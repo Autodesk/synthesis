@@ -3,17 +3,31 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
+using Google.Protobuf;
+using Mirabuf;
+using Mirabuf.Joint;
+using Mirabuf.Material;
 using SynthesisAPI.Proto;
+// using SynthesisAPI.Proto;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
+// using Joint = UnityEngine.Joint;
+using Joint = SynthesisAPI.Proto.Joint;
 using Material = SynthesisAPI.Proto.Material;
 using Mesh = SynthesisAPI.Proto.Mesh;
-using SynthesisAPI.Translation;
+// using SynthesisAPI.Translation;
 using UMaterial = UnityEngine.Material;
 using UMesh = UnityEngine.Mesh;
 using Logger = SynthesisAPI.Utilities.Logger;
+using Assembly = Mirabuf.Assembly;
+using AssemblyData = Mirabuf.AssemblyData;
+using Body = SynthesisAPI.Proto.Body;
+using Transform = UnityEngine.Transform;
+using Vector3 = Mirabuf.Vector3;
+using UVector3 = UnityEngine.Vector3;
 
 namespace Synthesis.Import {
 
@@ -31,11 +45,11 @@ namespace Synthesis.Import {
         /// <summary>
         /// Default Importers that come stock with Synthesis. Leaves ability to add one post release
         /// </summary>
-        public static Dictionary<SourceType, (ImportFuncString strFunc, ImportFuncBuffer bufFunc)> Importers
-            = new Dictionary<SourceType, (ImportFuncString strFunc, ImportFuncBuffer bufFunc)>() {
-            { SourceType.PROTOBUF_ROBOT, (ProtoRobotImport, ProtoRobotImport) },
-            { SourceType.PROTOBUF_FIELD, (ProtoFieldImport, ProtoFieldImport) }
-        };
+        // public static Dictionary<SourceType, (ImportFuncString strFunc, ImportFuncBuffer bufFunc)> Importers
+        //     = new Dictionary<SourceType, (ImportFuncString strFunc, ImportFuncBuffer bufFunc)>() {
+        //     // { SourceType.PROTOBUF_ROBOT, (ProtoRobotImport, ProtoRobotImport) },
+        //     { SourceType.PROTOBUF_DYNAMIC_STATIC, (ProtoFieldImport, ProtoFieldImport) }
+        // };
 
         /// <summary>
         /// Import a serialized DynamicObject into a Unity Environment
@@ -45,8 +59,8 @@ namespace Synthesis.Import {
         /// <param name="transType">Optional translation type to use before importing</param>
         /// <param name="forceTranslate">Force a translation of source data regardless if a temp file exists. TODO: Probably remove in the future</param>
         /// <returns>Root GameObject of whatever Entity/Model you imported</returns>
-        public static GameObject Import(string path, SourceType type, Translator.TranslationType transType, bool forceTranslate = false)
-            => Import(path, type, Translator.Translations.ContainsKey(transType) ? Translator.Translations[transType].strFunc : null, forceTranslate);
+        // public static GameObject Import(string path, SourceType type, Translator.TranslationType transType, bool forceTranslate = false)
+        //     => Import(path, type, Translator.Translations.ContainsKey(transType) ? Translator.Translations[transType].strFunc : null, forceTranslate);
         /// <summary>
         /// Import a serialized DynamicObject into a Unity Environment
         /// </summary>
@@ -54,68 +68,397 @@ namespace Synthesis.Import {
         /// <param name="type">Type of import to conduct</param>
         /// <param name="transType">Optional translation type to use before importing</param>
         /// <returns>Root GameObject of whatever Entity/Model you imported</returns>
-        public static GameObject Import(byte[] buf, SourceType type, Translator.TranslationType transType)
-            => Import(buf, type, Translator.Translations.ContainsKey(transType) ? Translator.Translations[transType].bufFunc : null);
+        // public static GameObject Import(byte[] buf, SourceType type, Translator.TranslationType transType)
+        //     => Import(buf, type, Translator.Translations.ContainsKey(transType) ? Translator.Translations[transType].bufFunc : null);
 
-        /// <summary>
-        /// Import an Entity/Model into the Engine
-        /// </summary>
-        /// <param name="path">Path to serialized data (this could be a directory or a file depending on your import/translate function)</param>
-        /// <param name="type">Type of import to conduct</param>
-        /// <param name="translation">Optional translation to use before importing</param>
-        /// <param name="forceTranslate">Force a translation of source data regardless if a temp file exists. TODO: Probably remove in the future</param>
-        /// <returns>Root GameObject of whatever Entity/Model you imported</returns>
-        public static GameObject Import(string path, SourceType type, Translator.TranslationFuncString translation = null, bool forceTranslate = false) {
-            if (!Importers.ContainsKey(type))
-                throw new Exception($"{Enum.GetName(type.GetType(), type)} importer doesn't exist");
-
-            if (translation == null) {
-                return Importers[type].strFunc(path);
-            } else {
-                if (!forceTranslate) {
-                    Debug.Log("Checking for cached translation");
-                    string newPath = path;
-                    // string name = newPath.Substring(newPath.LastIndexOf(Path.AltDirectorySeparatorChar) + 1);
-                    string name = Translator.TempFileName(path);
-                    string tempPath = Path.GetTempPath() + Path.AltDirectorySeparatorChar + "synth_temp";
-                    if (Directory.Exists(tempPath)) {
-                        newPath = tempPath + Path.AltDirectorySeparatorChar + $"{name}.{type.FileEnding}";
-                        if (File.Exists(newPath)) {
-                            Debug.Log("Importing from cache");
-                            return Importers[type].strFunc(newPath);
-                        } else {
-                            Debug.Log($"No file: {newPath}");
-                        }
-                    } else {
-                        Debug.Log($"No directory: {tempPath}");
-                    }
-                }
-                return Importers[type].strFunc(Translator.Translate(path, translation));
-            }
-        }
-        
-        /// <summary>
-        /// Import an Entity/Model into the Engine
-        /// </summary>
-        /// <param name="buf">Serialized data (this could be a directory or a file depending on your import/translate function)</param>
-        /// <param name="type">Type of import to conduct</param>
-        /// <param name="translation">Optional translation to use before importing</param>
-        /// <returns>Root GameObject of whatever Entity/Model you imported</returns>
-        public static GameObject Import(byte[] buf, SourceType type, Translator.TranslationFuncBuffer translation = null) {
-            if (!Importers.ContainsKey(type))
-                throw new Exception($"{Enum.GetName(type.GetType(), type)} importer doesn't exist");
-
-            if (translation == null) {
-                return Importers[type].bufFunc(buf);
-            } else {
-                return Importers[type].bufFunc(Translator.Translate(buf, translation));
-            }
-        }
+        // /// <summary>
+        // /// Import an Entity/Model into the Engine
+        // /// </summary>
+        // /// <param name="path">Path to serialized data (this could be a directory or a file depending on your import/translate function)</param>
+        // /// <param name="type">Type of import to conduct</param>
+        // /// <param name="translation">Optional translation to use before importing</param>
+        // /// <param name="forceTranslate">Force a translation of source data regardless if a temp file exists. TODO: Probably remove in the future</param>
+        // /// <returns>Root GameObject of whatever Entity/Model you imported</returns>
+        // public static GameObject Import(string path, SourceType type, Translator.TranslationFuncString translation = null, bool forceTranslate = false) {
+        //     if (!Importers.ContainsKey(type))
+        //         throw new Exception($"{Enum.GetName(type.GetType(), type)} importer doesn't exist");
+        //
+        //     if (translation == null) {
+        //         return Importers[type].strFunc(path);
+        //     } else {
+        //         if (!forceTranslate) {
+        //             Debug.Log("Checking for cached translation");
+        //             string newPath = path;
+        //             // string name = newPath.Substring(newPath.LastIndexOf(Path.AltDirectorySeparatorChar) + 1);
+        //             string name = Translator.TempFileName(path);
+        //             string tempPath = Path.GetTempPath() + Path.AltDirectorySeparatorChar + "synth_temp";
+        //             if (Directory.Exists(tempPath)) {
+        //                 newPath = tempPath + Path.AltDirectorySeparatorChar + $"{name}.{type.FileEnding}";
+        //                 if (File.Exists(newPath)) {
+        //                     Debug.Log("Importing from cache");
+        //                     return Importers[type].strFunc(newPath);
+        //                 } else {
+        //                     Debug.Log($"No file: {newPath}");
+        //                 }
+        //             } else {
+        //                 Debug.Log($"No directory: {tempPath}");
+        //             }
+        //         }
+        //         return Importers[type].strFunc(Translator.Translate(path, translation));
+        //     }
+        // }
+        //
+        // /// <summary>
+        // /// Import an Entity/Model into the Engine
+        // /// </summary>
+        // /// <param name="buf">Serialized data (this could be a directory or a file depending on your import/translate function)</param>
+        // /// <param name="type">Type of import to conduct</param>
+        // /// <param name="translation">Optional translation to use before importing</param>
+        // /// <returns>Root GameObject of whatever Entity/Model you imported</returns>
+        // public static GameObject Import(byte[] buf, SourceType type, Translator.TranslationFuncBuffer translation = null) {
+        //     if (!Importers.ContainsKey(type))
+        //         throw new Exception($"{Enum.GetName(type.GetType(), type)} importer doesn't exist");
+        //
+        //     if (translation == null) {
+        //         return Importers[type].bufFunc(buf);
+        //     } else {
+        //         return Importers[type].bufFunc(Translator.Translate(buf, translation));
+        //     }
+        // }
 
         #endregion
-        
-        #region ProtoBuf Importer
 
+        #region Mirabuf Importer
+        
+        /*
+         * Questions:
+         * - Does the Part transform override or add on top of the PartDefinition transform?
+         * - Should Parts have a parent definition?
+         * - Are Bodys supposed to have a transform?
+         * - Is there currently anything planned for using the value section of an Edge?
+         * - Is vector data stored as centimeters or meters?
+         */
+        
+        /*
+         * Potential Changes:
+         * - Add static/dynamic friction as separate values (if possible to grab from fusion)
+         * - Rename TriangleMesh's material reference to appearance
+         * - Uvs are float vectors not int vectors
+         * - Restitution?
+         */
+        
+        /*
+         * Notes for Hunter so he doesn't forget:
+         * - For now I'm keeping everything mirrored because Fusion is lovely
+         * - May have to compound transformations (specifically rotations) and then flip X and W values of quaternions and flip X value of vectors.
+         *      Consider doing that at a SpatialTransformMatrix level when converting to a UnityEngine.Matrix4x4, instead of compounding
+         * - Check if changing positions/rotations/scales change recursively or not
+         */
+        
+        public static GameObject AssemblyImport(byte[] buffer)
+            => AssemblyImport(Assembly.Parser.ParseFrom(buffer));
+
+        private static List<Collider> collidersToIgnore;
+        public static GameObject AssemblyImport(Assembly assembly) {
+
+            GameObject assemblyObject = new GameObject(assembly.Info.Name);
+
+            var parts = assembly.Data.Parts;
+            
+            
+            
+            // Construct rigid groups
+            var groupings = new Dictionary<string, RigidGroup>();
+            var partToGroupMap = new Dictionary<string, string>(); // Curious if I'm going to use this
+            if (assembly.Data.Joints is { RigidGroups: { } }) { // Uhhh idk what this is, rider is a better coder than me
+                foreach (var rigidGroup in assembly.Data.Joints.RigidGroups) {
+                    groupings.Add(rigidGroup.Name, rigidGroup);
+                    foreach (var part in rigidGroup.Occurrences) {
+                        // TODO: Can 1 part exist in multiple rigid groups?
+                        partToGroupMap.Add(part, rigidGroup.Name);
+                    }
+                }
+            }
+            foreach (var kvp in parts.PartInstances) {
+                if (!partToGroupMap.ContainsKey(kvp.Key)) {
+                    string name = $"single_grouping:{kvp.Value.Info.Name}";
+                    var singleGroup = new RigidGroup {Name = name};
+                    singleGroup.Occurrences.Add(kvp.Key);
+                    groupings.Add($"single_grouping:{kvp.Key}", singleGroup);
+                    partToGroupMap.Add(kvp.Key, name);
+                }
+            }
+
+            var globalTransformations = MakeGlobalTransformations(assembly); // Not sure I need to store it
+            var partObjects = new Dictionary<string, GameObject>();
+            collidersToIgnore = new List<Collider>();
+            
+            foreach (var group in groupings) {
+                GameObject groupObject = new GameObject(group.Value.Name);
+                foreach (var part in group.Value.Occurrences) {
+                    var partInstance = parts.PartInstances[part];
+                    var partDefinition = parts.PartDefinitions[partInstance.PartDefinitionReference];
+                    GameObject partObject = new GameObject(partInstance.Info.Name);
+                    MakePartDefinition(partObject, partDefinition, partInstance, assembly.Data);
+                    partObjects.Add(part, partObject);
+                    partObject.transform.parent = groupObject.transform;
+                    // MARK: If transform changes do work recursively, apply transformations here instead of in a separate loop
+                    partObject.transform.ApplyMatrix(partInstance.GlobalTransform);
+                    var physicalData = partDefinition.PhysicalData;
+                    // var rb = partObject.AddComponent<Rigidbody>();
+                    // rb.mass = (float)physicalData.Mass;
+                    // rb.centerOfMass = physicalData.Com; // I actually don't need to flip this
+                }
+                groupObject.transform.parent = assemblyObject.transform;
+            }
+            // ApplyTransformationsToGraph(gameObjects, assembly);
+            for (int i = 0; i < collidersToIgnore.Count - 1; i++) {
+                for (int j = i + 1; j < collidersToIgnore.Count; j++) {
+                    UnityEngine.Physics.IgnoreCollision(collidersToIgnore[i], collidersToIgnore[j]);
+                }
+            }
+            
+            // TODO: Joints, Rigidbodies, Etc.
+            
+            return assemblyObject;
+        }
+
+        // I think this might work?
+        public static Dictionary<string, Matrix4x4> MakeGlobalTransformations(Assembly assembly) {
+            var map = new Dictionary<string, Matrix4x4>();
+            foreach (Node n in assembly.DesignHierarchy.Nodes) {
+                Matrix4x4 trans = assembly.Data.Parts.PartInstances[n.Value].Transform == null
+                    ? assembly.Data.Parts.PartDefinitions[assembly.Data.Parts.PartInstances[n.Value].PartDefinitionReference].BaseTransform == null
+                        ? Matrix4x4.identity
+                        : assembly.Data.Parts.PartDefinitions[assembly.Data.Parts.PartInstances[n.Value].PartDefinitionReference].BaseTransform.UnityMatrix
+                    : assembly.Data.Parts.PartInstances[n.Value].Transform.UnityMatrix;
+                map.Add(n.Value, trans);
+                MakeGlobalTransformations(map, map[n.Value], assembly.Data.Parts, n);
+            }
+            foreach (var kvp in map) {
+                assembly.Data.Parts.PartInstances[kvp.Key].GlobalTransform = map[kvp.Key];
+            }
+            return map;
+        }
+
+        public static void MakeGlobalTransformations(Dictionary<string, Matrix4x4> map, Matrix4x4 parent, Parts parts, Node node) {
+            foreach (var child in node.Children) {
+                map.Add(child.Value, parent * parts.PartInstances[child.Value].Transform.UnityMatrix);
+                MakeGlobalTransformations(map, map[child.Value], parts, child);
+            }
+        }
+
+        // public static void ApplyTransformationsToGraph(Dictionary<string, GameObject> gameObjects, Assembly assembly) {
+        //     ApplyTransformationsToGraph(gameObjects, assembly, assembly.DesignHierarchy.Nodes);
+        // }
+
+        // This is all wrong whoops
+        // public static void ApplyTransformationsToGraph(Dictionary<string, GameObject> gameObjects, Assembly assembly, IEnumerable<Node> nodes) {
+        //     foreach (var node in nodes) {
+        //         ApplyTransformation(node.Value, gameObjects[node.Value], assembly.Data);
+        //         ApplyTransformationsToGraph(gameObjects, assembly, node.Children.UnravelNodes());
+        //     }
+        // }
+        //
+        // public static void ApplyTransformation(string part, GameObject gameObject, AssemblyData data) {
+        //     gameObject.transform.ApplyMatrix(data.Parts.PartInstances[part].Transform.SpatialMatrix.UnityMatrix);
+        // }
+
+        // public static void MakeRigidGroup(GameObject container, IEnumerable<string> parts, AssemblyData assemblyData) {
+        //     
+        // }
+        
+        // Keep this
+        // TODO: Collider Ignorance (Is that the correct term?)
+        public static void MakePartDefinition(GameObject container, PartDefinition definition, PartInstance instance, AssemblyData assemblyData) {
+            PhysicMaterial physMat = new PhysicMaterial {
+                dynamicFriction = 0.6f, // definition.PhysicalData.,
+                staticFriction = 0.6f // definition.PhysicalData.Friction
+            };
+            foreach (var body in definition.Bodies) {
+                GameObject bodyObject = new GameObject(body.Info.Name);
+                var filter = bodyObject.AddComponent<MeshFilter>();
+                var renderer = bodyObject.AddComponent<MeshRenderer>();
+                filter.sharedMesh = body.TriangleMesh.UnityMesh;
+                renderer.material = assemblyData.Materials.Appearances.ContainsKey(body.AppearanceOverride)
+                    ? assemblyData.Materials.Appearances[body.AppearanceOverride].UnityMaterial
+                    : assemblyData.Materials.Appearances.ContainsKey(instance.Appearance)
+                        ? assemblyData.Materials.Appearances[instance.Appearance].UnityMaterial
+                        : Appearance.DefaultAppearance.UnityMaterial; // Setup the override
+                var collider = bodyObject.AddComponent<MeshCollider>();
+                collider.convex = true;
+                collider.sharedMesh = body.TriangleMesh.UnityMesh; // Again, not sure if this actually works
+                collider.material = physMat;
+                collidersToIgnore.Add(collider);
+                bodyObject.transform.parent = container.transform;
+                // Ensure all transformations are zeroed after assigning parent
+                bodyObject.transform.localPosition = UVector3.zero;
+                bodyObject.transform.localRotation = Quaternion.identity;
+                bodyObject.transform.localScale = UVector3.one;
+                // bodyObject.transform.ApplyMatrix(body.);
+            }
+        }
+        
+        // public static SpatialTransformMatrix CompoundTransformations(Part )
+        
+        #endregion
+        
+        #region Protobuf 2.0 Importer
+
+        // public static GameObject DynamicStaticImport(byte[] buf)
+        //     => DynamicStaticImport((DynamicStatic)buf);
+        //
+        // public static GameObject DynamicStaticImport(DynamicStatic dyStat) {
+        //
+        //     GameObject assembly = new GameObject(dyStat.Name);
+        //     
+        //     // Occurrences
+        //     Occurrence root = dyStat.AssemblyData.OccurrenceMap.Values.ElementAt(0);
+        //     while (!root.IsGrounded)
+        //         root = dyStat.AssemblyData.OccurrenceMap[root.Parent];
+        //     
+        //     MakeOccurrence(root, dyStat.AssemblyData);
+        //
+        //     // Joints
+        //     foreach (var kvp in dyStat.AssemblyData.JointMap) {
+        //         MakeJoint(kvp.Value, dyStat.AssemblyData);
+        //     }
+        //     
+        //     var values = dyStat.AssemblyData.ImportedOccurrences.Values;
+        //     for (int i = 0; i < values.Count - 1; i++) {
+        //         for (int j = i + 1; j < values.Count; j++) {
+        //             // Consider caching collider to avoid calling GetComponent too much
+        //             UnityEngine.Physics.IgnoreCollision(values.ElementAt(0).GetComponent<MeshCollider>(),
+        //                 values.ElementAt(1).GetComponent<MeshCollider>());
+        //         }
+        //     }
+        //
+        //     return assembly;
+        // }
+        //
+        // public static void MakeJoint(Joint joint, AssemblyData assemDat) {
+        //     switch (joint.JointCase) {
+        //         case Joint.JointOneofCase.RotationalJoint:
+        //             MakeRotationalJoint(joint, assemDat);
+        //             break;
+        //         case Joint.JointOneofCase.OtherJoint:
+        //             MakeOtherJoint(joint, assemDat);
+        //             break;
+        //     }
+        // }
+        //
+        // public static void MakeOtherJoint(Joint joint, AssemblyData assemDat) {
+        //     MakeOtherJoint(joint, assemDat, false);
+        //     MakeOtherJoint(joint, assemDat, true);
+        // }
+        //
+        // public static void MakeOtherJoint(Joint joint, AssemblyData assemDat, bool sideB) {
+        //     FixedJoint other;
+        //     if (sideB) {
+        //         other = assemDat.ImportedOccurrences[joint.Occurrence2].AddComponent<FixedJoint>();
+        //         other.connectedBody = assemDat.ImportedOccurrences[joint.Occurrence1].GetComponent<Rigidbody>();
+        //         other.massScale = assemDat.ComponentMap[assemDat.OccurrenceMap[joint.Occurrence2].ComponentRef].PhysicalProperties.Mass
+        //                           / assemDat.ComponentMap[assemDat.OccurrenceMap[joint.Occurrence1].ComponentRef].PhysicalProperties.Mass;
+        //     } else {
+        //         other = assemDat.ImportedOccurrences[joint.Occurrence1].AddComponent<FixedJoint>();
+        //         other.connectedBody = assemDat.ImportedOccurrences[joint.Occurrence2].GetComponent<Rigidbody>();
+        //         other.massScale = assemDat.ComponentMap[assemDat.OccurrenceMap[joint.Occurrence1].ComponentRef].PhysicalProperties.Mass 
+        //                           / assemDat.ComponentMap[assemDat.OccurrenceMap[joint.Occurrence2].ComponentRef].PhysicalProperties.Mass;
+        //     }
+        //     other.anchor = joint.Anchor;
+        //     other.axis = joint.Axis;
+        // }
+        //
+        // public static void MakeRotationalJoint(Joint joint, AssemblyData assemDat) {
+        //     MakeRotationalJoint(joint, assemDat, false);
+        //     MakeRotationalJoint(joint, assemDat, true);
+        // }
+        //
+        // public static void MakeRotationalJoint(Joint joint, AssemblyData assemDat, bool sideB) {
+        //     HingeJoint hinge;
+        //     if (sideB) {
+        //         hinge = assemDat.ImportedOccurrences[joint.Occurrence2].gameObject.AddComponent<HingeJoint>();
+        //         hinge.connectedBody = assemDat.ImportedOccurrences[joint.Occurrence1].GetComponent<Rigidbody>();
+        //     } else {
+        //         hinge = assemDat.ImportedOccurrences[joint.Occurrence1].gameObject.AddComponent<HingeJoint>();
+        //         hinge.connectedBody = assemDat.ImportedOccurrences[joint.Occurrence2].GetComponent<Rigidbody>();
+        //     }
+        //     hinge.anchor = joint.Anchor;
+        //     hinge.axis = ((Vector3)joint.Axis).normalized;
+        //     // float angleRange = joint.RotationalJoint.UpperLimit - joint.RotationalJoint.LowerLimit;
+        //     if (joint.UseLimits) {
+        //         hinge.useLimits = true;
+        //         float min, max;
+        //         
+        //         min = joint.RotationalJoint.CurrentAngle - joint.RotationalJoint.UpperLimit;
+        //         max = joint.RotationalJoint.CurrentAngle - joint.RotationalJoint.LowerLimit;
+        //         
+        //         var minAngle = joint.RotationalJoint.CurrentAngle - joint.RotationalJoint.UpperLimit;
+        //         var maxAngle = joint.RotationalJoint.CurrentAngle - joint.RotationalJoint.LowerLimit;
+        //         var midAngle = (maxAngle + minAngle) / 2.0f;
+        //         Logger.Log($"Upper {joint.RotationalJoint.UpperLimit}\nLower {joint.RotationalJoint.LowerLimit}"
+        //                    + $"\nCurrent {joint.RotationalJoint.CurrentAngle}\nMin {minAngle}\nMax {maxAngle}\nMid {midAngle}");
+        //         if (!sideB)
+        //             assemDat.ImportedOccurrences[joint.Occurrence1].transform.RotateAround(joint.Anchor, joint.Axis, midAngle);
+        //         
+        //         hinge.limits = new JointLimits() { // TODO: Bounciness?
+        //             min = -midAngle, // Mathf.Clamp(, -175, 175), // TODO: Fix this?
+        //             max = midAngle // Mathf.Clamp(, -175, 175)
+        //         };
+        //     }
+        //     // Maybe just get the mass through the Proto data
+        //     float mass = assemDat.ComponentMap[assemDat.OccurrenceMap[joint.Occurrence1].ComponentRef].PhysicalProperties.Mass;
+        //     if (sideB)
+        //         hinge.massScale = mass / hinge.connectedBody.mass;
+        //     else
+        //         hinge.massScale = hinge.connectedBody.mass / mass;
+        // }
+        //
+        // public static void MakeOccurrence(Occurrence occ, AssemblyData assemDat, Transform parent = null) {
+        //     // if (!occ.IsGrounded && !assemDat.ImportedOccurrences.ContainsKey(occ.Parent))
+        //     //    MakeOccurrence(assemDat.OccurrenceMap[occ.Parent], assemDat);
+        //
+        //     var comp = assemDat.ComponentMap[occ.ComponentRef];
+        //     
+        //     GameObject occurrenceObject = new GameObject(occ.Name);
+        //     if (!occ.IsGrounded)
+        //         occurrenceObject.transform.parent = parent;
+        //     // Load Transformation
+        //     var matrix = assemDat.ComponentMap[occ.ComponentRef].Transform.UnityMatrix * occ.Transform.UnityMatrix;
+        //     occurrenceObject.transform.ApplyMatrix(matrix);
+        //     // Create Bodies
+        //     comp.Bodies.ForEachIndex((i, x) => CreateBody(x, occurrenceObject.transform, assemDat, comp.PhysicalProperties));
+        //     // Physical Bodies
+        //     Rigidbody rb = occurrenceObject.AddComponent<Rigidbody>();
+        //     rb.mass = comp.PhysicalProperties.Mass;
+        //     rb.centerOfMass = comp.PhysicalProperties.CenterOfMass;
+        //     // Make Child Occurrences
+        //     assemDat.ImportedOccurrences.Add(occ.GUID, occurrenceObject);
+        //     foreach (var child in occ.Children) {
+        //         MakeOccurrence(assemDat.OccurrenceMap[child], assemDat, occurrenceObject.transform);
+        //     }
+        // }
+        //
+        // public static void CreateBody(Body body, Transform parent, AssemblyData assemDat, PhysProps physicalProperties) {
+        //     GameObject bodyObject = new GameObject(body.Name);
+        //     bodyObject.transform.parent = parent;
+        //     bodyObject.transform.ApplyMatrix(body.Transform); // We should really avoid using scales
+        //     var filter = bodyObject.AddComponent<MeshFilter>();
+        //     var renderer = bodyObject.AddComponent<MeshRenderer>();
+        //     filter.sharedMesh = body.VisualMesh;
+        //     renderer.material = assemDat.MaterialMap[body.Material];
+        //     var collider = bodyObject.AddComponent<MeshCollider>();
+        //     collider.convex = true;
+        //     collider.sharedMesh = body.VisualMesh; // Does making it shared do weird stuff?
+        //     collider.material = new PhysicMaterial() { dynamicFriction = physicalProperties.DynamicFriction, staticFriction = physicalProperties.StaticFriction };
+        // }
+        
+        #endregion
+        
+        #region Protobuf Importer
+
+        /*
+        
         #region ProtoField
         
         /// <summary>
@@ -429,6 +772,8 @@ namespace Synthesis.Import {
                 hinge.massScale = parent.mass / c.mass;
         }
 
+        */
+
         #endregion
 
         /// <summary>
@@ -436,8 +781,8 @@ namespace Synthesis.Import {
         /// </summary>
         public struct SourceType {
 
-            public static readonly SourceType PROTOBUF_ROBOT = new SourceType("proto_robot", ProtoRobot.FILE_ENDING);
-            public static readonly SourceType PROTOBUF_FIELD = new SourceType("proto_field", ProtoField.FILE_ENDING);
+            public static readonly SourceType PROTOBUF_DYNAMIC_STATIC = new SourceType("proto_dynamic_static", "synth");
+            // public static readonly SourceType PROTOBUF_FIELD = new SourceType("proto_field", ProtoField.FILE_ENDING);
             
             public string FileEnding { get; private set; }
             public string Indentifier { get; private set; }
