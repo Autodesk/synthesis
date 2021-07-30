@@ -1266,6 +1266,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 287867056}
     m_Modifications:
+    - target: {fileID: 4938579954587822591, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4938579954976714812, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4938579955969888530, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4938579956092097941, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8276093422936841946, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
       propertyPath: m_Name
       value: Nav-Bar
@@ -1352,6 +1368,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8276093422936841947, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8276093422936841948, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: m_Color.b
+      value: 0.9607843
+      objectReference: {fileID: 0}
+    - target: {fileID: 8276093422936841948, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: m_Color.g
+      value: 0.9607843
+      objectReference: {fileID: 0}
+    - target: {fileID: 8276093422936841948, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: m_Color.r
+      value: 0.9607843
+      objectReference: {fileID: 0}
+    - target: {fileID: 8276093423157737641, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

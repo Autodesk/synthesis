@@ -3397,6 +3397,34 @@ PrefabInstance:
       propertyPath: m_AnchorMin.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1283168100911462910, guid: 2d57af8390174fa41be26d37d1cfbb17, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1283168100911462910, guid: 2d57af8390174fa41be26d37d1cfbb17, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1283168100911462910, guid: 2d57af8390174fa41be26d37d1cfbb17, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 4539348305775465477, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+    - target: {fileID: 1283168100911462910, guid: 2d57af8390174fa41be26d37d1cfbb17, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1283168100911462910, guid: 2d57af8390174fa41be26d37d1cfbb17, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: CloseAllPanels
+      objectReference: {fileID: 0}
+    - target: {fileID: 1283168100911462910, guid: 2d57af8390174fa41be26d37d1cfbb17, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: Synthesis.UI.Bars.NavigationBar, CoreEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 1283168100911462910, guid: 2d57af8390174fa41be26d37d1cfbb17, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 1283168101440069533, guid: 2d57af8390174fa41be26d37d1cfbb17, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

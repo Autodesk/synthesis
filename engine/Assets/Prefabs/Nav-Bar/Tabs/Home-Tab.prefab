@@ -456,12 +456,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4046745758473013452, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4046745758473013452, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 4046745758473013452, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
+      value: 
+      objectReference: {fileID: 1013426937749199350, guid: 7858009751d5d0749b03cf7f57a130ad, type: 3}
     - target: {fileID: 5256256030723406140, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
       propertyPath: m_Sprite
       value: 

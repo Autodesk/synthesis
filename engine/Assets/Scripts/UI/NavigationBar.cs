@@ -26,12 +26,14 @@ namespace Synthesis.UI.Bars
 
         public void OpenPanel(GameObject prefab)
         {
-            LayoutManager.OpenPanel(prefab, true);
-            if(_currentPanelButton!=null) changePanelButton(artifaktRegular,new Color(1,1,1,1));
+            if(prefab!=null){
+                LayoutManager.OpenPanel(prefab, true);
+                if(_currentPanelButton!=null) changePanelButton(artifaktRegular,new Color(1,1,1,1));
 
-            //set current panel button to the button clicked
-            _currentPanelButton = EventSystem.current.currentSelectedGameObject;
-            changePanelButton(artifaktBold,new Color(0.8705882f,0.8705882f,0.8705882f,1));
+                //set current panel button to the button clicked
+                _currentPanelButton = EventSystem.current.currentSelectedGameObject;
+                changePanelButton(artifaktBold,new Color(0.8705882f,0.8705882f,0.8705882f,1));
+            }
         }
         public void CloseAllPanels()
         {
