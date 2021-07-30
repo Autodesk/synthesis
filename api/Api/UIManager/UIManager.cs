@@ -351,7 +351,9 @@ namespace SynthesisAPI.UIManager
                                 (digitalInput.Name == InputNameMouse1 && button == 1) ||
                                 (digitalInput.Name == InputNameMouse2 && button == 2))
                             {
-                                EventBus.EventBus.Push($"input/{name}", new DigitalEvent(name, state));
+                                EventBus.EventBus.Push($"input/{name}",
+                                    new DigitalEvent(name, state > 0 ? 1 : 0, state)
+                                    );
                             }
                         }
                     }

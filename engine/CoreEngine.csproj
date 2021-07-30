@@ -118,6 +118,11 @@
      <Compile Include="Assets\Scripts\Importer\GamepieceTag.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\AudioSourceAdapter.cs" />
      <Compile Include="Assets\Scripts\Importer\Importer.cs" />
+     <Compile Include="Assets\Scripts\MultiplayerSwitch.cs" />
+     <Compile Include="Assets\Scripts\ButtonPanel.cs" />
+     <Compile Include="Assets\Scripts\LocalMultiplayer.cs" />
+     <Compile Include="Assets\Scripts\RemoveItem.cs" />
+     <Compile Include="Assets\Scripts\RobotButtons.cs" />
      <None Include="Assets\Scripts\CoreEngine.asmdef" />
     <Reference Include="UnityEngine">
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
