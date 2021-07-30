@@ -61,6 +61,13 @@ class Parser:
                 progressDialog,
             )
 
+            Materials._MapAllPhysicalMaterials(
+                design.materials,
+                assembly_out.data.materials,
+                self.parseOptions,
+                progressDialog
+            )
+
             Components._MapAllComponents(
                 design,
                 self.parseOptions,
@@ -127,7 +134,7 @@ class Parser:
                 joint_hierarchy_out += "\n\n"
 
                 gm.ui.messageBox(
-                    f"Materials: {len(assembly_out.data.materials.appearances)} \nPart-Definitions: {len(part_defs)} \nParts: {len(parts)} \nJoints: {len(joints)}\n {joint_hierarchy_out}"
+                    f"Appearances: {len(assembly_out.data.materials.appearances)} \nMaterials: {len(assembly_out.data.materials.physicalMaterials)} \nPart-Definitions: {len(part_defs)} \nParts: {len(parts)} \nJoints: {len(joints)}\n {joint_hierarchy_out}"
                 )
 
         except:

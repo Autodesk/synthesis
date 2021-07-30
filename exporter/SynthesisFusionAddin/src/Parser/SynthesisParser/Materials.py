@@ -6,8 +6,59 @@ from .. import ParseOptions
 from proto.proto_out import assembly_pb2, types_pb2, material_pb2
 
 
+def _MapAllPhysicalMaterials (
+    physicalMaterials: list,
+    materials: material_pb2.Materials,
+    options: ParseOptions,
+    progressDialog,
+) -> None:
+    setDefaultMaterial(materials.physicalMaterials["default"])
+
+    for material in physicalMaterials:
+        newmaterial = materials.physicalMaterials[material.id]
+        getPhysicalMaterialData(material, newmaterial, options)
+
+
+def setDefaultMaterial(physical_material: material_pb2.PhysicalMaterial):
+    construct_info("default", physical_material)
+
+    physical_material.description = "A default physical material"
+    physical_material.dynamic_friction = 0.5
+    physical_material.static_friction = 0.5
+    physical_material.restitution = 0.5
+    physical_material.deformable = False
+
+    physical_material.matType = 0
+
+
+def getPhysicalMaterialData(
+    fusion_material,
+    proto_material,
+    options
+):
+    """ Gets the material data and adds it to protobuf
+
+    Args:
+        fusion_material (fusionmaterial): Fusion 360 Material
+        proto_material (protomaterial): proto material mirabuf
+        options (parseoptions): parse options
+    """
+    construct_info("", proto_material, fus_object=fusion_material)
+
+    proto_material.deformable = False
+    proto_material.matType = 0
+
+    # for these reach out to the fusion-api channel - ask for a way to get friction coefficient from materials
+    # for access in f360 right click and go to physical materials - select something and go to advanced
+
+    # proto_material.dynamic_friction = 0.5 - set as generic friction
+    # proto_material.static_friction = 0.5 - set as generic friction
+    # proto_material.restitution = 0.5
+
+
+
 def _MapAllAppearances(
-    appearances: [],
+    appearances: list,
     materials: material_pb2.Materials,
     options: ParseOptions,
     progressDialog,

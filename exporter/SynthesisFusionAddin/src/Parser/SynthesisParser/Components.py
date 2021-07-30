@@ -132,9 +132,12 @@ def __parseChildOccurrence(
 
     fill_info(part, occurrence)
 
-    if occurrence.component.material:
-        part.appearance = occurrence.component.material.id
+    if occurrence.appearance:
+        part.appearance = occurrence.appearance.id
         # TODO: Add phyical_material parser
+
+    if occurrence.component.material:
+        part.physical_material = occurrence.component.material.id
 
     def_map = partsData.part_definitions
 
