@@ -14,12 +14,20 @@ namespace SynthesisAPI.Simulation {
         public static IReadOnlyDictionary<string, SimObject> SimulationObjects
             = new ReadOnlyDictionary<string, SimObject>(_simulationObject);
 
-        public delegate void DriverUpdate();
-        public static event DriverUpdate OnDriverUpdate;
+        public delegate void UpdateDelegate();
+        public static event UpdateDelegate OnDriverUpdate;
+        public static event UpdateDelegate OnBehaviourUpdate;
+
+        public static List<Driver> Drivers = new List<Driver>();
+        public static List<SimBehaviour> Behaviours = new List<SimBehaviour>();
 
         public static void Update() {
+            Drivers.ForEach(x => x.Update());
             if (OnDriverUpdate != null)
                 OnDriverUpdate();
+            Behaviours.ForEach(x => x.Update());
+            if (OnBehaviourUpdate != null)
+                OnBehaviourUpdate();
             // _drivers.ForEach(x => x.Update());
         }
 
