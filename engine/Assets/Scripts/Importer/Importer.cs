@@ -15,7 +15,7 @@ using SynthesisAPI.Proto;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 // using Joint = UnityEngine.Joint;
-using Joint = SynthesisAPI.Proto.Joint;
+// using Joint = SynthesisAPI.Proto.Joint;
 using Material = SynthesisAPI.Proto.Material;
 using Mesh = SynthesisAPI.Proto.Mesh;
 // using SynthesisAPI.Translation;
@@ -24,10 +24,11 @@ using UMesh = UnityEngine.Mesh;
 using Logger = SynthesisAPI.Utilities.Logger;
 using Assembly = Mirabuf.Assembly;
 using AssemblyData = Mirabuf.AssemblyData;
-using Body = SynthesisAPI.Proto.Body;
+// using Body = SynthesisAPI.Proto.Body;
 using Transform = UnityEngine.Transform;
 using Vector3 = Mirabuf.Vector3;
 using UVector3 = UnityEngine.Vector3;
+using Node = Mirabuf.Node;
 
 namespace Synthesis.Import {
 
@@ -170,7 +171,7 @@ namespace Synthesis.Import {
             // Construct rigid groups
             var groupings = new Dictionary<string, RigidGroup>();
             var partToGroupMap = new Dictionary<string, string>(); // Curious if I'm going to use this
-            if (assembly.Data.Joints is { RigidGroups: { } }) { // Uhhh idk what this is, rider is a better coder than me
+            if (assembly.Data.Joints.) { // Uhhh idk what this is, rider is a better coder than me
                 foreach (var rigidGroup in assembly.Data.Joints.RigidGroups) {
                     groupings.Add(rigidGroup.Name, rigidGroup);
                     foreach (var part in rigidGroup.Occurrences) {
@@ -191,36 +192,55 @@ namespace Synthesis.Import {
 
             var globalTransformations = MakeGlobalTransformations(assembly); // Not sure I need to store it
             var partObjects = new Dictionary<string, GameObject>();
-            collidersToIgnore = new List<Collider>();
             
-            foreach (var group in groupings) {
-                GameObject groupObject = new GameObject(group.Value.Name);
-                foreach (var part in group.Value.Occurrences) {
-                    var partInstance = parts.PartInstances[part];
-                    var partDefinition = parts.PartDefinitions[partInstance.PartDefinitionReference];
-                    GameObject partObject = new GameObject(partInstance.Info.Name);
-                    MakePartDefinition(partObject, partDefinition, partInstance, assembly.Data);
-                    partObjects.Add(part, partObject);
-                    partObject.transform.parent = groupObject.transform;
-                    // MARK: If transform changes do work recursively, apply transformations here instead of in a separate loop
-                    partObject.transform.ApplyMatrix(partInstance.GlobalTransform);
-                    var physicalData = partDefinition.PhysicalData;
-                    // var rb = partObject.AddComponent<Rigidbody>();
-                    // rb.mass = (float)physicalData.Mass;
-                    // rb.centerOfMass = physicalData.Com; // I actually don't need to flip this
-                }
-                groupObject.transform.parent = assemblyObject.transform;
-            }
-            // ApplyTransformationsToGraph(gameObjects, assembly);
-            for (int i = 0; i < collidersToIgnore.Count - 1; i++) {
-                for (int j = i + 1; j < collidersToIgnore.Count; j++) {
-                    UnityEngine.Physics.IgnoreCollision(collidersToIgnore[i], collidersToIgnore[j]);
-                }
-            }
+            collidersToIgnore = new List<Collider>();
+            // foreach (var group in groupings) {
+            //     GameObject groupObject = new GameObject(group.Value.Name);
+            //     foreach (var part in group.Value.Occurrences) {
+            //         var partInstance = parts.PartInstances[part];
+            //         var partDefinition = parts.PartDefinitions[partInstance.PartDefinitionReference];
+            //         GameObject partObject = new GameObject(partInstance.Info.Name);
+            //         MakePartDefinition(partObject, partDefinition, partInstance, assembly.Data);
+            //         partObjects.Add(part, partObject);
+            //         partObject.transform.parent = groupObject.transform;
+            //         // MARK: If transform changes do work recursively, apply transformations here instead of in a separate loop
+            //         partObject.transform.ApplyMatrix(partInstance.GlobalTransform);
+            //         var physicalData = partDefinition.PhysicalData;
+            //         // var rb = partObject.AddComponent<Rigidbody>();
+            //         // rb.mass = (float)physicalData.Mass;
+            //         // rb.centerOfMass = physicalData.Com; // I actually don't need to flip this
+            //     }
+            //     groupObject.transform.parent = assemblyObject.transform;
+            // }
+            // // ApplyTransformationsToGraph(gameObjects, assembly);
+            // for (int i = 0; i < collidersToIgnore.Count - 1; i++) {
+            //     for (int j = i + 1; j < collidersToIgnore.Count; j++) {
+            //         UnityEngine.Physics.IgnoreCollision(collidersToIgnore[i], collidersToIgnore[j]);
+            //     }
+            // }
             
             // TODO: Joints, Rigidbodies, Etc.
             
             return assemblyObject;
+        }
+
+        public static Tree<StaticGroupDefinition> FindStaticGroupDefinitions(Assembly assembly, Node node) {
+            Tree<StaticGroupDefinition> tree = new Tree<StaticGroupDefinition>();
+            tree.Value = GenerateStaticGroupDefinitions(rootNode);
+        }
+
+        public static StaticGroupDefinition GenerateStaticGroupDefinitions(AssemblyData data, Node node) {
+            
+        }
+
+        public struct Tree<T> {
+            public T Value;
+            public List<Tree<T>> Children;
+        }
+        
+        public struct StaticGroupDefinition {
+            public string Id;
+            public Dictionary<string, PartInstance> parts;
         }
 
         // I think this might work?
