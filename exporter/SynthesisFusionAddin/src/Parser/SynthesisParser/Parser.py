@@ -96,6 +96,8 @@ class Parser:
                 rootNode,
             )
 
+            assembly_out.design_hierarchy.nodes.append(rootNode)
+
             Joints.populateJoints(
                 design, assembly_out.data.joints, progressDialog, self.parseOptions
             )
@@ -111,8 +113,6 @@ class Parser:
             JointHierarchy.BuildJointPartHierarchy(
                 design, assembly_out.data.joints, self.parseOptions, progressDialog
             )
-
-            assembly_out.design_hierarchy.nodes.append(rootNode)
 
             f = open(self.parseOptions.fileLocation, "wb")
             f.write(assembly_out.SerializeToString())

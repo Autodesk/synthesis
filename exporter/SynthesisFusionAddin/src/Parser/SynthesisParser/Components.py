@@ -84,9 +84,6 @@ def _ParseComponentRoot(
 
     def_map = partsData.part_definitions
 
-    if component.material:
-        part.appearance = component.material.id
-
     if mapConstant in def_map:
         part.part_definition_reference = mapConstant
         # part.transform.spatial_matrix = component.transform.asArray()
