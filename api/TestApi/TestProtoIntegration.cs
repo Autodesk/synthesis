@@ -10,6 +10,7 @@ using System.Net.Sockets;
 using System.IO;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
+using System.Diagnostics;
 
 namespace TestApi {
     
@@ -17,70 +18,83 @@ namespace TestApi {
     [TestFixture]
     public static class TestProtoCompleteIntegration
     {
-        /*
+        static Signals RobotLayout;
         [Test]
         public static void TestIngtegration()
         {
-            Signals testSignalLayout = new Signals()
+            
+            RobotLayout = new Signals()
             {
                 Info = new Info()
                 {
-                    GUID = "1",
-                    Name = "testSignalLayout",
+                    GUID = Guid.NewGuid().ToString(),
+                    Name = "Robot",
                     Version = 1
                 }
             };
-            testSignalLayout.SignalMap.Add("DO1", new Signal()
+            RobotLayout.SignalMap.Add("DI1", new Signal()
             {
+                Info = new Info()
+                {
+                    GUID = Guid.NewGuid().ToString(),
+                    Name = "DigitalInput1",
+                    Version = 1
+                },
                 Class = "Digital",
-                Info = new Info()
-                {
-                    GUID = "2",
-                    Name = "testDigitalOutput",
-                    Version = 1
-                },
-                Io = IOType.Output
-            });
-            testSignalLayout.SignalMap.Add("AI1", new Signal()
-            {
-                Class = "Analog",
-                Info = new Info()
-                {
-                    GUID = "3",
-                    Name = "testAnalogInput",
-                    Version = 1
-                },
                 Io = IOType.Input
             });
-
-            UpdateSignals updateMessage = new UpdateSignals()
+            RobotLayout.SignalMap.Add("DI2", new Signal()
             {
-                Name = "testSignalLayout"
-            };
-            updateMessage.SignalMap.Add("DO1", new UpdateSignal()
-            {
+                Info = new Info()
+                {
+                    GUID = Guid.NewGuid().ToString(),
+                    Name = "DigitalInput2",
+                    Version = 1
+                },
                 Class = "Digital",
-                Io = UpdateIOType.Output,
-                Value = Value.ForNumber(4.2)
+                Io = IOType.Input
             });
-            updateMessage.SignalMap.Add("AI1", new UpdateSignal()
+            RobotLayout.SignalMap.Add("DO1", new Signal()
             {
+                Info = new Info()
+                {
+                    GUID = Guid.NewGuid().ToString(),
+                    Name = "DigitalOutput1",
+                    Version = 1
+                },
                 Class = "Digital",
-                Io = UpdateIOType.Output,
-                Value = Value.ForNumber(3.9)
+                Io = IOType.Output
+            });
+            RobotLayout.SignalMap.Add("AO1", new Signal()
+            {
+                Info = new Info()
+                {
+                    GUID = Guid.NewGuid().ToString(),
+                    Name = "AnalogOutput1",
+                    Version = 1
+                },
+                Class = "Analog",
+                Io = IOType.Output
             });
 
             System.Diagnostics.Debug.WriteLine("Adding signal layout");
-            RobotManager.Instance.AddSignalLayout(testSignalLayout);
+            RobotManager.Instance.AddSignalLayout(RobotLayout);
 
             System.Diagnostics.Debug.WriteLine("Starting Server");
             TcpServerManager.SetTargetQueue(RobotManager.Instance.UpdateQueue);
             TcpServerManager.Start();
 
             System.Diagnostics.Debug.WriteLine("Sending data");
-            SendData("127.0.0.1", updateMessage);
-
-            Thread.Sleep(500);
+            //SendData("127.0.0.1", updateMessage);
+            /*
+            Process proc = new Process();
+            proc.StartInfo.FileName = "python.exe";
+            proc.StartInfo.RedirectStandardOutput = true;
+            proc.StartInfo.UseShellExecute = false;
+            proc.StartInfo.Arguments = "C:\\git\\synthesis\\engine\\Assets\\Scripts\\SendData.py";
+            proc.Start();
+            */
+            Thread.Sleep(10000);
 
             System.Diagnostics.Debug.WriteLine("Stopping Server");
             TcpServerManager.Stop();
@@ -92,14 +106,18 @@ namespace TestApi {
             RobotManager.Instance.Stop();
             System.Diagnostics.Debug.WriteLine("Stopped RobotManager");
 
-            Assert.IsTrue(RobotManager.Instance.Robots["testSignalLayout"].CurrentSignals["DO1"].Equals(new UpdateSignal()
+            foreach (var robot in RobotManager.Instance.Robots)
+            {
+                System.Diagnostics.Debug.WriteLine(robot.Value.CurrentSignals["DI1"].Class);
+            }
+            Assert.IsTrue(RobotManager.Instance.Robots["Robot"].CurrentSignals["DI1"].Equals(new UpdateSignal()
             {
                 Class = "Digital",
                 Io = UpdateIOType.Output,
                 Value = Value.ForNumber(4.2)
             }));
         }
-        */
+        
 
         [Test]
         public static void TestRobotManager()
@@ -190,7 +208,7 @@ namespace TestApi {
 
             byte[] metadata = new byte[sizeof(int)];
             metadata = BitConverter.GetBytes(size);
-            if (BitConverter.IsLittleEndian)
+            if (!BitConverter.IsLittleEndian)
                 Array.Reverse(metadata);
 
             using (NetworkStream stream = client.GetStream())

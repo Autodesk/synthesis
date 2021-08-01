@@ -32,7 +32,7 @@ namespace TestApi
             UpdateSignal testDigitalOutput1 = new UpdateSignal()
             {
                 Io = UpdateIOType.Output,
-                Class = "PWM",
+                Class = "Digital",
                 Value = Value.ForNumber(4.2)
             };
 
@@ -88,7 +88,7 @@ namespace TestApi
 
             byte[] metadata = new byte[sizeof(int)];
             metadata = BitConverter.GetBytes(size);
-            if (BitConverter.IsLittleEndian)
+            if (!BitConverter.IsLittleEndian)
                 Array.Reverse(metadata);
 
             using (NetworkStream stream = client.GetStream())
@@ -100,8 +100,9 @@ namespace TestApi
 
             client.Close();
         }
+        
         */
-
     }
+        
     
 }

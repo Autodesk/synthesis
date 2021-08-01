@@ -78,8 +78,11 @@ namespace SynthesisAPI.Utilities
                         try
                         {
                             TcpClient cli = (listener.AcceptTcpClient());
-                            MemoryStream ms = new MemoryStream();
-                            cli.GetStream().CopyTo(ms);
+                            System.Diagnostics.Debug.WriteLine("Accepted Client");
+                            MemoryStream ms = new MemoryStream(DePythonifyNetworkStream(cli.GetStream()));
+                            //DePythonifyNetworkStream(cli.GetStream()).CopyTo(ms);
+                            //cli.GetStream().CopyTo(ms);
+                            
                             ms.Seek(0, SeekOrigin.Begin);
 
                             clients.Add(new ClientHandler
@@ -111,6 +114,12 @@ namespace SynthesisAPI.Utilities
                                 }
                                 else
                                 {
+                                    System.Diagnostics.Debug.WriteLine("-----------");
+                                    System.Diagnostics.Debug.WriteLine(clients[i].inputData.Result.Name);
+                                    foreach (var v in clients[i].inputData.Result.SignalMap.Values)
+                                    {
+                                        System.Diagnostics.Debug.WriteLine(v.Value);
+                                    }
                                     _packets.Enqueue(clients[i].inputData.Result);
                                     clients[i].inputData = ReadUpdateMessageAsync(clients[i].stream);
 
@@ -126,23 +135,48 @@ namespace SynthesisAPI.Utilities
                 
             }
             
-            public async Task<UpdateSignals?> ReadUpdateMessageAsync(MemoryStream stream)
+            private async Task<UpdateSignals?> ReadUpdateMessageAsync(MemoryStream stream)
             {
+                System.Diagnostics.Debug.WriteLine("Reading message");
+                System.Diagnostics.Debug.WriteLine(stream.Length);
+                System.Diagnostics.Debug.WriteLine(stream.Position);
                 if (stream.Position >= stream.Length)
                 {
+                    System.Diagnostics.Debug.WriteLine("returning null");
                     return null;
                 }
+
                 UpdateSignals signals = new UpdateSignals();
                 byte[] sizeBytes = new byte[sizeof(int)];
                 await stream.ReadAsync(sizeBytes, 0, sizeBytes.Length);
-                if (BitConverter.IsLittleEndian)
+                //You may have to change this!
+                if (!BitConverter.IsLittleEndian)
                     Array.Reverse(sizeBytes);
 
                 int size = BitConverter.ToInt32(sizeBytes, 0);
+                System.Diagnostics.Debug.WriteLine(size);
+                System.Diagnostics.Debug.WriteLine("size ^");
                 byte[] signalBytes = new byte[size];
                 await stream.ReadAsync(signalBytes, 0, signalBytes.Length);
                 signals.MergeFrom(signalBytes);
                 return signals;
+            }
+
+            private byte[] DePythonifyNetworkStream(NetworkStream networkStream)
+            {
+                MemoryStream tmp = new MemoryStream();
+                StreamWriter sw = new StreamWriter(tmp);
+                StreamReader sr = new StreamReader(networkStream);
+
+                string byteString = sr.ReadToEnd();
+                byteString = byteString.Replace("b'", String.Empty);
+                byteString = byteString.Replace("'", String.Empty);
+
+                sw.Write(byteString);
+                sw.Flush();
+
+                return tmp.ToArray();
+                
             }
         }
 
