@@ -1,6 +1,3 @@
-# Author-Shawn Hice
-# Description-SketchUp Website uploader
-
 from .src.general_imports import root_logger, gm, INTERNAL_ID, APP_NAME
 
 from .src.UI import HUI, Handlers, Camera, Helper, ConfigCommand
@@ -63,8 +60,10 @@ def stop(context):
         import sys
 
         path = os.path.abspath(os.path.dirname(__file__))
-        
-        path_proto_files = os.path.abspath(os.path.join(os.path.dirname(__file__), "../proto/proto_out"))
+
+        path_proto_files = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "../proto/proto_out")
+        )
 
         if path in sys.path:
             sys.path.remove(path)
@@ -117,4 +116,3 @@ def register_ui() -> None:
     )
 
     gm.elements.append(commandButton)
-    

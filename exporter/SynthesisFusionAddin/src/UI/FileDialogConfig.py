@@ -22,8 +22,8 @@ def SaveFileDialog(
         str: full file path
     """
 
-    ext="MiraBuf Package (*.mira)"
-    
+    ext = "MiraBuf Package (*.mira)"
+
     fileDialog = gm.ui.createFileDialog()
     fileDialog.isMultiSelectEnabled = False
 

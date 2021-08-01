@@ -10,13 +10,12 @@ from proto.proto_out import assembly_pb2
 
 # from . import Joints, Materials, Components, Utilities
 
-from . import Materials, Components, Joints, JointHierarchy
+from . import Materials, Components, Joints, JointHierarchy, PDMessage
 
 from .Utilities import *
 
 
 class Parser:
-
     def __init__(self, options: any):
         """Creates a new parser with the supplied options
 
@@ -33,6 +32,16 @@ class Parser:
 
             assembly_out = assembly_pb2.Assembly()
             fill_info(assembly_out, design.rootComponent)
+
+            self.pdMessage = PDMessage.PDMessage(
+                assembly_out.info.name,
+                design.allComponents.count,
+                design.rootComponent.allOccurrences.count,
+                design.materials.count,
+                design.appearances.count,  # this is very high for some reason
+            )
+
+            gm.ui.messageBox(str(self.pdMessage))
 
             assembly_out.dynamic = True
 
@@ -65,7 +74,7 @@ class Parser:
                 design.materials,
                 assembly_out.data.materials,
                 self.parseOptions,
-                progressDialog
+                progressDialog,
             )
 
             Components._MapAllComponents(
@@ -84,25 +93,23 @@ class Parser:
                 self.parseOptions,
                 assembly_out.data.parts,
                 assembly_out.data.materials.appearances,
-                rootNode
+                rootNode,
             )
 
             Joints.populateJoints(
-                design,
-                assembly_out.data.joints,
-                progressDialog,
-                self.parseOptions
+                design, assembly_out.data.joints, progressDialog, self.parseOptions
             )
 
+            # add condition in here for advanced joints maybe idk
+            # should pre-process to find if there are any grounded joints at all
+            # that or add code to existing parser to determine leftovers
+
             Joints.createJointGraph(
-                self.parseOptions.joints,
-                assembly_out.joint_hierarchy
+                self.parseOptions.joints, assembly_out.joint_hierarchy, progressDialog
             )
 
             JointHierarchy.BuildJointPartHierarchy(
-                design,
-                assembly_out.data.joints,
-                self.parseOptions
+                design, assembly_out.data.joints, self.parseOptions, progressDialog
             )
 
             assembly_out.design_hierarchy.nodes.append(rootNode)
@@ -126,15 +133,21 @@ class Parser:
                         joint_hierarchy_out = f"{joint_hierarchy_out}  |- ground\n"
                     else:
                         newnode = assembly_out.data.joints.joint_instances[node.value]
-                        jointdefinition = assembly_out.data.joints.joint_definitions[newnode.joint_reference]
+                        jointdefinition = assembly_out.data.joints.joint_definitions[
+                            newnode.joint_reference
+                        ]
                         joint_hierarchy_out = f"{joint_hierarchy_out}  |- {jointdefinition.info.name} type: {jointdefinition.joint_motion_type}\n"
 
                     for child in node.children:
                         if child.value == "ground":
                             joint_hierarchy_out = f"{joint_hierarchy_out} |--- ground\n"
                         else:
-                            newnode = assembly_out.data.joints.joint_instances[child.value]
-                            jointdefinition = assembly_out.data.joints.joint_definitions[newnode.joint_reference]
+                            newnode = assembly_out.data.joints.joint_instances[
+                                child.value
+                            ]
+                            jointdefinition = assembly_out.data.joints.joint_definitions[
+                                newnode.joint_reference
+                            ]
                             joint_hierarchy_out = f"{joint_hierarchy_out}  |--- {jointdefinition.info.name} type: {jointdefinition.joint_motion_type}\n"
 
                 joint_hierarchy_out += "\n\n"

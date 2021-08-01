@@ -51,11 +51,12 @@ from .Utilities import fill_info, construct_info
 # 2. add bodies to each of the Joint Instances
 # 3. connect all instances with graphcontainer
 
-def populateJoints (
+
+def populateJoints(
     design: adsk.fusion.Design,
     joints: joint_pb2.Joints,
     progressDialog: adsk.core.ProgressDialog,
-    options
+    options,
 ):
     fill_info(joints, None)
 
@@ -102,16 +103,18 @@ def populateJoints (
                 _motionFromJoint(joint.jointMotion, joint_definition)
 
             except:
-                logging.getLogger(f"{INTERNAL_ID}.JointParser").error("Failed:\n{}".format(traceback.format_exc()))
+                logging.getLogger(f"{INTERNAL_ID}.JointParser").error(
+                    "Failed:\n{}".format(traceback.format_exc())
+                )
                 continue
 
 
 def _addJoint(joint: adsk.fusion.Joint, joint_definition: joint_pb2.Joint):
     fill_info(joint_definition, joint)
-    
+
     jointPivotTranslation = _jointOrigin(joint)
 
-    if jointPivotTranslation :
+    if jointPivotTranslation:
         joint_definition.origin.x = jointPivotTranslation.x
         joint_definition.origin.y = jointPivotTranslation.y
         joint_definition.origin.z = jointPivotTranslation.z
@@ -120,9 +123,12 @@ def _addJoint(joint: adsk.fusion.Joint, joint_definition: joint_pb2.Joint):
         joint_definition.origin.y = 0.0
         joint_definition.origin.z = 0.0
         if DEBUG:
-            logging.getLogger(f"{INTERNAL_ID}.JointParser._addJoint").error(f"Cannot find joint origin on joint {joint.name}")
+            logging.getLogger(f"{INTERNAL_ID}.JointParser._addJoint").error(
+                f"Cannot find joint origin on joint {joint.name}"
+            )
 
     joint_definition.break_magnitude = 0.0
+
 
 def _addJointInstance(joint: adsk.fusion.Joint, joint_instance: joint_pb2.JointInstance):
     fill_info(joint_instance, joint)
@@ -142,12 +148,15 @@ def _addJointInstance(joint: adsk.fusion.Joint, joint_instance: joint_pb2.JointI
 
     # fill info for what parts are contained within this joint
 
-def _motionFromJoint(fusionMotionDefinition: adsk.fusion.JointMotion, proto_joint: joint_pb2.Joint) -> None:
+
+def _motionFromJoint(
+    fusionMotionDefinition: adsk.fusion.JointMotion, proto_joint: joint_pb2.Joint
+) -> None:
     # if fusionJoint.geometryOrOriginOne.objectType == "adsk::fusion::JointGeometry"
     # create the DOF depending on what kind of information the joint has
-    
+
     fillJointMotionFuncSwitcher = {
-        0: noop, # this should be ignored
+        0: noop,  # this should be ignored
         1: fillRevoluteJointMotion,
         2: fillSliderJointMotion,
         3: noop,  # TODO: Implement - Ball Joint at least
@@ -162,7 +171,10 @@ def _motionFromJoint(fusionMotionDefinition: adsk.fusion.JointMotion, proto_join
 
     fillJointMotionFunc(fusionMotionDefinition, proto_joint)
 
-def fillRevoluteJointMotion(revoluteMotion: adsk.fusion.RevoluteJointMotion, proto_joint: joint_pb2.Joint):
+
+def fillRevoluteJointMotion(
+    revoluteMotion: adsk.fusion.RevoluteJointMotion, proto_joint: joint_pb2.Joint
+):
     """#### Fill Protobuf revolute joint motion data
 
     Args:
@@ -185,7 +197,7 @@ def fillRevoluteJointMotion(revoluteMotion: adsk.fusion.RevoluteJointMotion, pro
 
     dof.value = revoluteMotion.rotationValue
 
-    if (revoluteMotion.rotationLimits):
+    if revoluteMotion.rotationLimits:
         dof.limits.lower = revoluteMotion.rotationLimits.minimumValue
         dof.limits.upper = revoluteMotion.rotationLimits.maximumValue
 
@@ -203,7 +215,10 @@ def fillRevoluteJointMotion(revoluteMotion: adsk.fusion.RevoluteJointMotion, pro
         dof.axis.y = int(rotationAxis == 2)
         dof.axis.z = int(rotationAxis == 1)
 
-def fillSliderJointMotion(sliderMotion: adsk.fusion.SliderJointMotion, proto_joint: joint_pb2.Joint) -> None:
+
+def fillSliderJointMotion(
+    sliderMotion: adsk.fusion.SliderJointMotion, proto_joint: joint_pb2.Joint
+) -> None:
     """#### Fill Protobuf slider joint motion data
 
     Args:
@@ -224,11 +239,14 @@ def fillSliderJointMotion(sliderMotion: adsk.fusion.SliderJointMotion, proto_joi
 
 
 def noop(*argv):
-    
+
     """Easy way to keep track of no-op code that required function pointers"""
     pass
 
-def _searchForGrounded(occ: adsk.fusion.Occurrence) -> Union[adsk.fusion.Occurrence, None]:
+
+def _searchForGrounded(
+    occ: adsk.fusion.Occurrence,
+) -> Union[adsk.fusion.Occurrence, None]:
     """Search for a grounded component or occurrence in the assembly
 
     Args:
@@ -258,6 +276,7 @@ def _searchForGrounded(occ: adsk.fusion.Occurrence) -> Union[adsk.fusion.Occurre
             return searched
 
     return None
+
 
 def _jointOrigin(
     fusionJoint: Union[adsk.fusion.Joint, adsk.fusion.AsBuiltJoint]
@@ -306,9 +325,10 @@ def _jointOrigin(
 
 
 def createJointGraph(
-    supplied_joints : list,
-    joint_tree : types_pb2.GraphContainer
+    supplied_joints: list, joint_tree: types_pb2.GraphContainer, progressDialog
 ) -> None:
+
+    progressDialog.message = f"Building Joint Graph Map from given joints"
 
     # keep track of current nodes to link them
     node_map = dict({})
@@ -328,12 +348,19 @@ def createJointGraph(
     # second sort them
     for supplied_joint in supplied_joints:
         current_node = node_map[supplied_joint.joint_token]
-        if (supplied_joint.parent == 0):
+        if supplied_joint.parent == 0:
             node_map["ground"].children.append(node_map[supplied_joint.joint_token])
-        elif node_map[supplied_joint.parent] is not None and node_map[supplied_joint.joint_token] is not None:
-            node_map[supplied_joint.parent].children.append(node_map[supplied_joint.joint_token])
+        elif (
+            node_map[supplied_joint.parent] is not None
+            and node_map[supplied_joint.joint_token] is not None
+        ):
+            node_map[supplied_joint.parent].children.append(
+                node_map[supplied_joint.joint_token]
+            )
         else:
-            logging.getLogger('JointHierarchy').error(f"Cannot construct hierarhcy because of detached tree at : {supplied_joint.joint_token}")
+            logging.getLogger("JointHierarchy").error(
+                f"Cannot construct hierarhcy because of detached tree at : {supplied_joint.joint_token}"
+            )
 
     for node in node_map.values():
         # append everything at top level to isolate kinematics

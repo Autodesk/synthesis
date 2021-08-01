@@ -56,7 +56,7 @@ class General:
         self.material = BooleanInput("material", True)
         self.joints = BooleanInput("joints", False)
         self.rigidGroups = BooleanInput("rigidgroup", False)
-        #self.wheelType = 
+        # self.wheelType =
         self.simpleWheelExport = BooleanInput("simplewheelexport", False)
 
 

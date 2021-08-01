@@ -52,4 +52,6 @@ def GetPhysicalProperties(
             _com.y = com.y
             _com.z = com.z
     except:
-        logging.getLogger(f"{INTERNAL_ID}.Parser.PhysicalProperties").error("Failed:\n{}".format(traceback.format_exc()))
+        logging.getLogger(f"{INTERNAL_ID}.Parser.PhysicalProperties").error(
+            "Failed:\n{}".format(traceback.format_exc())
+        )

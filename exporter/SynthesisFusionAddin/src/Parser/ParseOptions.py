@@ -23,23 +23,26 @@ from .SynthesisParser.Parser import Parser
 
 # Contains enums for parents of joints that have special cases
 class JointParentType:
-    ROOT = 0 # grounded root object
+    ROOT = 0  # grounded root object
     END = 1
+
 
 class WheelType:
     STANDARD = 0
     OMNI = 1
 
+
 # will need to be constructed in the UI Configure on Export
 @dataclass
 class _Wheel:
-    occurrence_token: str # maybe just pass the component
+    occurrence_token: str  # maybe just pass the component
     wheelType: WheelType
+
 
 @dataclass
 class _Joint:
     joint_token: str
-    parent: Union[str, JointParentType] # str can be root
+    parent: Union[str, JointParentType]  # str can be root
 
 
 class PhysicalDepth:
@@ -119,8 +122,8 @@ class ParseOptions:
         materials=1,
         mode=Mode.Synthesis,
         wheels=List[_Wheel],
-        joints=List[_Joint] # [{Occurrence, wheeltype} , {entitytoken, wheeltype}]
-        ):
+        joints=List[_Joint],  # [{Occurrence, wheeltype} , {entitytoken, wheeltype}]
+    ):
         """Generates the Parser Options for the given export
 
         Args:
@@ -133,7 +136,7 @@ class ParseOptions:
             - physicalDepth (PhysicalDepth, optional): Enum to define the level of physical attributes exported. Defaults to PhysicalDepth.AllOccurrence.
             - materials (int, optional): Export Materials type: defaults to STANDARD 1
             - joints (bool, optional): Export Joints. Defaults to True.
-            - wheels (list (strings)): List of Occurrence.entityTokens that 
+            - wheels (list (strings)): List of Occurrence.entityTokens that
         """
         self.fileLocation = fileLocation
         self.name = name

@@ -6,7 +6,7 @@ from .. import ParseOptions
 from proto.proto_out import assembly_pb2, types_pb2, material_pb2
 
 
-def _MapAllPhysicalMaterials (
+def _MapAllPhysicalMaterials(
     physicalMaterials: list,
     materials: material_pb2.Materials,
     options: ParseOptions,
@@ -15,6 +15,9 @@ def _MapAllPhysicalMaterials (
     setDefaultMaterial(materials.physicalMaterials["default"])
 
     for material in physicalMaterials:
+        if progressDialog.wasCancelled:
+            raise RuntimeError("User canceled export")
+
         newmaterial = materials.physicalMaterials[material.id]
         getPhysicalMaterialData(material, newmaterial, options)
 
@@ -31,12 +34,8 @@ def setDefaultMaterial(physical_material: material_pb2.PhysicalMaterial):
     physical_material.matType = 0
 
 
-def getPhysicalMaterialData(
-    fusion_material,
-    proto_material,
-    options
-):
-    """ Gets the material data and adds it to protobuf
+def getPhysicalMaterialData(fusion_material, proto_material, options):
+    """Gets the material data and adds it to protobuf
 
     Args:
         fusion_material (fusionmaterial): Fusion 360 Material
@@ -56,7 +55,6 @@ def getPhysicalMaterialData(
     # proto_material.restitution = 0.5
 
 
-
 def _MapAllAppearances(
     appearances: list,
     materials: material_pb2.Materials,
@@ -71,6 +69,9 @@ def _MapAllAppearances(
     fill_info(materials, None)
 
     for appearance in appearances:
+        if progressDialog.wasCancelled:
+            raise RuntimeError("User canceled export")
+
         material = materials.appearances[appearance.id]
         getMaterialAppearance(appearance, options, material)
 

@@ -45,6 +45,7 @@ def getOS():
     """
     return platform.system()
 
+
 """ Old code I believe 
 def openFileLocation(fileLoc: str) -> bool:
     osName = getOS()

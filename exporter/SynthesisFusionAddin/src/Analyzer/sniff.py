@@ -10,7 +10,7 @@ class Sniffer:
         self.logger = logging.getLogger(f"{INTERNAL_ID}.Analyzer.Sniffer")
 
         (self.filename, self.line_number, _, self.lines, _) = inspect.getframeinfo(
-            inspect.currentframe().f_back
+            inspect.currentframe().f_back.f_back
         )
 
         self.stopped = False
@@ -142,13 +142,3 @@ class Analyze:
             self.function(*args, **kwargs)
             self.sniffer.stop()
             self.sniffer.log_top()
-
-
-def timer_decorator(func):
-    def timer_wrapper(*args, **kwargs):
-        import datetime
-
-        before = datetime.datetime.now()
-        result = func(*args, **kwargs)
-        after = datetime.datetime.now()
-        return result

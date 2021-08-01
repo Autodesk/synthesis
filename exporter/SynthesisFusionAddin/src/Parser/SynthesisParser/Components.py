@@ -7,9 +7,12 @@ from .. import ParseOptions
 from typing import *
 
 from . import PhysicalProperties
+from ...Analyzer.timer import TimeThis
 
 # TODO: Impelement Material overrides
 
+
+@TimeThis
 def _MapAllComponents(
     design: adsk.fusion.Design,
     options: ParseOptions,
@@ -19,6 +22,8 @@ def _MapAllComponents(
 ) -> None:
     for component in design.allComponents:
         adsk.doEvents()
+        if progressDialog.wasCancelled:
+            raise RuntimeError("User canceled export")
         progressDialog.message = f"Exporting {component.name}"
 
         try:
@@ -33,11 +38,11 @@ def _MapAllComponents(
 
         fill_info(partDefinition, component)
 
-        PhysicalProperties.GetPhysicalProperties(
-            component, partDefinition.physical_data
-        )
+        PhysicalProperties.GetPhysicalProperties(component, partDefinition.physical_data)
 
         for body in component.bRepBodies:
+            if progressDialog.wasCancelled:
+                raise RuntimeError("User canceled export")
             if body.isLightBulbOn:
                 progressDialog.progressValue = progressDialog.progressValue + 1
 
@@ -47,7 +52,6 @@ def _MapAllComponents(
                 part_body.part = comp_ref
                 _ParseBRep(body, options, part_body.triangle_mesh)
 
-
                 # this should be appearance
                 if body.appearance.id in materials.appearances:
                     part_body.appearance_override = body.appearance.id
@@ -55,13 +59,14 @@ def _MapAllComponents(
                     part_body.appearance_override = "default"
 
 
+@TimeThis
 def _ParseComponentRoot(
     component: adsk.fusion.Component,
     progressDialog: adsk.core.ProgressDialog,
     options: ParseOptions,
     partsData: assembly_pb2.Parts,
     material_map: dict,
-    node: types_pb2.Node
+    node: types_pb2.Node,
 ) -> None:
 
     adsk.doEvents()
@@ -107,7 +112,7 @@ def __parseChildOccurrence(
     options: ParseOptions,
     partsData: assembly_pb2.Parts,
     material_map: dict,
-    node: types_pb2.Node
+    node: types_pb2.Node,
 ) -> None:
 
     if occurrence.isLightBulbOn is False:
@@ -145,6 +150,11 @@ def __parseChildOccurrence(
 
     part.transform.spatial_matrix.extend(occurrence.transform.asArray())
 
+    worldTransform = GetMatrixWorld(occurrence)
+
+    if worldTransform:
+        part.global_transform.spatial_matrix.extend(worldTransform.asArray())
+
     for occur in occurrence.childOccurrences:
         if progressDialog.wasCancelled:
             raise RuntimeError("User canceled export")
@@ -155,6 +165,18 @@ def __parseChildOccurrence(
                 occur, progressDialog, options, partsData, material_map, child_node
             )
             node.children.append(child_node)
+
+
+# saw online someone used this to get the correct context but of boy does it look pricey
+# I think if I can make all parts relative to a parent it should return that parents transform maybe
+# TESTED AND VERIFIED - but unoptimized
+def GetMatrixWorld(occurrence):
+    matrix = occurrence.transform
+    while occurrence.assemblyContext:
+        matrix.transformBy(occurrence.assemblyContext.transform)
+        occurrence = occurrence.assemblyContext
+    return matrix
+
 
 def _ParseBRep(
     body: adsk.fusion.BRepBody, options: ParseOptions, trimesh: assembly_pb2.TriangleMesh
