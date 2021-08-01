@@ -33,10 +33,9 @@ def _MapAllComponents(
 
         fill_info(partDefinition, component)
 
-        if options.physicalDepth >= 1:
-            PhysicalProperties.GetPhysicalProperties(
-                component, partDefinition.physical_data
-            )
+        PhysicalProperties.GetPhysicalProperties(
+            component, partDefinition.physical_data
+        )
 
         for body in component.bRepBodies:
             if body.isLightBulbOn:
