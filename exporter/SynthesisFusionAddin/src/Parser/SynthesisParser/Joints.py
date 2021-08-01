@@ -28,7 +28,7 @@ from proto.proto_out import types_pb2, joint_pb2
 from typing import List, Union
 
 from ...general_imports import logging, INTERNAL_ID, DEBUG
-from .Utilities import fill_info
+from .Utilities import fill_info, construct_info
 
 
 # Need to take in a graphcontainer
@@ -62,6 +62,19 @@ def populateJoints (
     # This is for creating all of the Joint Definition objects
     # So we need to iterate through the joints and construct them and add them to the map
     if options.joints or DEBUG:
+
+        # Add the grounded joints object - TODO: rename some of the protobuf stuff for the love of god
+
+        joint_definition_ground = joints.joint_definitions["grounded"]
+        construct_info("grounded", joint_definition_ground)
+
+        joint_instance_ground = joints.joint_instances["grounded"]
+        construct_info("grounded", joint_instance_ground)
+
+        joint_instance_ground.joint_reference = joint_definition_ground.info.GUID
+
+        # Add the rest of the dynamic objects
+
         for joint in list(design.rootComponent.allJoints) + list(
             design.rootComponent.allAsBuiltJoints
         ):

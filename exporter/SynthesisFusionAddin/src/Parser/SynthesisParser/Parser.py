@@ -99,6 +99,12 @@ class Parser:
                 assembly_out.joint_hierarchy
             )
 
+            JointHierarchy.BuildJointPartHierarchy(
+                design,
+                assembly_out.data.joints,
+                self.parseOptions
+            )
+
             assembly_out.design_hierarchy.nodes.append(rootNode)
 
             f = open(self.parseOptions.fileLocation, "wb")

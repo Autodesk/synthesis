@@ -456,54 +456,76 @@ def BuildJointPartHierarchy (
     try:
         jointParser = JointParser(design)
         rootSimNode = jointParser.groundSimNode
+
+        populateJoint(rootSimNode, joints)
+
+        # 1. Get Node
+        # 2. Get Transform of current Node
+        # 3. Set Transform
+        # 4. SimNode.data contains list of all affected bodies
+        # 5. Occurrence Relationship indicates how this SimNode is connected (for instance is this a rigid connection or directly parented)
+        # 6. 
+        # 4. For each child 
+
     except Warning:
         return False
     except:
         logging.getLogger(f"{INTERNAL_ID}.JointHierarchy").error("Failed:\n{}".format(traceback.format_exc()))
-        # A_EP.send_exception()
 
-def createBodyObject(
-    self,
+def populateJoint(simNode: SimulationNode, joints: joint_pb2.Joints):
+    if (not simNode.joint):
+        proto_joint = joints.joint_instances["grounded"]
+    else:
+        proto_joint = joints.joint_instances[simNode.joint.entityToken]
+
+    if (not proto_joint):
+        logging.getLogger(f"{INTERNAL_ID}.JointHierarchy").error(f"Could not find protobuf joint for {simNode.name}")
+        return
+
+    root = types_pb2.Node()
+
+    if DEBUG:
+        print(f"Configuring {proto_joint.info.name}")
+
+    # construct body tree if possible
+    createTreeParts(
+        simNode.data,
+        OccurrenceRelationship.CONNECTION,
+        root
+    )
+
+    proto_joint.parts.nodes.append(root)
+
+    # next in line to be populated
+    for edge in simNode.edges:
+        populateJoint(edge.node, joints)
+
+def createTreeParts(
     dynNode: DynamicOccurrenceNode,
     relationship: OccurrenceRelationship,
-    previous: list, # this was originally for gameobjects in unity - somehow convert it?
-    previous_occ=None,
-):
-    """Creates the Body Game Object Hierarchy
+    node: types_pb2.Node
+    ):
 
-    Args:
-        dynOccNode (DynamicOccurrenceNode): DynamicOccurrenceNode
-        previous (Transform): Previous Node
-    """
-    if relationship is None:
-        # Make Part here for the given body
-        # bodyGameObjectTransform = self.createGameObject(
-        #    previous_occ,
-        #    dynNode.data.name,
-        #    occurrence_component=dynNode.data,
-        #    previous_occurrence=previous_occ,
-        #)
+    # if it's the next part just exit early for our own sanity
+    if relationship == OccurrenceRelationship.NEXT: return
 
-        for edge in dynNode.edges:
-            # if edge.relationship == OccurrenceRelationship.CONNECTION:
-            self.createBodyObject(
-                edge.node,
-                edge.relationship,
-                bodyGameObjectTransform,
-                previous_occ=bodyGameObjectTransform,
-            )
-            return # why is this here im confused
+    # set the occurrence / component id to reference the part
+    try:
+        node.value = dynNode.data.entityToken
+    except RuntimeError:
+        node.value = dynNode.data.name
+    
+    if DEBUG:
+        print(f" -- {dynNode.data.name} + rel : {relationship}\n")
 
-    if relationship == OccurrenceRelationship.TRANSFORM:
-        pass # Make part connection here
-    elif relationship == OccurrenceRelationship.CONNECTION:
-        pass # Make part connection here
+    # possibly add additional information for the type of connection made
+    # recurse and add all children connections
     for edge in dynNode.edges:
-        # if edge.relationship == OccurrenceRelationship.CONNECTION:
-        self.createBodyObject(
+        child_node = types_pb2.Node()
+        createTreeParts(
             edge.node,
             edge.relationship,
-            bodyGameObjectTransform,
-            previous_occ=previous_occ,
-            )
-
+            child_node
+        )
+        node.children.append(child_node)
+        
