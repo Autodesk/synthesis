@@ -52,6 +52,27 @@ namespace RobotProofOfConcept
             SendData("127.0.0.1", GetRandomUpdateSignals(Robot.CurrentInfo.Name));
 
             Thread.Sleep(500);
+            _isRunning = false;
+            
+        }
+
+        public void RunUpdate() 
+        {
+            _isRunning = true;
+            Thread thr1 = new Thread(() =>
+            {
+                while (_isRunning)
+                {
+                    if (UpdateQueue.TryDequeue(out UpdateSignals tmp) && Robot.CurrentInfo.Name.Equals(tmp.Name))
+                        Robot.Update(tmp);
+                }
+            });
+            thr1.Start();
+
+
+            SendData("127.0.0.1", GetRandomUpdateSignals(Robot.CurrentInfo.Name));
+
+            Thread.Sleep(500);
 
             TcpServerManager.Stop();
             _isRunning = false;

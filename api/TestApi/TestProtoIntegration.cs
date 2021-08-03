@@ -19,6 +19,7 @@ namespace TestApi {
     public static class TestProtoCompleteIntegration
     {
         static Signals RobotLayout;
+        /*
         [Test]
         public static void TestIngtegration()
         {
@@ -86,14 +87,7 @@ namespace TestApi {
 
             System.Diagnostics.Debug.WriteLine("Sending data");
             //SendData("127.0.0.1", updateMessage);
-            /*
-            Process proc = new Process();
-            proc.StartInfo.FileName = "python.exe";
-            proc.StartInfo.RedirectStandardOutput = true;
-            proc.StartInfo.UseShellExecute = false;
-            proc.StartInfo.Arguments = "C:\\git\\synthesis\\engine\\Assets\\Scripts\\SendData.py";
-            proc.Start();
-            */
+            
             Thread.Sleep(10000);
 
             System.Diagnostics.Debug.WriteLine("Stopping Server");
@@ -117,7 +111,7 @@ namespace TestApi {
                 Value = 4.2
             }));
         }
-        
+        */
 
         [Test]
         public static void TestRobotManager()
