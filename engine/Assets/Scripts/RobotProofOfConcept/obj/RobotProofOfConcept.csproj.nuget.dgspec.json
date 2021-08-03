@@ -1,0 +1,68 @@
+{
+  "format": 1,
+  "restore": {
+    "D:\\Synthesis\\Synthesis-git\\synthesis\\engine\\Assets\\Scripts\\RobotProofOfConcept\\RobotProofOfConcept.csproj": {}
+  },
+  "projects": {
+    "D:\\Synthesis\\Synthesis-git\\synthesis\\engine\\Assets\\Scripts\\RobotProofOfConcept\\RobotProofOfConcept.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\Synthesis\\Synthesis-git\\synthesis\\engine\\Assets\\Scripts\\RobotProofOfConcept\\RobotProofOfConcept.csproj",
+        "projectName": "RobotProofOfConcept",
+        "projectPath": "D:\\Synthesis\\Synthesis-git\\synthesis\\engine\\Assets\\Scripts\\RobotProofOfConcept\\RobotProofOfConcept.csproj",
+        "packagesPath": "C:\\Users\\aaron\\.nuget\\packages\\",
+        "outputPath": "D:\\Synthesis\\Synthesis-git\\synthesis\\engine\\Assets\\Scripts\\RobotProofOfConcept\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "D:\\Synthesis\\Synthesis-git\\synthesis\\engine\\Assets\\NuGet.Config",
+          "C:\\Users\\aaron\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1"
+        ],
+        "sources": {
+          "http://www.nuget.org/api/v2/": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "targetAlias": "netcoreapp3.1",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "targetAlias": "netcoreapp3.1",
+          "dependencies": {
+            "Google.Protobuf": {
+              "target": "Package",
+              "version": "[3.17.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.301\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

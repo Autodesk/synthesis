@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "TUjRakjT+Qb9z+gLMVwnDG0YzLPNsgayk7wwvUpNd/L/GUWirQ+kSrb5vMj09udmSD52y8RmeQCfWbX8XC0jFw==",
+  "success": true,
+  "projectFilePath": "D:\\Synthesis\\Synthesis-git\\synthesis\\engine\\Assets\\Scripts\\RobotProofOfConcept\\RobotProofOfConcept.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\aaron\\.nuget\\packages\\google.protobuf\\3.17.3\\google.protobuf.3.17.3.nupkg.sha512",
+    "C:\\Users\\aaron\\.nuget\\packages\\system.memory\\4.5.3\\system.memory.4.5.3.nupkg.sha512",
+    "C:\\Users\\aaron\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\4.5.2\\system.runtime.compilerservices.unsafe.4.5.2.nupkg.sha512"
+  ],
+  "logs": []
+}

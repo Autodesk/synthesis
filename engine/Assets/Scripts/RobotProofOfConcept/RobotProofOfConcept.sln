@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31410.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotProofOfConcept", "RobotProofOfConcept.csproj", "{59931972-F39A-4885-BBCB-8C8B81791646}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{59931972-F39A-4885-BBCB-8C8B81791646}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59931972-F39A-4885-BBCB-8C8B81791646}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59931972-F39A-4885-BBCB-8C8B81791646}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59931972-F39A-4885-BBCB-8C8B81791646}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0B2470B6-B09C-40D2-9CE6-D21F073B0102}
+	EndGlobalSection
+EndGlobal

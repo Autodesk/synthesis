@@ -40,7 +40,7 @@ namespace TestApi {
                     Name = "DigitalInput1",
                     Version = 1
                 },
-                Class = "Digital",
+                DeviceType = "Digital",
                 Io = IOType.Input
             });
             RobotLayout.SignalMap.Add("DI2", new Signal()
@@ -51,7 +51,7 @@ namespace TestApi {
                     Name = "DigitalInput2",
                     Version = 1
                 },
-                Class = "Digital",
+                DeviceType = "Digital",
                 Io = IOType.Input
             });
             RobotLayout.SignalMap.Add("DO1", new Signal()
@@ -62,7 +62,7 @@ namespace TestApi {
                     Name = "DigitalOutput1",
                     Version = 1
                 },
-                Class = "Digital",
+                DeviceType = "Digital",
                 Io = IOType.Output
             });
             RobotLayout.SignalMap.Add("AO1", new Signal()
@@ -73,7 +73,7 @@ namespace TestApi {
                     Name = "AnalogOutput1",
                     Version = 1
                 },
-                Class = "Analog",
+                DeviceType = "Analog",
                 Io = IOType.Output
             });
 
@@ -108,13 +108,13 @@ namespace TestApi {
 
             foreach (var robot in RobotManager.Instance.Robots)
             {
-                System.Diagnostics.Debug.WriteLine(robot.Value.CurrentSignals["DI1"].Class);
+                System.Diagnostics.Debug.WriteLine(robot.Value.CurrentSignals["DI1"].DeviceType);
             }
             Assert.IsTrue(RobotManager.Instance.Robots["Robot"].CurrentSignals["DI1"].Equals(new UpdateSignal()
             {
-                Class = "Digital",
+                DeviceType = "Digital",
                 Io = UpdateIOType.Output,
-                Value = Value.ForNumber(4.2)
+                Value = 4.2
             }));
         }
         
@@ -133,7 +133,7 @@ namespace TestApi {
             };
             testSignalLayout.SignalMap.Add("DO1", new Signal()
             {
-                Class = "Digital",
+                DeviceType = "Digital",
                 Info = new Info()
                 {
                     GUID = "2",
@@ -144,7 +144,7 @@ namespace TestApi {
             });
             testSignalLayout.SignalMap.Add("AI1", new Signal()
             {
-                Class = "Analog",
+                DeviceType = "Analog",
                 Info = new Info()
                 {
                     GUID = "3",
@@ -160,15 +160,15 @@ namespace TestApi {
             };
             updateMessage.SignalMap.Add("DO1", new UpdateSignal()
             {
-                Class = "Digital",
+                DeviceType = "Digital",
                 Io = UpdateIOType.Output,
-                Value = Value.ForNumber(4.2)
+                Value = 4.2
             });
             updateMessage.SignalMap.Add("AI1", new UpdateSignal()
             {
-                Class = "Digital",
+                DeviceType = "Digital",
                 Io = UpdateIOType.Output,
-                Value = Value.ForNumber(3.9)
+                Value = 3.9
             });
 
             System.Diagnostics.Debug.WriteLine("Adding signal layout");
@@ -185,9 +185,9 @@ namespace TestApi {
 
             Assert.IsTrue(RobotManager.Instance.Robots["testSignalLayout"].CurrentSignals["DO1"].Equals(new UpdateSignal()
             {
-                Class = "Digital",
+                DeviceType = "Digital",
                 Io = UpdateIOType.Output,
-                Value = Value.ForNumber(4.2)
+                Value = 4.2
             }));
         }
 
