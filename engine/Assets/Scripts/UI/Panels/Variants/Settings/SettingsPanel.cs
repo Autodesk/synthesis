@@ -18,9 +18,6 @@ public static class Preference{
     public const string YAW_SENSITIVITY = "Yaw Sensitivity";
     public const string PITCH_SENSITIVITY = "Pitch Sensitivity";
 
-
-
-
     //sliders for camera controller
 
     //sliders
@@ -40,9 +37,9 @@ public static class Preference{
         PreferenceManager.SetPreference(Preference.QUALITY_SETTINGS,(int)0);
         PreferenceManager.SetPreference(Preference.ALLOW_DATA_GATHERING,(bool)true);
         PreferenceManager.SetPreference(Preference.MEASUREMENTS,(int)0);
-        PreferenceManager.SetPreference(Preference.ZOOM_SENSITIVITY,(float)0.52f);
-        PreferenceManager.SetPreference(Preference.YAW_SENSITIVITY,(float)10);
-        PreferenceManager.SetPreference(Preference.PITCH_SENSITIVITY,(float)3);
+        PreferenceManager.SetPreference(Preference.ZOOM_SENSITIVITY,(int)5);
+        PreferenceManager.SetPreference(Preference.YAW_SENSITIVITY,(int)10);
+        PreferenceManager.SetPreference(Preference.PITCH_SENSITIVITY,(int)3);
         PreferenceManager.Save();        
     }
 }
@@ -102,9 +99,9 @@ public class SettingsPanel : MonoBehaviour
         createDropdown(Preference.QUALITY_SETTINGS,Preference.QualitySettingsList,Convert.ToInt32(PreferenceManager.GetPreference(Preference.QUALITY_SETTINGS)));
         
         createTitle("Camera Settings");
-        createSlider(Preference.ZOOM_SENSITIVITY,0.1f,5,Convert.ToSingle(PreferenceManager.GetPreference(Preference.ZOOM_SENSITIVITY)));
-        createSlider(Preference.YAW_SENSITIVITY,1,15,Convert.ToSingle(PreferenceManager.GetPreference(Preference.YAW_SENSITIVITY)));
-        createSlider(Preference.PITCH_SENSITIVITY,1,15,Convert.ToSingle(PreferenceManager.GetPreference(Preference.PITCH_SENSITIVITY)));
+        createSlider(Preference.ZOOM_SENSITIVITY,1,15,Convert.ToInt32(PreferenceManager.GetPreference(Preference.ZOOM_SENSITIVITY)));
+        createSlider(Preference.YAW_SENSITIVITY,1,15,Convert.ToInt32(PreferenceManager.GetPreference(Preference.YAW_SENSITIVITY)));
+        createSlider(Preference.PITCH_SENSITIVITY,1,15,Convert.ToInt32(PreferenceManager.GetPreference(Preference.PITCH_SENSITIVITY)));
 
         createTitle("Preferences");        
         createToggle(Preference.ALLOW_DATA_GATHERING,(bool)PreferenceManager.GetPreference(Preference.ALLOW_DATA_GATHERING));
@@ -164,7 +161,7 @@ public class SettingsPanel : MonoBehaviour
        GameObject g = Instantiate(titleText, list.transform);
        g.GetComponentInChildren<TextMeshProUGUI>().text=title;
     }
-    private void createSlider(string title, float lowVal, float highVal, float value)
+    private void createSlider(string title, int lowVal, int highVal, int value)
     {
         GameObject g = Instantiate(sliderInput, list.transform);
         g.GetComponent<SettingsInput>().Init(title, lowVal,highVal,value);

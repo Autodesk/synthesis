@@ -51,7 +51,7 @@ public class SettingsInput : MonoBehaviour
         }
         _dropdown.value = value;//CURRENT STATE
     }
-    public void Init(string name, float lowValue, float highValue, float value)//SLIDER
+    public void Init(string name, int lowValue, int highValue, int value)//SLIDER
     {
         type = SettingsPanel.InputType.SLIDER;
         _name.text = name;
