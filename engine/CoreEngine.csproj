@@ -61,9 +61,11 @@
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Settings\SettingsPanel.cs" />
      <Compile Include="Assets\Scripts\Camera\CameraController.cs" />
      <Compile Include="Assets\Scripts\Util\SynthesisUtil.cs" />
+     <Compile Include="Assets\Scripts\RemoveItem.cs" />
      <Compile Include="Assets\Scripts\Engine\Utilities\ObjectLedger.cs" />
      <Compile Include="Assets\Scripts\ModelManager\Models\Motor.cs" />
      <Compile Include="Assets\Scripts\UtilExtensions.cs" />
+     <Compile Include="Assets\Scripts\MultiplayerSwitch.cs" />
      <Compile Include="Assets\Scripts\PTL.cs" />
      <Compile Include="Assets\Scripts\Attributes\ControllableInputAttribute.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Drivetrain\ConfigureDrivetrainPanel.cs" />
@@ -111,6 +113,7 @@
      <Compile Include="Assets\Scripts\EntityManager\Entity.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\ComponentAdapter.cs" />
      <Compile Include="Assets\Scripts\Gizmos\ArrowType.cs" />
+     <Compile Include="Assets\Scripts\LocalMultiplayer.cs" />
      <Compile Include="Assets\Scripts\MyTest.cs" />
      <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyModelItem.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\LayerAdapter.cs" />
@@ -118,10 +121,6 @@
      <Compile Include="Assets\Scripts\Importer\GamepieceTag.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\AudioSourceAdapter.cs" />
      <Compile Include="Assets\Scripts\Importer\Importer.cs" />
-     <Compile Include="Assets\Scripts\MultiplayerSwitch.cs" />
-     <Compile Include="Assets\Scripts\ButtonPanel.cs" />
-     <Compile Include="Assets\Scripts\LocalMultiplayer.cs" />
-     <Compile Include="Assets\Scripts\RemoveItem.cs" />
      <Compile Include="Assets\Scripts\RobotButtons.cs" />
      <None Include="Assets\Scripts\CoreEngine.asmdef" />
     <Reference Include="UnityEngine">
@@ -363,9 +362,6 @@
     </Reference>
     <Reference Include="UnityEditor.UWP.Extensions">
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/PlaybackEngines/MetroSupport/UnityEditor.UWP.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
-        <HintPath>C:/Program Files (x86)/Microsoft Visual Studio Tools for Unity/16.0/Editor/SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
     </Reference>
     <Reference Include="Api">
         <HintPath>C:/Users/victo/Documents/GitHub/synthesis/engine/Assets/Packages/Api.dll</HintPath>

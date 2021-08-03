@@ -1,22 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &6029415710043180869
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2702697856074163897}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b1f774e6cbe070c4098e51fe638f9b91, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  list: {fileID: 5790338150222367955}
-  keybindInput: {fileID: 1579594526663974035, guid: a4e11313194aebc4082c6e5773ed4a5d, type: 3}
-  dropdownInput: {fileID: 4499265211640781500, guid: 75b1bc7b213368a46b826a8a4f98b2b7, type: 3}
-  toggleInput: {fileID: 2480781726041998042, guid: 6d18a54f8f53ea34b9db9cedc7f63102, type: 3}
-  titleText: {fileID: 3791250721427426543, guid: 4bd991454c224bc41b5d313e50be36e3, type: 3}
 --- !u!1 &3291800162956168671
 GameObject:
   m_ObjectHideFlags: 0
@@ -286,6 +269,24 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &6029415710043180869
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2702697856074163897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1f774e6cbe070c4098e51fe638f9b91, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  list: {fileID: 5790338150222367955}
+  keybindInput: {fileID: 1579594526663974035, guid: a4e11313194aebc4082c6e5773ed4a5d, type: 3}
+  dropdownInput: {fileID: 4499265211640781500, guid: 75b1bc7b213368a46b826a8a4f98b2b7, type: 3}
+  toggleInput: {fileID: 2480781726041998042, guid: 6d18a54f8f53ea34b9db9cedc7f63102, type: 3}
+  titleText: {fileID: 3791250721427426543, guid: 4bd991454c224bc41b5d313e50be36e3, type: 3}
+  sliderInput: {fileID: 7716911928719637412, guid: a1d27134bf1b58a48bd5f73325f7a684, type: 3}
 --- !u!1001 &8799357630054860313
 PrefabInstance:
   m_ObjectHideFlags: 0
