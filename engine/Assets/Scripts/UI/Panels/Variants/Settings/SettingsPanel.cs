@@ -15,6 +15,8 @@ public static class Preference{
     public const string MEASUREMENTS = "Measurements";//Dropdown: Metric or Imperial
     public static List<string> MeasurementsList = new List<string>{"Imperial","Metric"};   
     public const string ZOOM_SENSITIVITY = "Zoom Sensitivity";
+    public const string YAW_SENSITIVITY = "Yaw Sensitivity";
+    public const string PITCH_SENSITIVITY = "Pitch Sensitivity";
 
 
 
@@ -39,6 +41,8 @@ public static class Preference{
         PreferenceManager.SetPreference(Preference.ALLOW_DATA_GATHERING,(bool)true);
         PreferenceManager.SetPreference(Preference.MEASUREMENTS,(int)0);
         PreferenceManager.SetPreference(Preference.ZOOM_SENSITIVITY,(float)0.52f);
+        PreferenceManager.SetPreference(Preference.YAW_SENSITIVITY,(float)10);
+        PreferenceManager.SetPreference(Preference.PITCH_SENSITIVITY,(float)3);
         PreferenceManager.Save();        
     }
 }
@@ -92,12 +96,19 @@ public class SettingsPanel : MonoBehaviour
 
     private void showSettings()
     {        
+        createTitle("Screen Settings");
         createDropdown(Preference.RESOLUTION, Preference.ResolutionList, Convert.ToInt32(PreferenceManager.GetPreference(Preference.RESOLUTION)));
         createDropdown(Preference.SCREEN_MODE,Preference.ScreenModeList,Convert.ToInt32(PreferenceManager.GetPreference(Preference.SCREEN_MODE)));
         createDropdown(Preference.QUALITY_SETTINGS,Preference.QualitySettingsList,Convert.ToInt32(PreferenceManager.GetPreference(Preference.QUALITY_SETTINGS)));
+        
+        createTitle("Camera Settings");
+        createSlider(Preference.ZOOM_SENSITIVITY,0.1f,5,Convert.ToSingle(PreferenceManager.GetPreference(Preference.ZOOM_SENSITIVITY)));
+        createSlider(Preference.YAW_SENSITIVITY,1,15,Convert.ToSingle(PreferenceManager.GetPreference(Preference.YAW_SENSITIVITY)));
+        createSlider(Preference.PITCH_SENSITIVITY,1,15,Convert.ToSingle(PreferenceManager.GetPreference(Preference.PITCH_SENSITIVITY)));
+
+        createTitle("Preferences");        
         createToggle(Preference.ALLOW_DATA_GATHERING,(bool)PreferenceManager.GetPreference(Preference.ALLOW_DATA_GATHERING));
         createDropdown(Preference.MEASUREMENTS, Preference.MeasurementsList, Convert.ToInt32(PreferenceManager.GetPreference(Preference.MEASUREMENTS)));
-        createSlider(Preference.ZOOM_SENSITIVITY,0.1f,5,Convert.ToSingle(PreferenceManager.GetPreference(Preference.ZOOM_SENSITIVITY)));
     }
 
     //Depricate it: Have settings saved within each object when changed. Then just call preference manager save on save.
@@ -152,7 +163,6 @@ public class SettingsPanel : MonoBehaviour
     {
        GameObject g = Instantiate(titleText, list.transform);
        g.GetComponentInChildren<TextMeshProUGUI>().text=title;
-       settingsList.Add(g);        
     }
     private void createSlider(string title, float lowVal, float highVal, float value)
     {
