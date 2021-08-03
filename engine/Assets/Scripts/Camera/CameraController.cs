@@ -26,6 +26,9 @@ public class CameraController : MonoBehaviour {
     private float _actualYaw = 0.0f;
     private bool _useOrbit = false;
     
+    private void Awake() { //Set Camera and Screen Settings
+        Preference.LoadSettings();
+    }
     public void Update() {
   //      if (FollowTransform != null && transform.parent != FollowTransform)
   //          transform.parent = FollowTransform;

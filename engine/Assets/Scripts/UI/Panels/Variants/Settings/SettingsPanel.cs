@@ -9,7 +9,7 @@ public static class Preference{
     public static List<string> ResolutionList = new List<string>{"1920x1080"};    
     public const string SCREEN_MODE = "Screen Mode";//Dropdown: Fullscreen or Windowed
     public static List<string> ScreenModeList = new List<string>{"Fullscreen","Windowed"}; //OLD SYNTHESIS SUCKS AT THIS   
-    public const string QUALITY_SETTINGS = " Quality Settings";//Dropdown: Low Medium High
+    public const string QUALITY_SETTINGS = "Quality Settings";//Dropdown: Low Medium High
     public static List<string> QualitySettingsList = new List<string>{"High","Medium","Low"};    
     public const string ALLOW_DATA_GATHERING = "Allow Data Gathering";//Toggle
     public const string MEASUREMENTS = "Measurements";//Dropdown: Metric or Imperial
@@ -20,6 +20,7 @@ public static class Preference{
 
     //sliders for camera controller
 
+
     //sliders
 
 
@@ -28,10 +29,28 @@ public static class Preference{
             if(PreferenceManager.GetPreference(Preference.RESOLUTION)==null){//checks if preferences are initialized with default values
                 setDefaultPreferences();
             }
-
+            
             //implement settings by going through each, loading, and setting
+
+            //set resolution
+            Screen.SetResolution(1920,1080,false);
+            //set screen mode
+            if(Convert.ToInt32(PreferenceManager.GetPreference(Preference.SCREEN_MODE))==1){//CONVERT TO SWITCH STATEMENT
+                Screen.fullScreenMode = FullScreenMode.Windowed;
+            }
+            else{
+                Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+            }
+            //set graphics quality
+
+
+            //Camera
+            CameraController c = Camera.main.GetComponent<CameraController>();
+            c.ZoomSensitivity = Convert.ToSingle(PreferenceManager.GetPreference(Preference.ZOOM_SENSITIVITY))/10;//scaled down by 10
+            c.PitchSensitivity = Convert.ToInt32(PreferenceManager.GetPreference(Preference.PITCH_SENSITIVITY));
+            c.YawSensitivity = Convert.ToInt32(PreferenceManager.GetPreference(Preference.YAW_SENSITIVITY));
     }
-    public static void setDefaultPreferences(){
+    public static void setDefaultPreferences(){        
         PreferenceManager.SetPreference(Preference.RESOLUTION,(int)0);
         PreferenceManager.SetPreference(Preference.SCREEN_MODE,(int)0);
         PreferenceManager.SetPreference(Preference.QUALITY_SETTINGS,(int)0);
@@ -87,7 +106,6 @@ public class SettingsPanel : MonoBehaviour
 
     void Start()
     {
-        Preference.LoadSettings();
         showSettings();
     }
 
@@ -134,6 +152,12 @@ public class SettingsPanel : MonoBehaviour
             }
         }
         PreferenceManager.Save();
+        Preference.LoadSettings();
+    }
+
+    public void resetSettings(){
+        Preference.setDefaultPreferences();
+        Preference.LoadSettings();
     }
 
     private void createDropdown(string title, List<string> dropdownList, int value)
