@@ -7,17 +7,20 @@ using System.Security.Cryptography.X509Certificates;
 using System;
 using System.Net.Security;
 using System.Diagnostics;
+using Debug = UnityEngine.Debug;
 
 public class AutoUpdater : MonoBehaviour
 {
 
     public static string updater;
-    public const string LocalVersion = "5.0.0.0";
+    public const string LocalVersion = "4.0.0.0";
+    public GameObject game;
 
     // Start is called before the first frame update
     void Start()
     {
         GameObject.Find("VersionNumber").GetComponent<Text>().text = "Version " + LocalVersion;
+        game = GameObject.Find("UpdatePrompt");
 
         if (CheckConnection())
         {
@@ -35,11 +38,11 @@ public class AutoUpdater : MonoBehaviour
             if (check < 0) // if outdated, set update prompt to true
             {
                 // Auxiliary.FindGameObject
-                GameObject.Find("UpdatePrompt").SetActive(true);
+                game.SetActive(true);
             }
             else
             {
-                GameObject.Find("UpdatePrompt").SetActive(false);
+                game.SetActive(false);
             }
         }
     }
