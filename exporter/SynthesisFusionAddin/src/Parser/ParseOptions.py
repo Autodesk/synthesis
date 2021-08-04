@@ -7,13 +7,12 @@
         - this is essentially a flat configuration file with non serializable objects
 """
 
-from enum import Enum
 from typing import Union, List
 from os import path
 from dataclasses import dataclass
 
 import os, platform
-
+import enum
 import adsk.core, adsk.fusion, traceback
 
 # from .unity import Parse
@@ -22,14 +21,20 @@ from ..general_imports import A_EP, PROTOBUF
 from .SynthesisParser.Parser import Parser
 
 # Contains enums for parents of joints that have special cases
-class JointParentType:
+class JointParentType(enum.Enum):
     ROOT = 0  # grounded root object
     END = 1
 
 
-class WheelType:
+class WheelType(enum.Enum):
     STANDARD = 0
     OMNI = 1
+
+
+class SignalType(enum.Enum):
+    PWM = 0
+    CAN = 1
+    PASSIVE = 2
 
 
 # will need to be constructed in the UI Configure on Export
@@ -37,12 +42,14 @@ class WheelType:
 class _Wheel:
     occurrence_token: str  # maybe just pass the component
     wheelType: WheelType
+    signalType: SignalType
 
 
 @dataclass
 class _Joint:
     joint_token: str
     parent: Union[str, JointParentType]  # str can be root
+    signalType: SignalType
 
 
 class PhysicalDepth:
