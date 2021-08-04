@@ -12,7 +12,6 @@ from os import path
 from dataclasses import dataclass
 
 import os, platform
-import enum
 import adsk.core, adsk.fusion, traceback
 
 # from .unity import Parse
@@ -21,17 +20,16 @@ from ..general_imports import A_EP, PROTOBUF
 from .SynthesisParser.Parser import Parser
 
 # Contains enums for parents of joints that have special cases
-class JointParentType(enum.Enum):
+class JointParentType(): # validate for unique key and value
     ROOT = 0  # grounded root object
     END = 1
 
-
-class WheelType(enum.Enum):
+class WheelType():
     STANDARD = 0
     OMNI = 1
 
 
-class SignalType(enum.Enum):
+class SignalType():
     PWM = 0
     CAN = 1
     PASSIVE = 2
