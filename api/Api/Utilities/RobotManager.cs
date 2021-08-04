@@ -54,10 +54,6 @@ namespace SynthesisAPI.Utilities
                 {
                     if (UpdateQueue.TryDequeue(out UpdateSignals tmp))
                     {
-                        foreach (var v in tmp.SignalMap.Values)
-                        {
-                            System.Diagnostics.Debug.WriteLine(v.Value);
-                        }
                         Robots[tmp.Name].Update(tmp);
                     }
                         

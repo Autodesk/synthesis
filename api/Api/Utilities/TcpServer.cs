@@ -12,7 +12,7 @@ using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using ProtoBuf;
 using System.Collections.Concurrent;
-
+using System.Net.NetworkInformation;
 
 namespace SynthesisAPI.Utilities
 {
@@ -21,6 +21,10 @@ namespace SynthesisAPI.Utilities
     {
         private sealed class Server
         {
+            private IPGlobalProperties ipProperties;
+            private TcpConnectionInformation[] tcpConnections;
+            private TcpState stateOfConnection;
+
             private List<ClientHandler> clients;
             public ConcurrentQueue<UpdateSignals> _packets;
             public TcpListener listener;
@@ -106,21 +110,22 @@ namespace SynthesisAPI.Utilities
                         {
                             if (clients[i].inputData.IsCompleted)
                             {
-                                if (clients[i].inputData.Result == null && !clients[i].client.Connected)
+                                ipProperties = IPGlobalProperties.GetIPGlobalProperties();
+                                tcpConnections = ipProperties.GetActiveTcpConnections().Where(x => x.LocalEndPoint.Equals(clients[i].client.Client.LocalEndPoint) && x.RemoteEndPoint.Equals(clients[i].client.Client.RemoteEndPoint)).ToArray();
+                                if (tcpConnections != null && tcpConnections.Length > 0)
                                 {
+                                    stateOfConnection = tcpConnections.First().State;
+                                }
+                                if (clients[i].inputData.Result == null && stateOfConnection == TcpState.CloseWait)
+                                {
+                                    clients[i].client.GetStream().Close();
                                     clients[i].client.Close();
                                     clients.RemoveAt(i);
                                 }
                                 else
                                 {
-                                    foreach (var v in clients[i].inputData.Result.SignalMap.Values)
-                                    {
-                                        System.Diagnostics.Debug.WriteLine(v.DeviceType);
-                                    }
                                     _packets.Enqueue(clients[i].inputData.Result);
                                     clients[i].inputData = ReadUpdateMessageAsync(clients[i].stream);
-
-
                                 }
                             }
                         }

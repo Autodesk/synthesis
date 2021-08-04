@@ -19,7 +19,7 @@ namespace TestApi {
     public static class TestProtoCompleteIntegration
     {
         static Signals RobotLayout;
-        /*
+        
         [Test]
         public static void TestIngtegration()
         {
@@ -78,6 +78,23 @@ namespace TestApi {
                 Io = IOType.Output
             });
 
+            UpdateSignals updateMessage = new UpdateSignals()
+            {
+                Name = "Robot"
+            };
+            updateMessage.SignalMap.Add("DO1", new UpdateSignal()
+            {
+                DeviceType = "Digital",
+                Io = UpdateIOType.Output,
+                Value = 4.2
+            });
+            updateMessage.SignalMap.Add("AO1", new UpdateSignal()
+            {
+                DeviceType = "Digital",
+                Io = UpdateIOType.Output,
+                Value = 3.9
+            });
+
             System.Diagnostics.Debug.WriteLine("Adding signal layout");
             RobotManager.Instance.AddSignalLayout(RobotLayout);
 
@@ -86,9 +103,9 @@ namespace TestApi {
             TcpServerManager.Start();
 
             System.Diagnostics.Debug.WriteLine("Sending data");
-            //SendData("127.0.0.1", updateMessage);
+            SendData("127.0.0.1", updateMessage);
             
-            Thread.Sleep(10000);
+            Thread.Sleep(5000);
 
             System.Diagnostics.Debug.WriteLine("Stopping Server");
             TcpServerManager.Stop();
@@ -100,18 +117,15 @@ namespace TestApi {
             RobotManager.Instance.Stop();
             System.Diagnostics.Debug.WriteLine("Stopped RobotManager");
 
-            foreach (var robot in RobotManager.Instance.Robots)
-            {
-                System.Diagnostics.Debug.WriteLine(robot.Value.CurrentSignals["DI1"].DeviceType);
-            }
-            Assert.IsTrue(RobotManager.Instance.Robots["Robot"].CurrentSignals["DI1"].Equals(new UpdateSignal()
+            
+            Assert.IsTrue(RobotManager.Instance.Robots["Robot"].CurrentSignals["DO1"].Equals(new UpdateSignal()
             {
                 DeviceType = "Digital",
                 Io = UpdateIOType.Output,
                 Value = 4.2
             }));
         }
-        */
+        
 
         [Test]
         public static void TestRobotManager()
@@ -205,13 +219,20 @@ namespace TestApi {
             if (!BitConverter.IsLittleEndian)
                 Array.Reverse(metadata);
 
-            using (NetworkStream stream = client.GetStream())
-            {
-                stream.Write(metadata, 0, metadata.Length);
-                stream.Write(content, 0, content.Length);
-            }
+            NetworkStream stream = client.GetStream();
+            
+            stream.Write(metadata, 0, metadata.Length);
+            stream.Write(content, 0, content.Length);
+            
+
+            Thread.Sleep(3000);
 
 
+            stream.Write(metadata, 0, metadata.Length);
+            stream.Write(content, 0, content.Length);
+
+
+            client.GetStream().Close();
             client.Close();
         }
 

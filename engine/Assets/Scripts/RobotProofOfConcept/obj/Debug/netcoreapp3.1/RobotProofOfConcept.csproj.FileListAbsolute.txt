@@ -11,7 +11,6 @@ D:\Synthesis\Synthesis-git\synthesis\engine\Assets\Scripts\RobotProofOfConcept\b
 D:\Synthesis\Synthesis-git\synthesis\engine\Assets\Scripts\RobotProofOfConcept\bin\Debug\netcoreapp3.1\Aardvark.pdb
 D:\Synthesis\Synthesis-git\synthesis\engine\Assets\Scripts\RobotProofOfConcept\bin\Debug\netcoreapp3.1\Api.pdb
 D:\Synthesis\Synthesis-git\synthesis\engine\Assets\Scripts\RobotProofOfConcept\bin\Debug\netcoreapp3.1\UnityEngine.xml
-D:\Synthesis\Synthesis-git\synthesis\engine\Assets\Scripts\RobotProofOfConcept\obj\Debug\netcoreapp3.1\RobotProofOfConcept.csproj.AssemblyReference.cache
 D:\Synthesis\Synthesis-git\synthesis\engine\Assets\Scripts\RobotProofOfConcept\obj\Debug\netcoreapp3.1\RobotProofOfConcept.AssemblyInfoInputs.cache
 D:\Synthesis\Synthesis-git\synthesis\engine\Assets\Scripts\RobotProofOfConcept\obj\Debug\netcoreapp3.1\RobotProofOfConcept.AssemblyInfo.cs
 D:\Synthesis\Synthesis-git\synthesis\engine\Assets\Scripts\RobotProofOfConcept\obj\Debug\netcoreapp3.1\RobotProofOfConcept.csproj.CoreCompileInputs.cache
@@ -19,3 +18,4 @@ D:\Synthesis\Synthesis-git\synthesis\engine\Assets\Scripts\RobotProofOfConcept\o
 D:\Synthesis\Synthesis-git\synthesis\engine\Assets\Scripts\RobotProofOfConcept\obj\Debug\netcoreapp3.1\RobotProofOfConcept.dll
 D:\Synthesis\Synthesis-git\synthesis\engine\Assets\Scripts\RobotProofOfConcept\obj\Debug\netcoreapp3.1\RobotProofOfConcept.pdb
 D:\Synthesis\Synthesis-git\synthesis\engine\Assets\Scripts\RobotProofOfConcept\obj\Debug\netcoreapp3.1\RobotProofOfConcept.genruntimeconfig.cache
+D:\Synthesis\Synthesis-git\synthesis\engine\Assets\Scripts\RobotProofOfConcept\obj\Debug\netcoreapp3.1\RobotProofOfConcept.csproj.AssemblyReference.cache
