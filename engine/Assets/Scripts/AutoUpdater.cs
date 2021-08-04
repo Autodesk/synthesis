@@ -32,7 +32,7 @@ public class AutoUpdater : MonoBehaviour
 
             var check = localVersion.CompareTo(globalVersion);
 
-            if (check < 0) // if outdated, set update prompt to true
+            if (check > 0) // if outdated, set update prompt to true
             {
                 // Auxiliary.FindGameObject
                 GameObject.Find("UpdatePrompt").SetActive(true);
