@@ -20,6 +20,7 @@ public class AutoUpdater : MonoBehaviour
     void Start()
     {
         GameObject.Find("VersionNumber").GetComponent<Text>().text = "Version " + LocalVersion;
+        Debug.Log("" + GameObject.Find("VersionNumber").GetComponent<Text>().text);
         game = GameObject.Find("UpdatePrompt");
 
         if (CheckConnection())
@@ -113,6 +114,6 @@ public class AutoUpdater : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }
