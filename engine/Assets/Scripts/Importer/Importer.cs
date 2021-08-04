@@ -10,6 +10,7 @@ using Google.Protobuf;
 using Mirabuf;
 using Mirabuf.Joint;
 using Mirabuf.Material;
+using Synthesis.Util;
 using SynthesisAPI.Proto;
 // using SynthesisAPI.Proto;
 using UnityEngine;
@@ -165,72 +166,116 @@ namespace Synthesis.Import {
             GameObject assemblyObject = new GameObject(assembly.Info.Name);
 
             var parts = assembly.Data.Parts;
-            
-            
-            
+
+            var rigidDefinitions = FindRigidbodyDefinitions(assembly);
+
+            #region Keep so I don't have to rewrite
             // Construct rigid groups
-            var groupings = new Dictionary<string, RigidGroup>();
-            var partToGroupMap = new Dictionary<string, string>(); // Curious if I'm going to use this
-            if (assembly.Data.Joints.) { // Uhhh idk what this is, rider is a better coder than me
-                foreach (var rigidGroup in assembly.Data.Joints.RigidGroups) {
-                    groupings.Add(rigidGroup.Name, rigidGroup);
-                    foreach (var part in rigidGroup.Occurrences) {
-                        // TODO: Can 1 part exist in multiple rigid groups?
-                        partToGroupMap.Add(part, rigidGroup.Name);
-                    }
-                }
-            }
-            foreach (var kvp in parts.PartInstances) {
-                if (!partToGroupMap.ContainsKey(kvp.Key)) {
-                    string name = $"single_grouping:{kvp.Value.Info.Name}";
-                    var singleGroup = new RigidGroup {Name = name};
-                    singleGroup.Occurrences.Add(kvp.Key);
-                    groupings.Add($"single_grouping:{kvp.Key}", singleGroup);
-                    partToGroupMap.Add(kvp.Key, name);
-                }
-            }
+            // var groupings = new Dictionary<string, RigidGroup>();
+            // var partToGroupMap = new Dictionary<string, string>(); // Curious if I'm going to use this
+            // if (assembly.Data.Joints.) { // Uhhh idk what this is, rider is a better coder than me
+            //     foreach (var rigidGroup in assembly.Data.Joints.RigidGroups) {
+            //         groupings.Add(rigidGroup.Name, rigidGroup);
+            //         foreach (var part in rigidGroup.Occurrences) {
+            //             // TODO: Can 1 part exist in multiple rigid groups?
+            //             partToGroupMap.Add(part, rigidGroup.Name);
+            //         }
+            //     }
+            // }
+            // foreach (var kvp in parts.PartInstances) {
+            //     if (!partToGroupMap.ContainsKey(kvp.Key)) {
+            //         string name = $"single_grouping:{kvp.Value.Info.Name}";
+            //         var singleGroup = new RigidGroup {Name = name};
+            //         singleGroup.Occurrences.Add(kvp.Key);
+            //         groupings.Add($"single_grouping:{kvp.Key}", singleGroup);
+            //         partToGroupMap.Add(kvp.Key, name);
+            //     }
+            // }
+            #endregion
 
             var globalTransformations = MakeGlobalTransformations(assembly); // Not sure I need to store it
             var partObjects = new Dictionary<string, GameObject>();
             
             collidersToIgnore = new List<Collider>();
-            // foreach (var group in groupings) {
-            //     GameObject groupObject = new GameObject(group.Value.Name);
-            //     foreach (var part in group.Value.Occurrences) {
-            //         var partInstance = parts.PartInstances[part];
-            //         var partDefinition = parts.PartDefinitions[partInstance.PartDefinitionReference];
-            //         GameObject partObject = new GameObject(partInstance.Info.Name);
-            //         MakePartDefinition(partObject, partDefinition, partInstance, assembly.Data);
-            //         partObjects.Add(part, partObject);
-            //         partObject.transform.parent = groupObject.transform;
-            //         // MARK: If transform changes do work recursively, apply transformations here instead of in a separate loop
-            //         partObject.transform.ApplyMatrix(partInstance.GlobalTransform);
-            //         var physicalData = partDefinition.PhysicalData;
-            //         // var rb = partObject.AddComponent<Rigidbody>();
-            //         // rb.mass = (float)physicalData.Mass;
-            //         // rb.centerOfMass = physicalData.Com; // I actually don't need to flip this
-            //     }
-            //     groupObject.transform.parent = assemblyObject.transform;
-            // }
-            // // ApplyTransformationsToGraph(gameObjects, assembly);
-            // for (int i = 0; i < collidersToIgnore.Count - 1; i++) {
-            //     for (int j = i + 1; j < collidersToIgnore.Count; j++) {
-            //         UnityEngine.Physics.IgnoreCollision(collidersToIgnore[i], collidersToIgnore[j]);
-            //     }
-            // }
+            foreach (var group in rigidDefinitions) {
+                GameObject groupObject = new GameObject(group.Id);
+                foreach (var part in group.Parts) {
+                    var partInstance = part.Value;
+                    var partDefinition = parts.PartDefinitions[partInstance.PartDefinitionReference];
+                    GameObject partObject = new GameObject(partInstance.Info.Name);
+                    MakePartDefinition(partObject, partDefinition, partInstance, assembly.Data);
+                    partObjects.Add(part.Key, partObject);
+                    partObject.transform.parent = groupObject.transform;
+                    // MARK: If transform changes do work recursively, apply transformations here instead of in a separate loop
+                    partObject.transform.ApplyMatrix(partInstance.GlobalTransform);
+                    var physicalData = partDefinition.PhysicalData;
+                    // var rb = partObject.AddComponent<Rigidbody>();
+                    // rb.mass = (float)physicalData.Mass;
+                    // rb.centerOfMass = physicalData.Com; // I actually don't need to flip this
+                }
+                groupObject.transform.parent = assemblyObject.transform;
+            }
+            // ApplyTransformationsToGraph(gameObjects, assembly);
+            for (int i = 0; i < collidersToIgnore.Count - 1; i++) {
+                for (int j = i + 1; j < collidersToIgnore.Count; j++) {
+                    UnityEngine.Physics.IgnoreCollision(collidersToIgnore[i], collidersToIgnore[j]);
+                }
+            }
             
             // TODO: Joints, Rigidbodies, Etc.
             
             return assemblyObject;
         }
 
-        public static Tree<StaticGroupDefinition> FindStaticGroupDefinitions(Assembly assembly, Node node) {
-            Tree<StaticGroupDefinition> tree = new Tree<StaticGroupDefinition>();
-            tree.Value = GenerateStaticGroupDefinitions(rootNode);
+        public static List<RigidbodyDefinition> FindRigidbodyDefinitions(Assembly assembly) {
+            var defs = new List<RigidbodyDefinition>();
+            assembly.DesignHierarchy.Nodes.ForEach(x => {
+                defs.AddRange(FindRigidbodyDefinitions(assembly, x));
+            });
+            return defs;
         }
 
-        public static StaticGroupDefinition GenerateStaticGroupDefinitions(AssemblyData data, Node node) {
-            
+        public static List<RigidbodyDefinition> FindRigidbodyDefinitions(Assembly assembly, Node node) {
+            // Tree<StaticGroupDefinition> tree = new Tree<StaticGroupDefinition>();
+            var defs = new List<RigidbodyDefinition>();
+            defs.Add(GenerateRigidbodyDefinitions(assembly.Data, node));
+            List<Node> toSearch = new List<Node>(node.Children);
+            while (toSearch.Count() > 0) {
+                List<Node> newSearchList = new List<Node>();
+                toSearch.ForEach(x => {
+                    if (assembly.Data.Parts.PartInstances[x.Value].Joints.Count() > 0) {
+                        defs.Add(GenerateRigidbodyDefinitions(assembly.Data, x));
+                    }
+                    newSearchList.AddRange(x.Children);
+                });
+                toSearch.Clear();
+                toSearch = newSearchList;
+            }
+
+            return defs;
+        }
+
+        private static int counter = 0;
+        public static RigidbodyDefinition GenerateRigidbodyDefinitions(AssemblyData data, Node node) {
+            RigidbodyDefinition def = new RigidbodyDefinition {
+                Id = $"RigidDef:{counter}",
+                Parts = new Dictionary<string, PartInstance>()
+            };
+            counter++;
+            def.Parts.Add(node.Value, data.Parts.PartInstances[node.Value]);
+            var children = new List<Node>(node.Children);
+            while (children.Any()) {
+                var moreChildren = new List<Node>();
+                children.ForEach(x => {
+                    if (!data.Parts.PartInstances[x.Value].Joints.Any()) {
+                        def.Parts.Add(x.Value, data.Parts.PartInstances[x.Value]);
+                        moreChildren.AddRange(x.Children);
+                    }
+                });
+                children = moreChildren;
+            }
+
+            return def;
         }
 
         public struct Tree<T> {
@@ -238,9 +283,9 @@ namespace Synthesis.Import {
             public List<Tree<T>> Children;
         }
         
-        public struct StaticGroupDefinition {
+        public struct RigidbodyDefinition {
             public string Id;
-            public Dictionary<string, PartInstance> parts;
+            public Dictionary<string, PartInstance> Parts;
         }
 
         // I think this might work?

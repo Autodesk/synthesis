@@ -9,6 +9,8 @@ using Synthesis.ModelManager;
 using Synthesis.ModelManager.Models;
 using SynthesisAPI.Translation;
 using System.Linq;
+using Mirabuf;
+using Vector3 = UnityEngine.Vector3;
 
 // adjust the PTL for the script, add robot to a list of gameobjects when its spawned
 
@@ -34,10 +36,13 @@ public class PTL : MonoBehaviour {
         SYNTHEPARK = ParsePath("$appdata/Autodesk/Synthesis/Fields/SynthePark");
         DESTINATION_DEEP_SPACE = ParsePath("$appdata/Autodesk/Synthesis/Fields/2019 Destination Deep Space");
         POWER_UP = ParsePath("$appdata/Autodesk/Synthesis/Fields/2018 Power Up");
+        var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/Maybe_v0.mira");
         
         hasRobot = false;
         robotList = new List<GameObject>();
-        SpawnRobot(MEAN_MACHINE);
+        // SpawnRobot(MEAN_MACHINE);
+
+        Importer.AssemblyImport(Assembly.Parser.ParseFrom(File.ReadAllBytes(MIRA_TEST)));
 
         // var field = Importer.Import(POWER_UP, Importer.SourceType.PROTOBUF_FIELD,
         //     Translator.TranslationType.BXDF_TO_PROTO_FIELD, true);
@@ -47,18 +52,18 @@ public class PTL : MonoBehaviour {
     }
     public void SpawnField(string fieldPath)
     {
-        SpawnField(fieldPath, Vector3.zero, Importer.SourceType.PROTOBUF_FIELD, Translator.TranslationType.BXDF_TO_PROTO_FIELD);
+        // SpawnField(fieldPath, Vector3.zero, Importer.SourceType.PROTOBUF_FIELD, Translator.TranslationType.BXDF_TO_PROTO_FIELD);
     }
     public void SpawnField(string fieldPath, Vector3 pos, Importer.SourceType srcType, Translator.TranslationType transType = default)
     {
-        if (Directory.Exists(fieldPath)) fieldPath = Translator.Translate(fieldPath, transType, ParsePath("$appdata/Autodesk/Synthesis/Fields"));
-        var field = Importer.Import(fieldPath, srcType);
-        field.transform.parent = Game.transform;
-        field.transform.position = pos;        
+        // if (Directory.Exists(fieldPath)) fieldPath = Translator.Translate(fieldPath, transType, ParsePath("$appdata/Autodesk/Synthesis/Fields"));
+        // var field = Importer.Import(fieldPath, srcType);
+        // field.transform.parent = Game.transform;
+        // field.transform.position = pos;        
     }
     public void SpawnRobot(string botPath)//overloaded
     {
-        SpawnRobot(botPath, Vector3.up * 2, Importer.SourceType.PROTOBUF_ROBOT, Translator.TranslationType.BXDJ_TO_PROTO_ROBOT);
+        // SpawnRobot(botPath, Vector3.up * 2, Importer.SourceType.PROTOBUF_ROBOT, Translator.TranslationType.BXDJ_TO_PROTO_ROBOT);
     }
 
     /*
@@ -69,24 +74,24 @@ public class PTL : MonoBehaviour {
     */
 
     public void SpawnRobot(string botPath, Vector3 pos, Importer.SourceType srcType, Translator.TranslationType transType = default) {
-        if(Directory.Exists(botPath)) botPath = Translator.Translate(botPath, transType, ParsePath("$appdata/Autodesk/Synthesis/Robots"));
-        var robot = Importer.Import(botPath, srcType);
-
-        robot.transform.parent = Game.transform;
-        robot.transform.position = pos;
-        var dynoMeta = robot.GetComponent<DynamicObjectMeta>();
-
-        var model = new Model();
-        model.GameObject = robot;
-        foreach (var kvp in dynoMeta.Nodes) {
-            if (dynoMeta.HasFlag(kvp.Key, EntityFlag.Wheel)) {
-                model.AddMotor(dynoMeta.Nodes[kvp.Key].GetComponent<HingeJoint>());
-            }
-        }
-        ModelManager.AddModel(dynoMeta.Name, model);
-
-        Camera.main.GetComponent<CameraController>().FollowTransform = robot.transform.GetChild(0);
-        robotList.Add(robot);
+        // if(Directory.Exists(botPath)) botPath = Translator.Translate(botPath, transType, ParsePath("$appdata/Autodesk/Synthesis/Robots"));
+        // var robot = Importer.Import(botPath, srcType);
+        //
+        // robot.transform.parent = Game.transform;
+        // robot.transform.position = pos;
+        // var dynoMeta = robot.GetComponent<DynamicObjectMeta>();
+        //
+        // var model = new Model();
+        // model.GameObject = robot;
+        // foreach (var kvp in dynoMeta.Nodes) {
+        //     if (dynoMeta.HasFlag(kvp.Key, EntityFlag.Wheel)) {
+        //         model.AddMotor(dynoMeta.Nodes[kvp.Key].GetComponent<HingeJoint>());
+        //     }
+        // }
+        // ModelManager.AddModel(dynoMeta.Name, model);
+        //
+        // Camera.main.GetComponent<CameraController>().FollowTransform = robot.transform.GetChild(0);
+        // robotList.Add(robot);
     }
     /*
     public void RemoveRobot(int index)
