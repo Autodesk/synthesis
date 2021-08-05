@@ -4,6 +4,7 @@
 
 import adsk.core
 
+
 class PDMessage:
     def __init__(
         self,
@@ -28,7 +29,12 @@ class PDMessage:
 
         self.currentMessage = "working..."
 
-        self.finalValue = self.componentCount + self.occurrenceCount + self.materialCount + self.appearanceCount
+        self.finalValue = (
+            self.componentCount
+            + self.occurrenceCount
+            + self.materialCount
+            + self.appearanceCount
+        )
         self.currentValue = 0
 
         self.progressDialog = progressDialog
@@ -45,31 +51,31 @@ class PDMessage:
 
         return out
 
-    def addComponent(self, name = None):
+    def addComponent(self, name=None):
         self.currentValue += 1
         self.currentCompCount += 1
         self.currentMessage = f"Exporting Component {name}"
         self.update()
 
-    def addOccurrence(self, name = None):
+    def addOccurrence(self, name=None):
         self.currentValue += 1
         self.currentOccCount += 1
         self.currentMessage = f"Exporting Occurrence {name}"
         self.update()
 
-    def addMaterial(self, name = None):
+    def addMaterial(self, name=None):
         self.currentValue += 1
         self.currentMatCount += 1
         self.currentMessage = f"Exporting Physical Material {name}"
         self.update()
 
-    def addAppearance(self, name = None):
+    def addAppearance(self, name=None):
         self.currentValue += 1
         self.currentAppCount += 1
         self.currentMessage = f"Exporting Appearance Material {name}"
         self.update()
 
-    def addJoint(self, name = None):
+    def addJoint(self, name=None):
         self.currentMessage = f"Connecting Joints {name}"
         self.update()
 

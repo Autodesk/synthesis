@@ -33,8 +33,6 @@ class Parser:
             assembly_out = assembly_pb2.Assembly()
             fill_info(assembly_out, design.rootComponent)
 
-           
-
             assembly_out.dynamic = True
 
             # Physical Props here when ready
@@ -62,7 +60,7 @@ class Parser:
                 design.rootComponent.allOccurrences.count,
                 design.materials.count,
                 design.appearances.count,  # this is very high for some reason
-                progressDialog
+                progressDialog,
             )
 
             Materials._MapAllAppearances(
@@ -109,7 +107,10 @@ class Parser:
             # that or add code to existing parser to determine leftovers
 
             Joints.createJointGraph(
-                self.parseOptions.joints, self.parseOptions.wheels, assembly_out.joint_hierarchy, self.pdMessage
+                self.parseOptions.joints,
+                self.parseOptions.wheels,
+                assembly_out.joint_hierarchy,
+                self.pdMessage,
             )
 
             JointHierarchy.BuildJointPartHierarchy(

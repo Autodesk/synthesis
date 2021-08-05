@@ -541,7 +541,7 @@ def createTreeParts(
     except RuntimeError:
         node.value = dynNode.data.name
 
-    #if DEBUG:
+    # if DEBUG:
     #    print(f" -- {dynNode.data.name} + rel : {relationship}\n")
 
     # possibly add additional information for the type of connection made

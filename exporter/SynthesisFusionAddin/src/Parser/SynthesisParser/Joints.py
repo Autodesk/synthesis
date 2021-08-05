@@ -327,10 +327,13 @@ def _jointOrigin(
 
 
 def createJointGraph(
-    supplied_joints: list, wheels: list, joint_tree: types_pb2.GraphContainer, progressDialog: PDMessage
+    supplied_joints: list,
+    wheels: list,
+    joint_tree: types_pb2.GraphContainer,
+    progressDialog: PDMessage,
 ) -> None:
 
-    #progressDialog.message = f"Building Joint Graph Map from given joints"
+    # progressDialog.message = f"Building Joint Graph Map from given joints"
 
     progressDialog.currentMessage = f"Building Joint Graph Map from given joints"
     progressDialog.update()
@@ -375,9 +378,7 @@ def createJointGraph(
 
 
 def addWheelsToGraph(
-    wheels: list,
-    rootNode: types_pb2.Node,
-    joint_tree: types_pb2.GraphContainer
+    wheels: list, rootNode: types_pb2.Node, joint_tree: types_pb2.GraphContainer
 ):
     for wheel in wheels:
         # wheel name
