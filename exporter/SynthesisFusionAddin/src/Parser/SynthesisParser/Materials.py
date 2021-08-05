@@ -4,6 +4,8 @@ import adsk, logging, traceback
 from .Utilities import *
 from .. import ParseOptions
 
+from ...general_imports import INTERNAL_ID
+
 from .PDMessage import PDMessage
 from proto.proto_out import assembly_pb2, types_pb2, material_pb2
 
@@ -58,43 +60,45 @@ def getPhysicalMaterialData(fusion_material, proto_material, options):
         proto_material.deformable = False
         proto_material.matType = 0
 
-        materialProperties = fusion_material.materialProperties
-
         thermalProperties = proto_material.thermal
         mechanicalProperties = proto_material.mechanical
         strengthProperties = proto_material.strength
 
-        ## IGNORING THESE VALUES:
-        #dynamicFrictionProperties = proto_material.dynamic_friction
-        #staticFrictionProperties = proto_material.static_friction
-        #restitutionProperties = proto_material.restitution
+        # TODO: Provide advanced option overrides for these values
+        proto_material.dynamic_friction = 0.5
+        proto_material.static_friction = 0.5
+        proto_material.restitution = 0.5
 
-        """
-        Thermal Properties
-        """
-        thermalProperties.thermal_conductivity = materialProperties.itemById["thermal_Thermal_conductivity"].value
-        thermalProperties.specific_heat = materialProperties.itemById["structural_Specific_heat"].value
-        thermalProperties.thermal_expansion_coefficient = materialProperties.itemById["structural_Thermal_expansion_coefficient"].value
+        proto_material.description = f"{fusion_material.name} exported from FUSION 360"
 
-        """
-        Mechanical Properties
-        """
-        mechanicalProperties.young_mod = materialProperties.itemById["structural_Young_modulus"].value
-        mechanicalProperties.poisson_ratio = materialProperties.itemById["structural_Poisson_ratio"].value
-        mechanicalProperties.shear_mod = materialProperties.itemById["structural_Shear_modulus"].value
-        mechanicalProperties.density = materialProperties.itemById["structural_Density"].value
-        mechanicalProperties.damping_coefficient = materialProperties.itemById["structural_Damping_coefficient"].value
+        if (fusion_material.materialProperties):
+            materialProperties = fusion_material.materialProperties
 
-        """
-        Strength Properties
-        """
-        strengthProperties.yield_strength = materialProperties.itemById["structural_Minimum_yield_stress"].value
-        strengthProperties.tensile_strength = materialProperties.itemById["structural_Minimum_tensile_strength"].value
-        strengthProperties.thermal_treatment = materialProperties.itemById["structural_Thermally_treated"].value
+            """
+            Thermal Properties
+            """
+            thermalProperties.thermal_conductivity = materialProperties.itemById["thermal_Thermal_conductivity"].value
+            thermalProperties.specific_heat = materialProperties.itemById["structural_Specific_heat"].value
+            thermalProperties.thermal_expansion_coefficient = materialProperties.itemById["structural_Thermal_expansion_coefficient"].value
 
-        print(strengthProperties.thermal_treatment)
+            """
+            Mechanical Properties
+            """
+            mechanicalProperties.young_mod = materialProperties.itemById["structural_Young_modulus"].value
+            mechanicalProperties.poisson_ratio = materialProperties.itemById["structural_Poisson_ratio"].value
+            mechanicalProperties.shear_mod = materialProperties.itemById["structural_Shear_modulus"].value
+            mechanicalProperties.density = materialProperties.itemById["structural_Density"].value
+            mechanicalProperties.damping_coefficient = materialProperties.itemById["structural_Damping_coefficient"].value
+
+            """
+            Strength Properties
+            """
+            strengthProperties.yield_strength = materialProperties.itemById["structural_Minimum_yield_stress"].value
+            strengthProperties.tensile_strength = materialProperties.itemById["structural_Minimum_tensile_strength"].value
+            strengthProperties.thermal_treatment = materialProperties.itemById["structural_Thermally_treated"].value
+
     except:
-        logging.getLogger("GetPhysicalMaterialData").error(
+        logging.getLogger(f"{INTERNAL_ID}.Parser.Materials.getPhysicalMaterialData").error(
                 "Failed:\n{}".format(traceback.format_exc())
             )
 
