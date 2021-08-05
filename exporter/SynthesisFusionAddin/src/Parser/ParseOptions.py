@@ -20,16 +20,17 @@ from ..general_imports import A_EP, PROTOBUF
 from .SynthesisParser.Parser import Parser
 
 # Contains enums for parents of joints that have special cases
-class JointParentType(): # validate for unique key and value
+class JointParentType: # validate for unique key and value
     ROOT = 0  # grounded root object
     END = 1
 
-class WheelType():
+
+class WheelType:
     STANDARD = 0
     OMNI = 1
 
 
-class SignalType():
+class SignalType:
     PWM = 0
     CAN = 1
     PASSIVE = 2

@@ -1,4 +1,4 @@
-""" Module to create and seyup the logger so that logging is accessible for other internal modules
+""" Module to create and setup the logger so that logging is accessible for other internal modules
 """
 
 import logging.handlers
