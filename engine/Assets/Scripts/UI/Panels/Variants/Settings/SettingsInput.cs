@@ -41,7 +41,7 @@ public class SettingsInput : MonoBehaviour
         _name.text = name;
         _key.text = control;
     }
-    public void Init(string name, List<string> dropdownList, int value)//DROPDOWN LIST
+    public void Init(string name, string[] dropdownList, int value)//DROPDOWN LIST
     {
         type = SettingsPanel.InputType.DROPDOWN;
         _name.text = name;

@@ -4,63 +4,134 @@ using System;
 using UnityEngine;
 using TMPro;
 using Synthesis.PreferenceManager;
-public static class Preference{
+public static class Preference
+{
     public const string RESOLUTION = "Resolution";//Dropdown: Different resolution settings
-    public static List<string> ResolutionList = new List<string>{"1920x1080"};    
+    public static string[] ResolutionList;
+    public static string MAX_RES = "Maximum Resolution";//saved bool for if the player selected for the maximum resolution
     public const string SCREEN_MODE = "Screen Mode";//Dropdown: Fullscreen or Windowed
-    public static List<string> ScreenModeList = new List<string>{"Fullscreen","Windowed"}; //OLD SYNTHESIS SUCKS AT THIS   
+    public static readonly string[] ScreenModeList = new string[] { "Fullscreen", "Maximized Window", "Windowed" }; //OLD SYNTHESIS SUCKS AT THIS   
     public const string QUALITY_SETTINGS = "Quality Settings";//Dropdown: Low Medium High
-    public static List<string> QualitySettingsList = new List<string>{"High","Medium","Low"};    
+    public static readonly string[] QualitySettingsList = QualitySettings.names;
     public const string ALLOW_DATA_GATHERING = "Allow Data Gathering";//Toggle
-    public const string MEASUREMENTS = "Measurements";//Dropdown: Metric or Imperial
-    public static List<string> MeasurementsList = new List<string>{"Imperial","Metric"};   
+    public const string MEASUREMENTS = "Use Imperial Measurements";//toggle for imperial. if unchecked, uses metric. 
+    public static bool useImperial = true;
     public const string ZOOM_SENSITIVITY = "Zoom Sensitivity";
     public const string YAW_SENSITIVITY = "Yaw Sensitivity";
     public const string PITCH_SENSITIVITY = "Pitch Sensitivity";
 
-    //sliders for camera controller
+    public static void LoadSettings()
+    {
+
+        //populate resolution list        
+        ResolutionList = new string[Screen.resolutions.Length];
+        for (int i = 0; i < ResolutionList.Length; i++)
+        {
+            ResolutionList[i] = Screen.resolutions[i].width + "x" + Screen.resolutions[i].height;
+        }
+
+        PreferenceManager.Load();
+        if (PreferenceManager.GetPreference(Preference.RESOLUTION) == null)
+        {//checks if preferences are initialized with default values
+            setDefaultPreferences();
+        }
+
+        FullScreenMode fsMode = FullScreenMode.FullScreenWindow;
+        //set screen mode
+        switch (Convert.ToInt32(PreferenceManager.GetPreference(Preference.SCREEN_MODE)))
+        {
+            case 0://Full Screen
+                ResolutionList = new string[]{ResolutionList[ResolutionList.Length-1]};
+                Set(Preference.MAX_RES,true);
+                Save();
+                break;
+            case 1:
+                ResolutionList = new string[]{ResolutionList[ResolutionList.Length-1]};
+                fsMode = FullScreenMode.MaximizedWindow;
+                Set(Preference.MAX_RES,true);
+                Save();
+                break;
+            case 2:
+                fsMode = FullScreenMode.Windowed;
+                break;
+                
+        }
+
+        if(GetBool(Preference.MAX_RES)){            
+                Set(Preference.RESOLUTION, ResolutionList.Length-1);
+                PreferenceManager.Save();
+                SetRes(Screen.resolutions.Length-1,fsMode);
+        }
+        else{            
+                int resolutionIndex = GetInt(Preference.RESOLUTION);
+
+                if(resolutionIndex<ResolutionList.Length){
+                    SetRes(resolutionIndex,fsMode);
+                }
+                else{
+                    Set(Preference.RESOLUTION, ResolutionList.Length-1);
+                    Set(Preference.MAX_RES,true);
+                    PreferenceManager.Save();
+                    SetRes(ResolutionList.Length-1,fsMode);
+                }
+        }
+
+        //Quality Settings
+        QualitySettings.SetQualityLevel(Convert.ToInt32(PreferenceManager.GetPreference(Preference.QUALITY_SETTINGS)), true);
+
+        //Analytics
+        AnalyticsManager.useAnalytics = (bool)PreferenceManager.GetPreference(Preference.ALLOW_DATA_GATHERING);
+
+        //imperial or metric
+        useImperial = (bool)PreferenceManager.GetPreference(Preference.MEASUREMENTS); //can convert back to dropdown
 
 
-    //sliders
-
-
-    public static void LoadSettings(){
-            PreferenceManager.Load();
-            if(PreferenceManager.GetPreference(Preference.RESOLUTION)==null){//checks if preferences are initialized with default values
-                setDefaultPreferences();
-            }
-            
-            //implement settings by going through each, loading, and setting
-
-            //set resolution
-            Screen.SetResolution(1920,1080,false);
-            //set screen mode
-            if(Convert.ToInt32(PreferenceManager.GetPreference(Preference.SCREEN_MODE))==1){//CONVERT TO SWITCH STATEMENT
-                Screen.fullScreenMode = FullScreenMode.Windowed;
-            }
-            else{
-                Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
-            }
-            //set graphics quality
-
-
-            //Camera
-            CameraController c = Camera.main.GetComponent<CameraController>();
-            c.ZoomSensitivity = Convert.ToSingle(PreferenceManager.GetPreference(Preference.ZOOM_SENSITIVITY))/10;//scaled down by 10
-            c.PitchSensitivity = Convert.ToInt32(PreferenceManager.GetPreference(Preference.PITCH_SENSITIVITY));
-            c.YawSensitivity = Convert.ToInt32(PreferenceManager.GetPreference(Preference.YAW_SENSITIVITY));
+        //Camera
+        CameraController c = Camera.main.GetComponent<CameraController>();
+        c.ZoomSensitivity = Convert.ToSingle(PreferenceManager.GetPreference(Preference.ZOOM_SENSITIVITY)) / 10;//scaled down by 10
+        c.PitchSensitivity = Convert.ToInt32(PreferenceManager.GetPreference(Preference.PITCH_SENSITIVITY));
+        c.YawSensitivity = Convert.ToInt32(PreferenceManager.GetPreference(Preference.YAW_SENSITIVITY));
     }
-    public static void setDefaultPreferences(){        
-        PreferenceManager.SetPreference(Preference.RESOLUTION,(int)0);
-        PreferenceManager.SetPreference(Preference.SCREEN_MODE,(int)0);
-        PreferenceManager.SetPreference(Preference.QUALITY_SETTINGS,(int)0);
-        PreferenceManager.SetPreference(Preference.ALLOW_DATA_GATHERING,(bool)true);
-        PreferenceManager.SetPreference(Preference.MEASUREMENTS,(int)0);
-        PreferenceManager.SetPreference(Preference.ZOOM_SENSITIVITY,(int)5);
-        PreferenceManager.SetPreference(Preference.YAW_SENSITIVITY,(int)10);
-        PreferenceManager.SetPreference(Preference.PITCH_SENSITIVITY,(int)3);
-        PreferenceManager.Save();        
+    public static void setDefaultPreferences()
+    {
+        Set(Preference.RESOLUTION, (int)0);
+        Set(Preference.MAX_RES,(bool)true);
+        Set(Preference.SCREEN_MODE, (int)0);
+        Set(Preference.QUALITY_SETTINGS, (int)0);
+        Set(Preference.ALLOW_DATA_GATHERING, (bool)true);
+        Set(Preference.MEASUREMENTS, (bool)true);
+        Set(Preference.ZOOM_SENSITIVITY, (int)5);
+        Set(Preference.YAW_SENSITIVITY, (int)10);
+        Set(Preference.PITCH_SENSITIVITY, (int)3);
+        PreferenceManager.Save();
     }
+    private static void Set(string s, object o)
+    {//better readability
+        PreferenceManager.SetPreference(s, o);
+    }
+    //Get Int
+    private static int GetInt(string s){
+        return Convert.ToInt32(PreferenceManager.GetPreference(s));
+    }
+    //Get Float
+    private static float GetFloat(string s){
+        return Convert.ToSingle(PreferenceManager.GetPreference(s));
+    }
+    //Get Bool
+    private static bool GetBool(string s){
+        return (bool)(PreferenceManager.GetPreference(s));
+    }
+    private static void Save(){
+        PreferenceManager.Save();
+    }
+    //screen resolution set
+    private static void SetRes(int i, FullScreenMode f){
+            Screen.SetResolution(
+                Screen.resolutions[i].width,
+                Screen.resolutions[i].height,f);
+    }
+    
+
 }
 
 public class SettingsPanel : MonoBehaviour
@@ -89,20 +160,6 @@ public class SettingsPanel : MonoBehaviour
         SLIDER
     }
 
-    /*
-    At the start: Load Preference Manager
-    Script that converts preference manager into the proper implemented settings
-
-    When Panel is loaded:
-    Show Settings goes through each preference and gets them and their state, creates the parts
-
-    When save button is pressed: save changes, then call the load function to apply them
-
-    When close is pressed with unsaved changes: issue warning saying you have unsaved changes    
-
-
-    */
-
 
     void Start()
     {
@@ -110,26 +167,25 @@ public class SettingsPanel : MonoBehaviour
     }
 
     private void showSettings()
-    {        
+    {
         createTitle("Screen Settings");
         createDropdown(Preference.RESOLUTION, Preference.ResolutionList, Convert.ToInt32(PreferenceManager.GetPreference(Preference.RESOLUTION)));
-        createDropdown(Preference.SCREEN_MODE,Preference.ScreenModeList,Convert.ToInt32(PreferenceManager.GetPreference(Preference.SCREEN_MODE)));
-        createDropdown(Preference.QUALITY_SETTINGS,Preference.QualitySettingsList,Convert.ToInt32(PreferenceManager.GetPreference(Preference.QUALITY_SETTINGS)));
-        
-        createTitle("Camera Settings");
-        createSlider(Preference.ZOOM_SENSITIVITY,1,15,Convert.ToInt32(PreferenceManager.GetPreference(Preference.ZOOM_SENSITIVITY)));
-        createSlider(Preference.YAW_SENSITIVITY,1,15,Convert.ToInt32(PreferenceManager.GetPreference(Preference.YAW_SENSITIVITY)));
-        createSlider(Preference.PITCH_SENSITIVITY,1,15,Convert.ToInt32(PreferenceManager.GetPreference(Preference.PITCH_SENSITIVITY)));
+        createDropdown(Preference.SCREEN_MODE, Preference.ScreenModeList, Convert.ToInt32(PreferenceManager.GetPreference(Preference.SCREEN_MODE)));
+        createDropdown(Preference.QUALITY_SETTINGS, Preference.QualitySettingsList, Convert.ToInt32(PreferenceManager.GetPreference(Preference.QUALITY_SETTINGS)));
 
-        createTitle("Preferences");        
-        createToggle(Preference.ALLOW_DATA_GATHERING,(bool)PreferenceManager.GetPreference(Preference.ALLOW_DATA_GATHERING));
-        createDropdown(Preference.MEASUREMENTS, Preference.MeasurementsList, Convert.ToInt32(PreferenceManager.GetPreference(Preference.MEASUREMENTS)));
+        createTitle("Camera Settings");
+        createSlider(Preference.ZOOM_SENSITIVITY, 1, 15, Convert.ToInt32(PreferenceManager.GetPreference(Preference.ZOOM_SENSITIVITY)));
+        createSlider(Preference.YAW_SENSITIVITY, 1, 15, Convert.ToInt32(PreferenceManager.GetPreference(Preference.YAW_SENSITIVITY)));
+        createSlider(Preference.PITCH_SENSITIVITY, 1, 15, Convert.ToInt32(PreferenceManager.GetPreference(Preference.PITCH_SENSITIVITY)));
+
+        createTitle("Preferences");
+        createToggle(Preference.ALLOW_DATA_GATHERING, (bool)PreferenceManager.GetPreference(Preference.ALLOW_DATA_GATHERING));
+        createToggle(Preference.MEASUREMENTS, (bool)PreferenceManager.GetPreference(Preference.MEASUREMENTS));
     }
 
-    //Depricate it: Have settings saved within each object when changed. Then just call preference manager save on save.
     public void saveSettings()//writes settings back into preference manager when save button is clicked
     {
-        foreach(GameObject g in settingsList)
+        foreach (GameObject g in settingsList)
         {
             //MODIFY THIS: Each Input field has different outputs
             SettingsInput si = g.GetComponent<SettingsInput>();
@@ -138,32 +194,40 @@ public class SettingsPanel : MonoBehaviour
             switch (si.getType())//sets each value based on type. Needs to be changed when writing to preference manager
             {
                 case InputType.TOGGLE:
-                    PreferenceManager.SetPreference(name,si._toggle.isOn);
+                    PreferenceManager.SetPreference(name, si._toggle.isOn);
                     break;
                 case InputType.DROPDOWN:
-                    PreferenceManager.SetPreference(name,si._dropdown.value);
+                    PreferenceManager.SetPreference(name, si._dropdown.value);
                     break;
                 case InputType.KEYBIND:
-                    PreferenceManager.SetPreference(name,si._key.text);
+                    PreferenceManager.SetPreference(name, si._key.text);
                     break;
                 case InputType.SLIDER:
-                    PreferenceManager.SetPreference(name,si._slider.value);
+                    PreferenceManager.SetPreference(name, si._slider.value);
                     break;
+            }
+            
+            if(name == Preference.RESOLUTION){
+                if(Convert.ToInt32(PreferenceManager.GetPreference(Preference.RESOLUTION))==Preference.ResolutionList.Length-1)
+                    PreferenceManager.SetPreference(Preference.MAX_RES,true);
+                else
+                    PreferenceManager.SetPreference(Preference.MAX_RES,false);
             }
         }
         PreferenceManager.Save();
         Preference.LoadSettings();
     }
 
-    public void resetSettings(){
+    public void resetSettings()
+    {
         Preference.setDefaultPreferences();
         Preference.LoadSettings();
     }
 
-    private void createDropdown(string title, List<string> dropdownList, int value)
+    private void createDropdown(string title, string[] dropdownList, int value)
     {
         GameObject g = Instantiate(dropdownInput, list.transform);
-        g.GetComponent<SettingsInput>().Init(title, dropdownList,value);
+        g.GetComponent<SettingsInput>().Init(title, dropdownList, value);
         settingsList.Add(g);
     }
 
@@ -182,14 +246,17 @@ public class SettingsPanel : MonoBehaviour
     }
     private void createTitle(string title)
     {
-       GameObject g = Instantiate(titleText, list.transform);
-       g.GetComponentInChildren<TextMeshProUGUI>().text=title;
+        GameObject g = Instantiate(titleText, list.transform);
+        g.GetComponentInChildren<TextMeshProUGUI>().text = title;
     }
     private void createSlider(string title, int lowVal, int highVal, int value)
     {
         GameObject g = Instantiate(sliderInput, list.transform);
-        g.GetComponent<SettingsInput>().Init(title, lowVal,highVal,value);
+        g.GetComponent<SettingsInput>().Init(title, lowVal, highVal, value);
         settingsList.Add(g);
     }
+
+
+
 }
 
