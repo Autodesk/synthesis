@@ -36,7 +36,7 @@ public class PTL : MonoBehaviour {
         SYNTHEPARK = ParsePath("$appdata/Autodesk/Synthesis/Fields/SynthePark");
         DESTINATION_DEEP_SPACE = ParsePath("$appdata/Autodesk/Synthesis/Fields/2019 Destination Deep Space");
         POWER_UP = ParsePath("$appdata/Autodesk/Synthesis/Fields/2018 Power Up");
-        var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/Maybe_v0.mira");
+        var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/MotionDefinition_v72.mira");
         
         hasRobot = false;
         robotList = new List<GameObject>();

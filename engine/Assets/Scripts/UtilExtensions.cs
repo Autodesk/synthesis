@@ -36,7 +36,7 @@ public static class UtilExtensions {
     }
     
     public static void ApplyMatrix(this Transform trans, Matrix4x4 m) {
-        m.Print();
+        // m.Print();
         trans.localPosition = m.GetPosition();
         var rot = m.rotation;
         rot = new Quaternion(-rot.x, rot.y, rot.z, -rot.w);

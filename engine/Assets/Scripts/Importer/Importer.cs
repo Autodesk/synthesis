@@ -25,6 +25,7 @@ using UMesh = UnityEngine.Mesh;
 using Logger = SynthesisAPI.Utilities.Logger;
 using Assembly = Mirabuf.Assembly;
 using AssemblyData = Mirabuf.AssemblyData;
+using Joint = Mirabuf.Joint.Joint;
 // using Body = SynthesisAPI.Proto.Body;
 using Transform = UnityEngine.Transform;
 using Vector3 = Mirabuf.Vector3;
@@ -163,6 +164,16 @@ namespace Synthesis.Import {
         private static List<Collider> collidersToIgnore;
         public static GameObject AssemblyImport(Assembly assembly) {
 
+            var jFormatter = new JsonFormatter(JsonFormatter.Settings.Default);
+            File.WriteAllText("C:\\Users\\hunte\\Desktop\\Test.json", jFormatter.Format(assembly));
+
+            assembly.Data.Joints.JointDefinitions.ForEach(x => {
+                Debug.Log(Enum.GetName(typeof(JointMotion), x.Value.JointMotionType));
+                // Debug.Log($"Part1: {assembly.Data.Parts.PartInstances[x.Value.Part1].Info.Name}");
+                // Debug.Log($"Part2: {assembly.Data.Parts.PartInstances[x.Value.Part2].Info.Name}");
+
+            });
+
             GameObject assemblyObject = new GameObject(assembly.Info.Name);
 
             var parts = assembly.Data.Parts;
@@ -238,13 +249,17 @@ namespace Synthesis.Import {
         public static List<RigidbodyDefinition> FindRigidbodyDefinitions(Assembly assembly, Node node) {
             // Tree<StaticGroupDefinition> tree = new Tree<StaticGroupDefinition>();
             var defs = new List<RigidbodyDefinition>();
-            defs.Add(GenerateRigidbodyDefinitions(assembly.Data, node));
+            defs.Add(GenerateRigidbodyDefinitions(assembly, node));
             List<Node> toSearch = new List<Node>(node.Children);
             while (toSearch.Count() > 0) {
                 List<Node> newSearchList = new List<Node>();
                 toSearch.ForEach(x => {
-                    if (assembly.Data.Parts.PartInstances[x.Value].Joints.Count() > 0) {
-                        defs.Add(GenerateRigidbodyDefinitions(assembly.Data, x));
+                    if (assembly.Data.Parts.PartInstances[x.Value].Joints.Any()) {
+                        assembly.Data.Parts.PartInstances[x.Value].Joints.ForEach(x => {
+                            Debug.Log(Encoding.UTF8.GetBytes(x).ToHexString());
+                            // DebugJoint(assembly, x);
+                        });
+                        defs.Add(GenerateRigidbodyDefinitions(assembly, x));
                     }
                     newSearchList.AddRange(x.Children);
                 });
@@ -256,19 +271,19 @@ namespace Synthesis.Import {
         }
 
         private static int counter = 0;
-        public static RigidbodyDefinition GenerateRigidbodyDefinitions(AssemblyData data, Node node) {
+        public static RigidbodyDefinition GenerateRigidbodyDefinitions(Assembly assembly, Node node) {
             RigidbodyDefinition def = new RigidbodyDefinition {
                 Id = $"RigidDef:{counter}",
                 Parts = new Dictionary<string, PartInstance>()
             };
             counter++;
-            def.Parts.Add(node.Value, data.Parts.PartInstances[node.Value]);
+            def.Parts.Add(node.Value, assembly.Data.Parts.PartInstances[node.Value]);
             var children = new List<Node>(node.Children);
             while (children.Any()) {
                 var moreChildren = new List<Node>();
                 children.ForEach(x => {
-                    if (!data.Parts.PartInstances[x.Value].Joints.Any()) {
-                        def.Parts.Add(x.Value, data.Parts.PartInstances[x.Value]);
+                    if (!assembly.Data.Parts.PartInstances[x.Value].Joints.Any()) {
+                        def.Parts.Add(x.Value, assembly.Data.Parts.PartInstances[x.Value]);
                         moreChildren.AddRange(x.Children);
                     }
                 });
@@ -276,6 +291,13 @@ namespace Synthesis.Import {
             }
 
             return def;
+        }
+
+        private static void DebugJoint(Assembly assembly, string joint) {
+            var instance = assembly.Data.Joints.JointInstances[joint];
+            var definition = assembly.Data.Joints.JointDefinitions[instance.JointReference];
+            
+            Debug.Log(Enum.GetName(typeof(Joint.JointMotionOneofCase), definition.JointMotionCase));
         }
 
         public struct Tree<T> {
@@ -305,7 +327,7 @@ namespace Synthesis.Import {
             }
             return map;
         }
-
+        
         public static void MakeGlobalTransformations(Dictionary<string, Matrix4x4> map, Matrix4x4 parent, Parts parts, Node node) {
             foreach (var child in node.Children) {
                 map.Add(child.Value, parent * parts.PartInstances[child.Value].Transform.UnityMatrix);

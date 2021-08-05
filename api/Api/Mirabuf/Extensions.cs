@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -21,5 +22,11 @@ internal static class Extensions {
                 vertices[i / 3] = vertices[i / 3].normalized;
         }
         return vertices;
+    }
+
+    public static void ForEach<T>(this IEnumerable<T> e, Action<T> act) {
+        foreach (var a in e) {
+            act(a);
+        }
     }
 }
