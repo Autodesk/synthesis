@@ -506,8 +506,8 @@ def populateJoint(simNode: SimulationNode, joints: joint_pb2.Joints, progressDia
 
     root = types_pb2.Node()
 
-    if DEBUG:
-        print(f"Configuring {proto_joint.info.name}")
+    # if DEBUG:
+    #     print(f"Configuring {proto_joint.info.name}")
 
     # construct body tree if possible
     createTreeParts(simNode.data, OccurrenceRelationship.CONNECTION, root, progressDialog)
@@ -541,8 +541,8 @@ def createTreeParts(
     except RuntimeError:
         node.value = dynNode.data.name
 
-    if DEBUG:
-        print(f" -- {dynNode.data.name} + rel : {relationship}\n")
+    #if DEBUG:
+    #    print(f" -- {dynNode.data.name} + rel : {relationship}\n")
 
     # possibly add additional information for the type of connection made
     # recurse and add all children connections
