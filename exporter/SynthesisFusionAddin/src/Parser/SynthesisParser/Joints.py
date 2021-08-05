@@ -29,6 +29,7 @@ from typing import List, Union
 
 from ...general_imports import logging, INTERNAL_ID, DEBUG
 from .Utilities import fill_info, construct_info
+from .PDMessage import PDMessage
 
 
 # Need to take in a graphcontainer
@@ -55,7 +56,7 @@ from .Utilities import fill_info, construct_info
 def populateJoints(
     design: adsk.fusion.Design,
     joints: joint_pb2.Joints,
-    progressDialog: adsk.core.ProgressDialog,
+    progressDialog: PDMessage,
     options,
 ):
     fill_info(joints, None)
@@ -89,7 +90,8 @@ def populateJoints(
             try:
                 #  Fusion has no instances of joints but lets roll with it anyway
 
-                progressDialog.message = f"Exporting Joint configuration {joint.name}"
+                # progressDialog.message = f"Exporting Joint configuration {joint.name}"
+                progressDialog.addJoint(joint.name)
 
                 # create the definition
                 joint_definition = joints.joint_definitions[joint.entityToken]
@@ -325,10 +327,13 @@ def _jointOrigin(
 
 
 def createJointGraph(
-    supplied_joints: list, joint_tree: types_pb2.GraphContainer, progressDialog
+    supplied_joints: list, wheels: list, joint_tree: types_pb2.GraphContainer, progressDialog: PDMessage
 ) -> None:
 
-    progressDialog.message = f"Building Joint Graph Map from given joints"
+    #progressDialog.message = f"Building Joint Graph Map from given joints"
+
+    progressDialog.currentMessage = f"Building Joint Graph Map from given joints"
+    progressDialog.update()
 
     # keep track of current nodes to link them
     node_map = dict({})
@@ -338,6 +343,8 @@ def createJointGraph(
     groundNode.value = "ground"
 
     node_map[groundNode.value] = groundNode
+
+    addWheelsToGraph(wheels, groundNode, joint_tree)
 
     # first iterate through to create the nodes
     for supplied_joint in supplied_joints:
@@ -365,3 +372,19 @@ def createJointGraph(
     for node in node_map.values():
         # append everything at top level to isolate kinematics
         joint_tree.nodes.append(node)
+
+
+def addWheelsToGraph(
+    wheels: list,
+    rootNode: types_pb2.Node,
+    joint_tree: types_pb2.GraphContainer
+):
+    for wheel in wheels:
+        # wheel name
+        # wheel signal
+        # wheel occ id
+        # these don't have children
+        wheelNode = types_pb2.Node()
+        wheelNode.value = wheel.occurrence_token
+        rootNode.children.append(wheelNode)
+        joint_tree.nodes.append(wheelNode)

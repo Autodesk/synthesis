@@ -33,15 +33,7 @@ class Parser:
             assembly_out = assembly_pb2.Assembly()
             fill_info(assembly_out, design.rootComponent)
 
-            self.pdMessage = PDMessage.PDMessage(
-                assembly_out.info.name,
-                design.allComponents.count,
-                design.rootComponent.allOccurrences.count,
-                design.materials.count,
-                design.appearances.count,  # this is very high for some reason
-            )
-
-            gm.ui.messageBox(str(self.pdMessage))
+           
 
             assembly_out.dynamic = True
 
@@ -60,27 +52,37 @@ class Parser:
             progressDialog.minimumValue = 0
             progressDialog.maximumValue = totalIterations
             progressDialog.show(
-                "Synthesis Export Progress", "Currently on %v of %m", 0, totalIterations
+                "Synthesis Export", "Currently on %v of %m", 0, totalIterations
+            )
+
+            # this is the formatter for the progress dialog now
+            self.pdMessage = PDMessage.PDMessage(
+                assembly_out.info.name,
+                design.allComponents.count,
+                design.rootComponent.allOccurrences.count,
+                design.materials.count,
+                design.appearances.count,  # this is very high for some reason
+                progressDialog
             )
 
             Materials._MapAllAppearances(
                 design.appearances,
                 assembly_out.data.materials,
                 self.parseOptions,
-                progressDialog,
+                self.pdMessage,
             )
 
             Materials._MapAllPhysicalMaterials(
                 design.materials,
                 assembly_out.data.materials,
                 self.parseOptions,
-                progressDialog,
+                self.pdMessage,
             )
 
             Components._MapAllComponents(
                 design,
                 self.parseOptions,
-                progressDialog,
+                self.pdMessage,
                 assembly_out.data.parts,
                 assembly_out.data.materials,
             )
@@ -89,7 +91,7 @@ class Parser:
 
             Components._ParseComponentRoot(
                 design.rootComponent,
-                progressDialog,
+                self.pdMessage,
                 self.parseOptions,
                 assembly_out.data.parts,
                 assembly_out.data.materials.appearances,
@@ -99,7 +101,7 @@ class Parser:
             assembly_out.design_hierarchy.nodes.append(rootNode)
 
             Joints.populateJoints(
-                design, assembly_out.data.joints, progressDialog, self.parseOptions
+                design, assembly_out.data.joints, self.pdMessage, self.parseOptions
             )
 
             # add condition in here for advanced joints maybe idk
@@ -107,11 +109,11 @@ class Parser:
             # that or add code to existing parser to determine leftovers
 
             Joints.createJointGraph(
-                self.parseOptions.joints, assembly_out.joint_hierarchy, progressDialog
+                self.parseOptions.joints, self.parseOptions.wheels, assembly_out.joint_hierarchy, self.pdMessage
             )
 
             JointHierarchy.BuildJointPartHierarchy(
-                design, assembly_out.data.joints, self.parseOptions, progressDialog
+                design, assembly_out.data.joints, self.parseOptions, self.pdMessage
             )
 
             f = open(self.parseOptions.fileLocation, "wb")

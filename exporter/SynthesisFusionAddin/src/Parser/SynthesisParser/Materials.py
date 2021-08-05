@@ -3,6 +3,8 @@ import adsk
 
 from .Utilities import *
 from .. import ParseOptions
+
+from .PDMessage import PDMessage
 from proto.proto_out import assembly_pb2, types_pb2, material_pb2
 
 
@@ -10,12 +12,14 @@ def _MapAllPhysicalMaterials(
     physicalMaterials: list,
     materials: material_pb2.Materials,
     options: ParseOptions,
-    progressDialog,
+    progressDialog : PDMessage,
 ) -> None:
     setDefaultMaterial(materials.physicalMaterials["default"])
 
     for material in physicalMaterials:
-        if progressDialog.wasCancelled:
+        progressDialog.addMaterial(material.name)
+
+        if progressDialog.wasCancelled():
             raise RuntimeError("User canceled export")
 
         newmaterial = materials.physicalMaterials[material.id]
@@ -59,7 +63,7 @@ def _MapAllAppearances(
     appearances: list,
     materials: material_pb2.Materials,
     options: ParseOptions,
-    progressDialog,
+    progressDialog: PDMessage,
 ) -> None:
 
     # in case there are no appearances on a body
@@ -69,7 +73,9 @@ def _MapAllAppearances(
     fill_info(materials, None)
 
     for appearance in appearances:
-        if progressDialog.wasCancelled:
+        progressDialog.addAppearance(appearance.name)
+
+        if progressDialog.wasCancelled():
             raise RuntimeError("User canceled export")
 
         material = materials.appearances[appearance.id]

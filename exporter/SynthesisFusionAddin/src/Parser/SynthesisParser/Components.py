@@ -7,6 +7,8 @@ from .. import ParseOptions
 from typing import *
 
 from . import PhysicalProperties
+
+from .PDMessage import PDMessage
 from ...Analyzer.timer import TimeThis
 
 # TODO: Impelement Material overrides
@@ -16,15 +18,16 @@ from ...Analyzer.timer import TimeThis
 def _MapAllComponents(
     design: adsk.fusion.Design,
     options: ParseOptions,
-    progressDialog,
+    progressDialog: PDMessage,
     partsData: assembly_pb2.Parts,
     materials: material_pb2.Materials,
 ) -> None:
     for component in design.allComponents:
         adsk.doEvents()
-        if progressDialog.wasCancelled:
+        if progressDialog.wasCancelled():
             raise RuntimeError("User canceled export")
-        progressDialog.message = f"Exporting {component.name}"
+        # progressDialog.message = f"Exporting {component.name}"
+        progressDialog.addComponent(component.name)
 
         try:
             comp_ref = component.entityToken
@@ -41,10 +44,10 @@ def _MapAllComponents(
         PhysicalProperties.GetPhysicalProperties(component, partDefinition.physical_data)
 
         for body in component.bRepBodies:
-            if progressDialog.wasCancelled:
+            if progressDialog.wasCancelled():
                 raise RuntimeError("User canceled export")
             if body.isLightBulbOn:
-                progressDialog.progressValue = progressDialog.progressValue + 1
+                # progressDialog.progressValue = progressDialog.progressValue + 1
 
                 part_body = partDefinition.bodies.add()
                 fill_info(part_body, body)
@@ -62,14 +65,12 @@ def _MapAllComponents(
 @TimeThis
 def _ParseComponentRoot(
     component: adsk.fusion.Component,
-    progressDialog: adsk.core.ProgressDialog,
+    progressDialog: PDMessage,
     options: ParseOptions,
     partsData: assembly_pb2.Parts,
     material_map: dict,
     node: types_pb2.Node,
 ) -> None:
-
-    adsk.doEvents()
 
     try:
         mapConstant = component.entityToken
@@ -90,7 +91,7 @@ def _ParseComponentRoot(
 
     for occur in component.occurrences:
 
-        if progressDialog.wasCancelled:
+        if progressDialog.wasCancelled():
             raise RuntimeError("User canceled export")
 
         if occur.isLightBulbOn:
@@ -105,7 +106,7 @@ def _ParseComponentRoot(
 
 def __parseChildOccurrence(
     occurrence: adsk.fusion.Occurrence,
-    progressDialog: adsk.core.ProgressDialog,
+    progressDialog: PDMessage,
     options: ParseOptions,
     partsData: assembly_pb2.Parts,
     material_map: dict,
@@ -115,7 +116,7 @@ def __parseChildOccurrence(
     if occurrence.isLightBulbOn is False:
         return
 
-    adsk.doEvents()
+    progressDialog.addOccurrence(occurrence.name)
 
     try:
         mapConstant = occurrence.entityToken
@@ -153,7 +154,7 @@ def __parseChildOccurrence(
         part.global_transform.spatial_matrix.extend(worldTransform.asArray())
 
     for occur in occurrence.childOccurrences:
-        if progressDialog.wasCancelled:
+        if progressDialog.wasCancelled():
             raise RuntimeError("User canceled export")
 
         if occur.isLightBulbOn:

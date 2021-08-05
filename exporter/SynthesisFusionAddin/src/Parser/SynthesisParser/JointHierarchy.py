@@ -2,6 +2,7 @@ from ...general_imports import *
 import adsk.core, adsk.fusion, traceback, logging, enum
 from typing import *
 from .. import ParseOptions
+from .PDMessage import PDMessage
 from proto.proto_out import types_pb2, joint_pb2
 
 
@@ -453,10 +454,11 @@ def BuildJointPartHierarchy(
     design: adsk.fusion.Design,
     joints: joint_pb2.Joints,
     options: ParseOptions,
-    progressDialog,
+    progressDialog: PDMessage,
 ):
     try:
-        progressDialog.message = f"Constructing Simulation Hierarchy"
+        progressDialog.currentMessage = f"Constructing Simulation Hierarchy"
+        progressDialog.update()
 
         jointParser = JointParser(design)
         rootSimNode = jointParser.groundSimNode
@@ -471,7 +473,9 @@ def BuildJointPartHierarchy(
         # 6.
         # 4. For each child
 
-        if progressDialog.wasCancelled:
+        # now add each wheel to the root I believe
+
+        if progressDialog.wasCancelled():
             raise RuntimeError("User canceled export")
 
     except Warning:
@@ -483,7 +487,7 @@ def BuildJointPartHierarchy(
 
 
 def populateJoint(simNode: SimulationNode, joints: joint_pb2.Joints, progressDialog):
-    if progressDialog.wasCancelled:
+    if progressDialog.wasCancelled():
         raise RuntimeError("User canceled export")
 
     if not simNode.joint:
@@ -491,7 +495,8 @@ def populateJoint(simNode: SimulationNode, joints: joint_pb2.Joints, progressDia
     else:
         proto_joint = joints.joint_instances[simNode.joint.entityToken]
 
-    progressDialog.message = f"Linking Parts to Joint: {proto_joint.info.name}"
+    progressDialog.currentMessage = f"Linking Parts to Joint: {proto_joint.info.name}"
+    progressDialog.update()
 
     if not proto_joint:
         logging.getLogger(f"{INTERNAL_ID}.JointHierarchy").error(
@@ -520,7 +525,7 @@ def createTreeParts(
     node: types_pb2.Node,
     progressDialog,
 ):
-    if progressDialog.wasCancelled:
+    if progressDialog.wasCancelled():
         raise RuntimeError("User canceled export")
 
     # if it's the next part just exit early for our own sanity
