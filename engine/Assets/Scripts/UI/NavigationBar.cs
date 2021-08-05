@@ -12,14 +12,16 @@ namespace Synthesis.UI.Bars
         public GameObject homeTab;
         public GameObject homeButton;
 
+        public TMP_Text VersionNumber;
+
         public TMP_FontAsset artifaktRegular;
         public TMP_FontAsset artifaktBold;
 
         private GameObject _currentTabButton = null;
         private GameObject _currentPanelButton = null;
 
-        private void Start()
-        {
+        private void Start() {
+            VersionNumber.text = $"v {AutoUpdater.LocalVersion}";
             OpenTab(homeTab);
         }
 

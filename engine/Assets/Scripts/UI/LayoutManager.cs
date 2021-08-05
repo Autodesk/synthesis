@@ -1,12 +1,11 @@
 using Synthesis.UI.Panels;
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 
 public static class LayoutManager
 {
-
-
     //PANEL MANAGER
     private static Panel _currentPanel = null;
     public static Panel CurrentPanel
@@ -14,16 +13,16 @@ public static class LayoutManager
         get => _currentPanel;
     }
 
-    public static bool OpenPanel(GameObject p, bool forceClose=false)
+    public static (bool success, Panel panel) OpenPanel(GameObject p, bool forceClose=false)
     {
         if (_currentPanel != null)
             if (forceClose)
                 _currentPanel.Close();
             else
-                return false;
+                return (false, null);
         var panel = Object.Instantiate(p, GameObject.Find("Panels").transform);//set transform
         _currentPanel = panel.GetComponent<Panel>();
-        return true;
+        return (true, _currentPanel);
     }
 
     public static void ClosePanel()
