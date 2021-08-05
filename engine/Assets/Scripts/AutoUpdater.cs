@@ -7,21 +7,22 @@ using System.Security.Cryptography.X509Certificates;
 using System;
 using System.Net.Security;
 using System.Diagnostics;
+using Synthesis.UI.Panels;
 using Debug = UnityEngine.Debug;
 
 public class AutoUpdater : MonoBehaviour
 {
-
-    public static string updater;
+    // public static string updater;
     public const string LocalVersion = "4.0.0.0";
-    public GameObject game;
+    public GameObject updaterPanelPrefab;
 
     // Start is called before the first frame update
     void Start()
     {
-        GameObject.Find("VersionNumber").GetComponent<Text>().text = "Version " + LocalVersion;
-        Debug.Log("" + GameObject.Find("VersionNumber").GetComponent<Text>().text);
-        game = GameObject.Find("UpdatePrompt");
+        // var versionText = GameObject.Find("VersionNumber").GetComponent<Text>();
+        // versionText.text = "Version " + LocalVersion;
+        Debug.Log($"Version {LocalVersion}");
+        // game = GameObject.Find("UpdatePrompt");
 
         if (CheckConnection())
         {
@@ -29,21 +30,19 @@ public class AutoUpdater : MonoBehaviour
             ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
             var json = new WebClient().DownloadString("https://raw.githubusercontent.com/Autodesk/synthesis/master/VersionManager.json");
             VersionManager update = JsonConvert.DeserializeObject<VersionManager>(json);
-            updater = update.URL;
+            var updater = update.URL;
 
             var localVersion = new Version(LocalVersion);
             var globalVersion = new Version(update.Version);
 
             var check = localVersion.CompareTo(globalVersion);
 
-            if (check < 0) // if outdated, set update prompt to true
-            {
-                // Auxiliary.FindGameObject
-                game.SetActive(true);
-            }
-            else
-            {
-                game.SetActive(false);
+            if (check < 0) { // if outdated, set update prompt to true
+                Debug.Log($"Version {globalVersion.ToString()} available");
+                var result = LayoutManager.OpenPanel(updaterPanelPrefab, true);
+                if (result.success) { // This really shouldn't ever fail but just in case
+                    (result.panel as UpdatePromptPanel).UpdaterLink = updater;
+                }
             }
         }
     }
@@ -63,26 +62,6 @@ public class AutoUpdater : MonoBehaviour
         catch
         {
             return false;
-        }
-    }
-
-    // Prompt Cancel Button Pressed
-    public void CloseUpdatePrompt()
-    {
-        GameObject.Find("UpdatePrompt").SetActive(false);
-    }
-
-    // Prompt Upate Button Pressed
-    public void UpdateYes()
-    {
-        Process.Start(updater);
-        if (Application.isEditor)
-        {
-            GameObject.Find("UpdatePrompt").SetActive(false);
-        }
-        else
-        {
-            Application.Quit();
         }
     }
 
@@ -109,11 +88,5 @@ public class AutoUpdater : MonoBehaviour
             }
         }
         return isOk;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 }
