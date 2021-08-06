@@ -212,6 +212,8 @@ public class SettingsPanel : Panel
         disableSaveButton();
         Save();
         Load();
+        
+        repopulatePanel();
     }
     public void onValueChanged(SettingsInput si){
             string name = si.Title; //key for preference manager
@@ -252,13 +254,14 @@ public class SettingsPanel : Panel
     public void ResetSettings() {
         Preference.setDefaultPreferences();
         Load();
-
+        repopulatePanel();
+    }
+    private void repopulatePanel(){
         //clear
         _settingsList = new List<GameObject>();
         foreach(Transform s in list.GetComponentInChildren<Transform>()){
             Destroy(s.gameObject);
         }
-
         //reload
         DisplaySettings();
     }
