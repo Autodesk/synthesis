@@ -4,6 +4,8 @@ using System;
 using UnityEngine;
 using TMPro;
 using Synthesis.PreferenceManager;
+using Synthesis.UI.Panels;
+
 public static class Preference
 {
     public const string RESOLUTION = "Resolution";//Dropdown: Different resolution settings
@@ -145,75 +147,69 @@ public static class Preference
     }
 }
 
-public class SettingsPanel : MonoBehaviour
+public class SettingsPanel : Panel
 {
-
     [SerializeField]
     public GameObject list;
     [SerializeField]
-    public GameObject keybindInput;
+    public GameObject keybindInputPrefab;
     [SerializeField]
-    public GameObject dropdownInput;
+    public GameObject dropdownInputPrefab;
     [SerializeField]
-    public GameObject toggleInput;
+    public GameObject toggleInputPrefab;
     [SerializeField]
-    public GameObject titleText;
+    public GameObject titleTextPrefab;
     [SerializeField]
-    public GameObject sliderInput;
+    public GameObject sliderInputPrefab;
 
-    List<GameObject> settingsList = new List<GameObject>();
+    private List<GameObject> _settingsList = new List<GameObject>();
 
-    public enum InputType
-    {
-        TOGGLE,
-        DROPDOWN,
-        KEYBIND,
-        SLIDER
+    public enum InputType {
+        Toggle,
+        Dropdown,
+        Keybind,
+        Slider
     }
 
-
-    void Start()
-    {
-        showSettings();
+    void Start() {
+        DisplaySettings();
     }
 
-    private void showSettings()
-    {
-        createTitle("Screen Settings");
-        createDropdown(Preference.RESOLUTION, Preference.ResolutionList, GetInt(Preference.RESOLUTION));
-        createDropdown(Preference.SCREEN_MODE, Preference.ScreenModeList, GetInt(Preference.SCREEN_MODE));
-        createDropdown(Preference.QUALITY_SETTINGS, Preference.QualitySettingsList, GetInt(Preference.QUALITY_SETTINGS));
+    private void DisplaySettings() {
+        CreateTitle("Screen Settings");
+        CreateDropdown(Preference.RESOLUTION, Preference.ResolutionList, GetInt(Preference.RESOLUTION));
+        CreateDropdown(Preference.SCREEN_MODE, Preference.ScreenModeList, GetInt(Preference.SCREEN_MODE));
+        CreateDropdown(Preference.QUALITY_SETTINGS, Preference.QualitySettingsList, GetInt(Preference.QUALITY_SETTINGS));
 
-        createTitle("Camera Settings");
-        createSlider(Preference.ZOOM_SENSITIVITY, 1, 15, GetInt(Preference.ZOOM_SENSITIVITY));
-        createSlider(Preference.YAW_SENSITIVITY, 1, 15, GetInt(Preference.YAW_SENSITIVITY));
-        createSlider(Preference.PITCH_SENSITIVITY, 1, 15, GetInt(Preference.PITCH_SENSITIVITY));
+        CreateTitle("Camera Settings");
+        CreateSlider(Preference.ZOOM_SENSITIVITY, 1, 15, GetInt(Preference.ZOOM_SENSITIVITY));
+        CreateSlider(Preference.YAW_SENSITIVITY, 1, 15, GetInt(Preference.YAW_SENSITIVITY));
+        CreateSlider(Preference.PITCH_SENSITIVITY, 1, 15, GetInt(Preference.PITCH_SENSITIVITY));
 
-        createTitle("Preferences");
-        createToggle(Preference.ALLOW_DATA_GATHERING, GetBool(Preference.ALLOW_DATA_GATHERING));
-        createToggle(Preference.MEASUREMENTS, GetBool(Preference.MEASUREMENTS));
+        CreateTitle("Preferences");
+        CreateToggle(Preference.ALLOW_DATA_GATHERING, GetBool(Preference.ALLOW_DATA_GATHERING));
+        CreateToggle(Preference.MEASUREMENTS, GetBool(Preference.MEASUREMENTS));
     }
 
-    public void saveSettings()//writes settings back into preference manager when save button is clicked
-    {
-        foreach (GameObject g in settingsList)
+    public void SaveSettings() {//writes settings back into preference manager when save button is clicked
+        foreach (GameObject g in _settingsList)
         {
             SettingsInput si = g.GetComponent<SettingsInput>();
-            string name = si._name.text; //key for preference manager
+            string name = si.Title; //key for preference manager
 
-            switch (si.getType())
+            switch (si.Type)
             {
-                case InputType.TOGGLE:
-                    Set(name, si._toggle.isOn);
+                case InputType.Toggle:
+                    Set(name, si.toggle.isOn);
                     break;
-                case InputType.DROPDOWN:
-                    Set(name, si._dropdown.value);
+                case InputType.Dropdown:
+                    Set(name, si.dropdown.value);
                     break;
-                case InputType.KEYBIND:
-                    Set(name, si._key.text);
+                case InputType.Keybind:
+                    Set(name, si.key.text);
                     break;
-                case InputType.SLIDER:
-                    Set(name, si._slider.value);
+                case InputType.Slider:
+                    Set(name, si.slider.value);
                     break;
             }
 
@@ -230,70 +226,62 @@ public class SettingsPanel : MonoBehaviour
         Load();
     }
 
-    public void resetSettings()
-    {
+    public override void Close() {
+        Save();
+        base.Close();
+    }
+
+    public void ResetSettings() {
         Preference.setDefaultPreferences();
         Load();
     }
 
-    private void createDropdown(string title, string[] dropdownList, int value)
-    {
-        GameObject g = Instantiate(dropdownInput, list.transform);
+    private void CreateDropdown(string title, string[] dropdownList, int value) {
+        GameObject g = Instantiate(dropdownInputPrefab, list.transform);
         g.GetComponent<SettingsInput>().Init(title, dropdownList, value);
-        settingsList.Add(g);
+        _settingsList.Add(g);
     }
 
-    private void createToggle(string title, bool state)
-    {
-        GameObject g = Instantiate(toggleInput, list.transform);
+    private void CreateToggle(string title, bool state) {
+        GameObject g = Instantiate(toggleInputPrefab, list.transform);
         g.GetComponent<SettingsInput>().Init(title, state);
-        settingsList.Add(g);
+        _settingsList.Add(g);
     }
 
-    private void createKeybind(string control, string key)
-    {
-        GameObject g = Instantiate(keybindInput, list.transform);
+    private void CreateKeybind(string control, string key) {
+        GameObject g = Instantiate(keybindInputPrefab, list.transform);
         g.GetComponent<SettingsInput>().Init(control, key);
-        settingsList.Add(g);
+        _settingsList.Add(g);
     }
-    private void createTitle(string title)
-    {
-        GameObject g = Instantiate(titleText, list.transform);
+    
+    private void CreateTitle(string title) {
+        GameObject g = Instantiate(titleTextPrefab, list.transform);
         g.GetComponentInChildren<TextMeshProUGUI>().text = title;
     }
-    private void createSlider(string title, int lowVal, int highVal, int value)
-    {
-        GameObject g = Instantiate(sliderInput, list.transform);
+    
+    private void CreateSlider(string title, int lowVal, int highVal, int value) {
+        GameObject g = Instantiate(sliderInputPrefab, list.transform);
         g.GetComponent<SettingsInput>().Init(title, lowVal, highVal, value);
-        settingsList.Add(g);
+        _settingsList.Add(g);
     }
 
-
     //Sets Preference for better readability
-    private void Set(string s, object o)
-    {
+    private void Set(string s, object o) {
         PreferenceManager.SetPreference(s, o);
     }
     //Get Int
     private int GetInt(string s)
-    {
-        return Convert.ToInt32(PreferenceManager.GetPreference(s));
-    }
-    private void Load(){
+        => Convert.ToInt32(PreferenceManager.GetPreference(s));
+    private void Load() {
         Preference.LoadSettings();
     }
     //Get Float
     private float GetFloat(string s)
-    {
-        return Convert.ToSingle(PreferenceManager.GetPreference(s));
-    }
+        => Convert.ToSingle(PreferenceManager.GetPreference(s));
     //Get Bool
     private bool GetBool(string s)
-    {
-        return (bool)(PreferenceManager.GetPreference(s));
-    }
-    private void Save()
-    {
+        => (bool)PreferenceManager.GetPreference(s);
+    private void Save() {
         PreferenceManager.Save();
     }
 }

@@ -6,76 +6,83 @@ using UnityEngine.UI;
 
 public class SettingsInput : MonoBehaviour
 {
-    SettingsPanel.InputType type;//type
-
-
-    public TextMeshProUGUI _name;//shared
-
-    //Toggle
-    public Toggle _toggle;
-
-    //keybind
-    public TextMeshProUGUI _key;
-    private bool bind = false;
-
-    //dropdown list
-    public TMP_Dropdown _dropdown;
-
-    public Slider _slider;
-    public TextMeshProUGUI _sliderValue;
-
-
-    public void Init(string name, bool state)//TOGGLE
-    {
-        type = SettingsPanel.InputType.TOGGLE;
-        _name.text = name;
-        _toggle.isOn = state;
+    private SettingsPanel.InputType _type;//type
+    public SettingsPanel.InputType Type {
+        get => _type;
     }
-    public SettingsPanel.InputType getType()
-    {
-        return type;
+    private string _title = "sample-title";
+    public string Title {
+        get => _title;
+        private set {
+            _title = value;
+            titleText.text = _title;
+        }
     }
-    public void Init(string name, string control)//KEYBIND
-    {
-        type = SettingsPanel.InputType.KEYBIND;
-        _name.text = name;
-        _key.text = control;
+    [SerializeField] public TextMeshProUGUI titleText;//shared
+    
+    [Header("Toggle Field")]
+    [SerializeField] public Toggle toggle;
+    
+    [Header("Keybinding Field")]
+    [SerializeField] public TextMeshProUGUI key;
+    private bool _bind = false;
+
+    [Header("Dropdown Field")]
+    [SerializeField] public TMP_Dropdown dropdown;
+    
+    [Header("Slider Field")]
+    [SerializeField] public Slider slider;
+    [SerializeField] public TextMeshProUGUI sliderValue;
+
+    #region Initializers
+    
+    public void Init(string title, bool state) { //TOGGLE
+        _type = SettingsPanel.InputType.Toggle;
+        Title = title;
+        toggle.isOn = state;
     }
-    public void Init(string name, string[] dropdownList, int value)//DROPDOWN LIST
-    {
-        type = SettingsPanel.InputType.DROPDOWN;
-        _name.text = name;
+    
+    public void Init(string title, string control) { //KEYBIND
+        _type = SettingsPanel.InputType.Keybind;
+        Title = title;
+        key.text = control;
+    }
+    
+    public void Init(string title, string[] dropdownList, int value) { //DROPDOWN LIST
+        _type = SettingsPanel.InputType.Dropdown;
+        Title = title;
         foreach (string c in dropdownList)
         {
-            _dropdown.options.Add(new TMP_Dropdown.OptionData(c));//CREATE DROPDOWN
+            dropdown.options.Add(new TMP_Dropdown.OptionData(c));//CREATE DROPDOWN
         }
-        _dropdown.value = value;//CURRENT STATE
+        dropdown.value = value;//CURRENT STATE
     }
-    public void Init(string name, int lowValue, int highValue, int value)//SLIDER
-    {
-        type = SettingsPanel.InputType.SLIDER;
-        _name.text = name;
-        _slider.minValue = lowValue;
-        _slider.maxValue = highValue;
-        _slider.value = value;        //Make sure it is formatted correctly
+    
+    public void Init(string name, int lowValue, int highValue, int value) { //SLIDER
+        _type = SettingsPanel.InputType.Slider;
+        Title = name;
+        slider.minValue = lowValue;
+        slider.maxValue = highValue;
+        slider.value = value;        //Make sure it is formatted correctly
         sliderValueChanged();
     }
-    public void sliderValueChanged(){
-        _sliderValue.text = _slider.value.ToString();
+    
+    #endregion
+    
+    public void sliderValueChanged() {
+        sliderValue.text = slider.value.ToString();
     }
-    public void setKeybind() //CALLED BY KEYBIND
-    {
-        bind = true;
+    
+    public void setKeybind() { //CALLED BY KEYBIND
+        _bind = true;
     }
-    private void OnGUI()
-    {
-        if (type== SettingsPanel.InputType.KEYBIND&&bind) //SET KEYBIND
-        {
+    
+    private void OnGUI() {
+        if (_type == SettingsPanel.InputType.Keybind && _bind) { //SET KEYBIND
             Event e = Event.current;
-            if (e.isKey)
-            {
-                _key.text = e.keyCode.ToString();
-                bind = false;
+            if (e.isKey) {
+                key.text = e.keyCode.ToString();
+                _bind = false;
             }
         }
     }   
