@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 using Synthesis.PreferenceManager;
 using Synthesis.UI.Panels;
@@ -161,8 +162,14 @@ public class SettingsPanel : Panel
     public GameObject titleTextPrefab;
     [SerializeField]
     public GameObject sliderInputPrefab;
+    
 
     private List<GameObject> _settingsList = new List<GameObject>();
+
+    private Color disabledColor = new Color(0.5f,0.5f,0.5f,1f);
+    private Color enabledColor = new Color(0.1294118f,0.5882353f,0.9529412f,1f);
+    public GameObject saveButton;
+
 
     public enum InputType {
         Toggle,
@@ -173,6 +180,14 @@ public class SettingsPanel : Panel
 
     void Start() {
         DisplaySettings();
+    }
+    public void disableSaveButton(){
+        saveButton.GetComponent<Image>().color = disabledColor;
+        saveButton.GetComponent<Button>().interactable = false;
+    }
+    public void enableSaveButton(){
+        saveButton.GetComponent<Button>().interactable = true;
+        saveButton.GetComponent<Image>().color = enabledColor;
     }
 
     private void DisplaySettings() {
@@ -189,12 +204,16 @@ public class SettingsPanel : Panel
         CreateTitle("Preferences");
         CreateToggle(Preference.ALLOW_DATA_GATHERING, GetBool(Preference.ALLOW_DATA_GATHERING));
         CreateToggle(Preference.MEASUREMENTS, GetBool(Preference.MEASUREMENTS));
+        
+        disableSaveButton();
     }
 
     public void SaveSettings() {//writes settings back into preference manager when save button is clicked
-        foreach (GameObject g in _settingsList)
-        {
-            SettingsInput si = g.GetComponent<SettingsInput>();
+        disableSaveButton();
+        Save();
+        Load();
+    }
+    public void onValueChanged(SettingsInput si){
             string name = si.Title; //key for preference manager
 
             switch (si.Type)
@@ -221,9 +240,8 @@ public class SettingsPanel : Panel
                 else
                     Set(Preference.MAX_RES, false);
             }
-        }
-        Save();
-        Load();
+
+            enableSaveButton();
     }
 
     public override void Close() {
@@ -234,6 +252,15 @@ public class SettingsPanel : Panel
     public void ResetSettings() {
         Preference.setDefaultPreferences();
         Load();
+
+        //clear
+        _settingsList = new List<GameObject>();
+        foreach(Transform s in list.GetComponentInChildren<Transform>()){
+            Destroy(s.gameObject);
+        }
+
+        //reload
+        DisplaySettings();
     }
 
     private void CreateDropdown(string title, string[] dropdownList, int value) {

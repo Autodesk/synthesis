@@ -86,7 +86,7 @@ public class SettingsInput : MonoBehaviour
             }
         }
     }   
-
-    //ON CHANGE FUNCTION
-    
+    public void OnValueChanged(){
+        GameObject.FindObjectOfType<SettingsPanel>().onValueChanged(this);
+    }    
 }

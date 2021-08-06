@@ -123,6 +123,17 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &131752549 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4539348305775465477, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+  m_PrefabInstance: {fileID: 1467358337}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae00c7e68e7b07a419a2ff85f54da7c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &287867052
 GameObject:
   m_ObjectHideFlags: 0
@@ -1462,6 +1473,10 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7258070574453639033, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -66.8999
+      objectReference: {fileID: 0}
     - target: {fileID: 8276093422936841946, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
       propertyPath: m_Name
       value: Nav-Bar
@@ -1565,6 +1580,14 @@ PrefabInstance:
     - target: {fileID: 8276093423157737641, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
       propertyPath: m_SizeDelta.x
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8276093423831739770, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 131752549}
+    - target: {fileID: 8276093423831739770, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OpenPanel
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}

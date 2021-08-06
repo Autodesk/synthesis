@@ -76,5 +76,7 @@ namespace Synthesis.UI.Bars
             Image img = underline.GetComponent<Image>();
             img.color = c;//color
         }
+
+
     }
 }

@@ -330,9 +330,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6029415710043180869}
-        m_TargetAssemblyTypeName: Synthesis.UI.Panels.Panel, CoreEngine
-        m_MethodName: Close
+      - m_Target: {fileID: 4539348305775465477, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+        m_TargetAssemblyTypeName: Synthesis.UI.Bars.NavigationBar, CoreEngine
+        m_MethodName: CloseAllPanels
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -514,6 +514,7 @@ MonoBehaviour:
   toggleInputPrefab: {fileID: 2480781726041998042, guid: 6d18a54f8f53ea34b9db9cedc7f63102, type: 3}
   titleTextPrefab: {fileID: 3791250721427426543, guid: 4bd991454c224bc41b5d313e50be36e3, type: 3}
   sliderInputPrefab: {fileID: 7716911928719637412, guid: a1d27134bf1b58a48bd5f73325f7a684, type: 3}
+  saveButton: {fileID: 2939423899709127257}
 --- !u!1 &2939423899709127257
 GameObject:
   m_ObjectHideFlags: 0
