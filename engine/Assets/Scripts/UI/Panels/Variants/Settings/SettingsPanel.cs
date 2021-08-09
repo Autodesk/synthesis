@@ -171,9 +171,10 @@ public class SettingsPanel : Panel
 
     private List<GameObject> _settingsList = new List<GameObject>();
 
-    private Color disabledColor = new Color(0.5f,0.5f,0.5f,1f);
+    private Color disabledColor = new Color(0.9333333f,0.9333333f,0.9333333f,1f);
     private Color enabledColor = new Color(0.1294118f,0.5882353f,0.9529412f,1f);
     public GameObject saveButton;
+    public TextMeshProUGUI saveText;
 
 
     public enum InputType {
@@ -188,10 +189,12 @@ public class SettingsPanel : Panel
     }
     public void disableSaveButton(){
         saveButton.GetComponent<Image>().color = disabledColor;
+        saveText.color = new Color(0.2352941f,0.2352941f,0.2352941f,1f);
         saveButton.GetComponent<Button>().interactable = false;
     }
     public void enableSaveButton(){
         saveButton.GetComponent<Button>().interactable = true;
+        saveText.color = Color.white;
         saveButton.GetComponent<Image>().color = enabledColor;
     }
     bool setup = false;
