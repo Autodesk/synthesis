@@ -24,18 +24,13 @@ public static class Preference
     public const string PITCH_SENSITIVITY = "Pitch Sensitivity";
 
     public static void LoadSettings()
-    {
-        //populate resolution list with availible resolutions     
-        ResolutionList = new string[Screen.resolutions.Length];
-        for (int i = 0; i < ResolutionList.Length; i++)
-        {
-            ResolutionList[i] = Screen.resolutions[i].width + "x" + Screen.resolutions[i].height;
-        }
+    {   
+        PopulateResolutionList();
 
         PreferenceManager.Load();
         if (Get(Preference.RESOLUTION) == null)
         {//checks if preferences are initialized with default values
-            setDefaultPreferences();
+            SetDefaultPreferences();
         }
 
         //set screen mode
@@ -51,7 +46,7 @@ public static class Preference
                 ResolutionList = new string[] { ResolutionList[ResolutionList.Length - 1] };
                 fsMode = FullScreenMode.MaximizedWindow;
                 Set(Preference.MAX_RES, true);
-                Save();
+                Save(); 
                 break;
             case 2:
                 fsMode = FullScreenMode.Windowed;
@@ -59,6 +54,7 @@ public static class Preference
 
         }
 
+        //Checks if the user wants maximum resolution
         if (GetBool(Preference.MAX_RES))
         {
             Set(Preference.RESOLUTION, ResolutionList.Length - 1);
@@ -66,11 +62,11 @@ public static class Preference
             SetRes(Screen.resolutions.Length - 1, fsMode);
         }
         else
-        {
+        {//if user doesn't want maximum resolution, use index
             int resolutionIndex = GetInt(Preference.RESOLUTION);
 
             if (resolutionIndex < ResolutionList.Length)
-            {
+            {//check if wanted resolution is above the availible resolutions (in case screen resolution changed)
                 SetRes(resolutionIndex, fsMode);
             }
             else
@@ -97,7 +93,7 @@ public static class Preference
         c.PitchSensitivity = GetInt(Preference.PITCH_SENSITIVITY);
         c.YawSensitivity = GetInt(Preference.YAW_SENSITIVITY);
     }
-    public static void setDefaultPreferences()
+    public static void SetDefaultPreferences()
     {
         Set(Preference.RESOLUTION, (int)0);
         Set(Preference.MAX_RES, (bool)true);
@@ -109,6 +105,15 @@ public static class Preference
         Set(Preference.YAW_SENSITIVITY, (int)10);
         Set(Preference.PITCH_SENSITIVITY, (int)3);
         Save();
+    }
+    
+    //populate resolution list with availible resolutions  
+    public static void PopulateResolutionList(){        
+        ResolutionList = new string[Screen.resolutions.Length];
+        for (int i = 0; i < ResolutionList.Length; i++)
+        {
+            ResolutionList[i] = Screen.resolutions[i].width + "x" + Screen.resolutions[i].height;
+        }
     }
     
     //Sets Preference for better readability
@@ -189,8 +194,9 @@ public class SettingsPanel : Panel
         saveButton.GetComponent<Button>().interactable = true;
         saveButton.GetComponent<Image>().color = enabledColor;
     }
-
+    bool setup = false;
     private void DisplaySettings() {
+        setup = true;
         CreateTitle("Screen Settings");
         CreateDropdown(Preference.RESOLUTION, Preference.ResolutionList, GetInt(Preference.RESOLUTION));
         CreateDropdown(Preference.SCREEN_MODE, Preference.ScreenModeList, GetInt(Preference.SCREEN_MODE));
@@ -206,16 +212,16 @@ public class SettingsPanel : Panel
         CreateToggle(Preference.MEASUREMENTS, GetBool(Preference.MEASUREMENTS));
         
         disableSaveButton();
+        setup=false;
     }
 
     public void SaveSettings() {//writes settings back into preference manager when save button is clicked
-        disableSaveButton();
         Save();
         Load();
-        
-        repopulatePanel();
+        disableSaveButton();
     }
     public void onValueChanged(SettingsInput si){
+        if(!setup){ //prevents this from being called on setup
             string name = si.Title; //key for preference manager
 
             switch (si.Type)
@@ -242,8 +248,19 @@ public class SettingsPanel : Panel
                 else
                     Set(Preference.MAX_RES, false);
             }
+            else if(name == Preference.SCREEN_MODE){//modifies availible resolutions when screen mode is changed
+                if(GetInt(Preference.SCREEN_MODE) == 2){  //2 is windowed mode                                    
+                    Preference.PopulateResolutionList();
+                    SetMaxResolution();
+                }
+                else{                    
+                    Preference.ResolutionList = new string[] { Preference.ResolutionList[Preference.ResolutionList.Length - 1] };
+                    SetMaxResolution();
+                }
+            }
 
             enableSaveButton();
+        }
     }
 
     public override void Close() {
@@ -252,11 +269,16 @@ public class SettingsPanel : Panel
     }
 
     public void ResetSettings() {
-        Preference.setDefaultPreferences();
+        Preference.SetDefaultPreferences();
         Load();
-        repopulatePanel();
+        RepopulatePanel();
     }
-    private void repopulatePanel(){
+    private void SetMaxResolution(){
+                Set(Preference.MAX_RES, true);
+                Set(Preference.RESOLUTION, Preference.ResolutionList.Length - 1);
+                _settingsList[0].GetComponent<SettingsInput>().Init(Preference.RESOLUTION, Preference.ResolutionList, GetInt(Preference.RESOLUTION));
+    }
+    private void RepopulatePanel(){
         //clear
         _settingsList = new List<GameObject>();
         foreach(Transform s in list.GetComponentInChildren<Transform>()){

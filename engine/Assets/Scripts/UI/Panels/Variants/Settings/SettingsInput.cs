@@ -49,6 +49,7 @@ public class SettingsInput : MonoBehaviour
     }
     
     public void Init(string title, string[] dropdownList, int value) { //DROPDOWN LIST
+        dropdown.options.Clear();
         _type = SettingsPanel.InputType.Dropdown;
         Title = title;
         foreach (string c in dropdownList)
