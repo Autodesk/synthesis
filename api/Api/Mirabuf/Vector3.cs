@@ -25,5 +25,7 @@ namespace Mirabuf {
         public static Vector3 operator -(Vector3 a) => new Vector3() { X = -a.X, Y = -a.Y, Z = -a.Z };
         public static Vector3 operator /(Vector3 a, float b) => new Vector3 { X = a.X / b, Y = a.Y / b, Z = a.Z / b };
         public static Vector3 operator *(Vector3 a, float b) => new Vector3 { X = a.X * b, Y = a.Y * b, Z = a.Z * b };
+        public static Vector3 operator /(Vector3 a, double b) => new Vector3 { X = a.X / (float)b, Y = a.Y / (float)b, Z = a.Z / (float)b };
+        public static Vector3 operator *(Vector3 a, double b) => new Vector3 { X = a.X * (float)b, Y = a.Y * (float)b, Z = a.Z * (float)b };
     }
 }

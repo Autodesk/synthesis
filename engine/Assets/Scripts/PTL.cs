@@ -36,14 +36,16 @@ public class PTL : MonoBehaviour {
         SYNTHEPARK = ParsePath("$appdata/Autodesk/Synthesis/Fields/SynthePark");
         DESTINATION_DEEP_SPACE = ParsePath("$appdata/Autodesk/Synthesis/Fields/2019 Destination Deep Space");
         POWER_UP = ParsePath("$appdata/Autodesk/Synthesis/Fields/2018 Power Up");
-        var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/MotionDefinition_v72.mira");
+        // var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/MotionDefinition_v72.mira");
+        var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/1425-2019_v20.mira");
         
         hasRobot = false;
         robotList = new List<GameObject>();
         // SpawnRobot(MEAN_MACHINE);
 
         Importer.AssemblyImport(Assembly.Parser.ParseFrom(File.ReadAllBytes(MIRA_TEST)));
-
+        Debug.Break();
+        
         // var field = Importer.Import(POWER_UP, Importer.SourceType.PROTOBUF_FIELD,
         //     Translator.TranslationType.BXDF_TO_PROTO_FIELD, true);
         // var position = field.transform.position;

@@ -12,25 +12,21 @@ using Mirabuf.Joint;
 using Mirabuf.Material;
 using Synthesis.Util;
 using SynthesisAPI.Proto;
-// using SynthesisAPI.Proto;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
-// using Joint = UnityEngine.Joint;
-// using Joint = SynthesisAPI.Proto.Joint;
 using Material = SynthesisAPI.Proto.Material;
 using Mesh = SynthesisAPI.Proto.Mesh;
-// using SynthesisAPI.Translation;
 using UMaterial = UnityEngine.Material;
 using UMesh = UnityEngine.Mesh;
 using Logger = SynthesisAPI.Utilities.Logger;
 using Assembly = Mirabuf.Assembly;
 using AssemblyData = Mirabuf.AssemblyData;
 using Joint = Mirabuf.Joint.Joint;
-// using Body = SynthesisAPI.Proto.Body;
 using Transform = UnityEngine.Transform;
 using Vector3 = Mirabuf.Vector3;
 using UVector3 = UnityEngine.Vector3;
 using Node = Mirabuf.Node;
+using MPhysicalProperties = Mirabuf.PhysicalProperties;
 
 namespace Synthesis.Import {
 
@@ -167,12 +163,16 @@ namespace Synthesis.Import {
             var jFormatter = new JsonFormatter(JsonFormatter.Settings.Default);
             File.WriteAllText("C:\\Users\\hunte\\Desktop\\Test.json", jFormatter.Format(assembly));
 
-            assembly.Data.Joints.JointDefinitions.ForEach(x => {
-                Debug.Log(Enum.GetName(typeof(JointMotion), x.Value.JointMotionType));
-                // Debug.Log($"Part1: {assembly.Data.Parts.PartInstances[x.Value.Part1].Info.Name}");
-                // Debug.Log($"Part2: {assembly.Data.Parts.PartInstances[x.Value.Part2].Info.Name}");
-
-            });
+            // assembly.Data.Joints.JointInstances.ForEach(x => {
+            //     var definition = assembly.Data.Joints.JointDefinitions[x.Value.JointReference];
+            //     Debug.Log(Enum.GetName(typeof(JointMotion), definition.JointMotionType));
+            //     if (x.Value.Parts != null) {
+            //         DebugGraph(x.Value.Parts);
+            //     }
+            //     // Debug.Log($"Part1: {assembly.Data.Parts.PartInstances[x.Value.Part1].Info.Name}");
+            //     // Debug.Log($"Part2: {assembly.Data.Parts.PartInstances[x.Value.Part2].Info.Name}");
+            //
+            // });
 
             GameObject assemblyObject = new GameObject(assembly.Info.Name);
 
@@ -206,27 +206,41 @@ namespace Synthesis.Import {
 
             var globalTransformations = MakeGlobalTransformations(assembly); // Not sure I need to store it
             var partObjects = new Dictionary<string, GameObject>();
-            
+            var groupObjects = new Dictionary<string, GameObject>();
+
+            float totalMass = 0;
             collidersToIgnore = new List<Collider>();
-            foreach (var group in rigidDefinitions) {
-                GameObject groupObject = new GameObject(group.Id);
+            foreach (var group in rigidDefinitions.definitions.Values) {
+                GameObject groupObject = new GameObject(group.Name);
+                var collectivePhysData = new List<MPhysicalProperties>();
                 foreach (var part in group.Parts) {
                     var partInstance = part.Value;
                     var partDefinition = parts.PartDefinitions[partInstance.PartDefinitionReference];
                     GameObject partObject = new GameObject(partInstance.Info.Name);
                     MakePartDefinition(partObject, partDefinition, partInstance, assembly.Data);
-                    partObjects.Add(part.Key, partObject);
+                    partObjects.Add(partInstance.Info.GUID, partObject);
                     partObject.transform.parent = groupObject.transform;
                     // MARK: If transform changes do work recursively, apply transformations here instead of in a separate loop
                     partObject.transform.ApplyMatrix(partInstance.GlobalTransform);
-                    var physicalData = partDefinition.PhysicalData;
-                    // var rb = partObject.AddComponent<Rigidbody>();
-                    // rb.mass = (float)physicalData.Mass;
-                    // rb.centerOfMass = physicalData.Com; // I actually don't need to flip this
+                    collectivePhysData.Add(partDefinition.PhysicalData);
                 }
+                // TODO: Combine all physical data for grouping
+                var combPhysProps = CombineProperties(collectivePhysData);
+                var rb = groupObject.AddComponent<Rigidbody>();
+                rb.mass = (float)combPhysProps.Mass;
+                totalMass += rb.mass;
+                rb.centerOfMass = combPhysProps.Com; // I actually don't need to flip this
                 groupObject.transform.parent = assemblyObject.transform;
+                groupObjects.Add(group.GUID, groupObject);
             }
-            // ApplyTransformationsToGraph(gameObjects, assembly);
+
+            foreach (var jointKvp in assembly.Data.Joints.JointInstances) {
+                if (jointKvp.Key == "grounded")
+                    continue;
+                Debug.Log($"Joint Key: {jointKvp.Key}");
+                MakeJoint(groupObjects[jointKvp.Key], groupObjects[rigidDefinitions.partToDefinitionMap[jointKvp.Value.ChildPart]], jointKvp.Value, totalMass, assembly);
+            }
+            
             for (int i = 0; i < collidersToIgnore.Count - 1; i++) {
                 for (int j = i + 1; j < collidersToIgnore.Count; j++) {
                     UnityEngine.Physics.IgnoreCollision(collidersToIgnore[i], collidersToIgnore[j]);
@@ -238,60 +252,153 @@ namespace Synthesis.Import {
             return assemblyObject;
         }
 
-        public static List<RigidbodyDefinition> FindRigidbodyDefinitions(Assembly assembly) {
-            var defs = new List<RigidbodyDefinition>();
-            assembly.DesignHierarchy.Nodes.ForEach(x => {
-                defs.AddRange(FindRigidbodyDefinitions(assembly, x));
+        public static void MakeJoint(GameObject a, GameObject b, JointInstance instance, float totalMass, Assembly assembly) {
+            var definition = assembly.Data.Joints.JointDefinitions[instance.JointReference];
+            var rbA = a.GetComponent<Rigidbody>();
+            var rbB = b.GetComponent<Rigidbody>();
+            switch (definition.JointMotionType) {
+                case JointMotion.Revolute:
+                    var revoluteA = a.AddComponent<HingeJoint>();
+                    revoluteA.anchor = (definition.Origin == null ? new Vector3() : definition.Origin) + (instance.Offset == null ? new Vector3() : instance.Offset);
+                    revoluteA.axis = (((Matrix4x4)assembly.Data.Parts.PartInstances[instance.ParentPart].GlobalTransform).rotation)
+                                     * definition.Rotational.RotationalFreedom.Axis; // CHANGE
+                    revoluteA.connectedBody = rbB;
+                    revoluteA.massScale = Mathf.Pow(totalMass / rbA.mass, 1);
+                    var revoluteB = b.AddComponent<HingeJoint>();
+                    revoluteB.anchor = (definition.Origin == null ? new Vector3() : definition.Origin) + (instance.Offset == null ? new Vector3() : instance.Offset);
+                    revoluteB.axis = revoluteA.axis; // definition.Rotational.RotationalFreedom.Axis;
+                    revoluteB.connectedBody = rbA;
+                    revoluteB.connectedMassScale = Mathf.Pow(totalMass / rbA.mass, 1);
+                    break;
+                // case JointMotion.Slider:
+                //     break;
+                default: // Make a rigid joint
+                    var rigidA = a.AddComponent<FixedJoint>();
+                    rigidA.anchor = (definition.Origin == null ? new Vector3() : definition.Origin) + (instance.Offset == null ? new Vector3() : instance.Offset);
+                    rigidA.axis = UVector3.forward;
+                    rigidA.connectedBody = rbB;
+                    rigidA.massScale = Mathf.Pow(totalMass / rbA.mass, 1); // Not sure if this works
+                    var rigidB = b.AddComponent<FixedJoint>();
+                    rigidB.anchor = (definition.Origin == null ? new Vector3() : definition.Origin) + (instance.Offset == null ? new Vector3() : instance.Offset);
+                    rigidB.axis = UVector3.forward;
+                    rigidB.connectedBody = rbA;
+                    rigidB.connectedMassScale = Mathf.Pow(totalMass / rbA.mass, 1);
+                    break;
+            }
+        }
+
+        public static MPhysicalProperties CombineProperties(IEnumerable<MPhysicalProperties> props) {
+            var total = 0.0;
+            var com = new Vector3();
+            props.ForEach(x => total += x.Mass);
+            props.ForEach(x => com += x.Com * x.Mass);
+            com /= total;
+            return new MPhysicalProperties { Mass = total, Com = com };
+        }
+
+        public static void DebugGraph(GraphContainer graph) {
+            graph.Nodes.ForEach(x => DebugNode(x, 0));
+        }
+
+        public static void DebugNode(Node node, int level) {
+            int a = 0;
+            string prefix = "";
+            while (a != level) {
+                prefix += "-";
+                a++;
+            }
+            Debug.Log($"{prefix} {node.Value}");
+            node.Children.ForEach(x => DebugNode(x, level + 1));
+        }
+        
+        public static (Dictionary<string, RigidbodyDefinition> definitions, Dictionary<string, string> partToDefinitionMap) FindRigidbodyDefinitions(Assembly assembly) {
+            var defs = new Dictionary<string, RigidbodyDefinition>();
+            var partMap = new Dictionary<string, string>();
+
+            int counter = 0;
+            assembly.Data.Joints.JointInstances.ForEach(x => {
+                var def = new RigidbodyDefinition {
+                    GUID = $"{x.Value.Info.GUID}",
+                    Name = $"Rigidgroup:{counter}",
+                    Parts = new Dictionary<string, PartInstance>()
+                };
+                counter++;
+                List<Node> nodes = x.Value.Parts == null ? new List<Node>() : new List<Node>(x.Value.Parts.Nodes);
+                while (nodes.Any()) {
+                    nodes.ForEach(y => {
+                        Debug.Log($"Part GUID: \"{y.Value}\"");
+                        if (y.Value != String.Empty)
+                            def.Parts.Add(y.Value, assembly.Data.Parts.PartInstances[y.Value]);
+                    });
+                    var newNodes = new List<Node>();
+                    nodes.ForEach(y => newNodes.AddRange(y.Children));
+                    nodes = newNodes;
+                }
+                defs.Add(def.GUID, def);
+                def.Parts.ForEach(y => partMap[y.Key] = def.GUID);
             });
-            return defs;
+            
+            return (defs, partMap);
         }
 
-        public static List<RigidbodyDefinition> FindRigidbodyDefinitions(Assembly assembly, Node node) {
-            // Tree<StaticGroupDefinition> tree = new Tree<StaticGroupDefinition>();
-            var defs = new List<RigidbodyDefinition>();
-            defs.Add(GenerateRigidbodyDefinitions(assembly, node));
-            List<Node> toSearch = new List<Node>(node.Children);
-            while (toSearch.Count() > 0) {
-                List<Node> newSearchList = new List<Node>();
-                toSearch.ForEach(x => {
-                    if (assembly.Data.Parts.PartInstances[x.Value].Joints.Any()) {
-                        assembly.Data.Parts.PartInstances[x.Value].Joints.ForEach(x => {
-                            Debug.Log(Encoding.UTF8.GetBytes(x).ToHexString());
-                            // DebugJoint(assembly, x);
-                        });
-                        defs.Add(GenerateRigidbodyDefinitions(assembly, x));
-                    }
-                    newSearchList.AddRange(x.Children);
-                });
-                toSearch.Clear();
-                toSearch = newSearchList;
-            }
-
-            return defs;
-        }
-
-        private static int counter = 0;
-        public static RigidbodyDefinition GenerateRigidbodyDefinitions(Assembly assembly, Node node) {
-            RigidbodyDefinition def = new RigidbodyDefinition {
-                Id = $"RigidDef:{counter}",
-                Parts = new Dictionary<string, PartInstance>()
-            };
-            counter++;
-            def.Parts.Add(node.Value, assembly.Data.Parts.PartInstances[node.Value]);
-            var children = new List<Node>(node.Children);
-            while (children.Any()) {
-                var moreChildren = new List<Node>();
-                children.ForEach(x => {
-                    if (!assembly.Data.Parts.PartInstances[x.Value].Joints.Any()) {
-                        def.Parts.Add(x.Value, assembly.Data.Parts.PartInstances[x.Value]);
-                        moreChildren.AddRange(x.Children);
-                    }
-                });
-                children = moreChildren;
-            }
-
-            return def;
-        }
+        #region More stuff I don't want to delete
+        
+        // public static List<RigidbodyDefinition> FindRigidbodyDefinitions(Assembly assembly) {
+        //     var defs = new List<RigidbodyDefinition>();
+        //     assembly.DesignHierarchy.Nodes.ForEach(x => {
+        //         defs.AddRange(FindRigidbodyDefinitions(assembly, x));
+        //     });
+        //     return defs;
+        // }
+        //
+        // public static List<RigidbodyDefinition> FindRigidbodyDefinitions(Assembly assembly, Node node) {
+        //     // Tree<StaticGroupDefinition> tree = new Tree<StaticGroupDefinition>();
+        //     var defs = new List<RigidbodyDefinition>();
+        //     defs.Add(GenerateRigidbodyDefinitions(assembly, node));
+        //     List<Node> toSearch = new List<Node>(node.Children);
+        //     while (toSearch.Count() > 0) {
+        //         List<Node> newSearchList = new List<Node>();
+        //         toSearch.ForEach(x => {
+        //             if (assembly.GetPartJoints(x.Value).Any()) {
+        //                 assembly.Data.Parts.PartInstances[x.Value].Joints.ForEach(x => {
+        //                     Debug.Log(Encoding.UTF8.GetBytes(x).ToHexString());
+        //                     // DebugJoint(assembly, x);
+        //                 });
+        //                 defs.Add(GenerateRigidbodyDefinitions(assembly, x));
+        //             }
+        //             newSearchList.AddRange(x.Children);
+        //         });
+        //         toSearch.Clear();
+        //         toSearch = newSearchList;
+        //     }
+        //
+        //     return defs;
+        // }
+        //
+        // private static int counter = 0;
+        // public static RigidbodyDefinition GenerateRigidbodyDefinitions(Assembly assembly, Node node) {
+        //     RigidbodyDefinition def = new RigidbodyDefinition {
+        //         Id = $"RigidDef:{counter}",
+        //         Parts = new Dictionary<string, PartInstance>()
+        //     };
+        //     counter++;
+        //     def.Parts.Add(node.Value, assembly.Data.Parts.PartInstances[node.Value]);
+        //     var children = new List<Node>(node.Children);
+        //     while (children.Any()) {
+        //         var moreChildren = new List<Node>();
+        //         children.ForEach(x => {
+        //             if (!assembly.GetPartJoints(x.Value).Any()) {
+        //                 def.Parts.Add(x.Value, assembly.Data.Parts.PartInstances[x.Value]);
+        //                 moreChildren.AddRange(x.Children);
+        //             }
+        //         });
+        //         children = moreChildren;
+        //     }
+        //
+        //     return def;
+        // }
+        
+        #endregion
 
         private static void DebugJoint(Assembly assembly, string joint) {
             var instance = assembly.Data.Joints.JointInstances[joint];
@@ -306,8 +413,9 @@ namespace Synthesis.Import {
         }
         
         public struct RigidbodyDefinition {
-            public string Id;
-            public Dictionary<string, PartInstance> Parts;
+            public string GUID;
+            public string Name;
+            public Dictionary<string, PartInstance> Parts; // Using a dictionary to make Key searches faster
         }
 
         // I think this might work?
