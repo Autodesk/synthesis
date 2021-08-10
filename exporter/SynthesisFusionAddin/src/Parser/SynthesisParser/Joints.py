@@ -101,7 +101,6 @@ def populateJoints(
 
                 # create the instance of the single definition
                 joint_instance = joints.joint_instances[joint.entityToken]
-                _addJointInstance(joint, joint_instance, joint_definition, options)
 
                 for parse_joints in options.joints:
                     if (parse_joints.joint_token == joint.entityToken):
@@ -119,6 +118,10 @@ def populateJoints(
                             signal.device_type = "PASSIVE"
 
                         joint_instance.signal_reference = signal.info.GUID
+
+                _addJointInstance(joint, joint_instance, joint_definition, signals, options)
+
+ 
 
                 # adds information for joint motion and limits
                 _motionFromJoint(joint.jointMotion, joint_definition)
@@ -151,7 +154,7 @@ def _addJoint(joint: adsk.fusion.Joint, joint_definition: joint_pb2.Joint):
     joint_definition.break_magnitude = 0.0
 
 
-def _addJointInstance(joint: adsk.fusion.Joint, joint_instance: joint_pb2.JointInstance, joint_definition: joint_pb2.Joint, options: ParseOptions):
+def _addJointInstance(joint: adsk.fusion.Joint, joint_instance: joint_pb2.JointInstance, joint_definition: joint_pb2.Joint, signals: signal_pb2.Signals, options: ParseOptions):
     fill_info(joint_instance, joint)
     # because there is only one and we are using the token - should be the same
     joint_instance.joint_reference = joint_instance.info.GUID
@@ -172,7 +175,22 @@ def _addJointInstance(joint: adsk.fusion.Joint, joint_instance: joint_pb2.JointI
             if (wheel.occurrence_token == joint_instance.parent_part):
                 joint_definition.user_data.data["wheel"] = "true"
 
-    # fill info for what parts are contained within this joint
+                # if it exists get it and overwrite the signal type
+                if (joint_instance.signal_reference):
+                    signal = signals.signal_map[joint_instance.signal_reference]
+                else: # if not then create it and add the signal type
+                    guid = str(uuid.uuid4())
+                    signal = signals.signal_map[guid]
+                    construct_info("joint_signal", signal, GUID=guid)
+                    signal.io = signal_pb2.IOType.OUTPUT
+                    joint_instance.signal_reference = signal.info.GUID
+
+                if (wheel.signalType == ParseOptions.SignalType.CAN):
+                    signal.device_type = "CAN"
+                elif (wheel.signalType == ParseOptions.SignalType.PWM):
+                    signal.device_type = "PWM"
+                elif (wheel.signalType == ParseOptions.SignalType.PASSIVE):
+                    signal.device_type = "PASSIVE"
 
 
 def _motionFromJoint(
