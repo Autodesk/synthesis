@@ -529,10 +529,7 @@ def createTreeParts(
         raise RuntimeError("User canceled export")
 
     # if it's the next part just exit early for our own sanity
-    if relationship == OccurrenceRelationship.NEXT:
-        return
-
-    if dynNode.data.isLightBulbOn == False:
+    if relationship == OccurrenceRelationship.NEXT or dynNode.data.isLightBulbOn == False:
         return
 
     # set the occurrence / component id to reference the part
