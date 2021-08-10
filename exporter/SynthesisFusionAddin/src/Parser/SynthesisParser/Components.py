@@ -26,7 +26,6 @@ def _MapAllComponents(
         adsk.doEvents()
         if progressDialog.wasCancelled():
             raise RuntimeError("User canceled export")
-        # progressDialog.message = f"Exporting {component.name}"
         progressDialog.addComponent(component.name)
 
         try:
@@ -47,8 +46,6 @@ def _MapAllComponents(
             if progressDialog.wasCancelled():
                 raise RuntimeError("User canceled export")
             if body.isLightBulbOn:
-                # progressDialog.progressValue = progressDialog.progressValue + 1
-
                 part_body = partDefinition.bodies.add()
                 fill_info(part_body, body)
                 
@@ -87,7 +84,6 @@ def _ParseComponentRoot(
 
     if mapConstant in def_map:
         part.part_definition_reference = mapConstant
-        # part.transform.spatial_matrix = component.transform.asArray()
 
     for occur in component.occurrences:
 
@@ -95,8 +91,6 @@ def _ParseComponentRoot(
             raise RuntimeError("User canceled export")
 
         if occur.isLightBulbOn:
-            # part.children.append(f"{occur.entityToken}")
-            # edge = types_pb2.Edge()
             child_node = types_pb2.Node()
             __parseChildOccurrence(
                 occur, progressDialog, options, partsData, material_map, child_node
@@ -165,7 +159,7 @@ def __parseChildOccurrence(
             node.children.append(child_node)
 
 
-# saw online someone used this to get the correct context but of boy does it look pricey
+# saw online someone used this to get the correct context but oh boy does it look pricey
 # I think if I can make all parts relative to a parent it should return that parents transform maybe
 # TESTED AND VERIFIED - but unoptimized
 def GetMatrixWorld(occurrence):

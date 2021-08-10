@@ -139,11 +139,12 @@ class Parser:
                         jointdefinition = assembly_out.data.joints.joint_definitions[
                             newnode.joint_reference
                         ]
-                        joint_hierarchy_out = f"{joint_hierarchy_out}  |- {jointdefinition.info.name} type: {jointdefinition.joint_motion_type}\n"
+                        wheel_ = f" wheel : true" if jointdefinition.user_data.data["wheel"] is not "" else ""
+                        joint_hierarchy_out = f"{joint_hierarchy_out}  |- {jointdefinition.info.name} type: {jointdefinition.joint_motion_type} {wheel_}\n"
 
                     for child in node.children:
                         if child.value == "ground":
-                            joint_hierarchy_out = f"{joint_hierarchy_out} |--- ground\n"
+                            joint_hierarchy_out = f"{joint_hierarchy_out} |---> ground\n"
                         else:
                             newnode = assembly_out.data.joints.joint_instances[
                                 child.value
@@ -151,7 +152,8 @@ class Parser:
                             jointdefinition = assembly_out.data.joints.joint_definitions[
                                 newnode.joint_reference
                             ]
-                            joint_hierarchy_out = f"{joint_hierarchy_out}  |--- {jointdefinition.info.name} type: {jointdefinition.joint_motion_type}\n"
+                            wheel_ = f" wheel : true" if jointdefinition.user_data.data["wheel"] is not "" else ""
+                            joint_hierarchy_out = f"{joint_hierarchy_out}  |---> {jointdefinition.info.name} type: {jointdefinition.joint_motion_type} {wheel_}\n"
 
                 joint_hierarchy_out += "\n\n"
 

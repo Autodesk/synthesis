@@ -30,6 +30,7 @@ from typing import List, Union
 from ...general_imports import logging, INTERNAL_ID, DEBUG
 from .Utilities import fill_info, construct_info
 from .PDMessage import PDMessage
+from .. import ParseOptions
 
 
 # Need to take in a graphcontainer
@@ -57,7 +58,7 @@ def populateJoints(
     design: adsk.fusion.Design,
     joints: joint_pb2.Joints,
     progressDialog: PDMessage,
-    options,
+    options: ParseOptions,
 ):
     fill_info(joints, None)
 
@@ -99,7 +100,7 @@ def populateJoints(
 
                 # create the instance of the single definition
                 joint_instance = joints.joint_instances[joint.entityToken]
-                _addJointInstance(joint, joint_instance)
+                _addJointInstance(joint, joint_instance, joint_definition, options)
 
                 # adds information for joint motion and limits
                 _motionFromJoint(joint.jointMotion, joint_definition)
@@ -132,7 +133,7 @@ def _addJoint(joint: adsk.fusion.Joint, joint_definition: joint_pb2.Joint):
     joint_definition.break_magnitude = 0.0
 
 
-def _addJointInstance(joint: adsk.fusion.Joint, joint_instance: joint_pb2.JointInstance):
+def _addJointInstance(joint: adsk.fusion.Joint, joint_instance: joint_pb2.JointInstance, joint_definition: joint_pb2.Joint, options: ParseOptions):
     fill_info(joint_instance, joint)
     # because there is only one and we are using the token - should be the same
     joint_instance.joint_reference = joint_instance.info.GUID
@@ -147,6 +148,11 @@ def _addJointInstance(joint: adsk.fusion.Joint, joint_instance: joint_pb2.JointI
         joint_instance.child_part = joint.occurrenceTwo.entityToken
     except:
         joint_instance.child_part = joint.occurrenceTwo.name
+
+    if (options.wheels):
+        for wheel in options.wheels:
+            if (wheel.occurrence_token == joint_instance.parent_part):
+                joint_definition.user_data.data["wheel"] = "true"
 
     # fill info for what parts are contained within this joint
 
@@ -347,7 +353,7 @@ def createJointGraph(
 
     node_map[groundNode.value] = groundNode
 
-    addWheelsToGraph(wheels, groundNode, joint_tree)
+    # addWheelsToGraph(wheels, groundNode, joint_tree)
 
     # first iterate through to create the nodes
     for supplied_joint in supplied_joints:
