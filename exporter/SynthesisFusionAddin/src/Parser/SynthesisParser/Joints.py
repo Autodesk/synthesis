@@ -22,9 +22,9 @@ Each root child has a number of children that are all rigidly attached to the dy
 
 """
 
-import adsk.fusion, adsk.core, traceback
+import adsk.fusion, adsk.core, traceback, uuid
 
-from proto.proto_out import types_pb2, joint_pb2
+from proto.proto_out import types_pb2, joint_pb2, signal_pb2
 from typing import List, Union
 
 from ...general_imports import logging, INTERNAL_ID, DEBUG
@@ -57,6 +57,7 @@ from .. import ParseOptions
 def populateJoints(
     design: adsk.fusion.Design,
     joints: joint_pb2.Joints,
+    signals: signal_pb2.Signals,
     progressDialog: PDMessage,
     options: ParseOptions,
 ):
@@ -101,6 +102,23 @@ def populateJoints(
                 # create the instance of the single definition
                 joint_instance = joints.joint_instances[joint.entityToken]
                 _addJointInstance(joint, joint_instance, joint_definition, options)
+
+                for parse_joints in options.joints:
+                    if (parse_joints.joint_token == joint.entityToken):
+                        guid = str(uuid.uuid4())
+                        signal = signals.signal_map[guid]
+                        construct_info("joint_signal", signal, GUID=guid)
+                        signal.io = signal_pb2.IOType.OUTPUT
+
+                        # really could just map the enum to a friggin string
+                        if (parse_joints.signalType == ParseOptions.SignalType.CAN):
+                            signal.device_type = "CAN"
+                        elif (parse_joints.signalType == ParseOptions.SignalType.PWM):
+                            signal.device_type = "PWM"
+                        elif (parse_joints.signalType == ParseOptions.SignalType.PASSIVE):
+                            signal.device_type = "PASSIVE"
+
+                        joint_instance.signal_reference = signal.info.GUID
 
                 # adds information for joint motion and limits
                 _motionFromJoint(joint.jointMotion, joint_definition)

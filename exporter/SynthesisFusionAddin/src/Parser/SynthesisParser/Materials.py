@@ -1,5 +1,5 @@
 # Should contain Physical and Apperance materials ?
-import adsk, logging, traceback
+import adsk, logging, traceback, math
 
 from .Utilities import *
 from .. import ParseOptions

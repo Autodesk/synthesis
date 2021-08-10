@@ -98,8 +98,8 @@ class Parser:
 
             assembly_out.design_hierarchy.nodes.append(rootNode)
 
-            Joints.populateJoints(
-                design, assembly_out.data.joints, self.pdMessage, self.parseOptions
+            Joints.populateJoints (
+                design, assembly_out.data.joints, assembly_out.data.signals, self.pdMessage, self.parseOptions
             )
 
             # add condition in here for advanced joints maybe idk
@@ -127,6 +127,7 @@ class Parser:
                 part_defs = assembly_out.data.parts.part_definitions
                 parts = assembly_out.data.parts.part_instances
                 joints = assembly_out.data.joints.joint_definitions
+                signals = assembly_out.data.signals.signal_map
 
                 joint_hierarchy_out = "Joint Hierarchy :\n"
 
@@ -158,11 +159,21 @@ class Parser:
                 joint_hierarchy_out += "\n\n"
 
                 gm.ui.messageBox(
-                    f"Appearances: {len(assembly_out.data.materials.appearances)} \nMaterials: {len(assembly_out.data.materials.physicalMaterials)} \nPart-Definitions: {len(part_defs)} \nParts: {len(parts)} \nJoints: {len(joints)}\n {joint_hierarchy_out}"
+                    f"Appearances: {len(assembly_out.data.materials.appearances)} \nMaterials: {len(assembly_out.data.materials.physicalMaterials)} \nPart-Definitions: {len(part_defs)} \nParts: {len(parts)} \nSignals: {len(signals)} \nJoints: {len(joints)}\n {joint_hierarchy_out}"
                 )
 
         except:
             self.logger.error("Failed:\n{}".format(traceback.format_exc()))
+
+            if DEBUG:
+                gm.ui.messageBox(
+                    "Failed:\n{}".format(traceback.format_exc())
+                )
+            else:
+                gm.ui.messageBox(
+                    "An error occurred while exporting."
+                )
+                
             return False
 
         return True
