@@ -115,7 +115,7 @@ namespace TestApi {
             };
             testSignalLayout.SignalMap.Add("DO1", new Signal()
             {
-                Class = "Digital",
+                DeviceType = "Digital",
                 Info = new Info()
                 {
                     GUID = "2",
@@ -126,7 +126,7 @@ namespace TestApi {
             });
             testSignalLayout.SignalMap.Add("AI1", new Signal()
             {
-                Class = "Analog",
+                DeviceType = "Analog",
                 Info = new Info()
                 {
                     GUID = "3",

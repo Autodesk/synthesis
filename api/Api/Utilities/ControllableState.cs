@@ -29,7 +29,7 @@ namespace SynthesisAPI.Utilities
                     CurrentSignals[kvp.Key] = new UpdateSignal
                     {
                         Io = kvp.Value.Io == IOType.Input ? UpdateIOType.Input : UpdateIOType.Output,
-                        Class = kvp.Value.Class
+                        Class = kvp.Value.DeviceType
                     };
                 }
             }
