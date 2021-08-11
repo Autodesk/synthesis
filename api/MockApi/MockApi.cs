@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Api.GUI;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.Modules.Attributes;
@@ -175,6 +176,11 @@ namespace MockApi
             // }
 
             public VisualElement GetRootVisualElement()
+            {
+                throw new NotImplementedException();
+            }
+
+            public GUIManager GetGUIManager()
             {
                 throw new NotImplementedException();
             }
