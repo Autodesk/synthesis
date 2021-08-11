@@ -61,8 +61,6 @@ namespace Engine.ModuleLoader
 
 		public void Update()
 		{
-			ToastLogger.ScrollToBottom();
-
 			if (IsMainThread && MainThreadTasks.Count > 0)
 				MainThreadTasks.Dequeue()();
 		}
