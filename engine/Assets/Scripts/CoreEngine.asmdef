@@ -19,7 +19,9 @@
         "System.Buffers.dll",
         "System.Memory.dll",
         "System.Runtime.CompilerServices.Unsafe.dll",
-        "nunit.framework.dll"
+        "nunit.framework.dll",
+        "System.IO.Compression.ZipFile",
+        "DotNetZip.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],
