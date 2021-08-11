@@ -137,8 +137,7 @@ namespace MockApi
                         if (!debugLogsEnabled)
                         {
                             return;
-                        }
-                        {
+                        } else {
                             Console.WriteLine(o);
                             break;
                         }
