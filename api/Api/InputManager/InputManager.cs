@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using SynthesisAPI.InputManager.InputEvents;
 using SynthesisAPI.InputManager.Inputs;
 using Input = SynthesisAPI.InputManager.Inputs.Input;
@@ -9,7 +10,13 @@ namespace SynthesisAPI.InputManager
     public static class InputManager
     {
         internal static Dictionary<string, Digital[]> _mappedDigitalInputs = new Dictionary<string, Digital[]>();
-        private static Dictionary<string, Analog> _mappedAxisInputs = new Dictionary<string, Analog>();
+        internal static Dictionary<string, Analog> _mappedValueInputs = new Dictionary<string, Analog>();
+        public static IReadOnlyDictionary<string, Digital[]> MappedDigitalInputs {
+            get => new ReadOnlyDictionary<string, Digital[]>(_mappedDigitalInputs);
+        }
+        public static IReadOnlyDictionary<string, Analog> MappedValueInputs {
+            get => new ReadOnlyDictionary<string, Analog>(_mappedValueInputs);
+        }
 
         public static void AssignDigitalInput(string name, Digital input, EventBus.EventBus.EventCallback callback = null) // TODO remove callback argument?
         {
@@ -31,9 +38,9 @@ namespace SynthesisAPI.InputManager
                 EventBus.EventBus.NewTagListener($"input/{name}", callback);
         }
 
-        public static void AssignAxis(string name, Analog axis)
+        public static void AssignValueInput(string name, Analog input)
         {
-            _mappedAxisInputs[name] = axis;
+            _mappedValueInputs[name] = input;
         }
 
         public static void UpdateInputs()
@@ -46,35 +53,38 @@ namespace SynthesisAPI.InputManager
                     {
                         if (input is MouseDown mouseDown)
                         {
-                            EventBus.EventBus.Push($"input/{name}", new MouseDownEvent(name, mouseDown.State, mouseDown.MousePosition));
+                            EventBus.EventBus.Push($"input/{name}",
+                                new MouseDownEvent(name, mouseDown.Value, mouseDown.State, mouseDown.MousePosition)
+                                );
                         }
                         else if (input is Digital digitalInput)
                         {
-                            EventBus.EventBus.Push($"input/{name}", new DigitalEvent(name, digitalInput.State));
+                            EventBus.EventBus.Push($"input/{name}",
+                                new DigitalEvent(name, digitalInput.Value, digitalInput.State)
+                                );
                         }
                     }
                 }
             }
         }
 
-        public static float GetAxisValue(string name)
+        public static float GetValue(string name)
         {
-            if (_mappedAxisInputs.ContainsKey(name))
+            if (_mappedValueInputs.ContainsKey(name))
             {
-                _mappedAxisInputs[name].Update();
-                return _mappedAxisInputs[name].Value;
+                _mappedValueInputs[name].Update();
+                return _mappedValueInputs[name].Value;
             }
-            throw new Exception($"Axis value is not mapped with name \"{name}\"");
+            throw new Exception($"Value Input is not mapped with name \"{name}\"");
         }
 
-        public static void SetAllInputs(Dictionary<string, Digital[]> input)
+        public static void SetAllDigitalInputs(Dictionary<string, Digital[]> input)
         {
             _mappedDigitalInputs = input;
         }
 
-        public static Dictionary<string, Digital[]> GetAllInputs()
-        {
-            return _mappedDigitalInputs;
+        public static void SetAllValueInputs(Dictionary<string, Analog> input) {
+            _mappedValueInputs = input;
         }
     }
 }

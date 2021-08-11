@@ -13,7 +13,7 @@ public class MyTest : MonoBehaviour
     public float HighlightTime;
 
     [SerializeField]
-    public Bar currentBar;
+    public NavigationBar currentBar;
 
     [SerializeField]
     public GameObject configGearboxPanel;
