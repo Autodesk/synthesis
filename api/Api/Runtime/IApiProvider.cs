@@ -3,7 +3,6 @@ using SynthesisAPI.Utilities;
 using System;
 using System.Collections;
 using System.Runtime.CompilerServices;
-using Api.GUI;
 using UnityEngine.UIElements;
 using Component = SynthesisAPI.EnvironmentManager.Component;
 
@@ -34,8 +33,6 @@ namespace SynthesisAPI.Runtime
         // TUnityType InstantiateFocusable<TUnityType>() where TUnityType : UnityEngine.UIElements.Focusable;
 		UnityEngine.UIElements.VisualElement GetRootVisualElement();
 
-		GUIManager GetGUIManager();
-
-		#endregion
+        #endregion
 	}
 }

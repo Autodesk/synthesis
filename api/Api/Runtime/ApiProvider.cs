@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Runtime.CompilerServices;
-using Api.GUI;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.Utilities;
 using UnityEngine.UIElements;
@@ -56,7 +55,5 @@ namespace SynthesisAPI.Runtime
 
 		public static UnityEngine.UIElements.VisualElement? GetRootVisualElement() =>
 			Instance?.GetRootVisualElement();
-
-		internal static GUIManager GetGUIManager() => Instance?.GetGUIManager();
 	}
 }
