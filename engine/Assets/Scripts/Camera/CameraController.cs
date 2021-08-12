@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Synthesis.UI.Panels.Variant;
 
 public class CameraController : MonoBehaviour {
     
@@ -27,7 +28,7 @@ public class CameraController : MonoBehaviour {
     private bool _useOrbit = false;
     
     private void Awake() { //Set Camera and Screen Settings
-        Preference.LoadSettings();
+        SettingsPanel.LoadSettings();
     }
     public void Update() {
   //      if (FollowTransform != null && transform.parent != FollowTransform)
