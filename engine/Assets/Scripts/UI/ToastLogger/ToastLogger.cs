@@ -62,8 +62,7 @@ namespace Engine
 
         public void Log(object o, LogLevel logLevel = LogLevel.Info, [CallerMemberName] string memberName = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0)
         {
-            UnityEngine.Debug.Log(ModuleLoader.Api.IsMainThread);
-            if (!currentlyLogging)//&& ModuleLoader.Api.IsMainThread)
+            if (!currentlyLogging&& ModuleLoader.Api.IsMainThread)
             {
                 currentlyLogging = true;
                 if (logLevel != LogLevel.Debug || debugLogsEnabled)
