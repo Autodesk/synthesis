@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<< HEAD:engine/Assets/Resources.meta
 guid: db7d13f23f56ab4448fdd36c67fd8e74
+=======
+guid: e389687147519e144b9171dd08c4329c
+>>>>>>> module-rework-gui:engine/Assets/Resources/UI.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
