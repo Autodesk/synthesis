@@ -28,6 +28,7 @@ class JointParentType:  # validate for unique key and value
 class WheelType:
     STANDARD = 0
     OMNI = 1
+    MECANUM = 2
 
 
 class SignalType:
@@ -42,6 +43,7 @@ class _Wheel:
     occurrence_token: str  # maybe just pass the component
     wheelType: WheelType
     signalType: SignalType
+    joint_token: str
 
 
 @dataclass
@@ -49,6 +51,13 @@ class _Joint:
     joint_token: str
     parent: Union[str, JointParentType]  # str can be root
     signalType: SignalType
+
+
+@dataclass
+class Gamepiece:
+    occurrence_token: str
+    weight: float
+    friction: float
 
 
 class PhysicalDepth:
@@ -129,6 +138,7 @@ class ParseOptions:
         mode=Mode.Synthesis,
         wheels=List[_Wheel],
         joints=List[_Joint],  # [{Occurrence, wheeltype} , {entitytoken, wheeltype}]
+        gamepieces=List[Gamepiece],
     ):
         """Generates the Parser Options for the given export
 
@@ -155,6 +165,7 @@ class ParseOptions:
         self.mode = mode
         self.wheels = wheels
         self.joints = joints
+        self.gamepieces = gamepieces
 
     def parse(self, sendReq: bool) -> Union[str, bool]:
         """Parses the file given the options
