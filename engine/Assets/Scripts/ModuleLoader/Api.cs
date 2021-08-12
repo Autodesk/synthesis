@@ -50,7 +50,7 @@ namespace Engine.ModuleLoader
 			ModuleManager.RegisterModuleAssemblyName(Assembly.GetExecutingAssembly().GetName().Name, "Core Engine");
 			Logger.RegisterLogger(new LoggerImpl());
 			ApiProvider.RegisterApiProvider(new ApiProviderImpl());
-			Logger.RegisterLogger(new ToastLogger()); // Must happen after ApiProvider is registered
+			//Logger.RegisterLogger(new ToastLogger()); // Must happen after ApiProvider is registered
 
 			ModuleLoader.PreloadApi();
 			ModuleLoader.LoadModules(ModulesSourcePath, BaseModuleTargetPath);

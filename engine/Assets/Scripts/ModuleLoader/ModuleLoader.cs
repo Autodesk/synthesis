@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using Assets.Scripts.Engine.Util;
+using Ionic.Zip;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EventBus;
@@ -13,7 +14,7 @@ using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Utilities;
 using SynthesisAPI.VirtualFileSystem;
 using Logger = SynthesisAPI.Utilities.Logger;
-// using PreloadedModule = System.ValueTuple<System.IO.Compression.ZipArchive, Engine.ModuleLoader.ModuleMetadata>;
+using PreloadedModule = System.ValueTuple<Ionic.Zip.ZipFile, Engine.ModuleLoader.ModuleMetadata>;
 
 using Directory = System.IO.Directory;
 using Type = System.Type;
@@ -27,154 +28,155 @@ namespace Engine.ModuleLoader
 
 		public static void LoadModules(string moduleSourcePath, string baseModuleTargetPath)
 		{
-			// _moduleSourcePath = moduleSourcePath;
-			// _baseModuleTargetPath = baseModuleTargetPath;
-			//
-			// if (!Directory.Exists(_moduleSourcePath))
-			// {
-			// 	Directory.CreateDirectory(_moduleSourcePath);
-			// }
-			// var modules = new List<PreloadedModule>();
-			// try
-			// {
-			// 	modules = PreloadModules();
-			// }
-			// catch (Exception e)
-			// {
-			// 	Logger.Log($"Failed to preload modules\n{e}", LogLevel.Error);
-			// }
-			// try
-			// {
-			// 	ResolveDependencies(modules);
-			// }
-			// catch (Exception e)
-			// {
-			// 	Logger.Log($"Failed to resolve module dependencies\n{e}", LogLevel.Error);
-			// }
-			// foreach (var (archive, metadata) in modules)
-			// {
-			// 	try
-			// 	{
-			// 		LoadModule((archive, metadata));
-			//
-			// 		EventBus.Push(new LoadModuleEvent(metadata.Name, metadata.Version));
-			// 		ModuleManager.AddToLoadedModuleList(new ModuleManager.ModuleInfo(metadata.Name, metadata.Version, metadata.Author, metadata.Description));
-			// 	}
-			// 	catch (Exception e)
-			// 	{
-			// 		Logger.Log($"Failed to load module {metadata.Name}\n{e}", LogLevel.Error);
-			// 		// TODO error screen
-			// 		break;
-			// 	}
-			// }
-			// foreach (var (archive, _) in modules)
-			// {
-			// 	archive.Dispose();
-			// }
-			// ModuleManager.MarkFinishedLoading();
+			_moduleSourcePath = moduleSourcePath;
+			_baseModuleTargetPath = baseModuleTargetPath;
+
+			if (!Directory.Exists(_moduleSourcePath))
+			{
+				Directory.CreateDirectory(_moduleSourcePath);
+			}
+			var modules = new List<PreloadedModule>();
+			try
+			{
+				modules = PreloadModules();
+			}
+			catch (Exception e)
+			{
+				Logger.Log($"Failed to preload modules\n{e}", LogLevel.Error);
+			}
+			try
+			{
+				ResolveDependencies(modules);
+			}
+			catch (Exception e)
+			{
+				Logger.Log($"Failed to resolve module dependencies\n{e}", LogLevel.Error);
+			}
+			foreach (var (archive, metadata) in modules)
+			{
+				try
+				{
+					LoadModule((archive, metadata));
+
+					EventBus.Push(new LoadModuleEvent(metadata.Name, metadata.Version));
+					ModuleManager.AddToLoadedModuleList(new ModuleManager.ModuleInfo(metadata.Name, metadata.Version, metadata.Author, metadata.Description));
+				}
+				catch (Exception e)
+				{
+					Logger.Log($"Failed to load module {metadata.Name}\n{e}", LogLevel.Error);
+					// TODO error screen
+					break;
+				}
+			}
+			foreach (var (archive, _) in modules)
+			{
+				archive.Dispose();
+			}
+			ModuleManager.MarkFinishedLoading();
 		}
 
-		// private static List<PreloadedModule> PreloadModules()
-		// {
-		// 	var modules = new List<PreloadedModule>();
-		//
-		// 	// Discover and preload all modules
-		// 	foreach (var file in Directory.GetFiles(_moduleSourcePath).Where(fn => Path.GetExtension(fn) == ".zip"))
-		// 	{
-		// 		var module = PreloadModule(Path.GetFileName(file));
-		// 		if (module is null)
-		// 			continue;
-		// 		foreach (var (_, metadata) in modules)
-		// 		{
-		// 			if (metadata.Name == module?.Item2.Name)
-		// 			{
-		// 				foreach (var (archive, _) in modules)
-		// 				{
-		// 					archive.Dispose();
-		// 				}
-		// 				throw new LoadModuleException($"Attempting to load module with duplicate name: {metadata.Name}");
-		// 			}
-		// 			if (metadata.TargetPath == module?.Item2.TargetPath)
-		// 			{
-		// 				foreach (var (archive, _) in modules)
-		// 				{
-		// 					archive.Dispose();
-		// 				}
-		// 				throw new LoadModuleException($"Attempting to load modules into same target path: {metadata.TargetPath}");
-		// 			}
-		// 		}
-		// 		modules.Add(module.Value);
-		// 	}
-		// 	return modules;
-		// }
-		//
-		// private static PreloadedModule? PreloadModule(string filePath)
-		// {
-		// 	var fullPath = $"{_moduleSourcePath}{Path.DirectorySeparatorChar}{filePath}";
-		//
-		// 	var module = ZipFile.Open(fullPath, ZipArchiveMode.Read);
-		//
-		// 	// Ensure module contains metadata
-		// 	if (module.Entries.All(e => e.Name != ModuleMetadata.MetadataFilename))
-		// 	{
-		// 		Logger.Log($"Potential module missing is metadata file: {filePath}", LogLevel.Warning);
-		// 		return null;
-		// 	}
-		//
-		// 	// Parse module metadata
-		// 	try
-		// 	{
-		// 		var metadata = ModuleMetadata.Deserialize(module.Entries
-		// 			.First(e => e.Name == ModuleMetadata.MetadataFilename).Open());
-		// 		return (module, metadata);
-		// 	}
-		// 	catch (Exception e)
-		// 	{
-		// 		module.Dispose();
-		// 		throw new LoadModuleException($"Failed to deserialize metadata in module: {fullPath}", e);
-		// 	}
-		// }
+		private static List<PreloadedModule> PreloadModules()
+		{
+			var modules = new List<PreloadedModule>();
 
-		// public static void ResolveDependencies(List<(ZipArchive archive, ModuleMetadata metadata)> moduleList)
-		// {
-		// 	foreach (var (_, metadata) in moduleList)
-		// 	{
-		// 		foreach (var dependency in metadata.Dependencies)
-		// 		{
-		// 			if (moduleList.All(m => m.metadata.Name != dependency.Name))
-		// 			{
-		// 				throw new LoadModuleException($"Module {metadata.Name} is missing dependency module {dependency.Name}");
-		// 			}
-		// 			var present_dep = moduleList.First(m => m.metadata.Name == dependency.Name);
-		// 			if (present_dep.metadata.Version != dependency.Version)
-		// 			{
-		// 				throw new LoadModuleException($"Module {metadata.Name} requires dependency module {dependency.Name} version {dependency.Version} but its version is {present_dep.metadata.Version}");
-		// 			}
-		// 		}
-		// 	}
-		//
-		// 	// Use Kahns algorithm to resolve module dependencies, ordering modules in list
-		// 	// in the order they should be loaded
-		//
-		// 	// TODO check for cyclic dependencies and throw
-		// 	var resolvedEntries = moduleList.Where(t => !t.metadata.Dependencies.Any()).ToList();
-		// 	var solutionSet = new Queue<(ZipArchive archive, ModuleMetadata metadata)>();
-		// 	while (resolvedEntries.Count > 0)
-		// 	{
-		// 		var element = resolvedEntries.PopAt(0);
-		// 		solutionSet.Enqueue(element);
-		// 		foreach (var dep in moduleList.Where(t =>
-		// 			t.metadata.Dependencies.Any(d => d.Name == element.metadata.Name && d.Version == element.metadata.Version)).ToList())
-		// 		{
-		// 			dep.metadata.Dependencies.RemoveAll(d => d.Name == element.metadata.Name && d.Version == element.metadata.Version);
-		// 			if (dep.metadata.Dependencies.Count == 0)
-		// 				resolvedEntries.Add(dep);
-		// 		}
-		// 	}
-		//
-		// 	moduleList.Clear();
-		// 	moduleList.AddRange(solutionSet.ToList());
-		// }
+			// Discover and preload all modules
+			foreach (var file in Directory.GetFiles(_moduleSourcePath).Where(fn => Path.GetExtension(fn) == ".zip"))
+			{
+				var module = PreloadModule(Path.GetFileName(file));
+				if (module is null)
+					continue;
+				foreach (var (_, metadata) in modules)
+				{
+					if (metadata.Name == module?.Item2.Name)
+					{
+						foreach (var (archive, _) in modules)
+						{
+							archive.Dispose();
+						}
+						throw new LoadModuleException($"Attempting to load module with duplicate name: {metadata.Name}");
+					}
+					if (metadata.TargetPath == module?.Item2.TargetPath)
+					{
+						foreach (var (archive, _) in modules)
+						{
+							archive.Dispose();
+						}
+						throw new LoadModuleException($"Attempting to load modules into same target path: {metadata.TargetPath}");
+					}
+				}
+				modules.Add(module.Value);
+			}
+			return modules;
+		}
+
+		private static PreloadedModule? PreloadModule(string filePath)
+		{
+			var fullPath = $"{_moduleSourcePath}{Path.DirectorySeparatorChar}{filePath}";
+
+			var module = ZipFile.Read(fullPath);
+
+			if (module.Entries.All(e => e.FileName != ModuleMetadata.MetadataFilename))
+			{
+				Logger.Log($"Potential module missing is metadata file: {filePath}", LogLevel.Warning);
+				return null;
+			}
+
+			// Parse module metadata
+			try
+			{
+
+				var tmp = module.Entries.First(e => e.FileName == ModuleMetadata.MetadataFilename);
+				var metadata = ModuleMetadata.Deserialize(module.Entries
+					.First(e => e.FileName == ModuleMetadata.MetadataFilename).OpenReader());
+				return (module, metadata);
+			}
+			catch (Exception e)
+			{
+				module.Dispose();
+				throw new LoadModuleException($"Failed to deserialize metadata in module: {fullPath}", e);
+			}
+		}
+
+		public static void ResolveDependencies(List<(ZipFile archive, ModuleMetadata metadata)> moduleList)
+		{
+			foreach (var (_, metadata) in moduleList)
+			{
+				foreach (var dependency in metadata.Dependencies)
+				{
+					if (moduleList.All(m => m.metadata.Name != dependency.Name))
+					{
+						throw new LoadModuleException($"Module {metadata.Name} is missing dependency module {dependency.Name}");
+					}
+					var present_dep = moduleList.First(m => m.metadata.Name == dependency.Name);
+					if (present_dep.metadata.Version != dependency.Version)
+					{
+						throw new LoadModuleException($"Module {metadata.Name} requires dependency module {dependency.Name} version {dependency.Version} but its version is {present_dep.metadata.Version}");
+					}
+				}
+			}
+
+			// Use Kahns algorithm to resolve module dependencies, ordering modules in list
+			// in the order they should be loaded
+
+			// TODO check for cyclic dependencies and throw
+			var resolvedEntries = moduleList.Where(t => !t.metadata.Dependencies.Any()).ToList();
+			var solutionSet = new Queue<(ZipFile archive, ModuleMetadata metadata)>();
+			while (resolvedEntries.Count > 0)
+			{
+				var element = resolvedEntries.PopAt(0);
+				solutionSet.Enqueue(element);
+				foreach (var dep in moduleList.Where(t =>
+					t.metadata.Dependencies.Any(d => d.Name == element.metadata.Name && d.Version == element.metadata.Version)).ToList())
+				{
+					dep.metadata.Dependencies.RemoveAll(d => d.Name == element.metadata.Name && d.Version == element.metadata.Version);
+					if (dep.metadata.Dependencies.Count == 0)
+						resolvedEntries.Add(dep);
+				}
+			}
+
+			moduleList.Clear();
+			moduleList.AddRange(solutionSet.ToList());
+		}
 
 		private static string GetPath(string fullName)
 		{
@@ -195,55 +197,55 @@ namespace Engine.ModuleLoader
 			return fullName;
 		}
 
-		// public static void LoadModule((ZipArchive archive, ModuleMetadata metadata) moduleInfo)
-		// {
-		// 	var fileManifest = new List<string>();
-		// 	fileManifest.AddRange(moduleInfo.metadata.FileManifest);
-		//
-		// 	var metadataPath = GetPath(moduleInfo.archive.Entries.First(e => e.Name == ModuleMetadata.MetadataFilename).FullName);
-		//
-		// 	List<(Assembly assembly, string owningModule)> loadedAssemblies = new List<(Assembly assembly, string owningModule)>();
-		//
-		// 	foreach (var entry in moduleInfo.archive.Entries.Where(e =>
-		// 	{
-		// 		var name = RemovePath(metadataPath, e.FullName);
-		// 		return name != ModuleMetadata.MetadataFilename && moduleInfo.metadata.FileManifest.Contains(name);
-		// 	}))
-		// 	{
-		// 		fileManifest.Remove(RemovePath(metadataPath, entry.FullName));
-		// 		var extension = Path.GetExtension(entry.Name);
-		// 		var stream = entry.Open();
-		// 		if (extension == ".dll")
-		// 		{
-		// 			if (!LoadModuleAssembly(stream, moduleInfo.metadata.Name, loadedAssemblies))
-		// 			{
-		// 				throw new LoadModuleException($"Failed to load assembly: {entry.Name}");
-		// 			}
-		// 		}
-		// 		else
-		// 		{
-		// 			var targetPath = _baseModuleTargetPath + SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar +
-		// 				moduleInfo.metadata.TargetPath + SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar +
-		// 				GetPath(RemovePath(metadataPath, entry.FullName));
-		// 			var perm = Permissions.PublicReadWrite;
-		// 			var type = AssetManager.GetTypeFromFileExtension(extension);
-		// 			if (type == null)
-		// 			{
-		// 				throw new LoadModuleException($"Failed to determine asset type from file extension of asset: {entry.Name}");
-		// 			}
-		// 			else if (AssetManager.Import(type,
-		// 				new DeflateStreamWrapper(stream, entry.Length), targetPath, entry.Name, perm, "") == null)
-		// 			{
-		// 				throw new LoadModuleException($"Failed to import asset: {entry.Name}");
-		// 			}
-		// 		}
-		// 	}
-		// 	ProcessLoadedAssemblies(loadedAssemblies);
-		// 	foreach (var file in fileManifest)
-		// 	{
-		// 		Logger.Log($"Module \"{moduleInfo.metadata.Name}\" is missing file from manifest: {file}", LogLevel.Warning);
-		// 	}
-		// }
+		public static void LoadModule((ZipFile archive, ModuleMetadata metadata) moduleInfo)
+		{
+			var fileManifest = new List<string>();
+			fileManifest.AddRange(moduleInfo.metadata.FileManifest);
+
+			var metadataPath = GetPath(moduleInfo.archive.Entries.First(e => e.FileName == ModuleMetadata.MetadataFilename).FileName);
+
+			List<(Assembly assembly, string owningModule)> loadedAssemblies = new List<(Assembly assembly, string owningModule)>();
+
+			foreach (var entry in moduleInfo.archive.Entries.Where(e =>
+			{
+				var name = RemovePath(metadataPath, e.FileName);
+				return name != ModuleMetadata.MetadataFilename && moduleInfo.metadata.FileManifest.Contains(name);
+			}))
+			{
+				fileManifest.Remove(RemovePath(metadataPath, entry.FileName));
+				var extension = Path.GetExtension(entry.FileName);
+				var stream = entry.OpenReader();
+				if (extension == ".dll")
+				{
+					if (!LoadModuleAssembly(stream, moduleInfo.metadata.Name, loadedAssemblies))
+					{
+						throw new LoadModuleException($"Failed to load assembly: {entry.FileName}");
+					}
+				}
+				else
+				{
+					var targetPath = _baseModuleTargetPath + SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar +
+						moduleInfo.metadata.TargetPath + SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar +
+						GetPath(RemovePath(metadataPath, entry.FileName));
+					var perm = Permissions.PublicReadWrite;
+					var type = AssetManager.GetTypeFromFileExtension(extension);
+					if (type == null)
+					{
+						throw new LoadModuleException($"Failed to determine asset type from file extension of asset: {entry.FileName}");
+					}
+					else if (AssetManager.Import(type,
+						new DeflateStreamWrapper(stream, entry.UncompressedSize), targetPath, entry.FileName, perm, "") == null)
+					{
+						throw new LoadModuleException($"Failed to import asset: {entry.FileName}");
+					}
+				}
+			}
+			ProcessLoadedAssemblies(loadedAssemblies);
+			foreach (var file in fileManifest)
+			{
+				Logger.Log($"Module \"{moduleInfo.metadata.Name}\" is missing file from manifest: {file}", LogLevel.Warning);
+			}
+		}
 
 		public static bool PreloadApi()
 		{
@@ -315,7 +317,7 @@ namespace Engine.ModuleLoader
 
 			loadedAssemblies.Add((assembly, owningModule));
 
-			return true;
+			//return true;
 
 			// Set up module
 			Type[] types;
