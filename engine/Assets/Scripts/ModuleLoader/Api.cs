@@ -19,6 +19,7 @@ using Component = SynthesisAPI.EnvironmentManager.Component;
 using Debug = UnityEngine.Debug;
 using SynthesisAPI.UIManager;
 using System.Collections;
+using Api.GUI;
 
 namespace Engine.ModuleLoader
 {
@@ -217,7 +218,7 @@ namespace Engine.ModuleLoader
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.MeshCollider2D), typeof(MeshCollider2DAdapter) }
 				};
 			}
-
+			
 			public void AddEntityToScene(Entity entity)
 			{
 				if (ApiProviderData.GameObjects.Contains(entity))
@@ -368,6 +369,11 @@ namespace Engine.ModuleLoader
 			public void StopCoroutine(IEnumerator routine)
 			{
 				Instance.StopCoroutine(routine);
+			}
+
+			public GUIManager GetGUIManager()
+			{
+				throw new NotImplementedException();
 			}
 		}
 	}
