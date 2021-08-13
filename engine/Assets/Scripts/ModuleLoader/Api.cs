@@ -19,6 +19,7 @@ using Component = SynthesisAPI.EnvironmentManager.Component;
 using Debug = UnityEngine.Debug;
 using SynthesisAPI.UIManager;
 using System.Collections;
+using Api.GUI;
 
 namespace Engine.ModuleLoader
 {
@@ -350,6 +351,11 @@ namespace Engine.ModuleLoader
 			{
 				// TODO: Re-evaluate this
 				return null; // PanelRenderer.visualTree;
+			}
+
+			public GUIManager GetGUIManager()
+			{
+				throw new NotImplementedException();
 			}
 
 			public void EnqueueTaskForMainThread(Action task)
