@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+message ConnectionMessage {
+
+    oneof message_type {
+        ConnectionRequest connection_request = 1;
+        ConnectionResponse connection_resonse = 2;
+        ResourceOwnershipRequest resource_ownership_request = 3;
+        ResourceOwnershipResponse resource_ownership_response = 4;
+        TerminateConnectionRequest terminate_connection_request = 5;
+        TerminateConnectionResponse terminate_connection_respons = 6;
+        Heartbeat heartbeat = 7;
+    }
+
+    message ConnectionRequest {}
+
+    message ConnectionResponse {
+        bool confirm = 1;
+        string error = 2;
+    }
+
+    message ResourceOwnershipRequest {
+        string resource_name = 1;
+    }
+
+    message ResourceOwnershipResponse {
+        bool confirm = 1;
+        string error = 2;
+        bytes uuid = 3;
+    }
+
+    message TerminateConnectionRequest {
+        bytes guid = 1;
+    }
+
+    message TerminateConnectionResponse {
+        bool confirm = 1;
+        string error = 2;
+    }
+
+    message Heartbeat {}
+}

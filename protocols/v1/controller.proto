@@ -14,11 +14,11 @@ enum UpdateIOType {
 
 message UpdateSignal {
     UpdateIOType io = 1; /// Is this a Input or Output
-    string class = 2; /// Is this a PWM, Digital, Analog, I2C, etc.
+    string device_type = 2; /// Is this a PWM, Digital, Analog, I2C, etc.
     google.protobuf.Value value = 3; 
 }
 
 message UpdateSignals {
-    string name = 1;
-    map<string, UpdateSignal> signalMap = 2;
+    bytes guid = 1;
+    map<string, UpdateSignal> signal_map = 2;
 }

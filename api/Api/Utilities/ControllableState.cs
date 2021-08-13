@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using Mirabuf.Signal;
 using Mirabuf;
+using Google.Protobuf;
 
 namespace SynthesisAPI.Utilities
 {
@@ -29,7 +30,7 @@ namespace SynthesisAPI.Utilities
                     CurrentSignals[kvp.Key] = new UpdateSignal
                     {
                         Io = kvp.Value.Io == IOType.Input ? UpdateIOType.Input : UpdateIOType.Output,
-                        Class = kvp.Value.Class
+                        DeviceType = kvp.Value.DeviceType
                     };
                 }
             }

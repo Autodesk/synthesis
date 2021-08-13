@@ -13,10 +13,14 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Google.Protobuf" Version="3.17.3" />
       <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
       <PackageReference Include="NUnit" Version="3.12.0" />
       <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
+      <PackageReference Include="protobuf-net" Version="3.0.101" />
+      <PackageReference Include="protobuf-net.Core" Version="3.0.101" />
+      <PackageReference Include="protobuf-net.Grpc" Version="1.0.152" />
     </ItemGroup>
 
     <ItemGroup>

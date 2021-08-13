@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using Mirabuf.Signal;
+using Google.Protobuf;
 
 namespace SynthesisAPI.Utilities
 {
@@ -53,7 +54,7 @@ namespace SynthesisAPI.Utilities
                 while (IsRunning)
                 {
                     if (UpdateQueue.TryDequeue(out UpdateSignals tmp))
-                        Robots[tmp.Name].Update(tmp);
+                        Robots[tmp.Guid.ToStringUtf8()].Update(tmp);
                 }
             });
             queueThread.Start();
@@ -66,7 +67,7 @@ namespace SynthesisAPI.Utilities
 
         public void AddSignalLayout(Signals signalLayout)
         {
-            Robots[signalLayout.Info.Name] = new ControllableState()
+            Robots[signalLayout.Info.GUID] = new ControllableState()
             {
                 CurrentSignalLayout = signalLayout
             };
