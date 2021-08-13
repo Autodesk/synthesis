@@ -43,7 +43,7 @@ class _Wheel:
     occurrence_token: str  # maybe just pass the component
     wheelType: WheelType
     signalType: SignalType
-    joint_token: str
+    #joint_token: str
 
 
 @dataclass
