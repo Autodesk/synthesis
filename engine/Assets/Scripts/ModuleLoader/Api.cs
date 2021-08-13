@@ -372,11 +372,6 @@ namespace Engine.ModuleLoader
 			{
 				Instance.StopCoroutine(routine);
 			}
-
-            public GUIManager GetGUIManager()
-            {
-                throw new NotImplementedException();
-            }
         }
 	}
 }
