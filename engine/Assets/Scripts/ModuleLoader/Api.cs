@@ -51,18 +51,16 @@ namespace Engine.ModuleLoader
 			ModuleManager.RegisterModuleAssemblyName(Assembly.GetExecutingAssembly().GetName().Name, "Core Engine");
 			Logger.RegisterLogger(new LoggerImpl());
 			ApiProvider.RegisterApiProvider(new ApiProviderImpl());
-			//Logger.RegisterLogger(new ToastLogger()); // Must happen after ApiProvider is registered
+			Logger.RegisterLogger(new ToastLogger()); // Must happen after ApiProvider is registered
 
 			ModuleLoader.PreloadApi();
 			ModuleLoader.LoadModules(ModulesSourcePath, BaseModuleTargetPath);
 
 			RerouteConsoleOutput();
 		}
-
+		
 		public void Update()
 		{
-			ToastLogger.ScrollToBottom();
-
 			if (IsMainThread && MainThreadTasks.Count > 0)
 				MainThreadTasks.Dequeue()();
 		}
@@ -218,7 +216,6 @@ namespace Engine.ModuleLoader
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.MeshCollider2D), typeof(MeshCollider2DAdapter) }
 				};
 			}
-
 			public void AddEntityToScene(Entity entity)
 			{
 				if (ApiProviderData.GameObjects.Contains(entity))
@@ -375,6 +372,6 @@ namespace Engine.ModuleLoader
 			{
 				Instance.StopCoroutine(routine);
 			}
-		}
+        }
 	}
 }
