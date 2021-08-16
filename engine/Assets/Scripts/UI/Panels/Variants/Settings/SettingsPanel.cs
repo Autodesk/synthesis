@@ -291,6 +291,14 @@ namespace Synthesis.UI.Panels.Variant
                     }
                 }
             }
+            else
+            {
+                if(GetInt(SCREEN_MODE) == 0)
+                {
+                    customRes = false;
+                    SetRes(ResolutionList.Length - 1, FullScreenMode.FullScreenWindow);
+                }
+            }
             //Quality Settings
             QualitySettings.SetQualityLevel(GetInt(QUALITY_SETTINGS), true);
 
