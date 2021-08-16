@@ -4,6 +4,9 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEditor;
+using System.Runtime.InteropServices;
+using System.Linq;
 
 namespace Synthesis.UI.Panels.Variant
 {
@@ -26,15 +29,15 @@ namespace Synthesis.UI.Panels.Variant
 
         private List<GameObject> _settingsList = new List<GameObject>();
 
-    private Color disabledColor = new Color(0.5f,0.5f,0.5f,1f);
-    private Color enabledColor = new Color(0.1294118f,0.5882353f,0.9529412f,1f);
+        private Color disabledColor = new Color(0.5f, 0.5f, 0.5f, 1f);
+        private Color enabledColor = new Color(0.1294118f, 0.5882353f, 0.9529412f, 1f);
         public GameObject saveButton;
 
         public const string RESOLUTION = "Resolution";//Dropdown: Different resolution settings
         public static string[] ResolutionList;
         public static string MAX_RES = "Maximum Resolution";//saved bool for if the player selected for the maximum resolution
         public const string SCREEN_MODE = "Screen Mode";//Dropdown: Fullscreen or Windowed
-        public static readonly string[] ScreenModeList = new string[] { "Fullscreen", "Maximized Window", "Windowed" }; //OLD SYNTHESIS SUCKS AT THIS   
+        public static readonly string[] ScreenModeList = new string[] { "Fullscreen", "Windowed" };
         public const string QUALITY_SETTINGS = "Quality Settings";//Dropdown: Low Medium High
         public static string[] QualitySettingsList;
         public const string ALLOW_DATA_GATHERING = "Allow Data Gathering";//Toggle
@@ -43,6 +46,13 @@ namespace Synthesis.UI.Panels.Variant
         public const string ZOOM_SENSITIVITY = "Zoom Sensitivity";//camera settings
         public const string YAW_SENSITIVITY = "Yaw Sensitivity";
         public const string PITCH_SENSITIVITY = "Pitch Sensitivity";
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetActiveWindow();
+        [DllImport("user32.dll")]
+        public static extern bool ShowWindowAsync(int hWnd, int nCmdShow);
+
+        private static bool customRes = false;
 
         public enum InputType
         {
@@ -54,6 +64,7 @@ namespace Synthesis.UI.Panels.Variant
 
         void Start()
         {
+            if(Screen.fullScreenMode != FullScreenMode.FullScreenWindow) customRes = CustomScreen();
             DisplaySettings();
         }
 
@@ -73,7 +84,15 @@ namespace Synthesis.UI.Panels.Variant
         {
             setup = true;
             CreateTitle("Screen Settings");
-            CreateDropdown(RESOLUTION, ResolutionList, GetInt(RESOLUTION));
+            if (customRes) //will check if user set custom resolution
+            { 
+                ResolutionList = ResolutionList.Concat(new string[] { "Custom" }).ToArray();
+                CreateDropdown(RESOLUTION, ResolutionList, ResolutionList.Length-1);
+            }
+            else
+            {
+                CreateDropdown(RESOLUTION, ResolutionList, GetInt(RESOLUTION));
+            }
             CreateDropdown(SCREEN_MODE, ScreenModeList, GetInt(SCREEN_MODE));
             CreateDropdown(QUALITY_SETTINGS, QualitySettingsList, GetInt(QUALITY_SETTINGS));
 
@@ -97,6 +116,7 @@ namespace Synthesis.UI.Panels.Variant
             Save();
             LoadSettings();
             disableSaveButton();
+            RepopulatePanel();
         }
         public void onValueChanged(SettingsInput si)
         {
@@ -110,6 +130,13 @@ namespace Synthesis.UI.Panels.Variant
                         Set(name, si.toggle.isOn);
                         break;
                     case InputType.Dropdown:
+                        if (name == RESOLUTION && ResolutionList.Last() == "Custom")
+                        {//if user wants to keep custom resolution, we won't change it
+                            if (si.dropdown.value == ResolutionList.Length - 1)
+                                customRes = true;
+                            else
+                                customRes = false;
+                        }
                         Set(name, si.dropdown.value);
                         break;
                     case InputType.Keybind:
@@ -122,7 +149,7 @@ namespace Synthesis.UI.Panels.Variant
 
                 //for dynamic resolution setting: checks if player wants the maximum resolution
                 if (name == RESOLUTION)
-                {
+                {                   
                     if (GetInt(RESOLUTION) == ResolutionList.Length - 1)
                         Set(MAX_RES, true);
                     else
@@ -130,7 +157,7 @@ namespace Synthesis.UI.Panels.Variant
                 }
                 else if (name == SCREEN_MODE)
                 {//modifies availible resolutions when screen mode is changed
-                    if (GetInt(SCREEN_MODE) == 2)
+                    if (GetInt(SCREEN_MODE) == 1)
                     {  //2 is windowed mode                                    
                         PopulateResolutionList();
                         SetMaxResolution();
@@ -213,6 +240,8 @@ namespace Synthesis.UI.Panels.Variant
         public static void LoadSettings()
         {
             PopulateResolutionList();
+
+
             QualitySettingsList = QualitySettings.names;
 
             PreferenceManager.PreferenceManager.Load();
@@ -231,41 +260,37 @@ namespace Synthesis.UI.Panels.Variant
                     Save();
                     break;
                 case 1:
-                    ResolutionList = new string[] { ResolutionList[ResolutionList.Length - 1] };
-                    fsMode = FullScreenMode.MaximizedWindow;
-                    Set(MAX_RES, true);
-                    Save();
-                    break;
-                case 2:
                     fsMode = FullScreenMode.Windowed;
                     break;
 
             }
 
-            //Checks if the user wants maximum resolution
-            if (GetBool(MAX_RES))
-            {
-                Set(RESOLUTION, ResolutionList.Length - 1);
-                Save();
-                SetRes(ResolutionList.Length - 1, fsMode);
-            }
-            else
-            {//if user doesn't want maximum resolution, use index
-                int resolutionIndex = GetInt(RESOLUTION);
-
-                if (resolutionIndex < ResolutionList.Length)
-                {//check if wanted resolution is above the availible resolutions (in case screen resolution changed)
-                    SetRes(resolutionIndex, fsMode);
-                }
-                else
+            if (!customRes)
+            {//if user wants custom res, do not change it
+                //Checks if the user wants maximum resolution
+                if (GetBool(MAX_RES))
                 {
                     Set(RESOLUTION, ResolutionList.Length - 1);
-                    Set(MAX_RES, true);
                     Save();
                     SetRes(ResolutionList.Length - 1, fsMode);
                 }
-            }
+                else
+                {//if user doesn't want maximum resolution, use index
+                    int resolutionIndex = GetInt(RESOLUTION);
 
+                    if (resolutionIndex < ResolutionList.Length)
+                    {//check if wanted resolution is above the availible resolutions (in case screen resolution changed)
+                        SetRes(resolutionIndex, fsMode);
+                    }
+                    else
+                    {
+                        Set(RESOLUTION, ResolutionList.Length - 1);
+                        Set(MAX_RES, true);
+                        Save();
+                        SetRes(ResolutionList.Length - 1, fsMode);
+                    }
+                }
+            }
             //Quality Settings
             QualitySettings.SetQualityLevel(GetInt(QUALITY_SETTINGS), true);
 
@@ -280,12 +305,14 @@ namespace Synthesis.UI.Panels.Variant
             c.ZoomSensitivity = GetFloat(ZOOM_SENSITIVITY) / 10;//scaled down by 10
             c.PitchSensitivity = GetInt(PITCH_SENSITIVITY);
             c.YawSensitivity = GetInt(YAW_SENSITIVITY);
+
+
         }
         public static void SetDefaultPreferences()
         {
             Set(RESOLUTION, (int)0);
             Set(MAX_RES, (bool)true);
-            Set(SCREEN_MODE, (int)0);
+            Set(SCREEN_MODE, (int)0);//fullscreen
             Set(QUALITY_SETTINGS, (int)3);//high quality
             Set(ALLOW_DATA_GATHERING, (bool)true);
             Set(MEASUREMENTS, (bool)true);
@@ -299,11 +326,25 @@ namespace Synthesis.UI.Panels.Variant
         public static void PopulateResolutionList()
         {
             List<string> resolutions = new List<string>();
-            foreach(Resolution r in Screen.resolutions){
-                if(!resolutions.Contains(r.width+"x"+r.height))
-                resolutions.Add(r.width+"x"+r.height);
+            foreach (Resolution r in Screen.resolutions) {
+                if (!resolutions.Contains(r.width + "x" + r.height))
+                    resolutions.Add(r.width + "x" + r.height);
             }
             ResolutionList = resolutions.ToArray();
+        }
+
+        private static bool CustomScreen()
+        {
+            bool customScreen = true;
+            foreach(Resolution r in Screen.resolutions)
+            {
+               if(Screen.width == r.width && Screen.height == r.height)
+                {
+                    customScreen = false;
+                    break;
+                }
+            }
+            return customScreen;
         }
 
         //Sets Preference for better readability
@@ -334,18 +375,21 @@ namespace Synthesis.UI.Panels.Variant
         {
             PreferenceManager.PreferenceManager.Save();
         }
+        public static void MaximizeScreen()
+        {//auto maximizes if its a window and the resolution is maximum. 
+            if (GetBool(MAX_RES) && !Screen.fullScreen && !Application.isEditor)
+                ShowWindowAsync(GetActiveWindow().ToInt32(), 3);
+        }
 
         //screen resolution set
         private static void SetRes(int i, FullScreenMode f)
         {
-            Debug.Log(ResolutionList.Length);
-            Debug.Log(i);
-            Debug.Log(ResolutionList[i]);
+            if (ResolutionList[i] == "Custom")
+                return;
             string[] r = ResolutionList[i].Split('x');
             Screen.SetResolution(
-                Convert.ToInt32(r[0]),
-                Convert.ToInt32(r[1]), f);
+            Convert.ToInt32(r[0]),
+            Convert.ToInt32(r[1]), f);
         }
     }
-
 }
