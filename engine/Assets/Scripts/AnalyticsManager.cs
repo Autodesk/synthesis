@@ -12,6 +12,7 @@ public static class AnalyticsManager
     public const string URL_COLLECT = "https://www.google-analytics.com/collect";
     public const string URL_BATCH = "https://www.google-analytics.com/batch";
 
+    public static bool useAnalytics = true;
     public static void LogEvent(AnalyticsEvent e)
     {
         LogAnalytic(e);
@@ -40,12 +41,17 @@ public static class AnalyticsManager
     }
 
     public static PostResult PostData() {
-        bool useBatch = AllData.Split('\n').Length > 2;
-        WebClient cli = new WebClient();
-        string res = cli.UploadString(useBatch ? URL_BATCH : URL_COLLECT, "POST", AllData);
-        AllData = string.Empty;
-        Debug.Log(res);
-        return new PostResult() { usedBatchUrl = useBatch, result = res };
+        if(useAnalytics){
+            bool useBatch = AllData.Split('\n').Length > 2;
+            WebClient cli = new WebClient();
+            string res = cli.UploadString(useBatch ? URL_BATCH : URL_COLLECT, "POST", AllData);
+            AllData = string.Empty;
+            Debug.Log(res);
+            return new PostResult() { usedBatchUrl = useBatch, result = res };
+        }
+        else{
+            return new PostResult(){ usedBatchUrl = false, result = ""};
+        }
     }
     
     public struct PostResult {

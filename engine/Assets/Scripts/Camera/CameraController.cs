@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Synthesis.UI.Panels.Variant;
+using System.Runtime.InteropServices;
 
 public class CameraController : MonoBehaviour {
     
@@ -25,7 +27,15 @@ public class CameraController : MonoBehaviour {
     private float _actualPitch = 0.0f;
     private float _actualYaw = 0.0f;
     private bool _useOrbit = false;
-    
+
+
+
+
+    private void Start()
+    { //Set Camera and Screen Settings
+        SettingsPanel.LoadSettings();
+        SettingsPanel.MaximizeScreen();
+    }
     public void Update() {
   //      if (FollowTransform != null && transform.parent != FollowTransform)
   //          transform.parent = FollowTransform;
@@ -87,4 +97,6 @@ public class CameraController : MonoBehaviour {
         t.RotateAround(FollowTransform.position, up, _actualYaw);
         t.localPosition = (up * 0.5f + t.forward * -_actualZoom)+t.localPosition;
     }
+
+
 }
