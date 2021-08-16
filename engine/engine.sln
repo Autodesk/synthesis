@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlayModeTests", "PlayModeTe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditModeTests", "EditModeTests.csproj", "{03aa75bb-fbc0-7460-e634-7afe38ec939b}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{b5a8759e-0364-3356-928d-1a35a0a8a237}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,8 +22,6 @@ Global
 		{7a96e841-d41a-b76d-ba5e-7e9f67b26716}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03aa75bb-fbc0-7460-e634-7afe38ec939b}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{03aa75bb-fbc0-7460-e634-7afe38ec939b}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{b5a8759e-0364-3356-928d-1a35a0a8a237}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{b5a8759e-0364-3356-928d-1a35a0a8a237}.Debug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
