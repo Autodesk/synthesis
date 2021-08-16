@@ -15,7 +15,7 @@ using System.Collections.Concurrent;
 
 namespace SynthesisAPI.Utilities
 {
-    
+
     public static class TcpServerManager
     {
         private sealed class Server
@@ -27,7 +27,8 @@ namespace SynthesisAPI.Utilities
             public Thread listenerThread;
             public Thread clientManagerThread;
             public Thread writerThread;
-            private bool _isRunning = false;
+            private bool _isRunning;
+            public bool _canAcceptClients;
             public bool IsRunning
             {
                 get => _isRunning;
@@ -75,13 +76,15 @@ namespace SynthesisAPI.Utilities
             {
                 //_packets = new ConcurrentQueue<UpdateSignals>(); //Default queue if no queue is set
                 listener = new TcpListener(IPAddress.Parse("127.0.0.1"), 13000);
+                _isRunning = false;
+                _canAcceptClients = false;
             }
 
             public void Start()
             {
                 clients = new List<ClientHandler>();
                 listener.Start();
-                
+
                 listenerThread = new Thread(() =>
                 {
                     while (_isRunning)
@@ -109,7 +112,7 @@ namespace SynthesisAPI.Utilities
                         }
                     }
                 });
-                
+
                 clientManagerThread = new Thread(() =>
                 {
                     while (_isRunning || clients.Any())
@@ -127,14 +130,17 @@ namespace SynthesisAPI.Utilities
                                 switch (clients[i].message.Result.MessageTypeCase)
                                 {
                                     case ConnectionMessage.MessageTypeOneofCase.ConnectionRequest:
-                                        //dont need to lock im pretty sure
-                                        clients[i].currentWrites.Add(SendMessageAsync(clients[i].stream, new ConnectionMessage { ConnectionResonse = new ConnectionMessage.Types.ConnectionResponse() { Confirm = true } }));
+                                        clients[i].currentWrites.Add(SendMessageAsync(clients[i].stream, new ConnectionMessage { ConnectionResonse = new ConnectionMessage.Types.ConnectionResponse() { Confirm = _canAcceptClients } }));
                                         break;
                                     case ConnectionMessage.MessageTypeOneofCase.ResourceOwnershipRequest:
+                                        //implement GetGuid
+                                        clients[i].currentWrites.Add(SendMessageAsync(clients[i].stream, new ConnectionMessage { ResourceOwnershipResponse = new ConnectionMessage.Types.ResourceOwnershipResponse() { Confirm = true, Guid = GetGuid(clients[i].message.Result.ResourceOwnershipRequest.ResourceName) } }));
                                         break;
                                     case ConnectionMessage.MessageTypeOneofCase.TerminateConnectionRequest:
+                                        clients[i].currentWrites.Add(SendMessageAsync(clients[i].stream, new ConnectionMessage { TerminateConnectionRespons = new ConnectionMessage.Types.TerminateConnectionResponse() { Confirm = true } }));
                                         break;
                                     case ConnectionMessage.MessageTypeOneofCase.Heartbeat:
+                                        clients[i].state.LastHeartbeat = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                                         break;
                                     default:
                                         System.Diagnostics.Debug.WriteLine("Invalid Message Recieved");
@@ -145,16 +151,16 @@ namespace SynthesisAPI.Utilities
                     }
                 });
 
-                
+
 
                 listenerThread.Start();
                 clientManagerThread.Start();
-                
+
             }
 
 
 
-            
+
             private async Task SendMessageAsync(NetworkStream stream, ConnectionMessage message)
             {
                 var ms = new MemoryStream();
@@ -168,6 +174,12 @@ namespace SynthesisAPI.Utilities
                 byte[] metadata = new byte[sizeof(int)];
                 metadata = BitConverter.GetBytes(size);
 
+                if (!BitConverter.IsLittleEndian)
+                {
+                    Array.Reverse(metadata);
+                    Array.Reverse(content);
+                }
+
                 await stream.WriteAsync(metadata, 0, metadata.Length);
                 await stream.WriteAsync(content, 0, content.Length);
             }
@@ -177,10 +189,21 @@ namespace SynthesisAPI.Utilities
                 ConnectionMessage connectionMessage = new ConnectionMessage();
                 byte[] sizeBuffer = new byte[sizeof(Int32)];
                 await stream.ReadAsync(sizeBuffer, 0, sizeof(Int32));
+                if (!BitConverter.IsLittleEndian)
+                    Array.Reverse(sizeBuffer);
+
                 byte[] messageBuffer = new byte[BitConverter.ToInt32(sizeBuffer, 0)];
                 await stream.ReadAsync(messageBuffer, 0, messageBuffer.Length);
+                if (!BitConverter.IsLittleEndian)
+                    Array.Reverse(sizeBuffer);
+
                 connectionMessage.MergeFrom(messageBuffer);
                 return connectionMessage;
+            }
+
+            private ByteString GetGuid(string resourceName)
+            {
+                throw new NotImplementedException();
             }
 
             /*
@@ -230,17 +253,17 @@ namespace SynthesisAPI.Utilities
             if (Server.Instance.IsRunning) return;
             Server.Instance.IsRunning = true;
         }
-
+        
         public static void Stop()
         {
             Server.Instance.IsRunning = false;
         }
-        /*
-        public static void SetTargetQueue(ConcurrentQueue<UpdateSignals> target)
+
+        public static bool CanAcceptClients
         {
-            Server.Instance._packets = target;
+            get => Server.Instance._canAcceptClients;
+            set => Server.Instance._canAcceptClients = value;
         }
-        */
     }
 
 }

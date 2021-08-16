@@ -26,7 +26,7 @@ message ConnectionMessage {
     message ResourceOwnershipResponse {
         bool confirm = 1;
         string error = 2;
-        bytes uuid = 3;
+        bytes guid = 3;
     }
 
     message TerminateConnectionRequest {
