@@ -29,7 +29,6 @@ using UVector3 = UnityEngine.Vector3;
 using Node = Mirabuf.Node;
 using MPhysicalProperties = Mirabuf.PhysicalProperties;
 
-#pragma warning disable 
 namespace Synthesis.Import {
 
     /// <summary>
