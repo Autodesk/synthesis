@@ -1,4 +1,5 @@
 from logging import PlaceHolder
+<<<<<<< HEAD
 from os import remove
 from proto.proto_out.joint_pb2 import Joint
 from ..general_imports import *
@@ -7,6 +8,30 @@ from ..Analytics.alert import showAnalyticsAlert
 from . import Helper, FileDialogConfig, OsHelper
 
 from ..Parser.ParseOptions import ParseOptions, _Joint, _Wheel
+=======
+from os import dup, fdopen, remove, strerror
+from enum import Enum
+from typing import Type
+from ..general_imports import *
+from ..configure import NOTIFIED, write_configuration
+from ..Analytics.alert import showAnalyticsAlert
+from . import Helper, FileDialogConfig, OsHelper, CustomGraphics
+
+try:
+    from proto.proto_out.joint_pb2 import Joint, JointMotion
+except:
+    pass
+
+from ..Parser.ParseOptions import (
+    Gamepiece,
+    ParseOptions,
+    SignalType,
+    _Joint,
+    _Wheel,
+    WheelType,
+    JointParentType,
+)
+>>>>>>> f7aae067c (tested and updated for working on OSX)
 from .Configuration.SerialCommand import (
     Struct,
     SerialCommand,

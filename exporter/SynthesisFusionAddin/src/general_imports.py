@@ -24,7 +24,7 @@ try:
     path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
     path_proto_files = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "../proto/proto_out")
+        os.path.join(os.path.dirname(__file__), "..", "proto", "proto_out")
     )
 
     if not path in sys.path:
@@ -34,6 +34,7 @@ try:
         sys.path.insert(2, path_proto_files)
 
     from proto import deps
+
 except:
     logging.getLogger(f"{INTERNAL_ID}.import_manager").error(
         "Failed\n{}".format(traceback.format_exc())

@@ -62,7 +62,7 @@ def stop(context):
         path = os.path.abspath(os.path.dirname(__file__))
 
         path_proto_files = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "../proto/proto_out")
+            os.path.join(os.path.dirname(__file__), "..", "proto", "proto_out")
         )
 
         if path in sys.path:

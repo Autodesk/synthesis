@@ -48,11 +48,11 @@ def installCross(pipDeps: list) -> bool:
         adsk.doEvents()
         subprocess.call(
             f"curl https://bootstrap.pypa.io/get-pip.py -o \"{pythonFolder / 'get-pip.py'}\"",
-            shell=False,
+            shell=True,
         )
         subprocess.call(
             f"\"{pythonFolder / 'python'}\" \"{pythonFolder / 'get-pip.py'}\"",
-            shell=False,
+            shell=True,
         )
     else:
         raise ImportError(
@@ -65,7 +65,7 @@ def installCross(pipDeps: list) -> bool:
         adsk.doEvents()
         subprocess.call(
             f"\"{pythonFolder / 'python'}\" -m pip install {depName}", 
-            shell=False
+            shell=True
         )
 
     if system == "Darwin":
@@ -75,7 +75,7 @@ def installCross(pipDeps: list) -> bool:
             adsk.doEvents()
             subprocess.call(
                 f"\"{pythonFolder / 'python'}\" -m pip uninstall {depName} -y",
-                shell=False,
+                shell=True,
             )
 
     progressBar.hide()
@@ -97,7 +97,7 @@ def _checkDeps() -> bool:
 
 try:
     from .proto_out import joint_pb2, assembly_pb2, types_pb2, material_pb2
-except ImportError:
+except ImportError or ModuleNotFoundError:
     # Version 1 with built in Pip - cannot check if it works on OSX right now.
     # Works with fusion debug builds
     installCross(["protobuf", "google"])
