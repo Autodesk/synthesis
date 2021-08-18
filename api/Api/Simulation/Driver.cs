@@ -10,21 +10,29 @@ namespace SynthesisAPI.Simulation {
         protected string[] _inputs;
         // What will the driver write so others can know what has been done
         protected string[] _outputs;
-        protected ControllableState _state;
+        protected SimObject _simObject;
 
-        public Driver(string name, string[] inputs, string[] outputs, ControllableState state) {
+        public SimObject _SimObject {
+            get => _simObject;
+        }
+
+        public ControllableState State {
+            get => _simObject.State;
+        }
+
+        public Driver(string name, string[] inputs, string[] outputs, SimObject simObject) {
             _name = name;
             _inputs = inputs;
             _outputs = outputs;
-            _state = state;
+            _simObject = simObject;
 
-            if (GetType().FullName != typeof(Driver).FullName) // Idk if this is necessary
-                SimulationManager.OnDriverUpdate += this.Update;
+            // if (GetType().FullName != typeof(Driver).FullName) // Idk if this is necessary
+            //     SimulationManager.OnDriverUpdate += this.Update;
         }
 
         ~Driver() {
-            if (GetType().FullName != typeof(Driver).FullName) // Idk if this is necessary
-                SimulationManager.OnDriverUpdate -= this.Update;
+            // if (GetType().FullName != typeof(Driver).FullName) // Idk if this is necessary
+            //     SimulationManager.OnDriverUpdate -= this.Update;
         }
 
         public abstract void Update();
@@ -32,7 +40,7 @@ namespace SynthesisAPI.Simulation {
         public override int GetHashCode()
             => _inputs.GetHashCode() * 374124789
                + _outputs.GetHashCode() * 875920184
-               + _state.GetHashCode() * 395018496;
+               + _simObject.GetHashCode() * 395018496;
 
         public override bool Equals(object obj) {
             if (ReferenceEquals(obj, null))

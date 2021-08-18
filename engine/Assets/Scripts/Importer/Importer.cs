@@ -13,6 +13,8 @@ using Mirabuf.Material;
 using NUnit.Framework.Constraints;
 using Synthesis.Util;
 using SynthesisAPI.Proto;
+using SynthesisAPI.Simulation;
+using SynthesisAPI.Utilities;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 using Material = SynthesisAPI.Proto.Material;
@@ -28,6 +30,8 @@ using Vector3 = Mirabuf.Vector3;
 using UVector3 = UnityEngine.Vector3;
 using Node = Mirabuf.Node;
 using MPhysicalProperties = Mirabuf.PhysicalProperties;
+
+using JointMotor = UnityEngine.JointMotor;
 
 namespace Synthesis.Import {
 
@@ -118,8 +122,14 @@ namespace Synthesis.Import {
                 groupObjects.Add(group.GUID, groupObject);
             }
             #endregion
-
+            
             #region Joints
+
+            var state = new ControllableState();
+            state.CurrentSignalLayout = assembly.Data.Signals;
+            var simObject = new SimObject(assembly.Info.Name, state);
+            SimulationManager.RegisterSimObject(simObject);
+
             foreach (var jointKvp in assembly.Data.Joints.JointInstances) {
                 if (jointKvp.Key == "grounded")
                     continue;
@@ -133,8 +143,10 @@ namespace Synthesis.Import {
                     b,
                     jointKvp.Value,
                     totalMass,
-                    assembly
+                    assembly,
+                    simObject
                     );
+                
             }
             #endregion
 
@@ -151,7 +163,9 @@ namespace Synthesis.Import {
 
         #region Assistant Functions
 
-        public static void MakeJoint(GameObject a, GameObject b, JointInstance instance, float totalMass, Assembly assembly) {
+        public static void MakeJoint(
+            GameObject a, GameObject b, JointInstance instance, float totalMass,
+            Assembly assembly, SimObject simObject) {
             // Stuff I'm gonna use for all joints
             var definition = assembly.Data.Joints.JointDefinitions[instance.JointReference];
             var rbA = a.GetComponent<Rigidbody>();
@@ -172,6 +186,17 @@ namespace Synthesis.Import {
                     revoluteB.axis = revoluteA.axis; // definition.Rotational.RotationalFreedom.Axis;
                     revoluteB.connectedBody = rbA;
                     revoluteB.connectedMassScale = Mathf.Pow(totalMass / rbA.mass, 1);
+
+                    // TODO: Encoder Signals
+                    var driver = new RotationalDriver(
+                        assembly.Data.Signals.SignalMap[instance.SignalReference].Info.Name,
+                        new string[] {instance.SignalReference}, new string[0], simObject, revoluteA, revoluteB,
+                        new JointMotor() {
+                            force = 400.0f,
+                            freeSpin = false,
+                            targetVelocity = 900
+                        });
+                    SimulationManager.Drivers.Add(driver);
                     break;
                 case JointMotion.Slider:
                 default: // Make a rigid joint
