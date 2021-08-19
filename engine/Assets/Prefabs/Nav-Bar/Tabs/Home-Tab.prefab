@@ -465,7 +465,7 @@ PrefabInstance:
     - target: {fileID: 4046745758473013452, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
       value: 
-      objectReference: {fileID: 1013426937749199350, guid: 7858009751d5d0749b03cf7f57a130ad, type: 3}
+      objectReference: {fileID: 2702697856074163897, guid: 4056ba4f4255aef4b8976df3b1ed9449, type: 3}
     - target: {fileID: 5256256030723406140, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -556,7 +556,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7011223228055757836, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
       propertyPath: m_text
-      value: CHANGE VIEW
+      value: CONTROLS
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
