@@ -63,6 +63,18 @@ PrefabInstance:
       propertyPath: m_Text
       value: Add Robots
       objectReference: {fileID: 0}
+    - target: {fileID: 4604477148157920287, guid: 59f5090a391f849308ddb7d3474ca136, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4604477148157920287, guid: 59f5090a391f849308ddb7d3474ca136, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 4075454794571564288, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+    - target: {fileID: 4604477148157920287, guid: 59f5090a391f849308ddb7d3474ca136, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: CloseAllPanels
+      objectReference: {fileID: 0}
     - target: {fileID: 4604477148703056508, guid: 59f5090a391f849308ddb7d3474ca136, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

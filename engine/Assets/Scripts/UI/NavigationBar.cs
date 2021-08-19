@@ -25,6 +25,13 @@ namespace Synthesis.UI.Bars
             OpenTab(homeTab);
         }
 
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                CloseAllPanels();
+            }
+        }
 
         public void OpenPanel(GameObject prefab)
         {

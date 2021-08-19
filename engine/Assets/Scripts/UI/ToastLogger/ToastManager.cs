@@ -17,7 +17,7 @@ public class ToastManager : MonoBehaviour
 
     private void Update()
     {
-        /*
+        
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Log("Lorem Ipsum");
@@ -26,7 +26,7 @@ public class ToastManager : MonoBehaviour
             Log("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.", LogLevel.Warning);
             Log("Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.", LogLevel.Info);
         }
-        */
+        
     }
 
     public void onAddToast()
