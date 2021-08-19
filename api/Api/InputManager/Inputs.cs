@@ -2,9 +2,13 @@
 using MathNet.Spatial.Euclidean;
 using SynthesisAPI.Runtime;
 using SynthesisAPI.Utilities;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace SynthesisAPI.InputManager.Inputs
 {
+    // TODO: Should I add HashCodes?
+    
     public interface Input
     {
         string Name { get; }
@@ -16,13 +20,15 @@ namespace SynthesisAPI.InputManager.Inputs
     {
         public string Name { get; private set; }
         public float Value { get; private set; }
+        public bool UsePositiveSide { get; private set; }
         public float BaseValue { get; private set; }
         public bool Inverted { get; private set; }
 
-        public Analog(string name, bool inverted = false, float baseValue = 0)
+        public Analog(string name, bool usePositiveSide, bool inverted = false, float baseValue = 0)
         {
             Name = name;
             Inverted = inverted;
+            UsePositiveSide = usePositiveSide;
             BaseValue = baseValue;
         }
 
@@ -30,6 +36,7 @@ namespace SynthesisAPI.InputManager.Inputs
         {
             Value = UnityEngine.Input.GetAxis(Name);
             Value = Inverted ? Value *= -1 : Value;
+            Value = Mathf.Clamp(Value, UsePositiveSide ? BaseValue : -999, UsePositiveSide ? 999 : BaseValue);
             return Value != BaseValue;
         }
     }
@@ -38,7 +45,7 @@ namespace SynthesisAPI.InputManager.Inputs
         public string Name { get; private set; }
         public float Value { get; private set; }
         public DigitalState State { get; private set; }
-        public Digital(string name) : base(name)
+        public Digital(string name) : base(name, true)
         {
             Name = name;
             Value = 0.0f;

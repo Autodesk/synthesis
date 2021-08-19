@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using SynthesisAPI.InputManager.InputEvents;
 using SynthesisAPI.InputManager.Inputs;
+using UnityEngine;
 using Input = SynthesisAPI.InputManager.Inputs.Input;
 
 namespace SynthesisAPI.InputManager
@@ -85,6 +86,43 @@ namespace SynthesisAPI.InputManager
 
         public static void SetAllValueInputs(Dictionary<string, Analog> input) {
             _mappedValueInputs = input;
+        }
+
+        // TODO: Exclusion cases
+        public static Analog GetAny() {
+            foreach (var k in AllInputs) {
+                if (k.Update())
+                    return k;
+            }
+
+            return null;
+        }
+
+        private static List<Analog> _allInputs = null;
+        public static IReadOnlyCollection<Analog> AllInputs {
+            get {
+                if (_allInputs == null) {
+                    _allInputs = new List<Analog>();
+
+                    // KeyCodes
+                    foreach (var k in Enum.GetNames(typeof(KeyCode))) {
+                        _allInputs.Add(new Digital(k));
+                    }
+                    
+                    // Joystick Controls
+                    for (int j = 0; j <= 11; j++) {
+                        for (int ab = 1; ab <= 20; ab++) {
+                            string joystickId = j == 0 ? "" : $"{j} ";
+                            string joystickPrefix = $"Joystick {joystickId}";
+                            _allInputs.Add(new Digital(joystickPrefix + $"Button {ab}"));
+                            _allInputs.Add(new Analog(joystickPrefix + $"Axis {ab}", true));
+                            _allInputs.Add(new Analog(joystickPrefix + $"Axis {ab}", false));
+                        }
+                    }
+                    
+                }
+                return _allInputs;
+            }
         }
     }
 }
