@@ -8,13 +8,32 @@ namespace SynthesisAPI.Simulation {
         public JointMotor Motor;
         private HingeJoint _jointA;
         private HingeJoint _jointB;
-        
+
+        private bool _useMotor;
+
+        public bool UseMotor
+        {
+            get => _useMotor;
+        }
+
         public RotationalDriver(string name, string[] inputs, string[] outputs, SimObject simObject,
             HingeJoint jointA, HingeJoint jointB, JointMotor motor)
             : base(name, inputs, outputs, simObject) {
             _jointA = jointA;
             _jointB = jointB;
             Motor = motor;
+        }
+
+        void EnableMotor()
+        {
+            _useMotor = true;
+            _jointA.useMotor = true;
+        }
+
+        void DisableMotor()
+        {
+            _useMotor = false;
+            _jointA.useMotor = false;
         }
 
         public override void Update() {
