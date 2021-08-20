@@ -10,6 +10,7 @@
 from typing import Union, List
 from os import path
 from dataclasses import dataclass
+from ..general_imports import *
 
 import os, platform
 import adsk.core, adsk.fusion, traceback
@@ -43,7 +44,7 @@ class _Wheel:
     occurrence_token: str  # maybe just pass the component
     wheelType: WheelType
     signalType: SignalType
-    #joint_token: str
+    joint_token: Union[str, None] # GUID of wheel's rotational joint
 
 
 @dataclass
@@ -95,6 +96,7 @@ class ModelHierarchy:
 
 class Mode:
     Synthesis = 0
+    SynthesisField = 3
 
 """
 
@@ -139,6 +141,7 @@ class ParseOptions:
         wheels=List[_Wheel],
         joints=List[_Joint],  # [{Occurrence, wheeltype} , {entitytoken, wheeltype}]
         gamepieces=List[Gamepiece],
+        weight=float,
     ):
         """Generates the Parser Options for the given export
 
@@ -166,6 +169,7 @@ class ParseOptions:
         self.wheels = wheels
         self.joints = joints
         self.gamepieces = gamepieces
+        self.weight = weight # full weight of robot in KG
 
     def parse(self, sendReq: bool) -> Union[str, bool]:
         """Parses the file given the options

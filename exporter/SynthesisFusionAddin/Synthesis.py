@@ -1,4 +1,4 @@
-from .src.general_imports import root_logger, gm, INTERNAL_ID, APP_NAME
+from .src.general_imports import root_logger, gm, INTERNAL_ID, APP_NAME, DESCRIPTION
 
 from .src.UI import HUI, Handlers, Camera, Helper, ConfigCommand
 from .src.UI.Toolbar import Toolbar
@@ -111,7 +111,7 @@ def register_ui() -> None:
         work_panel,
         Helper.check_solid_open,
         ConfigCommand.ConfigureCommandCreatedHandler,
-        description="Opens Dialog to configure and export model for Mira",
+        description=f"{DESCRIPTION}",
         command=True,
     )
 

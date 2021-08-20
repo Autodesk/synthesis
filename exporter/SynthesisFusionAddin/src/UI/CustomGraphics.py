@@ -1,4 +1,4 @@
-import adsk.fusion, traceback
+import adsk.fusion, traceback, logging
 from ..general_imports import *
 
 def createTextGraphics(wheel:adsk.fusion.Occurrence, _wheels) -> None:
