@@ -1,5 +1,6 @@
-import adsk.fusion, traceback, logging
+import adsk.fusion, adsk.core, traceback, logging
 from ..general_imports import *
+from ConfigCommand import ROOT_COMP
 
 def createTextGraphics(wheel:adsk.fusion.Occurrence, _wheels) -> None:
     try:
@@ -11,7 +12,7 @@ def createTextGraphics(wheel:adsk.fusion.Occurrence, _wheels) -> None:
         max = boundingBox.maxPoint.asArray() # [x, y, z] max coords
 
         if design:
-            graphics = design.rootComponent.customGraphicsGroups.add()
+            graphics = ROOT_COMP.customGraphicsGroups.add()
             matrix = adsk.core.Matrix3D.create()
             matrix.translation = adsk.core.Vector3D.create(min[0], min[1]-5, min[2])
 
@@ -62,3 +63,44 @@ def createTextGraphics(wheel:adsk.fusion.Occurrence, _wheels) -> None:
         logging.getLogger("{INTERNAL_ID}.UI.CreateTextGraphics").error(
             "Failed:\n{}".format(traceback.format_exc())
         )
+
+
+def highlightJointedOccurrences(joint: adsk.fusion.Joint) -> None:
+    occurrenceOne = joint.occurrenceOne
+    occurrenceTwo = joint.occurrenceTwo
+
+    try:
+        design = adsk.fusion.Design.cast(gm.app.activeProduct)
+
+        if design:
+            graphics = ROOT_COMP.customGraphicsGroups.add()
+
+            for bRepBody in occurrenceOne.bRepBodies:
+                bodyMesh = bRepBody.meshManager.displayMeshes.bestMesh
+
+                coords = adsk.fusion.CustomGraphicsCoordinates.create(bodyMesh.nodeCoordinatesAsDouble)
+                mesh = graphics.addMesh(
+                        coords,
+                        bodyMesh.nodeIndices, 
+                        bodyMesh.normalVectorsAsDouble,
+                        bodyMesh.nodeIndices
+                    )
+                mesh.color = adsk.fusion.CustomGraphicsShowThroughColorEffect.create(adsk.core.Color(0, 47, 76, 255), 0.8)
+
+            
+            for bRepBody in occurrenceTwo.bRepBodies:
+                bodyMesh = bRepBody.meshManager.displayMeshes.bestMesh
+
+                coords = adsk.fusion.CustomGraphicsCoordinates.create(bodyMesh.nodeCoordinatesAsDouble)
+                mesh = graphics.addMesh(
+                        coords,
+                        bodyMesh.nodeIndices, 
+                        bodyMesh.normalVectorsAsDouble,
+                        bodyMesh.nodeIndices
+                    )
+                mesh.color = adsk.fusion.CustomGraphicsShowThroughColorEffect.create(adsk.core.Color(235, 0, 0, 255), 0.8)
+
+            gm.app.activeViewport.refresh()
+    except:
+        if gm.ui:
+            gm.ui.messageBox('Failed:\n{}'.format(traceback.format_exc()))
