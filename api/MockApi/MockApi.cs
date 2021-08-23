@@ -53,7 +53,8 @@ namespace MockApi
             }
             var eventType = callback.GetParameters().First().ParameterType;
             var tag = callback.GetCustomAttribute<TaggedCallbackAttribute>().Tag;
-            typeof(EventBus).GetMethod("NewTagListener").Invoke(null, new object[]
+            typeof(EventBus).GetMethod("NewTagListener")
+                ?.Invoke(null, new object[]
                 {
                     tag,
                     CreateEventCallback(callback, instance, eventType)

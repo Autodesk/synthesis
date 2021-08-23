@@ -20,6 +20,11 @@ namespace SynthesisAPI.Utilities
             return Max(Min(value, max), min);
         }
 
+        public static double Abs(double v)
+        {
+            return v > 0 ? v : -v;
+        }
+
         public static bool ApproxEquals(double a, double b)
         {
             return System.Math.Abs(a - b) < 0.001;

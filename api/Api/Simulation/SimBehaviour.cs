@@ -1,4 +1,5 @@
-﻿using SynthesisAPI.Utilities;
+﻿using System;
+using SynthesisAPI.Utilities;
 
 namespace SynthesisAPI.Simulation {
     public abstract class SimBehaviour {
@@ -24,11 +25,11 @@ namespace SynthesisAPI.Simulation {
             }
         }
 
-        public ControllableState State { get; protected set; }
+        public String SimObjectId { get; protected set; }
         
-        public SimBehaviour(ControllableState state) {
+        public SimBehaviour(string simObjectId) {
             Enabled = true;
-            State = state;
+            SimObjectId = simObjectId;
         }
 
         ~SimBehaviour() {

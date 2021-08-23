@@ -6,10 +6,14 @@ using System.Linq;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
+using Assets.Scripts.Behaviors;
 using Google.Protobuf;
+using Google.Protobuf.WellKnownTypes;
 using Mirabuf;
 using Mirabuf.Joint;
 using Mirabuf.Material;
+using Mirabuf.Signal;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework.Constraints;
 using Synthesis.Util;
@@ -25,6 +29,7 @@ using UMesh = UnityEngine.Mesh;
 using Logger = SynthesisAPI.Utilities.Logger;
 using Assembly = Mirabuf.Assembly;
 using AssemblyData = Mirabuf.AssemblyData;
+using Enum = System.Enum;
 using Joint = Mirabuf.Joint.Joint;
 using Transform = UnityEngine.Transform;
 using Vector3 = Mirabuf.Vector3;
@@ -86,7 +91,7 @@ namespace Synthesis.Import
 		public static GameObject MirabufAssemblyImport(Assembly assembly)
 		{
 			// Uncommenting this will delete all bodies so the JSON file isn't huge
-			// DebugAssembly(assembly);
+			//DebugAssembly(assembly);
 
 			GameObject assemblyObject = new GameObject(assembly.Info.Name);
 			var parts = assembly.Data.Parts;
@@ -95,8 +100,8 @@ namespace Synthesis.Import
 			var groupObjects = new Dictionary<string, GameObject>();
 			float totalMass = 0;
 			_collidersToIgnore = new List<Collider>();
-			// Import Rigid Definitions
 
+			// Import Rigid Definitions
 			#region Rigid Definitions
 
 			var rigidDefinitions = FindRigidbodyDefinitions(assembly);
@@ -110,15 +115,22 @@ namespace Synthesis.Import
 
 				foreach (var part in group.Parts)
 				{
-					var partInstance = part.Value;
-					var partDefinition = parts.PartDefinitions[partInstance.PartDefinitionReference];
-					GameObject partObject = new GameObject(partInstance.Info.Name);
-					MakePartDefinition(partObject, partDefinition, partInstance, assembly.Data);
-					partObjects.Add(partInstance.Info.GUID, partObject);
-					partObject.transform.parent = groupObject.transform;
-					// MARK: If transform changes do work recursively, apply transformations here instead of in a separate loop
-					partObject.transform.ApplyMatrix(partInstance.GlobalTransform);
-					collectivePhysData.Add(partDefinition.PhysicalData);
+					if (!partObjects.ContainsKey(part.Value.Info.GUID))
+					{
+						var partInstance = part.Value;
+						var partDefinition = parts.PartDefinitions[partInstance.PartDefinitionReference];
+						GameObject partObject = new GameObject(partInstance.Info.Name);
+						MakePartDefinition(partObject, partDefinition, partInstance, assembly.Data);
+						partObjects.Add(partInstance.Info.GUID, partObject);
+						partObject.transform.parent = groupObject.transform;
+						// MARK: If transform changes do work recursively, apply transformations here instead of in a separate loop
+						partObject.transform.ApplyMatrix(partInstance.GlobalTransform);
+						collectivePhysData.Add(partDefinition.PhysicalData);
+					}
+					else
+					{
+						Logger.Log($"Duplicate key found with GUID '{part.Key}'", LogLevel.Debug);
+					}
 				}
 
 				#endregion
@@ -128,7 +140,7 @@ namespace Synthesis.Import
 				var rb = groupObject.AddComponent<Rigidbody>();
 				rb.mass = (float) combPhysProps.Mass;
 				totalMass += rb.mass;
-				rb.centerOfMass = combPhysProps.Com; // I actually don't need to flip this
+				//rb.centerOfMass = combPhysProps.Com; // I actually don't need to flip this
 				groupObject.transform.parent = assemblyObject.transform;
 				groupObjects.Add(group.GUID, groupObject);
 			}
@@ -137,21 +149,23 @@ namespace Synthesis.Import
 
 			#region Joints
 
+
 			var state = new ControllableState();
-			state.CurrentSignalLayout = assembly.Data.Signals;
+			state.CurrentSignalLayout = assembly.Data.Signals ?? new Signals();
 			var simObject = new SimObject(assembly.Info.Name, state);
 			SimulationManager.RegisterSimObject(simObject);
-
 
 			foreach (var jointKvp in assembly.Data.Joints.JointInstances)
 			{
 				if (jointKvp.Key == "grounded")
 					continue;
+
 				Debug.Log($"Joint Key: {jointKvp.Key}");
 				var a = groupObjects[jointKvp.Key];
 				Debug.Log($"Child: {jointKvp.Value.ChildPart}");
 				var bKey = rigidDefinitions.partToDefinitionMap[jointKvp.Value.ChildPart];
 				var b = groupObjects[bKey];
+
 				MakeJoint(
 					a,
 					b,
@@ -162,27 +176,18 @@ namespace Synthesis.Import
 				);
 			}
 
-			#endregion
 
-			for (int i = 0; i < _collidersToIgnore.Count - 1; i++)
+			for (var i = 0; i < _collidersToIgnore.Count - 1; i++)
 			{
-				for (int j = i + 1; j < _collidersToIgnore.Count; j++)
+				for (var j = i + 1; j < _collidersToIgnore.Count; j++)
 				{
 					UnityEngine.Physics.IgnoreCollision(_collidersToIgnore[i], _collidersToIgnore[j]);
 				}
 			}
 
-			var wheels = assembly.Data.Joints.JointInstances.Where(pair =>
-				pair.Value.Info.Name != "grounded"
-				&& assembly.Data.Joints.JointDefinitions[pair.Value.JointReference].UserData != null
-				&& assembly.Data.Joints.JointDefinitions[pair.Value.JointReference].UserData.Data
-					.TryGetValue("wheel", out var isWheel)
-				&& isWheel == "true").Select(pair => pair.Value.SignalReference);
+			#endregion
 
-			// TODO: Might want to investigate memory usage and see if it could be an issue
-			assemblyObject.AddComponent<RobotInstance>();
-			assemblyObject.GetComponent<RobotInstance>()
-				.SetLayout(assembly.Info, assembly.Data.Signals, wheels.ToList());
+			ConfigureDrivebase(assembly, assemblyObject);
 
 			return assemblyObject;
 		}
@@ -201,30 +206,28 @@ namespace Synthesis.Import
 			{
 				case JointMotion.Revolute: // Hinge/Revolution joint
 					var revoluteA = a.AddComponent<HingeJoint>();
-					revoluteA.anchor = (definition.Origin == null ? new Vector3() : definition.Origin)
-					                   + (instance.Offset == null ? new Vector3() : instance.Offset);
+					revoluteA.anchor = (definition.Origin ?? new Vector3())
+					                   + (instance.Offset ?? new Vector3());
 					revoluteA.axis =
 						(((Matrix4x4) assembly.Data.Parts.PartInstances[instance.ParentPart].GlobalTransform).rotation)
 						* definition.Rotational.RotationalFreedom.Axis; // CHANGE
 					revoluteA.connectedBody = rbB;
-					//revoluteA.massScale = Mathf.Pow(totalMass / rbA.mass, 1);
 					revoluteA.massScale = Mathf.Pow(revoluteA.connectedBody.mass / rbA.mass, 1);
 					revoluteA.useMotor = definition.Info.Name != "grounded" &&
 					                     definition.UserData != null &&
 					                     definition.UserData.Data.TryGetValue("wheel", out var isWheel) &&
 					                     isWheel == "true";
 					var revoluteB = b.AddComponent<HingeJoint>();
-					revoluteB.anchor = (definition.Origin == null ? new Vector3() : definition.Origin)
-					                   + (instance.Offset == null ? new Vector3() : instance.Offset);
+					revoluteB.anchor = (definition.Origin ?? new Vector3())
+					                   + (instance.Offset ?? new Vector3());
 					revoluteB.axis = revoluteA.axis; // definition.Rotational.RotationalFreedom.Axis;
 					revoluteB.connectedBody = rbA;
-					//revoluteB.connectedMassScale = Mathf.Pow(totalMass / rbA.mass, 1);
 					revoluteB.connectedMassScale = Mathf.Pow(revoluteB.connectedBody.mass / rbA.mass, 1);
 
 					// TODO: Encoder Signals
 					var driver = new RotationalDriver(
 						assembly.Data.Signals.SignalMap[instance.SignalReference].Info.Name,
-						new string[] {instance.SignalReference}, new string[0], simObject, revoluteA, revoluteB,
+						new string[] {instance.SignalReference}, Array.Empty<string>(), simObject, revoluteA, revoluteB,
 						new JointMotor()
 						{
 							force = 400.0f,
@@ -236,14 +239,14 @@ namespace Synthesis.Import
 				case JointMotion.Slider:
 				default: // Make a rigid joint
 					var rigidA = a.AddComponent<FixedJoint>();
-					rigidA.anchor = (definition.Origin == null ? new Vector3() : definition.Origin)
-					                + (instance.Offset == null ? new Vector3() : instance.Offset);
+					rigidA.anchor = (definition.Origin ?? new Vector3())
+					                + (instance.Offset ?? new Vector3());
 					rigidA.axis = UVector3.forward;
 					rigidA.connectedBody = rbB;
 					rigidA.massScale = Mathf.Pow(totalMass / rbA.mass, 1); // Not sure if this works
 					var rigidB = b.AddComponent<FixedJoint>();
-					rigidB.anchor = (definition.Origin == null ? new Vector3() : definition.Origin)
-					                + (instance.Offset == null ? new Vector3() : instance.Offset);
+					rigidB.anchor = (definition.Origin ?? new Vector3())
+					                + (instance.Offset ?? new Vector3());
 					rigidB.axis = UVector3.forward;
 					rigidB.connectedBody = rbA;
 					rigidB.connectedMassScale = Mathf.Pow(totalMass / rbA.mass, 1);
@@ -261,7 +264,7 @@ namespace Synthesis.Import
 			};
 			foreach (var body in definition.Bodies)
 			{
-				GameObject bodyObject = new GameObject(body.Info.Name);
+				var bodyObject = new GameObject(body.Info.Name);
 				var filter = bodyObject.AddComponent<MeshFilter>();
 				var renderer = bodyObject.AddComponent<MeshRenderer>();
 				filter.sharedMesh = body.TriangleMesh.UnityMesh;
@@ -284,17 +287,17 @@ namespace Synthesis.Import
 			}
 		}
 
-		public static MPhysicalProperties CombinePhysicalProperties(IEnumerable<MPhysicalProperties> props)
+		private static MPhysicalProperties CombinePhysicalProperties(IEnumerable<MPhysicalProperties> props)
 		{
 			var total = 0.0;
 			var com = new Vector3();
 			props.ForEach(x => total += x.Mass);
-			props.ForEach(x => com += x.Com * x.Mass);
-			com /= total;
-			return new MPhysicalProperties {Mass = total, Com = com};
+			//props.ForEach(x => com += x.Com * x.Mass);
+			//com /= total;
+			return new MPhysicalProperties {Mass = total};
 		}
 
-		public static (
+		private static (
 			Dictionary<string, RigidbodyDefinition> definitions,
 			Dictionary<string, string> partToDefinitionMap
 			) FindRigidbodyDefinitions(Assembly assembly)
@@ -303,39 +306,43 @@ namespace Synthesis.Import
 			var partMap = new Dictionary<string, string>();
 
 			int counter = 0;
-			assembly.Data.Joints.JointInstances.ForEach(x =>
+			foreach (var instance in assembly.Data.Joints.JointInstances)
 			{
 				var def = new RigidbodyDefinition
 				{
-					GUID = $"{x.Value.Info.GUID}",
+					GUID = $"{instance.Value.Info.GUID}",
 					Name = $"Rigidgroup:{counter}",
 					Parts = new Dictionary<string, PartInstance>()
 				};
-				if (x.Value.ParentPart != null && x.Value.ParentPart != string.Empty)
-					def.Parts.Add(x.Value.ParentPart, assembly.Data.Parts.PartInstances[x.Value.ParentPart]);
+				if (!string.IsNullOrEmpty(instance.Value.ParentPart))
+					def.Parts.Add(instance.Value.ParentPart, assembly.Data.Parts.PartInstances[instance.Value.ParentPart]);
 				counter++;
-				List<Node> nodes = x.Value.Parts == null ? new List<Node>() : new List<Node>(x.Value.Parts.Nodes);
+				var nodes = instance.Value.Parts == null ? new List<Node>() : new List<Node>(instance.Value.Parts.Nodes);
+
 				while (nodes.Any())
 				{
-					nodes.ForEach(y =>
+					foreach (var node in nodes)
 					{
-						Debug.Log($"Part GUID: \"{y.Value}\"");
-						if (y.Value != String.Empty)
+						Debug.Log($"Part GUID: \"{node.Value}\"");
+						if (node.Value != string.Empty)
 						{
-							if (!def.Parts.ContainsKey(y.Value))
-								def.Parts.Add(y.Value, assembly.Data.Parts.PartInstances[y.Value]);
+							if (!def.Parts.ContainsKey(node.Value))
+								def.Parts.Add(node.Value, assembly.Data.Parts.PartInstances[node.Value]);
 							else
-								Debug.Log($"Duplicate");
+								Debug.Log($"Duplicate entry: {node.Value}");
 						}
-					});
+					}
 					var newNodes = new List<Node>();
 					nodes.ForEach(y => newNodes.AddRange(y.Children));
 					nodes = newNodes;
 				}
 
 				defs.Add(def.GUID, def);
-				def.Parts.ForEach(y => partMap[y.Key] = def.GUID);
-			});
+				foreach(var part in def.Parts)
+				{
+					partMap[part.Key] = def.GUID;
+				}
+			};
 
 			return (defs, partMap);
 		}
@@ -373,6 +380,58 @@ namespace Synthesis.Import
 			{
 				map.Add(child.Value, parent * parts.PartInstances[child.Value].Transform.UnityMatrix);
 				MakeGlobalTransformations(map, map[child.Value], parts, child);
+			}
+		}
+
+		#endregion
+
+		#region Robot Configuration
+
+		public static void ConfigureDrivebase(Assembly assembly, GameObject assemblyObject)
+		{
+			if (assembly.Data.Signals != null && assembly.Data.Joints.JointInstances != null)
+			{
+				var wheelsInstances = assembly.Data.Joints.JointInstances.Where(pair =>
+					pair.Value.Info.Name != "grounded"
+					&& assembly.Data.Joints.JointDefinitions[pair.Value.JointReference].UserData != null
+					&& assembly.Data.Joints.JointDefinitions[pair.Value.JointReference].UserData.Data
+						.TryGetValue("wheel", out var isWheel)
+					&& isWheel == "true");
+
+				var leftWheels = new List<JointInstance>();
+				var rightWheels = new List<JointInstance>();
+
+				foreach (var wheelInstance in wheelsInstances)
+				{
+					SimulationManager.SimulationObjects[assembly.Info.Name].State.CurrentSignals[wheelInstance.Value.SignalReference].Value = Value.ForNumber(0.0);
+					var jointAnchor =
+						(wheelInstance.Value.Offset ?? new Vector3()) + assembly.Data.Joints
+							.JointDefinitions[wheelInstance.Value.JointReference].Origin ?? new Vector3();
+					if (UnityEngine.Vector3.Dot(UnityEngine.Vector3.up, jointAnchor) > 0)
+					{
+						rightWheels.Add(wheelInstance.Value);
+					}
+					else
+					{
+						leftWheels.Add(wheelInstance.Value);
+					}
+				}
+
+				assemblyObject.AddComponent<RobotInstance>();
+
+				var wheels = wheelsInstances.Select(pair => pair.Value.SignalReference);
+				assemblyObject.GetComponent<RobotInstance>()
+					.SetLayout(assembly.Info, assembly.Data.Signals, wheels.ToList());
+
+				SimulationManager.Behaviours.Add(new ArcadeDrive(
+					assembly.Info.Name,
+					leftWheels.Select(j => j.SignalReference).ToList(),
+					rightWheels.Select(j => j.SignalReference).ToList()));
+
+			}
+			else
+			{
+				Logger.Log($"No joints or signals found for {assembly.Info.Name}. Skipping.");
 			}
 		}
 

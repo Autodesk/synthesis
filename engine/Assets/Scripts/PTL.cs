@@ -37,8 +37,10 @@ public class PTL : MonoBehaviour {
         DESTINATION_DEEP_SPACE = ParsePath("$appdata/Autodesk/Synthesis/Fields/2019 Destination Deep Space");
         POWER_UP = ParsePath("$appdata/Autodesk/Synthesis/Fields/2018 Power Up");
         // var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/MotionDefinition_v72.mira");
-        // var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/1425-2019_v21.mira");
+        //var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/1425-2019_v21.mira");
         var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/TestDriveTrain_v19.mira");
+        //var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/Pneumatic-Drivetrain v33 v3_v1.mira");
+        //var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/2019_DEEPSPACE v2_v1.mira");
         hasRobot = false;
         robotList = new List<GameObject>();
         // SpawnRobot(MEAN_MACHINE);

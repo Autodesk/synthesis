@@ -72,6 +72,7 @@
      <Compile Include="Assets\Scripts\ModelManager\Models\Motor.cs" />
      <Compile Include="Assets\Scripts\UtilExtensions.cs" />
      <Compile Include="Assets\Scripts\MultiplayerSwitch.cs" />
+     <Compile Include="Assets\Scripts\Behaviors\TankDriveBehavior.cs" />
      <Compile Include="Assets\Scripts\PTL.cs" />
      <Compile Include="Assets\Scripts\Attributes\ControllableInputAttribute.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Drivetrain\ConfigureDrivetrainPanel.cs" />
@@ -136,6 +137,7 @@
      <Compile Include="Assets\Scripts\Importer\Importer.cs" />
      <Compile Include="Assets\Scripts\EntityManager\Driver.cs" />
      <Compile Include="Assets\Scripts\RobotButtons.cs" />
+     <Compile Include="Assets\Scripts\Behaviors\ArcadeDrive.cs" />
      <None Include="Assets\Scripts\CoreEngine.asmdef" />
      <Reference Include="UnityEngine">
      <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
