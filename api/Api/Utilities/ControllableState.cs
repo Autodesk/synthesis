@@ -22,22 +22,28 @@ namespace SynthesisAPI.Utilities
             get => _currentSignalLayout;
             set
             {
+                System.Diagnostics.Debug.WriteLine("Running CurrentSignalLayout set method");
                 _currentSignalLayout = value;
                 CurrentSignals.Clear();
-                CurrentInfo = value.Info;
+                Generation = 0;
+                IsFree = true;
+                Guid = ByteString.CopyFromUtf8(value.Info.GUID);
                 foreach (var kvp in value.SignalMap)
                 {
                     CurrentSignals[kvp.Key] = new UpdateSignal
                     {
                         Io = kvp.Value.Io == IOType.Input ? UpdateIOType.Input : UpdateIOType.Output,
-                        DeviceType = kvp.Value.DeviceType
+                        DeviceType = kvp.Value.DeviceType 
                     };
                 }
             }
         }
 
-        public Info CurrentInfo { get; private set; }
+        //public Info CurrentInfo { get; private set; }
         public Dictionary<string, UpdateSignal> CurrentSignals { get; private set; } = new Dictionary<string, UpdateSignal>();
+        public bool IsFree { get; set; }
+        public int Generation { get; set; }
+        public ByteString Guid { get; set; }
         
         public void Update(UpdateSignals updateSignals)
         {
@@ -53,5 +59,45 @@ namespace SynthesisAPI.Utilities
                 }    
             }
         }
+
+        /*
+        public class ResourceInfo : IEquatable<ResourceInfo>
+        {
+            public string ResourceName { get; private set; }
+            public ByteString Guid { get; private set; }
+            public int? Version { get; private set; }
+
+            public ResourceInfo(string name, ByteString guid) { ResourceName = name; Guid = guid; }
+            public ResourceInfo(ByteString guid) { Guid = guid; }
+            public ResourceInfo(string name) { ResourceName = name; Guid = ByteString.Empty; }
+
+            public override int GetHashCode()
+            {
+                return default;
+            }
+            public bool Equals(ResourceInfo other)
+            {
+                if (other == null)
+                    return false;
+
+                if (this.Guid.Equals(other.Guid) || (other.Guid.IsEmpty && this.ResourceName.Equals(other.ResourceName)))
+                    return true;
+                else
+                    return false;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj == null)
+                    return false;
+
+                ResourceInfo resourceInfoObj = obj as ResourceInfo;
+                if (resourceInfoObj == null)
+                    return false;
+                else
+                    return Equals(resourceInfoObj);
+            }
+        }
+        */
     }
 }

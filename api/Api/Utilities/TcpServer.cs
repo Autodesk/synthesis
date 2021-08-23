@@ -74,7 +74,6 @@ namespace SynthesisAPI.Utilities
             public static Server Instance { get { return lazy.Value; } }
             private Server()
             {
-                //_packets = new ConcurrentQueue<UpdateSignals>(); //Default queue if no queue is set
                 listener = new TcpListener(IPAddress.Parse("127.0.0.1"), 13000);
                 _isRunning = false;
                 _canAcceptClients = false;
@@ -84,6 +83,7 @@ namespace SynthesisAPI.Utilities
             {
                 clients = new List<ClientHandler>();
                 listener.Start();
+                _canAcceptClients = true;
 
                 listenerThread = new Thread(() =>
                 {
@@ -130,27 +130,82 @@ namespace SynthesisAPI.Utilities
                                 switch (clients[i].message.Result.MessageTypeCase)
                                 {
                                     case ConnectionMessage.MessageTypeOneofCase.ConnectionRequest:
-                                        clients[i].currentWrites.Add(SendMessageAsync(clients[i].stream, new ConnectionMessage { ConnectionResonse = new ConnectionMessage.Types.ConnectionResponse() { Confirm = _canAcceptClients } }));
+                                        System.Diagnostics.Debug.WriteLine("Received Connection Request");
+                                        clients[i].currentWrites.Add(SendMessageAsync(clients[i].stream, new ConnectionMessage 
+                                        { 
+                                            ConnectionResonse = new ConnectionMessage.Types.ConnectionResponse() 
+                                            { 
+                                                Confirm = _canAcceptClients 
+                                            } 
+                                        }));
                                         break;
                                     case ConnectionMessage.MessageTypeOneofCase.ResourceOwnershipRequest:
-                                        //implement GetGuid
-                                        clients[i].currentWrites.Add(SendMessageAsync(clients[i].stream, new ConnectionMessage { ResourceOwnershipResponse = new ConnectionMessage.Types.ResourceOwnershipResponse() { Confirm = true, Guid = GetGuid(clients[i].message.Result.ResourceOwnershipRequest.ResourceName) } }));
+                                        //Maybe make error stuff better
+                                        System.Diagnostics.Debug.WriteLine("Received Resource Ownership Request");
+                                        int generation = default;
+                                        ByteString guid = ByteString.Empty;
+                                        if (TryGetResource(clients[i].message.Result.ResourceOwnershipRequest.ResourceName, ref guid, ref generation))
+                                        {
+                                            clients[i].currentWrites.Add(SendMessageAsync(clients[i].stream, new ConnectionMessage
+                                            {
+                                                ResourceOwnershipResponse = new ConnectionMessage.Types.ResourceOwnershipResponse()
+                                                {
+                                                    Confirm = true,
+                                                    Guid = guid,
+                                                    Generation = generation
+                                                }
+                                            }));
+                                        }
+                                        else
+                                        {
+                                            clients[i].currentWrites.Add(SendMessageAsync(clients[i].stream, new ConnectionMessage
+                                            {
+                                                ResourceOwnershipResponse = new ConnectionMessage.Types.ResourceOwnershipResponse()
+                                                {
+                                                    Confirm = false,
+                                                    Error = "Resource could not be given"
+                                                }
+                                            }));
+                                        }
                                         break;
                                     case ConnectionMessage.MessageTypeOneofCase.TerminateConnectionRequest:
-                                        clients[i].currentWrites.Add(SendMessageAsync(clients[i].stream, new ConnectionMessage { TerminateConnectionRespons = new ConnectionMessage.Types.TerminateConnectionResponse() { Confirm = true } }));
+                                        System.Diagnostics.Debug.WriteLine("Received Terminate Connection Request");
+                                        if (RobotManager.Instance.Robots.TryGetValue(clients[i].message.Result.TerminateConnectionRequest.ResourceName, out ControllableState tmp) && clients[i].message.Result.TerminateConnectionRequest.Guid == tmp.Guid && clients[i].message.Result.TerminateConnectionRequest.Generation == tmp.Generation)
+                                        {
+                                            clients[i].currentWrites.Add(SendMessageAsync(clients[i].stream, new ConnectionMessage
+                                            {
+                                                TerminateConnectionResponse = new ConnectionMessage.Types.TerminateConnectionResponse()
+                                                {
+                                                    Confirm = true,
+                                                    ResourceName = clients[i].message.Result.TerminateConnectionRequest.ResourceName
+                                                }
+                                            }));
+                                        }
+                                        else
+                                        {
+                                            clients[i].currentWrites.Add(SendMessageAsync(clients[i].stream, new ConnectionMessage
+                                            {
+                                                TerminateConnectionResponse = new ConnectionMessage.Types.TerminateConnectionResponse()
+                                                {
+                                                    Confirm = false,
+                                                    Error = "Cannot terminate connection from resource"
+                                                }
+                                            }));
+                                        }
                                         break;
                                     case ConnectionMessage.MessageTypeOneofCase.Heartbeat:
+                                        System.Diagnostics.Debug.WriteLine("Received Heartbeat");
                                         clients[i].state.LastHeartbeat = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                                         break;
                                     default:
                                         System.Diagnostics.Debug.WriteLine("Invalid Message Recieved");
                                         break;
                                 }
+                                clients[i].message = GetConnectionMessageAsync(clients[i].stream);
                             }
                         }
                     }
                 });
-
 
 
                 listenerThread.Start();
@@ -163,6 +218,8 @@ namespace SynthesisAPI.Utilities
 
             private async Task SendMessageAsync(NetworkStream stream, ConnectionMessage message)
             {
+                System.Diagnostics.Debug.WriteLine("Writing: ", message.ToString());
+                /*
                 var ms = new MemoryStream();
                 message.WriteTo(ms);
 
@@ -179,9 +236,13 @@ namespace SynthesisAPI.Utilities
                     Array.Reverse(metadata);
                     Array.Reverse(content);
                 }
+                */
+                byte[] metadata = new byte[sizeof(int)];
+                metadata = BitConverter.GetBytes(message.CalculateSize());
 
                 await stream.WriteAsync(metadata, 0, metadata.Length);
-                await stream.WriteAsync(content, 0, content.Length);
+                message.WriteTo(stream);
+                //await stream.WriteAsync(content, 0, content.Length);
             }
 
             private async Task<ConnectionMessage> GetConnectionMessageAsync(NetworkStream stream)
@@ -201,52 +262,22 @@ namespace SynthesisAPI.Utilities
                 return connectionMessage;
             }
 
-            private ByteString GetGuid(string resourceName)
+            
+            private bool TryGetResource(string resourceName, ref ByteString guidOutput, ref int generation)
             {
-                throw new NotImplementedException();
-            }
-
-            /*
-            private async Task<byte[]> GetNextMessageBufferAsync(NetworkStream stream)
-            {
-                byte[] bufferSize = new byte[sizeof(Int32)];
-                await stream.ReadAsync(bufferSize, 0, sizeof(Int32));
-                byte[] newBuffer = new byte[BitConverter.ToInt32(bufferSize, 0)];
-                await stream.ReadAsync(newBuffer, 0, newBuffer.Length);
-                return newBuffer;
-            }
-            */
-
-            /*
-            public async Task<UpdateSignals?> ReadUpdateMessageAsync(MemoryStream stream)
-            {
-                if (stream.Position >= stream.Length)
+                System.Diagnostics.Debug.WriteLine("TRYING TO GET RESOURCE");
+                System.Diagnostics.Debug.WriteLine(RobotManager.Instance.Robots.TryGetValue(resourceName, out ControllableState asd));
+                System.Diagnostics.Debug.WriteLine(asd.Guid);
+                System.Diagnostics.Debug.WriteLine(asd.IsFree);
+                if (RobotManager.Instance.Robots.TryGetValue(resourceName, out ControllableState tmp) && tmp.IsFree)
                 {
-                    return null;
+                    guidOutput = tmp.Guid;
+                    generation = tmp.Generation;
+                    return true;
                 }
-                UpdateSignals signals = new UpdateSignals();
-                byte[] sizeBytes = new byte[sizeof(int)];
-                await stream.ReadAsync(sizeBytes, 0, sizeBytes.Length);
-                if (BitConverter.IsLittleEndian)
-                    Array.Reverse(sizeBytes);
-
-                int size = BitConverter.ToInt32(sizeBytes, 0);
-                byte[] signalBytes = new byte[size];
-                await stream.ReadAsync(signalBytes, 0, signalBytes.Length);
-                signals.MergeFrom(signalBytes);
-                return signals;
-            }
-            */
-        }
-        /*
-        public static ConcurrentQueue<UpdateSignals> Packets
-        {
-            get
-            {
-                return Server.Instance._packets;
+                return false;
             }
         }
-        */
 
         public static void Start()
         {
@@ -265,5 +296,4 @@ namespace SynthesisAPI.Utilities
             set => Server.Instance._canAcceptClients = value;
         }
     }
-
 }

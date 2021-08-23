@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using ProtoBuf;
 using Google.Protobuf;
+using Mirabuf.Signal;
+using Mirabuf;
 
 
 namespace TestApi 
@@ -24,6 +26,7 @@ namespace TestApi
 
         static ConnectionMessage response;
         static ByteString guid;
+        static int generation;
 
         static TcpClient client;
         static int port = 13000;
@@ -56,25 +59,53 @@ namespace TestApi
                 SendData(heartbeat);
             });
 
+            RobotManager.Instance.AddSignalLayout(new Signals()
+            {
+                Info = new Info()
+                {
+                    Name = "Robot",
+                    GUID = Guid.NewGuid().ToString()
+                }
+            });
+
             heartbeatThread.Start();
             TcpServerManager.Start();
             StartClient("127.0.0.1");
 
+            System.Diagnostics.Debug.WriteLine("Sending Connection Request");
             SendData(connectionRequest);
 
             response = ReadData();
             if (response.MessageTypeCase == ConnectionMessage.MessageTypeOneofCase.ConnectionResonse && response.ConnectionResonse.Confirm)
             {
+                System.Diagnostics.Debug.WriteLine("Sending Resource Ownership Request");
                 SendData(resourceOwnershipRequest);
             }
 
             response = ReadData();
-            if (response.MessageTypeCase == ConnectionMessage.MessageTypeOneofCase.ResourceOwnershipRequest && response.ResourceOwnershipResponse.Confirm)
+            System.Diagnostics.Debug.WriteLine(response);
+            if (response.MessageTypeCase == ConnectionMessage.MessageTypeOneofCase.ResourceOwnershipResponse && response.ResourceOwnershipResponse.Confirm)
             {
                 guid = response.ResourceOwnershipResponse.Guid;
-                SendData(resourceOwnershipRequest);
+                generation = response.ResourceOwnershipResponse.Generation;
             }
+            System.Diagnostics.Debug.WriteLine("Guid is: {0}", guid);
+            Thread.Sleep(1000);
 
+            terminateConnectionRequest = new ConnectionMessage()
+            {
+                TerminateConnectionRequest = new ConnectionMessage.Types.TerminateConnectionRequest()
+                {
+                    Guid = guid,
+                    Generation = generation
+                }
+            };
+            System.Diagnostics.Debug.WriteLine("Sending Terminate Connection Request");
+            SendData(terminateConnectionRequest);
+            if (response.MessageTypeCase == ConnectionMessage.MessageTypeOneofCase.TerminateConnectionResponse && response.TerminateConnectionResponse.Confirm)
+            {
+                StopClient();
+            }
 
         }
 

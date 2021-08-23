@@ -8,7 +8,7 @@ message ConnectionMessage {
         ResourceOwnershipRequest resource_ownership_request = 3;
         ResourceOwnershipResponse resource_ownership_response = 4;
         TerminateConnectionRequest terminate_connection_request = 5;
-        TerminateConnectionResponse terminate_connection_respons = 6;
+        TerminateConnectionResponse terminate_connection_response = 6;
         Heartbeat heartbeat = 7;
     }
 
@@ -26,16 +26,21 @@ message ConnectionMessage {
     message ResourceOwnershipResponse {
         bool confirm = 1;
         string error = 2;
-        bytes guid = 3;
+        string resource_name = 3;
+        bytes guid = 4;
+        int32 generation = 5;
     }
 
     message TerminateConnectionRequest {
-        bytes guid = 1;
+        string resource_name = 1;
+        bytes guid = 2;
+        int32 generation = 3;
     }
 
     message TerminateConnectionResponse {
         bool confirm = 1;
-        string error = 2;
+        string resource_name = 2;
+        string error = 3;
     }
 
     message Heartbeat {}

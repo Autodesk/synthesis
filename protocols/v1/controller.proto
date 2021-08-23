@@ -19,6 +19,8 @@ message UpdateSignal {
 }
 
 message UpdateSignals {
-    bytes guid = 1;
-    map<string, UpdateSignal> signal_map = 2;
+    string resource_name = 1;
+    bytes guid = 2;
+    int32 generation = 3;
+    map<string, UpdateSignal> signal_map = 4;
 }

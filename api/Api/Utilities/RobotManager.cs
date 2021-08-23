@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using Mirabuf.Signal;
+using Mirabuf;
 using Google.Protobuf;
 
 namespace SynthesisAPI.Utilities
@@ -34,14 +35,21 @@ namespace SynthesisAPI.Utilities
             }
         }
 
-        public Dictionary<string, ControllableState> Robots { get; private set; }
+        public struct GenerationalEntry<T>
+        {
+            public int Generation { get; set; }
+            public T Value { get; set; }
+        }
+
+        // TODO: maybe create IEquatable Info object to use as key?
+        public Dictionary<String, ControllableState> Robots { get; private set; }
         public ConcurrentQueue<UpdateSignals> UpdateQueue { get; private set; }
 
         private static readonly Lazy<RobotManager> lazy = new Lazy<RobotManager>(() => new RobotManager());
         public static RobotManager Instance { get { return lazy.Value; } }
         private RobotManager()
         {
-            Robots = new Dictionary<string, ControllableState>();
+            Robots = new Dictionary<String, ControllableState>();
             UpdateQueue = new ConcurrentQueue<UpdateSignals>();
         }
 
@@ -54,7 +62,7 @@ namespace SynthesisAPI.Utilities
                 while (IsRunning)
                 {
                     if (UpdateQueue.TryDequeue(out UpdateSignals tmp))
-                        Robots[tmp.Guid.ToStringUtf8()].Update(tmp);
+                        Robots[tmp.ResourceName].Update(tmp);
                 }
             });
             queueThread.Start();
@@ -67,10 +75,10 @@ namespace SynthesisAPI.Utilities
 
         public void AddSignalLayout(Signals signalLayout)
         {
-            Robots[signalLayout.Info.GUID] = new ControllableState()
-            {
-                CurrentSignalLayout = signalLayout
-            };
+            System.Diagnostics.Debug.WriteLine(signalLayout.Info.GUID);
+            System.Diagnostics.Debug.WriteLine(signalLayout.Info.Name);
+            Robots[signalLayout.Info.Name] = new ControllableState() { CurrentSignalLayout = signalLayout };
         }
+
     }
 }
