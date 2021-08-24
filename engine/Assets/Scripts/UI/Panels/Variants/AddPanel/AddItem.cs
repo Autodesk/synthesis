@@ -2,37 +2,43 @@
 using Synthesis.ModelManager;
 using Synthesis.UI.Panels;
 using TMPro;
+using UnityEngine.UI;
 
 public class AddItem : MonoBehaviour
 {
     [SerializeField]
     TextMeshProUGUI _name;
 
+    public Image background;
+
     private string _fullPath;
-    private Panel _parentPanel;
     GameObject p;
     private bool _isRobot;
 
     public void AddModel()
     {
-        //ModelManager.AddModel(_fullPath);//importer
-        // Debug.Log("TEST ADD MODEL");
         p.GetComponent<PTL>().SpawnRobot(_fullPath);
-        _parentPanel.Close();
     }
 
     public void AddField()
     {
-        Debug.Log("TEST FIELD");
         p.GetComponent<PTL>().SpawnField(_fullPath);
-        _parentPanel.Close();
     }
 
-    public void Init(string name, string path, Panel parentPanel)
+    public void Init(string name, string path)
     {
         _name.text = name;
         _fullPath = path;
-        _parentPanel = parentPanel;
         p = GameObject.Find("Tester");
     }
+
+    public void Darken()
+    {
+        background.color = new Color(0.972549f, 0.9568627f, 0.9568627f);
+    }
+    public void Lighten()
+    {
+        background.color = Color.white;
+    }
+
 }

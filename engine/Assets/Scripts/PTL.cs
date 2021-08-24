@@ -16,7 +16,8 @@ using Vector3 = UnityEngine.Vector3;
 
 // using Zippo = System.IO.Compression.Z
 
-public class PTL : MonoBehaviour {
+public class PTL : MonoBehaviour
+{
 
     private string DOZER;
     private string MEAN_MACHINE;
@@ -28,7 +29,8 @@ public class PTL : MonoBehaviour {
     private Boolean hasRobot;
     private GameObject Game;
 
-    private void Start() {
+    private void Start()
+    {
         Game = GameObject.Find("Game");//Finds the parent to spawn objects under
         DOZER = ParsePath("$appdata/Autodesk/Synthesis/Robots/Dozer");
         MEAN_MACHINE = ParsePath("$appdata/Autodesk/Synthesis/Robots/2018 - 2471 Mean Machine");
@@ -48,7 +50,7 @@ public class PTL : MonoBehaviour {
         var obj = Importer.MirabufAssemblyImport(Assembly.Parser.ParseFrom(File.ReadAllBytes(MIRA_TEST)));
         obj.transform.position = Vector3.up * 0.5f;
         Debug.Break();
-        
+
         // var field = Importer.Import(POWER_UP, Importer.SourceType.PROTOBUF_FIELD,
         //     Translator.TranslationType.BXDF_TO_PROTO_FIELD, true);
         // var position = field.transform.position;
@@ -78,7 +80,8 @@ public class PTL : MonoBehaviour {
     }
     */
 
-    public void SpawnRobot(string botPath, Vector3 pos, Importer.SourceType srcType, Translator.TranslationType transType = default) {
+    public void SpawnRobot(string botPath, Vector3 pos, Importer.SourceType srcType, Translator.TranslationType transType = default)
+    {
         // if(Directory.Exists(botPath)) botPath = Translator.Translate(botPath, transType, ParsePath("$appdata/Autodesk/Synthesis/Robots"));
         // var robot = Importer.Import(botPath, srcType);
         //
@@ -106,7 +109,8 @@ public class PTL : MonoBehaviour {
     }*/
 
 
-    public void Update() {
+    public void Update()
+    {
         // if (Input.GetKeyDown(KeyCode.Alpha1)) {
         //     SpawnRobot(MEAN_MACHINE, new Vector3(0, 10, 0), Importer.SourceType.PROTOBUF_ROBOT, Translator.TranslationType.BXDJ_TO_PROTO_ROBOT);
         // } else if (Input.GetKeyDown(KeyCode.Alpha2)) {
@@ -114,11 +118,14 @@ public class PTL : MonoBehaviour {
         // }
     }
 
-    private string ParsePath(string p) {
+    private string ParsePath(string p)
+    {
         string[] a = p.Split('/');
         string b = "";
-        for (int i = 0; i < a.Length; i++) {
-            switch (a[i]) {
+        for (int i = 0; i < a.Length; i++)
+        {
+            switch (a[i])
+            {
                 case "$appdata":
                     b += Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
                     break;
