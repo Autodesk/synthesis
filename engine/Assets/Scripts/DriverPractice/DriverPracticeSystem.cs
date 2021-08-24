@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Synthesis.Entitys;
+using Synthesis.Entity;
 using Synthesis.ModelManager.Models;
 using UnityEngine;
 
