@@ -5,7 +5,9 @@ using SynthesisAPI.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using UnityEngine.EventSystems;
+using Quaternion = MathNet.Spatial.Euclidean.Quaternion;
 
 namespace Engine.Util
 {
@@ -67,6 +69,11 @@ namespace Engine.Util
             entry.eventID = type;
             entry.callback.AddListener(action);
             return entry;
+        }
+
+        public static double TripleProduct(Vector3 u, Vector3 v, Vector3 w)
+        {
+            return Vector3.Dot(u, Vector3.Cross(v, w));
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Synthesis.UI.Bars
         private GameObject _currentPanelButton;
 
         private void Start() {
-            VersionNumber.text = $"v {AutoUpdater.LocalVersion}";
+            VersionNumber.text = $"v {AutoUpdater.LocalVersion} BETA";
             OpenTab(homeTab);
         }
 

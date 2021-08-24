@@ -4,17 +4,20 @@ using UnityEngine;
 using Synthesis.Import;
 using System.IO;
 using System;
-using Synthesis.Entitys;
+using Synthesis.Entity;
 using Synthesis.ModelManager;
 using Synthesis.ModelManager.Models;
 using SynthesisAPI.Translation;
 using System.Linq;
+using Mirabuf;
+using Vector3 = UnityEngine.Vector3;
 
 // adjust the PTL for the script, add robot to a list of gameobjects when its spawned
 
 // using Zippo = System.IO.Compression.Z
 
-public class PTL : MonoBehaviour {
+public class PTL : MonoBehaviour
+{
 
     private string DOZER;
     private string MEAN_MACHINE;
@@ -27,7 +30,8 @@ public class PTL : MonoBehaviour {
 
     private GameObject Game;
 
-    private void Start() {
+    private void Start()
+    {
         Game = GameObject.Find("Game");//Finds the parent to spawn objects under
         DOZER = ParsePath("$appdata/Autodesk/Synthesis/Robots/Dozer");
         MEAN_MACHINE = ParsePath("$appdata/Autodesk/Synthesis/Robots/2018 - 2471 Mean Machine");
@@ -35,8 +39,29 @@ public class PTL : MonoBehaviour {
         SYNTHEPARK = ParsePath("$appdata/Autodesk/Synthesis/Fields/SynthePark");
         DESTINATION_DEEP_SPACE = ParsePath("$appdata/Autodesk/Synthesis/Fields/2019 Destination Deep Space");
         POWER_UP = ParsePath("$appdata/Autodesk/Synthesis/Fields/2018 Power Up");
-        
+
         SpawnRobot(MEAN_MACHINE);
+
+        // begin master ptl
+        // var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/MotionDefinition_v72.mira");
+        //var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/1425-2019_v21.mira");
+        var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/TestDriveTrain_v19.mira");
+        //var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/Pneumatic-Drivetrain v33 v3_v1.mira");
+        //var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/2019_DEEPSPACE v2_v1.mira");
+        hasRobot = false;
+        robotList = new List<GameObject>();
+        // SpawnRobot(MEAN_MACHINE);
+
+        var obj = Importer.MirabufAssemblyImport(Assembly.Parser.ParseFrom(File.ReadAllBytes(MIRA_TEST)));
+        obj.transform.position = Vector3.up * 0.5f;
+        Debug.Break();
+
+        // var field = Importer.Import(POWER_UP, Importer.SourceType.PROTOBUF_FIELD,
+        //     Translator.TranslationType.BXDF_TO_PROTO_FIELD, true);
+        // var position = field.transform.position;
+        // position = new Vector3(position.x, position.y + 0.5f, position.z);
+        // field.transform.position = position;
+        // end master ptl
     }
     public void SpawnField(string fieldPath)
     {
@@ -47,21 +72,22 @@ public class PTL : MonoBehaviour {
         if (Directory.Exists(fieldPath)) fieldPath = Translator.Translate(fieldPath, transType, ParsePath("$appdata/Autodesk/Synthesis/Fields"));
         var field = Importer.Import(fieldPath, srcType);
         field.transform.parent = Game.transform;
-        field.transform.position = pos;        
+        field.transform.position = pos;
     }
     public void SpawnRobot(string botPath)
     {
         SpawnRobot(botPath, Vector3.up * 2, Importer.SourceType.PROTOBUF_ROBOT, Translator.TranslationType.BXDJ_TO_PROTO_ROBOT);
     }
 
-    public void SpawnRobot(string botPath, Vector3 pos, Importer.SourceType srcType, Translator.TranslationType transType = default) {
+    public void SpawnRobot(string botPath, Vector3 pos, Importer.SourceType srcType, Translator.TranslationType transType = default)
+    {
         if (ModelManager.Models.Count() > 5)//limit to 6 models
         {
             ToastManager.Log("Cannot spawn more than 6 robots.");
             return;
         }
 
-        if(Directory.Exists(botPath)) botPath = Translator.Translate(botPath, transType, ParsePath("$appdata/Autodesk/Synthesis/Robots"));
+        if (Directory.Exists(botPath)) botPath = Translator.Translate(botPath, transType, ParsePath("$appdata/Autodesk/Synthesis/Robots"));
         var robot = Importer.Import(botPath, srcType);
 
         robot.transform.parent = Game.transform;
@@ -70,8 +96,10 @@ public class PTL : MonoBehaviour {
 
         var model = new Model();
         model.GameObject = robot;
-        foreach (var kvp in dynoMeta.Nodes) {
-            if (dynoMeta.HasFlag(kvp.Key, EntityFlag.Wheel)) {
+        foreach (var kvp in dynoMeta.Nodes)
+        {
+            if (dynoMeta.HasFlag(kvp.Key, EntityFlag.Wheel))
+            {
                 model.AddMotor(dynoMeta.Nodes[kvp.Key].GetComponent<HingeJoint>());
             }
         }
@@ -84,14 +112,16 @@ public class PTL : MonoBehaviour {
 
         ModelManager.AddModel(dynoMeta.Name, model);
         SetCameraTransform(ModelManager.Models.Count() - 1);
-
     }
 
-    private string ParsePath(string p) {
+    private string ParsePath(string p)
+    {
         string[] a = p.Split('/');
         string b = "";
-        for (int i = 0; i < a.Length; i++) {
-            switch (a[i]) {
+        for (int i = 0; i < a.Length; i++)
+        {
+            switch (a[i])
+            {
                 case "$appdata":
                     b += Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
                     break;
@@ -110,5 +140,4 @@ public class PTL : MonoBehaviour {
         robotIndex = index;
         Camera.main.GetComponent<CameraController>().FollowTransform = ModelManager.Models.ElementAt(index).Value.GameObject.transform.GetChild(0);
     }
-
 }
