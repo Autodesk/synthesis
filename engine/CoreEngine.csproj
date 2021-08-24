@@ -56,6 +56,7 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\RobotButtons.cs" />
     <Compile Include="Assets\Scripts\Gizmos\SelectableArrow.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Drivetrain\DrivetrainSubPanel.cs" />
     <Compile Include="Assets\Scripts\ModuleLoader\LoadModuleException.cs" />
@@ -144,10 +145,9 @@
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\LayerAdapter.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\Variants\AddPanel\AddItem.cs" />
     <Compile Include="Assets\Scripts\Importer\GamepieceTag.cs" />
+    <Compile Include="Assets\Scripts\UI\Panels\Variants\ExitPanel.cs" />
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\AudioSourceAdapter.cs" />
     <Compile Include="Assets\Scripts\Importer\Importer.cs" />
-    <Compile Include="Assets\Scripts\RobotButtons.cs" />
-    <Compile Include="Assets\Scripts\UI\Panels\Variants\ExitPanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Scripts\CoreEngine.asmdef" />
