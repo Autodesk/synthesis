@@ -42,13 +42,13 @@ namespace Assets.Scripts.Behaviors
 		public override void Update()
 		{
 			_didUpdate = true;
-			if (Input.GetKeyDown(KeyCode.W) && !Input.GetKeyDown(KeyCode.S))
+			if (Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S))
 			{
-				if (Input.GetKeyDown(KeyCode.A))
+				if (Input.GetKey(KeyCode.A))
 				{
 					_xSpeed = System.Math.Sqrt(2)/2;
 					_zRot = -1*System.Math.Sqrt(2)/2;
-				} else if (Input.GetKeyDown(KeyCode.D))
+				} else if (Input.GetKey(KeyCode.D))
 				{
 					_xSpeed = System.Math.Sqrt(2)/2;
 					_zRot = System.Math.Sqrt(2)/2;
@@ -58,13 +58,13 @@ namespace Assets.Scripts.Behaviors
 					_xSpeed = 1;
 					_zRot = 0;
 				}
-			} else if (Input.GetKeyDown(KeyCode.S))
+			} else if (Input.GetKey(KeyCode.S))
 			{
-				if (Input.GetKeyDown(KeyCode.A))
+				if (Input.GetKey(KeyCode.A))
 				{
 					_xSpeed = -1*System.Math.Sqrt(2)/2;
 					_zRot = -1*System.Math.Sqrt(2)/2;
-				} else if (Input.GetKeyDown(KeyCode.D))
+				} else if (Input.GetKey(KeyCode.D))
 				{
 					_xSpeed = -1*System.Math.Sqrt(2)/2;
 					_zRot = System.Math.Sqrt(2)/2;
@@ -74,17 +74,17 @@ namespace Assets.Scripts.Behaviors
 					_xSpeed = -1;
 					_zRot = 0;
 				}
-			} else if (Input.GetKeyDown(KeyCode.A) && !Input.GetKeyDown(KeyCode.D))
+			} else if (Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
 			{
 				_zRot = -1;
-			}  else if (Input.GetKeyDown(KeyCode.D))
+			}  else if (Input.GetKey(KeyCode.D))
 			{
 				_zRot = 1;
 			}
 			else
 			{
-				//_xSpeed = 0;
-				//_zRot = 0;
+				_xSpeed = 0;
+				_zRot = 0;
 			}
 
 			if (_didUpdate)

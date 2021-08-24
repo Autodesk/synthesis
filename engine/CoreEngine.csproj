@@ -104,6 +104,7 @@
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\MeshAdapter.cs" />
      <Compile Include="Assets\Scripts\ModelManager\ModelManager.cs" />
      <Compile Include="Assets\Scripts\PreferenceManager\PreferenceManager.cs" />
+     <Compile Include="Assets\Scripts\Behaviors\ArcadeDrive.cs" />
      <Compile Include="Assets\Scripts\UI\LayoutManager.cs" />
      <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyFolderItem.cs" />
      <Compile Include="Assets\Scripts\FileSystem\FileSystem.cs" />
@@ -137,7 +138,6 @@
      <Compile Include="Assets\Scripts\Importer\Importer.cs" />
      <Compile Include="Assets\Scripts\EntityManager\Driver.cs" />
      <Compile Include="Assets\Scripts\RobotButtons.cs" />
-     <Compile Include="Assets\Scripts\Behaviors\ArcadeDrive.cs" />
      <None Include="Assets\Scripts\CoreEngine.asmdef" />
      <Reference Include="UnityEngine">
      <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
