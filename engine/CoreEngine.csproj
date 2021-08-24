@@ -79,6 +79,7 @@
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\JointsAdapter.cs" />
     <Compile Include="Assets\Scripts\Utilities\DeflateStreamWrapper.cs" />
     <Compile Include="Assets\Scripts\Camera\GizmoCamera.cs" />
+    <Compile Include="Assets\Scripts\UI\Panels\Variants\Input\InputSelection.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\Variants\Settings\SettingsPanel.cs" />
     <Compile Include="Assets\Scripts\Camera\CameraController.cs" />
     <Compile Include="Assets\Scripts\Util\SynthesisUtil.cs" />
@@ -123,6 +124,7 @@
     <Compile Include="Assets\Scripts\UI\LayoutManager.cs" />
     <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyFolderItem.cs" />
     <Compile Include="Assets\Scripts\FileSystem\FileSystem.cs" />
+    <Compile Include="Assets\Scripts\UI\Panels\Variants\Input\InputPanel.cs" />
     <Compile Include="Assets\Scripts\ModuleLoader\LoadModuleEvent.cs" />
     <Compile Include="Assets\Scripts\Utilities\Misc.cs" />
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\MeshColliderAdapter.cs" />
