@@ -42,7 +42,7 @@ class _Wheel:
     occurrence_token: str  # maybe just pass the component
     wheelType: WheelType
     signalType: SignalType
-    joint_token: Union[str, None] # GUID of wheel's rotational joint. If no joint found, default to None
+    #joint_token: Union[str, None] # GUID of wheel's rotational joint. If no joint found, default to None
 
 
 @dataclass
