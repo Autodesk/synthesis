@@ -56,7 +56,6 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\RobotButtons.cs" />
     <Compile Include="Assets\Scripts\Gizmos\SelectableArrow.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Drivetrain\DrivetrainSubPanel.cs" />
     <Compile Include="Assets\Scripts\ModuleLoader\LoadModuleException.cs" />
@@ -86,7 +85,6 @@
     <Compile Include="Assets\Scripts\Utilities\ObjectLedger.cs" />
     <Compile Include="Assets\Scripts\ModelManager\Models\Motor.cs" />
     <Compile Include="Assets\Scripts\UtilExtensions.cs" />
-    <Compile Include="Assets\Scripts\MultiplayerSwitch.cs" />
     <Compile Include="Assets\Scripts\PTL.cs" />
     <Compile Include="Assets\Scripts\Attributes\ControllableInputAttribute.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Drivetrain\ConfigureDrivetrainPanel.cs" />
@@ -139,7 +137,6 @@
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\ComponentAdapter.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\Variants\UpdatePromptPanel.cs" />
     <Compile Include="Assets\Scripts\Gizmos\ArrowType.cs" />
-    <Compile Include="Assets\Scripts\LocalMultiplayer.cs" />
     <Compile Include="Assets\Scripts\MyTest.cs" />
     <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyModelItem.cs" />
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\LayerAdapter.cs" />
@@ -148,6 +145,7 @@
     <Compile Include="Assets\Scripts\UI\Panels\Variants\ExitPanel.cs" />
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\AudioSourceAdapter.cs" />
     <Compile Include="Assets\Scripts\Importer\Importer.cs" />
+    <Compile Include="Assets\Scripts\UI\MultiplayerManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Scripts\CoreEngine.asmdef" />
