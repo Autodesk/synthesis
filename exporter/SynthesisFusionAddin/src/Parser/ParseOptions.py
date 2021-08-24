@@ -10,14 +10,12 @@
 from typing import Union, List
 from os import path
 from dataclasses import dataclass
-from ..general_imports import *
 
 import os, platform
 import adsk.core, adsk.fusion, traceback
 
 # from .unity import Parse
-from ..general_imports import A_EP, PROTOBUF
-
+from ..general_imports import A_EP, PROTOBUF, gm
 from .SynthesisParser.Parser import Parser
 
 # Contains enums for parents of joints that have special cases
