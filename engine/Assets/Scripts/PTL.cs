@@ -25,9 +25,8 @@ public class PTL : MonoBehaviour
     private string SYNTHEPARK;
     private string DESTINATION_DEEP_SPACE;
     private string POWER_UP;
-
-    public int robotIndex;
-
+    private List<GameObject> robotList;
+    private Boolean hasRobot;
     private GameObject Game;
 
     private void Start()
@@ -39,10 +38,6 @@ public class PTL : MonoBehaviour
         SYNTHEPARK = ParsePath("$appdata/Autodesk/Synthesis/Fields/SynthePark");
         DESTINATION_DEEP_SPACE = ParsePath("$appdata/Autodesk/Synthesis/Fields/2019 Destination Deep Space");
         POWER_UP = ParsePath("$appdata/Autodesk/Synthesis/Fields/2018 Power Up");
-
-        SpawnRobot(MEAN_MACHINE);
-
-        // begin master ptl
         // var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/MotionDefinition_v72.mira");
         //var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/1425-2019_v21.mira");
         var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/TestDriveTrain_v19.mira");
@@ -61,57 +56,66 @@ public class PTL : MonoBehaviour
         // var position = field.transform.position;
         // position = new Vector3(position.x, position.y + 0.5f, position.z);
         // field.transform.position = position;
-        // end master ptl
     }
     public void SpawnField(string fieldPath)
     {
-        SpawnField(fieldPath, Vector3.zero, Importer.SourceType.PROTOBUF_FIELD, Translator.TranslationType.BXDF_TO_PROTO_FIELD);
+        // SpawnField(fieldPath, Vector3.zero, Importer.SourceType.PROTOBUF_FIELD, Translator.TranslationType.BXDF_TO_PROTO_FIELD);
     }
     public void SpawnField(string fieldPath, Vector3 pos, Importer.SourceType srcType, Translator.TranslationType transType = default)
     {
-        if (Directory.Exists(fieldPath)) fieldPath = Translator.Translate(fieldPath, transType, ParsePath("$appdata/Autodesk/Synthesis/Fields"));
-        var field = Importer.Import(fieldPath, srcType);
-        field.transform.parent = Game.transform;
-        field.transform.position = pos;
+        // if (Directory.Exists(fieldPath)) fieldPath = Translator.Translate(fieldPath, transType, ParsePath("$appdata/Autodesk/Synthesis/Fields"));
+        // var field = Importer.Import(fieldPath, srcType);
+        // field.transform.parent = Game.transform;
+        // field.transform.position = pos;        
     }
-    public void SpawnRobot(string botPath)
+    public void SpawnRobot(string botPath)//overloaded
     {
-        SpawnRobot(botPath, Vector3.up * 2, Importer.SourceType.PROTOBUF_ROBOT, Translator.TranslationType.BXDJ_TO_PROTO_ROBOT);
+        // SpawnRobot(botPath, Vector3.up * 2, Importer.SourceType.PROTOBUF_ROBOT, Translator.TranslationType.BXDJ_TO_PROTO_ROBOT);
     }
+
+    /*
+    public void RemoveRobot(String botPath)
+    {
+        RemoveRobot(botPath, Vector3.up * 2, Importer.SourceType.PROTOBUF_ROBOT, Translator.TranslationType.BXDJ_TO_PROTO_ROBOT);
+    }
+    */
 
     public void SpawnRobot(string botPath, Vector3 pos, Importer.SourceType srcType, Translator.TranslationType transType = default)
     {
-        if (ModelManager.Models.Count() > 5)//limit to 6 models
-        {
-            ToastManager.Log("Cannot spawn more than 6 robots.");
-            return;
-        }
+        // if(Directory.Exists(botPath)) botPath = Translator.Translate(botPath, transType, ParsePath("$appdata/Autodesk/Synthesis/Robots"));
+        // var robot = Importer.Import(botPath, srcType);
+        //
+        // robot.transform.parent = Game.transform;
+        // robot.transform.position = pos;
+        // var dynoMeta = robot.GetComponent<DynamicObjectMeta>();
+        //
+        // var model = new Model();
+        // model.GameObject = robot;
+        // foreach (var kvp in dynoMeta.Nodes) {
+        //     if (dynoMeta.HasFlag(kvp.Key, EntityFlag.Wheel)) {
+        //         model.AddMotor(dynoMeta.Nodes[kvp.Key].GetComponent<HingeJoint>());
+        //     }
+        // }
+        // ModelManager.AddModel(dynoMeta.Name, model);
+        //
+        // Camera.main.GetComponent<CameraController>().FollowTransform = robot.transform.GetChild(0);
+        // robotList.Add(robot);
+    }
+    /*
+    public void RemoveRobot(int index)
+    {
+        ModelManager.Remove(j[index]);
+        // just use ModelManager to destroy
+    }*/
 
-        if (Directory.Exists(botPath)) botPath = Translator.Translate(botPath, transType, ParsePath("$appdata/Autodesk/Synthesis/Robots"));
-        var robot = Importer.Import(botPath, srcType);
 
-        robot.transform.parent = Game.transform;
-        robot.transform.position = pos;
-        var dynoMeta = robot.GetComponent<DynamicObjectMeta>();
-
-        var model = new Model();
-        model.GameObject = robot;
-        foreach (var kvp in dynoMeta.Nodes)
-        {
-            if (dynoMeta.HasFlag(kvp.Key, EntityFlag.Wheel))
-            {
-                model.AddMotor(dynoMeta.Nodes[kvp.Key].GetComponent<HingeJoint>());
-            }
-        }
-
-        if (ModelManager.Models.ContainsKey(dynoMeta.name)) //prevents error from being thrown: FIX LACK OF SUPPORT FOR DUPLICATE ROBOTS
-        {
-            ToastManager.Log("Duplicate Robot Loaded: Unaccounted for on model dictionary");
-            return;
-        }
-
-        ModelManager.AddModel(dynoMeta.Name, model);
-        SetCameraTransform(ModelManager.Models.Count() - 1);
+    public void Update()
+    {
+        // if (Input.GetKeyDown(KeyCode.Alpha1)) {
+        //     SpawnRobot(MEAN_MACHINE, new Vector3(0, 10, 0), Importer.SourceType.PROTOBUF_ROBOT, Translator.TranslationType.BXDJ_TO_PROTO_ROBOT);
+        // } else if (Input.GetKeyDown(KeyCode.Alpha2)) {
+        //     SpawnRobot(DOZER, new Vector3(3, 10, 0), Importer.SourceType.PROTOBUF_ROBOT, Translator.TranslationType.BXDJ_TO_PROTO_ROBOT);
+        // }
     }
 
     private string ParsePath(string p)
@@ -132,12 +136,39 @@ public class PTL : MonoBehaviour
             if (i != a.Length - 1)
                 b += Path.AltDirectorySeparatorChar;
         }
+        // Debug.Log(b);
         return b;
     }
 
-    public void SetCameraTransform(int index)
+    public GameObject getRobotAtIndex(int index)
     {
-        robotIndex = index;
-        Camera.main.GetComponent<CameraController>().FollowTransform = ModelManager.Models.ElementAt(index).Value.GameObject.transform.GetChild(0);
+        if (robotList.Count > index)
+        {
+            return robotList.ElementAt(index);
+        }
+        else
+        {
+            hasRobot = false;
+            return null;
+        }
+    }
+
+    public Boolean hasRobotAtPosition(int index)
+    {
+        if (robotList.Count > index)
+        {
+            hasRobot = true;
+            return hasRobot;
+        }
+        else
+        {
+            hasRobot = false;
+            return hasRobot;
+        }
+    }
+
+    public void fixTransformPosition(int index)
+    {
+        Camera.main.GetComponent<CameraController>().FollowTransform = robotList.ElementAt(index).transform.GetChild(0);
     }
 }

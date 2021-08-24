@@ -53,7 +53,7 @@
     <UnityVersion>2020.3.12f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Analyzers\Microsoft.Unity.Analyzers.dll" />
+    <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Gizmos\SelectableArrow.cs" />
@@ -71,6 +71,7 @@
     <Compile Include="Assets\Scripts\UI\ContextMenu\ContextMenu.cs" />
     <Compile Include="Assets\Scripts\ModelManager\Parse.cs" />
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\MeshCollider2DAdapter.cs" />
+    <Compile Include="Assets\Scripts\EntityManager\RotationalDriver.cs" />
     <Compile Include="Assets\Scripts\UI\Hierarchy\Hierarchy.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Gearboxes\JointItem.cs" />
     <Compile Include="Assets\Scripts\Gizmos\MoveArrow.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="Assets\Scripts\Utilities\ObjectLedger.cs" />
     <Compile Include="Assets\Scripts\ModelManager\Models\Motor.cs" />
     <Compile Include="Assets\Scripts\UtilExtensions.cs" />
+    <Compile Include="Assets\Scripts\Behaviors\TankDriveBehavior.cs" />
     <Compile Include="Assets\Scripts\PTL.cs" />
     <Compile Include="Assets\Scripts\Attributes\ControllableInputAttribute.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Drivetrain\ConfigureDrivetrainPanel.cs" />
@@ -97,14 +99,17 @@
     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Drivetrain\ArcadePanel.cs" />
     <Compile Include="Assets\Scripts\MouseTracker.cs" />
     <Compile Include="Assets\Scripts\UI\ContextMenu\ContextItem.cs" />
+    <Compile Include="Assets\Scripts\EntityManager\EntityManager.cs" />
     <Compile Include="Assets\Scripts\Gizmos\GizmoTester.cs" />
     <Compile Include="Assets\Scripts\Attributes\ContextMenuOptionAttribute.cs" />
+    <Compile Include="Assets\Scripts\RobotInstance.cs" />
     <Compile Include="Assets\Scripts\UI\ToastLogger\ToastLogger.cs" />
     <Compile Include="Assets\Scripts\UI\InteractableObject.cs" />
     <Compile Include="Assets\Scripts\AutoUpdater.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\Panel.cs" />
     <Compile Include="Assets\Scripts\ModelManager\Models\Model.cs" />
     <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyRootItem.cs" />
+    <Compile Include="Assets\Scripts\UI\MultiplayerManager.cs" />
     <Compile Include="Assets\Scripts\UI\NavigationBar.cs" />
     <Compile Include="Assets\Scripts\UI\ToastLogger\ToastConfig.cs" />
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\SystemAdapter.cs" />
@@ -114,6 +119,7 @@
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\MeshAdapter.cs" />
     <Compile Include="Assets\Scripts\ModelManager\ModelManager.cs" />
     <Compile Include="Assets\Scripts\PreferenceManager\PreferenceManager.cs" />
+    <Compile Include="Assets\Scripts\Behaviors\ArcadeDrive.cs" />
     <Compile Include="Assets\Scripts\UI\LayoutManager.cs" />
     <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyFolderItem.cs" />
     <Compile Include="Assets\Scripts\FileSystem\FileSystem.cs" />
@@ -145,7 +151,7 @@
     <Compile Include="Assets\Scripts\UI\Panels\Variants\ExitPanel.cs" />
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\AudioSourceAdapter.cs" />
     <Compile Include="Assets\Scripts\Importer\Importer.cs" />
-    <Compile Include="Assets\Scripts\UI\MultiplayerManager.cs" />
+    <Compile Include="Assets\Scripts\EntityManager\Driver.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Scripts\CoreEngine.asmdef" />
@@ -375,9 +381,6 @@
     </Reference>
     <Reference Include="UnityEditor.Graphs">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.12f1\Editor\Data\Managed\UnityEditor.Graphs.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor.WebGL.Extensions">
-      <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.12f1\Editor\Data\PlaybackEngines\WebGLSupport\UnityEditor.WebGL.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.OSXStandalone.Extensions">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.12f1\Editor\Data\PlaybackEngines\MacStandaloneSupport\UnityEditor.OSXStandalone.Extensions.dll</HintPath>

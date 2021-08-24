@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Synthesis.ModelManager;
@@ -32,12 +30,12 @@ public class MultiplayerManager : MonoBehaviour
             robotButtons[i].GetComponent<Button>().interactable = true;
             robotButtons[i].GetComponent<Image>().color = enabled;
         }
-        robotButtons[p.robotIndex].GetComponent<Image>().color = selected;
+        //robotButtons[p.robotIndex].GetComponent<Image>().color = selected;
     }
 
     public void SwitchRobot(int index)
     {
-        p.SetCameraTransform(index);
+        //p.SetCameraTransform(index);
     }
 
     private void Update()
