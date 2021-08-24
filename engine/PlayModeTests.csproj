@@ -266,10 +266,10 @@
      <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/Managed/UnityEngine/UnityEditor.UnityConnectModule.dll</HintPath>
      </Reference>
      <Reference Include="nunit.framework">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Library/PackageCache/com.unity.ext.nunit@1.0.6/net35/unity-custom/nunit.framework.dll</HintPath>
+     <HintPath>C:/Users/nickb/git/synthesis-input-panel/engine/Library/PackageCache/com.unity.ext.nunit@1.0.6/net35/unity-custom/nunit.framework.dll</HintPath>
      </Reference>
      <Reference Include="Api">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/Api.dll</HintPath>
+     <HintPath>C:/Users/nickb/git/synthesis-input-panel/engine/Assets/Packages/Api.dll</HintPath>
      </Reference>
      <Reference Include="mscorlib">
      <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>
@@ -620,16 +620,16 @@
      <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Xml.XPath.XDocument.dll</HintPath>
      </Reference>
      <Reference Include="UnityEngine.TestRunner">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Library/ScriptAssemblies/UnityEngine.TestRunner.dll</HintPath>
+     <HintPath>C:/Users/nickb/git/synthesis-input-panel/engine/Library/ScriptAssemblies/UnityEngine.TestRunner.dll</HintPath>
      </Reference>
      <Reference Include="UnityEditor.TestRunner">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Library/ScriptAssemblies/UnityEditor.TestRunner.dll</HintPath>
+     <HintPath>C:/Users/nickb/git/synthesis-input-panel/engine/Library/ScriptAssemblies/UnityEditor.TestRunner.dll</HintPath>
      </Reference>
      <Reference Include="UnityEditor.UI">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
+     <HintPath>C:/Users/nickb/git/synthesis-input-panel/engine/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
      </Reference>
      <Reference Include="UnityEngine.UI">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
+     <HintPath>C:/Users/nickb/git/synthesis-input-panel/engine/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
      </Reference>
   </ItemGroup>
   <ItemGroup>

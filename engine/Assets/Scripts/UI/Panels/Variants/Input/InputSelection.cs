@@ -24,7 +24,13 @@ namespace Synthesis.UI.Panels {
             
             UpdateUI(inputValue);
 
-            Button.onClick.AddListener(() => panel.RequestInput(this));
+            Button.onClick.AddListener(() =>
+            {
+                if (panel.RequestInput(this))
+                {
+                    UpdateUI("Press anything");
+                }
+            });
         }
 
         public void UpdateUI(string newKeyValue) {

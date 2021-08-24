@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using SynthesisAPI.InputManager;
+using SynthesisAPI.InputManager.Inputs;
 using UnityEngine;
 
 namespace Synthesis.UI.Panels {
@@ -11,12 +13,13 @@ namespace Synthesis.UI.Panels {
         public GameObject InputSelection;
         
         private InputSelection awaitingReassignment = null;
-        
-        public void RequestInput(InputSelection selection) {
-            if (awaitingReassignment != null)
-                throw new Exception("Should this even be possible?");
 
+        public bool RequestInput(InputSelection selection)
+        {
+            if (awaitingReassignment != null)
+                return false;
             awaitingReassignment = selection;
+            return true;
         }
 
         public void PopulateInputSelections() {
@@ -28,12 +31,23 @@ namespace Synthesis.UI.Panels {
             }
         }
 
+        private void Start()
+        {
+                PopulateInputSelections();
+        }
+
         private void Update() {
             if (awaitingReassignment != null) {
                 var input = InputManager.GetAny();
-                if (input != null) {
+                if (input != null && !Regex.IsMatch(input.Name, ".*Mouse.*")) {
                     InputManager.AssignValueInput(awaitingReassignment.InputKey, input);
-                    awaitingReassignment.UpdateUI(input.Name);
+                    if(input is Digital)
+                        awaitingReassignment.UpdateUI(input.Name);
+                    else
+                    {
+                        awaitingReassignment.UpdateUI(input.UsePositiveSide ? $"{input.Name} +" : $"{input.Name} -");
+                    }
+
                     awaitingReassignment = null;
                 }
             }
