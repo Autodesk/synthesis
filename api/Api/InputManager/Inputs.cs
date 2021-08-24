@@ -2,9 +2,15 @@
 using MathNet.Spatial.Euclidean;
 using SynthesisAPI.Runtime;
 using SynthesisAPI.Utilities;
+using UnityEngine;
+using UnityEngine.UIElements;
+using Logger = UnityEngine.Logger;
+using Math = System.Math;
 
 namespace SynthesisAPI.InputManager.Inputs
 {
+    // TODO: Should I add HashCodes?
+    
     public interface Input
     {
         string Name { get; }
@@ -14,31 +20,44 @@ namespace SynthesisAPI.InputManager.Inputs
 
     public class Analog : Input
     {
-        public string Name { get; private set; }
-        public float Value { get; private set; }
+
+        public string Name { get; protected set; }
+        public float Value
+        {
+            get
+            {
+                Update();
+                return _value;
+            }
+            protected set => _value = value;
+        }
+
+        public bool UsePositiveSide { get; private set; }
         public float BaseValue { get; private set; }
         public bool Inverted { get; private set; }
 
-        public Analog(string name, bool inverted = false, float baseValue = 0)
+        private float _value;
+
+        public Analog(string name, bool usePositiveSide, bool inverted = false, float baseValue = 0)
         {
             Name = name;
             Inverted = inverted;
+            UsePositiveSide = usePositiveSide;
             BaseValue = baseValue;
         }
 
         public virtual bool Update()
         {
-            Value = UnityEngine.Input.GetAxis(Name);
-            Value = Inverted ? Value *= -1 : Value;
-            return Value != BaseValue;
+            _value = UnityEngine.Input.GetAxis(Name);
+            _value = Inverted ? _value *= -1 : _value;
+            _value = Mathf.Clamp(_value, UsePositiveSide ? BaseValue : -999, UsePositiveSide ? 999 : BaseValue);
+            return Math.Abs(_value - BaseValue) > 0.1;
         }
     }
     public class Digital : Analog
     {
-        public string Name { get; private set; }
-        public float Value { get; private set; }
         public DigitalState State { get; private set; }
-        public Digital(string name) : base(name)
+        public Digital(string name) : base(name, true)
         {
             Name = name;
             Value = 0.0f;
@@ -46,16 +65,24 @@ namespace SynthesisAPI.InputManager.Inputs
         }
 
         public override bool Update() {
-            if (UnityEngine.Input.GetKeyDown(Name))
-                State = DigitalState.Down;
-            else if (UnityEngine.Input.GetKey(Name))
-                State = DigitalState.Held;
-            else if (UnityEngine.Input.GetKeyUp(Name))
-                State = DigitalState.Up;
-            else
-                State = DigitalState.None;
-            Value = State > 0 ? 1 : 0;
-            return State != DigitalState.None;
+            try
+            {
+                if (InputUtils.GetKeyOrButtonDown(Name))
+                    State = DigitalState.Down;
+                else if (InputUtils.GetKeyOrButton(Name))
+                    State = DigitalState.Held;
+                else if (InputUtils.GetKeyOrButtonUp(Name))
+                    State = DigitalState.Up;
+                else
+                    State = DigitalState.None;
+                Value = State > 0 ? 1 : 0;
+                return State != DigitalState.None;
+            }
+            catch (ArgumentException e)
+            {
+                Utilities.Logger.Log($"Key {Name} is invalid." );
+                return false;
+            }
         }
     }
 

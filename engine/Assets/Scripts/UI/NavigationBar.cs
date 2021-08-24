@@ -25,6 +25,12 @@ namespace Synthesis.UI.Bars
             OpenTab(homeTab);
         }
 
+        public void Exit() {
+            if (Application.isEditor)
+                Debug.Log("Would exit, but it's editor mode");
+            else
+                Application.Quit();
+        }
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Escape))
