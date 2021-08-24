@@ -3,450 +3,516 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
+using Assets.Scripts.Behaviors;
+using Google.Protobuf;
+using Google.Protobuf.WellKnownTypes;
+using Mirabuf;
+using Mirabuf.Joint;
+using Mirabuf.Material;
+using Mirabuf.Signal;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using NUnit.Framework.Constraints;
+using Synthesis.Util;
 using SynthesisAPI.Proto;
+using SynthesisAPI.Simulation;
+using SynthesisAPI.Utilities;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using Material = SynthesisAPI.Proto.Material;
 using Mesh = SynthesisAPI.Proto.Mesh;
-using SynthesisAPI.Translation;
 using UMaterial = UnityEngine.Material;
 using UMesh = UnityEngine.Mesh;
 using Logger = SynthesisAPI.Utilities.Logger;
+using Assembly = Mirabuf.Assembly;
+using AssemblyData = Mirabuf.AssemblyData;
+using Enum = System.Enum;
+using Joint = Mirabuf.Joint.Joint;
+using Transform = UnityEngine.Transform;
+using Vector3 = Mirabuf.Vector3;
+using UVector3 = UnityEngine.Vector3;
+using Node = Mirabuf.Node;
+using MPhysicalProperties = Mirabuf.PhysicalProperties;
+using JointMotor = UnityEngine.JointMotor;
 
-namespace Synthesis.Import {
+namespace Synthesis.Import
+{
+	/// <summary>
+	/// The Importer class connected functions with string parameters to import an Entity/Model into the Engine
+	/// NOTE: This may be moved into the Engine instead of in it's own project.
+	/// </summary>
+	public static class Importer
+	{
+		#region Importer Framework
 
-    /// <summary>
-    /// The Importer class connected functions with string parameters to import an Entity/Model into the Engine
-    /// NOTE: This may be moved into the Engine instead of in it's own project.
-    /// </summary>
-    public static class Importer {
+		public delegate GameObject ImportFuncString(string path);
 
-        #region Importer Framework
-        
-        public delegate GameObject ImportFuncString(string path);
-        public delegate GameObject ImportFuncBuffer(byte[] buffer);
+		public delegate GameObject ImportFuncBuffer(byte[] buffer);
 
-        /// <summary>
-        /// Default Importers that come stock with Synthesis. Leaves ability to add one post release
-        /// </summary>
-        public static Dictionary<SourceType, (ImportFuncString strFunc, ImportFuncBuffer bufFunc)> Importers
-            = new Dictionary<SourceType, (ImportFuncString strFunc, ImportFuncBuffer bufFunc)>() {
-            { SourceType.PROTOBUF_ROBOT, (ProtoRobotImport, ProtoRobotImport) },
-            { SourceType.PROTOBUF_FIELD, (ProtoFieldImport, ProtoFieldImport) }
-        };
+		/// <summary>
+		/// Default Importers that come stock with Synthesis. Leaves ability to add one post release
+		/// </summary>
+		public static Dictionary<SourceType, (ImportFuncString strFunc, ImportFuncBuffer bufFunc)> Importers
+			= new Dictionary<SourceType, (ImportFuncString strFunc, ImportFuncBuffer bufFunc)>()
+			{
+				// { SourceType.PROTOBUF_ROBOT, (ProtoRobotImport, ProtoRobotImport) },
+				{SourceType.MIRABUF_ASSEMBLY, (MirabufAssemblyImport, MirabufAssemblyImport)}
+			};
 
-        /// <summary>
-        /// Import a serialized DynamicObject into a Unity Environment
-        /// </summary>
-        /// <param name="path">Path to serialized data (this could be a directory or a file depending on your import/translate function)</param>
-        /// <param name="type">Type of import to conduct</param>
-        /// <param name="transType">Optional translation type to use before importing</param>
-        /// <param name="forceTranslate">Force a translation of source data regardless if a temp file exists. TODO: Probably remove in the future</param>
-        /// <returns>Root GameObject of whatever Entity/Model you imported</returns>
-        public static GameObject Import(string path, SourceType type, Translator.TranslationType transType, bool forceTranslate = false)
-            => Import(path, type, Translator.Translations.ContainsKey(transType) ? Translator.Translations[transType].strFunc : null, forceTranslate);
-        /// <summary>
-        /// Import a serialized DynamicObject into a Unity Environment
-        /// </summary>
-        /// <param name="buf">Serialized data</param>
-        /// <param name="type">Type of import to conduct</param>
-        /// <param name="transType">Optional translation type to use before importing</param>
-        /// <returns>Root GameObject of whatever Entity/Model you imported</returns>
-        public static GameObject Import(byte[] buf, SourceType type, Translator.TranslationType transType)
-            => Import(buf, type, Translator.Translations.ContainsKey(transType) ? Translator.Translations[transType].bufFunc : null);
+		/// <summary>
+		/// Import a serialized DynamicObject into a Unity Environment
+		/// </summary>
+		/// <param name="path">Path to serialized data (this could be a directory or a file depending on your import/translate function)</param>
+		/// <param name="type">Type of import to conduct</param>
+		/// <param name="transType">Optional translation type to use before importing</param>
+		/// <param name="forceTranslate">Force a translation of source data regardless if a temp file exists. TODO: Probably remove in the future</param>
+		/// <returns>Root GameObject of whatever Entity/Model you imported</returns>
+		public static GameObject Import(string path, SourceType type)
+			=> Importers[type].strFunc(path);
 
-        /// <summary>
-        /// Import an Entity/Model into the Engine
-        /// </summary>
-        /// <param name="path">Path to serialized data (this could be a directory or a file depending on your import/translate function)</param>
-        /// <param name="type">Type of import to conduct</param>
-        /// <param name="translation">Optional translation to use before importing</param>
-        /// <param name="forceTranslate">Force a translation of source data regardless if a temp file exists. TODO: Probably remove in the future</param>
-        /// <returns>Root GameObject of whatever Entity/Model you imported</returns>
-        public static GameObject Import(string path, SourceType type, Translator.TranslationFuncString translation = null, bool forceTranslate = false) {
-            if (!Importers.ContainsKey(type))
-                throw new Exception($"{Enum.GetName(type.GetType(), type)} importer doesn't exist");
+		public static GameObject Import(byte[] contents, SourceType type)
+			=> Importers[type].bufFunc(contents);
 
-            if (translation == null) {
-                return Importers[type].strFunc(path);
-            } else {
-                if (!forceTranslate) {
-                    Debug.Log("Checking for cached translation");
-                    string newPath = path;
-                    // string name = newPath.Substring(newPath.LastIndexOf(Path.AltDirectorySeparatorChar) + 1);
-                    string name = Translator.TempFileName(path);
-                    string tempPath = Path.GetTempPath() + Path.AltDirectorySeparatorChar + "synth_temp";
-                    if (Directory.Exists(tempPath)) {
-                        newPath = tempPath + Path.AltDirectorySeparatorChar + $"{name}.{type.FileEnding}";
-                        if (File.Exists(newPath)) {
-                            Debug.Log("Importing from cache");
-                            return Importers[type].strFunc(newPath);
-                        } else {
-                            Debug.Log($"No file: {newPath}");
-                        }
-                    } else {
-                        Debug.Log($"No directory: {tempPath}");
-                    }
-                }
-                return Importers[type].strFunc(Translator.Translate(path, translation));
-            }
-        }
-        
-        /// <summary>
-        /// Import an Entity/Model into the Engine
-        /// </summary>
-        /// <param name="buf">Serialized data (this could be a directory or a file depending on your import/translate function)</param>
-        /// <param name="type">Type of import to conduct</param>
-        /// <param name="translation">Optional translation to use before importing</param>
-        /// <returns>Root GameObject of whatever Entity/Model you imported</returns>
-        public static GameObject Import(byte[] buf, SourceType type, Translator.TranslationFuncBuffer translation = null) {
-            if (!Importers.ContainsKey(type))
-                throw new Exception($"{Enum.GetName(type.GetType(), type)} importer doesn't exist");
+		#endregion
 
-            if (translation == null) {
-                return Importers[type].bufFunc(buf);
-            } else {
-                return Importers[type].bufFunc(Translator.Translate(buf, translation));
-            }
-        }
+		#region Mirabuf Importer
 
-        #endregion
-        
-        #region ProtoBuf Importer
+		public static GameObject MirabufAssemblyImport(string path)
+			=> MirabufAssemblyImport(File.ReadAllBytes(path));
 
-        #region ProtoField
-        
-        /// <summary>
-        /// Import function for importing a ProtoField
-        /// </summary>
-        /// <param name="path">Path to the serialized ProtoField</param>
-        /// <returns>Root GameObject of the imported ProtoField</returns>
-        public static GameObject ProtoFieldImport(string path) => ProtoFieldImport(File.ReadAllBytes(path));
-        /// <summary>
-        /// Import function for importing a ProtoField
-        /// </summary>
-        /// <param name="buf">Serialized ProtoField</param>
-        /// <returns>Root GameObject of the imported ProtoField</returns>
-        public static GameObject ProtoFieldImport(byte[] buf) => ProtoFieldImport(ProtoField.Parser.ParseFrom(buf));
-        /// <summary>
-        /// Import function for importing a ProtoField
-        /// </summary>
-        /// <param name="protoField">ProtoField data</param>
-        /// <returns>Root GameObject of the imported ProtoField</returns>
-        public static GameObject ProtoFieldImport(ProtoField protoField) {
-            var dynoUnity = DynamicObjectImport(protoField.Object);
-            var gamepieces = GamepiecesImport(protoField.Gamepieces);
-            gamepieces.transform.parent = dynoUnity.transform;
-            return dynoUnity;
-        }
-        
-        #endregion
+		public static GameObject MirabufAssemblyImport(byte[] buffer)
+			=> MirabufAssemblyImport(Assembly.Parser.ParseFrom(buffer));
 
-        #region ProtoRobot
-        
-        /// <summary>
-        /// Import function for importing a ProtoRobot
-        /// </summary>
-        /// <param name="path">Path to the serialized ProtoRobot</param>
-        /// <returns>Root GameObject of the imported ProtoRobot</returns>
-        public static GameObject ProtoRobotImport(string path) => ProtoRobotImport(File.ReadAllBytes(path));
-        /// <summary>
-        /// Import function for importing a ProtoRobot
-        /// </summary>
-        /// <param name="buffer">Serialized ProtoRobot</param>
-        /// <returns>Root GameObject of the imported ProtoRobot</returns>
-        public static GameObject ProtoRobotImport(byte[] buffer) => ProtoRobotImport(ProtoRobot.Parser.ParseFrom(buffer));
-        /// <summary>
-        /// Import function for importing a ProtoRobot
-        /// TODO:
-        ///     1) Get rid of massScale and collectiveMass
-        ///     2) Add Meta components
-        /// </summary>
-        /// <param name="protoRobot">ProtoRobot data</param>
-        /// <returns>Root GameObject of the imported ProtoRobot</returns>
-        public static GameObject ProtoRobotImport(ProtoRobot protoRobot) {
-            var dynoUnity = DynamicObjectImport(protoRobot.Object);
-            return dynoUnity;
-        }
-        
-        #endregion
-        
-        /// <summary>
-        /// Import assist function for a DynamicObject
-        /// </summary>
-        /// <param name="dyno">Deserialized DynamicObject</param>
-        /// <returns>Root GameObject of the imported DynamicObject</returns>
-        /// <exception cref="Exception"></exception>
-        public static GameObject DynamicObjectImport(DynamicObject dyno) {
-            var dynoUnity = new GameObject();
-            var dynamicObjectMeta = dynoUnity.AddComponent<DynamicObjectMeta>();
+		private static List<Collider> _collidersToIgnore;
 
-            var nodeDict = new Dictionary<Guid, GameObject>();
-            var nodeSources = new Dictionary<Guid, Node>();
-            var ignoreCollisions = new List<Collider>();
+		public static GameObject MirabufAssemblyImport(Assembly assembly)
+		{
+			// Uncommenting this will delete all bodies so the JSON file isn't huge
+			//DebugAssembly(assembly);
 
-            try {
+			GameObject assemblyObject = new GameObject(assembly.Info.Name);
+			var parts = assembly.Data.Parts;
+			MakeGlobalTransformations(assembly);
+			var partObjects = new Dictionary<string, GameObject>(); // TODO: Do I need this?
+			var groupObjects = new Dictionary<string, GameObject>();
+			float totalMass = 0;
+			_collidersToIgnore = new List<Collider>();
 
-                Logger.Log("Starting Dynamic Object import");
-                dynoUnity.name = dyno.Name;
-                for (int i = 0; i < dyno.Nodes.Count; i++) {
-                    Logger.Log($"Node {i + 1} Started");
-                    var node = dyno.Nodes[i];
-                    var gNode = new GameObject($"node_{i}");
-                    gNode.transform.parent = dynoUnity.transform;
+			// Import Rigid Definitions
+			#region Rigid Definitions
 
-                    #region Visual Mesh
-                    
-                    // Create the Filter and Renderer and add the mesh and material data
-                    var filter = gNode.AddComponent<MeshFilter>();
-                    var renderer = gNode.AddComponent<MeshRenderer>();
-                    filter.mesh = node.VisualMesh;
-                    var materials = new List<UMaterial>();
-                    for (int j = 0; j < node.VisualMaterials.Count; j++) {
-                        materials.Add(node.VisualMaterials[j]);
-                    }
-                    renderer.materials = materials.ToArray();
-                    
-                    #endregion
-                    Logger.Log($"Created Visual Mesh for Node {i + 1}");
+			var rigidDefinitions = FindRigidbodyDefinitions(assembly);
+			foreach (var group in rigidDefinitions.definitions.Values)
+			{
+				GameObject groupObject = new GameObject(group.Name);
+				var collectivePhysData = new List<MPhysicalProperties>();
+				// Import Parts
 
-                    #region Colliders
-                    
-                    // To reduce lag when verifying colliders in Unity, colliders are added to child GameObjects
-                    foreach (var mesh in node.MeshColliders) {
-                        var colObj = new GameObject("Mesh_Collider");
-                        var col = colObj.AddComponent<MeshCollider>();
-                        col.convex = true;
-                        col.sharedMesh = mesh;
-                        ignoreCollisions.Add(col);
-                        colObj.transform.parent = gNode.transform;
-                        col.material = new PhysicMaterial() { 
-                            staticFriction = node.PhysicalProperties.StaticFriction, 
-                            dynamicFriction = node.PhysicalProperties.DynamicFriction
-                        };
-                    }
-                    // TODO: Box collider support. I can't get rotations to be true
-                    foreach (var sphere in node.SphereColliders) {
-                        var colObj = new GameObject("Sphere_Collider");
-                        var col = colObj.AddComponent<SphereCollider>();
-                        col.center = sphere.Center;
-                        col.radius = sphere.Radius;
-                        ignoreCollisions.Add(col);
-                        colObj.transform.parent = gNode.transform;
-                        col.material = new PhysicMaterial() {
-                            staticFriction = node.PhysicalProperties.StaticFriction,
-                            dynamicFriction = node.PhysicalProperties.DynamicFriction
-                        };
-                    }
-                    
-                    #endregion
-                    Logger.Log($"Created Colliders for Node {i + 1}");
+				#region Parts
 
-                    #region Physics Data
-                    
-                    var rb = gNode.AddComponent<Rigidbody>();
-                    rb.mass = node.IsStatic ? 0 : node.PhysicalProperties.Mass;
-                    rb.centerOfMass = node.PhysicalProperties.CenterOfMass;
-                    if (node.IsStatic) {
-                        rb.isKinematic = true;
-                        rb.constraints = RigidbodyConstraints.FreezeAll;
-                    }
-                    
-                    #endregion
-                    Logger.Log($"Phys done for Node {i + 1}");
+				foreach (var part in group.Parts)
+				{
+					if (!partObjects.ContainsKey(part.Value.Info.GUID))
+					{
+						var partInstance = part.Value;
+						var partDefinition = parts.PartDefinitions[partInstance.PartDefinitionReference];
+						GameObject partObject = new GameObject(partInstance.Info.Name);
+						MakePartDefinition(partObject, partDefinition, partInstance, assembly.Data);
+						partObjects.Add(partInstance.Info.GUID, partObject);
+						partObject.transform.parent = groupObject.transform;
+						// MARK: If transform changes do work recursively, apply transformations here instead of in a separate loop
+						partObject.transform.ApplyMatrix(partInstance.GlobalTransform);
+						collectivePhysData.Add(partDefinition.PhysicalData);
+					}
+					else
+					{
+						Logger.Log($"Duplicate key found with GUID '{part.Key}'", LogLevel.Debug);
+					}
+				}
 
-                    // nodeSrc.collectiveMass = node.PhysicalProperties.CollectiveMass;
-                    nodeDict.Add(node.Guid, gNode);
-                    nodeSources.Add(node.Guid, node);
-                }
+				#endregion
 
-                // Joints need to be added after all the rigidbodies have been created
-                for (int i = 0; i < dyno.Nodes.Count; i++) {
-                    #region Joint
+				// Combine all physical data for grouping
+				var combPhysProps = CombinePhysicalProperties(collectivePhysData);
+				var rb = groupObject.AddComponent<Rigidbody>();
+				rb.mass = (float) combPhysProps.Mass;
+				totalMass += rb.mass;
+				//rb.centerOfMass = combPhysProps.Com; // I actually don't need to flip this
+				groupObject.transform.parent = assemblyObject.transform;
+				groupObjects.Add(group.GUID, groupObject);
+			}
 
-                    if (dyno.Nodes[i].ParentGuid == null)
-                        continue;
-                    var parent = nodeDict[dyno.Nodes[i].ParentGuid].GetComponent<Rigidbody>();
-                    var current = nodeDict[dyno.Nodes[i].Guid].GetComponent<Rigidbody>();
+			#endregion
 
-                    switch (dyno.Nodes[i].JointCase) {
-                        case Node.JointOneofCase.RotationalJoint:
+			#region Joints
 
-                            var rotJoint = dyno.Nodes[i].RotationalJoint;
-                            var minAngle = rotJoint.CurrentAngle - rotJoint.UpperLimit;
-                            var maxAngle = rotJoint.CurrentAngle - rotJoint.LowerLimit;
-                            var midAngle = (maxAngle + minAngle) / 2.0f;
-                            Logger.Log($"Upper {rotJoint.UpperLimit}\nLower {rotJoint.LowerLimit}\nCurrent {rotJoint.CurrentAngle}\nMin {minAngle}\nMax {maxAngle}\nMid {midAngle}");
-                            if (dyno.Nodes[i].RotationalJoint.UseLimits)
-                                current.transform.RotateAround(rotJoint.Anchor, rotJoint.Axis, midAngle);
 
-                            CreateHingeJoint(current, dyno.Nodes[i].RotationalJoint, parent, angleRange: midAngle);
-                            CreateHingeJoint(parent, dyno.Nodes[i].RotationalJoint, current, useConnectedMassScale: true, angleRange: midAngle);
-                            
-                            dynamicObjectMeta.AddFlag(dyno.Nodes[i].Guid, EntityFlag.Hinge);
-                            // Wheels are the same hinge joint, but their colliders are spheres and the engine associates them separately
-                            if (rotJoint.IsWheel) {
-                                dynamicObjectMeta.AddFlag(dyno.Nodes[i].Guid, EntityFlag.Wheel);
-                            }
-                            break;
-                        case Node.JointOneofCase.OtherJoint:
-                            CreateFixedJoint(current, dyno.Nodes[i].OtherJoint, parent);
-                            CreateFixedJoint(current, dyno.Nodes[i].OtherJoint, parent, true);
-                            break;
-                            // TODO: Linear joints
-                    }
-                    
-                    #endregion
-                    Logger.Log($"Created joint for Node {i + 1}");
-                }
+			var state = new ControllableState();
+			state.CurrentSignalLayout = assembly.Data.Signals ?? new Signals();
+			var simObject = new SimObject(assembly.Info.Name, state);
+			SimulationManager.RegisterSimObject(simObject);
 
-            } catch (Exception e) {
-                Logger.Log(e.Message);
-                Logger.Log(e.StackTrace);
-                throw new Exception();
-            }
+			foreach (var jointKvp in assembly.Data.Joints.JointInstances)
+			{
+				if (jointKvp.Key == "grounded")
+					continue;
 
-            // Ignore collisions between all the colliders within the Dynamic Object
-            for (int i = 0; i < ignoreCollisions.Count - 1; i++) {
-                for (int j = i + 1; j < ignoreCollisions.Count; j++) {
-                    UnityEngine.Physics.IgnoreCollision(ignoreCollisions[i], ignoreCollisions[j], true);
-                }
-            }
-            
-            // DynamicObjectMeta
-            dynamicObjectMeta.Init(dyno.Name, nodeDict, nodeSources);
+				Debug.Log($"Joint Key: {jointKvp.Key}");
+				var a = groupObjects[jointKvp.Key];
+				Debug.Log($"Child: {jointKvp.Value.ChildPart}");
+				var bKey = rigidDefinitions.partToDefinitionMap[jointKvp.Value.ChildPart];
+				var b = groupObjects[bKey];
 
-            // Parent all the nodes correctly
-            foreach (var kvp in nodeSources) {
-                if (kvp.Value.ParentGuid != null)
-                    nodeDict[kvp.Key].transform.parent = nodeDict[kvp.Value.ParentGuid].transform;
-            }
+				MakeJoint(
+					a,
+					b,
+					jointKvp.Value,
+					totalMass,
+					assembly,
+					simObject
+				);
+			}
 
-            return dynoUnity;
-        }
 
-        /// <summary>
-        /// Import assist function for Gamepieces
-        /// </summary>
-        /// <param name="gps">A collection of the Gamepiece instances</param>
-        /// <returns>Root GameObject containing all the imported Gamepieces</returns>
-        public static GameObject GamepiecesImport(IEnumerable<Gamepiece> gps) {
-            
-            var container = new GameObject("Gamepieces");
-            
-            foreach (var gp in gps) {
-                
-                var obj = new GameObject(gp.Definition.Name);
-                var tag = obj.AddComponent<GamepieceTag>();
-                tag.Definition = gp.Definition;
-                
-                #region Visual Mesh
-                
-                var filter = obj.AddComponent<MeshFilter>();
-                var renderer = obj.AddComponent<MeshRenderer>();
-                filter.mesh = gp.VisualMesh;
-                var materials = new List<UMaterial>();
-                for (int j = 0; j < gp.VisualMaterials.Count; j++) {
-                    materials.Add(gp.VisualMaterials[j]);
-                }
-                renderer.materials = materials.ToArray();
-                
-                #endregion
+			for (var i = 0; i < _collidersToIgnore.Count - 1; i++)
+			{
+				for (var j = i + 1; j < _collidersToIgnore.Count; j++)
+				{
+					UnityEngine.Physics.IgnoreCollision(_collidersToIgnore[i], _collidersToIgnore[j]);
+				}
+			}
 
-                switch (gp.ColliderCase) {
-                    case Gamepiece.ColliderOneofCase.MeshCollider:
-                        var meshCol = obj.AddComponent<MeshCollider>();
-                        meshCol.convex = true;
-                        meshCol.sharedMesh = gp.MeshCollider;
-                        break;
-                    case Gamepiece.ColliderOneofCase.SphereCollider:
-                        var sphereCol = obj.AddComponent<SphereCollider>();
-                        sphereCol.center = gp.SphereCollider.Center;
-                        sphereCol.radius = gp.SphereCollider.Radius;
-                        break;
-                }
+			#endregion
 
-                var rb = obj.AddComponent<Rigidbody>();
-                rb.mass = gp.PhysicalProperties.Mass;
-                rb.centerOfMass = gp.PhysicalProperties.CenterOfMass;
+			ConfigureDrivebase(assembly, assemblyObject);
 
-                obj.transform.position = gp.Position;
+			return assemblyObject;
+		}
 
-                obj.transform.parent = container.transform;
-            }
-            return container;
-        }
+		#region Assistant Functions
 
-        /// <summary>
-        /// Import assist function for creating FixedJoints
-        /// </summary>
-        /// <param name="c">The owner of the joint component</param>
-        /// <param name="jointData">Protobuf joint data</param>
-        /// <param name="parent">The connected body of the joint</param>
-        /// <param name="useConnectedMassScale">Use connected mass scale</param>
-        private static void CreateFixedJoint(Rigidbody c, OtherJoint jointData, Rigidbody parent, bool useConnectedMassScale = false) {
-            var joint = c.gameObject.AddComponent<FixedJoint>();
-            joint.connectedBody = parent;
-            if (useConnectedMassScale)
-                joint.connectedMassScale = parent.mass / c.mass;
-            else
-                joint.massScale = parent.mass / c.mass;
-        }
+		public static void MakeJoint(
+			GameObject a, GameObject b, JointInstance instance, float totalMass,
+			Assembly assembly, SimObject simObject)
+		{
+			// Stuff I'm gonna use for all joints
+			var definition = assembly.Data.Joints.JointDefinitions[instance.JointReference];
+			var rbA = a.GetComponent<Rigidbody>();
+			var rbB = b.GetComponent<Rigidbody>();
+			switch (definition.JointMotionType)
+			{
+				case JointMotion.Revolute: // Hinge/Revolution joint
+					var revoluteA = a.AddComponent<HingeJoint>();
+					revoluteA.anchor = (definition.Origin ?? new Vector3())
+					                   + (instance.Offset ?? new Vector3());
+					revoluteA.axis =
+						(((Matrix4x4) assembly.Data.Parts.PartInstances[instance.ParentPart].GlobalTransform).rotation)
+						* definition.Rotational.RotationalFreedom.Axis; // CHANGE
+					revoluteA.connectedBody = rbB;
+					revoluteA.massScale = Mathf.Pow(revoluteA.connectedBody.mass / rbA.mass, 1);
+					revoluteA.useMotor = definition.Info.Name != "grounded" &&
+					                     definition.UserData != null &&
+					                     definition.UserData.Data.TryGetValue("wheel", out var isWheel) &&
+					                     isWheel == "true";
+					var revoluteB = b.AddComponent<HingeJoint>();
+					revoluteB.anchor = (definition.Origin ?? new Vector3())
+					                   + (instance.Offset ?? new Vector3());
+					revoluteB.axis = revoluteA.axis; // definition.Rotational.RotationalFreedom.Axis;
+					revoluteB.connectedBody = rbA;
+					revoluteB.connectedMassScale = Mathf.Pow(revoluteB.connectedBody.mass / rbA.mass, 1);
 
-        /// <summary>
-        /// Import assist function for creating HingeJoints
-        /// </summary>
-        /// <param name="c">The owner of the joint component</param>
-        /// <param name="jointData">Protobuf joint data</param>
-        /// <param name="parent">The connected body of the joint</param>
-        /// <param name="useConnectedMassScale">Use connected mass scale</param>
-        /// <param name="angleRange">Range of motion for the hinge</param>
-        private static void CreateHingeJoint(Rigidbody c, RotationalJoint jointData, Rigidbody parent, bool useConnectedMassScale = false, float angleRange = float.NaN) {
-            var hinge = c.gameObject.AddComponent<HingeJoint>();
-            hinge.connectedBody = parent;
-            hinge.anchor = jointData.Anchor;
-            hinge.axis = ((Vector3)jointData.Axis).normalized;
-            if (jointData.UseLimits) {
-                hinge.useLimits = true;
-                float min, max;
-                if (float.IsNaN(angleRange)) {
-                    min = jointData.CurrentAngle - jointData.UpperLimit;
-                    max = jointData.CurrentAngle - jointData.LowerLimit;
-                } else {
-                    min = -angleRange;
-                    max = angleRange;
-                }
-                hinge.limits = new JointLimits() { // TODO: Bounciness?
-                    min = min, // Mathf.Clamp(, -175, 175), // TODO: Fix this?
-                    max = max // Mathf.Clamp(, -175, 175)
-                };
-            }
-            if (useConnectedMassScale)
-                hinge.connectedMassScale = parent.mass / c.mass;
-            else
-                hinge.massScale = parent.mass / c.mass;
-        }
+					// TODO: Encoder Signals
+					var driver = new RotationalDriver(
+						assembly.Data.Signals.SignalMap[instance.SignalReference].Info.Name,
+						new string[] {instance.SignalReference}, Array.Empty<string>(), simObject, revoluteA, revoluteB,
+						new JointMotor()
+						{
+							force = 400.0f,
+							freeSpin = false,
+							targetVelocity = 900,
+						});
+					SimulationManager.Drivers.Add(driver);
+					break;
+				case JointMotion.Slider:
+				default: // Make a rigid joint
+					var rigidA = a.AddComponent<FixedJoint>();
+					rigidA.anchor = (definition.Origin ?? new Vector3())
+					                + (instance.Offset ?? new Vector3());
+					rigidA.axis = UVector3.forward;
+					rigidA.connectedBody = rbB;
+					rigidA.massScale = Mathf.Pow(totalMass / rbA.mass, 1); // Not sure if this works
+					var rigidB = b.AddComponent<FixedJoint>();
+					rigidB.anchor = (definition.Origin ?? new Vector3())
+					                + (instance.Offset ?? new Vector3());
+					rigidB.axis = UVector3.forward;
+					rigidB.connectedBody = rbA;
+					rigidB.connectedMassScale = Mathf.Pow(totalMass / rbA.mass, 1);
+					break;
+			}
+		}
 
-        #endregion
+		public static void MakePartDefinition(GameObject container, PartDefinition definition, PartInstance instance,
+			AssemblyData assemblyData)
+		{
+			PhysicMaterial physMat = new PhysicMaterial
+			{
+				dynamicFriction = 0.6f, // definition.PhysicalData.,
+				staticFriction = 0.6f // definition.PhysicalData.Friction
+			};
+			foreach (var body in definition.Bodies)
+			{
+				var bodyObject = new GameObject(body.Info.Name);
+				var filter = bodyObject.AddComponent<MeshFilter>();
+				var renderer = bodyObject.AddComponent<MeshRenderer>();
+				filter.sharedMesh = body.TriangleMesh.UnityMesh;
+				renderer.material = assemblyData.Materials.Appearances.ContainsKey(body.AppearanceOverride)
+					? assemblyData.Materials.Appearances[body.AppearanceOverride].UnityMaterial
+					: assemblyData.Materials.Appearances.ContainsKey(instance.Appearance)
+						? assemblyData.Materials.Appearances[instance.Appearance].UnityMaterial
+						: Appearance.DefaultAppearance.UnityMaterial; // Setup the override
+				var collider = bodyObject.AddComponent<MeshCollider>();
+				collider.convex = true;
+				collider.sharedMesh = body.TriangleMesh.UnityMesh; // Again, not sure if this actually works
+				collider.material = physMat;
+				_collidersToIgnore.Add(collider);
+				bodyObject.transform.parent = container.transform;
+				// Ensure all transformations are zeroed after assigning parent
+				bodyObject.transform.localPosition = UVector3.zero;
+				bodyObject.transform.localRotation = Quaternion.identity;
+				bodyObject.transform.localScale = UVector3.one;
+				// bodyObject.transform.ApplyMatrix(body.);
+			}
+		}
 
-        /// <summary>
-        /// Stock source type definitions
-        /// </summary>
-        public struct SourceType {
+		private static MPhysicalProperties CombinePhysicalProperties(IEnumerable<MPhysicalProperties> props)
+		{
+			var total = 0.0;
+			var com = new Vector3();
+			props.ForEach(x => total += x.Mass);
+			//props.ForEach(x => com += x.Com * x.Mass);
+			//com /= total;
+			return new MPhysicalProperties {Mass = total};
+		}
 
-            public static readonly SourceType PROTOBUF_ROBOT = new SourceType("proto_robot", ProtoRobot.FILE_ENDING);
-            public static readonly SourceType PROTOBUF_FIELD = new SourceType("proto_field", ProtoField.FILE_ENDING);
-            
-            public string FileEnding { get; private set; }
-            public string Indentifier { get; private set; }
+		private static (
+			Dictionary<string, RigidbodyDefinition> definitions,
+			Dictionary<string, string> partToDefinitionMap
+			) FindRigidbodyDefinitions(Assembly assembly)
+		{
+			var defs = new Dictionary<string, RigidbodyDefinition>();
+			var partMap = new Dictionary<string, string>();
 
-            public SourceType(string indentifier, string fileEnding) {
-                Indentifier = indentifier;
-                FileEnding = fileEnding;
-            }
-        }
+			int counter = 0;
+			foreach (var instance in assembly.Data.Joints.JointInstances)
+			{
+				var def = new RigidbodyDefinition
+				{
+					GUID = $"{instance.Value.Info.GUID}",
+					Name = $"Rigidgroup:{counter}",
+					Parts = new Dictionary<string, PartInstance>()
+				};
+				if (!string.IsNullOrEmpty(instance.Value.ParentPart))
+					def.Parts.Add(instance.Value.ParentPart, assembly.Data.Parts.PartInstances[instance.Value.ParentPart]);
+				counter++;
+				var nodes = instance.Value.Parts == null ? new List<Node>() : new List<Node>(instance.Value.Parts.Nodes);
 
-    }
+				while (nodes.Any())
+				{
+					foreach (var node in nodes)
+					{
+						Debug.Log($"Part GUID: \"{node.Value}\"");
+						if (node.Value != string.Empty)
+						{
+							if (!def.Parts.ContainsKey(node.Value))
+								def.Parts.Add(node.Value, assembly.Data.Parts.PartInstances[node.Value]);
+							else
+								Debug.Log($"Duplicate entry: {node.Value}");
+						}
+					}
+					var newNodes = new List<Node>();
+					nodes.ForEach(y => newNodes.AddRange(y.Children));
+					nodes = newNodes;
+				}
+
+				defs.Add(def.GUID, def);
+				foreach(var part in def.Parts)
+				{
+					partMap[part.Key] = def.GUID;
+				}
+			};
+
+			return (defs, partMap);
+		}
+
+		public static Dictionary<string, Matrix4x4> MakeGlobalTransformations(Assembly assembly)
+		{
+			var map = new Dictionary<string, Matrix4x4>();
+			foreach (Node n in assembly.DesignHierarchy.Nodes)
+			{
+				Matrix4x4 trans = assembly.Data.Parts.PartInstances[n.Value].Transform == null
+					? assembly.Data.Parts
+						.PartDefinitions[assembly.Data.Parts.PartInstances[n.Value].PartDefinitionReference]
+						.BaseTransform == null
+						? Matrix4x4.identity
+						: assembly.Data.Parts
+							.PartDefinitions[assembly.Data.Parts.PartInstances[n.Value].PartDefinitionReference]
+							.BaseTransform.UnityMatrix
+					: assembly.Data.Parts.PartInstances[n.Value].Transform.UnityMatrix;
+				map.Add(n.Value, trans);
+				MakeGlobalTransformations(map, map[n.Value], assembly.Data.Parts, n);
+			}
+
+			foreach (var kvp in map)
+			{
+				assembly.Data.Parts.PartInstances[kvp.Key].GlobalTransform = map[kvp.Key];
+			}
+
+			return map;
+		}
+
+		public static void MakeGlobalTransformations(Dictionary<string, Matrix4x4> map, Matrix4x4 parent, Parts parts,
+			Node node)
+		{
+			foreach (var child in node.Children)
+			{
+				map.Add(child.Value, parent * parts.PartInstances[child.Value].Transform.UnityMatrix);
+				MakeGlobalTransformations(map, map[child.Value], parts, child);
+			}
+		}
+
+		#endregion
+
+		#region Robot Configuration
+
+		public static void ConfigureDrivebase(Assembly assembly, GameObject assemblyObject)
+		{
+			if (assembly.Data.Signals != null && assembly.Data.Joints.JointInstances != null)
+			{
+				var wheelsInstances = assembly.Data.Joints.JointInstances.Where(pair =>
+					pair.Value.Info.Name != "grounded"
+					&& assembly.Data.Joints.JointDefinitions[pair.Value.JointReference].UserData != null
+					&& assembly.Data.Joints.JointDefinitions[pair.Value.JointReference].UserData.Data
+						.TryGetValue("wheel", out var isWheel)
+					&& isWheel == "true");
+
+				var leftWheels = new List<JointInstance>();
+				var rightWheels = new List<JointInstance>();
+
+				foreach (var wheelInstance in wheelsInstances)
+				{
+					SimulationManager.SimulationObjects[assembly.Info.Name].State.CurrentSignals[wheelInstance.Value.SignalReference].Value = Value.ForNumber(0.0);
+					var jointAnchor =
+						(wheelInstance.Value.Offset ?? new Vector3()) + assembly.Data.Joints
+							.JointDefinitions[wheelInstance.Value.JointReference].Origin ?? new Vector3();
+					if (UnityEngine.Vector3.Dot(UnityEngine.Vector3.up, jointAnchor) > 0)
+					{
+						rightWheels.Add(wheelInstance.Value);
+					}
+					else
+					{
+						leftWheels.Add(wheelInstance.Value);
+					}
+				}
+
+				assemblyObject.AddComponent<RobotInstance>();
+
+				var wheels = wheelsInstances.Select(pair => pair.Value.SignalReference);
+				assemblyObject.GetComponent<RobotInstance>()
+					.SetLayout(assembly.Info, assembly.Data.Signals, wheels.ToList());
+
+				SimulationManager.Behaviours.Add(new ArcadeDrive(
+					assembly.Info.Name,
+					leftWheels.Select(j => j.SignalReference).ToList(),
+					rightWheels.Select(j => j.SignalReference).ToList()));
+
+			}
+			else
+			{
+				Logger.Log($"No joints or signals found for {assembly.Info.Name}. Skipping.");
+			}
+		}
+
+		#endregion
+
+		#region Debug Functions
+
+		// Warning: This will remove all the bodies from the original assembly for some reason
+		public static void DebugAssembly(Assembly assembly)
+		{
+			var debugAssembly = new Assembly();
+			debugAssembly.MergeFrom(assembly);
+			debugAssembly.Data.Parts.PartDefinitions.ForEach((x, y) => { y.Bodies.Clear(); });
+			var jFormatter = new JsonFormatter(JsonFormatter.Settings.Default);
+			File.WriteAllText(
+				Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+				+ $"{Path.AltDirectorySeparatorChar}{debugAssembly.Info.Name}.json",
+				jFormatter.Format(debugAssembly));
+		}
+
+		public static void DebugGraph(GraphContainer graph)
+		{
+			graph.Nodes.ForEach(x => DebugNode(x, 0));
+		}
+
+		public static void DebugNode(Node node, int level)
+		{
+			int a = 0;
+			string prefix = "";
+			while (a != level)
+			{
+				prefix += "-";
+				a++;
+			}
+
+			Debug.Log($"{prefix} {node.Value}");
+			node.Children.ForEach(x => DebugNode(x, level + 1));
+		}
+
+		private static void DebugJoint(Assembly assembly, string joint)
+		{
+			var instance = assembly.Data.Joints.JointInstances[joint];
+			var definition = assembly.Data.Joints.JointDefinitions[instance.JointReference];
+
+			Debug.Log(Enum.GetName(typeof(Joint.JointMotionOneofCase), definition.JointMotionCase));
+		}
+
+		#endregion
+
+		#endregion
+
+		#region Assistant Types
+
+		/// <summary>
+		/// Collection of parts that move together
+		/// </summary>
+		public struct RigidbodyDefinition
+		{
+			public string                           GUID;
+			public string                           Name;
+			public Dictionary<string, PartInstance> Parts; // Using a dictionary to make Key searches faster
+		}
+
+		/// <summary>
+		/// Stock source type definitions
+		/// </summary>
+		public struct SourceType
+		{
+			public static readonly SourceType MIRABUF_ASSEMBLY = new SourceType("mirabuf_assembly", "mira");
+			// public static readonly SourceType PROTOBUF_FIELD = new SourceType("proto_field", ProtoField.FILE_ENDING);
+
+			public string FileEnding  { get; private set; }
+			public string Indentifier { get; private set; }
+
+			public SourceType(string indentifier, string fileEnding)
+			{
+				Indentifier = indentifier;
+				FileEnding = fileEnding;
+			}
+		}
+
+		#endregion
+	}
 }
