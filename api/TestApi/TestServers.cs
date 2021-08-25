@@ -19,30 +19,32 @@ namespace TestApi
     [TestFixture]
     public static class TestServers
     {
-        //Bad naming...
-        static ConnectionMessage connectionRequest;
-        static ConnectionMessage resourceOwnershipRequest;
-        static ConnectionMessage terminateConnectionRequest;
-        static ConnectionMessage heartbeat;
 
-        static ConnectionMessage secondResourceOwnershipRequest;
-        static ConnectionMessage secondTerminateConnectionRequest;
+        private static ConnectionMessage connectionRequest;
+        private static ConnectionMessage resourceOwnershipRequest;
+        private static ConnectionMessage terminateConnectionRequest;
+        private static ConnectionMessage heartbeat;
 
-        static ConnectionMessage response;
-        static ConnectionMessage secondResponse;
-        static ByteString guid;
-        static int generation;
-        static ByteString secondGuid;
-        static int secondGeneration;
+        private static ConnectionMessage secondResourceOwnershipRequest;
+        private static ConnectionMessage secondTerminateConnectionRequest;
 
-        static TcpClient client;
-        static int port = 13000;
-        static int udpListenPort = 13001;
-        static NetworkStream firstStream;
-        static NetworkStream secondStream;
+        private static ConnectionMessage response;
+        private static ConnectionMessage secondResponse;
+        private static ByteString guid;
+        private static int generation;
+        private static ByteString secondGuid;
+        private static int secondGeneration;
 
-        static IPEndPoint remoteIpEndPoint;
-        static UdpClient udpClient;
+        private static bool isRunning = true;
+
+        private static TcpClient client;
+        private static int port = 13000;
+        private static int udpListenPort = 13001;
+        private static NetworkStream firstStream;
+        private static NetworkStream secondStream;
+
+        private static IPEndPoint remoteIpEndPoint;
+        private static UdpClient udpClient;
 
         static Thread heartbeatThread;
 
@@ -67,16 +69,30 @@ namespace TestApi
 
             heartbeatThread = new Thread(() =>
             {
-                Thread.Sleep(100);
-                SendData(heartbeat, firstStream);
+                while (isRunning)
+                {
+                    Thread.Sleep(100);
+                    SendData(heartbeat, firstStream);
+                }
             });
             Thread udpThread = new Thread(() =>
             {
                 UdpServerManager.Start();
                 udpClient.JoinMulticastGroup(IPAddress.Parse("224.100.0.1"));
                 System.Diagnostics.Debug.WriteLine("Start Udp stuff...");
-                var data = UpdateSignals.Parser.ParseDelimitedFrom(new MemoryStream(udpClient.Receive(ref remoteIpEndPoint)));
-                System.Diagnostics.Debug.WriteLine(data);
+                while (isRunning)
+                {
+                    try
+                    {
+                        var data = UpdateSignals.Parser.ParseDelimitedFrom(new MemoryStream(udpClient.Receive(ref remoteIpEndPoint)));
+                        System.Diagnostics.Debug.WriteLine(data);
+                    }
+                    catch (SocketException e)
+                    {
+                        System.Diagnostics.Debug.WriteLine(e);
+                    }
+
+                }
                 System.Diagnostics.Debug.WriteLine("End Udp stuff");
                 UdpServerManager.Stop();
             });
@@ -90,6 +106,7 @@ namespace TestApi
                 }
             });
 
+            isRunning = true;
             heartbeatThread.Start();
             TcpServerManager.Start();
             StartClient("127.0.0.1", ref firstStream);
@@ -132,13 +149,19 @@ namespace TestApi
             };
             System.Diagnostics.Debug.WriteLine("Sending Terminate Connection Request");
             SendData(terminateConnectionRequest, firstStream);
+
+            response = ReadData(firstStream);
             if (response.MessageTypeCase == ConnectionMessage.MessageTypeOneofCase.TerminateConnectionResponse && response.TerminateConnectionResponse.Confirm)
             {
                 System.Diagnostics.Debug.WriteLine("Termination Successful");
                 StopClient(firstStream);
                 TcpServerManager.Stop();
             }
+            isRunning = false;
+            udpClient.Close();
             udpThread.Join();
+            heartbeatThread.Join();
+            System.Diagnostics.Debug.WriteLine("Test finished");
         }
 
         [Test]
@@ -356,7 +379,15 @@ namespace TestApi
 
         public static void SendData(ConnectionMessage message, NetworkStream stream)
         {
-            message.WriteDelimitedTo(stream);
+            try
+            {
+                message.WriteDelimitedTo(stream);
+            }
+            catch (ObjectDisposedException e)
+            {
+                System.Diagnostics.Debug.WriteLine(e);
+            }
+            
         }
 
         public static ConnectionMessage ReadData(NetworkStream clientStream)

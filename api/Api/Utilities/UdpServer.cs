@@ -22,16 +22,19 @@ namespace SynthesisAPI.Utilities
             {
                 packets = new ConcurrentQueue<UpdateSignals>();
                 _isRunning = false;
-
+                updateSignalTasks = new List<Task<UpdateSignals?>>();
                 
 
                 listenerThread = new Thread(() =>
                 {
+                    listenerPort = 13000;
+                    listenerClient = new UdpClient(listenerPort);
+                    listenerIpEndPoint = new IPEndPoint(IPAddress.Any, listenerPort);
                     try
                     {
                         while (_isRunning)
                         {
-                            //updateSignalTasks.Add(DeserializeUpdateSignalAsync(client.ReceiveAsync()));
+                            updateSignalTasks.Add(DeserializeUpdateSignalAsync(listenerClient.ReceiveAsync()));
                         }
                     }
                     catch (SocketException e)
@@ -85,7 +88,6 @@ namespace SynthesisAPI.Utilities
 
                             System.Diagnostics.Debug.WriteLine("Sending update");
 
-                            //outputSocket.SendTo(sendBuffer, remoteIpEndPoint);
                             outputClient.Send(sendBuffer, sendBuffer.Length, outputIpEndPoint);
                             
                         }
@@ -115,15 +117,15 @@ namespace SynthesisAPI.Utilities
                     _isRunning = value;
                     if (!value)
                     {
+                        if (outputClient != null && outputClient.Client.Connected) { outputClient.Close(); }
+                        if (listenerClient != null) { listenerClient.Close(); }
                         if (listenerThread != null && listenerThread.IsAlive) { listenerThread.Join(); }
                         if (managerThread != null && managerThread.IsAlive) { managerThread.Join(); }
                         if (outputThread != null && outputThread.IsAlive) { outputThread.Join(); }
-                        //if (client != null && client.Client.Connected) { client.Close(); }
-                        if (outputClient != null && outputClient.Client.Connected) { outputClient.Close(); }
                     }
                     if (value)
                     {
-                        //listenerThread.Start();
+                        listenerThread.Start();
                         outputThread.Start();
                     }
                 }

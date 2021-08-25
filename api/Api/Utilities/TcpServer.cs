@@ -40,9 +40,9 @@ namespace SynthesisAPI.Utilities
                     {
                         if (listenerThread != null && listenerThread.IsAlive)
                         {
-                            clientManagerThread.Join();
                             listener.Stop();
                             listenerThread.Join();
+                            clientManagerThread.Join();
                             writerThread.Join();
                         }
                     }
@@ -122,11 +122,18 @@ namespace SynthesisAPI.Utilities
                 {
                     while (_isRunning || clients.Any())
                     {
+                        if (!_isRunning)
+                        {
+                            for (int i = clients.Count - 1; i >= 0; i--)
+                            {
+                                RemoveClient(clients[i]);
+                            }
+                        }
                         for (int i = clients.Count - 1; i >= 0; i--)
                         {
-                            if (DateTimeOffset.Now.ToUnixTimeMilliseconds() - clients[i].state.LastHeartbeat > 7000 && clients[i].message != null && clients[i].message.IsCompleted)
+                            if (DateTimeOffset.Now.ToUnixTimeMilliseconds() - clients[i].state.LastHeartbeat > 5000 && clients[i].message != null && clients[i].message.IsCompleted)
                             {
-                                if (!TryRemoveClient(clients[i]))
+                                if (!RemoveClient(clients[i]))
                                 {
                                     System.Diagnostics.Debug.WriteLine("Could not remove client.");
                                 }
@@ -261,7 +268,7 @@ namespace SynthesisAPI.Utilities
                 await Task.Run(() => message.WriteDelimitedTo(stream));
             }
 
-            private bool TryRemoveClient(ClientHandler clientHandler)
+            private bool RemoveClient(ClientHandler clientHandler)
             {
                 System.Diagnostics.Debug.WriteLine("Removing Client");
                 for (int i = clientHandler.currentResources.Count - 1; i >= 0; i--)
