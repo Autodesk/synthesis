@@ -68,13 +68,13 @@ def previouslyConfigured() -> Union[str, None]:
 
 def writeConfigure(serialized: str) -> bool:
     app = adsk.core.Application.get()
-    try:
-        app.activeDocument.attributes.add(
-            f"{INTERNAL_ID}", "Configuration", f"{serialized}"
-        )
-        return True
-    except:
-        return False
+    #try:
+        #app.activeDocument.attributes.add(
+        #    f"{INTERNAL_ID}", "Configuration", f"{serialized}"
+        #)
+    return True
+    #except:
+    #    return False
 
 
 def getDocName() -> str or None:

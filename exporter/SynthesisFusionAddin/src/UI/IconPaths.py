@@ -1,6 +1,9 @@
 from . import OsHelper
 import os
 
+"""
+Dictionaries that store all the icon paths in ConfigCommand. All path strings are OS-independent
+"""
 resources = OsHelper.getOSPath(".", "src", "Resources") # str shortcut with primary directories to all images in file
 
 wheelIcons = {
@@ -24,24 +27,22 @@ gamepieceIcons = {
 }
 
 mouseIcons = {
-    "add": resources + os.path.join("MousePreselectIcons" + "mouse-add-icon.png"),
-    "remove": resources + os.path.join("MousePreselectIcons" + "mouse-remove-icon.png"),
+    "add": resources + os.path.join("MousePreselectIcons", "mouse-add-icon.png"),
+    "remove": resources + os.path.join("MousePreselectIcons", "mouse-remove-icon.png"),
 }
 
 massIcons = {
-    "KG": resources + os.path.join("kg_icon" + "16x16-normal.png"),
-    "LBS": resources + os.path.join("lbs_icon" + "16x16-normal.png"),
+    "KG": resources + os.path.join("kg_icon"), # resource folder
+    "LBS": resources + os.path.join("lbs_icon"), # resource folder
 }
 
 signalIcons = {
-    "PWM": resources + os.path.join("PWM_icon" + "16x16-normal.png"),
-    "CAN": resources + os.path.join("CAN_icon" + "16x16-normal.png"),
-    "PASSIVE": resources + os.path.join("PASSIVE_icon" + "16x16-normal.png"),
+    "PWM": resources + os.path.join("PWM_icon"), # resource folder
+    "CAN": resources + os.path.join("CAN_icon"), # resource folder
+    "PASSIVE": resources + os.path.join("PASSIVE_icon"), # resource folder
 }
 
 stringIcons = {
-    "calculate-enabled": resources + os.path.join("AutoCalcWeight_icon" + "16x16-normal.png"),
-    "calculate-disabled": resources + os.path.join("AutoCalcWeight_icon" + "16x16-disabled.png"),
-    "friction_override-enabled": resources + os.path.join("FrictionOverride_icon" + "16x16-normal.png"),
-    "friction_override-disabled": resources + os.path.join("FrictionOverride_icon" + "16x16-disabled.png"),
+    "calculate-enabled": resources + os.path.join("AutoCalcWeight_icon"), # resource folder
+    "friction_override-enabled": resources + os.path.join("FrictionOverride_icon"), # resource folder
 }
