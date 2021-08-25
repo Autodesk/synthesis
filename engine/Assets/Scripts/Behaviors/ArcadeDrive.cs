@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using Google.Protobuf.WellKnownTypes;
+using SynthesisAPI.InputManager;
+using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
 using UnityEditor;
 using UnityEngine;
+using Input = UnityEngine.Input;
+using Logger = SynthesisAPI.Utilities.Logger;
 using Math = SynthesisAPI.Utilities.Math;
 
 namespace Assets.Scripts.Behaviors
@@ -26,6 +30,8 @@ namespace Assets.Scripts.Behaviors
 
 		private byte _keyMask;
 
+		private const double DEADBAND = 0.1;
+
 		public ArcadeDrive(string simObjectId, List<string> leftSignals, List<string> rightSignals, string inputName = "") : base(
 			simObjectId)
 		{
@@ -36,56 +42,27 @@ namespace Assets.Scripts.Behaviors
 			_leftSignals = leftSignals;
 			_rightSignals = rightSignals;
 
+			InputManager.AssignValueInput("Arcade 1 Forward", new Analog("Joystick Axis 2", false));
+			InputManager.AssignValueInput("Arcade 1 Backward", new Analog("Joystick Axis 2", true));
+			InputManager.AssignValueInput("Arcade 1 Left", new Analog("Joystick Axis 1", false));
+			InputManager.AssignValueInput("Arcade 1 Right", new Analog("Joystick Axis 1", true));
+
 
 		}
 
 		public override void Update()
 		{
 			_didUpdate = true;
-			if (Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S))
-			{
-				if (Input.GetKey(KeyCode.A))
-				{
-					_xSpeed = System.Math.Sqrt(2)/2;
-					_zRot = -1*System.Math.Sqrt(2)/2;
-				} else if (Input.GetKey(KeyCode.D))
-				{
-					_xSpeed = System.Math.Sqrt(2)/2;
-					_zRot = System.Math.Sqrt(2)/2;
-				}
-				else
-				{
-					_xSpeed = 1;
-					_zRot = 0;
-				}
-			} else if (Input.GetKey(KeyCode.S))
-			{
-				if (Input.GetKey(KeyCode.A))
-				{
-					_xSpeed = -1*System.Math.Sqrt(2)/2;
-					_zRot = -1*System.Math.Sqrt(2)/2;
-				} else if (Input.GetKey(KeyCode.D))
-				{
-					_xSpeed = -1*System.Math.Sqrt(2)/2;
-					_zRot = System.Math.Sqrt(2)/2;
-				}
-				else
-				{
-					_xSpeed = -1;
-					_zRot = 0;
-				}
-			} else if (Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
-			{
-				_zRot = -1;
-			}  else if (Input.GetKey(KeyCode.D))
-			{
-				_zRot = 1;
-			}
-			else
-			{
-				_xSpeed = 0;
-				_zRot = 0;
-			}
+
+			_xSpeed = InputManager.MappedValueInputs["Arcade 1 Forward"].Value +
+			          InputManager.MappedValueInputs["Arcade 1 Backward"].Value;
+
+			_zRot = InputManager.MappedValueInputs["Arcade 1 Left"].Value +
+			          InputManager.MappedValueInputs["Arcade 1 Right"].Value;
+
+			// Deadbanding
+			_xSpeed = Math.Abs(_xSpeed) > DEADBAND ? _xSpeed : 0;
+			_zRot = Math.Abs(_zRot) > DEADBAND ? _zRot : 0;
 
 			if (_didUpdate)
 			{

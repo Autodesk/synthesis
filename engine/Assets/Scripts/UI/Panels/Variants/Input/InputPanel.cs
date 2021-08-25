@@ -27,7 +27,11 @@ namespace Synthesis.UI.Panels {
                 var selectionObject = Instantiate(InputSelection, Content.transform);
                 var selection = selectionObject.GetComponent<InputSelection>();
                 // TODO: Probably some parsing on the selection title and some specific ordering of available inputs
-                selection.Init(kvp.Key, kvp.Key, kvp.Value.Name, this);
+                if(kvp.Value is Digital)
+                    selection.Init(kvp.Key, kvp.Key, kvp.Value.Name, this);
+                else
+                    selection.Init(kvp.Key, kvp.Key,
+                        kvp.Value.UsePositiveSide ? $"{kvp.Value.Name} +" : $"{kvp.Value.Name} -", this);
             }
         }
 
@@ -44,10 +48,7 @@ namespace Synthesis.UI.Panels {
                     if(input is Digital)
                         awaitingReassignment.UpdateUI(input.Name);
                     else
-                    {
                         awaitingReassignment.UpdateUI(input.UsePositiveSide ? $"{input.Name} +" : $"{input.Name} -");
-                    }
-
                     awaitingReassignment = null;
                 }
             }
