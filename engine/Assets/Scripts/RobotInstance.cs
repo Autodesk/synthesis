@@ -7,19 +7,17 @@ using Mirabuf;
 using Mirabuf.Signal;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.Simulation;
+using SynthesisAPI.Utilities;
 using UnityEngine;
+using Logger = SynthesisAPI.Utilities.Logger;
 
 public class RobotInstance : MonoBehaviour
 {
 
     private Signals? _robotLayout;
-    private Info?    _info;
+    public Info?    Info;
 
     private List<string> _driveMotors;
-
-    public double speed = 0.0;
-
-    public bool enable;
 
     public void SetLayout(Info info, Signals layout, List<string> driveMotors)
     {
@@ -29,16 +27,16 @@ public class RobotInstance : MonoBehaviour
         }
         else
         {
-            throw new Exception($"Layout already set for {_info.Name}");
+            throw new Exception($"Layout already set for {Info.Name}");
         }
 
-        if (_info == null)
+        if (Info == null)
         {
-            _info = info;
+            Info = info;
         }
         else
         {
-            throw new Exception($"Info already set for {_info.Name}");
+            throw new Exception($"Info already set for {Info.Name}");
         }
 
         _driveMotors = driveMotors;
@@ -47,20 +45,7 @@ public class RobotInstance : MonoBehaviour
 
     void Start()
     {
-        
+        Logger.Log($"Successfully initialized {Info?.Name}", LogLevel.Debug);
     }
-
-    void Update()
-    {
-        if (enable)
-        {
-            foreach (var wheel in _driveMotors)
-            {
-                SimulationManager.SimulationObjects[_info.Name].State.CurrentSignals[wheel].Value =
-                    Value.ForNumber(speed);
-            }
-        }
-    }
-
 }
 

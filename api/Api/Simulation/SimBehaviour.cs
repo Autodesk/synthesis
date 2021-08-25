@@ -7,22 +7,20 @@ namespace SynthesisAPI.Simulation {
         private bool _enabled = false;
         public bool Enabled {
             get => _enabled;
-            set {
-                _enabled = value;
-                if (_enabled != value) {
-                    _enabled = value;
-                    if (value) {
-                        if (GetType().FullName != typeof(SimBehaviour).FullName)
-                            SimulationManager.Behaviours.Add(this);
-                            // SimulationManager.OnBehaviourUpdate += this.Update;
-                    }
-                    else {
-                        if (GetType().FullName != typeof(SimBehaviour).FullName)
-                            SimulationManager.Behaviours.Remove(this);
-                            // SimulationManager.OnBehaviourUpdate -= this.Update;
-                    }
-                }
-            }
+            set => _enabled = value;
+            //     if (_enabled != value) {
+            //         _enabled = value;
+            //         if (value) {
+            //             if (GetType().FullName != typeof(SimBehaviour).FullName)
+            //                 SimulationManager.Behaviours.Add(this);
+            //                 // SimulationManager.OnBehaviourUpdate += this.Update;
+            //         }
+            //         else {
+            //             if (GetType().FullName != typeof(SimBehaviour).FullName)
+            //                 SimulationManager.Behaviours.Remove(this);
+            //                 // SimulationManager.OnBehaviourUpdate -= this.Update;
+            //         }
+            //     }
         }
 
         public String SimObjectId { get; protected set; }
