@@ -15,6 +15,11 @@ namespace Assets.Scripts.Behaviors
 	public class ArcadeDrive : SimBehaviour
 	{
 
+		internal const string FORWARD = "Arcade 1 Forward";
+		internal const string BACKWARD = "Arcade 1 Backward";
+		internal const string LEFT = "Arcade 1 Left";
+		internal const string RIGHT = "Arcade 1 Right";
+
 		private List<string> _leftSignals;
 		private List<string> _rightSignals;
 
@@ -44,10 +49,10 @@ namespace Assets.Scripts.Behaviors
 			_leftSignals = leftSignals;
 			_rightSignals = rightSignals;
 
-			InputManager.AssignValueInput("Arcade 1 Forward", new Analog("Joystick Axis 2", false));
-			InputManager.AssignValueInput("Arcade 1 Backward", new Analog("Joystick Axis 2", true));
-			InputManager.AssignValueInput("Arcade 1 Left", new Analog("Joystick Axis 1", false));
-			InputManager.AssignValueInput("Arcade 1 Right", new Analog("Joystick Axis 1", true));
+			InputManager.AssignValueInput(FORWARD, new Analog("Joystick Axis 2", false));
+			InputManager.AssignValueInput(BACKWARD, new Analog("Joystick Axis 2", true));
+			InputManager.AssignValueInput(LEFT, new Analog("Joystick Axis 1", false));
+			InputManager.AssignValueInput(RIGHT, new Analog("Joystick Axis 1", true));
 
 
 		}
@@ -56,11 +61,19 @@ namespace Assets.Scripts.Behaviors
 		{
 			_didUpdate = true;
 
-			_xSpeed = InputManager.MappedValueInputs["Arcade 1 Forward"].Value +
-			          InputManager.MappedValueInputs["Arcade 1 Backward"].Value;
+			var forwardInput = InputManager.MappedValueInputs[FORWARD];
+			var backwardInput = InputManager.MappedValueInputs[BACKWARD];
+			var leftInput = InputManager.MappedValueInputs[LEFT];
+			var rightInput = InputManager.MappedValueInputs[RIGHT];
 
-			_zRot = InputManager.MappedValueInputs["Arcade 1 Left"].Value +
-			          InputManager.MappedValueInputs["Arcade 1 Right"].Value;
+			if (backwardInput is Digital)
+				_xSpeed = forwardInput.Value - backwardInput.Value;
+			else
+				_xSpeed = forwardInput.Value + backwardInput.Value;
+			if (leftInput is Digital)
+				_zRot = rightInput.Value - leftInput.Value;
+			else
+				_zRot = rightInput.Value + leftInput.Value;
 
 			// Deadbanding
 			_xSpeed = Math.Abs(_xSpeed) > DEADBAND ? _xSpeed : 0;
