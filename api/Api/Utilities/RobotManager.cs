@@ -6,6 +6,7 @@ using System.Threading;
 using Mirabuf.Signal;
 using Mirabuf;
 using Google.Protobuf;
+using System.Linq;
 
 namespace SynthesisAPI.Utilities
 {
@@ -35,12 +36,6 @@ namespace SynthesisAPI.Utilities
             }
         }
 
-        public struct GenerationalEntry<T>
-        {
-            public int Generation { get; set; }
-            public T Value { get; set; }
-        }
-
         // TODO: maybe create IEquatable Info object to use as key?
         public Dictionary<String, ControllableState> Robots { get; private set; }
         public ConcurrentQueue<UpdateSignals> UpdateQueue { get; private set; }
@@ -52,7 +47,7 @@ namespace SynthesisAPI.Utilities
             Robots = new Dictionary<String, ControllableState>();
             UpdateQueue = new ConcurrentQueue<UpdateSignals>();
         }
-
+        //NEED TO MAKE STUFF THREAD SAFE!!!!!!!!!
         public void Start()
         {
             if (RobotManager.Instance.IsRunning) return;

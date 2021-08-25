@@ -22,26 +22,21 @@ namespace SynthesisAPI.Utilities
             {
                 packets = new ConcurrentQueue<UpdateSignals>();
                 _isRunning = false;
+
+                
+
                 listenerThread = new Thread(() =>
                 {
-                    Port = 13001;
-                    IPEndPoint remoteIpEndPoint = new IPEndPoint(IPAddress.Any, Port);
-                    UdpClient listener = new UdpClient(remoteIpEndPoint);
-                    
                     try
                     {
                         while (_isRunning)
                         {
-                            updateSignalTasks.Add(DeserializeUpdateSignalAsync(listener.ReceiveAsync()));
+                            //updateSignalTasks.Add(DeserializeUpdateSignalAsync(client.ReceiveAsync()));
                         }
                     }
                     catch (SocketException e)
                     {
                         System.Diagnostics.Debug.WriteLine(e);
-                    }
-                    finally
-                    {
-                        listener.Close();
                     }
                 });
                 managerThread = new Thread(() =>
@@ -58,9 +53,58 @@ namespace SynthesisAPI.Utilities
                         }
                     }
                 });
+                outputThread = new Thread(() =>
+                {
+                    multicastAddress = IPAddress.Parse("224.100.0.1");
+                    outputPort = 13001;
+                    outputIpEndPoint = new IPEndPoint(multicastAddress, outputPort);
+                    outputClient = new UdpClient(AddressFamily.InterNetwork);
+                    outputClient.JoinMulticastGroup(multicastAddress);
+                    MemoryStream outputStream = new MemoryStream();
+                    while (_isRunning)
+                    {
+                        // maybe lock robots with ReaderWriterLockSlim
+                        for (int i = 0; i < RobotManager.Instance.Robots.Count; i++)
+                        {
+                            // Resets outputStream without initializing a new MemoryStream every time
+                            byte[] buffer = outputStream.GetBuffer();
+                            Array.Clear(buffer, 0, buffer.Length);
+                            outputStream.Position = 0;
+                            outputStream.SetLength(0);
+
+                            string[] robotKeys = RobotManager.Instance.Robots.Keys.ToArray<string>();
+                            UpdateSignals update = new UpdateSignals()
+                            {
+                                ResourceName = robotKeys[i]
+                            };
+                            update.SignalMap.Add(RobotManager.Instance.Robots[robotKeys[i]].CurrentSignals);
+
+                            update.WriteDelimitedTo(outputStream);
+
+                            byte[] sendBuffer = outputStream.ToArray();
+
+                            System.Diagnostics.Debug.WriteLine("Sending update");
+
+                            //outputSocket.SendTo(sendBuffer, remoteIpEndPoint);
+                            outputClient.Send(sendBuffer, sendBuffer.Length, outputIpEndPoint);
+                            
+                        }
+                    }
+                });
             }
 
-            public static int Port { get; private set; }
+
+
+            private UdpClient listenerClient;
+            private IPEndPoint listenerIpEndPoint;
+            private int listenerPort;
+
+            private IPAddress multicastAddress;
+            private UdpClient outputClient;
+            private IPEndPoint outputIpEndPoint;
+            private int outputPort;
+            
+
 
             private bool _isRunning = false;
             public bool IsRunning
@@ -71,14 +115,16 @@ namespace SynthesisAPI.Utilities
                     _isRunning = value;
                     if (!value)
                     {
-                        if (listenerThread != null && listenerThread.IsAlive)
-                        {
-                            listenerThread.Join();
-                        }
+                        if (listenerThread != null && listenerThread.IsAlive) { listenerThread.Join(); }
+                        if (managerThread != null && managerThread.IsAlive) { managerThread.Join(); }
+                        if (outputThread != null && outputThread.IsAlive) { outputThread.Join(); }
+                        //if (client != null && client.Client.Connected) { client.Close(); }
+                        if (outputClient != null && outputClient.Client.Connected) { outputClient.Close(); }
                     }
                     if (value)
                     {
-                        listenerThread.Start();
+                        //listenerThread.Start();
+                        outputThread.Start();
                     }
                 }
             }
@@ -114,11 +160,9 @@ namespace SynthesisAPI.Utilities
             }
         }
 
-        public static bool IsRunning
-        {
-            get => Server.Instance.IsRunning;
-            set => Server.Instance.IsRunning = value;
-        }
+        public static void Start() { Server.Instance.IsRunning = true; }
+
+        public static void Stop() { Server.Instance.IsRunning = false; }
 
         public static void SetTargetQueue(ConcurrentQueue<UpdateSignals> target)
         {
