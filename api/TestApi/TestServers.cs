@@ -40,13 +40,18 @@ namespace TestApi
         private static TcpClient client;
         private static int port = 13000;
         private static int udpListenPort = 13001;
+        private static int udpSendPort = 13002;
         private static NetworkStream firstStream;
         private static NetworkStream secondStream;
 
+
         private static IPEndPoint remoteIpEndPoint;
         private static UdpClient udpClient;
+        private static Socket updateSendSocket;
+        private static IPEndPoint updateEndpoint;
+        private static UpdateSignals update;
 
-        static Thread heartbeatThread;
+        private static Thread heartbeatThread;
 
         [Test]
         public static void TestUpdating()
@@ -75,9 +80,9 @@ namespace TestApi
                     SendData(heartbeat, firstStream);
                 }
             });
-            Thread udpThread = new Thread(() =>
+            Thread udpReceiveThread = new Thread(() =>
             {
-                UdpServerManager.Start();
+                
                 udpClient.JoinMulticastGroup(IPAddress.Parse("224.100.0.1"));
                 System.Diagnostics.Debug.WriteLine("Start Udp stuff...");
                 while (isRunning)
@@ -85,7 +90,7 @@ namespace TestApi
                     try
                     {
                         var data = UpdateSignals.Parser.ParseDelimitedFrom(new MemoryStream(udpClient.Receive(ref remoteIpEndPoint)));
-                        System.Diagnostics.Debug.WriteLine(data);
+                        //System.Diagnostics.Debug.WriteLine(data);
                     }
                     catch (SocketException e)
                     {
@@ -93,8 +98,14 @@ namespace TestApi
                     }
 
                 }
-                System.Diagnostics.Debug.WriteLine("End Udp stuff");
-                UdpServerManager.Stop();
+            });
+            Thread udpSendThread = new Thread(() =>
+            {
+                var ms = new MemoryStream();
+                update.WriteDelimitedTo(ms);
+                System.Diagnostics.Debug.WriteLine("Sending update test");
+                System.Diagnostics.Debug.WriteLine(update);
+                updateSendSocket.SendTo(ms.ToArray(), updateEndpoint);
             });
 
             RobotManager.Instance.AddSignalLayout(new Signals()
@@ -112,6 +123,9 @@ namespace TestApi
             StartClient("127.0.0.1", ref firstStream);
             remoteIpEndPoint = new IPEndPoint(IPAddress.Any, udpListenPort);
             udpClient = new UdpClient(udpListenPort);
+            updateSendSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            updateEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), udpSendPort);
+
             
 
             System.Diagnostics.Debug.WriteLine("Sending Connection Request");
@@ -132,9 +146,17 @@ namespace TestApi
                 generation = response.ResourceOwnershipResponse.Generation;
             }
             System.Diagnostics.Debug.WriteLine("Guid is: {0}", guid);
-            
 
-            udpThread.Start();
+
+            update = new UpdateSignals()
+            {
+                Generation = generation,
+                Guid = guid,
+                ResourceName = "Robot"
+            };
+            UdpServerManager.Start();
+            udpReceiveThread.Start();
+            udpSendThread.Start();
 
             Thread.Sleep(2000);
 
@@ -159,7 +181,11 @@ namespace TestApi
             }
             isRunning = false;
             udpClient.Close();
-            udpThread.Join();
+            System.Diagnostics.Debug.WriteLine("End Udp stuff");
+            udpReceiveThread.Join();
+            udpSendThread.Join();
+            UdpServerManager.Stop();
+            
             heartbeatThread.Join();
             System.Diagnostics.Debug.WriteLine("Test finished");
         }

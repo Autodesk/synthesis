@@ -131,7 +131,9 @@ namespace SynthesisAPI.Utilities
                         }
                         for (int i = clients.Count - 1; i >= 0; i--)
                         {
-                            if (DateTimeOffset.Now.ToUnixTimeMilliseconds() - clients[i].state.LastHeartbeat > 5000 && clients[i].message != null && clients[i].message.IsCompleted)
+                            if (clients[i].message != null)
+                                System.Diagnostics.Debug.WriteLine(clients[i].message.IsCompleted);
+                            if (DateTimeOffset.Now.ToUnixTimeMilliseconds() - clients[i].state.LastHeartbeat > 7000 && clients[i].message != null && clients[i].message.IsCompleted)
                             {
                                 if (!RemoveClient(clients[i]))
                                 {
@@ -140,6 +142,7 @@ namespace SynthesisAPI.Utilities
                             }
                             else if (clients[i].message != null && clients[i].message.IsCompleted)
                             {
+                                
                                 switch (clients[i].message.Result.MessageTypeCase)
                                 {
                                     case ConnectionMessage.MessageTypeOneofCase.ConnectionRequest:
@@ -159,10 +162,12 @@ namespace SynthesisAPI.Utilities
                                         ControllableState? resource = null;
                                         if (TryGetResource(clients[i].message.Result.ResourceOwnershipRequest.ResourceName, ref resource) && resource.Owner == null)
                                         {
+                                            System.Diagnostics.Debug.WriteLine(resource.Generation);
                                             _currentWrites.Add(SendMessageAsync(clients[i].stream, new ConnectionMessage
                                             {
                                                 ResourceOwnershipResponse = new ConnectionMessage.Types.ResourceOwnershipResponse()
                                                 {
+                                                    ResourceName = clients[i].message.Result.ResourceOwnershipRequest.ResourceName,
                                                     Confirm = true,
                                                     Guid = resource.Guid,
                                                     Generation = resource.Generation
@@ -175,6 +180,7 @@ namespace SynthesisAPI.Utilities
                                             {
                                                 ResourceOwnershipResponse = new ConnectionMessage.Types.ResourceOwnershipResponse()
                                                 {
+                                                    ResourceName = clients[i].message.Result.ResourceOwnershipRequest.ResourceName,
                                                     Confirm = false,
                                                     Error = "Resource could not be given"
                                                 }

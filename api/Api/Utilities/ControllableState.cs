@@ -27,7 +27,7 @@ namespace SynthesisAPI.Utilities
                 _currentSignalLayout = value;
                 CurrentSignals = new Dictionary<string, UpdateSignal>();
                 Owner = null;
-                Generation = 0;
+                Generation = 1;
                 Guid = ByteString.CopyFromUtf8(value.Info.GUID);
                 foreach (var kvp in value.SignalMap)
                 {

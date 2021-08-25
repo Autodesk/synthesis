@@ -20,42 +20,56 @@ namespace SynthesisAPI.Utilities
             public static Server Instance { get { return lazy.Value; } }
             private Server()
             {
-                packets = new ConcurrentQueue<UpdateSignals>();
+                Packets = new ConcurrentQueue<UpdateSignals>();
                 _isRunning = false;
                 updateSignalTasks = new List<Task<UpdateSignals?>>();
-                
 
                 listenerThread = new Thread(() =>
                 {
-                    listenerPort = 13000;
+                    listenerPort = 13002;
                     listenerClient = new UdpClient(listenerPort);
                     listenerIpEndPoint = new IPEndPoint(IPAddress.Any, listenerPort);
                     try
                     {
                         while (_isRunning)
                         {
-                            updateSignalTasks.Add(DeserializeUpdateSignalAsync(listenerClient.ReceiveAsync()));
+                            var data = listenerClient.Receive(ref listenerIpEndPoint);
+                            Task.Run(() =>
+                            {
+                                Packets.Enqueue(UpdateSignals.Parser.ParseDelimitedFrom(new MemoryStream(data));
+                            });
+                            
                         }
                     }
                     catch (SocketException e)
                     {
-                        System.Diagnostics.Debug.WriteLine(e);
+                        System.Diagnostics.Debug.WriteLine("UDP Listener Stopped Successfully");
+                    }
+                    catch (AggregateException)
+                    {
+
                     }
                 });
+                /*
                 managerThread = new Thread(() =>
                 {
-                    while (_isRunning || updateSignalTasks.Any())
+                    while (_isRunning || updateSignalTasks.Count > 0)
                     {
+
                         for (int i = updateSignalTasks.Count - 1; i >= 0; i--)
                         {
-                            if (updateSignalTasks[i].IsCompleted && updateSignalTasks[i].Result != null)
+                            
+                            if (updateSignalTasks[i] != null && updateSignalTasks[i].IsCompleted && updateSignalTasks[i].Result != null)
                             {
-                                packets.Enqueue(updateSignalTasks[i].Result);
+                                System.Diagnostics.Debug.WriteLine("RESULT");
+                                System.Diagnostics.Debug.WriteLine(updateSignalTasks[i].Result);
+                                Packets.Enqueue(updateSignalTasks[i].Result);
                                 updateSignalTasks.RemoveAt(i);
                             }
                         }
                     }
                 });
+                */
                 outputThread = new Thread(() =>
                 {
                     multicastAddress = IPAddress.Parse("224.100.0.1");
@@ -86,7 +100,7 @@ namespace SynthesisAPI.Utilities
 
                             byte[] sendBuffer = outputStream.ToArray();
 
-                            System.Diagnostics.Debug.WriteLine("Sending update");
+                            //System.Diagnostics.Debug.WriteLine("Sending update");
 
                             outputClient.Send(sendBuffer, sendBuffer.Length, outputIpEndPoint);
                             
@@ -105,8 +119,12 @@ namespace SynthesisAPI.Utilities
             private UdpClient outputClient;
             private IPEndPoint outputIpEndPoint;
             private int outputPort;
-            
 
+            public ConcurrentQueue<UpdateSignals> Packets { get; set; }
+            private List<Task<UpdateSignals?>> updateSignalTasks;
+            private Thread listenerThread;
+            private Thread managerThread;
+            private Thread outputThread;
 
             private bool _isRunning = false;
             public bool IsRunning
@@ -120,46 +138,21 @@ namespace SynthesisAPI.Utilities
                         if (outputClient != null && outputClient.Client.Connected) { outputClient.Close(); }
                         if (listenerClient != null) { listenerClient.Close(); }
                         if (listenerThread != null && listenerThread.IsAlive) { listenerThread.Join(); }
-                        if (managerThread != null && managerThread.IsAlive) { managerThread.Join(); }
+                        //if (managerThread != null && managerThread.IsAlive) { managerThread.Join(); }
                         if (outputThread != null && outputThread.IsAlive) { outputThread.Join(); }
                     }
                     if (value)
                     {
                         listenerThread.Start();
+                        //managerThread.Start();
                         outputThread.Start();
                     }
                 }
             }
 
-            public ConcurrentQueue<UpdateSignals> packets;
-            private List<Task<UpdateSignals?>> updateSignalTasks;
-            private Thread listenerThread;
-            private Thread managerThread;
-            private Thread outputThread;
 
-            private async Task<UpdateSignals?> DeserializeUpdateSignalAsync(Task<UdpReceiveResult> receiveTask)
-            {
-                byte[] data = receiveTask.Result.Buffer;
-                try
-                {
-                    UpdateSignals signals = new UpdateSignals();
-                    MemoryStream stream = new MemoryStream(data);
-                    byte[] sizeBytes = new byte[sizeof(int)];
-                    await stream.ReadAsync(sizeBytes, 0, sizeBytes.Length);
-                    
+            
 
-                    int size = BitConverter.ToInt32(sizeBytes, 0);
-                    byte[] signalBytes = new byte[size];
-                    await stream.ReadAsync(signalBytes, 0, signalBytes.Length);
-                    signals.MergeFrom(signalBytes);
-                    return signals;
-                }
-                catch (Exception e)
-                {
-                    System.Diagnostics.Debug.WriteLine(e);
-                    return null;
-                }
-            }
         }
 
         public static void Start() { Server.Instance.IsRunning = true; }
@@ -168,7 +161,7 @@ namespace SynthesisAPI.Utilities
 
         public static void SetTargetQueue(ConcurrentQueue<UpdateSignals> target)
         {
-            Server.Instance.packets = target;
+            Server.Instance.Packets = target;
         } 
     }
 }
