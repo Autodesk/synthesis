@@ -40,16 +40,16 @@ public class PTL : MonoBehaviour
         POWER_UP = ParsePath("$appdata/Autodesk/Synthesis/Fields/2018 Power Up");
         // var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/MotionDefinition_v72.mira");
         //var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/1425-2019_v21.mira");
-        var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/TestDriveTrain_v19.mira");
-        //var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/Pneumatic-Drivetrain v33 v3_v1.mira");
-        //var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/2019_DEEPSPACE v2_v1.mira");
-        hasRobot = false;
-        robotList = new List<GameObject>();
-        // SpawnRobot(MEAN_MACHINE);
-
-        var obj = Importer.MirabufAssemblyImport(Assembly.Parser.ParseFrom(File.ReadAllBytes(MIRA_TEST)));
-        obj.transform.position = Vector3.up * 0.5f;
-        Debug.Break();
+        // var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/TestDriveTrain_v19.mira");
+        // //var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/Pneumatic-Drivetrain v33 v3_v1.mira");
+        // //var MIRA_TEST = ParsePath("$appdata/Autodesk/Synthesis/Mira/2019_DEEPSPACE v2_v1.mira");
+        // hasRobot = false;
+        // robotList = new List<GameObject>();
+        // // SpawnRobot(MEAN_MACHINE);
+        //
+        // var obj = Importer.MirabufAssemblyImport(Assembly.Parser.ParseFrom(File.ReadAllBytes(MIRA_TEST)));
+        // obj.transform.position = Vector3.up * 0.5f;
+        // Debug.Break();
 
         // var field = Importer.Import(POWER_UP, Importer.SourceType.PROTOBUF_FIELD,
         //     Translator.TranslationType.BXDF_TO_PROTO_FIELD, true);
@@ -57,16 +57,17 @@ public class PTL : MonoBehaviour
         // position = new Vector3(position.x, position.y + 0.5f, position.z);
         // field.transform.position = position;
     }
-    public void SpawnField(string fieldPath)
+    public GameObject SpawnField(string fieldPath)
     {
-        // SpawnField(fieldPath, Vector3.zero, Importer.SourceType.PROTOBUF_FIELD, Translator.TranslationType.BXDF_TO_PROTO_FIELD);
+        return SpawnField(fieldPath, Vector3.zero, Importer.SourceType.PROTOBUF_FIELD, Translator.TranslationType.BXDF_TO_PROTO_FIELD);
     }
-    public void SpawnField(string fieldPath, Vector3 pos, Importer.SourceType srcType, Translator.TranslationType transType = default)
+    public GameObject SpawnField(string fieldPath, Vector3 pos, Importer.SourceType srcType, Translator.TranslationType transType = default)
     {
-        // if (Directory.Exists(fieldPath)) fieldPath = Translator.Translate(fieldPath, transType, ParsePath("$appdata/Autodesk/Synthesis/Fields"));
-        // var field = Importer.Import(fieldPath, srcType);
-        // field.transform.parent = Game.transform;
-        // field.transform.position = pos;        
+        if (Directory.Exists(fieldPath)) fieldPath = Translator.Translate(fieldPath, transType, ParsePath("$appdata/Autodesk/Synthesis/Fields"));
+        var field = Importer.Import(fieldPath, srcType);
+        field.transform.parent = Game.transform;
+        field.transform.position = pos;
+        return field;
     }
     public void SpawnRobot(string botPath)//overloaded
     {

@@ -37,6 +37,7 @@ using UVector3 = UnityEngine.Vector3;
 using Node = Mirabuf.Node;
 using MPhysicalProperties = Mirabuf.PhysicalProperties;
 using JointMotor = UnityEngine.JointMotor;
+using Object = System.Object;
 
 namespace Synthesis.Import
 {
@@ -58,7 +59,7 @@ namespace Synthesis.Import
 		public static Dictionary<SourceType, (ImportFuncString strFunc, ImportFuncBuffer bufFunc)> Importers
 			= new Dictionary<SourceType, (ImportFuncString strFunc, ImportFuncBuffer bufFunc)>()
 			{
-				// { SourceType.PROTOBUF_ROBOT, (ProtoRobotImport, ProtoRobotImport) },
+				{SourceType.PROTOBUF_FIELD, (LegacyFieldImporter.ProtoFieldImport, LegacyFieldImporter.ProtoFieldImport) },
 				{SourceType.MIRABUF_ASSEMBLY, (MirabufAssemblyImport, MirabufAssemblyImport)}
 			};
 
@@ -150,10 +151,21 @@ namespace Synthesis.Import
 			#region Joints
 
 
-			var state = new ControllableState();
-			state.CurrentSignalLayout = assembly.Data.Signals ?? new Signals();
+			var state = new ControllableState
+			{
+				CurrentSignalLayout = assembly.Data.Signals ?? new Signals()
+			};
 			var simObject = new SimObject(assembly.Info.Name, state);
-			SimulationManager.RegisterSimObject(simObject);
+			try
+			{
+				SimulationManager.RegisterSimObject(simObject);
+			}
+			catch
+			{
+				// TODO: Fix
+				Logger.Log($"Robot with assembly {assembly.Info.Name} already exists.");
+				UnityEngine.Object.Destroy(assemblyObject);
+			}
 
 			foreach (var jointKvp in assembly.Data.Joints.JointInstances)
 			{
@@ -234,7 +246,7 @@ namespace Synthesis.Import
 							freeSpin = false,
 							targetVelocity = 900,
 						});
-					SimulationManager.Drivers.Add(driver);
+					SimulationManager.AddDriver(assembly.Info.Name, driver);
 					break;
 				case JointMotion.Slider:
 				default: // Make a rigid joint
@@ -423,7 +435,7 @@ namespace Synthesis.Import
 				assemblyObject.GetComponent<RobotInstance>()
 					.SetLayout(assembly.Info, assembly.Data.Signals, wheels.ToList());
 
-				SimulationManager.Behaviours.Add(new ArcadeDrive(
+				SimulationManager.AddBehaviour(assembly.Info.Name, new ArcadeDrive(
 					assembly.Info.Name,
 					leftWheels.Select(j => j.SignalReference).ToList(),
 					rightWheels.Select(j => j.SignalReference).ToList()));
@@ -501,7 +513,7 @@ namespace Synthesis.Import
 		public struct SourceType
 		{
 			public static readonly SourceType MIRABUF_ASSEMBLY = new SourceType("mirabuf_assembly", "mira");
-			// public static readonly SourceType PROTOBUF_FIELD = new SourceType("proto_field", ProtoField.FILE_ENDING);
+			public static readonly SourceType PROTOBUF_FIELD = new SourceType("proto_field", ProtoField.FILE_ENDING);
 
 			public string FileEnding  { get; private set; }
 			public string Indentifier { get; private set; }

@@ -32,6 +32,8 @@ namespace Assets.Scripts.Behaviors
 
 		private const double DEADBAND = 0.1;
 
+		public double speedMult = 4.0f;
+
 		public ArcadeDrive(string simObjectId, List<string> leftSignals, List<string> rightSignals, string inputName = "") : base(
 			simObjectId)
 		{
@@ -71,11 +73,11 @@ namespace Assets.Scripts.Behaviors
 				(_leftSpeed, _rightSpeed) = SolveSpeed(_xSpeed, _zRot, _squareInputs);
 				foreach (var sig in _leftSignals)
 				{
-					SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignals[sig].Value = Value.ForNumber(_leftSpeed);
+					SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignals[sig].Value = Value.ForNumber(_leftSpeed*speedMult);
 				}
 				foreach (var sig in _rightSignals)
             	{
-            		SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignals[sig].Value = Value.ForNumber(-_rightSpeed);
+            		SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignals[sig].Value = Value.ForNumber(-_rightSpeed*speedMult);
             	}
 			}
 
