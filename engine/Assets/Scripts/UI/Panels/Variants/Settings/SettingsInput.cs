@@ -3,66 +3,106 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-
-public class SettingsInput : MonoBehaviour
+namespace Synthesis.UI.Panels.Variant
 {
-    SettingsPanel.inputType type;//type
-
-
-    public TextMeshProUGUI _name;//shared
-
-    //Toggle
-    public Toggle _toggle;
-
-    //keybind
-    public TextMeshProUGUI _key;
-    private bool bind = false;
-
-    //dropdown list
-    public TMP_Dropdown _dropdown;
-
-
-    public void Init(string name, bool state)//TOGGLE
+    public class SettingsInput : MonoBehaviour
     {
-        type = SettingsPanel.inputType.toggle;
-        _name.text = name;
-        _toggle.isOn = state;
-    }
-    public SettingsPanel.inputType getType()
-    {
-        return type;
-    }
-    public void Init(string name, string control)//KEYBIND
-    {
-        type = SettingsPanel.inputType.keybind;
-        _name.text = name;
-        _key.text = control;
-    }
-    public void Init(string name, List<string> dropdownList, int value)//DROPDOWN LIST
-    {
-        type = SettingsPanel.inputType.dropdown;
-        _name.text = name;
-        foreach (string c in dropdownList)
+        private SettingsPanel.InputType _type;//type
+        public SettingsPanel.InputType Type
         {
-            _dropdown.options.Add(new TMP_Dropdown.OptionData(c));//CREATE DROPDOWN
+            get => _type;
         }
-        _dropdown.value = value;//CURRENT STATE
-    }
-    public void setKeybind() //CALLED BY KEYBIND
-    {
-        bind = true;
-    }
-    private void OnGUI()
-    {
-        if (type== SettingsPanel.inputType.keybind&&bind) //SET KEYBIND
+        private string _title = "sample-title";
+        public string Title
         {
-            Event e = Event.current;
-            if (e.isKey)
+            get => _title;
+            private set
             {
-                _key.text = e.keyCode.ToString();
-                bind = false;
+                _title = value;
+                titleText.text = _title;
             }
         }
-    }   
-    
+        [SerializeField] public TextMeshProUGUI titleText;//shared
+
+        [Header("Toggle Field")]
+        [SerializeField] public Toggle toggle;
+
+        [Header("Keybinding Field")]
+        [SerializeField] public TextMeshProUGUI key;
+        private bool _bind = false;
+
+        [Header("Dropdown Field")]
+        [SerializeField] public TMP_Dropdown dropdown;
+
+        [Header("Slider Field")]
+        [SerializeField] public Slider slider;
+        [SerializeField] public TextMeshProUGUI sliderValue;
+
+        #region Initializers
+
+        public void Init(string title, bool state)
+        { //TOGGLE
+            _type = SettingsPanel.InputType.Toggle;
+            Title = title;
+            toggle.isOn = state;
+        }
+
+        public void Init(string title, string control)
+        { //KEYBIND
+            _type = SettingsPanel.InputType.Keybind;
+            Title = title;
+            key.text = control;
+        }
+
+        public void Init(string title, string[] dropdownList, int value)
+        { //DROPDOWN LIST
+            dropdown.options.Clear();
+            _type = SettingsPanel.InputType.Dropdown;
+            Title = title;
+            foreach (string c in dropdownList)
+            {
+                dropdown.options.Add(new TMP_Dropdown.OptionData(c));//CREATE DROPDOWN
+            }
+            dropdown.value = value;//CURRENT STATE
+        }
+
+        public void Init(string name, int lowValue, int highValue, int value)
+        { //SLIDER
+            _type = SettingsPanel.InputType.Slider;
+            Title = name;
+            slider.minValue = lowValue;
+            slider.maxValue = highValue;
+            slider.value = value;        //Make sure it is formatted correctly
+            sliderValueChanged();
+        }
+
+        #endregion
+
+        public void sliderValueChanged()
+        {
+            sliderValue.text = slider.value.ToString();
+        }
+
+        public void setKeybind()
+        { //CALLED BY KEYBIND
+            _bind = true;
+        }
+
+        private void OnGUI()
+        {
+            if (_type == SettingsPanel.InputType.Keybind && _bind)
+            { //SET KEYBIND
+                Event e = Event.current;
+                if (e.isKey)
+                {
+                    key.text = e.keyCode.ToString();
+                    _bind = false;
+                }
+            }
+        }
+        public void OnValueChanged()
+        {
+            GameObject.FindObjectOfType<SettingsPanel>().onValueChanged(this);
+        }
+    }
 }
