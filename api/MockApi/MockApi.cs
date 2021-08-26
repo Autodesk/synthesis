@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Api.GUI;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.Modules.Attributes;
@@ -52,7 +53,8 @@ namespace MockApi
             }
             var eventType = callback.GetParameters().First().ParameterType;
             var tag = callback.GetCustomAttribute<TaggedCallbackAttribute>().Tag;
-            typeof(EventBus).GetMethod("NewTagListener").Invoke(null, new object[]
+            typeof(EventBus).GetMethod("NewTagListener")
+                ?.Invoke(null, new object[]
                 {
                     tag,
                     CreateEventCallback(callback, instance, eventType)
@@ -136,8 +138,7 @@ namespace MockApi
                         if (!debugLogsEnabled)
                         {
                             return;
-                        }
-                        {
+                        } else {
                             Console.WriteLine(o);
                             break;
                         }
@@ -175,6 +176,11 @@ namespace MockApi
             // }
 
             public VisualElement GetRootVisualElement()
+            {
+                throw new NotImplementedException();
+            }
+
+            public GUIManager GetGUIManager()
             {
                 throw new NotImplementedException();
             }

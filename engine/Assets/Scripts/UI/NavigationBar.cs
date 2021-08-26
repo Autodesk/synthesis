@@ -12,21 +12,37 @@ namespace Synthesis.UI.Bars
         public GameObject homeTab;
         public GameObject homeButton;
 
+        public TMP_Text VersionNumber;
+
         public TMP_FontAsset artifaktRegular;
         public TMP_FontAsset artifaktBold;
 
-        private GameObject _currentTabButton = null;
-        private GameObject _currentPanelButton = null;
+        private GameObject _currentTabButton;
+        private GameObject _currentPanelButton;
 
-        private void Start()
-        {
+        private void Start() {
+            VersionNumber.text = $"v {AutoUpdater.LocalVersion} BETA";
             OpenTab(homeTab);
         }
 
+        public void Exit() {
+            if (Application.isEditor)
+                Debug.Log("Would exit, but it's editor mode");
+            else
+                Application.Quit();
+        }
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                CloseAllPanels();
+            }
+        }
 
         public void OpenPanel(GameObject prefab)
         {
             if(prefab!=null){
+                  
                 LayoutManager.OpenPanel(prefab, true);
                 if(_currentPanelButton!=null) changePanelButton(artifaktRegular,new Color(1,1,1,1));
 
@@ -40,7 +56,7 @@ namespace Synthesis.UI.Bars
             LayoutManager.ClosePanel();
             if(_currentPanelButton!=null) changePanelButton(artifaktRegular,new Color(1,1,1,1));
         }
-        private void changePanelButton(TMP_FontAsset f, Color c){ //changes color and font of the clicked button       
+        private void changePanelButton(TMP_FontAsset f, Color c){ //changes color and font of the clicked button    
             //set font
             TextMeshProUGUI text = _currentPanelButton.transform.parent.GetComponentInChildren<TextMeshProUGUI>();
             if(text!=null)text.font = f;
@@ -74,5 +90,7 @@ namespace Synthesis.UI.Bars
             Image img = underline.GetComponent<Image>();
             img.color = c;//color
         }
+
+
     }
 }

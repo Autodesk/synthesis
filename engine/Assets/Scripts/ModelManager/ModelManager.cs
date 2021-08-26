@@ -17,10 +17,14 @@ namespace Synthesis.ModelManager
 
         public static void AddModel(string filePath)
         {
-            // Model m = Parse.AsModel(filePath);
-            // //Model m = new Model(filePath);
-            // OnModelSpawned(m);
-            // Models.Add(m.Name,m);
+            foreach (var kvp in Models)
+            {
+                kvp.Value.DestroyModel();
+            }
+            Models.Clear();
+            var m = new Model(filePath);
+            if (OnModelSpawned != null) OnModelSpawned(m);
+            Models.Add(m.Name, m);
         }
 
         public static void AddModel(string name, Model m) {
@@ -29,8 +33,9 @@ namespace Synthesis.ModelManager
 
         public static void SetField(string filePath)
         {
-            Field = Parse.AsField(filePath);
-            //Field = new Field(filePath);
+            if (Field != null)
+                Field.Destroy();
+            Field = new Field(filePath);
         }
 
         public static void Remove(string modelName)

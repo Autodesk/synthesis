@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+<<<<<<< HEAD:engine/Assets/Resources.meta
+guid: f1c720439b9f8584dbfd4ece94162421
+=======
+guid: e389687147519e144b9171dd08c4329c
+>>>>>>> module-rework-gui:engine/Assets/Resources/UI.meta
+folderAsset: yes
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
