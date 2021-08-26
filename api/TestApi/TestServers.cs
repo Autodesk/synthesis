@@ -53,7 +53,7 @@ namespace TestApi
         private static UpdateSignals update;
 
         private static Thread heartbeatThread;
-
+        /*
         [Test]
         public static void TestUpdating()
         {
@@ -97,7 +97,6 @@ namespace TestApi
                     {
                         System.Diagnostics.Debug.WriteLine(e);
                     }
-
                 }
             });
             Thread udpSendThread = new Thread(() =>
@@ -215,7 +214,7 @@ namespace TestApi
             System.Diagnostics.Debug.WriteLine("Test finished");
             Assert.IsTrue(true);
         }
-
+        */
         [Test]
         public static void TestConnecting()
         {
