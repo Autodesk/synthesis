@@ -23,7 +23,6 @@ namespace SynthesisAPI.Utilities
             get => _currentSignalLayout;
             set
             {
-                System.Diagnostics.Debug.WriteLine("Running CurrentSignalLayout set method");
                 _currentSignalLayout = value;
                 CurrentSignals = new Dictionary<string, UpdateSignal>();
                 Owner = null;
@@ -55,7 +54,7 @@ namespace SynthesisAPI.Utilities
                 }
                 else
                 {
-                    throw new SynthesisException("Layout does not contain key: " + kvp.Key);
+                    Logger.Log("Layout does not contain key: " + kvp.Key, LogLevel.Debug);
                 }    
             }
         }

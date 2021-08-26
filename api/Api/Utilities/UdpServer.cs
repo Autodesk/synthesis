@@ -45,7 +45,7 @@ namespace SynthesisAPI.Utilities
                     }
                     catch (SocketException e)
                     {
-                        System.Diagnostics.Debug.WriteLine("UDP Listener Stopped Successfully");
+                        Logger.Log("UDP Listener Stopped Successfully", LogLevel.Debug);
                     }
                     catch (AggregateException)
                     {

@@ -108,7 +108,7 @@ namespace SynthesisAPI.Utilities
                         }
                         catch (SocketException)
                         {
-                            System.Diagnostics.Debug.WriteLine("Listener stopped succesfully.");
+                            Logger.Log("Listener stopped succesfully.", LogLevel.Debug);
                         }
                     }
                 });
