@@ -24,7 +24,7 @@ namespace Synthesis.ModelManager.Models
 
         public Model(string filePath, Vector3 position, Quaternion rotation)
         {
-            _object = Importer.MirabufAssemblyImport(filePath);
+            _object = Importer.MirabufAssemblyImport(filePath, reverseSideMotors);
             _object.transform.SetParent(GameObject.Find("Game").transform);
             DrivetrainMeta = new DrivetrainMeta { Type = DrivetrainType.Arcade };
             _object.transform.position = position;
