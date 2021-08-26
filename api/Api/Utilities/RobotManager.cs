@@ -13,8 +13,6 @@ namespace SynthesisAPI.Utilities
     
     public sealed class RobotManager
     {
-        
-
         private Thread queueThread;
         private bool _isRunning = false;
         public bool IsRunning
@@ -36,7 +34,6 @@ namespace SynthesisAPI.Utilities
             }
         }
 
-        // TODO: maybe create IEquatable Info object to use as key?
         public Dictionary<String, ControllableState> Robots { get; private set; }
         public ConcurrentQueue<UpdateSignals> UpdateQueue { get; private set; }
 
@@ -47,7 +44,7 @@ namespace SynthesisAPI.Utilities
             Robots = new Dictionary<String, ControllableState>();
             UpdateQueue = new ConcurrentQueue<UpdateSignals>();
         }
-        //NEED TO MAKE STUFF THREAD SAFE!!!!!!!!!
+
         public void Start()
         {
             if (RobotManager.Instance.IsRunning) return;
@@ -57,7 +54,9 @@ namespace SynthesisAPI.Utilities
                 while (IsRunning)
                 {
                     if (UpdateQueue.TryDequeue(out UpdateSignals tmp))
+                    {
                         Robots[tmp.ResourceName].Update(tmp);
+                    }
                 }
             });
             queueThread.Start();
@@ -70,8 +69,6 @@ namespace SynthesisAPI.Utilities
 
         public void AddSignalLayout(Signals signalLayout)
         {
-            System.Diagnostics.Debug.WriteLine(signalLayout.Info.GUID);
-            System.Diagnostics.Debug.WriteLine(signalLayout.Info.Name);
             Robots[signalLayout.Info.Name] = new ControllableState() { CurrentSignalLayout = signalLayout };
         }
 

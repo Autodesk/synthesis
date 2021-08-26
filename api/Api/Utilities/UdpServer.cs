@@ -26,19 +26,21 @@ namespace SynthesisAPI.Utilities
 
                 listenerThread = new Thread(() =>
                 {
-                    listenerPort = 13002;
+                    listenerPort = 13000;
                     listenerClient = new UdpClient(listenerPort);
                     listenerIpEndPoint = new IPEndPoint(IPAddress.Any, listenerPort);
                     try
                     {
                         while (_isRunning)
                         {
+                            //may need to fix this
                             var data = listenerClient.Receive(ref listenerIpEndPoint);
+                            
+                            System.Diagnostics.Debug.WriteLine(UpdateSignals.Parser.ParseDelimitedFrom(new MemoryStream(data)));
                             Task.Run(() =>
                             {
-                                Packets.Enqueue(UpdateSignals.Parser.ParseDelimitedFrom(new MemoryStream(data));
+                                Packets.Enqueue(UpdateSignals.Parser.ParseDelimitedFrom(new MemoryStream(data)));
                             });
-                            
                         }
                     }
                     catch (SocketException e)
@@ -50,26 +52,6 @@ namespace SynthesisAPI.Utilities
 
                     }
                 });
-                /*
-                managerThread = new Thread(() =>
-                {
-                    while (_isRunning || updateSignalTasks.Count > 0)
-                    {
-
-                        for (int i = updateSignalTasks.Count - 1; i >= 0; i--)
-                        {
-                            
-                            if (updateSignalTasks[i] != null && updateSignalTasks[i].IsCompleted && updateSignalTasks[i].Result != null)
-                            {
-                                System.Diagnostics.Debug.WriteLine("RESULT");
-                                System.Diagnostics.Debug.WriteLine(updateSignalTasks[i].Result);
-                                Packets.Enqueue(updateSignalTasks[i].Result);
-                                updateSignalTasks.RemoveAt(i);
-                            }
-                        }
-                    }
-                });
-                */
                 outputThread = new Thread(() =>
                 {
                     multicastAddress = IPAddress.Parse("224.100.0.1");
@@ -80,7 +62,6 @@ namespace SynthesisAPI.Utilities
                     MemoryStream outputStream = new MemoryStream();
                     while (_isRunning)
                     {
-                        // maybe lock robots with ReaderWriterLockSlim
                         for (int i = 0; i < RobotManager.Instance.Robots.Count; i++)
                         {
                             // Resets outputStream without initializing a new MemoryStream every time
@@ -100,7 +81,6 @@ namespace SynthesisAPI.Utilities
 
                             byte[] sendBuffer = outputStream.ToArray();
 
-                            //System.Diagnostics.Debug.WriteLine("Sending update");
 
                             outputClient.Send(sendBuffer, sendBuffer.Length, outputIpEndPoint);
                             
@@ -138,21 +118,15 @@ namespace SynthesisAPI.Utilities
                         if (outputClient != null && outputClient.Client.Connected) { outputClient.Close(); }
                         if (listenerClient != null) { listenerClient.Close(); }
                         if (listenerThread != null && listenerThread.IsAlive) { listenerThread.Join(); }
-                        //if (managerThread != null && managerThread.IsAlive) { managerThread.Join(); }
                         if (outputThread != null && outputThread.IsAlive) { outputThread.Join(); }
                     }
                     if (value)
                     {
                         listenerThread.Start();
-                        //managerThread.Start();
                         outputThread.Start();
                     }
                 }
             }
-
-
-            
-
         }
 
         public static void Start() { Server.Instance.IsRunning = true; }

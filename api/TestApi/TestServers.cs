@@ -12,6 +12,7 @@ using ProtoBuf;
 using Google.Protobuf;
 using Mirabuf.Signal;
 using Mirabuf;
+using Google.Protobuf.WellKnownTypes;
 
 
 namespace TestApi 
@@ -38,9 +39,9 @@ namespace TestApi
         private static bool isRunning = true;
 
         private static TcpClient client;
-        private static int port = 13000;
+        private static int tcpPort = 13000;
         private static int udpListenPort = 13001;
-        private static int udpSendPort = 13002;
+        private static int udpSendPort = 13000;
         private static NetworkStream firstStream;
         private static NetworkStream secondStream;
 
@@ -108,14 +109,28 @@ namespace TestApi
                 updateSendSocket.SendTo(ms.ToArray(), updateEndpoint);
             });
 
-            RobotManager.Instance.AddSignalLayout(new Signals()
+            var signals = new Signals()
             {
                 Info = new Info()
                 {
                     Name = "Robot",
                     GUID = Guid.NewGuid().ToString()
                 }
+            };
+            signals.SignalMap.Add("DigitalOutput", new Signal()
+            {
+                Info = new Info()
+                {
+                    Name = "signal",
+                    GUID = Guid.NewGuid().ToString()
+                },
+                DeviceType = "Digital",
+                Io = IOType.Output
             });
+
+            
+            RobotManager.Instance.Start();
+            RobotManager.Instance.AddSignalLayout(signals);
 
             isRunning = true;
             heartbeatThread.Start();
@@ -154,6 +169,14 @@ namespace TestApi
                 Guid = guid,
                 ResourceName = "Robot"
             };
+            update.SignalMap.Add("DigitalOutput", new UpdateSignal()
+            {
+                DeviceType = "Digital",
+                Io = UpdateIOType.Output,
+                Value = Value.ForNumber(4.2)
+            });
+
+            UdpServerManager.SetTargetQueue(RobotManager.Instance.UpdateQueue);
             UdpServerManager.Start();
             udpReceiveThread.Start();
             udpSendThread.Start();
@@ -185,9 +208,12 @@ namespace TestApi
             udpReceiveThread.Join();
             udpSendThread.Join();
             UdpServerManager.Stop();
+            RobotManager.Instance.Stop();
+            System.Diagnostics.Debug.WriteLine(RobotManager.Instance.Robots["Robot"].CurrentSignals["DigitalOutput"]);
             
             heartbeatThread.Join();
             System.Diagnostics.Debug.WriteLine("Test finished");
+            Assert.IsTrue(true);
         }
 
         [Test]
@@ -265,6 +291,7 @@ namespace TestApi
             if (response.MessageTypeCase == ConnectionMessage.MessageTypeOneofCase.TerminateConnectionResponse && response.TerminateConnectionResponse.Confirm)
             {
                 StopClient(firstStream);
+                Assert.IsTrue(true);
             }
         }
 
@@ -353,7 +380,6 @@ namespace TestApi
                 secondGuid = secondResponse.ResourceOwnershipResponse.Guid;
                 secondGeneration = secondResponse.ResourceOwnershipResponse.Generation;
             }
-            //Isnt getting second resource...
 
             System.Diagnostics.Debug.WriteLine("Guid1", guid);
             System.Diagnostics.Debug.WriteLine("Guid1", secondGuid);
@@ -388,11 +414,12 @@ namespace TestApi
             {
                 StopClient(secondStream);
             }
+            Assert.IsTrue(true);
         }
 
         public static void StartClient(string server, ref NetworkStream clientStream)
         {
-            client = new TcpClient(server, port);
+            client = new TcpClient(server, tcpPort);
             clientStream = client.GetStream();
         }
 

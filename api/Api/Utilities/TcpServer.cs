@@ -20,8 +20,6 @@ namespace SynthesisAPI.Utilities
     {
         private sealed class Server
         {
-            // May have to lock clients (read/write lock?)
-            public ReaderWriterLockSlim clientsLock;
             private List<ClientHandler> clients;
             public TcpListener listener;
             public Thread listenerThread;
@@ -63,7 +61,6 @@ namespace SynthesisAPI.Utilities
                 public List<ControllableState> currentResources;
             }
 
-            // Send both data and type in tcp messages
             private class ClientState
             {
                 public bool IsConnected { get; set; } = false;
@@ -80,7 +77,6 @@ namespace SynthesisAPI.Utilities
                 _isRunning = false;
                 _canAcceptClients = false;
                 _currentWrites = new List<Task>();
-                clientsLock = new ReaderWriterLockSlim();
             }
 
             public void Start()
@@ -117,7 +113,6 @@ namespace SynthesisAPI.Utilities
                     }
                 });
 
-                // NEED TO LOCK THREADS!!!! (maybe)
                 clientManagerThread = new Thread(() =>
                 {
                     while (_isRunning || clients.Any())
@@ -146,8 +141,6 @@ namespace SynthesisAPI.Utilities
                                 switch (clients[i].message.Result.MessageTypeCase)
                                 {
                                     case ConnectionMessage.MessageTypeOneofCase.ConnectionRequest:
-                                        System.Diagnostics.Debug.WriteLine("Received Connection Request");
-                                        System.Diagnostics.Debug.WriteLine(clients[i].stream);
                                         _currentWrites.Add(SendMessageAsync(clients[i].stream, new ConnectionMessage 
                                         { 
                                             ConnectionResonse = new ConnectionMessage.Types.ConnectionResponse() 
@@ -158,7 +151,6 @@ namespace SynthesisAPI.Utilities
                                         break;
 
                                     case ConnectionMessage.MessageTypeOneofCase.ResourceOwnershipRequest:
-                                        System.Diagnostics.Debug.WriteLine("Received Resource Ownership Request");
                                         ControllableState? resource = null;
                                         if (TryGetResource(clients[i].message.Result.ResourceOwnershipRequest.ResourceName, ref resource) && resource.Owner == null)
                                         {
@@ -189,7 +181,6 @@ namespace SynthesisAPI.Utilities
                                         break;
 
                                     case ConnectionMessage.MessageTypeOneofCase.TerminateConnectionRequest:
-                                        System.Diagnostics.Debug.WriteLine("Received Terminate Connection Request");
                                         if (RobotManager.Instance.Robots.TryGetValue(clients[i].message.Result.TerminateConnectionRequest.ResourceName, out ControllableState tmp) && clients[i].message.Result.TerminateConnectionRequest.Guid.Equals(tmp.Guid) && clients[i].message.Result.TerminateConnectionRequest.Generation.Equals(tmp.Generation))
                                         {
                                             _currentWrites.Add(SendMessageAsync(clients[i].stream, new ConnectionMessage
@@ -225,7 +216,6 @@ namespace SynthesisAPI.Utilities
                                         break;
 
                                     case ConnectionMessage.MessageTypeOneofCase.Heartbeat:
-                                        System.Diagnostics.Debug.WriteLine("Received Heartbeat");
                                         clients[i].state.LastHeartbeat = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                                         break;
 
@@ -270,13 +260,11 @@ namespace SynthesisAPI.Utilities
             }
             private async Task SendMessageAsync(NetworkStream stream, ConnectionMessage message)
             {
-                System.Diagnostics.Debug.WriteLine("Writing: ", message.ToString());
                 await Task.Run(() => message.WriteDelimitedTo(stream));
             }
 
             private bool RemoveClient(ClientHandler clientHandler)
             {
-                System.Diagnostics.Debug.WriteLine("Removing Client");
                 for (int i = clientHandler.currentResources.Count - 1; i >= 0; i--)
                 {
                     clientHandler.currentResources[i].ReleaseResource();
@@ -289,10 +277,6 @@ namespace SynthesisAPI.Utilities
 
             private bool TryGetResource(string resourceName, ref ControllableState? resource)
             {
-                System.Diagnostics.Debug.WriteLine("TRYING TO GET RESOURCE");
-                System.Diagnostics.Debug.WriteLine(RobotManager.Instance.Robots.TryGetValue(resourceName, out ControllableState asd));
-                System.Diagnostics.Debug.WriteLine(asd.Guid);
-                
                 if (RobotManager.Instance.Robots.TryGetValue(resourceName, out resource))
                 {
                     return true;
