@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2148,6 +2148,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 287867056}
     m_Modifications:
+    - target: {fileID: 4075454794571564288, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: navBarPrefab
+      value: 
+      objectReference: {fileID: 4075454794571564288, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
     - target: {fileID: 4811190929119477552, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
       propertyPath: m_Pivot.x
       value: 1
