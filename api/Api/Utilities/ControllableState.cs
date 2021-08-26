@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Text;
 using Mirabuf.Signal;
 using Mirabuf;
+using Google.Protobuf;
+using System.Net.Sockets;
 
 namespace SynthesisAPI.Utilities
 {
@@ -22,21 +24,25 @@ namespace SynthesisAPI.Utilities
             set
             {
                 _currentSignalLayout = value;
-                CurrentSignals.Clear();
-                CurrentInfo = value.Info;
+                CurrentSignals = new Dictionary<string, UpdateSignal>();
+                Owner = null;
+                Generation = 1;
+                Guid = ByteString.CopyFromUtf8(value.Info.GUID);
                 foreach (var kvp in value.SignalMap)
                 {
                     CurrentSignals[kvp.Key] = new UpdateSignal
                     {
                         Io = kvp.Value.Io == IOType.Input ? UpdateIOType.Input : UpdateIOType.Output,
-                        Class = kvp.Value.DeviceType
+                        DeviceType = kvp.Value.DeviceType
                     };
                 }
             }
         }
 
-        public Info CurrentInfo { get; private set; }
-        public Dictionary<string, UpdateSignal> CurrentSignals { get; private set; } = new Dictionary<string, UpdateSignal>();
+        public Dictionary<string, UpdateSignal> CurrentSignals { get; private set; }
+        public int Generation { get; private set; }
+        public ByteString Guid { get; set; }
+        public TcpClient? Owner { get; set; }
         
         public void Update(UpdateSignals updateSignals)
         {
@@ -48,9 +54,15 @@ namespace SynthesisAPI.Utilities
                 }
                 else
                 {
-                    throw new SynthesisException("Layout does not contain key: " + kvp.Key);
+                    Logger.Log("Layout does not contain key: " + kvp.Key, LogLevel.Debug);
                 }    
             }
+        }
+
+        public void ReleaseResource()
+        {
+            Owner = null;
+            Generation += 1;
         }
     }
 }

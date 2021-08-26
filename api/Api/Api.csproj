@@ -42,6 +42,7 @@ For support contact frc@autodesk.com</PackageReleaseNotes>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
       <PackageReference Include="Google.Protobuf.Tools" Version="3.17.2" />
+      <PackageReference Include="System.Memory" Version="4.5.4" />
       <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>..\libs\UnityEngine.dll</HintPath>
       </Reference>

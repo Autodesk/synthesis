@@ -4,14 +4,15 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using Mirabuf.Signal;
+using Mirabuf;
+using Google.Protobuf;
+using System.Linq;
 
 namespace SynthesisAPI.Utilities
 {
     
     public sealed class RobotManager
     {
-        
-
         private Thread queueThread;
         private bool _isRunning = false;
         public bool IsRunning
@@ -33,14 +34,14 @@ namespace SynthesisAPI.Utilities
             }
         }
 
-        public Dictionary<string, ControllableState> Robots { get; private set; }
+        public Dictionary<String, ControllableState> Robots { get; private set; }
         public ConcurrentQueue<UpdateSignals> UpdateQueue { get; private set; }
 
         private static readonly Lazy<RobotManager> lazy = new Lazy<RobotManager>(() => new RobotManager());
         public static RobotManager Instance { get { return lazy.Value; } }
         private RobotManager()
         {
-            Robots = new Dictionary<string, ControllableState>();
+            Robots = new Dictionary<String, ControllableState>();
             UpdateQueue = new ConcurrentQueue<UpdateSignals>();
         }
 
@@ -53,7 +54,9 @@ namespace SynthesisAPI.Utilities
                 while (IsRunning)
                 {
                     if (UpdateQueue.TryDequeue(out UpdateSignals tmp))
-                        Robots[tmp.Name].Update(tmp);
+                    {
+                        Robots[tmp.ResourceName].Update(tmp);
+                    }
                 }
             });
             queueThread.Start();
@@ -66,10 +69,8 @@ namespace SynthesisAPI.Utilities
 
         public void AddSignalLayout(Signals signalLayout)
         {
-            Robots[signalLayout.Info.Name] = new ControllableState()
-            {
-                CurrentSignalLayout = signalLayout
-            };
+            Robots[signalLayout.Info.Name] = new ControllableState() { CurrentSignalLayout = signalLayout };
         }
+
     }
 }

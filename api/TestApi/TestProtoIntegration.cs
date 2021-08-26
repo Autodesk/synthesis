@@ -100,7 +100,7 @@ namespace TestApi {
             }));
         }
         */
-
+        /*
         [Test]
         public static void TestRobotManager()
         {
@@ -202,6 +202,6 @@ namespace TestApi {
 
             client.Close();
         }
-
+        */
     }
 }
