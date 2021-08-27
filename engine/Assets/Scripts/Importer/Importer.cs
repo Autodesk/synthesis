@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security;
-using System.Text;
-using System.Threading.Tasks;
 using Assets.Scripts.Behaviors;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
@@ -13,18 +9,10 @@ using Mirabuf;
 using Mirabuf.Joint;
 using Mirabuf.Material;
 using Mirabuf.Signal;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using NUnit.Framework;
-using NUnit.Framework.Constraints;
-using Synthesis.Util;
 using SynthesisAPI.Proto;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
-using Material = SynthesisAPI.Proto.Material;
-using Mesh = SynthesisAPI.Proto.Mesh;
 using UMaterial = UnityEngine.Material;
 using UMesh = UnityEngine.Mesh;
 using Logger = SynthesisAPI.Utilities.Logger;
@@ -32,13 +20,11 @@ using Assembly = Mirabuf.Assembly;
 using AssemblyData = Mirabuf.AssemblyData;
 using Enum = System.Enum;
 using Joint = Mirabuf.Joint.Joint;
-using Transform = UnityEngine.Transform;
 using Vector3 = Mirabuf.Vector3;
 using UVector3 = UnityEngine.Vector3;
 using Node = Mirabuf.Node;
 using MPhysicalProperties = Mirabuf.PhysicalProperties;
 using JointMotor = UnityEngine.JointMotor;
-using Object = System.Object;
 
 namespace Synthesis.Import
 {
@@ -303,7 +289,7 @@ namespace Synthesis.Import
 		private static MPhysicalProperties CombinePhysicalProperties(IEnumerable<MPhysicalProperties> props)
 		{
 			var total = 0.0;
-			var com = new Vector3();
+			// var com = new Vector3();
 			props.ForEach(x => total += x.Mass);
 			//props.ForEach(x => com += x.Com * x.Mass);
 			//com /= total;
@@ -344,47 +330,6 @@ namespace Synthesis.Import
 				}
 				++counter;
 			}
-
-			/*foreach (var instance in assembly.Data.Joints.JointInstances)
-			{
-				var def = new RigidbodyDefinition
-				{
-					GUID = $"{instance.Value.Info.GUID}",
-					Name = $"Rigidgroup:{counter}",
-					Parts = new Dictionary<string, PartInstance>()
-				};
-				if (!string.IsNullOrEmpty(instance.Value.ParentPart))
-					def.Parts.Add(instance.Value.ParentPart, assembly.Data.Parts.PartInstances[instance.Value.ParentPart]);
-				counter++;
-				var nodes = instance.Value.Parts == null ? new List<Node>() : new List<Node>(instance.Value.Parts.Nodes);
-
-				var tmp = GatherNodes(assembly, instance.Value);
-
-				while (nodes.Any())
-				{
-					foreach (var node in nodes)
-					{
-						Debug.Log($"Part GUID: \"{node.Value}\"");
-						if (node.Value != string.Empty)
-						{
-							if (!def.Parts.ContainsKey(node.Value))
-								def.Parts.Add(node.Value, assembly.Data.Parts.PartInstances[node.Value]);
-							else
-								Debug.Log($"Duplicate entry: {node.Value}");
-						}
-					}
-					var newNodes = new List<Node>();
-					nodes.ForEach(y => newNodes.AddRange(y.Children));
-					nodes = newNodes;
-				}
-
-				defs.Add(def.GUID, def);
-				foreach(var part in def.Parts)
-				{
-					partMap[part.Key] = def.GUID;
-				}
-			};
-			*/
 			return (defs, partMap);
 		}
 
@@ -419,8 +364,15 @@ namespace Synthesis.Import
 		{
 			foreach (var child in node.Children)
 			{
-				map.Add(child.Value, parent * parts.PartInstances[child.Value].Transform.UnityMatrix);
-				MakeGlobalTransformations(map, map[child.Value], parts, child);
+				if (!map.ContainsKey(child.Value))
+				{
+					map.Add(child.Value, parent * parts.PartInstances[child.Value].Transform.UnityMatrix);
+					MakeGlobalTransformations(map, map[child.Value], parts, child);
+				}
+				else
+				{
+					Logger.Log($"Key \"{child.Value}\" already present in map; ignoring", LogLevel.Error);
+				}
 			}
 		}
 
@@ -437,7 +389,7 @@ namespace Synthesis.Import
 					&& assembly.Data.Joints.JointDefinitions[pair.Value.JointReference].UserData != null
 					&& assembly.Data.Joints.JointDefinitions[pair.Value.JointReference].UserData.Data
 						.TryGetValue("wheel", out var isWheel)
-					&& isWheel == "true");
+					&& isWheel == "true").ToList();
 
 				var leftWheels = new List<JointInstance>();
 				var rightWheels = new List<JointInstance>();
@@ -448,7 +400,8 @@ namespace Synthesis.Import
 					var jointAnchor =
 						(wheelInstance.Value.Offset ?? new Vector3()) + assembly.Data.Joints
 							.JointDefinitions[wheelInstance.Value.JointReference].Origin ?? new Vector3();
-					if (UnityEngine.Vector3.Dot(UnityEngine.Vector3.up, jointAnchor) > 0)
+					jointAnchor.Y = 0;
+					if (UnityEngine.Vector3.Dot(UnityEngine.Vector3.right, jointAnchor) > 0)
 					{
 						rightWheels.Add(wheelInstance.Value);
 					}
@@ -520,28 +473,23 @@ namespace Synthesis.Import
 
 		public static List<(JointInstance instance, List<Node> nodes)> GatherNodes(Assembly assembly)
 		{
-			var res = new List<(JointInstance, List<Node>)>();
-			assembly.Data.Joints.JointInstances.Where(p => p.Value.Info.Name != "grounded").ForEach(x => res.Add((x.Value, GatherNodes(assembly,x.Value))));
-
+			var res = assembly.Data.Joints.JointInstances.Where(p => p.Value.Info.Name != "grounded")
+				.AsParallel().Select(x => (x.Value, GatherNodes(assembly, x.Value))).ToList();
+			/*
 			var exclusionList = res.SelectMany(ji => ji.Item2.Select(x => x.Value)).ToList();
+			*/
 			var groundedJoint = assembly.Data.Joints.JointInstances.First(p => p.Value.Info.Name == "grounded");
 			var nodes = new List<Node>(assembly.DesignHierarchy.Nodes);
 			var groundedNodes = new List<Node>();
 			while (nodes.Any())
 			{
-				foreach (var node in nodes)
-				{
-					if (!exclusionList.Contains(node.Value))
-					{
-						groundedNodes.Add(node);
-					}
-				}
-
+				groundedNodes.AddRange(nodes);
 				var newNodes = new List<Node>();
 				nodes.ForEach(y => newNodes.AddRange(y.Children));
 				nodes = newNodes;
 			}
-			res.Insert(0, (groundedJoint.Value, groundedNodes));
+
+			res.Insert(0, (groundedJoint.Value, groundedNodes.AsParallel().Except(res.AsParallel().SelectMany(p => p.Item2)).ToList()));
 			return res;
 		}
 
