@@ -211,8 +211,8 @@ namespace Synthesis.Import
 					revoluteA.anchor = (definition.Origin ?? new Vector3())
 					                   + (instance.Offset ?? new Vector3());
 					revoluteA.axis =
-						(((Matrix4x4) assembly.Data.Parts.PartInstances[instance.ParentPart].GlobalTransform).rotation)
-						* definition.Rotational.RotationalFreedom.Axis; // CHANGE
+						//(((Matrix4x4) assembly.Data.Parts.PartInstances[instance.ParentPart].GlobalTransform).rotation)
+						definition.Rotational.RotationalFreedom.Axis; // CHANGE
 					revoluteA.connectedBody = rbB;
 					revoluteA.connectedMassScale = revoluteA.connectedBody.mass / rbA.mass;
 					revoluteA.useMotor = definition.Info.Name != "grounded" &&
