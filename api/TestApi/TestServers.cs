@@ -13,7 +13,7 @@ using Google.Protobuf;
 using Mirabuf.Signal;
 using Mirabuf;
 using Google.Protobuf.WellKnownTypes;
-
+using SynthesisAPI.Simulation;
 
 namespace TestApi 
 {
@@ -127,9 +127,8 @@ namespace TestApi
                 Io = IOType.Output
             });
 
-            
-            RobotManager.Instance.Start();
-            RobotManager.Instance.AddSignalLayout(signals);
+
+            SimulationManager.RegisterSimObject(new SimObject(signals.Info.Name, new ControllableState() { CurrentSignalLayout = signals }));
 
             isRunning = true;
             heartbeatThread.Start();
@@ -175,7 +174,8 @@ namespace TestApi
                 Value = Value.ForNumber(4.2)
             });
 
-            UdpServerManager.SetTargetQueue(RobotManager.Instance.UpdateQueue);
+            UdpServerManager.SimulationObjectsTarget = SimulationManager._simulationObject;
+            System.Diagnostics.Debug.WriteLine(UdpServerManager.SimulationObjectsTarget);
             UdpServerManager.Start();
             udpReceiveThread.Start();
             udpSendThread.Start();
@@ -207,14 +207,14 @@ namespace TestApi
             udpReceiveThread.Join();
             udpSendThread.Join();
             UdpServerManager.Stop();
-            RobotManager.Instance.Stop();
-            System.Diagnostics.Debug.WriteLine(RobotManager.Instance.Robots["Robot"].CurrentSignals["DigitalOutput"]);
-            
+            System.Diagnostics.Debug.WriteLine(SimulationManager.SimulationObjects["Robot"].State.CurrentSignals["DigitalOutput"]);
+
             heartbeatThread.Join();
             System.Diagnostics.Debug.WriteLine("Test finished");
             Assert.IsTrue(true);
         }
         */
+
         [Test]
         public static void TestConnecting()
         {
@@ -240,14 +240,14 @@ namespace TestApi
                 SendData(heartbeat, firstStream);
             });
 
-            RobotManager.Instance.AddSignalLayout(new Signals()
+            SimulationManager.RegisterSimObject(new SimObject("Robot", new ControllableState() { CurrentSignalLayout = new Signals()
             {
                 Info = new Info()
                 {
                     Name = "Robot",
                     GUID = Guid.NewGuid().ToString()
                 }
-            });
+            }}));
 
             heartbeatThread.Start();
             TcpServerManager.Start();
@@ -297,22 +297,28 @@ namespace TestApi
         [Test]
         public static void TestMultipleConnections()
         {
-            RobotManager.Instance.AddSignalLayout(new Signals()
+            SimulationManager.RegisterSimObject(new SimObject("Robot1", new ControllableState()
             {
-                Info = new Info()
+                CurrentSignalLayout = new Signals()
                 {
-                    Name = "Robot1",
-                    GUID = Guid.NewGuid().ToString()
+                    Info = new Info()
+                    {
+                        Name = "Robot1",
+                        GUID = Guid.NewGuid().ToString()
+                    }
                 }
-            });
-            RobotManager.Instance.AddSignalLayout(new Signals()
+            }));
+            SimulationManager.RegisterSimObject(new SimObject("Robot2", new ControllableState()
             {
-                Info = new Info()
+                CurrentSignalLayout = new Signals()
                 {
-                    Name = "Robot2",
-                    GUID = Guid.NewGuid().ToString()
+                    Info = new Info()
+                    {
+                        Name = "Robot2",
+                        GUID = Guid.NewGuid().ToString()
+                    }
                 }
-            });
+            }));
 
             connectionRequest = new ConnectionMessage()
             {

@@ -11,7 +11,8 @@ using System.Linq;
 using Google.Protobuf;
 using ProtoBuf;
 using System.Collections.Concurrent;
-
+using SynthesisAPI.Simulation;
+using UnityEngine;
 
 namespace SynthesisAPI.Utilities
 {
@@ -132,7 +133,7 @@ namespace SynthesisAPI.Utilities
                             {
                                 if (!RemoveClient(clients[i]))
                                 {
-                                    System.Diagnostics.Debug.WriteLine("Could not remove client.");
+                                    Logger.Log("Could not remove client.", LogLevel.Debug);
                                 }
                             }
                             else if (clients[i].message != null && clients[i].message.IsCompleted)
@@ -151,18 +152,18 @@ namespace SynthesisAPI.Utilities
                                         break;
 
                                     case ConnectionMessage.MessageTypeOneofCase.ResourceOwnershipRequest:
-                                        ControllableState? resource = null;
-                                        if (TryGetResource(clients[i].message.Result.ResourceOwnershipRequest.ResourceName, ref resource) && resource.Owner == null)
+
+                                        if (SimulationManager.SimulationObjects.TryGetValue(clients[i].message.Result.ResourceOwnershipRequest.ResourceName, out SimObject resource) && resource.State.Owner == null)
                                         {
-                                            System.Diagnostics.Debug.WriteLine(resource.Generation);
+                                            System.Diagnostics.Debug.WriteLine(resource.State.Generation);
                                             _currentWrites.Add(SendMessageAsync(clients[i].stream, new ConnectionMessage
                                             {
                                                 ResourceOwnershipResponse = new ConnectionMessage.Types.ResourceOwnershipResponse()
                                                 {
                                                     ResourceName = clients[i].message.Result.ResourceOwnershipRequest.ResourceName,
                                                     Confirm = true,
-                                                    Guid = resource.Guid,
-                                                    Generation = resource.Generation
+                                                    Guid = resource.State.Guid,
+                                                    Generation = resource.State.Generation
                                                 }
                                             }));
                                         }
@@ -181,7 +182,7 @@ namespace SynthesisAPI.Utilities
                                         break;
 
                                     case ConnectionMessage.MessageTypeOneofCase.TerminateConnectionRequest:
-                                        if (RobotManager.Instance.Robots.TryGetValue(clients[i].message.Result.TerminateConnectionRequest.ResourceName, out ControllableState tmp) && clients[i].message.Result.TerminateConnectionRequest.Guid.Equals(tmp.Guid) && clients[i].message.Result.TerminateConnectionRequest.Generation.Equals(tmp.Generation))
+                                        if (SimulationManager.SimulationObjects.TryGetValue(clients[i].message.Result.TerminateConnectionRequest.ResourceName, out SimObject tmp) && clients[i].message.Result.TerminateConnectionRequest.Guid.Equals(tmp.State.Guid) && clients[i].message.Result.TerminateConnectionRequest.Generation.Equals(tmp.State.Generation))
                                         {
                                             _currentWrites.Add(SendMessageAsync(clients[i].stream, new ConnectionMessage
                                             {
@@ -275,16 +276,6 @@ namespace SynthesisAPI.Utilities
                 return clients.Remove(clientHandler);
             }
 
-            private bool TryGetResource(string resourceName, ref ControllableState? resource)
-            {
-                if (RobotManager.Instance.Robots.TryGetValue(resourceName, out resource))
-                {
-                    return true;
-                }
-                return false;
-                
-            }
-
         }
 
         public static void Start()
@@ -302,6 +293,19 @@ namespace SynthesisAPI.Utilities
         {
             get => Server.Instance._canAcceptClients;
             set => Server.Instance._canAcceptClients = value;
+        }
+    }
+
+    public class TcpServerMonoBehaviour : MonoBehaviour
+    {
+        void Start()
+        {
+            TcpServerManager.Start();
+        }
+
+        void Stop()
+        {
+            TcpServerManager.Stop();
         }
     }
 }

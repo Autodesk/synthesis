@@ -9,6 +9,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Google;
 using Google.Protobuf;
+using SynthesisAPI.Simulation;
+using UnityEngine;
 
 namespace SynthesisAPI.Utilities
 {
@@ -20,7 +22,7 @@ namespace SynthesisAPI.Utilities
             public static Server Instance { get { return lazy.Value; } }
             private Server()
             {
-                Packets = new ConcurrentQueue<UpdateSignals>();
+                updates = new ConcurrentQueue<UpdateSignals>();
                 _isRunning = false;
                 updateSignalTasks = new List<Task<UpdateSignals?>>();
 
@@ -39,7 +41,7 @@ namespace SynthesisAPI.Utilities
                             System.Diagnostics.Debug.WriteLine(UpdateSignals.Parser.ParseDelimitedFrom(new MemoryStream(data)));
                             Task.Run(() =>
                             {
-                                Packets.Enqueue(UpdateSignals.Parser.ParseDelimitedFrom(new MemoryStream(data)));
+                                updates.Enqueue(UpdateSignals.Parser.ParseDelimitedFrom(new MemoryStream(data)));
                             });
                         }
                     }
@@ -87,9 +89,25 @@ namespace SynthesisAPI.Utilities
                         }
                     }
                 });
+                queueThread = new Thread(() =>
+                {
+                    
+                    if (SimObjectsTarget == null)
+                    {
+                        Logger.Log("A target for Simulation Object updates has not been set", LogLevel.Debug);
+                    }
+                    else
+                    {
+                        while (_isRunning)
+                        {
+                            if (updates.TryDequeue(out UpdateSignals tmp))
+                            {
+                                SimObjectsTarget[tmp.ResourceName].State.Update(tmp);
+                            }
+                        }
+                    }
+                });
             }
-
-
 
             private UdpClient listenerClient;
             private IPEndPoint listenerIpEndPoint;
@@ -100,11 +118,12 @@ namespace SynthesisAPI.Utilities
             private IPEndPoint outputIpEndPoint;
             private int outputPort;
 
-            public ConcurrentQueue<UpdateSignals> Packets { get; set; }
+            public Dictionary<string, SimObject>? SimObjectsTarget { get; set; }
+            private ConcurrentQueue<UpdateSignals> updates;
             private List<Task<UpdateSignals?>> updateSignalTasks;
             private Thread listenerThread;
-            private Thread managerThread;
             private Thread outputThread;
+            private Thread queueThread;
 
             private bool _isRunning = false;
             public bool IsRunning
@@ -119,11 +138,13 @@ namespace SynthesisAPI.Utilities
                         if (listenerClient != null) { listenerClient.Close(); }
                         if (listenerThread != null && listenerThread.IsAlive) { listenerThread.Join(); }
                         if (outputThread != null && outputThread.IsAlive) { outputThread.Join(); }
+                        if (queueThread != null && queueThread.IsAlive) { queueThread.Join(); }
                     }
                     if (value)
                     {
                         listenerThread.Start();
                         outputThread.Start();
+                        queueThread.Start();
                     }
                 }
             }
@@ -133,9 +154,23 @@ namespace SynthesisAPI.Utilities
 
         public static void Stop() { Server.Instance.IsRunning = false; }
 
-        public static void SetTargetQueue(ConcurrentQueue<UpdateSignals> target)
+        public static Dictionary<string, SimObject> SimulationObjectsTarget 
+        { 
+            get => Server.Instance.SimObjectsTarget; 
+            set => Server.Instance.SimObjectsTarget = value; 
+        }
+    }
+    public class UdpServerMonoBehaviour : MonoBehaviour
+    {
+        void Start()
         {
-            Server.Instance.Packets = target;
-        } 
+            UdpServerManager.SimulationObjectsTarget = SimulationManager._simulationObject;
+            UdpServerManager.Start();
+        }
+
+        void Stop()
+        {
+            UdpServerManager.Stop();
+        }
     }
 }
