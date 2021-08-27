@@ -7,7 +7,7 @@ public class AnalyticsTest
 {
     [Test]
     public void EventTest() {
-        var data = new AnalyticsEvent(category: "dog", action: "bark", value: "9"); 
+        var data = new AnalyticsEvent(category: "dog", action: "bark", label: "9"); 
         AnalyticsManager.LogEvent(data);
         AnalyticsManager.PostData();
         

@@ -13,7 +13,7 @@ using Debug = UnityEngine.Debug;
 public class AutoUpdater : MonoBehaviour
 {
     // public static string updater;
-    public const string LocalVersion = "5.0.0.0";
+    public const string LocalVersion = "5.0.0.0"; // must be a version value
     public GameObject updaterPanelPrefab;
 
     // Start is called before the first frame update
@@ -23,6 +23,11 @@ public class AutoUpdater : MonoBehaviour
         // versionText.text = "Version " + LocalVersion;
         Debug.Log($"Version {LocalVersion} Beta");
         // game = GameObject.Find("UpdatePrompt");
+
+        // Analytics For Client Startup
+        var init = new AnalyticsEvent(category: "Startup", action: "Launched", label: $"Version {LocalVersion} BETA");
+        AnalyticsManager.LogEvent(init);
+        AnalyticsManager.PostData();
 
         if (CheckConnection())
         {
