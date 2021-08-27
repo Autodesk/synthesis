@@ -15,16 +15,23 @@ namespace Synthesis.ModelManager
         public delegate void ModelSpawned(Model model);
         public static event ModelSpawned OnModelSpawned;
 
-        public static void AddModel(string filePath)
+        public static Vector3 spawnLocation = new Vector3(0, 0.5f, 0);
+        public static Quaternion spawnRotation = Quaternion.identity;
+
+        public static Model primaryModel;
+
+        public static void AddModel(string filePath, bool reverseSideMotors = false)
         {
+            GizmoManager.ExitGizmo();
             foreach (var kvp in Models)
             {
                 kvp.Value.DestroyModel();
             }
             Models.Clear();
-            var m = new Model(filePath);
+            var m = new Model(filePath, spawnLocation,spawnRotation, reverseSideMotors);
             if (OnModelSpawned != null) OnModelSpawned(m);
             Models.Add(m.Name, m);
+            primaryModel = m;
         }
 
         public static void AddModel(string name, Model m) {

@@ -20,6 +20,8 @@ namespace Synthesis.UI.Bars
         private GameObject _currentTabButton;
         private GameObject _currentPanelButton;
 
+        public NavigationBar navBarPrefab;
+
         private void Start() {
             VersionNumber.text = $"v {AutoUpdater.LocalVersion} BETA";
             OpenTab(homeTab);
@@ -35,7 +37,7 @@ namespace Synthesis.UI.Bars
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                CloseAllPanels();
+                navBarPrefab.CloseAllPanels();
             }
         }
 

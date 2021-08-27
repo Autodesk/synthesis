@@ -28,6 +28,19 @@ namespace Synthesis.UI.Panels.Variant
         private Color disabledColor = new Color(0.5f, 0.5f, 0.5f, 1f);
         private Color enabledColor = new Color(0.1294118f, 0.5882353f, 0.9529412f, 1f);
 
+        public static bool ReverseSideJoints;
+
+        public static void ToggleReverseJoints()
+        {
+            ReverseSideJoints = !ReverseSideJoints;
+            var go = GameObject.Find("Reverse-Direction");
+            if (go != null)
+            {
+                go.GetComponent<Image>().color =
+                ReverseSideJoints ? new Color(0.5f, 0.5f, 0.5f) : new Color(0.35f, 0.35f, 0.35f);
+            }
+        }
+
         public void SelectItem(AddItem item)
         {
             if (_currentSelection != null) { 
@@ -52,7 +65,8 @@ namespace Synthesis.UI.Panels.Variant
         {
             if (_currentSelection != null)
             {
-                _currentSelection.AddModel();
+                _currentSelection.AddModel(ReverseSideJoints);
+                ReverseSideJoints = false;
                 NavBar.CloseAllPanels();
             }
         }
@@ -70,6 +84,7 @@ namespace Synthesis.UI.Panels.Variant
         void Start()
         {
             _root = ParsePath(Path.Combine("$appdata/Autodesk/Synthesis", Folder), '/');
+            ReverseSideJoints = false;
             ShowDirectory(_root);
             LoadButton.color = disabledColor;
             _currentSelection = null;

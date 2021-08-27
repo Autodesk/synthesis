@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Synthesis.Import;
 using SynthesisAPI.Simulation;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Synthesis.ModelManager.Models
 {
@@ -10,7 +11,7 @@ namespace Synthesis.ModelManager.Models
     {
         public string Name { get; set; }
 
-        private GameObject _object;
+        public GameObject _object;
 
         protected HashSet<Motor> motors = new HashSet<Motor>();
         public HashSet<Motor> Motors { get => motors; } // TODO: This bad, go back and fix
@@ -22,12 +23,15 @@ namespace Synthesis.ModelManager.Models
 
         protected Model() {}
 
-        public Model(string filePath)
+        public Model(string filePath, Vector3 position, Quaternion rotation, bool reverseSideMotors = false)
         {
-            _object = Importer.MirabufAssemblyImport(filePath);
+            _object = Importer.MirabufAssemblyImport(filePath, reverseSideMotors);
+            _object.transform.SetParent(GameObject.Find("Game").transform);
             DrivetrainMeta = new DrivetrainMeta { Type = DrivetrainType.Arcade };
-            _object.transform.position = Vector3.up * 0.5f;
+            _object.transform.position = position;
+            _object.transform.rotation = rotation;
             Name = _object.GetComponent<RobotInstance>().Info?.Name;
+            _object.GetComponent<RobotInstance>().ConfigureDrivebase(position,rotation, DrivetrainMeta);
         }
 
         public void DestroyModel()
@@ -36,16 +40,16 @@ namespace Synthesis.ModelManager.Models
             {
                 SimulationManager.RemoveSimObject(so);
             }
-            GameObject.Destroy(_object);
+            Object.Destroy(_object);
         }
 
-        private static int counter = 0;
+        private static int _counter = 0;
         private bool AddMotor(HingeJoint joint)
         {
             Motor m = _object.AddComponent<Motor>();
             m.Joint = joint;
-            m.Meta = ($"Motor {counter}", counter.ToString());
-            counter++;
+            m.Meta = ($"Motor {_counter}", _counter.ToString());
+            _counter++;
             joint.name = m.Meta.Name;
             return motors.Add(m);
         }

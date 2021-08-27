@@ -27,7 +27,15 @@ namespace SynthesisAPI.Utilities
                 CurrentSignals = new Dictionary<string, UpdateSignal>();
                 Owner = null;
                 Generation = 1;
-                Guid = ByteString.CopyFromUtf8(value.Info.GUID);
+                if (value.Info == null)
+                {
+                    Guid = ByteString.CopyFrom(System.Guid.NewGuid().ToByteArray());
+                }
+                else
+                {
+                    Guid = ByteString.CopyFromUtf8(value.Info.GUID);
+                }
+
                 foreach (var kvp in value.SignalMap)
                 {
                     CurrentSignals[kvp.Key] = new UpdateSignal
