@@ -10,6 +10,7 @@ public class SetLocation : MonoBehaviour
     public MoveArrow gizmoScript;
     public void SetRobotSpawn()//gizmo setup
     {
+        if (GizmoManager.currentGizmo != null) return;
         if (ModelManager.primaryModel == null) return;
         ResetRobotChildren();
         Transform currentRobot = ModelManager.primaryModel._object.transform;

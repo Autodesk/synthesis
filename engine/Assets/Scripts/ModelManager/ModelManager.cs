@@ -22,6 +22,7 @@ namespace Synthesis.ModelManager
 
         public static void AddModel(string filePath)
         {
+            GizmoManager.ExitGizmo();
             foreach (var kvp in Models)
             {
                 kvp.Value.DestroyModel();
