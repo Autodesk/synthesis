@@ -15,6 +15,10 @@ namespace Synthesis.ModelManager
         public delegate void ModelSpawned(Model model);
         public static event ModelSpawned OnModelSpawned;
 
+        public static Vector3 spawnLocation = new Vector3(0, 0.5f, 0);
+
+        public static Model primaryModel;
+
         public static void AddModel(string filePath)
         {
             foreach (var kvp in Models)
@@ -22,9 +26,10 @@ namespace Synthesis.ModelManager
                 kvp.Value.DestroyModel();
             }
             Models.Clear();
-            var m = new Model(filePath);
+            var m = new Model(filePath, spawnLocation);
             if (OnModelSpawned != null) OnModelSpawned(m);
             Models.Add(m.Name, m);
+            primaryModel = m;
         }
 
         public static void AddModel(string name, Model m) {

@@ -165,6 +165,10 @@ namespace Synthesis.Configuration
             {
                 snapEnabled = false;
             }
+            if (Input.GetKey(KeyCode.Return))
+            {
+                GizmoManager.OnEnter();
+            }
             if (activeArrow == ArrowType.None) // skip if there no gizmo components being dragged
                 return;
 

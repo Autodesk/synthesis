@@ -240,21 +240,41 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4046745758473013452, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4046745758473013452, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 7259845451573625542, guid: 7f4443e0480835a40be41aa190e93374, type: 3}
+    - target: {fileID: 4046745758473013452, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetRobotSpawn
+      objectReference: {fileID: 0}
+    - target: {fileID: 4046745758473013452, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: SetLocation, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 4046745758473013452, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 5256256030723406140, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 894355acb491a0b46a37013581ee1f0e, type: 3}
+      objectReference: {fileID: 21300000, guid: 27576f2b2c0db9c4eb1b2f69138f71ab, type: 3}
     - target: {fileID: 5256256030723406140, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
       propertyPath: m_Color.b
-      value: 0.23529412
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5256256030723406140, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
       propertyPath: m_Color.g
-      value: 0.23529412
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5256256030723406140, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
       propertyPath: m_Color.r
-      value: 0.23529412
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5269655053814281521, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
       propertyPath: m_Pivot.x
@@ -340,9 +360,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5471625243959210626, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 5471625243959210626, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 30
+      objectReference: {fileID: 0}
     - target: {fileID: 7011223228055757836, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
       propertyPath: m_text
-      value: RESET
+      value: SET SPAWN
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
@@ -366,21 +394,41 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4046745758473013452, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4046745758473013452, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 7259845451573625542, guid: 7f4443e0480835a40be41aa190e93374, type: 3}
+    - target: {fileID: 4046745758473013452, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ResetRobot
+      objectReference: {fileID: 0}
+    - target: {fileID: 4046745758473013452, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: SetLocation, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 4046745758473013452, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 5256256030723406140, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 6048e0dbfab377044a78be9d2e3db75c, type: 3}
+      objectReference: {fileID: 21300000, guid: c52e3331130cb6041a56a0195a4a59c4, type: 3}
     - target: {fileID: 5256256030723406140, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
       propertyPath: m_Color.b
-      value: 0.23529412
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5256256030723406140, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
       propertyPath: m_Color.g
-      value: 0.23529412
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5256256030723406140, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
       propertyPath: m_Color.r
-      value: 0.23529412
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5269655053814281521, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
       propertyPath: m_Pivot.x
@@ -465,6 +513,14 @@ PrefabInstance:
     - target: {fileID: 5269655053814281521, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5471625243959210626, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 5471625243959210626, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 7011223228055757836, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
       propertyPath: m_text
@@ -1031,18 +1087,18 @@ PrefabInstance:
     - target: {fileID: 5256256030723406140, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: e68ca6ef632148345bea79ec9e046e1d, type: 3}
+      objectReference: {fileID: 21300000, guid: 72be6b14d90eaeb46978a5d8689cc43f, type: 3}
     - target: {fileID: 5256256030723406140, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
       propertyPath: m_Color.b
-      value: 0.23529412
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5256256030723406140, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
       propertyPath: m_Color.g
-      value: 0.23529412
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5256256030723406140, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
       propertyPath: m_Color.r
-      value: 0.23529412
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5269655053814281521, guid: 0c3916b309d5b634da9af89f0c9bdd0f, type: 3}
       propertyPath: m_Pivot.x

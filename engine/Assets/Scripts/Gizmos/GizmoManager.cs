@@ -1,5 +1,6 @@
 
 using UnityEngine;
+using Synthesis.ModelManager;
 /// <summary>
 /// Manages Gizmos and ensures only one gizmo spawns at a time.
 /// </summary>
@@ -18,13 +19,12 @@ public static class GizmoManager
     /// <param name="parent"></param>
     /// <param name="forceClose"></param>
     /// <returns></returns>
-    public static bool SpawnGizmo(GameObject Gizmo, Transform parent, bool forceClose = false)
+    public static bool SpawnGizmo(GameObject Gizmo, Transform parent, Vector3 location)
     {
         if (gizmo != null)
-            if (forceClose)
                 Object.Destroy(gizmo);
-            else
-                return false;
+
+        parent.transform.position = location;
         var g = Object.Instantiate(Gizmo,parent);//set transform
         gizmo = g;
         return true;
@@ -34,6 +34,11 @@ public static class GizmoManager
     /// </summary>
     public static void ExitGizmo()
     {
+        Object.Destroy(gizmo);
+    }
+    public static void OnEnter()
+    {
+        ModelManager.spawnLocation = gizmo.transform.position;
         Object.Destroy(gizmo);
     }
 }

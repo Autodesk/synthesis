@@ -10,7 +10,7 @@ namespace Synthesis.ModelManager.Models
     {
         public string Name { get; set; }
 
-        private GameObject _object;
+        public GameObject _object;
 
         protected HashSet<Motor> motors = new HashSet<Motor>();
         public HashSet<Motor> Motors { get => motors; } // TODO: This bad, go back and fix
@@ -22,11 +22,12 @@ namespace Synthesis.ModelManager.Models
 
         protected Model() {}
 
-        public Model(string filePath)
+        public Model(string filePath, Vector3 position)
         {
             _object = Importer.MirabufAssemblyImport(filePath);
+            _object.transform.SetParent(GameObject.Find("Game").transform);
             DrivetrainMeta = new DrivetrainMeta { Type = DrivetrainType.Arcade };
-            _object.transform.position = Vector3.up * 0.5f;
+            _object.transform.position = position;
             Name = _object.GetComponent<RobotInstance>().Info?.Name;
         }
 
