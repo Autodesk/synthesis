@@ -20,7 +20,7 @@ namespace Synthesis.ModelManager
 
         public static Model primaryModel;
 
-        public static void AddModel(string filePath)
+        public static void AddModel(string filePath, bool reverseSideMotors = false)
         {
             GizmoManager.ExitGizmo();
             foreach (var kvp in Models)
@@ -28,7 +28,7 @@ namespace Synthesis.ModelManager
                 kvp.Value.DestroyModel();
             }
             Models.Clear();
-            var m = new Model(filePath, spawnLocation,spawnRotation);
+            var m = new Model(filePath, spawnLocation,spawnRotation, reverseSideMotors);
             if (OnModelSpawned != null) OnModelSpawned(m);
             Models.Add(m.Name, m);
             primaryModel = m;

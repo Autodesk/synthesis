@@ -15,9 +15,9 @@ public class AddItem : MonoBehaviour
     GameObject p;
     private bool _isRobot;
 
-    public void AddModel()
+    public void AddModel(bool reverseSideMotors)
     {
-        ModelManager.AddModel(_fullPath);
+        ModelManager.AddModel(_fullPath, reverseSideMotors);
     }
 
     public void AddField()
