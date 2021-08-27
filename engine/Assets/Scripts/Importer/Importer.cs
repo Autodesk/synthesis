@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Assets.Scripts.Behaviors;
 using Google.Protobuf;
+using Google.Protobuf.Collections;
 using Google.Protobuf.WellKnownTypes;
 using Mirabuf;
 using Mirabuf.Joint;
@@ -186,7 +187,9 @@ namespace Synthesis.Import
 
 			#endregion
 
-			ConfigureDrivebase(assembly, assemblyObject, reverseSideJoints);
+			assemblyObject.AddComponent<RobotInstance>();
+            assemblyObject.GetComponent<RobotInstance>()
+                .Init(assembly.Info, assembly.Data.Joints.JointInstances, assembly.Data.Joints.JointDefinitions, assembly.Data.Signals, reverseSideJoints);
 
 			return assemblyObject;
 		}
@@ -378,59 +381,7 @@ namespace Synthesis.Import
 
 		#endregion
 
-		#region Robot Configuration
-
-		public static void ConfigureDrivebase(Assembly assembly, GameObject assemblyObject, bool reverseSideJoints = false)
-		{
-			if (assembly.Data.Signals != null && assembly.Data.Joints.JointInstances != null)
-			{
-				var wheelsInstances = assembly.Data.Joints.JointInstances.Where(pair =>
-					pair.Value.Info.Name != "grounded"
-					&& assembly.Data.Joints.JointDefinitions[pair.Value.JointReference].UserData != null
-					&& assembly.Data.Joints.JointDefinitions[pair.Value.JointReference].UserData.Data
-						.TryGetValue("wheel", out var isWheel)
-					&& isWheel == "true").ToList();
-
-				var leftWheels = new List<JointInstance>();
-				var rightWheels = new List<JointInstance>();
-
-				foreach (var wheelInstance in wheelsInstances)
-				{
-					SimulationManager.SimulationObjects[assembly.Info.Name].State.CurrentSignals[wheelInstance.Value.SignalReference].Value = Value.ForNumber(0.0);
-					var jointAnchor =
-						(wheelInstance.Value.Offset ?? new Vector3()) + assembly.Data.Joints
-							.JointDefinitions[wheelInstance.Value.JointReference].Origin ?? new Vector3();
-					jointAnchor.Y = 0;
-					if (UnityEngine.Vector3.Dot(UnityEngine.Vector3.right, jointAnchor) > 0)
-					{
-						rightWheels.Add(wheelInstance.Value);
-					}
-					else
-					{
-						leftWheels.Add(wheelInstance.Value);
-					}
-				}
-
-				assemblyObject.AddComponent<RobotInstance>();
-
-				var wheels = wheelsInstances.Select(pair => pair.Value.SignalReference);
-				assemblyObject.GetComponent<RobotInstance>()
-					.SetLayout(assembly.Info, assembly.Data.Signals, wheels.ToList());
-
-				SimulationManager.AddBehaviour(assembly.Info.Name, new ArcadeDrive(
-					assembly.Info.Name,
-					leftWheels.Select(j => j.SignalReference).ToList(),
-					rightWheels.Select(j => j.SignalReference).ToList(),
-					reversedSideJoints: reverseSideJoints));
-
-			}
-			else
-			{
-				Logger.Log($"No joints or signals found for {assembly.Info.Name}. Skipping.");
-			}
-		}
-
-		public static List<Node> GatherNodes(Assembly assembly, JointInstance instance)
+		static List<Node> GatherNodes(Assembly assembly, JointInstance instance)
 		{
 			var nodes = new List<Node>(assembly.DesignHierarchy.Nodes);
 			var newRoot = new List<Node>();
@@ -560,8 +511,6 @@ namespace Synthesis.Import
 
 			Debug.Log(Enum.GetName(typeof(Joint.JointMotionOneofCase), definition.JointMotionCase));
 		}
-
-		#endregion
 
 		#endregion
 
