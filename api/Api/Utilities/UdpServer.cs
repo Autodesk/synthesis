@@ -142,6 +142,7 @@ namespace SynthesisAPI.Utilities
                     }
                     if (value)
                     {
+                        Logger.Log("Starting UDP Server", LogLevel.Debug);
                         listenerThread.Start();
                         outputThread.Start();
                         queueThread.Start();
@@ -160,17 +161,5 @@ namespace SynthesisAPI.Utilities
             set => Server.Instance.SimObjectsTarget = value; 
         }
     }
-    public class UdpServerMonoBehaviour : MonoBehaviour
-    {
-        void Start()
-        {
-            UdpServerManager.SimulationObjectsTarget = SimulationManager._simulationObject;
-            UdpServerManager.Start();
-        }
-
-        void Stop()
-        {
-            UdpServerManager.Stop();
-        }
-    }
+    
 }

@@ -253,6 +253,11 @@ namespace TestApi
             TcpServerManager.Start();
             StartClient("127.0.0.1", ref firstStream);
 
+            SendData(new ConnectionMessage()
+            {
+                TerminateConnectionRequest = new ConnectionMessage.Types.TerminateConnectionRequest()
+            }, firstStream);
+
             System.Diagnostics.Debug.WriteLine("Sending Connection Request");
             SendData(connectionRequest, firstStream);
 

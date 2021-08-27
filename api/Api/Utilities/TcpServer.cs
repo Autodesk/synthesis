@@ -82,6 +82,7 @@ namespace SynthesisAPI.Utilities
 
             public void Start()
             {
+                Logger.Log("Starting TCP Server", LogLevel.Debug);
                 clients = new List<ClientHandler>();
                 listener.Start();
                 _canAcceptClients = true;
@@ -109,7 +110,7 @@ namespace SynthesisAPI.Utilities
                         }
                         catch (SocketException)
                         {
-                            Logger.Log("Listener stopped succesfully.", LogLevel.Debug);
+                            Logger.Log("TCP Listener stopped succesfully.", LogLevel.Debug);
                         }
                     }
                 });
@@ -138,7 +139,6 @@ namespace SynthesisAPI.Utilities
                             }
                             else if (clients[i].message != null && clients[i].message.IsCompleted)
                             {
-                                
                                 switch (clients[i].message.Result.MessageTypeCase)
                                 {
                                     case ConnectionMessage.MessageTypeOneofCase.ConnectionRequest:
@@ -155,7 +155,6 @@ namespace SynthesisAPI.Utilities
 
                                         if (SimulationManager.SimulationObjects.TryGetValue(clients[i].message.Result.ResourceOwnershipRequest.ResourceName, out SimObject resource) && resource.State.Owner == null)
                                         {
-                                            System.Diagnostics.Debug.WriteLine(resource.State.Generation);
                                             _currentWrites.Add(SendMessageAsync(clients[i].stream, new ConnectionMessage
                                             {
                                                 ResourceOwnershipResponse = new ConnectionMessage.Types.ResourceOwnershipResponse()
@@ -166,6 +165,7 @@ namespace SynthesisAPI.Utilities
                                                     Generation = resource.State.Generation
                                                 }
                                             }));
+                                            resource.State.Owner = clients[i].client;
                                         }
                                         else
                                         {
@@ -294,18 +294,7 @@ namespace SynthesisAPI.Utilities
             get => Server.Instance._canAcceptClients;
             set => Server.Instance._canAcceptClients = value;
         }
-    }
 
-    public class TcpServerMonoBehaviour : MonoBehaviour
-    {
-        void Start()
-        {
-            TcpServerManager.Start();
-        }
-
-        void Stop()
-        {
-            TcpServerManager.Stop();
-        }
+        public static bool IsRunning { get => Server.Instance.IsRunning; }
     }
 }
