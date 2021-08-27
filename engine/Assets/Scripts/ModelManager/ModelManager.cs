@@ -16,6 +16,7 @@ namespace Synthesis.ModelManager
         public static event ModelSpawned OnModelSpawned;
 
         public static Vector3 spawnLocation = new Vector3(0, 0.5f, 0);
+        public static Quaternion spawnRotation = Quaternion.identity;
 
         public static Model primaryModel;
 
@@ -26,7 +27,7 @@ namespace Synthesis.ModelManager
                 kvp.Value.DestroyModel();
             }
             Models.Clear();
-            var m = new Model(filePath, spawnLocation);
+            var m = new Model(filePath, spawnLocation,spawnRotation);
             if (OnModelSpawned != null) OnModelSpawned(m);
             Models.Add(m.Name, m);
             primaryModel = m;

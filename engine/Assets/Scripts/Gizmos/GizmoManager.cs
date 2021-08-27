@@ -39,6 +39,7 @@ public static class GizmoManager
     public static void OnEnter()
     {
         ModelManager.spawnLocation = gizmo.transform.position;
+        ModelManager.spawnRotation = gizmo.transform.rotation;
         Object.Destroy(gizmo);
     }
 }

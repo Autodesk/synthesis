@@ -340,7 +340,7 @@ namespace Synthesis.Configuration
             cam.FollowTransform = gizmoCameraTransform;
 
         }
-        private void HierarchyRigidbodiesToDictionary() //save the state of all gameobject's rigidbodies as a dictionary
+        public void HierarchyRigidbodiesToDictionary() //save the state of all gameobject's rigidbodies as a dictionary
         {
             rigidbodiesKinematicStateInScene = new Dictionary<Rigidbody, bool>();
             GameObject Game = GameObject.Find("Game");
@@ -354,7 +354,7 @@ namespace Synthesis.Configuration
         /// Enables or disables rigidbodies using isKinematic and detect collisions
         /// </summary>
         /// <param name="enabled"></param>
-        private void SetRigidbodies(bool enabled)
+        public void SetRigidbodies(bool enabled)
         {
             foreach (KeyValuePair<Rigidbody, bool> rb in rigidbodiesKinematicStateInScene)
             {

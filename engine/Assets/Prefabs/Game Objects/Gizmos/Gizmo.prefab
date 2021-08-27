@@ -1368,3 +1368,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gizmo: {fileID: 1956879812176446}
+  gizmoScript: {fileID: 114632750974120752}
