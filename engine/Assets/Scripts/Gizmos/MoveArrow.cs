@@ -358,15 +358,18 @@ namespace Synthesis.Configuration
         {
             foreach (KeyValuePair<Rigidbody, bool> rb in rigidbodiesKinematicStateInScene)
             {
-                if (enabled)
+                if (rb.Key != null)
                 {
-                    rb.Key.isKinematic = rb.Value; //saved dictionary state for reactivating the rigidbody's motion
-                    rb.Key.detectCollisions = true;
-                }
-                else
-                {
-                    rb.Key.isKinematic = true;
-                    rb.Key.detectCollisions = false;
+                    if (enabled)
+                    {
+                        rb.Key.isKinematic = rb.Value; //saved dictionary state for reactivating the rigidbody's motion
+                        rb.Key.detectCollisions = true;
+                    }
+                    else
+                    {
+                        rb.Key.isKinematic = true;
+                        rb.Key.detectCollisions = false;
+                    }
                 }
             }
         }
