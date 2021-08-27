@@ -213,7 +213,6 @@ namespace TestApi
             System.Diagnostics.Debug.WriteLine("Test finished");
             Assert.IsTrue(true);
         }
-        */
 
         [Test]
         public static void TestConnecting()
@@ -426,6 +425,7 @@ namespace TestApi
             }
             Assert.IsTrue(true);
         }
+        */
 
         public static void StartClient(string server, ref NetworkStream clientStream)
         {
