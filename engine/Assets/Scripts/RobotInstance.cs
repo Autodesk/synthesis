@@ -82,7 +82,6 @@ public class RobotInstance : MonoBehaviour
                         (wheelInstance.Value.Offset ?? new Vector3()) +
                         _joints?[wheelInstance.Value.JointReference].Origin ?? new Vector3();
                     jointAnchor = rotation * jointAnchor;
-                    jointAnchor.Y = 0;
                     if (Vector3.Dot(Vector3.right, jointAnchor) > 0)
                     {
                         rightWheels.Add(wheelInstance.Value);
