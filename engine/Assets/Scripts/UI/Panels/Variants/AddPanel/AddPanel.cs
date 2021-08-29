@@ -66,7 +66,6 @@ namespace Synthesis.UI.Panels.Variant
             }
         }
 
-
         void Start()
         {
             _root = ParsePath(Path.Combine("$appdata/Autodesk/Synthesis", Folder), '/');
@@ -102,7 +101,6 @@ namespace Synthesis.UI.Panels.Variant
                         ParsePath(path, '\\'));
                 }
             }
-
         }
 
         private string ParsePath(string p, char c)
@@ -126,7 +124,5 @@ namespace Synthesis.UI.Panels.Variant
             // Debug.Log(b);
             return b;
         }
-
-
     }
 }

@@ -22,6 +22,8 @@ namespace Synthesis.UI.Bars
 
         public NavigationBar navBarPrefab;
 
+        private string lastOpenedPanel;
+
         private void Start() {
             VersionNumber.text = $"v {AutoUpdater.LocalVersion} BETA";
             OpenTab(homeTab);
@@ -31,7 +33,13 @@ namespace Synthesis.UI.Bars
             if (Application.isEditor)
                 Debug.Log("Would exit, but it's editor mode");
             else
+            {
+                var update = new AnalyticsEvent(category: "Exit", action: "Closed", label: $"Closed Synthesis");
+                AnalyticsManager.LogEvent(update);
+                AnalyticsManager.PostData();
+
                 Application.Quit();
+            }
         }
         private void Update()
         {
@@ -39,6 +47,13 @@ namespace Synthesis.UI.Bars
             {
                 navBarPrefab.CloseAllPanels();
             }
+        }
+
+        public void PanelAnalytics(string prefabName, string status)
+        {
+            var panel = new AnalyticsEvent(category: "Panel", action: status, label: prefabName);
+            AnalyticsManager.LogEvent(panel);
+            AnalyticsManager.PostData();
         }
 
         public void OpenPanel(GameObject prefab)
@@ -51,12 +66,18 @@ namespace Synthesis.UI.Bars
                 //set current panel button to the button clicked
                 _currentPanelButton = EventSystem.current.currentSelectedGameObject;
                 changePanelButton(artifaktBold,new Color(0.8705882f,0.8705882f,0.8705882f,1));
+
+                // Analytics Stuff
+                lastOpenedPanel = prefab.name; // this will need to be an array for movable panels
+                PanelAnalytics(prefab.name, "Opened");
             }
         }
         public void CloseAllPanels()
         {
             LayoutManager.ClosePanel();
             if(_currentPanelButton!=null) changePanelButton(artifaktRegular,new Color(1,1,1,1));
+
+            PanelAnalytics(lastOpenedPanel, "Closed");
         }
         private void changePanelButton(TMP_FontAsset f, Color c){ //changes color and font of the clicked button    
             //set font
@@ -92,7 +113,5 @@ namespace Synthesis.UI.Bars
             Image img = underline.GetComponent<Image>();
             img.color = c;//color
         }
-
-
     }
 }

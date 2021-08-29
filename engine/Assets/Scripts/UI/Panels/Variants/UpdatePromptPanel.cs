@@ -25,7 +25,6 @@ namespace Synthesis.UI.Panels {
 
                 var update = new AnalyticsEvent(category: "Startup", action: "Update Prompted", label: $"Update Agreed");
                 AnalyticsManager.LogEvent(update);
-                AnalyticsManager.PostData();
             }
 
             if(updateAgreed == false)
@@ -33,8 +32,9 @@ namespace Synthesis.UI.Panels {
                 Debug.Log("Update Declined");
                 var update = new AnalyticsEvent(category: "Startup", action: "Update Prompted", label: $"Update Declined");
                 AnalyticsManager.LogEvent(update);
-                AnalyticsManager.PostData();
             }
+
+            AnalyticsManager.PostData();
 
             if (Application.isEditor)
                 Debug.Log("Would exit, but it's editor mode");
