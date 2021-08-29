@@ -15,14 +15,23 @@ public class AddItem : MonoBehaviour
     GameObject p;
     private bool _isRobot;
 
+    private void ItemAnalytics(string item)
+    {
+        var update = new AnalyticsEvent(category: $"{item}", action: "Loaded", label: $"{item} Loaded");
+        AnalyticsManager.LogEvent(update);
+        AnalyticsManager.PostData();
+    }    
+
     public void AddModel()
     {
         ModelManager.AddModel(_fullPath);
+        ItemAnalytics("Robot");
     }
 
     public void AddField()
     {
         ModelManager.SetField(_fullPath);
+        ItemAnalytics("Field");
     }
 
     public void Init(string name, string path)
