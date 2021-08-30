@@ -3,7 +3,6 @@ using UnityEngine;
 
 public static class AnalyticsManager
 {
-
     private static string AllData = "";
 
     public const string TRACKING_ID = "UA-81892961-6";
@@ -58,10 +57,7 @@ public static class AnalyticsManager
         public bool usedBatchUrl;
         public string result;
     }
-
 }
-
-
 
 public interface IAnalytics
 {
@@ -70,17 +66,26 @@ public interface IAnalytics
 public class AnalyticsEvent : IAnalytics
 {
 
-    public string Category, Value, Action;
+    public string Category, Value, Action, Label;
 
+    public AnalyticsEvent(string category, string action, string label)
+    {
+        Category = category;
+        Action = action;
+        Label = label;
+    }
+
+    /*
     public AnalyticsEvent(string category, string action, string value)
     {
         Category = category;
         Action = action;
         Value = value;
     }
+    */
 
     public string GetPostData()
-        => $"t=event&ec={Category}&ea={Action}&ev={Value}";
+        => $"t=event&ec={Category}&ea={Action}&el={Label}";
 }
 
 public class AnalyticsScreenView : IAnalytics
@@ -118,6 +123,5 @@ public class AnalyticsLogTiming : IAnalytics
     }
 
     public string GetPostData() => $"t=timing&utc={Category}&utv={Vari}&utt={Time.ToString()}&utl={Label}";
-
 }
 

@@ -68,7 +68,6 @@ namespace Synthesis.UI.Panels.Variant
             DisplaySettings();
         }
 
-
         public void disableSaveButton()
         {
             saveButton.GetComponent<Image>().color = disabledColor;
@@ -109,14 +108,16 @@ namespace Synthesis.UI.Panels.Variant
             setup = false;
         }
 
-
-
         public void SaveSettings()
         {//writes settings back into preference manager when save button is clicked
             Save();
             LoadSettings();
             disableSaveButton();
             RepopulatePanel();
+
+            var update = new AnalyticsEvent(category: "Settings", action: "Saved", label: $"Saved Settings");
+            AnalyticsManager.LogEvent(update);
+            AnalyticsManager.PostData();
         }
         public void onValueChanged(SettingsInput si)
         {
@@ -177,6 +178,10 @@ namespace Synthesis.UI.Panels.Variant
         {
             Save();
             base.Close();
+
+            var update = new AnalyticsEvent(category: "Settings", action: "Closed", label: $"Closed Settings");
+            AnalyticsManager.LogEvent(update);
+            AnalyticsManager.PostData();
         }
 
         public void ResetSettings()
@@ -184,6 +189,10 @@ namespace Synthesis.UI.Panels.Variant
             SetDefaultPreferences();
             LoadSettings();
             RepopulatePanel();
+
+            var update = new AnalyticsEvent(category: "Settings", action: "Reset", label: $"Reset Settings");
+            AnalyticsManager.LogEvent(update);
+            AnalyticsManager.PostData();
         }
         private void SetMaxResolution()
         {
