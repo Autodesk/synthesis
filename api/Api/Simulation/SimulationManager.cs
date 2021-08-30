@@ -10,7 +10,7 @@ namespace SynthesisAPI.Simulation {
         public static event SimObjectEvent OnNewSimulationObject;
         public static event SimObjectEvent OnRemoveSimulationObject;
         
-        private static Dictionary<string, SimObject> _simulationObject = new Dictionary<string, SimObject>();
+        internal static Dictionary<string, SimObject> _simulationObject = new Dictionary<string, SimObject>();
         public static IReadOnlyDictionary<string, SimObject> SimulationObjects
             = new ReadOnlyDictionary<string, SimObject>(_simulationObject);
 
