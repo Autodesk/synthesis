@@ -25,7 +25,7 @@ namespace Synthesis.UI.Bars
         private string lastOpenedPanel;
 
         private void Start() {
-            VersionNumber.text = $"v {AutoUpdater.LocalVersion} BETA";
+            VersionNumber.text = $"v {AutoUpdater.LocalVersion}  ALPHA";
             OpenTab(homeTab);
         }
 

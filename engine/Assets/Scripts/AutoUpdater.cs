@@ -21,11 +21,11 @@ public class AutoUpdater : MonoBehaviour
     {
         // var versionText = GameObject.Find("VersionNumber").GetComponent<Text>();
         // versionText.text = "Version " + LocalVersion;
-        Debug.Log($"Version {LocalVersion} Beta");
+        Debug.Log($"Version {LocalVersion} ALPHA");
         // game = GameObject.Find("UpdatePrompt");
 
         // Analytics For Client Startup
-        var init = new AnalyticsEvent(category: "Startup", action: "Launched", label: $"Version {LocalVersion} BETA");
+        var init = new AnalyticsEvent(category: "Startup", action: "Launched", label: $"Version {LocalVersion} ALPHA");
         AnalyticsManager.LogEvent(init);
         AnalyticsManager.PostData();
 
