@@ -37,9 +37,11 @@ namespace Assets.Scripts.Behaviors
 
 		private const double DEADBAND = 0.1;
 
-		public double speedMult = 4.0f;
+		public double speedMult = 1.0f;
 
-		public ArcadeDrive(string simObjectId, List<string> leftSignals, List<string> rightSignals, string inputName = "") : base(
+		private bool _reversedSideJoints;
+
+		public ArcadeDrive(string simObjectId, List<string> leftSignals, List<string> rightSignals, string inputName = "", bool reversedSideJoints = false) : base(
 			simObjectId)
 		{
 			if (inputName == "")
@@ -48,6 +50,8 @@ namespace Assets.Scripts.Behaviors
 			SimObjectId = simObjectId;
 			_leftSignals = leftSignals;
 			_rightSignals = rightSignals;
+
+			_reversedSideJoints = reversedSideJoints;
 
 			InputManager.AssignValueInput(FORWARD, new Analog("Joystick Axis 2", false));
 			InputManager.AssignValueInput(BACKWARD, new Analog("Joystick Axis 2", true));
@@ -90,7 +94,7 @@ namespace Assets.Scripts.Behaviors
 				}
 				foreach (var sig in _rightSignals)
             	{
-            		SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignals[sig].Value = Value.ForNumber(-_rightSpeed*speedMult);
+            		SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignals[sig].Value = Value.ForNumber(_rightSpeed*speedMult * (!_reversedSideJoints ? -1 : 1));
             	}
 			}
 

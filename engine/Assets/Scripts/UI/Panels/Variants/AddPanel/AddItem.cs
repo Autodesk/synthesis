@@ -22,9 +22,9 @@ public class AddItem : MonoBehaviour
         AnalyticsManager.PostData();
     }    
 
-    public void AddModel()
+    public void AddModel(bool reverseSideMotors)
     {
-        ModelManager.AddModel(_fullPath);
+        ModelManager.AddModel(_fullPath, reverseSideMotors);
         ItemAnalytics("Robot");
     }
 

@@ -33,7 +33,7 @@ namespace Synthesis.Entity {
             var key = _outputs[0];
             var current = _state.CurrentSignals[key];
             updateSignal.SignalMap.Add(key, new UpdateSignal() {
-                Class = current.Class, Io = current.Io,
+                DeviceType = current.DeviceType, Io = current.Io,
                 Value = new Value { NumberValue = _joint.angle }
             });
             _state.Update(updateSignal);
