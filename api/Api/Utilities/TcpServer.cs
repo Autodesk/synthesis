@@ -21,14 +21,19 @@ namespace SynthesisAPI.Utilities
     {
         private sealed class Server
         {
-            private List<ClientHandler> clients;
-            public TcpListener listener;
-            public Thread listenerThread;
+            private Socket _server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            private const int _port = 13000;
+            private List<ClientState> _clients = new List<ClientState>();
+            private byte[] _buffer = new byte[1024];
+
+            //private List<ClientHandler> clients;
+            //public TcpListener listener;
+            //public Thread listenerThread;
             public Thread clientManagerThread;
             public Thread writerThread;
             private bool _isRunning;
             public bool _canAcceptClients;
-            private List<Task> _currentWrites;
+            //private List<Task> _currentWrites;
             public bool IsRunning
             {
                 get => _isRunning;
@@ -37,10 +42,10 @@ namespace SynthesisAPI.Utilities
                     _isRunning = value;
                     if (!value)
                     {
-                        if (listenerThread != null && listenerThread.IsAlive)
+                        if (/*listenerThread != null && listenerThread.IsAlive*/true)
                         {
-                            listener.Stop();
-                            listenerThread.Join();
+                            //listener.Stop();
+                            //listenerThread.Join();
                             clientManagerThread.Join();
                             writerThread.Join();
                         }
@@ -62,31 +67,68 @@ namespace SynthesisAPI.Utilities
                 public List<ControllableState> currentResources;
             }
 
+            /*
             private class ClientState
             {
                 public bool IsConnected { get; set; } = false;
                 public string? ResourceName { get; set; }
                 public long LastHeartbeat { get; set; }
             }
+            */
 
 
             private static readonly Lazy<Server> lazy = new Lazy<Server>(() => new Server());
             public static Server Instance { get { return lazy.Value; } }
             private Server()
             {
-                listener = new TcpListener(IPAddress.Parse("127.0.0.1"), 13000);
+                //listener = new TcpListener(IPAddress.Parse("127.0.0.1"), 13000);
                 _isRunning = false;
                 _canAcceptClients = false;
-                _currentWrites = new List<Task>();
+                //_currentWrites = new List<Task>();
+            }
+
+            
+            struct ClientState
+            {
+                public Socket socket;
+                public byte[] buffer;
+            }
+            
+
+            private void AcceptCallback(IAsyncResult asyncResult)
+            {
+                ClientState client = new ClientState
+                {
+                    socket = _server.EndAccept(asyncResult),
+                    buffer = new byte[1024]
+                };
+                _clients.Add(client);
+                if (_isRunning)
+                {
+                    _server.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(AcceptCallback), client);
+                    _server.BeginAccept(new AsyncCallback(ReceiveCallback), null);
+                }
+            }
+
+            private void ReceiveCallback(IAsyncResult asyncResult)
+            {
+                ClientState client = (ClientState)asyncResult.AsyncState;
+                int received = client.socket.EndReceive(asyncResult);
+                ConnectionMessage.Parser.ParseDelimitedFrom(new MemoryStream(client.buffer, 0, received));
             }
 
             public void Start()
             {
+                _server.Bind(new IPEndPoint(IPAddress.Any, _port));
+                _server.Listen(5);
+                _server.BeginAccept(new AsyncCallback(AcceptCallback), null);
                 Logger.Log("Starting TCP Server", LogLevel.Debug);
-                clients = new List<ClientHandler>();
-                listener.Start();
+                // use 1024 byte buffer
+                //clients = new List<ClientHandler>();
+                //listener.Start();
                 _canAcceptClients = true;
 
+                /*
                 listenerThread = new Thread(() =>
                 {
                     while (_isRunning)
@@ -114,7 +156,8 @@ namespace SynthesisAPI.Utilities
                         }
                     }
                 });
-
+                */
+                /*
                 clientManagerThread = new Thread(() =>
                 {
                     while (_isRunning || clients.Any())
@@ -233,7 +276,9 @@ namespace SynthesisAPI.Utilities
                         }
                     }
                 });
+                */
 
+                /*
                 writerThread = new Thread(() =>
                 {
                     while (IsRunning || _currentWrites.Count > 0)
@@ -247,9 +292,9 @@ namespace SynthesisAPI.Utilities
                         }
                     }
                 });
+                */
 
-
-                listenerThread.Start();
+                //listenerThread.Start();
                 clientManagerThread.Start();
                 writerThread.Start();
 
@@ -273,7 +318,7 @@ namespace SynthesisAPI.Utilities
                 }
                 clientHandler.stream.Close();
                 clientHandler.client.Close();
-                return clients.Remove(clientHandler);
+                return true;//clients.Remove(clientHandler);
             }
 
         }

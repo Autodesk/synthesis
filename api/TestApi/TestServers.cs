@@ -53,6 +53,49 @@ namespace TestApi
         private static UpdateSignals update;
 
         private static Thread heartbeatThread;
+
+        [Test]
+        public static void TestProtoSize()
+        {
+            ConnectionMessage test = new ConnectionMessage()
+            {
+                ResourceOwnershipResponse = new ConnectionMessage.Types.ResourceOwnershipResponse
+                {
+                    Confirm = true,
+                    Error = "none",
+                    Generation = 0,
+                    Guid = ByteString.CopyFromUtf8(Guid.NewGuid().ToString()),
+                    ResourceName = "test"
+                }
+            };
+            MemoryStream ms = new MemoryStream();
+            test.WriteDelimitedTo(ms);
+            System.Diagnostics.Debug.WriteLine(ms.Length);
+        }
+
+        [Test]
+        public static void TestStreamBuffers()
+        {
+            ConnectionMessage test = new ConnectionMessage()
+            {
+                ResourceOwnershipResponse = new ConnectionMessage.Types.ResourceOwnershipResponse
+                {
+                    Confirm = true,
+                    Error = "none",
+                    Generation = 0,
+                    Guid = ByteString.CopyFromUtf8(Guid.NewGuid().ToString()),
+                    ResourceName = "test"
+                }
+            };
+            MemoryStream ms = new MemoryStream();
+            MemoryStream tmp = new MemoryStream();
+            System.Diagnostics.Debug.Write("Initial buffer size: ");
+            System.Diagnostics.Debug.WriteLine(ms.GetBuffer().Length);
+            test.WriteDelimitedTo(tmp);
+            tmp.ToArray().CopyTo(ms.GetBuffer(), 0);
+            System.Diagnostics.Debug.WriteLine(ms.GetBuffer().Length);
+
+        }
         /*
         [Test]
         public static void TestUpdating()
