@@ -187,7 +187,7 @@ def _ParseBRep(
         plainmesh_out.verts.extend(mesh.nodeCoordinatesAsFloat)
         plainmesh_out.normals.extend(mesh.normalVectorsAsFloat)
         plainmesh_out.indices.extend(mesh.nodeIndices)
-        plainmesh_out.uv.extend(mesh.textureCoordinates)
+        plainmesh_out.uv.extend(mesh.textureCoordinatesAsFloat)
     except:
         logging.getLogger("{INTERNAL_ID}.Parser.BrepBody").error(
             "Failed:\n{}".format(traceback.format_exc())

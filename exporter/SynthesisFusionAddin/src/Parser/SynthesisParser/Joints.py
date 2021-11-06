@@ -158,6 +158,9 @@ def _addJointInstance(joint: adsk.fusion.Joint, joint_instance: joint_pb2.JointI
     fill_info(joint_instance, joint)
     # because there is only one and we are using the token - should be the same
     joint_instance.joint_reference = joint_instance.info.GUID
+    
+    # Need to check if it is in a rigidgroup first, if yes then make the parent the actual parent
+
 
     # assign part id values - bug with entity tokens
     try:
@@ -169,6 +172,23 @@ def _addJointInstance(joint: adsk.fusion.Joint, joint_instance: joint_pb2.JointI
         joint_instance.child_part = joint.occurrenceTwo.entityToken
     except:
         joint_instance.child_part = joint.occurrenceTwo.name
+
+    # FIX FOR ISSUE WHERE CHILD PART IS ACTUAL PART OF A LARGER GROUP THAT IS RIGID
+    # MAY ALSO BE A FIX FR THE HIERARCHY DETECTION
+
+    # THIS IS THE SAME RIGIDGROUP
+    rigid_groups_1 = joint.occurrenceOne.rigidGroups
+    rigid_groups_2 = joint.occurrenceTwo.rigidGroups
+
+    # There should almost never be multiple - unless this is a parent of something else... hmmmm TBD
+    for rigid_group in rigid_groups_1:
+        joint_instance.parent_part = rigid_group.assemblyContext.entityToken
+        
+
+    for rigid_group in rigid_groups_2:
+        joint_instance.child_part = rigid_group.assemblyContext.entityToken
+
+    # ENDFIX
 
     if (options.wheels):
         for wheel in options.wheels:
