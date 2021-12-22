@@ -20,40 +20,138 @@ namespace TestApi
     [TestFixture]
     public static class TestServers
     {
+        private static Socket _client;
 
-        private static ConnectionMessage connectionRequest;
-        private static ConnectionMessage resourceOwnershipRequest;
-        private static ConnectionMessage terminateConnectionRequest;
-        private static ConnectionMessage heartbeat;
+        [Test]
+        public static void TestConnecting()
+        {
+            ConnectionMessage connectionRequest = new ConnectionMessage()
+            {
+                ConnectionRequest = new ConnectionMessage.Types.ConnectionRequest() { }
+            };
+            ConnectionMessage resourceOwnershipRequest = new ConnectionMessage()
+            {
+                ResourceOwnershipRequest = new ConnectionMessage.Types.ResourceOwnershipRequest()
+                {
+                    ResourceName = "Robot"
+                }
+            };
+            ConnectionMessage heartbeat = new ConnectionMessage()
+            {
+                Heartbeat = new ConnectionMessage.Types.Heartbeat()
+            };
+            ConnectionMessage terminateConnectionRequest = new ConnectionMessage()
+            {
+                TerminateConnectionRequest = new ConnectionMessage.Types.TerminateConnectionRequest()
+                {
+                }
+            };
 
-        private static ConnectionMessage secondResourceOwnershipRequest;
-        private static ConnectionMessage secondTerminateConnectionRequest;
+            Thread heartbeatThread = new Thread(() =>
+            {
+                Thread.Sleep(100);
+                //heartbeat.WriteDelimitedTo(tmpStream);
+            });
 
-        private static ConnectionMessage response;
-        private static ConnectionMessage secondResponse;
-        private static ByteString guid;
-        private static int generation;
-        private static ByteString secondGuid;
-        private static int secondGeneration;
+            SimulationManager.RegisterSimObject(new SimObject("Robot", new ControllableState()
+            {
+                CurrentSignalLayout = new Signals()
+                {
+                    Info = new Info()
+                    {
+                        Name = "Robot",
+                        GUID = Guid.NewGuid().ToString()
+                    }
+                }
+            }));
 
-        private static bool isRunning = true;
+            //heartbeatThread.Start();
+            ByteString guid = ByteString.Empty;
+            int generation = 0;
+            _client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            TcpServerManager.Start();
+            int connectionAttempts = 0;
+            while (!_client.Connected)
+            {
+                try
+                {
+                    connectionAttempts += 1;
+                    _client.Connect(IPAddress.Loopback, 13000);
+                }
+                catch (SocketException e)
+                {
+                    System.Diagnostics.Debug.WriteLine(connectionAttempts);
+                }
+            }
 
-        private static TcpClient client;
-        private static int tcpPort = 13000;
-        private static int udpListenPort = 13001;
-        private static int udpSendPort = 13000;
-        private static NetworkStream firstStream;
-        private static NetworkStream secondStream;
+            System.Diagnostics.Debug.WriteLine("CLIENT HAS CONNECTED");
+
+            ConnectionMessage response;
+            /*
+            System.Diagnostics.Debug.WriteLine("Sending Connection Request");
+            byte[] receiveBuffer = new byte[256];
+            byte[] buffer = new byte[connectionRequest.CalculateSize()];
+            connectionRequest.WriteTo(buffer);
+            System.Diagnostics.Debug.WriteLine("BUFFER");
+            _client.Send(buffer);
+            int rec = _client.Receive(receiveBuffer);
+            System.Diagnostics.Debug.WriteLine("Recieved data back");
+            System.Diagnostics.Debug.WriteLine(rec);
+
+            byte[] data = new byte[rec];
+            Array.Copy(receiveBuffer, data, rec);
+            response = ConnectionMessage.Parser.ParseFrom(data);
+            */
+            response = SendReceiveData(connectionRequest);
+            if (response.MessageTypeCase == ConnectionMessage.MessageTypeOneofCase.ConnectionResonse && response.ConnectionResonse.Confirm)
+            {
+                System.Diagnostics.Debug.WriteLine("Sending Resource Ownership Request");
+                //resourceOwnershipRequest.WriteDelimitedTo(tmpStream);
+            }
+
+            //response = ReadData(firstStream);
+            //System.Diagnostics.Debug.WriteLine(response);
+            if (response.MessageTypeCase == ConnectionMessage.MessageTypeOneofCase.ResourceOwnershipResponse && response.ResourceOwnershipResponse.Confirm)
+            {
+                guid = response.ResourceOwnershipResponse.Guid;
+                generation = response.ResourceOwnershipResponse.Generation;
+            }
+            System.Diagnostics.Debug.WriteLine("Guid is: {0}", guid);
+            Thread.Sleep(1000);
 
 
-        private static IPEndPoint remoteIpEndPoint;
-        private static UdpClient udpClient;
-        private static Socket updateSendSocket;
-        private static IPEndPoint updateEndpoint;
-        private static UpdateSignals update;
 
-        private static Thread heartbeatThread;
 
+            terminateConnectionRequest = new ConnectionMessage()
+            {
+                TerminateConnectionRequest = new ConnectionMessage.Types.TerminateConnectionRequest()
+                {
+                    ResourceName = "Robot",
+                    Guid = guid,
+                    Generation = generation
+                }
+            };
+            System.Diagnostics.Debug.WriteLine("Sending Terminate Connection Request");
+            //terminateConnectionRequest.WriteDelimitedTo(firstStream);
+            if (response.MessageTypeCase == ConnectionMessage.MessageTypeOneofCase.TerminateConnectionResponse && response.TerminateConnectionResponse.Confirm)
+            {
+                //StopClient(firstStream);
+                Assert.IsTrue(true);
+            }
+        }
+
+        public static ConnectionMessage SendReceiveData(ConnectionMessage msg)
+        {
+            byte[] receiveBuffer = new byte[256];
+            byte[] buffer = new byte[msg.CalculateSize()];
+            msg.WriteTo(buffer);
+            _client.Send(buffer);
+            int rec = _client.Receive(receiveBuffer);
+            byte[] data = new byte[rec];
+            Array.Copy(receiveBuffer, data, rec);
+            return ConnectionMessage.Parser.ParseFrom(data);
+        }
+        /*
         [Test]
         public static void TestProtoSize()
         {
@@ -96,7 +194,7 @@ namespace TestApi
             System.Diagnostics.Debug.WriteLine(ms.GetBuffer().Length);
 
         }
-        /*
+
         [Test]
         public static void TestUpdating()
         {
@@ -256,91 +354,7 @@ namespace TestApi
             System.Diagnostics.Debug.WriteLine("Test finished");
             Assert.IsTrue(true);
         }
-
-        [Test]
-        public static void TestConnecting()
-        {
-            connectionRequest = new ConnectionMessage()
-            {
-                ConnectionRequest = new ConnectionMessage.Types.ConnectionRequest()
-            };
-            resourceOwnershipRequest = new ConnectionMessage()
-            {
-                ResourceOwnershipRequest = new ConnectionMessage.Types.ResourceOwnershipRequest()
-                {
-                    ResourceName = "Robot"
-                }
-            };
-            heartbeat = new ConnectionMessage()
-            {
-                Heartbeat = new ConnectionMessage.Types.Heartbeat()
-            };
-
-            heartbeatThread = new Thread(() =>
-            {
-                Thread.Sleep(100);
-                SendData(heartbeat, firstStream);
-            });
-
-            SimulationManager.RegisterSimObject(new SimObject("Robot", new ControllableState() { CurrentSignalLayout = new Signals()
-            {
-                Info = new Info()
-                {
-                    Name = "Robot",
-                    GUID = Guid.NewGuid().ToString()
-                }
-            }}));
-
-            heartbeatThread.Start();
-            TcpServerManager.Start();
-            StartClient("127.0.0.1", ref firstStream);
-
-            SendData(new ConnectionMessage()
-            {
-                TerminateConnectionRequest = new ConnectionMessage.Types.TerminateConnectionRequest()
-            }, firstStream);
-
-            System.Diagnostics.Debug.WriteLine("Sending Connection Request");
-            SendData(connectionRequest, firstStream);
-
-            response = ReadData(firstStream);
-            if (response.MessageTypeCase == ConnectionMessage.MessageTypeOneofCase.ConnectionResonse && response.ConnectionResonse.Confirm)
-            {
-                System.Diagnostics.Debug.WriteLine("Sending Resource Ownership Request");
-                SendData(resourceOwnershipRequest, firstStream);
-            }
-
-            response = ReadData(firstStream);
-            System.Diagnostics.Debug.WriteLine(response);
-            if (response.MessageTypeCase == ConnectionMessage.MessageTypeOneofCase.ResourceOwnershipResponse && response.ResourceOwnershipResponse.Confirm)
-            {
-                guid = response.ResourceOwnershipResponse.Guid;
-                generation = response.ResourceOwnershipResponse.Generation;
-            }
-            System.Diagnostics.Debug.WriteLine("Guid is: {0}", guid);
-            Thread.Sleep(1000);
-
-            
-
-
-            terminateConnectionRequest = new ConnectionMessage()
-            {
-                TerminateConnectionRequest = new ConnectionMessage.Types.TerminateConnectionRequest()
-                {
-                    ResourceName = "Robot",
-                    Guid = guid,
-                    Generation = generation
-                }
-            };
-            System.Diagnostics.Debug.WriteLine("Sending Terminate Connection Request");
-            SendData(terminateConnectionRequest, firstStream);
-            if (response.MessageTypeCase == ConnectionMessage.MessageTypeOneofCase.TerminateConnectionResponse && response.TerminateConnectionResponse.Confirm)
-            {
-                StopClient(firstStream);
-                Assert.IsTrue(true);
-            }
-        }
-
+        
         [Test]
         public static void TestMultipleConnections()
         {
@@ -470,36 +484,6 @@ namespace TestApi
         }
         */
 
-        public static void StartClient(string server, ref NetworkStream clientStream)
-        {
-            client = new TcpClient(server, tcpPort);
-            clientStream = client.GetStream();
-        }
-
-        public static void StopClient(NetworkStream clientStream)
-        {
-            //may need error handling
-            clientStream.Close();
-            client.Close();
-        }
-
-        public static void SendData(ConnectionMessage message, NetworkStream stream)
-        {
-            try
-            {
-                message.WriteDelimitedTo(stream);
-            }
-            catch (ObjectDisposedException e)
-            {
-                System.Diagnostics.Debug.WriteLine(e);
-            }
-            
-        }
-
-        public static ConnectionMessage ReadData(NetworkStream clientStream)
-        {
-            return ConnectionMessage.Parser.ParseDelimitedFrom(clientStream);
-        }
     }
     
 }

@@ -24,16 +24,12 @@ namespace SynthesisAPI.Utilities
             private Socket _server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             private const int _port = 13000;
             private List<ClientState> _clients = new List<ClientState>();
-            private byte[] _buffer = new byte[1024];
+            // TODO: Allow user to change buffer size and port in UI
+            public int GlobalBufferSize { get; set; } = 1024;
+            private byte[] _globalBuffer;
 
-            //private List<ClientHandler> clients;
-            //public TcpListener listener;
-            //public Thread listenerThread;
-            public Thread clientManagerThread;
-            public Thread writerThread;
             private bool _isRunning;
             public bool _canAcceptClients;
-            //private List<Task> _currentWrites;
             public bool IsRunning
             {
                 get => _isRunning;
@@ -46,8 +42,8 @@ namespace SynthesisAPI.Utilities
                         {
                             //listener.Stop();
                             //listenerThread.Join();
-                            clientManagerThread.Join();
-                            writerThread.Join();
+                            //clientManagerThread.Join();
+                            //writerThread.Join();
                         }
                     }
                     if (value)
@@ -67,61 +63,160 @@ namespace SynthesisAPI.Utilities
                 public List<ControllableState> currentResources;
             }
 
-            /*
-            private class ClientState
-            {
-                public bool IsConnected { get; set; } = false;
-                public string? ResourceName { get; set; }
-                public long LastHeartbeat { get; set; }
-            }
-            */
 
 
             private static readonly Lazy<Server> lazy = new Lazy<Server>(() => new Server());
             public static Server Instance { get { return lazy.Value; } }
             private Server()
             {
-                //listener = new TcpListener(IPAddress.Parse("127.0.0.1"), 13000);
                 _isRunning = false;
                 _canAcceptClients = false;
-                //_currentWrites = new List<Task>();
             }
 
             
             struct ClientState
             {
                 public Socket socket;
-                public byte[] buffer;
+                public List<SimObject> resources;
             }
             
 
             private void AcceptCallback(IAsyncResult asyncResult)
             {
+                System.Diagnostics.Debug.WriteLine("ACCEPT CALLBACK");
                 ClientState client = new ClientState
                 {
                     socket = _server.EndAccept(asyncResult),
-                    buffer = new byte[1024]
+                    resources = new List<SimObject>()
                 };
+                System.Diagnostics.Debug.WriteLine(client.socket.ToString());
                 _clients.Add(client);
                 if (_isRunning)
                 {
-                    _server.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(AcceptCallback), client);
-                    _server.BeginAccept(new AsyncCallback(ReceiveCallback), null);
+                    client.socket.BeginReceive(_globalBuffer, 0, _globalBuffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), client);
+                    _server.BeginAccept(new AsyncCallback(AcceptCallback), null);
                 }
             }
 
             private void ReceiveCallback(IAsyncResult asyncResult)
             {
+                System.Diagnostics.Debug.WriteLine("RECEIVE CALLBACK");
                 ClientState client = (ClientState)asyncResult.AsyncState;
                 int received = client.socket.EndReceive(asyncResult);
-                ConnectionMessage.Parser.ParseDelimitedFrom(new MemoryStream(client.buffer, 0, received));
+                System.Diagnostics.Debug.WriteLine(received);
+                byte[] data = new byte[received];
+                Array.Copy(_globalBuffer, data, received);
+                ConnectionMessage message = ConnectionMessage.Parser.ParseFrom(data);
+
+                switch (message.MessageTypeCase)
+                {
+                    case ConnectionMessage.MessageTypeOneofCase.ConnectionRequest:
+                        System.Diagnostics.Debug.WriteLine("Recieved Connection Request");
+                        SendConnectionMessage(client, new ConnectionMessage()
+                        {
+                            ConnectionResonse = new ConnectionMessage.Types.ConnectionResponse()
+                            {
+                                Confirm = _canAcceptClients
+                            }
+                        });
+                        break;
+                    case ConnectionMessage.MessageTypeOneofCase.ResourceOwnershipRequest:
+                        System.Diagnostics.Debug.WriteLine("Recieved Resource Request");
+                        if (SimulationManager.SimulationObjects.TryGetValue(message.ResourceOwnershipRequest.ResourceName, out SimObject resource) && resource.State.IsFree)
+                        {
+                            SendConnectionMessage(client, new ConnectionMessage
+                            {
+                                ResourceOwnershipResponse = new ConnectionMessage.Types.ResourceOwnershipResponse()
+                                {
+                                    ResourceName = message.ResourceOwnershipRequest.ResourceName,
+                                    Confirm = true,
+                                    Guid = resource.State.Guid,
+                                    Generation = resource.State.Generation
+                                }
+                            });
+                            resource.State.IsFree = false;
+                        }
+                        else
+                        {
+                            SendConnectionMessage(client, new ConnectionMessage
+                            {
+                                ResourceOwnershipResponse = new ConnectionMessage.Types.ResourceOwnershipResponse()
+                                {
+                                    ResourceName = message.ResourceOwnershipRequest.ResourceName,
+                                    Confirm = false,
+                                    Error = "Resource could not be given"
+                                }
+                            });
+                        }
+                        break;
+                    case ConnectionMessage.MessageTypeOneofCase.TerminateConnectionRequest:
+                        System.Diagnostics.Debug.WriteLine("Recieved Terminate Connection Request");
+                        if (SimulationManager.SimulationObjects.TryGetValue(message.TerminateConnectionRequest.ResourceName, out SimObject tmp) && message.TerminateConnectionRequest.Guid.Equals(tmp.State.Guid) && message.TerminateConnectionRequest.Generation.Equals(tmp.State.Generation))
+                        {
+                            SendConnectionMessage(client, new ConnectionMessage
+                            {
+                                TerminateConnectionResponse = new ConnectionMessage.Types.TerminateConnectionResponse()
+                                {
+                                    Confirm = true,
+                                    ResourceName = message.TerminateConnectionRequest.ResourceName
+                                }
+                            });
+
+                            for (int i = client.resources.Count - 1; i >= 0; i--)
+                            {
+                                if (client.resources[i].State.Guid.Equals(message.TerminateConnectionRequest.Guid))
+                                {
+                                    client.resources[i].State.IsFree = true;
+                                    client.resources.RemoveAt(i);
+                                }
+                            }
+
+                        }
+                        else
+                        {
+                            SendConnectionMessage(client, new ConnectionMessage
+                            {
+                                TerminateConnectionResponse = new ConnectionMessage.Types.TerminateConnectionResponse()
+                                {
+                                    Confirm = false,
+                                    Error = "Cannot terminate connection from resource"
+                                }
+                            });
+                        }
+                        break;
+                    case ConnectionMessage.MessageTypeOneofCase.Heartbeat:
+                        System.Diagnostics.Debug.WriteLine("Recieved Heartbeat");
+                        // Maybe get rid of heartbeat
+                        break;
+                    default:
+                        System.Diagnostics.Debug.WriteLine("INVALID MESSAGE");
+                        break;
+                }
+            }
+
+            private void SendCallback(IAsyncResult asyncResult)
+            {
+                ClientState client = (ClientState)asyncResult.AsyncState;
+                client.socket.EndSend(asyncResult);
+            }
+
+            private void SendConnectionMessage(ClientState cli, ConnectionMessage msg)
+            {
+                byte[] data = new byte[msg.CalculateSize()];
+                msg.WriteTo(data);
+                cli.socket.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(SendCallback), cli);
+                
             }
 
             public void Start()
             {
+                System.Diagnostics.Debug.WriteLine("STARTING");
+                _globalBuffer = new byte[GlobalBufferSize];
                 _server.Bind(new IPEndPoint(IPAddress.Any, _port));
                 _server.Listen(5);
+                System.Diagnostics.Debug.WriteLine("LISTENING");
                 _server.BeginAccept(new AsyncCallback(AcceptCallback), null);
+                System.Diagnostics.Debug.WriteLine("TCP SERVER STARTED");
                 Logger.Log("Starting TCP Server", LogLevel.Debug);
                 // use 1024 byte buffer
                 //clients = new List<ClientHandler>();
@@ -295,15 +390,16 @@ namespace SynthesisAPI.Utilities
                 */
 
                 //listenerThread.Start();
-                clientManagerThread.Start();
-                writerThread.Start();
+                //clientManagerThread.Start();
+                //writerThread.Start();
 
             }
-
+            /*
             private async Task<ConnectionMessage> ParseMessageAsync(NetworkStream stream)
             {
                 return await Task.Run(() => { return ConnectionMessage.Parser.ParseDelimitedFrom(stream); });
             }
+            
             private async Task SendMessageAsync(NetworkStream stream, ConnectionMessage message)
             {
                 await Task.Run(() => message.WriteDelimitedTo(stream));
@@ -320,12 +416,12 @@ namespace SynthesisAPI.Utilities
                 clientHandler.client.Close();
                 return true;//clients.Remove(clientHandler);
             }
-
+            */
         }
 
         public static void Start()
         {
-            if (Server.Instance.IsRunning) return;
+            if (Server.Instance.IsRunning) { return; }
             Server.Instance.IsRunning = true;
         }
         
