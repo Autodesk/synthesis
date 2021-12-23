@@ -36,10 +36,6 @@ namespace TestApi
                     ResourceName = "Robot"
                 }
             };
-            ConnectionMessage heartbeat = new ConnectionMessage()
-            {
-                Heartbeat = new ConnectionMessage.Types.Heartbeat()
-            };
             ConnectionMessage terminateConnectionRequest = new ConnectionMessage()
             {
                 TerminateConnectionRequest = new ConnectionMessage.Types.TerminateConnectionRequest()
@@ -47,12 +43,7 @@ namespace TestApi
                 }
             };
 
-            Thread heartbeatThread = new Thread(() =>
-            {
-                Thread.Sleep(100);
-                //heartbeat.WriteDelimitedTo(tmpStream);
-            });
-
+            string originalGuid = Guid.NewGuid().ToString();
             SimulationManager.RegisterSimObject(new SimObject("Robot", new ControllableState()
             {
                 CurrentSignalLayout = new Signals()
@@ -60,12 +51,13 @@ namespace TestApi
                     Info = new Info()
                     {
                         Name = "Robot",
-                        GUID = Guid.NewGuid().ToString()
+                        GUID = originalGuid
                     }
-                }
+                },
+                IsFree = true
             }));
 
-            //heartbeatThread.Start();
+            
             ByteString guid = ByteString.Empty;
             int generation = 0;
             _client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -87,40 +79,22 @@ namespace TestApi
             System.Diagnostics.Debug.WriteLine("CLIENT HAS CONNECTED");
 
             ConnectionMessage response;
-            /*
-            System.Diagnostics.Debug.WriteLine("Sending Connection Request");
-            byte[] receiveBuffer = new byte[256];
-            byte[] buffer = new byte[connectionRequest.CalculateSize()];
-            connectionRequest.WriteTo(buffer);
-            System.Diagnostics.Debug.WriteLine("BUFFER");
-            _client.Send(buffer);
-            int rec = _client.Receive(receiveBuffer);
-            System.Diagnostics.Debug.WriteLine("Recieved data back");
-            System.Diagnostics.Debug.WriteLine(rec);
-
-            byte[] data = new byte[rec];
-            Array.Copy(receiveBuffer, data, rec);
-            response = ConnectionMessage.Parser.ParseFrom(data);
-            */
+            
             response = SendReceiveData(connectionRequest);
             if (response.MessageTypeCase == ConnectionMessage.MessageTypeOneofCase.ConnectionResonse && response.ConnectionResonse.Confirm)
             {
                 System.Diagnostics.Debug.WriteLine("Sending Resource Ownership Request");
-                //resourceOwnershipRequest.WriteDelimitedTo(tmpStream);
+                response = SendReceiveData(resourceOwnershipRequest);
             }
 
-            //response = ReadData(firstStream);
-            //System.Diagnostics.Debug.WriteLine(response);
             if (response.MessageTypeCase == ConnectionMessage.MessageTypeOneofCase.ResourceOwnershipResponse && response.ResourceOwnershipResponse.Confirm)
             {
                 guid = response.ResourceOwnershipResponse.Guid;
                 generation = response.ResourceOwnershipResponse.Generation;
             }
-            System.Diagnostics.Debug.WriteLine("Guid is: {0}", guid);
+            System.Diagnostics.Debug.WriteLine(response.ToString());
+            System.Diagnostics.Debug.WriteLine(originalGuid);
             Thread.Sleep(1000);
-
-
-
 
             terminateConnectionRequest = new ConnectionMessage()
             {
@@ -132,10 +106,10 @@ namespace TestApi
                 }
             };
             System.Diagnostics.Debug.WriteLine("Sending Terminate Connection Request");
-            //terminateConnectionRequest.WriteDelimitedTo(firstStream);
+            response = SendReceiveData(terminateConnectionRequest);
             if (response.MessageTypeCase == ConnectionMessage.MessageTypeOneofCase.TerminateConnectionResponse && response.TerminateConnectionResponse.Confirm)
             {
-                //StopClient(firstStream);
+                System.Diagnostics.Debug.WriteLine("RECEIVED TERMINATE CONNECTION RESPONSE");
                 Assert.IsTrue(true);
             }
         }

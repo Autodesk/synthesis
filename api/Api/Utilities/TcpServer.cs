@@ -38,12 +38,9 @@ namespace SynthesisAPI.Utilities
                     _isRunning = value;
                     if (!value)
                     {
-                        if (/*listenerThread != null && listenerThread.IsAlive*/true)
+                        if (true)
                         {
-                            //listener.Stop();
-                            //listenerThread.Join();
-                            //clientManagerThread.Join();
-                            //writerThread.Join();
+          
                         }
                     }
                     if (value)
@@ -53,18 +50,6 @@ namespace SynthesisAPI.Utilities
                 }
             }
 
-
-            private class ClientHandler
-            {
-                public ClientState state;
-                public NetworkStream stream;
-                public Task<ConnectionMessage?>? message;
-                public TcpClient client;
-                public List<ControllableState> currentResources;
-            }
-
-
-
             private static readonly Lazy<Server> lazy = new Lazy<Server>(() => new Server());
             public static Server Instance { get { return lazy.Value; } }
             private Server()
@@ -73,7 +58,6 @@ namespace SynthesisAPI.Utilities
                 _canAcceptClients = false;
             }
 
-            
             struct ClientState
             {
                 public Socket socket;
@@ -107,6 +91,9 @@ namespace SynthesisAPI.Utilities
                 byte[] data = new byte[received];
                 Array.Copy(_globalBuffer, data, received);
                 ConnectionMessage message = ConnectionMessage.Parser.ParseFrom(data);
+                System.Diagnostics.Debug.WriteLine("MESSAGE");
+                System.Diagnostics.Debug.WriteLine(message.ToString());
+
 
                 switch (message.MessageTypeCase)
                 {
@@ -134,6 +121,7 @@ namespace SynthesisAPI.Utilities
                                     Generation = resource.State.Generation
                                 }
                             });
+                            client.resources.Add(resource);
                             resource.State.IsFree = false;
                         }
                         else
@@ -192,6 +180,7 @@ namespace SynthesisAPI.Utilities
                         System.Diagnostics.Debug.WriteLine("INVALID MESSAGE");
                         break;
                 }
+                client.socket.BeginReceive(_globalBuffer, 0, _globalBuffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), client);
             }
 
             private void SendCallback(IAsyncResult asyncResult)
@@ -211,17 +200,13 @@ namespace SynthesisAPI.Utilities
             public void Start()
             {
                 System.Diagnostics.Debug.WriteLine("STARTING");
+                _canAcceptClients = true;
                 _globalBuffer = new byte[GlobalBufferSize];
                 _server.Bind(new IPEndPoint(IPAddress.Any, _port));
                 _server.Listen(5);
-                System.Diagnostics.Debug.WriteLine("LISTENING");
                 _server.BeginAccept(new AsyncCallback(AcceptCallback), null);
                 System.Diagnostics.Debug.WriteLine("TCP SERVER STARTED");
                 Logger.Log("Starting TCP Server", LogLevel.Debug);
-                // use 1024 byte buffer
-                //clients = new List<ClientHandler>();
-                //listener.Start();
-                _canAcceptClients = true;
 
                 /*
                 listenerThread = new Thread(() =>
@@ -395,15 +380,6 @@ namespace SynthesisAPI.Utilities
 
             }
             /*
-            private async Task<ConnectionMessage> ParseMessageAsync(NetworkStream stream)
-            {
-                return await Task.Run(() => { return ConnectionMessage.Parser.ParseDelimitedFrom(stream); });
-            }
-            
-            private async Task SendMessageAsync(NetworkStream stream, ConnectionMessage message)
-            {
-                await Task.Run(() => message.WriteDelimitedTo(stream));
-            }
 
             private bool RemoveClient(ClientHandler clientHandler)
             {
