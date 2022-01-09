@@ -1,6 +1,6 @@
 !include MUI2.nsh
 !include x64.nsh
-!define PRODUCT_VERSION "4.3.3.1"
+!define PRODUCT_VERSION "4.3.3.3"
 
 Name "Synthesis"
 
@@ -280,6 +280,7 @@ Section "Uninstall"
   RMDir /r "$APPDATA\Autodesk\ApplicationPlugins\FusionSynth.bundle"
   
   ; Remove inventor plugins
+  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2022\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2021\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2020\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2019\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
