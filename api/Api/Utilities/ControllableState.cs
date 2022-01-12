@@ -29,11 +29,11 @@ namespace SynthesisAPI.Utilities
                 CurrentSignals = new Dictionary<string, UpdateSignal>();
                 if (value.Info == null)
                 {
-                    Guid = ByteString.CopyFrom(System.Guid.NewGuid().ToByteArray());
+                    Guid = System.Guid.NewGuid().ToString();
                 }
                 else
                 {
-                    Guid = ByteString.CopyFromUtf8(value.Info.GUID);
+                    Guid = value.Info.GUID;
                 }
 
                 foreach (var kvp in value.SignalMap)
@@ -48,7 +48,7 @@ namespace SynthesisAPI.Utilities
         }
 
         public Dictionary<string, UpdateSignal> CurrentSignals { get; private set; }
-        public ByteString Guid { get; set; }
+        public string Guid { get; set; }
 
         public int Generation { get => _generation; }
 
