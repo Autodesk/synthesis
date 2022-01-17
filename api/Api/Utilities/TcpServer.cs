@@ -22,7 +22,8 @@ namespace SynthesisAPI.Utilities
         private sealed class Server
         {
             private Socket _server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            private List<ClientState> _clients = new List<ClientState>();
+            private Dictionary<ClientState, long> _clients = new Dictionary<ClientState, long>();
+            private ReaderWriterLockSlim _clientsLock = new ReaderWriterLockSlim();
 
             public int GlobalBufferSize { get; set; } = 1024;
             private byte[] _globalBuffer;
@@ -54,22 +55,39 @@ namespace SynthesisAPI.Utilities
             { 
                 while (Server.Instance._isRunning)
                 {
-                    for (int i = Server.Instance._clients.Count - 1; i >= 0; i--)
+                    List<KeyValuePair<ClientState, long>> clientList = Instance._clients.ToList<KeyValuePair<ClientState, long>>();
+                    
+                    for (int i = clientList.Count - 1; i >= 0; i--)
                     {
-                        if (System.DateTimeOffset.Now.ToUnixTimeMilliseconds() - Server.Instance._clients[i].lastMessage >= 2000) 
+                        if (System.DateTimeOffset.Now.ToUnixTimeMilliseconds() - clientList[i].Value >= 2000) 
                         {
-                            Server.Instance._clients.RemoveAt(i);
+                            System.Diagnostics.Debug.WriteLine("removing due to heartbeat");
+                            Instance.RemoveClient(clientList[i].Key);
                         }
                     }
-                    Thread.Sleep(1);
+                    Thread.Sleep(1000);
                 }
             });
+
+            private void RemoveClient(ClientState client)
+            {
+                System.Diagnostics.Debug.WriteLine("Removing Client");
+                if (_clients.ContainsKey(client))
+                {
+                    for (int i = client.resources.Count - 1; i >= 0; i--)
+                    {
+                        client.resources[i].State.IsFree = true;
+                        client.resources.RemoveAt(i);
+                    }
+                    client.socket.Shutdown(SocketShutdown.Send);
+                    _clients.Remove(client);
+                }
+            }
 
             struct ClientState
             {
                 public Socket socket;
                 public List<SimObject> resources;
-                public long lastMessage;
             }
             
 
@@ -79,10 +97,9 @@ namespace SynthesisAPI.Utilities
                 ClientState client = new ClientState
                 {
                     socket = _server.EndAccept(asyncResult),
-                    resources = new List<SimObject>(),
-                    lastMessage = System.DateTimeOffset.Now.ToUnixTimeMilliseconds()
+                    resources = new List<SimObject>()
                 };
-                _clients.Add(client);
+                _clients.Add(client, System.DateTimeOffset.Now.ToUnixTimeMilliseconds());
                 if (_isRunning)
                 {
                     client.socket.BeginReceive(_globalBuffer, 0, _globalBuffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), client);
@@ -92,13 +109,13 @@ namespace SynthesisAPI.Utilities
 
             private void ReceiveCallback(IAsyncResult asyncResult)
             {
-                ClientState client = (ClientState)asyncResult.AsyncState;
+                ClientState client = (ClientState)asyncResult.AsyncState; //This is different from what goes in the array
                 int received = client.socket.EndReceive(asyncResult);
                 byte[] data = new byte[received];
                 Array.Copy(_globalBuffer, data, received);
                 ConnectionMessage message = ConnectionMessage.Parser.ParseFrom(data);
 
-                client.lastMessage = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                _clients[client] = System.DateTimeOffset.Now.ToUnixTimeMilliseconds(); 
 
                 switch (message.MessageTypeCase)
                 {
@@ -109,7 +126,7 @@ namespace SynthesisAPI.Utilities
                             {
                                 Confirm = _canAcceptClients
                             }
-                        });
+                        }, false);
                         break;
                     case ConnectionMessage.MessageTypeOneofCase.ResourceOwnershipRequest:
                         if (SimulationManager.SimulationObjects.TryGetValue(message.ResourceOwnershipRequest.ResourceName, out SimObject resource) && resource.State.IsFree)
@@ -123,7 +140,7 @@ namespace SynthesisAPI.Utilities
                                     Guid = resource.State.Guid,
                                     Generation = resource.State.Generation
                                 }
-                            });
+                            }, false);
                             client.resources.Add(resource);
                             resource.State.IsFree = false;
                         }
@@ -137,22 +154,18 @@ namespace SynthesisAPI.Utilities
                                     Confirm = false,
                                     Error = "Resource could not be given"
                                 }
-                            });
+                            }, false);
                         }
                         break;
                     case ConnectionMessage.MessageTypeOneofCase.TerminateConnectionRequest:
-                        for (int i = client.resources.Count - 1; i >= 0; i--)
-                        {
-                            client.resources[i].State.IsFree = true;
-                            client.resources.RemoveAt(i);
-                        }
+                        System.Diagnostics.Debug.WriteLine("Received this");
                         SendConnectionMessage(client, new ConnectionMessage
                         {
                             TerminateConnectionResponse = new ConnectionMessage.Types.TerminateConnectionResponse()
                             {
                                 Confirm = true
-                            }
-                        });
+                            } // Why won't this send properly?
+                        }, true);
                         break;
                     case ConnectionMessage.MessageTypeOneofCase.ReleaseResourceRequest:
                         bool hasRemoved = false;
@@ -174,7 +187,7 @@ namespace SynthesisAPI.Utilities
                                 {
                                     Confirm = true
                                 }
-                            });
+                            }, false);
                         }
                         else
                         {
@@ -185,7 +198,7 @@ namespace SynthesisAPI.Utilities
                                     Confirm = false,
                                     Error = "Cannot release resource"
                                 }
-                            });
+                            }, false);
                         }
                         break;
                     case ConnectionMessage.MessageTypeOneofCase.Heartbeat:
@@ -196,20 +209,30 @@ namespace SynthesisAPI.Utilities
                         Logger.Log("Invalid Message Received");
                         break;
                 }
-                client.socket.BeginReceive(_globalBuffer, 0, _globalBuffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), client);
+                if (_clients.ContainsKey(client))
+                {
+                    client.socket.BeginReceive(_globalBuffer, 0, _globalBuffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), client);
+                }
             }
 
+            // The bool value is whether or not the client should be removed after sending the message
             private void SendCallback(IAsyncResult asyncResult)
             {
-                ClientState client = (ClientState)asyncResult.AsyncState;
-                client.socket.EndSend(asyncResult);
+                KeyValuePair<ClientState, bool> client = (KeyValuePair<ClientState, bool>)asyncResult.AsyncState;
+                System.Diagnostics.Debug.WriteLine(client.Key.socket.EndSend(asyncResult));
+                
+                if (client.Value)
+                {
+                    Thread.Sleep(100);
+                    RemoveClient(client.Key);
+                }
             }
 
-            private void SendConnectionMessage(ClientState cli, ConnectionMessage msg)
+            private void SendConnectionMessage(ClientState cli, ConnectionMessage msg, bool shouldTerminate)
             {
                 byte[] data = new byte[msg.CalculateSize()];
                 msg.WriteTo(data);
-                cli.socket.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(SendCallback), cli);
+                cli.socket.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(SendCallback), new KeyValuePair<ClientState, bool>(cli, shouldTerminate));
                 
             }
 

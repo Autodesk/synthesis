@@ -25,7 +25,7 @@ namespace TestApi
             while (_isRunning)
             {
                 Thread.Sleep(100);
-                    SendReceiveData(heartbeat);
+                SendReceiveData(heartbeat);
             }
         });
         private static Signals signals = new Signals()
@@ -174,12 +174,19 @@ namespace TestApi
             Thread.Sleep(1000); // need sleep to give it time to update
 
             Assert.IsTrue(!SimulationManager.SimulationObjects["Robot"].State.IsFree);
-            foreach(var s in SimulationManager.SimulationObjects["Robot"].State.CurrentSignals)
-            {
-                System.Diagnostics.Debug.WriteLine(s.Key);
-            }
+
             System.Diagnostics.Debug.WriteLine(SimulationManager.SimulationObjects["Robot"].State.CurrentSignals["DigitalOutput"].Value);
             Assert.IsTrue(SimulationManager.SimulationObjects["Robot"].State.CurrentSignals["DigitalOutput"].Value.NumberValue == 4.2);
+
+            response = SendReceiveData(terminateConnectionRequest);
+            System.Diagnostics.Debug.WriteLine("THIS HAPPENED");
+            Assert.IsTrue(response.TerminateConnectionResponse.Confirm);
+            _isRunning = false; 
+            udpClient.Close();
+            UdpServerManager.Stop();
+            udpReceiveThread.Join();
+            heartbeatThread.Join();
+            TcpServerManager.Stop();
         }
 
         [Test]
