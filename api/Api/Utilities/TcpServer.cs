@@ -1,18 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Net;
 using System.Net.Sockets;
-using System.Reflection;
-using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Linq;
 using Google.Protobuf;
-using ProtoBuf;
-using System.Collections.Concurrent;
 using SynthesisAPI.Simulation;
-using UnityEngine;
 
 namespace SynthesisAPI.Utilities
 {
@@ -23,7 +16,6 @@ namespace SynthesisAPI.Utilities
         {
             private Socket _server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             private Dictionary<ClientState, long> _clients = new Dictionary<ClientState, long>();
-            private ReaderWriterLockSlim _clientsLock = new ReaderWriterLockSlim();
 
             public int GlobalBufferSize { get; set; } = 1024;
             private byte[] _globalBuffer;
@@ -37,8 +29,8 @@ namespace SynthesisAPI.Utilities
                 get => _isRunning;
                 set
                 {
-                    if (!value && heartbeatThread.IsAlive) { heartbeatThread.Join(); }
                     _isRunning = value;
+                    if (!value && heartbeatThread.IsAlive) { heartbeatThread.Join(); }
                     if (value) { Start(); }
                 }
             }
@@ -56,12 +48,10 @@ namespace SynthesisAPI.Utilities
                 while (Server.Instance._isRunning)
                 {
                     List<KeyValuePair<ClientState, long>> clientList = Instance._clients.ToList<KeyValuePair<ClientState, long>>();
-                    
                     for (int i = clientList.Count - 1; i >= 0; i--)
                     {
                         if (System.DateTimeOffset.Now.ToUnixTimeMilliseconds() - clientList[i].Value >= 2000) 
                         {
-                            System.Diagnostics.Debug.WriteLine("removing due to heartbeat");
                             Instance.RemoveClient(clientList[i].Key);
                         }
                     }
@@ -71,7 +61,7 @@ namespace SynthesisAPI.Utilities
 
             private void RemoveClient(ClientState client)
             {
-                System.Diagnostics.Debug.WriteLine("Removing Client");
+                Logger.Log("Removing Client");
                 if (_clients.ContainsKey(client))
                 {
                     for (int i = client.resources.Count - 1; i >= 0; i--)
@@ -79,7 +69,7 @@ namespace SynthesisAPI.Utilities
                         client.resources[i].State.IsFree = true;
                         client.resources.RemoveAt(i);
                     }
-                    client.socket.Shutdown(SocketShutdown.Send);
+                    client.socket.Close();
                     _clients.Remove(client);
                 }
             }
@@ -158,13 +148,12 @@ namespace SynthesisAPI.Utilities
                         }
                         break;
                     case ConnectionMessage.MessageTypeOneofCase.TerminateConnectionRequest:
-                        System.Diagnostics.Debug.WriteLine("Received this");
                         SendConnectionMessage(client, new ConnectionMessage
                         {
                             TerminateConnectionResponse = new ConnectionMessage.Types.TerminateConnectionResponse()
                             {
                                 Confirm = true
-                            } // Why won't this send properly?
+                            }
                         }, true);
                         break;
                     case ConnectionMessage.MessageTypeOneofCase.ReleaseResourceRequest:
@@ -202,8 +191,6 @@ namespace SynthesisAPI.Utilities
                         }
                         break;
                     case ConnectionMessage.MessageTypeOneofCase.Heartbeat:
-                        System.Diagnostics.Debug.WriteLine("Recieved Heartbeat");
-
                         break;
                     default:
                         Logger.Log("Invalid Message Received");
@@ -223,7 +210,7 @@ namespace SynthesisAPI.Utilities
                 
                 if (client.Value)
                 {
-                    Thread.Sleep(100);
+                    client.Key.socket.Shutdown(SocketShutdown.Both);
                     RemoveClient(client.Key);
                 }
             }

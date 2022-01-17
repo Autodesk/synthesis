@@ -4,18 +4,14 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using NUnit.Framework;
-using SynthesisAPI.AssetManager;
 using SynthesisAPI.Utilities;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using ProtoBuf;
 using Google.Protobuf;
 using Mirabuf.Signal;
 using Mirabuf;
 using Google.Protobuf.WellKnownTypes;
 using SynthesisAPI.Simulation;
 
-namespace TestApi 
+namespace TestApi
 {
     [TestFixture]
     public static class TestServers
@@ -24,10 +20,11 @@ namespace TestApi
             {
             while (_isRunning)
             {
-                Thread.Sleep(100);
-                SendReceiveData(heartbeat);
+                Thread.Sleep(500);
+                SendData(heartbeat);
             }
         });
+        /*
         private static Signals signals = new Signals()
         {
             Info = new Info()
@@ -36,6 +33,7 @@ namespace TestApi
                 GUID = Guid.NewGuid().ToString()
             }
         };
+        */
         private static ConnectionMessage heartbeat = new ConnectionMessage()
         {
             Heartbeat = new ConnectionMessage.Types.Heartbeat() { }
@@ -64,7 +62,6 @@ namespace TestApi
             {
             }
         };
-        private static string originalGuid = Guid.NewGuid().ToString();
         private static Socket _client;
         private static bool _isRunning;
 
@@ -88,27 +85,12 @@ namespace TestApi
                     }
                     catch (SocketException e)
                     {
-                        System.Diagnostics.Debug.WriteLine(e);
+                        System.Diagnostics.Debug.WriteLine("Udp Connection Terminated");
                     }
                 }
             });
-
-            signals.SignalMap.Add("DigitalOutput", new Signal()
-            {
-                Info = new Info()
-                {
-                    Name = "signal",
-                    GUID = Guid.NewGuid().ToString()
-                },
-                DeviceType = "Digital",
-                Io = IOType.Output
-            });
-            SimulationManager.RegisterSimObject(new SimObject("Robot", new ControllableState()
-            {
-                CurrentSignalLayout = signals,
-                IsFree = true
-            }));
-
+            
+            RegisterRobot();
             string guid = string.Empty;
             int generation = 999;
             _client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -178,34 +160,26 @@ namespace TestApi
             System.Diagnostics.Debug.WriteLine(SimulationManager.SimulationObjects["Robot"].State.CurrentSignals["DigitalOutput"].Value);
             Assert.IsTrue(SimulationManager.SimulationObjects["Robot"].State.CurrentSignals["DigitalOutput"].Value.NumberValue == 4.2);
 
+            _isRunning = false;
+            heartbeatThread.Join();
             response = SendReceiveData(terminateConnectionRequest);
             System.Diagnostics.Debug.WriteLine("THIS HAPPENED");
             Assert.IsTrue(response.TerminateConnectionResponse.Confirm);
-            _isRunning = false; 
+            
             udpClient.Close();
             UdpServerManager.Stop();
             udpReceiveThread.Join();
-            heartbeatThread.Join();
+            System.Diagnostics.Debug.WriteLine("Almost Finished");
             TcpServerManager.Stop();
+            System.Diagnostics.Debug.WriteLine("Finished");
+            Assert.IsTrue(true);
         }
 
         [Test]
         public static void TestConnecting()
         {
-            
-            SimulationManager.RegisterSimObject(new SimObject("Robot", new ControllableState()
-            {
-                CurrentSignalLayout = new Signals()
-                {
-                    Info = new Info()
-                    {
-                        Name = "Robot",
-                        GUID = originalGuid
-                    }
-                },
-                IsFree = true
-            }));
 
+            RegisterRobot();
             
             string guid = string.Empty;
             int generation;
@@ -244,8 +218,6 @@ namespace TestApi
                 generation = response.ResourceOwnershipResponse.Generation;
             }
 
-            Assert.IsTrue(response.ResourceOwnershipResponse.Guid.Equals(originalGuid));
-
             response = SendReceiveData(releaseResourceRequest);
             Assert.IsTrue(response.ReleaseResourceResponse.Confirm);
 
@@ -257,6 +229,7 @@ namespace TestApi
             }
         }
 
+        // for sending message and recieving a response
         public static ConnectionMessage SendReceiveData(ConnectionMessage msg)
         {
             byte[] receiveBuffer = new byte[256];
@@ -268,6 +241,46 @@ namespace TestApi
             Array.Copy(receiveBuffer, data, rec);
             return ConnectionMessage.Parser.ParseFrom(data);
         }
+        // for just sending a message
+        public static void SendData(ConnectionMessage msg)
+        {
+            byte[] buffer = new byte[msg.CalculateSize()];
+            msg.WriteTo(buffer);
+            _client.Send(buffer);
+        }
 
+        public static void RegisterRobot()
+        {
+            try
+            {
+                Signals signals = new Signals()
+                {
+                    Info = new Info()
+                    {
+                        Name = "Robot",
+                        GUID = Guid.NewGuid().ToString()
+                    }
+                };
+                signals.SignalMap.Add("DigitalOutput", new Signal()
+                {
+                    Info = new Info()
+                    {
+                        Name = "signal",
+                        GUID = Guid.NewGuid().ToString()
+                    },
+                    DeviceType = "Digital",
+                    Io = IOType.Output
+                });
+                SimulationManager.RegisterSimObject(new SimObject("Robot", new ControllableState()
+                {
+                    CurrentSignalLayout = signals,
+                    IsFree = true
+                }));
+            } catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e);
+            }
+            
+        }
     } 
 }
