@@ -13,6 +13,7 @@ using SynthesisAPI.Simulation;
 
 namespace TestApi
 {
+    /*
     [TestFixture]
     public static class TestServers
     {
@@ -24,16 +25,6 @@ namespace TestApi
                 SendData(heartbeat);
             }
         });
-        /*
-        private static Signals signals = new Signals()
-        {
-            Info = new Info()
-            {
-                Name = "Robot",
-                GUID = Guid.NewGuid().ToString()
-            }
-        };
-        */
         private static ConnectionMessage heartbeat = new ConnectionMessage()
         {
             Heartbeat = new ConnectionMessage.Types.Heartbeat() { }
@@ -283,4 +274,5 @@ namespace TestApi
             
         }
     } 
+*/
 }
