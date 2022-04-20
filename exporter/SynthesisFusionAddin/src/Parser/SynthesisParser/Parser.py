@@ -6,7 +6,7 @@ from time import time
 
 from ...general_imports import *
 
-from proto.proto_out import assembly_pb2
+from proto.proto_out import assembly_pb2, signal_pb2
 
 # from . import Joints, Materials, Components, Utilities
 
@@ -31,6 +31,9 @@ class Parser:
             design = app.activeDocument.design
 
             assembly_out = assembly_pb2.Assembly()
+            wut = signal_pb2.Signals()
+            #assembly_out.data.signals = Signals()
+            hi = len(assembly_out.data.signals.signal_map)
             fill_info(assembly_out, design.rootComponent)
 
             assembly_out.dynamic = True
@@ -96,8 +99,11 @@ class Parser:
                 rootNode,
             )
 
+            Components._MapRigidGroups(design.rootComponent, assembly_out.data.joints)
+
             assembly_out.design_hierarchy.nodes.append(rootNode)
 
+            # Problem Child
             Joints.populateJoints (
                 design, assembly_out.data.joints, assembly_out.data.signals, self.pdMessage, self.parseOptions
             )

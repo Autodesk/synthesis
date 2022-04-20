@@ -1,6 +1,6 @@
 # Contains all of the logic for mapping the Components / Occurrences
 import adsk.core, adsk.fusion, uuid, logging, traceback
-from proto.proto_out import assembly_pb2, types_pb2, material_pb2
+from proto.proto_out import assembly_pb2, types_pb2, material_pb2, joint_pb2
 
 from .Utilities import *
 from .. import ParseOptions
@@ -192,3 +192,22 @@ def _ParseBRep(
         logging.getLogger("{INTERNAL_ID}.Parser.BrepBody").error(
             "Failed:\n{}".format(traceback.format_exc())
         )
+
+def _MapRigidGroups(
+    rootComponent: adsk.fusion.Component,
+    joints: joint_pb2.Joints
+) -> None:
+    groups = rootComponent.allRigidGroups
+    for group in groups:
+        mira_group = joint_pb2.RigidGroup()
+        mira_group.name = group.name
+        for occ in group.occurrences:
+            try:
+                occRef = occ.entityToken
+            except RuntimeError:
+                occRef = occ.name
+            mira_group.occurrences.append(occRef)
+        if (len(mira_group.occurrences) > 1):
+            joints.rigid_groups.append(mira_group)
+    
+
