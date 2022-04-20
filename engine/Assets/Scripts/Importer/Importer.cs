@@ -80,7 +80,9 @@ namespace Synthesis.Import
 		public static GameObject MirabufAssemblyImport(Assembly assembly, bool reverseSideJoints = false)
 		{
 			// Uncommenting this will delete all bodies so the JSON file isn't huge
-			//DebugAssembly(assembly);
+			DebugAssembly(assembly);
+
+			return null;
 
 			GameObject assemblyObject = new GameObject(assembly.Info.Name);
 			var parts = assembly.Data.Parts;
@@ -299,6 +301,15 @@ namespace Synthesis.Import
 			return new MPhysicalProperties {Mass = total};
 		}
 
+		/// <summary>
+		/// I really don't like how I made this. It gets the job done but I feel like it
+		/// could use a ton of optimizations.
+		/// TODO: Maybe get rid of the dictionary in the rigidbodyDefinitions and just
+		/// 	store keys. I feel like that would be a bit better.
+		/// </summary>
+		/// <param name="definitions"></param>
+		/// <param name="assembly"></param>
+		/// <returns></returns>
 		private static (
 			Dictionary<string, RigidbodyDefinition> definitions,
 			Dictionary<string, string> partToDefinitionMap
@@ -307,33 +318,85 @@ namespace Synthesis.Import
 			var defs = new Dictionary<string, RigidbodyDefinition>();
 			var partMap = new Dictionary<string, string>();
 
-			int counter = 0;
-
-			foreach (var (jointInstance, nodes) in GatherNodes(assembly))
-			{
-				var def = new RigidbodyDefinition
-				{
-					GUID = $"{jointInstance.Info.GUID}",
-					Name = $"RigidGroup:{counter}",
-					Parts = new Dictionary<string, PartInstance>()
-				};
-				foreach (var node in nodes)
-				{
-					Debug.Log($"Part GUID: \"{node.Value}\"");
-					if(!def.Parts.ContainsKey(node.Value))
-						def.Parts.Add(node.Value, assembly.Data.Parts.PartInstances[node.Value]);
-					else
-						Debug.Log($"Duplicate entry: {node.Value}");
-				}
-
-				defs.Add(def.GUID, def);
-				foreach (var part in def.Parts)
-				{
-					partMap[part.Key] = def.GUID;
-				}
-				++counter;
+			var groundHier = assembly.JointHierarchy.Nodes.First(x => x.Value == "ground");
+			if (groundHier == null) {
+				Logger.Log($"Failed to find 'ground' joint hierarchy node for assembly '{assembly.Info.Name}'");
+				throw new Exception();
 			}
+
+			// Create grounded node
+			// var groundedJoint = assembly.Data.Joints.JointInstances["grounded"];
+
+			Action<RigidbodyDefinition, RigidbodyDefinition> MergeDefinitions = (keep, delete) => {
+				delete.Parts.ForEach((k, v) => keep.Parts.Add(k, v));
+				for (int i = 0; i < partMap.Keys.Count; i++) {
+					if (partMap[partMap.Keys.ElementAt(i)].Equals(delete.GUID))
+						partMap[partMap.Keys.ElementAt(i)] = keep.GUID;
+				}
+				defs.Remove(delete.GUID);
+			};
+
+			// Create initial definitions
+			foreach (var jInst in assembly.Data.Joints.JointInstances) {
+				if (jInst.Key.Equals("grounded")) {
+
+					RigidbodyDefinition def = new RigidbodyDefinition {
+						GUID = "grounded",
+						Name = "grounded",
+						Parts = new Dictionary<string, PartInstance>()
+					};
+					defs[def.GUID] = def;
+					// I'm slowly turning into Nick
+					var tmpParts = jInst.Value.Parts.Nodes.AllTreeElements()
+						.Select(x => (x.Value, assembly.Data.Parts.PartInstances[x.Value]));
+					tmpParts.ForEach(x => def.Parts.Add(x.Value, x.Item2));
+
+					for (int i = 0; i < tmpParts.Count(); i++) {
+						if (partMap.TryGetValue(tmpParts.ElementAt(i).Value, out string existingDef)) {
+							MergeDefinitions(def, defs[existingDef]);
+						} else {
+							partMap[tmpParts.ElementAt(i).Value] = def.GUID;
+						}
+					}
+
+					continue;
+				} else {
+
+				}
+			}
+
+			// Handle orphans and open-ended parts
+
 			return (defs, partMap);
+
+			// int counter = 0;
+
+			// foreach (var (jointInstance, nodes) in GatherNodes(assembly))
+			// {
+			// 	var def = new RigidbodyDefinition
+			// 	{
+			// 		GUID = $"{jointInstance.Info.GUID}",
+			// 		Name = $"RigidGroup:{counter}",
+			// 		Parts = new Dictionary<string, PartInstance>()
+			// 	};
+			// 	foreach (var node in nodes)
+			// 	{
+			// 		Debug.Log($"Part GUID: \"{node.Value}\"");
+			// 		if(!def.Parts.ContainsKey(node.Value))
+			// 			def.Parts.Add(node.Value, assembly.Data.Parts.PartInstances[node.Value]);
+			// 		else
+			// 			Debug.Log($"Duplicate entry: {node.Value}");
+			// 	}
+
+			// 	defs.Add(def.GUID, def);
+			// 	foreach (var part in def.Parts)
+			// 	{
+			// 		partMap[part.Key] = def.GUID;
+			// 	}
+			// 	++counter;
+			// }
+
+			// return (defs, partMap);
 		}
 
 		public static Dictionary<string, Matrix4x4> MakeGlobalTransformations(Assembly assembly)
@@ -477,7 +540,10 @@ namespace Synthesis.Import
 		{
 			var debugAssembly = new Assembly();
 			debugAssembly.MergeFrom(assembly);
+
+			// Remove mesh data
 			debugAssembly.Data.Parts.PartDefinitions.ForEach((x, y) => { y.Bodies.Clear(); });
+
 			var jFormatter = new JsonFormatter(JsonFormatter.Settings.Default);
 			File.WriteAllText(
 				Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)

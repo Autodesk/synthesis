@@ -49,6 +49,24 @@ public static class UtilExtensions {
                   + $"\n{m[2, 0]}, {m[2, 1]}, {m[2, 2]}, {m[2, 3]}\n{m[3, 0]}, {m[3, 1]}, {m[3, 2]}, {m[3, 3]}");
     }
 
+    public static List<Mirabuf.Node> AllTreeElements(this IEnumerable<Mirabuf.Node> ns) {
+        var elm = new List<Mirabuf.Node>();
+        ns.ForEach(x => elm.AddRange(x.AllTreeElements()));
+        return elm;
+    }
+    /// <summary>
+    /// DO NOT USE List<Mirabuf.Node> AllTreeElements(this IEnumerable<Mirabuf.Node> ns)
+    /// INSIDE THIS FUNCTION. WILL CREATE RACE CASE
+    /// </summary>
+    /// <param name="n"></param>
+    /// <returns></returns>
+    public static List<Mirabuf.Node> AllTreeElements(this Mirabuf.Node n) {
+        var elm = new List<Mirabuf.Node>();
+        elm.Add(n);
+        n.Children.ForEach(x => elm.AddRange(x.AllTreeElements()));
+        return elm;
+    }
+
     // public static IEnumerable<Node> UnravelNodes(this IEnumerable<Edge> edges) {
     //     var nodes = new Node[edges.Count()];
     //     for (int i = 0; i < nodes.Length; i++) {
@@ -56,6 +74,9 @@ public static class UtilExtensions {
     //     }
     //     return nodes;
     // }
+
+    public static Vector3 DotProduct(this Vector3 a, Vector3 b)
+        => new Vector3(a.y * b.z - a.z * b.y, -(a.x * b.z - a.z * b.x), a.x * b.y - a.y * b.x);
     
     public static UVector3 GetPosition(this Matrix4x4 m)
         => new UVector3(m.m03 * -0.01f, m.m13 * 0.01f, m.m23 * 0.01f);
