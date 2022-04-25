@@ -31,9 +31,6 @@ class Parser:
             design = app.activeDocument.design
 
             assembly_out = assembly_pb2.Assembly()
-            wut = signal_pb2.Signals()
-            #assembly_out.data.signals = Signals()
-            hi = len(assembly_out.data.signals.signal_map)
             fill_info(assembly_out, design.rootComponent)
 
             assembly_out.dynamic = True

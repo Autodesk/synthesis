@@ -127,6 +127,7 @@ def populateJoints(
                 _motionFromJoint(joint.jointMotion, joint_definition)
 
             except:
+                err_msg = "Failed:\n{}".format(traceback.format_exc())
                 logging.getLogger(f"{INTERNAL_ID}.JointParser").error(
                     "Failed:\n{}".format(traceback.format_exc())
                 )
@@ -177,16 +178,16 @@ def _addJointInstance(joint: adsk.fusion.Joint, joint_instance: joint_pb2.JointI
     # MAY ALSO BE A FIX FR THE HIERARCHY DETECTION
 
     # THIS IS THE SAME RIGIDGROUP
-    rigid_groups_1 = joint.occurrenceOne.rigidGroups
-    rigid_groups_2 = joint.occurrenceTwo.rigidGroups
+    # rigid_groups_1 = joint.occurrenceOne.rigidGroups
+    # rigid_groups_2 = joint.occurrenceTwo.rigidGroups
 
     # There should almost never be multiple - unless this is a parent of something else... hmmmm TBD
-    for rigid_group in rigid_groups_1:
-        joint_instance.parent_part = rigid_group.assemblyContext.entityToken
+    # for rigid_group in rigid_groups_1:
+    #     joint_instance.parent_part = rigid_group.assemblyContext.entityToken
         
 
-    for rigid_group in rigid_groups_2:
-        joint_instance.child_part = rigid_group.assemblyContext.entityToken
+    # for rigid_group in rigid_groups_2:
+    #     joint_instance.child_part = rigid_group.assemblyContext.entityToken
 
     # ENDFIX
 

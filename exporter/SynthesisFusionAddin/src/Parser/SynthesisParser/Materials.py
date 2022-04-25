@@ -127,7 +127,7 @@ def _MapAllAppearances(
         if progressDialog.wasCancelled():
             raise RuntimeError("User canceled export")
 
-        material = materials.appearances[appearance.id]
+        material = materials.appearances["{}_{}".format(appearance.name, appearance.id)]
         getMaterialAppearance(appearance, options, material)
 
 
