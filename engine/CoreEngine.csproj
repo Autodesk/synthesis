@@ -54,6 +54,7 @@
      <Compile Include="Assets\Scripts\UI\Hierarchy\Hierarchy.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Gearboxes\JointItem.cs" />
      <Compile Include="Assets\Scripts\Gizmos\MoveArrow.cs" />
+     <Compile Include="Assets\Scripts\Drivers\DrivebaseWheelDriver.cs" />
      <Compile Include="Assets\Scripts\Utilities\IOHandler.cs" />
      <Compile Include="Assets\Scripts\ServersMonoBehavior.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\JointsAdapter.cs" />
@@ -136,7 +137,7 @@
      <Compile Include="Assets\Scripts\Importer\Importer.cs" />
      <Compile Include="Assets\Scripts\EntityManager\Driver.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\DraggablePanel.cs" />
-     <Compile Include="Assets\Scripts\Drivers\DrivebaseWheelDriver.cs" />
+     <Compile Include="Assets\Scripts\Test\DebugJointAxes.cs" />
      <None Include="Assets\Scripts\CoreEngine.asmdef" />
     <Reference Include="UnityEngine">
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>

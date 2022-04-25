@@ -81,8 +81,11 @@ namespace Synthesis.Import
 		{
 			// Uncommenting this will delete all bodies so the JSON file isn't huge
 			DebugAssembly(assembly);
+			// return null;
 
-			return null;
+			// Logger.Log((new System.Diagnostics.StackTrace()).ToString(), LogLevel.Debug);
+
+			UnityEngine.Physics.sleepThreshold = 0;
 
 			GameObject assemblyObject = new GameObject(assembly.Info.Name);
 			var parts = assembly.Data.Parts;
@@ -162,9 +165,11 @@ namespace Synthesis.Import
 				if (jointKvp.Key == "grounded")
 					continue;
 
-				Debug.Log($"Joint Key: {jointKvp.Key}");
-				var a = groupObjects[jointKvp.Key];
-				Debug.Log($"Child: {jointKvp.Value.ChildPart}");
+				// Logger.Log($"Joint Instance: {jointKvp.Key}", LogLevel.Debug);
+				// Logger.Log($"Parent: {jointKvp.Value.ParentPart}", LogLevel.Debug);
+				var aKey = rigidDefinitions.partToDefinitionMap[jointKvp.Value.ParentPart];
+				var a = groupObjects[aKey];
+				// Logger.Log($"Child: {jointKvp.Value.ChildPart}", LogLevel.Debug);
 				var bKey = rigidDefinitions.partToDefinitionMap[jointKvp.Value.ChildPart];
 				var b = groupObjects[bKey];
 
@@ -202,6 +207,7 @@ namespace Synthesis.Import
 			GameObject a, GameObject b, JointInstance instance, float totalMass,
 			Assembly assembly, SimObject simObject)
 		{
+			// Logger.Log($"Obj A: {a.name}, Obj B: {b.name}");
 			// Stuff I'm gonna use for all joints
 			var definition = assembly.Data.Joints.JointDefinitions[instance.JointReference];
 			var rbA = a.GetComponent<Rigidbody>();
@@ -210,27 +216,64 @@ namespace Synthesis.Import
 			{
 				case JointMotion.Revolute: // Hinge/Revolution joint
 					var revoluteA = a.AddComponent<HingeJoint>();
-					revoluteA.anchor = (definition.Origin ?? new Vector3())
-					                   + (instance.Offset ?? new Vector3());
+
+					var parentPartInstance = assembly.Data.Parts.PartInstances[instance.ParentPart];
+					var parentPartDefinition = assembly.Data.Parts.PartDefinitions[parentPartInstance.PartDefinitionReference];
+
+					var moddedMat = parentPartInstance.GlobalTransform.UnityMatrix;
+
+					var originA = (UVector3)(definition.Origin ?? new UVector3());
+					// var from = Matrix4x4.TRS(originA, Quaternion.identity, UVector3.one);
+					// var firstPart = assembly.Data.Parts.PartInstances.First(
+					// 	x => x.Value.PartDefinitionReference.Equals(
+					// 		assembly.Data.Parts.PartInstances[instance.ParentPart].PartDefinitionReference
+					// 	));
+					// var firstPart = assembly.Data.Parts.PartInstances[
+					// 	FindOriginalFromReferencePoint(assembly, parentPartDefinition, (UVector3)parentPartDefinition.PhysicalData.Com)
+					// ];
+					var firstPart = assembly.Data.Parts.PartInstances.First(x => x.Value.Info.Name.Equals(parentPartDefinition.Info.Name + ":1")).Value;
+					var firstMat = firstPart.GlobalTransform.UnityMatrix;
+					var from = Matrix4x4.TRS(
+						firstMat.GetPosition(),
+						new Quaternion(-firstMat.rotation.x, firstMat.rotation.y, firstMat.rotation.z, -firstMat.rotation.w),
+						UVector3.one
+					);
+					var to = Matrix4x4.TRS(
+						moddedMat.GetPosition(),
+						new Quaternion(-moddedMat.rotation.x, moddedMat.rotation.y, moddedMat.rotation.z, -moddedMat.rotation.w),
+						UVector3.one
+					);
+					moddedMat = DiffToTransformations(from, to);
+					var partOffset = assembly.Data.Parts.PartInstances[instance.ParentPart].GlobalTransform.UnityMatrix.GetPosition()
+						+ moddedMat.MultiplyPoint(originA - firstMat.GetPosition());
+					// Logger.Log($"{assembly.Data.Parts.PartInstances[instance.ParentPart].Info.Name}: {partOffset.x}, {partOffset.y}, {partOffset.z}");
+					UVector3 jointOffset = instance.Offset ?? new Vector3();
+					// Logger.Log($"'{instance.Info.Name}' Joint Offset: {jointOffset.x}, {jointOffset.y}, {jointOffset.z}");
+					// Logger.Log($"Definition Origin: {definition.Origin?.X}, {definition.Origin?.Y}, {definition.Origin?.Z}");
+					revoluteA.anchor = partOffset + jointOffset;
 					revoluteA.axis =
-						//(((Matrix4x4) assembly.Data.Parts.PartInstances[instance.ParentPart].GlobalTransform).rotation)
-						definition.Rotational.RotationalFreedom.Axis; // CHANGE
+						moddedMat.MultiplyVector(definition.Rotational.RotationalFreedom.Axis); // CHANGE - ? -Hunter
 					revoluteA.connectedBody = rbB;
 					revoluteA.connectedMassScale = revoluteA.connectedBody.mass / rbA.mass;
 					revoluteA.useMotor = definition.Info.Name != "grounded" &&
 					                     definition.UserData != null &&
 					                     definition.UserData.Data.TryGetValue("wheel", out var isWheel) &&
 					                     isWheel == "true";
+					revoluteA.useLimits = true;
+					revoluteA.limits = new JointLimits { min = -15, max = 15 };
+					
 					var revoluteB = b.AddComponent<HingeJoint>();
-					revoluteB.anchor = (definition.Origin ?? new Vector3())
-					                   + (instance.Offset ?? new Vector3());
+					
+					// All of the rigidbodies have the same location and orientation so these are the same for both joints
+					revoluteB.anchor = revoluteA.anchor;
 					revoluteB.axis = revoluteA.axis; // definition.Rotational.RotationalFreedom.Axis;
+					
 					revoluteB.connectedBody = rbA;
 					revoluteB.connectedMassScale = revoluteB.connectedBody.mass / rbB.mass;
 
 					// TODO: Encoder Signals
 					var driver = new RotationalDriver(
-						assembly.Data.Signals.SignalMap[instance.SignalReference].Info.Name,
+						assembly.Data.Signals.SignalMap[instance.SignalReference].Info.GUID,
 						new string[] {instance.SignalReference}, Array.Empty<string>(), simObject, revoluteA, revoluteB,
 						new JointMotor()
 						{
@@ -247,15 +290,34 @@ namespace Synthesis.Import
 					                + (instance.Offset ?? new Vector3());
 					rigidA.axis = UVector3.forward;
 					rigidA.connectedBody = rbB;
-					rigidA.massScale = Mathf.Pow(totalMass / rbA.mass, 1); // Not sure if this works
+					rigidA.connectedMassScale = rigidA.connectedBody.mass / rbA.mass;
+					// rigidA.massScale = Mathf.Pow(totalMass / rbA.mass, 1); // Not sure if this works
 					var rigidB = b.AddComponent<FixedJoint>();
 					rigidB.anchor = (definition.Origin ?? new Vector3())
 					                + (instance.Offset ?? new Vector3());
 					rigidB.axis = UVector3.forward;
 					rigidB.connectedBody = rbA;
-					rigidB.connectedMassScale = Mathf.Pow(totalMass / rbA.mass, 1);
+					rigidB.connectedMassScale = rigidB.connectedBody.mass / rbB.mass;
+					// rigidB.connectedMassScale = Mathf.Pow(totalMass / rbA.mass, 1);
 					break;
 			}
+		}
+
+		public static Matrix4x4 DiffToTransformations(Matrix4x4 from, Matrix4x4 to) {
+			return Matrix4x4.TRS(to.GetPosition() - from.GetPosition(), to.rotation * Quaternion.Inverse(from.rotation), UVector3.one);
+		}
+
+		public static string FindOriginalFromReferencePoint(Assembly assembly, PartDefinition def, UVector3 point) {
+			string closest = string.Empty;
+			float closestDist = float.MaxValue;
+			assembly.Data.Parts.PartInstances.Where(y => y.Value.PartDefinitionReference.Equals(def.Info.GUID)).ForEach(p => {
+				float dist = (p.Value.GlobalTransform.UnityMatrix.GetPosition() - point).magnitude;
+				if (dist < closestDist) {
+					closest = p.Key;
+					closestDist = dist;
+				}
+			});
+			return closest;
 		}
 
 		public static void MakePartDefinition(GameObject container, PartDefinition definition, PartInstance instance,
@@ -277,6 +339,9 @@ namespace Synthesis.Import
 					: assemblyData.Materials.Appearances.ContainsKey(instance.Appearance)
 						? assemblyData.Materials.Appearances[instance.Appearance].UnityMaterial
 						: Appearance.DefaultAppearance.UnityMaterial; // Setup the override
+				// renderer.material = assemblyData.Materials.Appearances.ContainsKey(instance.Appearance)
+				// 	? assemblyData.Materials.Appearances[instance.Appearance].UnityMaterial
+				// 	: Appearance.DefaultAppearance.UnityMaterial;
 				var collider = bodyObject.AddComponent<MeshCollider>();
 				collider.convex = true;
 				collider.sharedMesh = body.TriangleMesh.UnityMesh; // Again, not sure if this actually works
@@ -301,6 +366,8 @@ namespace Synthesis.Import
 			return new MPhysicalProperties {Mass = total};
 		}
 
+		#region New RigidDefinition Gathering
+
 		/// <summary>
 		/// I really don't like how I made this. It gets the job done but I feel like it
 		/// could use a ton of optimizations.
@@ -318,15 +385,10 @@ namespace Synthesis.Import
 			var defs = new Dictionary<string, RigidbodyDefinition>();
 			var partMap = new Dictionary<string, string>();
 
-			var groundHier = assembly.JointHierarchy.Nodes.First(x => x.Value == "ground");
-			if (groundHier == null) {
-				Logger.Log($"Failed to find 'ground' joint hierarchy node for assembly '{assembly.Info.Name}'");
-				throw new Exception();
-			}
-
 			// Create grounded node
 			// var groundedJoint = assembly.Data.Joints.JointInstances["grounded"];
 
+			// I'm using lambda functions so I can reuse repeated logic while taking advantage of variables in the current scope
 			Action<RigidbodyDefinition, RigidbodyDefinition> MergeDefinitions = (keep, delete) => {
 				delete.Parts.ForEach((k, v) => keep.Parts.Add(k, v));
 				for (int i = 0; i < partMap.Keys.Count; i++) {
@@ -335,69 +397,209 @@ namespace Synthesis.Import
 				}
 				defs.Remove(delete.GUID);
 			};
+			Action<string, string, string> MoveToDef = (part, from, to) => {
+				if (from != string.Empty)
+					defs[from].Parts.Remove(part);
+				var _a = assembly.Data.Parts.PartInstances[part];
+				defs[to].Parts.Add(part, _a);
+				partMap[part] = to;
+			};
 
+			var paths = LoadPartTreePaths(assembly.DesignHierarchy);
+			// File.WriteAllText("C:\\Users\\hunte\\Documents\\paths.json", Newtonsoft.Json.JsonConvert.SerializeObject(paths));
+
+			var discoveredRigidGroups = new List<RigidGroup>();
+
+			(string guid, JointInstance joint) groundJoint = default;
+			int counter = 0;
 			// Create initial definitions
 			foreach (var jInst in assembly.Data.Joints.JointInstances) {
-				if (jInst.Key.Equals("grounded")) {
+				RigidbodyDefinition mainDef;
+				RigidbodyDefinition stubDef;
+				bool isGrounded = jInst.Key.Equals("grounded");
+				if (isGrounded) {
+					groundJoint = (jInst.Key, jInst.Value);
+					continue; // Skip grounded to apply it last
+				}
 
-					RigidbodyDefinition def = new RigidbodyDefinition {
-						GUID = "grounded",
-						Name = "grounded",
+				mainDef = new RigidbodyDefinition {
+					GUID = $"{counter}",
+					Name = $"{jInst.Value.Info.Name}_Rigidgroup{counter}",
+					Parts = new Dictionary<string, PartInstance>()
+				};
+				defs[mainDef.GUID] = mainDef;
+
+				stubDef = new RigidbodyDefinition {
+						GUID = $"{counter}-2",
+						Name = $"{jInst.Value.Info.Name}_Rigidgroup{counter}-2",
 						Parts = new Dictionary<string, PartInstance>()
-					};
-					defs[def.GUID] = def;
-					// I'm slowly turning into Nick
-					var tmpParts = jInst.Value.Parts.Nodes.AllTreeElements()
-						.Select(x => (x.Value, assembly.Data.Parts.PartInstances[x.Value]));
-					tmpParts.ForEach(x => def.Parts.Add(x.Value, x.Item2));
+				};
+				defs[stubDef.GUID] = stubDef;
 
-					for (int i = 0; i < tmpParts.Count(); i++) {
-						if (partMap.TryGetValue(tmpParts.ElementAt(i).Value, out string existingDef)) {
-							MergeDefinitions(def, defs[existingDef]);
+				// I'm slowly turning into Nick
+				// Grab all the parts listed under the joint
+				if ((jInst.Value.Parts != null && jInst.Value.Parts.Nodes != null) && jInst.Value.Parts.Nodes.Count > 0) {
+					// I don't know why AllTreeElements sometimes returns null elements
+					var tmpParts = jInst.Value.Parts.Nodes.AllTreeElements().Where(x => x.Value != null && x.Value != string.Empty)
+						.Select(x => (x.Value, assembly.Data.Parts.PartInstances[x.Value]));
+					var tmpRG = new RigidGroup {
+						Name = $"discovered_{counter}"
+					};
+					tmpRG.Occurrences.Add(tmpParts.Select(x => x.Value));
+					discoveredRigidGroups.Add(tmpRG);
+					// tmpParts.ForEach(x => MoveToDef(x.Value, string.Empty, mainDef.GUID));
+				}
+
+				// Grab all parts eligable via design hierarchy
+				var parentSiblings = IdentifyParentSiblings(paths, jInst.Value.ParentPart, jInst.Value.ChildPart);
+				// Gonna make an action so I don't have to have the same code written twice
+				Action<string, string> inherit = (part, definition) => {
+					List<Node> toCheck = new List<Node>();
+					List<Node> tmp = new List<Node>();
+					string originalDef;
+					var path = paths[part];
+					// Logger.Log($"{part}: Path length {path.Count}");
+					Node n = assembly.DesignHierarchy.Nodes[0];
+					for (int i = 0; i < path.Count; i++) {
+						n = n.Children.Find(y => y.Value.Equals(path[i]));
+					}
+					toCheck.Add(n.Children.Find(y => y.Value.Equals(part)));
+					// if (path.Count == 0) {
+					// 	toCheck.Add(assembly.DesignHierarchy.Nodes.Find(y => y.Value == part));
+					// } else {
+
+					var defObj = defs[definition];
+					defObj.Name += $"_{assembly.Data.Parts.PartInstances[part]}";
+						
+					// }
+					if (partMap.ContainsKey(part))
+						originalDef = partMap[part];
+					else
+						originalDef = string.Empty;
+
+					while (toCheck.Count > 0) {
+						toCheck.ForEach(y => {
+							partMap.TryGetValue(y.Value, out string existingDef);
+							if (existingDef == null) {
+								var _partInst = assembly.Data.Parts.PartInstances[y.Value];
+								defs[definition].Parts.Add(y.Value, _partInst);
+								partMap[y.Value] = definition;
+								tmp.AddRange(y.Children.Where(z => z != null && z.Value != null)); // Just to make sure
+							} else if (existingDef.Equals(originalDef)) {
+								MoveToDef(y.Value, originalDef, definition);
+								tmp.AddRange(y.Children.Where(z => z != null && z.Value != null)); // Just to make sure
+							}
+						});
+						toCheck.Clear();
+						toCheck.AddRange(tmp);
+						tmp.Clear();
+					}
+				};
+				inherit(parentSiblings.child, stubDef.GUID);
+				inherit(parentSiblings.parent, mainDef.GUID);
+				counter++;
+			}
+
+			// Apply Ground Last
+			if (groundJoint == default) {
+				Logger.Log("Not sure this is possible but failed to find grounded joint", LogLevel.Error);
+				throw new Exception();
+			}
+			RigidbodyDefinition groundDef = new RigidbodyDefinition {
+				Name = "grounded",
+				GUID = "grounded",
+				Parts = new Dictionary<string, PartInstance>()
+			};
+			defs.Add(groundDef.GUID, groundDef);
+			groundJoint.joint.Parts?.Nodes?.AllTreeElements().Where(x => x.Value != null && x.Value != string.Empty).ForEach(x => {
+				if (!partMap.ContainsKey(x.Value))
+					MoveToDef(x.Value, string.Empty, groundDef.GUID);
+			});
+
+			// Apply RigidGroups
+			discoveredRigidGroups.AddRange(assembly.Data.Joints.RigidGroups);
+			discoveredRigidGroups.Where(x => x.Occurrences.Count > 1).ForEach(x => {
+				RigidbodyDefinition rigidDef = new RigidbodyDefinition {
+					Name = $"{x.Name}",
+					GUID = $"{counter}",
+					Parts = new Dictionary<string, PartInstance>()
+				};
+				defs.Add(rigidDef.GUID, rigidDef);
+				x.Occurrences.ForEach(y => {
+					partMap.TryGetValue(y, out string existingDef);
+					if (existingDef == null) {
+						MoveToDef(y, string.Empty, rigidDef.GUID);
+					} else if (!existingDef.Equals(rigidDef.GUID)) {
+						if (existingDef.Equals("grounded")) {
+							MergeDefinitions(groundDef, rigidDef);
+							rigidDef = groundDef;
 						} else {
-							partMap[tmpParts.ElementAt(i).Value] = def.GUID;
+							// Logger.Log($"MERGING DEFINITION: {defs[existingDef].Name} based on {x.Name}", LogLevel.Debug);
+							rigidDef.Name += $"_{defs[existingDef].Name}";
+							MergeDefinitions(rigidDef, defs[existingDef]);
 						}
 					}
+				});
 
-					continue;
-				} else {
+				counter++;
+			});
 
+			// Clear excess rigidbodies
+			for (int i = 0; i < defs.Keys.Count; i++) {
+				if (defs[defs.Keys.ElementAt(i)].Parts.Count == 0) {
+					defs.Remove(defs.Keys.ElementAt(i));
+					i -= 1;
 				}
 			}
 
-			// Handle orphans and open-ended parts
+			// Identify Orphaned parts and TBD
+			// TODO: Gonna just expected orphaned parts are insignificant and any parts that should be included, should be rigidgrouped
 
 			return (defs, partMap);
-
-			// int counter = 0;
-
-			// foreach (var (jointInstance, nodes) in GatherNodes(assembly))
-			// {
-			// 	var def = new RigidbodyDefinition
-			// 	{
-			// 		GUID = $"{jointInstance.Info.GUID}",
-			// 		Name = $"RigidGroup:{counter}",
-			// 		Parts = new Dictionary<string, PartInstance>()
-			// 	};
-			// 	foreach (var node in nodes)
-			// 	{
-			// 		Debug.Log($"Part GUID: \"{node.Value}\"");
-			// 		if(!def.Parts.ContainsKey(node.Value))
-			// 			def.Parts.Add(node.Value, assembly.Data.Parts.PartInstances[node.Value]);
-			// 		else
-			// 			Debug.Log($"Duplicate entry: {node.Value}");
-			// 	}
-
-			// 	defs.Add(def.GUID, def);
-			// 	foreach (var part in def.Parts)
-			// 	{
-			// 		partMap[part.Key] = def.GUID;
-			// 	}
-			// 	++counter;
-			// }
-
-			// return (defs, partMap);
 		}
+
+		public static (string parent, string child) IdentifyParentSiblings(Dictionary<string, List<string>> paths, string parent, string child) {
+			var parentAncestors = new List<string>();
+			var childAncestors = new List<string>();
+			parentAncestors.AddRange(paths[parent]);
+			childAncestors.AddRange(paths[child]);
+			if (parentAncestors.Count == 0 || childAncestors.Count == 0) {
+				return (parentAncestors.Count == 0 ? parent : parentAncestors[0], childAncestors.Count == 0 ? child : childAncestors[0]);
+			}
+			while (parentAncestors[0].Equals(childAncestors[0])) {
+				parentAncestors.RemoveAt(0);
+				childAncestors.RemoveAt(0);
+
+				if (parentAncestors.Count == 0 || childAncestors.Count == 0) {
+					return (parentAncestors.Count == 0 ? parent : parentAncestors[0], childAncestors.Count == 0 ? child : childAncestors[0]);
+				}
+			}
+			return (parentAncestors[0], childAncestors[0]);
+		}
+
+		public static Dictionary<string, List<string>> LoadPartTreePaths(GraphContainer designHierarchy) {
+			Dictionary<string, List<string>> paths = new Dictionary<string, List<string>>();
+			foreach (Node n in designHierarchy.Nodes[0].Children) {
+				LoadPartTreePaths(n, paths);
+			}
+			return paths;
+		}
+
+		public static void LoadPartTreePaths(Node n, Dictionary<string, List<string>> paths, List<string> currentPath = null) {
+			paths[n.Value] = new List<string>();
+			if (currentPath != null && currentPath.Count > 0)
+				paths[n.Value].AddRange(currentPath);
+			// paths[n.Value] = currentPath == null ? new List<string>() : new List<string>(currentPath);
+			if (currentPath == null)
+				currentPath = new List<string>();
+			currentPath.Add(n.Value);
+			foreach (Node child in n.Children) {
+				LoadPartTreePaths(child, paths, currentPath);
+			}
+			currentPath.RemoveAt(currentPath.Count - 1);
+		}
+
+		#endregion
 
 		public static Dictionary<string, Matrix4x4> MakeGlobalTransformations(Assembly assembly)
 		{
@@ -443,6 +645,9 @@ namespace Synthesis.Import
 		}
 
 		#endregion
+
+		// Keeping it just incase
+		#region Old RigidDefinition Gathering
 
 		static List<Node> GatherNodes(Assembly assembly, JointInstance instance)
 		{
@@ -533,16 +738,23 @@ namespace Synthesis.Import
 
 		#endregion
 
+		#endregion
+
 		#region Debug Functions
 
-		// Warning: This will remove all the bodies from the original assembly for some reason
 		public static void DebugAssembly(Assembly assembly)
 		{
-			var debugAssembly = new Assembly();
-			debugAssembly.MergeFrom(assembly);
+			Assembly debugAssembly;
+			// debugAssembly.MergeFrom(assembly);
+			MemoryStream ms = new MemoryStream(new byte[assembly.CalculateSize()]);
+			ms.Seek(0, SeekOrigin.Begin);
+			assembly.WriteTo(ms);
+			ms.Seek(0, SeekOrigin.Begin);
+			debugAssembly = Assembly.Parser.ParseFrom(ms);
 
 			// Remove mesh data
-			debugAssembly.Data.Parts.PartDefinitions.ForEach((x, y) => { y.Bodies.Clear(); });
+			// debugAssembly.Data.Parts.PartDefinitions.ForEach((x, y) => { y.Bodies.Clear(); });
+			debugAssembly.Data.Parts.PartDefinitions.Select(kvp => kvp.Value.Bodies).ForEach(x => x.ForEach(y => { y.TriangleMesh = new TriangleMesh(); }));
 
 			var jFormatter = new JsonFormatter(JsonFormatter.Settings.Default);
 			File.WriteAllText(

@@ -18,6 +18,7 @@ namespace SynthesisAPI.Simulation {
         public static event UpdateDelegate OnDriverUpdate;
         public static event UpdateDelegate OnBehaviourUpdate;
 
+        // TODO: Switch to using guids cuz all the signals have the same name
         public static Dictionary<string, List<Driver>>       Drivers    = new Dictionary<string, List<Driver>>();
         public static Dictionary<string, List<SimBehaviour>> Behaviours = new Dictionary<string, List<SimBehaviour>>();
 

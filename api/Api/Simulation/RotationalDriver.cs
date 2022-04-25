@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 using SynthesisAPI.Utilities;
+using System;
 using UnityEngine;
 
 namespace SynthesisAPI.Simulation {
@@ -7,7 +8,9 @@ namespace SynthesisAPI.Simulation {
 
         public JointMotor Motor;
         private HingeJoint _jointA;
+        public HingeJoint JointA => _jointA;
         private HingeJoint _jointB;
+        public HingeJoint JointB => _jointB;
 
         private bool _useMotor;
 
