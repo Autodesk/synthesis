@@ -8,14 +8,11 @@
 """
 
 from typing import Union, List
-from os import path
 from dataclasses import dataclass
-
-import os, platform
-import adsk.core, adsk.fusion, traceback
+import adsk.core, adsk.fusion
 
 # from .unity import Parse
-from ..general_imports import A_EP, PROTOBUF, gm
+from ..general_imports import A_EP
 from .SynthesisParser.Parser import Parser
 
 # Contains enums for parents of joints that have special cases
@@ -140,6 +137,7 @@ class ParseOptions:
         joints=List[_Joint],  # [{Occurrence, wheeltype} , {entitytoken, wheeltype}]
         gamepieces=List[Gamepiece],
         weight=float,
+        compress=bool
     ):
         """Generates the Parser Options for the given export
 
@@ -168,8 +166,9 @@ class ParseOptions:
         self.joints = joints
         self.gamepieces = gamepieces
         self.weight = weight # full weight of robot in KG
+        self.compress = compress
 
-    def parse(self, sendReq: bool) -> Union[str, bool]:
+    def parse(self, _: bool) -> Union[str, bool]:
         """Parses the file given the options
 
         Args:
@@ -181,5 +180,5 @@ class ParseOptions:
         if A_EP:
             A_EP.send_event("Parse", "started_parsing")
 
-        test = Parser(self).export()
+        Parser(self).export()
         return True

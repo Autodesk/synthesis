@@ -2,7 +2,7 @@
 """
 from ..general_imports import *
 from time import time
-import time, os, inspect
+import os, inspect
 
 
 class Timer:
@@ -23,11 +23,11 @@ class Timer:
 
     def start(self):
         self.stopped = False
-        self.t0 = time.time()
+        self.t0 = time()
 
     def stop(self):
         self.stopped = True
-        self.t1 = time.time()
+        self.t1 = time()
 
     def _str(self) -> str:
         if not self.stopped:

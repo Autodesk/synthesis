@@ -1,5 +1,4 @@
 from ..general_imports import *
-from . import Helper
 
 
 class HButtonCommandCreatedEvent(adsk.core.CommandCreatedEventHandler):
@@ -38,7 +37,7 @@ class HButtonCommandExecuteHandler(adsk.core.CommandEventHandler):
         super().__init__()
         self.button = button
 
-    def notify(self, args):
+    def notify(self, _):
         self.button.exec_func()
 
 

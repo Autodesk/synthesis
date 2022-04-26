@@ -1,6 +1,6 @@
 import math, uuid
 from adsk.core import Vector3D
-from proto.proto_out import types_pb2
+# from proto.proto_out import types_pb2
 
 
 def fill_info(proto_obj, fus_object) -> None:

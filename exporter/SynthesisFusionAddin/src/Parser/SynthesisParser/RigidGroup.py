@@ -11,7 +11,7 @@
  Returns:
     - Success
 """
-import adsk.core, adsk.fusion, traceback, logging
+import adsk.core, adsk.fusion, logging
 from typing import *
 
 from proto.proto_out import assembly_pb2
@@ -19,7 +19,7 @@ from proto.proto_out import assembly_pb2
 
 def ExportRigidGroups(
     fus_occ: Union[adsk.fusion.Occurrence, adsk.fusion.Component],
-    hel_occ: Assembly_pb2.Occurrence,
+    hel_occ: assembly_pb2.Occurrence,
 ) -> None:
     """Takes a Fusion and Protobuf Occurrence and will assign Rigidbody data per the occurrence if any exist and are not surpressed.
 

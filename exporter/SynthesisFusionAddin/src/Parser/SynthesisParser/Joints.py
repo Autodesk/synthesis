@@ -25,7 +25,7 @@ Each root child has a number of children that are all rigidly attached to the dy
 import adsk.fusion, adsk.core, traceback, uuid
 
 from proto.proto_out import types_pb2, joint_pb2, signal_pb2
-from typing import List, Union
+from typing import Union
 
 from ...general_imports import logging, INTERNAL_ID, DEBUG
 from .Utilities import fill_info, construct_info

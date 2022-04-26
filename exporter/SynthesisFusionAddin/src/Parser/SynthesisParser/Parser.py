@@ -1,12 +1,9 @@
 import adsk.core, adsk.fusion
-import os, sys, math, uuid, traceback
-
-from typing import List, Optional, Union, Tuple
-from time import time
+import traceback
 
 from ...general_imports import *
 
-from proto.proto_out import assembly_pb2, signal_pb2
+from proto.proto_out import assembly_pb2, types_pb2
 
 # from . import Joints, Materials, Components, Utilities
 

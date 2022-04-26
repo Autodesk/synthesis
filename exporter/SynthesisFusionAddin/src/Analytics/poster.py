@@ -1,7 +1,7 @@
 from ..general_imports import *
 from ..configure import CID, ANALYTICS, DEBUG
 
-import json, urllib, sys, adsk.core
+import urllib, sys, adsk.core
 
 # Reference https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
 

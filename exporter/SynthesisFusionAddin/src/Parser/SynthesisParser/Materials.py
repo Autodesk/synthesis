@@ -7,7 +7,7 @@ from .. import ParseOptions
 from ...general_imports import INTERNAL_ID
 
 from .PDMessage import PDMessage
-from proto.proto_out import assembly_pb2, types_pb2, material_pb2
+from proto.proto_out import material_pb2
 
 def _MapAllPhysicalMaterials(
 <<<<<<< HEAD

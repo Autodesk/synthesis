@@ -1,37 +1,16 @@
 from ..general_imports import *
 from inspect import getmembers, isfunction
-from typing import Any, Union
+from typing import Union
 
 from . import Events, HUI
 
 
 def check_solid_open() -> bool:
     """### Checks to see if the current design open is Fusion Solid
-    - Supplied as callback
+    - Supplied as callback 
+    WARN - THIS NO LONGER FUNCTIONS 
     """
     return True
-
-    app = adsk.core.Application.get()
-
-    try:
-        ui = app.userInterface
-        doc = app.activeDocument
-
-        if (doc is None) or (doc.dataFile is None):
-            ui.messageBox("Please open a valid fusion 360 solid body document.")
-        elif doc and (doc.isSaved == False) and (doc.dataFile.fileExtension == "f3d"):
-            ui.messageBox("The current document must be saved first.")
-        elif doc and (doc.dataFile.fileExtension != "f3d"):
-            ui.messageBox("You must have a valid modeling document open.")
-        elif doc and (doc.isSaved == True) and (doc.dataFile.fileExtension == "f3d"):
-            return True
-        else:
-            ui.messageBox("Please open a valid fusion 360 solid body document.")
-
-        return False
-
-    except RuntimeError:
-        return False
 
 
 def previouslyConfigured() -> Union[str, None]:
@@ -67,7 +46,7 @@ def previouslyConfigured() -> Union[str, None]:
 
 
 def writeConfigure(serialized: str) -> bool:
-    app = adsk.core.Application.get()
+    # app = adsk.core.Application.get()
     #try:
         #app.activeDocument.attributes.add(
         #    f"{INTERNAL_ID}", "Configuration", f"{serialized}"
