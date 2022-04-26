@@ -170,6 +170,6 @@ public class PTL : MonoBehaviour
 
     public void fixTransformPosition(int index)
     {
-        Camera.main.GetComponent<CameraController>().FollowTransform = robotList.ElementAt(index).transform.GetChild(0);
+        // Camera.main.GetComponent<CameraController>().FollowTransform = robotList.ElementAt(index).transform.GetChild(0);
     }
 }

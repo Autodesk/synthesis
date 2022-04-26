@@ -26,6 +26,7 @@ using UVector3 = UnityEngine.Vector3;
 using Node = Mirabuf.Node;
 using MPhysicalProperties = Mirabuf.PhysicalProperties;
 using JointMotor = UnityEngine.JointMotor;
+using System.IO.Compression;
 
 namespace Synthesis.Import
 {
@@ -69,8 +70,23 @@ namespace Synthesis.Import
 
 		#region Mirabuf Importer
 
-		public static GameObject MirabufAssemblyImport(string path, bool reverseSideJoints = false)
-			=> MirabufAssemblyImport(File.ReadAllBytes(path), reverseSideJoints);
+		public static GameObject MirabufAssemblyImport(string path, bool reverseSideJoints = false) {
+			byte[] buff = File.ReadAllBytes(path);
+
+			if (buff[0] == 0x1f && buff[1] == 0x8b) {
+
+				int originalLength = BitConverter.ToInt32(buff, buff.Length - 4);
+
+				MemoryStream mem = new MemoryStream(buff);
+				byte[] res = new byte[originalLength];
+				GZipStream decompresser = new GZipStream(mem, CompressionMode.Decompress);
+				decompresser.Read(res, 0, res.Length);
+				decompresser.Close();
+				mem.Close();
+				buff = res;
+			}
+			return MirabufAssemblyImport(buff, reverseSideJoints);
+		}
 
 		public static GameObject MirabufAssemblyImport(byte[] buffer, bool reverseSideJoints = false)
 			=> MirabufAssemblyImport(Assembly.Parser.ParseFrom(buffer), reverseSideJoints);
@@ -194,9 +210,12 @@ namespace Synthesis.Import
 
 			#endregion
 
+			if (!assembly.Dynamic)
+				groupObjects["grounded"].GetComponent<Rigidbody>().isKinematic = true;
+
 			assemblyObject.AddComponent<RobotInstance>();
             assemblyObject.GetComponent<RobotInstance>()
-                .Init(assembly.Info, assembly.Data.Joints.JointInstances, assembly.Data.Joints.JointDefinitions, assembly.Data.Signals, reverseSideJoints);
+                .Init(assembly.Info, assembly.Data.Joints.JointInstances, assembly.Data.Joints.JointDefinitions, groupObjects["grounded"], assembly.Data.Signals, reverseSideJoints);
 
 			return assemblyObject;
 		}
@@ -250,17 +269,19 @@ namespace Synthesis.Import
 					UVector3 jointOffset = instance.Offset ?? new Vector3();
 					// Logger.Log($"'{instance.Info.Name}' Joint Offset: {jointOffset.x}, {jointOffset.y}, {jointOffset.z}");
 					// Logger.Log($"Definition Origin: {definition.Origin?.X}, {definition.Origin?.Y}, {definition.Origin?.Z}");
-					revoluteA.anchor = partOffset + jointOffset;
+					revoluteA.anchor = /*partOffset*/originA + jointOffset;
 					revoluteA.axis =
-						moddedMat.MultiplyVector(definition.Rotational.RotationalFreedom.Axis); // CHANGE - ? -Hunter
+						definition.Rotational.RotationalFreedom.Axis;
+						// moddedMat.MultiplyVector(definition.Rotational.RotationalFreedom.Axis); // CHANGE - ? -Hunter
 					revoluteA.connectedBody = rbB;
 					revoluteA.connectedMassScale = revoluteA.connectedBody.mass / rbA.mass;
 					revoluteA.useMotor = definition.Info.Name != "grounded" &&
 					                     definition.UserData != null &&
 					                     definition.UserData.Data.TryGetValue("wheel", out var isWheel) &&
 					                     isWheel == "true";
-					revoluteA.useLimits = true;
-					revoluteA.limits = new JointLimits { min = -15, max = 15 };
+					// TODO: Implement and test limits
+					// revoluteA.useLimits = true;
+					// revoluteA.limits = new JointLimits { min = -15, max = 15 };
 					
 					var revoluteB = b.AddComponent<HingeJoint>();
 					
@@ -544,12 +565,32 @@ namespace Synthesis.Import
 				counter++;
 			});
 
+			bool wasRemoved = false;
+			RigidbodyDefinition newGrounded = default;
 			// Clear excess rigidbodies
 			for (int i = 0; i < defs.Keys.Count; i++) {
 				if (defs[defs.Keys.ElementAt(i)].Parts.Count == 0) {
+					if (defs.Keys.ElementAt(i).Equals("grounded")) {
+						var groundedPartGuid = assembly.Data.Joints.JointInstances.Find(x => x.Key.Equals("grounded")).Value.Parts.Nodes[0].Value;
+						newGrounded = defs[partMap[groundedPartGuid]];
+						wasRemoved = true;
+					}
 					defs.Remove(defs.Keys.ElementAt(i));
 					i -= 1;
 				}
+			}
+
+			// Readd grounded if it was removed
+			if (wasRemoved) {
+				defs.Remove(newGrounded.GUID);
+				List<string> originalKeys = new List<string>(partMap.Keys);
+				foreach (string partKey in originalKeys) {
+					if (partMap[partKey].Equals(newGrounded.GUID))
+						partMap[partKey] = "grounded";
+				}
+				newGrounded.GUID = "grounded";
+				newGrounded.Name = "grounded";
+				defs.Add(newGrounded.GUID, newGrounded);
 			}
 
 			// Identify Orphaned parts and TBD

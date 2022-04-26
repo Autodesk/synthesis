@@ -2,14 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
 
 public class DebugJointAxes : MonoBehaviour{
 
     public static List<(Vector3 point, Matrix4x4 trans)> DebugPoints = new List<(Vector3 point, Matrix4x4 trans)>();
+    public static List<(UnityEngine.Bounds bounds, Func<Matrix4x4> trans)> DebugBounds = new List<(UnityEngine.Bounds bounds, Func<Matrix4x4> trans)>();
 
     public void OnDrawGizmos() {
         if (Application.isPlaying) {
-            SynthesisAPI.Simulation.SimulationManager.Drivers.Select(x => x.Value).ForEach(a => a/*.Where(c => c.Name == "4e87bf7e-2e13-4c09-9fa4-623027409f7c")*/.ForEach(y => {
+            SynthesisAPI.Simulation.SimulationManager.Drivers.Select(x => x.Value).ForEach(a => a/*.Where(c => c.Name == "e94f72e4-2d00-48a6-bf88-4d3eb98f9d22")*/.ForEach(y => {
                 if (y is SynthesisAPI.Simulation.RotationalDriver) {
 
                     var ArmDriver = y as SynthesisAPI.Simulation.RotationalDriver;
@@ -39,6 +41,10 @@ public class DebugJointAxes : MonoBehaviour{
             DebugPoints.ForEach(x => {
                 Gizmos.color = Color.red;
                 Gizmos.DrawSphere(x.trans.MultiplyPoint(x.point), 0.001f);
+            });
+            DebugBounds.ForEach(x => {
+                Gizmos.color = Color.magenta;
+                Gizmos.DrawWireCube(x.trans().MultiplyPoint(x.bounds.center), x.bounds.extents * 2f);
             });
         }
     }

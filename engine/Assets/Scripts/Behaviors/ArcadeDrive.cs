@@ -53,10 +53,10 @@ namespace Assets.Scripts.Behaviors
 
 			_reversedSideJoints = reversedSideJoints;
 
-			InputManager.AssignValueInput(FORWARD, new Analog("Joystick Axis 2", false));
-			InputManager.AssignValueInput(BACKWARD, new Analog("Joystick Axis 2", true));
-			InputManager.AssignValueInput(LEFT, new Analog("Joystick Axis 1", false));
-			InputManager.AssignValueInput(RIGHT, new Analog("Joystick Axis 1", true));
+			InputManager.AssignValueInput(FORWARD, new Digital("W"));
+			InputManager.AssignValueInput(BACKWARD, new Digital("S"));
+			InputManager.AssignValueInput(LEFT, new Digital("A"));
+			InputManager.AssignValueInput(RIGHT, new Digital("D"));
 
 
 		}

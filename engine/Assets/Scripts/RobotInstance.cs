@@ -18,8 +18,10 @@ using Joint = Mirabuf.Joint.Joint;
 using Logger = SynthesisAPI.Utilities.Logger;
 using Vector3 = UnityEngine.Vector3;
 
+// TODO: Shouldn't this all be a simobject?
 public class RobotInstance : MonoBehaviour
 {
+    public GameObject RootNode;
 
     private Signals? _robotLayout;
     public Info?    Info;
@@ -27,13 +29,29 @@ public class RobotInstance : MonoBehaviour
     private bool _init;
     private bool _robotSetup;
 
+    public UnityEngine.Bounds RootBounds;
+
     [CanBeNull] private  MapField<string, JointInstance> _instances;
     [CanBeNull] private  MapField<string, Joint>         _joints;
     [CanBeNull] private  Signals                         _signals;
     private              bool                            _reverseSideMotors;
 
-    public void Init(Info info, MapField<string, JointInstance> instances, MapField<string, Joint> joints, Signals layout, bool reversedSideMotors)
+    public void Init(Info info, MapField<string, JointInstance> instances, MapField<string, Joint> joints, GameObject rootNode, Signals layout, bool reversedSideMotors)
     {
+        RootNode = rootNode;
+        Vector3 min = new Vector3(float.MaxValue,float.MaxValue,float.MaxValue), max = new Vector3(float.MinValue,float.MinValue,float.MinValue);
+        rootNode.transform.GetComponentsInChildren<Renderer>().ForEach(x => {
+            var b = x.bounds;
+            if (min.x > b.min.x) min.x = b.min.x;
+            if (min.y > b.min.y) min.y = b.min.y;
+            if (min.z > b.min.z) min.z = b.min.z;
+            if (max.x < b.max.x) max.x = b.max.x;
+            if (max.y < b.max.y) max.y = b.max.y;
+            if (max.z < b.max.z) max.z = b.max.z;
+        });
+        RootBounds = new UnityEngine.Bounds(((max + min) / 2f) - rootNode.transform.position, max - min);
+        DebugJointAxes.DebugBounds.Add((RootBounds, () => RootNode.transform.localToWorldMatrix));
+
         if (_robotLayout == null)
         {
             _robotLayout = layout;
