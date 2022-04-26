@@ -370,7 +370,24 @@ def _jointOrigin(
         return None
 
     if geometryOrOrigin.objectType == "adsk::fusion::JointGeometry":
-        return geometryOrOrigin.origin
+        ent = geometryOrOrigin.entityOne
+        if (ent.objectType == "adsk::fusion::BRepEdge"):
+            if (ent.assemblyContext is None):
+                newEnt = ent.createForAssemblyContext(fusionJoint.occurrenceOne)
+                min = newEnt.boundingBox.minPoint
+                max = newEnt.boundingBox.maxPoint
+                org = adsk.core.Point3D.create((max.x + min.x) / 2.0, (max.y + min.y) / 2.0, (max.z + min.z) / 2.0)
+                return org# ent.startVertex.geometry
+            else:
+                return geometryOrOrigin.origin
+        if (ent.objectType == "adsk::fusion::BRepFace"):
+            if (ent.assemblyContext is None):
+                newEnt = ent.createForAssemblyContext(fusionJoint.occurrenceOne)
+                return newEnt.centroid
+            else:
+                return geometryOrOrigin.origin
+        else:
+            return geometryOrOrigin.origin
     else:  # adsk::fusion::JointOrigin
         origin = geometryOrOrigin.geometry.origin
         # todo: Is this the correct way to calculate a joint origin's true location? Why isn't this exposed in the API?
