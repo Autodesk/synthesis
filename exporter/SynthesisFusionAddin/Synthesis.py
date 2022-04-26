@@ -9,7 +9,7 @@ from shutil import rmtree
 import logging.handlers, traceback, importlib.util, os
 
 
-def run(context):
+def run(_):
     """## Entry point to application from Fusion 360.
 
     Arguments:
@@ -29,7 +29,7 @@ def run(context):
         )
 
 
-def stop(context):
+def stop(_):
     """## Fusion 360 exit point - deconstructs buttons and handlers
 
     Arguments:

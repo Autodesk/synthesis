@@ -33,11 +33,12 @@ class Parser:
             assembly_out = assembly_pb2.Assembly()
             fill_info(assembly_out, design.rootComponent)
 
-            assembly_out.dynamic = True
+            # set int to 0 in dropdown selection for dynamic
+            assembly_out.dynamic = self.parseOptions.mode == 0
 
             # Physical Props here when ready
 
-            ts = time()
+            # ts = time()
 
             progressDialog = app.userInterface.createProgressDialog()
             progressDialog.cancelButtonText = "Cancel"
@@ -143,7 +144,9 @@ class Parser:
                         jointdefinition = assembly_out.data.joints.joint_definitions[
                             newnode.joint_reference
                         ]
-                        wheel_ = f" wheel : true" if jointdefinition.user_data.data["wheel"] is not "" else ""
+
+                        wheel_ = " wheel : true" if (jointdefinition.user_data.data["wheel"] != "") else ""
+
                         joint_hierarchy_out = f"{joint_hierarchy_out}  |- {jointdefinition.info.name} type: {jointdefinition.joint_motion_type} {wheel_}\n"
 
                     for child in node.children:
@@ -156,7 +159,7 @@ class Parser:
                             jointdefinition = assembly_out.data.joints.joint_definitions[
                                 newnode.joint_reference
                             ]
-                            wheel_ = f" wheel : true" if jointdefinition.user_data.data["wheel"] is not "" else ""
+                            wheel_ = " wheel : true" if (jointdefinition.user_data.data["wheel"] != "") else ""
                             joint_hierarchy_out = f"{joint_hierarchy_out}  |---> {jointdefinition.info.name} type: {jointdefinition.joint_motion_type} {wheel_}\n"
 
                 joint_hierarchy_out += "\n\n"
