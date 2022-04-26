@@ -1,5 +1,5 @@
 import adsk.core, adsk.fusion
-import traceback
+import traceback, gzip
 
 from ...general_imports import *
 
@@ -10,7 +10,6 @@ from proto.proto_out import assembly_pb2, types_pb2
 from . import Materials, Components, Joints, JointHierarchy, PDMessage
 
 from .Utilities import *
-
 
 class Parser:
     def __init__(self, options: any):
@@ -117,10 +116,15 @@ class Parser:
             JointHierarchy.BuildJointPartHierarchy(
                 design, assembly_out.data.joints, self.parseOptions, self.pdMessage
             )
-
-            f = open(self.parseOptions.fileLocation, "wb")
-            f.write(assembly_out.SerializeToString())
-            f.close()
+            
+            if self.parseOptions.compress:
+                self.logger.debug("Compressing file")
+                with gzip.open(self.parseOptions.fileLocation, 'wb', 9) as f:
+                    f.write(assembly_out.SerializeToString())
+            else:
+                f = open(self.parseOptions.fileLocation, "wb")
+                f.write(assembly_out.SerializeToString())
+                f.close()
 
             progressDialog.hide()
 
