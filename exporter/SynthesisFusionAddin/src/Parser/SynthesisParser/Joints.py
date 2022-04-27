@@ -193,7 +193,7 @@ def _addJointInstance(joint: adsk.fusion.Joint, joint_instance: joint_pb2.JointI
 
     if (options.wheels):
         for wheel in options.wheels:
-            if (wheel.occurrence_token == joint_instance.parent_part):
+            if (wheel.joint_token == joint.entityToken):
                 joint_definition.user_data.data["wheel"] = "true"
 
                 # if it exists get it and overwrite the signal type

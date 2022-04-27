@@ -3,27 +3,28 @@ from ..general_imports import *
 from . import IconPaths, OsHelper
 from . ConfigCommand import *
 
-def addWheelToTable(wheel: adsk.fusion.Occurrence) -> None:
-    """### Adds a wheel occurrence to its global list and wheel table.
+def addWheelToTable(wheel: adsk.fusion.Joint) -> None:
+    """### Adds a wheel joint to its global list and wheel table.
 
     Args:
-        wheel (adsk.fusion.Occurrence): wheel Occurrence object to be added.
+        wheel (adsk.fusion.Joint): wheel Joint object to be added.
     """
     try:
         onSelect = gm.handlers[3]
         wheelTableInput = INPUTS_ROOT.itemById("wheel_table")
         
-        def addPreselections(child_occurrences):
-            for occ in child_occurrences:
-                onSelect.allWheelPreselections.append(occ.entityToken)
+        # def addPreselections(child_occurrences):
+        #     for occ in child_occurrences:
+        #         onSelect.allWheelPreselections.append(occ.entityToken)
 
-                if occ.childOccurrences:
-                    addPreselections(occ.childOccurrences)
+        #         if occ.childOccurrences:
+        #             addPreselections(occ.childOccurrences)
 
-        if wheel.childOccurrences:    
-            addPreselections(wheel.childOccurrences)
-        else:
-            onSelect.allWheelPreselections.append(wheel.entityToken)
+        # if wheel.childOccurrences:    
+        #     addPreselections(wheel.childOccurrences)
+        # else:
+        #     onSelect.allWheelPreselections.append(wheel.entityToken)
+        onSelect.allWheelPreselections.append(wheel.entityToken)
 
         WheelListGlobal.append(wheel)
         cmdInputs = adsk.core.CommandInputs.cast(wheelTableInput.commandInputs)
@@ -33,7 +34,7 @@ def addWheelToTable(wheel: adsk.fusion.Occurrence) -> None:
         )
 
         name = cmdInputs.addTextBoxCommandInput(
-            "name_w", "Occurrence name", wheel.name, 1, True
+            "name_w", "Joint name", wheel.name, 1, True
         )
         name.tooltip = wheel.name
 
