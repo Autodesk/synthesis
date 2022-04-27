@@ -2,12 +2,12 @@
 
 namespace SynthesisAPI.Simulation {
     public class SimObject {
-        private string _name;
+        protected string _name;
         public string Name {
             get => _name;
         }
-        private ControllableState _state;
 
+        protected ControllableState _state;
         public ControllableState State {
             get => _state;
         }

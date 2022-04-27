@@ -30,12 +30,12 @@ namespace Synthesis.ModelManager.Models
             DrivetrainMeta = new DrivetrainMeta { Type = DrivetrainType.Arcade };
             _object.transform.position = position;
             _object.transform.rotation = rotation;
-            var robotInstance = _object.GetComponent<RobotInstance>();
-            Name = robotInstance.Info?.Name;
-            robotInstance.ConfigureDrivebase(position,rotation, DrivetrainMeta);
+            // var robotInstance = _object.GetComponent<RobotInstance>();
+            // Name = robotInstance.Info?.Name;
+            // robotInstance.ConfigureDrivebase(position,rotation, DrivetrainMeta);
 
-            Camera.main.GetComponent<CameraController>().FocusPoint =
-                () => robotInstance.RootNode.transform.localToWorldMatrix.MultiplyPoint(robotInstance.RootBounds.center);
+            // Camera.main.GetComponent<CameraController>().FocusPoint =
+            //     () => robotInstance.RootNode.transform.localToWorldMatrix.MultiplyPoint(robotInstance.RootBounds.center);
         }
 
         public void DestroyModel()

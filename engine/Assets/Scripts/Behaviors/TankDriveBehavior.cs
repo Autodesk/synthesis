@@ -6,7 +6,7 @@ using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
 using UnityEngine;
 
-namespace Assets.Scripts.Behaviors
+namespace Synthesis
 {
 	public class TankDriveBehavior : SimBehaviour
 	{

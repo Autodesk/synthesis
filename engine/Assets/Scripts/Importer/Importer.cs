@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Assets.Scripts.Behaviors;
 using Google.Protobuf;
 using Google.Protobuf.Collections;
 using Google.Protobuf.WellKnownTypes;
@@ -14,6 +13,9 @@ using SynthesisAPI.Proto;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
 using UnityEngine;
+using System.IO.Compression;
+using Synthesis;
+
 using UMaterial = UnityEngine.Material;
 using UMesh = UnityEngine.Mesh;
 using Logger = SynthesisAPI.Utilities.Logger;
@@ -26,7 +28,6 @@ using UVector3 = UnityEngine.Vector3;
 using Node = Mirabuf.Node;
 using MPhysicalProperties = Mirabuf.PhysicalProperties;
 using JointMotor = UnityEngine.JointMotor;
-using System.IO.Compression;
 
 namespace Synthesis.Import
 {
@@ -108,6 +109,7 @@ namespace Synthesis.Import
 			MakeGlobalTransformations(assembly);
 			var partObjects = new Dictionary<string, GameObject>(); // TODO: Do I need this?
 			var groupObjects = new Dictionary<string, GameObject>();
+			var jointToJointMap = new Dictionary<string, (UnityEngine.Joint a, UnityEngine.Joint b)>();
 			float totalMass = 0;
 			_collidersToIgnore = new List<Collider>();
 
@@ -164,7 +166,7 @@ namespace Synthesis.Import
 			{
 				CurrentSignalLayout = assembly.Data.Signals ?? new Signals()
 			};
-			var simObject = new SimObject(assembly.Info.Name, state);
+			var simObject = new RobotSimObject(assembly.Info.Name, state, assembly, groupObjects["grounded"], jointToJointMap);
 			try
 			{
 				SimulationManager.RegisterSimObject(simObject);
@@ -195,7 +197,8 @@ namespace Synthesis.Import
 					jointKvp.Value,
 					totalMass,
 					assembly,
-					simObject
+					simObject,
+					jointToJointMap
 				);
 			}
 
@@ -210,12 +213,14 @@ namespace Synthesis.Import
 
 			#endregion
 
+			simObject.ConfigureArcadeDrivetrain();
+
 			if (!assembly.Dynamic)
 				groupObjects["grounded"].GetComponent<Rigidbody>().isKinematic = true;
 
-			assemblyObject.AddComponent<RobotInstance>();
-            assemblyObject.GetComponent<RobotInstance>()
-                .Init(assembly.Info, assembly.Data.Joints.JointInstances, assembly.Data.Joints.JointDefinitions, groupObjects["grounded"], assembly.Data.Signals, reverseSideJoints);
+			// assemblyObject.AddComponent<RobotInstance>();
+            // assemblyObject.GetComponent<RobotInstance>()
+            //     .Init(assembly.Info, assembly.Data.Joints.JointInstances, assembly.Data.Joints.JointDefinitions, groupObjects["grounded"], assembly.Data.Signals, reverseSideJoints);
 
 			return assemblyObject;
 		}
@@ -224,7 +229,7 @@ namespace Synthesis.Import
 
 		public static void MakeJoint(
 			GameObject a, GameObject b, JointInstance instance, float totalMass,
-			Assembly assembly, SimObject simObject)
+			Assembly assembly, SimObject simObject, Dictionary<string, (UnityEngine.Joint a, UnityEngine.Joint b)> jointMap)
 		{
 			// Logger.Log($"Obj A: {a.name}, Obj B: {b.name}");
 			// Stuff I'm gonna use for all joints
@@ -303,6 +308,8 @@ namespace Synthesis.Import
 							targetVelocity = 900,
 						});
 					SimulationManager.AddDriver(assembly.Info.Name, driver);
+
+					jointMap.Add(instance.Info.GUID, (revoluteA, revoluteB));
 					break;
 				case JointMotion.Slider:
 				default: // Make a rigid joint

@@ -10,7 +10,7 @@ using Input = UnityEngine.Input;
 using Logger = SynthesisAPI.Utilities.Logger;
 using Math = SynthesisAPI.Utilities.Math;
 
-namespace Assets.Scripts.Behaviors
+namespace Synthesis
 {
 	public class ArcadeDrive : SimBehaviour
 	{
