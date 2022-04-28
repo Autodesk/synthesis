@@ -24,7 +24,8 @@ public class AddItem : MonoBehaviour
 
     public void AddModel(bool reverseSideMotors)
     {
-        ModelManager.AddModel(_fullPath, reverseSideMotors);
+        // ModelManager.AddModel(_fullPath, reverseSideMotors);
+        RobotSimObject.SpawnRobot(_fullPath);
         ItemAnalytics("Robot");
     }
 

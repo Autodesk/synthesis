@@ -50,6 +50,13 @@ namespace SynthesisAPI.Simulation {
             Behaviours[simObjectName].Add(d);
         }
 
+        public static void RemoveDriver(string simObjectName, Driver d)
+        {
+            if (Drivers.ContainsKey(simObjectName))
+            {
+                Drivers[simObjectName].RemoveAll(x => x == d);
+            }
+        }
 
         public static void RegisterSimObject(SimObject so) {
             if (_simulationObject.ContainsKey(so.Name)) // Probably use some GUID

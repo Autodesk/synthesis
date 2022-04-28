@@ -6,7 +6,7 @@ using System;
 
 public class DebugJointAxes : MonoBehaviour{
 
-    public static List<(Vector3 point, Matrix4x4 trans)> DebugPoints = new List<(Vector3 point, Matrix4x4 trans)>();
+    public static List<(Vector3 point, Func<Matrix4x4> trans)> DebugPoints = new List<(Vector3 point, Func<Matrix4x4> trans)>();
     public static List<(UnityEngine.Bounds bounds, Func<Matrix4x4> trans)> DebugBounds = new List<(UnityEngine.Bounds bounds, Func<Matrix4x4> trans)>();
 
     public void OnDrawGizmos() {
@@ -39,8 +39,8 @@ public class DebugJointAxes : MonoBehaviour{
                 }
             }));
             DebugPoints.ForEach(x => {
-                Gizmos.color = Color.red;
-                Gizmos.DrawSphere(x.trans.MultiplyPoint(x.point), 0.001f);
+                Gizmos.color = Color.white;
+                Gizmos.DrawSphere(x.trans().MultiplyPoint(x.point), 0.01f);
             });
             DebugBounds.ForEach(x => {
                 Gizmos.color = Color.magenta;

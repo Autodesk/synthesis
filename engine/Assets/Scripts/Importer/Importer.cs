@@ -71,7 +71,7 @@ namespace Synthesis.Import
 
 		#region Mirabuf Importer
 
-		public static GameObject MirabufAssemblyImport(string path, bool reverseSideJoints = false) {
+		public static (GameObject RobotObject, Assembly MiraAssembly, SimObject Sim) MirabufAssemblyImport(string path, bool reverseSideJoints = false) {
 			byte[] buff = File.ReadAllBytes(path);
 
 			if (buff[0] == 0x1f && buff[1] == 0x8b) {
@@ -89,12 +89,12 @@ namespace Synthesis.Import
 			return MirabufAssemblyImport(buff, reverseSideJoints);
 		}
 
-		public static GameObject MirabufAssemblyImport(byte[] buffer, bool reverseSideJoints = false)
+		public static (GameObject RobotObject, Assembly MiraAssembly, SimObject Sim) MirabufAssemblyImport(byte[] buffer, bool reverseSideJoints = false)
 			=> MirabufAssemblyImport(Assembly.Parser.ParseFrom(buffer), reverseSideJoints);
 
 		private static List<Collider> _collidersToIgnore;
 
-		public static GameObject MirabufAssemblyImport(Assembly assembly, bool reverseSideJoints = false)
+		public static (GameObject RobotObject, Assembly MiraAssembly, SimObject Sim) MirabufAssemblyImport(Assembly assembly, bool reverseSideJoints = false)
 		{
 			// Uncommenting this will delete all bodies so the JSON file isn't huge
 			DebugAssembly(assembly);
@@ -120,7 +120,7 @@ namespace Synthesis.Import
 			foreach (var group in rigidDefinitions.definitions.Values)
 			{
 				GameObject groupObject = new GameObject(group.Name);
-				var collectivePhysData = new List<MPhysicalProperties>();
+				var collectivePhysData = new List<(UnityEngine.Transform, MPhysicalProperties)>();
 				// Import Parts
 
 				#region Parts
@@ -137,7 +137,7 @@ namespace Synthesis.Import
 						partObject.transform.parent = groupObject.transform;
 						// MARK: If transform changes do work recursively, apply transformations here instead of in a separate loop
 						partObject.transform.ApplyMatrix(partInstance.GlobalTransform);
-						collectivePhysData.Add(partDefinition.PhysicalData);
+						collectivePhysData.Add((partObject.transform, partDefinition.PhysicalData));
 					}
 					else
 					{
@@ -152,30 +152,42 @@ namespace Synthesis.Import
 				var rb = groupObject.AddComponent<Rigidbody>();
 				rb.mass = (float) combPhysProps.Mass;
 				totalMass += rb.mass;
-				//rb.centerOfMass = combPhysProps.Com; // I actually don't need to flip this
+				rb.centerOfMass = combPhysProps.Com; // I actually don't need to flip this
 				groupObject.transform.parent = assemblyObject.transform;
 				groupObjects.Add(group.GUID, groupObject);
+				DebugJointAxes.DebugPoints.Add((combPhysProps.Com, () => groupObject.transform.localToWorldMatrix));
 			}
 
 			#endregion
 
 			#region Joints
 
-
 			var state = new ControllableState
 			{
 				CurrentSignalLayout = assembly.Data.Signals ?? new Signals()
 			};
-			var simObject = new RobotSimObject(assembly.Info.Name, state, assembly, groupObjects["grounded"], jointToJointMap);
-			try
-			{
-				SimulationManager.RegisterSimObject(simObject);
-			}
-			catch
-			{
-				// TODO: Fix
-				Logger.Log($"Robot with assembly {assembly.Info.Name} already exists.");
-				UnityEngine.Object.Destroy(assemblyObject);
+
+			SimObject simObject;
+			if (assembly.Dynamic) {
+				simObject = new RobotSimObject(assembly.Info.Name, state, assembly, groupObjects["grounded"], jointToJointMap);
+				try {
+					SimulationManager.RegisterSimObject(simObject);
+				} catch {
+					// TODO: Fix
+					Logger.Log($"Robot with assembly {assembly.Info.Name} already exists.");
+					UnityEngine.Object.Destroy(assemblyObject);
+				}
+			} else {
+				if (FieldSimObject.CurrentField != null)
+					FieldSimObject.CurrentField.DeleteField();
+				simObject = new FieldSimObject(assembly.Info.Name, state, assembly, groupObjects["grounded"]);
+				try {
+					SimulationManager.RegisterSimObject(simObject);
+				} catch {
+					// TODO: Fix
+					Logger.Log($"Field with assembly {assembly.Info.Name} already exists.");
+					UnityEngine.Object.Destroy(assemblyObject);
+				}
 			}
 
 			foreach (var jointKvp in assembly.Data.Joints.JointInstances)
@@ -202,7 +214,6 @@ namespace Synthesis.Import
 				);
 			}
 
-
 			for (var i = 0; i < _collidersToIgnore.Count - 1; i++)
 			{
 				for (var j = i + 1; j < _collidersToIgnore.Count; j++)
@@ -213,16 +224,12 @@ namespace Synthesis.Import
 
 			#endregion
 
-			simObject.ConfigureArcadeDrivetrain();
+			if (assembly.Dynamic) {
+				(simObject as RobotSimObject).ConfigureArcadeDrivetrain();
+				(simObject as RobotSimObject).ConfigureArmBehaviours();
+			}
 
-			if (!assembly.Dynamic)
-				groupObjects["grounded"].GetComponent<Rigidbody>().isKinematic = true;
-
-			// assemblyObject.AddComponent<RobotInstance>();
-            // assemblyObject.GetComponent<RobotInstance>()
-            //     .Init(assembly.Info, assembly.Data.Joints.JointInstances, assembly.Data.Joints.JointDefinitions, groupObjects["grounded"], assembly.Data.Signals, reverseSideJoints);
-
-			return assemblyObject;
+			return (assemblyObject, assembly, simObject);
 		}
 
 		#region Assistant Functions
@@ -280,11 +287,20 @@ namespace Synthesis.Import
 						// moddedMat.MultiplyVector(definition.Rotational.RotationalFreedom.Axis); // CHANGE - ? -Hunter
 					revoluteA.connectedBody = rbB;
 					revoluteA.connectedMassScale = revoluteA.connectedBody.mass / rbA.mass;
-					revoluteA.useMotor = definition.Info.Name != "grounded" &&
-					                     definition.UserData != null &&
-					                     definition.UserData.Data.TryGetValue("wheel", out var isWheel) &&
-					                     isWheel == "true";
+					revoluteA.useMotor = true; // TODO: Turn off if joint is passive
+					// revoluteA.useMotor = definition.Info.Name != "grounded" &&
+					//                      definition.UserData != null &&
+					//                      definition.UserData.Data.TryGetValue("wheel", out var isWheel) &&
+					//                      isWheel == "true";
 					// TODO: Implement and test limits
+					var limits = definition.Rotational.RotationalFreedom.Limits;
+					if (limits != null && limits.Lower != limits.Upper) {
+						revoluteA.useLimits = true;
+						revoluteA.limits = new JointLimits() {
+							min = limits.Lower * Mathf.Rad2Deg,
+							max = limits.Upper * Mathf.Rad2Deg
+						};
+					}
 					// revoluteA.useLimits = true;
 					// revoluteA.limits = new JointLimits { min = -15, max = 15 };
 					
@@ -384,14 +400,13 @@ namespace Synthesis.Import
 			}
 		}
 
-		private static MPhysicalProperties CombinePhysicalProperties(IEnumerable<MPhysicalProperties> props)
-		{
-			var total = 0.0;
-			// var com = new Vector3();
-			props.ForEach(x => total += x.Mass);
-			//props.ForEach(x => com += x.Com * x.Mass);
-			//com /= total;
-			return new MPhysicalProperties {Mass = total};
+		private static MPhysicalProperties CombinePhysicalProperties(List<(UnityEngine.Transform trans, MPhysicalProperties prop)> props) {
+			var total = 0.0f;
+			var com = new UVector3();
+			props.ForEach(x => total += (float)x.prop.Mass);
+			props.ForEach(x => com += (x.trans.localToWorldMatrix.MultiplyPoint(x.prop.Com)) * (float)x.prop.Mass);
+			com /= total;
+			return new MPhysicalProperties { Mass = total, Com = com };
 		}
 
 		#region New RigidDefinition Gathering

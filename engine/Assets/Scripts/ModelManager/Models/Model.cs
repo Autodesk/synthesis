@@ -23,13 +23,14 @@ namespace Synthesis.ModelManager.Models
 
         protected Model() {}
 
+        [Obsolete]
         public Model(string filePath, Vector3 position, Quaternion rotation, bool reverseSideMotors = false)
         {
-            _object = Importer.MirabufAssemblyImport(filePath, reverseSideMotors);
-            _object.transform.SetParent(GameObject.Find("Game").transform);
-            DrivetrainMeta = new DrivetrainMeta { Type = DrivetrainType.Arcade };
-            _object.transform.position = position;
-            _object.transform.rotation = rotation;
+            // _object = Importer.MirabufAssemblyImport(filePath, reverseSideMotors);
+            // _object.transform.SetParent(GameObject.Find("Game").transform);
+            // DrivetrainMeta = new DrivetrainMeta { Type = DrivetrainType.Arcade };
+            // _object.transform.position = position;
+            // _object.transform.rotation = rotation;
             // var robotInstance = _object.GetComponent<RobotInstance>();
             // Name = robotInstance.Info?.Name;
             // robotInstance.ConfigureDrivebase(position,rotation, DrivetrainMeta);

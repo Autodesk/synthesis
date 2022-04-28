@@ -12,7 +12,7 @@ using Math = SynthesisAPI.Utilities.Math;
 
 namespace Synthesis
 {
-	public class ArcadeDrive : SimBehaviour
+	public class ArcadeDriveBehaviour : SimBehaviour
 	{
 
 		internal const string FORWARD = "Arcade 1 Forward";
@@ -26,8 +26,8 @@ namespace Synthesis
 		private double _leftSpeed;
 		private double _rightSpeed;
 
-		private double _xSpeed;
-		private double _zRot;
+		private float _xSpeed;
+		private float _zRot;
 
 		private bool _squareInputs; // TODO: Add ability to modify this
 
@@ -39,9 +39,7 @@ namespace Synthesis
 
 		public double speedMult = 1.0f;
 
-		private bool _reversedSideJoints;
-
-		public ArcadeDrive(string simObjectId, List<string> leftSignals, List<string> rightSignals, string inputName = "", bool reversedSideJoints = false) : base(
+		public ArcadeDriveBehaviour(string simObjectId, List<string> leftSignals, List<string> rightSignals, string inputName = "") : base(
 			simObjectId)
 		{
 			if (inputName == "")
@@ -50,8 +48,6 @@ namespace Synthesis
 			SimObjectId = simObjectId;
 			_leftSignals = leftSignals;
 			_rightSignals = rightSignals;
-
-			_reversedSideJoints = reversedSideJoints;
 
 			InputManager.AssignValueInput(FORWARD, new Digital("W"));
 			InputManager.AssignValueInput(BACKWARD, new Digital("S"));
@@ -94,14 +90,14 @@ namespace Synthesis
 				}
 				foreach (var sig in _rightSignals)
             	{
-            		SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignals[sig].Value = Value.ForNumber(_rightSpeed*speedMult * (!_reversedSideJoints ? -1 : 1));
+            		SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignals[sig].Value = Value.ForNumber(_rightSpeed*speedMult);
             	}
 			}
 
 		}
 
 		// Implementation derived from https://github.com/wpilibsuite/allwpilib/blob/362066a9b77f38a2862e306b8119e753b199d4ae/wpilibc/src/main/native/cpp/drive/DifferentialDrive.cpp
-		protected static (double lSpeed, double rSpeed) SolveSpeed(double xSpeed, double zRot, bool squareInputs)
+		protected static (float lSpeed, float rSpeed) SolveSpeed(float xSpeed, float zRot, bool squareInputs)
 		{
 			if (xSpeed == 0 && zRot == 0)
 			{
@@ -116,44 +112,7 @@ namespace Synthesis
 				zRot = zRot * zRot * (zRot < 0 ? -1 : 1);
 			}
 
-			double lSpeed, rSpeed;
-
-			double maxInput = Math.Max(Math.Abs(xSpeed), Math.Abs(zRot)) * (xSpeed < 0 ? -1 : 1);
-
-			if (xSpeed >= 0)
-			{
-				if (zRot >= 0)
-				{
-					lSpeed = maxInput;
-					rSpeed = xSpeed - zRot;
-				}
-				else
-				{
-					lSpeed = xSpeed + zRot;
-					rSpeed = maxInput;
-				}
-			}
-			else
-			{
-				if (zRot >= 0)
-				{
-					lSpeed = xSpeed + zRot;
-					rSpeed = maxInput;
-				}
-				else
-				{
-					lSpeed = maxInput;
-					rSpeed = xSpeed - zRot;
-				}
-			}
-
-			// Normalize speeds
-			double maxMag = Math.Max(Math.Abs(lSpeed), Math.Abs(rSpeed));
-			if (maxMag >= 0)
-			{
-				lSpeed /= maxMag;
-				rSpeed /= maxMag;
-			}
+			float lSpeed = Mathf.Clamp(xSpeed + zRot, -1f, 1f), rSpeed = Mathf.Clamp(xSpeed - zRot, -1f, 1f);
 
 			return (lSpeed, rSpeed);
 

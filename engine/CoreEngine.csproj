@@ -62,6 +62,7 @@
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Input\InputSelection.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Settings\SettingsPanel.cs" />
      <Compile Include="Assets\Scripts\Camera\CameraController.cs" />
+     <Compile Include="Assets\Scripts\SimObjects\RobotSimObject.cs" />
      <Compile Include="Assets\Scripts\Util\SynthesisUtil.cs" />
      <Compile Include="Assets\Scripts\RemoveItem.cs" />
      <Compile Include="Assets\Scripts\Utilities\ObjectLedger.cs" />
@@ -100,7 +101,7 @@
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\MeshAdapter.cs" />
      <Compile Include="Assets\Scripts\ModelManager\ModelManager.cs" />
      <Compile Include="Assets\Scripts\PreferenceManager\PreferenceManager.cs" />
-     <Compile Include="Assets\Scripts\Behaviors\ArcadeDrive.cs" />
+     <Compile Include="Assets\Scripts\Behaviors\ArcadeDriveBehaviour.cs" />
      <Compile Include="Assets\Scripts\UI\LayoutManager.cs" />
      <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyFolderItem.cs" />
      <Compile Include="Assets\Scripts\FileSystem\FileSystem.cs" />
@@ -137,7 +138,9 @@
      <Compile Include="Assets\Scripts\EntityManager\Driver.cs" />
      <Compile Include="Assets\Scripts\Test\DebugJointAxes.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\DraggablePanel.cs" />
-     <Compile Include="Assets\Scripts\SimObjects\RobotSimObject.cs" />
+     <Compile Include="Assets\Scripts\SimObjects\FieldSimObject.cs" />
+     <Compile Include="Assets\Scripts\GizmoStore.cs" />
+     <Compile Include="Assets\Scripts\Behaviors\GeneralArmBehaviour.cs" />
      <None Include="Assets\Scripts\CoreEngine.asmdef" />
     <Reference Include="UnityEngine">
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>

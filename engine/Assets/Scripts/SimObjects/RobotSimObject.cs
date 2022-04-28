@@ -15,38 +15,35 @@ using Bounds = UnityEngine.Bounds;
 using Vector3 = UnityEngine.Vector3;
 using MVector3 = Mirabuf.Vector3;
 using Transform = UnityEngine.Transform;
+using Synthesis.Import;
 
 public class RobotSimObject : SimObject {
 
-    private Assembly _miraAssembly;
-    public Assembly MiraAssembly => _miraAssembly;
-    private GameObject _groundedNode;
-    public GameObject GroundedNode => _groundedNode;
-    private Bounds _groundedBounds;
-    public Bounds GroundedBounds => _groundedBounds;
-    private GameObject _robotNode;
-    public GameObject RobotNode => _robotNode;
-    private Bounds _robotBounds;
-    public Bounds RobotBounds => _robotBounds;
+    public Assembly MiraAssembly { get; private set; }
+    public GameObject GroundedNode { get; private set; }
+    public Bounds GroundedBounds { get; private set; }
+    public GameObject RobotNode { get; private set; }
+    public Bounds RobotBounds { get; private set; }
 
-    private SimBehaviour _driveBehaviour;
-    public SimBehaviour DriveBehaviour;
+    public SimBehaviour DriveBehaviour { get; private set; }
+
+    private (List<JointInstance> leftWheels, List<JointInstance> rightWheels) _tankTrackWheels = (null, null);
 
     private Dictionary<string, (UnityEngine.Joint a, UnityEngine.Joint b)> _jointMap;
 
     public RobotSimObject(string name, ControllableState state, Assembly assembly,
             GameObject groundedNode, Dictionary<string, (UnityEngine.Joint a, UnityEngine.Joint b)> jointMap)
             : base(name, state) {
-        _miraAssembly = assembly;
-        _groundedNode = groundedNode;
+        MiraAssembly = assembly;
+        GroundedNode = groundedNode;
         _jointMap = jointMap;
-        _robotNode = groundedNode.transform.parent.gameObject;
-        _robotBounds = GetBounds(_robotNode.transform);
-        _groundedBounds = GetBounds(_groundedNode.transform);
-        DebugJointAxes.DebugBounds.Add((_groundedBounds, () => _groundedNode.transform.localToWorldMatrix));
+        RobotNode = groundedNode.transform.parent.gameObject;
+        RobotBounds = GetBounds(RobotNode.transform);
+        GroundedBounds = GetBounds(GroundedNode.transform);
+        DebugJointAxes.DebugBounds.Add((GroundedBounds, () => GroundedNode.transform.localToWorldMatrix));
     }
 
-    public Bounds GetBounds(Transform top) {
+    private Bounds GetBounds(Transform top) {
         Vector3 min = new Vector3(float.MaxValue,float.MaxValue,float.MaxValue), max = new Vector3(float.MinValue,float.MinValue,float.MinValue);
         top.GetComponentsInChildren<Renderer>().ForEach(x => {
             var b = x.bounds;
@@ -60,71 +57,98 @@ public class RobotSimObject : SimObject {
         return new UnityEngine.Bounds(((max + min) / 2f) - top.position, max - min);
     }
 
-    public void ConfigureArcadeDrivetrain() {
-        var wheelsInstances = _miraAssembly.Data.Joints.JointInstances.Where(instance =>
-            instance.Value.Info.Name != "grounded"
-            && _miraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].UserData != null
-            && _miraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].UserData.Data
-                .TryGetValue("wheel", out var isWheel)
-            && isWheel == "true").ToList();
+    private (List<JointInstance> leftWheels, List<JointInstance> rightWheels) GetLeftRightWheels() {
+        if (_tankTrackWheels.leftWheels == null) {
+            var wheelsInstances = MiraAssembly.Data.Joints.JointInstances.Where(instance =>
+                instance.Value.Info.Name != "grounded"
+                && MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].UserData != null
+                && MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].UserData.Data
+                    .TryGetValue("wheel", out var isWheel)
+                && isWheel == "true").ToList();
 
-        var leftWheels = new List<JointInstance>();
-        var rightWheels = new List<JointInstance>();
+            var leftWheels = new List<JointInstance>();
+            var rightWheels = new List<JointInstance>();
 
-        Dictionary<JointInstance, float> wheelDotProducts = new Dictionary<JointInstance, float>();
-        foreach (var wheelInstance in wheelsInstances)
-        {
-            _state.CurrentSignals[wheelInstance.Value.SignalReference].Value = Value.ForNumber(0.0);
-            var jointAnchor =
-                (wheelInstance.Value.Offset ?? new Vector3()) +
-                _miraAssembly.Data.Joints.JointDefinitions[wheelInstance.Value.JointReference].Origin ?? new Vector3();
-            // jointAnchor = jointAnchor;
-            wheelDotProducts[wheelInstance.Value] = Vector3.Dot(Vector3.right, jointAnchor);
-        }
-        float min = float.MaxValue;
-        float max = float.MinValue;
-        wheelDotProducts.ForEach(x => {
-            if (x.Value < min)
-                min = x.Value;
-            if (x.Value > max)
-                max = x.Value;
-        });
-        float mid = (min + max) / 2f;
-        wheelDotProducts.ForEach(x => {
-            if (x.Value > mid)
-                rightWheels.Add(x.Key);
-            else
-                leftWheels.Add(x.Key);
-        });
-
-        // Spin all of the wheels straight
-        wheelsInstances.ForEach(x => {
-            var def = _miraAssembly.Data.Joints.JointDefinitions[x.Value.JointReference];
-            var globalAxis = _groundedNode.transform.rotation
-                * ((Vector3)def.Rotational.RotationalFreedom.Axis).normalized;
-            var cross = Vector3.Cross(_groundedNode.transform.up, globalAxis);
-            if (Vector3.Dot(_groundedNode.transform.forward, cross) < 0) {
-                var ogAxis = def.Rotational.RotationalFreedom.Axis;
-                ogAxis.X *= -1;
-                ogAxis.Y *= -1;
-                ogAxis.Z *= -1;
-                // Modify assembly for if a new behaviour evaluates this again
-                def.Rotational.RotationalFreedom.Axis = ogAxis; // I think this is irrelevant after the last few lines
-                var joints = _jointMap[x.Key];
-                (joints.a as UnityEngine.HingeJoint).axis = ogAxis;
-                (joints.b as UnityEngine.HingeJoint).axis = ogAxis;
+            Dictionary<JointInstance, float> wheelDotProducts = new Dictionary<JointInstance, float>();
+            foreach (var wheelInstance in wheelsInstances)
+            {
+                _state.CurrentSignals[wheelInstance.Value.SignalReference].Value = Value.ForNumber(0.0);
+                var jointAnchor =
+                    (wheelInstance.Value.Offset ?? new Vector3()) +
+                    MiraAssembly.Data.Joints.JointDefinitions[wheelInstance.Value.JointReference].Origin ?? new Vector3();
+                // jointAnchor = jointAnchor;
+                wheelDotProducts[wheelInstance.Value] = Vector3.Dot(Vector3.right, jointAnchor);
             }
+            float min = float.MaxValue;
+            float max = float.MinValue;
+            wheelDotProducts.ForEach(x => {
+                if (x.Value < min)
+                    min = x.Value;
+                if (x.Value > max)
+                    max = x.Value;
+            });
+            float mid = (min + max) / 2f;
+            wheelDotProducts.ForEach(x => {
+                if (x.Value > mid)
+                    rightWheels.Add(x.Key);
+                else
+                    leftWheels.Add(x.Key);
+            });
+
+            // Spin all of the wheels straight
+            wheelsInstances.ForEach(x => {
+                var def = MiraAssembly.Data.Joints.JointDefinitions[x.Value.JointReference];
+                var globalAxis = GroundedNode.transform.rotation
+                    * ((Vector3)def.Rotational.RotationalFreedom.Axis).normalized;
+                var cross = Vector3.Cross(GroundedNode.transform.up, globalAxis);
+                if (Vector3.Dot(GroundedNode.transform.forward, cross) > 0) {
+                    var ogAxis = def.Rotational.RotationalFreedom.Axis;
+                    ogAxis.X *= -1;
+                    ogAxis.Y *= -1;
+                    ogAxis.Z *= -1;
+                    // Modify assembly for if a new behaviour evaluates this again
+                    def.Rotational.RotationalFreedom.Axis = ogAxis; // I think this is irrelevant after the last few lines
+                    var joints = _jointMap[x.Key];
+                    (joints.a as UnityEngine.HingeJoint).axis = ogAxis;
+                    (joints.b as UnityEngine.HingeJoint).axis = ogAxis;
+                }
+            });
+            _tankTrackWheels = (leftWheels, rightWheels);
+        }
+
+        return _tankTrackWheels;
+    }
+
+    // Account for passive joints
+    public void ConfigureArmBehaviours() {
+        var nonWheelInstances = MiraAssembly.Data.Joints.JointInstances.Where(instance =>
+                instance.Value.Info.Name != "grounded"
+                && (
+                    MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].UserData == null
+                    || !MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].UserData.Data
+                        .TryGetValue("wheel", out var isWheel)
+                    || isWheel == "false")
+                ).ToList();
+        nonWheelInstances.ForEach(x => {
+            var genArmBehaviour = new GeneralArmBehaviour(this.Name, x.Value.SignalReference);
+            SimulationManager.AddBehaviour(this.Name, genArmBehaviour);
         });
+    }
 
-        var arcadeBehaviour = new ArcadeDrive(
-            _miraAssembly.Info.Name,
-            leftWheels.Select(j => j.SignalReference).ToList(),
-            rightWheels.Select(j => j.SignalReference).ToList(),
-            reversedSideJoints: false
+    public void ConfigureArcadeDrivetrain() {
+        
+        var wheels = GetLeftRightWheels();
+
+        var arcadeBehaviour = new ArcadeDriveBehaviour(
+            this.Name,
+            wheels.leftWheels.Select(j => j.SignalReference).ToList(),
+            wheels.rightWheels.Select(j => j.SignalReference).ToList()
         );
-        _driveBehaviour = arcadeBehaviour;
+        if (DriveBehaviour == null)
+            
+        DriveBehaviour = arcadeBehaviour;
 
-        SimulationManager.AddBehaviour(_miraAssembly.Info.Name, arcadeBehaviour);
+        SimulationManager.AddBehaviour(this.Name, arcadeBehaviour);
     }
     
     // public void ConfigureTankDrivetrain() {
@@ -165,4 +189,24 @@ public class RobotSimObject : SimObject {
 
     //     SimulationManager.AddBehaviour(_miraAssembly.Info.Name, arcadeBehaviour);
     // }
+
+    public static void SpawnRobot(string filePath) {
+        SpawnRobot(filePath, new Vector3(0f, 0.5f, 0f), Quaternion.identity);
+    }
+    public static void SpawnRobot(string filePath, Vector3 position, Quaternion rotation) {
+
+        GizmoManager.ExitGizmo();
+
+        var mira = Importer.MirabufAssemblyImport(filePath);
+        RobotSimObject simObject = mira.Sim as RobotSimObject;
+        mira.RobotObject.transform.SetParent(GameObject.Find("Game").transform);
+        mira.RobotObject.transform.position = position;
+        mira.RobotObject.transform.rotation = rotation;
+
+        // Event call maybe?
+
+        Camera.main.GetComponent<CameraController>().FocusPoint =
+            () => simObject.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(simObject.GroundedBounds.center);
+        GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, mira.RobotObject.transform, mira.RobotObject.transform.position);
+    }
 }
