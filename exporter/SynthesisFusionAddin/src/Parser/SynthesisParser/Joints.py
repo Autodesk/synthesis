@@ -106,7 +106,7 @@ def populateJoints(
                     if (parse_joints.joint_token == joint.entityToken):
                         guid = str(uuid.uuid4())
                         signal = signals.signal_map[guid]
-                        construct_info("joint_signal", signal, GUID=guid)
+                        construct_info(joint.name, signal, GUID=guid)
                         signal.io = signal_pb2.IOType.OUTPUT
 
                         # really could just map the enum to a friggin string
@@ -296,9 +296,21 @@ def fillSliderJointMotion(
 
     dof = proto_joint.prismatic.prismatic_freedom
 
+    # dof.axis = sliderMotion.slideDirectionVector
+    dof.axis.x = -sliderMotion.slideDirectionVector.x
+    dof.axis.y = sliderMotion.slideDirectionVector.y
+    dof.axis.z = sliderMotion.slideDirectionVector.z
+
+    if sliderMotion.slideDirection is adsk.fusion.JointDirections.XAxisJointDirection:
+        dof.pivotDirection = types_pb2.Axis.X
+    elif sliderMotion.slideDirection is adsk.fusion.JointDirections.YAxisJointDirection:
+        dof.pivotDirection = types_pb2.Axis.Y
+    elif sliderMotion.slideDirection is adsk.fusion.JointDirections.ZAxisJointDirection:
+        dof.pivotDirection = types_pb2.Axis.Z
+
     if sliderMotion.slideLimits:
-        dof.limits.lower = sliderMotion.slideLimits.maximumValue
-        dof.limits.upper = sliderMotion.slideLimits.minimumValue
+        dof.limits.lower = sliderMotion.slideLimits.minimumValue
+        dof.limits.upper = sliderMotion.slideLimits.maximumValue
 
     dof.value = sliderMotion.slideValue
 
