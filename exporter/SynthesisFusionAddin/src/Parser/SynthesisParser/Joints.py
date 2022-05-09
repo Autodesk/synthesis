@@ -110,14 +110,15 @@ def populateJoints(
                         signal.io = signal_pb2.IOType.OUTPUT
 
                         # really could just map the enum to a friggin string
-                        if (parse_joints.signalType == ParseOptions.SignalType.CAN):
-                            signal.device_type = "CAN"
-                        elif (parse_joints.signalType == ParseOptions.SignalType.PWM):
-                            signal.device_type = "PWM"
-                        elif (parse_joints.signalType == ParseOptions.SignalType.PASSIVE):
-                            signal.device_type = "PASSIVE"
+                        if (parse_joints.signalType != ParseOptions.SignalType.PASSIVE):
+                            if (parse_joints.signalType == ParseOptions.SignalType.CAN):
+                                signal.device_type = signal_pb2.DeviceType.CANBUS
+                            elif (parse_joints.signalType == ParseOptions.SignalType.PWM):
+                                signal.device_type = signal_pb2.DeviceType.PWM
 
-                        joint_instance.signal_reference = signal.info.GUID
+                            joint_instance.signal_reference = signal.info.GUID
+                        # else:
+                        #     signals.signal_map.remove(guid)
 
                 _addJointInstance(joint, joint_instance, joint_definition, signals, options)
 
@@ -206,12 +207,13 @@ def _addJointInstance(joint: adsk.fusion.Joint, joint_instance: joint_pb2.JointI
                     signal.io = signal_pb2.IOType.OUTPUT
                     joint_instance.signal_reference = signal.info.GUID
 
-                if (wheel.signalType == ParseOptions.SignalType.CAN):
-                    signal.device_type = "CAN"
-                elif (wheel.signalType == ParseOptions.SignalType.PWM):
-                    signal.device_type = "PWM"
-                elif (wheel.signalType == ParseOptions.SignalType.PASSIVE):
-                    signal.device_type = "PASSIVE"
+                if (wheel.signalType != ParseOptions.SignalType.PASSIVE):
+                    if (wheel.signalType == ParseOptions.SignalType.CAN):
+                        signal.device_type = signal_pb2.DeviceType.CANBUS
+                    elif (wheel.signalType == ParseOptions.SignalType.PWM):
+                        signal.device_type = signal_pb2.DeviceType.PWM
+                else:
+                    joint_instance.signal_reference = ''
 
 
 def _motionFromJoint(

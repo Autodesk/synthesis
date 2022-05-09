@@ -7,7 +7,7 @@ def fill_info(proto_obj, fus_object) -> None:
     construct_info("", proto_obj, fus_object=fus_object)
 
 
-def construct_info(name: str, proto_obj, version=2, fus_object=None, GUID=None) -> None:
+def construct_info(name: str, proto_obj, version=3, fus_object=None, GUID=None) -> None:
     """Constructs a info object from either a name or a fus_object
 
     Args:
