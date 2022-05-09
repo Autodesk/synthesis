@@ -12,9 +12,9 @@ public class DebugJointAxes : MonoBehaviour{
     public void OnDrawGizmos() {
         if (Application.isPlaying) {
             SynthesisAPI.Simulation.SimulationManager.Drivers.Select(x => x.Value).ForEach(a => a/*.Where(c => c.Name == "e94f72e4-2d00-48a6-bf88-4d3eb98f9d22")*/.ForEach(y => {
-                if (y is SynthesisAPI.Simulation.RotationalDriver) {
+                if (y is Synthesis.RotationalDriver) {
 
-                    var ArmDriver = y as SynthesisAPI.Simulation.RotationalDriver;
+                    var ArmDriver = y as Synthesis.RotationalDriver;
 
                     var anchorA = ArmDriver.JointA.anchor;
                     var axisA = ArmDriver.JointA.axis;

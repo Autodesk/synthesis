@@ -41,7 +41,8 @@ namespace SynthesisAPI.Utilities
                     CurrentSignals[kvp.Key] = new UpdateSignal
                     {
                         Io = kvp.Value.Io == IOType.Input ? UpdateIOType.Input : UpdateIOType.Output,
-                        DeviceType = kvp.Value.DeviceType
+                        DeviceType = Enum.GetName(typeof(DeviceType), kvp.Value.DeviceType), // Keeping a string for now
+                        Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(0.0)
                     };
                 }
             }

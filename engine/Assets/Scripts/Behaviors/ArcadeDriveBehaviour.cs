@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Google.Protobuf.WellKnownTypes;
+using Synthesis.PreferenceManager;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
@@ -49,12 +50,14 @@ namespace Synthesis
 			_leftSignals = leftSignals;
 			_rightSignals = rightSignals;
 
-			InputManager.AssignValueInput(FORWARD, new Digital("W"));
-			InputManager.AssignValueInput(BACKWARD, new Digital("S"));
-			InputManager.AssignValueInput(LEFT, new Digital("A"));
-			InputManager.AssignValueInput(RIGHT, new Digital("D"));
-
-
+			InputManager.AssignValueInput(FORWARD, SimulationPreferences.GetRobotInput(
+            	(SimulationManager.SimulationObjects[simObjectId] as RobotSimObject).MiraAssembly.Info.GUID, FORWARD) ?? new Digital("W"));
+			InputManager.AssignValueInput(BACKWARD, SimulationPreferences.GetRobotInput(
+            	(SimulationManager.SimulationObjects[simObjectId] as RobotSimObject).MiraAssembly.Info.GUID, BACKWARD) ?? new Digital("S"));
+			InputManager.AssignValueInput(LEFT, SimulationPreferences.GetRobotInput(
+            	(SimulationManager.SimulationObjects[simObjectId] as RobotSimObject).MiraAssembly.Info.GUID, LEFT) ?? new Digital("A"));
+			InputManager.AssignValueInput(RIGHT, SimulationPreferences.GetRobotInput(
+            	(SimulationManager.SimulationObjects[simObjectId] as RobotSimObject).MiraAssembly.Info.GUID, RIGHT) ?? new Digital("D"));
 		}
 
 		public override void Update()

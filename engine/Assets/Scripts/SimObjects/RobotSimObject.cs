@@ -16,8 +16,11 @@ using Vector3 = UnityEngine.Vector3;
 using MVector3 = Mirabuf.Vector3;
 using Transform = UnityEngine.Transform;
 using Synthesis.Import;
+using Synthesis.Util;
 
 public class RobotSimObject : SimObject {
+
+    public static int ControllableJointCounter = 0;
 
     public Assembly MiraAssembly { get; private set; }
     public GameObject GroundedNode { get; private set; }
@@ -121,6 +124,7 @@ public class RobotSimObject : SimObject {
 
     // Account for passive joints
     public void ConfigureArmBehaviours() {
+        // I pity the poor dev that has to look at this
         var nonWheelInstances = MiraAssembly.Data.Joints.JointInstances.Where(instance =>
                 instance.Value.Info.Name != "grounded"
                 && (
@@ -128,10 +132,22 @@ public class RobotSimObject : SimObject {
                     || !MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].UserData.Data
                         .TryGetValue("wheel", out var isWheel)
                     || isWheel == "false")
-                ).ToList();
+                && instance.Value.HasSignal()
+                && MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].JointMotionType == JointMotion.Revolute).ToList();
         nonWheelInstances.ForEach(x => {
             var genArmBehaviour = new GeneralArmBehaviour(this.Name, x.Value.SignalReference);
             SimulationManager.AddBehaviour(this.Name, genArmBehaviour);
+        });
+    }
+
+    public void ConfigureSliderBehaviours() {
+        var sliderInstances = MiraAssembly.Data.Joints.JointInstances.Where(instance => 
+                instance.Value.Info.Name != "grounded"
+                && MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].JointMotionType == JointMotion.Slider
+                && instance.Value.HasSignal()).ToList();
+        sliderInstances.ForEach(x => {
+            var sliderBehaviour = new GeneralSliderBehaviour(this.Name, x.Value.SignalReference);
+            SimulationManager.AddBehaviour(this.Name, sliderBehaviour);
         });
     }
 

@@ -1,9 +1,9 @@
-﻿using Google.Protobuf.WellKnownTypes;
-using SynthesisAPI.Utilities;
-using System;
+using System.Collections;
+using System.Collections.Generic;
+using SynthesisAPI.Simulation;
 using UnityEngine;
 
-namespace SynthesisAPI.Simulation {
+namespace Synthesis {
     public class RotationalDriver : Driver {
 
         public JointMotor Motor;

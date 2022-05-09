@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Mirabuf;
+using Mirabuf.Joint;
+
+using Color = UnityEngine.Color;
 
 namespace Synthesis.Util {
     public static class SynthesisUtil {
@@ -18,6 +22,9 @@ namespace Synthesis.Util {
                 a(e.ElementAt(i), i);
             }
         }
+
+        public static bool HasSignal(this JointInstance inst)
+            => inst.SignalReference != null && !inst.SignalReference.Equals(string.Empty);
 
         public static Color ColorFromHex(uint hex) => new Color(
             (float)((hex & 0xFF000000) >> 24) / 255f,

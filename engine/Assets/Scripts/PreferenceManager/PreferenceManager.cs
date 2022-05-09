@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
+using SynthesisAPI.EventBus;
 
 namespace Synthesis.PreferenceManager
 {
@@ -9,6 +10,7 @@ namespace Synthesis.PreferenceManager
     {
         public static bool UnsavedChanges { get; private set; }
         private static Dictionary<string, object> _preferences = new Dictionary<string, object>();
+        public static bool AnyPrefs => _preferences.Keys.Count > 0;
         private static string FilePath = Path.Combine(FileSystem.FileSystem.Preferences, "preferences.json");
 
         public static void Load()
@@ -19,8 +21,8 @@ namespace Synthesis.PreferenceManager
             _preferences = JsonConvert.DeserializeObject<Dictionary<string, object>>(data);
         }
 
-        public static void Save()
-        {
+        public static void Save() {
+            EventBus.Push(new PrePreferenceSaveEvent());
             if(UnsavedChanges)
                 File.WriteAllText(FilePath, JsonConvert.SerializeObject(_preferences));
             UnsavedChanges = false;
@@ -53,4 +55,6 @@ namespace Synthesis.PreferenceManager
             UnsavedChanges = true;
         }
     }
+
+    public class PrePreferenceSaveEvent : IEvent { }
 }

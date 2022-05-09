@@ -9,6 +9,7 @@ using Mirabuf;
 using Mirabuf.Joint;
 using Mirabuf.Material;
 using Mirabuf.Signal;
+using Synthesis.Util;
 using SynthesisAPI.Proto;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
@@ -38,6 +39,8 @@ namespace Synthesis.Import
 	public static class Importer
 	{
 		#region Importer Framework
+
+		public const UInt32 CURRENT_MIRA_EXPORTER_VERSION = 3;
 
 		public delegate GameObject ImportFuncString(string path);
 
@@ -99,6 +102,12 @@ namespace Synthesis.Import
 			// Uncommenting this will delete all bodies so the JSON file isn't huge
 			DebugAssembly(assembly);
 			// return null;
+
+			if (assembly.Info.Version < CURRENT_MIRA_EXPORTER_VERSION) {
+				Logger.Log($"Out-of-date Assembly\nCurrent Version: {CURRENT_MIRA_EXPORTER_VERSION}\nVersion of Assembly: {assembly.Info.Version}", LogLevel.Info);
+			} else if (assembly.Info.Version > CURRENT_MIRA_EXPORTER_VERSION) {
+				Logger.Log($"Hey Dev, the assembly you're importing is using a higher version than the current set version. Please update the CURRENT_MIRA_EXPORTER_VERSION constant", LogLevel.Debug);
+			}
 
 			// Logger.Log((new System.Diagnostics.StackTrace()).ToString(), LogLevel.Debug);
 
@@ -227,6 +236,7 @@ namespace Synthesis.Import
 			if (assembly.Dynamic) {
 				(simObject as RobotSimObject).ConfigureArcadeDrivetrain();
 				(simObject as RobotSimObject).ConfigureArmBehaviours();
+				(simObject as RobotSimObject).ConfigureSliderBehaviours();
 			}
 
 			return (assemblyObject, assembly, simObject);
@@ -251,47 +261,31 @@ namespace Synthesis.Import
 					var parentPartInstance = assembly.Data.Parts.PartInstances[instance.ParentPart];
 					var parentPartDefinition = assembly.Data.Parts.PartDefinitions[parentPartInstance.PartDefinitionReference];
 
-					var moddedMat = parentPartInstance.GlobalTransform.UnityMatrix;
+					// var moddedMat = parentPartInstance.GlobalTransform.UnityMatrix;
 
 					var originA = (UVector3)(definition.Origin ?? new UVector3());
-					// var from = Matrix4x4.TRS(originA, Quaternion.identity, UVector3.one);
-					// var firstPart = assembly.Data.Parts.PartInstances.First(
-					// 	x => x.Value.PartDefinitionReference.Equals(
-					// 		assembly.Data.Parts.PartInstances[instance.ParentPart].PartDefinitionReference
-					// 	));
-					// var firstPart = assembly.Data.Parts.PartInstances[
-					// 	FindOriginalFromReferencePoint(assembly, parentPartDefinition, (UVector3)parentPartDefinition.PhysicalData.Com)
-					// ];
-					var firstPart = assembly.Data.Parts.PartInstances.First(x => x.Value.Info.Name.Equals(parentPartDefinition.Info.Name + ":1")).Value;
-					var firstMat = firstPart.GlobalTransform.UnityMatrix;
-					var from = Matrix4x4.TRS(
-						firstMat.GetPosition(),
-						new Quaternion(-firstMat.rotation.x, firstMat.rotation.y, firstMat.rotation.z, -firstMat.rotation.w),
-						UVector3.one
-					);
-					var to = Matrix4x4.TRS(
-						moddedMat.GetPosition(),
-						new Quaternion(-moddedMat.rotation.x, moddedMat.rotation.y, moddedMat.rotation.z, -moddedMat.rotation.w),
-						UVector3.one
-					);
-					moddedMat = DiffToTransformations(from, to);
-					var partOffset = assembly.Data.Parts.PartInstances[instance.ParentPart].GlobalTransform.UnityMatrix.GetPosition()
-						+ moddedMat.MultiplyPoint(originA - firstMat.GetPosition());
-					// Logger.Log($"{assembly.Data.Parts.PartInstances[instance.ParentPart].Info.Name}: {partOffset.x}, {partOffset.y}, {partOffset.z}");
+					// var firstPart = assembly.Data.Parts.PartInstances.First(x => x.Value.Info.Name.Equals(parentPartDefinition.Info.Name + ":1")).Value;
+					// var firstMat = firstPart.GlobalTransform.UnityMatrix;
+					// var from = Matrix4x4.TRS(
+					// 	firstMat.GetPosition(),
+					// 	new Quaternion(-firstMat.rotation.x, firstMat.rotation.y, firstMat.rotation.z, -firstMat.rotation.w),
+					// 	UVector3.one
+					// );
+					// var to = Matrix4x4.TRS(
+					// 	moddedMat.GetPosition(),
+					// 	new Quaternion(-moddedMat.rotation.x, moddedMat.rotation.y, moddedMat.rotation.z, -moddedMat.rotation.w),
+					// 	UVector3.one
+					// );
+					// moddedMat = DiffToTransformations(from, to);
+					// var partOffset = assembly.Data.Parts.PartInstances[instance.ParentPart].GlobalTransform.UnityMatrix.GetPosition()
+					// 	+ moddedMat.MultiplyPoint(originA - firstMat.GetPosition());
 					UVector3 jointOffset = instance.Offset ?? new Vector3();
-					// Logger.Log($"'{instance.Info.Name}' Joint Offset: {jointOffset.x}, {jointOffset.y}, {jointOffset.z}");
-					// Logger.Log($"Definition Origin: {definition.Origin?.X}, {definition.Origin?.Y}, {definition.Origin?.Z}");
-					revoluteA.anchor = /*partOffset*/originA + jointOffset;
+					revoluteA.anchor = originA + jointOffset;
 					revoluteA.axis =
 						definition.Rotational.RotationalFreedom.Axis;
-						// moddedMat.MultiplyVector(definition.Rotational.RotationalFreedom.Axis); // CHANGE - ? -Hunter
 					revoluteA.connectedBody = rbB;
 					revoluteA.connectedMassScale = revoluteA.connectedBody.mass / rbA.mass;
-					revoluteA.useMotor = true; // TODO: Turn off if joint is passive
-					// revoluteA.useMotor = definition.Info.Name != "grounded" &&
-					//                      definition.UserData != null &&
-					//                      definition.UserData.Data.TryGetValue("wheel", out var isWheel) &&
-					//                      isWheel == "true";
+					revoluteA.useMotor = true;
 					// TODO: Implement and test limits
 					var limits = definition.Rotational.RotationalFreedom.Limits;
 					if (limits != null && limits.Lower != limits.Upper) {
@@ -314,20 +308,105 @@ namespace Synthesis.Import
 					revoluteB.connectedMassScale = revoluteB.connectedBody.mass / rbB.mass;
 
 					// TODO: Encoder Signals
-					var driver = new RotationalDriver(
-						assembly.Data.Signals.SignalMap[instance.SignalReference].Info.GUID,
-						new string[] {instance.SignalReference}, Array.Empty<string>(), simObject, revoluteA, revoluteB,
-						new JointMotor()
-						{
-							force = 400.0f,
-							freeSpin = false,
-							targetVelocity = 900,
-						});
-					SimulationManager.AddDriver(assembly.Info.Name, driver);
+					if (instance.HasSignal()) {
+						var driver = new RotationalDriver(
+							assembly.Data.Signals.SignalMap[instance.SignalReference].Info.GUID,
+							new string[] {instance.SignalReference}, Array.Empty<string>(), simObject, revoluteA, revoluteB,
+							new JointMotor()
+							{
+								force = 2000.0f,
+								freeSpin = false,
+								targetVelocity = 500,
+							});
+						SimulationManager.AddDriver(assembly.Info.Name, driver);
+					}
 
 					jointMap.Add(instance.Info.GUID, (revoluteA, revoluteB));
 					break;
 				case JointMotion.Slider:
+
+					UVector3 anchor = definition.Origin ?? new Vector3()
+						+ instance.Offset ?? new Vector3();
+					UVector3 axis = definition.Prismatic.PrismaticFreedom.Axis;
+					axis = axis.normalized;
+					float midRange = ((definition.Prismatic.PrismaticFreedom.Limits.Lower + definition.Prismatic.PrismaticFreedom.Limits.Upper) / 2) * 0.01f;
+
+					var sliderA = a.AddComponent<ConfigurableJoint>();
+					sliderA.anchor = anchor; // + (axis * midRange);
+					sliderA.axis = axis;
+					sliderA.autoConfigureConnectedAnchor = false;
+					sliderA.connectedAnchor = anchor + (axis * midRange);
+					sliderA.secondaryAxis = axis;
+					sliderA.angularXMotion = ConfigurableJointMotion.Locked;
+					sliderA.angularYMotion = ConfigurableJointMotion.Locked;
+					sliderA.angularZMotion = ConfigurableJointMotion.Locked;
+					// switch (definition.Prismatic.PrismaticFreedom.PivotDirection) {
+					// 	case Axis.Y:
+					// 		sliderA.xMotion = ConfigurableJointMotion.Locked;
+					// 		sliderA.yMotion = ConfigurableJointMotion.Limited;
+					// 		sliderA.zMotion = ConfigurableJointMotion.Locked;
+					// 		break;
+					// 	case Axis.Z:
+					// 		sliderA.xMotion = ConfigurableJointMotion.Locked;
+					// 		sliderA.yMotion = ConfigurableJointMotion.Locked;
+					// 		sliderA.zMotion = ConfigurableJointMotion.Limited;
+					// 		break;
+					// 	case Axis.X:
+					// 	default:
+					// 		sliderA.xMotion = ConfigurableJointMotion.Limited;
+					// 		sliderA.yMotion = ConfigurableJointMotion.Locked;
+					// 		sliderA.zMotion = ConfigurableJointMotion.Locked;
+					// 		break;
+					// }
+					sliderA.xMotion = ConfigurableJointMotion.Limited;
+					sliderA.yMotion = ConfigurableJointMotion.Locked;
+					sliderA.zMotion = ConfigurableJointMotion.Locked;
+					sliderA.connectedBody = rbB;
+					sliderA.connectedMassScale = sliderA.connectedBody.mass / rbA.mass;
+					var ulimitA = sliderA.linearLimit;
+					ulimitA.limit = Mathf.Abs(midRange);
+					sliderA.linearLimit = ulimitA;
+
+					var sliderB = b.AddComponent<ConfigurableJoint>();
+					sliderB.anchor = sliderA.anchor;
+					sliderB.axis = sliderA.axis;
+					sliderB.angularXMotion = ConfigurableJointMotion.Locked;
+					sliderB.angularYMotion = ConfigurableJointMotion.Locked;
+					sliderB.angularZMotion = ConfigurableJointMotion.Locked;
+					// switch (definition.Prismatic.PrismaticFreedom.PivotDirection) {
+					// 	case Axis.Y:
+					// 		sliderB.xMotion = ConfigurableJointMotion.Locked;
+					// 		sliderB.yMotion = ConfigurableJointMotion.Free;
+					// 		sliderB.zMotion = ConfigurableJointMotion.Locked;
+					// 		break;
+					// 	case Axis.Z:
+					// 		sliderB.xMotion = ConfigurableJointMotion.Locked;
+					// 		sliderB.yMotion = ConfigurableJointMotion.Locked;
+					// 		sliderB.zMotion = ConfigurableJointMotion.Free;
+					// 		break;
+					// 	case Axis.X:
+					// 	default:
+					// 		sliderB.xMotion = ConfigurableJointMotion.Free;
+					// 		sliderB.yMotion = ConfigurableJointMotion.Locked;
+					// 		sliderB.zMotion = ConfigurableJointMotion.Locked;
+					// 		break;
+					// }
+					sliderB.xMotion = ConfigurableJointMotion.Free;
+					sliderB.yMotion = ConfigurableJointMotion.Locked;
+					sliderB.zMotion = ConfigurableJointMotion.Locked;
+					sliderB.connectedBody = rbA;
+					sliderB.connectedMassScale = sliderB.connectedBody.mass / rbB.mass;
+					// var ulimitB = sliderA.linearLimit;
+					// ulimitB.limit = midRange;
+
+					if (instance.HasSignal()) {
+						var slideDriver = new LinearDriver(assembly.Data.Signals.SignalMap[instance.SignalReference].Info.GUID,
+							new string[] { instance.SignalReference }, Array.Empty<string>(), simObject, sliderA, sliderB, 0.1f,
+							(definition.Prismatic.PrismaticFreedom.Limits.Upper * 0.01f, definition.Prismatic.PrismaticFreedom.Limits.Lower * 0.01f));
+						SimulationManager.AddDriver(simObject.Name, slideDriver);
+					}
+
+					break;
 				default: // Make a rigid joint
 					var rigidA = a.AddComponent<FixedJoint>();
 					rigidA.anchor = (definition.Origin ?? new Vector3())

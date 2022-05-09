@@ -13,6 +13,11 @@ namespace SynthesisAPI.InputManager
 {
     public static class InputManager
     {
+        public static readonly string[] IGNORE_KEYS = new string[] {
+            "AltGr"
+        };
+
+        // TODO: Should this still be an array?
         internal static Dictionary<string, Digital[]> _mappedDigitalInputs = new Dictionary<string, Digital[]>();
         internal static Dictionary<string, Analog> _mappedValueInputs = new Dictionary<string, Analog>();
         public static IReadOnlyDictionary<string, Digital[]> MappedDigitalInputs {
@@ -94,11 +99,22 @@ namespace SynthesisAPI.InputManager
         // TODO: Exclusion cases
         public static Analog GetAny() {
             foreach (var k in AllInputs) {
-                if (k.Update())
-                    return k;
+                if (k.Update(true))
+                    return k.WithModifier(GetModifier());
             }
 
             return null;
+        }
+
+        public static int GetModifier() {
+            int mod = 0x00;
+            ModifierInputs.ForEach(x => {
+                x.Update(true);
+                if (x.State > DigitalState.None) {
+                    mod = mod ^ (int)Enum.Parse(typeof(ModKey), x.Name);
+                }
+            });
+            return mod;
         }
 
         public static List<Analog> GetAll() => AllInputs.Where(k => k.Update()).ToList();
@@ -110,8 +126,10 @@ namespace SynthesisAPI.InputManager
                     _allInputs = new List<Analog>();
 
                     // KeyCodes
+                    var modKeyNames = Enum.GetNames(typeof(ModKey));
                     foreach (var k in Enum.GetNames(typeof(KeyCode))) {
-                        _allInputs.Add(new Digital(k));
+                        if (!modKeyNames.Contains(k) && !IGNORE_KEYS.Contains(k))
+                            _allInputs.Add(new Digital(k));
                     }
                     
                     // Joystick Controls
@@ -127,6 +145,20 @@ namespace SynthesisAPI.InputManager
                     
                 }
                 return _allInputs;
+            }
+        }
+        private static List<Digital> _modifierInputs = null;
+        public static IReadOnlyCollection<Digital> ModifierInputs {
+            get {
+                if (_modifierInputs == null) {
+                    _modifierInputs = new List<Digital>();
+
+                    var modKeys = Enum.GetNames(typeof(ModKey));
+                    modKeys.ForEach(x => {
+                        _modifierInputs.Add(new Digital(x));
+                    });
+                }
+                return _modifierInputs;
             }
         }
     }
