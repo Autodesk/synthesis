@@ -1,4 +1,5 @@
 ﻿using SynthesisAPI.Utilities;
+using System.Collections.Generic;
 
 namespace SynthesisAPI.Simulation {
     public class SimObject {
@@ -16,6 +17,14 @@ namespace SynthesisAPI.Simulation {
         public SimObject(string name, ControllableState state) {
             _name = name;
             _state = state;
+        }
+
+        public virtual void Destroy() { }
+
+        public List<string> GetAllReservedInputs() {
+            var res = new List<string>();
+            SimulationManager.Behaviours[_name].ForEach(x => x.ReservedInput.ForEach(y => res.Add(y)));
+            return res;
         }
 
         public override int GetHashCode()

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
+using SynthesisAPI.Simulation;
 using UnityEngine;
 
 namespace Synthesis.UI.Panels {
@@ -23,15 +24,19 @@ namespace Synthesis.UI.Panels {
         }
 
         public void PopulateInputSelections() {
-            foreach (var kvp in InputManager.MappedValueInputs) {
+            if (RobotSimObject.CurrentlyPossessedRobot.Equals(string.Empty))
+                return;
+
+            foreach (var inputKey in SimulationManager.SimulationObjects[RobotSimObject.CurrentlyPossessedRobot]?.GetAllReservedInputs()) {
+                var val = InputManager.MappedValueInputs[inputKey];
                 var selectionObject = Instantiate(InputSelection, Content.transform);
                 var selection = selectionObject.GetComponent<InputSelection>();
                 // TODO: Probably some parsing on the selection title and some specific ordering of available inputs
-                if(kvp.Value is Digital)
-                    selection.Init(kvp.Key, kvp.Key, kvp.Value.Name, kvp.Value.Modifier, this);
+                if(val is Digital)
+                    selection.Init(inputKey, inputKey, val.Name, val.Modifier, this);
                 else
-                    selection.Init(kvp.Key, kvp.Key,
-                        kvp.Value.UsePositiveSide ? $"(+) {kvp.Value.Name}" : $"(-) {kvp.Value.Name}", kvp.Value.Modifier, this);
+                    selection.Init(inputKey, inputKey,
+                        val.UsePositiveSide ? $"(+) {val.Name}" : $"(-) {val.Name}", val.Modifier, this);
             }
         }
 

@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
+using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager.InputEvents;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Utilities;
 using UnityEngine;
+
 using Input = SynthesisAPI.InputManager.Inputs.Input;
 
 namespace SynthesisAPI.InputManager
@@ -27,47 +29,44 @@ namespace SynthesisAPI.InputManager
             get => new ReadOnlyDictionary<string, Analog>(_mappedValueInputs);
         }
 
-        public static void AssignDigitalInput(string name, Digital input, EventBus.EventBus.EventCallback callback = null) // TODO remove callback argument?
-        {
+        public static void AssignDigitalInput(string name, Digital input, EventBus.EventBus.EventCallback callback = null) { // TODO remove callback argument?
             _mappedDigitalInputs[name] = new Digital[] { input };
             if (callback != null)
                 EventBus.EventBus.NewTagListener($"input/{name}", callback);
         }
 
-        public static void UnassignDigitalInput(string name)
-        {
+        public static void UnassignDigitalInput(string name) {
             _mappedDigitalInputs.Remove(name);
             EventBus.EventBus.RemoveAllTagListeners($"input/{name}");
         }
 
-        public static void AssignDigitalInputs(string name, Digital[] input, EventBus.EventBus.EventCallback callback = null)
-        {
+        public static void AssignDigitalInputs(string name, Digital[] input, EventBus.EventBus.EventCallback callback = null) {
             _mappedDigitalInputs[name] = input;
             if(callback != null)
                 EventBus.EventBus.NewTagListener($"input/{name}", callback);
         }
 
-        public static void AssignValueInput(string name, Analog input)
-        {
+        /// <summary>
+        /// Assign a name to an input.
+        /// </summary>
+        /// <param name="name">Name of Input</param>
+        /// <param name="input">Analog of the input to check for activity for</param>
+        /// <param name="mute">Set mute to true if you wish to mute the event call for the input being assigned</param>
+        public static void AssignValueInput(string name, Analog input, bool mute = false) {
             _mappedValueInputs[name] = input;
+            if (!mute)
+                EventBus.EventBus.Push(new ValueInputAssignedEvent(name, input));
         }
 
-        public static void UpdateInputs()
-        {
-            foreach(string name in _mappedDigitalInputs.Keys)
-            {
-                foreach(Input input in _mappedDigitalInputs[name])
-                {
-                    if (!input.Name.EndsWith("non-ui") && input.Update())
-                    {
-                        if (input is MouseDown mouseDown)
-                        {
+        public static void UpdateInputs() {
+            foreach(string name in _mappedDigitalInputs.Keys) {
+                foreach(Input input in _mappedDigitalInputs[name]) {
+                    if (!input.Name.EndsWith("non-ui") && input.Update()) {
+                        if (input is MouseDown mouseDown) {
                             EventBus.EventBus.Push($"input/{name}",
                                 new MouseDownEvent(name, mouseDown.Value, mouseDown.State, mouseDown.MousePosition)
                                 );
-                        }
-                        else if (input is Digital digitalInput)
-                        {
+                        } else if (input is Digital digitalInput) {
                             EventBus.EventBus.Push($"input/{name}",
                                 new DigitalEvent(name, digitalInput.Value, digitalInput.State)
                                 );
@@ -77,18 +76,15 @@ namespace SynthesisAPI.InputManager
             }
         }
 
-        public static float GetValue(string name)
-        {
-            if (_mappedValueInputs.ContainsKey(name))
-            {
+        public static float GetValue(string name) {
+            if (_mappedValueInputs.ContainsKey(name)) {
                 _mappedValueInputs[name].Update();
                 return _mappedValueInputs[name].Value;
             }
             throw new Exception($"Value Input is not mapped with name \"{name}\"");
         }
 
-        public static void SetAllDigitalInputs(Dictionary<string, Digital[]> input)
-        {
+        public static void SetAllDigitalInputs(Dictionary<string, Digital[]> input) {
             _mappedDigitalInputs = input;
         }
 
@@ -160,6 +156,15 @@ namespace SynthesisAPI.InputManager
                 }
                 return _modifierInputs;
             }
+        }
+    }
+
+    public class ValueInputAssignedEvent : IEvent {
+        public readonly string InputKey;
+        public readonly Analog Input;
+        public ValueInputAssignedEvent(string key, Analog input) {
+            InputKey = key;
+            Input = input;
         }
     }
 }

@@ -20,12 +20,14 @@ using Synthesis.Util;
 
 public class RobotSimObject : SimObject {
 
+    public static string CurrentlyPossessedRobot { get; private set; }
+
     public static int ControllableJointCounter = 0;
 
     public Assembly MiraAssembly { get; private set; }
     public GameObject GroundedNode { get; private set; }
     public Bounds GroundedBounds { get; private set; }
-    public GameObject RobotNode { get; private set; }
+    public GameObject RobotNode { get; private set; } // Doesn't work??
     public Bounds RobotBounds { get; private set; }
 
     public SimBehaviour DriveBehaviour { get; private set; }
@@ -44,6 +46,18 @@ public class RobotSimObject : SimObject {
         RobotBounds = GetBounds(RobotNode.transform);
         GroundedBounds = GetBounds(GroundedNode.transform);
         DebugJointAxes.DebugBounds.Add((GroundedBounds, () => GroundedNode.transform.localToWorldMatrix));
+    }
+
+    public void Possess() {
+        CurrentlyPossessedRobot = this.Name;
+        Camera.main.GetComponent<CameraController>().FocusPoint =
+            () => GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center);
+    }
+
+    public override void Destroy() {
+        if (CurrentlyPossessedRobot.Equals(this._name))
+            CurrentlyPossessedRobot = string.Empty;
+        MonoBehaviour.Destroy(GroundedNode.transform.parent.gameObject);
     }
 
     private Bounds GetBounds(Transform top) {
@@ -221,8 +235,9 @@ public class RobotSimObject : SimObject {
 
         // Event call maybe?
 
-        Camera.main.GetComponent<CameraController>().FocusPoint =
-            () => simObject.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(simObject.GroundedBounds.center);
+        // Camera.main.GetComponent<CameraController>().FocusPoint =
+        //     () => simObject.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(simObject.GroundedBounds.center);
+        simObject.Possess();
         GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, mira.RobotObject.transform, mira.RobotObject.transform.position);
     }
 }

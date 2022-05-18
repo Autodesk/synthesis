@@ -37,6 +37,7 @@
   </PropertyGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\Gizmos\SelectableArrow.cs" />
+     <Compile Include="Assets\Scripts\PreferenceManager\SimulationPreferences.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Drivetrain\DrivetrainSubPanel.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\LoadModuleException.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Gearboxes\GearboxItem.cs" />
@@ -138,7 +139,6 @@
      <Compile Include="Assets\Scripts\Importer\Importer.cs" />
      <Compile Include="Assets\Scripts\Test\DebugJointAxes.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\DraggablePanel.cs" />
-     <Compile Include="Assets\Scripts\PreferenceManager\RobotPrefSet.cs" />
      <None Include="Assets\Scripts\CoreEngine.asmdef" />
     <Reference Include="UnityEngine">
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>

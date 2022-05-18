@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Google.Protobuf.WellKnownTypes;
 using Synthesis.PreferenceManager;
+using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
@@ -21,19 +22,38 @@ namespace Synthesis {
         public GeneralSliderBehaviour(string simObjectId, string sliderSignal) : base(simObjectId) {
             _sliderSignal = sliderSignal;
 
-            var name = SimulationManager.SimulationObjects[simObjectId].State.CurrentSignalLayout.SignalMap[_sliderSignal].Info.Name;
+            InitInputs(GetInputs());
+
+            EventBus.NewTypeListener<ValueInputAssignedEvent>(OnValueInputAssigned);
+        }
+
+        public (string key, Analog input)[] GetInputs() {
+            var name = SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignalLayout.SignalMap[_sliderSignal].Info.Name;
             FORWARD = name + FORWARD;
             REVERSE = name + REVERSE;
 
-            if (RobotSimObject.ControllableJointCounter > 9)
-                Logger.Log("Too Many Slider Joints. Need to come up with a better plan to generate keys", LogLevel.Debug);
-
             var key = ((RobotSimObject.ControllableJointCounter + 1) % 10).ToString();
-            InputManager.AssignValueInput(FORWARD, SimulationPreferences.GetRobotInput(
-            (SimulationManager.SimulationObjects[simObjectId] as RobotSimObject).MiraAssembly.Info.GUID, FORWARD) ?? new Digital("Alpha" + key));
-            InputManager.AssignValueInput(REVERSE, SimulationPreferences.GetRobotInput(
-            (SimulationManager.SimulationObjects[simObjectId] as RobotSimObject).MiraAssembly.Info.GUID, REVERSE) ?? new Digital("Alpha" + key, (int)ModKey.LeftShift));
             RobotSimObject.ControllableJointCounter++;
+            return new (string key, Analog input)[] {
+                (FORWARD, TryLoadInput(FORWARD, new Digital("Alpha" + key))),
+                (REVERSE, TryLoadInput(REVERSE, new Digital("Alpha" + key, (int)ModKey.LeftShift)))
+            };
+        }
+
+        public Analog TryLoadInput(string key, Analog defaultInput)
+            => SimulationPreferences.GetRobotInput((SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject).MiraAssembly.Info.GUID, key)
+                ?? defaultInput;
+
+        private void OnValueInputAssigned(IEvent tmp) {
+            ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
+            if (args.InputKey.Equals(FORWARD) || args.InputKey.Equals(REVERSE)) {
+                SimulationPreferences.SetRobotInput(
+                    (SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject).MiraAssembly.Info.GUID,
+                    args.InputKey,
+                    args.Input);
+            }
+
+            PreferenceManager.PreferenceManager.Save();
         }
 
         public override void Update() {

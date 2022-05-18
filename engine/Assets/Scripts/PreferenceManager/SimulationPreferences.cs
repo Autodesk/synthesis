@@ -32,7 +32,7 @@ namespace Synthesis.PreferenceManager {
 
         private class Inner {
 
-            private Dictionary<string, RobotData> _allRobotData;
+            private Dictionary<string, RobotData> _allRobotData = new  Dictionary<string, RobotData>();
 
             public Inner() {
                 EventBus.NewTypeListener<PrePreferenceSaveEvent>(PreSaveDump);
@@ -110,6 +110,9 @@ namespace Synthesis.PreferenceManager {
         public Type Type;
         [JsonProperty]
         public string Data;
+
+        [JsonConstructor]
+        public InputData() { }
 
         public InputData(Analog input) {
             this.Type = input.GetType();

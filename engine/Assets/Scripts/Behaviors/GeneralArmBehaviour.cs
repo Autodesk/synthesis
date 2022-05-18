@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Google.Protobuf.WellKnownTypes;
 using Synthesis.PreferenceManager;
+using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
@@ -10,38 +11,69 @@ using UnityEngine;
 
 using Logger = SynthesisAPI.Utilities.Logger;
 
-public class GeneralArmBehaviour : SimBehaviour {
+namespace Synthesis {
+    public class GeneralArmBehaviour : SimBehaviour {
 
-    internal string FORWARD = " Forward"; // TODO
-    internal string REVERSE = " Reverse"; // TODO
+        internal string FORWARD = " Forward"; // TODO
+        internal string REVERSE = " Reverse"; // TODO
 
-    private string _armSignal;
-    private float _speedMod = 0.4f;
+        private string _armSignal;
+        private float _speedMod = 0.4f;
 
-    public GeneralArmBehaviour(string simObjectId, string armSignal) : base(simObjectId) {
-        _armSignal = armSignal;
+        public GeneralArmBehaviour(string simObjectId, string armSignal) : base(simObjectId) {// base(simObjectId, GetInputs(this, armSignal))
+            _armSignal = armSignal;
 
-        var name = SimulationManager.SimulationObjects[simObjectId].State.CurrentSignalLayout.SignalMap[armSignal].Info.Name;
-        FORWARD = name + FORWARD;
-        REVERSE = name + REVERSE;
+            // var name = SimulationManager.SimulationObjects[simObjectId].State.CurrentSignalLayout.SignalMap[armSignal].Info.Name;
+            // FORWARD = name + FORWARD;
+            // REVERSE = name + REVERSE;
 
-        if (RobotSimObject.ControllableJointCounter > 9)
-            Logger.Log("Too Many Arm Joints. Need to come up with a better plan to generate keys", LogLevel.Debug);
+            // if (RobotSimObject.ControllableJointCounter > 9)
+            //     Logger.Log("Too Many Arm Joints. Need to come up with a better plan to generate keys", LogLevel.Debug);
 
-        var key = ((RobotSimObject.ControllableJointCounter + 1) % 10).ToString();
-        InputManager.AssignValueInput(FORWARD, SimulationPreferences.GetRobotInput(
-            (SimulationManager.SimulationObjects[simObjectId] as RobotSimObject).MiraAssembly.Info.GUID, FORWARD) ?? new Digital("Alpha" + key));
-        InputManager.AssignValueInput(REVERSE, SimulationPreferences.GetRobotInput(
-            (SimulationManager.SimulationObjects[simObjectId] as RobotSimObject).MiraAssembly.Info.GUID, REVERSE) ?? new Digital("Alpha" + key, (int)ModKey.LeftShift));
-        RobotSimObject.ControllableJointCounter++;
-    }
+            // var key = ((RobotSimObject.ControllableJointCounter + 1) % 10).ToString();
+            // SetupInput(FORWARD, new Digital("Alpha" + key));
+            // SetupInput(REVERSE, new Digital("Alpha" + key, (int)ModKey.LeftShift));
+            // RobotSimObject.ControllableJointCounter++;
 
-    public override void Update() {
+            InitInputs(GetInputs());
 
-        var forw = InputManager.MappedValueInputs[FORWARD];
-        var rev = InputManager.MappedValueInputs[REVERSE];
-        float val = Mathf.Abs(forw.Value) - Mathf.Abs(rev.Value);
+            EventBus.NewTypeListener<ValueInputAssignedEvent>(OnValueInputAssigned);
+        }
 
-        SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignals[_armSignal].Value = Value.ForNumber(val * _speedMod);
+        public (string key, Analog input)[] GetInputs() {
+            var name = SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignalLayout.SignalMap[_armSignal].Info.Name;
+            FORWARD = name + FORWARD;
+            REVERSE = name + REVERSE;
+
+            var key = ((RobotSimObject.ControllableJointCounter + 1) % 10).ToString();
+            RobotSimObject.ControllableJointCounter++;
+            return new (string key, Analog input)[] {
+                (FORWARD, TryLoadInput(FORWARD, new Digital("Alpha" + key))),
+                (REVERSE, TryLoadInput(REVERSE, new Digital("Alpha" + key, (int)ModKey.LeftShift)))
+            };
+        }
+
+        public Analog TryLoadInput(string key, Analog defaultInput)
+            => SimulationPreferences.GetRobotInput((SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject).MiraAssembly.Info.GUID, key)
+                ?? defaultInput;
+
+        private void OnValueInputAssigned(IEvent tmp) {
+            ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
+            if (args.InputKey.Equals(FORWARD) || args.InputKey.Equals(REVERSE)) {
+                SimulationPreferences.SetRobotInput(
+                    (SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject).MiraAssembly.Info.GUID,
+                    args.InputKey,
+                    args.Input);
+            }
+        }
+
+        public override void Update() {
+
+            var forw = InputManager.MappedValueInputs[FORWARD];
+            var rev = InputManager.MappedValueInputs[REVERSE];
+            float val = Mathf.Abs(forw.Value) - Mathf.Abs(rev.Value);
+
+            SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignals[_armSignal].Value = Value.ForNumber(val * _speedMod);
+        }
     }
 }

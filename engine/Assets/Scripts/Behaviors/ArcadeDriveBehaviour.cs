@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Google.Protobuf.WellKnownTypes;
 using Synthesis.PreferenceManager;
+using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
@@ -11,15 +12,13 @@ using Input = UnityEngine.Input;
 using Logger = SynthesisAPI.Utilities.Logger;
 using Math = SynthesisAPI.Utilities.Math;
 
-namespace Synthesis
-{
-	public class ArcadeDriveBehaviour : SimBehaviour
-	{
+namespace Synthesis {
+	public class ArcadeDriveBehaviour : SimBehaviour {
 
-		internal const string FORWARD = "Arcade 1 Forward";
-		internal const string BACKWARD = "Arcade 1 Backward";
-		internal const string LEFT = "Arcade 1 Left";
-		internal const string RIGHT = "Arcade 1 Right";
+		internal const string FORWARD = "Arcade Forward";
+		internal const string BACKWARD = "Arcade Backward";
+		internal const string LEFT = "Arcade Left";
+		internal const string RIGHT = "Arcade Right";
 
 		private List<string> _leftSignals;
 		private List<string> _rightSignals;
@@ -41,8 +40,7 @@ namespace Synthesis
 		public double speedMult = 1.0f;
 
 		public ArcadeDriveBehaviour(string simObjectId, List<string> leftSignals, List<string> rightSignals, string inputName = "") : base(
-			simObjectId)
-		{
+			simObjectId) {
 			if (inputName == "")
 				inputName = simObjectId;
 
@@ -50,20 +48,40 @@ namespace Synthesis
 			_leftSignals = leftSignals;
 			_rightSignals = rightSignals;
 
-			InputManager.AssignValueInput(FORWARD, SimulationPreferences.GetRobotInput(
-            	(SimulationManager.SimulationObjects[simObjectId] as RobotSimObject).MiraAssembly.Info.GUID, FORWARD) ?? new Digital("W"));
-			InputManager.AssignValueInput(BACKWARD, SimulationPreferences.GetRobotInput(
-            	(SimulationManager.SimulationObjects[simObjectId] as RobotSimObject).MiraAssembly.Info.GUID, BACKWARD) ?? new Digital("S"));
-			InputManager.AssignValueInput(LEFT, SimulationPreferences.GetRobotInput(
-            	(SimulationManager.SimulationObjects[simObjectId] as RobotSimObject).MiraAssembly.Info.GUID, LEFT) ?? new Digital("A"));
-			InputManager.AssignValueInput(RIGHT, SimulationPreferences.GetRobotInput(
-            	(SimulationManager.SimulationObjects[simObjectId] as RobotSimObject).MiraAssembly.Info.GUID, RIGHT) ?? new Digital("D"));
+			InitInputs(GetInputs());
+
+			EventBus.NewTypeListener<ValueInputAssignedEvent>(OnValueInputAssigned);
 		}
 
-		public override void Update()
-		{
-			_didUpdate = true;
+		public (string key, Analog input)[] GetInputs() {
+            return new (string key, Analog input)[] {
+                (FORWARD, TryLoadInput(FORWARD, new Digital("W"))),
+                (BACKWARD, TryLoadInput(BACKWARD, new Digital("S"))),
+				(LEFT, TryLoadInput(LEFT, new Digital("A"))),
+				(RIGHT, TryLoadInput(RIGHT, new Digital("D")))
+            };
+        }
 
+        public Analog TryLoadInput(string key, Analog defaultInput)
+            => SimulationPreferences.GetRobotInput((SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject).MiraAssembly.Info.GUID, key)
+                ?? defaultInput;
+
+		private void OnValueInputAssigned(IEvent tmp) {
+			ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
+			switch (args.InputKey) {
+				case FORWARD:
+				case BACKWARD:
+				case LEFT:
+				case RIGHT:
+					SimulationPreferences.SetRobotInput(
+						(SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject).MiraAssembly.Info.GUID,
+						args.InputKey,
+						args.Input);
+					break;
+			}
+		}
+
+		public override void Update() {
 			var forwardInput = InputManager.MappedValueInputs[FORWARD];
 			var backwardInput = InputManager.MappedValueInputs[BACKWARD];
 			var leftInput = InputManager.MappedValueInputs[LEFT];
@@ -82,35 +100,24 @@ namespace Synthesis
 			_xSpeed = Math.Abs(_xSpeed) > DEADBAND ? _xSpeed : 0;
 			_zRot = Math.Abs(_zRot) > DEADBAND ? _zRot : 0;
 
-			if (_didUpdate)
-			{
-				_didUpdate = false;
-				_keyMask = 0b0000000;
-				(_leftSpeed, _rightSpeed) = SolveSpeed(_xSpeed, _zRot, _squareInputs);
-				foreach (var sig in _leftSignals)
-				{
-					SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignals[sig].Value = Value.ForNumber(_leftSpeed*speedMult);
-				}
-				foreach (var sig in _rightSignals)
-            	{
-            		SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignals[sig].Value = Value.ForNumber(_rightSpeed*speedMult);
-            	}
+			(_leftSpeed, _rightSpeed) = SolveSpeed(_xSpeed, _zRot, _squareInputs);
+			foreach (var sig in _leftSignals) {
+				SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignals[sig].Value = Value.ForNumber(_leftSpeed*speedMult);
 			}
-
+			foreach (var sig in _rightSignals) {
+				SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignals[sig].Value = Value.ForNumber(_rightSpeed*speedMult);
+			}
 		}
 
 		// Implementation derived from https://github.com/wpilibsuite/allwpilib/blob/362066a9b77f38a2862e306b8119e753b199d4ae/wpilibc/src/main/native/cpp/drive/DifferentialDrive.cpp
-		protected static (float lSpeed, float rSpeed) SolveSpeed(float xSpeed, float zRot, bool squareInputs)
-		{
-			if (xSpeed == 0 && zRot == 0)
-			{
+		protected static (float lSpeed, float rSpeed) SolveSpeed(float xSpeed, float zRot, bool squareInputs) {
+			if (xSpeed == 0 && zRot == 0) {
 				return (0, 0);
 			}
 			xSpeed = Math.Clamp(xSpeed, -1, 1);
 			zRot = Math.Clamp(zRot, -1, 1);
 
-			if (squareInputs)
-			{
+			if (squareInputs) {
 				xSpeed = xSpeed * xSpeed * (xSpeed < 0 ? -1 : 1);
 				zRot = zRot * zRot * (zRot < 0 ? -1 : 1);
 			}

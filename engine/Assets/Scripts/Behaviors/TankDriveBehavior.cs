@@ -1,53 +1,89 @@
 ﻿using System.Collections.Generic;
 using Google.Protobuf.WellKnownTypes;
 using Mirabuf;
+using Synthesis.PreferenceManager;
 using SynthesisAPI.EnvironmentManager;
+using SynthesisAPI.EventBus;
+using SynthesisAPI.InputManager;
+using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
 using UnityEngine;
 
-namespace Synthesis
-{
-	public class TankDriveBehavior : SimBehaviour
-	{
+namespace Synthesis {
+	public class TankDriveBehavior : SimBehaviour {
+
+		internal const string LEFT_FORWARD = "Tank Left Forward";
+		internal const string LEFT_REVERSE = "Tank Left Reverse";
+		internal const string RIGHT_FORWARD = "Tank Right Forward";
+		internal const string RIGHT_REVERSE = "Tank Right Reverse";
 
 		private List<string> _leftSignals;
 		private List<string> _rightSignals;
-		private bool         _didUpdate;
-		private double       _leftSpeed;
-		private double       _rightSpeed;
-		private double       _inL;
-		private double       _inR;
-		private object       _squareInputs;
+		private double       _speed;
 
-		public TankDriveBehavior(string simObjectId, List<string> leftSignals, List<string> rightSignals) : base(simObjectId)
-		{
+		public TankDriveBehavior(string simObjectId, List<string> leftSignals, List<string> rightSignals) : base(simObjectId) {
 			SimObjectId = simObjectId;
 			_leftSignals = leftSignals;
 			_rightSignals = rightSignals;
+
+			InitInputs(GetInputs());
+
+			EventBus.NewTypeListener<ValueInputAssignedEvent>(OnValueInputAssigned);
 		}
 
-		public override void Update()
-		{
+		public (string key, Analog input)[] GetInputs() {
+            return new (string key, Analog input)[] {
+                (LEFT_FORWARD, TryLoadInput(LEFT_FORWARD, new Digital("W"))),
+                (LEFT_REVERSE, TryLoadInput(LEFT_REVERSE, new Digital("S"))),
+				(RIGHT_FORWARD, TryLoadInput(RIGHT_FORWARD, new Digital("I"))),
+				(RIGHT_REVERSE, TryLoadInput(RIGHT_REVERSE, new Digital("K")))
+            };
+        }
 
-			if (_didUpdate)
-			{
-				_didUpdate = false;
-				(_leftSpeed, _rightSpeed) = SolveSpeed(_inL, _inR, false);
-				foreach (var sig in _leftSignals)
-				{
-					SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignals[sig].Value = Value.ForNumber(_leftSpeed);
-				}
-				foreach (var sig in _rightSignals)
-            	{
-            		SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignals[sig].Value = Value.ForNumber(-_rightSpeed);
-            	}
+        public Analog TryLoadInput(string key, Analog defaultInput)
+            => SimulationPreferences.GetRobotInput((SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject).MiraAssembly.Info.GUID, key)
+                ?? defaultInput;
+
+		private void OnValueInputAssigned(IEvent tmp) {
+			ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
+			switch (args.InputKey) {
+				case LEFT_FORWARD:
+				case LEFT_REVERSE:
+				case RIGHT_FORWARD:
+				case RIGHT_REVERSE:
+					SimulationPreferences.SetRobotInput(
+						(SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject).MiraAssembly.Info.GUID,
+						args.InputKey,
+						args.Input);
+					break;
 			}
 		}
 
-		protected static (double, double) SolveSpeed(double lSpeed, double rSpeed, bool squareInputs)
-		{
-			return (0, 0);
+		public override void Update() {
+			var lf = InputManager.MappedValueInputs[LEFT_FORWARD];
+			var lr = InputManager.MappedValueInputs[LEFT_REVERSE];
+			var rf = InputManager.MappedValueInputs[RIGHT_FORWARD];
+			var rr = InputManager.MappedValueInputs[RIGHT_REVERSE];
+
+			float leftIn = 0f;
+			float rightIn = 0f;
+
+			if (lr is Digital)
+				leftIn = lf.Value - lr.Value;
+			else
+				leftIn = lf.Value + lr.Value;
+			if (rr is Digital)
+				rightIn = rf.Value - rr.Value;
+			else
+				rightIn = rf.Value + rr.Value;
+
+			foreach (var sig in _leftSignals) {
+				SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignals[sig].Value = Value.ForNumber(leftIn*_speed);
+			}
+			foreach (var sig in _rightSignals) {
+				SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignals[sig].Value = Value.ForNumber(rightIn*_speed);
+			}
 		}
 	}
 }

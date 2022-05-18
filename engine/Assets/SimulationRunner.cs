@@ -2,19 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using Synthesis.PreferenceManager;
 using SynthesisAPI.Simulation;
+using SynthesisAPI.Utilities;
 using UnityEngine;
 
-public class SimulationRunner : MonoBehaviour
-{
-    // Start is called before the first frame update
+using Logger = SynthesisAPI.Utilities.Logger;
+
+public class SimulationRunner : MonoBehaviour {
     void Start() {
         PreferenceManager.Load();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
+    void Update() {
         SimulationManager.Update();
+
+        if (Input.GetKeyDown(KeyCode.K)) {
+            if (!SimulationManager.RemoveSimObject(RobotSimObject.CurrentlyPossessedRobot))
+                Logger.Log("Failed", LogLevel.Debug);
+            else
+                Logger.Log("Succeeded", LogLevel.Debug);
+        }
     }
 
     void OnDestroy() {

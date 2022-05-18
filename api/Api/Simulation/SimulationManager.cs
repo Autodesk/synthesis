@@ -69,12 +69,20 @@ namespace SynthesisAPI.Simulation {
                 OnNewSimulationObject(so);
         }
 
+        public static bool RemoveSimObject(string so) {
+            if (_simulationObject.ContainsKey(so))
+                return RemoveSimObject(_simulationObject[so]);
+            return false;
+        }
+
         public static bool RemoveSimObject(SimObject so) {
             Drivers.Remove(so.Name);
             Behaviours.Remove(so.Name);
             var res = _simulationObject.Remove(so.Name);
-            if (res && OnRemoveSimulationObject != null)
+            if (res && OnRemoveSimulationObject != null) {
+                so.Destroy();
                 OnRemoveSimulationObject(so);
+            }
             return res;
         }
     }
