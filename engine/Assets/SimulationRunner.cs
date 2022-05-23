@@ -15,12 +15,12 @@ public class SimulationRunner : MonoBehaviour {
     void Update() {
         SimulationManager.Update();
 
-        if (Input.GetKeyDown(KeyCode.K)) {
-            if (!SimulationManager.RemoveSimObject(RobotSimObject.CurrentlyPossessedRobot))
-                Logger.Log("Failed", LogLevel.Debug);
-            else
-                Logger.Log("Succeeded", LogLevel.Debug);
-        }
+        // if (Input.GetKeyDown(KeyCode.K)) {
+        //     if (!SimulationManager.RemoveSimObject(RobotSimObject.CurrentlyPossessedRobot))
+        //         Logger.Log("Failed", LogLevel.Debug);
+        //     else
+        //         Logger.Log("Succeeded", LogLevel.Debug);
+        // }
     }
 
     void OnDestroy() {

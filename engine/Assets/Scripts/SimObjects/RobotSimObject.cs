@@ -55,8 +55,11 @@ public class RobotSimObject : SimObject {
     }
 
     public override void Destroy() {
-        if (CurrentlyPossessedRobot.Equals(this._name))
+        if (CurrentlyPossessedRobot.Equals(this._name)) {
             CurrentlyPossessedRobot = string.Empty;
+            Camera.main.GetComponent<CameraController>().FocusPoint =
+                () => Vector3.zero;
+        }
         MonoBehaviour.Destroy(GroundedNode.transform.parent.gameObject);
     }
 
