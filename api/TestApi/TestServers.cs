@@ -13,7 +13,6 @@ using SynthesisAPI.Simulation;
 
 namespace TestApi
 {
-    /*
     [TestFixture]
     public static class TestServers
     {
@@ -273,6 +272,5 @@ namespace TestApi
             }
             
         }
-    } 
-*/
+    }
 }
