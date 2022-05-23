@@ -258,7 +258,7 @@ namespace TestApi
                         Name = "signal",
                         GUID = Guid.NewGuid().ToString()
                     },
-                    DeviceType = "Digital",
+                    DeviceType = DeviceType.Digital,
                     Io = IOType.Output
                 });
                 SimulationManager.RegisterSimObject(new SimObject("Robot", new ControllableState()
