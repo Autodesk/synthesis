@@ -3,8 +3,8 @@ from adsk.core import Vector3D
 # from proto.proto_out import types_pb2
 
 
-def fill_info(proto_obj, fus_object) -> None:
-    construct_info("", proto_obj, fus_object=fus_object)
+def fill_info(proto_obj, fus_object, override_guid=None) -> None:
+    construct_info("", proto_obj, fus_object=fus_object, GUID=override_guid)
 
 
 def construct_info(name: str, proto_obj, version=3, fus_object=None, GUID=None) -> None:

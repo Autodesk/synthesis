@@ -27,7 +27,7 @@ class Parser:
             design = app.activeDocument.design
 
             assembly_out = assembly_pb2.Assembly()
-            fill_info(assembly_out, design.rootComponent)
+            fill_info(assembly_out, design.rootComponent, override_guid=design.parentDocument.name)
 
             # set int to 0 in dropdown selection for dynamic
             assembly_out.dynamic = self.parseOptions.mode == 0
