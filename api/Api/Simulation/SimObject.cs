@@ -14,7 +14,8 @@ namespace SynthesisAPI.Simulation {
         }
 
         // This was Init. No idea why but it might need to be
-        public SimObject(string name, ControllableState state) {
+        public SimObject(string name, ControllableState state)
+        {
             _name = name;
             _state = state;
         }

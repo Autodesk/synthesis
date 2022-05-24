@@ -7,9 +7,11 @@ message ConnectionMessage {
         ConnectionResponse connection_resonse = 2;
         ResourceOwnershipRequest resource_ownership_request = 3;
         ResourceOwnershipResponse resource_ownership_response = 4;
-        TerminateConnectionRequest terminate_connection_request = 5;
-        TerminateConnectionResponse terminate_connection_response = 6;
-        Heartbeat heartbeat = 7;
+	    ReleaseResourceRequest release_resource_request = 5;
+	    ReleaseResourceResponse release_resource_response = 6;
+        TerminateConnectionRequest terminate_connection_request = 7;
+        TerminateConnectionResponse terminate_connection_response = 8;
+        Heartbeat heartbeat = 9;
     }
 
     message ConnectionRequest {}
@@ -27,20 +29,25 @@ message ConnectionMessage {
         bool confirm = 1;
         string error = 2;
         string resource_name = 3;
-        bytes guid = 4;
+        string guid = 4;
         int32 generation = 5;
     }
 
-    message TerminateConnectionRequest {
-        string resource_name = 1;
-        bytes guid = 2;
-        int32 generation = 3;
+    message ReleaseResourceRequest {
+	    string resource_name = 1;
     }
+
+    message ReleaseResourceResponse {
+	    bool confirm = 1;
+	    string error = 2;
+	    string resource_name = 3;
+    }
+
+    message TerminateConnectionRequest {}
 
     message TerminateConnectionResponse {
         bool confirm = 1;
-        string resource_name = 2;
-        string error = 3;
+        string error = 2;
     }
 
     message Heartbeat {}

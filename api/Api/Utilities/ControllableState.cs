@@ -17,6 +17,8 @@ namespace SynthesisAPI.Utilities
      */
     public class ControllableState
     {
+        private int _generation;
+        private bool _isFree;
         private Signals? _currentSignalLayout;
         public Signals? CurrentSignalLayout
         {
@@ -25,15 +27,13 @@ namespace SynthesisAPI.Utilities
             {
                 _currentSignalLayout = value;
                 CurrentSignals = new Dictionary<string, UpdateSignal>();
-                Owner = null;
-                Generation = 1;
                 if (value.Info == null)
                 {
-                    Guid = ByteString.CopyFrom(System.Guid.NewGuid().ToByteArray());
+                    Guid = System.Guid.NewGuid().ToString();
                 }
                 else
                 {
-                    Guid = ByteString.CopyFromUtf8(value.Info.GUID);
+                    Guid = value.Info.GUID;
                 }
 
                 foreach (var kvp in value.SignalMap)
@@ -49,10 +49,24 @@ namespace SynthesisAPI.Utilities
         }
 
         public Dictionary<string, UpdateSignal> CurrentSignals { get; private set; }
-        public int Generation { get; private set; }
-        public ByteString Guid { get; set; }
-        public TcpClient? Owner { get; set; }
-        
+        public string Guid { get; set; }
+
+        public int Generation { get => _generation; }
+
+        public bool IsFree
+        {
+            get => _isFree;
+            set
+            {
+                if (!value) _isFree = false;
+                else
+                {
+                    _generation += 1;
+                    _isFree = true;
+                }
+            }
+        }
+
         public void Update(UpdateSignals updateSignals)
         {
             foreach (var kvp in updateSignals.SignalMap)
@@ -66,12 +80,6 @@ namespace SynthesisAPI.Utilities
                     Logger.Log("Layout does not contain key: " + kvp.Key, LogLevel.Debug);
                 }    
             }
-        }
-
-        public void ReleaseResource()
-        {
-            Owner = null;
-            Generation += 1;
         }
     }
 }
