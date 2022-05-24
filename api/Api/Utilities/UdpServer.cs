@@ -111,12 +111,12 @@ namespace SynthesisAPI.Utilities
 
             private UdpClient listenerClient;
             private IPEndPoint listenerIpEndPoint;
-            private int listenerPort;
+            public int listenerPort;
 
             private IPAddress multicastAddress;
             private UdpClient outputClient;
             private IPEndPoint outputIpEndPoint;
-            private int outputPort;
+            public int outputPort;
 
             public Dictionary<string, SimObject>? SimObjectsTarget { get; set; }
             private ConcurrentQueue<UpdateSignals> updates;
@@ -154,6 +154,18 @@ namespace SynthesisAPI.Utilities
         public static void Start() { Server.Instance.IsRunning = true; }
 
         public static void Stop() { Server.Instance.IsRunning = false; }
+
+        public static int ListenerPort
+        {
+            get => Server.Instance.listenerPort;
+            set => Server.Instance.listenerPort = value;
+        }
+
+        public static int OutputPort
+        {
+            get => Server.Instance.outputPort;
+            set => Server.Instance.outputPort = value;
+        }
 
         public static Dictionary<string, SimObject> SimulationObjectsTarget 
         { 
