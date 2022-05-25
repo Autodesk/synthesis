@@ -20,7 +20,9 @@ using Synthesis.Util;
 
 public class RobotSimObject : SimObject {
 
-    public static string CurrentlyPossessedRobot { get; private set; }
+    public static string CurrentlyPossessedRobot { get; private set; } = string.Empty;
+    public static RobotSimObject GetCurrentlyPossessedRobot()
+        => CurrentlyPossessedRobot == string.Empty ? null : SimulationManager._simulationObject[CurrentlyPossessedRobot] as RobotSimObject;
 
     public static int ControllableJointCounter = 0;
 

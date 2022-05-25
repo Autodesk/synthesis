@@ -4,9 +4,9 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-namespace Synthesis.UI.Bars
-{
-    
+
+namespace Synthesis.UI.Bars {
+    // TODO: Needs a big rework. We'll tackle this with the rest of the UI system later
     public class NavigationBar : MonoBehaviour
     {
         public GameObject homeTab;
@@ -23,6 +23,9 @@ namespace Synthesis.UI.Bars
         public NavigationBar navBarPrefab;
 
         private string lastOpenedPanel;
+
+        // private readonly Color unselectedPanelButton = new Color(0.23529f,0.23529f,0.23529f,1);
+        // private readonly Color selectedPanelButton = new Color(0.1f, 0.1f, 0.1f, 1);
 
         private void Start() {
             VersionNumber.text = $"v {AutoUpdater.LocalVersion}  ALPHA";
@@ -61,11 +64,11 @@ namespace Synthesis.UI.Bars
             if(prefab!=null){
                   
                 LayoutManager.OpenPanel(prefab, true);
-                if(_currentPanelButton!=null) changePanelButton(artifaktRegular,new Color(1,1,1,1));
+                if(_currentPanelButton!=null) changePanelButton(artifaktRegular,1f);
 
                 //set current panel button to the button clicked
                 _currentPanelButton = EventSystem.current.currentSelectedGameObject;
-                changePanelButton(artifaktBold,new Color(0.8705882f,0.8705882f,0.8705882f,1));
+                changePanelButton(artifaktBold,0.6f);
 
                 // Analytics Stuff
                 lastOpenedPanel = prefab.name; // this will need to be an array for movable panels
@@ -75,17 +78,17 @@ namespace Synthesis.UI.Bars
         public void CloseAllPanels()
         {
             LayoutManager.ClosePanel();
-            if(_currentPanelButton!=null) changePanelButton(artifaktRegular,new Color(1,1,1,1));
+            if(_currentPanelButton!=null) changePanelButton(artifaktRegular,1f);
 
             PanelAnalytics(lastOpenedPanel, "Closed");
         }
-        private void changePanelButton(TMP_FontAsset f, Color c){ //changes color and font of the clicked button    
+        private void changePanelButton(TMP_FontAsset f, float opacity) {   
             //set font
             TextMeshProUGUI text = _currentPanelButton.transform.parent.GetComponentInChildren<TextMeshProUGUI>();
             if(text!=null)text.font = f;
 
             Image img = _currentPanelButton.GetComponent<Image>();
-            img.color = c;//color
+            img.color = new Color(img.color.r, img.color.g, img.color.b, opacity);
             
         }
 
