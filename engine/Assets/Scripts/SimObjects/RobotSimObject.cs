@@ -26,6 +26,8 @@ public class RobotSimObject : SimObject {
 
     public static int ControllableJointCounter = 0;
 
+    public string MiraGUID => MiraAssembly.Info.GUID;
+
     public Assembly MiraAssembly { get; private set; }
     public GameObject GroundedNode { get; private set; }
     public Bounds GroundedBounds { get; private set; }

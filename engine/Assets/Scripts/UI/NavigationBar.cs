@@ -57,6 +57,7 @@ namespace Synthesis.UI.Bars {
             VersionNumber.text = $"v {AutoUpdater.LocalVersion}  ALPHA";
 
             RegisterTab("Home", new HomeTab());
+            RegisterTab("Config", new ConfigTab());
             SelectTab("Home");
 
             // OpenTab(homeTab);

@@ -336,7 +336,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 15, y: 0}
   m_SizeDelta: {x: 0, y: 72}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &5780566829304558139
@@ -846,7 +846,7 @@ MonoBehaviour:
   TopButtonContainer: {fileID: 8406948017347011702}
   TopButtonPrefab: {fileID: 5984060356492803303, guid: 742e4eb1aed122b45be36758e5a65e6b, type: 3}
   SelectedTopButtonColor: {r: 0, g: 0.6765175, b: 1, a: 1}
-  UnselectedTopButtonColor: {r: 1, g: 1, b: 1, a: 1}
+  UnselectedTopButtonColor: {r: 0.5058824, g: 0.5019608, b: 0.5058824, a: 1}
   VersionNumber: {fileID: 8370716987390739144}
   artifaktRegular: {fileID: 11400000, guid: d773a0b9b3212ab4fb694b91237f4660, type: 2}
   artifaktBold: {fileID: 11400000, guid: 98cce4828f4b4e04997da22ea07c56cf, type: 2}

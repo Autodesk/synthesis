@@ -26,8 +26,22 @@ namespace Synthesis.PreferenceManager {
         public static Dictionary<string, Analog> GetRobotInputs(string robot)
             => Instance.GetRobotInputs(robot);
 
+        public static JointMotor? GetRobotJointMotor(string robot, string motorKey)
+            => Instance.GetRobotJointMotor(robot, motorKey);
+
+        public static float? GetRobotJointSpeed(string robot, string speedKey)
+            => Instance.GetRobotJointSpeed(robot, speedKey);
+
         public static void SetRobotInput(string robot, string inputKey, Analog inputValue) {
             Instance.SetRobotInput(robot, inputKey, inputValue);
+        }
+
+        public static void SetRobotJointMotor(string robot, string motorKey, JointMotor motor) {
+            Instance.SetRobotJointMotor(robot, motorKey, motor);
+        }
+
+        public static void SetRobotJointSpeed(string robot, string speedKey, float speed) {
+            Instance.SetRobotJointSpeed(robot, speedKey, speed);
         }
 
         private class Inner {
@@ -76,12 +90,50 @@ namespace Synthesis.PreferenceManager {
                 return inputs;
             }
 
+            public JointMotor? GetRobotJointMotor(string robot, string motorKey) {
+                if (!_allRobotData.ContainsKey(robot))
+                    return null;
+
+                var motors = _allRobotData[robot].JointMotors;
+                if (!motors.ContainsKey(motorKey))
+                    return null;
+
+                return motors[motorKey];
+            }
+
+            public float? GetRobotJointSpeed(string robot, string speedKey) {
+                if (!_allRobotData.ContainsKey(robot))
+                    return null;
+
+                var speeds = _allRobotData[robot].JointSpeeds;
+                if (!speeds.ContainsKey(speedKey))
+                    return null;
+
+                return speeds[speedKey];
+            }
+
             public void SetRobotInput(string robot, string inputKey, Analog inputValue) {
                 if (!_allRobotData.ContainsKey(robot))
-                    _allRobotData[robot] = new RobotData { AssemblyGuid = robot, InputData = new Dictionary<string, InputData>() };
+                    _allRobotData[robot] = new RobotData(robot);
                 var rData = _allRobotData[robot];
                 rData.InputData[inputKey] = new InputData(inputValue);
-                _allRobotData[robot] = rData; // I changed it to a class so Im not sure if this is needed
+                // _allRobotData[robot] = rData; // I changed it to a class so Im not sure if this is needed
+            }
+
+            public void SetRobotJointMotor(string robot, string motorKey, JointMotor m) {
+                if (!_allRobotData.ContainsKey(robot))
+                    _allRobotData[robot] = new RobotData(robot);
+                var rData = _allRobotData[robot];
+                rData.JointMotors[motorKey] = m;
+                // _allRobotData[robot] = rData;
+            }
+
+            public void SetRobotJointSpeed(string robot, string speedKey, float speed) {
+                if (!_allRobotData.ContainsKey(robot))
+                    _allRobotData[robot] = new RobotData(robot);
+                var rData = _allRobotData[robot];
+                rData.JointSpeeds[speedKey] = speed;
+                // _allRobotData[robot] = rData;
             }
         }
 
@@ -98,10 +150,27 @@ namespace Synthesis.PreferenceManager {
 
     [JsonObject(MemberSerialization.OptIn)]
     public class RobotData {
+        [JsonConstructor]
+        public RobotData() {
+            AssemblyGuid = string.Empty;
+            InputData = new Dictionary<string, InputData>();
+            JointMotors = new Dictionary<string, JointMotor>();
+            JointSpeeds = new Dictionary<string, float>();
+        }
+        public RobotData(string guid) {
+            AssemblyGuid = guid;
+            InputData = new Dictionary<string, InputData>();
+            JointMotors = new Dictionary<string, JointMotor>();
+            JointSpeeds = new Dictionary<string, float>();
+        }
         [JsonProperty]
         public string AssemblyGuid;
         [JsonProperty]
         public Dictionary<string, InputData> InputData;
+        [JsonProperty]
+        public Dictionary<string, JointMotor> JointMotors;
+        [JsonProperty]
+        public Dictionary<string, float> JointSpeeds;
     }
 
     [JsonObject(MemberSerialization.OptIn)]

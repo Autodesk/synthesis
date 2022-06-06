@@ -311,13 +311,7 @@ namespace Synthesis.Import
 					if (instance.HasSignal()) {
 						var driver = new RotationalDriver(
 							assembly.Data.Signals.SignalMap[instance.SignalReference].Info.GUID,
-							new string[] {instance.SignalReference}, Array.Empty<string>(), simObject, revoluteA, revoluteB,
-							new JointMotor()
-							{
-								force = 2000.0f,
-								freeSpin = false,
-								targetVelocity = 500,
-							});
+							new string[] {instance.SignalReference}, Array.Empty<string>(), simObject, revoluteA, revoluteB);
 						SimulationManager.AddDriver(assembly.Info.Name, driver);
 					}
 

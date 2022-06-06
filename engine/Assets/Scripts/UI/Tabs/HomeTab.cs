@@ -17,11 +17,6 @@ namespace Synthesis.UI.Tabs {
                 SynthesisAssetCollection.GetSpriteByName("fieldimport"),
                 () => LayoutManager.OpenPanel(SynthesisAssetCollection.GetPanelByName("Load-Field-Panel"))
             );
-            CreateButton(
-                "Controls",
-                SynthesisAssetCollection.GetSpriteByName("DriverStationView Gray"),
-                () => LayoutManager.OpenPanel(SynthesisAssetCollection.GetPanelByName("InputPanel"))
-            );
             CreateDivider();
             CreateButton(
                 "Robots",

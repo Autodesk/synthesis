@@ -72,9 +72,11 @@
      <Compile Include="Assets\Scripts\Test\ConfigurableJointTest.cs" />
      <Compile Include="Assets\Scripts\ModelManager\Models\Motor.cs" />
      <Compile Include="Assets\Scripts\Utilities\UtilExtensions.cs" />
+     <Compile Include="Assets\Scripts\UI\SynthesisAssetCollection.cs" />
      <Compile Include="Assets\Scripts\Behaviors\TankDriveBehavior.cs" />
      <Compile Include="Assets\Scripts\PTL.cs" />
      <Compile Include="Assets\Scripts\Attributes\ControllableInputAttribute.cs" />
+     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Joints\RotationalJointItem.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Drivetrain\ConfigureDrivetrainPanel.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Settings\SettingsInput.cs" />
      <Compile Include="Assets\Scripts\ServerMonobehaviour.cs" />
@@ -89,6 +91,7 @@
      <Compile Include="Assets\Scripts\Behaviors\GeneralSliderBehaviour.cs" />
      <Compile Include="Assets\Scripts\Attributes\ContextMenuOptionAttribute.cs" />
      <Compile Include="Assets\Scripts\UI\ToastLogger\ToastLogger.cs" />
+     <Compile Include="Assets\Scripts\UI\Tabs\TopButton.cs" />
      <Compile Include="Assets\Scripts\UI\InteractableObject.cs" />
      <Compile Include="Assets\Scripts\AutoUpdater.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Panel.cs" />
@@ -116,15 +119,19 @@
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\SpriteAdapter.cs" />
      <Compile Include="Assets\Scripts\Importer\DynamicObjectMeta.cs" />
      <Compile Include="Assets\Scripts\VersionManager.cs" />
+     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Joints\ConfigureJointsPanel.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\ModuleMetadata.cs" />
      <Compile Include="Assets\Scripts\ModelManager\Controllables\TestControllable.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\IApiAdapter.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\SelectableAdapter.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\CameraAdapter.cs" />
+     <Compile Include="Assets\Scripts\UI\Tabs\Tab.cs" />
      <Compile Include="Assets\Scripts\SimObjects\FieldSimObject.cs" />
      <Compile Include="Assets\Scripts\ModelManager\Models\Field.cs" />
      <Compile Include="Assets\Scripts\ModelManager\Models\GearboxData.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\AddPanel\AddPanel.cs" />
+     <Compile Include="Assets\Scripts\UI\Tabs\HomeTab.cs" />
+     <Compile Include="Assets\Scripts\UI\Tabs\Buttons\TabButton.cs" />
      <Compile Include="Assets\Scripts\Drivers\LinearDriver.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\ComponentAdapter.cs" />
      <Compile Include="Assets\Scripts\Importer\LegacyFieldImporter.cs" />
@@ -141,11 +148,7 @@
      <Compile Include="Assets\Scripts\Importer\Importer.cs" />
      <Compile Include="Assets\Scripts\Test\DebugJointAxes.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\DraggablePanel.cs" />
-     <Compile Include="Assets\Scripts\UI\Tabs\Tab.cs" />
-     <Compile Include="Assets\Scripts\UI\Tabs\HomeTab.cs" />
-     <Compile Include="Assets\Scripts\UI\SynthesisAssetCollection.cs" />
-     <Compile Include="Assets\Scripts\UI\Tabs\TopButton.cs" />
-     <Compile Include="Assets\Scripts\UI\Tabs\Buttons\TabButton.cs" />
+     <Compile Include="Assets\Scripts\UI\Tabs\ConfigTab.cs" />
      <None Include="Assets\Scripts\CoreEngine.asmdef" />
     <Reference Include="UnityEngine">
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
