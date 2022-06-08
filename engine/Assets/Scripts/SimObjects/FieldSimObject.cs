@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Mirabuf;
+using Synthesis.Import;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
 using UnityEngine;
@@ -32,5 +33,10 @@ public class FieldSimObject : SimObject {
     public void DeleteField() {
         GameObject.Destroy(FieldObject);
         SimulationManager.RemoveSimObject(this);
+    }
+
+    public static void SpawnField(string filePath) {
+        var mira = Importer.MirabufAssemblyImport(filePath);
+        mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
     }
 }

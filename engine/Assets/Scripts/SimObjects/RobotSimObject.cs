@@ -236,15 +236,15 @@ public class RobotSimObject : SimObject {
 
         var mira = Importer.MirabufAssemblyImport(filePath);
         RobotSimObject simObject = mira.Sim as RobotSimObject;
-        mira.RobotObject.transform.SetParent(GameObject.Find("Game").transform);
-        mira.RobotObject.transform.position = position;
-        mira.RobotObject.transform.rotation = rotation;
+        mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
+        mira.MainObject.transform.position = position;
+        mira.MainObject.transform.rotation = rotation;
 
         // Event call maybe?
 
         // Camera.main.GetComponent<CameraController>().FocusPoint =
         //     () => simObject.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(simObject.GroundedBounds.center);
         simObject.Possess();
-        GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, mira.RobotObject.transform, mira.RobotObject.transform.position);
+        GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, mira.MainObject.transform, mira.MainObject.transform.position);
     }
 }

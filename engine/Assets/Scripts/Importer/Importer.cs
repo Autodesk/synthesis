@@ -74,7 +74,7 @@ namespace Synthesis.Import
 
 		#region Mirabuf Importer
 
-		public static (GameObject RobotObject, Assembly MiraAssembly, SimObject Sim) MirabufAssemblyImport(string path, bool reverseSideJoints = false) {
+		public static (GameObject MainObject, Assembly MiraAssembly, SimObject Sim) MirabufAssemblyImport(string path, bool reverseSideJoints = false) {
 			byte[] buff = File.ReadAllBytes(path);
 
 			if (buff[0] == 0x1f && buff[1] == 0x8b) {
@@ -92,12 +92,12 @@ namespace Synthesis.Import
 			return MirabufAssemblyImport(buff, reverseSideJoints);
 		}
 
-		public static (GameObject RobotObject, Assembly MiraAssembly, SimObject Sim) MirabufAssemblyImport(byte[] buffer, bool reverseSideJoints = false)
+		public static (GameObject MainObject, Assembly MiraAssembly, SimObject Sim) MirabufAssemblyImport(byte[] buffer, bool reverseSideJoints = false)
 			=> MirabufAssemblyImport(Assembly.Parser.ParseFrom(buffer), reverseSideJoints);
 
 		private static List<Collider> _collidersToIgnore;
 
-		public static (GameObject RobotObject, Assembly MiraAssembly, SimObject Sim) MirabufAssemblyImport(Assembly assembly, bool reverseSideJoints = false)
+		public static (GameObject MainObject, Assembly MiraAssembly, SimObject Sim) MirabufAssemblyImport(Assembly assembly, bool reverseSideJoints = false)
 		{
 			// Uncommenting this will delete all bodies so the JSON file isn't huge
 			DebugAssembly(assembly);
@@ -630,6 +630,39 @@ namespace Synthesis.Import
 			groundJoint.joint.Parts?.Nodes?.AllTreeElements().Where(x => x.Value != null && x.Value != string.Empty).ForEach(x => {
 				if (!partMap.ContainsKey(x.Value))
 					MoveToDef(x.Value, string.Empty, groundDef.GUID);
+			});
+
+			int disjointedCounter = 0;
+			// Resolve disjointed groups
+			var firstNode = assembly.DesignHierarchy.Nodes[0];
+			var childrenOfFirstNode = firstNode.Children;
+
+			childrenOfFirstNode.ForEach(x => {
+				if (!groundDef.Parts.ContainsKey(x.Value)) {
+					var disjointedDef = new RigidbodyDefinition {
+						Name = $"disjointed-{disjointedCounter}",
+						GUID = $"disjointed-{disjointedCounter}",
+						Parts = new Dictionary<string, PartInstance>()
+					};
+					defs[disjointedDef.GUID] = disjointedDef;
+
+					var toCheck = new List<Node>();
+					MoveToDef(x.Value, string.Empty, disjointedDef.GUID);
+					x.Children.ForEach(y => {
+						toCheck.Add(y);
+					});
+					while (toCheck.Count > 0) {
+						var tmp = new List<Node>();
+						toCheck.ForEach(y => {
+							MoveToDef(y.Value, string.Empty, disjointedDef.GUID);
+							tmp.AddRange(y.Children);
+						});
+						toCheck.Clear();
+						toCheck = tmp;
+					}
+
+					disjointedCounter++;
+				}
 			});
 
 			// Apply RigidGroups

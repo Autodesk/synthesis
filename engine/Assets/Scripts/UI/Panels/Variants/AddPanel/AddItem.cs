@@ -31,7 +31,7 @@ public class AddItem : MonoBehaviour
 
     public void AddField()
     {
-        ModelManager.SetField(_fullPath);
+        FieldSimObject.SpawnField(_fullPath);
         ItemAnalytics("Field");
     }
 
