@@ -16,12 +16,14 @@ public class FieldSimObject : SimObject {
     public GameObject GroundedNode { get; private set; }
     public GameObject FieldObject { get; private set; }
     public Bounds FieldBounds { get; private set; }
+    public List<GamepieceSimObject> Gamepieces { get; private set; }
 
-    public FieldSimObject(string name, ControllableState state, Assembly assembly, GameObject groundedNode) : base(name, state) {
+    public FieldSimObject(string name, ControllableState state, Assembly assembly, GameObject groundedNode, List<GamepieceSimObject> gamepieces) : base(name, state) {
         MiraAssembly = assembly;
         GroundedNode = groundedNode;
         FieldObject = groundedNode.transform.parent.gameObject;
         FieldBounds = FieldObject.transform.GetBounds();
+        Gamepieces = gamepieces;
 
         // Level the field
         var position = FieldObject.transform.position;

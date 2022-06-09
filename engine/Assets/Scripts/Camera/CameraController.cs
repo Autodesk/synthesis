@@ -17,6 +17,7 @@ public class CameraController : MonoBehaviour {
     [SerializeField] public float ZoomUpperLimit;
     [SerializeField, Range(0.005f, 1.0f)] public float OrbitalAcceleration;
     [SerializeField, Range(0.005f, 1.0f)] public float ZoomAcceleration;
+    [SerializeField] public Renderer GroundRenderer;
     // [SerializeField] public Transform FollowTransform;
     public Func<Vector3> FocusPoint;
     public static bool isOverGizmo = false;
@@ -90,6 +91,8 @@ public class CameraController : MonoBehaviour {
     public void LateUpdate() {
         // Construct orientation of the camera
         Vector3 focus = FocusPoint == null ? Vector3.zero : FocusPoint();
+
+        GroundRenderer.material.SetVector("FOCUS_POINT", focus);
 
         var t = transform;
         t.localPosition = focus;
