@@ -125,11 +125,13 @@ namespace Synthesis.Import
 			// Import Rigid Definitions
 			#region Rigid Definitions
 
+			var gamepieces = new List<GamepieceSimObject>();
 			var rigidDefinitions = FindRigidbodyDefinitions(assembly);
 			foreach (var group in rigidDefinitions.definitions.Values)
 			{
 				GameObject groupObject = new GameObject(group.Name);
 				var collectivePhysData = new List<(UnityEngine.Transform, MPhysicalProperties)>();
+				var isGamepiece = !assembly.Dynamic && group.Name.Contains("gamepiece");
 				// Import Parts
 
 				#region Parts
@@ -141,7 +143,7 @@ namespace Synthesis.Import
 						var partInstance = part.Value;
 						var partDefinition = parts.PartDefinitions[partInstance.PartDefinitionReference];
 						GameObject partObject = new GameObject(partInstance.Info.Name);
-						MakePartDefinition(partObject, partDefinition, partInstance, assembly.Data);
+						MakePartDefinition(partObject, partDefinition, partInstance, assembly.Data, !isGamepiece);
 						partObjects.Add(partInstance.Info.GUID, partObject);
 						partObject.transform.parent = groupObject.transform;
 						// MARK: If transform changes do work recursively, apply transformations here instead of in a separate loop
@@ -163,8 +165,19 @@ namespace Synthesis.Import
 				totalMass += rb.mass;
 				rb.centerOfMass = combPhysProps.Com; // I actually don't need to flip this
 				groupObject.transform.parent = assemblyObject.transform;
-				groupObjects.Add(group.GUID, groupObject);
-				DebugJointAxes.DebugPoints.Add((combPhysProps.Com, () => groupObject.transform.localToWorldMatrix));
+				if (isGamepiece) {
+					var gpSim = new GamepieceSimObject(group.Name, groupObject);
+					try {
+						SimulationManager.RegisterSimObject(gpSim);
+					} catch {
+						// TODO: Fix
+						Logger.Log($"Gamepiece with name {gpSim.Name} already exists.");
+						UnityEngine.Object.Destroy(groupObject);
+					}
+				} else {
+					groupObjects.Add(group.GUID, groupObject);
+				}
+				// DebugJointAxes.DebugPoints.Add((combPhysProps.Com, () => groupObject.transform.localToWorldMatrix));
 			}
 
 			#endregion
@@ -189,7 +202,7 @@ namespace Synthesis.Import
 			} else {
 				if (FieldSimObject.CurrentField != null)
 					FieldSimObject.CurrentField.DeleteField();
-				simObject = new FieldSimObject(assembly.Info.Name, state, assembly, groupObjects["grounded"]);
+				simObject = new FieldSimObject(assembly.Info.Name, state, assembly, groupObjects["grounded"], gamepieces);
 				try {
 					SimulationManager.RegisterSimObject(simObject);
 				} catch {
@@ -438,7 +451,7 @@ namespace Synthesis.Import
 		}
 
 		public static void MakePartDefinition(GameObject container, PartDefinition definition, PartInstance instance,
-			AssemblyData assemblyData)
+			AssemblyData assemblyData, bool addToColliderIgnore = true)
 		{
 			PhysicMaterial physMat = new PhysicMaterial
 			{
@@ -463,7 +476,8 @@ namespace Synthesis.Import
 				collider.convex = true;
 				collider.sharedMesh = body.TriangleMesh.UnityMesh; // Again, not sure if this actually works
 				collider.material = physMat;
-				_collidersToIgnore.Add(collider);
+				if (addToColliderIgnore)
+					_collidersToIgnore.Add(collider);
 				bodyObject.transform.parent = container.transform;
 				// Ensure all transformations are zeroed after assigning parent
 				bodyObject.transform.localPosition = UVector3.zero;
@@ -688,8 +702,25 @@ namespace Synthesis.Import
 				defs.Add(newGrounded.GUID, newGrounded);
 			}
 
-			// Identify Orphaned parts and TBD
-			// TODO: Gonna just expected orphaned parts are insignificant and any parts that should be included, should be rigidgrouped
+			// Gamepieces: They are disjointed at the root level but will be labeled as gamepieces through the dynamic flag
+			int gamepieceCounter = 0;
+			if (!assembly.Dynamic) {
+				assembly.Data.Parts.PartDefinitions.Where(x => x.Value.Dynamic).ForEach(
+					x => assembly.Data.Parts.PartInstances.Where(y => y.Value.PartDefinitionReference.Equals(x.Key))
+						.ForEach(y => {
+							RigidbodyDefinition rigidDef = new RigidbodyDefinition {
+								Name = $"gamepiece_{gamepieceCounter}",
+								GUID = $"{counter}",
+								Parts = new Dictionary<string, PartInstance>()
+							};
+							defs.Add(rigidDef.GUID, rigidDef);
+							GetAllPartsInBranch(y.Key, paths).ForEach(z => MoveToDef(z, string.Empty, rigidDef.GUID));
+
+							gamepieceCounter++;
+							counter++;
+						})
+				);
+			}
 
 			return (defs, partMap);
 		}
@@ -733,6 +764,23 @@ namespace Synthesis.Import
 				LoadPartTreePaths(child, paths, currentPath);
 			}
 			currentPath.RemoveAt(currentPath.Count - 1);
+		}
+
+		public static List<string> GetAllPartsInBranch(string rootPart, Dictionary<string, List<string>> paths) {
+			var parts = new List<string>();
+			var toCheck = new List<string>();
+			toCheck.Add(rootPart);
+			while (toCheck.Count > 0) {
+				var tmp = new List<string>();
+				toCheck.ForEach(x => {
+					parts.Add(x);
+					if (paths.ContainsKey(x))
+						tmp.AddRange(paths[x]);
+				});
+				toCheck.Clear();
+				toCheck = tmp;
+			}
+			return parts;
 		}
 
 		#endregion
