@@ -42,6 +42,11 @@ def _MapAllComponents(
 
         PhysicalProperties.GetPhysicalProperties(component, partDefinition.physical_data)
 
+        if options.mode == 3:
+            partDefinition.dynamic = False
+        else:
+            partDefinition.dynamic = True
+
         for body in component.bRepBodies:
             if progressDialog.wasCancelled():
                 raise RuntimeError("User canceled export")
@@ -141,6 +146,13 @@ def __parseChildOccurrence(
     if compRef in def_map:
         part.part_definition_reference = compRef
 
+    # TODO: Maybe make this a separate step where you dont go backwards and search for the gamepieces
+    if options.mode == ParseOptions.Mode.SynthesisField:
+        for x in options.gamepieces:
+            if x.occurrence_token == mapConstant:
+                partsData.part_definitions[part.part_definition_reference].dynamic = True
+                break
+
     part.transform.spatial_matrix.extend(occurrence.transform.asArray())
 
     worldTransform = GetMatrixWorld(occurrence)
@@ -201,7 +213,7 @@ def _MapRigidGroups(
     groups = rootComponent.allRigidGroups
     for group in groups:
         mira_group = joint_pb2.RigidGroup()
-        mira_group.name = group.name
+        mira_group.name = group.entityToken
         for occ in group.occurrences:
             try:
                 occRef = occ.entityToken
