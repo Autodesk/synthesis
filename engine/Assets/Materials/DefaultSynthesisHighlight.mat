@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: DefaultSynthesis
-  m_Shader: {fileID: -6465566751694194690, guid: 2126383874a59044d86198ee3e2ed81b, type: 3}
+  m_Name: DefaultSynthesisHighlight
+  m_Shader: {fileID: -6465566751694194690, guid: 200653adcb90f55409a32bd473a57de0, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -76,9 +76,6 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - Boolean_81b75d0ae28b4f9f8d7642dd576feddb: 0
-    - OPAQUE_METALLIC: 0.45
-    - Vector1_dd87d7fcd1f1419f894566001d248ab9: 0.8
     - _AlphaClip: 0
     - _Blend: 0
     - _BumpScale: 1
@@ -106,13 +103,12 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - Color_2aa135b32e7e4808b9be05c544657380: {r: 0.8490566, g: 0.1481844, b: 0.1481844, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
   m_BuildTextureStacks: []
---- !u!114 &2594415830842667889
+--- !u!114 &3607365989387631108
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}

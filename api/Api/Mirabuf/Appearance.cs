@@ -33,6 +33,7 @@ namespace Mirabuf.Material {
                         _unityMaterial = new UMaterial(DefaultOpaqueShader);
                         _unityMaterial.SetColor(OPAQUE_COLOR, c);
                         _unityMaterial.SetFloat(OPAQUE_SMOOTHNESS, 1 - (float)Roughness);
+                        _unityMaterial.SetFloat(OPAQUE_METALLIC, (float)Metallic);
                     }
                     
                     _unityMaterial.renderQueue = 3000;
@@ -45,6 +46,7 @@ namespace Mirabuf.Material {
 
         public const string OPAQUE_COLOR = "Color_2aa135b32e7e4808b9be05c544657380";
         public const string OPAQUE_SMOOTHNESS = "Vector1_dd87d7fcd1f1419f894566001d248ab9";
+        public const string OPAQUE_METALLIC = "OPAQUE_METALLIC";
         private static Shader _defaultOpaqueShader = null;
         public static Shader DefaultOpaqueShader {
             get {
