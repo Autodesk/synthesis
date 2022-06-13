@@ -420,7 +420,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1039084634046459816}
   m_HandleRect: {fileID: 4886521984075472471}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -491,7 +491,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: REVERSE SIDE JOINTS
+  m_text: CHANGE DIRECTORY
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d773a0b9b3212ab4fb694b91237f4660, type: 2}
   m_sharedMaterial: {fileID: 7508162858481735423, guid: d773a0b9b3212ab4fb694b91237f4660, type: 2}
@@ -573,7 +573,7 @@ GameObject:
   - component: {fileID: 4224541775469481640}
   - component: {fileID: 4258804627171300774}
   m_Layer: 5
-  m_Name: Reverse-Direction
+  m_Name: Change-Directory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -620,7 +620,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  m_Color: {r: 0.12941177, g: 0.5882353, b: 0.9529412, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -686,7 +686,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 8099976770030476226}
         m_TargetAssemblyTypeName: Synthesis.UI.Panels.Variant.AddPanel, CoreEngine
-        m_MethodName: ToggleReverseJoints
+        m_MethodName: RequestDirectory
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

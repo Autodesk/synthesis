@@ -3,7 +3,10 @@ using System.IO;
 using System;
 using UnityEngine.UI;
 using Synthesis.UI.Bars;
+using SynthesisAPI.Utilities;
 using TMPro;
+
+using Logger = SynthesisAPI.Utilities.Logger;
 
 namespace Synthesis.UI.Panels.Variant
 {
@@ -96,6 +99,15 @@ namespace Synthesis.UI.Panels.Variant
             ShowDirectory(_root);
         }
 
+        public void RequestDirectory() {
+
+            Logger.Log("Todo", LogLevel.Debug);
+
+            // if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.MacOSX || SystemInfo.operatingSystemFamily == OperatingSystemFamily.Windows) {
+
+            // }
+        }
+
         private void ShowDirectory(string filePath)
         {
             //log, find items, etc
@@ -110,11 +122,11 @@ namespace Synthesis.UI.Panels.Variant
                     Instantiate(addItem, list.transform).GetComponent<AddItem>().Init(path.Substring(_root.Length + Path.DirectorySeparatorChar.ToString().Length),
                         ParsePath(path, '\\'));
                 }
-                foreach (string path in Directory.GetDirectories(filePath))//LEGACY FORMAT
-                {
-                    Instantiate(addItem, list.transform).GetComponent<AddItem>().Init(path.Substring(_root.Length + Path.DirectorySeparatorChar.ToString().Length),
-                        ParsePath(path, '\\'));
-                }
+                // foreach (string path in Directory.GetDirectories(filePath))//LEGACY FORMAT
+                // {
+                //     Instantiate(addItem, list.transform).GetComponent<AddItem>().Init(path.Substring(_root.Length + Path.DirectorySeparatorChar.ToString().Length),
+                //         ParsePath(path, '\\'));
+                // }
             }
         }
 
