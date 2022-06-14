@@ -53,8 +53,8 @@ namespace Engine.ModuleLoader
 			ApiProvider.RegisterApiProvider(new ApiProviderImpl());
 			Logger.RegisterLogger(new ToastLogger()); // Must happen after ApiProvider is registered
 
-			ModuleLoader.PreloadApi();
-			ModuleLoader.LoadModules(ModulesSourcePath, BaseModuleTargetPath);
+			// ModuleLoader.PreloadApi();
+			// ModuleLoader.LoadModules(ModulesSourcePath, BaseModuleTargetPath);
 
 			RerouteConsoleOutput();
 		}
