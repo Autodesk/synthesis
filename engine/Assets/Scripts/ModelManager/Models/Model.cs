@@ -23,15 +23,20 @@ namespace Synthesis.ModelManager.Models
 
         protected Model() {}
 
+        [Obsolete]
         public Model(string filePath, Vector3 position, Quaternion rotation, bool reverseSideMotors = false)
         {
-            _object = Importer.MirabufAssemblyImport(filePath, reverseSideMotors);
-            _object.transform.SetParent(GameObject.Find("Game").transform);
-            DrivetrainMeta = new DrivetrainMeta { Type = DrivetrainType.Arcade };
-            _object.transform.position = position;
-            _object.transform.rotation = rotation;
-            Name = _object.GetComponent<RobotInstance>().Info?.Name;
-            _object.GetComponent<RobotInstance>().ConfigureDrivebase(position,rotation, DrivetrainMeta);
+            // _object = Importer.MirabufAssemblyImport(filePath, reverseSideMotors);
+            // _object.transform.SetParent(GameObject.Find("Game").transform);
+            // DrivetrainMeta = new DrivetrainMeta { Type = DrivetrainType.Arcade };
+            // _object.transform.position = position;
+            // _object.transform.rotation = rotation;
+            // var robotInstance = _object.GetComponent<RobotInstance>();
+            // Name = robotInstance.Info?.Name;
+            // robotInstance.ConfigureDrivebase(position,rotation, DrivetrainMeta);
+
+            // Camera.main.GetComponent<CameraController>().FocusPoint =
+            //     () => robotInstance.RootNode.transform.localToWorldMatrix.MultiplyPoint(robotInstance.RootBounds.center);
         }
 
         public void DestroyModel()

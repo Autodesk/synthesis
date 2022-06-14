@@ -60,7 +60,7 @@ namespace TestApi
             if (!PreferenceManager.Save()) throw new Exception();
             if (!PreferenceManager.Load()) throw new Exception();
 
-            CustomStruct customCopy = PreferenceManager.GetPreference<CustomStruct>(Program.TestModuleName, "custom_type", useJsonDeserialization: true);
+            CustomStruct customCopy = PreferenceManager.GetPreference<CustomStruct>(Program.TestModuleName, "custom_type");
 
             Assert.AreEqual(customOriginal, customCopy);
         }

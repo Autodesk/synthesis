@@ -30,7 +30,7 @@ namespace Synthesis.ModelManager
             Models.Clear();
             var m = new Model(filePath, spawnLocation,spawnRotation, reverseSideMotors);
             if (OnModelSpawned != null) OnModelSpawned(m);
-            Models.Add(m.Name, m);
+            Models.Add(m.Name ?? "Placeholder Name", m);
             primaryModel = m;
         }
 

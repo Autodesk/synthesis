@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,7 +18,7 @@ namespace Synthesis.Configuration
         private Plane markerPlane;
 
         private Transform parent;
-        private Transform originalCameraTransform;
+        private Func<Vector3> originalCameraFocusPoint;
         private Transform gizmoCameraTransform;
         Dictionary<Rigidbody, bool> rigidbodiesKinematicStateInScene;
 
@@ -93,7 +94,7 @@ namespace Synthesis.Configuration
         {
             cam = Camera.main.GetComponent<CameraController>();
             originalLowerPitch = cam.PitchLowerLimit;
-            originalCameraTransform = cam.FollowTransform;
+            originalCameraFocusPoint = cam.FocusPoint;
 
             //makes a list of the rigidbodies in the hierarchy and their state
             HierarchyRigidbodiesToDictionary();
@@ -116,13 +117,13 @@ namespace Synthesis.Configuration
 
             gizmoCameraTransform = new GameObject().transform;
             gizmoCameraTransform.position = transform.parent.position; //camera shifting
-            cam.FollowTransform = gizmoCameraTransform;//camera focus
+            cam.FocusPoint = () => gizmoCameraTransform.position;//camera focus
             cam.PitchLowerLimit = gizmoPitch; //camera pitch limits
         }
         private void disableGizmo() //makes sure values are set correctly when the gizmo is removed
         {
             cam.PitchLowerLimit = originalLowerPitch;
-            cam.FollowTransform = originalCameraTransform;
+            cam.FocusPoint = originalCameraFocusPoint;
             SetRigidbodies(true);
         }
 
@@ -337,7 +338,7 @@ namespace Synthesis.Configuration
 
             //move the camera
             gizmoCameraTransform.position = transform.parent.position;
-            cam.FollowTransform = gizmoCameraTransform;
+            cam.FocusPoint = () => gizmoCameraTransform.position;
 
         }
         public void HierarchyRigidbodiesToDictionary() //save the state of all gameobject's rigidbodies as a dictionary

@@ -2,6 +2,8 @@
 
 namespace Mirabuf {
     public partial class Transform {
+        // TODO: This doesn't adjust for the Fusion to Unity coordinate system. I have it fixed basically everytime I use it, just not here which
+        //      of all places for me to fix it. Here would solve basically everything.
         private Matrix4x4 _unityMatrix;
         public Matrix4x4 UnityMatrix {
             get {

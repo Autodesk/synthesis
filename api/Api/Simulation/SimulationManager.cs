@@ -18,6 +18,7 @@ namespace SynthesisAPI.Simulation {
         public static event UpdateDelegate OnDriverUpdate;
         public static event UpdateDelegate OnBehaviourUpdate;
 
+        // TODO: Switch to using guids cuz all the signals have the same name
         public static Dictionary<string, List<Driver>>       Drivers    = new Dictionary<string, List<Driver>>();
         public static Dictionary<string, List<SimBehaviour>> Behaviours = new Dictionary<string, List<SimBehaviour>>();
 
@@ -49,6 +50,13 @@ namespace SynthesisAPI.Simulation {
             Behaviours[simObjectName].Add(d);
         }
 
+        public static void RemoveDriver(string simObjectName, Driver d)
+        {
+            if (Drivers.ContainsKey(simObjectName))
+            {
+                Drivers[simObjectName].RemoveAll(x => x == d);
+            }
+        }
 
         public static void RegisterSimObject(SimObject so) {
             if (_simulationObject.ContainsKey(so.Name)) // Probably use some GUID
@@ -62,11 +70,22 @@ namespace SynthesisAPI.Simulation {
         }
 
         public static bool RemoveSimObject(SimObject so) {
-            Drivers.Remove(so.Name);
-            Behaviours.Remove(so.Name);
-            var res = _simulationObject.Remove(so.Name);
-            if (res && OnRemoveSimulationObject != null)
-                OnRemoveSimulationObject(so);
+            return RemoveSimObject(_simulationObject[so.Name]);
+        }
+
+        public static bool RemoveSimObject(string so) {
+            bool exists = _simulationObject.TryGetValue(so, out SimObject s);
+            if (!exists)
+                return false;
+            Drivers.Remove(so);
+            Behaviours.Remove(so);
+            var res = _simulationObject.Remove(so);
+            if (res) {
+                s.Destroy();
+                if (OnRemoveSimulationObject != null) {
+                    OnRemoveSimulationObject(s);
+                }
+            }
             return res;
         }
     }

@@ -3,16 +3,23 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
+using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager.InputEvents;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Utilities;
 using UnityEngine;
+
 using Input = SynthesisAPI.InputManager.Inputs.Input;
 
 namespace SynthesisAPI.InputManager
 {
     public static class InputManager
     {
+        public static readonly string[] IGNORE_KEYS = new string[] {
+            "AltGr"
+        };
+
+        // TODO: Should this still be an array?
         internal static Dictionary<string, Digital[]> _mappedDigitalInputs = new Dictionary<string, Digital[]>();
         internal static Dictionary<string, Analog> _mappedValueInputs = new Dictionary<string, Analog>();
         public static IReadOnlyDictionary<string, Digital[]> MappedDigitalInputs {
@@ -22,47 +29,44 @@ namespace SynthesisAPI.InputManager
             get => new ReadOnlyDictionary<string, Analog>(_mappedValueInputs);
         }
 
-        public static void AssignDigitalInput(string name, Digital input, EventBus.EventBus.EventCallback callback = null) // TODO remove callback argument?
-        {
+        public static void AssignDigitalInput(string name, Digital input, EventBus.EventBus.EventCallback callback = null) { // TODO remove callback argument?
             _mappedDigitalInputs[name] = new Digital[] { input };
             if (callback != null)
                 EventBus.EventBus.NewTagListener($"input/{name}", callback);
         }
 
-        public static void UnassignDigitalInput(string name)
-        {
+        public static void UnassignDigitalInput(string name) {
             _mappedDigitalInputs.Remove(name);
             EventBus.EventBus.RemoveAllTagListeners($"input/{name}");
         }
 
-        public static void AssignDigitalInputs(string name, Digital[] input, EventBus.EventBus.EventCallback callback = null)
-        {
+        public static void AssignDigitalInputs(string name, Digital[] input, EventBus.EventBus.EventCallback callback = null) {
             _mappedDigitalInputs[name] = input;
             if(callback != null)
                 EventBus.EventBus.NewTagListener($"input/{name}", callback);
         }
 
-        public static void AssignValueInput(string name, Analog input)
-        {
+        /// <summary>
+        /// Assign a name to an input.
+        /// </summary>
+        /// <param name="name">Name of Input</param>
+        /// <param name="input">Analog of the input to check for activity for</param>
+        /// <param name="mute">Set mute to true if you wish to mute the event call for the input being assigned</param>
+        public static void AssignValueInput(string name, Analog input, bool mute = false) {
             _mappedValueInputs[name] = input;
+            if (!mute)
+                EventBus.EventBus.Push(new ValueInputAssignedEvent(name, input));
         }
 
-        public static void UpdateInputs()
-        {
-            foreach(string name in _mappedDigitalInputs.Keys)
-            {
-                foreach(Input input in _mappedDigitalInputs[name])
-                {
-                    if (!input.Name.EndsWith("non-ui") && input.Update())
-                    {
-                        if (input is MouseDown mouseDown)
-                        {
+        public static void UpdateInputs() {
+            foreach(string name in _mappedDigitalInputs.Keys) {
+                foreach(Input input in _mappedDigitalInputs[name]) {
+                    if (!input.Name.EndsWith("non-ui") && input.Update()) {
+                        if (input is MouseDown mouseDown) {
                             EventBus.EventBus.Push($"input/{name}",
                                 new MouseDownEvent(name, mouseDown.Value, mouseDown.State, mouseDown.MousePosition)
                                 );
-                        }
-                        else if (input is Digital digitalInput)
-                        {
+                        } else if (input is Digital digitalInput) {
                             EventBus.EventBus.Push($"input/{name}",
                                 new DigitalEvent(name, digitalInput.Value, digitalInput.State)
                                 );
@@ -72,18 +76,15 @@ namespace SynthesisAPI.InputManager
             }
         }
 
-        public static float GetValue(string name)
-        {
-            if (_mappedValueInputs.ContainsKey(name))
-            {
+        public static float GetValue(string name) {
+            if (_mappedValueInputs.ContainsKey(name)) {
                 _mappedValueInputs[name].Update();
                 return _mappedValueInputs[name].Value;
             }
             throw new Exception($"Value Input is not mapped with name \"{name}\"");
         }
 
-        public static void SetAllDigitalInputs(Dictionary<string, Digital[]> input)
-        {
+        public static void SetAllDigitalInputs(Dictionary<string, Digital[]> input) {
             _mappedDigitalInputs = input;
         }
 
@@ -94,11 +95,22 @@ namespace SynthesisAPI.InputManager
         // TODO: Exclusion cases
         public static Analog GetAny() {
             foreach (var k in AllInputs) {
-                if (k.Update())
-                    return k;
+                if (k.Update(true))
+                    return k.WithModifier(GetModifier());
             }
 
             return null;
+        }
+
+        public static int GetModifier() {
+            int mod = 0x00;
+            ModifierInputs.ForEach(x => {
+                x.Update(true);
+                if (x.State > DigitalState.None) {
+                    mod = mod ^ (int)Enum.Parse(typeof(ModKey), x.Name);
+                }
+            });
+            return mod;
         }
 
         public static List<Analog> GetAll() => AllInputs.Where(k => k.Update()).ToList();
@@ -110,8 +122,10 @@ namespace SynthesisAPI.InputManager
                     _allInputs = new List<Analog>();
 
                     // KeyCodes
+                    var modKeyNames = Enum.GetNames(typeof(ModKey));
                     foreach (var k in Enum.GetNames(typeof(KeyCode))) {
-                        _allInputs.Add(new Digital(k));
+                        if (!modKeyNames.Contains(k) && !IGNORE_KEYS.Contains(k))
+                            _allInputs.Add(new Digital(k));
                     }
                     
                     // Joystick Controls
@@ -128,6 +142,29 @@ namespace SynthesisAPI.InputManager
                 }
                 return _allInputs;
             }
+        }
+        private static List<Digital> _modifierInputs = null;
+        public static IReadOnlyCollection<Digital> ModifierInputs {
+            get {
+                if (_modifierInputs == null) {
+                    _modifierInputs = new List<Digital>();
+
+                    var modKeys = Enum.GetNames(typeof(ModKey));
+                    modKeys.ForEach(x => {
+                        _modifierInputs.Add(new Digital(x));
+                    });
+                }
+                return _modifierInputs;
+            }
+        }
+    }
+
+    public class ValueInputAssignedEvent : IEvent {
+        public readonly string InputKey;
+        public readonly Analog Input;
+        public ValueInputAssignedEvent(string key, Analog input) {
+            InputKey = key;
+            Input = input;
         }
     }
 }

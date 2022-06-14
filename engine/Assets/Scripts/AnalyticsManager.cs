@@ -45,7 +45,7 @@ public static class AnalyticsManager
             WebClient cli = new WebClient();
             string res = cli.UploadString(useBatch ? URL_BATCH : URL_COLLECT, "POST", AllData);
             AllData = string.Empty;
-            Debug.Log(res);
+            // Debug.Log(res);
             return new PostResult() { usedBatchUrl = useBatch, result = res };
         }
         else{

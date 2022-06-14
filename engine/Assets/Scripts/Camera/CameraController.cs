@@ -17,7 +17,9 @@ public class CameraController : MonoBehaviour {
     [SerializeField] public float ZoomUpperLimit;
     [SerializeField, Range(0.005f, 1.0f)] public float OrbitalAcceleration;
     [SerializeField, Range(0.005f, 1.0f)] public float ZoomAcceleration;
-    [SerializeField] public Transform FollowTransform;
+    [SerializeField] public Renderer GroundRenderer;
+    // [SerializeField] public Transform FollowTransform;
+    public Func<Vector3> FocusPoint;
     public static bool isOverGizmo = false;
 
     private float _targetZoom = 5.0f;
@@ -88,14 +90,18 @@ public class CameraController : MonoBehaviour {
 
     public void LateUpdate() {
         // Construct orientation of the camera
+        Vector3 focus = FocusPoint == null ? Vector3.zero : FocusPoint();
+
+        GroundRenderer.material.SetVector("FOCUS_POINT", focus);
+
         var t = transform;
-        t.localPosition = FollowTransform == null ? Vector3.zero : FollowTransform.position;
+        t.localPosition = focus;
         t.localRotation = Quaternion.identity;
 
         var up = t.up;
         t.localRotation = Quaternion.Euler(_actualPitch, 0.0f, 0.0f);
-        t.RotateAround(FollowTransform == null ? Vector3.zero : FollowTransform.position, up, _actualYaw);
-        t.localPosition = (up * 0.5f + t.forward * -_actualZoom)+t.localPosition;
+        t.RotateAround(focus, up, _actualYaw);
+        t.localPosition = (/*up * 0.5f +*/ t.forward * -_actualZoom) + t.localPosition;
     }
 
 

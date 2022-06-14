@@ -28,7 +28,22 @@ namespace SynthesisAPI.PreferenceManager
         }
 
         /// <summary>
-        /// Set a preference using an identifier inside your unique dictionary
+        /// Set a preference using an identifier inside your unique dictionary. Uses an object type
+        /// </summary>
+        /// <typeparam name="TValueType">Type of preference. No constraints</typeparam>
+        /// <param name="moduleName">name of the owner module</param>
+        /// <param name="key">Identifier for preference</param>
+        /// <param name="value">Preference value</param>
+        [ExposedApi]
+        public static void SetPreferenceObject(string moduleName, string key, object value) {
+            if (!_preferences.ContainsKey(moduleName))
+                _preferences[moduleName] = new Dictionary<string, object>();
+            _preferences[moduleName][key] = value;
+            UnsavedChanges = true;
+        }
+
+        /// <summary>
+        /// Set a preference using an identifier inside your unique dictionary. Uses a generic type
         /// </summary>
         /// <typeparam name="TValueType">Type of preference. No constraints</typeparam>
         /// <param name="moduleName">name of the owner module</param>
@@ -39,7 +54,7 @@ namespace SynthesisAPI.PreferenceManager
         {
             if (!_preferences.ContainsKey(moduleName))
                 _preferences[moduleName] = new Dictionary<string, object>();
-            _preferences[moduleName][key] = value;
+            _preferences[moduleName][key] = JsonConvert.SerializeObject(value);
             UnsavedChanges = true;
         }
 
@@ -53,14 +68,13 @@ namespace SynthesisAPI.PreferenceManager
         
         /// <summary>
         /// This function will return a specific preference that has loaded in and/or
-        /// set using the <see cref="SetPreference{TValueType}(string, string, TValueType)"/> method
+        /// set using the <see cref="SetPreferenceObject(string, string, object)"/> method
         /// </summary>
         /// <param name="moduleName">name of the owner module</param>
         /// <param name="key">Identifier for preference</param>
-        /// <returns>Preference or null if no preference exists</returns>
+        /// <returns>Preference or null if no preference exists. Potential problems with the way JSON deserializes into object types</returns>
         [ExposedApi]
-        public static object GetPreference(string moduleName, string key)
-        {
+        public static object GetPreferenceObject(string moduleName, string key) {
             return ContainsPreference(moduleName, key) ? _preferences[moduleName][key] : null;
         }
 
@@ -86,23 +100,12 @@ namespace SynthesisAPI.PreferenceManager
         /// have a <see cref="JsonObjectAttribute">JsonObjectAttribute</see></typeparam>
         /// <param name="moduleName">name of the owner module</param>
         /// <param name="key">Identifier for preference</param>
-        /// <param name="useJsonDeserialization">Set this to true if you are trying to retrieve an object of a custom type. Be sure
-        /// to label everything inside the type with the Attributes Newtonsoft provides</param>
-        /// <returns>Preference or default if no preference exists</returns>
+        /// <returns>Preference or default if no preference exists. Will be of type T</returns>
         [ExposedApi]
-        public static T GetPreference<T>(string moduleName, string key, bool useJsonDeserialization = false)
-        {
-            if (_preferences.ContainsKey(moduleName))
-            {
-                if (_preferences[moduleName].ContainsKey(key))
-                {
-                    if (useJsonDeserialization)
-                    {
-                        if (typeof(T).IsDefined(typeof(JsonObjectAttribute), false))
-                            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(_preferences[moduleName][key]));
-                        Logger.Log($"Type \"{typeof(T).FullName}\" does not have the Newtonsoft.Json.JsonObjectAttribute");
-                    }
-                    return (T) Convert.ChangeType(_preferences[moduleName][key], typeof(T));
+        public static T GetPreference<T>(string moduleName, string key) {
+            if (_preferences.ContainsKey(moduleName)) {
+                if (_preferences[moduleName].ContainsKey(key)) {
+                    return JsonConvert.DeserializeObject<T>((string)_preferences[moduleName][key]);
                 }
                 Logger.Log($"There is no key of value \"{key}\" for module \"{moduleName}\"");
             }

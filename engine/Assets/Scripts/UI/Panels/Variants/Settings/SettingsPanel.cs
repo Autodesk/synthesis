@@ -90,19 +90,19 @@ namespace Synthesis.UI.Panels.Variant
             }
             else
             {
-                CreateDropdown(RESOLUTION, ResolutionList, GetInt(RESOLUTION));
+                CreateDropdown(RESOLUTION, ResolutionList, Get<int>(RESOLUTION));
             }
-            CreateDropdown(SCREEN_MODE, ScreenModeList, GetInt(SCREEN_MODE));
-            CreateDropdown(QUALITY_SETTINGS, QualitySettingsList, GetInt(QUALITY_SETTINGS));
+            CreateDropdown(SCREEN_MODE, ScreenModeList, Get<int>(SCREEN_MODE));
+            CreateDropdown(QUALITY_SETTINGS, QualitySettingsList, Get<int>(QUALITY_SETTINGS));
 
             CreateTitle("Camera Settings");
-            CreateSlider(ZOOM_SENSITIVITY, 1, 15, GetInt(ZOOM_SENSITIVITY));
-            CreateSlider(YAW_SENSITIVITY, 1, 15, GetInt(YAW_SENSITIVITY));
-            CreateSlider(PITCH_SENSITIVITY, 1, 15, GetInt(PITCH_SENSITIVITY));
+            CreateSlider(ZOOM_SENSITIVITY, 1, 15, (int)Get<float>(ZOOM_SENSITIVITY));
+            CreateSlider(YAW_SENSITIVITY, 1, 15, (int)Get<float>(YAW_SENSITIVITY));
+            CreateSlider(PITCH_SENSITIVITY, 1, 15, (int)Get<float>(PITCH_SENSITIVITY));
 
             CreateTitle("Preferences");
-            CreateToggle(ALLOW_DATA_GATHERING, GetBool(ALLOW_DATA_GATHERING));
-            CreateToggle(MEASUREMENTS, GetBool(MEASUREMENTS));
+            CreateToggle(ALLOW_DATA_GATHERING, Get<bool>(ALLOW_DATA_GATHERING));
+            CreateToggle(MEASUREMENTS, Get<bool>(MEASUREMENTS));
 
             disableSaveButton();
             setup = false;
@@ -151,14 +151,14 @@ namespace Synthesis.UI.Panels.Variant
                 //for dynamic resolution setting: checks if player wants the maximum resolution
                 if (name == RESOLUTION)
                 {                   
-                    if (GetInt(RESOLUTION) == ResolutionList.Length - 1)
+                    if (Get<int>(RESOLUTION) == ResolutionList.Length - 1)
                         Set(MAX_RES, true);
                     else
                         Set(MAX_RES, false);
                 }
                 else if (name == SCREEN_MODE)
                 {//modifies availible resolutions when screen mode is changed
-                    if (GetInt(SCREEN_MODE) == 1)
+                    if (Get<int>(SCREEN_MODE) == 1)
                     {  //2 is windowed mode                                    
                         PopulateResolutionList();
                         SetMaxResolution();
@@ -198,7 +198,7 @@ namespace Synthesis.UI.Panels.Variant
         {
             Set(MAX_RES, true);
             Set(RESOLUTION, ResolutionList.Length - 1);
-            _settingsList[0].GetComponent<SettingsInput>().Init(RESOLUTION, ResolutionList, GetInt(RESOLUTION));
+            _settingsList[0].GetComponent<SettingsInput>().Init(RESOLUTION, ResolutionList, Get<int>(RESOLUTION));
         }
         private void RepopulatePanel()
         {
@@ -254,14 +254,14 @@ namespace Synthesis.UI.Panels.Variant
             QualitySettingsList = QualitySettings.names;
 
             PreferenceManager.PreferenceManager.Load();
-            if (Get(RESOLUTION) == null)
-            {//checks if preferences are initialized with default values
+            //checks if preferences are initialized with default values
+            if (!PreferenceManager.PreferenceManager.ContainsPreference(RESOLUTION)) {
                 SetDefaultPreferences();
             }
 
             //set screen mode
             FullScreenMode fsMode = FullScreenMode.FullScreenWindow;
-            switch (GetInt(SCREEN_MODE))
+            switch (Get<int>(SCREEN_MODE))
             {
                 case 0://Full Screen
                     ResolutionList = new string[] { ResolutionList[ResolutionList.Length - 1] };
@@ -277,7 +277,7 @@ namespace Synthesis.UI.Panels.Variant
             if (!customRes)
             {//if user wants custom res, do not change it
                 //Checks if the user wants maximum resolution
-                if (GetBool(MAX_RES))
+                if (Get<bool>(MAX_RES))
                 {
                     Set(RESOLUTION, ResolutionList.Length - 1);
                     Save();
@@ -285,7 +285,7 @@ namespace Synthesis.UI.Panels.Variant
                 }
                 else
                 {//if user doesn't want maximum resolution, use index
-                    int resolutionIndex = GetInt(RESOLUTION);
+                    int resolutionIndex = Get<int>(RESOLUTION);
 
                     if (resolutionIndex < ResolutionList.Length)
                     {//check if wanted resolution is above the availible resolutions (in case screen resolution changed)
@@ -302,26 +302,26 @@ namespace Synthesis.UI.Panels.Variant
             }
             else
             {
-                if(GetInt(SCREEN_MODE) == 0)
+                if(Get<int>(SCREEN_MODE) == 0)
                 {
                     customRes = false;
                     SetRes(ResolutionList.Length - 1, FullScreenMode.FullScreenWindow);
                 }
             }
             //Quality Settings
-            QualitySettings.SetQualityLevel(GetInt(QUALITY_SETTINGS), true);
+            QualitySettings.SetQualityLevel(Get<int>(QUALITY_SETTINGS), true);
 
             //Analytics
-            AnalyticsManager.useAnalytics = GetBool(ALLOW_DATA_GATHERING);
+            AnalyticsManager.useAnalytics = Get<bool>(ALLOW_DATA_GATHERING);
 
             //imperial or metric
-            useImperial = GetBool(MEASUREMENTS);
+            useImperial = Get<bool>(MEASUREMENTS);
 
             //Camera
             CameraController c = Camera.main.GetComponent<CameraController>();
-            c.ZoomSensitivity = GetFloat(ZOOM_SENSITIVITY) / 10;//scaled down by 10
-            c.PitchSensitivity = GetInt(PITCH_SENSITIVITY);
-            c.YawSensitivity = GetInt(YAW_SENSITIVITY);
+            c.ZoomSensitivity = Get<float>(ZOOM_SENSITIVITY) / 10;//scaled down by 10
+            c.PitchSensitivity = Get<int>(PITCH_SENSITIVITY);
+            c.YawSensitivity = Get<int>(YAW_SENSITIVITY);
 
 
         }
@@ -365,42 +365,21 @@ namespace Synthesis.UI.Panels.Variant
         }
 
         //Sets Preference for better readability
-        private static void Set(string s, object o)
-        {
-            PreferenceManager.PreferenceManager.SetPreference(s, o);
-        }
-        private static object Get(string s)
-        {
-            return PreferenceManager.PreferenceManager.GetPreference(s);
-        }
-        //Get Int
-        private static int GetInt(string s)
-        {
-            return Convert.ToInt32(PreferenceManager.PreferenceManager.GetPreference(s));
-        }
-        //Get Float
-        private static float GetFloat(string s)
-        {
-            return Convert.ToSingle(PreferenceManager.PreferenceManager.GetPreference(s));
-        }
-        //Get Bool
-        private static bool GetBool(string s)
-        {
-            return (bool)(PreferenceManager.PreferenceManager.GetPreference(s));
-        }
-        private static void Save()
-        {
+        private static void Set(string s, object o) { PreferenceManager.PreferenceManager.SetPreference(s, o); }
+        private static T Get<T>(string s)
+            => PreferenceManager.PreferenceManager.GetPreference<T>(s);
+
+        private static void Save() {
             PreferenceManager.PreferenceManager.Save();
         }
-        public static void MaximizeScreen()
-        {//auto maximizes if its a window and the resolution is maximum. 
-            if (GetBool(MAX_RES) && !Screen.fullScreen && !Application.isEditor)
+        public static void MaximizeScreen() {
+            //auto maximizes if its a window and the resolution is maximum. 
+            if (Get<bool>(MAX_RES) && !Screen.fullScreen && !Application.isEditor)
                 ShowWindowAsync(GetActiveWindow().ToInt32(), 3);
         }
 
         //screen resolution set
-        private static void SetRes(int i, FullScreenMode f)
-        {
+        private static void SetRes(int i, FullScreenMode f) {
             if (ResolutionList[i] == "Custom")
                 return;
             string[] r = ResolutionList[i].Split('x');
