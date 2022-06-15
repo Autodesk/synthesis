@@ -2015,6 +2015,7 @@ GameObject:
   - component: {fileID: 1293899045}
   - component: {fileID: 1293899047}
   - component: {fileID: 1293899048}
+  - component: {fileID: 1293899049}
   m_Layer: 0
   m_Name: Simulation Runner
   m_TagString: Untagged
@@ -2076,6 +2077,18 @@ MonoBehaviour:
   Delay: 0.2
   Length: 0.75
   FloorRenderer: {fileID: 1040913157}
+--- !u!114 &1293899049
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1293899044}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b742decb8161262409508c4c05c461ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1413913835
 GameObject:
   m_ObjectHideFlags: 0
