@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using SynthesisAPI.EventBus;
 
 namespace Synthesis.Physics {
     /// <summary>
@@ -27,6 +28,7 @@ namespace Synthesis.Physics {
                             x.Value.Unfreeze();
                         });
                     }
+                    EventBus.Push(new PhysicsFreezeChangeEvent { IsFrozen = _isFrozen });
                 }
             }
         }
@@ -47,6 +49,10 @@ namespace Synthesis.Physics {
 
         public static List<IPhysicsOverridable> GetAllOverridable()
             => new List<IPhysicsOverridable>(_physObjects.Values);
+    }
+
+    public class PhysicsFreezeChangeEvent: IEvent {
+        public bool IsFrozen;
     }
 
     public interface IPhysicsOverridable {
