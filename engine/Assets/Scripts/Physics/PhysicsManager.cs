@@ -17,10 +17,12 @@ namespace Synthesis.Physics {
                 if (_isFrozen != value) {
                     _isFrozen = value;
                     if (_isFrozen) {
+                        UnityEngine.Physics.autoSimulation = false;
                         _physObjects.ForEach(x => {
                             x.Value.Freeze();
                         });
                     } else {
+                        UnityEngine.Physics.autoSimulation = true;
                         _physObjects.ForEach(x => {
                             x.Value.Unfreeze();
                         });
