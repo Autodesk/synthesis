@@ -72,6 +72,9 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - Boolean_c72171ac97dc4a2889a8b48dc374e00e: 1
+    - FEATHER_RADIUS: 5
+    - INNER_RADIUS: 30
     - Vector1_8159f882c7ae43e5951d332a5bb2c351: 15
     - Vector1_fdf532604aad4da3b057273975b23362: 5
     - _BumpScale: 1

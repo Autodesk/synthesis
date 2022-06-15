@@ -22,7 +22,7 @@ public class CameraController : MonoBehaviour {
     public Func<Vector3> FocusPoint;
     public static bool isOverGizmo = false;
 
-    private float _targetZoom = 5.0f;
+    private float _targetZoom = 15.0f;
     private float _targetPitch = 10.0f;
     private float _targetYaw = 135.0f;
     private float _actualZoom = 5.0f;

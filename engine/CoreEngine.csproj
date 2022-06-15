@@ -117,6 +117,7 @@
      <Compile Include="Assets\Scripts\UI\ImageManager.cs" />
      <Compile Include="Assets\Scripts\AnalyticsManager.cs" />
      <Compile Include="Assets\Scripts\Behaviors\GeneralSliderBehaviour.cs" />
+     <Compile Include="Assets\Scripts\Utilities\Highlighter.cs" />
      <Compile Include="Assets\Scripts\UI\Tabs\TopButton.cs" />
      <Compile Include="Assets\Scripts\UI\InteractableObject.cs" />
      <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyRootItem.cs" />
@@ -150,7 +151,8 @@
      <Compile Include="Assets\Scripts\UI\Panels\Variants\ExitPanel.cs" />
      <Compile Include="Assets\Scripts\Importer\Importer.cs" />
      <Compile Include="Assets\Scripts\Test\DebugJointAxes.cs" />
-     <Compile Include="Assets\Scripts\Utilities\Highlighter.cs" />
+     <Compile Include="Assets\Scripts\Physics\ReplayManager.cs" />
+     <Compile Include="Assets\Scripts\GridEntry.cs" />
      <None Include="Assets\Scripts\CoreEngine.asmdef" />
     <Reference Include="UnityEngine">
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
