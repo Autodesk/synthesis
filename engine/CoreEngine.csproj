@@ -128,6 +128,7 @@
     <Compile Include="Assets\Scripts\Utilities\ObjectLedger.cs" />
     <Compile Include="Assets\Scripts\ModelManager\Models\Motor.cs" />
     <Compile Include="Assets\Scripts\Utilities\UtilExtensions.cs" />
+    <Compile Include="Assets\Scripts\Camera\MenuCamera.cs" />
     <Compile Include="Assets\Scripts\Behaviors\TankDriveBehavior.cs" />
     <Compile Include="Assets\Scripts\Attributes\ControllableInputAttribute.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Joints\RotationalJointItem.cs" />
@@ -171,7 +172,7 @@
     <Compile Include="Assets\Scripts\UI\Panels\Variants\ExitPanel.cs" />
     <Compile Include="Assets\Scripts\Importer\Importer.cs" />
     <Compile Include="Assets\Scripts\Test\DebugJointAxes.cs" />
-    <Compile Include="Assets\Scripts\Camera\MenuCamera.cs" />
+    <Compile Include="Assets\Scripts\UI\MenuManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Scripts\CoreEngine.asmdef" />

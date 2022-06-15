@@ -61,6 +61,7 @@
     <Compile Include="Assets\TestScript.cs" />
     <Compile Include="Assets\SimulationRunner.cs" />
     <Compile Include="Assets\LineScript.cs" />
+    <Compile Include="Assets\MenuPanelManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Packages\System.Memory.4.5.3\useSharedDesignerContext.txt" />
@@ -369,6 +370,9 @@
     <Reference Include="System.Drawing.Common">
       <HintPath>Assets\Packages\System.Drawing.Common.5.0.2\lib\net461\System.Drawing.Common.dll</HintPath>
     </Reference>
+    <Reference Include="DotNetZip">
+      <HintPath>Assets\Packages\DotNetZip.1.15.0\lib\net40\DotNetZip.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe">
       <HintPath>Assets\Packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
@@ -377,9 +381,6 @@
     </Reference>
     <Reference Include="System.Memory">
       <HintPath>Assets\Packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.dll</HintPath>
-    </Reference>
-    <Reference Include="DotNetZip">
-      <HintPath>Assets\Packages\DotNetZip.1.15.0\lib\net40\DotNetZip.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.iOS.Extensions.Xcode">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.12f1\Editor\Data\PlaybackEngines\iOSSupport\UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
