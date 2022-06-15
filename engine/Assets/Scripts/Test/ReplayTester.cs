@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Synthesis.Physics;
 using Synthesis.Replay;
+using SynthesisAPI.EventBus;
 using UnityEngine;
 
 public class ReplayTester : MonoBehaviour {
@@ -19,6 +20,12 @@ public class ReplayTester : MonoBehaviour {
             }
         });
         Slider.gameObject.SetActive(false);
+
+        EventBus.NewTypeListener<PhysicsFreezeChangeEvent>((EventBus.EventCallback)PhysChange);
+    }
+
+    private void PhysChange(IEvent e) {
+        var physInfo = e as PhysicsFreezeChangeEvent;
     }
 
     private void Update() {

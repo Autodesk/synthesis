@@ -23,6 +23,7 @@ namespace Synthesis.Replay {
         public static float TimeSpan => _timeSpan;
         private static ReplayFrame? _newestFrame = null;
         private static ReplayFrame? _oldestFrame = null;
+        public static ReplayFrame CurrentFrame;
 
         public static void InvalidateRecording() {
             _newestFrame = null;
@@ -33,6 +34,9 @@ namespace Synthesis.Replay {
         /// MARK: Bug in here I think
         /// </summary>
         public static void RecordFrame() {
+            if (!IsRecording || PhysicsManager.IsFrozen)
+                return;
+
             var newFrame = ReplayFrame.RecordFrame();
             if (_newestFrame == null) {
                 _newestFrame = newFrame;
@@ -146,6 +150,7 @@ namespace Synthesis.Replay {
                 x.Key.velocity = x.Value.Velocity;
                 x.Key.angularVelocity = x.Value.AngularVelocity;
             });
+            ReplayManager.CurrentFrame = a;
         }
     }
 
