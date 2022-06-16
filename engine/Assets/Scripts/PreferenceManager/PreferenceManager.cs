@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using SynthesisAPI.EventBus;
+using SynthesisAPI.InputManager;
 
 namespace Synthesis.PreferenceManager {
     public static class PreferenceManager {
@@ -31,6 +33,10 @@ namespace Synthesis.PreferenceManager {
 
         public static void Save() {
             EventBus.Push(new PrePreferenceSaveEvent());
+            // TODO: Just save all inputs?
+            InputManager._mappedDigitalInputs.ForEach(x => {
+                SetPreference(x.Key, x.Value.Select(y => new InputData(y)).ToArray());
+            });
             if(UnsavedChanges) {
                 _data.BulkData = _preferences;
                 _data.CoherenceId = COHERENCE_ID;

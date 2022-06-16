@@ -14,9 +14,9 @@ namespace Synthesis.Replay {
             get => _isRecording;
             set {
                 _isRecording = value;
-                if (!_isRecording) {
-                    InvalidateRecording();
-                }
+                // if (!_isRecording) {
+                //     InvalidateRecording();
+                // }
             }
         }
         private static float _timeSpan = 5f;
@@ -89,6 +89,25 @@ namespace Synthesis.Replay {
                 return ReplayFrame.Lerp(a, b, ((_newestFrame.TimeStamp + t) - a.TimeStamp) / (b.TimeStamp - a.TimeStamp));
             }
         }
+
+        public static void MakeCurrentNewestFrame() {
+            if (_newestFrame == null || CurrentFrame == null)
+                return;
+            
+            while (_newestFrame.TimeStamp > CurrentFrame.TimeStamp) {
+                if (_newestFrame == _oldestFrame) {
+                    throw new Exception("Current Frame is too outdated");
+                }
+                _newestFrame = _newestFrame.LastFrame;
+            }
+
+            _newestFrame.NextFrame = CurrentFrame;
+            CurrentFrame.LastFrame = _newestFrame;
+            CurrentFrame.NextFrame = null!;
+            _newestFrame = CurrentFrame;
+
+            CurrentFrame = null!;
+        }
     }
 
     public class ReplayFrame {
@@ -129,6 +148,7 @@ namespace Synthesis.Replay {
         /// <returns></returns>
         public static ReplayFrame Lerp(ReplayFrame a, ReplayFrame b, float t) {
             var c = new ReplayFrame();
+            c.TimeStamp = Mathf.Lerp(a.TimeStamp, b.TimeStamp, t);
             a.RigidbodyData.ForEach(x => {
                 if (b.RigidbodyData.ContainsKey(x.Key)) {
                     var data = new RigidbodyFrameData {

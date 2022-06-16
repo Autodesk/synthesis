@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Synthesis.PreferenceManager;
+using SynthesisAPI.InputManager;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
 using UnityEngine;
@@ -13,6 +14,7 @@ public class SimulationRunner : MonoBehaviour {
     }
 
     void Update() {
+        InputManager.UpdateInputs();
         SimulationManager.Update();
 
         // if (Input.GetKeyDown(KeyCode.K)) {
