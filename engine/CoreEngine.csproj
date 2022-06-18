@@ -96,6 +96,7 @@
     <Compile Include="Assets\Scripts\ModuleLoader\LoadModuleEvent.cs" />
     <Compile Include="Assets\Scripts\Utilities\Misc.cs" />
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\MeshColliderAdapter.cs" />
+    <Compile Include="Assets\Scripts\UI\Modals\ModalPanel.cs" />
     <Compile Include="Assets\Scripts\UI\Tabs\Tab.cs" />
     <Compile Include="Assets\Scripts\SimObjects\FieldSimObject.cs" />
     <Compile Include="Assets\Scripts\ModelManager\Models\GearboxData.cs" />
@@ -138,6 +139,7 @@
     <Compile Include="Assets\Scripts\AnalyticsManager.cs" />
     <Compile Include="Assets\Scripts\Behaviors\GeneralSliderBehaviour.cs" />
     <Compile Include="Assets\Scripts\Utilities\Highlighter.cs" />
+    <Compile Include="Assets\Scripts\UI\Modals\ModalInput.cs" />
     <Compile Include="Assets\Scripts\UI\Tabs\TopButton.cs" />
     <Compile Include="Assets\Scripts\UI\InteractableObject.cs" />
     <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyRootItem.cs" />
@@ -171,6 +173,7 @@
     <Compile Include="Assets\Scripts\UI\Panels\Variants\ExitPanel.cs" />
     <Compile Include="Assets\Scripts\Importer\Importer.cs" />
     <Compile Include="Assets\Scripts\Test\DebugJointAxes.cs" />
+    <Compile Include="Assets\Scripts\UI\Modals\ModalManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Scripts\CoreEngine.asmdef" />

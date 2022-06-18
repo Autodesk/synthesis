@@ -119,7 +119,7 @@
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF Overlay.shader" />
     <None Include="Assets\Packages\System.Drawing.Common.5.0.2\version.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Mobile.shader" />
-    <None Include="Assets\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
+    <None Include="Assets\TextMesh Pro\Resources\Fonts &amp; Materials\LiberationSans - OFL.txt" />
     <None Include="Assets\Packages\System.Drawing.Common.5.0.2\lib\net461\System.Drawing.Common.dll" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile.shader" />
     <None Include="Assets\Packages\System.Drawing.Common.5.0.2\THIRD-PARTY-NOTICES.TXT" />
