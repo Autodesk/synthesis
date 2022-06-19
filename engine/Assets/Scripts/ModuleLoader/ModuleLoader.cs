@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNITY_STANDALONE_WIN
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -632,3 +633,4 @@ namespace Engine.ModuleLoader
 
 	}
 }
+#endif

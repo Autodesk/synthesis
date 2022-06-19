@@ -126,6 +126,7 @@
      <Compile Include="Assets\Scripts\SimObjects\GamepieceSimObject.cs" />
      <Compile Include="Assets\Scripts\UI\MultiplayerManager.cs" />
      <Compile Include="Assets\Scripts\UI\ToastLogger\ToastConfig.cs" />
+     <Compile Include="Assets\Scripts\GodMode.cs" />
      <Compile Include="Assets\Scripts\Utilities\IEnumerableExtensions.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\MeshAdapter.cs" />
      <Compile Include="Assets\Scripts\UI\LayoutManager.cs" />

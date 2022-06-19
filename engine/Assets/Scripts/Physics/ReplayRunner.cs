@@ -52,9 +52,7 @@ public class ReplayRunner : MonoBehaviour {
     }
 
     private void CreateContactMarker(ContactReport report, float opacity = 1f) {
-        // Debug.Log("Attempting to Create Contact Markers");
         report.Points.ForEach(x => {
-            // var screenPoint = Camera.main.WorldToScreenPoint(x.point);
             var marker = Instantiate(ContactMarker, x.point, Quaternion.identity);
             var mat = marker.GetComponent<Renderer>();
             var color = mat.material.GetColor("TRANSPARENT_COLOR");
@@ -62,19 +60,8 @@ public class ReplayRunner : MonoBehaviour {
             mat.material.SetColor("TRANSPARENT_COLOR", color);
             _contactMarkers.Add(marker);
             marker.AddComponent<ContactMarkerHandler>();
-            Debug.Log($"Contact Marker Created: {x.point}");
         });
     }
-
-    // public GameObject CreateContactMarkerGameObject(Vector3 screenPoint) {
-    //     var canvas = GameObject.Find("UI");
-    //     var marker = Instantiate(ContactMarker, canvas.transform);
-    //     var rectTrans = marker.GetComponent<RectTransform>();
-    //     rectTrans.anchorMin = new Vector2(0, 0);
-    //     rectTrans.anchorMax = new Vector2(0, 0);
-    //     rectTrans.anchoredPosition = screenPoint;
-    //     return marker;
-    // }
 
     private void PhysChange(IEvent e) {
         var physInfo = e as PhysicsFreezeChangeEvent;
@@ -95,23 +82,6 @@ public class ReplayRunner : MonoBehaviour {
                     ReplayManager.EraseContactMarkers();
                 ReplayManager.MakeCurrentNewestFrame();
             }
-        }
-    }
-
-    private void Update() {
-        // if (Input.GetKeyDown(KeyCode.P)) {
-        //     PhysicsManager.IsFrozen = !PhysicsManager.IsFrozen;
-        //     if (!PhysicsManager.IsFrozen) {
-        //         ReplayManager.InvalidateRecording();
-                
-        //     } else {
-                
-                
-        //     }
-        // }
-
-        if (UnityEngine.Input.GetKeyDown(KeyCode.B)) {
-            RobotSimObject.GetCurrentlyPossessedRobot().GroundedNode.GetComponent<Rigidbody>().velocity = Vector3.up * 10;
         }
     }
 
