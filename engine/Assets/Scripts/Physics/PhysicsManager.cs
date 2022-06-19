@@ -73,11 +73,10 @@ namespace Synthesis.Physics {
     }
 
     public class ContactRecorder : MonoBehaviour {
-        public List<ContactReport> Reports = new List<ContactReport>();
-
         public void OnCollisionEnter(Collision c) {
             if (GetComponent<Rigidbody>().isKinematic && c.rigidbody.isKinematic)
                 return;
+            
             // c.contacts.ForEach(x => Reports.Add(new ContactReport(this, c)));
             c.contacts.ForEach(x => ReplayManager.PushContactReport(new ContactReport(this, c)));
         }

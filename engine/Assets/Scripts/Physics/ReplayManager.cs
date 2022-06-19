@@ -132,7 +132,7 @@ namespace Synthesis.Replay {
             }
         }
 
-        public static void ShowContactsAtTime(float t, float giveOrTake = 0.25f, float impulseThreshold = 0.001f) {
+        public static void ShowContactsAtTime(float t, float giveOrTake = 0.25f, float impulseThreshold = 10f) {
             if (_newestFrame == null || _contactReports.Count < 1 || CreateContactMarker == null || EraseContactMarkers == null)
                 return;
 
@@ -163,7 +163,8 @@ namespace Synthesis.Replay {
                 var dist = Math.Abs(_contactReports.ElementAt(indexBefore).Value.TimeStamp - targetTimeStamp);
                 if (dist >= giveOrTake)
                     break;
-                CreateContactMarker(_contactReports.ElementAt(indexBefore).Value, (giveOrTake - dist) / giveOrTake);
+                if (_contactReports.ElementAt(indexBefore).Value.Impulse.magnitude >= impulseThreshold)
+                    CreateContactMarker(_contactReports.ElementAt(indexBefore).Value, (giveOrTake - dist) / giveOrTake);
                 indexBefore--;
             }
             int indexAfter = index + 1;
@@ -171,7 +172,8 @@ namespace Synthesis.Replay {
                 var dist = Math.Abs(_contactReports.ElementAt(indexAfter).Value.TimeStamp - targetTimeStamp);
                 if (dist >= giveOrTake)
                     break;
-                CreateContactMarker(_contactReports.ElementAt(indexAfter).Value, (giveOrTake - dist) / giveOrTake);
+                if (_contactReports.ElementAt(indexAfter).Value.Impulse.magnitude >= impulseThreshold)
+                    CreateContactMarker(_contactReports.ElementAt(indexAfter).Value, (giveOrTake - dist) / giveOrTake);
                 indexAfter++;
             }
         }
