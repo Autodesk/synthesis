@@ -25,7 +25,7 @@ public class ReplayRunner : MonoBehaviour {
             if (PhysicsManager.IsFrozen) {
                 var frame = ReplayManager.GetFrameAtTime(x);
                 frame?.ApplyFrame();
-                ReplayManager.ShowContactsAtTime(x);
+                // ReplayManager.ShowContactsAtTime(x);
             }
         });
         Slider.gameObject.SetActive(false);
