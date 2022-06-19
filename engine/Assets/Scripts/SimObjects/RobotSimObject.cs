@@ -251,4 +251,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable {
 
     public List<Rigidbody> GetAllRigidbodies()
         => _allRigidbodies;
+
+    public GameObject GetRootGameObject() {
+        return RobotNode;
+    }
 }

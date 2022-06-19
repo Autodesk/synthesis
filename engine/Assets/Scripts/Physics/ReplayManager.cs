@@ -1,8 +1,10 @@
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Synthesis.Physics;
+using SynthesisAPI.EventBus;
 using UnityEngine;
 
 #nullable enable
@@ -23,7 +25,43 @@ namespace Synthesis.Replay {
         public static float TimeSpan => _timeSpan;
         private static ReplayFrame? _newestFrame = null;
         private static ReplayFrame? _oldestFrame = null;
-        public static ReplayFrame CurrentFrame;
+        public static ReplayFrame CurrentFrame = null!;
+
+        private static float _desyncTime = 0;
+        public static float DesyncTime => _desyncTime;
+
+        private static Action<ContactReport, float>? _createContactMarker;
+        public static Action<ContactReport, float>? CreateContactMarker => _createContactMarker;
+        private static Action? _eraseContactMarkers;
+        public static Action? EraseContactMarkers => _eraseContactMarkers;
+
+        private static SortedList<float, ContactReport> _contactReports = new SortedList<float, ContactReport>();
+
+        private static float _startDesync = float.NaN;
+        public static void SetupDesyncTracker() {
+            EventBus.NewTypeListener<PhysicsFreezeChangeEvent>(e => {
+                var pe = e as PhysicsFreezeChangeEvent;
+                
+                if (pe!.IsFrozen) {
+                    _startDesync = Time.realtimeSinceStartup;
+                } else {
+                    if (_startDesync == float.NaN)
+                        return;
+                    _desyncTime += Time.realtimeSinceStartup - _startDesync;
+                    _startDesync = float.NaN;
+                }
+            });
+        }
+        public static void SetupContactUI(Action<ContactReport, float> create, Action erase) {
+            _createContactMarker = create;
+            _eraseContactMarkers = erase;
+        }
+
+        public static void PushContactReport(ContactReport r) {
+            if (_contactReports.ContainsKey(r.TimeStamp))
+                return;
+            _contactReports.Add(r.TimeStamp, r);
+        }
 
         public static void InvalidateRecording() {
             _newestFrame = null;
@@ -52,6 +90,10 @@ namespace Synthesis.Replay {
                     if (_oldestFrame == _newestFrame)
                         break;
                 }
+            }
+
+            while (_contactReports.Count > 0 && (Time.realtimeSinceStartup - _desyncTime) - _contactReports.ElementAt(0).Value.TimeStamp > _timeSpan) {
+                _contactReports.RemoveAt(0);
             }
 
             // int frameCount = 1;
@@ -90,15 +132,67 @@ namespace Synthesis.Replay {
             }
         }
 
+        public static void ShowContactsAtTime(float t, float giveOrTake = 0.25f, float impulseThreshold = 0.001f) {
+            if (_newestFrame == null || _contactReports.Count < 1 || CreateContactMarker == null || EraseContactMarkers == null)
+                return;
+
+            EraseContactMarkers();
+            
+            var targetTimeStamp = t > 0 ? t : _newestFrame.TimeStamp + t;
+
+            // locate closest index using binary search (NOTE FOR FUTURE DEVS: I was too lazy to google a binary search algo so I made this in like a minute)
+            int a = 0, b = _contactReports.Count - 1;
+            int index = (a + b) / 2;
+            while (a != b) {
+                var tmpIndex = (a + b) / 2;
+                if (tmpIndex == index)
+                    break;
+                index = tmpIndex;
+                if (_contactReports.ElementAt(index).Value.TimeStamp > t) {
+                    b = index;
+                } else if (_contactReports.ElementAt(index).Value.TimeStamp < t) {
+                    a = index;
+                } else {
+                    break;
+                }
+            }
+
+            // Before Markers
+            int indexBefore = index;
+            while (indexBefore > -1) {
+                var dist = Math.Abs(_contactReports.ElementAt(indexBefore).Value.TimeStamp - targetTimeStamp);
+                if (dist >= giveOrTake)
+                    break;
+                CreateContactMarker(_contactReports.ElementAt(indexBefore).Value, (giveOrTake - dist) / giveOrTake);
+                indexBefore--;
+            }
+            int indexAfter = index + 1;
+            while (indexAfter < _contactReports.Count) {
+                var dist = Math.Abs(_contactReports.ElementAt(indexAfter).Value.TimeStamp - targetTimeStamp);
+                if (dist >= giveOrTake)
+                    break;
+                CreateContactMarker(_contactReports.ElementAt(indexAfter).Value, (giveOrTake - dist) / giveOrTake);
+                indexAfter++;
+            }
+        }
+
         public static void MakeCurrentNewestFrame() {
             if (_newestFrame == null || CurrentFrame == null)
                 return;
+
+            var originalNewestTimestamp = _newestFrame.TimeStamp;
             
             while (_newestFrame.TimeStamp > CurrentFrame.TimeStamp) {
                 if (_newestFrame == _oldestFrame) {
                     throw new Exception("Current Frame is too outdated");
                 }
                 _newestFrame = _newestFrame.LastFrame;
+            }
+
+            _desyncTime += originalNewestTimestamp - CurrentFrame.TimeStamp;
+
+            while (_contactReports.Count > 0 && _contactReports.ElementAt(_contactReports.Count - 1).Value.TimeStamp > CurrentFrame.TimeStamp) {
+                _contactReports.RemoveAt(_contactReports.Count - 1);
             }
 
             _newestFrame.NextFrame = CurrentFrame;
@@ -119,7 +213,7 @@ namespace Synthesis.Replay {
 
         public static ReplayFrame RecordFrame() {
             var frame = new ReplayFrame();
-            frame.TimeStamp = Time.realtimeSinceStartup;
+            frame.TimeStamp = Time.realtimeSinceStartup - ReplayManager.DesyncTime;
             PhysicsManager.GetAllOverridable().ForEach(x => {
                 x.GetAllRigidbodies().ForEach(y => {
                     var data = new RigidbodyFrameData {
@@ -130,6 +224,10 @@ namespace Synthesis.Replay {
                     };
                     frame.RigidbodyData[y] = data;
                 });
+                // PhysicsManager.GetContactRecorders(x)?.ForEach(y => {
+                //     frame.ContactReports[x] = y.Reports;
+                //     y.Reports = new List<ContactReport>();
+                // });
             });
             return frame;
         }
@@ -158,6 +256,7 @@ namespace Synthesis.Replay {
                         AngularVelocity = Vector3.Lerp(x.Value.AngularVelocity, b.RigidbodyData[x.Key].AngularVelocity, t)
                     };
                     c.RigidbodyData[x.Key] = data;
+                    // c.ContactReports = new Dictionary<IPhysicsOverridable, List<ContactReport>>(b.ContactReports);
                 }
             });
             return c;
@@ -170,6 +269,10 @@ namespace Synthesis.Replay {
                 x.Key.velocity = x.Value.Velocity;
                 x.Key.angularVelocity = x.Value.AngularVelocity;
             });
+            // if (ReplayManager.ResetContactUI != null) {
+            //     ReplayManager.ResetContactUI();
+            //     a.ContactReports.ForEach(x => x.Value.ForEach(y => ReplayManager.CreateContactUI!(y)));
+            // }
             ReplayManager.CurrentFrame = a;
         }
     }
@@ -179,5 +282,6 @@ namespace Synthesis.Replay {
         public Quaternion Rotation;
         public Vector3 Velocity;
         public Vector3 AngularVelocity;
+        public List<ContactReport> ContactReports;
     }
 }
