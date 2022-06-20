@@ -11,6 +11,8 @@ public class SynthesisAssetCollection : MonoBehaviour {
     public List<Sprite> SpriteAssets;
     [SerializeField]
     public List<GameObject> PanelPrefabs;
+    [SerializeField]
+    public List<GameObject> DynamicModalPrefabs;
 
     public void Awake() {
         Instance = this;
@@ -21,4 +23,7 @@ public class SynthesisAssetCollection : MonoBehaviour {
 
     public static GameObject GetPanelByName(string name)
         => Instance.PanelPrefabs.First(x => x.name == name);
+
+    public static GameObject GetModalPrefab(string name)
+        => Instance.DynamicModalPrefabs.First(x => x.name == name);
 }
