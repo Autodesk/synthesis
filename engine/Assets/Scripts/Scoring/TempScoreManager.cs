@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.IO.IsolatedStorage;
-using System.Security.Policy;
 using SynthesisAPI.EventBus;
 using UnityEngine;
 
@@ -31,6 +28,8 @@ public class TempScoreManager : MonoBehaviour
     private void Start()
     {
         ScoringZones = new List<ScoringZone>();
+        GameObject parent = new GameObject();
+        parent.name = "Gamepiece Parent";
         List<GameObject> zones = new List<GameObject>(
         );
         for (int i = -5; i < 5; i++)
@@ -38,12 +37,11 @@ public class TempScoreManager : MonoBehaviour
             GameObject newZone = GameObject.CreatePrimitive(PrimitiveType.Capsule);
             newZone.transform.position = new Vector3(i, 1, 0);
             zones.Add(newZone);
+            newZone.transform.parent = parent.transform;
         }
-        CreateScoringZone(zones, Alliance.RED, 1);
+        CreateScoringZonesFromParent(parent, Alliance.RED, 1);
         CreateTestGamepiece(3, 1, 2, PrimitiveType.Cube);
-
-        RenderScoringZones = false;
-
+        
         EventBus.NewTypeListener<OnScoreEvent>(e =>
         {
             OnScoreEvent se = (OnScoreEvent) e;
@@ -60,13 +58,20 @@ public class TempScoreManager : MonoBehaviour
         });
     }
 
-    public void CreateScoringZone(List<GameObject> gameObjects, Alliance alliance, int points,
+    public void CreateScoringZones(List<GameObject> gameObjects, Alliance alliance, int points,
         bool destroyObject = true)
     {
         gameObjects.ForEach(obj =>
         {
             ScoringZones.Add(new ScoringZone(obj, alliance, points, destroyObject));
         });
+    }
+
+    public void CreateScoringZonesFromParent(GameObject parent, Alliance alliance, int points,
+        bool destroyObject = true)
+    {
+        List<GameObject> children = parent.GetComponentsInChildren<Collider>().Map(c => c.gameObject);
+        CreateScoringZones(children, alliance, points, destroyObject);
     }
 
 
