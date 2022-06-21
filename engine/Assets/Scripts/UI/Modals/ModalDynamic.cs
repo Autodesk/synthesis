@@ -378,6 +378,7 @@ namespace Synthesis.UI.Dynamic {
             _titleLabel = new Label(this, infoObj.Find("Label").gameObject, null);
             _valueLabel = new Label(this, infoObj.Find("Value").gameObject, null);
             _unitySlider = unityObject.transform.Find("Slider").GetComponent<USlider>();
+            _titleLabel.SetText(label);
             _unitySlider.onValueChanged.AddListener(x => {
                 var roundedVal = Math.Round(x, 2);
                 _valueLabel.SetText(roundedVal.ToString() + (this._unitSuffix == string.Empty ? "" : this._unitSuffix));
