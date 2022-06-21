@@ -4261,6 +4261,9 @@ MonoBehaviour:
   DynamicModalPrefabs:
   - {fileID: 8560781038113940189, guid: 59fdc8a262af98747a05686039d99ec3, type: 3}
   - {fileID: 4191171026364460964, guid: dd3491e17aa84b846a7e35e41113844f, type: 3}
+  - {fileID: 8619128759257943195, guid: e1ab223c704241f4c9dc94db1a232229, type: 3}
+  - {fileID: 6908786337394242463, guid: 8411aa8dc027b8b4e858199fbe9181ad, type: 3}
+  - {fileID: 6803603400564139838, guid: 35121adfdbf29b042b6a90bd86a1601d, type: 3}
 --- !u!4 &1647995102
 Transform:
   m_ObjectHideFlags: 0
@@ -8660,6 +8663,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 287867056}
     m_Modifications:
+    - target: {fileID: 1684245844857021953, guid: 59fdc8a262af98747a05686039d99ec3, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1864198586693411679, guid: 59fdc8a262af98747a05686039d99ec3, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2683792687659184008, guid: 59fdc8a262af98747a05686039d99ec3, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6434569044271676752, guid: 59fdc8a262af98747a05686039d99ec3, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8560781037517242474, guid: 59fdc8a262af98747a05686039d99ec3, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1

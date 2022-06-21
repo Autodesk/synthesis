@@ -16,18 +16,18 @@ namespace Synthesis.UI.Dynamic {
 
             var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("dynamic-modal-base"), GameObject.Find("UI").transform);
 
-            try {
-                ModalDynamic modal = (ModalDynamic)Activator.CreateInstance(typeof(T), args);
-                modal.Init(unityObject);
-                modal.Create();
-                return false;
-            } catch (Exception e) {
-                Logger.Log($"Failed to create Modal of type '{typeof(T).FullName}'");
-            }
+            // var c = ColorManager.GetColor("SAMPLE");
+
+            ModalDynamic modal = (ModalDynamic)Activator.CreateInstance(typeof(T), args);
+            modal.Init(unityObject);
+            modal.Create();
             return true;
         }
 
         // public static GameObject GetActiveModalGameObject()
         //     => ActiveModalGameObject;
+
+        public static T ApplyTemplate<T>(this T component, Func<T, T> template) where T : UIComponent
+            => template(component);
     }
 }
