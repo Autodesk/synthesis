@@ -29,5 +29,7 @@ namespace Synthesis.UI.Dynamic {
 
         public static T ApplyTemplate<T>(this T component, Func<T, T> template) where T : UIComponent
             => template(component);
+        public static T ApplyTemplate<T>(this T component, Func<UIComponent, UIComponent> template) where T : UIComponent
+            => template(component) as T;
     }
 }

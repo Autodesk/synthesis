@@ -26,10 +26,10 @@ namespace Synthesis.UI.Dynamic {
         protected Button AcceptButton => _acceptButton;
         private Image _modalImage;
         protected Image ModalImage => _modalImage;
-        private TMP_Text _title;
-        protected TMP_Text Title => _title;
-        private TMP_Text _description;
-        protected TMP_Text Description => _description;
+        private Label _title;
+        protected Label Title => _title;
+        private Label _description;
+        protected Label Description => _description;
         
         private Content _mainContent;
         protected Content MainContent => _mainContent;
@@ -44,8 +44,8 @@ namespace Synthesis.UI.Dynamic {
             // Grab Customizable Modal Components
             var header = _unityObject.transform.Find("Header");
             _modalImage = header.Find("Image").GetComponent<Image>();
-            _title = header.Find("Title").GetComponent<TMP_Text>();
-            _description = header.Find("Description").GetComponent<TMP_Text>();
+            _title = new Label(null, header.Find("Title").gameObject, null);
+            _description = new Label( null, header.Find("Description").gameObject, null);
 
             var footer = _unityObject.transform.Find("Footer");
             _cancelButton = new Button(null!, footer.Find("Cancel").gameObject, null);
@@ -66,9 +66,14 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public abstract void Create();
+        public abstract void Delete();
     }
 
     public abstract class UIComponent {
+
+        // public static readonly Func<UIComponent, UIComponent> VerticalLayoutTemplate = (UIComponent component) => {
+        //     return component.SetTopStretch<UIComponent>(anchoredY: component.Parent!.HeightOfChildren - component.Size.y);
+        // };
 
         public float HeightOfChildren {
             get {
@@ -84,6 +89,9 @@ namespace Synthesis.UI.Dynamic {
                 return sum;
             }
         }
+
+        protected bool _eventsActive = true;
+        public bool EventsActive => _eventsActive;
 
         public Vector2 Size { get; protected set; }
         protected GameObject RootGameObject;
@@ -108,52 +116,60 @@ namespace Synthesis.UI.Dynamic {
             SetAnchorOffset(new Vector2(0, 1), new Vector2(1, 1), new Vector2(leftPadding, -Size.y), new Vector2(-rightPadding, 0));
             RootRectTransform.pivot = new Vector2(RootRectTransform.pivot.x, 1);
             RootRectTransform.anchoredPosition = new Vector2(RootRectTransform.anchoredPosition.x, -anchoredY);
-            return this as T;
+            return (this as T)!;
         }
         public T SetBottomStretch<T>(float leftPadding = 0f, float rightPadding = 0f, float anchoredY = 0f) where T : UIComponent {
             SetAnchorOffset(new Vector2(0, 0), new Vector2(1, 0), new Vector2(leftPadding, 0), new Vector2(-rightPadding, Size.y));
             RootRectTransform.pivot = new Vector2(RootRectTransform.pivot.x, 0);
             RootRectTransform.anchoredPosition = new Vector2(RootRectTransform.anchoredPosition.x, anchoredY);
-            return this as T;
+            return (this as T)!;
         }
         public T SetLeftStretch<T>(float topPadding = 0f, float bottomPadding = 0f, float anchoredX = 0f) where T : UIComponent {
             SetAnchorOffset(new Vector2(0, 0), new Vector2(0, 1), new Vector2(0, bottomPadding), new Vector2(Size.x, -topPadding));
             RootRectTransform.pivot = new Vector2(0, RootRectTransform.pivot.y);
             RootRectTransform.anchoredPosition = new Vector2(anchoredX, RootRectTransform.anchoredPosition.y);
-            return this as T;
+            return (this as T)!;
         }
         public T SetRightStretch<T>(float topPadding = 0f, float bottomPadding = 0f, float anchoredX = 0f) where T : UIComponent {
             SetAnchorOffset(new Vector2(1, 0), new Vector2(1, 1), new Vector2(-Size.x, bottomPadding), new Vector2(0, -topPadding));
             RootRectTransform.pivot = new Vector2(1, RootRectTransform.pivot.y);
             RootRectTransform.anchoredPosition = new Vector2(-anchoredX, RootRectTransform.anchoredPosition.y);
-            return this as T;
+            return (this as T)!;
         }
         public T SetStretch<T>(float leftPadding = 0f, float rightPadding = 0f, float topPadding = 0f, float bottomPadding = 0f) where T: UIComponent{
             SetAnchorOffset(new Vector2(0, 0), new Vector2(1, 1), new Vector2(leftPadding, bottomPadding), new Vector2(-rightPadding, -topPadding));
-            return this as T;
+            return (this as T)!;
         }
         public T SetPivot<T>(Vector2 pivot) where T : UIComponent {
             RootRectTransform.pivot = pivot;
-            return this as T;
+            return (this as T)!;
         }
         public T SetAnchoredPosition<T>(Vector2 pos) where T : UIComponent {
             RootRectTransform.anchoredPosition = pos;
-            return this as T;
+            return (this as T)!;
         }
         public T SetSize<T>(Vector2 size) where T: UIComponent {
             Size = size;
             RootRectTransform.sizeDelta = size;
-            return this as T;
+            return (this as T)!;
         }
         public T SetWidth<T>(float width) where T : UIComponent {
             Size = new Vector2(width, Size.y);
             RootRectTransform.sizeDelta = Size;
-            return this as T;
+            return (this as T)!;
         }
         public T SetHeight<T>(float height) where T : UIComponent {
             Size = new Vector2(Size.x, height);
             RootRectTransform.sizeDelta = Size;
-            return this as T;
+            return (this as T)!;
+        }
+        public T EnableEvents<T>() where T : UIComponent {
+            _eventsActive = true;
+            return (this as T)!;
+        }
+        public T DisableEvents<T>() where T : UIComponent {
+            _eventsActive = false;
+            return (this as T)!;
         }
     }
 
@@ -219,6 +235,24 @@ namespace Synthesis.UI.Dynamic {
             var slider = new Slider(this, sliderObj, label, unitSuffix, minValue, maxValue, currentValue);
             base.Children.Add(slider);
             return slider;
+        }
+        public Button CreateButton(string text = "New Button") {
+            var buttonObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("button-base"), base.RootGameObject.transform);
+            var button = new Button(this, buttonObj, null);
+            base.Children.Add(button);
+            return button;
+        }
+        public LabeledButton CreateLabeledButton() {
+            var lButtonObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("labeled-button-base"), base.RootGameObject.transform);
+            var lButton = new LabeledButton(this, lButtonObj);
+            base.Children.Add(lButton);
+            return lButton;
+        }
+        public Dropdown CreateDropdown() {
+            var dropdownObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("dropdown-base"), base.RootGameObject.transform);
+            var dropdown = new Dropdown(this, dropdownObj, null);
+            base.Children.Add(dropdown);
+            return dropdown;
         }
         public InputField CreateInputField() {
             throw new NotImplementedException();
@@ -292,14 +326,7 @@ namespace Synthesis.UI.Dynamic {
         public static readonly Func<Toggle, Toggle> VerticalLayoutTemplate = (Toggle toggle)
             => toggle.SetTopStretch<Toggle>(leftPadding: 15f, anchoredY: toggle.Parent!.HeightOfChildren - toggle.Size.y);
 
-        private bool _callbacksActive = true;
-        public bool CallbacksActive {
-            get => _callbacksActive;
-            set {
-                _callbacksActive = value;
-            }
-        }
-        private Action<Toggle, bool> _stateChangeCallback = null!;
+        public event Action<Toggle, bool> OnStateChanged;
         private Label _titleLabel;
         public Label TitleLabel => _titleLabel;
         private UToggle _unityToggle;
@@ -315,10 +342,10 @@ namespace Synthesis.UI.Dynamic {
             _titleLabel = new Label(this, RootGameObject.transform.Find("Label").gameObject, null);
             _unityToggle = RootGameObject.transform.Find("Toggle").GetComponent<UToggle>();
             _unityToggle.onValueChanged.AddListener(x => {{
-                if (_callbacksActive && _stateChangeCallback != null)
-                    _stateChangeCallback(this, x);
+                if (_eventsActive && OnStateChanged != null)
+                    OnStateChanged(this, x);
             }});
-            DisableCallbacks().SetState(isOn).EnableCallbacks();
+            DisableEvents<Toggle>().SetState(isOn).EnableEvents<Toggle>();
             _titleLabel.SetText(text);
         }
 
@@ -326,16 +353,8 @@ namespace Synthesis.UI.Dynamic {
             _unityToggle.isOn = state;
             return this;
         }
-        public Toggle SetStateChangeCallback(Action<Toggle, bool> callback) {
-            _stateChangeCallback = callback;
-            return this;
-        }
-        public Toggle DisableCallbacks() {
-            _callbacksActive = false;
-            return this;
-        }
-        public Toggle EnableCallbacks() {
-            _callbacksActive = true;
+        public Toggle AddOnStateChangedEvent(Action<Toggle, bool> callback) {
+            OnStateChanged += callback;
             return this;
         }
     }
@@ -345,14 +364,7 @@ namespace Synthesis.UI.Dynamic {
         public static readonly Func<Slider, Slider> VerticalLayoutTemplate = (Slider slider)
             => slider.SetTopStretch<Slider>(leftPadding: 15f, anchoredY: slider.Parent!.HeightOfChildren - slider.Size.y);
 
-        private bool _callbacksActive = true;
-        public bool CallbacksActive {
-            get => _callbacksActive;
-            set {
-                _callbacksActive = value;
-            }
-        }
-        private Action<Slider, float> _valueChangeCallback;
+        public event Action<Slider, float> OnValueChanged;
         private Func<float, string> _customValuePresentation = (x) => Math.Round(x, 2).ToString();
         private USlider _unitySlider;
         public (float min, float max) SlideRange => (_unitySlider.minValue, _unitySlider.maxValue);
@@ -369,8 +381,8 @@ namespace Synthesis.UI.Dynamic {
             _unitySlider.onValueChanged.AddListener(x => {
                 var roundedVal = Math.Round(x, 2);
                 _valueLabel.SetText(roundedVal.ToString() + (this._unitSuffix == string.Empty ? "" : this._unitSuffix));
-                if (_callbacksActive && _valueChangeCallback != null)
-                    _valueChangeCallback(this, x);
+                if (_eventsActive && OnValueChanged != null)
+                    OnValueChanged(this, x);
             });
 
             if (unitSuffix != null)
@@ -384,28 +396,22 @@ namespace Synthesis.UI.Dynamic {
             return this;
         }
         public Slider SetValue(float value, bool mute = false) {
-            var before = _callbacksActive;
+            var before = _eventsActive;
             if (mute)
-                _callbacksActive = false;
+                _eventsActive = false;
             _unitySlider.value = value;
             if (mute)
-                _callbacksActive = before;
+                _eventsActive = before;
             return this;
         }
-        public Slider SetValueChangeCallback(Action<Slider, float> callback) {
-            _valueChangeCallback = callback;
+        public Slider AddOnValueChangedEvent(Action<Slider, float> callback) {
+            OnValueChanged += callback;
             return this;
         }
         public Slider SetCustomValuePresentation(Func<float, string> mod) {
+            if (_customValuePresentation == null)
+                return this;
             _customValuePresentation = mod;
-            return this;
-        }
-        public Slider DisableCallbacks() {
-            _callbacksActive = false;
-            return this;
-        }
-        public Slider EnableCallbacks() {
-            _callbacksActive = true;
             return this;
         }
     }
@@ -415,26 +421,115 @@ namespace Synthesis.UI.Dynamic {
     }
 
     public class LabeledButton : UIComponent {
-        public LabeledButton(UIComponent? parent, GameObject unityObject) : base(parent, unityObject) { }
+
+        public static readonly Func<LabeledButton, LabeledButton> VerticalLayoutTemplate = (LabeledButton lb) => {
+            return lb.SetTopStretch<LabeledButton>(leftPadding: 15f, anchoredY: lb.Parent!.HeightOfChildren - lb.Size.y);
+        };
+
+        private Button _button;
+        public Button Button => _button;
+        private Label _label;
+        public Label Label => _label;
+
+        public LabeledButton(UIComponent? parent, GameObject unityObject) : base(parent, unityObject) {
+            _button = new Button(this, RootGameObject.transform.Find("Button").gameObject, null);
+            _label = new Label(this, RootGameObject.transform.Find("Label").gameObject, null);
+        }
+
+        public LabeledButton StepIntoButton(Action<Button> mod) {
+            mod(_button);
+            return this;
+        }
+        public LabeledButton StepIntoLabel(Action<Label> mod) {
+            mod(_label);
+            return this;
+        }
     }
 
     public class Button : UIComponent {
-        private Vector2 _size;
 
-        private TMP_Text _buttonText;
-        public TMP_Text ButtonText => _buttonText;
+        public static readonly Func<Button, Button> VerticalLayoutTemplate = (Button button)
+            => button.SetTopStretch<Button>(leftPadding: 15f, anchoredY: button.Parent!.HeightOfChildren - button.Size.y);
+
+        public event Action<Button> OnClicked;
+        private Label _label;
+        public Label Label => _label;
         private UButton _unityButton;
-        public UButton UnityButton => _unityButton;
+        // public UButton UnityButton => _unityButton;
 
         public Button(UIComponent? parent, GameObject unityObject, Vector2? size) : base(parent, unityObject) {
-            if (size == null) {
-                size = unityObject.GetComponent<RectTransform>().sizeDelta;
-            } else {
-                _size = size.Value;
+            if (size != null) {
+                Size = size.Value;
             }
 
-            _buttonText = unityObject.transform.Find("Text (TMP)").GetComponent<TMP_Text>();
+            _label = new Label(this, unityObject.transform.Find("Text (TMP)").gameObject, null);
             _unityButton = unityObject.GetComponent<UButton>();
+            _unityButton.onClick.AddListener(() => {
+                if (_eventsActive && OnClicked != null) {
+                    OnClicked(this);
+                }
+            });
+        }
+
+        public Button StepIntoLabel(Action<Label> mod) {
+            mod(_label);
+            return this;
+        }
+        public Button AddOnClickedEvent(Action<Button> callback) {
+            OnClicked += callback;
+            return this;
+        }
+    }
+
+    public class Dropdown : UIComponent {
+
+        public static readonly Func<Dropdown, Dropdown> VerticalLayoutTemplate = (Dropdown dropdown)
+            => dropdown.SetTopStretch<Dropdown>(leftPadding: 15f, anchoredY: dropdown.Parent!.HeightOfChildren - dropdown.Size.y);
+
+        public event Action<Dropdown, int, TMP_Dropdown.OptionData> OnValueChanged;
+        private Label _label;
+        public Label Label => _label;
+        private TMP_Dropdown _tmpDropdown;
+        public IReadOnlyList<TMP_Dropdown.OptionData> Options => _tmpDropdown.options.AsReadOnly();
+
+        public Dropdown(UIComponent? parent, GameObject unityObject, Vector2? size) : base(parent, unityObject) {
+            if (size != null) {
+                Size = size.Value;
+            }
+
+            _label = new Label(this, unityObject.transform.Find("Label").gameObject, null);
+            _tmpDropdown = unityObject.transform.Find("Dropdown").GetComponent<TMP_Dropdown>();
+
+            _tmpDropdown.onValueChanged.AddListener(x => {
+                // TODO?
+                if (_eventsActive && OnValueChanged != null)
+                    OnValueChanged(this, x, this.Options[x]);
+            });
+        }
+
+        public Dropdown SetOptions(string[] options) {
+            _tmpDropdown.ClearOptions();
+            var optionData = new List<TMP_Dropdown.OptionData>();
+            options.ForEach(x => optionData.Add(new TMP_Dropdown.OptionData(x)));
+            _tmpDropdown.AddOptions(optionData);
+            return this;
+        }
+        public Dropdown SetValue(int index, bool mute = false) {
+            var original = _eventsActive;
+            if (mute)
+                _eventsActive = false;
+            _tmpDropdown.value = index;
+            if (mute)
+                _eventsActive = original;
+            return this;
+        }
+        public Dropdown AddOnValueChangedEvent(Action<Dropdown, int, TMP_Dropdown.OptionData> callback) {
+            OnValueChanged += callback;
+            return this;
+        }
+        public Dropdown StepIntoLabel(Action<Label> mod) {
+            mod(_label);
+            return this;
         }
     }
 }
