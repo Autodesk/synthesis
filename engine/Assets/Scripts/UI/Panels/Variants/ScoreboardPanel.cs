@@ -18,23 +18,13 @@ public class ScoreboardPanel : Panel
     {
         redScoreTextMesh = redScoreText.GetComponent<TextMeshProUGUI>();
         blueScoreTextMesh = blueScoreText.GetComponent<TextMeshProUGUI>();
-        redScoreTextMesh.text = "0";
-        blueScoreTextMesh.text = "0";
+        redScoreTextMesh.text = TempScoreManager.redScore.ToString();
+        blueScoreTextMesh.text = TempScoreManager.blueScore.ToString();
         
         EventBus.NewTypeListener<OnScoreEvent>(e =>
         {
-            var se = (OnScoreEvent) e;
-            switch (se.zone.alliance)
-            {
-                case Alliance.RED:
-                    redScore += se.zone.points;
-                    redScoreTextMesh.text = redScore.ToString();
-                    break;
-                case Alliance.BLUE:
-                    blueScore += se.zone.points;
-                    blueScoreTextMesh.text = blueScore.ToString();
-                    break;
-            }
+            redScoreTextMesh.text = TempScoreManager.redScore.ToString();
+            blueScoreTextMesh.text = TempScoreManager.blueScore.ToString();
         });
     }
 }

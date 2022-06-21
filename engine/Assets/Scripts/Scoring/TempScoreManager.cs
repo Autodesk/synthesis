@@ -1,26 +1,76 @@
+using System;
 using System.Collections.Generic;
+using System.IO.IsolatedStorage;
+using System.Security.Policy;
 using SynthesisAPI.EventBus;
 using UnityEngine;
 
 public class TempScoreManager : MonoBehaviour
 {
+    private bool _RenderScoringZones = true;
+
+    public bool RenderScoringZones
+    {
+        get => _RenderScoringZones;
+        set
+        {
+            if (_RenderScoringZones != value)
+            {
+                _RenderScoringZones = value;
+                ScoringZones.ForEach(zone =>
+                {
+                    zone.SetVisibility(value);
+                });
+            }
+        }
+    }
     private List<ScoringZone> ScoringZones;
+    public static int redScore = 0;
+    public static int blueScore = 0;
 
     private void Start()
     {
         ScoringZones = new List<ScoringZone>();
-        CreateScoringZone(1, 1, 1, Alliance.RED, 5);
-        CreateTestGamepiece(3, 1, 1, PrimitiveType.Cube);
+        List<GameObject> zones = new List<GameObject>(
+        );
+        for (int i = -5; i < 5; i++)
+        {
+            GameObject newZone = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            newZone.transform.position = new Vector3(i, 1, 0);
+            zones.Add(newZone);
+        }
+        CreateScoringZone(zones, Alliance.RED, 1);
+        CreateTestGamepiece(3, 1, 2, PrimitiveType.Cube);
+
+        RenderScoringZones = false;
 
         EventBus.NewTypeListener<OnScoreEvent>(e =>
         {
-            OnScoreEvent scoreEvent = (OnScoreEvent) e;
-            Debug.Log($"{scoreEvent.zone.alliance.ToString()} alliance scored {scoreEvent.zone.points} points!");
+            OnScoreEvent se = (OnScoreEvent) e;
+            switch (se.zone.alliance)
+            {
+                case Alliance.RED:
+                    redScore += se.zone.points;
+                    break;
+                case Alliance.BLUE:
+                    blueScore += se.zone.points;
+                    break;
+            }
+            Debug.Log($"{se.zone.alliance.ToString()} alliance scored {se.zone.points} points!");
+        });
+    }
+
+    public void CreateScoringZone(List<GameObject> gameObjects, Alliance alliance, int points,
+        bool destroyObject = true)
+    {
+        gameObjects.ForEach(obj =>
+        {
+            ScoringZones.Add(new ScoringZone(obj, alliance, points, destroyObject));
         });
     }
 
 
-    public void CreateScoringZone(int x, int y, int z, Alliance alliance, int points, bool destroyObject = true)
+    public void CreateScoringZoneManual(int x, int y, int z, Alliance alliance, int points, bool destroyObject = true)
     {
         GameObject zone = GameObject.CreatePrimitive(PrimitiveType.Cube);
         zone.transform.position = new Vector3(x, y, z);

@@ -15,7 +15,7 @@ public class ScoringZone
     public int points;
     public bool destroyObject;
     private GameObject gameObject;
-    private BoxCollider boxCollider;
+    private Collider collider;
     private MeshRenderer meshRenderer;
 
     public ScoringZone(GameObject gameObject, Alliance alliance, int points, bool destroyObject)
@@ -34,10 +34,15 @@ public class ScoringZone
         ScoringZoneListener listener = gameObject.AddComponent<ScoringZoneListener>();
         listener.scoringZone = this;
         
-        boxCollider = gameObject.GetComponent<BoxCollider>();
+        collider = gameObject.GetComponent<Collider>();
         meshRenderer = gameObject.GetComponent<MeshRenderer>();
 
-        boxCollider.isTrigger = true;
+        collider.isTrigger = true;
+    }
+
+    public void SetVisibility(bool visible)
+    {
+        gameObject.GetComponent<Renderer>().enabled = visible;
     }
 }
 
