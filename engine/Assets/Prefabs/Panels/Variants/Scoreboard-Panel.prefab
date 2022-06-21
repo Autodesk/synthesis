@@ -1035,6 +1035,7 @@ GameObject:
   - component: {fileID: 7021431401944511235}
   - component: {fileID: 8624994682915817711}
   - component: {fileID: 2308892964948406686}
+  - component: {fileID: 3498785380430298049}
   m_Layer: 5
   m_Name: Scoreboard-Panel
   m_TagString: Untagged
@@ -1128,6 +1129,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   redScoreText: {fileID: 119006365984770825}
   blueScoreText: {fileID: 1965458076098386871}
+--- !u!114 &3498785380430298049
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7021431401944511233}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f35a2f739de0f704ca27a3854ea3ed05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parent: {fileID: 7021431401944511234}
+  draggableArea: {fileID: 7021431401944511234}
 --- !u!1 &8169901753413817848
 GameObject:
   m_ObjectHideFlags: 0
