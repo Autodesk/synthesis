@@ -255,7 +255,10 @@ namespace Synthesis.UI.Dynamic {
             return dropdown;
         }
         public InputField CreateInputField() {
-            throw new NotImplementedException();
+            var inputFieldObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("input-field-base"), base.RootGameObject.transform);
+            var inputField = new InputField(this, inputFieldObj);
+            base.Children.Add(inputField);
+            return inputField;
         }
         public ScrollView CreateScrollView() {
             throw new NotImplementedException();
@@ -273,6 +276,7 @@ namespace Synthesis.UI.Dynamic {
         private TMP_Text _unityText;
 
         public string Text => _unityText.text;
+        public FontStyles FontStyle => _unityText.fontStyle;
 
         public static readonly Func<Label, Label> VerticalLayoutTemplate = (Label label) => {
             return label.SetTopStretch(anchoredY: label.Parent!.HeightOfChildren - label.Size.y);
@@ -418,7 +422,49 @@ namespace Synthesis.UI.Dynamic {
     }
 
     public class InputField : UIComponent {
-        public InputField(UIComponent? parent, GameObject unityObject) : base(parent, unityObject) { }
+
+        public static readonly Func<InputField, InputField> VerticalLayoutTemplate = (InputField inputField)
+            => inputField.SetTopStretch<InputField>(leftPadding: 15f, anchoredY: inputField.Parent!.HeightOfChildren - inputField.Size.y);
+
+        public event Action<InputField, string> OnValueChanged;
+        private Label _hint;
+        public Label Hint => _hint;
+        private Label _label;
+        public Label Label => _label;
+        private TMP_InputField _tmpInput;
+        public TMP_InputField.ContentType ContentType => _tmpInput.contentType;
+
+        public InputField(UIComponent? parent, GameObject unityObject) : base(parent, unityObject) {
+            var ifObj = unityObject.transform.Find("InputField");
+            _tmpInput = ifObj.GetComponent<TMP_InputField>();
+            _hint = new Label(this, ifObj.Find("Text Area").Find("Placeholder").gameObject, null);
+            _label = new Label(this, unityObject.transform.Find("Label").gameObject, null);
+            _tmpInput.onValueChanged.AddListener(x => {
+                if (_eventsActive && OnValueChanged != null)
+                    OnValueChanged(this, x);
+            });
+        }
+
+        public InputField StepIntoHint(Action<Label> mod) {
+            mod(_hint);
+            return this;
+        }
+        public InputField StepIntoLabel(Action<Label> mod) {
+            mod(_label);
+            return this;
+        }
+        public InputField AddOnValueChangedEvent(Action<InputField, string> callback) {
+            OnValueChanged += callback;
+            return this;
+        }
+        public InputField SetContentType(TMP_InputField.ContentType type) {
+            _tmpInput.contentType = type;
+            return this;
+        }
+        public InputField SetValue(string val) {
+            _tmpInput.SetTextWithoutNotify(val);
+            return this;
+        }
     }
 
     public class LabeledButton : UIComponent {

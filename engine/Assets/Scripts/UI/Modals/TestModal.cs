@@ -36,10 +36,15 @@ namespace Synthesis.UI.Dynamic {
             var testLabeledButton = MainContent.CreateLabeledButton().ApplyTemplate(LabeledButton.VerticalLayoutTemplate)
                 .StepIntoButton(b => b.AddOnClickedEvent(x => Debug.Log("Labeled Button Pressed")).StepIntoLabel(l => l.SetText("Tab")))
                 .StepIntoLabel(l => l.SetText("Pause/Play"));
-            var testDropdown = MainContent.CreateDropdown().ApplyTemplate(Dropdown.VerticalLayoutTemplate)
-                .StepIntoLabel(l => l.SetText("Test Dropdown BOII"))
-                .SetOptions(new string[] { "Red", "Square", "Candy", "Window", "Pixel" })
-                .AddOnValueChangedEvent((d, i, o) => Debug.Log($"{d.Label.Text} -> [{i}] {o.text}"));
+            // var testDropdown = MainContent.CreateDropdown().ApplyTemplate(Dropdown.VerticalLayoutTemplate)
+            //     .StepIntoLabel(l => l.SetText("Test Dropdown BOII"))
+            //     .SetOptions(new string[] { "Red", "Square", "Candy", "Window", "Pixel" })
+            //     .AddOnValueChangedEvent((d, i, o) => Debug.Log($"{d.Label.Text} -> [{i}] {o.text}"));
+            var testInputField = MainContent.CreateInputField().ApplyTemplate(InputField.VerticalLayoutTemplate)
+                .StepIntoHint(h => h.SetText("Enter a number..."))
+                .StepIntoLabel(l => l.SetText("Test Input Field"))
+                .SetContentType(TMP_InputField.ContentType.IntegerNumber)
+                .SetValue("486743");
         }
 
         public override void Delete() { }
