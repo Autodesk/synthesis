@@ -76,9 +76,13 @@ namespace Synthesis.Physics {
         public void OnCollisionEnter(Collision c) {
             if (GetComponent<Rigidbody>().isKinematic && c.rigidbody.isKinematic)
                 return;
-            
             // c.contacts.ForEach(x => Reports.Add(new ContactReport(this, c)));
-            c.contacts.ForEach(x => ReplayManager.PushContactReport(new ContactReport(this, c)));
+            ContactReport cr = new ContactReport(this, c);
+            ReplayManager.PushContactReport(cr);
+            Debug.Log("Collision entered " + cr.RigidbodyA + " " + cr.RigidbodyB + " at "+ cr.TimeStamp + " with " + cr.RelativeVelocity);
+            string s = "";
+            c.contacts.ForEach(x => s+=x.separation + "\n");
+            Debug.Log(s);
         }
     }
 
@@ -89,16 +93,30 @@ namespace Synthesis.Physics {
         public string RigidbodyB;
         public Vector3 RelativeVelocity;
         public Vector3 Impulse;
-        public ContactPoint[] Points;
+        public Vector3 point;
+        public Vector3 normal;
+        public float seperation;
 
         public ContactReport(ContactRecorder r, Collision c) {
             // TODO: In newer versions of Unity they change these name for some reason. Hi future developer
             RigidbodyA = r.gameObject.name;
             RigidbodyB = c.rigidbody == null ? string.Empty : c.rigidbody.name;
-            Points = c.contacts;
             TimeStamp = Time.realtimeSinceStartup - ReplayManager.DesyncTime;
             RelativeVelocity = c.relativeVelocity;
             Impulse = c.impulse;
+
+            //averages contact points
+            Vector3 averageContactPoint = Vector3.zero;
+            Vector3 averageNormal = Vector3.zero;
+            float averageSeperation = 0; 
+            c.contacts.ForEach(x => {
+                averageContactPoint += x.point;
+                averageNormal += x.normal;
+                averageSeperation += x.separation;
+                });
+            point = averageContactPoint / c.contactCount;
+            normal = Vector3.Normalize(averageNormal);
+            seperation = averageSeperation / c.contactCount;
         }
     }
 

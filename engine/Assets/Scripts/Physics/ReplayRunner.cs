@@ -52,15 +52,13 @@ public class ReplayRunner : MonoBehaviour {
     }
 
     private void CreateContactMarker(ContactReport report, float opacity = 1f) {
-        report.Points.ForEach(x => {
-            var marker = Instantiate(ContactMarker, x.point, Quaternion.identity);
-            var mat = marker.GetComponent<Renderer>();
-            var color = mat.material.GetColor("TRANSPARENT_COLOR");
-            color.a = opacity;
-            mat.material.SetColor("TRANSPARENT_COLOR", color);
-            _contactMarkers.Add(marker);
-            marker.AddComponent<ContactMarkerHandler>();
-        });
+        var marker = Instantiate(ContactMarker, report.point, Quaternion.identity);
+        var mat = marker.GetComponent<Renderer>();
+        var color = mat.material.GetColor("TRANSPARENT_COLOR");
+        color.a = opacity;
+        mat.material.SetColor("TRANSPARENT_COLOR", color);
+        _contactMarkers.Add(marker);
+        marker.AddComponent<ContactMarkerHandler>();
     }
 
     private void PhysChange(IEvent e) {
