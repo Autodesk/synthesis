@@ -29,7 +29,7 @@ namespace SynthesisServer
                 }
 
                 //configure build to use local json file
-                config.AddJsonFile("");
+                //config.AddJsonFile("");
             });
 
             builder.ConfigureServices((hostContext, services) =>
