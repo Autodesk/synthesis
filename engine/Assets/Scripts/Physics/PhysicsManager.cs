@@ -76,13 +76,8 @@ namespace Synthesis.Physics {
         public void OnCollisionEnter(Collision c) {
             if (GetComponent<Rigidbody>().isKinematic && c.rigidbody.isKinematic)
                 return;
-            // c.contacts.ForEach(x => Reports.Add(new ContactReport(this, c)));
-            ContactReport cr = new ContactReport(this, c);
-            ReplayManager.PushContactReport(cr);
-            Debug.Log("Collision entered " + cr.RigidbodyA + " " + cr.RigidbodyB + " at "+ cr.TimeStamp + " with " + cr.RelativeVelocity);
-            string s = "";
-            c.contacts.ForEach(x => s+=x.separation + "\n");
-            Debug.Log(s);
+
+            ReplayManager.PushContactReport(new ContactReport(this, c));
         }
     }
 
