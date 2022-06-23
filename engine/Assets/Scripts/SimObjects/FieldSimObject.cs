@@ -40,5 +40,6 @@ public class FieldSimObject : SimObject {
     public static void SpawnField(string filePath) {
         var mira = Importer.MirabufAssemblyImport(filePath);
         mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
+        mira.MainObject.tag = "field";
     }
 }

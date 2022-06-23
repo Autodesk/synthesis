@@ -237,8 +237,11 @@ public class RobotSimObject : SimObject {
         var mira = Importer.MirabufAssemblyImport(filePath);
         RobotSimObject simObject = mira.Sim as RobotSimObject;
         mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
+        mira.MainObject.tag = "robot";
         mira.MainObject.transform.position = position;
         mira.MainObject.transform.rotation = rotation;
+
+        ModeManager.RobotSpawnpoint = position;
 
         // Event call maybe?
 
