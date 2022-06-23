@@ -282,7 +282,7 @@ namespace Synthesis.UI.Dynamic {
             return label.SetTopStretch(anchoredY: label.Parent!.HeightOfChildren - label.Size.y);
         };
         public static readonly Func<Label, Label> BigLabelTemplate = (Label label) => {
-            return label.SetHeight<Label>(30).SetFontSize(22).ApplyTemplate(Label.VerticalLayoutTemplate).SetHorizontalAlignment(HorizontalAlignmentOptions.Left)
+            return label.SetHeight<Label>(30).SetFontSize(24).ApplyTemplate(Label.VerticalLayoutTemplate).SetHorizontalAlignment(HorizontalAlignmentOptions.Left)
                 .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
         };
 

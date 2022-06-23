@@ -45,6 +45,9 @@ namespace Synthesis.UI.Dynamic {
                 .StepIntoLabel(l => l.SetText("Test Input Field"))
                 .SetContentType(TMP_InputField.ContentType.IntegerNumber)
                 .SetValue("486743");
+            var testDropdownMenu = MainContent.CreateDropdown().ApplyTemplate(Dropdown.VerticalLayoutTemplate)
+                .StepIntoLabel(l => l.SetText("Test Dropdown"))
+                .SetValue(0);
         }
 
         public override void Delete() { }
