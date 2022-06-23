@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+
+  <assemblyIdentity name="InventorMirabufExporter" version="1.0.0.0"></assemblyIdentity>
+
+  <clrClass clsid="{37135cf6-eae5-47c5-8ae8-c5204255b1fb}" progid="InventorMirabufExporter.StandardAddInServer" threadingModel="Both" name="InventorMirabufExporter.StandardAddInServer" runtimeVersion=""></clrClass>
+
+  <file name="InventorMirabufExporter.dll" hashalg="SHA1"></file>
+
+</assembly>

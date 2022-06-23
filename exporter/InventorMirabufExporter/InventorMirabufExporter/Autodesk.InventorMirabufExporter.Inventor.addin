@@ -1,0 +1,14 @@
+<Addin Type="Standard">
+  <!--Created for Autodesk Inventor Version 24.0-->
+  <ClassId>{37135cf6-eae5-47c5-8ae8-c5204255b1fb}</ClassId>
+  <ClientId>{37135cf6-eae5-47c5-8ae8-c5204255b1fb}</ClientId>
+  <DisplayName>SynthesisExporter</DisplayName>
+  <Description>Addin for exporting models into Synthesis™</Description>
+  <Assembly>InventorMirabufExporter.dll</Assembly>
+  <LoadOnStartUp>1</LoadOnStartUp>
+  <UserUnloadable>1</UserUnloadable>
+  <Hidden>0</Hidden>
+  <SupportedSoftwareVersionGreaterThan>23..</SupportedSoftwareVersionGreaterThan>
+  <DataVersion>1</DataVersion>
+  <UserInterfaceVersion>1</UserInterfaceVersion>
+</Addin>
