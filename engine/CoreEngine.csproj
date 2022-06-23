@@ -62,6 +62,7 @@
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Drivetrain\ArcadePanel.cs" />
      <Compile Include="Assets\Scripts\UI\ContextMenu\ContextItem.cs" />
      <Compile Include="Assets\Scripts\Attributes\ContextMenuOptionAttribute.cs" />
+     <Compile Include="Assets\Scripts\UI\Modals\ModalManager.cs" />
      <Compile Include="Assets\Scripts\UI\ToastLogger\ToastLogger.cs" />
      <Compile Include="Assets\Scripts\AutoUpdater.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Panel.cs" />
@@ -76,9 +77,11 @@
      <Compile Include="Assets\Scripts\ModuleLoader\LoadModuleEvent.cs" />
      <Compile Include="Assets\Scripts\Utilities\Misc.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\MeshColliderAdapter.cs" />
+     <Compile Include="Assets\Scripts\UI\Modals\ModalPanel.cs" />
      <Compile Include="Assets\Scripts\UI\Tabs\Tab.cs" />
      <Compile Include="Assets\Scripts\SimObjects\FieldSimObject.cs" />
      <Compile Include="Assets\Scripts\ModelManager\Models\GearboxData.cs" />
+     <Compile Include="Assets\Scripts\UI\Modals\ModalDynamic.cs" />
      <Compile Include="Assets\Scripts\Drivers\LinearDriver.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\ComponentAdapter.cs" />
      <Compile Include="Assets\Scripts\Importer\LegacyFieldImporter.cs" />
@@ -108,7 +111,6 @@
      <Compile Include="Assets\Scripts\Utilities\ObjectLedger.cs" />
      <Compile Include="Assets\Scripts\ModelManager\Models\Motor.cs" />
      <Compile Include="Assets\Scripts\Utilities\UtilExtensions.cs" />
-     <Compile Include="Assets\Scripts\Camera\MenuCamera.cs" />
      <Compile Include="Assets\Scripts\Behaviors\TankDriveBehavior.cs" />
      <Compile Include="Assets\Scripts\Attributes\ControllableInputAttribute.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Joints\RotationalJointItem.cs" />
@@ -119,14 +121,17 @@
      <Compile Include="Assets\Scripts\AnalyticsManager.cs" />
      <Compile Include="Assets\Scripts\Behaviors\GeneralSliderBehaviour.cs" />
      <Compile Include="Assets\Scripts\Utilities\Highlighter.cs" />
+     <Compile Include="Assets\Scripts\UI\Modals\ModalInput.cs" />
      <Compile Include="Assets\Scripts\UI\Tabs\TopButton.cs" />
      <Compile Include="Assets\Scripts\UI\InteractableObject.cs" />
      <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyRootItem.cs" />
      <Compile Include="Assets\Scripts\SimObjects\GamepieceSimObject.cs" />
      <Compile Include="Assets\Scripts\UI\MultiplayerManager.cs" />
      <Compile Include="Assets\Scripts\UI\ToastLogger\ToastConfig.cs" />
+     <Compile Include="Assets\Scripts\Utilities\ColorManager.cs" />
      <Compile Include="Assets\Scripts\Utilities\IEnumerableExtensions.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\MeshAdapter.cs" />
+     <Compile Include="Assets\Scripts\UI\Modals\TestModal.cs" />
      <Compile Include="Assets\Scripts\UI\LayoutManager.cs" />
      <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyFolderItem.cs" />
      <Compile Include="Assets\Scripts\FileSystem\FileSystem.cs" />
@@ -136,7 +141,6 @@
      <Compile Include="Assets\Scripts\VersionManager.cs" />
      <Compile Include="Assets\Scripts\Importer\DynamicObjectMeta.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Joints\ConfigureJointsPanel.cs" />
-     <Compile Include="Assets\Scripts\UI\MainMenu\MenuManager.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\ModuleMetadata.cs" />
      <Compile Include="Assets\Scripts\ModelManager\Controllables\TestControllable.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\IApiAdapter.cs" />
@@ -153,11 +157,7 @@
      <Compile Include="Assets\Scripts\UI\Panels\Variants\ExitPanel.cs" />
      <Compile Include="Assets\Scripts\Importer\Importer.cs" />
      <Compile Include="Assets\Scripts\Test\DebugJointAxes.cs" />
-     <Compile Include="Assets\Scripts\Tween\Tween.cs" />
-     <Compile Include="Assets\Scripts\Tween\Demo\TweenDemo.cs" />
-     <Compile Include="Assets\Scripts\UI\MainMenu\MenuButtonTween.cs" />
      <None Include="Assets\Scripts\CoreEngine.asmdef" />
-     <None Include="Assets\Scripts\Tween\Readme.txt" />
     <Reference Include="UnityEngine">
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>
@@ -383,8 +383,8 @@
     <Reference Include="UnityEditor.Graphs">
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEditor.OSXStandalone.Extensions">
-        <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/PlaybackEngines/MacStandaloneSupport/UnityEditor.OSXStandalone.Extensions.dll</HintPath>
+    <Reference Include="UnityEditor.WebGL.Extensions">
+        <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.WindowsStandalone.Extensions">
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
@@ -393,40 +393,40 @@
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/PlaybackEngines/LinuxStandaloneSupport/UnityEditor.LinuxStandalone.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="Api">
-        <HintPath>C:/Users/hunte/work/synthesis/engine/Assets/Packages/Api.dll</HintPath>
+        <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/Api.dll</HintPath>
     </Reference>
     <Reference Include="MathNet.Spatial">
-        <HintPath>C:/Users/hunte/work/synthesis/engine/Assets/Packages/MathNet.Spatial.0.6.0/lib/net461/MathNet.Spatial.dll</HintPath>
+        <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/MathNet.Spatial.0.6.0/lib/net461/MathNet.Spatial.dll</HintPath>
     </Reference>
     <Reference Include="MathNet.Numerics">
-        <HintPath>C:/Users/hunte/work/synthesis/engine/Assets/Packages/MathNet.Numerics.4.15.0/lib/net461/MathNet.Numerics.dll</HintPath>
+        <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/MathNet.Numerics.4.15.0/lib/net461/MathNet.Numerics.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing.Common">
-        <HintPath>C:/Users/hunte/work/synthesis/engine/Assets/Packages/System.Drawing.Common.5.0.2/lib/net461/System.Drawing.Common.dll</HintPath>
+        <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/System.Drawing.Common.5.0.2/lib/net461/System.Drawing.Common.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-        <HintPath>C:/Users/hunte/work/synthesis/engine/Assets/Packages/Newtonsoft.Json.13.0.1/lib/net45/Newtonsoft.Json.dll</HintPath>
+        <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/Newtonsoft.Json.13.0.1/lib/net45/Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Google.Protobuf">
-        <HintPath>C:/Users/hunte/work/synthesis/engine/Assets/Packages/Google.Protobuf.3.17.3/lib/net45/Google.Protobuf.dll</HintPath>
+        <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/Google.Protobuf.3.17.3/lib/net45/Google.Protobuf.dll</HintPath>
     </Reference>
     <Reference Include="Aardvark">
-        <HintPath>C:/Users/hunte/work/synthesis/engine/Assets/Packages/Aardvark.dll</HintPath>
+        <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/Aardvark.dll</HintPath>
     </Reference>
     <Reference Include="System.Buffers">
-        <HintPath>C:/Users/hunte/work/synthesis/engine/Assets/Packages/System.Buffers.4.4.0/lib/netstandard2.0/System.Buffers.dll</HintPath>
+        <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/System.Buffers.4.4.0/lib/netstandard2.0/System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.Memory">
-        <HintPath>C:/Users/hunte/work/synthesis/engine/Assets/Packages/System.Memory.4.5.3/lib/netstandard2.0/System.Memory.dll</HintPath>
+        <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/System.Memory.4.5.3/lib/netstandard2.0/System.Memory.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe">
-        <HintPath>C:/Users/hunte/work/synthesis/engine/Assets/Packages/System.Runtime.CompilerServices.Unsafe.4.5.2/lib/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+        <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/System.Runtime.CompilerServices.Unsafe.4.5.2/lib/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
-        <HintPath>C:/Users/hunte/work/synthesis/engine/Library/PackageCache/com.unity.ext.nunit@1.0.6/net35/unity-custom/nunit.framework.dll</HintPath>
+        <HintPath>C:/Users/hunte/git/synthesis/engine/Library/PackageCache/com.unity.ext.nunit@1.0.6/net35/unity-custom/nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="DotNetZip">
-        <HintPath>C:/Users/hunte/work/synthesis/engine/Assets/Packages/DotNetZip.1.15.0/lib/net40/DotNetZip.dll</HintPath>
+        <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/DotNetZip.1.15.0/lib/net40/DotNetZip.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>
@@ -777,13 +777,13 @@
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Xml.XPath.XDocument.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-        <HintPath>C:/Users/hunte/work/synthesis/engine/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+        <HintPath>C:/Users/hunte/git/synthesis/engine/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.UI">
-        <HintPath>C:/Users/hunte/work/synthesis/engine/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
+        <HintPath>C:/Users/hunte/git/synthesis/engine/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-        <HintPath>C:/Users/hunte/work/synthesis/engine/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
+        <HintPath>C:/Users/hunte/git/synthesis/engine/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
