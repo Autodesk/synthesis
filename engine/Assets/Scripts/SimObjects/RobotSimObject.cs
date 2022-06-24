@@ -239,6 +239,7 @@ public class RobotSimObject : SimObject {
         mira.MainObject.transform.rotation = rotation;
 
         ModeManager.RobotSpawnpoint = position;
+        ModeManager.RobotSpawnRotation = rotation;
 
         // Event call maybe?
 

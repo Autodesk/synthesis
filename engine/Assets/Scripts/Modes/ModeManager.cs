@@ -13,16 +13,19 @@ public class ModeManager
     
     public static void ResetRobot()
     {
-        GameObject.Find("Game")
-            .GetComponentsInChildren<Rigidbody>().ForEach(rb =>
+        // TODO object with robot tag does NOT move with the robot
+        // we have to set the position of each of its children I think
+        Transform[] transforms = GameObject.Find("Game").GetComponentsInChildren<Transform>();
+        foreach (Transform transform in transforms)
+        {
+            GameObject obj = transform.gameObject;
+            if (obj.CompareTag("robot"))
             {
-                GameObject obj = rb.gameObject;
-                if (obj.CompareTag("robot"))
-                {
-                    obj.transform.position = RobotSpawnpoint;
-                    obj.transform.rotation = RobotSpawnRotation;
-                }
-            });
+                obj.transform.position = RobotSpawnpoint;
+                obj.transform.rotation = RobotSpawnRotation;
+                break;
+            }
+        }
     }
 
     public static void ResetField()

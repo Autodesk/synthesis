@@ -29,12 +29,12 @@ public class PracticeMode : MonoBehaviour
             if (_escapeMenuOpen)
             {
                 _escapeMenuOpen = false;
-                ModalManager.CloseModal();
+                DynamicUIManager.CloseActiveModal();
             }
             else
             {
                 _escapeMenuOpen = true;
-                ModalManager.CreateModal<PracticeSettingsModal>();
+                DynamicUIManager.CreateModal<PracticeSettingsModal>();
                 // open menu using dynamic ui stuff
             }
         }
