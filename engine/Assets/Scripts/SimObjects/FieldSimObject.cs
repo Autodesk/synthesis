@@ -34,7 +34,8 @@ public class FieldSimObject : SimObject {
         Gamepieces.ForEach(gp =>
         {
             UnityEngine.Transform gpTransform = gp.GamepieceObject.transform;
-            gp.InitialTransform = gpTransform;
+            gp.InitialPosition = gpTransform.position;
+            gp.InitialRotation = gpTransform.rotation;
         });
     }
 
