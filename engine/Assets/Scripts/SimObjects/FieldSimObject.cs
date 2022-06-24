@@ -7,6 +7,7 @@ using SynthesisAPI.Utilities;
 using UnityEngine;
 
 using Bounds = UnityEngine.Bounds;
+using Transform = Mirabuf.Transform;
 
 public class FieldSimObject : SimObject {
 
@@ -30,6 +31,11 @@ public class FieldSimObject : SimObject {
         position.y -= position.y - FieldBounds.extents.y;
 
         CurrentField = this;
+        Gamepieces.ForEach(gp =>
+        {
+            UnityEngine.Transform gpTransform = gp.GamepieceObject.transform;
+            gp.InitialTransform = gpTransform;
+        });
     }
 
     public void DeleteField() {
@@ -40,5 +46,6 @@ public class FieldSimObject : SimObject {
     public static void SpawnField(string filePath) {
         var mira = Importer.MirabufAssemblyImport(filePath);
         mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
+        mira.MainObject.tag = "field";
     }
 }
