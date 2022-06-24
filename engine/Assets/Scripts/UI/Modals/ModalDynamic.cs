@@ -17,7 +17,7 @@ namespace Synthesis.UI.Dynamic {
         public const float MAIN_CONTENT_HORZ_PADDING = 35;
 
         private Vector2 _mainContentSize; // Shouldn't really be used after init is called
-        private GameObject _unityObject;
+        protected GameObject _unityObject;
 
         // Default for Modal
         private Button _cancelButton;

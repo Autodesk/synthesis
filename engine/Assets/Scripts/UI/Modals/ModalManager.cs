@@ -10,11 +10,12 @@ namespace Synthesis.UI.Dynamic {
     public static class ModalManager {
 
         public static ModalDynamic ActiveModal;
+        public static GameObject unityObject;
         // public static GameObject ActiveModalGameObject;
 
         public static bool CreateModal<T>(params object[] args) where T : ModalDynamic {
-
-            var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("dynamic-modal-base"), GameObject.Find("UI").transform);
+            if (unityObject != null) GameObject.Destroy(unityObject);
+            unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("dynamic-modal-base"), GameObject.Find("UI").transform);
 
             // var c = ColorManager.GetColor("SAMPLE");
 
@@ -28,7 +29,8 @@ namespace Synthesis.UI.Dynamic {
         public static void CloseModal()
         {
             // not sure if this is how this should be done
-            ActiveModal.Delete();
+            //ActiveModal.Delete();
+            MonoBehaviour.Destroy(unityObject);
             ActiveModal = null;
         }
 
