@@ -1,10 +1,10 @@
-using InvAddIn.Properties;
 using Inventor;
 using Microsoft.Win32;
 using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using InventorMirabufExporter.Properties;
 using static InventorMirabufExporter.PictureDispConverter;
 using Application = Inventor.Application;
 
@@ -87,7 +87,7 @@ namespace InventorMirabufExporter
             exporterButton = Application.CommandManager.ControlDefinitions.AddButtonDefinition("Export Model", "SynthesisExporter:ExportButton", CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "Exports the open assembly to a Mirabuf file.", ToIPictureDisp( new Bitmap(Resources.SynthesisLogo16)), ToIPictureDisp(new Bitmap(Resources.SynthesisLogo32)));
             exporterButton.OnExecute += context =>
             {
-                MessageBox.Show("HELLO", "Synthesis: An Autodesk Technology", MessageBoxButtons.OK);
+                new GUI.ConfigUI().Show();
             };
         }
 
