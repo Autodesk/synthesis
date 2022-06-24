@@ -169,6 +169,7 @@ namespace Synthesis.Import
 					var gpSim = new GamepieceSimObject(group.Name, groupObject);
 					try {
 						SimulationManager.RegisterSimObject(gpSim);
+						gamepieces.Add(gpSim);
 					} catch {
 						// TODO: Fix
 						Logger.Log($"Gamepiece with name {gpSim.Name} already exists.");

@@ -7,12 +7,13 @@ using UnityEngine;
 public class GamepieceSimObject : SimObject {
 
     private GameObject _gamepieceObject;
-    private Transform initialTransform;
-    public GameObject GamepieceObject { get; set; }
+    private Transform _initialTransform;
+    public GameObject GamepieceObject { get; private set; }
+    public Transform InitialTransform { get; set; }
 
     public GamepieceSimObject(string name, GameObject g) : base(name, new ControllableState()) {
-        _gamepieceObject = g;
-        initialTransform = _gamepieceObject.transform;
+        GamepieceObject = g;
+        InitialTransform = GamepieceObject.transform;
 
         foreach (Transform t in g.GetComponentsInChildren<Transform>()) {
             t.tag = "gamepiece";
@@ -21,7 +22,7 @@ public class GamepieceSimObject : SimObject {
 
     public void Reset()
     {
-        _gamepieceObject.transform.position = initialTransform.position;
-        _gamepieceObject.transform.rotation = initialTransform.rotation;
+        GamepieceObject.transform.position = InitialTransform.position;
+        GamepieceObject.transform.rotation = InitialTransform.rotation;
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Synthesis.UI.Dynamic;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using UnityEngine;
@@ -13,7 +14,7 @@ public class PracticeMode : MonoBehaviour
     private void Start()
     {
         if (!_active) return;
-        InputManager.AssignValueInput("escape_menu", new Digital("ESCAPE"));
+        InputManager.AssignValueInput("escape_menu", new Digital("Escape"));
         for (int i = 0; i < 10; i++)
         {
             ModeManager.SpawnGamepiece(0, i, 0, (10 - i) / 10f);
@@ -23,15 +24,17 @@ public class PracticeMode : MonoBehaviour
     private void Update()
     {
         bool openEscapeMenu = InputManager.MappedValueInputs["escape_menu"].Value == 1.0f;
-        if (openEscapeMenu && openEscapeMenu != _lastEscapeValue)
+        if (openEscapeMenu && openEscapeMenu && !_lastEscapeValue)
         {
             if (_escapeMenuOpen)
             {
                 _escapeMenuOpen = false;
+                ModalManager.CloseModal();
             }
             else
             {
                 _escapeMenuOpen = true;
+                ModalManager.CreateModal<PracticeSettingsModal>();
                 // open menu using dynamic ui stuff
             }
         }

@@ -12,7 +12,7 @@ public class SimulationRunner : MonoBehaviour {
     void Start() {
         PreferenceManager.Load();
 
-        ModalManager.CreateModal<TestModal>();
+        // ModalManager.CreateModal<TestModal>();
     }
 
     void Update() {

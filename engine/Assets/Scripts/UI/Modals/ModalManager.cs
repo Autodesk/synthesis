@@ -21,7 +21,15 @@ namespace Synthesis.UI.Dynamic {
             ModalDynamic modal = (ModalDynamic)Activator.CreateInstance(typeof(T), args);
             modal.Init(unityObject);
             modal.Create();
+            ActiveModal = modal;
             return true;
+        }
+
+        public static void CloseModal()
+        {
+            // not sure if this is how this should be done
+            ActiveModal.Delete();
+            ActiveModal = null;
         }
 
         // public static GameObject GetActiveModalGameObject()

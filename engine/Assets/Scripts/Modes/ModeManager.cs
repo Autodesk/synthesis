@@ -10,7 +10,7 @@ public class ModeManager
     
     private static List<GamepieceSimObject> _gamepieces = new List<GamepieceSimObject>();
     
-    public void ResetRobot()
+    public static void ResetRobot()
     {
         GameObject.Find("Game")
             .GetComponentsInChildren<Rigidbody>().ForEach(rb =>
@@ -18,8 +18,8 @@ public class ModeManager
                 GameObject obj = rb.gameObject;
                 if (obj.CompareTag("robot"))
                 {
-                    obj.transform.position = ModeManager.RobotSpawnpoint;
-                    obj.transform.rotation = ModeManager.RobotSpawnRotation;
+                    obj.transform.position = RobotSpawnpoint;
+                    obj.transform.rotation = RobotSpawnRotation;
                 }
             });
     }
@@ -27,7 +27,6 @@ public class ModeManager
     public static void ResetField()
     {
         ResetGamepieces();
-        // when we have fields to import, we should reset that as well
     }
     
     public static void ResetGamepieces()
@@ -36,6 +35,7 @@ public class ModeManager
         {
             GameObject.Destroy(gp.GamepieceObject);
         });
+        _gamepieces.Clear();
         FieldSimObject.CurrentField.Gamepieces.ForEach(gp =>
         {
             gp.Reset();
