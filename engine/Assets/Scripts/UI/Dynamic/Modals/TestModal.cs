@@ -61,6 +61,8 @@ namespace Synthesis.UI.Dynamic {
             //     .SetValue("486743");
         }
 
+        public override void Update() { }
+
         public override void Delete() { }
     }
 }

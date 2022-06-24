@@ -32,7 +32,7 @@ namespace Synthesis.UI.Dynamic {
                     if (_selectedIndex != -1) {
                         RobotSimObject.SpawnRobot(_files[_selectedIndex]);
                         // ItemAnalytics("Robot");
-                        ModalManager.CloseActiveModal();
+                        DynamicUIManager.CloseActiveModal();
                     }
                 });
 
@@ -45,6 +45,8 @@ namespace Synthesis.UI.Dynamic {
 
             // MainContent.CreateLabeledButton().SetTopStretch<LabeledButton>(anchoredY: 50).StepIntoLabel(l => l.SetText("Test"));
         }
+
+        public override void Update() { }
         
         public override void Delete() {}
 

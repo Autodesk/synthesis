@@ -11,7 +11,7 @@ namespace Synthesis.UI.Tabs {
             CreateButton(
                 "Load Robot",
                 SynthesisAssetCollection.GetSpriteByName("robotimport"),
-                () => ModalManager.CreateModal<AddRobotModal>()
+                () => DynamicUIManager.CreateModal<AddRobotModal>()
             );
             CreateButton(
                 "Load Field",
@@ -20,9 +20,9 @@ namespace Synthesis.UI.Tabs {
             );
             CreateDivider();
             CreateButton(
-                "Robots",
+                "Details",
                 SynthesisAssetCollection.GetSpriteByName("Multiplayer1-Gray"),
-                () => LayoutManager.OpenPanel(SynthesisAssetCollection.GetPanelByName("Multiplayer-Panel"))
+                () => DynamicUIManager.CreatePanel<RobotDetailsPanel>()
             );
         }
     }

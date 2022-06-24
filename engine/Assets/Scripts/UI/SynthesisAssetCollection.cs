@@ -15,6 +15,8 @@ public class SynthesisAssetCollection : MonoBehaviour {
     [SerializeField]
     public List<GameObject> DynamicModalPrefabs;
     [SerializeField]
+    public List<TMPro.TMP_FontAsset> Fonts;
+    [SerializeField]
     public Volume BlurVolume;
     public static Volume BlurVolumeStatic => Instance.BlurVolume;
 
@@ -30,4 +32,6 @@ public class SynthesisAssetCollection : MonoBehaviour {
 
     public static GameObject GetModalPrefab(string name)
         => Instance.DynamicModalPrefabs.First(x => x.name == name);
+    public static TMPro.TMP_FontAsset GetFont(string name)
+        => Instance.Fonts.First(x => x.name == name);
 }

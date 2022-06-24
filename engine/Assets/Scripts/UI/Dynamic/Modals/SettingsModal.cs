@@ -59,6 +59,8 @@ namespace Synthesis.UI.Dynamic {
                     .AddOnValueChangedEvent((d, i, o) => Debug.Log($"View -> [{i}] {o.text}")));
         }
 
+        public override void Update() { }
+
         public override void Delete() { }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using SynthesisAPI.Utilities;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -11,9 +12,84 @@ using UToggle = UnityEngine.UI.Toggle;
 using USlider = UnityEngine.UI.Slider;
 using UImage = UnityEngine.UI.Image;
 
+using Logger = SynthesisAPI.Utilities.Logger;
+using Math = System.Math;
+
 #nullable enable
 
 namespace Synthesis.UI.Dynamic {
+
+    public abstract class PanelDynamic {
+        public const float MAIN_CONTENT_HORZ_PADDING = 20f;
+
+        private Vector2 _mainContentSize; // Shouldn't really be used after init is called
+        private GameObject _unityObject;
+
+        // Default for Modal
+        private Button _cancelButton;
+        protected Button CancelButton => _cancelButton;
+        private Button _acceptButton;
+        protected Button AcceptButton => _acceptButton;
+        private UImage _modalImage;
+        protected UImage ModalImage => _modalImage;
+        private Label _title;
+        protected Label Title => _title;
+        
+        private Content _mainContent;
+        protected Content MainContent => _mainContent;
+
+        protected PanelDynamic(Vector2 mainContentSize) {
+            _mainContentSize = mainContentSize;
+        }
+
+        public void Create_Internal(GameObject unityObject) {
+            _unityObject = unityObject;
+
+            // Grab Customizable Modal Components
+            var header = _unityObject.transform.Find("Header");
+            var headerRt = header.GetComponent<RectTransform>();
+            _modalImage = header.Find("Image").GetComponent<UImage>();
+            _title = new Label(null, header.Find("Title").gameObject, null);
+
+            var footer = _unityObject.transform.Find("Footer");
+            var footerRt = footer.GetComponent<RectTransform>();
+            _cancelButton = new Button(null!, footer.Find("Cancel").gameObject, null);
+            _cancelButton.AddOnClickedEvent(b => {
+                if (!DynamicUIManager.CloseActivePanel())
+                    Logger.Log("Failed to Close Panel", LogLevel.Error);
+            });
+            _acceptButton = new Button(null!, footer.Find("Accept").gameObject, null);
+
+            // Create Inital Content Component
+            var hiddenContentT = _unityObject.transform.Find("Content");
+            var hiddenRt = hiddenContentT.GetComponent<RectTransform>();
+            hiddenRt.sizeDelta = new Vector2(hiddenRt.sizeDelta.x, _mainContentSize.y);
+            hiddenRt.anchorMin = new Vector2(0, 1);
+            hiddenRt.anchorMax = new Vector2(1, 1);
+            hiddenRt.pivot = new Vector2(0.5f, 1);
+            hiddenRt.anchoredPosition = new Vector2(0, -headerRt.sizeDelta.y);
+            var actualContentObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("content-base"), hiddenContentT);
+            actualContentObj.name = "CentralContent";
+            var contentRt = actualContentObj.GetComponent<RectTransform>();
+            contentRt.offsetMax = new Vector2(-MAIN_CONTENT_HORZ_PADDING, contentRt.offsetMax.y);
+            contentRt.offsetMin = new Vector2(MAIN_CONTENT_HORZ_PADDING, contentRt.offsetMin.y);
+            var modalRt = _unityObject.GetComponent<RectTransform>();
+            modalRt.sizeDelta = new Vector2(
+                _mainContentSize.x + (MAIN_CONTENT_HORZ_PADDING * 2),
+                hiddenRt.sizeDelta.y + headerRt.sizeDelta.y + footerRt.sizeDelta.y
+            );
+            _mainContent = new Content(null!, actualContentObj, _mainContentSize);
+        }
+
+        public abstract void Create();
+        public abstract void Update();
+        public abstract void Delete();
+
+        public void Delete_Internal() {
+            GameObject.Destroy(_unityObject);
+        }
+    }
+
     public abstract class ModalDynamic {
 
         public const float MAIN_CONTENT_HORZ_PADDING = 20f;
@@ -54,10 +130,8 @@ namespace Synthesis.UI.Dynamic {
             var footerRt = footer.GetComponent<RectTransform>();
             _cancelButton = new Button(null!, footer.Find("Cancel").gameObject, null);
             _cancelButton.AddOnClickedEvent(b => {
-                if (ModalManager.CloseActiveModal())
-                    Debug.Log("Success");
-                else
-                    Debug.Log("Fail");
+                if (!DynamicUIManager.CloseActiveModal())
+                    Logger.Log("Failed to Close Modal", LogLevel.Error);
             });
             _acceptButton = new Button(null!, footer.Find("Accept").gameObject, null);
 
@@ -83,6 +157,7 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public abstract void Create();
+        public abstract void Update();
         public abstract void Delete();
 
         public void Delete_Internal() {
@@ -697,6 +772,10 @@ namespace Synthesis.UI.Dynamic {
         }
         public Image SetColor(Color c) {
             _unityImage.color = c;
+            return this;
+        }
+        public Image SetCornerRadius(float r) {
+            _unityImage.pixelsPerUnitMultiplier = 250f / r;
             return this;
         }
     }
