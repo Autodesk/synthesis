@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 using System.Linq;
 
 public class SynthesisAssetCollection : MonoBehaviour {
@@ -13,6 +14,9 @@ public class SynthesisAssetCollection : MonoBehaviour {
     public List<GameObject> PanelPrefabs;
     [SerializeField]
     public List<GameObject> DynamicModalPrefabs;
+    [SerializeField]
+    public Volume BlurVolume;
+    public static Volume BlurVolumeStatic => Instance.BlurVolume;
 
     public void Awake() {
         Instance = this;

@@ -52,10 +52,11 @@ namespace Synthesis.UI.Dynamic {
                 Debug.Log("Visit website button clicked!");
             });
             
-            var viewsDropdown = MainContent.CreateDropdown().ApplyTemplate(Dropdown.VerticalLayoutTemplate)
+            var viewsDropdown = MainContent.CreateLabeledDropdown()
                 .StepIntoLabel(l => l.SetText("View"))
-                .SetOptions(new string[] { "Bird's Eye View", "Driver Station", "Orbit View", "Free Cam" })
-                .AddOnValueChangedEvent((d, i, o) => Debug.Log($"{d.Label.Text} -> [{i}] {o.text}"));
+                .StepIntoDropdown(
+                    d => d.SetOptions(new string[] { "Bird's Eye View", "Driver Station", "Orbit View", "Free Cam" })
+                    .AddOnValueChangedEvent((d, i, o) => Debug.Log($"View -> [{i}] {o.text}")));
         }
 
         public override void Delete() { }
