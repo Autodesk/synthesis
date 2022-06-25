@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SynthesisAPI.Proto;
 using UnityEngine;
 
 public class ModeManager
@@ -12,16 +13,19 @@ public class ModeManager
     
     public static void ResetRobot()
     {
-        GameObject.Find("Game")
-            .GetComponentsInChildren<Rigidbody>().ForEach(rb =>
+        // TODO object with robot tag does NOT move with the robot
+        // we have to set the position of each of its children I think
+        Transform[] transforms = GameObject.Find("Game").GetComponentsInChildren<Transform>();
+        foreach (Transform transform in transforms)
+        {
+            GameObject obj = transform.gameObject;
+            if (obj.CompareTag("robot"))
             {
-                GameObject obj = rb.gameObject;
-                if (obj.CompareTag("robot"))
-                {
-                    obj.transform.position = RobotSpawnpoint;
-                    obj.transform.rotation = RobotSpawnRotation;
-                }
-            });
+                obj.transform.position = RobotSpawnpoint;
+                obj.transform.rotation = RobotSpawnRotation;
+                break;
+            }
+        }
     }
 
     public static void ResetField()
@@ -36,10 +40,11 @@ public class ModeManager
             GameObject.Destroy(gp.GamepieceObject);
         });
         _gamepieces.Clear();
-        FieldSimObject.CurrentField.Gamepieces.ForEach(gp =>
+        FieldSimObject currentField = FieldSimObject.CurrentField;
+        if (currentField != null)
         {
-            gp.Reset();
-        });
+            FieldSimObject.CurrentField.Gamepieces.ForEach(gp => gp.Reset());
+        }
     }
 
     public static void SpawnGamepiece(float scale = 1.0f, PrimitiveType type = PrimitiveType.Sphere)
@@ -57,9 +62,21 @@ public class ModeManager
     {
         FieldSimObject currentField = FieldSimObject.CurrentField;
         // TODO this should be chosen by the user in a dropdown
-        GamepieceSimObject chosenGamepiece = currentField.Gamepieces[0];
-        GamepieceSimObject gamepiece = new GamepieceSimObject(chosenGamepiece.Name, chosenGamepiece.GamepieceObject);
-        GameObject.Instantiate(gamepiece.GamepieceObject);
+        GamepieceSimObject gamepiece;
+        if (currentField == null)
+        {
+            GameObject gameObject = GameObject.CreatePrimitive(type);
+            gameObject.AddComponent<Rigidbody>();
+            gamepiece = new GamepieceSimObject(type + " Gamepiece", gameObject);
+        }
+        else
+        {
+            GamepieceSimObject chosenGamepiece = currentField.Gamepieces[0];
+            gamepiece =
+                new GamepieceSimObject(chosenGamepiece.Name, chosenGamepiece.GamepieceObject);
+            GameObject.Instantiate(gamepiece.GamepieceObject);
+        }
+
         _gamepieces.Add(gamepiece);
     }
 }

@@ -1,20 +1,26 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using SynthesisAPI.Utilities;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
 
 using UButton = UnityEngine.UI.Button;
 using UToggle = UnityEngine.UI.Toggle;
 using USlider = UnityEngine.UI.Slider;
+using UImage = UnityEngine.UI.Image;
+
+using Logger = SynthesisAPI.Utilities.Logger;
+using Math = System.Math;
 
 #nullable enable
 
 namespace Synthesis.UI.Dynamic {
-    public abstract class ModalDynamic {
 
-        public const float MAIN_CONTENT_HORZ_PADDING = 35;
+    public abstract class PanelDynamic {
+        public const float MAIN_CONTENT_HORZ_PADDING = 20f;
 
         private Vector2 _mainContentSize; // Shouldn't really be used after init is called
         protected GameObject _unityObject;
@@ -24,8 +30,80 @@ namespace Synthesis.UI.Dynamic {
         protected Button CancelButton => _cancelButton;
         private Button _acceptButton;
         protected Button AcceptButton => _acceptButton;
-        private Image _modalImage;
-        protected Image ModalImage => _modalImage;
+        private UImage _modalImage;
+        protected UImage ModalImage => _modalImage;
+        private Label _title;
+        protected Label Title => _title;
+        
+        private Content _mainContent;
+        protected Content MainContent => _mainContent;
+
+        protected PanelDynamic(Vector2 mainContentSize) {
+            _mainContentSize = mainContentSize;
+        }
+
+        public void Create_Internal(GameObject unityObject) {
+            _unityObject = unityObject;
+
+            // Grab Customizable Modal Components
+            var header = _unityObject.transform.Find("Header");
+            var headerRt = header.GetComponent<RectTransform>();
+            _modalImage = header.Find("Image").GetComponent<UImage>();
+            _title = new Label(null, header.Find("Title").gameObject, null);
+
+            var footer = _unityObject.transform.Find("Footer");
+            var footerRt = footer.GetComponent<RectTransform>();
+            _cancelButton = new Button(null!, footer.Find("Cancel").gameObject, null);
+            _cancelButton.AddOnClickedEvent(b => {
+                if (!DynamicUIManager.CloseActivePanel())
+                    Logger.Log("Failed to Close Panel", LogLevel.Error);
+            });
+            _acceptButton = new Button(null!, footer.Find("Accept").gameObject, null);
+
+            // Create Inital Content Component
+            var hiddenContentT = _unityObject.transform.Find("Content");
+            var hiddenRt = hiddenContentT.GetComponent<RectTransform>();
+            hiddenRt.sizeDelta = new Vector2(hiddenRt.sizeDelta.x, _mainContentSize.y);
+            hiddenRt.anchorMin = new Vector2(0, 1);
+            hiddenRt.anchorMax = new Vector2(1, 1);
+            hiddenRt.pivot = new Vector2(0.5f, 1);
+            hiddenRt.anchoredPosition = new Vector2(0, -headerRt.sizeDelta.y);
+            var actualContentObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("content-base"), hiddenContentT);
+            actualContentObj.name = "CentralContent";
+            var contentRt = actualContentObj.GetComponent<RectTransform>();
+            contentRt.offsetMax = new Vector2(-MAIN_CONTENT_HORZ_PADDING, contentRt.offsetMax.y);
+            contentRt.offsetMin = new Vector2(MAIN_CONTENT_HORZ_PADDING, contentRt.offsetMin.y);
+            var modalRt = _unityObject.GetComponent<RectTransform>();
+            modalRt.sizeDelta = new Vector2(
+                _mainContentSize.x + (MAIN_CONTENT_HORZ_PADDING * 2),
+                hiddenRt.sizeDelta.y + headerRt.sizeDelta.y + footerRt.sizeDelta.y
+            );
+            _mainContent = new Content(null!, actualContentObj, _mainContentSize);
+        }
+
+        public abstract void Create();
+        public abstract void Update();
+        public abstract void Delete();
+
+        public void Delete_Internal() {
+            GameObject.Destroy(_unityObject);
+        }
+    }
+
+    public abstract class ModalDynamic {
+
+        public const float MAIN_CONTENT_HORZ_PADDING = 20f;
+
+        private Vector2 _mainContentSize; // Shouldn't really be used after init is called
+        private GameObject _unityObject;
+
+        // Default for Modal
+        private Button _cancelButton;
+        protected Button CancelButton => _cancelButton;
+        private Button _acceptButton;
+        protected Button AcceptButton => _acceptButton;
+        private UImage _modalImage;
+        protected UImage ModalImage => _modalImage;
         private Label _title;
         protected Label Title => _title;
         private Label _description;
@@ -38,35 +116,53 @@ namespace Synthesis.UI.Dynamic {
             _mainContentSize = mainContentSize;
         }
 
-        public void Init(GameObject unityObject) {
+        public void Create_Internal(GameObject unityObject) {
             _unityObject = unityObject;
 
             // Grab Customizable Modal Components
             var header = _unityObject.transform.Find("Header");
-            _modalImage = header.Find("Image").GetComponent<Image>();
+            var headerRt = header.GetComponent<RectTransform>();
+            _modalImage = header.Find("Image").GetComponent<UImage>();
             _title = new Label(null, header.Find("Title").gameObject, null);
             _description = new Label( null, header.Find("Description").gameObject, null);
 
             var footer = _unityObject.transform.Find("Footer");
+            var footerRt = footer.GetComponent<RectTransform>();
             _cancelButton = new Button(null!, footer.Find("Cancel").gameObject, null);
+            _cancelButton.AddOnClickedEvent(b => {
+                if (!DynamicUIManager.CloseActiveModal())
+                    Logger.Log("Failed to Close Modal", LogLevel.Error);
+            });
             _acceptButton = new Button(null!, footer.Find("Accept").gameObject, null);
 
             // Create Inital Content Component
             var hiddenContentT = _unityObject.transform.Find("Content");
             var hiddenRt = hiddenContentT.GetComponent<RectTransform>();
             hiddenRt.sizeDelta = new Vector2(hiddenRt.sizeDelta.x, _mainContentSize.y);
+            hiddenRt.anchorMin = new Vector2(0, 1);
+            hiddenRt.anchorMax = new Vector2(1, 1);
+            hiddenRt.pivot = new Vector2(0.5f, 1);
+            hiddenRt.anchoredPosition = new Vector2(0, -headerRt.sizeDelta.y);
             var actualContentObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("content-base"), hiddenContentT);
             actualContentObj.name = "CentralContent";
             var contentRt = actualContentObj.GetComponent<RectTransform>();
             contentRt.offsetMax = new Vector2(-MAIN_CONTENT_HORZ_PADDING, contentRt.offsetMax.y);
             contentRt.offsetMin = new Vector2(MAIN_CONTENT_HORZ_PADDING, contentRt.offsetMin.y);
             var modalRt = _unityObject.GetComponent<RectTransform>();
-            modalRt.sizeDelta = new Vector2(_mainContentSize.x + (MAIN_CONTENT_HORZ_PADDING * 2), modalRt.sizeDelta.y);
+            modalRt.sizeDelta = new Vector2(
+                _mainContentSize.x + (MAIN_CONTENT_HORZ_PADDING * 2),
+                hiddenRt.sizeDelta.y + headerRt.sizeDelta.y + footerRt.sizeDelta.y
+            );
             _mainContent = new Content(null!, actualContentObj, _mainContentSize);
         }
 
         public abstract void Create();
+        public abstract void Update();
         public abstract void Delete();
+
+        public void Delete_Internal() {
+            GameObject.Destroy(_unityObject);
+        }
     }
 
     public abstract class UIComponent {
@@ -89,14 +185,40 @@ namespace Synthesis.UI.Dynamic {
                 return sum;
             }
         }
+        public Rect RectOfChildren(UIComponent negate = null!) {
+            if (Children.Count == 0)
+                return new Rect();
+            bool hasInital = false;
+            Rect r = new Rect();
+            for (int i = 0; i < Children.Count; i++) {
+                if (Children[i] == negate)
+                    continue;
+                if (!hasInital) {
+                    r = Children[i].RootRectTransform.GetOffsetRect();
+                    continue;
+                }
+                var childTrans = Children[i].RootRectTransform;
+                var childRect = childTrans.GetOffsetRect();
+                
+                if (childRect.xMin < r.xMin)
+                    r.xMin = childRect.xMin;
+                if (childRect.xMax > r.xMax)
+                    r.xMax = childRect.xMax;
+                if (childRect.yMin < r.yMin)
+                    r.yMin = childRect.yMin;
+                if (childRect.yMax > r.yMax)
+                    r.yMax = childRect.yMax;
+            }
+            return r;
+        }
 
         protected bool _eventsActive = true;
         public bool EventsActive => _eventsActive;
 
         public Vector2 Size { get; protected set; }
-        protected GameObject RootGameObject;
+        public GameObject RootGameObject { get; protected set; }
         public RectTransform RootRectTransform { get; protected set; }
-        protected UIComponent? Parent;
+        public UIComponent? Parent { get; protected set; }
         protected List<UIComponent> Children = new List<UIComponent>();
 
         public UIComponent(UIComponent? parentComponent, GameObject rootGameObject) {
@@ -254,8 +376,17 @@ namespace Synthesis.UI.Dynamic {
             base.Children.Add(dropdown);
             return dropdown;
         }
+        public LabeledDropdown CreateLabeledDropdown() {
+            var lDropdownObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("labeled-dropdown-base"), base.RootGameObject.transform);
+            var lDropdown = new LabeledDropdown(this, lDropdownObj);
+            base.Children.Add(lDropdown);
+            return lDropdown;
+        }
         public InputField CreateInputField() {
-            throw new NotImplementedException();
+            var inputFieldObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("input-field-base"), base.RootGameObject.transform);
+            var inputField = new InputField(this, inputFieldObj);
+            base.Children.Add(inputField);
+            return inputField;
         }
         public ScrollView CreateScrollView() {
             throw new NotImplementedException();
@@ -273,12 +404,13 @@ namespace Synthesis.UI.Dynamic {
         private TMP_Text _unityText;
 
         public string Text => _unityText.text;
+        public FontStyles FontStyle => _unityText.fontStyle;
 
         public static readonly Func<Label, Label> VerticalLayoutTemplate = (Label label) => {
-            return label.SetTopStretch(anchoredY: label.Parent!.HeightOfChildren - label.Size.y);
+            return label.SetTopStretch(anchoredY: label.Parent!.HeightOfChildren - label.Size.y + 15f);
         };
         public static readonly Func<Label, Label> BigLabelTemplate = (Label label) => {
-            return label.SetHeight<Label>(30).SetFontSize(22).ApplyTemplate(Label.VerticalLayoutTemplate).SetHorizontalAlignment(HorizontalAlignmentOptions.Left)
+            return label.SetHeight<Label>(30).SetFontSize(24).ApplyTemplate(Label.VerticalLayoutTemplate).SetHorizontalAlignment(HorizontalAlignmentOptions.Left)
                 .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
         };
 
@@ -309,6 +441,14 @@ namespace Synthesis.UI.Dynamic {
             _unityText.verticalAlignment = alignment;
             return this;
         }
+        public Label SetFont(TMP_FontAsset font) {
+            _unityText.font = font;
+            return this;
+        }
+        public Label SetFontStyle(FontStyles styles) {
+            _unityText.fontStyle = styles;
+            return this;
+        }
         public Label SetTopStretch(float leftPadding = 0f, float rightPadding = 0f, float anchoredY = 0f)
             => base.SetTopStretch<Label>(leftPadding, rightPadding, anchoredY);
         public Label SetBottomStretch(float leftPadding = 0f, float rightPadding = 0f, float anchoredY = 0f)
@@ -324,7 +464,7 @@ namespace Synthesis.UI.Dynamic {
     public class Toggle : UIComponent {
 
         public static readonly Func<Toggle, Toggle> VerticalLayoutTemplate = (Toggle toggle)
-            => toggle.SetTopStretch<Toggle>(leftPadding: 15f, anchoredY: toggle.Parent!.HeightOfChildren - toggle.Size.y);
+            => toggle.SetTopStretch<Toggle>(leftPadding: 15f, anchoredY: toggle.Parent!.HeightOfChildren - toggle.Size.y + 15f);
 
         public event Action<Toggle, bool> OnStateChanged;
         private Label _titleLabel;
@@ -362,7 +502,7 @@ namespace Synthesis.UI.Dynamic {
     public class Slider : UIComponent {
 
         public static readonly Func<Slider, Slider> VerticalLayoutTemplate = (Slider slider)
-            => slider.SetTopStretch<Slider>(leftPadding: 15f, anchoredY: slider.Parent!.HeightOfChildren - slider.Size.y);
+            => slider.SetTopStretch<Slider>(leftPadding: 15f, anchoredY: slider.Parent!.HeightOfChildren - slider.Size.y + 15f);
 
         public event Action<Slider, float> OnValueChanged;
         private Func<float, string> _customValuePresentation = (x) => Math.Round(x, 2).ToString();
@@ -418,13 +558,55 @@ namespace Synthesis.UI.Dynamic {
     }
 
     public class InputField : UIComponent {
-        public InputField(UIComponent? parent, GameObject unityObject) : base(parent, unityObject) { }
+
+        public static readonly Func<InputField, InputField> VerticalLayoutTemplate = (InputField inputField)
+            => inputField.SetTopStretch<InputField>(leftPadding: 15f, anchoredY: inputField.Parent!.HeightOfChildren - inputField.Size.y + 15f);
+
+        public event Action<InputField, string> OnValueChanged;
+        private Label _hint;
+        public Label Hint => _hint;
+        private Label _label;
+        public Label Label => _label;
+        private TMP_InputField _tmpInput;
+        public TMP_InputField.ContentType ContentType => _tmpInput.contentType;
+
+        public InputField(UIComponent? parent, GameObject unityObject) : base(parent, unityObject) {
+            var ifObj = unityObject.transform.Find("InputField");
+            _tmpInput = ifObj.GetComponent<TMP_InputField>();
+            _hint = new Label(this, ifObj.Find("Text Area").Find("Placeholder").gameObject, null);
+            _label = new Label(this, unityObject.transform.Find("Label").gameObject, null);
+            _tmpInput.onValueChanged.AddListener(x => {
+                if (_eventsActive && OnValueChanged != null)
+                    OnValueChanged(this, x);
+            });
+        }
+
+        public InputField StepIntoHint(Action<Label> mod) {
+            mod(_hint);
+            return this;
+        }
+        public InputField StepIntoLabel(Action<Label> mod) {
+            mod(_label);
+            return this;
+        }
+        public InputField AddOnValueChangedEvent(Action<InputField, string> callback) {
+            OnValueChanged += callback;
+            return this;
+        }
+        public InputField SetContentType(TMP_InputField.ContentType type) {
+            _tmpInput.contentType = type;
+            return this;
+        }
+        public InputField SetValue(string val) {
+            _tmpInput.SetTextWithoutNotify(val);
+            return this;
+        }
     }
 
     public class LabeledButton : UIComponent {
 
         public static readonly Func<LabeledButton, LabeledButton> VerticalLayoutTemplate = (LabeledButton lb) => {
-            return lb.SetTopStretch<LabeledButton>(leftPadding: 15f, anchoredY: lb.Parent!.HeightOfChildren - lb.Size.y);
+            return lb.SetTopStretch<LabeledButton>(leftPadding: 15f, anchoredY: lb.Parent!.HeightOfChildren - lb.Size.y + 15f);
         };
 
         private Button _button;
@@ -450,7 +632,7 @@ namespace Synthesis.UI.Dynamic {
     public class Button : UIComponent {
 
         public static readonly Func<Button, Button> VerticalLayoutTemplate = (Button button)
-            => button.SetTopStretch<Button>(leftPadding: 15f, anchoredY: button.Parent!.HeightOfChildren - button.Size.y);
+            => button.SetTopStretch<Button>(leftPadding: 15f, anchoredY: button.Parent!.HeightOfChildren - button.Size.y + 15f);
 
         public event Action<Button> OnClicked;
         private Label _label;
@@ -485,11 +667,11 @@ namespace Synthesis.UI.Dynamic {
     public class Dropdown : UIComponent {
 
         public static readonly Func<Dropdown, Dropdown> VerticalLayoutTemplate = (Dropdown dropdown)
-            => dropdown.SetTopStretch<Dropdown>(leftPadding: 15f, anchoredY: dropdown.Parent!.HeightOfChildren - dropdown.Size.y);
+            => dropdown.SetTopStretch<Dropdown>(leftPadding: 15f, anchoredY: dropdown.Parent!.HeightOfChildren - dropdown.Size.y + 15f);
 
         public event Action<Dropdown, int, TMP_Dropdown.OptionData> OnValueChanged;
-        private Label _label;
-        public Label Label => _label;
+        private Image _image;
+        public Image Image => _image;
         private TMP_Dropdown _tmpDropdown;
         public IReadOnlyList<TMP_Dropdown.OptionData> Options => _tmpDropdown.options.AsReadOnly();
 
@@ -498,14 +680,18 @@ namespace Synthesis.UI.Dynamic {
                 Size = size.Value;
             }
 
-            _label = new Label(this, unityObject.transform.Find("Label").gameObject, null);
-            _tmpDropdown = unityObject.transform.Find("Dropdown").GetComponent<TMP_Dropdown>();
+            _image = new Image(this, unityObject.transform.Find("Header").Find("Arrow").gameObject);
+            _tmpDropdown = unityObject.transform.GetComponent<TMP_Dropdown>();
 
             _tmpDropdown.onValueChanged.AddListener(x => {
                 // TODO?
                 if (_eventsActive && OnValueChanged != null)
                     OnValueChanged(this, x, this.Options[x]);
             });
+            var eventHandler = _tmpDropdown.gameObject.AddComponent<UIEventHandler>();
+            eventHandler.OnPointerClickedEvent += e => {
+                ShowOnTop();
+            };
         }
 
         public Dropdown SetOptions(string[] options) {
@@ -528,9 +714,78 @@ namespace Synthesis.UI.Dynamic {
             OnValueChanged += callback;
             return this;
         }
-        public Dropdown StepIntoLabel(Action<Label> mod) {
+        public Dropdown ShowOnTop() {
+            RootRectTransform.SetAsLastSibling();
+            return this;
+        }
+        public Dropdown StepIntoImage(Action<Image> mod) {
+            mod(_image);
+            return this;
+        }
+    }
+
+    public class LabeledDropdown : UIComponent {
+
+        private Dropdown _dropdown;
+        public Dropdown Dropdown => _dropdown;
+        private Label _label;
+        public Label Label => _label;
+
+        public LabeledDropdown(UIComponent? parent, GameObject unityObject) : base(parent, unityObject) {
+            _dropdown = new Dropdown(this, unityObject.transform.Find("Dropdown").gameObject, null);
+            _label = new Label(this, unityObject.transform.Find("Label").gameObject, null);
+        }
+
+        public LabeledDropdown StepIntoDropdown(Action<Dropdown> mod) {
+            mod(_dropdown);
+            return this;
+        }
+        public LabeledDropdown StepIntoLabel(Action<Label> mod) {
             mod(_label);
             return this;
+        }
+    }
+
+    public class Image : UIComponent {
+
+        private UImage _unityImage;
+        public Sprite Sprite {
+            get => _unityImage.sprite;
+            set {
+                _unityImage.sprite = value;
+            }
+        }
+        public Color Color {
+            get => _unityImage.color;
+            set {
+                _unityImage.color = value;
+            }
+        }
+
+        public Image(UIComponent? parent, GameObject unityObject) : base(parent, unityObject) {
+            _unityImage = unityObject.GetComponent<UImage>();
+        }
+
+        public Image SetSprite(Sprite s) {
+            Sprite = s;
+            return this;
+        }
+        public Image SetColor(Color c) {
+            _unityImage.color = c;
+            return this;
+        }
+        public Image SetCornerRadius(float r) {
+            _unityImage.pixelsPerUnitMultiplier = 250f / r;
+            return this;
+        }
+    }
+
+    public class UIEventHandler : MonoBehaviour, IPointerClickHandler {
+        public event Action<PointerEventData> OnPointerClickedEvent;
+
+        public void OnPointerClick(PointerEventData pointerEventData) {
+            if (OnPointerClickedEvent != null)
+                OnPointerClickedEvent(pointerEventData);
         }
     }
 }

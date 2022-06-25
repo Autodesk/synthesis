@@ -13,6 +13,8 @@ public class PracticeSettingsModal : ModalDynamic
     {
         Title.SetText("Practice Settings");
         Description.SetText("Configuration actions for practice mode");
+        
+        // TODO fix vertical spacing
 
         MainContent.CreateButton().StepIntoLabel(label => label.SetText("Reset Robot"))
             .AddOnClickedEvent(b => ModeManager.ResetRobot())
@@ -26,6 +28,8 @@ public class PracticeSettingsModal : ModalDynamic
             .AddOnClickedEvent(b => ModeManager.ResetField())
             .ApplyTemplate(Button.VerticalLayoutTemplate);
     }
+    
+    public override void Update(){}
     
     public override void Delete(){}
 }
