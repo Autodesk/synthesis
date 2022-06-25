@@ -29,9 +29,8 @@ namespace SynthesisServer
         public bool NewConfig { get; set; } = false;
 
         public Command CommandType { get; } = Command.START;
-        public Command Execute(DaemonConfig currentConfig)
+        public void Execute(DaemonConfig currentConfig)
         {
-            return Command.START;
         }
     }
 }
