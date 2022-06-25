@@ -8,10 +8,10 @@ namespace SynthesisServer
     [Verb("restart", HelpText = "Restart the Synthesis Server if it is already running")]
     class RestartCommand : StartCommand
     {
-        public Command CommandType { get; } = Command.RESTART;
-        public new Command Execute(DaemonConfig currentConfig)
+        public new Command CommandType { get; } = Command.RESTART;
+        public new void Execute(DaemonConfig currentConfig)
         {
-            return Command.RESTART;
+
         }
     }
 }

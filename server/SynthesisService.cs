@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CommandLine;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -21,6 +22,13 @@ namespace SynthesisServer
 
 		public Task StartAsync(CancellationToken cancellationToken)
 		{
+			Parser.Default.ParseArguments<StartCommand, StartCommand, RestartCommand>(_config.Value.Arguments).MapResult(
+				(StartCommand opts) => StartServer(opts),
+				(StopCommand opts) => StopServer(opts),
+				(RestartCommand opts) => RestartServer(opts),
+				errs => 1);
+
+
 			if (System.Diagnostics.Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1)
 			{
 				_logger.LogInformation("An Instance of daemon: " + _config.Value.DaemonName + " is already running");
@@ -43,17 +51,17 @@ namespace SynthesisServer
 			_logger.LogInformation("Disposing...");
 		}
 
-		public void StartServer()
+		private void StartServer(StartCommand cmd)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void StopServer()
+		private void StopServer(StopCommand cmd)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void RestartServer()
+		private void RestartServer(RestartCommand cmd)
 		{
 			throw new NotImplementedException();
 		}

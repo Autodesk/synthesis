@@ -14,6 +14,6 @@ namespace SynthesisServer
     public interface ICommand
     {
         public Command CommandType { get; }
-        public Command Execute(DaemonConfig currentConfig);
+        public void Execute(DaemonConfig currentConfig);
     }
 }

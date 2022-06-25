@@ -9,9 +9,16 @@ namespace SynthesisServer
     public class StopCommand : ICommand
     {
         public Command CommandType { get; } = Command.STOP;
-        public Command Execute(DaemonConfig currentConfig)
+        public void Execute(DaemonConfig currentConfig)
         {
-            return Command.STOP;
+            if (System.Diagnostics.Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1)
+            {
+                foreach (var x in System.Diagnostics.Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)))
+                {
+                    x.Kill();
+                }
+                System.Diagnostics.Process.GetCurrentProcess().Kill();
+            }
         }
     }
 }
