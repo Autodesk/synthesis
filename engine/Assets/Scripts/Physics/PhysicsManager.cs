@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using SynthesisAPI.EventBus;
 using Synthesis.Replay;
+using Synthesis.Runtime;
 
 #nullable enable
 
@@ -22,11 +23,15 @@ namespace Synthesis.Physics {
                 if (_isFrozen != value) {
                     _isFrozen = value;
                     if (_isFrozen) {
+                        SimulationRunner.RemoveContext(SimulationRunner.RUNNING_SIM_CONTEXT);
+                        SimulationRunner.AddContext(SimulationRunner.PAUSED_SIM_CONTEXT);
                         UnityEngine.Physics.autoSimulation = false;
                         _physObjects.ForEach(x => {
                             x.Value.Freeze();
                         });
                     } else {
+                        SimulationRunner.RemoveContext(SimulationRunner.PAUSED_SIM_CONTEXT);
+                        SimulationRunner.AddContext(SimulationRunner.RUNNING_SIM_CONTEXT);
                         UnityEngine.Physics.autoSimulation = true;
                         _physObjects.ForEach(x => {
                             x.Value.Unfreeze();

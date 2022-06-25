@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Synthesis.Physics;
 using Synthesis.PreferenceManager;
 using Synthesis.Replay;
+using Synthesis.Runtime;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.InputEvents;
@@ -34,12 +35,16 @@ public class ReplayRunner : MonoBehaviour {
         // if () {
 
         // }
-        InputManager.AssignDigitalInput(TOGGLE_PLAY,
-            PreferenceManager.ContainsPreference(TOGGLE_PLAY)
-                ? (Digital)PreferenceManager.GetPreference<InputData[]>(TOGGLE_PLAY)[0].GetInput()
-                : new Digital(Enum.GetName(typeof(KeyCode), KeyCode.Tab)),
-            TogglePlay
-        );
+        Digital toggleReplayInput;
+        if (PreferenceManager.ContainsPreference(TOGGLE_PLAY)) {
+            toggleReplayInput = (Digital)PreferenceManager.GetPreference<InputData[]>(TOGGLE_PLAY)[0].GetInput();
+            toggleReplayInput.ContextBitmask = SimulationRunner.RUNNING_SIM_CONTEXT | SimulationRunner.REPLAY_SIM_CONTEXT;
+        } else {
+            toggleReplayInput = new Digital(Enum.GetName(typeof(KeyCode), KeyCode.Tab),
+                context: SimulationRunner.RUNNING_SIM_CONTEXT | SimulationRunner.REPLAY_SIM_CONTEXT
+            );
+        }
+        InputManager.AssignDigitalInput(TOGGLE_PLAY, toggleReplayInput, TogglePlay);
 
         ReplayManager.SetupDesyncTracker();
         ReplayManager.SetupContactUI(CreateContactMarker, EraseContactMarkers);
@@ -72,9 +77,11 @@ public class ReplayRunner : MonoBehaviour {
             //     ReplayManager.MakeCurrentNewestFrame();
             PhysicsManager.IsFrozen = !PhysicsManager.IsFrozen;
             if (PhysicsManager.IsFrozen) {
+                SimulationRunner.AddContext(SimulationRunner.REPLAY_SIM_CONTEXT);
                 Slider.value = 0;
                 Slider.gameObject.SetActive(true);
             } else {
+                SimulationRunner.RemoveContext(SimulationRunner.REPLAY_SIM_CONTEXT);
                 Slider.gameObject.SetActive(false);
                 if (ReplayManager.EraseContactMarkers != null)
                     ReplayManager.EraseContactMarkers();

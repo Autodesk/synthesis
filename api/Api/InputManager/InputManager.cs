@@ -58,10 +58,10 @@ namespace SynthesisAPI.InputManager
                 EventBus.EventBus.Push(new ValueInputAssignedEvent(name, input));
         }
 
-        public static void UpdateInputs() {
+        public static void UpdateInputs(uint context = 0x00000001) {
             foreach(string name in _mappedDigitalInputs.Keys) {
                 foreach(Input input in _mappedDigitalInputs[name]) {
-                    if (!input.Name.EndsWith("non-ui") && input.Update()) {
+                    if (!input.Name.EndsWith("non-ui") && input.Update(context: context)) {
                         if (input is MouseDown mouseDown) {
                             EventBus.EventBus.Push($"input/{name}",
                                 new MouseDownEvent(name, mouseDown.Value, mouseDown.State, mouseDown.MousePosition)
