@@ -6,13 +6,14 @@ namespace SynthesisServer
 {
     public enum Command
     {
+        INVALID,
         START,
         STOP,
         RESTART
     }
-    interface ICommand
+    public interface ICommand
     {
-        
-        Command Execute();
+        public Command CommandType { get; }
+        public Command Execute(DaemonConfig currentConfig);
     }
 }

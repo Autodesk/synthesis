@@ -26,6 +26,8 @@ namespace SynthesisServer
 				_logger.LogInformation("An Instance of daemon: " + _config.Value.DaemonName + " is already running");
 				System.Diagnostics.Process.GetCurrentProcess().Kill();
 			}
+			//Do this somewhere:
+			//Parser.Default.ParseArguments<StartCommand, StopCommand, RestartCommand>(_config.Value.Arguments).WithParsed<ICommand>(t => t.Execute(_config));
 			_logger.LogInformation("Starting daemon: " + _config.Value.DaemonName);
 			return Task.CompletedTask;
 		}
