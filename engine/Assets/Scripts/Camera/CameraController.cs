@@ -55,7 +55,9 @@ public class CameraController : MonoBehaviour {
         
         bool isOverUI = EventSystem.current.IsPointerOverGameObject();
         bool enableOrbit = !isOverUI && !isOverGizmo;
-        bool isGodMode = InputManager.MappedValueInputs["enable_god_mode"].Value == 1.0F;
+        bool isGodMode = InputManager.MappedValueInputs.ContainsKey("enable_god_mode")
+            ? InputManager.MappedValueInputs["enable_god_mode"].Value == 1.0F
+            : false;
         if (enableOrbit && !isGodMode) {
             z = ZoomSensitivity * -Input.mouseScrollDelta.y;
 
