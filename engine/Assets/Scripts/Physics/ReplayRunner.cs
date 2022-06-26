@@ -6,6 +6,7 @@ using Synthesis.Physics;
 using Synthesis.PreferenceManager;
 using Synthesis.Replay;
 using Synthesis.Runtime;
+using Synthesis.UI.Dynamic;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.InputEvents;
@@ -14,27 +15,25 @@ using UnityEngine;
 
 public class ReplayRunner : MonoBehaviour {
 
-    public UnityEngine.UI.Slider Slider;
     public GameObject ContactMarker;
 
     public const string TOGGLE_PLAY = "input/toggle_play";
 
     private void Start() {
         ReplayManager.IsRecording = true;
-        Slider.minValue = -ReplayManager.TimeSpan;
-        Slider.onValueChanged.AddListener(x => {
+
+        // DynamicUIManager.ReplaySlider.minValue = -ReplayManager.TimeSpan;
+        DynamicUIManager.ReplaySlider.AddOnValueChangedEvent((s, val) => {
             if (PhysicsManager.IsFrozen) {
-                var frame = ReplayManager.GetFrameAtTime(x);
+                var frame = ReplayManager.GetFrameAtTime(val);
                 frame?.ApplyFrame();
-                ReplayManager.ShowContactsAtTime(x);
+                ReplayManager.ShowContactsAtTime(val);
             }
         });
-        Slider.gameObject.SetActive(false);
+        DynamicUIManager.ReplaySlider.RootGameObject.SetActive(false);
 
         EventBus.NewTypeListener<PhysicsFreezeChangeEvent>(PhysChange);
-        // if () {
-
-        // }
+        
         Digital toggleReplayInput;
         if (PreferenceManager.ContainsPreference(TOGGLE_PLAY)) {
             toggleReplayInput = (Digital)PreferenceManager.GetPreference<InputData[]>(TOGGLE_PLAY)[0].GetInput();
@@ -78,11 +77,11 @@ public class ReplayRunner : MonoBehaviour {
             PhysicsManager.IsFrozen = !PhysicsManager.IsFrozen;
             if (PhysicsManager.IsFrozen) {
                 SimulationRunner.AddContext(SimulationRunner.REPLAY_SIM_CONTEXT);
-                Slider.value = 0;
-                Slider.gameObject.SetActive(true);
+                DynamicUIManager.ReplaySlider.SetValue(0);
+                DynamicUIManager.ReplaySlider.RootGameObject.SetActive(true);
             } else {
                 SimulationRunner.RemoveContext(SimulationRunner.REPLAY_SIM_CONTEXT);
-                Slider.gameObject.SetActive(false);
+                DynamicUIManager.ReplaySlider.RootGameObject.SetActive(false);
                 if (ReplayManager.EraseContactMarkers != null)
                     ReplayManager.EraseContactMarkers();
                 ReplayManager.MakeCurrentNewestFrame();

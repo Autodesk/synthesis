@@ -53,6 +53,7 @@
      <Compile Include="Assets\Scripts\Camera\GizmoCamera.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Settings\SettingsPanel.cs" />
      <Compile Include="Assets\Scripts\SimObjects\RobotSimObject.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\SettingsModal.cs" />
      <Compile Include="Assets\Scripts\UI\SynthesisAssetCollection.cs" />
      <Compile Include="Assets\Scripts\PTL.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Settings\SettingsInput.cs" />
@@ -63,11 +64,13 @@
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Drivetrain\ArcadePanel.cs" />
      <Compile Include="Assets\Scripts\UI\ContextMenu\ContextItem.cs" />
      <Compile Include="Assets\Scripts\Attributes\ContextMenuOptionAttribute.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\DynamicUIManager.cs" />
      <Compile Include="Assets\Scripts\UI\ToastLogger\ToastLogger.cs" />
      <Compile Include="Assets\Scripts\AutoUpdater.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Panel.cs" />
      <Compile Include="Assets\Scripts\ModelManager\Models\Model.cs" />
      <Compile Include="Assets\Scripts\UI\NavigationBar.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\AddRobotModal.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\SystemAdapter.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\ModuleLoader.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Gearboxes\GearboxConfigPanel.cs" />
@@ -81,11 +84,13 @@
      <Compile Include="Assets\Scripts\UI\Tabs\Tab.cs" />
      <Compile Include="Assets\Scripts\SimObjects\FieldSimObject.cs" />
      <Compile Include="Assets\Scripts\ModelManager\Models\GearboxData.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\DynamicUIComponents.cs" />
      <Compile Include="Assets\Scripts\Drivers\LinearDriver.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\ComponentAdapter.cs" />
      <Compile Include="Assets\Scripts\Importer\LegacyFieldImporter.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\UpdatePromptPanel.cs" />
      <Compile Include="Assets\Scripts\Gizmos\ArrowType.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Panels\RobotDetailsPanel.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Multiplayer\MultiplayerRobotItem.cs" />
      <Compile Include="Assets\Scripts\Importer\GamepieceTag.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\AudioSourceAdapter.cs" />
@@ -129,9 +134,11 @@
      <Compile Include="Assets\Scripts\SimObjects\GamepieceSimObject.cs" />
      <Compile Include="Assets\Scripts\UI\MultiplayerManager.cs" />
      <Compile Include="Assets\Scripts\UI\ToastLogger\ToastConfig.cs" />
+     <Compile Include="Assets\Scripts\Utilities\ColorManager.cs" />
      <Compile Include="Assets\Scripts\GodMode.cs" />
      <Compile Include="Assets\Scripts\Utilities\IEnumerableExtensions.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\MeshAdapter.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\TestModal.cs" />
      <Compile Include="Assets\Scripts\UI\LayoutManager.cs" />
      <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyFolderItem.cs" />
      <Compile Include="Assets\Scripts\FileSystem\FileSystem.cs" />
@@ -786,6 +793,9 @@
     </Reference>
     <Reference Include="Unity.TextMeshPro">
         <HintPath>C:/Users/hunte/work/synthesis/engine/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.Core.Runtime">
+        <HintPath>C:/Users/hunte/work/synthesis/engine/Library/ScriptAssemblies/Unity.RenderPipelines.Core.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.UI">
         <HintPath>C:/Users/hunte/work/synthesis/engine/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>

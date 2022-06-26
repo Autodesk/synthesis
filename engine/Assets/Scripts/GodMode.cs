@@ -1,3 +1,5 @@
+using Synthesis.PreferenceManager;
+using Synthesis.Runtime;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using UnityEngine;
@@ -18,16 +20,26 @@ public class GodMode : MonoBehaviour
         return gameObj.transform.parent != null ? GetGameObjectWithRigidbody(gameObj.transform.parent.gameObject) : null;
     }
 
-    private void Start()
-    {
-        InputManager.AssignValueInput("enable_god_mode", new Digital("G"));
-        InputManager.AssignValueInput("god_mode_drag_object", new Digital("Mouse0"));
+    public const string ENABLED_GOD_MODE_INPUT = "input/enable_god_mode";
+    public const string GOD_MODE_DRAG_INPUT = "input/god_mode_drag_object";
+    private void Start() {
+        InputManager.AssignValueInput(ENABLED_GOD_MODE_INPUT, TryGetSavedInput(ENABLED_GOD_MODE_INPUT, new Digital("G", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
+        InputManager.AssignValueInput(GOD_MODE_DRAG_INPUT, TryGetSavedInput(GOD_MODE_DRAG_INPUT, new Digital("Mouse0", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
     }
 
-    private void Update()
-    {
-        bool godModeKeyDown = InputManager.MappedValueInputs["enable_god_mode"].Value == 1.0F;
-        bool mouseDown = InputManager.MappedValueInputs["god_mode_drag_object"].Value == 1.0F;
+    private Analog TryGetSavedInput(string key, Analog defaultInput) {
+        if (PreferenceManager.ContainsPreference(key)) {
+            var input = (Digital)PreferenceManager.GetPreference<InputData[]>(key)[0].GetInput();
+            input.ContextBitmask = defaultInput.ContextBitmask;
+            return input;
+        } else {
+            return defaultInput;
+        }
+    }
+
+    private void Update() {
+        bool godModeKeyDown = InputManager.MappedValueInputs[ENABLED_GOD_MODE_INPUT].Value == 1.0F;
+        bool mouseDown = InputManager.MappedValueInputs[GOD_MODE_DRAG_INPUT].Value == 1.0F;
         if (godModeKeyDown)
         {
             if (mouseDown && grabbedObject == null)

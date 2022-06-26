@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Synthesis.PreferenceManager;
+using Synthesis.UI.Dynamic;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
@@ -18,14 +20,21 @@ namespace Synthesis.Runtime {
         public const uint PAUSED_SIM_CONTEXT = 0x00000002;
         public const uint REPLAY_SIM_CONTEXT = 0x00000004;
 
+        public static event Action OnUpdate;
+
         void Start() {
             SetContext(RUNNING_SIM_CONTEXT);
             Synthesis.PreferenceManager.PreferenceManager.Load();
+
+            OnUpdate += DynamicUIManager.Update;
         }
 
         void Update() {
             InputManager.UpdateInputs(_simulationContext);
             SimulationManager.Update();
+
+            if (OnUpdate != null)
+                OnUpdate();
 
             // if (Input.GetKeyDown(KeyCode.K)) {
             //     if (!SimulationManager.RemoveSimObject(RobotSimObject.CurrentlyPossessedRobot))
