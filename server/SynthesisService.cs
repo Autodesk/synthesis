@@ -9,6 +9,13 @@ using Microsoft.Extensions.Options;
 
 namespace SynthesisServer
 {
+	public enum Command
+	{
+		INVALID = -1,
+		START = 0,
+		STOP = 1,
+		RESTART = 2
+	}
 	public class SynthesisService : IHostedService, IDisposable
 	{
 		private readonly ILogger _logger;
@@ -22,21 +29,12 @@ namespace SynthesisServer
 
 		public Task StartAsync(CancellationToken cancellationToken)
 		{
-			Parser.Default.ParseArguments<StartCommand, StartCommand, RestartCommand>(_config.Value.Arguments).MapResult(
+			Parser.Default.ParseArguments<StartCommand, StopCommand, RestartCommand>(_config.Value.Arguments).MapResult(
 				(StartCommand opts) => StartServer(opts),
 				(StopCommand opts) => StopServer(opts),
 				(RestartCommand opts) => RestartServer(opts),
-				errs => 1);
+				errs => (int)Command.INVALID);
 
-
-			if (System.Diagnostics.Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1)
-			{
-				_logger.LogInformation("An Instance of daemon: " + _config.Value.DaemonName + " is already running");
-				System.Diagnostics.Process.GetCurrentProcess().Kill();
-			}
-			//Do this somewhere:
-			//Parser.Default.ParseArguments<StartCommand, StopCommand, RestartCommand>(_config.Value.Arguments).WithParsed<ICommand>(t => t.Execute(_config));
-			_logger.LogInformation("Starting daemon: " + _config.Value.DaemonName);
 			return Task.CompletedTask;
 		}
 
@@ -51,19 +49,35 @@ namespace SynthesisServer
 			_logger.LogInformation("Disposing...");
 		}
 
-		private void StartServer(StartCommand cmd)
+		private int StartServer(StartCommand cmd)
 		{
-			throw new NotImplementedException();
+			_logger.LogInformation("Starting Server");
+			if (System.Diagnostics.Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1)
+			{
+				_logger.LogInformation("An Instance of daemon: " + _config.Value.DaemonName + " is already running");
+				System.Diagnostics.Process.GetCurrentProcess().Kill();
+			}
+			return (int)Command.START;
 		}
 
-		private void StopServer(StopCommand cmd)
+		private int StopServer(StopCommand cmd)
 		{
-			throw new NotImplementedException();
+			_logger.LogInformation("Stopping Server");
+			if (System.Diagnostics.Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1)
+			{
+				foreach (var x in System.Diagnostics.Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)))
+				{
+					x.Kill();
+				}
+				System.Diagnostics.Process.GetCurrentProcess().Kill();
+			}
+			return (int)Command.STOP;
 		}
 
-		private void RestartServer(RestartCommand cmd)
+		private int RestartServer(RestartCommand cmd)
 		{
-			throw new NotImplementedException();
+			_logger.LogInformation("Restarting Server");
+			return (int)Command.RESTART;
 		}
 	}
 }
