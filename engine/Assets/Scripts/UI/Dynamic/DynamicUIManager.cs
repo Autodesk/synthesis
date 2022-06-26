@@ -6,6 +6,7 @@ using SynthesisAPI.Utilities;
 
 using Logger = SynthesisAPI.Utilities.Logger;
 using Synthesis.Replay;
+using Synthesis.Physics;
 
 namespace Synthesis.UI.Dynamic {
     public static class DynamicUIManager {
@@ -55,6 +56,7 @@ namespace Synthesis.UI.Dynamic {
             ActiveModal = modal;
 
             SynthesisAssetCollection.BlurVolumeStatic.weight = 1f;
+            PhysicsManager.IsFrozen = true;
             return true;
         }
 
@@ -87,6 +89,7 @@ namespace Synthesis.UI.Dynamic {
             ActiveModal = null;
 
             SynthesisAssetCollection.BlurVolumeStatic.weight = 0f;
+            PhysicsManager.IsFrozen = false;
             return true;
         }
 
