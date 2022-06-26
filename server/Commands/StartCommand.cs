@@ -7,7 +7,7 @@ using CommandLine;
 namespace SynthesisServer
 {
     [Verb("start", HelpText = "Start the Synthesis Server")]
-    class StartCommand : ICommand
+    class StartCommand
     {
 #nullable enable
         [Option('c', "config", Required = false, HelpText = "Specify a path to an appsettings.json file. Defaults to the same directory as the binary.")]
@@ -29,8 +29,5 @@ namespace SynthesisServer
         public bool NewConfig { get; set; } = false;
 
         public Command CommandType { get; } = Command.START;
-        public void Execute(DaemonConfig currentConfig)
-        {
-        }
     }
 }

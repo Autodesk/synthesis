@@ -9,9 +9,5 @@ namespace SynthesisServer
     class RestartCommand : StartCommand
     {
         public new Command CommandType { get; } = Command.RESTART;
-        public new void Execute(DaemonConfig currentConfig)
-        {
-
-        }
     }
 }
