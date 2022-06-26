@@ -55,7 +55,7 @@ namespace Synthesis.Runtime {
             _simulationContext |= c;
         }
         public static void RemoveContext(uint c) {
-            if (!HasContext(c))
+            if (HasContext(c))
                 _simulationContext ^= c;
         }
         public static bool HasContext(uint c)

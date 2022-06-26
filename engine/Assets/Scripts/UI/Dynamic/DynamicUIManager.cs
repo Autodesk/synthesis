@@ -42,6 +42,8 @@ namespace Synthesis.UI.Dynamic {
 
         public static bool CreateModal<T>(params object[] args) where T : ModalDynamic {
 
+            CloseActivePanel();
+
             var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("dynamic-modal-base"), GameObject.Find("UI").transform.Find("ScreenSpace").Find("ModalContainer"));
 
             // var c = ColorManager.GetColor("SAMPLE");
@@ -62,6 +64,10 @@ namespace Synthesis.UI.Dynamic {
 
         // Currently only going to allow one active panel
         public static bool CreatePanel<T>(params object[] args) where T : PanelDynamic {
+
+            if (ActiveModal != null)
+                return false;
+
             var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("dynamic-panel-base"), GameObject.Find("UI").transform.Find("ScreenSpace").Find("PanelContainer"));
 
             // var c = ColorManager.GetColor("SAMPLE");

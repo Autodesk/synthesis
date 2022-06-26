@@ -30,8 +30,10 @@ namespace Synthesis.UI.Dynamic {
         protected Button CancelButton => _cancelButton;
         private Button _acceptButton;
         protected Button AcceptButton => _acceptButton;
-        private UImage _modalImage;
-        protected UImage ModalImage => _modalImage;
+        private Image _panelImage;
+        protected Image PanelImage => _panelImage;
+        private Image _panelBackground;
+        protected Image PanelBackground => _panelBackground;
         private Label _title;
         protected Label Title => _title;
         
@@ -48,7 +50,9 @@ namespace Synthesis.UI.Dynamic {
             // Grab Customizable Modal Components
             var header = _unityObject.transform.Find("Header");
             var headerRt = header.GetComponent<RectTransform>();
-            _modalImage = header.Find("Image").GetComponent<UImage>();
+            _panelImage = new Image(null, header.Find("Image").gameObject);
+            _panelBackground = new Image(null, unityObject);
+            _panelBackground.SetCornerRadius(15);
             _title = new Label(null, header.Find("Title").gameObject, null);
 
             var footer = _unityObject.transform.Find("Footer");
@@ -102,8 +106,10 @@ namespace Synthesis.UI.Dynamic {
         protected Button CancelButton => _cancelButton;
         private Button _acceptButton;
         protected Button AcceptButton => _acceptButton;
-        private UImage _modalImage;
-        protected UImage ModalImage => _modalImage;
+        private Image _modalImage;
+        protected Image ModalImage => _modalImage;
+        private Image _modalBackground;
+        protected Image ModalBackground => _modalBackground;
         private Label _title;
         protected Label Title => _title;
         private Label _description;
@@ -122,7 +128,9 @@ namespace Synthesis.UI.Dynamic {
             // Grab Customizable Modal Components
             var header = _unityObject.transform.Find("Header");
             var headerRt = header.GetComponent<RectTransform>();
-            _modalImage = header.Find("Image").GetComponent<UImage>();
+            _modalImage = new Image(null, header.Find("Image").gameObject);
+            _modalBackground = new Image(null, unityObject);
+            _modalBackground.SetCornerRadius(20);
             _title = new Label(null, header.Find("Title").gameObject, null);
             _description = new Label( null, header.Find("Description").gameObject, null);
 
