@@ -15,7 +15,7 @@ namespace SynthesisServer
         public string Version { get; set; } = "1.0";
         public string DaemonName { get; set; } = "synthesisd";
         public int Port { get; set; } = 10800;
-        public int Timeout { get; set; } = 43200;
+        public int LobbyTimeout { get; set; } = 43200;
         public int MaxLobbies { get; set; } = -1;
         public int HeartbeatInterval { get; set; } = 5;
     }
