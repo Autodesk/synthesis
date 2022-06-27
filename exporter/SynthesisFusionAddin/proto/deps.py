@@ -1,4 +1,4 @@
-import platform, subprocess
+import platform, subprocess, shlex
 from pathlib import Path, PurePath
 from os import system, chdir, __file__, getcwd, path
 
@@ -46,13 +46,15 @@ def installCross(pipDeps: list) -> bool:
         pythonFolder = Path(__file__).parents[2] / "bin"
         progressBar.message = f"Fetching pip..."
         adsk.doEvents()
+        curlComm = shlex.quote(f"curl https://bootstrap.pypa.io/get-pip.py -o \"{pythonFolder / 'get-pip.py'}\"")
         subprocess.call(
-            f"curl https://bootstrap.pypa.io/get-pip.py -o \"{pythonFolder / 'get-pip.py'}\"",
-            shell=True,
+            curlComm,
+            shell=False,
         )
+        getPipComm = shlex.quote(f"\"{pythonFolder / 'python'}\" \"{pythonFolder / 'get-pip.py'}\"")
         subprocess.call(
-            f"\"{pythonFolder / 'python'}\" \"{pythonFolder / 'get-pip.py'}\"",
-            shell=True,
+            getPipComm,
+            shell=False,
         )
     else:
         raise ImportError(
@@ -63,9 +65,10 @@ def installCross(pipDeps: list) -> bool:
         progressBar.progressValue += 1
         progressBar.message = f"Installing {depName}..."
         adsk.doEvents()
+        installComm = shlex.quote(f"\"{pythonFolder / 'python'}\" -m pip install {depName}")
         subprocess.call(
-            f"\"{pythonFolder / 'python'}\" -m pip install {depName}", 
-            shell=True
+            installComm, 
+            shell=False
         )
 
     if system == "Darwin":
@@ -73,9 +76,10 @@ def installCross(pipDeps: list) -> bool:
         for depName in pipAntiDeps:
             progressBar.message = f"Uninstalling {depName}..."
             adsk.doEvents()
+            uninstallComm = shlex.quote(f"\"{pythonFolder / 'python'}\" -m pip uninstall {depName} -y")
             subprocess.call(
-                f"\"{pythonFolder / 'python'}\" -m pip uninstall {depName} -y",
-                shell=True,
+                uninstallComm,
+                shell=False,
             )
 
     progressBar.hide()
