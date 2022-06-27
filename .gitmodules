@@ -1,6 +1,0 @@
-[submodule "mirabuf"]
-	path = mirabuf
-	url = https://github.com/HiceS/mirabuf.git
-[submodule "protocols/mirabuf"]
-	path = protocols/mirabuf
-	url = https://github.com/HiceS/mirabuf
