@@ -15,8 +15,8 @@ jobs:
       uses: actions/checkout@v2
       with:
         submodules: recursive
-    - name: Create API Mirabuf Folder
-      run: mkdir api/Api/Gen && mkdir api/Api/Gen/Mirabuf
+    - name: Create Gen Folders
+      run: mkdir api/Api/Gen && mkdir api/Api/Gen/Mirabuf && mkdir api/Api/Gen/Proto
     - name: Genereate Mirabuf
       uses: PxyUp/protoc-actions@v3.0.0
       with:
