@@ -18,11 +18,11 @@ jobs:
     - name: Genereate Mirabuf
       uses: PxyUp/protoc-actions@v3.0.0
       with:
-          path: -I=mirabuf/ --csharp_out=./api/Api/Proto/ mirabuf/*.proto
+          path: -I=mirabuf/ --csharp_out=./api/Api/Gen/Mirabuf/ mirabuf/*.proto
     - name: Generate Protocol Buffers
       uses: PxyUp/protoc-actions@v3.0.0
       with:
-          path: -I./ --csharp_out=./api/Api/Proto/ protocols/v1/*.proto
+          path: -I./ --csharp_out=./api/Api/Gen/Proto/ protocols/v1/*.proto
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
