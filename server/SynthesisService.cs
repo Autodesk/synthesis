@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,11 +30,11 @@ namespace SynthesisServer
 
 		public Task StartAsync(CancellationToken cancellationToken)
 		{
-			Parser.Default.ParseArguments<StartCommand, StopCommand, RestartCommand>(_config.Value.Arguments).MapResult(
+			int status = Parser.Default.ParseArguments<StartCommand, StopCommand, RestartCommand>(_config.Value.Arguments).MapResult(
 				(StartCommand opts) => StartServer(opts),
 				(StopCommand opts) => StopServer(opts),
 				(RestartCommand opts) => RestartServer(opts),
-				errs => (int)Command.INVALID);
+				errs => InvalidCommand());
 
 			return Task.CompletedTask;
 		}
@@ -51,33 +52,60 @@ namespace SynthesisServer
 
 		private int StartServer(StartCommand cmd)
 		{
-			_logger.LogInformation("Starting Server");
-			if (System.Diagnostics.Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1)
+			
+			if (!cmd.Force && Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length > 1)
 			{
-				_logger.LogInformation("An Instance of daemon: " + _config.Value.DaemonName + " is already running");
-				System.Diagnostics.Process.GetCurrentProcess().Kill();
+				_logger.LogInformation("An instance of: " + _config.Value.DaemonName + " is already running");
+				Environment.Exit(0);
+			} else
+            {
+				_logger.LogInformation("Starting Server");
 			}
 			return (int)Command.START;
 		}
 
 		private int StopServer(StopCommand cmd)
 		{
-			_logger.LogInformation("Stopping Server");
-			if (System.Diagnostics.Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1)
+			Process current = Process.GetCurrentProcess();
+			Process[] processes = Process.GetProcessesByName(current.ProcessName);
+
+			foreach (Process x in processes)
 			{
-				foreach (var x in System.Diagnostics.Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)))
+				if (x.Id != current.Id)
 				{
 					x.Kill();
 				}
-				System.Diagnostics.Process.GetCurrentProcess().Kill();
 			}
+
+			Environment.Exit(0);
 			return (int)Command.STOP;
 		}
 
 		private int RestartServer(RestartCommand cmd)
 		{
-			_logger.LogInformation("Restarting Server");
-			return (int)Command.RESTART;
+			Process current = Process.GetCurrentProcess();
+			Process[] processes = Process.GetProcessesByName(current.ProcessName);
+
+			foreach (Process x in processes)
+			{
+				if (x.Id != current.Id)
+				{
+					x.Kill();
+				}
+			}
+			long time = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
+			while (Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length > 1 && System.DateTimeOffset.Now.ToUnixTimeMilliseconds() - time < cmd.Timeout)
+            {
+				Thread.Sleep(100);
+            }
+			return StartServer(new StartCommand() { Force = cmd.Force });
+		}
+
+		private int InvalidCommand()
+        {
+			_logger.LogError("Invalid command");
+			Environment.Exit(0);
+			return (int)Command.INVALID;
 		}
 	}
 }
