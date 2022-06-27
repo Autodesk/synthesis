@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Xml;
-using SynthesisAPI.Proto;
 
 /// <summary>
 /// Utility class defined in the main scope
@@ -33,27 +32,6 @@ internal static class TranslatorUtil {
         }
 
         return matchingNodes;
-    }
-
-    public static (Vec3 min, Vec3 max) Bounds(this IEnumerable<Vec3> verts) {
-        Vec3 min = new Vec3 { X = float.MaxValue, Y = float.MaxValue, Z = float.MaxValue },
-            max = new Vec3 { X = float.MinValue, Y = float.MinValue, Z = float.MinValue };
-        foreach (var v in verts) {
-            if (v.X < min.X)
-                min.X = v.X;
-            if (v.Y < min.Y)
-                min.Y = v.Y;
-            if (v.Z < min.Z)
-                min.Z = v.Z;
-
-            if (v.X > max.X)
-                max.X = v.X;
-            if (v.Y > max.Y)
-                max.Y = v.Y;
-            if (v.Z > max.Z)
-                max.Z = v.Z;
-        }
-        return (min, max);
     }
 
     public static List<T> Map<T>(this IEnumerable<T> collection, Func<T, T> modification) {
