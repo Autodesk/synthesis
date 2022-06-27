@@ -9,18 +9,12 @@ from ...general_imports import INTERNAL_ID
 from .PDMessage import PDMessage
 from proto.proto_out import material_pb2
 
+
 def _MapAllPhysicalMaterials(
-<<<<<<< HEAD
     physicalMaterials: list,
     materials: material_pb2.Materials,
     options: ParseOptions,
-    progressDialog : PDMessage,
-=======
-    physicalMaterials: list, # collection of materials in design
-    materials: material_pb2.Materials, # materials in proto file
-    options: ParseOptions, # 
-    progressDialog, # ui progress dialog
->>>>>>> 62febd57b (finished material properties parser + improved joint table + updated icons to high-res)
+    progressDialog: PDMessage,
 ) -> None:
     setDefaultMaterial(materials.physicalMaterials["default"])
 
@@ -60,60 +54,75 @@ def getPhysicalMaterialData(fusion_material, proto_material, options):
         proto_material.deformable = False
         proto_material.matType = 0
 
+        materialProperties = fusion_material.materialProperties
+
         thermalProperties = proto_material.thermal
         mechanicalProperties = proto_material.mechanical
         strengthProperties = proto_material.strength
 
-        # TODO: Provide advanced option overrides for these values
         proto_material.dynamic_friction = 0.5
         proto_material.static_friction = 0.5
         proto_material.restitution = 0.5
 
         proto_material.description = f"{fusion_material.name} exported from FUSION 360"
 
-        if (fusion_material.materialProperties):
-            materialProperties = fusion_material.materialProperties
+        """
+        Thermal Properties
+        """
+        thermalProperties.thermal_conductivity = materialProperties.itemById(
+            "thermal_Thermal_conductivity"
+        ).value
+        thermalProperties.specific_heat = materialProperties.itemById(
+            "structural_Specific_heat"
+        ).value
+        thermalProperties.thermal_expansion_coefficient = materialProperties.itemById(
+            "structural_Thermal_expansion_coefficient"
+        ).value
 
-            """
-            Thermal Properties
-            """
-            thermalProperties.thermal_conductivity = materialProperties.itemById["thermal_Thermal_conductivity"].value
-            thermalProperties.specific_heat = materialProperties.itemById["structural_Specific_heat"].value
-            thermalProperties.thermal_expansion_coefficient = materialProperties.itemById["structural_Thermal_expansion_coefficient"].value
+        """
+        Mechanical Properties
+        """
+        mechanicalProperties.young_mod = materialProperties.itemById(
+            "structural_Young_modulus"
+        ).value
+        mechanicalProperties.poisson_ratio = materialProperties.itemById(
+            "structural_Poisson_ratio"
+        ).value
+        mechanicalProperties.shear_mod = materialProperties.itemById(
+            "structural_Shear_modulus"
+        ).value
+        mechanicalProperties.density = materialProperties.itemById(
+            "structural_Density"
+        ).value
+        mechanicalProperties.damping_coefficient = materialProperties.itemById(
+            "structural_Damping_coefficient"
+        ).value
 
-            """
-            Mechanical Properties
-            """
-            mechanicalProperties.young_mod = materialProperties.itemById["structural_Young_modulus"].value
-            mechanicalProperties.poisson_ratio = materialProperties.itemById["structural_Poisson_ratio"].value
-            mechanicalProperties.shear_mod = materialProperties.itemById["structural_Shear_modulus"].value
-            mechanicalProperties.density = materialProperties.itemById["structural_Density"].value
-            mechanicalProperties.damping_coefficient = materialProperties.itemById["structural_Damping_coefficient"].value
-
-            """
-            Strength Properties
-            """
-            strengthProperties.yield_strength = materialProperties.itemById["structural_Minimum_yield_stress"].value
-            strengthProperties.tensile_strength = materialProperties.itemById["structural_Minimum_tensile_strength"].value
-            strengthProperties.thermal_treatment = materialProperties.itemById["structural_Thermally_treated"].value
+        """
+        Strength Properties
+        """
+        strengthProperties.yield_strength = materialProperties.itemById(
+            "structural_Minimum_yield_stress"
+        ).value
+        strengthProperties.tensile_strength = materialProperties.itemById(
+            "structural_Minimum_tensile_strength"
+        ).value
+        strengthProperties.thermal_treatment = materialProperties.itemById(
+            "structural_Thermally_treated"
+        ).value
 
     except:
-        logging.getLogger(f"{INTERNAL_ID}.Parser.Materials.getPhysicalMaterialData").error(
-                "Failed:\n{}".format(traceback.format_exc())
-            )
+        logging.getLogger(
+            f"{INTERNAL_ID}.Parser.Materials.getPhysicalMaterialData"
+        ).error("Failed:\n{}".format(traceback.format_exc()))
 
 
 def _MapAllAppearances(
     appearances: list,
     materials: material_pb2.Materials,
     options: ParseOptions,
-<<<<<<< HEAD
     progressDialog: PDMessage,
 ) -> None:
-=======
-    progressDialog,
-    ) -> None:
->>>>>>> 62febd57b (finished material properties parser + improved joint table + updated icons to high-res)
 
     # in case there are no appearances on a body
     # this is just a color tho
@@ -156,7 +165,7 @@ def getMaterialAppearance(
     fusionAppearance: adsk.core.Appearance,
     options: ParseOptions,
     appearance: material_pb2.Appearance,
-    ) -> None:
+) -> None:
     """Takes in a Fusion 360 Mesh and converts it to a usable unity mesh
 
     Args:

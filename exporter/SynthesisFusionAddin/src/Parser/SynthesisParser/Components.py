@@ -53,7 +53,6 @@ def _MapAllComponents(
             if body.isLightBulbOn:
                 part_body = partDefinition.bodies.add()
                 fill_info(part_body, body)
-                
                 part_body.part = comp_ref
                 _ParseBRep(body, options, part_body.triangle_mesh)
 
