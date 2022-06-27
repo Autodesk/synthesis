@@ -16,7 +16,7 @@ jobs:
       with:
         submodules: recursive
     - name: Create API Mirabuf Folder
-      run: mkdir api/Api/Gen/Mirabuf
+      run: mkdir api/Api/Gen && mkdir api/Api/Gen/Mirabuf
     - name: Genereate Mirabuf
       uses: PxyUp/protoc-actions@v3.0.0
       with:
