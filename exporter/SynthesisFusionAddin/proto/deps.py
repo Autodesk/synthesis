@@ -104,12 +104,6 @@ try:
     import google.protobuf
     import pkg_resources
 
-    file = open("C:\\Users\\hunte\\BAHH.txt", 'w')
-    file.write(f"{path.dirname(google.protobuf.__file__)}")
-    ver = pkg_resources.get_distribution("google").version
-    file.write(f"\n{ver}")
-    file.close()
-
     #logging.getLogger("deps").error()
 
     from .proto_out import joint_pb2, assembly_pb2, types_pb2, material_pb2

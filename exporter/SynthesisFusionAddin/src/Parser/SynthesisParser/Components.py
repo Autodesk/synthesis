@@ -214,6 +214,10 @@ def _MapRigidGroups(
         mira_group = joint_pb2.RigidGroup()
         mira_group.name = group.entityToken
         for occ in group.occurrences:
+
+            if not occ.isLightBulbOn:
+                continue
+
             try:
                 occRef = occ.entityToken
             except RuntimeError:
