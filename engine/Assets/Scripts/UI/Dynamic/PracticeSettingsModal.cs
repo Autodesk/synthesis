@@ -15,21 +15,25 @@ public class PracticeSettingsModal : ModalDynamic
         
         // TODO fix vertical spacing
 
-        MainContent.CreateButton().StepIntoLabel(label => label.SetText("Reset Robot"))
-            .AddOnClickedEvent(b => ModeManager.ResetRobot())
-            .ApplyTemplate(Button.VerticalLayoutTemplate);
+        MainContent.CreateButton()
+            .ApplyTemplate(Button.VerticalLayoutTemplate)
+            .StepIntoLabel(label => label.SetText("Reset Robot"))
+            .AddOnClickedEvent(b => ModeManager.ResetRobot());
 
-        MainContent.CreateButton().StepIntoLabel(label => label.SetText("Reset Gamepieces"))
-            .AddOnClickedEvent(b => ModeManager.ResetGamepieces())
-            .ApplyTemplate(Button.VerticalLayoutTemplate);
+        MainContent.CreateButton()
+            .ApplyTemplate(Button.VerticalLayoutTemplate)
+            .StepIntoLabel(label => label.SetText("Reset Gamepieces"))
+            .AddOnClickedEvent(b => ModeManager.ResetGamepieces());
 
-        MainContent.CreateButton().StepIntoLabel(label => label.SetText("Reset Field"))
-            .AddOnClickedEvent(b => ModeManager.ResetField())
-            .ApplyTemplate(Button.VerticalLayoutTemplate);
+        MainContent.CreateButton()
+            .ApplyTemplate(Button.VerticalLayoutTemplate)
+            .StepIntoLabel(label => label.SetText("Reset Field"))
+            .AddOnClickedEvent(b => ModeManager.ResetField());
 
-        MainContent.CreateButton().StepIntoLabel(label => label.SetText("Reset All"))
-            .AddOnClickedEvent(b => ModeManager.ResetAll())
-            .ApplyTemplate(Button.VerticalLayoutTemplate);
+        MainContent.CreateButton()
+            .ApplyTemplate(Button.VerticalLayoutTemplate)
+            .StepIntoLabel(label => label.SetText("Reset All"))
+            .AddOnClickedEvent(b => ModeManager.ResetAll());
     }
     
     public override void Update(){}

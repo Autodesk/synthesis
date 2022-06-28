@@ -51,7 +51,9 @@ public class ModeManager
 
     public static void ResetField()
     {
-        FieldSimObject.CurrentField.ResetField();
+        FieldSimObject field = FieldSimObject.CurrentField;
+        if (field != null)
+            FieldSimObject.CurrentField.ResetField();
         ResetGamepieces();
     }
 
