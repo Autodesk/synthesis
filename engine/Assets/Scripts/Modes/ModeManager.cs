@@ -39,7 +39,9 @@ public class ModeManager
 
     public static void ResetRobot()
     {
-        RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.GetComponentsInChildren<Rigidbody>().ForEach(rb =>
+        RobotSimObject robot = RobotSimObject.GetCurrentlyPossessedRobot();
+        if (robot == null) return;
+        robot.RobotNode.GetComponentsInChildren<Rigidbody>().ForEach(rb =>
         {
             GameObject go = rb.gameObject;
             go.transform.position = InitialPositions[go];
@@ -49,6 +51,7 @@ public class ModeManager
 
     public static void ResetField()
     {
+        FieldSimObject.CurrentField.ResetField();
         ResetGamepieces();
     }
 
@@ -61,6 +64,12 @@ public class ModeManager
         {
             FieldSimObject.CurrentField.Gamepieces.ForEach(gp => gp.Reset());
         }
+    }
+
+    public static void ResetAll()
+    {
+        ResetField();
+        ResetRobot();
     }
 
     public static void SpawnGamepiece(float scale = 1.0f, PrimitiveType type = PrimitiveType.Sphere)

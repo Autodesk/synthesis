@@ -1,4 +1,3 @@
-using Synthesis.ModelManager;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
 
@@ -26,6 +25,10 @@ public class PracticeSettingsModal : ModalDynamic
 
         MainContent.CreateButton().StepIntoLabel(label => label.SetText("Reset Field"))
             .AddOnClickedEvent(b => ModeManager.ResetField())
+            .ApplyTemplate(Button.VerticalLayoutTemplate);
+
+        MainContent.CreateButton().StepIntoLabel(label => label.SetText("Reset All"))
+            .AddOnClickedEvent(b => ModeManager.ResetAll())
             .ApplyTemplate(Button.VerticalLayoutTemplate);
     }
     

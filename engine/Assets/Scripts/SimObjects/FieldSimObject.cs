@@ -8,6 +8,7 @@ using UnityEngine;
 
 using Bounds = UnityEngine.Bounds;
 using Transform = Mirabuf.Transform;
+using Vector3 = UnityEngine.Vector3;
 
 public class FieldSimObject : SimObject {
 
@@ -19,6 +20,9 @@ public class FieldSimObject : SimObject {
     public Bounds FieldBounds { get; private set; }
     public List<GamepieceSimObject> Gamepieces { get; private set; }
 
+    private Vector3 _initialPosition;
+    private Quaternion _initialRotation;
+
     public FieldSimObject(string name, ControllableState state, Assembly assembly, GameObject groundedNode, List<GamepieceSimObject> gamepieces) : base(name, state) {
         MiraAssembly = assembly;
         GroundedNode = groundedNode;
@@ -29,6 +33,9 @@ public class FieldSimObject : SimObject {
         // Level the field
         var position = FieldObject.transform.position;
         position.y -= position.y - FieldBounds.extents.y;
+        
+        _initialPosition = GroundedNode.transform.position;
+        _initialRotation = GroundedNode.transform.rotation;
 
         CurrentField = this;
         Gamepieces.ForEach(gp =>
@@ -37,6 +44,12 @@ public class FieldSimObject : SimObject {
             gp.InitialPosition = gpTransform.position;
             gp.InitialRotation = gpTransform.rotation;
         });
+    }
+
+    public void ResetField()
+    {
+        GroundedNode.transform.position = _initialPosition;
+        GroundedNode.transform.rotation = _initialRotation;
     }
 
     public void DeleteField() {
