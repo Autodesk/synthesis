@@ -21,8 +21,9 @@ namespace InventorMirabufExporter
         public Application Application { get; private set; }
         private const string clientId = "{37135cf6-eae5-47c5-8ae8-c5204255b1fb}";
         private ButtonDefinition exporterButton;
+        private _Document doc;
 
-        public void Activate(Inventor.ApplicationAddInSite addInSiteObject, bool firstTime)
+        public void Activate(ApplicationAddInSite addInSiteObject, bool firstTime)
         {
             // This method is called by Inventor when it loads the addin.
             // The AddInSiteObject provides access to the Inventor Application object.
@@ -52,7 +53,7 @@ namespace InventorMirabufExporter
 
         private void ApplicationEvents_OnActivateDocument(_Document documentObject, EventTimingEnum beforeOrAfter, NameValueMap context, out HandlingCodeEnum handlingCode)
         {
-
+            doc = documentObject;
             handlingCode = HandlingCodeEnum.kEventNotHandled;
         }
 
@@ -87,6 +88,8 @@ namespace InventorMirabufExporter
             exporterButton = Application.CommandManager.ControlDefinitions.AddButtonDefinition("Export Model", "SynthesisExporter:ExportButton", CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "Exports the open assembly to a Mirabuf file.", ToIPictureDisp( new Bitmap(Resources.SynthesisLogo16)), ToIPictureDisp(new Bitmap(Resources.SynthesisLogo32)));
             exporterButton.OnExecute += context =>
             {
+                Serializer proto = new Serializer();
+                proto.Setup(doc);
                 new GUI.ConfigUI().Show();
             };
         }

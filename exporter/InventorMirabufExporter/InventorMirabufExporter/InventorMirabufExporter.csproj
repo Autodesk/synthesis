@@ -133,6 +133,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Serializer.cs" />
     <Compile Include="SynthesisAddInServer.cs">
       <SubType>Code</SubType>
     </Compile>
