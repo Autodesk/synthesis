@@ -30,8 +30,10 @@ namespace Synthesis.UI.Dynamic {
         protected Button CancelButton => _cancelButton;
         private Button _acceptButton;
         protected Button AcceptButton => _acceptButton;
-        private UImage _modalImage;
-        protected UImage ModalImage => _modalImage;
+        private Image _panelImage;
+        protected Image PanelImage => _panelImage;
+        private Image _panelBackground;
+        protected Image PanelBackground => _panelBackground;
         private Label _title;
         protected Label Title => _title;
         
@@ -48,7 +50,9 @@ namespace Synthesis.UI.Dynamic {
             // Grab Customizable Modal Components
             var header = _unityObject.transform.Find("Header");
             var headerRt = header.GetComponent<RectTransform>();
-            _modalImage = header.Find("Image").GetComponent<UImage>();
+            _panelImage = new Image(null, header.Find("Image").gameObject);
+            _panelBackground = new Image(null, unityObject);
+            _panelBackground.SetCornerRadius(15);
             _title = new Label(null, header.Find("Title").gameObject, null);
 
             var footer = _unityObject.transform.Find("Footer");
@@ -102,8 +106,10 @@ namespace Synthesis.UI.Dynamic {
         protected Button CancelButton => _cancelButton;
         private Button _acceptButton;
         protected Button AcceptButton => _acceptButton;
-        private UImage _modalImage;
-        protected UImage ModalImage => _modalImage;
+        private Image _modalImage;
+        protected Image ModalImage => _modalImage;
+        private Image _modalBackground;
+        protected Image ModalBackground => _modalBackground;
         private Label _title;
         protected Label Title => _title;
         private Label _description;
@@ -122,7 +128,9 @@ namespace Synthesis.UI.Dynamic {
             // Grab Customizable Modal Components
             var header = _unityObject.transform.Find("Header");
             var headerRt = header.GetComponent<RectTransform>();
-            _modalImage = header.Find("Image").GetComponent<UImage>();
+            _modalImage = new Image(null, header.Find("Image").gameObject);
+            _modalBackground = new Image(null, unityObject);
+            _modalBackground.SetCornerRadius(20);
             _title = new Label(null, header.Find("Title").gameObject, null);
             _description = new Label( null, header.Find("Description").gameObject, null);
 
@@ -449,6 +457,10 @@ namespace Synthesis.UI.Dynamic {
             _unityText.fontStyle = styles;
             return this;
         }
+        public Label SetColor(Color c) {
+            _unityText.color = c;
+            return this;
+        }
         public Label SetTopStretch(float leftPadding = 0f, float rightPadding = 0f, float anchoredY = 0f)
             => base.SetTopStretch<Label>(leftPadding, rightPadding, anchoredY);
         public Label SetBottomStretch(float leftPadding = 0f, float rightPadding = 0f, float anchoredY = 0f)
@@ -513,6 +525,10 @@ namespace Synthesis.UI.Dynamic {
         private Label _valueLabel;
         private string _unitSuffix = string.Empty;
 
+        private Image _backgroundImage;
+        private Image _fillImage;
+        private Image _handleImage;
+
         public Slider(UIComponent? parent, GameObject unityObject, string label, string unitSuffix, float minValue, float maxValue, float currentValue) : base(parent, unityObject) {
             var infoObj = unityObject.transform.Find("Info");
             _titleLabel = new Label(this, infoObj.Find("Label").gameObject, null);
@@ -526,8 +542,15 @@ namespace Synthesis.UI.Dynamic {
                     OnValueChanged(this, x);
             });
 
+            _backgroundImage = new Image(this, _unitySlider.transform.Find("Background").gameObject);
+            _fillImage = new Image(this, _unitySlider.transform.Find("Fill Area").Find("Fill").gameObject);
+            _handleImage = new Image(this, _unitySlider.transform.Find("Handle Slide Area").Find("Handle").gameObject);
+
             if (unitSuffix != null)
                 _unitSuffix = unitSuffix;
+
+            SetRange((minValue, maxValue));
+            SetValue(currentValue);
         }
 
         public Slider SetRange((float min, float max) range) => SetRange(range.min, range.max);
@@ -549,10 +572,34 @@ namespace Synthesis.UI.Dynamic {
             OnValueChanged += callback;
             return this;
         }
+        public Slider SetSlideDirection(USlider.Direction direction) {
+            _unitySlider.direction = direction;
+            return this;
+        }
         public Slider SetCustomValuePresentation(Func<float, string> mod) {
             if (_customValuePresentation == null)
                 return this;
             _customValuePresentation = mod;
+            return this;
+        }
+        public Slider StepIntoTitleLabel(Action<Label> mod) {
+            mod(_titleLabel);
+            return this;
+        }
+        public Slider StepIntoValueLabel(Action<Label> mod) {
+            mod(_valueLabel);
+            return this;
+        }
+        public Slider StepIntoBackgroundImage(Action<Image> mod) {
+            mod(_backgroundImage);
+            return this;
+        }
+        public Slider StepIntoFillImage(Action<Image> mod) {
+            mod(_fillImage);
+            return this;
+        }
+        public Slider StepIntoHandleImage(Action<Image> mod) {
+            mod(_handleImage);
             return this;
         }
     }

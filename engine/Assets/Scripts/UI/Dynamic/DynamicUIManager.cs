@@ -5,15 +5,44 @@ using UnityEngine;
 using SynthesisAPI.Utilities;
 
 using Logger = SynthesisAPI.Utilities.Logger;
+using Synthesis.Replay;
+using Synthesis.Physics;
 
 namespace Synthesis.UI.Dynamic {
     public static class DynamicUIManager {
 
         public static ModalDynamic ActiveModal { get; private set; }
         public static PanelDynamic ActivePanel { get; private set; }
+        public static Content _screenSpaceContent = null;
+        public static Content ScreenSpaceContent { 
+            get {
+                if (_screenSpaceContent == null)
+                    _screenSpaceContent = new Content(null, GameObject.Find("UI").transform.Find("ScreenSpace").gameObject, null);
+                return _screenSpaceContent;
+            }
+        }
+        private static Slider _replaySlider = null;
+        public static Slider ReplaySlider {
+            get {
+                if (_replaySlider == null)
+                    _replaySlider = ScreenSpaceContent
+                        .CreateSlider(label: "Last 5 seconds", unitSuffix: "s", minValue: -ReplayManager.TimeSpan, maxValue: 0f, currentValue: 0f)
+                        .SetBottomStretch<Slider>(leftPadding: 100f, rightPadding: 100f, anchoredY: 50)
+                        .SetSlideDirection(UnityEngine.UI.Slider.Direction.LeftToRight)
+                        .StepIntoBackgroundImage(i => i.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE)))
+                        .StepIntoFillImage(i => i.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK)))
+                        .StepIntoTitleLabel(l => l.SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Bottom)
+                            .SetFontSize(20).SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK)))
+                        .StepIntoValueLabel(l => l.SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Bottom)
+                            .SetFontSize(20).SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK)));
+                return _replaySlider;
+            }
+        }
         // public static GameObject ActiveModalGameObject;
 
         public static bool CreateModal<T>(params object[] args) where T : ModalDynamic {
+
+            CloseActivePanel();
 
             var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("dynamic-modal-base"), GameObject.Find("UI").transform.Find("ScreenSpace").Find("ModalContainer"));
 
@@ -29,11 +58,16 @@ namespace Synthesis.UI.Dynamic {
             ActiveModal = modal;
 
             SynthesisAssetCollection.BlurVolumeStatic.weight = 1f;
+            PhysicsManager.IsFrozen = true;
             return true;
         }
 
         // Currently only going to allow one active panel
         public static bool CreatePanel<T>(params object[] args) where T : PanelDynamic {
+
+            if (ActiveModal != null)
+                return false;
+
             var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("dynamic-panel-base"), GameObject.Find("UI").transform.Find("ScreenSpace").Find("PanelContainer"));
 
             // var c = ColorManager.GetColor("SAMPLE");
@@ -61,6 +95,7 @@ namespace Synthesis.UI.Dynamic {
             ActiveModal = null;
 
             SynthesisAssetCollection.BlurVolumeStatic.weight = 0f;
+            PhysicsManager.IsFrozen = false;
             return true;
         }
 
