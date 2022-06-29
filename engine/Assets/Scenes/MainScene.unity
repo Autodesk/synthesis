@@ -3770,6 +3770,8 @@ GameObject:
   - component: {fileID: 1293899047}
   - component: {fileID: 1293899048}
   - component: {fileID: 1293899049}
+  - component: {fileID: 1293899050}
+  - component: {fileID: 1293899051}
   m_Layer: 0
   m_Name: Simulation Runner
   m_TagString: Untagged
@@ -3844,6 +3846,32 @@ MonoBehaviour:
   board: {fileID: 1506906110}
   timer: {fileID: 1002785877}
   targetTime: 135
+--- !u!114 &1293899050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1293899044}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae7d17a5078b419190218853c9d10b9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ZoomSensitivity: 0.15
+  MovementSpeed: 3
+--- !u!114 &1293899051
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1293899044}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21a7315af0f549aca1fe5c269d605784, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1353310054
 GameObject:
   m_ObjectHideFlags: 0
