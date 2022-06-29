@@ -200,4 +200,32 @@ namespace Synthesis.PreferenceManager {
         public Analog GetInput()
             => (Analog)DeserializeMethod.MakeGenericMethod(this.Type).Invoke(null, new string[] { Data });
     }
+
+    // [JsonObject(MemberSerialization.OptIn)]
+    // public class JsonFriendlyData<T> {
+    //     [JsonProperty]
+    //     public Type Type;
+    //     [JsonProperty]
+    //     public string Data;
+
+    //     [JsonConstructor]
+    //     public JsonFriendlyData() { }
+
+    //     public JsonFriendlyData(T input) {
+    //         this.Type = input.GetType();
+    //         Data = JsonConvert.SerializeObject(input);
+    //     }
+
+    //     private static MethodInfo _deserializeMethod;
+    //     private static MethodInfo DeserializeMethod {
+    //         get {
+    //             if (_deserializeMethod == null)
+    //                 _deserializeMethod = typeof(JsonConvert).GetMethods().First(y => y.IsGenericMethod && y.Name.Equals("DeserializeObject"));
+    //             return _deserializeMethod;
+    //         }
+    //     }
+
+    //     public T GetData()
+    //         => (T)DeserializeMethod.MakeGenericMethod(this.Type).Invoke(null, new string[] { Data });
+    // }
 }

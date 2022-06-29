@@ -18,7 +18,10 @@ public class SynthesisAssetCollection : MonoBehaviour {
     public List<TMPro.TMP_FontAsset> Fonts;
     [SerializeField]
     public Volume BlurVolume;
+    [SerializeField]
+    public GameObject ReplaySlider;
     public static Volume BlurVolumeStatic => Instance.BlurVolume;
+    public static GameObject ReplaySliderStatic => Instance.ReplaySlider;
 
     public void Awake() {
         Instance = this;
