@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
@@ -19,6 +18,7 @@ namespace SynthesisServer
 	}
 	public class SynthesisService : IHostedService, IDisposable
 	{
+
 		private readonly ILogger _logger;
 		private readonly IOptions<DaemonConfig> _config;
 
