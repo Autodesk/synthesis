@@ -1,9 +1,6 @@
 using Synthesis.UI.Dynamic;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
-
+using UnityEngine;
 
 public class MatchMode : MonoBehaviour
 {
@@ -46,16 +43,16 @@ public class MatchMode : MonoBehaviour
             if(e.keyCode == KeyCode.M && !isMatchModalOpen)
             {
                 isMatchModalOpen = true;
-                ModalManager.CreateModal<MatchModeModal>();
+                DynamicUIManager.CreateModal<MatchModeModal>();
             }
             else if(e.keyCode == KeyCode.Escape && isMatchModalOpen)
             {
-                ModalManager.CloseModal();
+                DynamicUIManager.CloseActiveModal();
                 isMatchModalOpen = false;
             }
             else if(e.keyCode == KeyCode.S && isMatchModalOpen)
             {
-                ModalManager.CloseModal();
+                DynamicUIManager.CloseActiveModal();
                 isMatchModalOpen = false;
                 StartMatch();
             }
