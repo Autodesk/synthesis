@@ -6,6 +6,13 @@ using UnityEngine;
 public class ModeManager
 {
     public static Vector3 GamepieceSpawnpoint = new Vector3(0, 1, 0);
+    
+    private static Mode _currentMode;
+    public static Mode CurrentMode
+    {
+        get;
+        set;
+    }
 
     private static Dictionary<GameObject, Vector3> _initialPositions = new Dictionary<GameObject, Vector3>();
     private static Dictionary<GameObject, Quaternion> _initialRotations = new Dictionary<GameObject, Quaternion>();
@@ -107,5 +114,11 @@ public class ModeManager
         }
 
         _gamepieces.Add(gamepiece);
+    }
+
+    public enum Mode
+    {
+        Practice,
+        Match
     }
 }
