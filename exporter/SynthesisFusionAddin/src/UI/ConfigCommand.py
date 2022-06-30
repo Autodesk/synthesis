@@ -525,7 +525,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 if (
                     joint.jointMotion.jointType == JointMotions.REVOLUTE.value
                     or joint.jointMotion.jointType == JointMotions.SLIDER.value
-                ):
+                ) and not joint.isSuppressed:
 
                     addJointToTable(joint)
 

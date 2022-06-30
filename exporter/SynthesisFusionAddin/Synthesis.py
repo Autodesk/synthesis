@@ -8,6 +8,9 @@ from .src.configure import setAnalytics, unload_config
 from shutil import rmtree
 import logging.handlers, traceback, importlib.util, os
 
+from .src.UI import MarkingMenu
+import adsk.core
+
 
 def run(_):
     """## Entry point to application from Fusion 360.
@@ -23,6 +26,11 @@ def run(_):
         # creates the UI elements
         register_ui()
 
+        app = adsk.core.Application.get()
+        ui  = app.userInterface
+
+        MarkingMenu.setupMarkingMenu(ui)
+
     except:
         logging.getLogger(f"{INTERNAL_ID}").error(
             "Failed:\n{}".format(traceback.format_exc())
@@ -37,6 +45,11 @@ def stop(_):
     """
     try:
         unregister_all()
+
+        app = adsk.core.Application.get()
+        ui  = app.userInterface
+
+        MarkingMenu.stopMarkingMenu(ui)
 
         # nm.deleteMe()
 
