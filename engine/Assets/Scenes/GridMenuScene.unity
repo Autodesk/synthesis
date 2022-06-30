@@ -6154,7 +6154,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8178300921710398091, guid: a164eb99c8d3069438923ac0c0b61657, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: PracticeMode
+      value: Singleplayer
       objectReference: {fileID: 0}
     - target: {fileID: 8178300921710398091, guid: a164eb99c8d3069438923ac0c0b61657, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
