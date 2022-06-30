@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 
 public class ChooseModeModal : ModalDynamic
 {
-    public ChooseModeModal() : base(new Vector2(500, 500)) {}
+    public ChooseModeModal() : base(new Vector2(300, 120)) {}
 
     public override void Create()
     {

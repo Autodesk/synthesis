@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PracticeSettingsModal : ModalDynamic
 {
-    public PracticeSettingsModal() : base(new Vector2(500, 500))
+    public PracticeSettingsModal() : base(new Vector2(500, 220))
     {
         
     }
