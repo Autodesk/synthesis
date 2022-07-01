@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-public class MatchMode : MonoBehaviour
+public class MatchMode : GameMode
 {
     public GameObject board;
     public TMP_Text timer;
@@ -20,14 +20,14 @@ public class MatchMode : MonoBehaviour
 
 
     // Start is called before the first frame update
-    void Start()
+    public override void Start()
     {
         instance = this;
         board.SetActive(false);
     }
 
     // Update is called once per frame
-    void Update()
+    public override void Update()
     {
         if (runTimer)
         {
@@ -41,6 +41,9 @@ public class MatchMode : MonoBehaviour
         }
 
 
+    }
+    public override void End()
+    {
     }
     void OnGUI()
     {

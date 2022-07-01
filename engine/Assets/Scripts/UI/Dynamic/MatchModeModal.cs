@@ -83,7 +83,6 @@ public class MatchModeModal : ModalDynamic
     
     public override void Update() {}
 
-    public override void Update() { }
 
     public override void Delete()
     {
