@@ -14,7 +14,47 @@ message ServerMessage {
 	oneof server_msg_type {
 		KeyExchange key_exchange = 1;
                 LobbyInfo lobby_info = 2;
-		GenericLobbyRequest generic_lobby_request = 3;
-		SwapRequest swap_request = 4;
-		GenericLobbyResponse generic_lobby_response = 5;
+
+		CreateLobbyRequest create_lobby_request = 3;
+		DeleteLobbyRequest delete_lobby_request = 4;
+		StartLobbyRequest start_lobby_request = 5;
+		JoinLobbyRequest join_lobby_request = 6;
+		SwapRequest swap_request = 7;
+
+		GenericLobbyResponse generic_lobby_response = 8;
 	}
+
+	message KeyExchange {}
+
+	message LobbyInfo {}
+
+	message CreateLobbyRequest {
+		string lobby_name = 1;
+		string client_id = 2;
+	}
+
+	message DeleteLobbyRequest {
+		string lobby_id = 1;
+		string client_id = 2;
+	}
+
+	message StartLobbyRequest {
+		string lobby_id = 1;
+		string client_id = 2;
+	}
+
+	message JoinLobbyRequest {
+		string lobby_id = 1;
+
+	message SwapRequest {
+		string lobby_id = 1;
+		int new_postion = 2;
+	}
+
+	message GenericLobbyResponse {
+		RequestType response_type = 1;
+		string lobby_id = 3;
+		bool status = 4;
+		string status_msg = 5;
+	}
+}
