@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+enum RequestType {
+	CREATE_LOBBY = 0;
+	DELETE_LOBBY = 1;
+	START_LOBBY = 2;
+	JOIN_LOBBY = 3;
+	SWAP_LOBBY_SLOT = 4;
+}
+
+
+message ServerMessage {
+	
+	oneof server_msg_type {
+		KeyExchange key_exchange = 1;
+                LobbyInfo lobby_info = 2;
+		GenericLobbyRequest generic_lobby_request = 3;
+		SwapRequest swap_request = 4;
+		GenericLobbyResponse generic_lobby_response = 5;
+	}

@@ -60,9 +60,15 @@ namespace SynthesisServer
             return false;
         }
 
-        public bool TryRemoveClient()
+        public bool TryRemoveClient(int index)
         {
-            throw new NotImplementedException();
+            _clientsLock.EnterWriteLock();
+            if (_clients[index] != null)
+            {
+                _clients[index] = null;
+                return true;
+            }
+            return false;
         }
     }
 }
