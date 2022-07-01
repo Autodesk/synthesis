@@ -1,6 +1,8 @@
 
 using UnityEngine;
 using Synthesis.ModelManager;
+using SynthesisAPI.Utilities;
+
 /// <summary>
 /// Manages Gizmos and ensures only one gizmo spawns at a time.
 /// </summary>
@@ -38,8 +40,10 @@ public static class GizmoManager
     }
     public static void OnEnter()
     {
-        ModelManager.spawnLocation = gizmo.transform.position;
-        ModelManager.spawnRotation = gizmo.transform.rotation;
+        if (gizmo.transform.parent.CompareTag("robot"))
+        {
+            ModeManager.SetInitialState(gizmo.transform.parent.gameObject);
+        }
         Object.Destroy(gizmo);
     }
 }

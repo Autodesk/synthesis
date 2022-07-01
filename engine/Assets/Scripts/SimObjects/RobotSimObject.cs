@@ -6,6 +6,7 @@ using Mirabuf.Joint;
 using Synthesis;
 using Synthesis.Import;
 using Synthesis.Util;
+using Synthesis.Physics;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
 using UnityEngine;
@@ -15,7 +16,7 @@ using MVector3 = Mirabuf.Vector3;
 using Transform = UnityEngine.Transform;
 using Vector3 = UnityEngine.Vector3;
 
-public class RobotSimObject : SimObject {
+public class RobotSimObject : SimObject, IPhysicsOverridable {
 
     public static string CurrentlyPossessedRobot { get; private set; } = string.Empty;
     public static RobotSimObject GetCurrentlyPossessedRobot()
@@ -35,7 +36,8 @@ public class RobotSimObject : SimObject {
 
     private (List<JointInstance> leftWheels, List<JointInstance> rightWheels) _tankTrackWheels = (null, null);
 
-    private Dictionary<string, (Joint a, Joint b)> _jointMap;
+    private Dictionary<string, (UnityEngine.Joint a, UnityEngine.Joint b)> _jointMap;
+    private List<Rigidbody> _allRigidbodies;
 
     public RobotSimObject(string name, ControllableState state, Assembly assembly,
             GameObject groundedNode, Dictionary<string, (Joint a, Joint b)> jointMap)
@@ -47,6 +49,9 @@ public class RobotSimObject : SimObject {
         RobotBounds = GetBounds(RobotNode.transform);
         GroundedBounds = GetBounds(GroundedNode.transform);
         DebugJointAxes.DebugBounds.Add((GroundedBounds, () => GroundedNode.transform.localToWorldMatrix));
+
+        _allRigidbodies = new List<Rigidbody>(RobotNode.transform.GetComponentsInChildren<Rigidbody>());
+        PhysicsManager.Register(this);
     }
 
     public void Possess() {
@@ -56,6 +61,7 @@ public class RobotSimObject : SimObject {
     }
 
     public override void Destroy() {
+        PhysicsManager.Unregister(this);
         if (CurrentlyPossessedRobot.Equals(this._name)) {
             CurrentlyPossessedRobot = string.Empty;
             Camera.main.GetComponent<CameraController>().FocusPoint =
@@ -184,45 +190,6 @@ public class RobotSimObject : SimObject {
 
         SimulationManager.AddBehaviour(this.Name, arcadeBehaviour);
     }
-    
-    // public void ConfigureTankDrivetrain() {
-    //     var wheelsInstances = _miraAssembly.Data.Joints.JointInstances.Where(instance =>
-    //         instance.Value.Info.Name != "grounded"
-    //         && _miraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].UserData != null
-    //         && _miraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].UserData.Data
-    //             .TryGetValue("wheel", out var isWheel)
-    //         && isWheel == "true").ToList();
-
-    //     var leftWheels = new List<JointInstance>();
-    //     var rightWheels = new List<JointInstance>();
-
-    //     foreach (var wheelInstance in wheelsInstances)
-    //     {
-    //         _state.CurrentSignals[wheelInstance.Value.SignalReference].Value = Value.ForNumber(0.0);
-    //         var jointAnchor =
-    //             (wheelInstance.Value.Offset ?? new Vector3()) +
-    //             _miraAssembly.Data.Joints.JointDefinitions[wheelInstance.Value.JointReference].Origin ?? new Vector3();
-    //         jointAnchor = _groundedNode.transform.rotation * jointAnchor;
-    //         if (Vector3.Dot(Vector3.right, jointAnchor) > 0)
-    //         {
-    //             rightWheels.Add(wheelInstance.Value);
-    //         }
-    //         else
-    //         {
-    //             leftWheels.Add(wheelInstance.Value);
-    //         }
-    //     }
-
-    //     var arcadeBehaviour = new ArcadeDrive(
-    //         _miraAssembly.Info.Name,
-    //         leftWheels.Select(j => j.SignalReference).ToList(),
-    //         rightWheels.Select(j => j.SignalReference).ToList(),
-    //         reversedSideJoints: false
-    //     );
-    //     _driveBehaviour = arcadeBehaviour;
-
-    //     SimulationManager.AddBehaviour(_miraAssembly.Info.Name, arcadeBehaviour);
-    // }
 
     public static void SpawnRobot(string filePath) {
         SpawnRobot(filePath, new Vector3(0f, 0.5f, 0f), Quaternion.identity);
@@ -238,9 +205,6 @@ public class RobotSimObject : SimObject {
         mira.MainObject.transform.position = position;
         mira.MainObject.transform.rotation = rotation;
 
-        ModeManager.RobotSpawnpoint = position;
-        ModeManager.RobotSpawnRotation = rotation;
-
         // Event call maybe?
 
         // Camera.main.GetComponent<CameraController>().FocusPoint =
@@ -249,6 +213,44 @@ public class RobotSimObject : SimObject {
         GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, mira.MainObject.transform, mira.MainObject.transform.position);
     }
 
+    private Dictionary<Rigidbody, (bool isKine, Vector3 vel, Vector3 angVel)> _preFreezeStates = new Dictionary<Rigidbody, (bool isKine, Vector3 vel, Vector3 angVel)>();
+    private bool _isFrozen = false;
+    public bool isFrozen()
+        => _isFrozen;
 
+    public void Freeze() {
+        if (_isFrozen)
+            return;
 
+        _allRigidbodies.ForEach(x => {
+            _preFreezeStates[x] = (x.isKinematic, x.velocity, x.angularVelocity);
+            x.isKinematic = true;
+            x.velocity = Vector3.zero;
+            x.angularVelocity = Vector3.zero;
+        });
+
+        _isFrozen = true;
+    }
+
+    public void Unfreeze() {
+        if (!_isFrozen)
+            return;
+
+        _allRigidbodies.ForEach(x => {
+            var originalState = _preFreezeStates[x];
+            x.isKinematic = originalState.isKine;
+            // I think replay might take care of this
+            // if (x.velocity != Vector3.zero || x.angularVelocity != Vector3.zero);
+        });
+        _preFreezeStates.Clear();
+
+        _isFrozen = false;
+    }
+
+    public List<Rigidbody> GetAllRigidbodies()
+        => _allRigidbodies;
+
+    public GameObject GetRootGameObject() {
+        return RobotNode;
+    }
 }

@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using Synthesis.UI.Dynamic;
 using UnityEngine;
 using System.IO;
 using System.Linq;
@@ -81,6 +80,8 @@ public class MatchModeModal : ModalDynamic
             .SetOptions(new string[] { "Left", "Middle", "Right" })
             .AddOnValueChangedEvent((d, i, data) => _spawnPosition = i).ApplyTemplate(VerticalLayout);
     }
+    
+    public override void Update() {}
 
     public override void Update() { }
 
