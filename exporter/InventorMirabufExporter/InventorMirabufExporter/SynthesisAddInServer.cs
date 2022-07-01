@@ -88,8 +88,12 @@ namespace InventorMirabufExporter
             exporterButton = Application.CommandManager.ControlDefinitions.AddButtonDefinition("Export Model", "SynthesisExporter:ExportButton", CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "Exports the open assembly to a Mirabuf file.", ToIPictureDisp( new Bitmap(Resources.SynthesisLogo16)), ToIPictureDisp(new Bitmap(Resources.SynthesisLogo32)));
             exporterButton.OnExecute += context =>
             {
-                Serializer proto = new Serializer();
-                proto.Setup(doc);
+                try
+                {
+                    Serializer proto = new Serializer();
+                    proto.Setup(doc);
+                }
+                catch (Exception x) { MessageBox.Show(x.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
                 new GUI.ConfigUI().Show();
             };
         }

@@ -29,15 +29,15 @@ namespace InventorMirabufExporter
         {
             environment.Info = new Info()
             {
-                GUID = assemblyDoc.InternalName,
-                Name = assemblyDoc.DisplayName,
+                GUID = assemblyDoc.DisplayName.Substring(0, assemblyDoc.DisplayName.LastIndexOf('.')),
+                Name = assemblyDoc.DisplayName.Substring(0, assemblyDoc.DisplayName.LastIndexOf('.')),
                 Version = 1
             };
 
             environment.Data.Parts = new Parts();
             environment.Data.Parts.Info = new Info()
             {
-                GUID = "rand",
+                GUID = assemblyDoc.InternalName.Trim('{', '}'),
                 Version = 1,
                 // Name?
             };
@@ -45,43 +45,84 @@ namespace InventorMirabufExporter
             // Assembly > AssemblyData > Part > Part Definition Loop
             for (int i = 0; i < assemblyDoc.ReferencedDocuments.Count; i++)
             {
+                var docRef = assemblyDoc.ReferencedDocuments[i+1];
+
+                try { MessageBox.Show(docRef.DisplayName, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+                catch(Exception e) {MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+                
                 //environment.Data.Parts.PartDefinitionsEntry[i] = new PartDefinition();
                 PartDefinition def = new PartDefinition();
                 def.Info = new Info()
                 {
-                    GUID = "rand" + i.ToString(),
-                    Name = "myrand" + i.ToString(),
+                    GUID = docRef.InternalName.Trim('{', '}'),
+                    Name = docRef.DisplayName.Substring(0, docRef.DisplayName.LastIndexOf('.')),
                     Version = 1
                 };
 
+                try { MessageBox.Show(def.Info.GUID, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+                catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+
+                PartDocument doc = (PartDocument)docRef;
+
+                /*
+                if (docRef.DocumentType == DocumentTypeEnum.kPartDocumentObject)
+                {
+                    doc = (PartDocument)docRef;
+                }
+                */
+
                 def.PhysicalData = new PhysicalProperties()
                 {
-                    Density = 1,
-                    Mass = 1,
-                    Volume = 1,
-                    Area = 1,
+                    Density = doc.ComponentDefinition.Material.Density,
+                    Mass = doc.ComponentDefinition.MassProperties.Mass,
+                    Volume = doc.ComponentDefinition.MassProperties.Volume,
+                    Area = doc.ComponentDefinition.MassProperties.Area,
                     Com = new Vector3()
                     {
-                        X = 1,
-                        Y = 2,
-                        Z = 3
+                        X = (float)doc.ComponentDefinition.MassProperties.CenterOfMass.X,
+                        Y = (float)doc.ComponentDefinition.MassProperties.CenterOfMass.Y,
+                        Z = (float)doc.ComponentDefinition.MassProperties.CenterOfMass.Z
                     }
                 };
 
+                // Mass Properties Testing
+                //try 
+                //{ 
+                //    MessageBox.Show("Density: " + def.PhysicalData.Density.ToString()
+                //        + System.Environment.NewLine + "Mass: " + def.PhysicalData.Mass.ToString()
+                //        + System.Environment.NewLine + "Volume: " + def.PhysicalData.Volume.ToString()
+                //        + System.Environment.NewLine + "Area: " + def.PhysicalData.Area.ToString()
+                //        , "Synthesis: An Autodesk Technology", MessageBoxButtons.OK);
+
+                //    MessageBox.Show("X: " + def.PhysicalData.Com.X.ToString()
+                //        + System.Environment.NewLine + "Y: " + def.PhysicalData.Com.Y.ToString()
+                //        + System.Environment.NewLine + "Z: " + def.PhysicalData.Com.Z.ToString()
+                //        , "Synthesis: An Autodesk Technology", MessageBoxButtons.OK);
+                //}
+                //catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+
+                /*
                 // needed?
                 def.BaseTransform = new Transform()
                 {
                     SpatialMatrix = { 1, 2 }
                 };
+                */
 
-                for (int j = 0; j < bodyCount; j++)
+                try { MessageBox.Show("COUNT: " + doc.ComponentDefinition.SurfaceBodies.Count, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+                catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+
+                for (int j = 0; j < doc.ComponentDefinition.SurfaceBodies.Count; j++)
                 {
-                    def.Bodies[j] = new Body()
+                    try { MessageBox.Show("before body", "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+                    catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+
+                    Body solid = new Body()
                     {
                         Info = new Info()
                         {
-                            GUID = "rand" + j.ToString(),
-                            Name = "myrand" + j.ToString(),
+                            GUID = doc.InternalName,
+                            Name = doc.ComponentDefinition.SurfaceBodies[j].Name,
                             Version = 1
                         },
 
@@ -102,16 +143,22 @@ namespace InventorMirabufExporter
                         AppearanceOverride = "override"
                     };
 
+                    try { MessageBox.Show("SOLID: " + solid.Info.Name, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+                    catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+
                     //def.Bodies[j].TriangleMesh.Mesh = new Mesh(); ?
 
+                    def.Bodies.Add(solid);
                     def.FrictionOverride = 5;
                     def.MassOverride = 5;
                 }
 
                 MessageBox.Show("before add", "Synthesis: An Autodesk Technology", MessageBoxButtons.OK);
-                environment.Data.Parts.PartDefinitions.Add("key", def);
+                environment.Data.Parts.PartDefinitions.Add("key" + i.ToString(), def);
                 MessageBox.Show("after add", "Synthesis: An Autodesk Technology", MessageBoxButtons.OK);
             }
+
+            /*
 
             // Assembly > AssemblyData > Part > PartInstance Loop
             for(int i = 0; i < instanceCount; i++)
@@ -268,6 +315,8 @@ namespace InventorMirabufExporter
             {
                 SpatialMatrix = { 1, 2 }
             };
+
+            */
         }
 
         public void Serialize()
