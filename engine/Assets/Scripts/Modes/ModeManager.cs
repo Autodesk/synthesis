@@ -6,6 +6,8 @@ using UnityEngine;
 public class ModeManager
 {
     public static Vector3 GamepieceSpawnpoint = new Vector3(0, 1, 0);
+
+    private static PracticeMode practiceMode;
     
     private static Mode _currentMode;
     public static Mode CurrentMode
@@ -31,6 +33,18 @@ public class ModeManager
     }
 
     private static List<GamepieceSimObject> _gamepieces = new List<GamepieceSimObject>();
+
+    public static void Start()
+    {
+        practiceMode = new PracticeMode();
+        practiceMode.Start();
+    }
+    
+    public static void Update()
+    {
+        if (CurrentMode == Mode.Practice)
+            practiceMode.Update();
+    }
 
     public static void SetInitialState(GameObject robot)
     {

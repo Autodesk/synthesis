@@ -3,19 +3,19 @@ using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using UnityEngine;
 
-public class PracticeMode : MonoBehaviour
+public class PracticeMode : GameMode
 {
     private bool _lastEscapeValue = false;
     private bool _escapeMenuOpen = false;
 
-    private void Start()
+    public override void Start()
     {
         if (ModeManager.CurrentMode != ModeManager.Mode.Practice) return;
         DynamicUIManager.CreateModal<SelectFieldModal>();
         InputManager.AssignValueInput("escape_menu", new Digital("Escape"));
     }
 
-    private void Update()
+    public override void Update()
     {
         if (ModeManager.CurrentMode != ModeManager.Mode.Practice) return;
         bool openEscapeMenu = InputManager.MappedValueInputs["escape_menu"].Value == 1.0f;
@@ -35,4 +35,6 @@ public class PracticeMode : MonoBehaviour
 
         _lastEscapeValue = openEscapeMenu;
     }
+
+    public override void End(){}
 }
