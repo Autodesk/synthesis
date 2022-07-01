@@ -16,7 +16,8 @@ namespace SynthesisServer
         // Maybe try implementing ECDH in the future
         public DHParameters Parameters { get; private set; } // send parameters to client in order to generate keys
         public IPEndPoint ClientEndpoint { get; set; }
-        public String Name { get; set; }
+        public string Name { get; set; }
+        public string ClientID { get; private set; } // May change to actually guid object
 
         private AsymmetricCipherKeyPair _keyPair;
         private BigInteger _sharedKey;
