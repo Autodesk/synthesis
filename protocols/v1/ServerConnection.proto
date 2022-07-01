@@ -1,32 +1,46 @@
 syntax = "proto3";
 
-enum RequestType {
+enum ResponseType {
 	CREATE_LOBBY = 0;
 	DELETE_LOBBY = 1;
 	START_LOBBY = 2;
 	JOIN_LOBBY = 3;
-	SWAP_LOBBY_SLOT = 4;
+	LEAVE_LOBBY = 4;
+	SWAP_LOBBY_SLOT = 5;
+}
+
+message KeyExchange {
+	string p = 1;
+	string g = 2; 
+	string public_key = 3;
 }
 
 
 message ServerMessage {
 	
 	oneof server_msg_type {
-		KeyExchange key_exchange = 1;
-                LobbyInfo lobby_info = 2;
+                LobbyInfo lobby_info = 1;
 
-		CreateLobbyRequest create_lobby_request = 3;
-		DeleteLobbyRequest delete_lobby_request = 4;
-		StartLobbyRequest start_lobby_request = 5;
-		JoinLobbyRequest join_lobby_request = 6;
+		CreateLobbyRequest create_lobby_request = 2;
+		DeleteLobbyRequest delete_lobby_request = 3;
+		StartLobbyRequest start_lobby_request = 4;
+		JoinLobbyRequest join_lobby_request = 5;
+		LeaveLobbyRequest leave_lobby_request = 6;
 		SwapRequest swap_request = 7;
 
 		GenericLobbyResponse generic_lobby_response = 8;
 	}
 
-	message KeyExchange {}
-
-	message LobbyInfo {}
+	message LobbyInfo {
+		repeated Lobby lobbies = 1;
+		string current_lobby = 2;
+		
+		message Lobby {
+			string lobby_name = 1;
+			string lobby_id = 2;
+			map<string, string> clients = 3;
+		}
+	}
 
 	message CreateLobbyRequest {
 		string lobby_name = 1;
@@ -45,14 +59,21 @@ message ServerMessage {
 
 	message JoinLobbyRequest {
 		string lobby_id = 1;
+		string client_id = 2;
+	}
+
+	message LeaveLobbyRequest {
+		string lobby_id = 1;
+		string client_id = 2;
+	}
 
 	message SwapRequest {
 		string lobby_id = 1;
-		int new_postion = 2;
+		int32 new_postion = 2;
 	}
 
 	message GenericLobbyResponse {
-		RequestType response_type = 1;
+		ResponseType response_type = 1;
 		string lobby_id = 3;
 		bool status = 4;
 		string status_msg = 5;
