@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using SynthesisAPI.Utilities;
 using Logger = SynthesisAPI.Utilities.Logger;
+using Synthesis.UI.Dynamic;
 
 namespace Synthesis.UI.Tabs {
     public class HomeTab : Tab {
@@ -10,7 +11,7 @@ namespace Synthesis.UI.Tabs {
             CreateButton(
                 "Load Robot",
                 SynthesisAssetCollection.GetSpriteByName("robotimport"),
-                () => LayoutManager.OpenPanel(SynthesisAssetCollection.GetPanelByName("Load-Robot-Panel"))
+                () => DynamicUIManager.CreateModal<AddRobotModal>()
             );
             CreateButton(
                 "Load Field",
@@ -19,9 +20,9 @@ namespace Synthesis.UI.Tabs {
             );
             CreateDivider();
             CreateButton(
-                "Robots",
+                "Details",
                 SynthesisAssetCollection.GetSpriteByName("Multiplayer1-Gray"),
-                () => LayoutManager.OpenPanel(SynthesisAssetCollection.GetPanelByName("Multiplayer-Panel"))
+                () => DynamicUIManager.CreatePanel<RobotDetailsPanel>()
             );
             CreateDivider();
             CreateButton(

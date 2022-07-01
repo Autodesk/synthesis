@@ -23,7 +23,7 @@ public class CameraController : MonoBehaviour {
     public Func<Vector3> FocusPoint;
     public static bool isOverGizmo = false;
 
-    private float _targetZoom = 5.0f;
+    private float _targetZoom = 15.0f;
     private float _targetPitch = 10.0f;
     private float _targetYaw = 135.0f;
     private float _actualZoom = 5.0f;
@@ -55,7 +55,9 @@ public class CameraController : MonoBehaviour {
         
         bool isOverUI = EventSystem.current.IsPointerOverGameObject();
         bool enableOrbit = !isOverUI && !isOverGizmo;
-        bool isGodMode = InputManager.MappedValueInputs["enable_god_mode"].Value == 1.0F;
+        bool isGodMode = InputManager.MappedValueInputs.ContainsKey(GodMode.ENABLED_GOD_MODE_INPUT)
+            ? InputManager.MappedValueInputs[GodMode.ENABLED_GOD_MODE_INPUT].Value == 1.0F
+            : false;
         if (enableOrbit && !isGodMode) {
             z = ZoomSensitivity * -Input.mouseScrollDelta.y;
 

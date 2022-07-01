@@ -12,16 +12,18 @@ namespace SynthesisAPI.InputManager.Inputs
 {
     // TODO: Should I add HashCodes?
     
-    public interface Input
-    {
+    public interface Input {
+        uint ContextBitmask { get; }
         string Name { get; }
         float Value { get; }
-        bool Update();
+        int Modifier { get; }
+        bool Update(bool ignoreMod = false, uint context = 0x00000001);
     }
 
     [JsonObject(MemberSerialization.OptIn)]
-    public class Analog : Input
-    {
+    public class Analog : Input {
+        [JsonProperty]
+        public uint ContextBitmask { get; set; }
         [JsonProperty]
         public string Name { get; protected set; }
         public float Value
@@ -45,21 +47,24 @@ namespace SynthesisAPI.InputManager.Inputs
 
         private float _value;
 
-        public Analog(string name, bool usePositiveSide, bool inverted = false, int modifier = 0, float baseValue = 0)
+        public Analog(string name, bool usePositiveSide, bool inverted = false, int modifier = 0, float baseValue = 0, uint context = 0xFFFFFFFF)
         {
             Name = name;
             Inverted = inverted;
             Modifier = modifier;
             UsePositiveSide = usePositiveSide;
             BaseValue = baseValue;
+            ContextBitmask = context;
         }
 
-        public bool Update() {
-            return Update(false);
-        }
+        //public bool Update() {
+        //    return Update(false);
+        //}
         // TODO: Use modifier for analogs?
-        public virtual bool Update(bool ignoreMod = false)
-        {
+        public virtual bool Update(bool ignoreMod = false, uint context = 0x00000001) {
+            if ((context & ContextBitmask) == 0)
+                return false;
+
             _value = UnityEngine.Input.GetAxis(Name);
             _value = Inverted ? _value *= -1 : _value;
             _value = Mathf.Clamp(_value, UsePositiveSide ? BaseValue : -999, UsePositiveSide ? 999 : BaseValue);
@@ -86,7 +91,7 @@ namespace SynthesisAPI.InputManager.Inputs
     public class Digital : Analog
     {
         public DigitalState State { get; private set; }
-        public Digital(string name, int modifier = 0) : base(name, true)
+        public Digital(string name, int modifier = 0, uint context = 0xFFFFFFFF) : base(name, true, context: context)
         {
             Name = name;
             Modifier = modifier;
@@ -104,7 +109,10 @@ namespace SynthesisAPI.InputManager.Inputs
         [JsonConstructor]
         private Digital() : base(string.Empty, true) { }
 
-        public override bool Update(bool ignoreMod = false) {
+        public override bool Update(bool ignoreMod = false, uint context = 0x00000001) {
+            if ((context & ContextBitmask) == 0)
+                return false;
+
             try
             {
                 int activeMod = 0;
@@ -162,12 +170,13 @@ namespace SynthesisAPI.InputManager.Inputs
     }
 
     // TODO: Should this be MouseDown or just like Mouse/MouseInput
-    public class MouseDown: Digital
-    {
+    public class MouseDown: Digital {
         public Vector2D MousePosition { get; private set; }
-        public MouseDown(string name, int modifier = 0): base(name, modifier) { }
-        public override bool Update(bool ignoreMod = false)
-        {
+        public MouseDown(string name, int modifier = 0, uint context = 0xFFFFFFFF): base(name, modifier, context: context) { }
+        public override bool Update(bool ignoreMod = false, uint context = 0x00000001) {
+            if ((context & ContextBitmask) == 0)
+                return false;
+
             var r = base.Update(ignoreMod);
             MousePosition = ((UnityEngine.Vector2)UnityEngine.Input.mousePosition).Map();
             return r;
