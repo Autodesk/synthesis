@@ -57,7 +57,8 @@ namespace Synthesis.UI.Dynamic {
         //     return Array.ConvertAll(fullPaths, path => path.Substring(_root.Length + Path.DirectorySeparatorChar.ToString().Length));
         // }
 
-        private string ParsePath(string p, char c) {
+        public static string ParsePath(string p, char c)
+        {
             string[] a = p.Split(c);
             string b = "";
             for (int i = 0; i < a.Length; i++)
@@ -65,14 +66,14 @@ namespace Synthesis.UI.Dynamic {
                 switch (a[i])
                 {
                     case "$appdata":
-                        b += Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                        b += System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
                         break;
                     default:
                         b += a[i];
                         break;
                 }
                 if (i != a.Length - 1)
-                    b += Path.AltDirectorySeparatorChar;
+                    b += System.IO.Path.AltDirectorySeparatorChar;
             }
             // Debug.Log(b);
             return b;

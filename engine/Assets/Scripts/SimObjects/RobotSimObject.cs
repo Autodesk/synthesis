@@ -248,4 +248,7 @@ public class RobotSimObject : SimObject {
         simObject.Possess();
         GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, mira.MainObject.transform, mira.MainObject.transform.position);
     }
+
+
+
 }

@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-
-
 public class MatchMode : MonoBehaviour
 {
     public GameObject board;
@@ -13,11 +11,18 @@ public class MatchMode : MonoBehaviour
     public float targetTime = 135;
     bool runTimer = false;
 
+    private static MatchMode instance;
+    public static MatchMode GetInstance()
+    {
+        if (instance != null) instance = new MatchMode();
+        return instance;
+    }
+
 
     // Start is called before the first frame update
     void Start()
     {
-        isMatchModalOpen = false;
+        instance = this;
         board.SetActive(false);
     }
 
@@ -37,35 +42,32 @@ public class MatchMode : MonoBehaviour
 
 
     }
-    bool isMatchModalOpen;
     void OnGUI()
     {
         Event e = Event.current;
         if (e.isKey)
         {
-            if(e.keyCode == KeyCode.M && !isMatchModalOpen)
+            if (e.keyCode == KeyCode.M && DynamicUIManager.ActiveModal == null)
             {
-                isMatchModalOpen = true;
-                ModalManager.CreateModal<MatchModeModal>();
+                DynamicUIManager.CreateModal<MatchModeModal>();
             }
-            else if(e.keyCode == KeyCode.Escape && isMatchModalOpen)
+            if (robotLoaded && GizmoManager.currentGizmo == null)
             {
-                ModalManager.CloseModal();
-                isMatchModalOpen = false;
-            }
-            else if(e.keyCode == KeyCode.S && isMatchModalOpen)
-            {
-                ModalManager.CloseModal();
-                isMatchModalOpen = false;
+                robotLoaded = false;
                 StartMatch();
             }
         }
+    }
+    private bool robotLoaded = false;
+    public void SpawnedIn()
+    {
+        robotLoaded = true;
+        board.SetActive(true);
     }
     private void StartMatch()
     {
         Debug.Log("Match Started");
         //start timer
-        board.SetActive(true);
         runTimer = true;
         //show scoreboard
     }

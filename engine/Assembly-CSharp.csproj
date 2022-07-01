@@ -62,7 +62,6 @@
     <Compile Include="Assets\TestScript.cs" />
     <Compile Include="Assets\SimulationRunner.cs" />
     <Compile Include="Assets\LineScript.cs" />
-    <Compile Include="Assets\MatchMode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Packages\System.Memory.4.5.3\useSharedDesignerContext.txt" />

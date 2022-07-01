@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Drivetrain\DrivetrainSubPanel.cs" />
+    <Compile Include="Assets\Scripts\Modes\PracticeMode.cs" />
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\ParentAdapter.cs" />
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\TransformAdapter.cs" />
     <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyItem.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="Assets\Scripts\SimObjects\RobotSimObject.cs" />
     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\SettingsModal.cs" />
     <Compile Include="Assets\Scripts\UI\SynthesisAssetCollection.cs" />
+    <Compile Include="Assets\Scripts\UI\Dynamic\PracticeSettingsModal.cs" />
     <Compile Include="Assets\Scripts\PTL.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\Variants\Settings\SettingsInput.cs" />
     <Compile Include="Assets\Scripts\UI\ToastLogger\ToastManager.cs" />
@@ -113,6 +115,7 @@
     <Compile Include="Assets\Scripts\UI\Panels\Variants\Multiplayer\MultiplayerRobotItem.cs" />
     <Compile Include="Assets\Scripts\Importer\GamepieceTag.cs" />
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\AudioSourceAdapter.cs" />
+    <Compile Include="Assets\Scripts\Modes\ModeManager.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\DraggablePanel.cs" />
     <Compile Include="Assets\Scripts\Gizmos\SelectableArrow.cs" />
     <Compile Include="Assets\Scripts\PreferenceManager\SimulationPreferences.cs" />
@@ -135,6 +138,7 @@
     <Compile Include="Assets\Scripts\ModelManager\Models\Motor.cs" />
     <Compile Include="Assets\Scripts\Utilities\UtilExtensions.cs" />
     <Compile Include="Assets\Scripts\Camera\MenuCamera.cs" />
+    <Compile Include="Assets\Scripts\UI\Dynamic\MatchModeModal.cs" />
     <Compile Include="Assets\Scripts\Behaviors\TankDriveBehavior.cs" />
     <Compile Include="Assets\Scripts\Attributes\ControllableInputAttribute.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Joints\RotationalJointItem.cs" />
@@ -144,6 +148,7 @@
     <Compile Include="Assets\Scripts\UI\ImageManager.cs" />
     <Compile Include="Assets\Scripts\AnalyticsManager.cs" />
     <Compile Include="Assets\Scripts\Behaviors\GeneralSliderBehaviour.cs" />
+    <Compile Include="Assets\Scripts\Modes\MatchMode.cs" />
     <Compile Include="Assets\Scripts\Utilities\Highlighter.cs" />
     <Compile Include="Assets\Scripts\UI\Tabs\TopButton.cs" />
     <Compile Include="Assets\Scripts\UI\InteractableObject.cs" />
@@ -184,11 +189,6 @@
     <Compile Include="Assets\Scripts\UI\Panels\Variants\ExitPanel.cs" />
     <Compile Include="Assets\Scripts\Importer\Importer.cs" />
     <Compile Include="Assets\Scripts\Test\DebugJointAxes.cs" />
-    <Compile Include="Assets\Scripts\UI\Dynamic\PracticeSettingsModal.cs" />
-    <Compile Include="Assets\Scripts\Modes\PracticeMode.cs" />
-    <Compile Include="Assets\Scripts\UI\Dynamic\MatchModeModal.cs" />
-    <Compile Include="Assets\Scripts\Modes\ModeManager.cs" />
-    <Compile Include="Assets\Scripts\UI\Modals\ModalManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Scripts\CoreEngine.asmdef" />
