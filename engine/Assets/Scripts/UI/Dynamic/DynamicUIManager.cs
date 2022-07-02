@@ -13,6 +13,7 @@ namespace Synthesis.UI.Dynamic {
 
         public static ModalDynamic ActiveModal { get; private set; }
         public static PanelDynamic ActivePanel { get; private set; }
+        public static PopupDynamic ActivePopup { get; private set; }
         public static Content _screenSpaceContent = null;
         public static Content ScreenSpaceContent { 
             get {
@@ -56,6 +57,28 @@ namespace Synthesis.UI.Dynamic {
                 CloseActiveModal();
             
             ActiveModal = modal;
+
+            SynthesisAssetCollection.BlurVolumeStatic.weight = 1f;
+            PhysicsManager.IsFrozen = true;
+            return true;
+        }
+        
+        public static bool CreatePopup<T>(params object[] args) where T : PopupDynamic {
+
+            CloseActivePopup();
+            
+            var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("dynamic-popup-base"), GameObject.Find("UI").transform.Find("ScreenSpace").Find("ModalContainer"));
+
+            // var c = ColorManager.GetColor("SAMPLE");
+
+            PopupDynamic popup = (PopupDynamic)Activator.CreateInstance(typeof(T), args);
+            popup.Create_Internal(unityObject);
+            popup.Create();
+
+            if (ActivePopup != null)
+                CloseActivePopup();
+            
+            ActivePopup = popup;
 
             SynthesisAssetCollection.BlurVolumeStatic.weight = 1f;
             PhysicsManager.IsFrozen = true;
@@ -110,11 +133,27 @@ namespace Synthesis.UI.Dynamic {
             return true;
         }
 
+        public static bool CloseActivePopup()
+        {
+            if (ActivePopup == null)
+                return false;
+
+            ActivePopup.Delete();
+            ActivePopup.Delete_Internal();
+
+            SynthesisAssetCollection.BlurVolumeStatic.weight = 0f;
+            PhysicsManager.IsFrozen = false;
+            ActivePopup = null;
+            return true;
+        }
+
         public static void Update() {
             if (ActiveModal != null)
                 ActiveModal.Update();
             if (ActivePanel != null)
                 ActivePanel.Update();
+            if (ActivePopup != null)
+                ActivePopup.Update();
         }
 
         public static T ApplyTemplate<T>(this T component, Func<T, T> template) where T : UIComponent

@@ -3,7 +3,7 @@ using Synthesis.UI.Dynamic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class ChooseModeModal : ModalDynamic
+public class ChooseModePopup : PopupDynamic
 {
     public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
         var offset = (-u.Parent!.RectOfChildren(u).yMin) + 7.5f;
@@ -11,7 +11,7 @@ public class ChooseModeModal : ModalDynamic
         return u;
     };
     
-    public ChooseModeModal() : base(new Vector2(300, 120)) {}
+    public ChooseModePopup() : base(new Vector2(300, 120)) {}
 
     public override void Create()
     {

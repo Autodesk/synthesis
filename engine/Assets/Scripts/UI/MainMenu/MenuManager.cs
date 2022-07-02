@@ -11,7 +11,7 @@ namespace Synthesis.UI {
 
         public void Singleplayer()
         {
-            DynamicUIManager.CreateModal<ChooseModeModal>();
+            DynamicUIManager.CreatePopup<ChooseModePopup>();
         }
     }
 }

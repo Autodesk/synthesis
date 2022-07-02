@@ -9,7 +9,6 @@ public class ModeManager
 
     private static PracticeMode practiceMode;
     
-    private static Mode _currentMode;
     public static Mode CurrentMode
     {
         get;
@@ -112,8 +111,8 @@ public class ModeManager
     {
         FieldSimObject currentField = FieldSimObject.CurrentField;
         // TODO this should be chosen by the user in a dropdown
-        GamepieceSimObject gamepiece;
-        if (currentField == null)
+        GamepieceSimObject gamepiece = PracticeMode.ChosenGamepiece;
+        if (currentField == null || gamepiece == null)
         {
             GameObject gameObject = GameObject.CreatePrimitive(type);
             gameObject.AddComponent<Rigidbody>();
@@ -121,9 +120,9 @@ public class ModeManager
         }
         else
         {
-            GamepieceSimObject chosenGamepiece = currentField.Gamepieces[0];
             gamepiece =
-                new GamepieceSimObject(chosenGamepiece.Name, chosenGamepiece.GamepieceObject);
+                new GamepieceSimObject(gamepiece.Name, gamepiece.GamepieceObject);
+            gamepiece.GamepieceObject.transform.position = spawnPosition;
             GameObject.Instantiate(gamepiece.GamepieceObject);
         }
 

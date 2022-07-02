@@ -24,6 +24,7 @@ namespace Synthesis.UI.Dynamic {
 
         private Vector2 _mainContentSize; // Shouldn't really be used after init is called
         private GameObject _unityObject;
+        private bool _showAcceptButton = true;
 
         // Default for Modal
         private Button _cancelButton;
@@ -158,6 +159,82 @@ namespace Synthesis.UI.Dynamic {
             contentRt.offsetMin = new Vector2(MAIN_CONTENT_HORZ_PADDING, contentRt.offsetMin.y);
             var modalRt = _unityObject.GetComponent<RectTransform>();
             modalRt.sizeDelta = new Vector2(
+                _mainContentSize.x + (MAIN_CONTENT_HORZ_PADDING * 2),
+                hiddenRt.sizeDelta.y + headerRt.sizeDelta.y + footerRt.sizeDelta.y
+            );
+            _mainContent = new Content(null!, actualContentObj, _mainContentSize);
+        }
+
+        public abstract void Create();
+        public abstract void Update();
+        public abstract void Delete();
+
+        public void Delete_Internal() {
+            GameObject.Destroy(_unityObject);
+        }
+    }
+    
+    public abstract class PopupDynamic {
+
+        public const float MAIN_CONTENT_HORZ_PADDING = 20f;
+
+        private Vector2 _mainContentSize; // Shouldn't really be used after init is called
+        private GameObject _unityObject;
+
+        // Default for Modal
+        private Button _closeButton;
+        protected Button CloseButton => _closeButton;
+        private Image _popupImage;
+        protected Image PopupImage => _popupImage;
+        private Image _popupBackground;
+        protected Image PopupBackground => _popupBackground;
+        private Label _title;
+        protected Label Title => _title;
+        private Label _description;
+        protected Label Description => _description;
+        
+        private Content _mainContent;
+        protected Content MainContent => _mainContent;
+
+        protected PopupDynamic(Vector2 mainContentSize) {
+            _mainContentSize = mainContentSize;
+        }
+
+        public void Create_Internal(GameObject unityObject) {
+            _unityObject = unityObject;
+
+            // Grab Customizable Modal Components
+            var header = _unityObject.transform.Find("Header");
+            var headerRt = header.GetComponent<RectTransform>();
+            _popupImage = new Image(null, header.Find("Image").gameObject);
+            _popupBackground = new Image(null, unityObject);
+            _popupBackground.SetCornerRadius(20);
+            _title = new Label(null, header.Find("Title").gameObject, null);
+            _description = new Label( null, header.Find("Description").gameObject, null);
+
+            var footer = _unityObject.transform.Find("Footer");
+            var footerRt = footer.GetComponent<RectTransform>();
+            _closeButton = new Button(null!, footer.Find("Close").gameObject, null);
+            _closeButton.AddOnClickedEvent(b => {
+                if (!DynamicUIManager.CloseActivePopup())
+                    Logger.Log("Failed to Close Modal", LogLevel.Error);
+            });
+
+            // Create Inital Content Component
+            var hiddenContentT = _unityObject.transform.Find("Content");
+            var hiddenRt = hiddenContentT.GetComponent<RectTransform>();
+            hiddenRt.sizeDelta = new Vector2(hiddenRt.sizeDelta.x, _mainContentSize.y);
+            hiddenRt.anchorMin = new Vector2(0, 1);
+            hiddenRt.anchorMax = new Vector2(1, 1);
+            hiddenRt.pivot = new Vector2(0.5f, 1);
+            hiddenRt.anchoredPosition = new Vector2(0, -headerRt.sizeDelta.y);
+            var actualContentObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("content-base"), hiddenContentT);
+            actualContentObj.name = "CentralContent";
+            var contentRt = actualContentObj.GetComponent<RectTransform>();
+            contentRt.offsetMax = new Vector2(-MAIN_CONTENT_HORZ_PADDING, contentRt.offsetMax.y);
+            contentRt.offsetMin = new Vector2(MAIN_CONTENT_HORZ_PADDING, contentRt.offsetMin.y);
+            var popupRt = _unityObject.GetComponent<RectTransform>();
+            popupRt.sizeDelta = new Vector2(
                 _mainContentSize.x + (MAIN_CONTENT_HORZ_PADDING * 2),
                 hiddenRt.sizeDelta.y + headerRt.sizeDelta.y + footerRt.sizeDelta.y
             );
@@ -346,6 +423,11 @@ namespace Synthesis.UI.Dynamic {
         }
         public (Content top, Content bottom) SplitTopBottom(float topHeight, float padding) {
             throw new NotImplementedException();
+        }
+
+        public void DeleteElement<T>(T element) where T: UIComponent
+        {
+            base.Children.Remove(element);
         }
 
         public Label CreateLabel(float height = 15f) {

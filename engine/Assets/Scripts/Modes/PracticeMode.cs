@@ -7,6 +7,9 @@ public class PracticeMode : GameMode
 {
     private bool _lastEscapeValue = false;
     private bool _escapeMenuOpen = false;
+    
+    public static GamepieceSimObject ChosenGamepiece { get; set; }
+    public static PrimitiveType ChosenPrimitive { get; set; }
 
     public override void Start()
     {
@@ -19,17 +22,19 @@ public class PracticeMode : GameMode
     {
         if (ModeManager.CurrentMode != ModeManager.Mode.Practice) return;
         bool openEscapeMenu = InputManager.MappedValueInputs["escape_menu"].Value == 1.0f;
+        // TODO close button doesn't update last escape and escape menu open
+        // so you have to press space twice again to open menu
         if (openEscapeMenu && !_lastEscapeValue)
         {
             if (_escapeMenuOpen)
             {
                 _escapeMenuOpen = false;
-                DynamicUIManager.CloseActiveModal();
+                DynamicUIManager.CloseActivePopup();
             }
             else
             {
                 _escapeMenuOpen = true;
-                DynamicUIManager.CreateModal<PracticeSettingsModal>();
+                DynamicUIManager.CreatePopup<PracticeSettingsPopup>();
             }
         }
 
