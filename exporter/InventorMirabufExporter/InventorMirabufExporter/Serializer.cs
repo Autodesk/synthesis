@@ -85,7 +85,7 @@ namespace InventorMirabufExporter
                     }
                 };
 
-                // Mass Properties Testing
+                // Mass Properties Debugging
                 //try 
                 //{ 
                 //    MessageBox.Show("Density: " + def.PhysicalData.Density.ToString()
@@ -103,47 +103,52 @@ namespace InventorMirabufExporter
 
                 /*
                 // needed?
+                // Assembly > Assembly Data > PartDefinition > Transform
                 def.BaseTransform = new Transform()
                 {
                     SpatialMatrix = { 1, 2 }
                 };
                 */
 
-                try { MessageBox.Show("COUNT: " + doc.ComponentDefinition.SurfaceBodies.Count, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+                try { MessageBox.Show("BODY COUNT: " + doc.ComponentDefinition.SurfaceBodies.Count, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
                 catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
 
-                for (int j = 0; j < doc.ComponentDefinition.SurfaceBodies.Count; j++)
+                for (int j = 1; j < doc.ComponentDefinition.SurfaceBodies.Count + 1; j++)
                 {
-                    try { MessageBox.Show("before body", "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
-                    catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+                    // independent instantiation better for debugging
+                    Body solid = new Body();
 
-                    Body solid = new Body()
+                    solid.Info = new Info()
+                    {
+                        GUID = doc.InternalName.Trim('{', '}'), // what should this be?
+                        Name = doc.ComponentDefinition.SurfaceBodies[j].Name,
+                        Version = 1
+                    };
+
+                    solid.Part = doc.InternalName.Trim('{', '}'); // refers to PartDefinition GUID
+
+                    solid.TriangleMesh = new TriangleMesh()
                     {
                         Info = new Info()
                         {
-                            GUID = doc.InternalName,
-                            Name = doc.ComponentDefinition.SurfaceBodies[j].Name,
+                            GUID = doc.InternalName.Trim('{', '}'), // refers to PartDefinition GUID
+                            Name = doc.ComponentDefinition.SurfaceBodies[j].Name, // refers to name of solid
                             Version = 1
                         },
 
-                        Part = "part",
-
-                        TriangleMesh = new TriangleMesh()
-                        {
-                            Info = new Info()
-                            {
-                                GUID = "rand" + i.ToString(),
-                                Name = "myrand" + i.ToString(),
-                                Version = 1
-                            },
-
-                            MaterialReference = "metal",
-                        },
-
-                        AppearanceOverride = "override"
+                        MaterialReference = doc.ComponentDefinition.Material.Name, // name of part material
+                        
+                        // Mesh Data Here...
                     };
 
-                    try { MessageBox.Show("SOLID: " + solid.Info.Name, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+                    // might need some tweaking
+                    solid.AppearanceOverride = doc.ComponentDefinition.SurfaceBodies[j].Appearance.Name;
+
+                    // Body Properties Debugging
+                    try { MessageBox.Show("SOLID: " + solid.Info.Name
+                        + System.Environment.NewLine + "TriMesh Material: " + solid.TriangleMesh.MaterialReference
+                        + System.Environment.NewLine + "Appearance Override: " + solid.AppearanceOverride
+                        , "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
                     catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
 
                     //def.Bodies[j].TriangleMesh.Mesh = new Mesh(); ?
