@@ -112,7 +112,7 @@ namespace InventorMirabufExporter
 
                 try { MessageBox.Show("BODY COUNT: " + doc.ComponentDefinition.SurfaceBodies.Count, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
                 catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
-
+                // Assembly > AssemblyData > Part > PartDefinition > Body
                 for (int j = 1; j < doc.ComponentDefinition.SurfaceBodies.Count + 1; j++)
                 {
                     // independent instantiation better for debugging
@@ -144,12 +144,14 @@ namespace InventorMirabufExporter
                     // might need some tweaking
                     solid.AppearanceOverride = doc.ComponentDefinition.SurfaceBodies[j].Appearance.Name;
 
+                    /*
                     // Body Properties Debugging
                     try { MessageBox.Show("SOLID: " + solid.Info.Name
                         + System.Environment.NewLine + "TriMesh Material: " + solid.TriangleMesh.MaterialReference
                         + System.Environment.NewLine + "Appearance Override: " + solid.AppearanceOverride
                         , "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
                     catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+                    */
 
                     //def.Bodies[j].TriangleMesh.Mesh = new Mesh(); ?
 
@@ -158,46 +160,68 @@ namespace InventorMirabufExporter
                     def.MassOverride = 5;
                 }
 
-                MessageBox.Show("before add", "Synthesis: An Autodesk Technology", MessageBoxButtons.OK);
-                environment.Data.Parts.PartDefinitions.Add("key" + i.ToString(), def);
-                MessageBox.Show("after add", "Synthesis: An Autodesk Technology", MessageBoxButtons.OK);
+                environment.Data.Parts.PartDefinitions.Add(def.Info.GUID, def);
+
+                /*
+                ComponentOccurrencesEnumerator leafOccurences = doc.ComponentDefinition.Occurrences.AllReferencedOccurrences[i];
+
+                foreach(ComponentOccurrence compOcc in leafOccurences)
+                {
+                    try { MessageBox.Show("compOcc: " + compOcc.Name, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+                    catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+                }
+                */
+
+                AssemblyDocument asmDoc = (AssemblyDocument)assemblyDoc;
+                ComponentOccurrencesEnumerator occurence = asmDoc.ComponentDefinition.Occurrences.AllReferencedOccurrences[doc];
+
+                try { MessageBox.Show("Occurences: " + occurence.Count, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+                catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+
+                Random rand = new Random();
+
+                // Assembly > AssemblyData > Part > PartInstance Loop
+                for (int j = 1; j <= occurence.Count; j++)
+                {
+                    PartInstance instance = new PartInstance();
+                    instance.Info = new Info()
+                    {
+                        GUID = "idk" + rand.Next(1, 100), // what should this be?
+                        Name = occurence[j].Name,
+                        Version = 1
+                    };
+
+                    instance.PartDefinitionReference = docRef.InternalName;
+
+                    instance.Transform = new Transform()
+                    {
+                        SpatialMatrix = { 1, 2 }
+                    };
+
+                    instance.GlobalTransform = new Transform()
+                    {
+                        SpatialMatrix = { 1, 2 }
+                    };
+
+                    /*
+                    // needed?
+                    // PartInstance > Joints
+                    for (int j = 0; j < jointCount; j++)
+                    {
+                        instance.Joints[j] = "joint";
+                    }
+                    */
+
+                    // needed?
+                    //instance.Appearance = "appearance";
+
+                    instance.PhysicalMaterial = doc.ComponentDefinition.Material.Name;
+
+                    environment.Data.Parts.PartInstances.Add(instance.Info.GUID, instance);
+                }
             }
 
             /*
-
-            // Assembly > AssemblyData > Part > PartInstance Loop
-            for(int i = 0; i < instanceCount; i++)
-            {
-                PartInstance instance = new PartInstance();
-                instance.Info = new Info()
-                {
-                    GUID = "rand" + i.ToString(),
-                    Name = "myrand" + i.ToString(),
-                    Version = 1
-                };
-
-                instance.PartDefinitionReference = "ref";
-
-                instance.Transform = new Transform()
-                {
-                    SpatialMatrix = { 1, 2 }
-                };
-
-                instance.GlobalTransform = new Transform()
-                {
-                    SpatialMatrix = { 1, 2 }
-                };
-
-                for(int j = 0; j < jointCount; j++)
-                {
-                    instance.Joints[j] = "joint";
-                }
-
-                instance.Appearance = "appearance";
-                instance.PhysicalMaterial = "physical material";
-
-                environment.Data.Parts.PartInstances.Add("key", instance);
-            }
 
             // Assembly > AssemblyData > Parts > UserData?
 
