@@ -24,6 +24,11 @@ namespace Synthesis.UI.Tabs {
                 SynthesisAssetCollection.GetSpriteByName("Multiplayer1-Gray"),
                 () => DynamicUIManager.CreatePanel<RobotDetailsPanel>()
             );
+            CreateDivider();
+            CreateButton(
+                "Scoreboard",
+                SynthesisAssetCollection.GetSpriteByName("fieldimport"),
+                () => LayoutManager.OpenPanel(SynthesisAssetCollection.GetPanelByName("Scoreboard-Panel")));
         }
     }
 }
