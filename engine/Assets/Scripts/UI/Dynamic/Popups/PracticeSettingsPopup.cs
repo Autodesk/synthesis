@@ -65,6 +65,15 @@ public class PracticeSettingsPopup : PopupDynamic
 
         leftContent.CreateButton()
             .ApplyTemplate(VerticalLayout)
+            .StepIntoLabel(l => l.SetText("Gamepiece Spawnpoint"))
+            .AddOnClickedEvent(b =>
+            {
+                DynamicUIManager.CloseActivePopup();
+                ModeManager.ConfigureGamepieceSpawnpoint();
+            });
+
+        leftContent.CreateButton()
+            .ApplyTemplate(VerticalLayout)
             .StepIntoLabel(label => label.SetText("Reset All"))
             .AddOnClickedEvent(b => ModeManager.ResetAll());
         
