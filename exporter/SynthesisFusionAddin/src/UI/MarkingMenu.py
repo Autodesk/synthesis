@@ -17,7 +17,7 @@ def setupMarkingMenu(ui: adsk.core.UserInterface):
         def setLinearMarkingMenu(args):
             try:
                 menuArgs = adsk.core.MarkingMenuEventArgs.cast(args)
-                    
+                
                 linearMenu = menuArgs.linearMarkingMenu
                 linearMenu.controls.addSeparator('LinearSeparator')
 

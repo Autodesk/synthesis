@@ -1,3 +1,5 @@
+'''
+from curses.textpad import Textbox
 import adsk.fusion, adsk.core, traceback
 from ..general_imports import *
 from . import IconPaths, OsHelper
@@ -165,12 +167,20 @@ def addJointToTable(joint: adsk.fusion.Joint) -> None:
         signalType.listItems.add("‎", False, IconPaths.signalIcons["PASSIVE"])
         signalType.tooltip = "Signal type"
 
+        defaultMotorSpeed = adsk.core.ValueInput()
+        defaultMotorSpeed.realValue = 90
+        testMotorSpeed = cmdInputs.addTextBoxCommandInput(
+            "test_j", "Omfg", "", 1, True
+        )
+        testMotorSpeed.formattedText = 'j'
+
         row = jointTableInput.rowCount
 
         jointTableInput.addCommandInput(icon, row, 0)
         jointTableInput.addCommandInput(name, row, 1)
         jointTableInput.addCommandInput(jointType, row, 2)
         jointTableInput.addCommandInput(signalType, row, 3)
+        jointTableInput.addCommandInput(testMotorSpeed, row, 4)
     except:
         logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.addJointToTable()").error(
         "Failed:\n{}".format(traceback.format_exc())
@@ -361,3 +371,4 @@ def removeGamePieceFromTable(index: int) -> None:
         logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.removeGamePieceFromTable()").error(
         "Failed:\n{}".format(traceback.format_exc())
     )
+'''

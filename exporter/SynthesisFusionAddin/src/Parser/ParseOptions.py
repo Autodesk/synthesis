@@ -47,6 +47,8 @@ class _Joint:
     joint_token: str
     parent: Union[str, JointParentType]  # str can be root
     signalType: SignalType
+    speed: float
+    force: float
 
 
 @dataclass

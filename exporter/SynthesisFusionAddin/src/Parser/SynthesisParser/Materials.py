@@ -173,16 +173,16 @@ def getMaterialAppearance(
     """
     construct_info("", appearance, fus_object=fusionAppearance)
 
-    appearance.roughness = 0.5
-    appearance.metallic = 0.5
+    appearance.roughness = 0.9
+    appearance.metallic = 0.3
     appearance.specular = 0.5
 
     # set defaults just in case
     color = appearance.albedo
-    color.R = 127
-    color.G = 127
-    color.B = 127
-    color.A = 127
+    color.R = 10
+    color.G = 10
+    color.B = 10
+    color.A = 10
 
     properties = fusionAppearance.appearanceProperties
 

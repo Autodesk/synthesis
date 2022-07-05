@@ -27,7 +27,7 @@ import adsk.fusion, adsk.core, traceback, uuid
 from proto.proto_out import types_pb2, joint_pb2, signal_pb2
 from typing import Union
 
-from ...general_imports import logging, INTERNAL_ID, DEBUG
+from ...general_imports import *
 from .Utilities import fill_info, construct_info
 from .PDMessage import PDMessage
 from .. import ParseOptions
@@ -103,6 +103,9 @@ def populateJoints(
                 joint_instance = joints.joint_instances[joint.entityToken]
 
                 for parse_joints in options.joints:
+
+                    gm.ui.messageBox(f'Joint Speed: {parse_joints.speed}')
+
                     if (parse_joints.joint_token == joint.entityToken):
                         guid = str(uuid.uuid4())
                         signal = signals.signal_map[guid]

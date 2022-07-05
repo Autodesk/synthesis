@@ -446,8 +446,8 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 "joint_table",
                 "Joint Table",
                 joint_inputs,
-                4,
-                "1:2:2:2",
+                6,
+                "1:2:2:2:3:3",
                 50,
             )
 
@@ -519,6 +519,30 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 ),
                 0,
                 3,
+            )
+
+            jointTableInput.addCommandInput(
+                self.createTextBoxInput( # another header using helper
+                    "speed_header",
+                    "Speed",
+                    joint_inputs,
+                    "Joint Speed",
+                    background="#d9d9d9", # back color
+                ),
+                0,
+                4
+            )
+
+            jointTableInput.addCommandInput(
+                self.createTextBoxInput( # another header using helper
+                    "force_header",
+                    "Force",
+                    joint_inputs,
+                    "Joint Force",
+                    background="#d9d9d9", # back color
+                ),
+                0,
+                5
             )
 
             for joint in gm.app.activeDocument.design.rootComponent.allJoints:
@@ -1178,6 +1202,14 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                         row, 3
                     ).selectedItem.index # signal type index, int
 
+                    jointSpeed = jointTableInput.getInputAtPosition(
+                        row, 4
+                    ).value
+
+                    jointForce = jointTableInput.getInputAtPosition(
+                        row, 5
+                    ).value
+
                     parentJointToken = ""
 
                     if parentJointIndex == 0:
@@ -1186,6 +1218,8 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                                 JointListGlobal[row - 1].entityToken,
                                 JointParentType.ROOT,
                                 signalTypeIndex, # index of selected signal in dropdown
+                                jointSpeed,
+                                jointForce
                             )  # parent joint GUID
                         )
                         continue
@@ -1205,7 +1239,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
 
                     _exportJoints.append(
                         _Joint(
-                            JointListGlobal[row - 1].entityToken, parentJointToken, signalTypeIndex
+                            JointListGlobal[row - 1].entityToken, parentJointToken, signalTypeIndex, jointSpeed, jointForce
                         )
                     )
                 
@@ -2318,7 +2352,29 @@ def addJointToTable(joint: adsk.fusion.Joint) -> None:
         jointTableInput.addCommandInput(name, row, 1)
         jointTableInput.addCommandInput(jointType, row, 2)
         jointTableInput.addCommandInput(signalType, row, 3)
+
+        if joint.jointMotion.jointType == adsk.fusion.JointTypes.RevoluteJointType:
+            jointSpeed = cmdInputs.addAngleValueCommandInput(
+                "joint_speed",
+                "Speed",
+                adsk.core.ValueInput.createByReal(3.1415926)
+            )
+            jointSpeed.tooltip = 'Degrees per second'
+            jointTableInput.addCommandInput(jointSpeed, row, 4)
+
+        if joint.jointMotion.jointType == adsk.fusion.JointTypes.RevoluteJointType:
+            jointForce = cmdInputs.addValueInput(
+                "joint_force",
+                "Force",
+                "N",
+                adsk.core.ValueInput.createByReal(10)
+            )
+            jointForce.tooltip = 'Newtons'
+            jointTableInput.addCommandInput(jointForce, row, 5)
+
+        
     except:
+        gm.ui.messageBox('Failed:\n{}'.format(traceback.format_exc()))
         logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.addJointToTable()").error(
         "Failed:\n{}".format(traceback.format_exc())
     )
