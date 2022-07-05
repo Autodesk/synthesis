@@ -29,12 +29,12 @@ public class PracticeMode : GameMode
             if (_escapeMenuOpen)
             {
                 _escapeMenuOpen = false;
-                DynamicUIManager.CloseActivePopup();
+                DynamicUIManager.CloseActiveModal();
             }
             else
             {
                 _escapeMenuOpen = true;
-                DynamicUIManager.CreatePopup<PracticeSettingsPopup>();
+                DynamicUIManager.CreateModal<PracticeSettingsModal>();
             }
         }
 

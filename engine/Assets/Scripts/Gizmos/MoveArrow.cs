@@ -295,7 +295,7 @@ namespace Synthesis.Configuration
             lastArrowPoint = Vector3.zero;
             bufferPassed = false;
 
-            
+
             if (arrowType == ArrowType.P) //sets marker's plane
                 markerPlane = new Plane(Vector3.Normalize(Camera.main.transform.forward), parent.position);
             else if (arrowType <= ArrowType.Z) //sets up axis arrows for plane creation

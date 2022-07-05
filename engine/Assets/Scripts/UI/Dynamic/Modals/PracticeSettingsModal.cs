@@ -4,7 +4,7 @@ using System.Linq;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
 
-public class PracticeSettingsPopup : PopupDynamic
+public class PracticeSettingsModal : ModalDynamic
 {
 
     private static Dictionary<string, GamepieceSimObject> _gamepieceMap = new Dictionary<string, GamepieceSimObject>();
@@ -16,7 +16,7 @@ public class PracticeSettingsPopup : PopupDynamic
         return u;
     };
     
-    public PracticeSettingsPopup() : base(new Vector2(500, 300))
+    public PracticeSettingsModal() : base(new Vector2(500, 300))
     {
         
     }
@@ -25,6 +25,9 @@ public class PracticeSettingsPopup : PopupDynamic
     {
         Title.SetText("Practice Settings");
         Description.SetText("Configuration actions for practice mode");
+        
+        AcceptButton.RootGameObject.SetActive(false);
+        CancelButton.Label.SetText("Close");
 
         (Content leftContent, Content rightContent) = MainContent.SplitLeftRight(MainContent.Size.x / 2, 4);
 
@@ -68,7 +71,7 @@ public class PracticeSettingsPopup : PopupDynamic
             .StepIntoLabel(l => l.SetText("Gamepiece Spawnpoint"))
             .AddOnClickedEvent(b =>
             {
-                DynamicUIManager.CloseActivePopup();
+                DynamicUIManager.CloseActiveModal();
                 ModeManager.ConfigureGamepieceSpawnpoint();
             });
 
