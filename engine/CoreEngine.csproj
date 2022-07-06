@@ -65,6 +65,7 @@
      <Compile Include="Assets\Scripts\UI\ContextMenu\ContextItem.cs" />
      <Compile Include="Assets\Scripts\Attributes\ContextMenuOptionAttribute.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\DynamicUIManager.cs" />
+     <Compile Include="Assets\Scripts\Scoring\TempScoreManager.cs" />
      <Compile Include="Assets\Scripts\UI\ToastLogger\ToastLogger.cs" />
      <Compile Include="Assets\Scripts\AutoUpdater.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Panel.cs" />
@@ -84,6 +85,7 @@
      <Compile Include="Assets\Scripts\UI\Tabs\Tab.cs" />
      <Compile Include="Assets\Scripts\SimObjects\FieldSimObject.cs" />
      <Compile Include="Assets\Scripts\ModelManager\Models\GearboxData.cs" />
+     <Compile Include="Assets\Scripts\Scoring\ScoringZone.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\DynamicUIComponents.cs" />
      <Compile Include="Assets\Scripts\Drivers\LinearDriver.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\ComponentAdapter.cs" />
@@ -155,6 +157,7 @@
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\IApiAdapter.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\SelectableAdapter.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\CameraAdapter.cs" />
+     <Compile Include="Assets\Scripts\UI\Panels\Variants\ScoreboardPanel.cs" />
      <Compile Include="Assets\Scripts\ModelManager\Models\Field.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\AddPanel\AddPanel.cs" />
      <Compile Include="Assets\Scripts\UI\Tabs\HomeTab.cs" />
