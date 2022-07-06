@@ -57,10 +57,24 @@ public class FieldSimObject : SimObject {
 
     public void DeleteField() {
         GameObject.Destroy(FieldObject);
-        SimulationManager.RemoveSimObject(this);
+        
+        foreach (var gamepiece in Gamepieces)
+        {
+            SimulationManager.RemoveSimObject(gamepiece.Name);
+        }
+        
+        SimulationManager.RemoveSimObject(Name);
+        
+        Gamepieces.Clear();
+        ScoringZones.Clear();
     }
 
-    public static void SpawnField(string filePath) {
+    public static void SpawnField(string filePath) { 
+        if (CurrentField != null)
+        {
+            CurrentField.DeleteField();
+            CurrentField = null;
+        }
         var mira = Importer.MirabufAssemblyImport(filePath);
         mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
         mira.MainObject.tag = "field";
