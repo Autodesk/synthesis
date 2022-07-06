@@ -24,8 +24,6 @@ namespace Synthesis.UI.Dynamic {
 
         private Vector2 _mainContentSize; // Shouldn't really be used after init is called
         private GameObject _unityObject;
-        private bool _showAcceptButton = true;
-
         // Default for Modal
         private Button _cancelButton;
         protected Button CancelButton => _cancelButton;
@@ -347,11 +345,6 @@ namespace Synthesis.UI.Dynamic {
         }
         public (Content top, Content bottom) SplitTopBottom(float topHeight, float padding) {
             throw new NotImplementedException();
-        }
-
-        public void DeleteElement<T>(T element) where T: UIComponent
-        {
-            base.Children.Remove(element);
         }
 
         public Label CreateLabel(float height = 15f) {
