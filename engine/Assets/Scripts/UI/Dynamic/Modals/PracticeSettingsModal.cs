@@ -11,8 +11,8 @@ public class PracticeSettingsModal : ModalDynamic
     private static List<GamepieceSimObject> _gamepieceSimObjects = new List<GamepieceSimObject>();
     
     public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
-        var offset = (-u.Parent!.RectOfChildren(u).yMin) + 7.5f;
-        u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 15f);
+        var offset = (-u.Parent!.RectOfChildren(u).yMin) + 10f;
+        u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 0f); // used to be 15f
         return u;
     };
     
@@ -29,7 +29,8 @@ public class PracticeSettingsModal : ModalDynamic
         AcceptButton.RootGameObject.SetActive(false);
         CancelButton.Label.SetText("Close");
 
-        (Content leftContent, Content rightContent) = MainContent.SplitLeftRight(MainContent.Size.x / 2, 4);
+        float leftRightPadding = 8;
+        (Content leftContent, Content rightContent) = MainContent.SplitLeftRight((MainContent.Size.x - leftRightPadding) / 2, leftRightPadding);
 
         var spawnButton = rightContent.CreateButton()
             .StepIntoLabel(l => l.SetText("Spawn"))
