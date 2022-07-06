@@ -41,6 +41,7 @@ namespace SynthesisServer
 
 		public Task StopAsync(CancellationToken cancellationToken)
 		{
+			Server.Instance.Stop();
 			_logger.LogInformation("Stopping daemon.");
 			return Task.CompletedTask;
 		}
@@ -59,6 +60,7 @@ namespace SynthesisServer
 				Environment.Exit(0);
 			} else
             {
+				Server.Instance.Start();
 				_logger.LogInformation("Starting Server");
 			}
 			return (int)Command.START;
