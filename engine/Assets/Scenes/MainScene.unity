@@ -3187,6 +3187,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MatchModeUI
       objectReference: {fileID: 0}
+    - target: {fileID: 8221930223239156157, guid: 218acdf079fac4b4fb0b284c94bd201e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8221930223239156158, guid: 218acdf079fac4b4fb0b284c94bd201e, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -3273,25 +3277,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 218acdf079fac4b4fb0b284c94bd201e, type: 3}
---- !u!114 &1105671794 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8221930221550398139, guid: 218acdf079fac4b4fb0b284c94bd201e, type: 3}
-  m_PrefabInstance: {fileID: 1105671793}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &1105671795 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8221930223239156158, guid: 218acdf079fac4b4fb0b284c94bd201e, type: 3}
-  m_PrefabInstance: {fileID: 1105671793}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1105671796 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8221930223239156157, guid: 218acdf079fac4b4fb0b284c94bd201e, type: 3}
   m_PrefabInstance: {fileID: 1105671793}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1132227691
@@ -3748,9 +3736,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c5fd86f3ceb4bf44b852afb90de349c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  board: {fileID: 1105671796}
-  timer: {fileID: 1105671794}
-  targetTime: 135
 --- !u!1 &1354015881
 GameObject:
   m_ObjectHideFlags: 0
@@ -4549,6 +4534,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c1e0c7f3dc392244e995e9944765a81e, type: 2}
   - {fileID: 11400000, guid: b815287ce3927b64f8c47aa7920ac72b, type: 2}
   BlurVolume: {fileID: 517415466}
+  ReplaySlider: {fileID: 0}
 --- !u!4 &1647995102
 Transform:
   m_ObjectHideFlags: 0

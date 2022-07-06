@@ -8,6 +8,7 @@ public class ModeManager
     public static Vector3 GamepieceSpawnpoint = new Vector3(0, 1, 0);
 
     private static PracticeMode practiceMode;
+    public static MatchMode matchMode;
     
     private static Mode _currentMode;
     public static Mode CurrentMode
@@ -36,14 +37,24 @@ public class ModeManager
 
     public static void Start()
     {
-        practiceMode = new PracticeMode();
-        practiceMode.Start();
+        if (CurrentMode == Mode.Practice)
+        {
+            practiceMode = new PracticeMode();
+            practiceMode.Start();
+        }
+        else if (CurrentMode == Mode.Match)
+        {
+            matchMode = new MatchMode();
+            matchMode.Start();
+        }
     }
     
     public static void Update()
     {
         if (CurrentMode == Mode.Practice)
             practiceMode.Update();
+        else if (CurrentMode == Mode.Match)
+            matchMode.Update();
     }
 
     public static void SetInitialState(GameObject robot)
