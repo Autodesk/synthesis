@@ -41,5 +41,15 @@ public class PracticeMode : GameMode
         _lastEscapeValue = openEscapeMenu;
     }
 
+    public void OpenMenu()
+    {
+        
+    }
+
+    public void CloseMenu()
+    {
+        
+    }
+
     public override void End(){}
 }

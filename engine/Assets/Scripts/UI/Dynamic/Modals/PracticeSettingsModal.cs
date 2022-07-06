@@ -9,14 +9,16 @@ public class PracticeSettingsModal : ModalDynamic
 
     private static Dictionary<string, GamepieceSimObject> _gamepieceMap = new Dictionary<string, GamepieceSimObject>();
     private static List<GamepieceSimObject> _gamepieceSimObjects = new List<GamepieceSimObject>();
+
+    private const float VERTICAL_PADDING = 10f;
     
     public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
-        var offset = (-u.Parent!.RectOfChildren(u).yMin) + 10f;
+        var offset = (-u.Parent!.RectOfChildren(u).yMin) + VERTICAL_PADDING;
         u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 0f); // used to be 15f
         return u;
     };
     
-    public PracticeSettingsModal() : base(new Vector2(500, 300))
+    public PracticeSettingsModal() : base(new Vector2(500, 315))
     {
         
     }
@@ -30,14 +32,21 @@ public class PracticeSettingsModal : ModalDynamic
         CancelButton.Label.SetText("Close");
 
         float leftRightPadding = 8;
-        (Content leftContent, Content rightContent) = MainContent.SplitLeftRight((MainContent.Size.x - leftRightPadding) / 2, leftRightPadding);
+        float leftWidth = (MainContent.Size.x - leftRightPadding) / 2;
+        (Content leftContent, Content rightContent) = MainContent.SplitLeftRight(leftWidth, leftRightPadding);
+        
+        var gamepieceLabel = leftContent.CreateLabel()
+            .SetText("Gamepiece Spawning")
+            .ApplyTemplate(Label.BigLabelTemplate)
+            .ApplyTemplate(VerticalLayout);
+        
+        rightContent.SetTopStretch<Content>(leftWidth + leftRightPadding, 0, anchoredY: gamepieceLabel.Size.y + VERTICAL_PADDING);
 
         var spawnButton = rightContent.CreateButton()
             .StepIntoLabel(l => l.SetText("Spawn"))
             .ApplyTemplate(VerticalLayout)
             .AddOnClickedEvent(b => ModeManager.SpawnGamepiece(1f, PracticeMode.ChosenPrimitive));
         
-        // TODO dropdown is slightly wider than other buttons
         var gamepieceDropdown = leftContent.CreateDropdown()
             .ApplyTemplate(VerticalLayout)
             .SetHeight<Dropdown>(spawnButton.Size.y)
@@ -76,20 +85,25 @@ public class PracticeSettingsModal : ModalDynamic
                 ModeManager.ConfigureGamepieceSpawnpoint();
             });
 
+        var resetLabel = leftContent.CreateLabel()
+            .SetText("Reset Gamepieces")
+            .ApplyTemplate(Label.BigLabelTemplate)
+            .ApplyTemplate(VerticalLayout);
+
         leftContent.CreateButton()
             .ApplyTemplate(VerticalLayout)
             .StepIntoLabel(label => label.SetText("Reset All"))
             .AddOnClickedEvent(b => ModeManager.ResetAll());
         
-        rightContent.CreateButton()
-            .ApplyTemplate(VerticalLayout)
-            .StepIntoLabel(label => label.SetText("Reset Robot"))
-            .AddOnClickedEvent(b => ModeManager.ResetRobot());
-
         leftContent.CreateButton()
             .ApplyTemplate(VerticalLayout)
             .StepIntoLabel(label => label.SetText("Reset Gamepieces"))
             .AddOnClickedEvent(b => ModeManager.ResetGamepieces());
+        rightContent.CreateButton()
+            .ApplyTemplate(VerticalLayout)
+            .StepIntoLabel(label => label.SetText("Reset Robot"))
+            .AddOnClickedEvent(b => ModeManager.ResetRobot())
+            .SetTopStretch<Button>(0, 0, VERTICAL_PADDING + (spawnButton.Size.y + VERTICAL_PADDING) * 2 + resetLabel.Size.y + VERTICAL_PADDING);
 
         rightContent.CreateButton()
             .ApplyTemplate(VerticalLayout)
