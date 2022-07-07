@@ -22,7 +22,7 @@ namespace Synthesis.UI.Tabs {
             CreateButton(
                 "Details",
                 SynthesisAssetCollection.GetSpriteByName("Multiplayer1-Gray"),
-                () => DynamicUIManager.CreatePanel<RobotDetailsPanel>()
+                () => DynamicUIManager.CreatePanel<MatchmodeScoreboardPanel>()
             );
         }
     }

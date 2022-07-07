@@ -31,17 +31,12 @@ namespace Synthesis.UI.Dynamic {
         }
         float targetTime = 135;
         public override void Update() {
-            Vector3 robotPosition = new Vector3();
-            if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
-                robotPosition = RobotSimObject.GetCurrentlyPossessedRobot().GroundedNode.transform.position;
-            }
-
-            targetTime -= Time.deltaTime;
+          /*  targetTime -= Time.deltaTime;
             if (targetTime >= 0) time.SetText($"Time Remaining: {Mathf.RoundToInt(targetTime).ToString()}");
             else
             {
                 
-            }
+            }*/
             
         }
 
