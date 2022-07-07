@@ -31,6 +31,7 @@ namespace Synthesis.Configuration
         private float floorBound = 0f;
         private float bounds = 50f;
         private float singleMoveLimitScale = 20f; //limits a single movement boundry to this number times the distance from camera to position
+        private float startRotation;
 
 
         private Transform axisArrowTransform;
@@ -261,7 +262,7 @@ namespace Synthesis.Configuration
                 else if (ActiveArrow == ArrowType.RX) t = parent.up;
                 else t = parent.forward;
                 parent.RotateAround(parent.position, axisPlane.normal, //defines point and axis plane
-                    -1 * RoundTo(Vector3.SignedAngle(pointToLook - parent.position, t, axisPlane.normal), //rounds degrees of rotation axis forward to mouse ray intersection
+                    -1 * RoundTo(Vector3.SignedAngle(pointToLook - parent.position, t, axisPlane.normal) - startRotation, //rounds degrees of rotation axis forward to mouse ray intersection
                     snapEnabled ? snapRotationToDegree : 0f)); //if control is pressed, snap to configurable value, otherwise, don't snap
             }
 
@@ -295,7 +296,7 @@ namespace Synthesis.Configuration
             lastArrowPoint = Vector3.zero;
             bufferPassed = false;
 
-            
+
             if (arrowType == ArrowType.P) //sets marker's plane
                 markerPlane = new Plane(Vector3.Normalize(Camera.main.transform.forward), parent.position);
             else if (arrowType <= ArrowType.Z) //sets up axis arrows for plane creation
@@ -314,7 +315,31 @@ namespace Synthesis.Configuration
                 }
             }
             else if (arrowType >= ArrowType.RX) //creates plane for rotation
+            {
                 axisPlane = new Plane(ArrowDirection, parent.position);
+
+                //the following code determines the starting offset between the mouse and the gizmo.
+                //does the exact same thing as a normal rotation, but extracts the resulting angle as the initial offset
+
+                //Project a ray from mouse
+                Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+                float rayLength;
+
+                //if mouse ray doesn't intersect plane, set default ray length
+                if (!axisPlane.Raycast(cameraRay, out rayLength)) rayLength = Vector3.Distance(Camera.main.transform.position, parent.position) * 10;
+
+                //get intersection point; if none, find closest point to default length
+                Vector3 pointToLook = axisPlane.ClosestPointOnPlane(cameraRay.GetPoint(rayLength));
+
+                //Correct parent's forward depending on rotation axis. Y-axis does not need corrections
+                Vector3 t;
+                if (ActiveArrow == ArrowType.RZ) t = parent.right;
+                else if (ActiveArrow == ArrowType.RX) t = parent.up;
+                else t = parent.forward;
+
+                //sets the starting rotational offset to the angle
+                startRotation = Vector3.SignedAngle(pointToLook - parent.position, t, axisPlane.normal);
+            }
 
 
         }

@@ -24,7 +24,6 @@ namespace Synthesis.UI.Dynamic {
 
         private Vector2 _mainContentSize; // Shouldn't really be used after init is called
         private GameObject _unityObject;
-
         // Default for Modal
         private Button _cancelButton;
         protected Button CancelButton => _cancelButton;

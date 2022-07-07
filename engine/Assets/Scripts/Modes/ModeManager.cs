@@ -2,15 +2,16 @@ using System.Collections.Generic;
 using System.Linq;
 using SynthesisAPI.Proto;
 using UnityEngine;
+using Material = UnityEngine.Material;
 
 public class ModeManager
 {
-    public static Vector3 GamepieceSpawnpoint = new Vector3(0, 1, 0);
+    public static Vector3 GamepieceSpawnpoint = new Vector3(0, 10, 0);
+    private static GameObject _gamepieceSpawnpointObject;
 
     private static PracticeMode practiceMode;
     public static MatchMode matchMode;
     
-    private static Mode _currentMode;
     public static Mode CurrentMode
     {
         get;
@@ -69,6 +70,29 @@ public class ModeManager
         });
     }
 
+    public static void ConfigureGamepieceSpawnpoint()
+    {
+        _gamepieceSpawnpointObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        _gamepieceSpawnpointObject.transform.localScale = new Vector3(1, 1, 1);
+        _gamepieceSpawnpointObject.transform.position = GamepieceSpawnpoint;
+        _gamepieceSpawnpointObject.transform.tag = "gamepiece";
+
+        _gamepieceSpawnpointObject.GetComponent<Collider>().enabled = false;
+        
+        // make it transparent
+        Renderer renderer = _gamepieceSpawnpointObject.GetComponent<Renderer>();
+        renderer.material = new Material(Shader.Find("Shader Graphs/DefaultSynthesisTransparentShader"));
+
+        GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, _gamepieceSpawnpointObject.transform, _gamepieceSpawnpointObject.transform.position);
+    }
+
+    public static void EndConfigureGamepieceSpawnpoint()
+    {
+        GamepieceSpawnpoint = _gamepieceSpawnpointObject.transform.position;
+        GameObject.Destroy(_gamepieceSpawnpointObject);
+        _gamepieceSpawnpointObject = null;
+    }
+
     public static void ResetRobot()
     {
         RobotSimObject robot = RobotSimObject.GetCurrentlyPossessedRobot();
@@ -117,14 +141,12 @@ public class ModeManager
         SpawnGamepiece(new Vector3(x, y, z), scale, type);
     }
 
-    // will change when we have gamepieces from mirabuf
     public static void SpawnGamepiece(Vector3 spawnPosition, float scale = 1.0f,
         PrimitiveType type = PrimitiveType.Sphere)
     {
         FieldSimObject currentField = FieldSimObject.CurrentField;
-        // TODO this should be chosen by the user in a dropdown
-        GamepieceSimObject gamepiece;
-        if (currentField == null)
+        GamepieceSimObject gamepiece = PracticeMode.ChosenGamepiece;
+        if (currentField == null || gamepiece == null)
         {
             GameObject gameObject = GameObject.CreatePrimitive(type);
             gameObject.AddComponent<Rigidbody>();
@@ -132,9 +154,9 @@ public class ModeManager
         }
         else
         {
-            GamepieceSimObject chosenGamepiece = currentField.Gamepieces[0];
             gamepiece =
-                new GamepieceSimObject(chosenGamepiece.Name, chosenGamepiece.GamepieceObject);
+                new GamepieceSimObject(gamepiece.Name, gamepiece.GamepieceObject);
+            gamepiece.GamepieceObject.transform.position = spawnPosition;
             GameObject.Instantiate(gamepiece.GamepieceObject);
         }
 

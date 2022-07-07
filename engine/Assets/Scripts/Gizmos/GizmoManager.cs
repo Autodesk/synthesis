@@ -43,6 +43,9 @@ public static class GizmoManager
         if (gizmo.transform.parent.CompareTag("robot"))
         {
             ModeManager.SetInitialState(gizmo.transform.parent.gameObject);
+        } else if (gizmo.transform.parent.CompareTag("gamepiece"))
+        {
+            ModeManager.EndConfigureGamepieceSpawnpoint();
         }
         Object.Destroy(gizmo);
     }
