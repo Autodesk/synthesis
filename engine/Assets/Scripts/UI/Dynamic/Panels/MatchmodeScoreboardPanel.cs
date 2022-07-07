@@ -24,20 +24,17 @@ namespace Synthesis.UI.Dynamic {
             Func<Label, Label> nonHighlightedLabel =
                 l => l.SetFont(normalFont).SetFontSize(14).SetVerticalAlignment(VerticalAlignmentOptions.Middle).SetHorizontalAlignment(HorizontalAlignmentOptions.Left);
 
-            MainContent.CreateLabel(15f).ApplyTemplate(nonHighlightedLabel).SetTopStretch().SetText("Position");
             time = MainContent.CreateLabel(15f).ApplyTemplate(nonHighlightedLabel).SetTopStretch(leftPadding: 10f, anchoredY: 15f).SetText("Time Remaining: " + targetTime);
             redScore = MainContent.CreateLabel(15f).ApplyTemplate(nonHighlightedLabel).SetTopStretch(leftPadding: 10f, anchoredY: 30f).SetText("Red: 0");
             blueScore = MainContent.CreateLabel(15f).ApplyTemplate(nonHighlightedLabel).SetTopStretch(leftPadding: 10f, anchoredY: 45f).SetText("Blue: 0");
         }
         float targetTime = 135;
         public override void Update() {
-          /*  targetTime -= Time.deltaTime;
-            if (targetTime >= 0) time.SetText($"Time Remaining: {Mathf.RoundToInt(targetTime).ToString()}");
-            else
+            if(GizmoManager.currentGizmo == null && targetTime >= 0)
             {
-                
-            }*/
-            
+                targetTime -= Time.deltaTime;
+                time.SetText($"Time Remaining: {Mathf.RoundToInt(targetTime).ToString()}");
+            }            
         }
 
         public override void Delete() { }

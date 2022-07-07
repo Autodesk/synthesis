@@ -46,9 +46,8 @@ public class MatchModeModal : ModalDynamic
                     if (RobotSimObject.GetCurrentlyPossessedRobot() != null) RobotSimObject.GetCurrentlyPossessedRobot().Destroy();
                     RobotSimObject.SpawnRobot(_robotFiles[_robotIndex]);
 
-                    DynamicUIManager.CreatePanel<MatchmodeScoreboardPanel>();
-
                     DynamicUIManager.CloseActiveModal();
+                    DynamicUIManager.CreatePanel<MatchmodeScoreboardPanel>();
                 }
             });
         CancelButton.AddOnClickedEvent(b =>

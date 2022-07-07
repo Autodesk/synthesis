@@ -26,6 +26,7 @@ public class ChooseModeModal : ModalDynamic
             .ApplyTemplate(VerticalLayout)
             .AddOnClickedEvent(b =>
             {
+                DynamicUIManager.CloseActiveModal();
                 ModeManager.CurrentMode = ModeManager.Mode.Practice;
                 SceneManager.LoadScene("MainScene");
             });
@@ -35,6 +36,7 @@ public class ChooseModeModal : ModalDynamic
             .ApplyTemplate(VerticalLayout)
             .AddOnClickedEvent(b =>
             {
+                DynamicUIManager.CloseActiveModal();
                 ModeManager.CurrentMode = ModeManager.Mode.Match;
                 SceneManager.LoadScene("MainScene");
             });

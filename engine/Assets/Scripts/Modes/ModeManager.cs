@@ -3,6 +3,7 @@ using System.Linq;
 using SynthesisAPI.Proto;
 using UnityEngine;
 using Material = UnityEngine.Material;
+using Synthesis.UI.Dynamic;
 
 public class ModeManager
 {

@@ -17,7 +17,7 @@ namespace Synthesis.UI.Tabs {
             CreateButton(
                 "Details",
                 SynthesisAssetCollection.GetSpriteByName("Multiplayer1-Gray"),
-                () => DynamicUIManager.CreatePanel<MatchmodeScoreboardPanel>()
+                () => DynamicUIManager.CreatePanel<RobotDetailsPanel>()
             );
             CreateDivider();
             CreateButton(

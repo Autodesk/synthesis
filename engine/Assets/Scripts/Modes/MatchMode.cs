@@ -13,8 +13,7 @@ public class MatchMode : GameMode
     // Start is called before the first frame update
     public override void Start()
     {
-        //DynamicUIManager.CreateModal<MatchModeModal>();
-        DynamicUIManager.CreatePanel<MatchmodeScoreboardPanel>();
+        DynamicUIManager.CreateModal<MatchModeModal>();
 
     }
 
