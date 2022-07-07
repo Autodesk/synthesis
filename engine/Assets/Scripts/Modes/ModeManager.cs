@@ -59,6 +59,19 @@ public class ModeManager
         });
     }
 
+    public static void ModalClosed()
+    {
+        // used to tell practice mode that the modal has closed due to a button
+        // so that the user doesn't have to press escape twice to open it again
+        if (CurrentMode == Mode.Practice)
+        {
+            practiceMode.CloseMenu();
+        } else if (CurrentMode == Mode.Match)
+        {
+            // match mode here if necessary
+        }
+    }
+
     public static void ConfigureGamepieceSpawnpoint()
     {
         _gamepieceSpawnpointObject = GameObject.CreatePrimitive(PrimitiveType.Cube);

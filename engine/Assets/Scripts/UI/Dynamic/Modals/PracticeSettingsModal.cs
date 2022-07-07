@@ -29,7 +29,12 @@ public class PracticeSettingsModal : ModalDynamic
         Description.SetText("Configuration actions for practice mode");
         
         AcceptButton.RootGameObject.SetActive(false);
-        CancelButton.Label.SetText("Close");
+        CancelButton
+            .StepIntoLabel(l => l.SetText("Close"))
+            .AddOnClickedEvent(b =>
+            {
+                ModeManager.ModalClosed();
+            });
 
         float leftRightPadding = 8;
         float leftWidth = (MainContent.Size.x - leftRightPadding) / 2;
@@ -82,6 +87,7 @@ public class PracticeSettingsModal : ModalDynamic
             .AddOnClickedEvent(b =>
             {
                 DynamicUIManager.CloseActiveModal();
+                ModeManager.ModalClosed();
                 ModeManager.ConfigureGamepieceSpawnpoint();
             });
 
