@@ -8,7 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
-
+using System.Text;
+using Google.Protobuf;
 
 namespace SynthesisServer
 {
@@ -18,6 +19,7 @@ namespace SynthesisServer
         
         public static async Task Main(string[] args)
         {
+
             string filePath = "appsettings.json";
             var builder = new HostBuilder();
 
@@ -47,7 +49,6 @@ namespace SynthesisServer
            
             
             await host.RunAsync();
-            
             
         }
 
