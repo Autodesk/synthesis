@@ -1,8 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
-using SynthesisAPI.Proto;
 using UnityEngine;
-using Material = UnityEngine.Material;
 
 public class ModeManager
 {
@@ -81,6 +78,12 @@ public class ModeManager
 
         _gamepieceSpawnpointObject.GetComponent<Collider>().enabled = false;
         
+        FieldSimObject currentField = FieldSimObject.CurrentField;
+        if (currentField != null)
+        {
+            _gamepieceSpawnpointObject.transform.parent = currentField.FieldObject.transform;
+        }
+        
         // make it transparent
         Renderer renderer = _gamepieceSpawnpointObject.GetComponent<Renderer>();
         renderer.material = new Material(Shader.Find("Shader Graphs/DefaultSynthesisTransparentShader"));
@@ -151,13 +154,22 @@ public class ModeManager
         if (currentField == null || gamepiece == null)
         {
             GameObject gameObject = GameObject.CreatePrimitive(type);
+            gameObject.transform.position = spawnPosition;
             gameObject.AddComponent<Rigidbody>();
             gamepiece = new GamepieceSimObject(type + " Gamepiece", gameObject);
         }
         else
         {
             GameObject go = GameObject.Instantiate(gamepiece.GamepieceObject);
-            gamepiece.GamepieceObject.transform.position = spawnPosition;
+            go.transform.parent = gamepiece.GamepieceObject.transform.parent;
+            go.transform.position = Vector3.zero;
+            Transform childTransform = go.transform.GetChild(0);
+
+            if (childTransform != null)
+            {
+                childTransform.position = spawnPosition;
+            }
+            
             gamepiece =
                 new GamepieceSimObject(gamepiece.Name, go);
         }
