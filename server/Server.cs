@@ -7,6 +7,7 @@ using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
@@ -18,6 +19,7 @@ namespace SynthesisServer
     public sealed class Server
     {
         private UdpClient _udpSocket;
+        private SymmetricEncryptor _encryptor;
 
         private ReaderWriterLockSlim _clientsLock;
         private List<ClientData> _clients;
@@ -46,8 +48,12 @@ namespace SynthesisServer
         public void Start()
         {
             _udpSocket = new UdpClient(Port, AddressFamily.InterNetwork);
+            _encryptor = new SymmetricEncryptor();
+
             _clients = new List<ClientData>();
             _clientsLock = new ReaderWriterLockSlim();
+
+
             _udpSocket.BeginReceive(RecieveCallback, Port);
         }
 
@@ -58,50 +64,61 @@ namespace SynthesisServer
             {
                 IPEndPoint remoteEP = new IPEndPoint(IPAddress.Any, (int)asyncResult.AsyncState);
                 byte[] buffer = _udpSocket.EndReceive(asyncResult, ref remoteEP);
-                
+                if (BitConverter.IsLittleEndian) { Array.Reverse(buffer); } // make sure to do while sending
                 // decode and parse data and then send response
                 try
                 {
-                    KeyExchange exchangeMessage = KeyExchange.Parser.ParseFrom(buffer);
-                    bool clientAlreadyEstablished = false;
-                    _clientsLock.EnterWriteLock();
-                    foreach (var x in _clients)
+                    byte[] msgTypeBytes = buffer.Take(sizeof(int)).ToArray();
+                    int msgType = BitConverter.ToInt32(msgTypeBytes, 0);
+
+                    byte[] data = buffer.Skip(msgTypeBytes.Length).ToArray();
+
+                    switch (msgType)
                     {
-                        if (x.ClientID.Equals(exchangeMessage.ClientId))
-                        {
-                            clientAlreadyEstablished = true;
-                        }
+                        // Key Exchange
+                        case (int)MessageType.Exchange:
+                            KeyExchange exchangeMessage = KeyExchange.Parser.ParseFrom(data);
+                            ClientData EstablishedClientData = null;
+                            _clientsLock.EnterUpgradeableReadLock();
+                            foreach (var x in _clients)
+                            {
+                                if (x.ClientID.Equals(exchangeMessage.ClientId))
+                                {
+                                    EstablishedClientData = x;
+                                }
+                            }
+                            if (EstablishedClientData == null)
+                            {
+                                _clientsLock.EnterWriteLock();
+                                _clients.Add(new ClientData(exchangeMessage.PublicKey, new DHParameters(new BigInteger(exchangeMessage.P), new BigInteger(exchangeMessage.G)))
+                                {
+                                    ClientID = exchangeMessage.ClientId,
+                                    ClientEndpoint = remoteEP
+                                });
+                                _clientsLock.ExitWriteLock();
+                            }
+
+                            //_udpSocket.BeginSend();
+                            _clientsLock.ExitUpgradeableReadLock();
+
+
+                            throw new NotImplementedException();
+                            break;
+
+                        // Encrypted Message
+                        case (int)MessageType.Message:
+                            throw new NotImplementedException();
+                            break;
+                        
+                        // Invalid Message
+                        default:
+                            throw new NotImplementedException();
+                            break;
                     }
-                    if (clientAlreadyEstablished)
-                    {
-                        //_udpSocket.BeginSend() (pass in remote endpoint and send generic response with error)
-                        throw new NotImplementedException();
-                    } else
-                    {
-                        _clients.Add(new ClientData
-                        {
-                            ClientID = exchangeMessage.ClientId,
-                            ClientEndpoint = remoteEP,
-                            Parameters = new DHParameters(new BigInteger(exchangeMessage.P), new BigInteger(exchangeMessage.G))
-                        });
-                    }
-                    _clientsLock.ExitWriteLock();
-                    
 
                 } catch (Exception e)
                 {
-                    Console.WriteLine("Make sure to handle only this specific exception:");
                     Console.WriteLine(e);
-                    try
-                    {
-                        Aes test = Aes.Create(); // check to create using key
-                        ServerMessage msg = ServerMessage.Parser.ParseFrom(buffer);
-                    }
-                    catch (Exception asdf)
-                    {
-                        Console.WriteLine("Invalid message");
-                        //Send message to client saying its invalid
-                    }
                 }
 
                 _udpSocket.BeginReceive(RecieveCallback, Port);
