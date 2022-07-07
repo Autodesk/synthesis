@@ -40,14 +40,8 @@ public class MatchModeModal : ModalDynamic
             {
                 if (_robotIndex != -1 && _fieldIndex != -1)
                 {
-                    if (FieldSimObject.CurrentField != null) FieldSimObject.CurrentField.DeleteField();
-                    FieldSimObject.SpawnField(_fieldFiles[_fieldIndex]);
-
-                    if (RobotSimObject.GetCurrentlyPossessedRobot() != null) RobotSimObject.GetCurrentlyPossessedRobot().Destroy();
-                    RobotSimObject.SpawnRobot(_robotFiles[_robotIndex]);
-
-                    DynamicUIManager.CloseActiveModal();
-                    DynamicUIManager.CreatePanel<MatchmodeScoreboardPanel>();
+                    DynamicUIManager.CreateModal<LoadingScreenModal>();\
+                    LoadMatch();
                 }
             });
         CancelButton.AddOnClickedEvent(b =>
@@ -80,6 +74,17 @@ public class MatchModeModal : ModalDynamic
             .AddOnValueChangedEvent((d, i, data) => _spawnPosition = i).ApplyTemplate(VerticalLayout);
     }
     
+    private void LoadMatch()
+    {
+        if (FieldSimObject.CurrentField != null) FieldSimObject.CurrentField.DeleteField();
+        FieldSimObject.SpawnField(_fieldFiles[_fieldIndex]);
+
+        if (RobotSimObject.GetCurrentlyPossessedRobot() != null) RobotSimObject.GetCurrentlyPossessedRobot().Destroy();
+        RobotSimObject.SpawnRobot(_robotFiles[_robotIndex]);
+
+        DynamicUIManager.CloseActiveModal();
+        DynamicUIManager.CreatePanel<MatchmodeScoreboardPanel>();
+    }
     public override void Update() {}
 
 

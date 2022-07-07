@@ -200,6 +200,7 @@
     <Compile Include="Assets\Scripts\Scoring\TempScoreManager.cs" />
     <Compile Include="Assets\Scripts\Scoring\ScoringZone.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\Variants\ScoreboardPanel.cs" />
+    <Compile Include="Assets\Scripts\UI\Dynamic\Modals\LoadingScreenModal.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Scripts\CoreEngine.asmdef" />
