@@ -143,10 +143,10 @@ public class ModeManager
         }
         else
         {
-            gamepiece =
-                new GamepieceSimObject(gamepiece.Name, gamepiece.GamepieceObject);
+            GameObject go = GameObject.Instantiate(gamepiece.GamepieceObject);
             gamepiece.GamepieceObject.transform.position = spawnPosition;
-            GameObject.Instantiate(gamepiece.GamepieceObject);
+            gamepiece =
+                new GamepieceSimObject(gamepiece.Name, go);
         }
 
         _gamepieces.Add(gamepiece);
