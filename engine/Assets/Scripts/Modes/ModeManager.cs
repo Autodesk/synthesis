@@ -77,6 +77,7 @@ public class ModeManager
 
     public static void EndConfigureGamepieceSpawnpoint()
     {
+        GamepieceSpawnpoint = _gamepieceSpawnpointObject.transform.position;
         GameObject.Destroy(_gamepieceSpawnpointObject);
         _gamepieceSpawnpointObject = null;
     }
