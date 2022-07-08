@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class LoadingScreenModal : ModalDynamic
 {
     
-    public LoadingScreenModal() : base(new Vector2(300, -80)) {}
+    public LoadingScreenModal() : base(new Vector2(250, -92)) {}
 
     public override void Create()
     {
@@ -15,6 +15,8 @@ public class LoadingScreenModal : ModalDynamic
         
         AcceptButton.RootGameObject.SetActive(false);
         CancelButton.RootGameObject.SetActive(false);
+        ModalImage.RootGameObject.SetActive(false);
+        
     }
     
     public override void Update() {}

@@ -29,7 +29,6 @@ public class ChooseModeModal : ModalDynamic
                 DynamicUIManager.CreateModal<LoadingScreenModal>();
                 ModeManager.CurrentMode = ModeManager.Mode.Practice;
                 SceneManager.LoadScene("MainScene");
-                //DynamicUIManager.CloseActiveModal();
             });
 
         MainContent.CreateButton()
@@ -40,7 +39,6 @@ public class ChooseModeModal : ModalDynamic
                 DynamicUIManager.CreateModal<LoadingScreenModal>();
                 ModeManager.CurrentMode = ModeManager.Mode.Match;
                 SceneManager.LoadScene("MainScene");
-                //DynamicUIManager.CloseActiveModal();
             });
     }
     

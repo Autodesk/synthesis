@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System;
 using Synthesis.UI.Dynamic;
+using System.Collections;
 
 public class MatchModeModal : ModalDynamic
 {
@@ -40,8 +41,13 @@ public class MatchModeModal : ModalDynamic
             {
                 if (_robotIndex != -1 && _fieldIndex != -1)
                 {
-                    DynamicUIManager.CreateModal<LoadingScreenModal>();\
-                    LoadMatch();
+                    DynamicUIManager.CreateModal<LoadingScreenModal>(); 
+                    MonoBehaviour _mb = GameObject.FindObjectOfType<MonoBehaviour>();
+                    if (_mb != null)
+                    {
+                        Debug.Log("Found a MonoBehaviour.");
+                        _mb.StartCoroutine(LoadMatch());
+                    }
                 }
             });
         CancelButton.AddOnClickedEvent(b =>
@@ -74,8 +80,9 @@ public class MatchModeModal : ModalDynamic
             .AddOnValueChangedEvent((d, i, data) => _spawnPosition = i).ApplyTemplate(VerticalLayout);
     }
     
-    private void LoadMatch()
+    public IEnumerator LoadMatch()
     {
+        yield return new WaitForSeconds(0.05f);
         if (FieldSimObject.CurrentField != null) FieldSimObject.CurrentField.DeleteField();
         FieldSimObject.SpawnField(_fieldFiles[_fieldIndex]);
 
