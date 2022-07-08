@@ -447,7 +447,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 "Joint Table",
                 joint_inputs,
                 6,
-                "1:2:2:2:3:3",
+                "1:2:2:2:2:2",
                 50,
             )
 
@@ -1219,7 +1219,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                                 JointParentType.ROOT,
                                 signalTypeIndex, # index of selected signal in dropdown
                                 jointSpeed,
-                                jointForce
+                                jointForce / 100.0
                             )  # parent joint GUID
                         )
                         continue
@@ -2367,9 +2367,9 @@ def addJointToTable(joint: adsk.fusion.Joint) -> None:
                 "joint_force",
                 "Force",
                 "N",
-                adsk.core.ValueInput.createByReal(10)
+                adsk.core.ValueInput.createByReal(1)
             )
-            jointForce.tooltip = 'Newtons'
+            jointForce.tooltip = 'Newton-Meters***'
             jointTableInput.addCommandInput(jointForce, row, 5)
 
         

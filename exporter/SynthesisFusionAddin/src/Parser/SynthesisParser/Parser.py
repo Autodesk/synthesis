@@ -3,6 +3,8 @@ import traceback, gzip
 
 from ...general_imports import *
 
+from google.protobuf.json_format import MessageToJson
+
 from proto.proto_out import assembly_pb2, types_pb2
 
 # from . import Joints, Materials, Components, Utilities
@@ -129,6 +131,7 @@ class Parser:
             progressDialog.hide()
 
             if DEBUG:
+
                 part_defs = assembly_out.data.parts.part_definitions
                 parts = assembly_out.data.parts.part_instances
                 joints = assembly_out.data.joints.joint_definitions

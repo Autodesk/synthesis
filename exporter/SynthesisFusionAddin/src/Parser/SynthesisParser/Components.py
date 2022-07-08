@@ -135,7 +135,7 @@ def __parseChildOccurrence(
 
     collision_attr = occurrence.attributes.itemByName('synthesis', 'collision_off')
     if collision_attr != None:
-        partsData.user_data.data[mapConstant] = 'collision_off'
+        part.skip_collider = True
 
     if occurrence.appearance:
         part.appearance = "{}_{}".format(occurrence.appearance.name, occurrence.appearance.id)

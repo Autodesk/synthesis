@@ -24,7 +24,7 @@ Each root child has a number of children that are all rigidly attached to the dy
 
 import adsk.fusion, adsk.core, traceback, uuid
 
-from proto.proto_out import types_pb2, joint_pb2, signal_pb2
+from proto.proto_out import types_pb2, joint_pb2, signal_pb2, motor_pb2
 from typing import Union
 
 from ...general_imports import *
@@ -104,8 +104,6 @@ def populateJoints(
 
                 for parse_joints in options.joints:
 
-                    gm.ui.messageBox(f'Joint Speed: {parse_joints.speed}')
-
                     if (parse_joints.joint_token == joint.entityToken):
                         guid = str(uuid.uuid4())
                         signal = signals.signal_map[guid]
@@ -118,6 +116,13 @@ def populateJoints(
                                 signal.device_type = signal_pb2.DeviceType.CANBUS
                             elif (parse_joints.signalType == ParseOptions.SignalType.PWM):
                                 signal.device_type = signal_pb2.DeviceType.PWM
+
+                            motor = joints.motor_definitions[joint.entityToken]
+                            fill_info(motor, joint)
+                            simple_motor = motor.simple_motor
+                            simple_motor.stall_torque = parse_joints.force
+                            simple_motor.max_velocity = parse_joints.speed
+                            simple_motor.braking_constant = 0.8 # Default for now
 
                             joint_instance.signal_reference = signal.info.GUID
                         # else:
