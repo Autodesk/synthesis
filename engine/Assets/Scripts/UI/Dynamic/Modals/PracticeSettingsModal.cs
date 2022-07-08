@@ -82,6 +82,7 @@ public class PracticeSettingsModal : ModalDynamic
                 {
                     PracticeMode.ChosenGamepiece = _gamepieceMap[data.text];
                 });
+            PracticeMode.ChosenGamepiece = _gamepieceMap.First().Value;
         }
 
         leftContent.CreateButton()
