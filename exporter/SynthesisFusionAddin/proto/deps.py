@@ -46,15 +46,13 @@ def installCross(pipDeps: list) -> bool:
         pythonFolder = Path(__file__).parents[2] / "bin"
         progressBar.message = f"Fetching pip..."
         adsk.doEvents()
-        curlComm = shlex.quote(f"curl https://bootstrap.pypa.io/get-pip.py -o \"{pythonFolder / 'get-pip.py'}\"")
         subprocess.call(
-            curlComm,
-            shell=False,
+            f"curl https://bootstrap.pypa.io/get-pip.py -o \"{pythonFolder / 'get-pip.py'}\"",
+            shell=True,
         )
-        getPipComm = shlex.quote(f"\"{pythonFolder / 'python'}\" \"{pythonFolder / 'get-pip.py'}\"")
         subprocess.call(
-            getPipComm,
-            shell=False,
+            f"\"{pythonFolder / 'python'}\" \"{pythonFolder / 'get-pip.py'}\"",
+            shell=True,
         )
     else:
         raise ImportError(
@@ -65,10 +63,9 @@ def installCross(pipDeps: list) -> bool:
         progressBar.progressValue += 1
         progressBar.message = f"Installing {depName}..."
         adsk.doEvents()
-        installComm = shlex.quote(f"\"{pythonFolder / 'python'}\" -m pip install {depName}")
         subprocess.call(
-            installComm, 
-            shell=False
+            f"\"{pythonFolder / 'python'}\" -m pip install {depName}", 
+            shell=True
         )
 
     if system == "Darwin":
@@ -76,10 +73,9 @@ def installCross(pipDeps: list) -> bool:
         for depName in pipAntiDeps:
             progressBar.message = f"Uninstalling {depName}..."
             adsk.doEvents()
-            uninstallComm = shlex.quote(f"\"{pythonFolder / 'python'}\" -m pip uninstall {depName} -y")
             subprocess.call(
-                uninstallComm,
-                shell=False,
+                f"\"{pythonFolder / 'python'}\" -m pip uninstall {depName} -y",
+                shell=True,
             )
 
     progressBar.hide()
