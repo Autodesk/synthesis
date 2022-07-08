@@ -8,9 +8,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <RootNamespace>
-    </RootNamespace>
-    <ProjectGuid>{7A96E841-D41A-B76D-BA5E-7E9F67B26716}</ProjectGuid>
+    <RootNamespace></RootNamespace>
+    <ProjectGuid>{41E8967A-1AD4-6DB7-BA5E-7E9F67B26716}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>PlayModeTests</AssemblyName>

@@ -8,9 +8,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <RootNamespace>
-    </RootNamespace>
-    <ProjectGuid>{28740E66-4B28-D1EE-7FFD-CA276D12197B}</ProjectGuid>
+    <RootNamespace></RootNamespace>
+    <ProjectGuid>{660E7428-284B-EED1-7FFD-CA276D12197B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>CoreEngine</AssemblyName>
@@ -60,7 +59,7 @@
     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Drivetrain\DrivetrainSubPanel.cs" />
     <Compile Include="Assets\Scripts\Modes\PracticeMode.cs" />
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\ParentAdapter.cs" />
-    <Compile Include="Assets\Scripts\UI\Dynamic\Panels\MatchmodeScoreboardPanel.cs" />
+    <Compile Include="Assets\Scripts\UI\Dynamic\Panels\ScoreboardPanel.cs" />
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\TransformAdapter.cs" />
     <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyItem.cs" />
     <Compile Include="Assets\Scripts\ModuleLoader\Api.cs" />
@@ -90,6 +89,7 @@
     <Compile Include="Assets\Scripts\UI\ContextMenu\ContextItem.cs" />
     <Compile Include="Assets\Scripts\Attributes\ContextMenuOptionAttribute.cs" />
     <Compile Include="Assets\Scripts\UI\Dynamic\DynamicUIManager.cs" />
+    <Compile Include="Assets\Scripts\Scoring\TempScoreManager.cs" />
     <Compile Include="Assets\Scripts\UI\ToastLogger\ToastLogger.cs" />
     <Compile Include="Assets\Scripts\AutoUpdater.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\Panel.cs" />
@@ -110,6 +110,7 @@
     <Compile Include="Assets\Scripts\UI\Tabs\Tab.cs" />
     <Compile Include="Assets\Scripts\SimObjects\FieldSimObject.cs" />
     <Compile Include="Assets\Scripts\ModelManager\Models\GearboxData.cs" />
+    <Compile Include="Assets\Scripts\Scoring\ScoringZone.cs" />
     <Compile Include="Assets\Scripts\UI\Dynamic\DynamicUIComponents.cs" />
     <Compile Include="Assets\Scripts\Drivers\LinearDriver.cs" />
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\ComponentAdapter.cs" />
@@ -139,8 +140,9 @@
     <Compile Include="Assets\Scripts\SimulationRunner.cs" />
     <Compile Include="Assets\Scripts\Camera\CameraController.cs" />
     <Compile Include="Assets\Scripts\Utilities\SynthesisUtil.cs" />
-    <Compile Include="Assets\Scripts\Test\ConfigurableJointTest.cs" />
+    <Compile Include="Assets\Scripts\UI\Dynamic\Modals\LoadingScreenModal.cs" />
     <Compile Include="Assets\Scripts\Utilities\ObjectLedger.cs" />
+    <Compile Include="Assets\Scripts\Test\ConfigurableJointTest.cs" />
     <Compile Include="Assets\Scripts\ModelManager\Models\Motor.cs" />
     <Compile Include="Assets\Scripts\Utilities\UtilExtensions.cs" />
     <Compile Include="Assets\Scripts\Camera\MenuCamera.cs" />
@@ -184,6 +186,7 @@
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\IApiAdapter.cs" />
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\SelectableAdapter.cs" />
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\CameraAdapter.cs" />
+    <Compile Include="Assets\Scripts\UI\Panels\Variants\ScoreboardPanel.cs" />
     <Compile Include="Assets\Scripts\ModelManager\Models\Field.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\Variants\AddPanel\AddPanel.cs" />
     <Compile Include="Assets\Scripts\UI\Tabs\HomeTab.cs" />
@@ -198,10 +201,6 @@
     <Compile Include="Assets\Scripts\UI\Panels\Variants\ExitPanel.cs" />
     <Compile Include="Assets\Scripts\Importer\Importer.cs" />
     <Compile Include="Assets\Scripts\Test\DebugJointAxes.cs" />
-    <Compile Include="Assets\Scripts\Scoring\TempScoreManager.cs" />
-    <Compile Include="Assets\Scripts\Scoring\ScoringZone.cs" />
-    <Compile Include="Assets\Scripts\UI\Panels\Variants\ScoreboardPanel.cs" />
-    <Compile Include="Assets\Scripts\UI\Dynamic\Modals\LoadingScreenModal.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Scripts\CoreEngine.asmdef" />

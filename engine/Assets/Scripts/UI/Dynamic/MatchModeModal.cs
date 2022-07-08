@@ -90,7 +90,7 @@ public class MatchModeModal : ModalDynamic
         RobotSimObject.SpawnRobot(_robotFiles[_robotIndex]);
 
         DynamicUIManager.CloseActiveModal();
-        DynamicUIManager.CreatePanel<MatchmodeScoreboardPanel>();
+        DynamicUIManager.CreatePanel<Synthesis.UI.Dynamic.ScoreboardPanel>();
     }
     public override void Update() {}
 
