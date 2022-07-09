@@ -48,11 +48,11 @@ def installCross(pipDeps: list) -> bool:
         adsk.doEvents()
         subprocess.call(
             f"curl https://bootstrap.pypa.io/get-pip.py -o \"{pythonFolder / 'get-pip.py'}\"",
-            shell=True,
+            shell=False,
         )
         subprocess.call(
             f"\"{pythonFolder / 'python'}\" \"{pythonFolder / 'get-pip.py'}\"",
-            shell=True,
+            shell=False,
         )
     else:
         raise ImportError(
@@ -65,7 +65,7 @@ def installCross(pipDeps: list) -> bool:
         adsk.doEvents()
         subprocess.call(
             f"\"{pythonFolder / 'python'}\" -m pip install {depName}", 
-            shell=True
+            shell=False
         )
 
     if system == "Darwin":
@@ -75,7 +75,7 @@ def installCross(pipDeps: list) -> bool:
             adsk.doEvents()
             subprocess.call(
                 f"\"{pythonFolder / 'python'}\" -m pip uninstall {depName} -y",
-                shell=True,
+                shell=False,
             )
 
     progressBar.hide()
