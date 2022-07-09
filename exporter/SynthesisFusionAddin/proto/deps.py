@@ -48,10 +48,12 @@ def installCross(pipDeps: list) -> bool:
         adsk.doEvents()
         subprocess.call(
             f"curl https://bootstrap.pypa.io/get-pip.py -o \"{pythonFolder / 'get-pip.py'}\"",
+            creationflags=0x08000000,
             shell=False,
         )
         subprocess.call(
             f"\"{pythonFolder / 'python'}\" \"{pythonFolder / 'get-pip.py'}\"",
+            creationflags=0x08000000,
             shell=False,
         )
     else:
@@ -64,7 +66,8 @@ def installCross(pipDeps: list) -> bool:
         progressBar.message = f"Installing {depName}..."
         adsk.doEvents()
         subprocess.call(
-            f"\"{pythonFolder / 'python'}\" -m pip install {depName}", 
+            f"\"{pythonFolder / 'python'}\" -m pip install {depName}",
+            creationflags=0x08000000,
             shell=False
         )
 
@@ -75,6 +78,7 @@ def installCross(pipDeps: list) -> bool:
             adsk.doEvents()
             subprocess.call(
                 f"\"{pythonFolder / 'python'}\" -m pip uninstall {depName} -y",
+                creationflags=0x08000000,
                 shell=False,
             )
 
