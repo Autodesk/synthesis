@@ -12,6 +12,8 @@ namespace InventorMirabufExporter
     public class Serializer
     {
         Assembly environment;
+        Random rand = new Random(); // temp
+        uint version = 3;
         char slash = System.IO.Path.DirectorySeparatorChar;
 
         public Serializer()
@@ -25,20 +27,20 @@ namespace InventorMirabufExporter
             environment.Transform = new Transform();
         }
 
-        public void Setup(_Document assemblyDoc)
+        public void Setup(AssemblyDocument assemblyDoc)
         {
             environment.Info = new Info()
             {
                 GUID = assemblyDoc.DisplayName.Substring(0, assemblyDoc.DisplayName.LastIndexOf('.')),
                 Name = assemblyDoc.DisplayName.Substring(0, assemblyDoc.DisplayName.LastIndexOf('.')),
-                Version = 1
+                Version = version
             };
 
             environment.Data.Parts = new Parts();
             environment.Data.Parts.Info = new Info()
             {
                 GUID = assemblyDoc.InternalName.Trim('{', '}'),
-                Version = 1,
+                Version = version,
                 // Name?
             };
 
@@ -56,7 +58,7 @@ namespace InventorMirabufExporter
                 {
                     GUID = docRef.InternalName.Trim('{', '}'),
                     Name = docRef.DisplayName.Substring(0, docRef.DisplayName.LastIndexOf('.')),
-                    Version = 1
+                    Version = version
                 };
 
                 try { MessageBox.Show(def.Info.GUID, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
@@ -122,7 +124,7 @@ namespace InventorMirabufExporter
                     {
                         GUID = doc.InternalName.Trim('{', '}'), // what should this be?
                         Name = doc.ComponentDefinition.SurfaceBodies[j].Name,
-                        Version = 1
+                        Version = version
                     };
 
                     solid.Part = doc.InternalName.Trim('{', '}'); // refers to PartDefinition GUID
@@ -133,7 +135,7 @@ namespace InventorMirabufExporter
                         {
                             GUID = doc.InternalName.Trim('{', '}'), // refers to PartDefinition GUID
                             Name = doc.ComponentDefinition.SurfaceBodies[j].Name, // refers to name of solid
-                            Version = 1
+                            Version = version
                         },
 
                         MaterialReference = doc.ComponentDefinition.Material.Name, // name of part material
@@ -172,13 +174,10 @@ namespace InventorMirabufExporter
                 }
                 */
 
-                AssemblyDocument asmDoc = (AssemblyDocument)assemblyDoc;
-                ComponentOccurrencesEnumerator occurence = asmDoc.ComponentDefinition.Occurrences.AllReferencedOccurrences[doc];
+                ComponentOccurrencesEnumerator occurence = assemblyDoc.ComponentDefinition.Occurrences.AllReferencedOccurrences[doc];
 
                 try { MessageBox.Show("Occurences: " + occurence.Count, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
                 catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
-
-                Random rand = new Random();
 
                 // Assembly > AssemblyData > Part > PartInstance Loop
                 for (int j = 1; j <= occurence.Count; j++)
@@ -188,20 +187,27 @@ namespace InventorMirabufExporter
                     {
                         GUID = "idk" + rand.Next(1, 100), // what should this be?
                         Name = occurence[j].Name,
-                        Version = 1
+                        Version = version
                     };
 
                     instance.PartDefinitionReference = docRef.InternalName;
 
-                    instance.Transform = new Transform()
-                    {
-                        SpatialMatrix = { 1, 2 }
-                    };
+                    instance.Transform = new Transform();
+                    instance.GlobalTransform = new Transform();
 
-                    instance.GlobalTransform = new Transform()
+                    double[] matrix = new double[16];
+
+                    occurence[j].Transformation.GetMatrixData(ref matrix);
+
+                    for (int k = 0; k < matrix.Length; k++)
                     {
-                        SpatialMatrix = { 1, 2 }
-                    };
+                        // Transform & GlobalTransform same for now...
+                        instance.Transform.SpatialMatrix.Add((float)matrix[k]);
+                        instance.GlobalTransform.SpatialMatrix.Add((float)matrix[k]);
+                    }
+
+                    try { MessageBox.Show($"Matrix: " + instance.Transform.SpatialMatrix, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+                    catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
 
                     /*
                     // needed?
@@ -212,7 +218,7 @@ namespace InventorMirabufExporter
                     }
                     */
 
-                    // needed?
+                    // not needed?
                     //instance.Appearance = "appearance";
 
                     instance.PhysicalMaterial = doc.ComponentDefinition.Material.Name;
@@ -221,23 +227,34 @@ namespace InventorMirabufExporter
                 }
             }
 
-            /*
-
             // Assembly > AssemblyData > Parts > UserData?
 
             // Assembly > AssemblyData > Joints?
 
+            /*
+
+            // Assembly > AssemblyData > Materials
             environment.Data.Materials = new Mirabuf.Material.Materials();
-            for(int i = 0; i < partCount; i++)
+
+            environment.Data.Materials.Info = new Info()
+            {
+                GUID = assemblyDoc.InternalName, // what should this be?
+                Version = version
+            };
+
+            for(int i = 1; i <= assemblyDoc.Materials.Count; i++)
             {
                 Mirabuf.Material.PhysicalMaterial material = new Mirabuf.Material.PhysicalMaterial();
 
                 material.Info = new Info()
                 {
-                    GUID = "rand" + i.ToString(),
-                    Name = "myrand" + i.ToString(),
-                    Version = 1
+                    GUID = "idk" + rand.Next(1, 100), // what should this be?
+                    Name = assemblyDoc.Materials[i].Name,
+                    Version = version
                 };
+
+                try { MessageBox.Show($"Material {i} Name: " + material.Info.Name, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+                catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
 
                 material.Description = "material";
 
@@ -270,10 +287,10 @@ namespace InventorMirabufExporter
                 // Deformable?
                 // matType?
 
-                environment.Data.Materials.PhysicalMaterials.Add("key", material);
+                environment.Data.Materials.PhysicalMaterials.Add(material.Info.Name, material);
             }
 
-            for(int i = 0; i < partCount; i++)
+            for (int i = 0; i < partCount; i++)
             {
                 Mirabuf.Material.Appearance appearance = new Mirabuf.Material.Appearance();
 
@@ -281,7 +298,7 @@ namespace InventorMirabufExporter
                 {
                     GUID = "rand" + i.ToString(),
                     Name = "myrand" + i.ToString(),
-                    Version = 1
+                    Version = version
                 };
 
                 appearance.Albedo = new Mirabuf.Color()
@@ -298,20 +315,24 @@ namespace InventorMirabufExporter
 
                 environment.Data.Materials.Appearances.Add("key", appearance);
             }
+            */
 
             // Assembly > Data > Signals?
 
-            MessageBox.Show(assemblyDoc.ReferencedDocuments.Count.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK);
+            MessageBox.Show("Referenced Docs: " + assemblyDoc.ReferencedDocuments.Count.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK);
 
             //environment.Data.Parts.PartDefinitions.Add();
 
             environment.Dynamic = false;
 
+            /*
+            // needed?
+            // Assembly > Physical Data
             environment.PhysicalData = new PhysicalProperties()
             { 
                 Density = 1,
-                Mass = 1,
-                Volume = 1,
+                Mass = assemblyDoc.ComponentDefinition.MassProperties.Mass,
+                Volume = assemblyDoc.ComponentDefinition.MassProperties.Volume,
                 Area = 1,
                 Com = new Vector3()
                 { 
@@ -320,31 +341,38 @@ namespace InventorMirabufExporter
                     Z = 1
                 }
             };
+            */
 
+            // Assembly > Design Hierarchy
             environment.DesignHierarchy = new GraphContainer();
+            Node node = new Node();
+            node.Value = assemblyDoc.InternalName;
 
-            for(int i = 0; i < partCount; i++)
+            // Recursion?
+            for (int i = 0; i < assemblyDoc.ReferencedDocuments.Count; i++)
             {
-                environment.DesignHierarchy.Nodes[i] = new Node();
+                Node subNode = new Node();
+                subNode.Value = assemblyDoc.ReferencedDocuments[i+1].InternalName.Trim('{', '}');
+                node.Children.Add(subNode);
 
-                environment.DesignHierarchy.Nodes[i].Value = "value";
-
+                try { MessageBox.Show($"Node {i}: " + node.Children[i].Value, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+                catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
                 // UserData?
-
-                // Recursion?
-                for(int j = 0; j < childCount; j++)
-                {
-                    environment.DesignHierarchy.Nodes[i].Children[j] = new Node();
-                    environment.DesignHierarchy.Nodes[i].Children[j].Value = "childValue";
-                    // UserData?
-                }
             }
 
+            environment.DesignHierarchy.Nodes.Add(node);
+
+            // UserData?
+
+            // Assembly > JointHierarchy
+
+            /*
+            // needed?
+            // Assembly > Transform
             environment.Transform = new Transform()
             {
                 SpatialMatrix = { 1, 2 }
             };
-
             */
         }
 

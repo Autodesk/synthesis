@@ -21,7 +21,7 @@ namespace InventorMirabufExporter
         public Application Application { get; private set; }
         private const string clientId = "{37135cf6-eae5-47c5-8ae8-c5204255b1fb}";
         private ButtonDefinition exporterButton;
-        private _Document doc;
+        private AssemblyDocument doc;
 
         public void Activate(ApplicationAddInSite addInSiteObject, bool firstTime)
         {
@@ -53,7 +53,7 @@ namespace InventorMirabufExporter
 
         private void ApplicationEvents_OnActivateDocument(_Document documentObject, EventTimingEnum beforeOrAfter, NameValueMap context, out HandlingCodeEnum handlingCode)
         {
-            doc = documentObject;
+            doc = (AssemblyDocument)documentObject;
             handlingCode = HandlingCodeEnum.kEventNotHandled;
         }
 
