@@ -16,7 +16,7 @@ message KeyExchange {
 }
 
 /// A theoretically better and simpler way to do things where the client simply syncs their state/desired state with the server
-message ServerMessageLite {
+message ServerMessage {
 
 	oneof server_msg_type {
 		LobbyInfo lobby_info = 1; // sent by server
@@ -59,7 +59,7 @@ message ServerMessageLite {
 }
 
 /// Don't use (here as a backup for now)
-message ServerMessage {
+message ServerMessageBackup {
 	
 	oneof server_msg_type {
                 LobbyInfo lobby_info = 1;
