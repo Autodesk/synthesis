@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using SynthesisAPI.EventBus;
 using TMPro;
 using System;
 
@@ -10,23 +11,51 @@ namespace Synthesis.UI.Dynamic {
         public const string ROBOTO_BOLD = "Roboto-Bold SDF";
         public const string ROBOTO_REGULAR = "Roboto-Regular SDF";
 
-        public ScoreboardPanel() : base(new Vector2(170, 100)) { }
+        public ScoreboardPanel() : base(new Vector2(200, 80)) { }
 
         private Label time, redScore, blueScore;
+
+        private const float VERTICAL_PADDING = 10f;
+        
+        public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
+            var offset = (-u.Parent!.RectOfChildren(u).yMin) + VERTICAL_PADDING;
+            u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 0f); // used to be 15f
+            return u;
+        };
 
         public override void Create() {
 
             CancelButton.RootGameObject.SetActive(false);
+            AcceptButton.RootGameObject.SetActive(false);
+            Title.RootGameObject.SetActive(false);
+            PanelImage.RootGameObject.SetActive(false);
+
             
-            Title.SetText("Scoreboard");
+            time = MainContent.CreateLabel(15f).ApplyTemplate(VerticalLayout).SetTopStretch(leftPadding: 0f, anchoredY: -30f).
+                SetText(targetTime.ToString()).SetHorizontalAlignment(HorizontalAlignmentOptions.Center).SetFontSize(40);
+            
 
-            var normalFont = SynthesisAssetCollection.GetFont(ROBOTO_REGULAR);
-            Func<Label, Label> nonHighlightedLabel =
-                l => l.SetFont(normalFont).SetFontSize(20).SetVerticalAlignment(VerticalAlignmentOptions.Middle).SetHorizontalAlignment(HorizontalAlignmentOptions.Left);
+            float leftRightPadding = 8;
+            float leftWidth = (MainContent.Size.x - leftRightPadding) / 2;
+            (Content leftContent, Content rightContent) = MainContent.SplitLeftRight(leftWidth, leftRightPadding);
+            
 
-            time = MainContent.CreateLabel(15f).ApplyTemplate(nonHighlightedLabel).SetTopStretch(leftPadding: 10f, anchoredY: 15f).SetText(targetTime.ToString());
-            redScore = MainContent.CreateLabel(15f).ApplyTemplate(nonHighlightedLabel).SetTopStretch(leftPadding: 10f, anchoredY: 30f).SetText("R: 0");
-            blueScore = MainContent.CreateLabel(15f).ApplyTemplate(nonHighlightedLabel).SetTopStretch(leftPadding: 10f, anchoredY: 45f).SetText("B: 0");
+            leftContent.CreateLabel(50f).ApplyTemplate(VerticalLayout).SetTopStretch(leftPadding: 0f, anchoredY: 10f).SetText("RED")
+                .SetFontSize(30).SetHorizontalAlignment(HorizontalAlignmentOptions.Center);
+            redScore = leftContent.CreateLabel(50f).ApplyTemplate(VerticalLayout).SetTopStretch(leftPadding: 10f, anchoredY: 60f).SetText("0")
+                .SetFontSize(50).SetHorizontalAlignment(HorizontalAlignmentOptions.Center);
+            rightContent.CreateLabel(50f).ApplyTemplate(VerticalLayout).SetTopStretch(leftPadding: 0f, anchoredY: 10f).SetText("BLUE")
+                .SetFontSize(30).SetHorizontalAlignment(HorizontalAlignmentOptions.Center);
+            blueScore = rightContent.CreateLabel(50f).ApplyTemplate(VerticalLayout).SetTopStretch(leftPadding: 0f, anchoredY: 60f).SetText("0")
+                .SetFontSize(50).SetHorizontalAlignment(HorizontalAlignmentOptions.Center);
+
+
+
+            EventBus.NewTypeListener<OnScoreEvent>(e =>
+            {
+                redScore.SetText($"R: {TempScoreManager.redScore}");
+                blueScore.SetText($"B: {TempScoreManager.blueScore}");
+            });
         }
         
         float targetTime = 135;
@@ -36,8 +65,6 @@ namespace Synthesis.UI.Dynamic {
             {
                 targetTime -= Time.deltaTime;
                 time.SetText(Mathf.RoundToInt(targetTime).ToString());
-                redScore.SetText($"R: {TempScoreManager.redScore}");
-                blueScore.SetText($"B: {TempScoreManager.blueScore}");
             }    
             else if (!matchEnd)
             {

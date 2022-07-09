@@ -186,7 +186,6 @@
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\IApiAdapter.cs" />
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\SelectableAdapter.cs" />
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\CameraAdapter.cs" />
-    <Compile Include="Assets\Scripts\UI\Panels\Variants\ScoreboardPanel.cs" />
     <Compile Include="Assets\Scripts\ModelManager\Models\Field.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\Variants\AddPanel\AddPanel.cs" />
     <Compile Include="Assets\Scripts\UI\Tabs\HomeTab.cs" />
