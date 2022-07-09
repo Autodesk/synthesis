@@ -1,4 +1,5 @@
-﻿using Org.BouncyCastle.Asn1.Nist;
+﻿using Google.Protobuf;
+using Org.BouncyCastle.Asn1.Nist;
 using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
@@ -22,10 +23,10 @@ namespace SynthesisServer
         private SymmetricEncryptor _encryptor;
 
         private ReaderWriterLockSlim _clientsLock;
-        private List<ClientData> _clients;
+        private Dictionary<string, ClientData> _clients; // Uses IPEndpoint.ToString() as key
 
         private ReaderWriterLockSlim _lobbiesLock;
-        private List<Lobby> _lobbies;
+        private List<Lobby> _lobbies; // probably this too
 
         public int Port { get; set; } = 10800;
         private static readonly Lazy<Server> lazy = new Lazy<Server>(() => new Server());
@@ -50,75 +51,96 @@ namespace SynthesisServer
             _udpSocket = new UdpClient(Port, AddressFamily.InterNetwork);
             _encryptor = new SymmetricEncryptor();
 
-            _clients = new List<ClientData>();
+            _clients = new Dictionary<string, ClientData>();
             _clientsLock = new ReaderWriterLockSlim();
 
 
-            _udpSocket.BeginReceive(RecieveCallback, Port);
+            _udpSocket.BeginReceive(RecieveCallback, null);
         }
-
+        /*
+            Data is send in this format: [4 byte int that denotes the message type] + [protobuf data (if is a Message it is encrypted and the iv is prepended]
+        */
         private void RecieveCallback(IAsyncResult asyncResult)
         {
-
             try
             {
-                IPEndPoint remoteEP = new IPEndPoint(IPAddress.Any, (int)asyncResult.AsyncState);
+                IPEndPoint remoteEP = new IPEndPoint(IPAddress.Any, 0);
                 byte[] buffer = _udpSocket.EndReceive(asyncResult, ref remoteEP);
                 if (BitConverter.IsLittleEndian) { Array.Reverse(buffer); } // make sure to do while sending
-                // decode and parse data and then send response
-                try
+
+                byte[] msgTypeBytes = buffer.Take(sizeof(int)).ToArray();
+                int msgType = BitConverter.ToInt32(msgTypeBytes, 0);
+                byte[] data = buffer.Skip(msgTypeBytes.Length).ToArray();
+
+                switch (msgType)
                 {
-                    byte[] msgTypeBytes = buffer.Take(sizeof(int)).ToArray();
-                    int msgType = BitConverter.ToInt32(msgTypeBytes, 0);
+                    // Key Exchange
+                    case (int)MessageType.Exchange:
 
-                    byte[] data = buffer.Skip(msgTypeBytes.Length).ToArray();
-
-                    switch (msgType)
-                    {
-                        // Key Exchange
-                        case (int)MessageType.Exchange:
-                            KeyExchange exchangeMessage = KeyExchange.Parser.ParseFrom(data);
-                            ClientData EstablishedClientData = null;
-                            _clientsLock.EnterUpgradeableReadLock();
-                            foreach (var x in _clients)
+                        KeyExchange exchangeMessage = KeyExchange.Parser.ParseFrom(data);
+                        ClientData EstablishedClientData = null;
+                     
+                        _clientsLock.EnterUpgradeableReadLock();
+                        if (_clients.ContainsKey(remoteEP.ToString()))
+                        {
+                            EstablishedClientData = _clients[remoteEP.ToString()];
+                        }
+                        else
+                        {
+                            _clientsLock.EnterWriteLock();
+                            EstablishedClientData = new ClientData(exchangeMessage.PublicKey, new DHParameters(new BigInteger(exchangeMessage.P), new BigInteger(exchangeMessage.G)))
                             {
-                                if (x.ClientID.Equals(exchangeMessage.ClientId))
-                                {
-                                    EstablishedClientData = x;
-                                }
-                            }
-                            if (EstablishedClientData == null)
-                            {
-                                _clientsLock.EnterWriteLock();
-                                _clients.Add(new ClientData(exchangeMessage.PublicKey, new DHParameters(new BigInteger(exchangeMessage.P), new BigInteger(exchangeMessage.G)))
-                                {
-                                    ClientID = exchangeMessage.ClientId,
-                                    ClientEndpoint = remoteEP
-                                });
-                                _clientsLock.ExitWriteLock();
-                            }
-
-                            //_udpSocket.BeginSend();
-                            _clientsLock.ExitUpgradeableReadLock();
-
-
-                            throw new NotImplementedException();
-                            break;
-
-                        // Encrypted Message
-                        case (int)MessageType.Message:
-                            throw new NotImplementedException();
-                            break;
+                                ClientID = Guid.NewGuid().ToString(),
+                                ClientEndpoint = remoteEP
+                            };
+                            _clients.Add(remoteEP.ToString(), EstablishedClientData);
+                            _clientsLock.ExitWriteLock();
+                        }
+                        _clientsLock.ExitUpgradeableReadLock();
                         
-                        // Invalid Message
-                        default:
-                            throw new NotImplementedException();
-                            break;
-                    }
+                        SendMessage(new KeyExchange()
+                        {
+                            ClientId = EstablishedClientData.ClientID,
+                            PublicKey = EstablishedClientData.GetPublicKey()
+                        }, _udpSocket);
 
-                } catch (Exception e)
-                {
-                    Console.WriteLine(e);
+                        break;
+
+                    // Encrypted Message
+                    case (int)MessageType.Message:
+
+                        ServerMessage receivedMessage = null;
+
+                        _clientsLock.EnterReadLock();
+                        if (_clients.ContainsKey(remoteEP.ToString()))
+                        {
+                            receivedMessage = ServerMessage.Parser.ParseFrom(_encryptor.Decrypt(data, _clients[remoteEP.ToString()].SymmetricKey));
+                        }
+
+                        switch (receivedMessage.ServerMsgTypeCase)
+                        {
+                            case ServerMessage.ServerMsgTypeOneofCase.ClientStatus:
+                                throw new NotImplementedException();
+                                break;
+                            default:
+                                SendEncryptedMessage(new ServerMessage()
+                                {
+                                    StatusMessage = new ServerMessage.Types.StatusMessage()
+                                    {
+                                        Level = ServerMessage.Types.StatusMessage.Types.Level.Error,
+                                        Msg = "Invalid Message Sent"
+                                    }
+                                }, _encryptor, _clients[remoteEP.ToString()].SymmetricKey, _udpSocket);
+                                break;
+                        }
+                        
+                        throw new NotImplementedException();
+                        break;
+
+                    // Invalid Message
+                    default:
+                        throw new NotImplementedException();
+                        break;
                 }
 
                 _udpSocket.BeginReceive(RecieveCallback, Port);
@@ -135,5 +157,23 @@ namespace SynthesisServer
         }
 
 
+        private void SendMessage(IMessage msg, UdpClient server)
+        {
+            byte[] data = new byte[msg.CalculateSize()];
+            msg.WriteTo(data);
+
+            if (BitConverter.IsLittleEndian) { Array.Reverse(data); }
+            server.BeginSend(data, data.Length, SendCallback, null);
+        }
+
+        private void SendEncryptedMessage(IMessage msg, SymmetricEncryptor encryptor, byte[] symmetricKey, UdpClient server)
+        {
+            byte[] data = new byte[msg.CalculateSize()];
+            msg.WriteTo(data);
+
+            byte[] encryptedData = encryptor.Encrypt(data, symmetricKey);
+            if (BitConverter.IsLittleEndian) { Array.Reverse(encryptedData); }
+            server.BeginSend(encryptedData, encryptedData.Length, SendCallback, null);
+        }
     }
 }
