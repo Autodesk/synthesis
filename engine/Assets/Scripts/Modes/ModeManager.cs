@@ -1,9 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
-using SynthesisAPI.Proto;
 using UnityEngine;
-using Material = UnityEngine.Material;
-using Synthesis.UI.Dynamic;
 
 public class ModeManager
 {
@@ -71,6 +67,19 @@ public class ModeManager
         });
     }
 
+    public static void ModalClosed()
+    {
+        // used to tell practice mode that the modal has closed due to a button
+        // so that the user doesn't have to press escape twice to open it again
+        if (CurrentMode == Mode.Practice)
+        {
+            practiceMode.CloseMenu();
+        } else if (CurrentMode == Mode.Match)
+        {
+            // match mode here if necessary
+        }
+    }
+
     public static void ConfigureGamepieceSpawnpoint()
     {
         _gamepieceSpawnpointObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -79,6 +88,12 @@ public class ModeManager
         _gamepieceSpawnpointObject.transform.tag = "gamepiece";
 
         _gamepieceSpawnpointObject.GetComponent<Collider>().enabled = false;
+        
+        FieldSimObject currentField = FieldSimObject.CurrentField;
+        if (currentField != null)
+        {
+            _gamepieceSpawnpointObject.transform.parent = currentField.FieldObject.transform;
+        }
         
         // make it transparent
         Renderer renderer = _gamepieceSpawnpointObject.GetComponent<Renderer>();
@@ -150,15 +165,24 @@ public class ModeManager
         if (currentField == null || gamepiece == null)
         {
             GameObject gameObject = GameObject.CreatePrimitive(type);
+            gameObject.transform.position = spawnPosition;
             gameObject.AddComponent<Rigidbody>();
             gamepiece = new GamepieceSimObject(type + " Gamepiece", gameObject);
         }
         else
         {
+            GameObject go = GameObject.Instantiate(gamepiece.GamepieceObject);
+            go.transform.parent = gamepiece.GamepieceObject.transform.parent;
+            go.transform.position = Vector3.zero;
+            Transform childTransform = go.transform.GetChild(0);
+
+            if (childTransform != null)
+            {
+                childTransform.position = spawnPosition;
+            }
+            
             gamepiece =
-                new GamepieceSimObject(gamepiece.Name, gamepiece.GamepieceObject);
-            gamepiece.GamepieceObject.transform.position = spawnPosition;
-            GameObject.Instantiate(gamepiece.GamepieceObject);
+                new GamepieceSimObject(gamepiece.Name, go);
         }
 
         _gamepieces.Add(gamepiece);

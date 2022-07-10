@@ -19,8 +19,12 @@ using Math = System.Math;
 
 namespace Synthesis.UI.Dynamic {
 
+    #region Abstracts
+
     public abstract class PanelDynamic {
-        public const float MAIN_CONTENT_HORZ_PADDING = 20f;
+        private float _leftContentPadding, _rightContentPadding;
+        public float LeftContentPadding => _leftContentPadding;
+        public float RightContentPadding => _rightContentPadding;
 
         private Vector2 _mainContentSize; // Shouldn't really be used after init is called
         private GameObject _unityObject;
@@ -39,8 +43,10 @@ namespace Synthesis.UI.Dynamic {
         private Content _mainContent;
         protected Content MainContent => _mainContent;
 
-        protected PanelDynamic(Vector2 mainContentSize) {
+        protected PanelDynamic(Vector2 mainContentSize, float leftContentPadding = 20f, float rightContentPadding = 20f) {
             _mainContentSize = mainContentSize;
+            _leftContentPadding = leftContentPadding;
+            _rightContentPadding = rightContentPadding;
         }
 
         public void Create_Internal(GameObject unityObject) {
@@ -74,11 +80,11 @@ namespace Synthesis.UI.Dynamic {
             var actualContentObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("content-base"), hiddenContentT);
             actualContentObj.name = "CentralContent";
             var contentRt = actualContentObj.GetComponent<RectTransform>();
-            contentRt.offsetMax = new Vector2(-MAIN_CONTENT_HORZ_PADDING, contentRt.offsetMax.y);
-            contentRt.offsetMin = new Vector2(MAIN_CONTENT_HORZ_PADDING, contentRt.offsetMin.y);
+            contentRt.offsetMax = new Vector2(-_rightContentPadding, contentRt.offsetMax.y);
+            contentRt.offsetMin = new Vector2(_leftContentPadding, contentRt.offsetMin.y);
             var modalRt = _unityObject.GetComponent<RectTransform>();
             modalRt.sizeDelta = new Vector2(
-                _mainContentSize.x + (MAIN_CONTENT_HORZ_PADDING * 2),
+                _mainContentSize.x + (_leftContentPadding + _rightContentPadding),
                 hiddenRt.sizeDelta.y + headerRt.sizeDelta.y + footerRt.sizeDelta.y
             );
             _mainContent = new Content(null!, actualContentObj, _mainContentSize);
@@ -292,6 +298,14 @@ namespace Synthesis.UI.Dynamic {
             RootRectTransform.sizeDelta = Size;
             return (this as T)!;
         }
+        public T ShiftOffsetMax<T>(Vector2 shift) where T : UIComponent {
+            RootRectTransform.offsetMax += shift;
+            return (this as T)!;
+        }
+        public T ShiftOffsetMin<T>(Vector2 shift) where T : UIComponent {
+            RootRectTransform.offsetMin += shift;
+            return (this as T)!;
+        }
         public T EnableEvents<T>() where T : UIComponent {
             _eventsActive = true;
             return (this as T)!;
@@ -302,7 +316,14 @@ namespace Synthesis.UI.Dynamic {
         }
     }
 
+    #endregion
+
+    #region Components
+
     public class Content : UIComponent {
+
+        private Image? _image;
+        public Image? Image => _image;
 
         /// <summary>
         /// Creates a Content UIComponent from an existing GameObject with a set parent
@@ -317,6 +338,11 @@ namespace Synthesis.UI.Dynamic {
                 Size = size.Value;
             } else {
                 Size = RootRectTransform.sizeDelta;
+            }
+
+            var uImg = unityObject.GetComponent<UImage>();
+            if (uImg != null) {
+                _image = new Image(this, unityObject);
             }
         }
 
@@ -397,6 +423,18 @@ namespace Synthesis.UI.Dynamic {
         }
         public ScrollView CreateScrollView() {
             throw new NotImplementedException();
+        }
+        public Content CreateSubContent(Vector2 size) {
+            var contentObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("content-base"), base.RootGameObject.transform);
+            var content = new Content(this, contentObj, size);
+            base.Children.Add(content);
+            return content;
+        }
+
+        public Content StepIntoImage(Action<Image> mod) {
+            if (_image != null)
+                mod(_image);
+            return this;
         }
     }
 
@@ -718,6 +756,8 @@ namespace Synthesis.UI.Dynamic {
         public event Action<Dropdown, int, TMP_Dropdown.OptionData> OnValueChanged;
         private Image _image;
         public Image Image => _image;
+        private Content _viewport;
+        public Content Viewport => _viewport;
         private TMP_Dropdown _tmpDropdown;
         public IReadOnlyList<TMP_Dropdown.OptionData> Options => _tmpDropdown.options.AsReadOnly();
 
@@ -727,6 +767,7 @@ namespace Synthesis.UI.Dynamic {
             }
 
             _image = new Image(this, unityObject.transform.Find("Header").Find("Arrow").gameObject);
+            _viewport = new Content(this, unityObject.transform.Find("Template").Find("Viewport").gameObject, null);
             _tmpDropdown = unityObject.transform.GetComponent<TMP_Dropdown>();
 
             _tmpDropdown.onValueChanged.AddListener(x => {
@@ -738,6 +779,9 @@ namespace Synthesis.UI.Dynamic {
             eventHandler.OnPointerClickedEvent += e => {
                 ShowOnTop();
             };
+
+            // TODO: Get some more control over the individual items in the dropdown
+            // _viewport.StepIntoImage(i => i.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT)));
         }
 
         public Dropdown SetOptions(string[] options) {
@@ -825,6 +869,8 @@ namespace Synthesis.UI.Dynamic {
             return this;
         }
     }
+
+    #endregion
 
     public class UIEventHandler : MonoBehaviour, IPointerClickHandler {
         public event Action<PointerEventData> OnPointerClickedEvent;

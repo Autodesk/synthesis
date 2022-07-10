@@ -28,6 +28,8 @@ public class FieldSimObject : SimObject {
     public FieldSimObject(string name, ControllableState state, Assembly assembly, GameObject groundedNode, List<GamepieceSimObject> gamepieces) : base(name, state) {
         MiraAssembly = assembly;
         GroundedNode = groundedNode;
+        // grounded node is what gets grabbed in god mode so it needs field tag to not get moved
+        GroundedNode.transform.tag = "field";
         FieldObject = groundedNode.transform.parent.gameObject;
         FieldBounds = FieldObject.transform.GetBounds();
         Gamepieces = gamepieces;

@@ -36,6 +36,15 @@ public static class GizmoManager
     /// </summary>
     public static void ExitGizmo()
     {
+        if (gizmo != null && gizmo.transform != null)
+        {
+            Transform parent = gizmo.transform.parent;
+            if (parent != null && parent.CompareTag("gamepiece"))
+            {
+                ModeManager.EndConfigureGamepieceSpawnpoint();
+            }
+        }
+
         Object.Destroy(gizmo);
     }
     public static void OnEnter()
