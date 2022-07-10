@@ -13,7 +13,7 @@ namespace InventorMirabufExporter
     {
         Assembly environment;
         Random rand = new Random(); // temp
-        uint version = 3;
+        uint version = 3; // temp
         char slash = System.IO.Path.DirectorySeparatorChar;
 
         public Serializer()
@@ -206,12 +206,26 @@ namespace InventorMirabufExporter
                         instance.GlobalTransform.SpatialMatrix.Add((float)matrix[k]);
                     }
 
+                    /*
+                    // Transform Debugging (requires engine testing)
                     try { MessageBox.Show($"Matrix: " + instance.Transform.SpatialMatrix, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
                     catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+                    */
 
-                    /*
                     // needed?
                     // PartInstance > Joints
+                    /*
+                    environment.Data.Joints = new Mirabuf.Joint.Joints();
+                    Mirabuf.Joint.Joint joint = new Mirabuf.Joint.Joint()
+                    {
+                        Info = new Info()
+                        {
+                            GUID = assemblyDoc
+                        }
+
+                        // Other Definition Data Here
+                    };
+
                     for (int j = 0; j < jointCount; j++)
                     {
                         instance.Joints[j] = "joint";
@@ -346,25 +360,31 @@ namespace InventorMirabufExporter
             // Assembly > Design Hierarchy
             environment.DesignHierarchy = new GraphContainer();
             Node node = new Node();
-            node.Value = assemblyDoc.InternalName;
+            node.Value = assemblyDoc.InternalName.Trim('{', '}');
 
             // Recursion?
             for (int i = 0; i < assemblyDoc.ReferencedDocuments.Count; i++)
             {
-                Node subNode = new Node();
-                subNode.Value = assemblyDoc.ReferencedDocuments[i+1].InternalName.Trim('{', '}');
-                node.Children.Add(subNode);
+                PartDocument doc = (PartDocument)assemblyDoc.ReferencedDocuments[i + 1];
+                ComponentOccurrencesEnumerator occurence = assemblyDoc.ComponentDefinition.Occurrences.AllReferencedOccurrences[doc];
 
-                try { MessageBox.Show($"Node {i}: " + node.Children[i].Value, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
-                catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
-                // UserData?
+                for (int j = 0; j < occurence.Count; j++)
+                {
+                    Node subNode = new Node();
+                    subNode.Value = occurence[j+1].Name;
+                    node.Children.Add(subNode);
+                    // UserData?
+                }
             }
 
             environment.DesignHierarchy.Nodes.Add(node);
 
-            // UserData?
+            // Assembly > Design Hierarchy > Node > UserData?
 
             // Assembly > JointHierarchy
+            environment.JointHierarchy = new GraphContainer();
+            Node grounded = new Node() { Value = "ground" };
+            environment.JointHierarchy.Nodes.Add(grounded);
 
             /*
             // needed?
