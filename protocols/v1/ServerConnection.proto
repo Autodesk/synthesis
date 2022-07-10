@@ -30,8 +30,7 @@ message ServerMessage {
 		
 		message Lobby {
 			string lobby_name = 1;
-			string lobby_id = 2;
-			repeated Client clients = 3;
+			repeated Client clients = 2;
 		}
 	}
 	
@@ -42,7 +41,7 @@ message ServerMessage {
 		string client_name = 2;
 		
 		string current_lobby_name = 3;
-		string current_lobby_id = 4;
+		int32 current_lobby_index = 4;
 		bool is_ready = 5;
 	}
 
