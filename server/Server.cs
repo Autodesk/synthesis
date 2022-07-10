@@ -26,7 +26,7 @@ namespace SynthesisServer
         private Dictionary<string, ClientData> _clients; // Uses IPEndpoint.ToString() as key
 
         private ReaderWriterLockSlim _lobbiesLock;
-        private List<Lobby> _lobbies; // probably this too
+        private Dictionary<string, Lobby> _lobbies; // Uses lobby name as key
 
         public int Port { get; set; } = 10800;
         private static readonly Lazy<Server> lazy = new Lazy<Server>(() => new Server());
@@ -54,6 +54,8 @@ namespace SynthesisServer
             _clients = new Dictionary<string, ClientData>();
             _clientsLock = new ReaderWriterLockSlim();
 
+            _lobbies = new Dictionary<string, Lobby>();
+            _lobbiesLock = new ReaderWriterLockSlim();
 
             _udpSocket.BeginReceive(RecieveCallback, null);
         }
@@ -174,6 +176,24 @@ namespace SynthesisServer
             byte[] encryptedData = encryptor.Encrypt(data, symmetricKey);
             if (BitConverter.IsLittleEndian) { Array.Reverse(encryptedData); }
             server.BeginSend(encryptedData, encryptedData.Length, SendCallback, null);
+        }
+
+        private void HandleClientStatus(ServerMessage.Types.Client desiredState, ClientData client, IPEndPoint clientEndpoint)
+        {
+            _clients[clientEndpoint.ToString()].Name = desiredState.ClientName; //probably needs a profanity filter
+            _lobbiesLock.EnterUpgradeableReadLock();
+
+            client.SetCurrentLobby(desiredState.CurrentLobbyName, _lobbies, _lobbiesLock);
+            client.IsReady = desiredState.IsReady;
+            if (desiredState.CurrentLobbyName != null && _lobbies[desiredState.CurrentLobbyName].Host.IsReady)
+            {
+                StartGame(_lobbies[desiredState.CurrentLobbyName]);
+            }
+        }
+
+        private void StartGame(Lobby lobby)
+        {
+            throw new NotImplementedException();
         }
     }
 }

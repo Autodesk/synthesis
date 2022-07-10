@@ -5,7 +5,9 @@ using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
 using System;
+using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 
 namespace SynthesisServer
 {
@@ -18,6 +20,10 @@ namespace SynthesisServer
         public string Name { get; set; }
         public string ClientID { get; set; } // May change to actually guid object probably not though
         public byte[] SymmetricKey { get; private set; }
+
+        public bool IsReady { get; set; }
+        private string _currentLobbyName = null;
+
 
         private AsymmetricCipherKeyPair _keyPair;
 
@@ -47,5 +53,39 @@ namespace SynthesisServer
         }
 
         public String GetPublicKey() { return ((DHPublicKeyParameters)_keyPair.Public).Y.ToString(); }
+
+        // Allows the server to not perform a bunch of iterations just to do nothing 
+        public void SetCurrentLobby(string? lobbyName, int? index, Dictionary<string, Lobby> lobbies, ReaderWriterLockSlim lobbiesLock)
+        {
+            if (_currentLobbyName != lobbyName)
+            {
+                if (lobbyName == null)
+                {
+                    lobbiesLock.EnterWriteLock();
+                    lobbies[_currentLobbyName].TryRemoveClient(this);
+                    lobbiesLock.ExitWriteLock();
+                } 
+                else if (lobbies.ContainsKey(lobbyName))
+                {
+                    lobbiesLock.EnterWriteLock();
+                    if (index == null)
+                    {
+                        lobbies[lobbyName].TryAddClient(this);
+                    }
+                    else
+                    {
+                        lobbies[lobbyName].TrySetClient(this, index);
+                    }
+                    lobbiesLock.ExitWriteLock();
+                }
+                else
+                {
+                    lobbiesLock.EnterWriteLock();
+                    lobbies.Add(lobbyName, new Lobby(this));
+                    lobbiesLock.ExitWriteLock();
+                }
+                _currentLobbyName = lobbyName;
+            }
+        }
     }
 }
