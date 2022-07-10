@@ -11,7 +11,9 @@ namespace Synthesis.UI.Dynamic {
         public const string ROBOTO_BOLD = "Roboto-Bold SDF";
         public const string ROBOTO_REGULAR = "Roboto-Regular SDF";
 
-        public ScoreboardPanel() : base(new Vector2(200, 80)) { }
+        private static float width = 200f;
+        private static float height = 80f;
+        public ScoreboardPanel() : base(new Vector2(width, height)) { }
 
         private Label time, redScore, blueScore;
 
@@ -30,6 +32,8 @@ namespace Synthesis.UI.Dynamic {
             Title.RootGameObject.SetActive(false);
             PanelImage.RootGameObject.SetActive(false);
 
+            Content panel = new Content(null, UnityObject, null);
+            panel.SetBottomStretch<Content>(Screen.width / 2 - width / 2 - 40f, Screen.width / 2 - width / 2 - 40f, 0);
             
             time = MainContent.CreateLabel(15f).ApplyTemplate(VerticalLayout).SetTopStretch(leftPadding: 0f, anchoredY: -30f).
                 SetText(targetTime.ToString()).SetHorizontalAlignment(HorizontalAlignmentOptions.Center).SetFontSize(40);

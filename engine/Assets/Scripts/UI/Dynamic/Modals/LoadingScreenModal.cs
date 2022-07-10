@@ -6,13 +6,13 @@ using UnityEngine.SceneManagement;
 public class LoadingScreenModal : ModalDynamic
 {
     
-    public LoadingScreenModal() : base(new Vector2(250, -92)) {}
+    public LoadingScreenModal() : base(new Vector2(300, -80)) {}
 
     public override void Create()
     {
-        Title.SetText("Loading...").SetFontSize(40);
-        Description.SetText("");
-        
+        MainContent.CreateLabel(40).SetFontSize(50).SetText("Loading...").SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Center).SetAnchoredPosition<Label>(new Vector2(0,10));
+        Description.RootGameObject.SetActive(false);
+        Title.RootGameObject.SetActive(false);        
         AcceptButton.RootGameObject.SetActive(false);
         CancelButton.RootGameObject.SetActive(false);
         ModalImage.RootGameObject.SetActive(false);
