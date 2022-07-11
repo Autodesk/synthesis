@@ -7,7 +7,7 @@ public class ChooseModeModal : ModalDynamic
 {
     public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
         var offset = (-u.Parent!.RectOfChildren(u).yMin) + 7.5f;
-        u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 15f);
+        u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 0);
         return u;
     };
     

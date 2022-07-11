@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &507563843828576300
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 507563843828576302}
+  - component: {fileID: 507563843828576301}
+  m_Layer: 0
+  m_Name: AssetCollection
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &507563843828576302
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 507563843828576300}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &507563843828576301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 507563843828576300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54bfbdde34f1b4e4dbc5835d140ef208, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SpriteAssets:
+  - {fileID: 21300000, guid: ef72a4385ffdd9242a9e24aa5638dd62, type: 3}
+  - {fileID: 21300000, guid: 4436bf7c141e43341a61c06bf38a973e, type: 3}
+  - {fileID: 21300000, guid: 012c3029f198f55459c207f9dbdedba7, type: 3}
+  - {fileID: 21300000, guid: 72be6b14d90eaeb46978a5d8689cc43f, type: 3}
+  - {fileID: 21300000, guid: d3987560964a74c2bb98d0fa3a1e7ab2, type: 3}
+  PanelPrefabs:
+  - {fileID: 2702697856074163897, guid: 4056ba4f4255aef4b8976df3b1ed9449, type: 3}
+  - {fileID: 8099976770030476227, guid: fb29a2ed7f63eea4fa63a5be33873450, type: 3}
+  - {fileID: 7021431401944511233, guid: 691a3a36f2486ec46bf53bbc1e6e3ef9, type: 3}
+  - {fileID: 8790275092831195369, guid: 24adb92c9b706ac4a837ab2ca2401e46, type: 3}
+  - {fileID: 8099976770030476227, guid: b50ce3a1c7e548d43b9ededdbfe5f390, type: 3}
+  DynamicModalPrefabs:
+  - {fileID: 8560781038113940189, guid: 59fdc8a262af98747a05686039d99ec3, type: 3}
+  - {fileID: 4191171026364460964, guid: dd3491e17aa84b846a7e35e41113844f, type: 3}
+  - {fileID: 8619128759257943195, guid: e1ab223c704241f4c9dc94db1a232229, type: 3}
+  - {fileID: 6908786337394242463, guid: 8411aa8dc027b8b4e858199fbe9181ad, type: 3}
+  - {fileID: 6803603400564139838, guid: 35121adfdbf29b042b6a90bd86a1601d, type: 3}
+  - {fileID: 626038177476704995, guid: 67841954fc797ca4099c4b62c87c3e0e, type: 3}
+  - {fileID: 9075645699274434798, guid: 9789bdf63e1c9b74ba6f0bdfb6e0b33a, type: 3}
+  - {fileID: 1454940937745632069, guid: 7ecea625ff3f88e4b838c4d9a8ee4181, type: 3}
+  - {fileID: 1527420503741984729, guid: 1a673a4ab85c41a49bf9ee2cd86865d0, type: 3}
+  - {fileID: 971906203682642134, guid: a464ec63d3b1fd447859b2f3152ae8b5, type: 3}
+  - {fileID: 2093592893864713276, guid: 5d702a8a7de68ca42a21adc2fe08a413, type: 3}
+  Fonts:
+  - {fileID: 11400000, guid: c1e0c7f3dc392244e995e9944765a81e, type: 2}
+  - {fileID: 11400000, guid: b815287ce3927b64f8c47aa7920ac72b, type: 2}
+  BlurVolumePrefab: {fileID: 6580295389658322125, guid: 394aa61974565994b902f14a87446d95, type: 3}
+  ReplaySlider: {fileID: 0}

@@ -18,44 +18,49 @@ public class PracticeSettingsModal : ModalDynamic
         return u;
     };
     
-    public PracticeSettingsModal() : base(new Vector2(500, 315))
-    {
-        
-    }
+    public PracticeSettingsModal() : base(new Vector2(500, 315)) { }
 
     public override void Create()
     {
         Title.SetText("Practice Settings");
-        Description.SetText("Configuration actions for practice mode");
+        // Description.SetText("Configuration actions for practice mode");
         
         AcceptButton.RootGameObject.SetActive(false);
         CancelButton
+            // .SetAnchoredPosition<Button>(new Vector2(20f, CancelButton.RootRectTransform.anchoredPosition.y))
             .StepIntoLabel(l => l.SetText("Close"))
             .AddOnClickedEvent(b =>
             {
                 ModeManager.ModalClosed();
             });
 
-        float leftRightPadding = 8;
-        float leftWidth = (MainContent.Size.x - leftRightPadding) / 2;
-        (Content leftContent, Content rightContent) = MainContent.SplitLeftRight(leftWidth, leftRightPadding);
-        
-        var gamepieceLabel = leftContent.CreateLabel()
+        var gamepieceLabel = MainContent.CreateLabel()
             .SetText("Gamepiece Spawning")
             .ApplyTemplate(Label.BigLabelTemplate)
             .ApplyTemplate(VerticalLayout);
-        
-        rightContent.SetTopStretch<Content>(leftWidth + leftRightPadding, 0, anchoredY: gamepieceLabel.Size.y + VERTICAL_PADDING);
 
-        var spawnButton = rightContent.CreateButton()
-            .StepIntoLabel(l => l.SetText("Spawn"))
+        float leftRightPadding = 8;
+        // float leftWidth = (MainContent.Size.x - leftRightPadding) / 2;
+        // (Content leftContent, Content rightContent) = MainContent.SplitLeftRight(leftWidth, leftRightPadding);
+
+        var top = MainContent.CreateSubContent(new Vector2(MainContent.Size.x, 110f))
             .ApplyTemplate(VerticalLayout)
+            .SetPivot<Content>(new Vector2(0.5f, 1f));
+
+        (Content topleft, Content topRight) = top.SplitLeftRight((top.Size.x - leftRightPadding) / 2f, leftRightPadding);
+        
+        // rightContent.SetTopStretch<Content>(leftWidth + leftRightPadding, 0, anchoredY: gamepieceLabel.Size.y + VERTICAL_PADDING);
+
+        var spawnButton = topRight.CreateButton()
+            .StepIntoLabel(l => l.SetText("Spawn"))
+            .SetTopStretch<Button>()
+            .ShiftOffsetMax<Button>(new Vector2(-7.5f, 0f))
             .AddOnClickedEvent(b => ModeManager.SpawnGamepiece(1f, PracticeMode.ChosenPrimitive));
         
-        var gamepieceDropdown = leftContent.CreateDropdown()
-            .ApplyTemplate(VerticalLayout)
+        var gamepieceDropdown = topleft.CreateDropdown()
             .SetHeight<Dropdown>(spawnButton.Size.y)
-            .SetWidth<Dropdown>(spawnButton.Size.x);
+            .SetTopStretch<Dropdown>()
+            .ShiftOffsetMin<Dropdown>(new Vector2(7.5f, 0f));
         
         FieldSimObject field = FieldSimObject.CurrentField;
 
@@ -87,8 +92,9 @@ public class PracticeSettingsModal : ModalDynamic
             PracticeMode.ChosenGamepiece = _gamepieceMap.First().Value;
         }
 
-        leftContent.CreateButton()
+        topleft.CreateButton()
             .ApplyTemplate(VerticalLayout)
+            .ShiftOffsetMin<Button>(new Vector2(7.5f, 0f))
             .StepIntoLabel(l => l.SetText("Gamepiece Spawnpoint"))
             .AddOnClickedEvent(b =>
             {
@@ -97,28 +103,38 @@ public class PracticeSettingsModal : ModalDynamic
                 ModeManager.ConfigureGamepieceSpawnpoint();
             });
 
-        var resetLabel = leftContent.CreateLabel()
+        var resetLabel = MainContent.CreateLabel()
             .SetText("Reset Gamepieces")
             .ApplyTemplate(Label.BigLabelTemplate)
             .ApplyTemplate(VerticalLayout);
 
-        leftContent.CreateButton()
+        var bottom = MainContent.CreateSubContent(new Vector2(MainContent.Size.x, 110f))
             .ApplyTemplate(VerticalLayout)
+            .SetPivot<Content>(new Vector2(0.5f, 1f));
+
+        (Content bottomLeft, Content bottomRight) = bottom.SplitLeftRight((bottom.Size.x - leftRightPadding) / 2f, leftRightPadding);
+
+        bottomLeft.CreateButton()
+            .SetTopStretch<Button>()
+            .ShiftOffsetMin<Button>(new Vector2(7.5f, 0f))
             .StepIntoLabel(label => label.SetText("Reset All"))
             .AddOnClickedEvent(b => ModeManager.ResetAll());
         
-        leftContent.CreateButton()
+        bottomLeft.CreateButton()
             .ApplyTemplate(VerticalLayout)
+            .ShiftOffsetMin<Button>(new Vector2(7.5f, 0f))
             .StepIntoLabel(label => label.SetText("Reset Gamepieces"))
             .AddOnClickedEvent(b => ModeManager.ResetGamepieces());
-        rightContent.CreateButton()
-            .ApplyTemplate(VerticalLayout)
+        bottomRight.CreateButton()
+            .SetTopStretch<Button>()
+            .ShiftOffsetMax<Button>(new Vector2(-7.5f, 0f))
             .StepIntoLabel(label => label.SetText("Reset Robot"))
-            .AddOnClickedEvent(b => ModeManager.ResetRobot())
-            .SetTopStretch<Button>(0, 0, VERTICAL_PADDING + (spawnButton.Size.y + VERTICAL_PADDING) * 2 + resetLabel.Size.y + VERTICAL_PADDING);
+            .AddOnClickedEvent(b => ModeManager.ResetRobot());
+            // .SetTopStretch<Button>(0, 0, VERTICAL_PADDING + (spawnButton.Size.y + VERTICAL_PADDING) * 2 + resetLabel.Size.y + VERTICAL_PADDING);
 
-        rightContent.CreateButton()
+        bottomRight.CreateButton()
             .ApplyTemplate(VerticalLayout)
+            .ShiftOffsetMax<Button>(new Vector2(-7.5f, 0f))
             .StepIntoLabel(label => label.SetText("Reset Field"))
             .AddOnClickedEvent(b => ModeManager.ResetField());
     }
