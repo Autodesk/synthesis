@@ -2,11 +2,10 @@ using Synthesis.PreferenceManager;
 using Synthesis.Runtime;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.InputManager;
-using SynthesisAPI.InputManager.InputEvents;
 using SynthesisAPI.InputManager.Inputs;
 using UnityEngine;
 
-public class PracticeMode : GameMode
+public class PracticeMode : IMode
 {
     private bool _lastEscapeValue = false;
     private bool _escapeMenuOpen = false;
@@ -16,9 +15,8 @@ public class PracticeMode : GameMode
 
     public const string TOGGLE_ESCAPE_MENU_INPUT = "input/escape_menu";
 
-    public override void Start()
+    public void Start()
     {
-        if (ModeManager.CurrentMode != ModeManager.Mode.Practice) return;
         DynamicUIManager.CreateModal<SelectFieldModal>();
         InputManager.AssignValueInput(TOGGLE_ESCAPE_MENU_INPUT, TryGetSavedInput(TOGGLE_ESCAPE_MENU_INPUT, new Digital("Escape", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
     }
@@ -32,10 +30,9 @@ public class PracticeMode : GameMode
         return defaultInput;
     }
 
-    public override void Update()
+    public void Update()
     {
-        if (ModeManager.CurrentMode != ModeManager.Mode.Practice) return;
-        bool openEscapeMenu = InputManager.MappedValueInputs[TOGGLE_ESCAPE_MENU_INPUT].Value == 1.0f;
+        bool openEscapeMenu = InputManager.MappedValueInputs[TOGGLE_ESCAPE_MENU_INPUT].Value == 1.0F;
         if (openEscapeMenu && !_lastEscapeValue)
         {
             if (_escapeMenuOpen)
@@ -63,5 +60,8 @@ public class PracticeMode : GameMode
         _escapeMenuOpen = false;
     }
 
-    public override void End(){}
+    public void End()
+    {
+        InputManager._mappedValueInputs.Remove(TOGGLE_ESCAPE_MENU_INPUT);
+    }
 }

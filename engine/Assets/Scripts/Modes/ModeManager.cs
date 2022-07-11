@@ -6,12 +6,16 @@ public class ModeManager
     public static Vector3 GamepieceSpawnpoint = new Vector3(0, 10, 0);
     private static GameObject _gamepieceSpawnpointObject;
 
-    private static PracticeMode practiceMode;
-    
-    public static Mode CurrentMode
+    private static IMode _currentMode;
+    public static IMode CurrentMode
     {
-        get;
-        set;
+        get => _currentMode;
+        set
+        {
+            if (_currentMode != null)
+                _currentMode.End();
+            _currentMode = value;
+        }
     }
 
     private static Dictionary<GameObject, Vector3> _initialPositions = new Dictionary<GameObject, Vector3>();
@@ -34,14 +38,15 @@ public class ModeManager
 
     public static void Start()
     {
-        practiceMode = new PracticeMode();
-        practiceMode.Start();
+        // should this be here? or somewhere else, or not at all?
+        if (CurrentMode == null)
+            CurrentMode = new PracticeMode();
+        CurrentMode.Start();
     }
     
     public static void Update()
     {
-        if (CurrentMode == Mode.Practice)
-            practiceMode.Update();
+        CurrentMode.Update();
     }
 
     public static void SetInitialState(GameObject robot)
@@ -60,13 +65,7 @@ public class ModeManager
     {
         // used to tell practice mode that the modal has closed due to a button
         // so that the user doesn't have to press escape twice to open it again
-        if (CurrentMode == Mode.Practice)
-        {
-            practiceMode.CloseMenu();
-        } else if (CurrentMode == Mode.Match)
-        {
-            // match mode here if necessary
-        }
+        CurrentMode.CloseMenu();
     }
 
     public static void ConfigureGamepieceSpawnpoint()
@@ -175,11 +174,5 @@ public class ModeManager
         }
 
         _gamepieces.Add(gamepiece);
-    }
-
-    public enum Mode
-    {
-        Practice,
-        Match
     }
 }

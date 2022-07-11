@@ -61,12 +61,14 @@ public class PracticeSettingsModal : ModalDynamic
 
         if (field == null)
         {
-            gamepieceDropdown.SetOptions(Enum.GetNames(typeof(PrimitiveType)))
+            string[] primitives = Enum.GetNames(typeof(PrimitiveType));
+            gamepieceDropdown.SetOptions(primitives)
                 .SetValue(0)
                 .AddOnValueChangedEvent((d, i, data) =>
                 {
                     PracticeMode.ChosenPrimitive = (PrimitiveType) Enum.Parse(typeof(PrimitiveType), data.text);
                 });
+            PracticeMode.ChosenPrimitive = (PrimitiveType) Enum.Parse(typeof(PrimitiveType), primitives[0]);
         }
         else
         {

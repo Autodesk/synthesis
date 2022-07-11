@@ -26,7 +26,7 @@ public class ChooseModeModal : ModalDynamic
             .ApplyTemplate(VerticalLayout)
             .AddOnClickedEvent(b =>
             {
-                ModeManager.CurrentMode = ModeManager.Mode.Practice;
+                ModeManager.CurrentMode = new PracticeMode();
                 SceneManager.LoadScene("MainScene");
             });
 
@@ -35,7 +35,7 @@ public class ChooseModeModal : ModalDynamic
             .ApplyTemplate(VerticalLayout)
             .AddOnClickedEvent(b =>
             {
-                ModeManager.CurrentMode = ModeManager.Mode.Match;
+                // ModeManager.CurrentMode = new MatchMode();
                 SceneManager.LoadScene("MainScene");
             });
     }
