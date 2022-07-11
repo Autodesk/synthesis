@@ -13,7 +13,7 @@ namespace InventorMirabufExporter
     {
         Assembly environment;
         Random rand = new Random(); // temp
-        uint version = 3; // temp
+        uint version = 4; // temp
         char slash = System.IO.Path.DirectorySeparatorChar;
 
         public Serializer()
@@ -212,25 +212,7 @@ namespace InventorMirabufExporter
                     catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
                     */
 
-                    // needed?
-                    // PartInstance > Joints
-                    /*
-                    environment.Data.Joints = new Mirabuf.Joint.Joints();
-                    Mirabuf.Joint.Joint joint = new Mirabuf.Joint.Joint()
-                    {
-                        Info = new Info()
-                        {
-                            GUID = assemblyDoc
-                        }
-
-                        // Other Definition Data Here
-                    };
-
-                    for (int j = 0; j < jointCount; j++)
-                    {
-                        instance.Joints[j] = "joint";
-                    }
-                    */
+                    // PartInstance > Joints?
 
                     // not needed?
                     //instance.Appearance = "appearance";
@@ -243,7 +225,41 @@ namespace InventorMirabufExporter
 
             // Assembly > AssemblyData > Parts > UserData?
 
-            // Assembly > AssemblyData > Joints?
+            // Assembly > AssemblyData > Joints
+            environment.Data.Joints = new Mirabuf.Joint.Joints();
+            environment.Data.Joints.Info = new Info()
+            {
+                GUID = "completelyrandomjointguid",
+                Version = version
+            };
+
+            Mirabuf.Joint.Joint jointDef = new Mirabuf.Joint.Joint()
+            {
+                Info = new Info()
+                {
+                    GUID = "groundedJointGUID",
+                    Name = "grounded",
+                    Version = version
+                }
+
+                // Potentially More Definition Data Here
+            };
+
+            environment.Data.Joints.JointDefinitions.Add(jointDef.Info.Name, jointDef);
+
+            Mirabuf.Joint.JointInstance jointInstance = new Mirabuf.Joint.JointInstance()
+            {
+                Info = new Info()
+                {
+                    GUID = "uniqueJointInstanceGUID",
+                    Name = "grounded",
+                    Version = version
+                },
+
+                JointReference = jointDef.Info.GUID, // will need better definition detection
+
+                Parts = new GraphContainer()
+            };
 
             /*
 
@@ -373,9 +389,20 @@ namespace InventorMirabufExporter
                     Node subNode = new Node();
                     subNode.Value = occurence[j+1].Name;
                     node.Children.Add(subNode);
+
+                    // Check For Grounded Joint
+                    if (occurence[j+1].Grounded)
+                    {
+                        MessageBox.Show("Grounded Occurence: " + occurence[j+1].Name, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK);
+                        jointInstance.Parts.Nodes.Add(subNode);
+                    }
+
                     // UserData?
                 }
             }
+
+            // Assembly > Data > Joints > JointInstances
+            environment.Data.Joints.JointInstances.Add(jointInstance.Info.Name, jointInstance);
 
             environment.DesignHierarchy.Nodes.Add(node);
 
