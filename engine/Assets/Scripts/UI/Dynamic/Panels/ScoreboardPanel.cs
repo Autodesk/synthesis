@@ -8,9 +8,6 @@ using System;
 namespace Synthesis.UI.Dynamic {
     public class ScoreboardPanel : PanelDynamic {
 
-        public const string ROBOTO_BOLD = "Roboto-Bold SDF";
-        public const string ROBOTO_REGULAR = "Roboto-Regular SDF";
-
         private static float width = 200f;
         private static float height = 80f;
         public ScoreboardPanel() : base(new Vector2(width, height)) { }

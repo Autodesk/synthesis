@@ -200,6 +200,7 @@
     <Compile Include="Assets\Scripts\UI\Panels\Variants\ExitPanel.cs" />
     <Compile Include="Assets\Scripts\Importer\Importer.cs" />
     <Compile Include="Assets\Scripts\Test\DebugJointAxes.cs" />
+    <Compile Include="Assets\Scripts\UI\Dynamic\Panels\SpawnLocationPanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Scripts\CoreEngine.asmdef" />
