@@ -55,7 +55,7 @@ public class PracticeSettingsModal : ModalDynamic
             .StepIntoLabel(l => l.SetText("Spawn"))
             .SetTopStretch<Button>()
             .ShiftOffsetMax<Button>(new Vector2(-7.5f, 0f))
-            .AddOnClickedEvent(b => ModeManager.SpawnGamepiece(1f, PracticeMode.ChosenPrimitive));
+            .AddOnClickedEvent(b => PracticeMode.SpawnGamepiece(1f, PracticeMode.ChosenPrimitive));
         
         var gamepieceDropdown = topleft.CreateDropdown()
             .SetHeight<Dropdown>(spawnButton.Size.y)
@@ -100,7 +100,7 @@ public class PracticeSettingsModal : ModalDynamic
             {
                 DynamicUIManager.CloseActiveModal();
                 ModeManager.ModalClosed();
-                ModeManager.ConfigureGamepieceSpawnpoint();
+                PracticeMode.ConfigureGamepieceSpawnpoint();
             });
 
         var resetLabel = MainContent.CreateLabel()
@@ -118,25 +118,25 @@ public class PracticeSettingsModal : ModalDynamic
             .SetTopStretch<Button>()
             .ShiftOffsetMin<Button>(new Vector2(7.5f, 0f))
             .StepIntoLabel(label => label.SetText("Reset All"))
-            .AddOnClickedEvent(b => ModeManager.ResetAll());
+            .AddOnClickedEvent(b => PracticeMode.ResetAll());
         
         bottomLeft.CreateButton()
             .ApplyTemplate(VerticalLayout)
             .ShiftOffsetMin<Button>(new Vector2(7.5f, 0f))
             .StepIntoLabel(label => label.SetText("Reset Gamepieces"))
-            .AddOnClickedEvent(b => ModeManager.ResetGamepieces());
+            .AddOnClickedEvent(b => PracticeMode.ResetGamepieces());
         bottomRight.CreateButton()
             .SetTopStretch<Button>()
             .ShiftOffsetMax<Button>(new Vector2(-7.5f, 0f))
             .StepIntoLabel(label => label.SetText("Reset Robot"))
-            .AddOnClickedEvent(b => ModeManager.ResetRobot());
+            .AddOnClickedEvent(b => PracticeMode.ResetRobot());
             // .SetTopStretch<Button>(0, 0, VERTICAL_PADDING + (spawnButton.Size.y + VERTICAL_PADDING) * 2 + resetLabel.Size.y + VERTICAL_PADDING);
 
         bottomRight.CreateButton()
             .ApplyTemplate(VerticalLayout)
             .ShiftOffsetMax<Button>(new Vector2(-7.5f, 0f))
             .StepIntoLabel(label => label.SetText("Reset Field"))
-            .AddOnClickedEvent(b => ModeManager.ResetField());
+            .AddOnClickedEvent(b => PracticeMode.ResetField());
     }
     
     public override void Update(){}
