@@ -46,7 +46,7 @@ namespace Synthesis.UI.Dynamic
                     ModeManager.ModalClosed();
                 });
 
-            MainContent.CreateLabel().ApplyTemplate(VerticalLayout).SetText("Spawn Positions");
+            MainContent.CreateLabel(50f).ApplyTemplate(VerticalLayout).SetText("Spawn Positions");
             var spawnPosition = MainContent.CreateDropdown().ApplyTemplate(Dropdown.VerticalLayoutTemplate)
                 .SetOptions(new string[] { "Left", "Middle", "Right" })
                 .AddOnValueChangedEvent((d, i, data) => { }
