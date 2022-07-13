@@ -10,15 +10,13 @@ namespace SynthesisServer
         // TODO: CATCH INDEX OUT OF BOUNDS
         //public string? Password { get; set; }
         public ClientData Host { get; private set; }
-        public bool ShouldDie { get; private set; }
+        public ClientData?[] Clients { get { return _clients; } }
 
         private ReaderWriterLockSlim _clientsLock;
-        private readonly ClientData[] _clients;
+        private readonly ClientData?[] _clients;
 
         public Lobby(ClientData host)
         {
-            ShouldDie = false;
-
             _clients = new ClientData[6];
             _clientsLock = new ReaderWriterLockSlim();
 
@@ -35,40 +33,42 @@ namespace SynthesisServer
             _clientsLock.ExitWriteLock();
         }
 
-        public bool TrySetClient(ClientData client, int index)
+        public bool TrySetClient(ClientData client, int? index = null)
         {
+            // If no index is specified, it will try to add the client to an empty index so long as it does not already have a spot
             _clientsLock.EnterWriteLock();
-            if (_clients[index] == null)
+            if (index == null)
             {
                 for (int i = 0; i < _clients.Length; i++)
                 {
                     if (client.Equals(_clients[i]))
                     {
-                        _clients[i] = null;
+                        _clientsLock.ExitWriteLock();
+                        return false;
                     }
                 }
-                _clients[index] = client;
-                return true;
-            }
-            return false;
-        }
-
-        public bool TryAddClient(ClientData client)
-        {
-            _clientsLock.EnterWriteLock();
-            for (int i = 0; i < _clients.Length; i++)
-            {
-                if (client.Equals(_clients[i]))
+                for (int i = 0; i < _clients.Length; i++)
                 {
-                    _clientsLock.ExitWriteLock();
-                    return false;
+                    if (_clients[i] == null)
+                    {
+                        _clients[i] = client;
+                        _clientsLock.ExitWriteLock();
+                        return true;
+                    }
                 }
             }
-            for (int i = 0; i < _clients.Length; i++)
+            else
             {
-                if (_clients[i] == null)
+                if (_clients[(int)index] == null)
                 {
-                    _clients[i] = client;
+                    for (int i = 0; i < _clients.Length; i++)
+                    {
+                        if (client.Equals(_clients[i]))
+                        {
+                            _clients[i] = null;
+                        }
+                    }
+                    _clients[(int)index] = client;
                     _clientsLock.ExitWriteLock();
                     return true;
                 }
@@ -77,14 +77,15 @@ namespace SynthesisServer
             return false;
         }
 
+
         public bool TryRemoveClient(int index)
         {
             _clientsLock.EnterWriteLock();
             if (_clients[index] != null)
             {
-                if (_clients[index].Equals(Host) && !TryFindNewHost())
+                if (Host.Equals(_clients[index]))
                 {
-                    ShouldDie = true;
+                    TryFindNewHost();
                 }
                 _clients[index] = null;
                 _clientsLock.ExitWriteLock();
@@ -97,9 +98,8 @@ namespace SynthesisServer
         public bool TryRemoveClient(ClientData client)
         {
             _clientsLock.EnterWriteLock();
-            if (client.Equals(Host) && !TryFindNewHost())
-            {
-                ShouldDie = true;
+            if (client.Equals(Host)) {
+                TryFindNewHost();
             }
             for (int i = 0; i < _clients.Length; i++)
             {
