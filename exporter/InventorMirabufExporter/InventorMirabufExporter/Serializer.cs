@@ -61,7 +61,7 @@ namespace InventorMirabufExporter
                     Version = version
                 };
 
-                try { MessageBox.Show(def.Info.GUID, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+                try { MessageBox.Show($"Part Def {i} GUID: " + def.Info.GUID, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
                 catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
 
                 PartDocument doc = (PartDocument)docRef;
@@ -122,7 +122,7 @@ namespace InventorMirabufExporter
 
                     solid.Info = new Info()
                     {
-                        GUID = doc.InternalName.Trim('{', '}'), // what should this be?
+                        GUID = doc.ComponentDefinition.SurfaceBodies[j].Name, // should be unique to solid
                         Name = doc.ComponentDefinition.SurfaceBodies[j].Name,
                         Version = version
                     };
@@ -133,15 +133,41 @@ namespace InventorMirabufExporter
                     {
                         Info = new Info()
                         {
-                            GUID = doc.InternalName.Trim('{', '}'), // refers to PartDefinition GUID
+                            GUID = doc.ComponentDefinition.SurfaceBodies[j].Name, // should refer to solid GUID
                             Name = doc.ComponentDefinition.SurfaceBodies[j].Name, // refers to name of solid
                             Version = version
                         },
 
                         MaterialReference = doc.ComponentDefinition.Material.Name, // name of part material
-                        
-                        // Mesh Data Here...
+
+                        Mesh = new Mesh()
                     };
+
+                    foreach (Vertex vert in doc.ComponentDefinition.SurfaceBodies[j].Vertices)
+                    {
+                        solid.TriangleMesh.Mesh.Verts.Add((float)vert.Point.X);
+                        solid.TriangleMesh.Mesh.Verts.Add((float)vert.Point.Y);
+                        solid.TriangleMesh.Mesh.Verts.Add((float)vert.Point.Z);
+                    }
+
+                    int FacetCount, VertexCount;
+                    //int[] VertexIndicies;
+                    //double[] VertexCoordinates, NormalVectors, TextureCoordinates;
+                    var VertexIndices = new int[] { };
+                    var VertexCoordinates = new double[] { };
+                    var NormalVectors = new double[] { };
+                    var TextureCoordinates = new double[] { };
+
+                    doc.ComponentDefinition.SurfaceBodies[j].CalculateFacetsAndTextureMap((double)0.01, out VertexCount, out FacetCount, out VertexCoordinates, out NormalVectors, out VertexIndices, out TextureCoordinates);
+
+                    foreach (double normal in NormalVectors)
+                        solid.TriangleMesh.Mesh.Normals.Add((float)normal);
+
+                    foreach (double uv in TextureCoordinates)
+                        solid.TriangleMesh.Mesh.Uv.Add((float)uv);
+
+                    foreach (double index in VertexIndices)
+                        solid.TriangleMesh.Mesh.Indices.Add((int)index);
 
                     // might need some tweaking
                     solid.AppearanceOverride = doc.ComponentDefinition.SurfaceBodies[j].Appearance.Name;
@@ -185,7 +211,7 @@ namespace InventorMirabufExporter
                     PartInstance instance = new PartInstance();
                     instance.Info = new Info()
                     {
-                        GUID = "idk" + rand.Next(1, 100), // what should this be?
+                        GUID = occurence[j].Name,
                         Name = occurence[j].Name,
                         Version = version
                     };
@@ -256,30 +282,32 @@ namespace InventorMirabufExporter
                     Version = version
                 },
 
-                JointReference = jointDef.Info.GUID, // will need better definition detection
+                JointReference = jointDef.Info.GUID,
 
                 Parts = new GraphContainer()
             };
-
-            /*
 
             // Assembly > AssemblyData > Materials
             environment.Data.Materials = new Mirabuf.Material.Materials();
 
             environment.Data.Materials.Info = new Info()
             {
-                GUID = assemblyDoc.InternalName, // what should this be?
+                GUID = "uniqueMaterialsGUID",
                 Version = version
             };
 
-            for(int i = 1; i <= assemblyDoc.Materials.Count; i++)
+            try { MessageBox.Show($"Total Materials: " + assemblyDoc.MaterialAssets.Count, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+            catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+
+            // Assembly > AssemblyData > Materials > Physical Materials
+            for (int i = 1; i <= assemblyDoc.MaterialAssets.Count; i++)
             {
                 Mirabuf.Material.PhysicalMaterial material = new Mirabuf.Material.PhysicalMaterial();
 
                 material.Info = new Info()
                 {
-                    GUID = "idk" + rand.Next(1, 100), // what should this be?
-                    Name = assemblyDoc.Materials[i].Name,
+                    GUID = "unique" + rand.Next(1, 100), // can be same as name?
+                    Name = assemblyDoc.MaterialAssets[i].Name,
                     Version = version
                 };
 
@@ -320,32 +348,48 @@ namespace InventorMirabufExporter
                 environment.Data.Materials.PhysicalMaterials.Add(material.Info.Name, material);
             }
 
-            for (int i = 0; i < partCount; i++)
+            // Assembly > AssemblyData > Materials > Appearances
+            for (int i = 1; i <= assemblyDoc.AppearanceAssets.Count; i++)
             {
                 Mirabuf.Material.Appearance appearance = new Mirabuf.Material.Appearance();
 
                 appearance.Info = new Info()
                 {
-                    GUID = "rand" + i.ToString(),
-                    Name = "myrand" + i.ToString(),
+                    GUID = "unique" + rand.Next(1, 100), // can be same as name?
+                    Name = assemblyDoc.AppearanceAssets[i].Name,
                     Version = version
                 };
 
                 appearance.Albedo = new Mirabuf.Color()
                 {
-                    R = 1,
-                    G = 1,
-                    B = 1,
-                    A = 1
+                    R = 127,
+                    G = 127,
+                    B = 127,
+                    A = 127
                 };
 
-                appearance.Roughness = 1;
-                appearance.Metallic = 1;
-                appearance.Specular = 1;
+                /*
+                // Get Actual Appearance Data
+                byte red, green, blue;
+                assemblyDoc.RenderStyles[assemblyDoc.AppearanceAssets[i]].GetAmbientColor(out red, out green, out blue);
 
-                environment.Data.Materials.Appearances.Add("key", appearance);
+                appearance.Albedo.R = red;
+                appearance.Albedo.G = green;
+                appearance.Albedo.B = blue;
+
+
+                try { MessageBox.Show($"Appearance {i} Colors: " + "R: " + appearance.Albedo.R +
+                    System.Environment.NewLine + "G: " + appearance.Albedo.G +
+                    System.Environment.NewLine + "B: " + appearance.Albedo.B, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+                catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+                */
+
+                appearance.Roughness = 0.5;
+                appearance.Metallic = 0.5;
+                appearance.Specular = 0.5;
+
+                environment.Data.Materials.Appearances.Add(appearance.Info.GUID, appearance);
             }
-            */
 
             // Assembly > Data > Signals?
 
@@ -353,6 +397,7 @@ namespace InventorMirabufExporter
 
             //environment.Data.Parts.PartDefinitions.Add();
 
+            // Assembly > Dynamic
             environment.Dynamic = false;
 
             /*
@@ -390,6 +435,7 @@ namespace InventorMirabufExporter
                     subNode.Value = occurence[j+1].Name;
                     node.Children.Add(subNode);
 
+                    // Assembly > Data > Joints > JointInstances > Parts > Nodes
                     // Check For Grounded Joint
                     if (occurence[j+1].Grounded)
                     {
@@ -421,6 +467,8 @@ namespace InventorMirabufExporter
                 SpatialMatrix = { 1, 2 }
             };
             */
+
+            Serialize();
         }
 
         public void Serialize()
