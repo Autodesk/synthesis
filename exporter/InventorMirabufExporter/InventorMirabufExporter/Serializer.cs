@@ -216,7 +216,7 @@ namespace InventorMirabufExporter
                         Version = version
                     };
 
-                    instance.PartDefinitionReference = docRef.InternalName;
+                    instance.PartDefinitionReference = docRef.InternalName.Trim('{', '}');
 
                     instance.Transform = new Transform();
                     instance.GlobalTransform = new Transform();
@@ -477,7 +477,7 @@ namespace InventorMirabufExporter
             {
                 using (var output = System.IO.File.Create
                     (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData)
-                    + slash + "Autodesk" + slash + "Synthesis" + slash + "Mira" + slash + "test.mira"))
+                    + slash + "Autodesk" + slash + "Synthesis" + slash + "Mira" + slash + "Fields" + slash + "test.mira"))
                 {
                     environment.WriteTo(output);
                 }
