@@ -1,10 +1,15 @@
 syntax = "proto3";
 
-/// Used to denote which type the message should be deserialized as
-enum MessageType {
-	INVALID = 0;
-	EXCHANGE = 1;
-	MESSAGE = 2;
+import "google/protobuf/any.proto";
+
+message MessageHeader {
+	bool is_encrypted = 1;
+	google.protobuf.Any message_type = 2;
+}
+
+message GenericResponse {
+	bool success = 1;
+	string log_message = 2;
 }
 
 // Sent by both clients and server to establish shared secrets and client_ids
@@ -15,13 +20,122 @@ message KeyExchange {
 	string client_id = 4; /// Determined by server and sent back. Whatever the client sends is ignored
 }
 
-/// A theoretically better and simpler way to do things where the client simply syncs their state/desired state with the server
-message ServerMessage {
+message LobbyInfo {
+	repeated Lobby lobbies = 1;
+	string current_lobby = 2;
+		
+	message Lobby {
+		string lobby_name = 1;
+		string lobby_id = 2;
+		map<string, string> clients = 3;
+	}
+}
+
+message Heartbeat {
+	string client_id = 1;
+}
+
+
+message CreateLobbyRequest {
+	string client_id = 1;
+	string lobby_name = 2;
+}
+
+message CreateLobbyResponse {
+	string client_id = 1;
+	string lobby_name = 2;
+	string lobby_id = 3;
+	GenericResponse generic_response = 4;
+}
+
+
+message DeleteLobbyRequest {
+	string client_id = 1;
+	string lobby_id = 2;
+}
+
+message DeleteLobbyResponse {
+	string client_id = 1;
+	string lobby_id = 2;
+	GenericResponse generic_response = 3;
+}
+
+
+message JoinLobbyRequest {
+	string client_id = 1;
+	string lobby_id = 2;
+}
+
+message JoinLobbyResponse {
+	string client_id = 1;
+	string lobby_id = 2;
+	GenericResponse generic_response = 3;
+}
+
+
+message LeaveLobbyRequest {
+	string client_id = 1;
+	string lobby_id = 2;
+}
+
+message LeaveLobbyResponse {
+	string client_id = 1;
+	string lobby_id = 2;
+	GenericResponse generic_response = 3;
+}
+
+
+message StartLobbyRequest {
+	string client_id = 1;
+	string lobby_id = 2;
+}
+
+message StartLobbyResponse {
+	string client_id = 1;
+	string lobby_id = 2;
+	GenericResponse generic_response = 3;
+}
+
+
+message SwapRequest {
+	string client_id = 1;
+	string lobby_id = 2;
+
+	int32 first_postion = 3;
+	int32 second_postion = 4;
+}
+
+message SwapResponse {
+	string client_id = 1;
+	string lobby_id = 2;
+
+	int32 first_postion = 3;
+	int32 second_postion = 4;
+	GenericResponse generic_response = 5;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/// don't use
+message ServerMessageLite {
 
 	oneof server_msg_type {
 		LobbyInfo lobby_info = 1; // sent by server
 		StatusMessage status_message = 2; // sent by server
 		Client client_status = 3; // sent by client
+
+		GameInfo game_info = 4; // sent by server
+		FoundGame game_found = 5; // sent by client (host)
 	}
 
 	/// Updates sent by the server that contain all the lobbies and their data
@@ -44,7 +158,8 @@ message ServerMessage {
 		int32 current_lobby_index = 4;
 		bool is_ready = 5;
 	}
-
+	
+	/// messages the server can send to the clients for debugging
 	message StatusMessage {
 		string msg = 1;
 		Level level = 2;
@@ -55,88 +170,22 @@ message ServerMessage {
 			ERROR = 2;
 		}	
 	}
-}
-
-/// Don't use (here as a backup for now)
-message ServerMessageBackup {
 	
-	oneof server_msg_type {
-                LobbyInfo lobby_info = 1;
+	/// Sent to all clients when trying to establish p2p connection
+	message GameInfo {
+		string lobby_name = 1;
+		bool is_host = 2;
+		repeated ClientData clients = 3; /// host will have all while clients will just have the host's		
 
-		CreateLobbyRequest create_lobby_request = 2;
-		DeleteLobbyRequest delete_lobby_request = 3;
-		StartLobbyRequest start_lobby_request = 4;
-		JoinLobbyRequest join_lobby_request = 5;
-		LeaveLobbyRequest leave_lobby_request = 6;
-		SwapRequest swap_request = 7;
-
-		GenericLobbyResponse generic_lobby_response = 8;
-
-		Heartbeat heartbeat = 9;
-	}
-
-	message LobbyInfo {
-		repeated Lobby lobbies = 1;
-		string current_lobby = 2;
-		
-		message Lobby {
-			string lobby_name = 1;
-			string lobby_id = 2;
-			map<string, string> clients = 3;
+		message ClientData {
+			string endpoint = 1;
+			string id = 2;
 		}
 	}
 
-	message CreateLobbyRequest {
-		string client_id = 1;		
-		
+	/// Sent by host as a courtesy to server so that the lobby can be deleted timely
+	message FoundGame {
+		string client_id = 1;
 		string lobby_name = 2;
-	}
-
-	message DeleteLobbyRequest {
-		string client_id = 1;
-		string lobby_id = 2;
-	}
-
-	message StartLobbyRequest {
-		string client_id = 1;
-		string lobby_id = 2;
-	}
-
-	message JoinLobbyRequest {
-		string client_id = 1;
-		string lobby_id = 2;
-	}
-
-	message LeaveLobbyRequest {
-		string client_id = 1;
-		string lobby_id = 2;
-	}
-
-	message SwapRequest {
-		string client_id = 1;
-		string lobby_id = 2;
-
-		int32 first_postion = 3;
-		int32 second_postion = 4;
-	}
-
-	message GenericLobbyResponse {
-		ResponseType response_type = 1;
-		string lobby_id = 2;
-		bool status = 3;
-		string status_msg = 4;
-
-		enum ResponseType {
-			CREATE_LOBBY = 0;
-			DELETE_LOBBY = 1;
-			START_LOBBY = 2;
-			JOIN_LOBBY = 3;
-			LEAVE_LOBBY = 4;
-			SWAP_LOBBY_SLOT = 5;
-		}
-	}
-
-	message Heartbeat {
-		string client_id = 1;
 	}
 }

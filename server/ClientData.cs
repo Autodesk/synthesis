@@ -68,14 +68,7 @@ namespace SynthesisServer
                 else if (lobbies.ContainsKey(lobbyName))
                 {
                     lobbiesLock.EnterWriteLock();
-                    if (index == null)
-                    {
-                        lobbies[lobbyName].TryAddClient(this);
-                    }
-                    else
-                    {
-                        lobbies[lobbyName].TrySetClient(this, index);
-                    }
+                    lobbies[lobbyName].TrySetClient(this, index);
                     lobbiesLock.ExitWriteLock();
                 }
                 else

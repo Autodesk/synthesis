@@ -14,6 +14,7 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace SynthesisServer
 {
@@ -78,34 +79,7 @@ namespace SynthesisServer
                 {
                     // Key Exchange
                     case (int)MessageType.Exchange:
-
-                        KeyExchange exchangeMessage = KeyExchange.Parser.ParseFrom(data);
-                        ClientData EstablishedClientData = null;
-                     
-                        _clientsLock.EnterUpgradeableReadLock();
-                        if (_clients.ContainsKey(remoteEP.ToString()))
-                        {
-                            EstablishedClientData = _clients[remoteEP.ToString()];
-                        }
-                        else
-                        {
-                            _clientsLock.EnterWriteLock();
-                            EstablishedClientData = new ClientData(exchangeMessage.PublicKey, new DHParameters(new BigInteger(exchangeMessage.P), new BigInteger(exchangeMessage.G)))
-                            {
-                                ClientID = Guid.NewGuid().ToString(),
-                                ClientEndpoint = remoteEP
-                            };
-                            _clients.Add(remoteEP.ToString(), EstablishedClientData);
-                            _clientsLock.ExitWriteLock();
-                        }
-                        _clientsLock.ExitUpgradeableReadLock();
-                        
-                        SendMessage(new KeyExchange()
-                        {
-                            ClientId = EstablishedClientData.ClientID,
-                            PublicKey = EstablishedClientData.GetPublicKey()
-                        }, _udpSocket);
-
+                        HandleExchange(data, remoteEP);
                         break;
 
                     // Encrypted Message
@@ -118,11 +92,12 @@ namespace SynthesisServer
                         {
                             receivedMessage = ServerMessage.Parser.ParseFrom(_encryptor.Decrypt(data, _clients[remoteEP.ToString()].SymmetricKey));
                         }
+                        _clientsLock.ExitReadLock();
 
                         switch (receivedMessage.ServerMsgTypeCase)
                         {
                             case ServerMessage.ServerMsgTypeOneofCase.ClientStatus:
-                                throw new NotImplementedException();
+                                HandleClientStatus(receivedMessage.ClientStatus, _clients[remoteEP.ToString()], remoteEP);
                                 break;
                             default:
                                 SendEncryptedMessage(new ServerMessage()
@@ -132,11 +107,9 @@ namespace SynthesisServer
                                         Level = ServerMessage.Types.StatusMessage.Types.Level.Error,
                                         Msg = "Invalid Message Sent"
                                     }
-                                }, _encryptor, _clients[remoteEP.ToString()].SymmetricKey, _udpSocket);
+                                }, MessageType.Message, _encryptor, _clients[remoteEP.ToString()].SymmetricKey, _udpSocket);
                                 break;
                         }
-                        
-                        throw new NotImplementedException();
                         break;
 
                     // Invalid Message
@@ -158,42 +131,145 @@ namespace SynthesisServer
 
         }
 
-
-        private void SendMessage(IMessage msg, UdpClient server)
+        // Use this due to issues with built in WriteDelimitedTo() method not working
+        private byte[] CreateDelimitedMessage(IMessage msg)
         {
-            byte[] data = new byte[msg.CalculateSize()];
-            msg.WriteTo(data);
+            byte[] msgBuffer = new byte[msg.CalculateSize()];
+            msg.WriteTo(msgBuffer);
 
-            if (BitConverter.IsLittleEndian) { Array.Reverse(data); }
-            server.BeginSend(data, data.Length, SendCallback, null);
+            byte[] delimitedMessage = new byte[sizeof(int) + msgBuffer.Length];
+            BitConverter.GetBytes(msgBuffer.Length).CopyTo(delimitedMessage, 0);
+            msgBuffer.CopyTo(delimitedMessage, sizeof(int));
+
+            return delimitedMessage;
         }
 
-        private void SendEncryptedMessage(IMessage msg, SymmetricEncryptor encryptor, byte[] symmetricKey, UdpClient server)
+        private byte[] GetFirstMessageFromBuffer(byte[] delimitedMsgBytes)
         {
-            byte[] data = new byte[msg.CalculateSize()];
-            msg.WriteTo(data);
+            byte[] msgLength = new byte[sizeof(int)];
+            Array.Copy(delimitedMsgBytes, 0, msgLength, 0, sizeof(int));
 
-            byte[] encryptedData = encryptor.Encrypt(data, symmetricKey);
-            if (BitConverter.IsLittleEndian) { Array.Reverse(encryptedData); }
-            server.BeginSend(encryptedData, encryptedData.Length, SendCallback, null);
+            byte[] msg = new byte[BitConverter.ToInt32(msgLength)];
+            Array.Copy(delimitedMsgBytes, sizeof(int), msg, 0, msg.Length);
+
+            return msg;
+        }
+
+
+        private void SendMessage(IMessage msg, bool isEncrypted, IPEndPoint remoteEndPoint, ClientData client, UdpClient server)
+        {
+            byte[] msgBytes = new byte[msg.CalculateSize()];
+            msg.WriteTo(msgBytes);
+
+            byte[] data = new byte[sizeof(int) + msgBytes.Length];
+
+            BitConverter.GetBytes(msgBytes.Length).CopyTo(data, 0);
+            msgBytes.CopyTo(data, sizeof(int));
+
+            byte[] finalData;
+            if (isEncrypted)
+            {
+                finalData = _encryptor.Encrypt(data, client.SymmetricKey);
+            } 
+            else
+            {
+                finalData = data;
+            }
+
+            if (BitConverter.IsLittleEndian) { Array.Reverse(finalData); }
+            server.BeginSend(finalData, finalData.Length, remoteEndPoint, SendCallback, null);
+        }
+
+        private void HandleExchange(byte[] exchangeData, IPEndPoint clientEP)
+        {
+            KeyExchange exchangeMessage = KeyExchange.Parser.ParseFrom(exchangeData);
+            ClientData EstablishedClientData = null;
+
+            _clientsLock.EnterUpgradeableReadLock();
+            if (_clients.ContainsKey(clientEP.ToString()))
+            {
+                EstablishedClientData = _clients[clientEP.ToString()];
+            }
+            else
+            {
+                _clientsLock.EnterWriteLock();
+                EstablishedClientData = new ClientData(exchangeMessage.PublicKey, new DHParameters(new BigInteger(exchangeMessage.P), new BigInteger(exchangeMessage.G)))
+                {
+                    ClientID = Guid.NewGuid().ToString(),
+                    ClientEndpoint = clientEP
+                };
+                _clients.Add(clientEP.ToString(), EstablishedClientData);
+                _clientsLock.ExitWriteLock();
+            }
+            _clientsLock.ExitUpgradeableReadLock();
+
+            SendMessage(new KeyExchange()
+            {
+                ClientId = EstablishedClientData.ClientID,
+                PublicKey = EstablishedClientData.GetPublicKey()
+            }, MessageType.Exchange, _udpSocket);
+        }
+
+        private void HandleMessage(byte[] data, IPEndPoint clientEP)
+        {
+            ServerMessage receivedMessage = null;
+
+            _clientsLock.EnterReadLock();
+            if (_clients.ContainsKey(clientEP.ToString()))
+            {
+                receivedMessage = ServerMessage.Parser.ParseFrom(_encryptor.Decrypt(data, _clients[clientEP.ToString()].SymmetricKey));
+            }
+            _clientsLock.ExitReadLock();
+
+            switch (receivedMessage.ServerMsgTypeCase)
+            {
+                case ServerMessage.ServerMsgTypeOneofCase.ClientStatus:
+                    HandleClientStatus(receivedMessage.ClientStatus, _clients[clientEP.ToString()], clientEP);
+                    break;
+                default:
+                    SendEncryptedMessage(new ServerMessage()
+                    {
+                        StatusMessage = new ServerMessage.Types.StatusMessage()
+                        {
+                            Level = ServerMessage.Types.StatusMessage.Types.Level.Error,
+                            Msg = "Invalid Message Sent"
+                        }
+                    }, MessageType.Message, _encryptor, _clients[clientEP.ToString()].SymmetricKey, _udpSocket);
+                    break;
+            }
         }
 
         private void HandleClientStatus(ServerMessage.Types.Client desiredState, ClientData client, IPEndPoint clientEndpoint)
         {
             _clients[clientEndpoint.ToString()].Name = desiredState.ClientName; //probably needs a profanity filter
-            _lobbiesLock.EnterUpgradeableReadLock();
 
-            client.SetCurrentLobby(desiredState.CurrentLobbyName, _lobbies, _lobbiesLock);
+            client.SetCurrentLobby(desiredState.CurrentLobbyName, desiredState.CurrentLobbyIndex, _lobbies, _lobbiesLock);
             client.IsReady = desiredState.IsReady;
             if (desiredState.CurrentLobbyName != null && _lobbies[desiredState.CurrentLobbyName].Host.IsReady)
             {
-                StartGame(_lobbies[desiredState.CurrentLobbyName]);
+                StartGame(desiredState.CurrentLobbyName, _lobbies[desiredState.CurrentLobbyName], 5000);
             }
         }
 
-        private void StartGame(Lobby lobby)
+        private Task StartGame(string lobbyName, Lobby lobby, long timeoutMS)
         {
-            throw new NotImplementedException();
+            return Task.Run(() => 
+            {
+                long time = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                _lobbiesLock.EnterReadLock();
+                while (timeoutMS >= System.DateTimeOffset.Now.ToUnixTimeMilliseconds() - time && _lobbies.ContainsKey(lobbyName))
+                {
+                    foreach (ClientData client in lobby.Clients)
+                    {
+                        if (lobby.Host.)
+                    }
+                    _lobbiesLock.ExitReadLock();
+                    Thread.Sleep(500);
+                    _lobbiesLock.EnterReadLock();
+                }
+                _lobbiesLock.ExitReadLock();
+                throw new NotImplementedException();
+            });
         }
     }
 }
