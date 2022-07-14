@@ -20,10 +20,9 @@ namespace SynthesisServer
         public string Name { get; set; }
         public string ClientID { get; set; } // May change to actually guid object probably not though
         public byte[] SymmetricKey { get; private set; }
-
+        public long LastHeartbeat { get; private set; }
         public bool IsReady { get; set; }
         private string _currentLobbyName = null;
-
 
         private AsymmetricCipherKeyPair _keyPair;
 
@@ -42,6 +41,8 @@ namespace SynthesisServer
             SymmetricKey = new byte[digest.GetDigestSize()];
             digest.BlockUpdate(sharedKeyBytes, 0, sharedKeyBytes.Length);
             digest.DoFinal(SymmetricKey, 0);
+
+            LastHeartbeat = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
         }
 
         private AsymmetricCipherKeyPair GenerateKeys(DHParameters parameters)
@@ -53,6 +54,9 @@ namespace SynthesisServer
         }
 
         public String GetPublicKey() { return ((DHPublicKeyParameters)_keyPair.Public).Y.ToString(); }
+
+        public void UpdateHeartbeat() { LastHeartbeat = System.DateTimeOffset.Now.ToUnixTimeMilliseconds(); }
+
 
         // Allows the server to not perform a bunch of iterations just to do nothing 
         public void SetCurrentLobby(string? lobbyName, int? index, Dictionary<string, Lobby> lobbies, ReaderWriterLockSlim lobbiesLock)
