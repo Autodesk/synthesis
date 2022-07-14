@@ -1,10 +1,20 @@
 syntax = "proto3";
 
-import "google/protobuf/any.proto";
-
 message MessageHeader {
 	bool is_encrypted = 1;
-	google.protobuf.Any message_type = 2;
+}
+
+// Pack messages as the 'Any' type before sending
+
+message StatusMessage {
+	LogLevel log_level = 1;
+	string msg = 2;
+
+	enum LogLevel {
+		INFO = 0;
+		WARNING = 1;
+		ERROR = 2;
+	}
 }
 
 message GenericResponse {
@@ -26,8 +36,7 @@ message LobbyInfo {
 		
 	message Lobby {
 		string lobby_name = 1;
-		string lobby_id = 2;
-		map<string, string> clients = 3;
+		map<string, string> clients = 2;
 	}
 }
 
@@ -44,19 +53,18 @@ message CreateLobbyRequest {
 message CreateLobbyResponse {
 	string client_id = 1;
 	string lobby_name = 2;
-	string lobby_id = 3;
-	GenericResponse generic_response = 4;
+	GenericResponse generic_response = 3;
 }
 
 
 message DeleteLobbyRequest {
 	string client_id = 1;
-	string lobby_id = 2;
+	string lobby_name = 2;
 }
 
 message DeleteLobbyResponse {
 	string client_id = 1;
-	string lobby_id = 2;
+	string lobby_name = 2;
 	GenericResponse generic_response = 3;
 }
 

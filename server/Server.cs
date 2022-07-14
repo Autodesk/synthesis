@@ -1,4 +1,5 @@
 ﻿using Google.Protobuf;
+using Google.Protobuf.WellKnownTypes;
 using Org.BouncyCastle.Asn1.Nist;
 using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Crypto;
@@ -71,52 +72,18 @@ namespace SynthesisServer
                 byte[] buffer = _udpSocket.EndReceive(asyncResult, ref remoteEP);
                 if (BitConverter.IsLittleEndian) { Array.Reverse(buffer); } // make sure to do while sending
 
-                byte[] msgTypeBytes = buffer.Take(sizeof(int)).ToArray();
-                int msgType = BitConverter.ToInt32(msgTypeBytes, 0);
-                byte[] data = buffer.Skip(msgTypeBytes.Length).ToArray();
-
-                switch (msgType)
-                {
-                    // Key Exchange
-                    case (int)MessageType.Exchange:
-                        HandleExchange(data, remoteEP);
-                        break;
-
-                    // Encrypted Message
-                    case (int)MessageType.Message:
-
-                        ServerMessage receivedMessage = null;
-
-                        _clientsLock.EnterReadLock();
-                        if (_clients.ContainsKey(remoteEP.ToString()))
-                        {
-                            receivedMessage = ServerMessage.Parser.ParseFrom(_encryptor.Decrypt(data, _clients[remoteEP.ToString()].SymmetricKey));
-                        }
-                        _clientsLock.ExitReadLock();
-
-                        switch (receivedMessage.ServerMsgTypeCase)
-                        {
-                            case ServerMessage.ServerMsgTypeOneofCase.ClientStatus:
-                                HandleClientStatus(receivedMessage.ClientStatus, _clients[remoteEP.ToString()], remoteEP);
-                                break;
-                            default:
-                                SendEncryptedMessage(new ServerMessage()
-                                {
-                                    StatusMessage = new ServerMessage.Types.StatusMessage()
-                                    {
-                                        Level = ServerMessage.Types.StatusMessage.Types.Level.Error,
-                                        Msg = "Invalid Message Sent"
-                                    }
-                                }, MessageType.Message, _encryptor, _clients[remoteEP.ToString()].SymmetricKey, _udpSocket);
-                                break;
-                        }
-                        break;
-
-                    // Invalid Message
-                    default:
-                        throw new NotImplementedException();
-                        break;
-                }
+                
+                MessageHeader header = MessageHeader.Parser.ParseFrom(GetNextMessage(ref buffer));
+                Any message = ParseMessage(header, buffer, remoteEP);
+                
+                if (message.Is(KeyExchange.Descriptor)) { HandleKeyExchange(message.Unpack<KeyExchange>(), remoteEP); } 
+                else if (message.Is(Heartbeat.Descriptor)) { HandleHeartbeat(message.Unpack<Heartbeat>(), remoteEP); }
+                else if (message.Is(CreateLobbyRequest.Descriptor)) { HandleCreateLobbyRequest(message.Unpack<CreateLobbyRequest>(), remoteEP); }
+                else if (message.Is(DeleteLobbyRequest.Descriptor)) { HandleDeleteLobbyRequest(message.Unpack<DeleteLobbyRequest>(), remoteEP); }
+                else if (message.Is(JoinLobbyRequest.Descriptor)) { HandleJoinLobbyRequest(message.Unpack<JoinLobbyRequest>(), remoteEP); }
+                else if (message.Is(LeaveLobbyRequest.Descriptor)) { HandleLeaveLobbyRequest(message.Unpack<LeaveLobbyRequest>(), remoteEP); }
+                else if (message.Is(StartLobbyRequest.Descriptor)) { HandleStartLobbyRequest(message.Unpack<StartLobbyRequest>(), remoteEP); }
+                else if (message.Is(SwapRequest.Descriptor)) { HandleSwapRequest(message.Unpack<SwapRequest>(), remoteEP); }
 
                 _udpSocket.BeginReceive(RecieveCallback, Port);
                 
@@ -126,61 +93,276 @@ namespace SynthesisServer
             }
         }
 
+        private void HandleKeyExchange(KeyExchange keyExchange, IPEndPoint remoteEP)
+        {
+            ClientData EstablishedClientData = null;
+
+            _clientsLock.EnterUpgradeableReadLock();
+            if (_clients.ContainsKey(remoteEP.ToString()))
+            {
+                EstablishedClientData = _clients[remoteEP.ToString()];
+            }
+            else
+            {
+                _clientsLock.EnterWriteLock();
+                EstablishedClientData = new ClientData(keyExchange.PublicKey, new DHParameters(new BigInteger(keyExchange.P), new BigInteger(keyExchange.G)))
+                {
+                    ClientID = Guid.NewGuid().ToString(),
+                    ClientEndpoint = remoteEP
+                };
+                _clients.Add(remoteEP.ToString(), EstablishedClientData);
+                _clientsLock.ExitWriteLock();
+            }
+            _clientsLock.ExitUpgradeableReadLock();
+
+            SendMessage
+            (
+                new KeyExchange()
+                {
+                    ClientId = EstablishedClientData.ClientID,
+                    PublicKey = EstablishedClientData.GetPublicKey()
+                },
+                remoteEP,
+                _udpSocket
+            );
+        }
+
+        private void HandleHeartbeat(Heartbeat heartbeat, IPEndPoint remoteEP)
+        {
+            _clientsLock.EnterWriteLock();
+            _clients[remoteEP.ToString()].UpdateHeartbeat();
+            _clientsLock.ExitWriteLock();
+        }
+
+        private void HandleCreateLobbyRequest(CreateLobbyRequest createLobbyRequest, IPEndPoint remoteEP)
+        {
+            _lobbiesLock.EnterUpgradeableReadLock();
+            if (_lobbies.ContainsKey(createLobbyRequest.LobbyName))
+            {
+                _clientsLock.EnterReadLock();
+                SendEncryptedMessage
+                (
+                    new CreateLobbyResponse()
+                    {
+                        ClientId = _clients[remoteEP.ToString()].ClientID,
+                        LobbyName = createLobbyRequest.LobbyName,
+                        GenericResponse = new GenericResponse()
+                        {
+                            Success = false,
+                            LogMessage = "That lobby already exists"
+                        }
+                    },
+                    remoteEP,
+                    _clients[remoteEP.ToString()],
+                    _udpSocket
+                );
+                _clientsLock.ExitReadLock();
+            }
+            else
+            {
+                _lobbiesLock.EnterWriteLock();
+                _clientsLock.EnterReadLock();
+                _lobbies[createLobbyRequest.LobbyName] = new Lobby(_clients[remoteEP.ToString()]);
+                SendEncryptedMessage
+                (
+                    new CreateLobbyResponse()
+                    {
+                        ClientId = _clients[remoteEP.ToString()].ClientID,
+                        LobbyName = createLobbyRequest.LobbyName,
+                        GenericResponse = new GenericResponse()
+                        {
+                            Success = true,
+                            LogMessage = "Lobby created successfully"
+                        }
+                    },
+                    remoteEP,
+                    _clients[remoteEP.ToString()],
+                    _udpSocket
+                );
+                _clientsLock.ExitReadLock();
+                _lobbiesLock.EnterWriteLock();
+            }
+            _lobbiesLock.ExitUpgradeableReadLock();
+        }
+
+        private void HandleDeleteLobbyRequest(DeleteLobbyRequest deleteLobbyRequest, IPEndPoint remoteEP)
+        {
+            _lobbiesLock.EnterUpgradeableReadLock();
+            if (_lobbies.ContainsKey(deleteLobbyRequest.LobbyName))
+            {
+                _clientsLock.EnterReadLock();
+                if (_lobbies[deleteLobbyRequest.LobbyName].Host.Equals(_clients[remoteEP.ToString()]))
+                {
+                    _lobbiesLock.EnterWriteLock();
+                    _lobbies.Remove(deleteLobbyRequest.LobbyName);
+                    _lobbiesLock.ExitWriteLock();
+                    SendEncryptedMessage
+                    (
+                        new DeleteLobbyResponse()
+                        {
+                            ClientId = _clients[remoteEP.ToString()].ClientID,
+                            LobbyName = deleteLobbyRequest.LobbyName,
+                            GenericResponse = new GenericResponse()
+                            {
+                                Success = true,
+                                LogMessage = "Lobby successfully deleted"
+                            }
+                        },
+                        remoteEP,
+                        _clients[remoteEP.ToString()],
+                        _udpSocket
+                    );
+                }
+                else
+                {
+                    SendEncryptedMessage
+                    (
+                        new DeleteLobbyResponse()
+                        {
+                            ClientId = _clients[remoteEP.ToString()].ClientID,
+                            LobbyName = deleteLobbyRequest.LobbyName,
+                            GenericResponse = new GenericResponse()
+                            {
+                                Success = false,
+                                LogMessage = "You do not have permission to delete this lobby"
+                            }
+                        },
+                        remoteEP,
+                        _clients[remoteEP.ToString()],
+                        _udpSocket
+                    );
+                }
+                _clientsLock.ExitReadLock();
+            }
+            else
+            {
+                _clientsLock.EnterReadLock();
+                SendEncryptedMessage
+                (
+                    new CreateLobbyResponse()
+                    {
+                        ClientId = _clients[remoteEP.ToString()].ClientID,
+                        LobbyName = deleteLobbyRequest.LobbyName,
+                        GenericResponse = new GenericResponse()
+                        {
+                            Success = false,
+                            LogMessage = "Lobby does not exist"
+                        }
+                    },
+                    remoteEP,
+                    _clients[remoteEP.ToString()],
+                    _udpSocket
+                );
+                _clientsLock.ExitReadLock();
+            }
+            _lobbiesLock.ExitUpgradeableReadLock();
+        }
+
+        private void HandleJoinLobbyRequest(JoinLobbyRequest joinLobbyRequest, IPEndPoint remoteEP)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void HandleLeaveLobbyRequest(LeaveLobbyRequest leaveLobbyRequest, IPEndPoint remoteEP)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void HandleStartLobbyRequest(StartLobbyRequest startLobbyRequest, IPEndPoint remoteEP)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void HandleSwapRequest(SwapRequest swapRequest, IPEndPoint remoteEP)
+        {
+            throw new NotImplementedException();
+        }
+
         private void SendCallback(IAsyncResult asyncResult)
         {
 
         }
 
-        // Use this due to issues with built in WriteDelimitedTo() method not working
-        private byte[] CreateDelimitedMessage(IMessage msg)
-        {
-            byte[] msgBuffer = new byte[msg.CalculateSize()];
-            msg.WriteTo(msgBuffer);
-
-            byte[] delimitedMessage = new byte[sizeof(int) + msgBuffer.Length];
-            BitConverter.GetBytes(msgBuffer.Length).CopyTo(delimitedMessage, 0);
-            msgBuffer.CopyTo(delimitedMessage, sizeof(int));
-
-            return delimitedMessage;
-        }
-
-        private byte[] GetFirstMessageFromBuffer(byte[] delimitedMsgBytes)
+        private byte[] GetNextMessage(ref byte[] buffer) 
         {
             byte[] msgLength = new byte[sizeof(int)];
-            Array.Copy(delimitedMsgBytes, 0, msgLength, 0, sizeof(int));
+            Array.Copy(buffer, 0, msgLength, 0, msgLength.Length);
 
             byte[] msg = new byte[BitConverter.ToInt32(msgLength)];
-            Array.Copy(delimitedMsgBytes, sizeof(int), msg, 0, msg.Length);
+            Array.Copy(buffer, sizeof(int), msg, 0, msg.Length);
 
+            buffer = buffer.Skip(msgLength.Length + msg.Length).ToArray();
             return msg;
         }
 
-
-        private void SendMessage(IMessage msg, bool isEncrypted, IPEndPoint remoteEndPoint, ClientData client, UdpClient server)
+        // Handles packing the message as 'Any'
+        private void SendMessage(IMessage msg, IPEndPoint remoteEndPoint, UdpClient server)
         {
-            byte[] msgBytes = new byte[msg.CalculateSize()];
-            msg.WriteTo(msgBytes);
+            Any packedMsg = Any.Pack(msg);
+            byte[] msgBytes = new byte[packedMsg.CalculateSize()];
+            packedMsg.WriteTo(msgBytes);
 
-            byte[] data = new byte[sizeof(int) + msgBytes.Length];
+            MessageHeader header = new MessageHeader() { IsEncrypted = false };
+            byte[] headerBytes = new byte[header.CalculateSize()];
+            header.WriteTo(headerBytes);
 
-            BitConverter.GetBytes(msgBytes.Length).CopyTo(data, 0);
-            msgBytes.CopyTo(data, sizeof(int));
+            byte[] data = new byte[sizeof(int) + headerBytes.Length + sizeof(int) + msgBytes.Length];
 
-            byte[] finalData;
-            if (isEncrypted)
-            {
-                finalData = _encryptor.Encrypt(data, client.SymmetricKey);
-            } 
-            else
-            {
-                finalData = data;
-            }
+            BitConverter.GetBytes(headerBytes.Length).CopyTo(data, 0);
+            headerBytes.CopyTo(data, sizeof(int));
 
-            if (BitConverter.IsLittleEndian) { Array.Reverse(finalData); }
-            server.BeginSend(finalData, finalData.Length, remoteEndPoint, SendCallback, null);
+            BitConverter.GetBytes(msgBytes.Length).CopyTo(data, sizeof(int) + headerBytes.Length);
+            msgBytes.CopyTo(data, sizeof(int) + headerBytes.Length + sizeof(int));
+
+            if (BitConverter.IsLittleEndian) { Array.Reverse(data); }
+            server.BeginSend(data, data.Length, remoteEndPoint, SendCallback, null);
         }
 
-        private void HandleExchange(byte[] exchangeData, IPEndPoint clientEP)
+        private void SendEncryptedMessage(IMessage msg, IPEndPoint remoteEndPoint, ClientData client, UdpClient server)
+        {
+            Any packedMsg = Any.Pack(msg);
+            byte[] msgBytes = new byte[packedMsg.CalculateSize()];
+            packedMsg.WriteTo(msgBytes);
+
+            byte[] delimitedMessage = new byte[sizeof(int) + msgBytes.Length];
+            BitConverter.GetBytes(msgBytes.Length).CopyTo(delimitedMessage, 0);
+            msgBytes.CopyTo(delimitedMessage, sizeof(int));
+
+            byte[] encryptedMessage = _encryptor.Encrypt(delimitedMessage, client.SymmetricKey);
+
+            MessageHeader header = new MessageHeader() { IsEncrypted = true };
+            byte[] headerBytes = new byte[header.CalculateSize()];
+            header.WriteTo(headerBytes);
+
+            byte[] data = new byte[sizeof(int) + headerBytes.Length + encryptedMessage.Length];
+
+            BitConverter.GetBytes(headerBytes.Length).CopyTo(data, 0);
+            headerBytes.CopyTo(data, sizeof(int));
+
+            encryptedMessage.CopyTo(data, sizeof(int) + headerBytes.Length);
+
+            if (BitConverter.IsLittleEndian) { Array.Reverse(data); }
+            server.BeginSend(data, data.Length, remoteEndPoint, SendCallback, null);
+        }
+
+        private Any ParseMessage(MessageHeader header, byte[] delimitedMessageBody, IPEndPoint remoteEndPoint)
+        {
+            if (!header.IsEncrypted)
+            {
+                return Any.Parser.ParseFrom(GetNextMessage(ref delimitedMessageBody));
+            }
+            else if (header.IsEncrypted)
+            {
+                return Any.Parser.ParseFrom(delimitedMessageBody);
+            }
+            return Any.Pack(new StatusMessage()
+            {
+                LogLevel = StatusMessage.Types.LogLevel.Error,
+                Msg = "Invalid Message body"
+            });
+        }
+
+        private void HandleKeyExchange(byte[] exchangeData, IPEndPoint clientEP, ClientData client)
         {
             KeyExchange exchangeMessage = KeyExchange.Parser.ParseFrom(exchangeData);
             ClientData EstablishedClientData = null;
@@ -203,73 +385,20 @@ namespace SynthesisServer
             }
             _clientsLock.ExitUpgradeableReadLock();
 
-            SendMessage(new KeyExchange()
-            {
-                ClientId = EstablishedClientData.ClientID,
-                PublicKey = EstablishedClientData.GetPublicKey()
-            }, MessageType.Exchange, _udpSocket);
-        }
-
-        private void HandleMessage(byte[] data, IPEndPoint clientEP)
-        {
-            ServerMessage receivedMessage = null;
-
-            _clientsLock.EnterReadLock();
-            if (_clients.ContainsKey(clientEP.ToString()))
-            {
-                receivedMessage = ServerMessage.Parser.ParseFrom(_encryptor.Decrypt(data, _clients[clientEP.ToString()].SymmetricKey));
-            }
-            _clientsLock.ExitReadLock();
-
-            switch (receivedMessage.ServerMsgTypeCase)
-            {
-                case ServerMessage.ServerMsgTypeOneofCase.ClientStatus:
-                    HandleClientStatus(receivedMessage.ClientStatus, _clients[clientEP.ToString()], clientEP);
-                    break;
-                default:
-                    SendEncryptedMessage(new ServerMessage()
-                    {
-                        StatusMessage = new ServerMessage.Types.StatusMessage()
-                        {
-                            Level = ServerMessage.Types.StatusMessage.Types.Level.Error,
-                            Msg = "Invalid Message Sent"
-                        }
-                    }, MessageType.Message, _encryptor, _clients[clientEP.ToString()].SymmetricKey, _udpSocket);
-                    break;
-            }
-        }
-
-        private void HandleClientStatus(ServerMessage.Types.Client desiredState, ClientData client, IPEndPoint clientEndpoint)
-        {
-            _clients[clientEndpoint.ToString()].Name = desiredState.ClientName; //probably needs a profanity filter
-
-            client.SetCurrentLobby(desiredState.CurrentLobbyName, desiredState.CurrentLobbyIndex, _lobbies, _lobbiesLock);
-            client.IsReady = desiredState.IsReady;
-            if (desiredState.CurrentLobbyName != null && _lobbies[desiredState.CurrentLobbyName].Host.IsReady)
-            {
-                StartGame(desiredState.CurrentLobbyName, _lobbies[desiredState.CurrentLobbyName], 5000);
-            }
-        }
-
-        private Task StartGame(string lobbyName, Lobby lobby, long timeoutMS)
-        {
-            return Task.Run(() => 
-            {
-                long time = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
-                _lobbiesLock.EnterReadLock();
-                while (timeoutMS >= System.DateTimeOffset.Now.ToUnixTimeMilliseconds() - time && _lobbies.ContainsKey(lobbyName))
+            SendMessage
+            (
+                new MessageHeader() { IsEncrypted = false },
+                new KeyExchange()
                 {
-                    foreach (ClientData client in lobby.Clients)
-                    {
-                        if (lobby.Host.)
-                    }
-                    _lobbiesLock.ExitReadLock();
-                    Thread.Sleep(500);
-                    _lobbiesLock.EnterReadLock();
-                }
-                _lobbiesLock.ExitReadLock();
-                throw new NotImplementedException();
-            });
+                    ClientId = EstablishedClientData.ClientID,
+                    PublicKey = EstablishedClientData.GetPublicKey()
+                },
+                clientEP,
+                client,
+                _udpSocket
+            );
         }
+        
+
     }
 }
