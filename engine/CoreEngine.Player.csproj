@@ -177,7 +177,6 @@
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\IApiAdapter.cs" />
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\SelectableAdapter.cs" />
     <Compile Include="Assets\Scripts\ModuleLoader\Adapters\CameraAdapter.cs" />
-    <Compile Include="Assets\Scripts\UI\Panels\Variants\ScoreboardPanel.cs" />
     <Compile Include="Assets\Scripts\ModelManager\Models\Field.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\Variants\AddPanel\AddPanel.cs" />
     <Compile Include="Assets\Scripts\UI\Tabs\HomeTab.cs" />
@@ -191,7 +190,17 @@
     <Compile Include="Assets\Scripts\UI\Panels\Variants\ExitPanel.cs" />
     <Compile Include="Assets\Scripts\Importer\Importer.cs" />
     <Compile Include="Assets\Scripts\Test\DebugJointAxes.cs" />
-    <Compile Include="Assets\Scripts\Scoring\Shooting.cs" />
+    <Compile Include="Assets\Scripts\UI\Dynamic\Modals\PracticeSettingsModal.cs" />
+    <Compile Include="Assets\Scripts\UI\Dynamic\Modals\SelectFieldModal.cs" />
+    <Compile Include="Assets\Scripts\UI\Dynamic\Panels\ScoreboardPanel.cs" />
+    <Compile Include="Assets\Scripts\Modes\IMode.cs" />
+    <Compile Include="Assets\Scripts\UI\Dynamic\Modals\ChooseModeModal.cs" />
+    <Compile Include="Assets\Scripts\Modes\PracticeMode.cs" />
+    <Compile Include="Assets\Scripts\UI\Dynamic\MatchModeModal.cs" />
+    <Compile Include="Assets\Scripts\UI\Dynamic\Panels\SpawnLocationPanel.cs" />
+    <Compile Include="Assets\Scripts\Modes\MatchMode.cs" />
+    <Compile Include="Assets\Scripts\Modes\ModeManager.cs" />
+    <Compile Include="Assets\Scripts\UI\Dynamic\Modals\LoadingScreenModal.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Scripts\CoreEngine.asmdef" />
