@@ -202,6 +202,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable {
         RobotSimObject simObject = mira.Sim as RobotSimObject;
         mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
         mira.MainObject.tag = "robot";
+        mira.MainObject.GetComponentsInChildren<MeshCollider>().ForEach(g => g.tag = "robot");
         mira.MainObject.transform.position = position;
         mira.MainObject.transform.rotation = rotation;
 

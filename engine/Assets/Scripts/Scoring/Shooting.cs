@@ -23,7 +23,8 @@ public static class Shooting
 
     public static void Start()
     {
-        InputManager.AssignValueInput(TOGGLE_SHOOT_GAMEPIECE, TryGetSavedInput(TOGGLE_SHOOT_GAMEPIECE, new Digital("Shift", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
+        
+        InputManager.AssignValueInput(TOGGLE_SHOOT_GAMEPIECE, TryGetSavedInput(TOGGLE_SHOOT_GAMEPIECE, new Digital("LeftShift", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
     }
     private static Analog TryGetSavedInput(string key, Analog defaultInput)
     {

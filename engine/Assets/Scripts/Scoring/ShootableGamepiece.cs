@@ -4,9 +4,14 @@ using UnityEngine;
 
 public class ShootableGamepiece : MonoBehaviour
 {
-
+    private MeshRenderer mesh;
+    private Rigidbody rb;
+    private MeshCollider collider;
     void Start()
     {
+        mesh = gameObject.GetComponentInChildren<MeshRenderer>();
+        rb = gameObject.GetComponent<Rigidbody>();
+        collider = gameObject.GetComponent<MeshCollider>();
         ResetGamepiece();
     }
 
@@ -31,7 +36,7 @@ public class ShootableGamepiece : MonoBehaviour
         //check if other is robot
         //add self to queue
         //disable self
-        if (collision.transform.gameObject.CompareTag("robot"))
+        if (collision.transform.CompareTag("robot"))
         {
             SetPieceState(false);
             Shooting.AddGamepiece(this);
@@ -44,8 +49,8 @@ public class ShootableGamepiece : MonoBehaviour
     private void SetPieceState(bool enabled)
     {
         currentlyHeld = !enabled;
-        gameObject.GetComponent<MeshRenderer>().enabled = enabled;
-        gameObject.GetComponent<Rigidbody>().isKinematic = !enabled;
-        gameObject.GetComponent<Collider>().enabled = enabled;
+        mesh.enabled = enabled;
+        rb.isKinematic = !enabled;
+        collider.enabled = enabled;
     }
 }
