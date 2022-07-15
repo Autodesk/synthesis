@@ -142,6 +142,8 @@ public class PracticeMode : IMode
 
     public static void ResetField()
     {
+        Shooting.Reset();
+        
         FieldSimObject field = FieldSimObject.CurrentField;
         if (field != null)
             FieldSimObject.CurrentField.ResetField();

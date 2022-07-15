@@ -52,6 +52,7 @@ public static class GizmoManager
         if (gizmo.transform.parent.CompareTag("robot"))
         {
             PracticeMode.SetInitialState(gizmo.transform.parent.gameObject);
+            Shooting.ConfigureGamepieces();
         } else if (gizmo.transform.parent.CompareTag("gamepiece"))
         {
             PracticeMode.EndConfigureGamepieceSpawnpoint();

@@ -93,7 +93,9 @@ public class MatchModeModal : ModalDynamic
 
         DynamicUIManager.CreatePanel<Synthesis.UI.Dynamic.SpawnLocationPanel>();
     }
-    public override void Update() {}
+    public override void Update() {
+        Shooting.Update();
+    }
 
 
     public override void Delete()
