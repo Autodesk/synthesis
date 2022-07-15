@@ -85,6 +85,7 @@
     <Compile Include="Assets\Scripts\UI\ContextMenu\ContextItem.cs" />
     <Compile Include="Assets\Scripts\Attributes\ContextMenuOptionAttribute.cs" />
     <Compile Include="Assets\Scripts\UI\Dynamic\DynamicUIManager.cs" />
+    <Compile Include="Assets\Scripts\Scoring\Shooting.cs" />
     <Compile Include="Assets\Scripts\Scoring\TempScoreManager.cs" />
     <Compile Include="Assets\Scripts\UI\ToastLogger\ToastLogger.cs" />
     <Compile Include="Assets\Scripts\AutoUpdater.cs" />
@@ -201,6 +202,7 @@
     <Compile Include="Assets\Scripts\Modes\MatchMode.cs" />
     <Compile Include="Assets\Scripts\Modes\ModeManager.cs" />
     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\LoadingScreenModal.cs" />
+    <Compile Include="Assets\Scripts\Scoring\ShootableGamepiece.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Scripts\CoreEngine.asmdef" />

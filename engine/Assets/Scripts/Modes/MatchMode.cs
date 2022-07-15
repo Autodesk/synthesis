@@ -5,12 +5,12 @@ using UnityEngine;
 using TMPro;
 public class MatchMode : IMode
 {
-
+    PracticeMode practiceMode = new PracticeMode();
+    
     // Start is called before the first frame update
     public void Start()
     {
         DynamicUIManager.CreateModal<MatchModeModal>();
-
     }
 
     // Update is called once per frame
