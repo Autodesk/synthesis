@@ -54,7 +54,7 @@ namespace Synthesis.UI.Dynamic
                 ).ApplyTemplate(VerticalLayout);
 
 
-            MainContent.CreateButton()
+            /*MainContent.CreateButton()
                 .SetTopStretch<Button>()
                 .ShiftOffsetMin<Button>(new Vector2(7.5f, 0f))
                 .StepIntoLabel(label => label.SetText("Set to Center"))
@@ -64,7 +64,7 @@ namespace Synthesis.UI.Dynamic
                 .ApplyTemplate(VerticalLayout)
                 .ShiftOffsetMin<Button>(new Vector2(7.5f, 0f))
                 .StepIntoLabel(label => label.SetText("Set to Previous"))
-                .AddOnClickedEvent(b => { });
+                .AddOnClickedEvent(b => { });*/
         }
 
         public override void Update() { }
