@@ -71,43 +71,43 @@ message DeleteLobbyResponse {
 
 message JoinLobbyRequest {
 	string client_id = 1;
-	string lobby_id = 2;
+	string lobby_name = 2;
 }
 
 message JoinLobbyResponse {
 	string client_id = 1;
-	string lobby_id = 2;
+	string lobby_name = 2;
 	GenericResponse generic_response = 3;
 }
 
 
 message LeaveLobbyRequest {
 	string client_id = 1;
-	string lobby_id = 2;
+	string lobby_name = 2;
 }
 
 message LeaveLobbyResponse {
 	string client_id = 1;
-	string lobby_id = 2;
+	string lobby_name = 2;
 	GenericResponse generic_response = 3;
 }
 
 
 message StartLobbyRequest {
 	string client_id = 1;
-	string lobby_id = 2;
+	string lobby_name = 2;
 }
 
 message StartLobbyResponse {
 	string client_id = 1;
-	string lobby_id = 2;
+	string lobby_name = 2;
 	GenericResponse generic_response = 3;
 }
 
 
 message SwapRequest {
 	string client_id = 1;
-	string lobby_id = 2;
+	string lobby_name = 2;
 
 	int32 first_postion = 3;
 	int32 second_postion = 4;
@@ -115,7 +115,7 @@ message SwapRequest {
 
 message SwapResponse {
 	string client_id = 1;
-	string lobby_id = 2;
+	string lobby_name = 2;
 
 	int32 first_postion = 3;
 	int32 second_postion = 4;
