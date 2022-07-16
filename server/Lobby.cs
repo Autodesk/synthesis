@@ -24,56 +24,46 @@ namespace SynthesisServer
             Host = host;
         } 
 
-        public void Swap(int firstIndex, int secondIndex)
+        public bool Swap(int firstIndex, int secondIndex)
         {
-            _clientsLock.EnterWriteLock();
-            var x = _clients[firstIndex];
-            _clients[firstIndex] = _clients[secondIndex];
-            _clients[secondIndex] = x;
-            _clientsLock.ExitWriteLock();
+            try
+            {
+                _clientsLock.EnterWriteLock();
+                var x = _clients[firstIndex];
+                _clients[firstIndex] = _clients[secondIndex];
+                _clients[secondIndex] = x;
+                _clientsLock.ExitWriteLock();
+                return true;
+            }
+            catch (IndexOutOfRangeException e)
+            {
+                _clientsLock.ExitWriteLock();
+                return false;
+            }
         }
 
-        public bool TrySetClient(ClientData client, int? index = null)
+        public bool TryAddClient(ClientData client)
         {
             // If no index is specified, it will try to add the client to an empty index so long as it does not already have a spot
             _clientsLock.EnterWriteLock();
-            if (index == null)
+
+            for (int i = 0; i < _clients.Length; i++)
             {
-                for (int i = 0; i < _clients.Length; i++)
+                if (client.Equals(_clients[i]))
                 {
-                    if (client.Equals(_clients[i]))
-                    {
-                        _clientsLock.ExitWriteLock();
-                        return false;
-                    }
-                }
-                for (int i = 0; i < _clients.Length; i++)
-                {
-                    if (_clients[i] == null)
-                    {
-                        _clients[i] = client;
-                        _clientsLock.ExitWriteLock();
-                        return true;
-                    }
+                    _clientsLock.ExitWriteLock();
+                    return false;
                 }
             }
-            else
+            for (int i = 0; i < _clients.Length; i++)
             {
-                if (_clients[(int)index] == null)
+                if (_clients[i] == null)
                 {
-                    for (int i = 0; i < _clients.Length; i++)
-                    {
-                        if (client.Equals(_clients[i]))
-                        {
-                            _clients[i] = null;
-                        }
-                    }
-                    _clients[(int)index] = client;
+                    _clients[i] = client;
                     _clientsLock.ExitWriteLock();
                     return true;
                 }
             }
-            _clientsLock.ExitWriteLock();
             return false;
         }
 

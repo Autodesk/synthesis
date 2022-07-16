@@ -137,9 +137,10 @@ namespace SynthesisServer
         private void HandleCreateLobbyRequest(CreateLobbyRequest createLobbyRequest, IPEndPoint remoteEP)
         {
             _lobbiesLock.EnterUpgradeableReadLock();
+            _clientsLock.EnterReadLock();
+
             if (_lobbies.ContainsKey(createLobbyRequest.LobbyName))
             {
-                _clientsLock.EnterReadLock();
                 SendEncryptedMessage
                 (
                     new CreateLobbyResponse()
@@ -156,46 +157,50 @@ namespace SynthesisServer
                     _clients[remoteEP.ToString()],
                     _udpSocket
                 );
+
+                _lobbiesLock.ExitUpgradeableReadLock();
                 _clientsLock.ExitReadLock();
+                return;
             }
-            else
-            {
-                _lobbiesLock.EnterWriteLock();
-                _clientsLock.EnterReadLock();
-                _lobbies[createLobbyRequest.LobbyName] = new Lobby(_clients[remoteEP.ToString()]);
-                SendEncryptedMessage
-                (
-                    new CreateLobbyResponse()
+
+            _lobbiesLock.EnterWriteLock();
+            _lobbies[createLobbyRequest.LobbyName] = new Lobby(_clients[remoteEP.ToString()]);
+            _lobbiesLock.ExitWriteLock();
+
+            SendEncryptedMessage
+            (
+                new CreateLobbyResponse()
+                {
+                    ClientId = _clients[remoteEP.ToString()].ClientID,
+                    LobbyName = createLobbyRequest.LobbyName,
+                    GenericResponse = new GenericResponse()
                     {
-                        ClientId = _clients[remoteEP.ToString()].ClientID,
-                        LobbyName = createLobbyRequest.LobbyName,
-                        GenericResponse = new GenericResponse()
-                        {
-                            Success = true,
-                            LogMessage = "Lobby created successfully"
-                        }
-                    },
-                    remoteEP,
-                    _clients[remoteEP.ToString()],
-                    _udpSocket
-                );
-                _clientsLock.ExitReadLock();
-                _lobbiesLock.EnterWriteLock();
-            }
+                        Success = true,
+                        LogMessage = "Lobby created successfully"
+                    }
+                },
+                remoteEP,
+                _clients[remoteEP.ToString()],
+                _udpSocket
+            );
+
+            _clientsLock.ExitReadLock();
             _lobbiesLock.ExitUpgradeableReadLock();
         }
 
         private void HandleDeleteLobbyRequest(DeleteLobbyRequest deleteLobbyRequest, IPEndPoint remoteEP)
         {
             _lobbiesLock.EnterUpgradeableReadLock();
+            _clientsLock.EnterReadLock();
+
             if (_lobbies.ContainsKey(deleteLobbyRequest.LobbyName))
             {
-                _clientsLock.EnterReadLock();
                 if (_lobbies[deleteLobbyRequest.LobbyName].Host.Equals(_clients[remoteEP.ToString()]))
                 {
                     _lobbiesLock.EnterWriteLock();
                     _lobbies.Remove(deleteLobbyRequest.LobbyName);
                     _lobbiesLock.ExitWriteLock();
+
                     SendEncryptedMessage
                     (
                         new DeleteLobbyResponse()
@@ -232,11 +237,9 @@ namespace SynthesisServer
                         _udpSocket
                     );
                 }
-                _clientsLock.ExitReadLock();
             }
             else
             {
-                _clientsLock.EnterReadLock();
                 SendEncryptedMessage
                 (
                     new CreateLobbyResponse()
@@ -253,29 +256,226 @@ namespace SynthesisServer
                     _clients[remoteEP.ToString()],
                     _udpSocket
                 );
-                _clientsLock.ExitReadLock();
             }
+
+            _clientsLock.ExitReadLock();
             _lobbiesLock.ExitUpgradeableReadLock();
         }
 
         private void HandleJoinLobbyRequest(JoinLobbyRequest joinLobbyRequest, IPEndPoint remoteEP)
         {
-            throw new NotImplementedException();
+            _clientsLock.EnterReadLock();
+            _lobbiesLock.EnterWriteLock();
+
+            if (_lobbies.ContainsKey(joinLobbyRequest.LobbyName) && _lobbies[joinLobbyRequest.LobbyName].TryAddClient(_clients[remoteEP.ToString()]))
+            {
+                _lobbiesLock.ExitWriteLock();
+                SendEncryptedMessage
+                (
+                    new CreateLobbyResponse()
+                    {
+                        ClientId = _clients[remoteEP.ToString()].ClientID,
+                        LobbyName = joinLobbyRequest.LobbyName,
+                        GenericResponse = new GenericResponse()
+                        {
+                            Success = true,
+                            LogMessage = "Joined lobby successfully"
+                        }
+                    },
+                    remoteEP,
+                    _clients[remoteEP.ToString()],
+                    _udpSocket
+                );
+            }
+            else
+            {
+                _lobbiesLock.ExitWriteLock();
+                SendEncryptedMessage
+                (
+                    new CreateLobbyResponse()
+                    {
+                        ClientId = _clients[remoteEP.ToString()].ClientID,
+                        LobbyName = joinLobbyRequest.LobbyName,
+                        GenericResponse = new GenericResponse()
+                        {
+                            Success = false,
+                            LogMessage = "Could not join lobby"
+                        }
+                    },
+                    remoteEP,
+                    _clients[remoteEP.ToString()],
+                    _udpSocket
+                );
+            }
+
+            _clientsLock.ExitReadLock();
         }
 
         private void HandleLeaveLobbyRequest(LeaveLobbyRequest leaveLobbyRequest, IPEndPoint remoteEP)
         {
-            throw new NotImplementedException();
+            _clientsLock.EnterReadLock();
+            _lobbiesLock.EnterWriteLock();
+            if (_lobbies.ContainsKey(leaveLobbyRequest.LobbyName) && _lobbies[leaveLobbyRequest.LobbyName].TryRemoveClient(_clients[remoteEP.ToString()]))
+            {
+                _lobbiesLock.ExitWriteLock();
+                SendEncryptedMessage
+                (
+                    new CreateLobbyResponse()
+                    {
+                        ClientId = _clients[remoteEP.ToString()].ClientID,
+                        LobbyName = leaveLobbyRequest.LobbyName,
+                        GenericResponse = new GenericResponse()
+                        {
+                            Success = true,
+                            LogMessage = "Left lobby successfully"
+                        }
+                    },
+                    remoteEP,
+                    _clients[remoteEP.ToString()],
+                    _udpSocket
+                );
+            }
+            else
+            {
+                _lobbiesLock.ExitWriteLock();
+                SendEncryptedMessage
+                (
+                    new CreateLobbyResponse()
+                    {
+                        ClientId = _clients[remoteEP.ToString()].ClientID,
+                        LobbyName = leaveLobbyRequest.LobbyName,
+                        GenericResponse = new GenericResponse()
+                        {
+                            Success = false,
+                            LogMessage = "Could not leave lobby"
+                        }
+                    },
+                    remoteEP,
+                    _clients[remoteEP.ToString()],
+                    _udpSocket
+                );
+            }
+            _clientsLock.ExitReadLock();
         }
 
         private void HandleStartLobbyRequest(StartLobbyRequest startLobbyRequest, IPEndPoint remoteEP)
         {
-            throw new NotImplementedException();
+            _lobbiesLock.EnterUpgradeableReadLock();
+            if (_lobbies.ContainsKey(startLobbyRequest.LobbyName))
+            {
+                _clientsLock.EnterReadLock();
+                if (_lobbies[startLobbyRequest.LobbyName].Host.Equals(_clients[remoteEP.ToString()]))
+                {
+                    _lobbiesLock.EnterWriteLock();
+                    StartLobby(startLobbyRequest.LobbyName);
+                    _lobbiesLock.ExitWriteLock();
+
+                    SendEncryptedMessage
+                    (
+                        new StartLobbyResponse()
+                        {
+                            ClientId = _clients[remoteEP.ToString()].ClientID,
+                            LobbyName = startLobbyRequest.LobbyName,
+                            GenericResponse = new GenericResponse()
+                            {
+                                Success = true,
+                                LogMessage = "Lobby successfully started"
+                            }
+                        },
+                        remoteEP,
+                        _clients[remoteEP.ToString()],
+                        _udpSocket
+                    );
+                }
+                else
+                {
+                    SendEncryptedMessage
+                    (
+                        new StartLobbyResponse()
+                        {
+                            ClientId = _clients[remoteEP.ToString()].ClientID,
+                            LobbyName = startLobbyRequest.LobbyName,
+                            GenericResponse = new GenericResponse()
+                            {
+                                Success = false,
+                                LogMessage = "You do not have permission to start this lobby"
+                            }
+                        },
+                        remoteEP,
+                        _clients[remoteEP.ToString()],
+                        _udpSocket
+                    );
+                }
+            }
+            else
+            {
+                SendEncryptedMessage
+                (
+                    new StartLobbyResponse()
+                    {
+                        ClientId = _clients[remoteEP.ToString()].ClientID,
+                        LobbyName = startLobbyRequest.LobbyName,
+                        GenericResponse = new GenericResponse()
+                        {
+                            Success = false,
+                            LogMessage = "Lobby does not exist"
+                        }
+                    },
+                    remoteEP,
+                    _clients[remoteEP.ToString()],
+                    _udpSocket
+                );
+            }
+            _clientsLock.ExitReadLock();
+            _lobbiesLock.ExitUpgradeableReadLock();
         }
 
         private void HandleSwapRequest(SwapRequest swapRequest, IPEndPoint remoteEP)
         {
-            throw new NotImplementedException();
+            _clientsLock.EnterReadLock();
+            _lobbiesLock.EnterReadLock();
+
+            if (_lobbies.ContainsKey(swapRequest.LobbyName) && (_clients[remoteEP.ToString()].Equals(_lobbies[swapRequest.LobbyName].Host)) && _lobbies[swapRequest.LobbyName].Swap(swapRequest.FirstPostion, swapRequest.SecondPostion))
+            {
+                SendEncryptedMessage
+                (
+                    new SwapResponse()
+                    {
+                        ClientId = _clients[remoteEP.ToString()].ClientID,
+                        LobbyName = swapRequest.LobbyName,
+                        GenericResponse = new GenericResponse()
+                        {
+                            Success = true,
+                            LogMessage = "Swap Successful"
+                        }
+                    },
+                    remoteEP,
+                    _clients[remoteEP.ToString()],
+                    _udpSocket
+                );
+            }
+            else
+            {
+                SendEncryptedMessage
+                (
+                    new SwapResponse()
+                    {
+                        ClientId = _clients[remoteEP.ToString()].ClientID,
+                        LobbyName = swapRequest.LobbyName,
+                        GenericResponse = new GenericResponse()
+                        {
+                            Success = false,
+                            LogMessage = "Swap failed"
+                        }
+                    },
+                    remoteEP,
+                    _clients[remoteEP.ToString()],
+                    _udpSocket
+                );
+            }
+
+            _lobbiesLock.ExitUpgradeableReadLock();
+            _clientsLock.ExitReadLock();
         }
 
         private void SendCallback(IAsyncResult asyncResult)
@@ -362,43 +562,14 @@ namespace SynthesisServer
             });
         }
 
-        private void HandleKeyExchange(byte[] exchangeData, IPEndPoint clientEP, ClientData client)
+        private void StartLobby(string lobbyName)
         {
-            KeyExchange exchangeMessage = KeyExchange.Parser.ParseFrom(exchangeData);
-            ClientData EstablishedClientData = null;
-
-            _clientsLock.EnterUpgradeableReadLock();
-            if (_clients.ContainsKey(clientEP.ToString()))
-            {
-                EstablishedClientData = _clients[clientEP.ToString()];
-            }
-            else
-            {
-                _clientsLock.EnterWriteLock();
-                EstablishedClientData = new ClientData(exchangeMessage.PublicKey, new DHParameters(new BigInteger(exchangeMessage.P), new BigInteger(exchangeMessage.G)))
-                {
-                    ClientID = Guid.NewGuid().ToString(),
-                    ClientEndpoint = clientEP
-                };
-                _clients.Add(clientEP.ToString(), EstablishedClientData);
-                _clientsLock.ExitWriteLock();
-            }
-            _clientsLock.ExitUpgradeableReadLock();
-
-            SendMessage
-            (
-                new MessageHeader() { IsEncrypted = false },
-                new KeyExchange()
-                {
-                    ClientId = EstablishedClientData.ClientID,
-                    PublicKey = EstablishedClientData.GetPublicKey()
-                },
-                clientEP,
-                client,
-                _udpSocket
-            );
+            Lobby lobby;
+            _lobbiesLock.EnterWriteLock();
+            _lobbies.Remove(lobbyName, out lobby);
+            _lobbiesLock.ExitWriteLock();
+            
+            throw new NotImplementedException();
         }
-        
-
     }
 }
