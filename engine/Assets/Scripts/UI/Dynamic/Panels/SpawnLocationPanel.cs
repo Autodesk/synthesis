@@ -36,6 +36,10 @@ namespace Synthesis.UI.Dynamic
                     .StepIntoLabel(label => label.SetText("Start"))
                     .AddOnClickedEvent(b =>
                     {
+
+                        PracticeMode.SetInitialState(GizmoManager.currentGizmo.transform.parent.gameObject);
+                        Shooting.ConfigureGamepieces();
+                        
                         DynamicUIManager.CreatePanel<Synthesis.UI.Dynamic.ScoreboardPanel>();
                         GizmoManager.ExitGizmo();
                     });

@@ -11,7 +11,7 @@ public class ShootableGamepiece : MonoBehaviour
     {
         mesh = gameObject.GetComponentInChildren<MeshRenderer>();
         rb = gameObject.GetComponent<Rigidbody>();
-        collider = gameObject.GetComponent<MeshCollider>();
+        collider = gameObject.GetComponentInChildren<MeshCollider>();
         ResetGamepiece();
     }
 
@@ -31,12 +31,13 @@ public class ShootableGamepiece : MonoBehaviour
         GetComponent<Rigidbody>().AddForce(HorizontalImpulse, ForceMode.Impulse);
         GetComponent<Rigidbody>().AddForce(VerticalImpulse, ForceMode.Impulse);
     }
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider collision)
     {
+        Debug.Log("Collision Detected" + collision.transform.tag);
         //check if other is robot
         //add self to queue
         //disable self
-        if (collision.transform.CompareTag("robot"))
+        if (collision.transform.CompareTag("robot") && !currentlyHeld)
         {
             SetPieceState(false);
             Shooting.AddGamepiece(this);

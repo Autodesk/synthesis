@@ -41,8 +41,10 @@ public static class Shooting
     {
         //loop through all gamepieces and attach objects
         //call this from the mode manager
+        Debug.Log("Here");
         FieldSimObject.CurrentField.Gamepieces.ForEach(gp =>
         {
+            //gp.GamepieceObject.GetComponentInChildren<MeshRenderer>().gameObject.AddComponent<ShootableGamepiece>();
             gp.GamepieceObject.AddComponent<ShootableGamepiece>();
         });
     }
