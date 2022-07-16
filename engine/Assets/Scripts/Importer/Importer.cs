@@ -16,6 +16,7 @@ using SynthesisAPI.Utilities;
 using UnityEngine;
 using System.IO.Compression;
 using Synthesis;
+using Unity.Profiling;
 
 using UMaterial = UnityEngine.Material;
 using UMesh = UnityEngine.Mesh;
@@ -38,9 +39,19 @@ namespace Synthesis.Import
 	/// </summary>
 	public static class Importer
 	{
+		#region Profiling
+
+		public static readonly ProfilerMarker RigidgroupParsing = new ProfilerMarker("Importer.RG_Parsing");
+		public static readonly ProfilerMarker BodyCreation = new ProfilerMarker("Importer.Body_Creation");
+		public static readonly ProfilerMarker JointCreation = new ProfilerMarker("Importer.Joint_Creation");
+		public static readonly ProfilerMarker EntireImport = new ProfilerMarker("Importer.All");
+		public static readonly ProfilerMarker CollisionIgnoring = new ProfilerMarker("Importer.Collision_Ignoring");
+
+		#endregion
+
 		#region Importer Framework
 
-		public const UInt32 CURRENT_MIRA_EXPORTER_VERSION = 3;
+		public const UInt32 CURRENT_MIRA_EXPORTER_VERSION = 4;
 
 		public delegate GameObject ImportFuncString(string path);
 
@@ -52,7 +63,7 @@ namespace Synthesis.Import
 		public static Dictionary<SourceType, (ImportFuncString strFunc, ImportFuncBuffer bufFunc)> Importers
 			= new Dictionary<SourceType, (ImportFuncString strFunc, ImportFuncBuffer bufFunc)>()
 			{
-				{SourceType.PROTOBUF_FIELD, (LegacyFieldImporter.ProtoFieldImport, LegacyFieldImporter.ProtoFieldImport) },
+				// {SourceType.PROTOBUF_FIELD, (LegacyFieldImporter.ProtoFieldImport, LegacyFieldImporter.ProtoFieldImport) },
 				//{SourceType.MIRABUF_ASSEMBLY, (MirabufAssemblyImport, MirabufAssemblyImport)}
 			};
 
@@ -99,12 +110,15 @@ namespace Synthesis.Import
 
 		public static (GameObject MainObject, Assembly MiraAssembly, SimObject Sim) MirabufAssemblyImport(Assembly assembly, bool reverseSideJoints = false)
 		{
+
+			EntireImport.Begin();
+
 			// Uncommenting this will delete all bodies so the JSON file isn't huge
 			DebugAssembly(assembly);
 			// return null;
 
 			if (assembly.Info.Version < CURRENT_MIRA_EXPORTER_VERSION) {
-				Logger.Log($"Out-of-date Assembly\nCurrent Version: {CURRENT_MIRA_EXPORTER_VERSION}\nVersion of Assembly: {assembly.Info.Version}", LogLevel.Info);
+				Logger.Log($"Out-of-date Assembly\nCurrent Version: {CURRENT_MIRA_EXPORTER_VERSION}\nVersion of Assembly: {assembly.Info.Version}", LogLevel.Warning);
 			} else if (assembly.Info.Version > CURRENT_MIRA_EXPORTER_VERSION) {
 				Logger.Log($"Hey Dev, the assembly you're importing is using a higher version than the current set version. Please update the CURRENT_MIRA_EXPORTER_VERSION constant", LogLevel.Debug);
 			}
@@ -112,6 +126,8 @@ namespace Synthesis.Import
 			// Logger.Log((new System.Diagnostics.StackTrace()).ToString(), LogLevel.Debug);
 
 			UnityEngine.Physics.sleepThreshold = 0;
+
+			RigidgroupParsing.Begin();
 
 			GameObject assemblyObject = new GameObject(assembly.Info.Name);
 			var parts = assembly.Data.Parts;
@@ -127,11 +143,16 @@ namespace Synthesis.Import
 
 			var gamepieces = new List<GamepieceSimObject>();
 			var rigidDefinitions = FindRigidbodyDefinitions(assembly);
+
+			RigidgroupParsing.End();
+			BodyCreation.Begin();
+
 			foreach (var group in rigidDefinitions.definitions.Values)
 			{
 				GameObject groupObject = new GameObject(group.Name);
 				var collectivePhysData = new List<(UnityEngine.Transform, MPhysicalProperties)>();
 				var isGamepiece = !assembly.Dynamic && group.Name.Contains("gamepiece");
+				var isStatic = !assembly.Dynamic && group.Name.Contains("grounded");
 				// Import Parts
 
 				#region Parts
@@ -143,7 +164,7 @@ namespace Synthesis.Import
 						var partInstance = part.Value;
 						var partDefinition = parts.PartDefinitions[partInstance.PartDefinitionReference];
 						GameObject partObject = new GameObject(partInstance.Info.Name);
-						MakePartDefinition(partObject, partDefinition, partInstance, assembly.Data, !isGamepiece);
+						MakePartDefinition(partObject, partDefinition, partInstance, assembly.Data, !isGamepiece, !isStatic);
 						partObjects.Add(partInstance.Info.GUID, partObject);
 						partObject.transform.parent = groupObject.transform;
 						// MARK: If transform changes do work recursively, apply transformations here instead of in a separate loop
@@ -152,7 +173,7 @@ namespace Synthesis.Import
 					}
 					else
 					{
-						Logger.Log($"Duplicate key found with GUID '{part.Key}'", LogLevel.Debug);
+						Logger.Log($"Duplicate Part\nGroup name: {group.Name}\nGUID: {part.Key}", LogLevel.Debug);
 					}
 				}
 
@@ -161,6 +182,8 @@ namespace Synthesis.Import
 				// Combine all physical data for grouping
 				var combPhysProps = CombinePhysicalProperties(collectivePhysData);
 				var rb = groupObject.AddComponent<Rigidbody>();
+				if (isStatic)
+					rb.isKinematic = true;
 				rb.mass = (float) combPhysProps.Mass;
 				totalMass += rb.mass;
 				rb.centerOfMass = combPhysProps.Com; // I actually don't need to flip this
@@ -180,9 +203,13 @@ namespace Synthesis.Import
 				// DebugJointAxes.DebugPoints.Add((combPhysProps.Com, () => groupObject.transform.localToWorldMatrix));
 			}
 
+			BodyCreation.End();
+
 			#endregion
 
 			#region Joints
+
+			JointCreation.Begin();
 
 			var state = new ControllableState
 			{
@@ -236,6 +263,11 @@ namespace Synthesis.Import
 				);
 			}
 
+			JointCreation.End();
+
+			CollisionIgnoring.Begin();
+
+			// TODO: This is really slow
 			for (var i = 0; i < _collidersToIgnore.Count - 1; i++)
 			{
 				for (var j = i + 1; j < _collidersToIgnore.Count; j++)
@@ -244,6 +276,8 @@ namespace Synthesis.Import
 				}
 			}
 
+			CollisionIgnoring.End();
+
 			#endregion
 
 			if (assembly.Dynamic) {
@@ -251,6 +285,8 @@ namespace Synthesis.Import
 				(simObject as RobotSimObject).ConfigureArmBehaviours();
 				(simObject as RobotSimObject).ConfigureSliderBehaviours();
 			}
+
+			EntireImport.End();
 
 			return (assemblyObject, assembly, simObject);
 		}
@@ -451,7 +487,7 @@ namespace Synthesis.Import
 		}
 
 		public static void MakePartDefinition(GameObject container, PartDefinition definition, PartInstance instance,
-			AssemblyData assemblyData, bool addToColliderIgnore = true)
+			AssemblyData assemblyData, bool addToColliderIgnore = true, bool isConvex = true)
 		{
 			PhysicMaterial physMat = new PhysicMaterial
 			{
@@ -472,12 +508,19 @@ namespace Synthesis.Import
 				// renderer.material = assemblyData.Materials.Appearances.ContainsKey(instance.Appearance)
 				// 	? assemblyData.Materials.Appearances[instance.Appearance].UnityMaterial
 				// 	: Appearance.DefaultAppearance.UnityMaterial;
-				var collider = bodyObject.AddComponent<MeshCollider>();
-				collider.convex = true;
-				collider.sharedMesh = body.TriangleMesh.UnityMesh; // Again, not sure if this actually works
-				collider.material = physMat;
-				if (addToColliderIgnore)
-					_collidersToIgnore.Add(collider);
+				if (!instance.SkipCollider) {
+					var collider = bodyObject.AddComponent<MeshCollider>();
+					if (isConvex) {
+						collider.convex = true;
+						collider.sharedMesh = body.TriangleMesh.ColliderMesh; // Again, not sure if this actually works
+					} else {
+						collider.convex = false;
+						collider.sharedMesh = body.TriangleMesh.UnityMesh;
+					}
+					collider.material = physMat;
+					if (addToColliderIgnore)
+						_collidersToIgnore.Add(collider);
+				}
 				bodyObject.transform.parent = container.transform;
 				// Ensure all transformations are zeroed after assigning parent
 				bodyObject.transform.localPosition = UVector3.zero;
@@ -646,6 +689,11 @@ namespace Synthesis.Import
 					MoveToDef(x.Value, string.Empty, groundDef.GUID);
 			});
 
+			// Add disjointed to grounded
+			assembly.Data.Parts.PartInstances.Where(x => !partMap.ContainsKey(x.Key)).ForEach(x => {
+				MoveToDef(x.Key, string.Empty, "grounded");
+			});
+
 			// Apply RigidGroups
 			discoveredRigidGroups.AddRange(assembly.Data.Joints.RigidGroups);
 			discoveredRigidGroups.Where(x => x.Occurrences.Count > 1).ForEach(x => {
@@ -689,7 +737,7 @@ namespace Synthesis.Import
 				}
 			}
 
-			// Readd grounded if it was removed
+			// Re-add grounded if it was removed
 			if (wasRemoved) {
 				defs.Remove(newGrounded.GUID);
 				List<string> originalKeys = new List<string>(partMap.Keys);
@@ -702,7 +750,7 @@ namespace Synthesis.Import
 				defs.Add(newGrounded.GUID, newGrounded);
 			}
 
-			// Gamepieces: They are disjointed at the root level but will be labeled as gamepieces through the dynamic flag
+			// Move gamepieces to separate groupings
 			int gamepieceCounter = 0;
 			if (!assembly.Dynamic) {
 				assembly.Data.Parts.PartDefinitions.Where(x => x.Value.Dynamic).ForEach(
@@ -714,7 +762,7 @@ namespace Synthesis.Import
 								Parts = new Dictionary<string, PartInstance>()
 							};
 							defs.Add(rigidDef.GUID, rigidDef);
-							GetAllPartsInBranch(y.Key, paths).ForEach(z => MoveToDef(z, string.Empty, rigidDef.GUID));
+							GetAllPartsInBranch(y.Key, paths, assembly.DesignHierarchy.Nodes.ElementAt(0)).ForEach(z => MoveToDef(z, partMap[z], rigidDef.GUID));
 
 							gamepieceCounter++;
 							counter++;
@@ -766,21 +814,32 @@ namespace Synthesis.Import
 			currentPath.RemoveAt(currentPath.Count - 1);
 		}
 
-		public static List<string> GetAllPartsInBranch(string rootPart, Dictionary<string, List<string>> paths) {
+		public static List<string> GetAllPartsInBranch(string rootPart, Dictionary<string, List<string>> paths, Node rootNode) {
 			var parts = new List<string>();
-			var toCheck = new List<string>();
-			toCheck.Add(rootPart);
+			var toCheck = new List<Node>();
+			toCheck.Add(NavigateDHPath(paths[rootPart].Append(rootPart).ToList(), rootNode));
 			while (toCheck.Count > 0) {
-				var tmp = new List<string>();
+				var tmp = new List<Node>();
 				toCheck.ForEach(x => {
-					parts.Add(x);
-					if (paths.ContainsKey(x))
-						tmp.AddRange(paths[x]);
+					parts.Add(x.Value);
+					x.Children.ForEach(y => {
+						if (y.Value != string.Empty)
+							tmp.Add(y);
+					});
 				});
 				toCheck.Clear();
 				toCheck = tmp;
 			}
 			return parts;
+		}
+
+		public static Node NavigateDHPath(List<string> path, Node rootNode) {
+			var current = rootNode;
+			while (path.Count > 0) {
+				current = current.Children.First(x => x.Value.Equals(path[0]));
+				path.RemoveAt(0);
+			}
+			return current;
 		}
 
 		#endregion
@@ -994,7 +1053,7 @@ namespace Synthesis.Import
 		public struct SourceType
 		{
 			public static readonly SourceType MIRABUF_ASSEMBLY = new SourceType("mirabuf_assembly", "mira");
-			public static readonly SourceType PROTOBUF_FIELD = new SourceType("proto_field", ProtoField.FILE_ENDING);
+			// public static readonly SourceType PROTOBUF_FIELD = new SourceType("proto_field", ProtoField.FILE_ENDING);
 
 			public string FileEnding  { get; private set; }
 			public string Indentifier { get; private set; }

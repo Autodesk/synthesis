@@ -24,7 +24,7 @@ Each root child has a number of children that are all rigidly attached to the dy
 
 import adsk.fusion, adsk.core, traceback, uuid
 
-from proto.proto_out import types_pb2, joint_pb2, signal_pb2, motor_pb2
+from proto.proto_out import types_pb2, joint_pb2, signal_pb2, motor_pb2, assembly_pb2
 from typing import Union
 
 from ...general_imports import *
@@ -60,6 +60,7 @@ def populateJoints(
     signals: signal_pb2.Signals,
     progressDialog: PDMessage,
     options: ParseOptions,
+    assembly: assembly_pb2.Assembly,
 ):
     fill_info(joints, None)
 
@@ -111,7 +112,7 @@ def populateJoints(
                         signal.io = signal_pb2.IOType.OUTPUT
 
                         # really could just map the enum to a friggin string
-                        if (parse_joints.signalType != ParseOptions.SignalType.PASSIVE):
+                        if (parse_joints.signalType != ParseOptions.SignalType.PASSIVE and assembly.dynamic):
                             if (parse_joints.signalType == ParseOptions.SignalType.CAN):
                                 signal.device_type = signal_pb2.DeviceType.CANBUS
                             elif (parse_joints.signalType == ParseOptions.SignalType.PWM):

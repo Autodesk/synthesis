@@ -2558,7 +2558,7 @@ GameObject:
   - component: {fileID: 1040913156}
   m_Layer: 0
   m_Name: Plane
-  m_TagString: Untagged
+  m_TagString: default-floor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 1
@@ -3286,8 +3286,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae7d17a5078b419190218853c9d10b9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ZoomSensitivity: 0.15
-  MovementSpeed: 3
+  ZoomSensitivity: 0.2
+  MovementSpeed: 4.5
 --- !u!1 &1354015881
 GameObject:
   m_ObjectHideFlags: 0

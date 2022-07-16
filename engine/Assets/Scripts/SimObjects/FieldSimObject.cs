@@ -24,20 +24,23 @@ public class FieldSimObject : SimObject {
         MiraAssembly = assembly;
         GroundedNode = groundedNode;
         FieldObject = groundedNode.transform.parent.gameObject;
-        FieldBounds = FieldObject.transform.GetBounds();
+        FieldBounds = groundedNode.transform.GetBounds();
         Gamepieces = gamepieces;
         ScoringZones = new List<ScoringZone>();
 
         // Level the field
         var position = FieldObject.transform.position;
-        position.y -= position.y - FieldBounds.extents.y;
+        position.y -= FieldBounds.center.y - FieldBounds.extents.y;
+        FieldObject.transform.position = position;
 
         CurrentField = this;
+        // SynthesisAssetCollection.DefaultFloor.SetActive(false);
     }
 
     public void DeleteField() {
         GameObject.Destroy(FieldObject);
         SimulationManager.RemoveSimObject(this);
+        // SynthesisAssetCollection.DefaultFloor.SetActive(true);
     }
 
     public static void SpawnField(string filePath) {

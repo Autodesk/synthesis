@@ -37,22 +37,25 @@ public class GodMode : MonoBehaviour
         }
     }
 
+    private float _lastUpdate = float.NaN;
+    private Vector3 _speed, _lastPosition;
     private void Update() {
         bool godModeKeyDown = InputManager.MappedValueInputs[ENABLED_GOD_MODE_INPUT].Value == 1.0F;
         bool mouseDown = InputManager.MappedValueInputs[GOD_MODE_DRAG_INPUT].Value == 1.0F;
         if (godModeKeyDown)
         {
-            if (mouseDown && grabbedObject == null)
-            {
+            if (mouseDown && grabbedObject == null) {
                 Camera camera = Camera.main;
                 Ray ray = camera.ScreenPointToRay(Input.mousePosition);
                 RaycastHit hitInfo;
                 bool hit = Physics.Raycast(ray, out hitInfo);
-                if (hit)
-                {
+                if (hit) {
                     grabbedObject = GetGameObjectWithRigidbody(hitInfo.collider.gameObject);
-                    if (grabbedObject != null)
-                    {
+                    if (grabbedObject != null) {
+                        _lastUpdate = Time.realtimeSinceStartup;
+                        _speed = Vector3.zero;
+                        _lastPosition = grabbedObject.transform.position;
+
                         grabbedDistance = hitInfo.distance;
                         // add a joint to the grabbed object anchored at where the user clicked
                         Vector3 localCoords = grabbedObject.transform.worldToLocalMatrix.MultiplyPoint(hitInfo.point);
@@ -62,25 +65,27 @@ public class GodMode : MonoBehaviour
                         grabJoint.xMotion = grabJoint.yMotion = grabJoint.zMotion = ConfigurableJointMotion.Locked;
                     }
                 }
-            }
-
-            if (mouseDown && grabJoint != null)
-            {
+            } else if (mouseDown && grabJoint != null) {
                 // move towards and away from the camera on scroll
-                grabbedDistance += ZoomSensitivity * -Input.mouseScrollDelta.y;
+                grabbedDistance += ZoomSensitivity * Input.mouseScrollDelta.y;
                 Camera camera = Camera.main;
                 Vector3 mousePosition = Input.mousePosition;
                 mousePosition.z = (float)grabbedDistance;
                 Ray ray = camera.ScreenPointToRay(mousePosition);
                 // move grabbed object towards mouse cursor
-                grabJoint.connectedAnchor += (ray.GetPoint((float)grabbedDistance) - grabJoint.connectedAnchor) *
-                                             (float)MovementSpeed * Time.deltaTime;
+
+                if (ray.GetPoint((float)grabbedDistance).y >= 0) {
+                    var delta = (ray.GetPoint((float)grabbedDistance) - grabJoint.connectedAnchor) * (float)MovementSpeed * Time.deltaTime;
+                    grabJoint.connectedAnchor += delta;
+
+                    _speed = delta / Time.deltaTime;
+                }
             }
         }
 
-        if (!mouseDown && grabJoint != null)
-        {
+        if (!mouseDown && grabJoint != null) {
             Destroy(grabJoint);
+            grabbedObject.GetComponent<Rigidbody>().velocity = _speed;
             grabbedObject = null;
             grabJoint = null;
         }

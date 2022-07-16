@@ -101,7 +101,7 @@ class Parser:
 
             # Problem Child
             Joints.populateJoints (
-                design, assembly_out.data.joints, assembly_out.data.signals, self.pdMessage, self.parseOptions
+                design, assembly_out.data.joints, assembly_out.data.signals, self.pdMessage, self.parseOptions, assembly_out
             )
 
             # add condition in here for advanced joints maybe idk

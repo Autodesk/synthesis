@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using Synthesis.ModelManager;
 using Synthesis.UI.Panels;
 using TMPro;
 using UnityEngine.UI;

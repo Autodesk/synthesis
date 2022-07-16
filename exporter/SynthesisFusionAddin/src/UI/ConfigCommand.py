@@ -1130,6 +1130,9 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             if mode_dropdown.selectedItem.name == "Synthesis Exporter":
                 mode = 5
 
+            # defaultPath = self.fp
+            # defaultPath = os.getenv()
+
             if mode == 5:
                 savepath = FileDialogConfig.SaveFileDialog(
                     defaultPath=self.fp, ext="Synthesis File (*.synth)"
