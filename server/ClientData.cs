@@ -22,6 +22,7 @@ namespace SynthesisServer
         public byte[] SymmetricKey { get; private set; }
         public long LastHeartbeat { get; private set; }
         public bool IsReady { get; set; }
+
         private string _currentLobbyName = null;
 
         private AsymmetricCipherKeyPair _keyPair;

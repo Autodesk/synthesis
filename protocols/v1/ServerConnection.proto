@@ -122,6 +122,13 @@ message SwapResponse {
 	GenericResponse generic_response = 5;
 }
 
+message MatchStart {
+	string host_endpoint = 1;
+	repeated string client_endpoints = 2; // only the host needs to know this
+}
+
+message MatchStartResponse {}
+
 
 
 

@@ -84,6 +84,7 @@ namespace SynthesisServer
                 else if (message.Is(LeaveLobbyRequest.Descriptor)) { HandleLeaveLobbyRequest(message.Unpack<LeaveLobbyRequest>(), remoteEP); }
                 else if (message.Is(StartLobbyRequest.Descriptor)) { HandleStartLobbyRequest(message.Unpack<StartLobbyRequest>(), remoteEP); }
                 else if (message.Is(SwapRequest.Descriptor)) { HandleSwapRequest(message.Unpack<SwapRequest>(), remoteEP); }
+                else if (message.Is(MatchStartResponse.Descriptor)) { HandleMatchStartResponse(message.Unpack<MatchStartResponse>(), remoteEP); }
 
                 _udpSocket.BeginReceive(RecieveCallback, Port);
                 
@@ -91,6 +92,13 @@ namespace SynthesisServer
             {
                 Console.WriteLine("Socket Exception");
             }
+        }
+
+        private void HandleMatchStartResponse(MatchStartResponse matchStartResponse, IPEndPoint remoteEP)
+        {
+            _clientsLock.EnterWriteLock();
+            _clients.Remove(remoteEP.ToString());
+            _clientsLock.ExitWriteLock();
         }
 
         private void HandleKeyExchange(KeyExchange keyExchange, IPEndPoint remoteEP)
@@ -564,12 +572,42 @@ namespace SynthesisServer
 
         private void StartLobby(string lobbyName)
         {
-            Lobby lobby;
             _lobbiesLock.EnterWriteLock();
-            _lobbies.Remove(lobbyName, out lobby);
+            _lobbies.Remove(lobbyName, out Lobby lobby);
             _lobbiesLock.ExitWriteLock();
-            
-            throw new NotImplementedException();
+
+            _clientsLock.EnterReadLock();
+            MatchStart matchStartMessage = new MatchStart()
+            {
+                HostEndpoint = lobby.Host.ClientEndpoint.ToString()
+            };
+            foreach (ClientData client in lobby.Clients)
+            {
+                matchStartMessage.ClientEndpoints.Add(client.ClientEndpoint.ToString());
+            }
+
+            foreach (ClientData client in lobby.Clients)
+            {
+                Task.Run(() => StartClient(client, matchStartMessage, 5000));
+            }
+            _clientsLock.ExitReadLock();
+        }
+
+        private void StartClient(ClientData client, MatchStart matchStartMessage, long timeout)
+        {
+            _clientsLock.EnterReadLock();
+            long startTime = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            while (_clients.ContainsKey(client.ClientEndpoint.ToString()) && System.DateTimeOffset.Now.ToUnixTimeMilliseconds() - startTime <= timeout) {
+                SendEncryptedMessage(matchStartMessage, client.ClientEndpoint, client, _udpSocket);
+                _clientsLock.ExitReadLock();
+                Thread.Sleep(500);
+                _clientsLock.EnterReadLock();
+            }
+            _clientsLock.ExitReadLock();
+
+            _clientsLock.EnterWriteLock();
+            _clients.Remove(client.ClientEndpoint.ToString());
+            _clientsLock.ExitWriteLock();
         }
     }
 }
