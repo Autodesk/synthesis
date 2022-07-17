@@ -24,7 +24,7 @@ public static class Shooting
     public static void Start()
     {
         
-        InputManager.AssignValueInput(TOGGLE_SHOOT_GAMEPIECE, TryGetSavedInput(TOGGLE_SHOOT_GAMEPIECE, new Digital("LeftShift", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
+        InputManager.AssignValueInput(TOGGLE_SHOOT_GAMEPIECE, TryGetSavedInput(TOGGLE_SHOOT_GAMEPIECE, new Digital("Space", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
     }
     private static Analog TryGetSavedInput(string key, Analog defaultInput)
     {
@@ -41,7 +41,7 @@ public static class Shooting
     {
         //loop through all gamepieces and attach objects
         //call this from the mode manager
-        Debug.Log("Here");
+        
         FieldSimObject.CurrentField.Gamepieces.ForEach(gp =>
         {
             //gp.GamepieceObject.GetComponentInChildren<MeshRenderer>().gameObject.AddComponent<ShootableGamepiece>();
@@ -49,12 +49,14 @@ public static class Shooting
         });
     }
     
+    
     public static void Update()
     {
         //call this from the mode manager update loop
         //update the current time, detect input, and perform shooting actions
-
+        
         bool shootGamepiece = InputManager.MappedValueInputs[TOGGLE_SHOOT_GAMEPIECE].Value == 1.0F;
+        //Debug.Log($"Key: {shootGamepiece} | shooting q {shootingQueue.Count} | can shoot {canShoot}");
         
         if(shootingQueue.Count > 0 && shootGamepiece && canShoot)
         {
@@ -76,19 +78,21 @@ public static class Shooting
         canShoot = true;
     }
     
-    private static float shootForce = 10;
-    private static float upwardsForce = 5;
-    private static Vector3 centerOffset = new Vector3(0, 1, 0);
+    
+    private static float shootForce = 70.0f;
+    private static float upwardsForce = 70.0f;
+    private static Vector3 verticalOffset = new Vector3(0, 1.5f, 0);
+    public static GameObject intakeObject { get; set; }
     public static void ShootGamepiece()
     {
         //shoot gamepiece from queue
-        GameObject cam = Camera.main.gameObject;
-        Vector3 horizontal = new Vector3(0, cam.transform.eulerAngles.y,0) * shootForce;
-        Vector3 vertical = cam.transform.up * upwardsForce;
-        Vector3 spawnPoint = cam.GetComponent<CameraController>().FocusPoint() + centerOffset;
-        
-        if(shootingQueue.Count > 0)
-            shootingQueue.Dequeue().OnShoot(horizontal,vertical, spawnPoint);
+        Vector3 horizontal = Vector3.Normalize(intakeObject.transform.forward) * shootForce;
+        Vector3 vertical = Vector3.Normalize(intakeObject.transform.up) * upwardsForce;
+        Vector3 spawnPoint = intakeObject.transform.position + verticalOffset;
+        Debug.Log("Spawn point: " + spawnPoint);
+
+        if (shootingQueue.Count > 0)
+            shootingQueue.Dequeue().OnShoot(horizontal,vertical, spawnPoint, intakeObject.transform.rotation.eulerAngles);
     }
 
     public static void AddGamepiece(ShootableGamepiece shootable)

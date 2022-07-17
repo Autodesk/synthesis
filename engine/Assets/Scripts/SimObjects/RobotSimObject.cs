@@ -202,10 +202,14 @@ public class RobotSimObject : SimObject, IPhysicsOverridable {
         RobotSimObject simObject = mira.Sim as RobotSimObject;
         mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
         mira.MainObject.tag = "robot";
+
+        //tags every mesh collider component in the robot with a tag of robot
         mira.MainObject.GetComponentsInChildren<MeshCollider>().ForEach(g => g.tag = "robot");
+        
         mira.MainObject.transform.position = position;
         mira.MainObject.transform.rotation = rotation;
 
+        
         //TEMPORARY: CREATING INSTAKE AT FRONT OF THE ROBOT
         GameObject intake = GameObject.CreatePrimitive(PrimitiveType.Cube);
         mira.MainObject.GetComponentsInChildren<Transform>().ForEach(t =>
@@ -224,7 +228,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable {
         intake.GetComponent<Collider>().isTrigger = true;
         intake.GetComponent<MeshRenderer>().enabled = false;
         intake.tag = "robot";
-
+        Shooting.intakeObject = intake;
+        
         // Event call maybe?
 
         // Camera.main.GetComponent<CameraController>().FocusPoint =

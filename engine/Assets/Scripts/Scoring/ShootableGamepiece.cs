@@ -22,18 +22,23 @@ public class ShootableGamepiece : MonoBehaviour
 
     public bool currentlyHeld = false;
 
-    public void OnShoot(Vector3 HorizontalImpulse, Vector3 VerticalImpulse, Vector3 location)
+    public void OnShoot(Vector3 HorizontalImpulse, Vector3 VerticalImpulse, Vector3 location, Vector3 rotation)
     {
         //configure being shown
         //add impulse
-        transform.position = location;
+        transform.position = location + (transform.position - gameObject.GetComponentInChildren<MeshCollider>().transform.position);
+        transform.GetComponentInChildren<MeshCollider>().gameObject.transform.rotation = Quaternion.Euler(rotation);
+        transform.position += GetComponentInChildren<MeshCollider>().gameObject.transform.forward * 0.4f;//forward offset
+        //transform.position = location;
+        
         SetPieceState(true);
-        GetComponent<Rigidbody>().AddForce(HorizontalImpulse, ForceMode.Impulse);
-        GetComponent<Rigidbody>().AddForce(VerticalImpulse, ForceMode.Impulse);
+        rb.AddForce(HorizontalImpulse, ForceMode.Impulse);
+        rb.AddForce(VerticalImpulse, ForceMode.Impulse);
+        Debug.Log($"HorizontalImpulse: {HorizontalImpulse} | VerticalImpulse {VerticalImpulse}");
     }
     private void OnTriggerEnter(Collider collision)
     {
-        Debug.Log("Collision Detected" + collision.transform.tag);
+        //Debug.Log("Collision Detected" + collision.transform.tag);
         //check if other is robot
         //add self to queue
         //disable self
