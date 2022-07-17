@@ -25,8 +25,8 @@ namespace Synthesis.UI.Dynamic
 
         public override void Create()
         {
-            Title.SetText("Set Spawn");
-            PanelImage.RootGameObject.SetActive(false);
+            Title.SetText("Set Spawn").SetFontSize(30f);
+            //PanelImage.RootGameObject.SetActive(false);
             //Description.RootGameObject.SetActive(false);
 
             Content panel = new Content(null, UnityObject, null);
@@ -36,29 +36,28 @@ namespace Synthesis.UI.Dynamic
                     .StepIntoLabel(label => label.SetText("Start"))
                     .AddOnClickedEvent(b =>
                     {
-
-                        PracticeMode.SetInitialState(GizmoManager.currentGizmo.transform.parent.gameObject);
-                        Shooting.ConfigureGamepieces();
-                        
-                        DynamicUIManager.CreatePanel<Synthesis.UI.Dynamic.ScoreboardPanel>();
-                        GizmoManager.ExitGizmo();
+                        StartMatch();
                     });
             CancelButton
                 .StepIntoLabel(label => label.SetText("Cancel"))
                 .AddOnClickedEvent(b =>
                 {
-                    ModeManager.ModalClosed();
+                    //if (FieldSimObject.CurrentField != null) FieldSimObject.CurrentField.DeleteField();
+                    //if (RobotSimObject.GetCurrentlyPossessedRobot() != null) RobotSimObject.GetCurrentlyPossessedRobot().Destroy();
+                    DynamicUIManager.CreateModal<MatchModeModal>();
                 });
 
-            MainContent.CreateLabel(50f).ApplyTemplate(VerticalLayout).SetText("Spawn Positions");
+            /*MainContent.CreateLabel(50f).ApplyTemplate(VerticalLayout).SetText("Spawn Positions");
             var spawnPosition = MainContent.CreateDropdown().ApplyTemplate(Dropdown.VerticalLayoutTemplate)
                 .SetOptions(new string[] { "Left", "Middle", "Right" })
                 .AddOnValueChangedEvent((d, i, data) => { }
                 //ADD: CHANGE SPAWN POSITION
-                ).ApplyTemplate(VerticalLayout);
+                ).ApplyTemplate(VerticalLayout);*/
+
+            
 
 
-            /*MainContent.CreateButton()
+            MainContent.CreateButton()
                 .SetTopStretch<Button>()
                 .ShiftOffsetMin<Button>(new Vector2(7.5f, 0f))
                 .StepIntoLabel(label => label.SetText("Set to Center"))
@@ -68,10 +67,23 @@ namespace Synthesis.UI.Dynamic
                 .ApplyTemplate(VerticalLayout)
                 .ShiftOffsetMin<Button>(new Vector2(7.5f, 0f))
                 .StepIntoLabel(label => label.SetText("Set to Previous"))
-                .AddOnClickedEvent(b => { });*/
+                .AddOnClickedEvent(b => { });
+        }
+        private void StartMatch()
+        {
+            PracticeMode.SetInitialState(GizmoManager.currentGizmo.transform.parent.gameObject);
+            Shooting.ConfigureGamepieces();
+
+            DynamicUIManager.CreatePanel<Synthesis.UI.Dynamic.ScoreboardPanel>();
+            GizmoManager.ExitGizmo();
         }
 
-        public override void Update() { }
+        public override void Update() { 
+            if(GizmoManager.currentGizmo == null)
+            {
+                StartMatch();
+            }
+        }
 
         public override void Delete() { }
     }

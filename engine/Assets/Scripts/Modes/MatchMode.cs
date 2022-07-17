@@ -6,6 +6,8 @@ using TMPro;
 public class MatchMode : IMode
 {
     PracticeMode practiceMode = new PracticeMode();
+    public static int currentFieldIndex = -1;
+    public static int currentRobotIndex = -1;
     
     // Start is called before the first frame update
     public void Start()

@@ -83,11 +83,20 @@ public class MatchModeModal : ModalDynamic
     public IEnumerator LoadMatch()
     {
         yield return new WaitForSeconds(0.05f);
-        if (FieldSimObject.CurrentField != null) FieldSimObject.CurrentField.DeleteField();
-        FieldSimObject.SpawnField(_fieldFiles[_fieldIndex]);
 
-        if (RobotSimObject.GetCurrentlyPossessedRobot() != null) RobotSimObject.GetCurrentlyPossessedRobot().Destroy();
-        RobotSimObject.SpawnRobot(_robotFiles[_robotIndex]);
+        if(MatchMode.currentFieldIndex != _fieldIndex)
+        {
+            if (FieldSimObject.CurrentField != null) FieldSimObject.CurrentField.DeleteField();
+            FieldSimObject.SpawnField(_fieldFiles[_fieldIndex]);
+            MatchMode.currentFieldIndex = _fieldIndex;
+        }
+        
+        if(MatchMode.currentRobotIndex != _robotIndex)
+        {
+            if (RobotSimObject.GetCurrentlyPossessedRobot() != null) RobotSimObject.GetCurrentlyPossessedRobot().Destroy();
+            RobotSimObject.SpawnRobot(_robotFiles[_robotIndex]);
+            MatchMode.currentRobotIndex = _robotIndex;
+        }
 
         DynamicUIManager.CloseActiveModal();
 
