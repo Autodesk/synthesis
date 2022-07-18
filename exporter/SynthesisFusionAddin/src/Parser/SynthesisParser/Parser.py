@@ -7,6 +7,8 @@ from google.protobuf.json_format import MessageToJson
 
 from proto.proto_out import assembly_pb2, types_pb2
 
+from ...UI.Camera import captureThumbnail, clearIconCache
+
 # from . import Joints, Materials, Components, Utilities
 
 from . import Materials, Components, Joints, JointHierarchy, PDMessage
@@ -118,15 +120,47 @@ class Parser:
             JointHierarchy.BuildJointPartHierarchy(
                 design, assembly_out.data.joints, self.parseOptions, self.pdMessage
             )
+
+            # These don't have an effect, I forgot how this is suppose to work
+            # progressDialog.message = "Taking Photo for thumbnail..."
+            # progressDialog.title = "Finishing Export"
+            self.pdMessage.currentMessage = "Taking Photo for Thumbnail..."
+            self.pdMessage.update()
+
+            # Can only save, cannot get the bytes directly
+            thumbnailLocation = captureThumbnail()
+
+            if thumbnailLocation != None:
+                # Load bytes into memory and write them to proto
+                binaryImage = None
+                with open(thumbnailLocation, "rb") as in_file:
+                    binaryImage = in_file.read()
+                
+                if binaryImage != None :
+                    # change these settings in the captureThumbnail Function
+                    assembly_out.thumbnail.width = 200
+                    assembly_out.thumbnail.height = 200
+                    assembly_out.thumbnail.transparent = True
+                    assembly_out.thumbnail.data = binaryImage
+                    assembly_out.thumbnail.extension = "png"
+                    # clear the icon cache - src/resources/Icons
+                    clearIconCache()
+
+            self.pdMessage.currentMessage = "Compressing File..."
+            self.pdMessage.update()
             
             if self.parseOptions.compress:
                 self.logger.debug("Compressing file")
                 with gzip.open(self.parseOptions.fileLocation, 'wb', 9) as f:
+                    self.pdMessage.currentMessage = "Saving File..."
+                    self.pdMessage.update()
                     f.write(assembly_out.SerializeToString())
             else:
                 f = open(self.parseOptions.fileLocation, "wb")
                 f.write(assembly_out.SerializeToString())
                 f.close()
+
+            
 
             progressDialog.hide()
 
@@ -169,7 +203,7 @@ class Parser:
                 joint_hierarchy_out += "\n\n"
 
                 gm.ui.messageBox(
-                    f"Appearances: {len(assembly_out.data.materials.appearances)} \nMaterials: {len(assembly_out.data.materials.physicalMaterials)} \nPart-Definitions: {len(part_defs)} \nParts: {len(parts)} \nSignals: {len(signals)} \nJoints: {len(joints)}\n {joint_hierarchy_out}"
+                    f"Appearances: {len(assembly_out.data.materials.appearances)} \nMaterials: {len(assembly_out.data.materials.physicalMaterials)} \nPart-Definitions: {len(part_defs)} \nParts: {len(parts)} \nSignals: {len(signals)} \nJoints: {len(joints)}\n {joint_hierarchy_out}", "DEBUG - Fusion Synthesis"
                 )
 
         except:
