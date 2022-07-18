@@ -5,6 +5,9 @@ using System.Linq;
 using Synthesis.UI.Dynamic;
 using TMPro;
 using UnityEngine;
+using SynthesisAPI.Utilities;
+
+using Logger = SynthesisAPI.Utilities.Logger;
 
 #nullable enable
 
@@ -30,8 +33,12 @@ namespace Synthesis.UI.Dynamic {
                 .StepIntoLabel(label => label.SetText("Load"))
                 .AddOnClickedEvent(b => {
                     if (_selectedIndex != -1) {
-                        RobotSimObject.SpawnRobot(_files[_selectedIndex]);
-                        // ItemAnalytics("Robot");
+                        if (FieldSimObject.DeleteField()) {
+                            Debug.Log("Good");
+                        } else {
+                            Debug.Log("Bad");
+                        }
+                        FieldSimObject.SpawnField(_files[_selectedIndex]);
                         DynamicUIManager.CloseActiveModal();
                     }
                 });

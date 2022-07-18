@@ -157,10 +157,8 @@ namespace Synthesis.Import
 
 				#region Parts
 
-				foreach (var part in group.Parts)
-				{
-					if (!partObjects.ContainsKey(part.Value.Info.GUID))
-					{
+				foreach (var part in group.Parts) {
+					if (!partObjects.ContainsKey(part.Value.Info.GUID)) {
 						var partInstance = part.Value;
 						var partDefinition = parts.PartDefinitions[partInstance.PartDefinitionReference];
 						GameObject partObject = new GameObject(partInstance.Info.Name);
@@ -170,10 +168,8 @@ namespace Synthesis.Import
 						// MARK: If transform changes do work recursively, apply transformations here instead of in a separate loop
 						partObject.transform.ApplyMatrix(partInstance.GlobalTransform);
 						collectivePhysData.Add((partObject.transform, partDefinition.PhysicalData));
-					}
-					else
-					{
-						Logger.Log($"Duplicate Part\nGroup name: {group.Name}\nGUID: {part.Key}", LogLevel.Debug);
+					} else {
+						Logger.Log($"Duplicate Part\nGroup name: {group.Name}\nGUID: {part.Key}", LogLevel.Warning);
 					}
 				}
 
@@ -192,11 +188,13 @@ namespace Synthesis.Import
 					var gpSim = new GamepieceSimObject(group.Name, groupObject);
 					try {
 						SimulationManager.RegisterSimObject(gpSim);
-					} catch {
+					} catch (Exception e) {
 						// TODO: Fix
+						throw e;
 						Logger.Log($"Gamepiece with name {gpSim.Name} already exists.");
 						UnityEngine.Object.Destroy(groupObject);
 					}
+					gamepieces.Add(gpSim);
 				} else {
 					groupObjects.Add(group.GUID, groupObject);
 				}
@@ -227,8 +225,6 @@ namespace Synthesis.Import
 					UnityEngine.Object.Destroy(assemblyObject);
 				}
 			} else {
-				if (FieldSimObject.CurrentField != null)
-					FieldSimObject.CurrentField.DeleteField();
 				simObject = new FieldSimObject(assembly.Info.Name, state, assembly, groupObjects["grounded"], gamepieces);
 				try {
 					SimulationManager.RegisterSimObject(simObject);
@@ -330,8 +326,11 @@ namespace Synthesis.Import
 					// 	+ moddedMat.MultiplyPoint(originA - firstMat.GetPosition());
 					UVector3 jointOffset = instance.Offset ?? new Vector3();
 					revoluteA.anchor = originA + jointOffset;
-					revoluteA.axis =
-						definition.Rotational.RotationalFreedom.Axis;
+
+					var axisWut = new UVector3(definition.Rotational.RotationalFreedom.Axis.X, definition.Rotational.RotationalFreedom.Axis.Y, definition.Rotational.RotationalFreedom.Axis.Z);
+
+					revoluteA.axis = axisWut;
+						// ((UVector3)definition.Rotational.RotationalFreedom.Axis).normalized;
 					revoluteA.connectedBody = rbB;
 					revoluteA.connectedMassScale = revoluteA.connectedBody.mass / rbA.mass;
 					revoluteA.useMotor = true;
@@ -339,9 +338,13 @@ namespace Synthesis.Import
 					var limits = definition.Rotational.RotationalFreedom.Limits;
 					if (limits != null && limits.Lower != limits.Upper) {
 						revoluteA.useLimits = true;
+						// revoluteA.limits = new JointLimits() {
+						// 	min = limits.Lower * Mathf.Rad2Deg,
+						// 	max = limits.Upper * Mathf.Rad2Deg
+						// };
 						revoluteA.limits = new JointLimits() {
-							min = limits.Lower * Mathf.Rad2Deg,
-							max = limits.Upper * Mathf.Rad2Deg
+							min = -limits.Upper * Mathf.Rad2Deg,
+							max = -limits.Lower * Mathf.Rad2Deg
 						};
 					}
 					// revoluteA.useLimits = true;

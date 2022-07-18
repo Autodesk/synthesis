@@ -15,4 +15,9 @@ public class GamepieceSimObject : SimObject {
             t.tag = "gamepiece";
         }
     }
+
+    public void DeleteGamepiece() {
+        GameObject.Destroy(_gamepieceObject);
+        SimulationManager.RemoveSimObject(this);
+    }
 }

@@ -92,6 +92,7 @@
      <Compile Include="Assets\Scripts\Drivers\RotationalDriver.cs" />
      <Compile Include="Assets\Scripts\UI\Tabs\ConfigTab.cs" />
      <Compile Include="Assets\Scripts\Gizmos\GizmoStore.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\AddFieldModal.cs" />
      <Compile Include="Assets\Scripts\UI\Hierarchy\Hierarchy.cs" />
      <Compile Include="Assets\Scripts\Gizmos\MoveArrow.cs" />
      <Compile Include="Assets\Scripts\Utilities\IOHandler.cs" />
@@ -151,7 +152,7 @@
      <Compile Include="Assets\Scripts\UI\Panels\Variants\ExitPanel.cs" />
      <Compile Include="Assets\Scripts\Importer\Importer.cs" />
      <Compile Include="Assets\Scripts\Test\DebugJointAxes.cs" />
-     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\AddFieldModal.cs" />
+     <Compile Include="Assets\Scripts\Physics\CustomWheel.cs" />
      <None Include="Assets\Scripts\CoreEngine.asmdef" />
      <None Include="Assets\Scripts\Tween\Readme.txt" />
     <Reference Include="UnityEngine">

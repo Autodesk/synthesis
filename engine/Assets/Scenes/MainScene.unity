@@ -2300,7 +2300,7 @@ Camera:
   field of view: 60.000004
   orthographic: 0
   orthographic size: 5
-  m_Depth: 1
+  m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 53
@@ -3434,7 +3434,7 @@ GameObject:
   - component: {fileID: 1413913838}
   - component: {fileID: 1413913837}
   - component: {fileID: 1413913839}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: GizmoCam
   m_TagString: Untagged
   m_Icon: {fileID: 0}

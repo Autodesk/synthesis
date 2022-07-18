@@ -37,13 +37,25 @@ public class FieldSimObject : SimObject {
         // SynthesisAssetCollection.DefaultFloor.SetActive(false);
     }
 
-    public void DeleteField() {
-        GameObject.Destroy(FieldObject);
-        SimulationManager.RemoveSimObject(this);
+    public static bool DeleteField() {
+        if (CurrentField == null)
+            return false;
+
+        Debug.Log($"GP count: {CurrentField.Gamepieces.Count}");
+
+        CurrentField.Gamepieces.ForEach(x => x.DeleteGamepiece());
+        CurrentField.Gamepieces.Clear();
+        GameObject.Destroy(CurrentField.FieldObject);
+        SimulationManager.RemoveSimObject(CurrentField);
+        CurrentField = null;
+        return true;
         // SynthesisAssetCollection.DefaultFloor.SetActive(true);
     }
 
     public static void SpawnField(string filePath) {
+
+        DeleteField();
+
         var mira = Importer.MirabufAssemblyImport(filePath);
         mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
     }

@@ -27,6 +27,8 @@ namespace Synthesis.Runtime {
             Synthesis.PreferenceManager.PreferenceManager.Load();
 
             OnUpdate += DynamicUIManager.Update;
+
+            RotationalDriver.TestSphericalCoordinate();
         }
 
         void Update() {
