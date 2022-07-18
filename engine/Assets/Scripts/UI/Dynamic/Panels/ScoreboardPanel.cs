@@ -51,12 +51,7 @@ namespace Synthesis.UI.Dynamic {
                 .SetFontSize(50).SetHorizontalAlignment(HorizontalAlignmentOptions.Center);
 
 
-
-            EventBus.NewTypeListener<OnScoreEvent>(e =>
-            {
-                redScore.SetText($"R: {TempScoreManager.redScore}");
-                blueScore.SetText($"B: {TempScoreManager.blueScore}");
-            });
+            
         }
         
         float targetTime = 135;
@@ -66,6 +61,8 @@ namespace Synthesis.UI.Dynamic {
             {
                 targetTime -= Time.deltaTime;
                 time.SetText(Mathf.RoundToInt(targetTime).ToString());
+                redScore.SetText(Scoring.redScore.ToString());
+                blueScore.SetText(Scoring.blueScore.ToString());
             }    
             else if (!matchEnd)
             {

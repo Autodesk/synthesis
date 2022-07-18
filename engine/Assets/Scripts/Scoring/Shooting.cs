@@ -92,7 +92,7 @@ public static class Shooting
         Debug.Log("Spawn point: " + spawnPoint);
 
         if (shootingQueue.Count > 0)
-            shootingQueue.Dequeue().OnShoot(horizontal,vertical, spawnPoint, intakeObject.transform.rotation.eulerAngles);
+            shootingQueue.Dequeue().OnShoot(horizontal,vertical, spawnPoint, intakeObject.transform.rotation);
     }
 
     public static void AddGamepiece(ShootableGamepiece shootable)

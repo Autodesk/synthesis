@@ -116,6 +116,7 @@ public class MatchModeModal : ModalDynamic
             
             MatchMode.currentRobotIndex = _robotIndex;
         }
+        Scoring.ResetScore();
 
         DynamicUIManager.CloseActiveModal();
 
