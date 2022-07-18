@@ -22,14 +22,13 @@ namespace SynthesisServer
         public byte[] SymmetricKey { get; private set; }
         public long LastHeartbeat { get; private set; }
         public bool IsReady { get; set; }
-
-        private string _currentLobbyName = null;
+        public string CurrentLobby { get; set; }
 
         private AsymmetricCipherKeyPair _keyPair;
 
         public ClientData(string importedPublicKey, DHParameters parameters)
         {
-
+            CurrentLobby = null;
             _keyPair = GenerateKeys(parameters);
 
             DHPublicKeyParameters importedPublicKeyParameters = new DHPublicKeyParameters(new BigInteger(importedPublicKey), parameters);
@@ -57,33 +56,5 @@ namespace SynthesisServer
         public String GetPublicKey() { return ((DHPublicKeyParameters)_keyPair.Public).Y.ToString(); }
 
         public void UpdateHeartbeat() { LastHeartbeat = System.DateTimeOffset.Now.ToUnixTimeMilliseconds(); }
-
-
-        // Allows the server to not perform a bunch of iterations just to do nothing 
-        public void SetCurrentLobby(string? lobbyName, int? index, Dictionary<string, Lobby> lobbies, ReaderWriterLockSlim lobbiesLock)
-        {
-            if (_currentLobbyName != lobbyName)
-            {
-                if (lobbyName == null)
-                {
-                    lobbiesLock.EnterWriteLock();
-                    lobbies[_currentLobbyName].TryRemoveClient(this);
-                    lobbiesLock.ExitWriteLock();
-                } 
-                else if (lobbies.ContainsKey(lobbyName))
-                {
-                    lobbiesLock.EnterWriteLock();
-                    lobbies[lobbyName].TrySetClient(this, index);
-                    lobbiesLock.ExitWriteLock();
-                }
-                else
-                {
-                    lobbiesLock.EnterWriteLock();
-                    lobbies.Add(lobbyName, new Lobby(this));
-                    lobbiesLock.ExitWriteLock();
-                }
-                _currentLobbyName = lobbyName;
-            }
-        }
     }
 }
