@@ -19,8 +19,13 @@ namespace Mirabuf {
         public UMesh ColliderMesh {
             get {
                 if (_colliderMesh == null) {
-                    _colliderMesh = MakeMesh();
-                    Physics.BakeMesh(_colliderMesh.GetInstanceID(), true);
+                    try {
+                        _colliderMesh = MakeMesh();
+                        Physics.BakeMesh(_colliderMesh.GetInstanceID(), true);
+                    } catch (Exception e) {
+                        // TODO: Maybe don't silently fail
+                        _colliderMesh = new UMesh();
+                    }
                 }
                 return _colliderMesh;
             }

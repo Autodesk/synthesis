@@ -53,19 +53,17 @@ namespace Synthesis {
             _jointA = jointA;
             _jointB = jointB;
             if (motor != null && motor.MotorTypeCase == Mirabuf.Motor.Motor.MotorTypeOneofCase.SimpleMotor) {
-                _motor = motor.Value;
+                _motor = motor!.SimpleMotor.UnityMotor;
             } else {
-                var m = SimulationPreferences.GetRobotJointMotor((_simObject as RobotSimObject).MiraGUID, name);
-                if (false)
-                    _motor = m.Value;
-                else
-                    Motor = new JointMotor() // Default Motor. Slow but powerful enough. Also uses Motor to save it
-                        {
-                            force = 2000,
-                            freeSpin = false,
-                            targetVelocity = 500,
-                        };
+                // var m = SimulationPreferences.GetRobotJointMotor((_simObject as RobotSimObject).MiraGUID, name);
+                Motor = new JointMotor() { // Default Motor. Slow but powerful enough. Also uses Motor to save it
+                    force = 2000,
+                    freeSpin = false,
+                    targetVelocity = 500,
+                };
             }
+
+            Debug.Log($"Speed: {_motor.targetVelocity}\nForce: {_motor.force}");
         }
 
         void EnableMotor()

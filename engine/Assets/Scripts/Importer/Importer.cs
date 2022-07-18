@@ -363,7 +363,11 @@ namespace Synthesis.Import
 					if (instance.HasSignal()) {
 						var driver = new RotationalDriver(
 							assembly.Data.Signals.SignalMap[instance.SignalReference].Info.GUID,
-							new string[] {instance.SignalReference}, Array.Empty<string>(), simObject, revoluteA, revoluteB);
+							new string[] {instance.SignalReference}, Array.Empty<string>(), simObject, revoluteA, revoluteB,
+							assembly.Data.Joints.MotorDefinitions.ContainsKey(definition.MotorReference)
+								? assembly.Data.Joints.MotorDefinitions[definition.MotorReference]
+								: null
+						);
 						SimulationManager.AddDriver(assembly.Info.Name, driver);
 					}
 
@@ -512,17 +516,27 @@ namespace Synthesis.Import
 				// 	? assemblyData.Materials.Appearances[instance.Appearance].UnityMaterial
 				// 	: Appearance.DefaultAppearance.UnityMaterial;
 				if (!instance.SkipCollider) {
-					var collider = bodyObject.AddComponent<MeshCollider>();
-					if (isConvex) {
-						collider.convex = true;
-						collider.sharedMesh = body.TriangleMesh.ColliderMesh; // Again, not sure if this actually works
-					} else {
-						collider.convex = false;
-						collider.sharedMesh = body.TriangleMesh.UnityMesh;
+					MeshCollider collider = null;
+					try {
+						collider = bodyObject.AddComponent<MeshCollider>();
+						if (isConvex) {
+							collider.convex = true;
+							collider.sharedMesh = body.TriangleMesh.ColliderMesh; // Again, not sure if this actually works
+						} else {
+							collider.convex = false;
+							collider.sharedMesh = body.TriangleMesh.UnityMesh;
+						}
+					} catch (Exception e) {
+						if (collider != null) {
+							GameObject.Destroy(collider);
+							collider = null;
+						}
 					}
-					collider.material = physMat;
-					if (addToColliderIgnore)
-						_collidersToIgnore.Add(collider);
+
+					if (collider != null)
+						collider.material = physMat;
+						if (addToColliderIgnore)
+							_collidersToIgnore.Add(collider);
 				}
 				bodyObject.transform.parent = container.transform;
 				// Ensure all transformations are zeroed after assigning parent
@@ -588,6 +602,9 @@ namespace Synthesis.Import
 
 			(string guid, JointInstance joint) groundJoint = default;
 			int counter = 0;
+
+			
+
 			// Create initial definitions
 			foreach (var jInst in assembly.Data.Joints.JointInstances) {
 				RigidbodyDefinition mainDef;
@@ -696,6 +713,13 @@ namespace Synthesis.Import
 			assembly.Data.Parts.PartInstances.Where(x => !partMap.ContainsKey(x.Key)).ForEach(x => {
 				MoveToDef(x.Key, string.Empty, "grounded");
 			});
+
+			// Check if the original grounded object has been eaten by one of the joints
+			var swallower = partMap[assembly.Data.Joints.JointInstances["grounded"].Parts.Nodes.ElementAt(0).Value];
+			if (swallower != groundDef.GUID) {
+				var def = defs[swallower];
+				MergeDefinitions(groundDef, def);
+			}
 
 			// Apply RigidGroups
 			discoveredRigidGroups.AddRange(assembly.Data.Joints.RigidGroups);

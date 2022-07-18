@@ -124,6 +124,7 @@ def populateJoints(
                             simple_motor.stall_torque = parse_joints.force
                             simple_motor.max_velocity = parse_joints.speed
                             simple_motor.braking_constant = 0.8 # Default for now
+                            joint_definition.motor_reference = joint.entityToken
 
                             joint_instance.signal_reference = signal.info.GUID
                         # else:

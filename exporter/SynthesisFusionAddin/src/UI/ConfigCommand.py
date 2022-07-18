@@ -2357,9 +2357,10 @@ def addJointToTable(joint: adsk.fusion.Joint) -> None:
         jointTableInput.addCommandInput(signalType, row, 3)
 
         if joint.jointMotion.jointType == adsk.fusion.JointTypes.RevoluteJointType:
-            jointSpeed = cmdInputs.addAngleValueCommandInput(
+            jointSpeed = cmdInputs.addValueInput(
                 "joint_speed",
                 "Speed",
+                "deg",
                 adsk.core.ValueInput.createByReal(3.1415926)
             )
             jointSpeed.tooltip = 'Degrees per second'
@@ -2370,7 +2371,7 @@ def addJointToTable(joint: adsk.fusion.Joint) -> None:
                 "joint_force",
                 "Force",
                 "N",
-                adsk.core.ValueInput.createByReal(1)
+                adsk.core.ValueInput.createByReal(5000)
             )
             jointForce.tooltip = 'Newton-Meters***'
             jointTableInput.addCommandInput(jointForce, row, 5)

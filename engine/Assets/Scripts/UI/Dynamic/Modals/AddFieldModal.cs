@@ -33,11 +33,7 @@ namespace Synthesis.UI.Dynamic {
                 .StepIntoLabel(label => label.SetText("Load"))
                 .AddOnClickedEvent(b => {
                     if (_selectedIndex != -1) {
-                        if (FieldSimObject.DeleteField()) {
-                            Debug.Log("Good");
-                        } else {
-                            Debug.Log("Bad");
-                        }
+                        FieldSimObject.DeleteField();
                         FieldSimObject.SpawnField(_files[_selectedIndex]);
                         DynamicUIManager.CloseActiveModal();
                     }

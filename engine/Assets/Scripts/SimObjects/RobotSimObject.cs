@@ -23,7 +23,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable {
 
     public static string CurrentlyPossessedRobot { get; private set; } = string.Empty;
     public static RobotSimObject GetCurrentlyPossessedRobot()
-        => CurrentlyPossessedRobot == string.Empty ? null : SimulationManager._simulationObject[CurrentlyPossessedRobot] as RobotSimObject;
+        => CurrentlyPossessedRobot == string.Empty ? null : SimulationManager._simObjects[CurrentlyPossessedRobot] as RobotSimObject;
 
     public static int ControllableJointCounter = 0;
 

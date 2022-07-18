@@ -41,7 +41,7 @@ public class FieldSimObject : SimObject {
         if (CurrentField == null)
             return false;
 
-        Debug.Log($"GP count: {CurrentField.Gamepieces.Count}");
+        // Debug.Log($"GP count: {CurrentField.Gamepieces.Count}");
 
         CurrentField.Gamepieces.ForEach(x => x.DeleteGamepiece());
         CurrentField.Gamepieces.Clear();
