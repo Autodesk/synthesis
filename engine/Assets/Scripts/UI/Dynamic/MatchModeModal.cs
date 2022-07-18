@@ -94,7 +94,22 @@ public class MatchModeModal : ModalDynamic
         if(MatchMode.currentRobotIndex != _robotIndex)
         {
             if (RobotSimObject.GetCurrentlyPossessedRobot() != null) RobotSimObject.GetCurrentlyPossessedRobot().Destroy();
-            RobotSimObject.SpawnRobot(_robotFiles[_robotIndex]);
+
+            
+            Synthesis.PreferenceManager.PreferenceManager.Load();
+            if (Synthesis.PreferenceManager.PreferenceManager.ContainsPreference(MatchMode.PREVIOUS_SPAWN_LOCATION))
+            {
+                RobotSimObject.SpawnRobot(_robotFiles[_robotIndex],
+                    Synthesis.PreferenceManager.PreferenceManager.GetPreference<Vector3>(MatchMode.PREVIOUS_SPAWN_LOCATION),
+                    Synthesis.PreferenceManager.PreferenceManager.GetPreference<Quaternion>(MatchMode.PREVIOUS_SPAWN_ROTATION)
+                    );
+            }
+            else
+            {
+                RobotSimObject.SpawnRobot(_robotFiles[_robotIndex]);
+            }
+            
+            
             MatchMode.currentRobotIndex = _robotIndex;
         }
 
