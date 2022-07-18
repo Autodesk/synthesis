@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
+using Microsoft.Extensions.Logging;
 using Org.BouncyCastle.Asn1.Nist;
 using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Crypto;
@@ -30,6 +31,9 @@ namespace SynthesisServer
         private ReaderWriterLockSlim _lobbiesLock;
         private Dictionary<string, Lobby> _lobbies; // Uses lobby name as key
 
+        private ILogger _logger;
+        private bool _isRunning = false;
+
         public int Port { get; set; } = 10800;
         private static readonly Lazy<Server> lazy = new Lazy<Server>(() => new Server());
         public static Server Instance { get { return lazy.Value; } }
@@ -48,8 +52,10 @@ namespace SynthesisServer
             _lobbiesLock.ExitWriteLock();
         }
 
-        public void Start()
+        public void Start(ILogger logger)
         {
+            _logger = logger;
+
             _udpSocket = new UdpClient(Port, AddressFamily.InterNetwork);
             _encryptor = new SymmetricEncryptor();
 
@@ -60,12 +66,22 @@ namespace SynthesisServer
             _lobbiesLock = new ReaderWriterLockSlim();
 
             _udpSocket.BeginReceive(RecieveCallback, null);
+
+            Task.Run(() =>
+            {
+                while (_isRunning)
+                {
+                    CheckHeartbeats(5000);
+                    Thread.Sleep(500);
+                }
+            });
         }
         /*
-            Data is send in this format: [4 byte int that denotes the message type] + [protobuf data (if is a Message it is encrypted and the iv is prepended]
+            Data is send in this format: [4 byte int denoting header length] + [MessageHeader object] + [4 byte int denoting message body length] + [The actual message]
         */
         private void RecieveCallback(IAsyncResult asyncResult)
         {
+            _logger.LogInformation("Received Message");
             try
             {
                 IPEndPoint remoteEP = new IPEndPoint(IPAddress.Any, 0);
@@ -96,6 +112,7 @@ namespace SynthesisServer
 
         private void HandleMatchStartResponse(MatchStartResponse matchStartResponse, IPEndPoint remoteEP)
         {
+            _logger.LogInformation(remoteEP.ToString() + " is in a match");
             _clientsLock.EnterWriteLock();
             _clients.Remove(remoteEP.ToString());
             _clientsLock.ExitWriteLock();
@@ -103,6 +120,7 @@ namespace SynthesisServer
 
         private void HandleKeyExchange(KeyExchange keyExchange, IPEndPoint remoteEP)
         {
+            _logger.LogInformation(remoteEP.ToString() + " is performing a key exchange");
             ClientData EstablishedClientData = null;
 
             _clientsLock.EnterUpgradeableReadLock();
@@ -137,6 +155,7 @@ namespace SynthesisServer
 
         private void HandleHeartbeat(Heartbeat heartbeat, IPEndPoint remoteEP)
         {
+            _logger.LogInformation(remoteEP.ToString() + " has sent a heartbeat");
             _clientsLock.EnterWriteLock();
             _clients[remoteEP.ToString()].UpdateHeartbeat();
             _clientsLock.ExitWriteLock();
@@ -144,8 +163,9 @@ namespace SynthesisServer
 
         private void HandleCreateLobbyRequest(CreateLobbyRequest createLobbyRequest, IPEndPoint remoteEP)
         {
+            _logger.LogInformation(remoteEP.ToString() + " has requested to create a lobby");
             _lobbiesLock.EnterUpgradeableReadLock();
-            _clientsLock.EnterReadLock();
+            _clientsLock.EnterUpgradeableReadLock();
 
             if (_lobbies.ContainsKey(createLobbyRequest.LobbyName))
             {
@@ -165,41 +185,45 @@ namespace SynthesisServer
                     _clients[remoteEP.ToString()],
                     _udpSocket
                 );
+            }
+            else
+            {
+                _lobbiesLock.EnterWriteLock();
+                _lobbies[createLobbyRequest.LobbyName] = new Lobby(_clients[remoteEP.ToString()]);
+                _lobbiesLock.ExitWriteLock();
 
-                _lobbiesLock.ExitUpgradeableReadLock();
-                _clientsLock.ExitReadLock();
-                return;
+                _clientsLock.EnterWriteLock();
+                _clients[remoteEP.ToString()].CurrentLobby = createLobbyRequest.LobbyName;
+                _clientsLock.ExitWriteLock();
+
+                SendEncryptedMessage
+                (
+                    new CreateLobbyResponse()
+                    {
+                        ClientId = _clients[remoteEP.ToString()].ClientID,
+                        LobbyName = createLobbyRequest.LobbyName,
+                        GenericResponse = new GenericResponse()
+                        {
+                            Success = true,
+                            LogMessage = "Lobby created successfully"
+                        }
+                    },
+                    remoteEP,
+                    _clients[remoteEP.ToString()],
+                    _udpSocket
+                );
             }
 
-            _lobbiesLock.EnterWriteLock();
-            _lobbies[createLobbyRequest.LobbyName] = new Lobby(_clients[remoteEP.ToString()]);
-            _lobbiesLock.ExitWriteLock();
 
-            SendEncryptedMessage
-            (
-                new CreateLobbyResponse()
-                {
-                    ClientId = _clients[remoteEP.ToString()].ClientID,
-                    LobbyName = createLobbyRequest.LobbyName,
-                    GenericResponse = new GenericResponse()
-                    {
-                        Success = true,
-                        LogMessage = "Lobby created successfully"
-                    }
-                },
-                remoteEP,
-                _clients[remoteEP.ToString()],
-                _udpSocket
-            );
-
-            _clientsLock.ExitReadLock();
+            _clientsLock.ExitUpgradeableReadLock();
             _lobbiesLock.ExitUpgradeableReadLock();
         }
 
         private void HandleDeleteLobbyRequest(DeleteLobbyRequest deleteLobbyRequest, IPEndPoint remoteEP)
         {
+            _logger.LogInformation(remoteEP.ToString() + " has requested to delete a lobby");
             _lobbiesLock.EnterUpgradeableReadLock();
-            _clientsLock.EnterReadLock();
+            _clientsLock.EnterUpgradeableReadLock();
 
             if (_lobbies.ContainsKey(deleteLobbyRequest.LobbyName))
             {
@@ -208,6 +232,10 @@ namespace SynthesisServer
                     _lobbiesLock.EnterWriteLock();
                     _lobbies.Remove(deleteLobbyRequest.LobbyName);
                     _lobbiesLock.ExitWriteLock();
+
+                    _clientsLock.EnterWriteLock();
+                    _clients[remoteEP.ToString()].CurrentLobby = null;
+                    _clientsLock.ExitWriteLock();
 
                     SendEncryptedMessage
                     (
@@ -266,18 +294,24 @@ namespace SynthesisServer
                 );
             }
 
-            _clientsLock.ExitReadLock();
+            _clientsLock.ExitUpgradeableReadLock();
             _lobbiesLock.ExitUpgradeableReadLock();
         }
 
         private void HandleJoinLobbyRequest(JoinLobbyRequest joinLobbyRequest, IPEndPoint remoteEP)
         {
-            _clientsLock.EnterReadLock();
+            _logger.LogInformation(remoteEP.ToString() + " has requested to join a lobby");
+            _clientsLock.EnterUpgradeableReadLock();
             _lobbiesLock.EnterWriteLock();
 
-            if (_lobbies.ContainsKey(joinLobbyRequest.LobbyName) && _lobbies[joinLobbyRequest.LobbyName].TryAddClient(_clients[remoteEP.ToString()]))
+            if (_lobbies.ContainsKey(joinLobbyRequest.LobbyName) && _clients[remoteEP.ToString()].CurrentLobby == null && _lobbies[joinLobbyRequest.LobbyName].TryAddClient(_clients[remoteEP.ToString()]))
             {
                 _lobbiesLock.ExitWriteLock();
+
+                _clientsLock.EnterWriteLock();
+                _clients[remoteEP.ToString()].CurrentLobby = joinLobbyRequest.LobbyName;
+                _clientsLock.ExitWriteLock();
+
                 SendEncryptedMessage
                 (
                     new CreateLobbyResponse()
@@ -316,16 +350,23 @@ namespace SynthesisServer
                 );
             }
 
-            _clientsLock.ExitReadLock();
+            _clientsLock.ExitUpgradeableReadLock();
         }
 
         private void HandleLeaveLobbyRequest(LeaveLobbyRequest leaveLobbyRequest, IPEndPoint remoteEP)
         {
-            _clientsLock.EnterReadLock();
+            _logger.LogInformation(remoteEP.ToString() + " has requested to leave a lobby");
+            _clientsLock.EnterUpgradeableReadLock();
             _lobbiesLock.EnterWriteLock();
+
             if (_lobbies.ContainsKey(leaveLobbyRequest.LobbyName) && _lobbies[leaveLobbyRequest.LobbyName].TryRemoveClient(_clients[remoteEP.ToString()]))
             {
                 _lobbiesLock.ExitWriteLock();
+
+                _clientsLock.EnterWriteLock();
+                _clients[remoteEP.ToString()].CurrentLobby = null;
+                _clientsLock.ExitWriteLock();
+
                 SendEncryptedMessage
                 (
                     new CreateLobbyResponse()
@@ -363,11 +404,12 @@ namespace SynthesisServer
                     _udpSocket
                 );
             }
-            _clientsLock.ExitReadLock();
+            _clientsLock.ExitUpgradeableReadLock();
         }
 
         private void HandleStartLobbyRequest(StartLobbyRequest startLobbyRequest, IPEndPoint remoteEP)
         {
+            _logger.LogInformation(remoteEP.ToString() + " has requested to start a lobby");
             _lobbiesLock.EnterUpgradeableReadLock();
             if (_lobbies.ContainsKey(startLobbyRequest.LobbyName))
             {
@@ -440,6 +482,7 @@ namespace SynthesisServer
 
         private void HandleSwapRequest(SwapRequest swapRequest, IPEndPoint remoteEP)
         {
+            _logger.LogInformation(remoteEP.ToString() + " has requested to swap positions in a lobby");
             _clientsLock.EnterReadLock();
             _lobbiesLock.EnterReadLock();
 
@@ -608,6 +651,21 @@ namespace SynthesisServer
             _clientsLock.EnterWriteLock();
             _clients.Remove(client.ClientEndpoint.ToString());
             _clientsLock.ExitWriteLock();
+        }
+
+        public void CheckHeartbeats(long clientTimeout)
+        {
+            _clientsLock.EnterUpgradeableReadLock();
+            foreach (string client in _clients.Keys)
+            {
+                if (System.DateTimeOffset.Now.ToUnixTimeMilliseconds() - _clients[client].LastHeartbeat >= clientTimeout)
+                {
+                    _clientsLock.EnterWriteLock();
+                    _clients.Remove(client);
+                    _clientsLock.ExitWriteLock();
+                }
+            }
+            _clientsLock.ExitUpgradeableReadLock();
         }
     }
 }

@@ -60,7 +60,7 @@ namespace SynthesisServer
 				Environment.Exit(0);
 			} else
             {
-				Server.Instance.Start();
+				Server.Instance.Start(_logger);
 				_logger.LogInformation("Starting Server");
 			}
 			return (int)Command.START;
