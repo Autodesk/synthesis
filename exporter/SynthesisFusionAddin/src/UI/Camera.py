@@ -7,10 +7,11 @@ from ..Types.OString import OString
 
 from adsk.core import SaveImageFileOptions
 
-def captureThumbnail(size = 200):
+
+def captureThumbnail(size=200):
     """
-        ## Captures Thumbnail and saves it to a temporary path - needs to be cleared after or on startup
-        - Size: int (Default: 200) : (width & height)
+    ## Captures Thumbnail and saves it to a temporary path - needs to be cleared after or on startup
+    - Size: int (Default: 200) : (width & height)
     """
     app = adsk.core.Application.get()
 
@@ -28,7 +29,9 @@ def captureThumbnail(size = 200):
             # )
 
             name = "Thumbnail_{0}.png".format(
-                app.activeDocument.design.rootComponent.name.rsplit(" ", 1)[0].replace(" ", "") # remove whitespace from just the filename
+                app.activeDocument.design.rootComponent.name.rsplit(" ", 1)[0].replace(
+                    " ", ""
+                )  # remove whitespace from just the filename
             )
 
             path = OString.ThumbnailPath(name)
