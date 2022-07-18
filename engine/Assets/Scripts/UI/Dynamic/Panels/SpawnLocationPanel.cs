@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Synthesis.UI.Dynamic;
+using Synthesis.PreferenceManager;
 using UnityEngine;
 
 namespace Synthesis.UI.Dynamic
@@ -10,10 +11,10 @@ namespace Synthesis.UI.Dynamic
     {
 
         
-        private static float width = 200f;
+        private static float width = 300f;
         private static float height = 200f;
 
-        private const float VERTICAL_PADDING = 25f;
+        private const float VERTICAL_PADDING = 15f;
 
         public Func<UIComponent, UIComponent> VerticalLayout = (u) =>
         {
@@ -67,8 +68,8 @@ namespace Synthesis.UI.Dynamic
 
             MainContent.CreateButton()
                 .ApplyTemplate(VerticalLayout)
-                .SetTopStretch<Button>()
-                .SetHeight<Button>(30f)
+                .SetTopStretch<Button>(anchoredY: 10f)
+                .SetHeight<Button>(40f)
                 .ShiftOffsetMin<Button>(new Vector2(7.5f, 0f))
                 .StepIntoLabel(label => label.SetText("Set to Center").SetFontSize(20f))
                 .AddOnClickedEvent(b => {
@@ -82,7 +83,8 @@ namespace Synthesis.UI.Dynamic
 
             MainContent.CreateButton()
                 .ApplyTemplate(VerticalLayout)
-                .SetHeight<Button>(30f)
+                .SetTopStretch<Button>(anchoredY: 60f)
+                .SetHeight<Button>(40f)
                 .ShiftOffsetMin<Button>(new Vector2(7.5f, 0f))
                 .StepIntoLabel(label => label.SetText("Set to Previous").SetFontSize(20f))
                 .AddOnClickedEvent(b => {
@@ -91,15 +93,15 @@ namespace Synthesis.UI.Dynamic
                         PreferenceManager.PreferenceManager.Load();
                         if (PreferenceManager.PreferenceManager.ContainsPreference(MatchMode.PREVIOUS_SPAWN_LOCATION))
                         {
-
-                            RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position = 
-                                PreferenceManager.PreferenceManager.GetPreference<Vector3>(MatchMode.PREVIOUS_SPAWN_LOCATION);
-                            RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.rotation =
-                                PreferenceManager.PreferenceManager.GetPreference<Quaternion>(MatchMode.PREVIOUS_SPAWN_ROTATION);
+                            var pos = PreferenceManager.PreferenceManager.GetPreference<float[]>(MatchMode.PREVIOUS_SPAWN_LOCATION);
+                            RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position = new Vector3(pos[0], pos[1], pos[2]);
+                            var rot = PreferenceManager.PreferenceManager.GetPreference<float[]>(MatchMode.PREVIOUS_SPAWN_ROTATION);
+                            RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.rotation = new Quaternion(rot[0], rot[1], rot[2], rot[3]).normalized;
                         }
                         else
                         {
                             RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position = new Vector3(0f, 0f, 0f);
+                            RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
                         }
                         Camera.main.GetComponent<CameraController>().FocusPoint = () => RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position;
                     }
@@ -108,17 +110,21 @@ namespace Synthesis.UI.Dynamic
 
             location = MainContent.CreateLabel(30f).ApplyTemplate(VerticalLayout).SetFontSize(30)
                 .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Center).SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Bottom)
-                .SetTopStretch(leftPadding: 10f, anchoredY: 120f).SetText("(0.00, 0.00, 0.00)");
+                .SetTopStretch(leftPadding: 10f, anchoredY: 130f).SetText("(0.00, 0.00, 0.00)");
+
+
+            PracticeMode.SetInitialState(GizmoManager.currentGizmo.transform.parent.gameObject);
         }
         private void StartMatch()
         {
             if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
             {
-                PreferenceManager.PreferenceManager.SetPreference(MatchMode.PREVIOUS_SPAWN_LOCATION, RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position);
-                PreferenceManager.PreferenceManager.SetPreference(MatchMode.PREVIOUS_SPAWN_ROTATION, RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.rotation);
+                Vector3 p = RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position;
+                PreferenceManager.PreferenceManager.SetPreference(MatchMode.PREVIOUS_SPAWN_LOCATION, new float[] { p.x, p.y, p.z});
+                Quaternion q = RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.rotation;
+                PreferenceManager.PreferenceManager.SetPreference(MatchMode.PREVIOUS_SPAWN_ROTATION, new float[] { q.x, q.y, q.z, q.w });
                 PreferenceManager.PreferenceManager.Save();
             }
-            PracticeMode.SetInitialState(GizmoManager.currentGizmo.transform.parent.gameObject);
             
             Shooting.ConfigureGamepieces();
             DynamicUIManager.CloseActivePanel();

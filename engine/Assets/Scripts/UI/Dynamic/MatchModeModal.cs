@@ -5,6 +5,7 @@ using System.Linq;
 using System;
 using Synthesis.UI.Dynamic;
 using System.Collections;
+using Synthesis.PreferenceManager;
 
 public class MatchModeModal : ModalDynamic
 {
@@ -95,14 +96,17 @@ public class MatchModeModal : ModalDynamic
         {
             if (RobotSimObject.GetCurrentlyPossessedRobot() != null) RobotSimObject.GetCurrentlyPossessedRobot().Destroy();
 
-            
-            Synthesis.PreferenceManager.PreferenceManager.Load();
-            if (Synthesis.PreferenceManager.PreferenceManager.ContainsPreference(MatchMode.PREVIOUS_SPAWN_LOCATION))
+            PreferenceManager.Load();
+            if (PreferenceManager.ContainsPreference(MatchMode.PREVIOUS_SPAWN_LOCATION)
+                && PreferenceManager.ContainsPreference(MatchMode.PREVIOUS_SPAWN_ROTATION))
             {
+
+                var pos = PreferenceManager.GetPreference<float[]>(MatchMode.PREVIOUS_SPAWN_LOCATION);
+                var rot = PreferenceManager.GetPreference<float[]>(MatchMode.PREVIOUS_SPAWN_ROTATION);
+                
                 RobotSimObject.SpawnRobot(_robotFiles[_robotIndex],
-                    Synthesis.PreferenceManager.PreferenceManager.GetPreference<Vector3>(MatchMode.PREVIOUS_SPAWN_LOCATION),
-                    Synthesis.PreferenceManager.PreferenceManager.GetPreference<Quaternion>(MatchMode.PREVIOUS_SPAWN_ROTATION)
-                    );
+                    new Vector3(pos[0], pos[1], pos[2]),
+                    new Quaternion(rot[0], rot[1], rot[2], rot[3]).normalized);
             }
             else
             {

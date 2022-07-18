@@ -5,7 +5,7 @@ using UnityEngine;
 using TMPro;
 public class MatchMode : IMode
 {
-    PracticeMode practiceMode = new PracticeMode();
+    //PracticeMode practiceMode = new PracticeMode();
     public static int currentFieldIndex = -1;
     public static int currentRobotIndex = -1;
 
