@@ -33,9 +33,26 @@ public static class GizmoManager
     /// </summary>
     public static void ExitGizmo()
     {
+        if (gizmo != null && gizmo.transform != null)
+        {
+            Transform parent = gizmo.transform.parent;
+            if (parent != null && parent.CompareTag("gamepiece"))
+            {
+                PracticeMode.EndConfigureGamepieceSpawnpoint();
+            }
+        }
+
         Object.Destroy(gizmo);
     }
-    public static void OnEnter() {
+    public static void OnEnter()
+    {
+        if (gizmo.transform.parent.CompareTag("robot"))
+        {
+            PracticeMode.SetInitialState(gizmo.transform.parent.gameObject);
+        } else if (gizmo.transform.parent.CompareTag("gamepiece"))
+        {
+            PracticeMode.EndConfigureGamepieceSpawnpoint();
+        }
         Object.Destroy(gizmo);
     }
 }

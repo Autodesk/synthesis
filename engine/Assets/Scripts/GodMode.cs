@@ -17,22 +17,33 @@ public class GodMode : MonoBehaviour
     {
         Rigidbody rb = gameObj.GetComponent<Rigidbody>();
         if (rb != null && !rb.isKinematic) return gameObj;
-        return gameObj.transform.parent != null ? GetGameObjectWithRigidbody(gameObj.transform.parent.gameObject) : null;
+        return gameObj.transform.parent != null
+            ? GetGameObjectWithRigidbody(gameObj.transform.parent.gameObject)
+            : null;
     }
 
     public const string ENABLED_GOD_MODE_INPUT = "input/enable_god_mode";
     public const string GOD_MODE_DRAG_INPUT = "input/god_mode_drag_object";
-    private void Start() {
-        InputManager.AssignValueInput(ENABLED_GOD_MODE_INPUT, TryGetSavedInput(ENABLED_GOD_MODE_INPUT, new Digital("G", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
-        InputManager.AssignValueInput(GOD_MODE_DRAG_INPUT, TryGetSavedInput(GOD_MODE_DRAG_INPUT, new Digital("Mouse0", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
+
+    private void Start()
+    {
+        InputManager.AssignValueInput(ENABLED_GOD_MODE_INPUT,
+            TryGetSavedInput(ENABLED_GOD_MODE_INPUT, new Digital("G", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
+        InputManager.AssignValueInput(GOD_MODE_DRAG_INPUT,
+            TryGetSavedInput(GOD_MODE_DRAG_INPUT,
+                new Digital("Mouse0", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
     }
 
-    private Analog TryGetSavedInput(string key, Analog defaultInput) {
-        if (PreferenceManager.ContainsPreference(key)) {
+    private Analog TryGetSavedInput(string key, Analog defaultInput)
+    {
+        if (PreferenceManager.ContainsPreference(key))
+        {
             var input = (Digital)PreferenceManager.GetPreference<InputData[]>(key)[0].GetInput();
             input.ContextBitmask = defaultInput.ContextBitmask;
             return input;
-        } else {
+        }
+        else
+        {
             return defaultInput;
         }
     }

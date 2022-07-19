@@ -25,6 +25,7 @@ namespace Synthesis.Runtime {
         void Start() {
             SetContext(RUNNING_SIM_CONTEXT);
             Synthesis.PreferenceManager.PreferenceManager.Load();
+            ModeManager.Start();
 
             OnUpdate += DynamicUIManager.Update;
 
@@ -34,6 +35,7 @@ namespace Synthesis.Runtime {
         void Update() {
             InputManager.UpdateInputs(_simulationContext);
             SimulationManager.Update();
+            ModeManager.Update();
 
             if (OnUpdate != null)
                 OnUpdate();

@@ -39,6 +39,7 @@
      <Compile Include="Assets\MenuPanelManager.cs" />
      <Compile Include="Assets\SimulationManagerInspector.cs" />
      <Compile Include="Assets\TestScript.cs" />
+     <Compile Include="Assets\MatchMode.cs" />
      <Compile Include="Assets\LineScript.cs" />
      <None Include="Assets\Packages\Microsoft.NETCore.Targets.1.1.3\ThirdPartyNotices.txt" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

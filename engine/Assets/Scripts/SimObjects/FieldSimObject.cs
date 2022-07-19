@@ -7,6 +7,8 @@ using SynthesisAPI.Utilities;
 using UnityEngine;
 
 using Bounds = UnityEngine.Bounds;
+using Transform = Mirabuf.Transform;
+using Vector3 = UnityEngine.Vector3;
 
 public class FieldSimObject : SimObject {
 
@@ -20,9 +22,14 @@ public class FieldSimObject : SimObject {
     
     public List<ScoringZone> ScoringZones { get; private set; }
 
+    private Vector3 _initialPosition;
+    private Quaternion _initialRotation;
+
     public FieldSimObject(string name, ControllableState state, Assembly assembly, GameObject groundedNode, List<GamepieceSimObject> gamepieces) : base(name, state) {
         MiraAssembly = assembly;
         GroundedNode = groundedNode;
+        // grounded node is what gets grabbed in god mode so it needs field tag to not get moved
+        GroundedNode.transform.tag = "field";
         FieldObject = groundedNode.transform.parent.gameObject;
         FieldBounds = groundedNode.transform.GetBounds();
         Gamepieces = gamepieces;
@@ -34,7 +41,18 @@ public class FieldSimObject : SimObject {
         FieldObject.transform.position = position;
 
         CurrentField = this;
-        // SynthesisAssetCollection.DefaultFloor.SetActive(false);
+        Gamepieces.ForEach(gp =>
+        {
+            UnityEngine.Transform gpTransform = gp.GamepieceObject.transform;
+            gp.InitialPosition = gpTransform.position;
+            gp.InitialRotation = gpTransform.rotation;
+        });
+    }
+
+    public void ResetField()
+    {
+        GroundedNode.transform.position = _initialPosition;
+        GroundedNode.transform.rotation = _initialRotation;
     }
 
     public static bool DeleteField() {
@@ -58,6 +76,7 @@ public class FieldSimObject : SimObject {
 
         var mira = Importer.MirabufAssemblyImport(filePath);
         mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
+        mira.MainObject.tag = "field";
     }
 
     public void CreateScoringZone(Alliance alliance, int points, bool destroyObject = true)

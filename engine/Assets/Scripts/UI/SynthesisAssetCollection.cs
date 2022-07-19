@@ -17,10 +17,18 @@ public class SynthesisAssetCollection : MonoBehaviour {
     [SerializeField]
     public List<TMPro.TMP_FontAsset> Fonts;
     [SerializeField]
-    public Volume BlurVolume;
+    public GameObject BlurVolumePrefab;
     [SerializeField]
     public GameObject ReplaySlider;
-    public static Volume BlurVolumeStatic => Instance.BlurVolume;
+    private static Volume _blurVolumeStatic = null;
+    public static Volume BlurVolumeStatic {
+        get {
+            if (_blurVolumeStatic == null) {
+                _blurVolumeStatic = GameObject.Instantiate(Instance.BlurVolumePrefab).GetComponent<Volume>();
+            }
+            return _blurVolumeStatic;
+        }
+    }
     public static GameObject ReplaySliderStatic => Instance.ReplaySlider;
 
 #nullable enable
@@ -36,7 +44,12 @@ public class SynthesisAssetCollection : MonoBehaviour {
 #nullable disable
 
     public void Awake() {
+        if (Instance != null) {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
     public static Sprite GetSpriteByName(string name)

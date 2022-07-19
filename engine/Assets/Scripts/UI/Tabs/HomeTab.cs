@@ -1,8 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using SynthesisAPI.Utilities;
-using Logger = SynthesisAPI.Utilities.Logger;
 using Synthesis.UI.Dynamic;
 
 namespace Synthesis.UI.Tabs {
@@ -16,7 +11,7 @@ namespace Synthesis.UI.Tabs {
             CreateButton(
                 "Load Field",
                 SynthesisAssetCollection.GetSpriteByName("fieldimport"),
-                () => DynamicUIManager.CreateModal<AddFieldModal>()
+                () => DynamicUIManager.CreateModal<SelectFieldModal>()
             );
             CreateDivider();
             CreateButton(

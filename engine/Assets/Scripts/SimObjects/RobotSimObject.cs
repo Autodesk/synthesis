@@ -1,23 +1,20 @@
+using System.Collections.Generic;
+using System.Linq;
 using Google.Protobuf.WellKnownTypes;
 using Mirabuf;
 using Mirabuf.Joint;
-using Mirabuf.Signal;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using Synthesis;
+using Synthesis.Import;
+using Synthesis.Util;
 using Synthesis.Physics;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
 using UnityEngine;
-
 using Bounds = UnityEngine.Bounds;
-using Vector3 = UnityEngine.Vector3;
+using Joint = UnityEngine.Joint;
 using MVector3 = Mirabuf.Vector3;
 using Transform = UnityEngine.Transform;
-using Synthesis.Import;
-using Synthesis.Util;
+using Vector3 = UnityEngine.Vector3;
 
 public class RobotSimObject : SimObject, IPhysicsOverridable {
 
@@ -43,7 +40,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable {
     private List<Rigidbody> _allRigidbodies;
 
     public RobotSimObject(string name, ControllableState state, Assembly assembly,
-            GameObject groundedNode, Dictionary<string, (UnityEngine.Joint a, UnityEngine.Joint b)> jointMap)
+            GameObject groundedNode, Dictionary<string, (Joint a, Joint b)> jointMap)
             : base(name, state) {
         MiraAssembly = assembly;
         GroundedNode = groundedNode;
@@ -84,7 +81,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable {
             if (max.y < b.max.y) max.y = b.max.y;
             if (max.z < b.max.z) max.z = b.max.z;
         });
-        return new UnityEngine.Bounds(((max + min) / 2f) - top.position, max - min);
+        return new Bounds(((max + min) / 2f) - top.position, max - min);
     }
 
     private (List<JointInstance> leftWheels, List<JointInstance> rightWheels) GetLeftRightWheels() {
@@ -141,8 +138,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable {
                     // def.Rotational.RotationalFreedom.Axis = ogAxis; // I think this is irrelevant after the last few lines
                     def.Rotational.RotationalFreedom.Axis = new MVector3() { X = jointAxis.x, Y = jointAxis.y, Z = jointAxis.z };
                     var joints = _jointMap[x.Key];
-                    (joints.a as UnityEngine.HingeJoint).axis = ogAxis;
-                    (joints.b as UnityEngine.HingeJoint).axis = ogAxis;
+                    (joints.a as HingeJoint).axis = ogAxis;
+                    (joints.b as HingeJoint).axis = ogAxis;
                 }
             });
             _tankTrackWheels = (leftWheels, rightWheels);
@@ -206,6 +203,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable {
         var mira = Importer.MirabufAssemblyImport(filePath);
         RobotSimObject simObject = mira.Sim as RobotSimObject;
         mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
+        mira.MainObject.tag = "robot";
         mira.MainObject.transform.position = position;
         mira.MainObject.transform.rotation = rotation;
 
