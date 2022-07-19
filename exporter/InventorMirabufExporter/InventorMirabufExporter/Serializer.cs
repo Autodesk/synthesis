@@ -44,6 +44,47 @@ namespace InventorMirabufExporter
                 // Name?
             };
 
+            // Part Definition For Assembly Document
+            PartDefinition asmDef = new PartDefinition()
+            {
+                Info = new Info()
+                {
+                    GUID = assemblyDoc.InternalName.Trim('{', '}'),
+                    Name = assemblyDoc.DisplayName.Substring(0, assemblyDoc.DisplayName.LastIndexOf('.')),
+                    Version = version
+                },
+
+                PhysicalData = new PhysicalProperties()
+                {
+                    Density = assemblyDoc.ComponentDefinition.DefaultMaterial.Density,
+                    Mass = assemblyDoc.ComponentDefinition.MassProperties.Mass,
+                    Volume = assemblyDoc.ComponentDefinition.MassProperties.Volume,
+                    Area = assemblyDoc.ComponentDefinition.MassProperties.Area,
+                    Com = new Vector3()
+                    {
+                        X = (float)assemblyDoc.ComponentDefinition.MassProperties.CenterOfMass.X,
+                        Y = (float)assemblyDoc.ComponentDefinition.MassProperties.CenterOfMass.Y,
+                        Z = (float)assemblyDoc.ComponentDefinition.MassProperties.CenterOfMass.Z
+                    }
+                }
+            };
+
+            // Part Instance For Assembly Document
+            PartInstance asmInstance = new PartInstance()
+            {
+                Info = new Info()
+                {
+                    GUID = assemblyDoc.InternalName.Trim('{', '}'),
+                    Name = assemblyDoc.DisplayName.Substring(0, assemblyDoc.DisplayName.LastIndexOf('.')),
+                    Version = version
+                },
+                PartDefinitionReference = assemblyDoc.InternalName.Trim('{', '}')
+            };
+
+            // Add Assembly Doc Part Definition & Instance
+            environment.Data.Parts.PartDefinitions.Add(asmDef.Info.GUID, asmDef);
+            environment.Data.Parts.PartInstances.Add(asmInstance.Info.GUID, asmInstance);
+
             // Assembly > AssemblyData > Part > Part Definition Loop
             for (int i = 0; i < assemblyDoc.ReferencedDocuments.Count; i++)
             {
@@ -143,12 +184,14 @@ namespace InventorMirabufExporter
                         Mesh = new Mesh()
                     };
 
+                    /*
                     foreach (Vertex vert in doc.ComponentDefinition.SurfaceBodies[j].Vertices)
                     {
                         solid.TriangleMesh.Mesh.Verts.Add((float)vert.Point.X);
                         solid.TriangleMesh.Mesh.Verts.Add((float)vert.Point.Y);
                         solid.TriangleMesh.Mesh.Verts.Add((float)vert.Point.Z);
                     }
+                    */
 
                     int FacetCount, VertexCount;
                     //int[] VertexIndicies;
@@ -158,7 +201,14 @@ namespace InventorMirabufExporter
                     var NormalVectors = new double[] { };
                     var TextureCoordinates = new double[] { };
 
-                    doc.ComponentDefinition.SurfaceBodies[j].CalculateFacetsAndTextureMap((double)0.01, out VertexCount, out FacetCount, out VertexCoordinates, out NormalVectors, out VertexIndices, out TextureCoordinates);
+                    doc.ComponentDefinition.SurfaceBodies[j].CalculateFacetsAndTextureMap(1, out VertexCount, out FacetCount, out VertexCoordinates, out NormalVectors, out VertexIndices, out TextureCoordinates);
+
+                    // print vertex coordinates
+                    try { MessageBox.Show("VCoords: " + VertexCoordinates.Length, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+                    catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+
+                    foreach (double vert in VertexCoordinates)
+                        solid.TriangleMesh.Mesh.Verts.Add((float)vert);
 
                     foreach (double normal in NormalVectors)
                         solid.TriangleMesh.Mesh.Normals.Add((float)normal);
@@ -166,8 +216,23 @@ namespace InventorMirabufExporter
                     foreach (double uv in TextureCoordinates)
                         solid.TriangleMesh.Mesh.Uv.Add((float)uv);
 
-                    foreach (double index in VertexIndices)
-                        solid.TriangleMesh.Mesh.Indices.Add((int)index);
+                    foreach (int index in VertexIndices)
+                        solid.TriangleMesh.Mesh.Indices.Add(index-1);
+
+                    /*
+                    for(int k = 0; k < doc.ComponentDefinition.SurfaceBodies[j].Vertices.Count; k++)
+                    {
+                        solid.TriangleMesh.Mesh.Normals.Add((float)NormalVectors[k]);
+                        solid.TriangleMesh.Mesh.Uv.Add((float)TextureCoordinates[k]);
+                        solid.TriangleMesh.Mesh.Indices.Add(VertexIndices[k]);
+                    }
+                    */
+
+                    /*
+                    // Messed Up Mesh
+                    for(int k = 0; k < VertexCount; k++)
+                        solid.TriangleMesh.Mesh.Indices.Add(VertexIndices[k]);
+                    */
 
                     // might need some tweaking
                     solid.AppearanceOverride = doc.ComponentDefinition.SurfaceBodies[j].Appearance.Name;
