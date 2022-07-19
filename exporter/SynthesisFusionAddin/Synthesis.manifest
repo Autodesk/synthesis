@@ -1,0 +1,13 @@
+{
+	"autodeskProduct":	"Fusion360",
+	"type":	"addin",
+	"id":	"d07927b2-1d3a-44a0-8797-560e1bea09d0",
+	"author":	"ADSK FRC",
+	"description":	{
+		"":	"Synthesis Exporter"
+	},
+	"version":	"0.0.0.1",
+	"runOnStartup":	false,
+	"supportedOS":	"windows|mac",
+	"editEnabled":	true
+}
