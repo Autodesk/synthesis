@@ -507,10 +507,10 @@ namespace Synthesis.Import
 				var filter = bodyObject.AddComponent<MeshFilter>();
 				var renderer = bodyObject.AddComponent<MeshRenderer>();
 				filter.sharedMesh = body.TriangleMesh.UnityMesh;
-				renderer.material = assemblyData.Materials.Appearances.ContainsKey(body.AppearanceOverride)
-					? assemblyData.Materials.Appearances[body.AppearanceOverride].UnityMaterial
-					: assemblyData.Materials.Appearances.ContainsKey(instance.Appearance)
-						? assemblyData.Materials.Appearances[instance.Appearance].UnityMaterial
+				renderer.material = assemblyData.Materials.Appearances.ContainsKey(instance.Appearance)
+					? assemblyData.Materials.Appearances[instance.Appearance].UnityMaterial
+					: assemblyData.Materials.Appearances.ContainsKey(body.AppearanceOverride)
+						? assemblyData.Materials.Appearances[body.AppearanceOverride].UnityMaterial
 						: Appearance.DefaultAppearance.UnityMaterial; // Setup the override
 				// renderer.material = assemblyData.Materials.Appearances.ContainsKey(instance.Appearance)
 				// 	? assemblyData.Materials.Appearances[instance.Appearance].UnityMaterial
