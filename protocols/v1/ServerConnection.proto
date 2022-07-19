@@ -2,6 +2,7 @@ syntax = "proto3";
 
 message MessageHeader {
 	bool is_encrypted = 1;
+	string client_id = 2; // only necessary for UDP hole-punching
 }
 
 // Pack messages as the 'Any' type before sending
@@ -122,85 +123,30 @@ message SwapResponse {
 	GenericResponse generic_response = 5;
 }
 
+/*
+1. When lobby is started the server will send a MatchStart message over TCP with the open UDP port number
+2. Clients in that lobby will then begin broadcasting the MatchStartResponse to the server on the specified UDP port
+3. Upon recieving the match response the server will record the IPEndPoint of the UDP Connection
+4. After receiving a response from each client the server will send a connection data message over UDP
+*/
+
 message MatchStart {
-	string host_endpoint = 1;
-	repeated string client_endpoints = 2; // only the host needs to know this
+	int32 udp_port = 1;
 }
 
+// sent by the client over udp
 message MatchStartResponse {}
 
-
-
-
-
-
-
-
-
-
-
-
-
-/// don't use
-message ServerMessageLite {
-
-	oneof server_msg_type {
-		LobbyInfo lobby_info = 1; // sent by server
-		StatusMessage status_message = 2; // sent by server
-		Client client_status = 3; // sent by client
-
-		GameInfo game_info = 4; // sent by server
-		FoundGame game_found = 5; // sent by client (host)
-	}
-
-	/// Updates sent by the server that contain all the lobbies and their data
-	message LobbyInfo {
-		repeated Lobby lobbies = 1;
-		
-		message Lobby {
-			string lobby_name = 1;
-			repeated Client clients = 2;
-		}
-	}
-	
-	/// Clients send this object to the server as a heartbeat and to convey their desired state (client_id must remain constant)
-	message Client {
-		string client_id = 1;
-
-		string client_name = 2;
-		
-		string current_lobby_name = 3;
-		int32 current_lobby_index = 4;
-		bool is_ready = 5;
-	}
-	
-	/// messages the server can send to the clients for debugging
-	message StatusMessage {
-		string msg = 1;
-		Level level = 2;
-	
-		enum Level {
-			INFO = 0;
-			WARNING = 1;
-			ERROR = 2;
-		}	
-	}
-	
-	/// Sent to all clients when trying to establish p2p connection
-	message GameInfo {
-		string lobby_name = 1;
-		bool is_host = 2;
-		repeated ClientData clients = 3; /// host will have all while clients will just have the host's		
-
-		message ClientData {
-			string endpoint = 1;
-			string id = 2;
-		}
-	}
-
-	/// Sent by host as a courtesy to server so that the lobby can be deleted timely
-	message FoundGame {
-		string client_id = 1;
-		string lobby_name = 2;
-	}
+message ConnectionDataHost {
+	repeated string client_enpoints = 1; // includes the host as the index corresponds with lobby position
 }
+
+message ConnectionDataClient {
+	string host_endpoint = 1;
+}
+
+
+
+
+
+
