@@ -31,6 +31,18 @@ public class SynthesisAssetCollection : MonoBehaviour {
     }
     public static GameObject ReplaySliderStatic => Instance.ReplaySlider;
 
+#nullable enable
+    private GameObject? _defaultFloor = null;
+    public static GameObject? DefaultFloor {
+        get {
+            if (Instance._defaultFloor == null) {
+                Instance._defaultFloor = GameObject.FindGameObjectWithTag("default-floor");
+            }
+            return Instance._defaultFloor;
+        }
+    }
+#nullable disable
+
     public void Awake() {
         if (Instance != null) {
             Destroy(gameObject);

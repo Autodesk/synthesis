@@ -23,6 +23,11 @@ public class GamepieceSimObject : SimObject {
         }
     }
 
+    public void DeleteGamepiece() {
+        GameObject.Destroy(_gamepieceObject);
+        SimulationManager.RemoveSimObject(this);
+    }
+    
     public void Reset()
     {
         GamepieceObject.transform.position = InitialPosition;

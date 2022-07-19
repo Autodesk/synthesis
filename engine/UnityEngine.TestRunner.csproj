@@ -9,10 +9,10 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{03aa75bb-fbc0-7460-e634-7afe38ec939b}</ProjectGuid>
+    <ProjectGuid>{567804dd-4aa4-cfb2-dac4-4923425fd94a}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <AssemblyName>EditModeTests</AssemblyName>
+    <AssemblyName>UnityEngine.TestRunner</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <BaseDirectory>.</BaseDirectory>
@@ -36,9 +36,118 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-     <Compile Include="Assets\EditModeTests\SampleTest.cs" />
-     <Compile Include="Assets\EditModeTests\AnalyticsTest.cs" />
-     <None Include="Assets\EditModeTests\EditModeTests.asmdef" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\TestRunner\TestListenerWrapper.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\AssemblyProvider\ITestAssemblyProvider.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\QuaternionEqualityComparer.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\AssemblyProvider\IScriptingRuntimeProxy.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Runner\UnityTestAssemblyRunner.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Runner\UnityTestExecutionContext.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Runner\FailCommand.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\TestRunner\RemoteHelpers\RemoteTestResultData.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\Vector4ComparerWithEqualsOperator.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\IOuterUnityTestAction.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Runner\IEnumerableTestMethodCommand.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\TestRunner\PlaymodeTestsControllerSettings.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Commands\TestActionCommand.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Commands\SetUpTearDownCommand.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\Vector4EqualityComparer.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Commands\ImmediateEnumerableCommand.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Attributes\UnityPlatformAttribute.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Assertions\LogScope\LogMatch.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Commands\TestCommandPcHelper.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\ConstructDelegator.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Attributes\ConditionalIgnoreAttribute.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\StacktraceFilter.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Assertions\LogScope\ILogScope.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\PostBuildCleanupAttribute.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\TestRunner\Callbacks\TestResultRenderer.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\TestRunner\Messages\IEditModeTestYieldInstruction.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\TestRunner\PlaymodeTestsController.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\TestRunner\RemoteHelpers\RemoteTestData.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Runner\PlaymodeWorkItemFactory.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Commands\EnumerableRepeatedTestCommand.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\AssemblyProvider\PlayerTestAssemblyProvider.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Runner\WorkItemFactory.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Commands\EnumerableTestState.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Assertions\LogScope\LogScope.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Runner\TestCommandBuilder.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Runner\UnityWorkItem.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\Vector3EqualityComparer.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\ActionDelegator.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\Vector2ComparerWithEqualsOperator.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Attributes\UnityCombinatorialStrategy.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Filters\FullNameFilter.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\TestRunCallbackListener.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\TestRunner\ITestRunnerListener.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\ColorEqualityComparer.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Assertions\ConstraintsExtensions.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\TestRunner\Callbacks\TestResultRendererCallback.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\Vector2EqualityComparer.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\Utils.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\AssemblyInfo.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestMustExpectAllLogsAttribute.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Assertions\LogScope\LogEvent.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Runner\CoroutineTestWorkItem.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\AttributeHelper.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Commands\BeforeAfterTestCommandState.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Commands\OuterUnityTestActionCommand.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\AssemblyProvider\IAssemblyWrapper.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Assertions\Is.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\Vector3ComparerWithEqualsOperator.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Filters\CategoryFilterExtended.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\AssemblyProvider\AssemblyWrapper.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\TestRunner\TestPlatform.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\TestRunCallbackAttribute.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\BaseDelegator.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Commands\UnityTestMethodCommand.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\TestRunner\SynchronousFilter.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Assertions\InvalidSignatureException.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Commands\EnumerableApplyChangesToContextCommand.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\TestRunner\RuntimeTestRunnerFilter.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\CoroutineRunner.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\UnityTestAssemblyBuilder.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\TestRunner\Callbacks\PlayerQuitHandler.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\IStateSerializer.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Assertions\LogAssert.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Runner\CompositeWorkItem.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Runner\RestoreTestContextAfterDomainReload.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\TestResultExtensions.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\TestRunner\Callbacks\PlayModeRunnerCallback.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Commands\EnumerableSetUpTearDownCommand.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\MonoBehaviourTest\IMonoBehaviourTest.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\IPrebuildSceneSetup.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Attributes\UnitySetUpAttribute.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Runner\UnityWorkItemDataHolder.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\MonoBehaviourTest\MonoBehaviourTest.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\TestRunner\Callbacks\RemoteTestResultSender.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\AssemblyProvider\IAssemblyLoadProxy.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Assertions\UnexpectedLogMessageException.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Filters\AssemblyNameFilter.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\ITestRunCallback.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Commands\EnumerableRetryTestCommand.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\TestExtensions.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\TestRunner\RemoteHelpers\RemoteTestResultDataWithTestData.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Commands\BeforeAfterTestCommandBase.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Assertions\AllocatingGCMemoryConstraint.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Attributes\UnityTearDownAttribute.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\IAsyncTestAssemblyBuilder.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Assertions\UnhandledLogMessageException.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\TestRunner\RemoteHelpers\IRemoteTestResultDataFactory.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\TestRunner\RemoteHelpers\RemoteTestResultDataFactory.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Runner\UnityLogCheckDelegatingCommand.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\TestRunner\TestEnumeratorWrapper.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\IPostBuildCleanup.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Attributes\UnityTestAttribute.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\AssemblyProvider\ScriptingRuntimeProxy.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\TestRunner\RemoteHelpers\PlayerConnectionMessageIds.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Commands\EnumerableTestMethodCommand.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\AssemblyProvider\AssemblyLoadProxy.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Assertions\UnityTestTimeoutException.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\PrebuildSceneSetupAttribute.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\NUnitExtensions\Runner\DefaultTestWorkItem.cs" />
+     <Compile Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\Utils\FloatEqualityComparer.cs" />
+     <None Include="Library\PackageCache\com.unity.test-framework@1.1.27\UnityEngine.TestRunner\UnityEngine.TestRunner.asmdef" />
     <Reference Include="UnityEngine">
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>
@@ -627,26 +736,6 @@
     <Reference Include="System.Xml.XPath.XDocument">
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Xml.XPath.XDocument.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEditor.UI">
-        <HintPath>C:/Users/hunte/work/synthesis/engine/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-        <HintPath>C:/Users/hunte/work/synthesis/engine/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="UnityEngine.TestRunner.csproj">
-      <Project>{567804dd-4aa4-cfb2-dac4-4923425fd94a}</Project>
-      <Name>UnityEngine.TestRunner</Name>
-    </ProjectReference>
-    <ProjectReference Include="UnityEditor.TestRunner.csproj">
-      <Project>{e62b2d7c-c97d-1bb0-c54e-99a9e3f19c8d}</Project>
-      <Name>UnityEditor.TestRunner</Name>
-    </ProjectReference>
-    <ProjectReference Include="CoreEngine.csproj">
-      <Project>{28740e66-4b28-d1ee-7ffd-ca276d12197b}</Project>
-      <Name>CoreEngine</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
