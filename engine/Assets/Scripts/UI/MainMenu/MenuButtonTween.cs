@@ -44,9 +44,8 @@ public class MenuButtonTween : MonoBehaviour, IPointerEnterHandler, IPointerExit
         _state = "exit";
         TweenFactory.RemoveTweenKey(gameObject.name + INDICATE_TWEEN, TweenStopBehavior.DoNotModify);
         if (_activeTween.State == TweenState.Running && _activeTween.Key.Equals(gameObject.name + CLICKED_TWEEN)) {
-            Debug.Log("YT");
             _activeTween.ContinueWith(new Vector3Tween().Setup(Vector3.one * ClickedScaleFactor, Vector3.one, _completionTime, TweenScaleFunctions.CubicEaseOut, updateButtonScale));
-        } else {
+        } else { 
         // transform.position = new Vector3(transform.position.x, transform.position.y, 0f);
             _activeTween = gameObject.Tween(gameObject.name + RETURN_TWEEN, gameObject.transform.localScale, Vector3.one, _completionTime, TweenScaleFunctions.CubicEaseOut, updateButtonScale);
         }
@@ -62,5 +61,11 @@ public class MenuButtonTween : MonoBehaviour, IPointerEnterHandler, IPointerExit
             if (!_state.Equals("exit"))
                 OnPointerEnter(null);
         });
+    }
+
+    public void OnDestroy() {
+        TweenFactory.RemoveTweenKey(gameObject.name + CLICKED_TWEEN, TweenStopBehavior.DoNotModify);
+        TweenFactory.RemoveTweenKey(gameObject.name + INDICATE_TWEEN, TweenStopBehavior.DoNotModify);
+        TweenFactory.RemoveTweenKey(gameObject.name + RETURN_TWEEN, TweenStopBehavior.DoNotModify);
     }
 }

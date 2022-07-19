@@ -13,10 +13,10 @@ namespace Synthesis.UI.Dynamic {
             // (var left, var right) = base.MainContent.SplitLeftRight(250, 100);
             Title.SetText("Settings");
             Description.SetText("Select one of the settings in order to change simulation settings");
-            
+
             AcceptButton.AddOnClickedEvent(b => Debug.Log("Settings Modal -> Accept"));
             CancelButton.AddOnClickedEvent(b => Debug.Log("Settings Modal -> Cancel"));
-
+            
             MainContent.CreateLabel().ApplyTemplate(Label.BigLabelTemplate).SetText("Main Settings");
 
             var reportAnalyticsToggle = MainContent.CreateToggle().ApplyTemplate(Toggle.VerticalLayoutTemplate);
