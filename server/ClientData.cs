@@ -7,6 +7,7 @@ using Org.BouncyCastle.Security;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Sockets;
 using System.Threading;
 
 namespace SynthesisServer
@@ -16,19 +17,27 @@ namespace SynthesisServer
         // The public and private key for the server that corresponds with a client
         // Maybe try implementing ECDH in the future
 
-        public IPEndPoint ClientEndpoint { get; set; }
+        //public IPEndPoint ClientEndpoint { get; set; }
         public string Name { get; set; }
-        public string ClientID { get; set; } // May change to actually guid object probably not though
+        public string ClientID { get; set; }
         public byte[] SymmetricKey { get; private set; }
         public long LastHeartbeat { get; private set; }
         public bool IsReady { get; set; }
         public string CurrentLobby { get; set; }
+        public Socket ClientSocket { get; private set; }
 
         private AsymmetricCipherKeyPair _keyPair;
 
-        public ClientData(string importedPublicKey, DHParameters parameters)
+        public ClientData(Socket socket)
         {
+            ClientSocket = socket;
             CurrentLobby = null;
+            IsReady = false;
+            LastHeartbeat = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        }
+
+        public void GenerateSharedSecret(string importedPublicKey, DHParameters parameters)
+        {
             _keyPair = GenerateKeys(parameters);
 
             DHPublicKeyParameters importedPublicKeyParameters = new DHPublicKeyParameters(new BigInteger(importedPublicKey), parameters);
@@ -41,8 +50,6 @@ namespace SynthesisServer
             SymmetricKey = new byte[digest.GetDigestSize()];
             digest.BlockUpdate(sharedKeyBytes, 0, sharedKeyBytes.Length);
             digest.DoFinal(SymmetricKey, 0);
-
-            LastHeartbeat = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
         }
 
         private AsymmetricCipherKeyPair GenerateKeys(DHParameters parameters)
