@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using System.Threading;
 
@@ -10,22 +11,34 @@ namespace SynthesisServer
         // TODO: CATCH INDEX OUT OF BOUNDS
         //public string? Password { get; set; }
         public ClientData Host { get; private set; }
-        public ClientData?[] Clients { get { return _clients; } }
+        public List<ClientData> Clients { get { return _clients; } }
+        public int LobbySize { get; set; }
+        public bool IsStarted { get; private set; }
 
-        private readonly ClientData?[] _clients;
+        private readonly List<ClientData> _clients;
 
         public Lobby(ClientData host, int lobbySize)
         {
-            _clients = new ClientData[lobbySize];
+            IsStarted = false;
+            _clients = new List<ClientData>();
 
-            _clients[0] = host;
+            _clients.Add(host);
             Host = host;
         } 
+
+        public void Start()
+        {
+            IsStarted = true;
+        }
 
         public bool Swap(int firstIndex, int secondIndex)
         {
             try
             {
+                if (IsStarted)
+                {
+                    return false;
+                }
                 var x = _clients[firstIndex];
                 _clients[firstIndex] = _clients[secondIndex];
                 _clients[secondIndex] = x;
@@ -41,51 +54,30 @@ namespace SynthesisServer
         {
             // If no index is specified, it will try to add the client to an empty index so long as it does not already have a spot
 
-            for (int i = 0; i < _clients.Length; i++)
+            if (IsStarted || _clients.Count >= LobbySize || _clients.Contains(client))
             {
-                if (client.Equals(_clients[i]))
-                {
-                    return false;
-                }
+                return false;
             }
-            for (int i = 0; i < _clients.Length; i++)
+            if (_clients.Count == 0)
             {
-                if (_clients[i] == null)
-                {
-                    _clients[i] = client;
-                    return true;
-                }
+                Host = client;
             }
-            return false;
-        }
-
-
-        public bool TryRemoveClient(int index)
-        {
-            if (_clients[index] != null)
-            {
-                if (Host.Equals(_clients[index]))
-                {
-                    TryFindNewHost();
-                }
-                _clients[index] = null;
-                return true;
-            }
-            return false;
+            _clients.Add(client);
+            return true;
         }
 
         public bool TryRemoveClient(ClientData client)
         {
+            if (IsStarted)
+            {
+                return false;
+            }
             if (client.Equals(Host)) {
                 TryFindNewHost();
             }
-            for (int i = 0; i < _clients.Length; i++)
+            if (_clients.Contains(client))
             {
-                if (_clients[i].Equals(client))
-                {
-                    _clients[i] = null;
-                    return true;
-                }
+                _clients.Remove(client);
             }
             return false;
         }
@@ -102,5 +94,7 @@ namespace SynthesisServer
             }
             return false;
         }
+
+
     }
 }

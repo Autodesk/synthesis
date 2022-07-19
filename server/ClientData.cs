@@ -19,12 +19,12 @@ namespace SynthesisServer
 
         //public IPEndPoint ClientEndpoint { get; set; }
         public string Name { get; set; }
-        public string ClientID { get; set; }
         public byte[] SymmetricKey { get; private set; }
         public long LastHeartbeat { get; private set; }
         public bool IsReady { get; set; }
         public string CurrentLobby { get; set; }
         public Socket ClientSocket { get; private set; }
+        public IPEndPoint UDPEndPoint { get; set; }
 
         private AsymmetricCipherKeyPair _keyPair;
 
