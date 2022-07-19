@@ -24,17 +24,13 @@ namespace SynthesisServer
     {
         private const int LOBBY_SIZE = 6;
         private const int BUFFER_SIZE = 256;
-        private const int MANAGED_UDP_OPERATIONS = 1; // The buffer manager is only used for read operations
-        private const int MAX_CONCURRENT_STARTING_LOBBIES = 5; // If this isn't enough you're being DDOS'd or something has gone wrong
 
         private Socket _tcpSocket;
-        private Socket _udpSocket;
+        private UdpClient _udpSocket;
         private SymmetricEncryptor _encryptor;
 
-        private BufferManager _bufferManager;
-
         private ReaderWriterLockSlim _clientsLock;
-        private Dictionary<Socket, ClientData> _clients;
+        private Dictionary<string, ClientData> _clients;
 
         private ReaderWriterLockSlim _lobbiesLock;
         private Dictionary<string, Lobby> _lobbies; // Uses lobby name as key
@@ -54,6 +50,7 @@ namespace SynthesisServer
         private struct ClientState {
             public byte[] buffer;
             public Socket socket;
+            public string id;
         }
 
         public void Stop()
@@ -77,24 +74,23 @@ namespace SynthesisServer
             _isRunning = true;
 
             _tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            _udpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            _udpSocket = new UdpClient(new IPEndPoint(IPAddress.Any, _udpPort));
 
             _encryptor = new SymmetricEncryptor();
 
-            _clients = new Dictionary<Socket, ClientData>();
+            _clients = new Dictionary<string, ClientData>();
             _clientsLock = new ReaderWriterLockSlim();
 
             _lobbies = new Dictionary<string, Lobby>();
             _lobbiesLock = new ReaderWriterLockSlim();
 
-            _bufferManager = new BufferManager(BUFFER_SIZE * LOBBY_SIZE * MANAGED_UDP_OPERATIONS * MAX_CONCURRENT_STARTING_LOBBIES, BUFFER_SIZE);
-            _bufferManager.Init();
-
             _tcpSocket.Bind(new IPEndPoint(IPAddress.Any, _tcpPort));
+            _tcpSocket.Listen(5);
             _tcpSocket.BeginAccept(new AsyncCallback(TCPAcceptCallback), null);
 
-            _udpSocket.Bind(new IPEndPoint(IPAddress.Any, _udpPort));
-            _udpSocket.BeginReceive(_bufferManager.) //maybe use guid
+            _udpSocket.BeginReceive(new AsyncCallback(UDPReceiveCallback), null);
+
+            _logger.LogInformation("Server is running");
 
             Task.Run(() =>
             {
@@ -114,12 +110,9 @@ namespace SynthesisServer
             ClientState state = new ClientState()
             {
                 buffer = new byte[BUFFER_SIZE],
-                socket = _tcpSocket.EndAccept(asyncResult)
+                socket = _tcpSocket.EndAccept(asyncResult),
+                id = Guid.NewGuid().ToString()
             };
-
-            _clientsLock.EnterWriteLock();
-            _clients.Add(state.socket, new ClientData(state.socket));
-            _clientsLock.ExitWriteLock();
 
             if (_isRunning)
             {
@@ -145,7 +138,7 @@ namespace SynthesisServer
                 Any message;
                 if (header.IsEncrypted)
                 {
-                    byte[] decryptedData = _encryptor.Decrypt(data, _clients[state.socket].SymmetricKey);
+                    byte[] decryptedData = _encryptor.Decrypt(data, _clients[header.ClientId].SymmetricKey);
                     message = Any.Parser.ParseFrom(GetNextMessage(ref decryptedData));
                 }
                 else if (!header.IsEncrypted)
@@ -161,16 +154,16 @@ namespace SynthesisServer
                     });
                 }
 
-                if (message.Is(KeyExchange.Descriptor)) { HandleKeyExchange(message.Unpack<KeyExchange>(), state.socket); }
-                else if (message.Is(Heartbeat.Descriptor)) { HandleHeartbeat(message.Unpack<Heartbeat>(), state.socket); }
-                else if (message.Is(CreateLobbyRequest.Descriptor)) { HandleCreateLobbyRequest(message.Unpack<CreateLobbyRequest>(), state.socket); }
-                else if (message.Is(DeleteLobbyRequest.Descriptor)) { HandleDeleteLobbyRequest(message.Unpack<DeleteLobbyRequest>(), state.socket); }
-                else if (message.Is(JoinLobbyRequest.Descriptor)) { HandleJoinLobbyRequest(message.Unpack<JoinLobbyRequest>(), state.socket); }
-                else if (message.Is(LeaveLobbyRequest.Descriptor)) { HandleLeaveLobbyRequest(message.Unpack<LeaveLobbyRequest>(), state.socket); }
-                else if (message.Is(StartLobbyRequest.Descriptor)) { HandleStartLobbyRequest(message.Unpack<StartLobbyRequest>(), state.socket); }
-                else if (message.Is(SwapRequest.Descriptor)) { HandleSwapRequest(message.Unpack<SwapRequest>(), state.socket); }
+                if (message.Is(KeyExchange.Descriptor)) { HandleKeyExchange(message.Unpack<KeyExchange>(), state.id, state.socket); }
+                else if (message.Is(Heartbeat.Descriptor)) { HandleHeartbeat(message.Unpack<Heartbeat>(), header.ClientId); }
+                else if (message.Is(CreateLobbyRequest.Descriptor)) { HandleCreateLobbyRequest(message.Unpack<CreateLobbyRequest>(), header.ClientId); }
+                else if (message.Is(DeleteLobbyRequest.Descriptor)) { HandleDeleteLobbyRequest(message.Unpack<DeleteLobbyRequest>(), header.ClientId); }
+                else if (message.Is(JoinLobbyRequest.Descriptor)) { HandleJoinLobbyRequest(message.Unpack<JoinLobbyRequest>(), header.ClientId); }
+                else if (message.Is(LeaveLobbyRequest.Descriptor)) { HandleLeaveLobbyRequest(message.Unpack<LeaveLobbyRequest>(), header.ClientId); }
+                else if (message.Is(StartLobbyRequest.Descriptor)) { HandleStartLobbyRequest(message.Unpack<StartLobbyRequest>(), header.ClientId); }
+                else if (message.Is(SwapRequest.Descriptor)) { HandleSwapRequest(message.Unpack<SwapRequest>(), header.ClientId); }
 
-                if (_clients.ContainsKey(state.socket) && _isRunning)
+                if (_isRunning)
                 {
                     state.socket.BeginReceive(state.buffer, 0, BUFFER_SIZE, SocketFlags.None, new AsyncCallback(TCPReceiveCallback), state);
                 }
@@ -189,6 +182,37 @@ namespace SynthesisServer
         // UDP Callbacks
         private void UDPReceiveCallback(IAsyncResult asyncResult)
         {
+            IPEndPoint remoteEP = new IPEndPoint(IPAddress.Any, 0);
+            byte[] buffer = _udpSocket.EndReceive(asyncResult, ref remoteEP);
+            if (BitConverter.IsLittleEndian) { Array.Reverse(buffer); } // make sure to do while sending
+
+            MessageHeader header = MessageHeader.Parser.ParseFrom(GetNextMessage(ref buffer));
+
+            // TODO: make clients accessible through id not socket (socket can just be a property of the client) (Still check to make sure correct socket is being used for client)
+
+            Any message;
+
+            _clientsLock.EnterReadLock();
+            if (header.IsEncrypted && _clients.ContainsKey(header.ClientId))
+            {
+                byte[] decryptedData = _encryptor.Decrypt(buffer, _clients[header.ClientId].SymmetricKey);
+                message = Any.Parser.ParseFrom(GetNextMessage(ref decryptedData));
+            }
+            else
+            {
+                message = Any.Pack(new StatusMessage()
+                {
+                    LogLevel = StatusMessage.Types.LogLevel.Error,
+                    Msg = "Invalid Message"
+                });
+            }
+            _clientsLock.ExitReadLock();
+
+            if (message.Is(MatchStartResponse.Descriptor)) { HandleMatchStartResponse(message.Unpack<MatchStartResponse>(), header.ClientId, remoteEP); }
+            if (_isRunning)
+            {
+                _udpSocket.BeginReceive(new AsyncCallback(UDPReceiveCallback), null);
+            }
 
         }
         private void UDPSendCallback(IAsyncResult asyncResult)
@@ -198,22 +222,26 @@ namespace SynthesisServer
 
 
         // UDP Handlers
-        private void HandleMatchStartResponse(MatchStartResponse matchStartResponse, IPEndPoint remoteEP)
+        private void HandleMatchStartResponse(MatchStartResponse matchStartResponse, string clientID, IPEndPoint remoteEP)
         {
-            _logger.LogInformation(remoteEP.ToString() + " is in a match");
+            _logger.LogInformation(clientID + " is starting a match");
+
+
             _clientsLock.EnterWriteLock();
-            _clients.Remove(remoteEP.ToString());
+            _clients[clientID].UDPEndPoint = remoteEP;
+            _clients.Remove(clientID);
             _clientsLock.ExitWriteLock();
         }
 
 
         // TCP Handlers
-        private void HandleKeyExchange(KeyExchange keyExchange, Socket socket)
+        private void HandleKeyExchange(KeyExchange keyExchange, string clientID, Socket socket)
         {
-            _logger.LogInformation(socket.RemoteEndPoint.ToString() + " is performing a key exchange");
+            _logger.LogInformation(clientID + " is performing a key exchange");
 
             _clientsLock.EnterWriteLock();
-            _clients[socket].GenerateSharedSecret(keyExchange.PublicKey, new DHParameters(new BigInteger(keyExchange.P), new BigInteger(keyExchange.G)));
+            if (_clients.ContainsKey(clientID)) { _clients.Add(clientID, new ClientData(socket)); }
+            _clients[clientID].GenerateSharedSecret(keyExchange.PublicKey, new DHParameters(new BigInteger(keyExchange.P), new BigInteger(keyExchange.G)));
             _clientsLock.ExitWriteLock();
 
             _clientsLock.EnterReadLock();
@@ -221,24 +249,24 @@ namespace SynthesisServer
             (
                 new KeyExchange()
                 {
-                    ClientId = _clients[socket].ClientID,
-                    PublicKey = _clients[socket].GetPublicKey()
+                    ClientId = clientID,
+                    PublicKey = _clients[clientID].GetPublicKey()
                 },
                 socket,
                 new AsyncCallback(TCPSendCallback)
             );
             _clientsLock.ExitReadLock();
         }
-        private void HandleHeartbeat(Heartbeat heartbeat, Socket socket)
+        private void HandleHeartbeat(Heartbeat heartbeat, string clientID)
         {
-            _logger.LogInformation(socket.RemoteEndPoint.ToString() + " has sent a heartbeat");
+            _logger.LogInformation(clientID + " has sent a heartbeat");
             _clientsLock.EnterWriteLock();
-            _clients[socket].UpdateHeartbeat();
+            _clients[clientID].UpdateHeartbeat();
             _clientsLock.ExitWriteLock();
         }
-        private void HandleCreateLobbyRequest(CreateLobbyRequest createLobbyRequest, Socket socket)
+        private void HandleCreateLobbyRequest(CreateLobbyRequest createLobbyRequest, string clientID)
         {
-            _logger.LogInformation(socket.RemoteEndPoint.ToString() + " has requested to create a lobby");
+            _logger.LogInformation(clientID + " has requested to create a lobby");
             _lobbiesLock.EnterUpgradeableReadLock();
             _clientsLock.EnterUpgradeableReadLock();
 
@@ -248,7 +276,7 @@ namespace SynthesisServer
                 (
                     new CreateLobbyResponse()
                     {
-                        ClientId = _clients[socket].ClientID,
+                        ClientId = clientID,
                         LobbyName = createLobbyRequest.LobbyName,
                         GenericResponse = new GenericResponse()
                         {
@@ -256,26 +284,26 @@ namespace SynthesisServer
                             LogMessage = "That lobby already exists"
                         }
                     },
-                    _clients[socket],
-                    socket,
+                    _clients[clientID],
+                    _clients[clientID].ClientSocket,
                     new AsyncCallback(TCPSendCallback)
                 );
             }
             else
             {
                 _lobbiesLock.EnterWriteLock();
-                _lobbies[createLobbyRequest.LobbyName] = new Lobby(_clients[socket], LOBBY_SIZE);
+                _lobbies[createLobbyRequest.LobbyName] = new Lobby(_clients[clientID], LOBBY_SIZE);
                 _lobbiesLock.ExitWriteLock();
 
                 _clientsLock.EnterWriteLock();
-                _clients[socket].CurrentLobby = createLobbyRequest.LobbyName;
+                _clients[clientID].CurrentLobby = createLobbyRequest.LobbyName;
                 _clientsLock.ExitWriteLock();
 
                 SendEncryptedMessage
                 (
                     new CreateLobbyResponse()
                     {
-                        ClientId = _clients[socket].ClientID,
+                        ClientId = clientID,
                         LobbyName = createLobbyRequest.LobbyName,
                         GenericResponse = new GenericResponse()
                         {
@@ -283,8 +311,8 @@ namespace SynthesisServer
                             LogMessage = "Lobby created successfully"
                         }
                     },
-                    _clients[socket],
-                    socket,
+                    _clients[clientID],
+                    _clients[clientID].ClientSocket,
                     new AsyncCallback(TCPSendCallback)
                 );
             }
@@ -293,29 +321,29 @@ namespace SynthesisServer
             _clientsLock.ExitUpgradeableReadLock();
             _lobbiesLock.ExitUpgradeableReadLock();
         }
-        private void HandleDeleteLobbyRequest(DeleteLobbyRequest deleteLobbyRequest, Socket socket)
+        private void HandleDeleteLobbyRequest(DeleteLobbyRequest deleteLobbyRequest, string clientID)
         {
-            _logger.LogInformation(socket.RemoteEndPoint.ToString() + " has requested to delete a lobby");
+            _logger.LogInformation(clientID + " has requested to delete a lobby");
             _lobbiesLock.EnterUpgradeableReadLock();
             _clientsLock.EnterUpgradeableReadLock();
 
             if (_lobbies.ContainsKey(deleteLobbyRequest.LobbyName))
             {
-                if (_lobbies[deleteLobbyRequest.LobbyName].Host.Equals(_clients[socket]))
+                if (_lobbies[deleteLobbyRequest.LobbyName].Host.Equals(_clients[clientID]))
                 {
                     _lobbiesLock.EnterWriteLock();
                     _lobbies.Remove(deleteLobbyRequest.LobbyName);
                     _lobbiesLock.ExitWriteLock();
 
                     _clientsLock.EnterWriteLock();
-                    _clients[socket].CurrentLobby = null;
+                    _clients[clientID].CurrentLobby = null;
                     _clientsLock.ExitWriteLock();
 
                     SendEncryptedMessage
                     (
                         new DeleteLobbyResponse()
                         {
-                            ClientId = _clients[socket].ClientID,
+                            ClientId = clientID,
                             LobbyName = deleteLobbyRequest.LobbyName,
                             GenericResponse = new GenericResponse()
                             {
@@ -323,8 +351,8 @@ namespace SynthesisServer
                                 LogMessage = "Lobby successfully deleted"
                             }
                         },
-                        _clients[socket],
-                        socket,
+                        _clients[clientID],
+                        _clients[clientID].ClientSocket,
                         new AsyncCallback(TCPSendCallback)
                     );
                 }
@@ -334,7 +362,7 @@ namespace SynthesisServer
                     (
                         new DeleteLobbyResponse()
                         {
-                            ClientId = _clients[socket].ClientID,
+                            ClientId = clientID,
                             LobbyName = deleteLobbyRequest.LobbyName,
                             GenericResponse = new GenericResponse()
                             {
@@ -342,8 +370,8 @@ namespace SynthesisServer
                                 LogMessage = "You do not have permission to delete this lobby"
                             }
                         },
-                        _clients[socket],
-                        socket,
+                        _clients[clientID],
+                        _clients[clientID].ClientSocket,
                         new AsyncCallback(TCPSendCallback)
                     );
                 }
@@ -354,7 +382,7 @@ namespace SynthesisServer
                 (
                     new CreateLobbyResponse()
                     {
-                        ClientId = _clients[socket].ClientID,
+                        ClientId = clientID,
                         LobbyName = deleteLobbyRequest.LobbyName,
                         GenericResponse = new GenericResponse()
                         {
@@ -362,8 +390,8 @@ namespace SynthesisServer
                             LogMessage = "Lobby does not exist"
                         }
                     },
-                    _clients[socket],
-                    socket,
+                    _clients[clientID],
+                    _clients[clientID].ClientSocket,
                     new AsyncCallback(TCPSendCallback)
                 );
             }
@@ -371,25 +399,25 @@ namespace SynthesisServer
             _clientsLock.ExitUpgradeableReadLock();
             _lobbiesLock.ExitUpgradeableReadLock();
         }
-        private void HandleJoinLobbyRequest(JoinLobbyRequest joinLobbyRequest, Socket socket)
+        private void HandleJoinLobbyRequest(JoinLobbyRequest joinLobbyRequest, string clientID)
         {
-            _logger.LogInformation(socket.RemoteEndPoint.ToString() + " has requested to join a lobby");
+            _logger.LogInformation(clientID + " has requested to join a lobby");
             _clientsLock.EnterUpgradeableReadLock();
             _lobbiesLock.EnterWriteLock();
 
-            if (_lobbies.ContainsKey(joinLobbyRequest.LobbyName) && _clients[socket].CurrentLobby == null && _lobbies[joinLobbyRequest.LobbyName].TryAddClient(_clients[socket]))
+            if (_lobbies.ContainsKey(joinLobbyRequest.LobbyName) && _clients[clientID].CurrentLobby == null && _lobbies[joinLobbyRequest.LobbyName].TryAddClient(_clients[clientID]))
             {
                 _lobbiesLock.ExitWriteLock();
 
                 _clientsLock.EnterWriteLock();
-                _clients[socket].CurrentLobby = joinLobbyRequest.LobbyName;
+                _clients[clientID].CurrentLobby = joinLobbyRequest.LobbyName;
                 _clientsLock.ExitWriteLock();
 
                 SendEncryptedMessage
                 (
                     new CreateLobbyResponse()
                     {
-                        ClientId = _clients[socket].ClientID,
+                        ClientId = clientID,
                         LobbyName = joinLobbyRequest.LobbyName,
                         GenericResponse = new GenericResponse()
                         {
@@ -397,8 +425,8 @@ namespace SynthesisServer
                             LogMessage = "Joined lobby successfully"
                         }
                     },
-                    _clients[socket],
-                    socket,
+                    _clients[clientID],
+                    _clients[clientID].ClientSocket,
                     new AsyncCallback(TCPSendCallback)
                 );
             }
@@ -409,7 +437,7 @@ namespace SynthesisServer
                 (
                     new CreateLobbyResponse()
                     {
-                        ClientId = _clients[socket].ClientID,
+                        ClientId = clientID,
                         LobbyName = joinLobbyRequest.LobbyName,
                         GenericResponse = new GenericResponse()
                         {
@@ -417,33 +445,33 @@ namespace SynthesisServer
                             LogMessage = "Could not join lobby"
                         }
                     },
-                    _clients[socket],
-                    socket,
+                    _clients[clientID],
+                    _clients[clientID].ClientSocket,
                     new AsyncCallback(TCPSendCallback)
                 );
             }
 
             _clientsLock.ExitUpgradeableReadLock();
         }
-        private void HandleLeaveLobbyRequest(LeaveLobbyRequest leaveLobbyRequest, Socket socket)
+        private void HandleLeaveLobbyRequest(LeaveLobbyRequest leaveLobbyRequest, string clientID)
         {
-            _logger.LogInformation(socket.RemoteEndPoint.ToString() + " has requested to leave a lobby");
+            _logger.LogInformation(clientID + " has requested to leave a lobby");
             _clientsLock.EnterUpgradeableReadLock();
             _lobbiesLock.EnterWriteLock();
 
-            if (_lobbies.ContainsKey(leaveLobbyRequest.LobbyName) && _lobbies[leaveLobbyRequest.LobbyName].TryRemoveClient(_clients[socket]))
+            if (_lobbies.ContainsKey(leaveLobbyRequest.LobbyName) && _lobbies[leaveLobbyRequest.LobbyName].TryRemoveClient(_clients[clientID]))
             {
                 _lobbiesLock.ExitWriteLock();
 
                 _clientsLock.EnterWriteLock();
-                _clients[socket].CurrentLobby = null;
+                _clients[clientID].CurrentLobby = null;
                 _clientsLock.ExitWriteLock();
 
                 SendEncryptedMessage
                 (
                     new CreateLobbyResponse()
                     {
-                        ClientId = _clients[socket].ClientID,
+                        ClientId = clientID,
                         LobbyName = leaveLobbyRequest.LobbyName,
                         GenericResponse = new GenericResponse()
                         {
@@ -451,8 +479,8 @@ namespace SynthesisServer
                             LogMessage = "Left lobby successfully"
                         }
                     },
-                    _clients[socket],
-                    socket,
+                    _clients[clientID],
+                    _clients[clientID].ClientSocket,
                     new AsyncCallback(TCPSendCallback)
                 );
             }
@@ -463,7 +491,7 @@ namespace SynthesisServer
                 (
                     new CreateLobbyResponse()
                     {
-                        ClientId = _clients[socket].ClientID,
+                        ClientId = clientID,
                         LobbyName = leaveLobbyRequest.LobbyName,
                         GenericResponse = new GenericResponse()
                         {
@@ -471,21 +499,21 @@ namespace SynthesisServer
                             LogMessage = "Could not leave lobby"
                         }
                     },
-                    _clients[socket],
-                    socket,
+                    _clients[clientID],
+                    _clients[clientID].ClientSocket,
                     new AsyncCallback(TCPSendCallback)
                 );
             }
             _clientsLock.ExitUpgradeableReadLock();
         }
-        private void HandleStartLobbyRequest(StartLobbyRequest startLobbyRequest, Socket socket)
+        private void HandleStartLobbyRequest(StartLobbyRequest startLobbyRequest, string clientID)
         {
-            _logger.LogInformation(socket.RemoteEndPoint.ToString() + " has requested to start a lobby");
+            _logger.LogInformation(clientID + " has requested to start a lobby");
             _lobbiesLock.EnterUpgradeableReadLock();
             if (_lobbies.ContainsKey(startLobbyRequest.LobbyName))
             {
                 _clientsLock.EnterReadLock();
-                if (_lobbies[startLobbyRequest.LobbyName].Host.Equals(_clients[socket]))
+                if (_lobbies[startLobbyRequest.LobbyName].Host.Equals(_clients[clientID]))
                 {
                     _lobbiesLock.EnterWriteLock();
                     StartLobby(startLobbyRequest.LobbyName);
@@ -495,7 +523,7 @@ namespace SynthesisServer
                     (
                         new StartLobbyResponse()
                         {
-                            ClientId = _clients[socket].ClientID,
+                            ClientId = clientID,
                             LobbyName = startLobbyRequest.LobbyName,
                             GenericResponse = new GenericResponse()
                             {
@@ -503,8 +531,8 @@ namespace SynthesisServer
                                 LogMessage = "Lobby successfully started"
                             }
                         },
-                        _clients[socket],
-                        socket,
+                        _clients[clientID],
+                        _clients[clientID].ClientSocket,
                         new AsyncCallback(TCPSendCallback)
                     );
                 }
@@ -514,7 +542,7 @@ namespace SynthesisServer
                     (
                         new StartLobbyResponse()
                         {
-                            ClientId = _clients[socket].ClientID,
+                            ClientId = clientID,
                             LobbyName = startLobbyRequest.LobbyName,
                             GenericResponse = new GenericResponse()
                             {
@@ -522,8 +550,8 @@ namespace SynthesisServer
                                 LogMessage = "You do not have permission to start this lobby"
                             }
                         },
-                        _clients[socket],
-                        socket,
+                        _clients[clientID],
+                        _clients[clientID].ClientSocket,
                         new AsyncCallback(TCPSendCallback)
                     );
                 }
@@ -534,7 +562,7 @@ namespace SynthesisServer
                 (
                     new StartLobbyResponse()
                     {
-                        ClientId = _clients[socket].ClientID,
+                        ClientId = clientID,
                         LobbyName = startLobbyRequest.LobbyName,
                         GenericResponse = new GenericResponse()
                         {
@@ -542,27 +570,27 @@ namespace SynthesisServer
                             LogMessage = "Lobby does not exist"
                         }
                     },
-                    _clients[socket],
-                    socket,
+                    _clients[clientID],
+                    _clients[clientID].ClientSocket,
                     new AsyncCallback(TCPSendCallback)
                 );
             }
             _clientsLock.ExitReadLock();
             _lobbiesLock.ExitUpgradeableReadLock();
         }
-        private void HandleSwapRequest(SwapRequest swapRequest, Socket socket)
+        private void HandleSwapRequest(SwapRequest swapRequest, string clientID)
         {
-            _logger.LogInformation(socket.RemoteEndPoint.ToString() + " has requested to swap positions in a lobby");
+            _logger.LogInformation(clientID + " has requested to swap positions in a lobby");
             _clientsLock.EnterReadLock();
             _lobbiesLock.EnterReadLock();
 
-            if (_lobbies.ContainsKey(swapRequest.LobbyName) && (_clients[socket].Equals(_lobbies[swapRequest.LobbyName].Host)) && _lobbies[swapRequest.LobbyName].Swap(swapRequest.FirstPostion, swapRequest.SecondPostion))
+            if (_lobbies.ContainsKey(swapRequest.LobbyName) && (_clients[clientID].Equals(_lobbies[swapRequest.LobbyName].Host)) && _lobbies[swapRequest.LobbyName].Swap(swapRequest.FirstPostion, swapRequest.SecondPostion))
             {
                 SendEncryptedMessage
                 (
                     new SwapResponse()
                     {
-                        ClientId = _clients[socket].ClientID,
+                        ClientId = clientID,
                         LobbyName = swapRequest.LobbyName,
                         GenericResponse = new GenericResponse()
                         {
@@ -570,8 +598,8 @@ namespace SynthesisServer
                             LogMessage = "Swap Successful"
                         }
                     },
-                    _clients[socket],
-                    socket,
+                    _clients[clientID],
+                    _clients[clientID].ClientSocket,
                     new AsyncCallback(TCPSendCallback)
                 );
             }
@@ -581,7 +609,7 @@ namespace SynthesisServer
                 (
                     new SwapResponse()
                     {
-                        ClientId = _clients[socket].ClientID,
+                        ClientId = clientID,
                         LobbyName = swapRequest.LobbyName,
                         GenericResponse = new GenericResponse()
                         {
@@ -589,8 +617,8 @@ namespace SynthesisServer
                             LogMessage = "Swap failed"
                         }
                     },
-                    _clients[socket],
-                    socket,
+                    _clients[clientID],
+                    _clients[clientID].ClientSocket,
                     new AsyncCallback(TCPSendCallback)
                 );
             }
@@ -665,43 +693,74 @@ namespace SynthesisServer
         {
             _lobbiesLock.EnterWriteLock();
             _lobbies.Remove(lobbyName, out Lobby lobby);
+            _lobbies[lobbyName].Start();
             _lobbiesLock.ExitWriteLock();
-
-            
 
             MatchStart startMsg = new MatchStart()
             {
-                UdpPort = lobbySocket.
-            }
+                UdpPort = _udpPort
+            };
 
-            // lock it and stuff
-            for (int i = 0; i < lobby.Clients.Length; i++)
-            {
-                SendEncryptedMessage
-                (
-                    new MatchStart()
-                    {
-                        UdpPort = lob
-                    }
-                )
-            }
-        }
-
-        private void StartClient(ClientData client, MatchStart matchStartMessage, long timeout)
-        {
             _clientsLock.EnterReadLock();
-            long startTime = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            while (_clients.ContainsKey(client.ClientEndpoint.ToString()) && System.DateTimeOffset.Now.ToUnixTimeMilliseconds() - startTime <= timeout) {
-                SendEncryptedMessage(matchStartMessage, client.ClientEndpoint, client, _udpSocket);
-                _clientsLock.ExitReadLock();
-                Thread.Sleep(500);
+            for (int i = 0; i < lobby.Clients.Count; i++)
+            {
+                SendEncryptedMessage(startMsg, lobby.Clients[i], lobby.Clients[i].ClientSocket, new AsyncCallback(TCPSendCallback));
+            }
+
+            long start = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            while (System.DateTimeOffset.Now.ToUnixTimeMilliseconds() - start <= 5000)
+            {
                 _clientsLock.EnterReadLock();
+                bool allSet = true;
+                foreach (ClientData x in lobby.Clients)
+                {
+                    if (x.UDPEndPoint == null)
+                    {
+                        allSet = false;
+                    }
+                }
+                if (allSet) 
+                {
+                    _clientsLock.ExitReadLock();
+                    break;
+                }
+                _clientsLock.ExitReadLock();
+                Thread.Sleep(200);
+            }
+
+            _clientsLock.EnterReadLock();
+            foreach (ClientData client in lobby.Clients)
+            {
+                if (client.UDPEndPoint == null)
+                {
+                    lobby.TryRemoveClient(client);
+                }
             }
             _clientsLock.ExitReadLock();
 
-            _clientsLock.EnterWriteLock();
-            _clients.Remove(client.ClientEndpoint.ToString());
-            _clientsLock.ExitWriteLock();
+            ConnectionDataHost hostMsg = new ConnectionDataHost();
+            foreach (var client in lobby.Clients)
+            {
+                hostMsg.ClientEnpoints.Add(client.UDPEndPoint.ToString());
+            }
+
+            ConnectionDataClient clientMsg = new ConnectionDataClient()
+            {
+                HostEndpoint = lobby.Host.UDPEndPoint.ToString()
+            };
+
+            foreach (ClientData client in lobby.Clients)
+            {
+                if (lobby.Host.Equals(client))
+                {
+                    SendEncryptedMessage(hostMsg, client, client.ClientSocket, new AsyncCallback(TCPSendCallback));
+                }
+                else
+                {
+                    SendEncryptedMessage(clientMsg, client, client.ClientSocket, new AsyncCallback(TCPSendCallback));
+                }
+            }
+
         }
 
         public void CheckHeartbeats(long clientTimeout)
