@@ -13,8 +13,7 @@ namespace InventorMirabufExporter
     {
         Assembly environment;
         Random rand = new Random(); // temp
-        uint version = 4; // temp
-        char slash = System.IO.Path.DirectorySeparatorChar;
+        const uint version = 4;
 
         public Serializer()
         {
@@ -29,17 +28,12 @@ namespace InventorMirabufExporter
 
         public void Setup(AssemblyDocument assemblyDoc)
         {
-            environment.Info = new Info()
-            {
-                GUID = assemblyDoc.DisplayName.Substring(0, assemblyDoc.DisplayName.LastIndexOf('.')),
-                Name = assemblyDoc.DisplayName.Substring(0, assemblyDoc.DisplayName.LastIndexOf('.')),
-                Version = version
-            };
+            environment.Info = SetInfo(assemblyDoc.DisplayName.Substring(0, assemblyDoc.DisplayName.LastIndexOf('.')), true);
 
             environment.Data.Parts = new Parts();
             environment.Data.Parts.Info = new Info()
             {
-                GUID = assemblyDoc.InternalName.Trim('{', '}'),
+                GUID = Guid.NewGuid().ToString(),
                 Version = version,
                 // Name?
             };
@@ -161,23 +155,13 @@ namespace InventorMirabufExporter
                     // independent instantiation better for debugging
                     Body solid = new Body();
 
-                    solid.Info = new Info()
-                    {
-                        GUID = doc.ComponentDefinition.SurfaceBodies[j].Name, // should be unique to solid
-                        Name = doc.ComponentDefinition.SurfaceBodies[j].Name,
-                        Version = version
-                    };
+                    solid.Info = SetInfo(doc.ComponentDefinition.SurfaceBodies[j].Name, false);
 
                     solid.Part = doc.InternalName.Trim('{', '}'); // refers to PartDefinition GUID
 
                     solid.TriangleMesh = new TriangleMesh()
                     {
-                        Info = new Info()
-                        {
-                            GUID = doc.ComponentDefinition.SurfaceBodies[j].Name, // should refer to solid GUID
-                            Name = doc.ComponentDefinition.SurfaceBodies[j].Name, // refers to name of solid
-                            Version = version
-                        },
+                        Info = SetInfo(doc.ComponentDefinition.SurfaceBodies[j].Name, false),
 
                         MaterialReference = doc.ComponentDefinition.Material.Name, // name of part material
 
@@ -248,12 +232,8 @@ namespace InventorMirabufExporter
                 for (int j = 1; j <= occurence.Count; j++)
                 {
                     PartInstance instance = new PartInstance();
-                    instance.Info = new Info()
-                    {
-                        GUID = occurence[j].Name,
-                        Name = occurence[j].Name,
-                        Version = version
-                    };
+
+                    instance.Info = SetInfo(occurence[j].Name, true);
 
                     instance.PartDefinitionReference = docRef.InternalName.Trim('{', '}');
 
@@ -294,18 +274,13 @@ namespace InventorMirabufExporter
             environment.Data.Joints = new Mirabuf.Joint.Joints();
             environment.Data.Joints.Info = new Info()
             {
-                GUID = "completelyrandomjointguid",
+                GUID = Guid.NewGuid().ToString(),
                 Version = version
             };
 
             Mirabuf.Joint.Joint jointDef = new Mirabuf.Joint.Joint()
             {
-                Info = new Info()
-                {
-                    GUID = "groundedJointGUID",
-                    Name = "grounded",
-                    Version = version
-                }
+                Info = SetInfo("grounded", false),
 
                 // Potentially More Definition Data Here
             };
@@ -314,12 +289,7 @@ namespace InventorMirabufExporter
 
             Mirabuf.Joint.JointInstance jointInstance = new Mirabuf.Joint.JointInstance()
             {
-                Info = new Info()
-                {
-                    GUID = "uniqueJointInstanceGUID",
-                    Name = "grounded",
-                    Version = version
-                },
+                Info = SetInfo("grounded", false),
 
                 JointReference = jointDef.Info.GUID,
 
@@ -510,8 +480,25 @@ namespace InventorMirabufExporter
             Serialize();
         }
 
+        private Info SetInfo(string name, bool isPartInstance)
+        {
+            Info Data = new Info()
+            {
+                Name = name,
+                Version = version
+            };
+
+            if (isPartInstance)
+                Data.GUID = name;
+            else
+                Data.GUID = Guid.NewGuid().ToString();
+
+            return Data;
+        }
+
         public void Serialize()
         {
+            char slash = System.IO.Path.DirectorySeparatorChar;
             try
             {
                 using (var output = System.IO.File.Create
