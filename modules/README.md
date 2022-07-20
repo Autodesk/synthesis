@@ -4,3 +4,6 @@ Modules are extensions or addins for Synthesis™ developed using the [Module AP
 ### Exporting The VS Module Template
 1. Compress the contents of the `ModuleTemplate` project directory into a `.zip` folder
 2. Move the `.zip` folder into `~\Documents\Visual Studio <year>\Templates\ProjectTemplates\Visual C#`
+
+## NOTICE
+The module system is currently on hold and as a result, the modules in this solution are extremely out of date.
