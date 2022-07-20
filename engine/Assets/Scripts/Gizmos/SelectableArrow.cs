@@ -46,7 +46,7 @@ namespace Synthesis.Configuration
         /// Sends a message upwards when this <see cref="SelectableArrow"/>
         /// is selected.
         /// </summary>
-        private void OnMouseDown()
+        public void OnMouseDown()
         {
             SendMessageUpwards("OnArrowSelected", arrowType);
         }
@@ -54,7 +54,7 @@ namespace Synthesis.Configuration
         /// Sends a message upwards when this <see cref="SelectableArrow"/>
         /// is released.
         /// </summary>
-        private void OnMouseUp()
+        public void OnMouseUp()
         {
             SendMessageUpwards("OnArrowReleased");
             material.color = color;
@@ -63,7 +63,7 @@ namespace Synthesis.Configuration
         /// <summary>
         /// Highlights the arrow yellow when it is hovered over.
         /// </summary>
-        private void OnMouseEnter()
+        public void OnMouseEnter()
         {
             CameraController.isOverGizmo = true;
             if (selectable)
@@ -75,7 +75,7 @@ namespace Synthesis.Configuration
         /// Returns the arrow to its original color when the mouse
         /// is no longer hovering over it.
         /// </summary>
-        private void OnMouseExit()
+        public void OnMouseExit()
         {
             CameraController.isOverGizmo = false;
             if (selectable)

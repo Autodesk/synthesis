@@ -38,6 +38,8 @@ namespace Synthesis.Runtime {
             SimulationManager.Update();
             ModeManager.Update();
 
+            // Debug.Log($"WHAT: {Time.realtimeSinceStartup}");
+
             if (OnUpdate != null)
                 OnUpdate();
 

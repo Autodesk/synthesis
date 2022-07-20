@@ -103,15 +103,11 @@ namespace Synthesis.Gizmo {
             _currentTargetTransform.rotation = _currentGizmoConfig.Value.Transform.Rotation;
             
             var gizmo = GameObject.Instantiate(SynthesisAssetCollection.GizmoPrefabStatic, _currentTargetTransform);
-
-            PhysicsManager.IsFrozen = true;
         }
 
         private static void UpdateGizmo() {
             if (!_currentGizmoConfig.HasValue || _currentTargetTransform == null)
                 return;
-
-            PhysicsManager.IsFrozen = true;
 
             _currentGizmoConfig.Value.UpdateCallback(_currentTargetTransform);
         }
@@ -126,8 +122,6 @@ namespace Synthesis.Gizmo {
             
             _currentGizmoConfig.Value.EndCallback(_currentTargetTransform);
             GameObject.Destroy(_currentTargetTransform.gameObject);
-
-            PhysicsManager.IsFrozen = false;
         }
     }
 

@@ -1,4 +1,7 @@
+using System.Linq;
+using Synthesis.Gizmo;
 using Synthesis.UI.Dynamic;
+using SynthesisAPI.Simulation;
 
 namespace Synthesis.UI.Tabs {
     public class HomeTab : Tab {
@@ -24,6 +27,15 @@ namespace Synthesis.UI.Tabs {
                 "Scoreboard",
                 SynthesisAssetCollection.GetSpriteByName("fieldimport"),
                 () => LayoutManager.OpenPanel(SynthesisAssetCollection.GetPanelByName("Scoreboard-Panel")));
+            CreateButton(
+                "Move",
+                SynthesisAssetCollection.GetSpriteByName("fieldimport"),
+                () => {
+                    var robot = SimulationManager.SimulationObjects.Values.First(x => x is RobotSimObject);
+                    if (robot != null)
+                        GizmoManager.SpawnGizmo(robot as RobotSimObject);
+                }
+            );
         }
     }
 }

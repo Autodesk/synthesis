@@ -149,7 +149,7 @@ namespace Synthesis.Configuration
             disableGizmo();
         }
 
-
+        private SelectableArrow _currentlyHovering;
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Escape))
@@ -172,6 +172,43 @@ namespace Synthesis.Configuration
             {
                 // GizmoManager.OnEnter();
             }
+
+            // Manually raycast and check stuff
+            // Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            // RaycastHit hitInfo;
+            // bool hit = UnityEngine.Physics.Raycast(ray, out hitInfo);
+            // if (hit) {
+            //     Debug.Log(hitInfo.collider.name);
+            // } else {
+            //     Debug.Log("No hit");
+            // }
+            // if (!Input.GetKey(KeyCode.Mouse0)) {
+            //     if (hit) {
+            //         var arrow = hitInfo.collider.gameObject.GetComponent<SelectableArrow>();
+            //         if (arrow != null) {
+            //             if (_currentlyHovering != null) {
+            //                 _currentlyHovering.OnMouseExit();
+            //             }
+            //             _currentlyHovering = arrow;
+            //             _currentlyHovering.OnMouseEnter();
+            //         }
+            //     } else if (_currentlyHovering != null) {
+            //         _currentlyHovering.OnMouseExit();
+            //         _currentlyHovering = null;
+            //     }
+            // } else if (Input.GetKeyDown(KeyCode.Mouse0)) {
+            //     if (hit) {
+            //         var arrow = hitInfo.collider.gameObject.GetComponent<SelectableArrow>();
+            //         if (arrow != null) {
+            //             arrow.OnMouseDown();
+            //         }
+            //     }
+            // } else if (Input.GetKeyUp(KeyCode.Mouse0)) {
+            //     if (_currentlyHovering != null) {
+            //         _currentlyHovering.OnMouseUp();
+            //     }
+            // }
+
             if (activeArrow == ArrowType.None) // skip if there no gizmo components being dragged
                 return;
 
@@ -381,19 +418,13 @@ namespace Synthesis.Configuration
         /// Enables or disables rigidbodies using isKinematic and detect collisions
         /// </summary>
         /// <param name="enabled"></param>
-        public void SetRigidbodies(bool enabled)
-        {
-            foreach (KeyValuePair<Rigidbody, bool> rb in rigidbodiesKinematicStateInScene)
-            {
-                if (rb.Key != null)
-                {
-                    if (enabled)
-                    {
+        public void SetRigidbodies(bool enabled) {
+            foreach (KeyValuePair<Rigidbody, bool> rb in rigidbodiesKinematicStateInScene) {
+                if (rb.Key != null) {
+                    if (enabled) {
                         rb.Key.isKinematic = rb.Value; //saved dictionary state for reactivating the rigidbody's motion
                         rb.Key.detectCollisions = true;
-                    }
-                    else
-                    {
+                    } else {
                         rb.Key.isKinematic = true;
                         rb.Key.detectCollisions = false;
                     }
