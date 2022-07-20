@@ -91,8 +91,8 @@ namespace InventorMirabufExporter
                 var docRef = assemblyDoc.ReferencedDocuments[i+1];
 
                 try { MessageBox.Show(docRef.DisplayName, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
-                catch(Exception e) {MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
-                
+                catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+
                 //environment.Data.Parts.PartDefinitionsEntry[i] = new PartDefinition();
                 PartDefinition def = new PartDefinition();
                 def.Info = new Info()
@@ -184,18 +184,7 @@ namespace InventorMirabufExporter
                         Mesh = new Mesh()
                     };
 
-                    /*
-                    foreach (Vertex vert in doc.ComponentDefinition.SurfaceBodies[j].Vertices)
-                    {
-                        solid.TriangleMesh.Mesh.Verts.Add((float)vert.Point.X);
-                        solid.TriangleMesh.Mesh.Verts.Add((float)vert.Point.Y);
-                        solid.TriangleMesh.Mesh.Verts.Add((float)vert.Point.Z);
-                    }
-                    */
-
                     int FacetCount, VertexCount;
-                    //int[] VertexIndicies;
-                    //double[] VertexCoordinates, NormalVectors, TextureCoordinates;
                     var VertexIndices = new int[] { };
                     var VertexCoordinates = new double[] { };
                     var NormalVectors = new double[] { };
@@ -218,21 +207,6 @@ namespace InventorMirabufExporter
 
                     foreach (int index in VertexIndices)
                         solid.TriangleMesh.Mesh.Indices.Add(index-1);
-
-                    /*
-                    for(int k = 0; k < doc.ComponentDefinition.SurfaceBodies[j].Vertices.Count; k++)
-                    {
-                        solid.TriangleMesh.Mesh.Normals.Add((float)NormalVectors[k]);
-                        solid.TriangleMesh.Mesh.Uv.Add((float)TextureCoordinates[k]);
-                        solid.TriangleMesh.Mesh.Indices.Add(VertexIndices[k]);
-                    }
-                    */
-
-                    /*
-                    // Messed Up Mesh
-                    for(int k = 0; k < VertexCount; k++)
-                        solid.TriangleMesh.Mesh.Indices.Add(VertexIndices[k]);
-                    */
 
                     // might need some tweaking
                     solid.AppearanceOverride = doc.ComponentDefinition.SurfaceBodies[j].Appearance.Name;
@@ -551,12 +525,6 @@ namespace InventorMirabufExporter
             {
                 MessageBox.Show(x.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK);
             }
-        }
-
-        private void test()
-        {
-            Assembly asm = new Assembly();
-            asm.Info.GUID = "test";
         }
     }
 }
