@@ -31,7 +31,7 @@ namespace Synthesis.UI.Tabs {
                 "Move",
                 SynthesisAssetCollection.GetSpriteByName("fieldimport"),
                 () => {
-                    var robot = SimulationManager.SimulationObjects.Values.First(x => x is RobotSimObject);
+                    var robot = SimulationManager.SimulationObjects.Values.FirstOrDefault(x => x is RobotSimObject);
                     if (robot != null)
                         GizmoManager.SpawnGizmo(robot as RobotSimObject);
                 }

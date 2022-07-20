@@ -56,8 +56,12 @@ namespace Synthesis.UI.Dynamic {
             var header = _unityObject.transform.Find("Header");
             var headerRt = header.GetComponent<RectTransform>();
             _panelImage = new Image(null, header.Find("Image").gameObject);
+            // _panelImage.SetColor(new Color(1, 1, 1, 0));
+
             _panelBackground = new Image(null, unityObject);
+            _panelBackground.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK));
             _panelBackground.SetCornerRadius(15);
+
             _title = new Label(null, header.Find("Title").gameObject, null);
 
             var footer = _unityObject.transform.Find("Footer");
@@ -67,7 +71,11 @@ namespace Synthesis.UI.Dynamic {
                 if (!DynamicUIManager.CloseActivePanel())
                     Logger.Log("Failed to Close Panel", LogLevel.Error);
             });
+            _cancelButton.Image.SetColor(ColorManager.SYNTHESIS_CANCEL);
+            _cancelButton.Label.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT));
             _acceptButton = new Button(null!, footer.Find("Accept").gameObject, null);
+            _acceptButton.Image.SetColor(ColorManager.SYNTHESIS_ACCEPT);
+            _acceptButton.Label.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT));
 
             // Create Inital Content Component
             var hiddenContentT = _unityObject.transform.Find("Content");
@@ -134,10 +142,17 @@ namespace Synthesis.UI.Dynamic {
             var header = _unityObject.transform.Find("Header");
             var headerRt = header.GetComponent<RectTransform>();
             _modalImage = new Image(null, header.Find("Image").gameObject);
+            // _modalImage.SetColor(new Color(1, 1, 1, 0));
+
             _modalBackground = new Image(null, unityObject);
+            _modalBackground.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK));
             _modalBackground.SetCornerRadius(20);
+            
             _title = new Label(null, header.Find("Title").gameObject, null);
+            _title.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_WHITE));
+            
             _description = new Label( null, header.Find("Description").gameObject, null);
+            _description.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_WHITE));
 
             var footer = _unityObject.transform.Find("Footer");
             var footerRt = footer.GetComponent<RectTransform>();
@@ -146,7 +161,11 @@ namespace Synthesis.UI.Dynamic {
                 if (!DynamicUIManager.CloseActiveModal())
                     Logger.Log("Failed to Close Modal", LogLevel.Error);
             });
+            _cancelButton.Image.SetColor(ColorManager.SYNTHESIS_CANCEL);
+            _cancelButton.Label.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT));
             _acceptButton = new Button(null!, footer.Find("Accept").gameObject, null);
+            _acceptButton.Image.SetColor(ColorManager.SYNTHESIS_ACCEPT);
+            _acceptButton.Label.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT));
 
             // Create Inital Content Component
             var hiddenContentT = _unityObject.transform.Find("Content");
@@ -468,6 +487,8 @@ namespace Synthesis.UI.Dynamic {
             } else {
                 size = RootRectTransform.sizeDelta;
             }
+
+            SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_WHITE));
         }
 
         public Label SetText(string text) {
@@ -494,6 +515,8 @@ namespace Synthesis.UI.Dynamic {
             _unityText.fontStyle = styles;
             return this;
         }
+        public Label SetColor(string c)
+            => SetColor(ColorManager.TryGetColor(c));
         public Label SetColor(Color c) {
             _unityText.color = c;
             return this;
@@ -520,6 +543,11 @@ namespace Synthesis.UI.Dynamic {
         public Label TitleLabel => _titleLabel;
         private UToggle _unityToggle;
 
+        private Image _disabledImage;
+        public Image DisabledImage => _disabledImage;
+        private Image _enabledImage;
+        public Image EnabledImage => _enabledImage;
+
         public bool State {
             get => _unityToggle.isOn;
             set {
@@ -536,6 +564,12 @@ namespace Synthesis.UI.Dynamic {
             }});
             DisableEvents<Toggle>().SetState(isOn).EnableEvents<Toggle>();
             _titleLabel.SetText(text);
+
+            _disabledImage = new Image(this, _unityToggle.transform.Find("Background").gameObject);
+            _disabledImage.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT));
+
+            _enabledImage = new Image(this, _unityToggle.transform.Find("Background").Find("Checkmark").gameObject);
+            _enabledImage.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
         }
 
         public Toggle SetState(bool state) {
@@ -580,8 +614,13 @@ namespace Synthesis.UI.Dynamic {
             });
 
             _backgroundImage = new Image(this, _unitySlider.transform.Find("Background").gameObject);
+            _backgroundImage.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT));
+
             _fillImage = new Image(this, _unitySlider.transform.Find("Fill Area").Find("Fill").gameObject);
+            _fillImage.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
+
             _handleImage = new Image(this, _unitySlider.transform.Find("Handle Slide Area").Find("Handle").gameObject);
+            _handleImage.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_ACCENT));
 
             if (unitSuffix != null)
                 _unitSuffix = unitSuffix;
@@ -651,6 +690,8 @@ namespace Synthesis.UI.Dynamic {
         public Label Hint => _hint;
         private Label _label;
         public Label Label => _label;
+        private Image _backgroundImage;
+        public Image BackgroundImage => _backgroundImage;
         private TMP_InputField _tmpInput;
         public TMP_InputField.ContentType ContentType => _tmpInput.contentType;
 
@@ -663,6 +704,9 @@ namespace Synthesis.UI.Dynamic {
                 if (_eventsActive && OnValueChanged != null)
                     OnValueChanged(this, x);
             });
+
+            _backgroundImage = new Image(this, ifObj.gameObject);
+            _backgroundImage.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT));
         }
 
         public InputField StepIntoHint(Action<Label> mod) {
@@ -722,6 +766,8 @@ namespace Synthesis.UI.Dynamic {
         private Label _label;
         public Label Label => _label;
         private UButton _unityButton;
+        private Image _image;
+        public Image Image => _image;
         // public UButton UnityButton => _unityButton;
 
         public Button(UIComponent? parent, GameObject unityObject, Vector2? size) : base(parent, unityObject) {
@@ -736,6 +782,9 @@ namespace Synthesis.UI.Dynamic {
                     OnClicked(this);
                 }
             });
+
+            _image = new Image(this, unityObject);
+            _image.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
         }
 
         public Button StepIntoLabel(Action<Label> mod) {
@@ -760,6 +809,20 @@ namespace Synthesis.UI.Dynamic {
         public Content Viewport => _viewport;
         private TMP_Dropdown _tmpDropdown;
         public IReadOnlyList<TMP_Dropdown.OptionData> Options => _tmpDropdown.options.AsReadOnly();
+        
+        private Image _headerImage;
+        public Image HeaderImage => _headerImage;
+        private Label _headerLabel;
+        public Label HeaderLabel => _headerLabel;
+
+        private Image _itemBackgroundImage;
+        public Image ItemBackgroundImage => _itemBackgroundImage;
+        private Image _itemCheckmarkImage;
+        public Image ItemCheckmarkImage => _itemCheckmarkImage;
+        private Label _itemLabel;
+        public Label ItemLabel => _itemLabel;
+        private Image _viewportImage;
+        public Image ViewportImage => ViewportImage;
 
         public Dropdown(UIComponent? parent, GameObject unityObject, Vector2? size) : base(parent, unityObject) {
             if (size != null) {
@@ -779,6 +842,26 @@ namespace Synthesis.UI.Dynamic {
             eventHandler.OnPointerClickedEvent += e => {
                 ShowOnTop();
             };
+
+            _headerImage = new Image(this, unityObject.transform.Find("Header").gameObject);
+            _headerImage.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
+
+            _headerLabel = new Label(this, unityObject.transform.Find("Header").Find("Label").gameObject, null);
+            _headerLabel.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT));
+
+            var itemObj = unityObject.transform.Find("Template").Find("Viewport").Find("Content").Find("Item");
+
+            _itemBackgroundImage = new Image(this, itemObj.Find("Item Background").gameObject);
+            _itemBackgroundImage.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
+
+            _itemCheckmarkImage = new Image(this, itemObj.Find("Item Checkmark").gameObject);
+            _itemCheckmarkImage.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK));
+
+            _itemLabel = new Label(this, itemObj.Find("Item Label").gameObject, null);
+            _itemLabel.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT));
+
+            _viewportImage = new Image(this, unityObject.transform.Find("Template").Find("Viewport").gameObject);
+            _viewportImage.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
 
             // TODO: Get some more control over the individual items in the dropdown
             // _viewport.StepIntoImage(i => i.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT)));
@@ -860,6 +943,8 @@ namespace Synthesis.UI.Dynamic {
             Sprite = s;
             return this;
         }
+        public Image SetColor(string c)
+            => SetColor(ColorManager.TryGetColor(c));
         public Image SetColor(Color c) {
             _unityImage.color = c;
             return this;

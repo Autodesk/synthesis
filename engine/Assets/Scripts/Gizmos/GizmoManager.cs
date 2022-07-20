@@ -122,6 +122,9 @@ namespace Synthesis.Gizmo {
             
             _currentGizmoConfig.Value.EndCallback(_currentTargetTransform);
             GameObject.Destroy(_currentTargetTransform.gameObject);
+
+            _currentGizmoConfig = null;
+            _currentTargetTransform = null;
         }
     }
 

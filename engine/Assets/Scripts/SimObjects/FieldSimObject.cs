@@ -40,6 +40,8 @@ public class FieldSimObject : SimObject {
         position.y -= FieldBounds.center.y - FieldBounds.extents.y;
         FieldObject.transform.position = position;
 
+        _initialPosition = FieldObject.transform.position;
+
         CurrentField = this;
         Gamepieces.ForEach(gp =>
         {
@@ -49,10 +51,10 @@ public class FieldSimObject : SimObject {
         });
     }
 
-    public void ResetField()
-    {
-        GroundedNode.transform.position = _initialPosition;
-        GroundedNode.transform.rotation = _initialRotation;
+    public void ResetField() {
+        SpawnField(MiraAssembly);
+        // FieldObject.transform.position = _initialPosition;
+        // FieldObject.transform.rotation = _initialRotation;
     }
 
     public static bool DeleteField() {
@@ -71,10 +73,17 @@ public class FieldSimObject : SimObject {
     }
 
     public static void SpawnField(string filePath) {
-
         DeleteField();
 
         var mira = Importer.MirabufAssemblyImport(filePath);
+        mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
+        mira.MainObject.tag = "field";
+    }
+
+    public static void SpawnField(Assembly miraAssem) {
+        DeleteField();
+
+        var mira = Importer.MirabufAssemblyImport(miraAssem);
         mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
         mira.MainObject.tag = "field";
     }
