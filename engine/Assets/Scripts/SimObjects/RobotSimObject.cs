@@ -15,8 +15,9 @@ using Joint = UnityEngine.Joint;
 using MVector3 = Mirabuf.Vector3;
 using Transform = UnityEngine.Transform;
 using Vector3 = UnityEngine.Vector3;
+using Synthesis.Gizmo;
 
-public class RobotSimObject : SimObject, IPhysicsOverridable {
+public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     public static string CurrentlyPossessedRobot { get; private set; } = string.Empty;
     public static RobotSimObject GetCurrentlyPossessedRobot()
@@ -198,7 +199,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable {
     }
     public static void SpawnRobot(string filePath, Vector3 position, Quaternion rotation) {
 
-        GizmoManager.ExitGizmo();
+        // GizmoManager.ExitGizmo();
 
         var mira = Importer.MirabufAssemblyImport(filePath);
         RobotSimObject simObject = mira.Sim as RobotSimObject;
@@ -212,7 +213,9 @@ public class RobotSimObject : SimObject, IPhysicsOverridable {
         // Camera.main.GetComponent<CameraController>().FocusPoint =
         //     () => simObject.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(simObject.GroundedBounds.center);
         simObject.Possess();
-        GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, mira.MainObject.transform, mira.MainObject.transform.position);
+
+        GizmoManager.SpawnGizmo(simObject);
+        // GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, mira.MainObject.transform, mira.MainObject.transform.position);
     }
 
     private Dictionary<Rigidbody, (bool isKine, Vector3 vel, Vector3 angVel)> _preFreezeStates = new Dictionary<Rigidbody, (bool isKine, Vector3 vel, Vector3 angVel)>();
@@ -255,4 +258,43 @@ public class RobotSimObject : SimObject, IPhysicsOverridable {
     public GameObject GetRootGameObject() {
         return RobotNode;
     }
+
+    public TransformData GetGizmoData() {
+
+        return new TransformData {
+            Position = GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center),
+            Rotation = GroundedNode.transform.rotation
+        };
+    }
+
+    public void Update(TransformData data) {
+        // GroundedNode.transform.rotation = data.Rotation;
+
+        /*
+        GroundedNode.transform.position -= GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center);
+        GroundedNode.transform.rotation = Quaternion.identity;
+
+        Matrix4x4 transformation = Matrix4x4.identity;
+
+        // transformation = Matrix4x4.TRS(-GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center), Quaternion.identity, Vector3.one) * transformation;
+        transformation = Matrix4x4.TRS(Vector3.zero, data.Rotation, Vector3.one) * transformation;
+        // transformation *= Matrix4x4.TRS(data.Position, Quaternion.identity, Vector3.one);
+
+        // Apply Gizmo
+        GroundedNode.transform.rotation = transformation.rotation;
+        GroundedNode.transform.position -= GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center);
+        GroundedNode.transform.position += transformation.GetPosition(mod: false);
+        */
+
+        RobotNode.transform.rotation = Quaternion.identity;
+        RobotNode.transform.position = Vector3.zero;
+
+        RobotNode.transform.rotation = data.Rotation * Quaternion.Inverse(GroundedNode.transform.rotation);
+        RobotNode.transform.position = data.Position - GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center);
+
+        // GroundedNode.transform.RotateAround()
+        // GroundedNode.transform.position = data.Position - GroundedBounds.center;
+    }
+
+    public void End(TransformData data) { }
 }

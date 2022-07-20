@@ -17,8 +17,9 @@ namespace Synthesis.Runtime {
         public static uint SimulationContext => _simulationContext;
 
         public const uint RUNNING_SIM_CONTEXT = 0x00000001;
-        public const uint PAUSED_SIM_CONTEXT = 0x00000002;
-        public const uint REPLAY_SIM_CONTEXT = 0x00000004;
+        public const uint PAUSED_SIM_CONTEXT =  0x00000002;
+        public const uint REPLAY_SIM_CONTEXT =  0x00000004;
+        public const uint GIZMO_SIM_CONTEXT =   0x00000008;
 
         public static event Action OnUpdate;
 

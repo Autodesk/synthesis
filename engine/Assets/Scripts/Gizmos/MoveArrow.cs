@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Synthesis.Gizmo;
 using UnityEngine;
 
 
@@ -169,7 +170,7 @@ namespace Synthesis.Configuration
             }
             if (Input.GetKey(KeyCode.Return))
             {
-                GizmoManager.OnEnter();
+                // GizmoManager.OnEnter();
             }
             if (activeArrow == ArrowType.None) // skip if there no gizmo components being dragged
                 return;

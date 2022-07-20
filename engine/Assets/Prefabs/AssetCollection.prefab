@@ -71,4 +71,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c1e0c7f3dc392244e995e9944765a81e, type: 2}
   - {fileID: 11400000, guid: b815287ce3927b64f8c47aa7920ac72b, type: 2}
   BlurVolumePrefab: {fileID: 6580295389658322125, guid: 394aa61974565994b902f14a87446d95, type: 3}
-  ReplaySlider: {fileID: 0}
+  ReplaySlider: {fileID: 3705824443591556104, guid: f80559b316f43074b95161133cd3b4d2, type: 3}
+  GizmoPrefab: {fileID: 1956879812176446, guid: 7f4443e0480835a40be41aa190e93374, type: 3}

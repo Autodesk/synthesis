@@ -93,6 +93,6 @@ public static class UtilExtensions {
         => new Vector3(a.y * b.z - a.z * b.y, -(a.x * b.z - a.z * b.x), a.x * b.y - a.y * b.x);
     
     // TODO: This should be done when the matrix is created
-    public static UVector3 GetPosition(this Matrix4x4 m)
-        => new UVector3(m.m03 * -0.01f, m.m13 * 0.01f, m.m23 * 0.01f);
+    public static UVector3 GetPosition(this Matrix4x4 m, bool mod = true)
+        => mod ? new UVector3(m.m03 * -0.01f, m.m13 * 0.01f, m.m23 * 0.01f) : new UVector3(m.m03, m.m13, m.m23);
 }

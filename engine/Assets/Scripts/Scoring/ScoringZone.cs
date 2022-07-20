@@ -1,4 +1,5 @@
 using System;
+using Synthesis.Runtime;
 using SynthesisAPI.EventBus;
 using UnityEngine;
 
@@ -55,7 +56,7 @@ public class ScoringZoneListener : MonoBehaviour
         if (!other.transform.CompareTag("gamepiece")) return;
 
         // don't destroy gamepiece if user is moving the zone
-        if (GizmoManager.currentGizmo != null) return;
+        if (SimulationRunner.HasContext(SimulationRunner.GIZMO_SIM_CONTEXT)) return;
         
         // trigger scoring
         EventBus.Push(new OnScoreEvent(other.name, scoringZone));

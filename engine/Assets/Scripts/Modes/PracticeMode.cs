@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Synthesis.Gizmo;
 using Synthesis.PreferenceManager;
 using Synthesis.Runtime;
 using Synthesis.UI.Dynamic;
@@ -118,7 +119,12 @@ public class PracticeMode : IMode
         Renderer renderer = _gamepieceSpawnpointObject.GetComponent<Renderer>();
         renderer.material = new Material(Shader.Find("Shader Graphs/DefaultSynthesisTransparentShader"));
 
-        GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, _gamepieceSpawnpointObject.transform, _gamepieceSpawnpointObject.transform.position);
+        GizmoManager.SpawnGizmo(
+            _gamepieceSpawnpointObject.transform,
+            t => _gamepieceSpawnpointObject.transform.position = t.Position,
+            t => EndConfigureGamepieceSpawnpoint()
+        );
+        // GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, _gamepieceSpawnpointObject.transform, _gamepieceSpawnpointObject.transform.position);
     }
 
     public static void EndConfigureGamepieceSpawnpoint()

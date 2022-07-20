@@ -8,6 +8,7 @@ using Logger = SynthesisAPI.Utilities.Logger;
 using Synthesis.Replay;
 using Synthesis.Physics;
 using SynthesisAPI.EventBus;
+using Synthesis.Gizmo;
 
 namespace Synthesis.UI.Dynamic {
     public static class DynamicUIManager {
@@ -44,6 +45,7 @@ namespace Synthesis.UI.Dynamic {
         public static bool CreateModal<T>(params object[] args) where T : ModalDynamic {
 
             CloseActivePanel();
+            GizmoManager.ExitGizmo();
             if (ActiveModal != null)
                 CloseActiveModal();
             
@@ -65,7 +67,7 @@ namespace Synthesis.UI.Dynamic {
 
         // Currently only going to allow one active panel
         public static bool CreatePanel<T>(params object[] args) where T : PanelDynamic {
-
+            
             if (ActiveModal != null)
                 return false;
 

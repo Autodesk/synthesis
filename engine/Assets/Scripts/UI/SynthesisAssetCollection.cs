@@ -20,6 +20,9 @@ public class SynthesisAssetCollection : MonoBehaviour {
     public GameObject BlurVolumePrefab;
     [SerializeField]
     public GameObject ReplaySlider;
+    [SerializeField]
+    public GameObject GizmoPrefab;
+
     private static Volume _blurVolumeStatic = null;
     public static Volume BlurVolumeStatic {
         get {
@@ -30,6 +33,7 @@ public class SynthesisAssetCollection : MonoBehaviour {
         }
     }
     public static GameObject ReplaySliderStatic => Instance.ReplaySlider;
+    public static GameObject GizmoPrefabStatic => Instance.GizmoPrefab;
 
 #nullable enable
     private GameObject? _defaultFloor = null;
