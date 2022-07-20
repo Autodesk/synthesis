@@ -25,13 +25,17 @@ namespace Synthesis.Runtime {
         void Start() {
             SetContext(RUNNING_SIM_CONTEXT);
             Synthesis.PreferenceManager.PreferenceManager.Load();
+            ModeManager.Start();
 
             OnUpdate += DynamicUIManager.Update;
+
+            // RotationalDriver.TestSphericalCoordinate();
         }
 
         void Update() {
             InputManager.UpdateInputs(_simulationContext);
             SimulationManager.Update();
+            ModeManager.Update();
 
             if (OnUpdate != null)
                 OnUpdate();

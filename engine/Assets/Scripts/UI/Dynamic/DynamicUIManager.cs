@@ -7,6 +7,7 @@ using SynthesisAPI.Utilities;
 using Logger = SynthesisAPI.Utilities.Logger;
 using Synthesis.Replay;
 using Synthesis.Physics;
+using SynthesisAPI.EventBus;
 
 namespace Synthesis.UI.Dynamic {
     public static class DynamicUIManager {
@@ -43,7 +44,9 @@ namespace Synthesis.UI.Dynamic {
         public static bool CreateModal<T>(params object[] args) where T : ModalDynamic {
 
             CloseActivePanel();
-
+            if (ActiveModal != null)
+                CloseActiveModal();
+            
             var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("dynamic-modal-base"), GameObject.Find("UI").transform.Find("ScreenSpace").Find("ModalContainer"));
 
             // var c = ColorManager.GetColor("SAMPLE");
@@ -52,10 +55,8 @@ namespace Synthesis.UI.Dynamic {
             modal.Create_Internal(unityObject);
             modal.Create();
 
-            if (ActiveModal != null)
-                CloseActiveModal();
-            
             ActiveModal = modal;
+            EventBus.Push(new ModalCreatedEvent(modal));
 
             SynthesisAssetCollection.BlurVolumeStatic.weight = 1f;
             PhysicsManager.IsFrozen = true;
@@ -68,6 +69,9 @@ namespace Synthesis.UI.Dynamic {
             if (ActiveModal != null)
                 return false;
 
+            if (ActivePanel != null)
+                CloseActivePanel();
+
             var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("dynamic-panel-base"), GameObject.Find("UI").transform.Find("ScreenSpace").Find("PanelContainer"));
 
             // var c = ColorManager.GetColor("SAMPLE");
@@ -75,11 +79,9 @@ namespace Synthesis.UI.Dynamic {
             PanelDynamic panel = (PanelDynamic)Activator.CreateInstance(typeof(T), args);
             panel.Create_Internal(unityObject);
             panel.Create();
-            
-            if (ActivePanel != null)
-                CloseActivePanel();
 
             ActivePanel = panel;
+            EventBus.Push(new PanelCreatedEvent(panel));
 
             return true;
         }
@@ -88,6 +90,8 @@ namespace Synthesis.UI.Dynamic {
             if (ActiveModal == null) {
                 return false;
             }
+
+            EventBus.Push(new ModalClosedEvent(ActiveModal));
 
             ActiveModal.Delete();
             ActiveModal.Delete_Internal();
@@ -102,6 +106,8 @@ namespace Synthesis.UI.Dynamic {
         public static bool CloseActivePanel() {
             if (ActivePanel == null)
                 return false;
+
+            EventBus.Push(new PanelClosedEvent(ActivePanel));
 
             ActivePanel.Delete();
             ActivePanel.Delete_Internal();
@@ -126,6 +132,38 @@ namespace Synthesis.UI.Dynamic {
             var min = new Vector2(trans.anchoredPosition.x + trans.rect.xMin, trans.anchoredPosition.y + trans.rect.yMin);
             var max = new Vector2(trans.anchoredPosition.x + trans.rect.xMax, trans.anchoredPosition.y + trans.rect.yMax);
             return new Rect(min.x, min.y, max.x - min.x, max.y - min.y);
+        }
+
+        public struct ModalCreatedEvent : IEvent {
+            public ModalDynamic Modal;
+
+            public ModalCreatedEvent(ModalDynamic modal) {
+                Modal = modal;
+            }
+        }
+
+        public struct PanelCreatedEvent : IEvent {
+            public PanelDynamic Panel;
+
+            public PanelCreatedEvent(PanelDynamic panel) {
+                Panel = panel;
+            }
+        }
+
+        public struct ModalClosedEvent : IEvent {
+            public ModalDynamic Modal;
+
+            public ModalClosedEvent(ModalDynamic modal) {
+                Modal = modal;
+            }
+        }
+
+        public struct PanelClosedEvent : IEvent {
+            public PanelDynamic Panel;
+
+            public PanelClosedEvent(PanelDynamic panel) {
+                Panel = panel;
+            }
         }
     }
 }

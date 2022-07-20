@@ -5,6 +5,9 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Synthesis.UI.Tabs;
+using Synthesis.UI.Dynamic;
+
+using Image = UnityEngine.UI.Image;
 
 namespace Synthesis.UI.Bars {
     // TODO: Needs a big rework. We'll tackle this with the rest of the UI system later
@@ -72,7 +75,8 @@ namespace Synthesis.UI.Bars {
                 AnalyticsManager.LogEvent(update);
                 AnalyticsManager.PostData();
 
-                Application.Quit();
+                DynamicUIManager.CreateModal<ExitSynthesisModal>();
+                // Application.Quit();
             }
         }
 

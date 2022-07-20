@@ -221,6 +221,10 @@ def _MapRigidGroups(
         mira_group.name = group.entityToken
         for occ in group.occurrences:
 
+            if occ == None:
+                a = 1
+                continue
+
             if not occ.isLightBulbOn:
                 continue
 

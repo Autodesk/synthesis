@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - gamepiece
+  - default-floor
+  - robot
+  - field
   layers:
   - Default
   - TransparentFX

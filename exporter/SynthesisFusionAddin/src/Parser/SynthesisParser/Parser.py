@@ -113,6 +113,7 @@ class Parser:
                 assembly_out.data.signals,
                 self.pdMessage,
                 self.parseOptions,
+                assembly_out,
             )
 
             # add condition in here for advanced joints maybe idk
