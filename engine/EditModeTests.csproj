@@ -627,12 +627,6 @@
     <Reference Include="System.Xml.XPath.XDocument">
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Xml.XPath.XDocument.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.TestRunner">
-        <HintPath>C:/Users/hunte/work/synthesis/engine/Library/ScriptAssemblies/UnityEngine.TestRunner.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor.TestRunner">
-        <HintPath>C:/Users/hunte/work/synthesis/engine/Library/ScriptAssemblies/UnityEditor.TestRunner.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEditor.UI">
         <HintPath>C:/Users/hunte/work/synthesis/engine/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
     </Reference>
@@ -641,6 +635,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="UnityEngine.TestRunner.csproj">
+      <Project>{567804dd-4aa4-cfb2-dac4-4923425fd94a}</Project>
+      <Name>UnityEngine.TestRunner</Name>
+    </ProjectReference>
+    <ProjectReference Include="UnityEditor.TestRunner.csproj">
+      <Project>{e62b2d7c-c97d-1bb0-c54e-99a9e3f19c8d}</Project>
+      <Name>UnityEditor.TestRunner</Name>
+    </ProjectReference>
     <ProjectReference Include="CoreEngine.csproj">
       <Project>{28740e66-4b28-d1ee-7ffd-ca276d12197b}</Project>
       <Name>CoreEngine</Name>

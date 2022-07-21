@@ -28,6 +28,8 @@ namespace Synthesis.Runtime {
             ModeManager.Start();
 
             OnUpdate += DynamicUIManager.Update;
+
+            // RotationalDriver.TestSphericalCoordinate();
         }
 
         void Update() {

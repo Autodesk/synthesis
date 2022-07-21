@@ -19,7 +19,28 @@ namespace Mirabuf {
                 return _unityMatrix;
             }
         }
-        
+
+        /// <summary>
+        /// Only reason this exists is because there are multiple points in the Unity project where it expects the data to be wrong.
+        /// Dear future developer, I'm sorry. -Hunter
+        /// </summary>
+        private Matrix4x4? _correctUnityMatrix;
+        public Matrix4x4 CorrectUnityMatrix {
+            get {
+                if (!_correctUnityMatrix.HasValue) {
+                    _correctUnityMatrix = UnityMatrix;
+                    _correctUnityMatrix = Matrix4x4.TRS(
+                        new UnityEngine.Vector3(_correctUnityMatrix.Value.m03 * -0.01f, _correctUnityMatrix.Value.m13 * 0.01f, _correctUnityMatrix.Value.m23 * 0.01f),
+                        new Quaternion(-_correctUnityMatrix.Value.rotation.x, _correctUnityMatrix.Value.rotation.y,
+                            _correctUnityMatrix.Value.rotation.z, -_correctUnityMatrix.Value.rotation.w
+                        ),
+                        UnityEngine.Vector3.one
+                    );
+                }
+                return _correctUnityMatrix.Value;
+            }
+        }
+
         public static implicit operator Matrix4x4(Transform t)
             => t.UnityMatrix;
 

@@ -36,7 +36,6 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Drivetrain\DrivetrainSubPanel.cs" />
      <Compile Include="Assets\Scripts\Modes\PracticeMode.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\ParentAdapter.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\TransformAdapter.cs" />
@@ -45,9 +44,8 @@
      <Compile Include="Assets\Scripts\Interactable3DDetector.cs" />
      <Compile Include="Assets\Scripts\Gizmos\GizmoManager.cs" />
      <Compile Include="Assets\Scripts\UI\ContextMenu\ContextMenu.cs" />
-     <Compile Include="Assets\Scripts\ModelManager\Parse.cs" />
+     <Compile Include="Assets\Scripts\Physics\CustomWheel.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\MeshCollider2DAdapter.cs" />
-     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Gearboxes\JointItem.cs" />
      <Compile Include="Assets\Scripts\ServersMonoBehavior.cs" />
      <Compile Include="Assets\Scripts\Behaviors\GeneralArmBehaviour.cs" />
      <Compile Include="Assets\Scripts\Utilities\DeflateStreamWrapper.cs" />
@@ -58,13 +56,11 @@
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\SelectFieldModal.cs" />
      <Compile Include="Assets\Scripts\UI\SynthesisAssetCollection.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\PracticeSettingsModal.cs" />
-     <Compile Include="Assets\Scripts\PTL.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Settings\SettingsInput.cs" />
      <Compile Include="Assets\Scripts\UI\ToastLogger\ToastManager.cs" />
      <Compile Include="Assets\Scripts\Tween\Demo\TweenDemo.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\RigidbodyAdapter.cs" />
      <Compile Include="Assets\Scripts\MouseTracker.cs" />
-     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Drivetrain\ArcadePanel.cs" />
      <Compile Include="Assets\Scripts\UI\ContextMenu\ContextItem.cs" />
      <Compile Include="Assets\Scripts\Attributes\ContextMenuOptionAttribute.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\DynamicUIManager.cs" />
@@ -72,14 +68,12 @@
      <Compile Include="Assets\Scripts\UI\ToastLogger\ToastLogger.cs" />
      <Compile Include="Assets\Scripts\AutoUpdater.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Panel.cs" />
-     <Compile Include="Assets\Scripts\ModelManager\Models\Model.cs" />
      <Compile Include="Assets\Scripts\UI\NavigationBar.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\AddRobotModal.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\SystemAdapter.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\ExitSynthesisModal.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\ModuleLoader.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\ChooseModeModal.cs" />
-     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Gearboxes\GearboxConfigPanel.cs" />
-     <Compile Include="Assets\Scripts\ModelManager\ModelManager.cs" />
      <Compile Include="Assets\Scripts\PreferenceManager\PreferenceManager.cs" />
      <Compile Include="Assets\Scripts\Behaviors\ArcadeDriveBehaviour.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\LoadModuleEvent.cs" />
@@ -88,16 +82,14 @@
      <Compile Include="Assets\Scripts\Physics\ReplayRunner.cs" />
      <Compile Include="Assets\Scripts\UI\Tabs\Tab.cs" />
      <Compile Include="Assets\Scripts\SimObjects\FieldSimObject.cs" />
-     <Compile Include="Assets\Scripts\ModelManager\Models\GearboxData.cs" />
      <Compile Include="Assets\Scripts\Scoring\ScoringZone.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\DynamicUIComponents.cs" />
      <Compile Include="Assets\Scripts\Drivers\LinearDriver.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\ComponentAdapter.cs" />
-     <Compile Include="Assets\Scripts\Importer\LegacyFieldImporter.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\UpdatePromptPanel.cs" />
      <Compile Include="Assets\Scripts\Gizmos\ArrowType.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Panels\RobotDetailsPanel.cs" />
-     <Compile Include="Assets\Scripts\UI\Panels\Variants\Multiplayer\MultiplayerRobotItem.cs" />
+     <Compile Include="Assets\Scripts\Modes\IMode.cs" />
      <Compile Include="Assets\Scripts\Importer\GamepieceTag.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\AudioSourceAdapter.cs" />
      <Compile Include="Assets\Scripts\Modes\ModeManager.cs" />
@@ -105,12 +97,10 @@
      <Compile Include="Assets\Scripts\Gizmos\SelectableArrow.cs" />
      <Compile Include="Assets\Scripts\PreferenceManager\SimulationPreferences.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\LoadModuleException.cs" />
-     <Compile Include="Assets\Scripts\UI\Panels\Variants\Multiplayer\MultiplayerPanel.cs" />
-     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Gearboxes\GearboxItem.cs" />
      <Compile Include="Assets\Scripts\Drivers\RotationalDriver.cs" />
      <Compile Include="Assets\Scripts\UI\Tabs\ConfigTab.cs" />
      <Compile Include="Assets\Scripts\Gizmos\GizmoStore.cs" />
-     <Compile Include="Assets\Scripts\ModelManager\Controllables\Controllable.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\AddFieldModal.cs" />
      <Compile Include="Assets\Scripts\UI\Hierarchy\Hierarchy.cs" />
      <Compile Include="Assets\Scripts\Gizmos\MoveArrow.cs" />
      <Compile Include="Assets\Scripts\Utilities\IOHandler.cs" />
@@ -121,7 +111,6 @@
      <Compile Include="Assets\Scripts\Utilities\SynthesisUtil.cs" />
      <Compile Include="Assets\Scripts\Test\ConfigurableJointTest.cs" />
      <Compile Include="Assets\Scripts\Utilities\ObjectLedger.cs" />
-     <Compile Include="Assets\Scripts\ModelManager\Models\Motor.cs" />
      <Compile Include="Assets\Scripts\Utilities\UtilExtensions.cs" />
      <Compile Include="Assets\Scripts\Camera\MenuCamera.cs" />
      <Compile Include="Assets\Scripts\GridEntry.cs" />
@@ -129,7 +118,6 @@
      <Compile Include="Assets\Scripts\Behaviors\TankDriveBehavior.cs" />
      <Compile Include="Assets\Scripts\Attributes\ControllableInputAttribute.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Joints\RotationalJointItem.cs" />
-     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Drivetrain\ConfigureDrivetrainPanel.cs" />
      <Compile Include="Assets\Scripts\ServerMonobehaviour.cs" />
      <Compile Include="Assets\Scripts\Physics\PhysicsManager.cs" />
      <Compile Include="Assets\Scripts\UI\ImageManager.cs" />
@@ -140,7 +128,6 @@
      <Compile Include="Assets\Scripts\UI\InteractableObject.cs" />
      <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyRootItem.cs" />
      <Compile Include="Assets\Scripts\SimObjects\GamepieceSimObject.cs" />
-     <Compile Include="Assets\Scripts\UI\MultiplayerManager.cs" />
      <Compile Include="Assets\Scripts\UI\ToastLogger\ToastConfig.cs" />
      <Compile Include="Assets\Scripts\Utilities\ColorManager.cs" />
      <Compile Include="Assets\Scripts\GodMode.cs" />
@@ -159,25 +146,22 @@
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Joints\ConfigureJointsPanel.cs" />
      <Compile Include="Assets\Scripts\UI\MainMenu\MenuManager.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\ModuleMetadata.cs" />
-     <Compile Include="Assets\Scripts\ModelManager\Controllables\TestControllable.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\IApiAdapter.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\SelectableAdapter.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\CameraAdapter.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\ScoreboardPanel.cs" />
-     <Compile Include="Assets\Scripts\ModelManager\Models\Field.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\AddPanel\AddPanel.cs" />
      <Compile Include="Assets\Scripts\UI\Tabs\HomeTab.cs" />
      <Compile Include="Assets\Scripts\UI\Tabs\Buttons\TabButton.cs" />
-     <Compile Include="Assets\Scripts\Modes\GameMode.cs" />
      <Compile Include="Assets\Scripts\Physics\ReplayManager.cs" />
      <Compile Include="Assets\Scripts\Tween\Tween.cs" />
-     <Compile Include="Assets\Scripts\MyTest.cs" />
      <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyModelItem.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\LayerAdapter.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\AddPanel\AddItem.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\ExitPanel.cs" />
      <Compile Include="Assets\Scripts\Importer\Importer.cs" />
      <Compile Include="Assets\Scripts\Test\DebugJointAxes.cs" />
+     <Compile Include="Assets\Scripts\UnityModalSpawner.cs" />
      <None Include="Assets\Scripts\CoreEngine.asmdef" />
      <None Include="Assets\Scripts\Tween\Readme.txt" />
     <Reference Include="UnityEngine">
@@ -801,12 +785,6 @@
     <Reference Include="System.Xml.XPath.XDocument">
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Xml.XPath.XDocument.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.TextMeshPro">
-        <HintPath>C:/Users/hunte/work/synthesis/engine/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Core.Runtime">
-        <HintPath>C:/Users/hunte/work/synthesis/engine/Library/ScriptAssemblies/Unity.RenderPipelines.Core.Runtime.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEditor.UI">
         <HintPath>C:/Users/hunte/work/synthesis/engine/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
     </Reference>
@@ -815,6 +793,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="Unity.TextMeshPro.csproj">
+      <Project>{fb4e956d-b397-f887-3554-408d13b56029}</Project>
+      <Name>Unity.TextMeshPro</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.RenderPipelines.Core.Runtime.csproj">
+      <Project>{feffff73-bffc-ec59-7c47-e5eebea1f21f}</Project>
+      <Name>Unity.RenderPipelines.Core.Runtime</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
