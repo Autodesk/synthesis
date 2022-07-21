@@ -791,6 +791,10 @@ namespace Synthesis.UI.Dynamic {
             mod(_label);
             return this;
         }
+        public Button StepIntoImage(Action<Image> mod) {
+            mod(_image);
+            return this;
+        }
         public Button AddOnClickedEvent(Action<Button> callback) {
             OnClicked += callback;
             return this;

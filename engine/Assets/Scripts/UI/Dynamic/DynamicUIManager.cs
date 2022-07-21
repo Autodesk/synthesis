@@ -79,11 +79,12 @@ namespace Synthesis.UI.Dynamic {
             // var c = ColorManager.GetColor("SAMPLE");
 
             PanelDynamic panel = (PanelDynamic)Activator.CreateInstance(typeof(T), args);
+            ActivePanel = panel;
             panel.Create_Internal(unityObject);
             panel.Create();
 
-            ActivePanel = panel;
-            EventBus.Push(new PanelCreatedEvent(panel));
+            if (ActivePanel != null)
+                EventBus.Push(new PanelCreatedEvent(panel));
 
             return true;
         }

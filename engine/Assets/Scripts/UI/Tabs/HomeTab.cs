@@ -36,6 +36,20 @@ namespace Synthesis.UI.Tabs {
                         GizmoManager.SpawnGizmo(robot as RobotSimObject);
                 }
             );
+            CreateButton(
+                "Pickup",
+                SynthesisAssetCollection.GetSpriteByName("fieldimport"),
+                () => {
+                    DynamicUIManager.CreatePanel<ConfigureGamepiecePickupPanel>();
+                }
+            );
+            CreateButton(
+                "Shooting",
+                SynthesisAssetCollection.GetSpriteByName("fieldimport"),
+                () => {
+                    DynamicUIManager.CreatePanel<ConfigureShotTrajectoryPanel>();
+                }
+            );
         }
     }
 }

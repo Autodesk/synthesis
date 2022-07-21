@@ -82,6 +82,7 @@
      <Compile Include="Assets\Scripts\Physics\ReplayRunner.cs" />
      <Compile Include="Assets\Scripts\UI\Tabs\Tab.cs" />
      <Compile Include="Assets\Scripts\SimObjects\FieldSimObject.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Panels\ConfigureGamepiecePickupPanel.cs" />
      <Compile Include="Assets\Scripts\Scoring\ScoringZone.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\DynamicUIComponents.cs" />
      <Compile Include="Assets\Scripts\Drivers\LinearDriver.cs" />
@@ -162,6 +163,7 @@
      <Compile Include="Assets\Scripts\Importer\Importer.cs" />
      <Compile Include="Assets\Scripts\Test\DebugJointAxes.cs" />
      <Compile Include="Assets\Scripts\UnityModalSpawner.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Panels\ConfigureShotTrajectoryPanel.cs" />
      <None Include="Assets\Scripts\CoreEngine.asmdef" />
      <None Include="Assets\Scripts\Tween\Readme.txt" />
     <Reference Include="UnityEngine">
