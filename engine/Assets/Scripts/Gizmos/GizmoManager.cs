@@ -1,8 +1,5 @@
 
 using UnityEngine;
-using Synthesis.ModelManager;
-using SynthesisAPI.Utilities;
-
 /// <summary>
 /// Manages Gizmos and ensures only one gizmo spawns at a time.
 /// </summary>
@@ -52,7 +49,6 @@ public static class GizmoManager
         if (gizmo.transform.parent.CompareTag("robot"))
         {
             PracticeMode.SetInitialState(gizmo.transform.parent.gameObject);
-            Shooting.ConfigureGamepieces();
         } else if (gizmo.transform.parent.CompareTag("gamepiece"))
         {
             PracticeMode.EndConfigureGamepieceSpawnpoint();

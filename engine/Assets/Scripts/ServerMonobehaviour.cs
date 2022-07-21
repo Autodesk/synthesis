@@ -10,7 +10,7 @@ public class ServerMonobehaviour : MonoBehaviour
     {
         SynthesisAPI.Utilities.Logger.Log("Start method called", LogLevel.Debug);
         TcpServerManager.Start();
-        UdpServerManager.SimulationObjectsTarget = SimulationManager._simulationObject;
+        UdpServerManager.SimulationObjectsTarget = SimulationManager._simObjects;
         UdpServerManager.Start();
     }
 

@@ -87,7 +87,7 @@ public class MatchModeModal : ModalDynamic
 
         if(MatchMode.currentFieldIndex != _fieldIndex)
         {
-            if (FieldSimObject.CurrentField != null) FieldSimObject.CurrentField.DeleteField();
+            if (FieldSimObject.CurrentField != null) FieldSimObject.DeleteField();
             FieldSimObject.SpawnField(_fieldFiles[_fieldIndex]);
             MatchMode.currentFieldIndex = _fieldIndex;
         }

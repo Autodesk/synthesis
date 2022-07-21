@@ -20,7 +20,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable {
 
     public static string CurrentlyPossessedRobot { get; private set; } = string.Empty;
     public static RobotSimObject GetCurrentlyPossessedRobot()
-        => CurrentlyPossessedRobot == string.Empty ? null : SimulationManager._simulationObject[CurrentlyPossessedRobot] as RobotSimObject;
+        => CurrentlyPossessedRobot == string.Empty ? null : SimulationManager._simObjects[CurrentlyPossessedRobot] as RobotSimObject;
 
     public static int ControllableJointCounter = 0;
 
@@ -125,16 +125,18 @@ public class RobotSimObject : SimObject, IPhysicsOverridable {
             // Spin all of the wheels straight
             wheelsInstances.ForEach(x => {
                 var def = MiraAssembly.Data.Joints.JointDefinitions[x.Value.JointReference];
+                var jointAxis = new Vector3(def.Rotational.RotationalFreedom.Axis.X, def.Rotational.RotationalFreedom.Axis.Y, def.Rotational.RotationalFreedom.Axis.Z);
                 var globalAxis = GroundedNode.transform.rotation
-                    * ((Vector3)def.Rotational.RotationalFreedom.Axis).normalized;
+                    * jointAxis.normalized;
                 var cross = Vector3.Cross(GroundedNode.transform.up, globalAxis);
                 if (Vector3.Dot(GroundedNode.transform.forward, cross) > 0) {
-                    var ogAxis = def.Rotational.RotationalFreedom.Axis;
-                    ogAxis.X *= -1;
-                    ogAxis.Y *= -1;
-                    ogAxis.Z *= -1;
+                    var ogAxis = jointAxis;
+                    ogAxis.x *= -1;
+                    ogAxis.y *= -1;
+                    ogAxis.z *= -1;
                     // Modify assembly for if a new behaviour evaluates this again
-                    def.Rotational.RotationalFreedom.Axis = ogAxis; // I think this is irrelevant after the last few lines
+                    // def.Rotational.RotationalFreedom.Axis = ogAxis; // I think this is irrelevant after the last few lines
+                    def.Rotational.RotationalFreedom.Axis = new MVector3() { X = jointAxis.x, Y = jointAxis.y, Z = jointAxis.z };
                     var joints = _jointMap[x.Key];
                     (joints.a as HingeJoint).axis = ogAxis;
                     (joints.b as HingeJoint).axis = ogAxis;
