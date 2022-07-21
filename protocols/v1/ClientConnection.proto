@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+// Possibly use mirabuf
+
+// All information 
+message GameUpdate {
+
+	repeated Client clients {
+	}
+	
+	// All data about a client (position, velocity, etc)
+	message Client {
+		Vector3 position = 1;
+		Vector3 velocity = 2;
+		Vector3 acceleration = 3;
+	
+		
+		
+	}
+
+	message Vector3 {
+		double x = 1;
+		double y = 2;
+		double z = 3;
+	}
+}
+
+
+
+
+
+
+
+
