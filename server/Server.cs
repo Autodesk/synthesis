@@ -23,7 +23,7 @@ namespace SynthesisServer
     public sealed class Server
     {
         private const int LOBBY_SIZE = 6;
-        private const int BUFFER_SIZE = 256;
+        private const int BUFFER_SIZE = 4096;
 
         private Socket _tcpSocket;
         private UdpClient _udpSocket;
@@ -56,6 +56,7 @@ namespace SynthesisServer
         public void Stop()
         {
             _udpSocket.Close();
+            _tcpSocket.Close();
             _clientsLock.EnterWriteLock();
             _clients.Clear();
             _clientsLock.ExitWriteLock();
@@ -240,7 +241,7 @@ namespace SynthesisServer
             _logger.LogInformation(clientID + " is performing a key exchange");
 
             _clientsLock.EnterWriteLock();
-            if (_clients.ContainsKey(clientID)) { _clients.Add(clientID, new ClientData(socket)); }
+            if (!_clients.ContainsKey(clientID)) { _clients.Add(clientID, new ClientData(socket)); }
             _clients[clientID].GenerateSharedSecret(keyExchange.PublicKey, new DHParameters(new BigInteger(keyExchange.P), new BigInteger(keyExchange.G)));
             _clientsLock.ExitWriteLock();
 

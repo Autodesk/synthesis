@@ -38,9 +38,9 @@ namespace SynthesisServer.Test
         private static void Init()
         {
             _tcpPort = 18001;
-            _udpPort = 18001;
+            _udpPort = 18000;
 
-            _serverIP = IPAddress.Any; // Specify during actual test 
+            _serverIP = IPAddress.Parse("76.115.121.246"); // Specify during actual test 
 
             _dhParameters = GenerateParameters();
             _keyPair = GenerateKeys(_dhParameters);
@@ -116,6 +116,7 @@ namespace SynthesisServer.Test
         [Test]
         public static void TestExchange()
         {
+            Init();
             while (!_tcpSocket.Connected)
             {
                 try
@@ -142,7 +143,7 @@ namespace SynthesisServer.Test
                 _tcpSocket
             );
 
-            byte[] buffer = new byte[256];
+            byte[] buffer = new byte[4096];
             int rec = _tcpSocket.Receive(buffer);
             byte[] data = new byte[rec];
             Array.Copy(buffer, data, rec);

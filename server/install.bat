@@ -6,3 +6,7 @@ dotnet publish Synthesis-Server.csproj --runtime linux-musl-x64 --framework netc
 dotnet publish Synthesis-Server.csproj --runtime linux-arm --framework netcoreapp3.1 --self-contained true --output bin/linux/arm
 
 copy appsettings.json bin\win\
+copy appsettings.json bin\osx\
+copy appsettings.json bin\linux\glibc
+copy appsettings.json bin\linux\musl
+copy appsettings.json bin\linux\arm
