@@ -75,7 +75,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             if (value.HasValue) {
                 _trajectoryPointer.transform.parent = RobotNode.transform.Find(_trajectoryData.Value.NodeName);
                 _trajectoryPointer.transform.localPosition = _trajectoryData.Value.RelativePosition.ToVector3();
-                _trajectoryPointer.transform.rotation = _trajectoryPointer.transform.parent.rotation * _trajectoryData.Value.RelativeRotation.ToQuaternion();
+                _trajectoryPointer.transform.localRotation = _trajectoryData.Value.RelativeRotation.ToQuaternion();
             }
 
             SimulationPreferences.SetRobotTrajectoryData(MiraAssembly.Info.GUID, _trajectoryData);

@@ -53,10 +53,10 @@ namespace Synthesis.UI.Dynamic {
             }).StepIntoLabel(l => l.SetText("Save"));
 
             _arrowObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            _arrowObject.transform.localScale = new Vector3(0.3f, 0.3f, 1f);
+            _arrowObject.transform.localScale = new Vector3(0.15f, 0.15f, 1f);
             var renderer = _arrowObject.GetComponent<Renderer>();
             renderer.material = new Material(Shader.Find("Shader Graphs/DefaultSynthesisTransparentShader"));
-            renderer.material.SetColor("Color_48545d7793c14f3d9e1dd2264f072068", new Color(0f, 0f, 0f, 0.2f));
+            renderer.material.SetColor("Color_48545d7793c14f3d9e1dd2264f072068", new Color(0f, 0f, 0f, 0.6f));
             renderer.material.SetFloat("Vector1_d66a0e8b289a457c85b3b4408b4f3c2f", 0f);
             var node = robot.RobotNode.transform.Find(_resultingData.NodeName);
             _arrowObject.transform.rotation = node.transform.rotation * _resultingData.RelativeRotation.ToQuaternion();
@@ -74,7 +74,8 @@ namespace Synthesis.UI.Dynamic {
                     _resultingData.RelativePosition =
                         node.transform.worldToLocalMatrix.MultiplyPoint(t.Position).ToArray();
                     _resultingData.RelativeRotation =
-                        (t.Rotation * Quaternion.Inverse(node.rotation)).ToArray();
+                        (node.transform.worldToLocalMatrix * Matrix4x4.TRS(Vector3.zero, t.Rotation, Vector3.one))
+                        .rotation.ToArray();
                     if (!_exiting)
                         DynamicUIManager.CloseActivePanel();
                 }
