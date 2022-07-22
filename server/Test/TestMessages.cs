@@ -13,6 +13,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SynthesisServer.Test
 {
@@ -35,8 +37,14 @@ namespace SynthesisServer.Test
         private static DHParameters _dhParameters;
         private static byte[] _symmetricKey;
 
+        private static bool _isRunning = false;
+
+        private static Heartbeat _heartbeat;
+
         private static void Init()
         {
+            
+
             _tcpPort = 18001;
             _udpPort = 18000;
 
@@ -96,6 +104,33 @@ namespace SynthesisServer.Test
 
             BitConverter.GetBytes(msgBytes.Length).CopyTo(data, sizeof(int) + headerBytes.Length);
             msgBytes.CopyTo(data, sizeof(int) + headerBytes.Length + sizeof(int));
+
+            if (BitConverter.IsLittleEndian) { Array.Reverse(data); }
+            socket.Send(data);
+        }
+
+        private static void SendEncryptedMessage(IMessage msg, Socket socket)
+        {
+            Any packedMsg = Any.Pack(msg);
+            byte[] msgBytes = new byte[packedMsg.CalculateSize()];
+            packedMsg.WriteTo(msgBytes);
+
+            byte[] delimitedMessage = new byte[sizeof(int) + msgBytes.Length];
+            BitConverter.GetBytes(msgBytes.Length).CopyTo(delimitedMessage, 0);
+            msgBytes.CopyTo(delimitedMessage, sizeof(int));
+
+            byte[] encryptedMessage = _encryptor.Encrypt(delimitedMessage, _symmetricKey);
+
+            MessageHeader header = new MessageHeader() { IsEncrypted = true };
+            byte[] headerBytes = new byte[header.CalculateSize()];
+            header.WriteTo(headerBytes);
+
+            byte[] data = new byte[sizeof(int) + headerBytes.Length + encryptedMessage.Length];
+
+            BitConverter.GetBytes(headerBytes.Length).CopyTo(data, 0);
+            headerBytes.CopyTo(data, sizeof(int));
+
+            encryptedMessage.CopyTo(data, sizeof(int) + headerBytes.Length);
 
             if (BitConverter.IsLittleEndian) { Array.Reverse(data); }
             socket.Send(data);
@@ -163,6 +198,69 @@ namespace SynthesisServer.Test
                     Assert.IsTrue(true);
                 }
             }
+        }
+        [Test]
+        public static void TestAllHandshakes()
+        {
+            _isRunning = true;
+            Init();
+            while (!_tcpSocket.Connected)
+            {
+                try
+                {
+                    _tcpSocket.Connect(_serverIP, _tcpPort);
+                }
+                catch (SocketException e)
+                {
+                    System.Diagnostics.Debug.WriteLine(e);
+                }
+            }
+
+            // Connection to server established!
+            Assert.IsTrue(_tcpSocket.Connected);
+
+            SendMessage
+            (
+                new KeyExchange()
+                {
+                    G = _dhParameters.G.ToString(),
+                    P = _dhParameters.P.ToString(),
+                    PublicKey = ((DHPublicKeyParameters)_keyPair.Public).Y.ToString()
+                },
+                _tcpSocket
+            );
+
+            byte[] buffer = new byte[4096];
+            int rec = _tcpSocket.Receive(buffer);
+            byte[] data = new byte[rec];
+            Array.Copy(buffer, data, rec);
+            if (BitConverter.IsLittleEndian) { Array.Reverse(data); }
+
+            MessageHeader header = MessageHeader.Parser.ParseFrom(GetNextMessage(ref data));
+
+            Assert.IsFalse(header.IsEncrypted);
+            Any message = Any.Parser.ParseFrom(GetNextMessage(ref data));
+            Assert.IsTrue(message.Is(KeyExchange.Descriptor));
+
+            GenerateSharedSecret(message.Unpack<KeyExchange>().PublicKey, _dhParameters);
+            _clientID = message.Unpack<KeyExchange>().ClientId;
+            System.Diagnostics.Debug.WriteLine(BitConverter.ToString(_symmetricKey));
+
+            _heartbeat = new Heartbeat()
+            {
+                ClientId = _clientID
+            };
+
+
+            Task.Run(() =>
+            {
+                while (_isRunning)
+                {
+                    SendEncryptedMessage(_heartbeat, _tcpSocket);
+                    Thread.Sleep(500);
+                }
+            });
+            
         }
     }
 }
