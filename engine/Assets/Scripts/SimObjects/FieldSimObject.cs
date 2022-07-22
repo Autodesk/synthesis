@@ -49,6 +49,7 @@ public class FieldSimObject : SimObject {
             gp.InitialPosition = gpTransform.position;
             gp.InitialRotation = gpTransform.rotation;
         });
+        Shooting.ConfigureGamepieces();
     }
 
     public void ResetField() {

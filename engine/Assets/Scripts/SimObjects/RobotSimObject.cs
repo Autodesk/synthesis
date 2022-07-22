@@ -205,9 +205,39 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         RobotSimObject simObject = mira.Sim as RobotSimObject;
         mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
         mira.MainObject.tag = "robot";
+
+        //tags every mesh collider component in the robot with a tag of robot
+        mira.MainObject.GetComponentsInChildren<MeshCollider>().ForEach(g => g.tag = "robot");
+        
         mira.MainObject.transform.position = position;
         mira.MainObject.transform.rotation = rotation;
 
+        
+        //TEMPORARY: CREATING INSTAKE AT FRONT OF THE ROBOT
+        GameObject intake = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        /*
+        mira.MainObject.GetComponentsInChildren<Transform>().ForEach(t =>
+        {
+            if (t.name == "grounded")
+            {
+                intake.transform.SetParent(t);
+            }
+        });
+        if (intake.transform.parent == null)
+        {
+            intake.transform.SetParent(mira.MainObject.GetComponentInChildren<Transform>());
+        }*/
+        intake.transform.SetParent(simObject.GroundedNode.transform);
+        
+        intake.transform.localPosition = new Vector3(0, 0.2f, 0.3f);
+        intake.transform.localScale = new Vector3(0.5f, 0.2f, 0.5f);
+        intake.transform.localRotation = Quaternion.identity;
+        
+        intake.GetComponent<Collider>().isTrigger = true;
+        intake.GetComponent<MeshRenderer>().enabled = false;
+        intake.tag = "robot";
+        Shooting.intakeObject = intake;
+        
         // Event call maybe?
 
         // Camera.main.GetComponent<CameraController>().FocusPoint =
@@ -236,7 +266,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
         _isFrozen = true;
     }
-
     public void Unfreeze() {
         if (!_isFrozen)
             return;

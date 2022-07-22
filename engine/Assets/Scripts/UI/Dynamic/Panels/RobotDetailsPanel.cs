@@ -30,6 +30,7 @@ namespace Synthesis.UI.Dynamic {
             Z = MainContent.CreateLabel(15f).ApplyTemplate(nonHighlightedLabel).SetTopStretch(leftPadding: 10f, anchoredY: 45f).SetText("Z: 0.0");
         }
 
+        
         public override void Update() {
             Vector3 robotPosition = new Vector3();
             if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
