@@ -24,6 +24,10 @@ public class RobotSimObject : SimObject, IPhysicsOverridable {
 
     public static int ControllableJointCounter = 0;
 
+    private CameraController cam;
+    private OrbitCameraMode orbit;
+    private ICameraMode previousMode;
+
     public string MiraGUID => MiraAssembly.Info.GUID;
 
     public Assembly MiraAssembly { get; private set; }
@@ -56,7 +60,11 @@ public class RobotSimObject : SimObject, IPhysicsOverridable {
 
     public void Possess() {
         CurrentlyPossessedRobot = this.Name;
-        Camera.main.GetComponent<CameraController>().FocusPoint =
+        cam = Camera.main.GetComponent<CameraController>();
+        previousMode = cam.cameraMode;
+        orbit = new OrbitCameraMode();
+        cam.cameraMode = orbit;
+        orbit.FocusPoint =
             () => GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center);
     }
 
@@ -64,8 +72,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable {
         PhysicsManager.Unregister(this);
         if (CurrentlyPossessedRobot.Equals(this._name)) {
             CurrentlyPossessedRobot = string.Empty;
-            Camera.main.GetComponent<CameraController>().FocusPoint =
-                () => Vector3.zero;
+            cam.cameraMode = previousMode;
         }
         MonoBehaviour.Destroy(GroundedNode.transform.parent.gameObject);
     }

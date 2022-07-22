@@ -23,6 +23,8 @@ namespace Synthesis.Configuration
         Dictionary<Rigidbody, bool> rigidbodiesKinematicStateInScene;
 
         private CameraController cam;
+        private ICameraMode previousMode;
+        private OrbitCameraMode orbit;
         private float originalLowerPitch;
         private float gizmoPitch = -80f;
 
@@ -94,8 +96,11 @@ namespace Synthesis.Configuration
         private void Awake()
         {
             cam = Camera.main.GetComponent<CameraController>();
+            previousMode = cam.cameraMode;
+            orbit = new OrbitCameraMode();
+            cam.cameraMode = orbit;
             originalLowerPitch = cam.PitchLowerLimit;
-            originalCameraFocusPoint = cam.FocusPoint;
+            originalCameraFocusPoint = orbit.FocusPoint;
 
             //makes a list of the rigidbodies in the hierarchy and their state
             HierarchyRigidbodiesToDictionary();
@@ -118,13 +123,12 @@ namespace Synthesis.Configuration
 
             gizmoCameraTransform = new GameObject().transform;
             gizmoCameraTransform.position = transform.parent.position; //camera shifting
-            cam.FocusPoint = () => gizmoCameraTransform.position;//camera focus
+            orbit.FocusPoint = () => gizmoCameraTransform.position;//camera focus
             cam.PitchLowerLimit = gizmoPitch; //camera pitch limits
         }
         private void disableGizmo() //makes sure values are set correctly when the gizmo is removed
         {
-            cam.PitchLowerLimit = originalLowerPitch;
-            cam.FocusPoint = originalCameraFocusPoint;
+            cam.cameraMode = previousMode;
             SetRigidbodies(true);
         }
 
@@ -363,7 +367,7 @@ namespace Synthesis.Configuration
 
             //move the camera
             gizmoCameraTransform.position = transform.parent.position;
-            cam.FocusPoint = () => gizmoCameraTransform.position;
+            orbit.FocusPoint = () => gizmoCameraTransform.position;
 
         }
         public void HierarchyRigidbodiesToDictionary() //save the state of all gameobject's rigidbodies as a dictionary
