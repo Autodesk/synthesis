@@ -8,6 +8,8 @@ TagManager:
   - default-floor
   - robot
   - field
+  - red zone
+  - blue zone
   layers:
   - Default
   - TransparentFX

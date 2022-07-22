@@ -43,24 +43,24 @@ public class ShootableGamepiece : MonoBehaviour
     private bool scored = false;
     private int value = 1;//TEMPORARY VALUES
     
-    private void OnTriggerEnter(Collider collision)
-    {
+    // private void OnCollisionEnter(Collision collision) {
+        
+    // }
+
+    private void OnTriggerEnter(Collider collision) {
         //Debug.Log("Collision Detected" + collision.transform.tag);
         
-        if (collision.transform.CompareTag("robot") && !currentlyHeld)
-        {
+        if (collision.transform.CompareTag("robot") && !currentlyHeld) {
             SetPieceState(false);
             Shooting.AddGamepiece(this);
         }
 
         //TEMPORARY SCORING
-        if (collision.transform.CompareTag("blue zone") && !scored)
-        {
+        if (collision.transform.CompareTag("blue zone") && !scored) {
             scored = true;
             Scoring.blueScore += value;
         }
-        if (collision.transform.CompareTag("red zone") && !scored)
-        {
+        if (collision.transform.CompareTag("red zone") && !scored) {
             scored = true;
             Scoring.redScore += value;
         }
