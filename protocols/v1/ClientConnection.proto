@@ -1,28 +1,15 @@
 syntax = "proto3";
 
-// Possibly use mirabuf
 
-// All information 
+import "google/protobuf/Any.proto";
+
+
+// All information about clients both on host and client side
 message GameUpdate {
-
-	repeated Client clients {
-	}
 	
-	// All data about a client (position, velocity, etc)
-	message Client {
-		Vector3 position = 1;
-		Vector3 velocity = 2;
-		Vector3 acceleration = 3;
-	
-		
-		
-	}
+	// Most likely use signals from mirabuf here but this allows easy adapting of what is being sent
+	repeated google.protobuf.Any client_data = 1;
 
-	message Vector3 {
-		double x = 1;
-		double y = 2;
-		double z = 3;
-	}
 }
 
 
