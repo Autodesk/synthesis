@@ -154,9 +154,9 @@ public class PracticeMode : IMode
         });
     }
 
-    public static void ResetField()
-    {
-        Shooting.Reset();
+    public static void ResetField() {
+        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+            RobotSimObject.GetCurrentlyPossessedRobot().ClearGamepieces();
         
         FieldSimObject field = FieldSimObject.CurrentField;
         if (field != null)

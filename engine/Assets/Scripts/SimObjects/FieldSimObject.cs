@@ -49,7 +49,7 @@ public class FieldSimObject : SimObject {
             gp.InitialPosition = gpTransform.position;
             gp.InitialRotation = gpTransform.rotation;
         });
-        Shooting.ConfigureGamepieces();
+        // Shooting.ConfigureGamepieces();
     }
 
     public void ResetField() {
@@ -63,6 +63,9 @@ public class FieldSimObject : SimObject {
             return false;
 
         // Debug.Log($"GP count: {CurrentField.Gamepieces.Count}");
+
+        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+            RobotSimObject.GetCurrentlyPossessedRobot().ClearGamepieces();
 
         CurrentField.Gamepieces.ForEach(x => x.DeleteGamepiece());
         CurrentField.Gamepieces.Clear();

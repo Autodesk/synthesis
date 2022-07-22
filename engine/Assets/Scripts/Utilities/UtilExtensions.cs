@@ -35,6 +35,16 @@ public static class UtilExtensions {
         return default;
     }
 
+    public static Vector3 ToVector3(this float[] arr)
+        => new Vector3(arr[0], arr[1], arr[2]);
+    public static Quaternion ToQuaternion(this float[] arr)
+        => new Quaternion(arr[0], arr[1], arr[2], arr[3]);
+
+    public static float[] ToArray(this Vector3 vec)
+        => new float[] { vec.x, vec.y, vec.z };
+    public static float[] ToArray(this Quaternion quat)
+        => new float[] { quat.x, quat.y, quat.z, quat.w };
+
     public static Bounds GetBounds(this Transform top) {
         Vector3 min = new Vector3(float.MaxValue,float.MaxValue,float.MaxValue), max = new Vector3(float.MinValue,float.MinValue,float.MinValue);
         top.GetComponentsInChildren<Renderer>().ForEach(x => {

@@ -2,6 +2,8 @@ using System;
 using Synthesis.Gizmo;
 using UnityEngine;
 
+using ITD = RobotSimObject.IntakeTriggerData;
+
 namespace Synthesis.UI.Dynamic {
     public class ConfigureGamepiecePickupPanel : PanelDynamic
     {
@@ -13,6 +15,7 @@ namespace Synthesis.UI.Dynamic {
         private Slider _zoneSizeSlider;
 
         private GameObject _zoneObject;
+        private ITD _resultingData;
 
         private bool _exiting = false;
         private bool _save = false;
@@ -31,6 +34,22 @@ namespace Synthesis.UI.Dynamic {
                 return;
             }
 
+            var robot = RobotSimObject.GetCurrentlyPossessedRobot();
+            var existingData = robot.IntakeData;
+            if (existingData.HasValue) {
+                _resultingData = existingData.Value;
+            } else {
+                _resultingData = new ITD {
+                    NodeName = "grounded",
+                    RelativePosition = robot.GroundedBounds.center.ToArray(),
+                    TriggerSize = 0.5f,
+                    StorageCapacity = 1
+                };
+            }
+
+            // TODO: Limit to one for now before we add UI for it
+            _resultingData.StorageCapacity = 1;
+
             AcceptButton.AddOnClickedEvent(b => {
                 _save = true;
                 DynamicUIManager.CloseActivePanel();
@@ -41,11 +60,17 @@ namespace Synthesis.UI.Dynamic {
             renderer.material = new Material(Shader.Find("Shader Graphs/DefaultSynthesisTransparentShader"));
             renderer.material.SetColor("Color_48545d7793c14f3d9e1dd2264f072068", new Color(0f, 0f, 0f, 0.2f));
             renderer.material.SetFloat("Vector1_d66a0e8b289a457c85b3b4408b4f3c2f", 0f);
+            var node = robot.RobotNode.transform.Find(_resultingData.NodeName);
+            _zoneObject.transform.rotation = node.transform.rotation;
+            _zoneObject.transform.position = node.transform.localToWorldMatrix.MultiplyPoint(_resultingData.RelativePosition.ToVector3());
 
             GizmoManager.SpawnGizmo(
                 _zoneObject.transform,
                 t => _zoneObject.transform.position = t.Position,
                 t => {
+                    _resultingData.RelativePosition =
+                        robot.RobotNode.transform.Find(_resultingData.NodeName) // Get Node
+                        .transform.worldToLocalMatrix.MultiplyPoint(t.Position).ToArray(); // Transform point to local space
                     if (!_exiting)
                         DynamicUIManager.CloseActivePanel();
                 }
@@ -56,6 +81,7 @@ namespace Synthesis.UI.Dynamic {
                 .StepIntoLabel(l => l.SetText("Select a node"))
                 .StepIntoButton(b => b.StepIntoLabel(l => l.SetText("Select")).AddOnClickedEvent(SelectNodeButton))
                 .ApplyTemplate<LabeledButton>(VerticalLayout);
+            SetSelectUIState(false);
             // _moveTriggerButton = MainContent.CreateLabeledButton()
             //     .SetHeight<LabeledButton>(30)
             //     .StepIntoLabel(l => l.SetText("Move pickup zone"))
@@ -64,33 +90,35 @@ namespace Synthesis.UI.Dynamic {
             _zoneSizeSlider = MainContent.CreateSlider(label: "Zone Size", minValue: 0.1f, maxValue: 1f)
                 .ApplyTemplate<Slider>(VerticalLayout)
                 .AddOnValueChangedEvent(
-                    (s, v) => _zoneObject.transform.localScale = new Vector3(v, v, v))
-                .SetValue(0.5f);
+                    (s, v) => {
+                        _resultingData.TriggerSize = v;
+                        _zoneObject.transform.localScale = new Vector3(v, v, v);
+                    })
+                .SetValue(_resultingData.TriggerSize);
         }
 
         public void SelectNodeButton(Button b) {
             if (!_selectingNode) {
                 _selectingNode = true;
-                _selectNodeButton.StepIntoLabel(l => l.SetText("Selecting..."));
-                SetSelectButtonState(false);
             } else {
                 _selectingNode = false;
-                _selectNodeButton.StepIntoLabel(l => l.SetText("Select a node"));
-                SetSelectButtonState(true);
             }
+            SetSelectUIState(_selectingNode);
         }
 
         // TODO: Maybe make node selection into its own component?
-        public void SetSelectButtonState(bool isButtonEnabled) {
-            if (isButtonEnabled) {
-                _selectNodeButton.StepIntoButton(
-                    b => b.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_ORANGE))
-                        .StepIntoLabel(l => l.SetText("Select"))
-                );
-            } else {
+        public void SetSelectUIState(bool isUserSelecting) {
+            if (isUserSelecting) {
+                _selectNodeButton.StepIntoLabel(l => l.SetText("Selecting..."));
                 _selectNodeButton.StepIntoButton(
                     b => b.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_BLACK_ACCENT))
                         .StepIntoLabel(l => l.SetText("..."))
+                );
+            } else {
+                _selectNodeButton.StepIntoLabel(l => l.SetText(_resultingData.NodeName));
+                _selectNodeButton.StepIntoButton(
+                    b => b.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_ORANGE))
+                        .StepIntoLabel(l => l.SetText("Select"))
                 );
             }
         }
@@ -102,7 +130,7 @@ namespace Synthesis.UI.Dynamic {
 
             // Save Data
             if (_save) {
-                Debug.Log("TODO: Save trigger");
+                RobotSimObject.GetCurrentlyPossessedRobot().IntakeData = _resultingData;
             }
 
             // Cleanup
@@ -124,9 +152,11 @@ namespace Synthesis.UI.Dynamic {
                             Debug.Log(hitInfo.rigidbody.name);
                             if (hitInfo.rigidbody.transform.parent == RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform) {
                                 Debug.Log($"Selecting Node: {hitInfo.rigidbody.name}");
+
+                                _resultingData.NodeName = hitInfo.rigidbody.name;
+
                                 _selectingNode = false;
-                                _selectNodeButton.StepIntoLabel(l => l.SetText("Selected"));
-                                SetSelectButtonState(true);
+                                SetSelectUIState(false);
                             }
                         }
                     }

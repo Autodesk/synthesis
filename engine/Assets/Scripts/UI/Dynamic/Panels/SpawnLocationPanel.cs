@@ -4,6 +4,8 @@ using System.Linq;
 using Synthesis.UI.Dynamic;
 using Synthesis.PreferenceManager;
 using UnityEngine;
+using Synthesis.Gizmo;
+using Synthesis.Runtime;
 
 namespace Synthesis.UI.Dynamic
 {
@@ -27,8 +29,9 @@ namespace Synthesis.UI.Dynamic
 
         Label location;
 
-        public override void Create()
-        {
+        public override void Create() {
+            throw new NotImplementedException();
+
             Title.SetText("Set Spawn").SetFontSize(25f);
             //PanelImage.RootGameObject.SetActive(false);
             //Description.RootGameObject.SetActive(false);
@@ -113,10 +116,9 @@ namespace Synthesis.UI.Dynamic
                 .SetTopStretch(leftPadding: 10f, anchoredY: 130f).SetText("(0.00, 0.00, 0.00)");
 
 
-            PracticeMode.SetInitialState(GizmoManager.currentGizmo.transform.parent.gameObject);
+            // PracticeMode.SetInitialState(GizmoManager.currentGizmo.transform.parent.gameObject);
         }
-        private void StartMatch()
-        {
+        private void StartMatch() {
             if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
             {
                 Vector3 p = RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position;
@@ -126,7 +128,7 @@ namespace Synthesis.UI.Dynamic
                 PreferenceManager.PreferenceManager.Save();
             }
             
-            Shooting.ConfigureGamepieces();
+            // Shooting.ConfigureGamepieces();
             
             //TEMPORARY: FOR POWERUP ONLY
             
@@ -137,12 +139,11 @@ namespace Synthesis.UI.Dynamic
             GizmoManager.ExitGizmo();
         }
 
-        private bool matchStarted = false; 
+        private bool matchStarted = false;
         public override void Update() {
 
             Vector3 robotPosition = new Vector3();
-            if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-            {
+            if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
                 robotPosition = RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position;
             }
 
@@ -150,8 +151,8 @@ namespace Synthesis.UI.Dynamic
                 $"({String.Format("{0:0.00}", robotPosition.x)}, {String.Format("{0:0.00}", robotPosition.y)}, {String.Format("{0:0.00}", robotPosition.z)})");
 
 
-            if (GizmoManager.currentGizmo == null && !matchStarted)
-            {
+            if ((SimulationRunner.HasContext(SimulationRunner.GIZMO_SIM_CONTEXT) || SimulationRunner.HasContext(SimulationRunner.PAUSED_SIM_CONTEXT))
+                    && !matchStarted) {
                 matchStarted = true;
                 StartMatch();
             }

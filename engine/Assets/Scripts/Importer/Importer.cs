@@ -797,6 +797,18 @@ namespace Synthesis.Import
 				);
 			}
 
+			// Make names reasonable
+			int shift = 0;
+			for (int i = 0; i < defs.Keys.Count; i++) {
+				var def = defs[defs.Keys.ElementAt(i)];
+				if (def.Name.Equals("grounded") || def.Name.Contains("gamepiece")) {
+					shift++;
+				} else {
+					def.Name = $"node_{i - shift}";
+				}
+				defs[defs.Keys.ElementAt(i)] = def;
+			}
+
 			return (defs, partMap);
 		}
 

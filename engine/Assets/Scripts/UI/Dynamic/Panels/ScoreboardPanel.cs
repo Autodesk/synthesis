@@ -4,6 +4,8 @@ using UnityEngine;
 using SynthesisAPI.EventBus;
 using TMPro;
 using System;
+using Synthesis.Gizmo;
+using Synthesis.Runtime;
 
 namespace Synthesis.UI.Dynamic {
     public class ScoreboardPanel : PanelDynamic {
@@ -57,13 +59,13 @@ namespace Synthesis.UI.Dynamic {
         float targetTime = 135;
         bool matchEnd = false;
         public override void Update() {
-            if(GizmoManager.currentGizmo == null && targetTime >= 0)
-            {
+            if ((SimulationRunner.HasContext(SimulationRunner.GIZMO_SIM_CONTEXT) || SimulationRunner.HasContext(SimulationRunner.PAUSED_SIM_CONTEXT)) 
+                    && targetTime >= 0) {
                 targetTime -= Time.deltaTime;
                 time.SetText(Mathf.RoundToInt(targetTime).ToString());
                 redScore.SetText(Scoring.redScore.ToString());
                 blueScore.SetText(Scoring.blueScore.ToString());
-            }    
+            }
             else if (!matchEnd)
             {
                 //end match

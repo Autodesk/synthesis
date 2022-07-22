@@ -27,6 +27,7 @@ namespace Synthesis.Runtime {
             SetContext(RUNNING_SIM_CONTEXT);
             Synthesis.PreferenceManager.PreferenceManager.Load();
             ModeManager.Start();
+            RobotSimObject.Setup();
 
             OnUpdate += DynamicUIManager.Update;
 
