@@ -11,6 +11,8 @@ using UButton = UnityEngine.UI.Button;
 using UToggle = UnityEngine.UI.Toggle;
 using USlider = UnityEngine.UI.Slider;
 using UImage = UnityEngine.UI.Image;
+using UScrollbar = UnityEngine.UI.Scrollbar;
+using UScrollView = UnityEngine.UI.ScrollRect;
 
 using Logger = SynthesisAPI.Utilities.Logger;
 using Math = System.Math;
@@ -442,7 +444,10 @@ namespace Synthesis.UI.Dynamic {
             return inputField;
         }
         public ScrollView CreateScrollView() {
-            throw new NotImplementedException();
+            var scrollViewObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("scroll-view-base"), base.RootGameObject.transform);
+            var scrollView = new ScrollView(this, scrollViewObj);
+            base.Children.Add(scrollView);
+            return scrollView;
         }
         public Content CreateSubContent(Vector2 size) {
             var contentObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("content-base"), base.RootGameObject.transform);
@@ -456,12 +461,37 @@ namespace Synthesis.UI.Dynamic {
                 mod(_image);
             return this;
         }
+
+        public Content EnsureImage() {
+            if (_image == null) {
+                base.RootGameObject.AddComponent<UImage>();
+                _image = new Image(this, base.RootGameObject);
+                _image.SetSprite(SynthesisAssetCollection.GetSpriteByName("250r-rounded"));
+                _image.SetMultiplier(50);
+            }
+            return this;
+        }
     }
 
     public class ScrollView : UIComponent {
+        private UScrollView _unityScrollView;
+        private Image _backgroundImage;
         private Content _content;
+        public Content Content => _content;
 
-        public ScrollView(UIComponent? parent, GameObject unityObject) : base(parent, unityObject) { }
+        public ScrollView(UIComponent? parent, GameObject unityObject) : base(parent, unityObject) {
+            _unityScrollView = unityObject.GetComponent<UScrollView>();
+
+            _content = new Content(this, unityObject.transform.Find("Viewport").Find("Content").gameObject, null);
+
+            _backgroundImage = new Image(this, unityObject);
+            _backgroundImage.SetColor(ColorManager.SYNTHESIS_BLACK_ACCENT);
+        }
+
+        public ScrollView StepIntoContent(Action<Content> mod) {
+            mod(_content);
+            return this;
+        }
     }
 
     public class Label : UIComponent {
@@ -957,6 +987,29 @@ namespace Synthesis.UI.Dynamic {
         public Image SetCornerRadius(float r) {
             _unityImage.pixelsPerUnitMultiplier = 250f / r;
             return this;
+        }
+        public Image SetMultiplier(float m) {
+            _unityImage.pixelsPerUnitMultiplier = m;
+            return this;
+        }
+    }
+
+    public class Scrollbar : UIComponent {
+
+        public UScrollbar _unityScrollbar;
+        private Image _backgroundImage;
+        public Image BackgroundImage => _backgroundImage;
+        private Image _handleImage;
+        public Image HandleImage => _handleImage;
+
+        public Scrollbar(UIComponent? parent, GameObject unityObject) : base(parent, unityObject) {
+            _unityScrollbar = unityObject.GetComponent<UScrollbar>();
+            
+            _backgroundImage = new Image(this, unityObject);
+            _backgroundImage.SetColor(ColorManager.SYNTHESIS_WHITE_ACCENT);
+
+            _handleImage = new Image(this, unityObject.transform.Find("Sliding Area").Find("Handle").gameObject);
+            _handleImage.SetColor(ColorManager.SYNTHESIS_WHITE);
         }
     }
 

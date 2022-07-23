@@ -27,13 +27,20 @@ namespace Synthesis.UI.Tabs {
                 "Scoreboard",
                 SynthesisAssetCollection.GetSpriteByName("fieldimport"),
                 () => LayoutManager.OpenPanel(SynthesisAssetCollection.GetPanelByName("Scoreboard-Panel")));
+            // CreateButton(
+            //     "Move",
+            //     SynthesisAssetCollection.GetSpriteByName("fieldimport"),
+            //     () => {
+            //         var robot = SimulationManager.SimulationObjects.Values.FirstOrDefault(x => x is RobotSimObject);
+            //         if (robot != null)
+            //             GizmoManager.SpawnGizmo(robot as RobotSimObject);
+            //     }
+            // );
             CreateButton(
-                "Move",
+                "Test Modal",
                 SynthesisAssetCollection.GetSpriteByName("fieldimport"),
                 () => {
-                    var robot = SimulationManager.SimulationObjects.Values.FirstOrDefault(x => x is RobotSimObject);
-                    if (robot != null)
-                        GizmoManager.SpawnGizmo(robot as RobotSimObject);
+                    DynamicUIManager.CreateModal<ScrollViewTestModal>();
                 }
             );
             CreateButton(
