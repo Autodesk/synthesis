@@ -1,4 +1,5 @@
 
+using System.Linq;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using UnityEngine;
@@ -13,17 +14,29 @@ public class FreeCameraMode : ICameraMode
     private float _actualPitch = 0.0f;
     private float _actualYaw = 0.0f;
 
-    private const string ForwardKey = "FREECAM_FORWARD";
-    private const string BackKey = "FREECAM_BACK";
-    private const string LeftKey = "FREECAM_LEFT";
-    private const string RightKey = "FREECAM_RIGHT";
+    private const string FORWARD_KEY = "input/FREECAM_FORWARD";
+    private const string BACK_KEY = "input/FREECAM_BACK";
+    private const string LEFT_KEY = "input/FREECAM_LEFT";
+    private const string RIGHT_KEY = "input/FREECAM_RIGHT";
+    private const string UP_KEY = "input/FREECAM_UP";
+    private const string DOWN_KEY = "input/FREECAM_DOWN";
+    private const string LEFT_YAW_KEY = "input/FREECAM_LEFT_YAW";
+    private const string RIGHT_YAW_KEY = "input/FREECAM_RIGHT_YAW";
+    private const string DOWN_PITCH_KEY = "input/FREECAM_DOWN_PITCH";
+    private const string UP_PITCH_KEY = "input/FREECAM_UP_PITCH";
 
     public void Start(CameraController cam)
     {
-        InputManager.AssignDigitalInput(ForwardKey, new Digital("UpArrow"));
-        InputManager.AssignDigitalInput(BackKey, new Digital("DownArrow"));
-        InputManager.AssignDigitalInput(LeftKey, new Digital("LeftArrow"));
-        InputManager.AssignDigitalInput(RightKey, new Digital("RightArrow"));
+        InputManager.AssignDigitalInput(FORWARD_KEY, new Digital("UpArrow"));
+        InputManager.AssignDigitalInput(BACK_KEY, new Digital("DownArrow"));
+        InputManager.AssignDigitalInput(LEFT_KEY, new Digital("LeftArrow"));
+        InputManager.AssignDigitalInput(RIGHT_KEY, new Digital("RightArrow"));
+        InputManager.AssignDigitalInput(UP_KEY, new Digital("Space"));
+        InputManager.AssignDigitalInput(DOWN_KEY, new Digital("LeftShift"));
+        InputManager.AssignValueInput(LEFT_YAW_KEY, new Digital("Q"));
+        InputManager.AssignValueInput(RIGHT_YAW_KEY, new Digital("E"));
+        InputManager.AssignValueInput(DOWN_PITCH_KEY, new Digital("Z"));
+        InputManager.AssignValueInput(UP_PITCH_KEY, new Digital("X"));
     }
     
     public void Update(CameraController cam)
@@ -32,15 +45,25 @@ public class FreeCameraMode : ICameraMode
         float y = 0.0f;
         float z = 0.0f;
         
-        z = cam.ZoomSensitivity * -Input.mouseScrollDelta.y;
+        // in old synthesis freecam mode, scrolling down zooms in and scrolling up zooms out
+        z = cam.ZoomSensitivity * Input.mouseScrollDelta.y;
+        
+        float yawMod = InputManager.MappedValueInputs.ContainsKey(LEFT_YAW_KEY) && InputManager.MappedValueInputs.ContainsKey(RIGHT_YAW_KEY) ? 
+            cam.YawSensitivity / 8 * (InputManager.MappedValueInputs[RIGHT_YAW_KEY].Value - InputManager.MappedValueInputs[LEFT_YAW_KEY].Value) : 0;
+        float pitchMod = InputManager.MappedValueInputs.ContainsKey(UP_PITCH_KEY) && InputManager.MappedValueInputs.ContainsKey(DOWN_PITCH_KEY) ? 
+            cam.PitchSensitivity / 8 * (InputManager.MappedValueInputs[UP_PITCH_KEY].Value - InputManager.MappedValueInputs[DOWN_PITCH_KEY].Value) : 0;
+        
+        p -= pitchMod;
+        y += yawMod;
 
         if (Input.GetKey(KeyCode.Mouse0))
         {
             p = -cam.PitchSensitivity * Input.GetAxis("Mouse Y");
             y = cam.YawSensitivity * Input.GetAxis("Mouse X");
         }
-        
-        _targetPitch = Mathf.Clamp(_targetPitch + p, cam.PitchLowerLimit, cam.PitchUpperLimit);
+
+        // make it so the user can't rotate the camera upside down
+        _targetPitch = Mathf.Clamp(_targetPitch + p, -90, 90);
         _targetYaw += y;
         _targetZoom = Mathf.Clamp(_targetZoom + z, cam.ZoomLowerLimit, cam.ZoomUpperLimit);
         
@@ -59,9 +82,17 @@ public class FreeCameraMode : ICameraMode
         
         // transform forwards and backwards when forward and backward inputs are pressed
         // left and right when left and right are pressed
-        t.Translate(Time.deltaTime * speed * (
-            t.forward * (InputManager._mappedDigitalInputs[ForwardKey][0].Value - InputManager._mappedDigitalInputs[BackKey][0].Value) +
-            t.right * (InputManager._mappedDigitalInputs[RightKey][0].Value - InputManager._mappedDigitalInputs[LeftKey][0].Value)), Space.World);
+        Vector3 forward = t.forward * (InputManager.MappedDigitalInputs[FORWARD_KEY][0].Value -
+                                       InputManager.MappedDigitalInputs[BACK_KEY][0].Value) +
+                          t.forward * (_targetZoom - _actualZoom) * cam.ZoomSensitivity;
+        
+        Vector3 right = t.right * (InputManager.MappedDigitalInputs[RIGHT_KEY][0].Value -
+                                   InputManager.MappedDigitalInputs[LEFT_KEY][0].Value);
+        
+        Vector3 up = Vector3.up * (InputManager.MappedDigitalInputs[UP_KEY][0].Value -
+                             InputManager.MappedDigitalInputs[DOWN_KEY][0].Value);
+        
+        t.Translate(Time.deltaTime * speed * (forward + right + up),Space.World);
 
         t.localRotation = Quaternion.Euler(_actualPitch, _actualYaw, 0.0f);
     }

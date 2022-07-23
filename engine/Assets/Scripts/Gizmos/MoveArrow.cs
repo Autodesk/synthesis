@@ -93,14 +93,18 @@ namespace Synthesis.Configuration
             }
         }
 
-        private void Awake()
+        private void Start()
         {
             cam = Camera.main.GetComponent<CameraController>();
-            previousMode = cam.cameraMode;
+            previousMode = cam.CameraMode;
             orbit = new OrbitCameraMode();
-            cam.cameraMode = orbit;
+            cam.CameraMode = orbit;
             originalLowerPitch = cam.PitchLowerLimit;
-            originalCameraFocusPoint = orbit.FocusPoint;
+            originalCameraFocusPoint = OrbitCameraMode.FocusPoint;
+        }
+
+        private void Awake()
+        {
 
             //makes a list of the rigidbodies in the hierarchy and their state
             HierarchyRigidbodiesToDictionary();
@@ -123,12 +127,26 @@ namespace Synthesis.Configuration
 
             gizmoCameraTransform = new GameObject().transform;
             gizmoCameraTransform.position = transform.parent.position; //camera shifting
-            orbit.FocusPoint = () => gizmoCameraTransform.position;//camera focus
+            OrbitCameraMode.FocusPoint = () => gizmoCameraTransform.position;//camera focus
             cam.PitchLowerLimit = gizmoPitch; //camera pitch limits
         }
+
+        private void RestoreCameraMode()
+        {
+            cam.CameraMode = previousMode;
+            OrbitCameraMode.FocusPoint = originalCameraFocusPoint;
+
+            // test if cam.cameraMode is of type OrbitCameraMode
+            if (cam.CameraMode is OrbitCameraMode)
+            {
+                OrbitCameraMode orbit = (OrbitCameraMode)cam.CameraMode;
+                cam.PitchLowerLimit = originalLowerPitch;
+            }
+        }
+        
         private void disableGizmo() //makes sure values are set correctly when the gizmo is removed
         {
-            cam.cameraMode = previousMode;
+            RestoreCameraMode();
             SetRigidbodies(true);
         }
 
@@ -158,6 +176,7 @@ namespace Synthesis.Configuration
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 GizmoManager.ExitGizmo();
+                RestoreCameraMode();
             }
             if (Input.GetKeyDown(KeyCode.R))//Reset on press R
             {
@@ -367,7 +386,7 @@ namespace Synthesis.Configuration
 
             //move the camera
             gizmoCameraTransform.position = transform.parent.position;
-            orbit.FocusPoint = () => gizmoCameraTransform.position;
+            OrbitCameraMode.FocusPoint = () => gizmoCameraTransform.position;
 
         }
         public void HierarchyRigidbodiesToDictionary() //save the state of all gameobject's rigidbodies as a dictionary

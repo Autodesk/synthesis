@@ -60,11 +60,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable {
 
     public void Possess() {
         CurrentlyPossessedRobot = this.Name;
-        cam = Camera.main.GetComponent<CameraController>();
-        previousMode = cam.cameraMode;
-        orbit = new OrbitCameraMode();
-        cam.cameraMode = orbit;
-        orbit.FocusPoint =
+        OrbitCameraMode.FocusPoint =
             () => GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center);
     }
 
@@ -72,7 +68,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable {
         PhysicsManager.Unregister(this);
         if (CurrentlyPossessedRobot.Equals(this._name)) {
             CurrentlyPossessedRobot = string.Empty;
-            cam.cameraMode = previousMode;
+            cam.CameraMode = previousMode;
         }
         MonoBehaviour.Destroy(GroundedNode.transform.parent.gameObject);
     }

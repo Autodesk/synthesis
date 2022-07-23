@@ -3,7 +3,16 @@ using Synthesis.UI.Panels.Variant;
 
 public class CameraController : MonoBehaviour
 {
-    public ICameraMode cameraMode = new FreeCameraMode();
+    private ICameraMode _cameraMode = new OrbitCameraMode();
+    public ICameraMode CameraMode
+    {
+        get { return _cameraMode; }
+        set
+        {
+            _cameraMode = value;
+            _cameraMode.Start(this);
+        }
+    }
     
     
     public static bool isOverGizmo = false;
@@ -25,16 +34,16 @@ public class CameraController : MonoBehaviour
         SettingsPanel.LoadSettings();
         SettingsPanel.MaximizeScreen();
         
-        cameraMode.Start(this);
+        CameraMode.Start(this);
     }
     public void Update() {
   //      if (FollowTransform != null && transform.parent != FollowTransform)
   //          transform.parent = FollowTransform;
 
-        cameraMode.Update(this);
+        CameraMode.Update(this);
     }
 
     public void LateUpdate() {
-        cameraMode.LateUpdate(this);
+        CameraMode.LateUpdate(this);
     }
 }
