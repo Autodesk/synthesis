@@ -7,6 +7,7 @@ using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
+using SynthesisServer.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,7 +49,7 @@ namespace SynthesisServer.Test
             _tcpPort = 18001;
             _udpPort = 18000;
 
-            _serverIP = IPAddress.Parse("76.115.121.246"); // Specify during actual test 
+            _serverIP = IPAddress.Parse("76.144.67.63"); // Specify during actual test 
 
             _dhParameters = GenerateParameters();
             _keyPair = GenerateKeys(_dhParameters);
@@ -199,6 +200,8 @@ namespace SynthesisServer.Test
                 }
             }
         }
+
+        /*
         [Test]
         public static void TestAllHandshakes()
         {
@@ -260,7 +263,10 @@ namespace SynthesisServer.Test
                     Thread.Sleep(500);
                 }
             });
+
+            
             
         }
+        */
     }
 }
