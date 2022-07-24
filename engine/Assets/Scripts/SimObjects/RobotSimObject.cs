@@ -20,12 +20,23 @@ using Synthesis.PreferenceManager;
 using Synthesis.Runtime;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.InputManager;
+using SynthesisAPI.EventBus;
 
 public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     public const string INTAKE_GAMEPIECES = "input/intake";
 
-    public static string CurrentlyPossessedRobot { get; private set; } = string.Empty;
+    private static string _currentlyPossedRobot = string.Empty;
+    public static string CurrentlyPossessedRobot {
+        get => _currentlyPossedRobot;
+        private set {
+            if (value != _currentlyPossedRobot) {
+                var old = _currentlyPossedRobot;
+                _currentlyPossedRobot = value;
+                EventBus.Push(new NewRobotEvent { NewBot = value, OldBot = old });
+            }
+        }
+    }
     public static RobotSimObject GetCurrentlyPossessedRobot()
         => CurrentlyPossessedRobot == string.Empty ? null : SimulationManager._simObjects[CurrentlyPossessedRobot] as RobotSimObject;
 
@@ -466,5 +477,10 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         public float EjectionSpeed;
         public float[] RelativePosition;
         public float[] RelativeRotation;
+    }
+
+    public class NewRobotEvent : IEvent {
+        public string NewBot;
+        public string OldBot;
     }
 }

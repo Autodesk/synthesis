@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Mirabuf;
+using Synthesis.Gizmo;
 using Synthesis.Import;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
@@ -82,6 +83,11 @@ public class FieldSimObject : SimObject {
         var mira = Importer.MirabufAssemblyImport(filePath);
         mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
         mira.MainObject.tag = "field";
+
+        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
+            GizmoManager.SpawnGizmo(RobotSimObject.GetCurrentlyPossessedRobot());
+            // TODO: Move robot to default spawn location for field
+        }
     }
 
     public static void SpawnField(Assembly miraAssem) {
@@ -90,6 +96,11 @@ public class FieldSimObject : SimObject {
         var mira = Importer.MirabufAssemblyImport(miraAssem);
         mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
         mira.MainObject.tag = "field";
+
+        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
+            GizmoManager.SpawnGizmo(RobotSimObject.GetCurrentlyPossessedRobot());
+            // TODO: Move robot to default spawn location for field
+        }
     }
 
     public void CreateScoringZone(Alliance alliance, int points, bool destroyObject = true)

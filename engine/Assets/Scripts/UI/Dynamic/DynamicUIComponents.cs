@@ -88,7 +88,7 @@ namespace Synthesis.UI.Dynamic {
             hiddenRt.anchorMax = new Vector2(1, 1);
             hiddenRt.pivot = new Vector2(0.5f, 1);
             hiddenRt.anchoredPosition = new Vector2(0, -headerRt.sizeDelta.y);
-            var actualContentObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("content-base"), hiddenContentT);
+            var actualContentObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("content-base"), hiddenContentT);
             actualContentObj.name = "CentralContent";
             var contentRt = actualContentObj.GetComponent<RectTransform>();
             contentRt.offsetMax = new Vector2(-_rightContentPadding, contentRt.offsetMax.y);
@@ -178,7 +178,7 @@ namespace Synthesis.UI.Dynamic {
             hiddenRt.anchorMax = new Vector2(1, 1);
             hiddenRt.pivot = new Vector2(0.5f, 1);
             hiddenRt.anchoredPosition = new Vector2(0, -headerRt.sizeDelta.y);
-            var actualContentObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("content-base"), hiddenContentT);
+            var actualContentObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("content-base"), hiddenContentT);
             actualContentObj.name = "CentralContent";
             var contentRt = actualContentObj.GetComponent<RectTransform>();
             contentRt.offsetMax = new Vector2(-MAIN_CONTENT_HORZ_PADDING, contentRt.offsetMax.y);
@@ -369,7 +369,7 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public (Content left, Content right) SplitLeftRight(float leftWidth, float padding) {
-            var leftContentObject = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("content-base"), base.RootGameObject.transform);
+            var leftContentObject = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("content-base"), base.RootGameObject.transform);
             var leftRt = leftContentObject.GetComponent<RectTransform>();
             leftRt.anchorMax = new Vector2(0f, 0.5f);
             leftRt.anchorMin = new Vector2(0f, 0.5f);
@@ -377,7 +377,7 @@ namespace Synthesis.UI.Dynamic {
             // leftRt.sizeDelta = new Vector2(leftWidth, leftRt.sizeDelta.y);
             var leftContent = new Content(this, leftContentObject, new Vector2(leftWidth, Size.y));
 
-            var rightContentObject = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("content-base"), base.RootGameObject.transform);
+            var rightContentObject = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("content-base"), base.RootGameObject.transform);
             var rightRt = rightContentObject.GetComponent<RectTransform>();
             rightRt.anchorMax = new Vector2(1f, 0.5f);
             rightRt.anchorMin = new Vector2(1f, 0.5f);
@@ -396,61 +396,62 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public Label CreateLabel(float height = 15f) {
-            var labelObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("label-base"), base.RootGameObject.transform);
+            var labelObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("label-base"), base.RootGameObject.transform);
             var label = new Label(this, labelObj, new Vector2(Size.x, height));
             base.Children.Add(label);
             return label;
         }
         public Toggle CreateToggle(bool isOn = false, string label = "New Toggle") {
-            var toggleObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("toggle-base"), base.RootGameObject.transform);
+            var toggleObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("toggle-base"), base.RootGameObject.transform);
             var toggle = new Toggle(this, toggleObj, isOn, label);
             base.Children.Add(toggle);
             return toggle;
         }
         public Slider CreateSlider(string label = "New Slider", string unitSuffix = "", float minValue = 0, float maxValue = 1, float currentValue = 0) {
-            var sliderObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("slider-base"), base.RootGameObject.transform);
+            var sliderObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("slider-base"), base.RootGameObject.transform);
             var slider = new Slider(this, sliderObj, label, unitSuffix, minValue, maxValue, currentValue);
             base.Children.Add(slider);
             return slider;
         }
         public Button CreateButton(string text = "New Button") {
-            var buttonObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("button-base"), base.RootGameObject.transform);
+            var buttonObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("button-base"), base.RootGameObject.transform);
             var button = new Button(this, buttonObj, null);
+            button.StepIntoLabel(l => l.SetText(text));
             base.Children.Add(button);
             return button;
         }
         public LabeledButton CreateLabeledButton() {
-            var lButtonObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("labeled-button-base"), base.RootGameObject.transform);
+            var lButtonObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("labeled-button-base"), base.RootGameObject.transform);
             var lButton = new LabeledButton(this, lButtonObj);
             base.Children.Add(lButton);
             return lButton;
         }
         public Dropdown CreateDropdown() {
-            var dropdownObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("dropdown-base"), base.RootGameObject.transform);
+            var dropdownObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("dropdown-base"), base.RootGameObject.transform);
             var dropdown = new Dropdown(this, dropdownObj, null);
             base.Children.Add(dropdown);
             return dropdown;
         }
         public LabeledDropdown CreateLabeledDropdown() {
-            var lDropdownObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("labeled-dropdown-base"), base.RootGameObject.transform);
+            var lDropdownObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("labeled-dropdown-base"), base.RootGameObject.transform);
             var lDropdown = new LabeledDropdown(this, lDropdownObj);
             base.Children.Add(lDropdown);
             return lDropdown;
         }
         public InputField CreateInputField() {
-            var inputFieldObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("input-field-base"), base.RootGameObject.transform);
+            var inputFieldObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("input-field-base"), base.RootGameObject.transform);
             var inputField = new InputField(this, inputFieldObj);
             base.Children.Add(inputField);
             return inputField;
         }
         public ScrollView CreateScrollView() {
-            var scrollViewObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("scroll-view-base"), base.RootGameObject.transform);
+            var scrollViewObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("scroll-view-base"), base.RootGameObject.transform);
             var scrollView = new ScrollView(this, scrollViewObj);
             base.Children.Add(scrollView);
             return scrollView;
         }
         public Content CreateSubContent(Vector2 size) {
-            var contentObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("content-base"), base.RootGameObject.transform);
+            var contentObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("content-base"), base.RootGameObject.transform);
             var content = new Content(this, contentObj, size);
             base.Children.Add(content);
             return content;
@@ -794,8 +795,8 @@ namespace Synthesis.UI.Dynamic {
             => button.SetTopStretch<Button>(leftPadding: 15f, anchoredY: button.Parent!.HeightOfChildren - button.Size.y + 15f);
 
         public event Action<Button> OnClicked;
-        private Label _label;
-        public Label Label => _label;
+        private Label? _label;
+        public Label? Label => _label;
         private UButton _unityButton;
         private Image _image;
         public Image Image => _image;
@@ -806,7 +807,9 @@ namespace Synthesis.UI.Dynamic {
                 Size = size.Value;
             }
 
-            _label = new Label(this, unityObject.transform.Find("Text (TMP)").gameObject, null);
+            var labelTransform = unityObject.transform.Find("Text (TMP)");
+            if (labelTransform != null)
+                _label = new Label(this, labelTransform.gameObject, null);
             _unityButton = unityObject.GetComponent<UButton>();
             _unityButton.onClick.AddListener(() => {
                 if (_eventsActive && OnClicked != null) {
@@ -819,7 +822,8 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public Button StepIntoLabel(Action<Label> mod) {
-            mod(_label);
+            if (_label != null)
+                mod(_label);
             return this;
         }
         public Button StepIntoImage(Action<Image> mod) {

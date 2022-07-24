@@ -49,7 +49,7 @@ namespace Synthesis.UI.Dynamic {
             if (ActiveModal != null)
                 CloseActiveModal();
             
-            var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("dynamic-modal-base"), GameObject.Find("UI").transform.Find("ScreenSpace").Find("ModalContainer"));
+            var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("dynamic-modal-base"), GameObject.Find("UI").transform.Find("ScreenSpace").Find("ModalContainer"));
 
             // var c = ColorManager.GetColor("SAMPLE");
 
@@ -62,6 +62,7 @@ namespace Synthesis.UI.Dynamic {
 
             SynthesisAssetCollection.BlurVolumeStatic.weight = 1f;
             PhysicsManager.IsFrozen = true;
+            MainHUD.Enabled = false;
             return true;
         }
 
@@ -74,7 +75,7 @@ namespace Synthesis.UI.Dynamic {
             if (ActivePanel != null)
                 CloseActivePanel();
 
-            var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("dynamic-panel-base"), GameObject.Find("UI").transform.Find("ScreenSpace").Find("PanelContainer"));
+            var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("dynamic-panel-base"), GameObject.Find("UI").transform.Find("ScreenSpace").Find("PanelContainer"));
 
             // var c = ColorManager.GetColor("SAMPLE");
 
@@ -103,6 +104,7 @@ namespace Synthesis.UI.Dynamic {
 
             SynthesisAssetCollection.BlurVolumeStatic.weight = 0f;
             PhysicsManager.IsFrozen = false;
+            MainHUD.Enabled = true;
             return true;
         }
 

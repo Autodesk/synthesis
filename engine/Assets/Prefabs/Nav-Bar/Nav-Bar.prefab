@@ -59,14 +59,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: f16015d9d97b761479a2207512af6974, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a34729508f97a2849bcfbd6a1490029e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -166,7 +166,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -90, y: 0}
+  m_AnchoredPosition: {x: -70, y: 0}
   m_SizeDelta: {x: 634.8, y: -14}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &4637710301516532175
@@ -392,7 +392,7 @@ GameObject:
   - component: {fileID: 8406948017201134718}
   - component: {fileID: 8406948017201134719}
   m_Layer: 5
-  m_Name: Settings-Button
+  m_Name: Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -412,11 +412,11 @@ RectTransform:
   m_Father: {fileID: 4811190929119477552}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 1}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -72.5, y: -40}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
-  m_Pivot: {x: 1, y: 1}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8406948017201134713
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -611,7 +611,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8406948017377061973
 RectTransform:
   m_ObjectHideFlags: 0
@@ -850,7 +850,7 @@ MonoBehaviour:
   VersionNumber: {fileID: 8370716987390739144}
   artifaktRegular: {fileID: 11400000, guid: d773a0b9b3212ab4fb694b91237f4660, type: 2}
   artifaktBold: {fileID: 11400000, guid: 98cce4828f4b4e04997da22ea07c56cf, type: 2}
-  navBarPrefab: {fileID: 0}
+  navBarPrefab: {fileID: 4075454794571564288}
   ModalTab: {fileID: 5780566829304558134}
   TabPanelButtonPrefab: {fileID: 3278567026309367006, guid: 63b2a4448dd56984985ccd2575fb5616, type: 3}
   TabDividerPrefab: {fileID: 2458474395038087744, guid: c2bc4a0e147ef1e4c86fdba9a8719c5f, type: 3}
@@ -900,7 +900,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4811190929119477552}
   m_Layer: 5
-  m_Name: GameObject
+  m_Name: Settings-Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -921,11 +921,11 @@ RectTransform:
   m_Father: {fileID: 8406948017628226205}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -35, y: -4}
+  m_SizeDelta: {x: 20, y: 20}
+  m_Pivot: {x: 1, y: 1}
 --- !u!1001 &4825802701781417511
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1095,6 +1095,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Gamepieces
       objectReference: {fileID: 0}
+    - target: {fileID: 3914696059960629130, guid: a053f96b701f5a048b27506d329f970f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3914696059960629131, guid: a053f96b701f5a048b27506d329f970f, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1125,7 +1129,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3914696059960629131, guid: a053f96b701f5a048b27506d329f970f, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 137.42
       objectReference: {fileID: 0}
     - target: {fileID: 3914696059960629131, guid: a053f96b701f5a048b27506d329f970f, type: 3}
       propertyPath: m_SizeDelta.y
@@ -1225,6 +1229,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tools
       objectReference: {fileID: 0}
+    - target: {fileID: 3914696059960629130, guid: a053f96b701f5a048b27506d329f970f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3914696059960629131, guid: a053f96b701f5a048b27506d329f970f, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1255,7 +1263,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3914696059960629131, guid: a053f96b701f5a048b27506d329f970f, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 90.99
       objectReference: {fileID: 0}
     - target: {fileID: 3914696059960629131, guid: a053f96b701f5a048b27506d329f970f, type: 3}
       propertyPath: m_SizeDelta.y
@@ -1355,6 +1363,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Emulation
       objectReference: {fileID: 0}
+    - target: {fileID: 3914696059960629130, guid: a053f96b701f5a048b27506d329f970f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3914696059960629131, guid: a053f96b701f5a048b27506d329f970f, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1385,7 +1397,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3914696059960629131, guid: a053f96b701f5a048b27506d329f970f, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 127.77
       objectReference: {fileID: 0}
     - target: {fileID: 3914696059960629131, guid: a053f96b701f5a048b27506d329f970f, type: 3}
       propertyPath: m_SizeDelta.y
@@ -1485,6 +1497,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Sensors
       objectReference: {fileID: 0}
+    - target: {fileID: 3914696059960629130, guid: a053f96b701f5a048b27506d329f970f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3914696059960629131, guid: a053f96b701f5a048b27506d329f970f, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1515,7 +1531,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3914696059960629131, guid: a053f96b701f5a048b27506d329f970f, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 111.1
       objectReference: {fileID: 0}
     - target: {fileID: 3914696059960629131, guid: a053f96b701f5a048b27506d329f970f, type: 3}
       propertyPath: m_SizeDelta.y

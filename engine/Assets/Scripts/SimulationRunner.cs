@@ -26,6 +26,7 @@ namespace Synthesis.Runtime {
         void Start() {
             SetContext(RUNNING_SIM_CONTEXT);
             Synthesis.PreferenceManager.PreferenceManager.Load();
+            MainHUD.Setup();
             ModeManager.Start();
             RobotSimObject.Setup();
 
