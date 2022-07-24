@@ -4,6 +4,7 @@ using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
+using SynthesisServer.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -14,50 +15,37 @@ namespace SynthesisServer
 {
     public class ClientData
     {
-        // The public and private key for the server that corresponds with a client
-        // Maybe try implementing ECDH in the future
-
-        //public IPEndPoint ClientEndpoint { get; set; }
         public string Name { get; set; }
-        public byte[] SymmetricKey { get; private set; }
         public long LastHeartbeat { get; private set; }
         public bool IsReady { get; set; }
         public string CurrentLobby { get; set; }
         public Socket ClientSocket { get; private set; }
+        public string ID { get; private set; }
+        public byte[] SocketBuffer { get; private set; }
         public IPEndPoint UDPEndPoint { get; set; }
 
+        public byte[] SymmetricKey { get; private set; }
         private AsymmetricCipherKeyPair _keyPair;
+        private DHParameters parameters;
 
-        public ClientData(Socket socket)
+        public ReaderWriterLockSlim ClientLock { get; private set; }
+
+        public ClientData(Socket socket, int bufferSize)
         {
+            ClientLock = new ReaderWriterLockSlim();
             ClientSocket = socket;
             CurrentLobby = null;
             IsReady = false;
+            ID = Guid.NewGuid().ToString();
+            SocketBuffer = new byte[bufferSize];
             LastHeartbeat = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
         }
 
-        public void GenerateSharedSecret(string importedPublicKey, DHParameters parameters)
+        public void GenerateSharedSecret(string importedPublicKey, DHParameters dhParameters, SymmetricEncryptor encryptor)
         {
-            _keyPair = GenerateKeys(parameters);
-
-            DHPublicKeyParameters importedPublicKeyParameters = new DHPublicKeyParameters(new BigInteger(importedPublicKey), parameters);
-            IBasicAgreement internalKeyAgreement = AgreementUtilities.GetBasicAgreement("DH");
-            internalKeyAgreement.Init(_keyPair.Private);
-            BigInteger sharedKey = internalKeyAgreement.CalculateAgreement(importedPublicKeyParameters);
-            byte[] sharedKeyBytes = sharedKey.ToByteArray();
-
-            IDigest digest = new Sha256Digest();
-            SymmetricKey = new byte[digest.GetDigestSize()];
-            digest.BlockUpdate(sharedKeyBytes, 0, sharedKeyBytes.Length);
-            digest.DoFinal(SymmetricKey, 0);
-        }
-
-        private AsymmetricCipherKeyPair GenerateKeys(DHParameters parameters)
-        {
-            var keyGen = GeneratorUtilities.GetKeyPairGenerator("DH");
-            var kgp = new DHKeyGenerationParameters(new SecureRandom(), parameters);
-            keyGen.Init(kgp);
-            return keyGen.GenerateKeyPair();
+            parameters = dhParameters;
+            _keyPair = encryptor.GenerateKeys(parameters);
+            SymmetricKey = encryptor.GenerateSharedSecret(importedPublicKey, parameters, _keyPair);
         }
 
         public String GetPublicKey() { return ((DHPublicKeyParameters)_keyPair.Public).Y.ToString(); }

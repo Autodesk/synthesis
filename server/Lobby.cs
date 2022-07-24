@@ -14,11 +14,13 @@ namespace SynthesisServer
         public List<ClientData> Clients { get { return _clients; } }
         public int LobbySize { get; set; }
         public bool IsStarted { get; private set; }
+        public ReaderWriterLockSlim LobbyLock { get; private set; } 
 
         private readonly List<ClientData> _clients;
 
         public Lobby(ClientData host, int lobbySize)
         {
+            LobbyLock = new ReaderWriterLockSlim();
             IsStarted = false;
             _clients = new List<ClientData>();
 
