@@ -31,9 +31,10 @@ message KeyExchange {
 	string client_id = 4; /// Determined by server and sent back. Whatever the client sends is ignored
 }
 
-message GetServerInfoRequest {}
+// make sure to do before an action because something else could have happened like your lobby could have been deleted
+message ServerInfoRequest {}
 
-message LobbyInfo {
+message ServerInfoResponse {
 	repeated Lobby lobbies = 1;
 	string current_lobby = 2;
 	string current_name = 3;
