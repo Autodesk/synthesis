@@ -808,8 +808,11 @@ namespace Synthesis.UI.Dynamic {
             }
 
             var labelTransform = unityObject.transform.Find("Text (TMP)");
-            if (labelTransform != null)
+            if (labelTransform != null) {
                 _label = new Label(this, labelTransform.gameObject, null);
+                _label.SetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT);
+            }
+
             _unityButton = unityObject.GetComponent<UButton>();
             _unityButton.onClick.AddListener(() => {
                 if (_eventsActive && OnClicked != null) {

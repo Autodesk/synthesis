@@ -40,7 +40,7 @@ public class PracticeMode : IMode
 
     public void Start()
     {
-        DynamicUIManager.CreateModal<SelectFieldModal>();
+        DynamicUIManager.CreateModal<AddFieldModal>();
         InputManager.AssignValueInput(TOGGLE_ESCAPE_MENU_INPUT, TryGetSavedInput(TOGGLE_ESCAPE_MENU_INPUT, new Digital("Escape", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
     }
     

@@ -55,7 +55,6 @@
      <Compile Include="Assets\Scripts\SimObjects\RobotSimObject.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Configuring\SettingsModal.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Panels\SpawnLocationPanel.cs" />
-     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\SelectFieldModal.cs" />
      <Compile Include="Assets\Scripts\UI\SynthesisAssetCollection.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Configuring\PracticeSettingsModal.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Settings\SettingsInput.cs" />
@@ -107,6 +106,7 @@
      <Compile Include="Assets\Scripts\Drivers\RotationalDriver.cs" />
      <Compile Include="Assets\Scripts\UI\Tabs\ConfigTab.cs" />
      <Compile Include="Assets\Scripts\Gizmos\GizmoStore.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Spawning\SpawningModal.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Spawning\AddFieldModal.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Panels\Configuring\ConfigureShotTrajectoryPanel.cs" />
      <Compile Include="Assets\Scripts\UI\Hierarchy\Hierarchy.cs" />
@@ -121,10 +121,12 @@
      <Compile Include="Assets\Scripts\Utilities\ObjectLedger.cs" />
      <Compile Include="Assets\Scripts\Test\ConfigurableJointTest.cs" />
      <Compile Include="Assets\Scripts\Utilities\UtilExtensions.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\MainHUD.cs" />
      <Compile Include="Assets\Scripts\Camera\MenuCamera.cs" />
      <Compile Include="Assets\Scripts\GridEntry.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Spawning\MatchModeModal.cs" />
      <Compile Include="Assets\Scripts\Behaviors\TankDriveBehavior.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Configuring\ConfiguringModal.cs" />
      <Compile Include="Assets\Scripts\Attributes\ControllableInputAttribute.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Joints\RotationalJointItem.cs" />
      <Compile Include="Assets\Scripts\ServerMonobehaviour.cs" />
@@ -171,9 +173,6 @@
      <Compile Include="Assets\Scripts\Importer\Importer.cs" />
      <Compile Include="Assets\Scripts\Test\DebugJointAxes.cs" />
      <Compile Include="Assets\Scripts\UnityModalSpawner.cs" />
-     <Compile Include="Assets\Scripts\UI\Dynamic\MainHUD.cs" />
-     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Spawning\SpawningModal.cs" />
-     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Configuring\ConfiguringModal.cs" />
      <None Include="Assets\Scripts\CoreEngine.asmdef" />
      <None Include="Assets\Scripts\Tween\Readme.txt" />
     <Reference Include="UnityEngine">

@@ -6,9 +6,11 @@ using Synthesis.UI.Dynamic;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
+using Synthesis.Util;
 using UnityEngine;
 
 using Logger = SynthesisAPI.Utilities.Logger;
+using Synthesis.UI;
 
 namespace Synthesis.Runtime {
     public class SimulationRunner : MonoBehaviour {
@@ -32,7 +34,16 @@ namespace Synthesis.Runtime {
 
             OnUpdate += DynamicUIManager.Update;
 
+            // TestColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
             // RotationalDriver.TestSphericalCoordinate();
+        }
+
+        private void TestColor(Color c) {
+            Debug.Log($"{c.r * 255}, {c.g * 255}, {c.b * 255}, {c.a * 255}");
+            var hex = c.ToHex();
+            Debug.Log(hex);
+            var color = hex.ColorToHex();
+            Debug.Log($"{color.r * 255}, {color.g * 255}, {color.b * 255}, {color.a * 255}");
         }
 
         void Update() {

@@ -14,7 +14,7 @@ namespace Synthesis.UI.Tabs {
             CreateButton(
                 "Load Field",
                 SynthesisAssetCollection.GetSpriteByName("fieldimport"),
-                () => DynamicUIManager.CreateModal<SelectFieldModal>()
+                () => DynamicUIManager.CreateModal<AddFieldModal>()
             );
             CreateDivider();
             CreateButton(

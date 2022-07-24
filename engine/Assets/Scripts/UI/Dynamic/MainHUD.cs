@@ -80,12 +80,15 @@ public static class MainHUD {
         _tabDrawerContent = new Content(null, GameObject.Find("MainHUD").transform.Find("TabDrawer").gameObject, null);
         _tabDrawerContent.Image!.SetColor(ColorManager.SYNTHESIS_BLACK);
         _expandDrawerButton = new Button(_tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("ExpandButton").gameObject, null);
+        _expandDrawerButton.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_BLACK));
         _expandDrawerButton.AddOnClickedEvent(b => MainHUD.Collapsed = !MainHUD.Collapsed);
+        var expandIcon = new Image(null, _expandDrawerButton.RootGameObject.transform.Find("Icon").gameObject);
+        expandIcon.SetColor(ColorManager.SYNTHESIS_ICON);
 
         // Setup default HUD
-        MainHUD.AddItemToDrawer("Spawn", null, b => DynamicUIManager.CreateModal<SpawningModal>());
+        MainHUD.AddItemToDrawer("Spawn", b => DynamicUIManager.CreateModal<SpawningModal>(), icon: SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-            MainHUD.AddItemToDrawer("Configure", null, b => DynamicUIManager.CreateModal<ConfiguringModal>());
+            MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>());
 
         if (!_hasNewRobotListener) {
             EventBus.NewTypeListener<RobotSimObject.NewRobotEvent>(e => {
@@ -100,14 +103,14 @@ public static class MainHUD {
                 if (robotEvent.NewBot == string.Empty) {
                     RemoveItemFromDrawer("Configure");
                 } else if (robotEvent.OldBot == string.Empty) {
-                    MainHUD.AddItemToDrawer("Configure", null, b => DynamicUIManager.CreateModal<ConfiguringModal>());
+                    MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>());
                 }
             });
             _hasNewRobotListener = true;
         }
     }
 
-    public static void AddItemToDrawer(string title, Sprite? icon, Action<Button> onClick, int index = -1) {
+    public static void AddItemToDrawer(string title, Action<Button> onClick, int index = -1, Sprite? icon = null, Color? color = null) {
         var drawerButtonObj = GameObject.Instantiate(
             SynthesisAssetCollection.GetUIPrefab("hud-drawer-item-base"),
             _tabDrawerContent.RootGameObject.transform.Find("ItemContainer")
@@ -119,8 +122,17 @@ public static class MainHUD {
         var drawerIcon = new Image(_tabDrawerContent, drawerButtonObj.transform.Find("ItemIcon").gameObject);
         if (icon != null) {
             drawerIcon.SetSprite(icon);
+            if (color.HasValue) {
+                drawerIcon.SetColor(color.Value);
+            } else {
+                drawerIcon.SetColor(ColorManager.SYNTHESIS_WHITE);
+            }
         } else {
-            drawerIcon.SetColor(ColorManager.SYNTHESIS_ORANGE);
+            if (color.HasValue) {
+                drawerIcon.SetColor(color.Value);
+            } else {
+                drawerIcon.SetColor(ColorManager.SYNTHESIS_ORANGE);
+            }
         }
         if (index < 0 || index > _drawerItems.Count) {
             _drawerItems.Add((drawerButton, drawerIcon));
