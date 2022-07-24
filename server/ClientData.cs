@@ -15,20 +15,23 @@ namespace SynthesisServer
 {
     public class ClientData
     {
+        // Unlocked Resources
+        public byte[] SocketBuffer { get; private set; }
+        public Socket ClientSocket { get; private set; }
+
+
+        // Locked Resources
+        public ReaderWriterLockSlim ClientLock { get; private set; }
         public string Name { get; set; }
         public long LastHeartbeat { get; private set; }
         public bool IsReady { get; set; }
         public string CurrentLobby { get; set; }
-        public Socket ClientSocket { get; private set; }
         public string ID { get; private set; }
-        public byte[] SocketBuffer { get; private set; }
         public IPEndPoint UDPEndPoint { get; set; }
 
         public byte[] SymmetricKey { get; private set; }
         private AsymmetricCipherKeyPair _keyPair;
         private DHParameters parameters;
-
-        public ReaderWriterLockSlim ClientLock { get; private set; }
 
         public ClientData(Socket socket, int bufferSize)
         {
