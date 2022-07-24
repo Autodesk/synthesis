@@ -45,27 +45,3 @@ def getOS():
     """
     return platform.system()
 
-
-""" Old code I believe 
-def openFileLocation(fileLoc: str) -> bool:
-    osName = getOS()
-    if osName == "Windows" or osName == "win32":
-        # explorer is kinda sorta a symbolic link that can be broken if not careful so use this apparently
-        # thank you stack overflow
-        path = os.path.normpath(fileLoc)
-        FILEBROWSER_PATH = os.path.join(os.getenv("WINDIR"), "explorer.exe")
-        # this could use pOpen and call a background task if the wait causes a problem=
-        subprocess.run([FILEBROWSER_PATH, "/select,", path])
-        return True
-    elif osName == "Darwin":
-        # from .Camera import captureThumbnail
-        # icon_name = captureThumbnail()
-        # path = os.path.normpath(fileLoc)
-        # subprocess.call(f"sips -i {icon_name}")
-        subprocess.call(f"open -R {fileLoc}", shell=True)
-        return True
-    elif osName == "Linux":
-        return False
-    else:
-        return False
-"""
