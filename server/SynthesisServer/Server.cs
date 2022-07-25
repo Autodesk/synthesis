@@ -122,43 +122,97 @@ namespace SynthesisServer {
             try {
                 ClientState state = (ClientState)asyncResult.AsyncState;
                 int received = state.socket.EndReceive(asyncResult);
+
                 byte[] data = new byte[received];
                 Array.Copy(state.buffer, data, received);
                 if (BitConverter.IsLittleEndian) { Array.Reverse(data); }
 
-                MessageHeader header = MessageHeader.Parser.ParseFrom(IO.GetNextMessage(ref data));
+                MessageHeader header;
                 Any message;
-                if (header.IsEncrypted) {
-                    byte[] decryptedData = _encryptor.Decrypt(data, _clients[header.ClientId].SymmetricKey);
-                    message = Any.Parser.ParseFrom(IO.GetNextMessage(ref decryptedData));
-                } else if (!header.IsEncrypted) {
-                    message = Any.Parser.ParseFrom(IO.GetNextMessage(ref data));
-                } else {
-                    message = Any.Pack(new StatusMessage() {
+
+                try
+                {
+                    header = MessageHeader.Parser.ParseFrom(IO.GetNextMessage(ref data));
+                    if (header.IsEncrypted)
+                    {
+                        byte[] decryptedData = _encryptor.Decrypt(data, _clients[header.ClientId].SymmetricKey);
+                        message = Any.Parser.ParseFrom(IO.GetNextMessage(ref decryptedData));
+                    }
+                    else if (!header.IsEncrypted)
+                    {
+                        message = Any.Parser.ParseFrom(IO.GetNextMessage(ref data));
+                    }
+                    else
+                    {
+                        message = Any.Pack(new StatusMessage()
+                        {
+                            LogLevel = StatusMessage.Types.LogLevel.Error,
+                            Msg = "Invalid Message Received"
+                        });
+                    }
+                }
+                catch (Exception e)
+                {
+                    _logger.LogWarning("Invalid Mesage Received");
+                    _clientsLock.EnterReadLock();
+                    header = new MessageHeader()
+                    {
+                        ClientId = state.id,
+                        IsEncrypted = (_clients.ContainsKey(state.id) && _clients[state.id].SymmetricKey != null)
+                    };
+                    _clientsLock.ExitReadLock();
+                    message = Any.Pack(new StatusMessage()
+                    {
                         LogLevel = StatusMessage.Types.LogLevel.Error,
-                        Msg = "Invalid Message body"
+                        Msg = "Invalid Message Received"
                     });
                 }
 
-                if (message.Is(KeyExchange.Descriptor)) {
+                if (message.Is(KeyExchange.Descriptor))
+                {
                     HandleKeyExchange(message.Unpack<KeyExchange>(), state.id, state.socket);
-                } else if (message.Is(Heartbeat.Descriptor)) {
+                }
+                else if (message.Is(Heartbeat.Descriptor))
+                {
                     HandleHeartbeat(message.Unpack<Heartbeat>(), header.ClientId);
-                } else if (message.Is(CreateLobbyRequest.Descriptor)) {
+                }
+                else if (message.Is(CreateLobbyRequest.Descriptor))
+                {
                     HandleCreateLobbyRequest(message.Unpack<CreateLobbyRequest>(), header.ClientId);
-                } else if (message.Is(DeleteLobbyRequest.Descriptor)) {
+                }
+                else if (message.Is(DeleteLobbyRequest.Descriptor))
+                {
                     HandleDeleteLobbyRequest(message.Unpack<DeleteLobbyRequest>(), header.ClientId);
-                } else if (message.Is(JoinLobbyRequest.Descriptor)) {
+                }
+                else if (message.Is(JoinLobbyRequest.Descriptor))
+                {
                     HandleJoinLobbyRequest(message.Unpack<JoinLobbyRequest>(), header.ClientId);
-                } else if (message.Is(LeaveLobbyRequest.Descriptor)) {
+                }
+                else if (message.Is(LeaveLobbyRequest.Descriptor))
+                {
                     HandleLeaveLobbyRequest(message.Unpack<LeaveLobbyRequest>(), header.ClientId);
-                } else if (message.Is(StartLobbyRequest.Descriptor)) {
+                }
+                else if (message.Is(StartLobbyRequest.Descriptor))
+                {
                     HandleStartLobbyRequest(message.Unpack<StartLobbyRequest>(), header.ClientId);
-                } else if (message.Is(SwapRequest.Descriptor)) {
+                }
+                else if (message.Is(SwapRequest.Descriptor))
+                {
                     HandleSwapRequest(message.Unpack<SwapRequest>(), header.ClientId);
-                } else if (message.Is(ServerInfoRequest.Descriptor)) {
+                }
+                else if (message.Is(ServerInfoRequest.Descriptor))
+                {
                     HandleServerInfoRequest(message.Unpack<ServerInfoRequest>(), header.ClientId);
                 }
+                else if (message.Is(ChangeNameRequest.Descriptor))
+                {
+                    HandleChangeNameRequest(message.Unpack<ChangeNameRequest>(), header.ClientId);
+                }
+                else if (message.Is(DisconnectRequest.Descriptor))
+                {
+                    HandleDisconnectRequest(message.Unpack<DisconnectRequest>(), header.ClientId);
+                }
+
 
                 if (_isRunning) {
                     state.socket.BeginReceive(state.buffer, 0, BUFFER_SIZE, SocketFlags.None, new AsyncCallback(TCPReceiveCallback), state);
@@ -593,6 +647,65 @@ namespace SynthesisServer {
 
             _lobbiesLock.ExitReadLock();
             _clientsLock.ExitReadLock();
+        }
+
+        private void HandleChangeNameRequest(ChangeNameRequest changeNameRequest, string clientID)
+        {
+            _logger.LogInformation(clientID + " has requested server info");
+
+            _clientsLock.EnterUpgradeableReadLock();
+            if (_clients.ContainsKey(clientID))
+            {
+                _clientsLock.EnterWriteLock();
+                _clients[clientID].Name = changeNameRequest.Name;
+                if (_clients[clientID].Name == null) { _clients[clientID].Name = string.Empty; }
+                _clientsLock.ExitWriteLock();
+                IO.SendEncryptedMessage(
+                    new ChangeNameResponse() 
+                    {
+                        Name = _clients[clientID].Name,
+                        GenericResponse = new GenericResponse()
+                        {
+                            Success = true,
+                            LogMessage = "Successfully renamed client"
+                        }
+                    },
+                    clientID,
+                    _clients[clientID].SymmetricKey,
+                    _clients[clientID].ClientSocket,
+                    _encryptor,
+                    new AsyncCallback(TCPSendCallback)
+                );
+
+            }
+            else
+            {
+                _logger.LogError($"No client with ID '{clientID}'");
+            }
+            _clientsLock.ExitUpgradeableReadLock();
+        }
+
+        private void HandleDisconnectRequest(DisconnectRequest disconnectRequest, string clientID)
+        {
+            _logger.LogInformation(clientID + " has requested to disconnect");
+
+            _clientsLock.EnterUpgradeableReadLock();
+            if (_clients.ContainsKey(clientID))
+            {
+                _clientsLock.EnterWriteLock();
+                if (!_clients[clientID].CurrentLobby.Equals(string.Empty))
+                {
+                    _lobbiesLock.EnterWriteLock();
+                    _lobbies[_clients[clientID].CurrentLobby].TryRemoveClient(_clients[clientID]);
+                    _lobbiesLock.ExitWriteLock();
+                    _clients[clientID].CurrentLobby = string.Empty;
+                }
+
+                _clients[clientID].ClientSocket.Close();
+                _clients.Remove(clientID);
+                _clientsLock.ExitWriteLock();
+            }
+            _clientsLock.ExitUpgradeableReadLock();
         }
 
 

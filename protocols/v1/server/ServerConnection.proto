@@ -128,6 +128,21 @@ message SwapResponse {
 	GenericResponse generic_response = 4;
 }
 
+message ChangeNameRequest {
+	string name = 1;
+}
+
+message ChangeNameResponse {
+	string name = 1;
+	GenericResponse generic_response = 2;
+}
+
+message DisconnectRequest {}
+
+message DisconnectResponse {
+	GenericResponse generic_response = 1;
+}
+
 
 /*
 1. When lobby is started the server will send a MatchStart message over TCP with the open UDP port number
