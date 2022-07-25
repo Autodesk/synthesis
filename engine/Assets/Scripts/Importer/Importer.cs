@@ -216,6 +216,13 @@ namespace Synthesis.Import
 
 			SimObject simObject;
 			if (assembly.Dynamic) {
+				List<string> foundRobots = new List<string>();
+				foreach (var kvp in SimulationManager.SimulationObjects) {
+					if (kvp.Value is RobotSimObject)
+						foundRobots.Add(kvp.Key);
+				}
+				foundRobots.ForEach(x => SimulationManager.RemoveSimObject(x));
+
 				simObject = new RobotSimObject(assembly.Info.Name, state, assembly, groupObjects["grounded"], jointToJointMap);
 				try {
 					SimulationManager.RegisterSimObject(simObject);

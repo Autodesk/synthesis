@@ -167,7 +167,10 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         MonoBehaviour.Destroy(GroundedNode.transform.parent.gameObject);
     }
 
-    public void ClearGamepieces() {
+    public void ClearGamepieces()
+    {
+        if (_gamepiecesInPossession.Count == 0)
+            return;
         _trajectoryPointer.transform.GetChild(0).transform.parent = FieldSimObject.CurrentField.FieldObject.transform;
         _gamepiecesInPossession.Clear();
         // TODO: Should robot handle this or is it expected that whatever calls this will have specific intention to do something else
@@ -186,6 +189,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         gp.GamepieceObject.SetActive(false);
 
         _gamepiecesInPossession.Enqueue(gp);
+
+        gp.IsCurrentlyPossessed = true;
         if (_gamepiecesInPossession.Count == 1)
             UpdateShownGamepiece();
     }
@@ -201,6 +206,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         rb.isKinematic = false;
         gp.GamepieceObject.transform.parent = FieldSimObject.CurrentField.FieldObject.transform;
         rb.AddForce(_trajectoryPointer.transform.rotation * Vector3.forward * _trajectoryData.Value.EjectionSpeed, ForceMode.VelocityChange);
+        gp.IsCurrentlyPossessed = false;
 
         UpdateShownGamepiece();
     }
@@ -398,6 +404,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         _allRigidbodies.ForEach(x => {
             _preFreezeStates[x] = (x.isKinematic, x.velocity, x.angularVelocity);
             x.isKinematic = true;
+            x.detectCollisions = false;
             x.velocity = Vector3.zero;
             x.angularVelocity = Vector3.zero;
         });
@@ -411,6 +418,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         _allRigidbodies.ForEach(x => {
             var originalState = _preFreezeStates[x];
             x.isKinematic = originalState.isKine;
+            x.detectCollisions = true;
             // I think replay might take care of this
             // if (x.velocity != Vector3.zero || x.angularVelocity != Vector3.zero);
         });
