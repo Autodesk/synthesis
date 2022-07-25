@@ -8,5 +8,6 @@ namespace SynthesisServer.Client {
         void HandleLeaveLobbyResponse(LeaveLobbyResponse leaveLobbyResponse);
         void HandleStartLobbyResponse(StartLobbyResponse startLobbyResponse);
         void HandleSwapResponse(SwapResponse swapResponse);
+        void HandleChangeNameResponse(ChangeNameResponse changeNameResponse);
     }
 }

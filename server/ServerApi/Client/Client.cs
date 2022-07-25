@@ -120,12 +120,16 @@ namespace SynthesisServer.Client {
                 return false;
             }
         }
-        public void Stop()
+        public void Stop(long timeout = 5000)
         {
             _isRunning = false;
+            TrySendDisconnectRequest();
             try
             {
-                _tcpSocket.Disconnect(true);
+                // Gives the server a chance to disconnect the client on its end
+                long start = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                while (_tcpSocket.Connected && System.DateTimeOffset.Now.ToUnixTimeMilliseconds() - start <= timeout) { Thread.Sleep(100); }
+                if (_tcpSocket.Connected) { _tcpSocket.Disconnect(true); }
                 if (_udpSocket != null)
                     _udpSocket.Close();
             }
@@ -221,6 +225,7 @@ namespace SynthesisServer.Client {
                 else if (message.Is(LeaveLobbyResponse.Descriptor)) { handleFunc = () => _handler.HandleLeaveLobbyResponse(message.Unpack<LeaveLobbyResponse>()); }
                 else if (message.Is(StartLobbyResponse.Descriptor)) { handleFunc = () => _handler.HandleStartLobbyResponse(message.Unpack<StartLobbyResponse>()); }
                 else if (message.Is(SwapResponse.Descriptor)) { handleFunc = () => _handler.HandleSwapResponse(message.Unpack<SwapResponse>()); }
+                else if (message.Is(ChangeNameResponse.Descriptor)) { handleFunc = () => _handler.HandleChangeNameResponse(message.Unpack<ChangeNameResponse>()); }
 
                 try {
                     handleFunc();
@@ -358,6 +363,18 @@ namespace SynthesisServer.Client {
             if (_hasInit && _isRunning && _tcpSocket.Connected)
             {
                 Heartbeat request = new Heartbeat();
+                IO.SendEncryptedMessage(request, _id, SymmetricKey, _tcpSocket, _encryptor, new AsyncCallback(TCPSendCallback));
+                return true;
+            }
+            return false;
+        }
+
+        private bool TrySendDisconnectRequest()
+        {
+            LockUntilKeyAvailable();
+            if (_hasInit && _isRunning && _tcpSocket.Connected)
+            {
+                DisconnectRequest request = new DisconnectRequest();
                 IO.SendEncryptedMessage(request, _id, SymmetricKey, _tcpSocket, _encryptor, new AsyncCallback(TCPSendCallback));
                 return true;
             }
