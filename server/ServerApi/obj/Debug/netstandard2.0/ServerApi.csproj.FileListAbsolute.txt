@@ -1,0 +1,10 @@
+C:\Users\hunte\work\synthesis\server\ServerApi\obj\Debug\netstandard2.0\ServerApi.csproj.AssemblyReference.cache
+C:\Users\hunte\work\synthesis\server\ServerApi\obj\Debug\netstandard2.0\ServerApi.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\hunte\work\synthesis\server\ServerApi\obj\Debug\netstandard2.0\ServerApi.AssemblyInfoInputs.cache
+C:\Users\hunte\work\synthesis\server\ServerApi\obj\Debug\netstandard2.0\ServerApi.AssemblyInfo.cs
+C:\Users\hunte\work\synthesis\server\ServerApi\obj\Debug\netstandard2.0\ServerApi.csproj.CoreCompileInputs.cache
+C:\Users\hunte\work\synthesis\server\ServerApi\bin\Debug\netstandard2.0\ServerApi.deps.json
+C:\Users\hunte\work\synthesis\server\ServerApi\bin\Debug\netstandard2.0\ServerApi.dll
+C:\Users\hunte\work\synthesis\server\ServerApi\bin\Debug\netstandard2.0\ServerApi.pdb
+C:\Users\hunte\work\synthesis\server\ServerApi\obj\Debug\netstandard2.0\ServerApi.dll
+C:\Users\hunte\work\synthesis\server\ServerApi\obj\Debug\netstandard2.0\ServerApi.pdb

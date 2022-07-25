@@ -11,42 +11,34 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace SynthesisServer
-{
-    public class ClientData
-    {
-        // Unlocked Resources
-        public byte[] SocketBuffer { get; private set; }
-        public Socket ClientSocket { get; private set; }
+namespace SynthesisServer {
+    public class ClientData {
+        // The public and private key for the server that corresponds with a client
+        // Maybe try implementing ECDH in the future
 
-
-        // Locked Resources
-        public ReaderWriterLockSlim ClientLock { get; private set; }
-        public string Name { get; set; }
+        //public IPEndPoint ClientEndpoint { get; set; }
+        public string Name { get; set; } = "Epic Gamer";
+        public byte[] SymmetricKey { get; private set; }
         public long LastHeartbeat { get; private set; }
         public bool IsReady { get; set; }
-        public string CurrentLobby { get; set; }
-        public string ID { get; private set; }
+        public string CurrentLobby { get; set; } = string.Empty;
+        public Socket ClientSocket { get; private set; }
         public IPEndPoint UDPEndPoint { get; set; }
+        public string ID { get; private set; }
 
-        public byte[] SymmetricKey { get; private set; }
         private AsymmetricCipherKeyPair _keyPair;
-        private DHParameters parameters;
 
-        public ClientData(Socket socket, int bufferSize)
-        {
-            ClientLock = new ReaderWriterLockSlim();
+        private DHParameters _parameters;
+
+        public ClientData(Socket socket, string id) {
+            ID = id;
             ClientSocket = socket;
-            CurrentLobby = null;
             IsReady = false;
-            ID = Guid.NewGuid().ToString();
-            SocketBuffer = new byte[bufferSize];
             LastHeartbeat = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
         }
 
-        public void GenerateSharedSecret(string importedPublicKey, DHParameters dhParameters, SymmetricEncryptor encryptor)
-        {
-            parameters = dhParameters;
+        public void GenerateSharedSecret(string importedPublicKey, DHParameters parameters, SymmetricEncryptor encryptor) {
+            _parameters = parameters;
             _keyPair = encryptor.GenerateKeys(parameters);
             SymmetricKey = encryptor.GenerateSharedSecret(importedPublicKey, parameters, _keyPair);
         }

@@ -265,6 +265,13 @@ namespace Synthesis.UI.Dynamic {
             return r;
         }
 
+        public void DeleteAllChildren() {
+            Children.ForEach(x => {
+                GameObject.Destroy(x.RootGameObject);
+            });
+            Children.Clear();
+        }
+
         protected bool _eventsActive = true;
         public bool EventsActive => _eventsActive;
 

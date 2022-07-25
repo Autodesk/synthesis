@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>SynthesisServer</RootNamespace>
+    <StartupObject>SynthesisServer.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,7 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Gen\" />
+    <ProjectReference Include="..\ServerApi\ServerApi.csproj" />
+    <ProjectReference Include="..\..\api\Api\Api.csproj" />
   </ItemGroup>
 
 </Project>
