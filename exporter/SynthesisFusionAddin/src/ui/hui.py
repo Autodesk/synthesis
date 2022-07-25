@@ -1,5 +1,5 @@
-from . import OsHelper
-from . import Handlers
+from . import os_helper
+from . import handlers
 
 from ..general_imports import *
 
@@ -56,7 +56,7 @@ class HPalette:
         self.palette = gm.ui.palettes.itemById(self.uid)
 
         if self.palette is None:
-            path = OsHelper.getOSPathPalette(
+            path = os_helper.getOSPathPalette(
                 "src", "Resources", "Palette", f'{self.name.replace(" ", "")}'
             )
 
@@ -75,7 +75,7 @@ class HPalette:
                 adsk.core.PaletteDockingStates.PaletteDockStateLeft
             )
 
-            onHTML = Handlers.HPaletteHTMLEventHandler(self)
+            onHTML = handlers.HPaletteHTMLEventHandler(self)
             self.palette.incomingFromHTML.add(onHTML)
             self.handlers.append(onHTML)
 
@@ -145,7 +145,7 @@ class HButton:
             self.uid,
             f"{name}",
             f"{description}",
-            OsHelper.getOSPath(".", "src", "Resources", f'{self.name.replace(" ", "")}'),
+            os_helper.getOSPath(".", "src", "Resources", f'{self.name.replace(" ", "")}'),
         )
         """ Button Command Definition stored as a member """
 
@@ -157,7 +157,7 @@ class HButton:
             # This will be a seperate command created event handler
             ccEventHandler = exec_func(self)
         else:
-            ccEventHandler = Handlers.HButtonCommandCreatedEvent(self)
+            ccEventHandler = handlers.HButtonCommandCreatedEvent(self)
 
         self.button.commandCreated.add(ccEventHandler)
         self.handlers.append(ccEventHandler)

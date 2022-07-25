@@ -1,7 +1,7 @@
 from ..general_imports import *
 
 # from ..proto_out import Configuration_pb2
-from ..Types.OString import OString
+from ..types.ostring import OString
 
 from typing import Union
 import adsk.core, adsk.fusion

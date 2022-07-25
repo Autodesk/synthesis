@@ -2,7 +2,7 @@ from ..general_imports import *
 from inspect import getmembers, isfunction
 from typing import Union
 
-from . import Events, HUI
+from . import events, hui
 
 
 def check_solid_open() -> bool:
@@ -16,7 +16,7 @@ def check_solid_open() -> bool:
 def previouslyConfigured() -> Union[str, None]:
     """Checks the Hellion File attribute stored in the document in order to get the saved configuration file
 
-    - This is used in the (@ref ConfigCommand.py) in order to pre-populate the fields
+    - This is used in the (@ref config_command.py) in order to pre-populate the fields
     - Command check is  ` if (ret is None): return `
 
     Args:
@@ -32,7 +32,7 @@ def previouslyConfigured() -> Union[str, None]:
     app = adsk.core.Application.get()
     try:
         configured = app.activeDocument.attributes.itemByName(
-            f"{INTERNAL_ID}", "Configuration"
+            f"{INTERNAL_ID}", "configuration"
         )
         if configured is not None:
             return configured.value
@@ -49,7 +49,7 @@ def writeConfigure(serialized: str) -> bool:
     # app = adsk.core.Application.get()
     #try:
         #app.activeDocument.attributes.add(
-        #    f"{INTERNAL_ID}", "Configuration", f"{serialized}"
+        #    f"{INTERNAL_ID}", "configuration", f"{serialized}"
         #)
     return True
     #except:
@@ -121,8 +121,8 @@ def openPanel() -> None:
             # Hides the data panel
             gm.app.data.isDataPanelVisible = False
     else:
-        func_list = [o for o in getmembers(Events, isfunction)]
-        palette_new = HUI.HPalette(
+        func_list = [o for o in getmembers(events, isfunction)]
+        palette_new = hui.HPalette(
             name, APP_TITLE, True, True, False, 400, 500, func_list
         )
         gm.elements.append(palette_new)

@@ -59,6 +59,6 @@ def createTextGraphics(wheel: adsk.fusion.Occurrence, _wheels) -> None:
             line.isSelectable = False
             line.depthPriority = 1
     except:
-        logging.getLogger("{INTERNAL_ID}.UI.CreateTextGraphics").error(
+        logging.getLogger("{INTERNAL_ID}.ui.CreateTextGraphics").error(
             "Failed:\n{}".format(traceback.format_exc())
         )

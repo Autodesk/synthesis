@@ -1,19 +1,19 @@
 # Should contain Physical and Apperance materials ?
 import adsk, logging, traceback, math
 
-from .Utilities import *
-from .. import ParseOptions
+from .utilities import *
+from .. import parse_options
 
 from ...general_imports import INTERNAL_ID
 
-from .PDMessage import PDMessage
+from .pd_message import PDMessage
 from proto.proto_out import material_pb2
 
 
 def _MapAllPhysicalMaterials(
     physicalMaterials: list,
     materials: material_pb2.Materials,
-    options: ParseOptions,
+    options: parse_options,
     progressDialog: PDMessage,
 ) -> None:
     setDefaultMaterial(materials.physicalMaterials["default"])
@@ -120,7 +120,7 @@ def getPhysicalMaterialData(fusion_material, proto_material, options):
 def _MapAllAppearances(
     appearances: list,
     materials: material_pb2.Materials,
-    options: ParseOptions,
+    options: parse_options,
     progressDialog: PDMessage,
 ) -> None:
 
@@ -163,7 +163,7 @@ def setDefaultAppearance(appearance: material_pb2.Appearance) -> None:
 
 def getMaterialAppearance(
     fusionAppearance: adsk.core.Appearance,
-    options: ParseOptions,
+    options: parse_options,
     appearance: material_pb2.Appearance,
 ) -> None:
     """Takes in a Fusion 360 Mesh and converts it to a usable unity mesh

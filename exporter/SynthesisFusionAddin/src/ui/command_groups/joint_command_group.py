@@ -3,8 +3,8 @@ from ..colors import Colors
 from ...general_imports import *
 from ...configure import NOTIFIED, write_configuration
 from ...Analytics.alert import showAnalyticsAlert
-from .. import Helper, FileDialogConfig, OsHelper, CustomGraphics, IconPaths
-from ...Parser.ParseOptions import (
+from .. import helper, file_dialog_config, os_helper, graphics_custom, icon_paths
+from ...parser.parse_options import (
     Gamepiece,
     Mode,
     ParseOptions,
@@ -12,12 +12,14 @@ from ...Parser.ParseOptions import (
     _Wheel,
     JointParentType,
 )
-from ..Configuration.SerialCommand import SerialCommand
+from ..configuration.serial_command import SerialCommand
+
+from ..config_command import UiGlobal
 
 import adsk.core, adsk.fusion, traceback, logging, os
 from types import SimpleNamespace
 
-from .CommandGroup import CommandGroup
+from .command_group import CommandGroup
 
 
 class JointCommandGroup(CommandGroup):
@@ -39,14 +41,13 @@ class JointCommandGroup(CommandGroup):
     def __init__(self, parent):
         super.__init__(parent)
         super().__init__(parent)
-        self.joint_list = []
 
     def configure(self):
         """
         Joint configuration group. Container for joint selection table
         """
         joint_config = self.parent.inputs.addGroupCommandInput(
-            "joint_config", "Joint Configuration"
+            "joint_config", "Joint configuration"
         )
         joint_config.isExpanded = False
         joint_config.isVisible = True
@@ -170,59 +171,60 @@ class JointCommandGroup(CommandGroup):
                     joint.jointMotion.jointType == JointCommandGroup.JointMotions.REVOLUTE.value
                     or joint.jointMotion.jointType == JointCommandGroup.JointMotions.SLIDER.value
             ) and not joint.isSuppressed:
-                addJointToTable(joint)
+                self.add_joint_to_table(joint)
 
-    def addJointToTable(joint: adsk.fusion.Joint) -> None:
+    @staticmethod
+    def add_joint_to_table(joint: adsk.fusion.Joint) -> None:
         """### Adds a Joint object to its global list and joint table.
 
         Args:
             joint (adsk.fusion.Joint): Joint object to be added
         """
         try:
-            self.joint_list.append(joint)
-            joint_table_input = jointTable()
+            UiGlobal.joint_list_global.append(joint)
+            joint_table_input = UiGlobal.joint_table()
             cmd_inputs = adsk.core.CommandInputs.cast(joint_table_input.commandInputs)
 
             # joint type icons
             if joint.jointMotion.jointType == adsk.fusion.JointTypes.RigidJointType:
                 icon = cmd_inputs.addImageCommandInput(
-                    "placeholder", "Rigid", IconPaths.jointIcons["rigid"]
+                    "placeholder", "Rigid", icon_paths.jointIcons["rigid"]
                 )
                 icon.tooltip = "Rigid joint"
 
             elif joint.jointMotion.jointType == adsk.fusion.JointTypes.RevoluteJointType:
                 icon = cmd_inputs.addImageCommandInput(
-                    "placeholder", "Revolute", IconPaths.jointIcons["revolute"]
+                    "placeholder", "Revolute", icon_paths.jointIcons["revolute"]
                 )
                 icon.tooltip = "Revolute joint"
 
             elif joint.jointMotion.jointType == adsk.fusion.JointTypes.SliderJointType:
                 icon = cmd_inputs.addImageCommandInput(
-                    "placeholder", "Slider", IconPaths.jointIcons["slider"]
+                    "placeholder", "Slider", icon_paths.jointIcons["slider"]
                 )
                 icon.tooltip = "Slider joint"
 
             elif joint.jointMotion.jointType == adsk.fusion.JointTypes.PlanarJointType:
                 icon = cmd_inputs.addImageCommandInput(
-                    "placeholder", "Planar", IconPaths.jointIcons["planar"]
+                    "placeholder", "Planar", icon_paths.jointIcons["planar"]
                 )
                 icon.tooltip = "Planar joint"
 
             elif joint.jointMotion.jointType == adsk.fusion.JointTypes.PinSlotJointType:
                 icon = cmd_inputs.addImageCommandInput(
-                    "placeholder", "Pin Slot", IconPaths.jointIcons["pin_slot"]
+                    "placeholder", "Pin Slot", icon_paths.jointIcons["pin_slot"]
                 )
                 icon.tooltip = "Pin slot joint"
 
             elif joint.jointMotion.jointType == adsk.fusion.JointTypes.CylindricalJointType:
                 icon = cmd_inputs.addImageCommandInput(
-                    "placeholder", "Cylindrical", IconPaths.jointIcons["cylindrical"]
+                    "placeholder", "Cylindrical", icon_paths.jointIcons["cylindrical"]
                 )
                 icon.tooltip = "Cylindrical joint"
 
             elif joint.jointMotion.jointType == adsk.fusion.JointTypes.BallJointType:
                 icon = cmd_inputs.addImageCommandInput(
-                    "placeholder", "Ball", IconPaths.jointIcons["ball"]
+                    "placeholder", "Ball", icon_paths.jointIcons["ball"]
                 )
                 icon.tooltip = "Ball joint"
 
@@ -245,11 +247,11 @@ class JointCommandGroup(CommandGroup):
             for row in range(joint_table_input.rowCount):
                 if row != 0:
                     drop_down = joint_table_input.getInputAtPosition(row, 2)
-                    drop_down.listItems.add(JointListGlobal[-1].name, False)
+                    drop_down.listItems.add(UiGlobal.joint_list_global[-1].name, False)
 
             # add all parent joint options to added joint dropdown
-            for j in range(len(self) - 1):
-                jointType.listItems.add(JointListGlobal[j].name, False)
+            for j in range(len(UiGlobal.joint_list_global) - 1):
+                jointType.listItems.add(UiGlobal.joint_list_global[j].name, False)
 
             jointType.tooltip = "Possible parent joints"
             jointType.tooltipDescription = "<hr>The root component is usually the parent."
@@ -259,9 +261,9 @@ class JointCommandGroup(CommandGroup):
                 "Signal Type",
                 dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
             )
-            signal_type.listItems.add("‎", True, IconPaths.signalIcons["PWM"])
-            signal_type.listItems.add("‎", False, IconPaths.signalIcons["CAN"])
-            signal_type.listItems.add("‎", False, IconPaths.signalIcons["PASSIVE"])
+            signal_type.listItems.add("‎", True, icon_paths.signalIcons["PWM"])
+            signal_type.listItems.add("‎", False, icon_paths.signalIcons["CAN"])
+            signal_type.listItems.add("‎", False, icon_paths.signalIcons["PASSIVE"])
             signal_type.tooltip = "Signal type"
 
             row = joint_table_input.rowCount
@@ -294,6 +296,6 @@ class JointCommandGroup(CommandGroup):
 
         except:
             gm.ui.messageBox('Failed:\n{}'.format(traceback.format_exc()))
-            logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.addJointToTable()").error(
+            logging.getLogger("{INTERNAL_ID}.ui.ConfigCommand.addJointToTable()").error(
                 "Failed:\n{}".format(traceback.format_exc())
             )

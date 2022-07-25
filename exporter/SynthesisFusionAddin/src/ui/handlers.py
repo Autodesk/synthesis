@@ -98,7 +98,7 @@ class CustomDocumentSavedHandler(adsk.core.DocumentEventHandler):
                     version = f"v{version}"
 
                     Helper.addUnityAttribute()
-                    req = Parser(parseOptions=ParseOptions()).parseUpdated(version)
+                    req = parser(parseOptions=ParseOptions()).parseUpdated(version)
                     if req is not None:
                         sent = nm.send(req)
                     else:

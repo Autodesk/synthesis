@@ -2,13 +2,13 @@
 import adsk.core, adsk.fusion, uuid, logging, traceback
 from proto.proto_out import assembly_pb2, types_pb2, material_pb2, joint_pb2
 
-from .Utilities import *
-from .. import ParseOptions
+from .utilities import *
+from .. import parse_options
 from typing import *
 
-from . import PhysicalProperties
+from . import physical_properties
 
-from .PDMessage import PDMessage
+from .pd_message import PDMessage
 from ...Analyzer.timer import TimeThis
 
 # TODO: Impelement Material overrides
@@ -17,7 +17,7 @@ from ...Analyzer.timer import TimeThis
 @TimeThis
 def _MapAllComponents(
     design: adsk.fusion.Design,
-    options: ParseOptions,
+    options: parse_options,
     progressDialog: PDMessage,
     partsData: assembly_pb2.Parts,
     materials: material_pb2.Materials,
@@ -40,7 +40,7 @@ def _MapAllComponents(
 
         fill_info(partDefinition, component)
 
-        PhysicalProperties.GetPhysicalProperties(component, partDefinition.physical_data)
+        physical_properties.GetPhysicalProperties(component, partDefinition.physical_data)
 
         if options.mode == 3:
             partDefinition.dynamic = False
@@ -68,7 +68,7 @@ def _MapAllComponents(
 def _ParseComponentRoot(
     component: adsk.fusion.Component,
     progressDialog: PDMessage,
-    options: ParseOptions,
+    options: parse_options,
     partsData: assembly_pb2.Parts,
     material_map: dict,
     node: types_pb2.Node,
@@ -106,7 +106,7 @@ def _ParseComponentRoot(
 def __parseChildOccurrence(
     occurrence: adsk.fusion.Occurrence,
     progressDialog: PDMessage,
-    options: ParseOptions,
+    options: parse_options,
     partsData: assembly_pb2.Parts,
     material_map: dict,
     node: types_pb2.Node,
@@ -150,7 +150,7 @@ def __parseChildOccurrence(
         part.part_definition_reference = compRef
 
     # TODO: Maybe make this a separate step where you dont go backwards and search for the gamepieces
-    if options.mode == ParseOptions.Mode.SynthesisField:
+    if options.mode == parse_options.Mode.SynthesisField:
         for x in options.gamepieces:
             if x.occurrence_token == mapConstant:
                 partsData.part_definitions[part.part_definition_reference].dynamic = True
@@ -187,7 +187,7 @@ def GetMatrixWorld(occurrence):
 
 
 def _ParseBRep(
-    body: adsk.fusion.BRepBody, options: ParseOptions, trimesh: assembly_pb2.TriangleMesh
+    body: adsk.fusion.BRepBody, options: parse_options, trimesh: assembly_pb2.TriangleMesh
 ) -> any:
     try:
         meshManager = body.meshManager
@@ -205,7 +205,7 @@ def _ParseBRep(
         plainmesh_out.indices.extend(mesh.nodeIndices)
         plainmesh_out.uv.extend(mesh.textureCoordinatesAsFloat)
     except:
-        logging.getLogger("{INTERNAL_ID}.Parser.BrepBody").error(
+        logging.getLogger("{INTERNAL_ID}.parser.BrepBody").error(
             "Failed:\n{}".format(traceback.format_exc())
         )
 

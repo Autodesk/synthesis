@@ -13,7 +13,7 @@ import adsk.core, adsk.fusion
 
 # from .unity import Parse
 from ..general_imports import A_EP
-from .SynthesisParser.Parser import Parser
+from .synthesis_parser.parser import Parser
 
 # Contains enums for parents of joints that have special cases
 class JointParentType:  # validate for unique key and value
@@ -33,7 +33,7 @@ class SignalType:
     PASSIVE = 2
 
 
-# will need to be constructed in the UI Configure on Export
+# will need to be constructed in the ui Configure on Export
 @dataclass
 class _Wheel:
     joint_token: str  # maybe just pass the component
@@ -116,7 +116,7 @@ class ParseOptions:
         weight=float,
         compress=bool
     ):
-        """Generates the Parser Options for the given export
+        """Generates the parser Options for the given export
 
         Args:
             - fileLocation (str): Location of file with file name (given during file explore action)

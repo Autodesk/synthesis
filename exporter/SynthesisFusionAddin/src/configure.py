@@ -1,6 +1,6 @@
 """ Stores data and fields from config.ini """
 from configparser import ConfigParser
-from .Types.OString import OString
+from .types.ostring import OString
 from .strings import INTERNAL_ID
 import uuid, traceback
 import logging.handlers
@@ -12,7 +12,7 @@ try:
     # gets the parent directory
     file_path = OString.AddinPath("config.ini")
 
-    # Reads Configuration File
+    # Reads configuration File
     config.read(str(file_path))
 
     # MAIN

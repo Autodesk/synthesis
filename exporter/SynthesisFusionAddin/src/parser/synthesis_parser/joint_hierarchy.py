@@ -1,8 +1,8 @@
 from ...general_imports import *
 import adsk.core, adsk.fusion, traceback, logging, enum
 from typing import *
-from .. import ParseOptions
-from .PDMessage import PDMessage
+from .. import parse_options
+from .pd_message import PDMessage
 from proto.proto_out import types_pb2, joint_pb2
 
 
@@ -205,7 +205,7 @@ class JointParser:
             raise RuntimeWarning("There is no grounded component")
             return
 
-        self.logger = logging.getLogger("{INTERNAL_ID}.Parser.Joints.Parser")
+        self.logger = logging.getLogger("{INTERNAL_ID}.parser.Joints.parser")
 
         self.currentTraversal = dict()
         self.groundedConnections = []
@@ -453,7 +453,7 @@ def searchForGrounded(occ: adsk.fusion.Occurrence) -> Union[adsk.fusion.Occurren
 def BuildJointPartHierarchy(
     design: adsk.fusion.Design,
     joints: joint_pb2.Joints,
-    options: ParseOptions,
+    options: parse_options,
     progressDialog: PDMessage,
 ):
     try:

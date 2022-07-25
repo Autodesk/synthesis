@@ -1,10 +1,10 @@
-from . import OsHelper
+from . import os_helper
 import os
 
 """
 Dictionaries that store all the icon paths in ConfigCommand. All path strings are OS-independent
 """
-resources = OsHelper.getOSPath(".", "src", "Resources") # str shortcut with primary directories to all images in file
+resources = os_helper.getOSPath(".", "src", "Resources") # str shortcut with primary directories to all images in file
 
 wheelIcons = {
     "omni": resources + os.path.join("WheelIcons", "omni-wheel-preview190x24.png"),

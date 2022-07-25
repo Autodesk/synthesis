@@ -9,9 +9,9 @@ from proto.proto_out import assembly_pb2, types_pb2
 
 # from . import Joints, Materials, Components, Utilities
 
-from . import Materials, Components, Joints, JointHierarchy, PDMessage
+from . import materials, components, joints, joint_hierarchy, pd_message
 
-from .Utilities import *
+from .utilities import *
 
 class Parser:
     def __init__(self, options: any):
@@ -53,7 +53,7 @@ class Parser:
             )
 
             # this is the formatter for the progress dialog now
-            self.pdMessage = PDMessage.PDMessage(
+            self.pdMessage = pd_message.PDMessage(
                 assembly_out.info.name,
                 design.allComponents.count,
                 design.rootComponent.allOccurrences.count,
@@ -62,21 +62,21 @@ class Parser:
                 progressDialog,
             )
 
-            Materials._MapAllAppearances(
+            materials._MapAllAppearances(
                 design.appearances,
                 assembly_out.data.materials,
                 self.parseOptions,
                 self.pdMessage,
             )
 
-            Materials._MapAllPhysicalMaterials(
+            materials._MapAllPhysicalMaterials(
                 design.materials,
                 assembly_out.data.materials,
                 self.parseOptions,
                 self.pdMessage,
             )
 
-            Components._MapAllComponents(
+            components._MapAllComponents(
                 design,
                 self.parseOptions,
                 self.pdMessage,
@@ -86,7 +86,7 @@ class Parser:
 
             rootNode = types_pb2.Node()
 
-            Components._ParseComponentRoot(
+            components._ParseComponentRoot(
                 design.rootComponent,
                 self.pdMessage,
                 self.parseOptions,
@@ -95,12 +95,12 @@ class Parser:
                 rootNode,
             )
 
-            Components._MapRigidGroups(design.rootComponent, assembly_out.data.joints)
+            components._MapRigidGroups(design.rootComponent, assembly_out.data.joints)
 
             assembly_out.design_hierarchy.nodes.append(rootNode)
 
             # Problem Child
-            Joints.populateJoints (
+            joints.populateJoints (
                 design, assembly_out.data.joints, assembly_out.data.signals, self.pdMessage, self.parseOptions, assembly_out
             )
 
@@ -108,14 +108,14 @@ class Parser:
             # should pre-process to find if there are any grounded joints at all
             # that or add code to existing parser to determine leftovers
 
-            Joints.createJointGraph(
+            joints.createJointGraph(
                 self.parseOptions.joints,
                 self.parseOptions.wheels,
                 assembly_out.joint_hierarchy,
                 self.pdMessage,
             )
 
-            JointHierarchy.BuildJointPartHierarchy(
+            joint_hierarchy.BuildJointPartHierarchy(
                 design, assembly_out.data.joints, self.parseOptions, self.pdMessage
             )
             

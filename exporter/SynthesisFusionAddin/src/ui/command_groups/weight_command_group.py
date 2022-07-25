@@ -1,7 +1,7 @@
-from .. import Helper, FileDialogConfig, OsHelper, CustomGraphics, IconPaths
+from .. import helper, file_dialog_config, os_helper, graphics_custom, icon_paths
 import adsk.core, adsk.fusion, traceback, logging, os
 
-from .CommandGroup import CommandGroup
+from .command_group import CommandGroup
 
 
 class WeightCommandGroup(CommandGroup):
@@ -39,7 +39,7 @@ class WeightCommandGroup(CommandGroup):
             enabled=True,
             is_check_box=False
         )
-        auto_calc_weight.resourceFolder = IconPaths.stringIcons["calculate-enabled"]
+        auto_calc_weight.resourceFolder = icon_paths.stringIcons["calculate-enabled"]
         auto_calc_weight.isFullWidth = True
 
         weight_input = self.parent.inputs.addValueInput(
@@ -56,8 +56,8 @@ class WeightCommandGroup(CommandGroup):
             "Weight Unit",
             adsk.core.DropDownStyles.LabeledIconDropDownStyle,
         )
-        weight_unit.listItems.add("‎", True, IconPaths.massIcons["LBS"])  # add listdropdown mass options
-        weight_unit.listItems.add("‎", False, IconPaths.massIcons["KG"])  # add listdropdown mass options
+        weight_unit.listItems.add("‎", True, icon_paths.massIcons["LBS"])  # add listdropdown mass options
+        weight_unit.listItems.add("‎", False, icon_paths.massIcons["KG"])  # add listdropdown mass options
         weight_unit.tooltip = "Unit of mass"
         weight_unit.tooltipDescription = "<hr>Configure the unit of mass for the weight calculation."
 

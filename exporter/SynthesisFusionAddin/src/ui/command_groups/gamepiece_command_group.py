@@ -1,8 +1,8 @@
 import adsk.core
 import adsk.fusion
 
-from .CommandGroup import CommandGroup
-from .. import IconPaths
+from .command_group import CommandGroup
+from .. import icon_paths
 
 
 class GamepieceCommandGroup(CommandGroup):
@@ -16,7 +16,7 @@ class GamepieceCommandGroup(CommandGroup):
                       - Container for gamepiece selection table
                   """
         gamepiece_config = self.parent.inputs.addGroupCommandInput(
-            "gamepiece_config", "Gamepiece Configuration"
+            "gamepiece_config", "Gamepiece configuration"
         )
         gamepiece_config.isExpanded = True
         gamepiece_config.isVisible = False
@@ -25,8 +25,8 @@ class GamepieceCommandGroup(CommandGroup):
 
         # GAMEPIECE MASS CONFIGURATION
         """
-      Mass unit dropdown and calculation for gamepiece elements
-      """
+        Mass unit dropdown and calculation for gamepiece elements
+        """
         weight_table_input_f = self.parent.create_table_input(
             "weight_table_f", "Weight Table", gamepiece_inputs, 3, "6:2:1", 1
         )
@@ -45,7 +45,7 @@ class GamepieceCommandGroup(CommandGroup):
             enabled=True,
             is_check_box=False
         )
-        auto_calc_weight_f.resourceFolder = IconPaths.stringIcons["calculate-enabled"]
+        auto_calc_weight_f.resourceFolder = icon_paths.stringIcons["calculate-enabled"]
         auto_calc_weight_f.isFullWidth = True
 
         weight_unit_f = gamepiece_inputs.addDropDownCommandInput(
@@ -53,8 +53,8 @@ class GamepieceCommandGroup(CommandGroup):
             "Unit of Mass",
             adsk.core.DropDownStyles.LabeledIconDropDownStyle,
         )
-        weight_unit_f.listItems.add("‎", True, IconPaths.massIcons["LBS"])  # add listdropdown mass options
-        weight_unit_f.listItems.add("‎", False, IconPaths.massIcons["KG"])  # add listdropdown mass options
+        weight_unit_f.listItems.add("‎", True, icon_paths.massIcons["LBS"])  # add listdropdown mass options
+        weight_unit_f.listItems.add("‎", False, icon_paths.massIcons["KG"])  # add listdropdown mass options
         weight_unit_f.tooltip = "Unit of mass"
         weight_unit_f.tooltipDescription = "<hr>Configure the unit of mass for for the weight calculation."
 
@@ -64,8 +64,8 @@ class GamepieceCommandGroup(CommandGroup):
 
         # GAMEPIECE SELECTION TABLE
         """
-      All selected gamepieces appear here
-      """
+        All selected gamepieces appear here
+        """
         gamepiece_table_input = self.parent.create_table_input(
             "gamepiece_table",
             "Gamepiece",
@@ -75,32 +75,32 @@ class GamepieceCommandGroup(CommandGroup):
             50,
         )
 
-        addFieldInput = gamepiece_inputs.addBoolValueInput("field_add", "Add", False)
+        add_field_input = gamepiece_inputs.addBoolValueInput("field_add", "Add", False)
 
-        removeFieldInput = gamepiece_inputs.addBoolValueInput(
+        remove_field_input = gamepiece_inputs.addBoolValueInput(
             "field_delete", "Remove", False
         )
-        addFieldInput.isEnabled = removeFieldInput.isEnabled = True
+        add_field_input.isEnabled = remove_field_input.isEnabled = True
 
-        removeFieldInput.tooltip = "Remove a field element"
-        addFieldInput.tooltip = "Add a field element"
+        remove_field_input.tooltip = "Remove a field element"
+        add_field_input.tooltip = "Add a field element"
 
-        gamepieceSelectInput = gamepiece_inputs.addSelectionInput(
+        gamepiece_select_input = gamepiece_inputs.addSelectionInput(
             "gamepiece_select",
             "Selection",
             "Select the unique gamepieces in your field.",
         )
-        gamepieceSelectInput.addSelectionFilter("Occurrences")
-        gamepieceSelectInput.setSelectionLimits(0)
-        gamepieceSelectInput.isEnabled = True
-        gamepieceSelectInput.isVisible = False
+        gamepiece_select_input.addSelectionFilter("Occurrences")
+        gamepiece_select_input.setSelectionLimits(0)
+        gamepiece_select_input.isEnabled = True
+        gamepiece_select_input.isVisible = False
 
-        gamepiece_table_input.addToolbarCommandInput(addFieldInput)
-        gamepiece_table_input.addToolbarCommandInput(removeFieldInput)
+        gamepiece_table_input.addToolbarCommandInput(add_field_input)
+        gamepiece_table_input.addToolbarCommandInput(remove_field_input)
 
         """
-      Gamepiece table column headers. (the permanent captions in the first row of table)
-      """
+        Gamepiece table column headers. (the permanent captions in the first row of table)
+        """
         gamepiece_table_input.addCommandInput(
             self.parent.create_text_box_input(
                 "e_header",

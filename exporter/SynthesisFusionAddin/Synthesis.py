@@ -1,14 +1,14 @@
-from .src.general_imports import root_logger, gm, INTERNAL_ID, APP_NAME, DESCRIPTION
+from src.general_imports import root_logger, gm, INTERNAL_ID, APP_NAME, DESCRIPTION
 
-from .src.UI import HUI, Handlers, Camera, Helper, ConfigCommand
-from .src.UI.Toolbar import Toolbar
-from .src.Types.OString import OString
-from .src.configure import setAnalytics, unload_config
+from src.ui import hui, handlers, camera, helper, config_command
+from src.ui.toolbar import Toolbar
+from src.types.ostring import OString
+from src.configure import setAnalytics, unload_config
 
 from shutil import rmtree
 import logging.handlers, traceback, importlib.util, os
 
-from .src.UI import MarkingMenu
+from src.ui import marking_menu
 import adsk.core
 
 
@@ -16,20 +16,20 @@ def run(_):
     """## Entry point to application from Fusion 360.
 
     Arguments:
-        **context** *context* -- Fusion 360 context to derive app and UI.
+        **context** *context* -- Fusion 360 context to derive app and ui.
     """
 
     try:
         # Remove all items prior to start just to make sure
         unregister_all()
 
-        # creates the UI elements
+        # creates the ui elements
         register_ui()
 
         app = adsk.core.Application.get()
         ui  = app.userInterface
 
-        MarkingMenu.setupMarkingMenu(ui)
+        marking_menu.setupMarkingMenu(ui)
 
     except:
         logging.getLogger(f"{INTERNAL_ID}").error(
@@ -49,7 +49,7 @@ def stop(_):
         app = adsk.core.Application.get()
         ui  = app.userInterface
 
-        MarkingMenu.stopMarkingMenu(ui)
+        marking_menu.stopMarkingMenu(ui)
 
         # nm.deleteMe()
 
@@ -91,12 +91,12 @@ def stop(_):
 
 
 def unregister_all() -> None:
-    """Unregisters all UI elements in case any still exist.
+    """Unregisters all ui elements in case any still exist.
 
     - Good place to unregister custom app events that may repeat.
     """
     try:
-        Camera.clearIconCache()
+        camera.clearIconCache()
 
         for element in gm.elements:
             element.deleteMe()
@@ -111,7 +111,7 @@ def unregister_all() -> None:
 
 
 def register_ui() -> None:
-    """ #### Generic Function to add all UI objects in a simple non destructive way."""
+    """ #### Generic Function to add all ui objects in a simple non destructive way."""
 
     # if A_EP:
     #     A_EP.send_view("open")
@@ -119,13 +119,13 @@ def register_ui() -> None:
     # toolbar = Toolbar('SketchFab')
     work_panel = Toolbar.getNewPanel(f"{APP_NAME}", f"{INTERNAL_ID}", "ToolsTab")
 
-    commandButton = HUI.HButton(
+    command_button = hui.HButton(
         "Synthesis Exporter",
         work_panel,
-        Helper.check_solid_open,
-        ConfigCommand.ConfigureCommandCreatedHandler,
+        helper.check_solid_open,
+        config_command.ConfigureCommandCreatedHandler,
         description=f"{DESCRIPTION}",
         command=True,
     )
 
-    gm.elements.append(commandButton)
+    gm.elements.append(command_button)

@@ -28,9 +28,9 @@ from proto.proto_out import types_pb2, joint_pb2, signal_pb2, motor_pb2, assembl
 from typing import Union
 
 from ...general_imports import *
-from .Utilities import fill_info, construct_info
-from .PDMessage import PDMessage
-from .. import ParseOptions
+from .utilities import fill_info, construct_info
+from .pd_message import PDMessage
+from .. import parse_options
 
 
 # Need to take in a graphcontainer
@@ -59,7 +59,7 @@ def populateJoints(
     joints: joint_pb2.Joints,
     signals: signal_pb2.Signals,
     progressDialog: PDMessage,
-    options: ParseOptions,
+    options: parse_options,
     assembly: assembly_pb2.Assembly,
 ):
     fill_info(joints, None)
@@ -112,10 +112,10 @@ def populateJoints(
                         signal.io = signal_pb2.IOType.OUTPUT
 
                         # really could just map the enum to a friggin string
-                        if (parse_joints.signalType != ParseOptions.SignalType.PASSIVE and assembly.dynamic):
-                            if (parse_joints.signalType == ParseOptions.SignalType.CAN):
+                        if (parse_joints.signalType != parse_options.SignalType.PASSIVE and assembly.dynamic):
+                            if (parse_joints.signalType == parse_options.SignalType.CAN):
                                 signal.device_type = signal_pb2.DeviceType.CANBUS
-                            elif (parse_joints.signalType == ParseOptions.SignalType.PWM):
+                            elif (parse_joints.signalType == parse_options.SignalType.PWM):
                                 signal.device_type = signal_pb2.DeviceType.PWM
 
                             motor = joints.motor_definitions[joint.entityToken]
@@ -166,7 +166,7 @@ def _addJoint(joint: adsk.fusion.Joint, joint_definition: joint_pb2.Joint):
     joint_definition.break_magnitude = 0.0
 
 
-def _addJointInstance(joint: adsk.fusion.Joint, joint_instance: joint_pb2.JointInstance, joint_definition: joint_pb2.Joint, signals: signal_pb2.Signals, options: ParseOptions):
+def _addJointInstance(joint: adsk.fusion.Joint, joint_instance: joint_pb2.JointInstance, joint_definition: joint_pb2.Joint, signals: signal_pb2.Signals, options: parse_options):
     fill_info(joint_instance, joint)
     # because there is only one and we are using the token - should be the same
     joint_instance.joint_reference = joint_instance.info.GUID
@@ -217,10 +217,10 @@ def _addJointInstance(joint: adsk.fusion.Joint, joint_instance: joint_pb2.JointI
                     signal.io = signal_pb2.IOType.OUTPUT
                     joint_instance.signal_reference = signal.info.GUID
 
-                if (wheel.signalType != ParseOptions.SignalType.PASSIVE):
-                    if (wheel.signalType == ParseOptions.SignalType.CAN):
+                if (wheel.signalType != parse_options.SignalType.PASSIVE):
+                    if (wheel.signalType == parse_options.SignalType.CAN):
                         signal.device_type = signal_pb2.DeviceType.CANBUS
-                    elif (wheel.signalType == ParseOptions.SignalType.PWM):
+                    elif (wheel.signalType == parse_options.SignalType.PWM):
                         signal.device_type = signal_pb2.DeviceType.PWM
                 else:
                     joint_instance.signal_reference = ''

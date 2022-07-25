@@ -1,9 +1,9 @@
 from ..general_imports import *
 
-from . import Helper
+from . import helper
 import os
 
-from ..Types.OString import OString
+from ..types.ostring import OString
 
 
 def captureThumbnail() -> str:
@@ -15,7 +15,7 @@ def captureThumbnail() -> str:
 
     log = logging.getLogger("{INTERNAL_ID}.HUI.Camera")
 
-    if Helper.check_solid_open():
+    if helper.check_solid_open():
         try:
             originalCamera = app.activeViewport.camera
 

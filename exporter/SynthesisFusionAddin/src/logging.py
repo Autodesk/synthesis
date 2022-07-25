@@ -5,7 +5,7 @@ import logging.handlers
 from datetime import datetime
 import os, pathlib
 
-from .UI.OsHelper import getOSPath
+from .ui.os_helper import getOSPath
 from .strings import *
 
 

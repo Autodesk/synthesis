@@ -1,22 +1,13 @@
-from enum import Enum
+import logging
+
+import adsk.core
+import adsk.fusion
+
+from .command_group import CommandGroup
+from .. import os_helper, icon_paths
 from ...general_imports import *
-from ...configure import NOTIFIED, write_configuration
-from ...Analytics.alert import showAnalyticsAlert
-from .. import Helper, FileDialogConfig, OsHelper, CustomGraphics, IconPaths
-from ...Parser.ParseOptions import (
-    Gamepiece,
-    Mode,
-    ParseOptions,
-    _Joint,
-    _Wheel,
-    JointParentType,
-)
-from ..Configuration.SerialCommand import SerialCommand
 
-import adsk.core, adsk.fusion, traceback, logging, os
-from types import SimpleNamespace
-
-from .CommandGroup import CommandGroup
+from ..config_command import UiGlobal
 
 
 class WheelCommandGroup(CommandGroup):
@@ -32,7 +23,7 @@ class WheelCommandGroup(CommandGroup):
             - Container for wheel selection Table
         """
         wheel_config = self.parent_menu.inputs.addGroupCommandInput(
-            "wheel_config", "Wheel Configuration"
+            "wheel_config", "Wheel configuration"
         )
         wheel_config.isExpanded = True
         wheel_config.isEnabled = True
@@ -168,7 +159,7 @@ class WheelCommandGroup(CommandGroup):
         """
         try:
             onSelect = gm.handlers[3]
-            wheelTableInput = wheelTable()
+            wheelTableInput = UiGlobal.wheel_list_global
             # def addPreselections(child_occurrences):
             #     for occ in child_occurrences:
             #         onSelect.allWheelPreselections.append(occ.entityToken)
@@ -181,11 +172,11 @@ class WheelCommandGroup(CommandGroup):
             # else:
             onSelect.allWheelPreselections.append(wheel.entityToken)
 
-            WheelListGlobal.append(wheel)
+            UiGlobal.wheel_list_global.append(wheel)
             cmdInputs = adsk.core.CommandInputs.cast(wheelTableInput.commandInputs)
 
             icon = cmdInputs.addImageCommandInput(
-                "placeholder_w", "Placeholder", IconPaths.wheelIcons["standard"]
+                "placeholder_w", "Placeholder", icon_paths.wheelIcons["standard"]
             )
 
             name = cmdInputs.addTextBoxCommandInput(
@@ -203,7 +194,7 @@ class WheelCommandGroup(CommandGroup):
             wheelType.listItems.add("Mecanum", False, "")
             wheelType.tooltip = "Wheel type"
             wheelType.tooltipDescription = "<Br>Omni-directional wheels can be used just like regular drive wheels but they have the advantage of being able to roll freely perpendicular to the drive direction.</Br>"
-            wheelType.toolClipFilename = OsHelper.getOSPath(".", "src", "Resources") + os.path.join("WheelIcons",
+            wheelType.toolClipFilename = os_helper.getOSPath(".", "src", "Resources") + os.path.join("WheelIcons",
                                                                                                     "omni-wheel-preview.png")
 
             signalType = cmdInputs.addDropDownCommandInput(
@@ -212,9 +203,9 @@ class WheelCommandGroup(CommandGroup):
                 dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
             )
             signalType.isFullWidth = True
-            signalType.listItems.add("‎", True, IconPaths.signalIcons["PWM"])
-            signalType.listItems.add("‎", False, IconPaths.signalIcons["CAN"])
-            signalType.listItems.add("‎", False, IconPaths.signalIcons["PASSIVE"])
+            signalType.listItems.add("‎", True, icon_paths.signalIcons["PWM"])
+            signalType.listItems.add("‎", False, icon_paths.signalIcons["CAN"])
+            signalType.listItems.add("‎", False, icon_paths.signalIcons["PASSIVE"])
             signalType.tooltip = "Signal type"
 
             row = wheelTableInput.rowCount
@@ -225,6 +216,6 @@ class WheelCommandGroup(CommandGroup):
             wheelTableInput.addCommandInput(signalType, row, 3)
 
         except:
-            logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.addWheelToTable()").error(
+            logging.getLogger("{INTERNAL_ID}.ui.ConfigCommand.addWheelToTable()").error(
                 "Failed:\n{}".format(traceback.format_exc())
             )

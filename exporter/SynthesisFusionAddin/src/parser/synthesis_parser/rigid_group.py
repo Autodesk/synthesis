@@ -31,7 +31,7 @@ def ExportRigidGroups(
         hel_occ (Assembly_pb2.Occurrence): Protobuf Hellion Occurrence Reference
     """
     try:
-        log = logging.getLogger("{INTERNAL_ID}.Parser.RigidGroup")
+        log = logging.getLogger("{INTERNAL_ID}.parser.RigidGroup")
 
         groups = fus_occ.rigidGroups
 
