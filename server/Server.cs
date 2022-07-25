@@ -25,12 +25,12 @@ namespace SynthesisServer
     {
         private const int LOBBY_SIZE = 6;
         private const int BUFFER_SIZE = 4096;
+        private const int HEARTBEAT_INTERVAL = 1000000; // Set to be very long for testing
 
         private Socket _tcpSocket;
         private UdpClient _udpSocket;
         private SymmetricEncryptor _encryptor;
 
-        //private Dictionary<string, ClientData> _clients;
         private List<ClientData> _clients;
         private Dictionary<string, Lobby> _lobbies; // Uses lobby name as key
 
@@ -49,14 +49,6 @@ namespace SynthesisServer
         private Server() 
         {
         }
-
-        /*
-        private struct ClientState {
-            public byte[] buffer;
-            public Socket socket;
-            public string id;
-        }
-        */
 
         public void Stop()
         {
@@ -84,8 +76,7 @@ namespace SynthesisServer
 
             _encryptor = new SymmetricEncryptor();
 
-            //_clients = new Dictionary<string, ClientData>();
-
+            _clients = new List<ClientData>();
             _clientsLock = new ReaderWriterLockSlim();
 
             _lobbies = new Dictionary<string, Lobby>();
@@ -128,13 +119,11 @@ namespace SynthesisServer
         /*
             Data is send in this format: [4 byte int denoting header length] + [MessageHeader object] + [4 byte int denoting message body length] + [The actual message]
         */
-        // HAVE EACH CLIENT HAVE ITS OWN READ WRITE LOCK AND ACCESS THINGS THROUGH THE LIST LESS. INSTEAD JUST PASS CLIENT INTO HANDLERS
         private void TCPReceiveCallback(IAsyncResult asyncResult)
         {
             _logger.LogInformation("Received Message");
             try
             {
-                //ClientState state = (ClientState)asyncResult.AsyncState;
                 ClientData client = (ClientData)asyncResult.AsyncState;
                 client.ClientLock.ExitWriteLock();
 
@@ -148,7 +137,6 @@ namespace SynthesisServer
                 Any message;
                 if (header.IsEncrypted && client.SymmetricKey != null)
                 {
-                    //byte[] decryptedData = _encryptor.Decrypt(data, _clients[header.ClientId].SymmetricKey);
                     byte[] decryptedData = _encryptor.Decrypt(data, client.SymmetricKey);
                     message = Any.Parser.ParseFrom(IO.GetNextMessage(ref decryptedData));
                 }
