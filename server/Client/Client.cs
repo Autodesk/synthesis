@@ -1,4 +1,7 @@
-﻿using Org.BouncyCastle.Crypto;
+﻿using Google.Protobuf;
+using Google.Protobuf.Reflection;
+using Google.Protobuf.WellKnownTypes;
+using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using SynthesisServer.Utilities;
 using System;
@@ -13,9 +16,9 @@ namespace SynthesisServer.Client
     {
         private const int BUFFER_SIZE = 4096;
 
+        private byte[] _serverBuffer;
         private Socket _tcpSocket;
         private UdpClient _udpSocket;
-        private SymmetricEncryptor _encryptor;
 
         private IPAddress _serverIP;
         private Socket _connectedServer;
@@ -29,9 +32,12 @@ namespace SynthesisServer.Client
 
         private string _id;
 
+        //private MessageDescriptor _expectedMessageType;
+
         public byte[] SymmetricKey { get; private set; }
         private AsymmetricCipherKeyPair _keyPair;
-        private DHParameters parameters;
+        private DHParameters _parameters;
+        private SymmetricEncryptor _encryptor;
 
         private static readonly Lazy<Client> lazy = new Lazy<Client>(() => new Client());
         public static Client Instance { get { return lazy.Value; } }
@@ -54,15 +60,23 @@ namespace SynthesisServer.Client
             _udpSocket = new UdpClient(new IPEndPoint(IPAddress.Any, _udpPort));
 
             _encryptor = new SymmetricEncryptor();
+            _parameters = _encryptor.GenerateParameters();
+            _keyPair = _encryptor.GenerateKeys(_parameters);
+
+            _serverBuffer = new byte[BUFFER_SIZE];
 
             _hasInit = true;
         }
 
         public void Start(long timeoutMS = 5000)
         {
-            if (_hasInit || TryConnectServer(_tcpSocket, _serverIP, _tcpPort, timeoutMS))
+            if (_hasInit && TryConnectServer(_tcpSocket, _serverIP, _tcpPort, timeoutMS))
             {
-                
+                _isRunning = true;
+                if (TrySendKeyExchange())
+                {
+                    _tcpSocket.BeginReceive(_serverBuffer, 0, BUFFER_SIZE, SocketFlags.None, new AsyncCallback(TCPReceiveCallback), null);
+                }
             }
             else
             {
@@ -71,7 +85,13 @@ namespace SynthesisServer.Client
         }
         public void Stop()
         {
-            throw new NotImplementedException();
+            _isRunning = false;
+            try
+            {
+                _tcpSocket.Close();
+                _udpSocket.Close();
+            }
+            catch (SocketException) { }
         }
         private bool TryConnectServer(Socket socket, IPAddress ip, int port, long timeoutMS)
         {
@@ -88,7 +108,19 @@ namespace SynthesisServer.Client
         }
         private bool DisconnectServer()
         {
-            throw new NotImplementedException();
+            if (_tcpSocket.Connected)
+            {
+                try
+                {
+                    _tcpSocket.Close();
+                    return true;
+                }
+                catch (SocketException)
+                {
+                    return false;
+                }
+            }
+            return false;
         }
         private bool TryAddClient(IPEndPoint remoteEP)
         {
@@ -102,51 +134,199 @@ namespace SynthesisServer.Client
         // TCP Callbacks
         private void TCPReceiveCallback(IAsyncResult asyncResult)
         {
-            throw new NotImplementedException();
+            try
+            {
+                int received = _tcpSocket.EndReceive(asyncResult);
+                byte[] data = new byte[received];
+                Array.Copy(_serverBuffer, data, received);
+                if (BitConverter.IsLittleEndian) { Array.Reverse(data); }
+
+                MessageHeader header = MessageHeader.Parser.ParseFrom(IO.GetNextMessage(ref data));
+                Any message;
+                if (header.IsEncrypted && SymmetricKey != null)
+                {
+                    byte[] decryptedData = _encryptor.Decrypt(data, SymmetricKey);
+                    message = Any.Parser.ParseFrom(IO.GetNextMessage(ref decryptedData));
+                }
+                else if (!header.IsEncrypted)
+                {
+                    message = Any.Parser.ParseFrom(IO.GetNextMessage(ref data));
+                }
+                else
+                {
+                    message = Any.Pack(new StatusMessage()
+                    {
+                        LogLevel = StatusMessage.Types.LogLevel.Error,
+                        Msg = "Invalid Message body"
+                    });
+                }
+
+                if (message.Is(KeyExchange.Descriptor)) { HandleKeyExchange(message.Unpack<KeyExchange>()); }
+                else if (message.Is(StatusMessage.Descriptor)) { HandleStatusMessage(message.Unpack<StatusMessage>()); }
+                else if (message.Is(ServerInfoResponse.Descriptor)) { HandleServerInfoResponse(message.Unpack<ServerInfoResponse>()); }
+                else if (message.Is(CreateLobbyResponse.Descriptor)) { HandleCreateLobbyResponse(message.Unpack<CreateLobbyResponse>()); }
+                else if (message.Is(DeleteLobbyResponse.Descriptor)) { HandleDeleteLobbyResponse(message.Unpack<DeleteLobbyResponse>()); }
+                else if (message.Is(JoinLobbyResponse.Descriptor)) { HandleJoinLobbyResponse(message.Unpack<JoinLobbyResponse>()); }
+                else if (message.Is(LeaveLobbyResponse.Descriptor)) { HandleLeaveLobbyResponse(message.Unpack<LeaveLobbyResponse>()); }
+                else if (message.Is(StartLobbyResponse.Descriptor)) { HandleStartLobbyResponse(message.Unpack<StartLobbyResponse>()); }
+                else if (message.Is(SwapResponse.Descriptor)) { HandleSwapResponse(message.Unpack<SwapResponse>()); }
+
+                _tcpSocket.BeginReceive(_serverBuffer, 0, BUFFER_SIZE, SocketFlags.None, new AsyncCallback(TCPReceiveCallback), null);
+            }
+            catch (SocketException) { }
         }
         private void TCPSendCallback(IAsyncResult asyncResult)
         {
-            throw new NotImplementedException();
         }
+
 
         // UDP Callbacks
 
         // Client Actions
-        public bool TryCreateLobby(string lobbyName)
+        private bool TrySendKeyExchange()
+        {
+            if (_hasInit && _isRunning && _tcpSocket.Connected)
+            {
+                KeyExchange exchangeMsg = new KeyExchange()
+                {
+                    ClientId = _id,
+                    G = _parameters.G.ToString(),
+                    P = _parameters.P.ToString(),
+                    PublicKey = ((DHPublicKeyParameters)_keyPair.Public).Y.ToString()
+                };
+                //_expectedMessageType = KeyExchange.Descriptor;
+                IO.SendMessage(exchangeMsg, _tcpSocket, new AsyncCallback(TCPSendCallback));
+                return true;
+            }
+            return false;
+        }
+        public bool TrySendCreateLobby(string lobbyName)
         {
             if (_hasInit && _isRunning && _tcpSocket.Connected)
             {
                 CreateLobbyRequest request = new CreateLobbyRequest()
                 {
-                    ClientId = _id,
                     LobbyName = lobbyName
                 };
-                IO.SendEncryptedMessage(request, SymmetricKey, _tcpSocket, _encryptor, new AsyncCallback(TCPSendCallback));
-                
+                IO.SendEncryptedMessage(request, _id, SymmetricKey, _tcpSocket, _encryptor, new AsyncCallback(TCPSendCallback));
+                return true;
             }
             return false;
         }
-        public bool TryDeleteLobby(string lobbyName)
+        public bool TrySendDeleteLobby(string lobbyName)
         {
-            throw new NotImplementedException(); //might need id
+            if (_hasInit && _isRunning && _tcpSocket.Connected)
+            {
+                DeleteLobbyRequest request = new DeleteLobbyRequest()
+                {
+                    LobbyName = lobbyName
+                };
+                IO.SendEncryptedMessage(request, _id, SymmetricKey, _tcpSocket, _encryptor, new AsyncCallback(TCPSendCallback));
+                return true;
+            }
+            return false;
         }
-        public bool TryJoinLobby(string lobbyName)
+        public bool TrySendJoinLobby(string lobbyName)
+        {
+            if (_hasInit && _isRunning && _tcpSocket.Connected)
+            {
+                JoinLobbyRequest request = new JoinLobbyRequest()
+                {
+                    LobbyName = lobbyName
+                };
+                IO.SendEncryptedMessage(request, _id, SymmetricKey, _tcpSocket, _encryptor, new AsyncCallback(TCPSendCallback));
+                return true;
+            }
+            return false;
+        }
+        public bool TrySendLeaveLobby(string lobbyName)
+        {
+            if (_hasInit && _isRunning && _tcpSocket.Connected)
+            {
+                LeaveLobbyRequest request = new LeaveLobbyRequest()
+                {
+                    LobbyName = lobbyName
+                };
+                IO.SendEncryptedMessage(request, _id, SymmetricKey, _tcpSocket, _encryptor, new AsyncCallback(TCPSendCallback));
+                return true;
+            }
+            return false;
+        }
+        public bool TrySendStartLobby(string lobbyName)
+        {
+            if (_hasInit && _isRunning && _tcpSocket.Connected)
+            {
+                StartLobbyRequest request = new StartLobbyRequest()
+                {
+                    LobbyName = lobbyName
+                };
+                IO.SendEncryptedMessage(request, _id, SymmetricKey, _tcpSocket, _encryptor, new AsyncCallback(TCPSendCallback));
+                return true;
+            }
+            return false;
+        }
+        public bool TrySendSwapPosition(string lobbyName, int firstPosition, int secondPosition)
+        {
+            if (_hasInit && _isRunning && _tcpSocket.Connected)
+            {
+                SwapRequest request = new SwapRequest()
+                {
+                    LobbyName = lobbyName,
+                    FirstPostion = firstPosition,
+                    SecondPostion = secondPosition
+                };
+                IO.SendEncryptedMessage(request, _id, SymmetricKey, _tcpSocket, _encryptor, new AsyncCallback(TCPSendCallback));
+                return true;
+            }
+            return false;
+        }
+        public bool TrySendGetServerData()
+        {
+            if (_hasInit && _isRunning && _tcpSocket.Connected)
+            {
+                ServerInfoRequest request = new ServerInfoRequest()
+                {
+                };
+                IO.SendEncryptedMessage(request, _id, SymmetricKey, _tcpSocket, _encryptor, new AsyncCallback(TCPSendCallback));
+                return true;
+            }
+            return false;
+        }
+
+        // Server Response Handlers
+        private void HandleKeyExchange(KeyExchange exchangeMessage)
         {
             throw new NotImplementedException();
         }
-        public bool TryLeaveLobby(string lobbyName)
+        private void HandleStatusMessage(StatusMessage statusMessage)
         {
             throw new NotImplementedException();
         }
-        public bool TryStartLobby(string lobbyName)
+        private void HandleServerInfoResponse(ServerInfoResponse serverInfoResponse)
         {
             throw new NotImplementedException();
         }
-        public bool TrySwapPosition(string lobbyName, int firstPosition, int secondPosition)
+        private void HandleCreateLobbyResponse(CreateLobbyResponse createLobbyResponse)
         {
             throw new NotImplementedException();
         }
-        public bool TryGetServerData()
+        private void HandleDeleteLobbyResponse(DeleteLobbyResponse deleteLobbyResponse)
+        {
+            throw new NotImplementedException();
+        }
+        private void HandleJoinLobbyResponse(JoinLobbyResponse joinLobbyResponse)
+        {
+            throw new NotImplementedException();
+        }
+        private void HandleLeaveLobbyResponse(LeaveLobbyResponse leaveLobbyResponse)
+        {
+            throw new NotImplementedException();
+        }
+        private void HandleStartLobbyResponse(StartLobbyResponse startLobbyResponse)
+        {
+            throw new NotImplementedException();
+        }
+        private void HandleSwapResponse(SwapResponse swapResponse)
         {
             throw new NotImplementedException();
         }

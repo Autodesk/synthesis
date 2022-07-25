@@ -52,6 +52,13 @@ namespace SynthesisServer.Utilities
             return keyGen.GenerateKeyPair();
         }
 
+        public DHParameters GenerateParameters()
+        {
+            DHParametersGenerator generator = new DHParametersGenerator();
+            generator.Init(1024, 80, new SecureRandom()); // not too sure about these numbers
+            return generator.GenerateParameters();
+        }
+
         public byte[] Encrypt(byte[] data, byte[] symmetricKey)
         {
             using (Aes aes = Aes.Create())
