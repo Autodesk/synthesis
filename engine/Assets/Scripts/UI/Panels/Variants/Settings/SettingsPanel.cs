@@ -79,8 +79,8 @@ namespace Synthesis.UI.Panels.Variant
             saveButton.GetComponent<Image>().color = enabledColor;
         }
         bool setup = false;
-        private void DisplaySettings()
-        {
+        private void DisplaySettings() {
+
             setup = true;
             CreateTitle("Screen Settings");
             if (customRes) //will check if user set custom resolution

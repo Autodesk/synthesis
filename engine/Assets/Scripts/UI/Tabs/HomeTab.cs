@@ -1,8 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using SynthesisAPI.Utilities;
-using Logger = SynthesisAPI.Utilities.Logger;
+using System.Linq;
+using Synthesis.Gizmo;
+using Synthesis.UI.Dynamic;
+using SynthesisAPI.Simulation;
 
 namespace Synthesis.UI.Tabs {
     public class HomeTab : Tab {
@@ -10,18 +9,53 @@ namespace Synthesis.UI.Tabs {
             CreateButton(
                 "Load Robot",
                 SynthesisAssetCollection.GetSpriteByName("robotimport"),
-                () => LayoutManager.OpenPanel(SynthesisAssetCollection.GetPanelByName("Load-Robot-Panel"))
+                () => DynamicUIManager.CreateModal<AddRobotModal>()
             );
             CreateButton(
                 "Load Field",
                 SynthesisAssetCollection.GetSpriteByName("fieldimport"),
-                () => LayoutManager.OpenPanel(SynthesisAssetCollection.GetPanelByName("Load-Field-Panel"))
+                () => DynamicUIManager.CreateModal<AddFieldModal>()
             );
             CreateDivider();
             CreateButton(
-                "Robots",
+                "Details",
                 SynthesisAssetCollection.GetSpriteByName("Multiplayer1-Gray"),
-                () => LayoutManager.OpenPanel(SynthesisAssetCollection.GetPanelByName("Multiplayer-Panel"))
+                () => DynamicUIManager.CreatePanel<RobotDetailsPanel>()
+            );
+            CreateDivider();
+            CreateButton(
+                "Scoreboard",
+                SynthesisAssetCollection.GetSpriteByName("fieldimport"),
+                () => LayoutManager.OpenPanel(SynthesisAssetCollection.GetPanelByName("Scoreboard-Panel")));
+            // CreateButton(
+            //     "Move",
+            //     SynthesisAssetCollection.GetSpriteByName("fieldimport"),
+            //     () => {
+            //         var robot = SimulationManager.SimulationObjects.Values.FirstOrDefault(x => x is RobotSimObject);
+            //         if (robot != null)
+            //             GizmoManager.SpawnGizmo(robot as RobotSimObject);
+            //     }
+            // );
+            CreateButton(
+                "Test Modal",
+                SynthesisAssetCollection.GetSpriteByName("fieldimport"),
+                () => {
+                    DynamicUIManager.CreateModal<ScrollViewTestModal>();
+                }
+            );
+            CreateButton(
+                "Pickup",
+                SynthesisAssetCollection.GetSpriteByName("fieldimport"),
+                () => {
+                    DynamicUIManager.CreatePanel<ConfigureGamepiecePickupPanel>();
+                }
+            );
+            CreateButton(
+                "Shooting",
+                SynthesisAssetCollection.GetSpriteByName("fieldimport"),
+                () => {
+                    DynamicUIManager.CreatePanel<ConfigureShotTrajectoryPanel>();
+                }
             );
         }
     }

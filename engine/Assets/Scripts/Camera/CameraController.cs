@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Synthesis.UI.Panels.Variant;
 using System.Runtime.InteropServices;
+using SynthesisAPI.InputManager;
 
 public class CameraController : MonoBehaviour {
     
@@ -22,7 +23,7 @@ public class CameraController : MonoBehaviour {
     public Func<Vector3> FocusPoint;
     public static bool isOverGizmo = false;
 
-    private float _targetZoom = 5.0f;
+    private float _targetZoom = 15.0f;
     private float _targetPitch = 10.0f;
     private float _targetYaw = 135.0f;
     private float _actualZoom = 5.0f;
@@ -54,7 +55,10 @@ public class CameraController : MonoBehaviour {
         
         bool isOverUI = EventSystem.current.IsPointerOverGameObject();
         bool enableOrbit = !isOverUI && !isOverGizmo;
-        if (enableOrbit) {
+        bool isGodMode = InputManager.MappedValueInputs.ContainsKey(GodMode.ENABLED_GOD_MODE_INPUT)
+            ? InputManager.MappedValueInputs[GodMode.ENABLED_GOD_MODE_INPUT].Value == 1.0F
+            : false;
+        if (enableOrbit && !isGodMode) {
             z = ZoomSensitivity * -Input.mouseScrollDelta.y;
 
             //UNCOMMENT OUT TO ENABLE CURSOR-LOCKING WHEN ORBITING
@@ -68,7 +72,7 @@ public class CameraController : MonoBehaviour {
             }*/
         }
 
-        if (!Input.GetKey(KeyCode.Mouse0)) {
+        if (!Input.GetKey(KeyCode.Mouse0) || isGodMode) {
             _useOrbit = enableOrbit;
         } else {
             if (_useOrbit) {

@@ -9,6 +9,11 @@ using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Utilities;
 using UnityEngine;
 
+using ITD = RobotSimObject.IntakeTriggerData;
+using STD = RobotSimObject.ShotTrajectoryData;
+
+#nullable enable
+
 namespace Synthesis.PreferenceManager {
     // Funky inner setup so I can control the lifetime of the instance
     public static class SimulationPreferences {
@@ -32,6 +37,12 @@ namespace Synthesis.PreferenceManager {
         public static float? GetRobotJointSpeed(string robot, string speedKey)
             => Instance.GetRobotJointSpeed(robot, speedKey);
 
+        public static ITD? GetRobotIntakeTriggerData(string robot)
+            => Instance.GetRobotIntakeTriggerData(robot);
+
+        public static STD? GetRobotTrajectoryData(string robot)
+            => Instance.GetTrajectoryData(robot);
+
         public static void SetRobotInput(string robot, string inputKey, Analog inputValue) {
             Instance.SetRobotInput(robot, inputKey, inputValue);
         }
@@ -42,6 +53,14 @@ namespace Synthesis.PreferenceManager {
 
         public static void SetRobotJointSpeed(string robot, string speedKey, float speed) {
             Instance.SetRobotJointSpeed(robot, speedKey, speed);
+        }
+
+        public static void SetRobotIntakeTriggerData(string robot, ITD? data) {
+            Instance.SetRobotIntakeTriggerData(robot, data);
+        }
+
+        public static void SetRobotTrajectoryData(string robot, STD? data) {
+            Instance.SetRobotTrajectoryData(robot, data);
         }
 
         private class Inner {
@@ -112,6 +131,20 @@ namespace Synthesis.PreferenceManager {
                 return speeds[speedKey];
             }
 
+            public ITD? GetRobotIntakeTriggerData(string robot) {
+                if (!_allRobotData.ContainsKey(robot))
+                    return null;
+
+                return _allRobotData[robot].IntakeTrigger;
+            }
+
+            public STD? GetTrajectoryData(string robot) {
+                if (!_allRobotData.ContainsKey(robot))
+                    return null;
+
+                return _allRobotData[robot].TrajectoryPointer;
+            }
+
             public void SetRobotInput(string robot, string inputKey, Analog inputValue) {
                 if (!_allRobotData.ContainsKey(robot))
                     _allRobotData[robot] = new RobotData(robot);
@@ -134,6 +167,18 @@ namespace Synthesis.PreferenceManager {
                 var rData = _allRobotData[robot];
                 rData.JointSpeeds[speedKey] = speed;
                 // _allRobotData[robot] = rData;
+            }
+
+            public void SetRobotIntakeTriggerData(string robot, ITD? data) {
+                if (!_allRobotData.ContainsKey(robot))
+                    _allRobotData[robot] = new RobotData(robot);
+                _allRobotData[robot].IntakeTrigger = data;
+            }
+
+            public void SetRobotTrajectoryData(string robot, STD? data) {
+                if (!_allRobotData.ContainsKey(robot))
+                    _allRobotData[robot] = new RobotData(robot);
+                _allRobotData[robot].TrajectoryPointer = data;
             }
         }
 
@@ -171,6 +216,10 @@ namespace Synthesis.PreferenceManager {
         public Dictionary<string, JointMotor> JointMotors;
         [JsonProperty]
         public Dictionary<string, float> JointSpeeds;
+        [JsonProperty]
+        public ITD? IntakeTrigger;
+        [JsonProperty]
+        public STD? TrajectoryPointer;
     }
 
     [JsonObject(MemberSerialization.OptIn)]
@@ -200,4 +249,32 @@ namespace Synthesis.PreferenceManager {
         public Analog GetInput()
             => (Analog)DeserializeMethod.MakeGenericMethod(this.Type).Invoke(null, new string[] { Data });
     }
+
+    // [JsonObject(MemberSerialization.OptIn)]
+    // public class JsonFriendlyData<T> {
+    //     [JsonProperty]
+    //     public Type Type;
+    //     [JsonProperty]
+    //     public string Data;
+
+    //     [JsonConstructor]
+    //     public JsonFriendlyData() { }
+
+    //     public JsonFriendlyData(T input) {
+    //         this.Type = input.GetType();
+    //         Data = JsonConvert.SerializeObject(input);
+    //     }
+
+    //     private static MethodInfo _deserializeMethod;
+    //     private static MethodInfo DeserializeMethod {
+    //         get {
+    //             if (_deserializeMethod == null)
+    //                 _deserializeMethod = typeof(JsonConvert).GetMethods().First(y => y.IsGenericMethod && y.Name.Equals("DeserializeObject"));
+    //             return _deserializeMethod;
+    //         }
+    //     }
+
+    //     public T GetData()
+    //         => (T)DeserializeMethod.MakeGenericMethod(this.Type).Invoke(null, new string[] { Data });
+    // }
 }

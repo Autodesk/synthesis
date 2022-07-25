@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Synthesis.Gizmo;
 using UnityEngine;
 
 
@@ -31,6 +32,7 @@ namespace Synthesis.Configuration
         private float floorBound = 0f;
         private float bounds = 50f;
         private float singleMoveLimitScale = 20f; //limits a single movement boundry to this number times the distance from camera to position
+        private float startRotation;
 
 
         private Transform axisArrowTransform;
@@ -147,7 +149,7 @@ namespace Synthesis.Configuration
             disableGizmo();
         }
 
-
+        private SelectableArrow _currentlyHovering;
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Escape))
@@ -168,8 +170,45 @@ namespace Synthesis.Configuration
             }
             if (Input.GetKey(KeyCode.Return))
             {
-                GizmoManager.OnEnter();
+                // GizmoManager.OnEnter();
             }
+
+            // Manually raycast and check stuff
+            // Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            // RaycastHit hitInfo;
+            // bool hit = UnityEngine.Physics.Raycast(ray, out hitInfo);
+            // if (hit) {
+            //     Debug.Log(hitInfo.collider.name);
+            // } else {
+            //     Debug.Log("No hit");
+            // }
+            // if (!Input.GetKey(KeyCode.Mouse0)) {
+            //     if (hit) {
+            //         var arrow = hitInfo.collider.gameObject.GetComponent<SelectableArrow>();
+            //         if (arrow != null) {
+            //             if (_currentlyHovering != null) {
+            //                 _currentlyHovering.OnMouseExit();
+            //             }
+            //             _currentlyHovering = arrow;
+            //             _currentlyHovering.OnMouseEnter();
+            //         }
+            //     } else if (_currentlyHovering != null) {
+            //         _currentlyHovering.OnMouseExit();
+            //         _currentlyHovering = null;
+            //     }
+            // } else if (Input.GetKeyDown(KeyCode.Mouse0)) {
+            //     if (hit) {
+            //         var arrow = hitInfo.collider.gameObject.GetComponent<SelectableArrow>();
+            //         if (arrow != null) {
+            //             arrow.OnMouseDown();
+            //         }
+            //     }
+            // } else if (Input.GetKeyUp(KeyCode.Mouse0)) {
+            //     if (_currentlyHovering != null) {
+            //         _currentlyHovering.OnMouseUp();
+            //     }
+            // }
+
             if (activeArrow == ArrowType.None) // skip if there no gizmo components being dragged
                 return;
 
@@ -261,7 +300,7 @@ namespace Synthesis.Configuration
                 else if (ActiveArrow == ArrowType.RX) t = parent.up;
                 else t = parent.forward;
                 parent.RotateAround(parent.position, axisPlane.normal, //defines point and axis plane
-                    -1 * RoundTo(Vector3.SignedAngle(pointToLook - parent.position, t, axisPlane.normal), //rounds degrees of rotation axis forward to mouse ray intersection
+                    -1 * RoundTo(Vector3.SignedAngle(pointToLook - parent.position, t, axisPlane.normal) - startRotation, //rounds degrees of rotation axis forward to mouse ray intersection
                     snapEnabled ? snapRotationToDegree : 0f)); //if control is pressed, snap to configurable value, otherwise, don't snap
             }
 
@@ -295,7 +334,7 @@ namespace Synthesis.Configuration
             lastArrowPoint = Vector3.zero;
             bufferPassed = false;
 
-            
+
             if (arrowType == ArrowType.P) //sets marker's plane
                 markerPlane = new Plane(Vector3.Normalize(Camera.main.transform.forward), parent.position);
             else if (arrowType <= ArrowType.Z) //sets up axis arrows for plane creation
@@ -314,7 +353,31 @@ namespace Synthesis.Configuration
                 }
             }
             else if (arrowType >= ArrowType.RX) //creates plane for rotation
+            {
                 axisPlane = new Plane(ArrowDirection, parent.position);
+
+                //the following code determines the starting offset between the mouse and the gizmo.
+                //does the exact same thing as a normal rotation, but extracts the resulting angle as the initial offset
+
+                //Project a ray from mouse
+                Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+                float rayLength;
+
+                //if mouse ray doesn't intersect plane, set default ray length
+                if (!axisPlane.Raycast(cameraRay, out rayLength)) rayLength = Vector3.Distance(Camera.main.transform.position, parent.position) * 10;
+
+                //get intersection point; if none, find closest point to default length
+                Vector3 pointToLook = axisPlane.ClosestPointOnPlane(cameraRay.GetPoint(rayLength));
+
+                //Correct parent's forward depending on rotation axis. Y-axis does not need corrections
+                Vector3 t;
+                if (ActiveArrow == ArrowType.RZ) t = parent.right;
+                else if (ActiveArrow == ArrowType.RX) t = parent.up;
+                else t = parent.forward;
+
+                //sets the starting rotational offset to the angle
+                startRotation = Vector3.SignedAngle(pointToLook - parent.position, t, axisPlane.normal);
+            }
 
 
         }
@@ -355,19 +418,13 @@ namespace Synthesis.Configuration
         /// Enables or disables rigidbodies using isKinematic and detect collisions
         /// </summary>
         /// <param name="enabled"></param>
-        public void SetRigidbodies(bool enabled)
-        {
-            foreach (KeyValuePair<Rigidbody, bool> rb in rigidbodiesKinematicStateInScene)
-            {
-                if (rb.Key != null)
-                {
-                    if (enabled)
-                    {
+        public void SetRigidbodies(bool enabled) {
+            foreach (KeyValuePair<Rigidbody, bool> rb in rigidbodiesKinematicStateInScene) {
+                if (rb.Key != null) {
+                    if (enabled) {
                         rb.Key.isKinematic = rb.Value; //saved dictionary state for reactivating the rigidbody's motion
                         rb.Key.detectCollisions = true;
-                    }
-                    else
-                    {
+                    } else {
                         rb.Key.isKinematic = true;
                         rb.Key.detectCollisions = false;
                     }

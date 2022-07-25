@@ -5,6 +5,11 @@ TagManager:
   serializedVersion: 2
   tags:
   - gamepiece
+  - default-floor
+  - robot
+  - field
+  - red zone
+  - blue zone
   layers:
   - Default
   - TransparentFX
@@ -12,7 +17,7 @@ TagManager:
   - Gizmo
   - Water
   - UI
-  - 
+  - UI2
   - 
   - 
   - 

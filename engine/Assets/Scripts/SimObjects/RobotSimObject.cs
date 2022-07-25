@@ -1,28 +1,44 @@
+using System.Collections.Generic;
+using System.Linq;
 using Google.Protobuf.WellKnownTypes;
 using Mirabuf;
 using Mirabuf.Joint;
-using Mirabuf.Signal;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using Synthesis;
+using Synthesis.Import;
+using Synthesis.Util;
+using Synthesis.Physics;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
 using UnityEngine;
-
 using Bounds = UnityEngine.Bounds;
-using Vector3 = UnityEngine.Vector3;
+using Joint = UnityEngine.Joint;
 using MVector3 = Mirabuf.Vector3;
 using Transform = UnityEngine.Transform;
-using Synthesis.Import;
-using Synthesis.Util;
+using Vector3 = UnityEngine.Vector3;
+using Synthesis.Gizmo;
+using Synthesis.PreferenceManager;
+using Synthesis.Runtime;
+using SynthesisAPI.InputManager.Inputs;
+using SynthesisAPI.InputManager;
+using SynthesisAPI.EventBus;
 
-public class RobotSimObject : SimObject {
+public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
-    public static string CurrentlyPossessedRobot { get; private set; } = string.Empty;
+    public const string INTAKE_GAMEPIECES = "input/intake";
+
+    private static string _currentlyPossedRobot = string.Empty;
+    public static string CurrentlyPossessedRobot {
+        get => _currentlyPossedRobot;
+        private set {
+            if (value != _currentlyPossedRobot) {
+                var old = _currentlyPossedRobot;
+                _currentlyPossedRobot = value;
+                EventBus.Push(new NewRobotEvent { NewBot = value, OldBot = old });
+            }
+        }
+    }
     public static RobotSimObject GetCurrentlyPossessedRobot()
-        => CurrentlyPossessedRobot == string.Empty ? null : SimulationManager._simulationObject[CurrentlyPossessedRobot] as RobotSimObject;
+        => CurrentlyPossessedRobot == string.Empty ? null : SimulationManager._simObjects[CurrentlyPossessedRobot] as RobotSimObject;
 
     public static int ControllableJointCounter = 0;
 
@@ -39,9 +55,49 @@ public class RobotSimObject : SimObject {
     private (List<JointInstance> leftWheels, List<JointInstance> rightWheels) _tankTrackWheels = (null, null);
 
     private Dictionary<string, (UnityEngine.Joint a, UnityEngine.Joint b)> _jointMap;
+    private List<Rigidbody> _allRigidbodies;
+
+    // SHOOTING/PICKUP
+    private GameObject _intakeTrigger;
+    private IntakeTriggerData? _intakeData;
+    public IntakeTriggerData? IntakeData {
+        get => _intakeData;
+        set {
+            _intakeData = value;
+            if (value.HasValue) {
+                _intakeTrigger.SetActive(true);
+                _intakeTrigger.transform.parent = RobotNode.transform.Find(_intakeData.Value.NodeName);
+                _intakeTrigger.transform.localPosition = _intakeData.Value.RelativePosition.ToVector3();
+                _intakeTrigger.GetComponent<SphereCollider>().radius = _intakeData.Value.TriggerSize * 0.5f;
+            } else {
+                _intakeTrigger.SetActive(false);
+            }
+
+            SimulationPreferences.SetRobotIntakeTriggerData(MiraAssembly.Info.GUID, _intakeData);
+        }
+    }
+
+    private GameObject _trajectoryPointer;
+    private ShotTrajectoryData? _trajectoryData;
+    public ShotTrajectoryData? TrajectoryData {
+        get => _trajectoryData;
+        set {
+            _trajectoryData = value;
+            if (value.HasValue) {
+                _trajectoryPointer.transform.parent = RobotNode.transform.Find(_trajectoryData.Value.NodeName);
+                _trajectoryPointer.transform.localPosition = _trajectoryData.Value.RelativePosition.ToVector3();
+                _trajectoryPointer.transform.localRotation = _trajectoryData.Value.RelativeRotation.ToQuaternion();
+            }
+
+            SimulationPreferences.SetRobotTrajectoryData(MiraAssembly.Info.GUID, _trajectoryData);
+        }
+    }
+
+    private Queue<GamepieceSimObject> _gamepiecesInPossession = new Queue<GamepieceSimObject>();
+    public bool PickingUpGamepieces { get; private set; }
 
     public RobotSimObject(string name, ControllableState state, Assembly assembly,
-            GameObject groundedNode, Dictionary<string, (UnityEngine.Joint a, UnityEngine.Joint b)> jointMap)
+            GameObject groundedNode, Dictionary<string, (Joint a, Joint b)> jointMap)
             : base(name, state) {
         MiraAssembly = assembly;
         GroundedNode = groundedNode;
@@ -50,6 +106,49 @@ public class RobotSimObject : SimObject {
         RobotBounds = GetBounds(RobotNode.transform);
         GroundedBounds = GetBounds(GroundedNode.transform);
         DebugJointAxes.DebugBounds.Add((GroundedBounds, () => GroundedNode.transform.localToWorldMatrix));
+
+        _allRigidbodies = new List<Rigidbody>(RobotNode.transform.GetComponentsInChildren<Rigidbody>());
+        PhysicsManager.Register(this);
+
+        //tags every mesh collider component in the robot with a tag of robot
+        RobotNode.tag = "robot";
+        RobotNode.GetComponentsInChildren<MeshCollider>().ForEach(g => g.tag = "robot");
+
+        _intakeTrigger = new GameObject("INTAKE_TRIGGER");
+        var trig = _intakeTrigger.AddComponent<SphereCollider>();
+        trig.isTrigger = true;
+        trig.radius = 0.01f;
+        trig.tag = "robot";
+        trig.transform.parent = GroundedNode.transform;
+        trig.transform.localPosition = Vector3.zero;
+        trig.transform.localRotation = Quaternion.identity;
+        _trajectoryPointer = new GameObject("TRAJECTORY_POINTER");
+        _trajectoryPointer.transform.parent = GroundedNode.transform;
+        _trajectoryPointer.transform.position = Vector3.zero;
+        _trajectoryPointer.transform.rotation = Quaternion.identity;
+
+        IntakeData = SimulationPreferences.GetRobotIntakeTriggerData(MiraAssembly.Info.GUID);
+        TrajectoryData = SimulationPreferences.GetRobotTrajectoryData(MiraAssembly.Info.GUID);
+    }
+
+    public static void Setup() {
+        InputManager.AssignValueInput(INTAKE_GAMEPIECES, TryGetSavedInput(INTAKE_GAMEPIECES, new Digital("E", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
+
+        SimulationRunner.OnUpdate += () => {
+            if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
+                bool pickup = InputManager.MappedValueInputs[INTAKE_GAMEPIECES].Value == 1.0F;
+                RobotSimObject.GetCurrentlyPossessedRobot().PickingUpGamepieces = pickup;
+            }
+        };
+    }
+
+    private static Analog TryGetSavedInput(string key, Analog defaultInput) {
+        if (PreferenceManager.ContainsPreference(key)) {
+            var input = (Digital)PreferenceManager.GetPreference<InputData[]>(key)[0].GetInput();
+            input.ContextBitmask = defaultInput.ContextBitmask;
+            return input;
+        }
+        return defaultInput;
     }
 
     public void Possess() {
@@ -59,6 +158,7 @@ public class RobotSimObject : SimObject {
     }
 
     public override void Destroy() {
+        PhysicsManager.Unregister(this);
         if (CurrentlyPossessedRobot.Equals(this._name)) {
             CurrentlyPossessedRobot = string.Empty;
             Camera.main.GetComponent<CameraController>().FocusPoint =
@@ -67,7 +167,64 @@ public class RobotSimObject : SimObject {
         MonoBehaviour.Destroy(GroundedNode.transform.parent.gameObject);
     }
 
-    private Bounds GetBounds(Transform top) {
+    public void ClearGamepieces() {
+        _trajectoryPointer.transform.GetChild(0).transform.parent = FieldSimObject.CurrentField.FieldObject.transform;
+        _gamepiecesInPossession.Clear();
+        // TODO: Should robot handle this or is it expected that whatever calls this will have specific intention to do something else
+    }
+
+    public void CollectGamepiece(GamepieceSimObject gp) {
+        if (!_intakeData.HasValue || !_trajectoryData.HasValue)
+            return;
+        
+        if (_gamepiecesInPossession.Count >= _intakeData.Value.StorageCapacity)
+            return;
+
+        var rb = gp.GamepieceObject.GetComponent<Rigidbody>();
+        rb.detectCollisions = false;
+        rb.isKinematic = true;
+        gp.GamepieceObject.SetActive(false);
+
+        _gamepiecesInPossession.Enqueue(gp);
+        if (_gamepiecesInPossession.Count == 1)
+            UpdateShownGamepiece();
+    }
+
+    public void ShootGamepiece() {
+        if (_gamepiecesInPossession.Count == 0)
+            return;
+
+        // Shoot Gamepiece
+        var gp = _gamepiecesInPossession.Dequeue();
+        var rb = gp.GamepieceObject.GetComponent<Rigidbody>();
+        rb.detectCollisions = true;
+        rb.isKinematic = false;
+        gp.GamepieceObject.transform.parent = FieldSimObject.CurrentField.FieldObject.transform;
+        rb.AddForce(_trajectoryPointer.transform.rotation * Vector3.forward * _trajectoryData.Value.EjectionSpeed, ForceMode.VelocityChange);
+
+        UpdateShownGamepiece();
+    }
+
+    private void UpdateShownGamepiece() {
+        // Take the first gamepiece in the queue and display it at trajectory pointer
+        if (_gamepiecesInPossession.Count == 0)
+            return;
+
+        if (_trajectoryPointer.transform.childCount > 0)
+            return;
+
+        var gp = _gamepiecesInPossession.Peek();
+        gp.GamepieceObject.SetActive(true);
+        gp.GamepieceObject.transform.parent = _trajectoryPointer.transform;
+        gp.GamepieceObject.transform.localRotation = Quaternion.identity;
+        gp.GamepieceObject.transform.localPosition = Vector3.zero;
+        gp.GamepieceObject.transform.localPosition -= gp.GamepieceBounds.center;
+        // gp.GamepieceObject.transform.position = _trajectoryPointer.transform.position
+        //     - gp.GamepieceObject.transform.localToWorldMatrix.MultiplyPoint(gp.GamepieceBounds.center);
+        
+    }
+
+    private static Bounds GetBounds(Transform top) {
         Vector3 min = new Vector3(float.MaxValue,float.MaxValue,float.MaxValue), max = new Vector3(float.MinValue,float.MinValue,float.MinValue);
         top.GetComponentsInChildren<Renderer>().ForEach(x => {
             var b = x.bounds;
@@ -78,7 +235,7 @@ public class RobotSimObject : SimObject {
             if (max.y < b.max.y) max.y = b.max.y;
             if (max.z < b.max.z) max.z = b.max.z;
         });
-        return new UnityEngine.Bounds(((max + min) / 2f) - top.position, max - min);
+        return new Bounds(((max + min) / 2f) - top.position, max - min);
     }
 
     private (List<JointInstance> leftWheels, List<JointInstance> rightWheels) GetLeftRightWheels() {
@@ -122,19 +279,21 @@ public class RobotSimObject : SimObject {
             // Spin all of the wheels straight
             wheelsInstances.ForEach(x => {
                 var def = MiraAssembly.Data.Joints.JointDefinitions[x.Value.JointReference];
+                var jointAxis = new Vector3(def.Rotational.RotationalFreedom.Axis.X, def.Rotational.RotationalFreedom.Axis.Y, def.Rotational.RotationalFreedom.Axis.Z);
                 var globalAxis = GroundedNode.transform.rotation
-                    * ((Vector3)def.Rotational.RotationalFreedom.Axis).normalized;
+                    * jointAxis.normalized;
                 var cross = Vector3.Cross(GroundedNode.transform.up, globalAxis);
                 if (Vector3.Dot(GroundedNode.transform.forward, cross) > 0) {
-                    var ogAxis = def.Rotational.RotationalFreedom.Axis;
-                    ogAxis.X *= -1;
-                    ogAxis.Y *= -1;
-                    ogAxis.Z *= -1;
+                    var ogAxis = jointAxis;
+                    ogAxis.x *= -1;
+                    ogAxis.y *= -1;
+                    ogAxis.z *= -1;
                     // Modify assembly for if a new behaviour evaluates this again
-                    def.Rotational.RotationalFreedom.Axis = ogAxis; // I think this is irrelevant after the last few lines
+                    // def.Rotational.RotationalFreedom.Axis = ogAxis; // I think this is irrelevant after the last few lines
+                    def.Rotational.RotationalFreedom.Axis = new MVector3() { X = jointAxis.x, Y = jointAxis.y, Z = jointAxis.z };
                     var joints = _jointMap[x.Key];
-                    (joints.a as UnityEngine.HingeJoint).axis = ogAxis;
-                    (joints.b as UnityEngine.HingeJoint).axis = ogAxis;
+                    (joints.a as HingeJoint).axis = ogAxis;
+                    (joints.b as HingeJoint).axis = ogAxis;
                 }
             });
             _tankTrackWheels = (leftWheels, rightWheels);
@@ -187,64 +346,141 @@ public class RobotSimObject : SimObject {
 
         SimulationManager.AddBehaviour(this.Name, arcadeBehaviour);
     }
-    
-    // public void ConfigureTankDrivetrain() {
-    //     var wheelsInstances = _miraAssembly.Data.Joints.JointInstances.Where(instance =>
-    //         instance.Value.Info.Name != "grounded"
-    //         && _miraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].UserData != null
-    //         && _miraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].UserData.Data
-    //             .TryGetValue("wheel", out var isWheel)
-    //         && isWheel == "true").ToList();
-
-    //     var leftWheels = new List<JointInstance>();
-    //     var rightWheels = new List<JointInstance>();
-
-    //     foreach (var wheelInstance in wheelsInstances)
-    //     {
-    //         _state.CurrentSignals[wheelInstance.Value.SignalReference].Value = Value.ForNumber(0.0);
-    //         var jointAnchor =
-    //             (wheelInstance.Value.Offset ?? new Vector3()) +
-    //             _miraAssembly.Data.Joints.JointDefinitions[wheelInstance.Value.JointReference].Origin ?? new Vector3();
-    //         jointAnchor = _groundedNode.transform.rotation * jointAnchor;
-    //         if (Vector3.Dot(Vector3.right, jointAnchor) > 0)
-    //         {
-    //             rightWheels.Add(wheelInstance.Value);
-    //         }
-    //         else
-    //         {
-    //             leftWheels.Add(wheelInstance.Value);
-    //         }
-    //     }
-
-    //     var arcadeBehaviour = new ArcadeDrive(
-    //         _miraAssembly.Info.Name,
-    //         leftWheels.Select(j => j.SignalReference).ToList(),
-    //         rightWheels.Select(j => j.SignalReference).ToList(),
-    //         reversedSideJoints: false
-    //     );
-    //     _driveBehaviour = arcadeBehaviour;
-
-    //     SimulationManager.AddBehaviour(_miraAssembly.Info.Name, arcadeBehaviour);
-    // }
 
     public static void SpawnRobot(string filePath) {
         SpawnRobot(filePath, new Vector3(0f, 0.5f, 0f), Quaternion.identity);
     }
     public static void SpawnRobot(string filePath, Vector3 position, Quaternion rotation) {
 
-        GizmoManager.ExitGizmo();
+        // GizmoManager.ExitGizmo();
 
         var mira = Importer.MirabufAssemblyImport(filePath);
         RobotSimObject simObject = mira.Sim as RobotSimObject;
         mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
+        
+        
         mira.MainObject.transform.position = position;
         mira.MainObject.transform.rotation = rotation;
 
-        // Event call maybe?
+        
+        //TEMPORARY: CREATING INSTAKE AT FRONT OF THE ROBOT
+        // GameObject intake = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        // intake.transform.SetParent(simObject.GroundedNode.transform);
+        
+        // intake.transform.localPosition = new Vector3(0, 0.2f, 0.3f);
+        // intake.transform.localScale = new Vector3(0.5f, 0.2f, 0.5f);
+        // intake.transform.localRotation = Quaternion.identity;
+        
+        // intake.GetComponent<Collider>().isTrigger = true;
+        // intake.GetComponent<MeshRenderer>().enabled = false;
+        // intake.tag = "robot";
+        // Shooting.intakeObject = intake;
+        
 
-        // Camera.main.GetComponent<CameraController>().FocusPoint =
-        //     () => simObject.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(simObject.GroundedBounds.center);
+
+        // TODO: Event call?
+
         simObject.Possess();
-        GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, mira.MainObject.transform, mira.MainObject.transform.position);
+
+        GizmoManager.SpawnGizmo(simObject);
+        // GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, mira.MainObject.transform, mira.MainObject.transform.position);
+    }
+
+    private Dictionary<Rigidbody, (bool isKine, Vector3 vel, Vector3 angVel)> _preFreezeStates = new Dictionary<Rigidbody, (bool isKine, Vector3 vel, Vector3 angVel)>();
+    private bool _isFrozen = false;
+    public bool isFrozen()
+        => _isFrozen;
+
+    public void Freeze() {
+        if (_isFrozen)
+            return;
+
+        _allRigidbodies.ForEach(x => {
+            _preFreezeStates[x] = (x.isKinematic, x.velocity, x.angularVelocity);
+            x.isKinematic = true;
+            x.velocity = Vector3.zero;
+            x.angularVelocity = Vector3.zero;
+        });
+
+        _isFrozen = true;
+    }
+    public void Unfreeze() {
+        if (!_isFrozen)
+            return;
+
+        _allRigidbodies.ForEach(x => {
+            var originalState = _preFreezeStates[x];
+            x.isKinematic = originalState.isKine;
+            // I think replay might take care of this
+            // if (x.velocity != Vector3.zero || x.angularVelocity != Vector3.zero);
+        });
+        _preFreezeStates.Clear();
+
+        _isFrozen = false;
+    }
+
+    public List<Rigidbody> GetAllRigidbodies()
+        => _allRigidbodies;
+
+    public GameObject GetRootGameObject() {
+        return RobotNode;
+    }
+
+    public TransformData GetGizmoData() {
+
+        return new TransformData {
+            Position = GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center),
+            Rotation = GroundedNode.transform.rotation
+        };
+    }
+
+    public void Update(TransformData data) {
+        // GroundedNode.transform.rotation = data.Rotation;
+
+        /*
+        GroundedNode.transform.position -= GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center);
+        GroundedNode.transform.rotation = Quaternion.identity;
+
+        Matrix4x4 transformation = Matrix4x4.identity;
+
+        // transformation = Matrix4x4.TRS(-GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center), Quaternion.identity, Vector3.one) * transformation;
+        transformation = Matrix4x4.TRS(Vector3.zero, data.Rotation, Vector3.one) * transformation;
+        // transformation *= Matrix4x4.TRS(data.Position, Quaternion.identity, Vector3.one);
+
+        // Apply Gizmo
+        GroundedNode.transform.rotation = transformation.rotation;
+        GroundedNode.transform.position -= GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center);
+        GroundedNode.transform.position += transformation.GetPosition(mod: false);
+        */
+
+        RobotNode.transform.rotation = Quaternion.identity;
+        RobotNode.transform.position = Vector3.zero;
+
+        RobotNode.transform.rotation = data.Rotation * Quaternion.Inverse(GroundedNode.transform.rotation);
+        RobotNode.transform.position = data.Position - GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center);
+
+        // GroundedNode.transform.RotateAround()
+        // GroundedNode.transform.position = data.Position - GroundedBounds.center;
+    }
+
+    public void End(TransformData data) { }
+
+    public struct IntakeTriggerData {
+        public string NodeName;
+        public float TriggerSize;
+        public float[] RelativePosition;
+        public int StorageCapacity;
+    }
+
+    public struct ShotTrajectoryData {
+        public string NodeName;
+        public float EjectionSpeed;
+        public float[] RelativePosition;
+        public float[] RelativeRotation;
+    }
+
+    public class NewRobotEvent : IEvent {
+        public string NewBot;
+        public string OldBot;
     }
 }

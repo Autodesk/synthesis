@@ -8,5 +8,4 @@ protoc --csharp_out=../server/Gen/Proto/ v1/ServerConnection.proto
 protoc --csharp_out=../server/Gen/Proto/ v1/ClientConnection.proto
 protoc --proto_path=../mirabuf --csharp_out=../api/Api/Gen/Mirabuf ../mirabuf/*.proto
 protoc --proto_path=../mirabuf --csharp_out=../Server/Gen/Mirabuf ../mirabuf/*.proto
-cd ..
 pause
