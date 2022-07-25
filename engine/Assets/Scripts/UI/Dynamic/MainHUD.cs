@@ -89,6 +89,7 @@ public static class MainHUD {
         MainHUD.AddItemToDrawer("Spawn", b => DynamicUIManager.CreateModal<SpawningModal>(), icon: SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
             MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>());
+        MainHUD.AddItemToDrawer("Lobbies", b => DynamicUIManager.CreateModal<ManageLobbiesModal>());
 
         if (!_hasNewRobotListener) {
             EventBus.NewTypeListener<RobotSimObject.NewRobotEvent>(e => {

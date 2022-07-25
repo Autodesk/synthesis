@@ -9,16 +9,23 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace SynthesisServer.Client
-{
-    class Client
-    {
+namespace SynthesisServer.Client {
+    public class Client {
         private const int BUFFER_SIZE = 4096;
 
+        public static event Action<string> ErrorReport;
+
+        public bool IsTcpConnected => _isRunning && _tcpSocket.Connected;
+
         private byte[] _serverBuffer;
+        private IClientHandler _handler;
         private Socket _tcpSocket;
-        private UdpClient _udpSocket;
+        private UdpClient _udpSocket = null;
 
         private IPAddress _serverIP;
         private Socket _connectedServer;
@@ -35,52 +42,82 @@ namespace SynthesisServer.Client
         //private MessageDescriptor _expectedMessageType;
 
         public byte[] SymmetricKey { get; private set; }
-        private AsymmetricCipherKeyPair _keyPair;
-        private DHParameters _parameters;
+        private Task<AsymmetricCipherKeyPair> _keyPair;
+        public AsymmetricCipherKeyPair KeyPair {
+            get {
+                if (!_hasInit)
+                    throw new Exception("Must Init");
+
+                if (!_keyPair.IsCompleted)
+                    _keyPair.Wait();
+
+                return _keyPair.Result;
+            }
+        }
+        private Task<DHParameters> _parameters;
+        public DHParameters Parameters {
+            get {
+                if (!_hasInit)
+                    throw new Exception("Must Init");
+
+                if (!_parameters.IsCompleted)
+                    _parameters.Wait();
+
+                return _parameters.Result;
+            }
+        }
         private SymmetricEncryptor _encryptor;
 
         private static readonly Lazy<Client> lazy = new Lazy<Client>(() => new Client());
         public static Client Instance { get { return lazy.Value; } }
-        private Client()
-        {
+        private Client() {
         }
 
         // Host will initiate connection with clients
 
-        public void Init(string serverIP, int tcpPort = 18001, int udpPort = 18000)
-        {
-            _tcpPort = tcpPort;
-            _udpPort = udpPort;
-
-            _serverIP = IPAddress.Parse(serverIP);
-
-            _isRunning = true;
-
+        public void Init(IClientHandler handler) {
+            _handler = handler;
+            
             _tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            _udpSocket = new UdpClient(new IPEndPoint(IPAddress.Any, _udpPort));
+            ErrorReport("Socket created");
+            // _udpSocket = new UdpClient(new IPEndPoint(IPAddress.Any, _udpPort));
 
             _encryptor = new SymmetricEncryptor();
-            _parameters = _encryptor.GenerateParameters();
-            _keyPair = _encryptor.GenerateKeys(_parameters);
+            _parameters = Task<DHParameters>.Factory.StartNew(() => {
+                var res = _encryptor.GenerateParameters();
+                ErrorReport("Generated Parameters");
+                return res;
+            });
+            _keyPair = Task<AsymmetricCipherKeyPair>.Factory.StartNew(() => {
+                var res = _encryptor.GenerateKeys(Parameters);
+                ErrorReport("Generated Keys");
+                return res;
+            });
 
             _serverBuffer = new byte[BUFFER_SIZE];
 
             _hasInit = true;
         }
 
-        public void Start(long timeoutMS = 5000)
-        {
-            if (_hasInit && TryConnectServer(_tcpSocket, _serverIP, _tcpPort, timeoutMS))
-            {
+        public bool Start(string serverIP, int tcpPort = 18001, int udpPort = 18000, long timeoutMS = 5000) {
+
+            _tcpPort = tcpPort;
+            _udpPort = udpPort;
+
+            _serverIP = IPAddress.Parse(serverIP);
+
+            if (_hasInit && TryConnectServer(_tcpSocket, _serverIP, _tcpPort, timeoutMS)) {
                 _isRunning = true;
-                if (TrySendKeyExchange())
-                {
+                if (TrySendKeyExchange()) {
                     _tcpSocket.BeginReceive(_serverBuffer, 0, BUFFER_SIZE, SocketFlags.None, new AsyncCallback(TCPReceiveCallback), null);
+                    return true;
+                } else {
+                    // TODO: Fail
+                    return false;
                 }
-            }
-            else
-            {
+            } else {
                 System.Diagnostics.Debug.WriteLine("Failed to connect to server (Make sure you call Init() first)"); // Use logger instead
+                return false;
             }
         }
         public void Stop()
@@ -88,30 +125,34 @@ namespace SynthesisServer.Client
             _isRunning = false;
             try
             {
-                _tcpSocket.Close();
-                _udpSocket.Close();
+                _tcpSocket.Disconnect(true);
+                if (_udpSocket != null)
+                    _udpSocket.Close();
             }
             catch (SocketException) { }
         }
         private bool TryConnectServer(Socket socket, IPAddress ip, int port, long timeoutMS)
         {
+            ErrorReport($"TryConnect Called: {System.DateTime.Now}");
             long start = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
             while (!_tcpSocket.Connected || System.DateTimeOffset.Now.ToUnixTimeMilliseconds() - start >= timeoutMS)
             {
-                try
-                {
+                try {
                     _tcpSocket.Connect(_serverIP, _tcpPort);
                 }
-                catch (SocketException) {}
+                catch (SocketException e) {
+                    if (ErrorReport != null)
+                        ErrorReport(e.Message);
+                }
             }
+            ErrorReport("Connected To Server");
             return _tcpSocket.Connected;
         }
         private bool DisconnectServer()
         {
             if (_tcpSocket.Connected)
             {
-                try
-                {
+                try {
                     _tcpSocket.Close();
                     return true;
                 }
@@ -161,38 +202,58 @@ namespace SynthesisServer.Client
                     });
                 }
 
-                if (message.Is(KeyExchange.Descriptor)) { HandleKeyExchange(message.Unpack<KeyExchange>()); }
-                else if (message.Is(StatusMessage.Descriptor)) { HandleStatusMessage(message.Unpack<StatusMessage>()); }
-                else if (message.Is(ServerInfoResponse.Descriptor)) { HandleServerInfoResponse(message.Unpack<ServerInfoResponse>()); }
-                else if (message.Is(CreateLobbyResponse.Descriptor)) { HandleCreateLobbyResponse(message.Unpack<CreateLobbyResponse>()); }
-                else if (message.Is(DeleteLobbyResponse.Descriptor)) { HandleDeleteLobbyResponse(message.Unpack<DeleteLobbyResponse>()); }
-                else if (message.Is(JoinLobbyResponse.Descriptor)) { HandleJoinLobbyResponse(message.Unpack<JoinLobbyResponse>()); }
-                else if (message.Is(LeaveLobbyResponse.Descriptor)) { HandleLeaveLobbyResponse(message.Unpack<LeaveLobbyResponse>()); }
-                else if (message.Is(StartLobbyResponse.Descriptor)) { HandleStartLobbyResponse(message.Unpack<StartLobbyResponse>()); }
-                else if (message.Is(SwapResponse.Descriptor)) { HandleSwapResponse(message.Unpack<SwapResponse>()); }
+                Action handleFunc = null;
 
-                _tcpSocket.BeginReceive(_serverBuffer, 0, BUFFER_SIZE, SocketFlags.None, new AsyncCallback(TCPReceiveCallback), null);
+                if (message.Is(KeyExchange.Descriptor)) {
+                    handleFunc = () => {
+                        var ke = message.Unpack<KeyExchange>();
+                        this.SymmetricKey = _encryptor.GenerateSharedSecret(ke.PublicKey, Parameters, KeyPair);
+                        _id = ke.ClientId;
+                        ErrorReport($"Key Set\nKey Length {this.SymmetricKey.Length}\nClient ID: {_id}");
+                    };
+                }
+
+                if (message.Is(StatusMessage.Descriptor)) { handleFunc = () => _handler.HandleStatusMessage(message.Unpack<StatusMessage>()); }
+                else if (message.Is(ServerInfoResponse.Descriptor)) { handleFunc = () => _handler.HandleServerInfoResponse(message.Unpack<ServerInfoResponse>()); }
+                else if (message.Is(CreateLobbyResponse.Descriptor)) { handleFunc = () => _handler.HandleCreateLobbyResponse(message.Unpack<CreateLobbyResponse>()); }
+                else if (message.Is(DeleteLobbyResponse.Descriptor)) { handleFunc = () => _handler.HandleDeleteLobbyResponse(message.Unpack<DeleteLobbyResponse>()); }
+                else if (message.Is(JoinLobbyResponse.Descriptor)) { handleFunc = () => _handler.HandleJoinLobbyResponse(message.Unpack<JoinLobbyResponse>()); }
+                else if (message.Is(LeaveLobbyResponse.Descriptor)) { handleFunc = () => _handler.HandleLeaveLobbyResponse(message.Unpack<LeaveLobbyResponse>()); }
+                else if (message.Is(StartLobbyResponse.Descriptor)) { handleFunc = () => _handler.HandleStartLobbyResponse(message.Unpack<StartLobbyResponse>()); }
+                else if (message.Is(SwapResponse.Descriptor)) { handleFunc = () => _handler.HandleSwapResponse(message.Unpack<SwapResponse>()); }
+
+                try {
+                    handleFunc();
+                } catch (Exception e) {
+                    // ERROR
+                }
+
+                if (_isRunning)
+                    _tcpSocket.BeginReceive(_serverBuffer, 0, BUFFER_SIZE, SocketFlags.None, new AsyncCallback(TCPReceiveCallback), null);
             }
             catch (SocketException) { }
         }
-        private void TCPSendCallback(IAsyncResult asyncResult)
-        {
-        }
-
+        private void TCPSendCallback(IAsyncResult asyncResult) { }
 
         // UDP Callbacks
 
         // Client Actions
+
+        public void LockUntilKeyAvailable() {
+            while (SymmetricKey == null || SymmetricKey.Length == 0)
+                Thread.Sleep(50);
+        }
+
         private bool TrySendKeyExchange()
         {
             if (_hasInit && _isRunning && _tcpSocket.Connected)
             {
                 KeyExchange exchangeMsg = new KeyExchange()
                 {
-                    ClientId = _id,
-                    G = _parameters.G.ToString(),
-                    P = _parameters.P.ToString(),
-                    PublicKey = ((DHPublicKeyParameters)_keyPair.Public).Y.ToString()
+                    // ClientId = _id,
+                    G = Parameters.G.ToString(),
+                    P = Parameters.P.ToString(),
+                    PublicKey = ((DHPublicKeyParameters)KeyPair.Public).Y.ToString()
                 };
                 //_expectedMessageType = KeyExchange.Descriptor;
                 IO.SendMessage(exchangeMsg, _tcpSocket, new AsyncCallback(TCPSendCallback));
@@ -200,8 +261,8 @@ namespace SynthesisServer.Client
             }
             return false;
         }
-        public bool TrySendCreateLobby(string lobbyName)
-        {
+        public bool TrySendCreateLobby(string lobbyName) {
+            LockUntilKeyAvailable();
             if (_hasInit && _isRunning && _tcpSocket.Connected)
             {
                 CreateLobbyRequest request = new CreateLobbyRequest()
@@ -213,8 +274,8 @@ namespace SynthesisServer.Client
             }
             return false;
         }
-        public bool TrySendDeleteLobby(string lobbyName)
-        {
+        public bool TrySendDeleteLobby(string lobbyName) {
+            LockUntilKeyAvailable();
             if (_hasInit && _isRunning && _tcpSocket.Connected)
             {
                 DeleteLobbyRequest request = new DeleteLobbyRequest()
@@ -226,8 +287,8 @@ namespace SynthesisServer.Client
             }
             return false;
         }
-        public bool TrySendJoinLobby(string lobbyName)
-        {
+        public bool TrySendJoinLobby(string lobbyName) {
+            LockUntilKeyAvailable();
             if (_hasInit && _isRunning && _tcpSocket.Connected)
             {
                 JoinLobbyRequest request = new JoinLobbyRequest()
@@ -239,8 +300,8 @@ namespace SynthesisServer.Client
             }
             return false;
         }
-        public bool TrySendLeaveLobby(string lobbyName)
-        {
+        public bool TrySendLeaveLobby(string lobbyName) {
+            LockUntilKeyAvailable();
             if (_hasInit && _isRunning && _tcpSocket.Connected)
             {
                 LeaveLobbyRequest request = new LeaveLobbyRequest()
@@ -252,8 +313,8 @@ namespace SynthesisServer.Client
             }
             return false;
         }
-        public bool TrySendStartLobby(string lobbyName)
-        {
+        public bool TrySendStartLobby(string lobbyName) {
+            LockUntilKeyAvailable();
             if (_hasInit && _isRunning && _tcpSocket.Connected)
             {
                 StartLobbyRequest request = new StartLobbyRequest()
@@ -265,8 +326,8 @@ namespace SynthesisServer.Client
             }
             return false;
         }
-        public bool TrySendSwapPosition(string lobbyName, int firstPosition, int secondPosition)
-        {
+        public bool TrySendSwapPosition(string lobbyName, int firstPosition, int secondPosition) {
+            LockUntilKeyAvailable();
             if (_hasInit && _isRunning && _tcpSocket.Connected)
             {
                 SwapRequest request = new SwapRequest()
@@ -280,8 +341,8 @@ namespace SynthesisServer.Client
             }
             return false;
         }
-        public bool TrySendGetServerData()
-        {
+        public bool TrySendGetServerData() {
+            LockUntilKeyAvailable();
             if (_hasInit && _isRunning && _tcpSocket.Connected)
             {
                 ServerInfoRequest request = new ServerInfoRequest()
@@ -292,43 +353,15 @@ namespace SynthesisServer.Client
             }
             return false;
         }
-
-        // Server Response Handlers
-        private void HandleKeyExchange(KeyExchange exchangeMessage)
-        {
-            throw new NotImplementedException();
-        }
-        private void HandleStatusMessage(StatusMessage statusMessage)
-        {
-            throw new NotImplementedException();
-        }
-        private void HandleServerInfoResponse(ServerInfoResponse serverInfoResponse)
-        {
-            throw new NotImplementedException();
-        }
-        private void HandleCreateLobbyResponse(CreateLobbyResponse createLobbyResponse)
-        {
-            throw new NotImplementedException();
-        }
-        private void HandleDeleteLobbyResponse(DeleteLobbyResponse deleteLobbyResponse)
-        {
-            throw new NotImplementedException();
-        }
-        private void HandleJoinLobbyResponse(JoinLobbyResponse joinLobbyResponse)
-        {
-            throw new NotImplementedException();
-        }
-        private void HandleLeaveLobbyResponse(LeaveLobbyResponse leaveLobbyResponse)
-        {
-            throw new NotImplementedException();
-        }
-        private void HandleStartLobbyResponse(StartLobbyResponse startLobbyResponse)
-        {
-            throw new NotImplementedException();
-        }
-        private void HandleSwapResponse(SwapResponse swapResponse)
-        {
-            throw new NotImplementedException();
+        public bool TrySendHeartbeat() {
+            LockUntilKeyAvailable();
+            if (_hasInit && _isRunning && _tcpSocket.Connected)
+            {
+                Heartbeat request = new Heartbeat();
+                IO.SendEncryptedMessage(request, _id, SymmetricKey, _tcpSocket, _encryptor, new AsyncCallback(TCPSendCallback));
+                return true;
+            }
+            return false;
         }
     }
 }

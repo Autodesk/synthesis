@@ -38,6 +38,7 @@ message ServerInfoResponse {
 	repeated Lobby lobbies = 1;
 	string current_lobby = 2;
 	string current_name = 3;
+	GenericResponse generic_response = 4;
 		
 	message Lobby {
 		string lobby_name = 1;

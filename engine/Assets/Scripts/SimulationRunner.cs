@@ -11,6 +11,7 @@ using UnityEngine;
 
 using Logger = SynthesisAPI.Utilities.Logger;
 using Synthesis.UI;
+using Synthesis.Networking;
 
 namespace Synthesis.Runtime {
     public class SimulationRunner : MonoBehaviour {
@@ -33,6 +34,8 @@ namespace Synthesis.Runtime {
             RobotSimObject.Setup();
 
             OnUpdate += DynamicUIManager.Update;
+
+            NetworkManager.Init();
 
             // TestColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
             // RotationalDriver.TestSphericalCoordinate();
@@ -66,6 +69,7 @@ namespace Synthesis.Runtime {
 
         void OnDestroy() {
             Synthesis.PreferenceManager.PreferenceManager.Save();
+            NetworkManager.Kill();
         }
 
         public static void SetContext(uint c) {

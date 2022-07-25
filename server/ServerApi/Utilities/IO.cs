@@ -15,7 +15,7 @@ namespace SynthesisServer.Utilities
             byte[] msgLength = new byte[sizeof(int)];
             Array.Copy(buffer, 0, msgLength, 0, msgLength.Length);
 
-            byte[] msg = new byte[BitConverter.ToInt32(msgLength)];
+            byte[] msg = new byte[BitConverter.ToInt32(msgLength, 0)];
             Array.Copy(buffer, sizeof(int), msg, 0, msg.Length);
 
             buffer = buffer.Skip(msgLength.Length + msg.Length).ToArray();

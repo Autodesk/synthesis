@@ -11,14 +11,14 @@ using System.Security.Cryptography;
 using System.Text;
 using Google.Protobuf;
 
-namespace SynthesisServer
-{
+namespace SynthesisServer {
+    class Program {
+        public static void Main(string[] args) {
 
-    class Program
-    {
-        
-        public static async Task Main(string[] args)
-        {
+            Console.WriteLine("FUFHUJSDHUJFIKSDA");
+
+            if (args.Length == 0)
+                args = new string[] { "start" };
 
             string filePath = "appsettings.json";
             var builder = new HostBuilder();
@@ -48,9 +48,8 @@ namespace SynthesisServer
             var host = builder.Build();
            
             
-            await host.RunAsync();
+            host.RunAsync().Wait();
             
         }
-
     }
 }

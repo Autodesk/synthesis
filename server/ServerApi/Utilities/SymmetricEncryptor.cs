@@ -1,5 +1,6 @@
 ﻿using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Digests;
+using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
@@ -68,8 +69,9 @@ namespace SynthesisServer.Utilities
 
                 using (ICryptoTransform encryptor = aes.CreateEncryptor())
                 {
-                    byte[] result = new byte[aes.IV.Length + aes.Key.Length];
+                    
                     byte[] encryptedData = encryptor.TransformFinalBlock(data, 0, data.Length);
+                    byte[] result = new byte[aes.IV.Length + encryptedData.Length];
 
                     aes.IV.CopyTo(result, 0);
                     encryptedData.CopyTo(result, aes.IV.Length);

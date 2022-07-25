@@ -39,6 +39,7 @@
      <Compile Include="Assets\Scripts\Modes\PracticeMode.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\ParentAdapter.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Panels\Information\ScoreboardPanel.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Networking\ManageLobbiesModal.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\TransformAdapter.cs" />
      <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyItem.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Api.cs" />
@@ -57,6 +58,7 @@
      <Compile Include="Assets\Scripts\UI\Dynamic\Panels\SpawnLocationPanel.cs" />
      <Compile Include="Assets\Scripts\UI\SynthesisAssetCollection.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Configuring\PracticeSettingsModal.cs" />
+     <Compile Include="Assets\Scripts\Networking\NetworkManager.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Settings\SettingsInput.cs" />
      <Compile Include="Assets\Scripts\UI\ToastLogger\ToastManager.cs" />
      <Compile Include="Assets\Scripts\Tween\Demo\TweenDemo.cs" />
@@ -447,6 +449,12 @@
     </Reference>
     <Reference Include="DotNetZip">
         <HintPath>C:/Users/hunte/work/synthesis/engine/Assets/Packages/DotNetZip.1.15.0/lib/net40/DotNetZip.dll</HintPath>
+    </Reference>
+    <Reference Include="BouncyCastle.Crypto">
+        <HintPath>C:/Users/hunte/work/synthesis/engine/Assets/Packages/BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
+    <Reference Include="ServerApi">
+        <HintPath>C:/Users/hunte/work/synthesis/engine/Assets/Packages/ServerApi.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>

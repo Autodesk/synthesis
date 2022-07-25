@@ -22,7 +22,9 @@
         "System.Runtime.CompilerServices.Unsafe.dll",
         "nunit.framework.dll",
         "System.IO.Compression.ZipFile",
-        "DotNetZip.dll"
+        "DotNetZip.dll",
+        "BouncyCastle.Crypto.dll",
+        "ServerApi.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],
