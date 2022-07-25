@@ -167,7 +167,10 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         MonoBehaviour.Destroy(GroundedNode.transform.parent.gameObject);
     }
 
-    public void ClearGamepieces() {
+    public void ClearGamepieces()
+    {
+        if (_gamepiecesInPossession.Count == 0)
+            return;
         _trajectoryPointer.transform.GetChild(0).transform.parent = FieldSimObject.CurrentField.FieldObject.transform;
         _gamepiecesInPossession.Clear();
         // TODO: Should robot handle this or is it expected that whatever calls this will have specific intention to do something else
