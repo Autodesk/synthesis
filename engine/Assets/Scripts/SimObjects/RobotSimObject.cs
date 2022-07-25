@@ -404,6 +404,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         _allRigidbodies.ForEach(x => {
             _preFreezeStates[x] = (x.isKinematic, x.velocity, x.angularVelocity);
             x.isKinematic = true;
+            x.detectCollisions = false;
             x.velocity = Vector3.zero;
             x.angularVelocity = Vector3.zero;
         });
@@ -417,6 +418,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         _allRigidbodies.ForEach(x => {
             var originalState = _preFreezeStates[x];
             x.isKinematic = originalState.isKine;
+            x.detectCollisions = true;
             // I think replay might take care of this
             // if (x.velocity != Vector3.zero || x.angularVelocity != Vector3.zero);
         });

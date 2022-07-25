@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Synthesis.Gizmo;
+using Synthesis.Physics;
 using UnityEngine;
 
 
@@ -112,7 +113,8 @@ namespace Synthesis.Configuration
         }
         private void setTransform() //called to set certain value when activated or when the parent changes
         {
-            SetRigidbodies(false);
+            //SetRigidbodies(false);
+            PhysicsManager.IsFrozen = true;
 
             parent = transform.parent;
             transform.localPosition = Vector3.zero;
@@ -127,23 +129,20 @@ namespace Synthesis.Configuration
         {
             cam.PitchLowerLimit = originalLowerPitch;
             cam.FocusPoint = originalCameraFocusPoint;
-            SetRigidbodies(true);
+            PhysicsManager.IsFrozen = false;
+            //SetRigidbodies(true);
         }
 
         private void OnTransformParentChanged()//only called for testing for changing parent transforms
         {
             if (transform.parent != null)
             {
-                setTransform();
+                //setTransform();
             }
         }
         private void OnEnable()
         {
             setTransform();
-        }
-        private void OnDisable()
-        {
-            disableGizmo();
         }
         private void OnDestroy()
         {
@@ -385,14 +384,15 @@ namespace Synthesis.Configuration
         /// <param name="enabled"></param>
         public void SetRigidbodies(bool enabled) {
 
+
             // Robot exists
             if (RobotSimObject.CurrentlyPossessedRobot != String.Empty)
             {
                 var robot = RobotSimObject.GetCurrentlyPossessedRobot();
                 var rbs = robot.RobotNode.GetComponentsInChildren<Rigidbody>();
                 rbs.ForEach(e => {
-                        e.isKinematic = enabled;
-                        e.detectCollisions = !enabled;
+                        e.isKinematic = !enabled;
+                        e.detectCollisions = enabled;
                 });
             }
 
@@ -403,8 +403,8 @@ namespace Synthesis.Configuration
                 FieldSimObject.CurrentField.Gamepieces.Where(e => !e.IsCurrentlyPossessed)
                     .Select(e => e.GamepieceObject.GetComponent<Rigidbody>())).ForEach(e =>
                 {
-                    e.isKinematic = enabled;
-                    e.detectCollisions = !enabled;
+                    e.isKinematic = !enabled;
+                    e.detectCollisions = enabled;
                 });
             }
         }
