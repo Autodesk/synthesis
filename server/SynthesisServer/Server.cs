@@ -324,6 +324,10 @@ namespace SynthesisServer {
             } else {
                 _lobbiesLock.EnterWriteLock();
                 _lobbies[createLobbyRequest.LobbyName] = new Lobby(_clients[clientID], LOBBY_SIZE, createLobbyRequest.LobbyName);
+                if (_clients[clientID].CurrentLobby != string.Empty && _lobbies.ContainsKey(_clients[clientID].CurrentLobby))
+                {
+                    _lobbies[_clients[clientID].CurrentLobby].TryRemoveClient(_clients[clientID]);
+                }
                 _lobbiesLock.ExitWriteLock();
 
                 _clientsLock.EnterWriteLock();
@@ -424,7 +428,7 @@ namespace SynthesisServer {
             _clientsLock.EnterUpgradeableReadLock();
             _lobbiesLock.EnterWriteLock();
 
-            if (_lobbies.ContainsKey(joinLobbyRequest.LobbyName) && _clients[clientID].CurrentLobby == null && _lobbies[joinLobbyRequest.LobbyName].TryAddClient(_clients[clientID])) {
+            if (_lobbies.ContainsKey(joinLobbyRequest.LobbyName) && _clients[clientID].CurrentLobby == String.Empty && _lobbies[joinLobbyRequest.LobbyName].TryAddClient(_clients[clientID])) {
                 _lobbiesLock.ExitWriteLock();
 
                 _clientsLock.EnterWriteLock();
