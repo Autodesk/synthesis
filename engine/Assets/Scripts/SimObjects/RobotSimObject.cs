@@ -189,6 +189,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         gp.GamepieceObject.SetActive(false);
 
         _gamepiecesInPossession.Enqueue(gp);
+
+        gp.IsCurrentlyPossessed = true;
         if (_gamepiecesInPossession.Count == 1)
             UpdateShownGamepiece();
     }
@@ -204,6 +206,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         rb.isKinematic = false;
         gp.GamepieceObject.transform.parent = FieldSimObject.CurrentField.FieldObject.transform;
         rb.AddForce(_trajectoryPointer.transform.rotation * Vector3.forward * _trajectoryData.Value.EjectionSpeed, ForceMode.VelocityChange);
+        gp.IsCurrentlyPossessed = false;
 
         UpdateShownGamepiece();
     }
