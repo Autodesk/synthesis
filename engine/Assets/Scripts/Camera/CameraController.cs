@@ -1,9 +1,10 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Synthesis.UI.Panels.Variant;
 
 public class CameraController : MonoBehaviour
 {
-    private ICameraMode _cameraMode = new OrbitCameraMode();
+    private ICameraMode _cameraMode;
     public ICameraMode CameraMode
     {
         get { return _cameraMode; }
@@ -14,7 +15,16 @@ public class CameraController : MonoBehaviour
         }
     }
     
-    
+    public static Dictionary<string, ICameraMode> CameraModes = new Dictionary<string, ICameraMode>();
+
+    static CameraController()
+    {
+        CameraModes.Add("Orbit", new OrbitCameraMode());
+        CameraModes.Add("Freecam", new FreeCameraMode());
+        CameraModes.Add("Overview", new OverviewCameraMode());
+    }
+
+
     public static bool isOverGizmo = false;
     
     [SerializeField, Range(1f, 15.0f)] public float PitchSensitivity;
@@ -31,6 +41,7 @@ public class CameraController : MonoBehaviour
     
     private void Start()
     { //Set Camera and Screen Settings
+        CameraMode = CameraModes["Orbit"];
         SettingsPanel.LoadSettings();
         SettingsPanel.MaximizeScreen();
         

@@ -1,4 +1,5 @@
 
+using System;
 using System.Linq;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
@@ -27,16 +28,20 @@ public class FreeCameraMode : ICameraMode
 
     public void Start(CameraController cam)
     {
-        InputManager.AssignDigitalInput(FORWARD_KEY, new Digital("UpArrow"));
-        InputManager.AssignDigitalInput(BACK_KEY, new Digital("DownArrow"));
-        InputManager.AssignDigitalInput(LEFT_KEY, new Digital("LeftArrow"));
-        InputManager.AssignDigitalInput(RIGHT_KEY, new Digital("RightArrow"));
-        InputManager.AssignDigitalInput(UP_KEY, new Digital("Space"));
-        InputManager.AssignDigitalInput(DOWN_KEY, new Digital("LeftShift"));
-        InputManager.AssignValueInput(LEFT_YAW_KEY, new Digital("Q"));
-        InputManager.AssignValueInput(RIGHT_YAW_KEY, new Digital("E"));
-        InputManager.AssignValueInput(DOWN_PITCH_KEY, new Digital("Z"));
-        InputManager.AssignValueInput(UP_PITCH_KEY, new Digital("X"));
+        // only assign inputs once
+        if (!InputManager.MappedDigitalInputs.ContainsKey(FORWARD_KEY))
+        {
+            InputManager.AssignDigitalInput(FORWARD_KEY, new Digital("UpArrow"));
+            InputManager.AssignDigitalInput(BACK_KEY, new Digital("DownArrow"));
+            InputManager.AssignDigitalInput(LEFT_KEY, new Digital("LeftArrow"));
+            InputManager.AssignDigitalInput(RIGHT_KEY, new Digital("RightArrow"));
+            InputManager.AssignDigitalInput(UP_KEY, new Digital("Space"));
+            InputManager.AssignDigitalInput(DOWN_KEY, new Digital("LeftShift"));
+            InputManager.AssignValueInput(LEFT_YAW_KEY, new Digital("Q"));
+            InputManager.AssignValueInput(RIGHT_YAW_KEY, new Digital("E"));
+            InputManager.AssignValueInput(DOWN_PITCH_KEY, new Digital("Z"));
+            InputManager.AssignValueInput(UP_PITCH_KEY, new Digital("X"));
+        }
     }
     
     public void Update(CameraController cam)
@@ -93,6 +98,9 @@ public class FreeCameraMode : ICameraMode
                              InputManager.MappedDigitalInputs[DOWN_KEY][0].Value);
         
         t.Translate(Time.deltaTime * speed * (forward + right + up),Space.World);
+
+        // we don't want the user to be able to move the camera under the map or so high they can't see the field
+        t.position = new Vector3(t.position.x, Mathf.Clamp(t.position.y, 0, 100), t.position.z);
 
         t.localRotation = Quaternion.Euler(_actualPitch, _actualYaw, 0.0f);
     }

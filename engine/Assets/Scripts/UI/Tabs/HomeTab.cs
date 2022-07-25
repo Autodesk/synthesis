@@ -19,6 +19,11 @@ namespace Synthesis.UI.Tabs {
                 SynthesisAssetCollection.GetSpriteByName("Multiplayer1-Gray"),
                 () => DynamicUIManager.CreatePanel<RobotDetailsPanel>()
             );
+            CreateButton(
+                "Change View",
+                SynthesisAssetCollection.GetSpriteByName("fieldimport"),
+                () => DynamicUIManager.CreateModal<ChangeViewModal>()
+            );
             CreateDivider();
             CreateButton(
                 "Scoreboard",
