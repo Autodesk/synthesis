@@ -22,6 +22,7 @@ namespace Synthesis.Physics {
             set {
                 if (_isFrozen != value) {
                     _isFrozen = value;
+                    // Debug.Log($"Frozen: {_isFrozen}");
                     if (_isFrozen) {
                         SimulationRunner.RemoveContext(SimulationRunner.RUNNING_SIM_CONTEXT);
                         SimulationRunner.AddContext(SimulationRunner.PAUSED_SIM_CONTEXT);

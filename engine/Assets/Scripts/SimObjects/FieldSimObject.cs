@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Mirabuf;
+using Synthesis.Gizmo;
 using Synthesis.Import;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
@@ -40,6 +41,8 @@ public class FieldSimObject : SimObject {
         position.y -= FieldBounds.center.y - FieldBounds.extents.y;
         FieldObject.transform.position = position;
 
+        _initialPosition = FieldObject.transform.position;
+
         CurrentField = this;
         Gamepieces.ForEach(gp =>
         {
@@ -47,12 +50,13 @@ public class FieldSimObject : SimObject {
             gp.InitialPosition = gpTransform.position;
             gp.InitialRotation = gpTransform.rotation;
         });
+        // Shooting.ConfigureGamepieces();
     }
 
-    public void ResetField()
-    {
-        GroundedNode.transform.position = _initialPosition;
-        GroundedNode.transform.rotation = _initialRotation;
+    public void ResetField() {
+        SpawnField(MiraAssembly);
+        // FieldObject.transform.position = _initialPosition;
+        // FieldObject.transform.rotation = _initialRotation;
     }
 
     public static bool DeleteField() {
@@ -60,6 +64,9 @@ public class FieldSimObject : SimObject {
             return false;
 
         // Debug.Log($"GP count: {CurrentField.Gamepieces.Count}");
+
+        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+            RobotSimObject.GetCurrentlyPossessedRobot().ClearGamepieces();
 
         CurrentField.Gamepieces.ForEach(x => x.DeleteGamepiece());
         CurrentField.Gamepieces.Clear();
@@ -71,12 +78,29 @@ public class FieldSimObject : SimObject {
     }
 
     public static void SpawnField(string filePath) {
-
         DeleteField();
 
         var mira = Importer.MirabufAssemblyImport(filePath);
         mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
         mira.MainObject.tag = "field";
+
+        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
+            GizmoManager.SpawnGizmo(RobotSimObject.GetCurrentlyPossessedRobot());
+            // TODO: Move robot to default spawn location for field
+        }
+    }
+
+    public static void SpawnField(Assembly miraAssem) {
+        DeleteField();
+
+        var mira = Importer.MirabufAssemblyImport(miraAssem);
+        mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
+        mira.MainObject.tag = "field";
+
+        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
+            GizmoManager.SpawnGizmo(RobotSimObject.GetCurrentlyPossessedRobot());
+            // TODO: Move robot to default spawn location for field
+        }
     }
 
     public void CreateScoringZone(Alliance alliance, int points, bool destroyObject = true)

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Synthesis.Gizmo;
 using SynthesisAPI.EventBus;
 using UnityEngine;
 
@@ -79,7 +80,14 @@ public class TempScoreManager : MonoBehaviour
     {
         GameObject zone = GameObject.CreatePrimitive(PrimitiveType.Cube);
         zone.transform.position = new Vector3(x, y, z);
-        GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, zone.transform, zone.transform.position);
+        GizmoManager.SpawnGizmo(
+            zone.transform,
+            t => zone.transform.position = t.Position,
+            t => {
+                zone.GetComponent<Renderer>().enabled = false;
+            }
+        );
+        // GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, zone.transform, zone.transform.position);
         ScoringZones.Add(new ScoringZone(zone, alliance, points, destroyObject));
     }
 
