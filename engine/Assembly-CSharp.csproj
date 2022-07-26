@@ -312,6 +312,9 @@
     <Reference Include="DotNetZip">
         <HintPath>C:/Users/hunte/work/synthesis/engine/Assets/Packages/DotNetZip.1.15.0/lib/net40/DotNetZip.dll</HintPath>
     </Reference>
+    <Reference Include="BouncyCastle.Crypto">
+        <HintPath>C:/Users/hunte/work/synthesis/engine/Assets/Packages/BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
     <Reference Include="Api">
         <HintPath>C:/Users/hunte/work/synthesis/engine/Assets/Packages/Api.dll</HintPath>
     </Reference>
@@ -323,6 +326,9 @@
     </Reference>
     <Reference Include="MathNet.Numerics">
         <HintPath>C:/Users/hunte/work/synthesis/engine/Assets/Packages/MathNet.Numerics.4.15.0/lib/net461/MathNet.Numerics.dll</HintPath>
+    </Reference>
+    <Reference Include="ServerApi">
+        <HintPath>C:/Users/hunte/work/synthesis/engine/Assets/Packages/ServerApi.dll</HintPath>
     </Reference>
     <Reference Include="Aardvark">
         <HintPath>C:/Users/hunte/work/synthesis/engine/Assets/Packages/Aardvark.dll</HintPath>

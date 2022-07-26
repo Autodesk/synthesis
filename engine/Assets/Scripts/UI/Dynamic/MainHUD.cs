@@ -21,10 +21,14 @@ public static class MainHUD {
         _tabDrawerContent?.SetWidth<Content>(v.CurrentValue);
     };
 
+    private static bool _isSetup = false;
     private static bool _enabled = true;
     public static bool Enabled {
         get => _enabled;
         set {
+            if (!_isSetup)
+                return;
+
             if (_enabled != value) {
                 _enabled = value;
                 if (_enabled) {
@@ -41,6 +45,9 @@ public static class MainHUD {
     public static bool Collapsed {
         get => _collapsed;
         set {
+            if (!_isSetup)
+                return;
+
             if (_collapsed != value) {
                 _collapsed = value;
                 if (_collapsed) {
@@ -89,6 +96,8 @@ public static class MainHUD {
         MainHUD.AddItemToDrawer("Spawn", b => DynamicUIManager.CreateModal<SpawningModal>(), icon: SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
             MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>());
+        // MainHUD.AddItemToDrawer("Lobbies", b => DynamicUIManager.CreateModal<ManageLobbiesModal>());
+        MainHUD.AddItemToDrawer("Exit", b => DynamicUIManager.CreateModal<ExitSynthesisModal>());
 
         if (!_hasNewRobotListener) {
             EventBus.NewTypeListener<RobotSimObject.NewRobotEvent>(e => {
@@ -103,11 +112,13 @@ public static class MainHUD {
                 if (robotEvent.NewBot == string.Empty) {
                     RemoveItemFromDrawer("Configure");
                 } else if (robotEvent.OldBot == string.Empty) {
-                    MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>());
+                    MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>(), index: 1);
                 }
             });
             _hasNewRobotListener = true;
         }
+
+        _isSetup = true;
     }
 
     public static void AddItemToDrawer(string title, Action<Button> onClick, int index = -1, Sprite? icon = null, Color? color = null) {
