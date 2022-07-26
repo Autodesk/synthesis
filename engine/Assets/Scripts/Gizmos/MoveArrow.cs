@@ -27,6 +27,8 @@ namespace Synthesis.Configuration
 
         private CameraController cam;
         private ICameraMode previousMode;
+        private Vector3 previousCameraPosition;
+        private Quaternion previousCameraRotation;
         private OrbitCameraMode orbit;
         private float originalLowerPitch;
         private float gizmoPitch = -80f;
@@ -98,16 +100,17 @@ namespace Synthesis.Configuration
 
         private void Start()
         {
-            cam = Camera.main.GetComponent<CameraController>();
             previousMode = cam.CameraMode;
-            orbit = new OrbitCameraMode();
-            cam.CameraMode = orbit;
+            previousCameraPosition = cam.transform.position;
+            previousCameraRotation = cam.transform.rotation;
+            cam.CameraMode = CameraController.CameraModes["Orbit"];
             originalLowerPitch = cam.PitchLowerLimit;
             originalCameraFocusPoint = OrbitCameraMode.FocusPoint;
         }
 
         private void Awake()
         {
+            cam = Camera.main.GetComponent<CameraController>();
 
             //makes a list of the rigidbodies in the hierarchy and their state
             HierarchyRigidbodiesToDictionary();
@@ -138,6 +141,8 @@ namespace Synthesis.Configuration
         private void RestoreCameraMode()
         {
             cam.CameraMode = previousMode;
+            cam.transform.position = previousCameraPosition;
+            cam.transform.rotation = previousCameraRotation;
             OrbitCameraMode.FocusPoint = originalCameraFocusPoint;
 
             // test if cam.cameraMode is of type OrbitCameraMode

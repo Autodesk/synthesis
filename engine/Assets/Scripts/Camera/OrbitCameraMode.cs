@@ -24,8 +24,8 @@ public class OrbitCameraMode : ICameraMode
 
     public void Update(CameraController cam)
     {
-        // don't allow camera movement when a modal or panel is open
-        if (DynamicUIManager.ActiveModal != null || DynamicUIManager.ActivePanel != null) return;
+        // don't allow camera movement when a modal is open
+        if (DynamicUIManager.ActiveModal != null) return;
         var pitchTest = cam.PitchUpperLimit - cam.PitchLowerLimit;
         if (pitchTest < 0)
             Debug.LogError("No range exists for pitch to reside in");

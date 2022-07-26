@@ -47,8 +47,8 @@ public class FreeCameraMode : ICameraMode
     
     public void Update(CameraController cam)
     {
-        // don't allow camera movement when a modal or panel is open
-        if (DynamicUIManager.ActiveModal != null || DynamicUIManager.ActivePanel != null) return;
+        // don't allow camera movement when a modal is open
+        if (DynamicUIManager.ActiveModal != null) return;
         float p = 0.0f;
         float y = 0.0f;
         float z = 0.0f;
@@ -84,8 +84,8 @@ public class FreeCameraMode : ICameraMode
 
     public void LateUpdate(CameraController cam)
     {
-        // don't allow camera movement when a modal or panel is open
-        if (DynamicUIManager.ActiveModal != null || DynamicUIManager.ActivePanel != null) return;
+        // don't allow camera movement when a modal is open
+        if (DynamicUIManager.ActiveModal != null) return;
         var t = cam.transform;
 
         float speed = 10.0F;
