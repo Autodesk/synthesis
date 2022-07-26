@@ -105,7 +105,7 @@ class Parser:
             assembly_out.design_hierarchy.nodes.append(rootNode)
 
             # Problem Child
-            joints.populateJoints(
+            joints.populate_joints(
                 design,
                 assembly_out.data.joints,
                 assembly_out.data.signals,
@@ -144,7 +144,7 @@ class Parser:
 
                 part_defs = assembly_out.data.parts.part_definitions
                 parts = assembly_out.data.parts.part_instances
-                joints = assembly_out.data.joints.joint_definitions
+                joints_defs = assembly_out.data.joints.joint_definitions
                 signals = assembly_out.data.signals.signal_map
 
                 joint_hierarchy_out = "Joint Hierarchy :\n"
@@ -187,7 +187,7 @@ class Parser:
                 joint_hierarchy_out += "\n\n"
 
                 gm.ui.messageBox(
-                    f"Appearances: {len(assembly_out.data.materials.appearances)} \nMaterials: {len(assembly_out.data.materials.physicalMaterials)} \nPart-Definitions: {len(part_defs)} \nParts: {len(parts)} \nSignals: {len(signals)} \nJoints: {len(joints)}\n {joint_hierarchy_out}"
+                    f"Appearances: {len(assembly_out.data.materials.appearances)} \nMaterials: {len(assembly_out.data.materials.physicalMaterials)} \nPart-Definitions: {len(part_defs)} \nParts: {len(parts)} \nSignals: {len(signals)} \nJoints: {len(joints_defs)}\n {joint_hierarchy_out}"
                 )
 
         except:

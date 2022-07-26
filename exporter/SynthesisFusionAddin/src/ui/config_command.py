@@ -56,7 +56,7 @@ class FullMassCalculuation:
     def __init__(self):
         self.totalMass = 0.0
         self.bRepMassInRoot()
-        self.traverseOccurrenceHierarchy()
+        self.traverse_occurrence_hierarchy()
 
     def bRepMassInRoot(self):
         try:
@@ -71,7 +71,7 @@ class FullMassCalculuation:
             if gm.ui:
                 gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
 
-    def traverseOccurrenceHierarchy(self):
+    def traverse_occurrence_hierarchy(self):
         try:
             for occ in gm.app.activeDocument.design.rootComponent.allOccurrences:
                 if not occ.isLightBulbOn:

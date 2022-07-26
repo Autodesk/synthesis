@@ -54,11 +54,11 @@ from .. import parse_options
 # 3. connect all instances with graphcontainer
 
 
-def populateJoints(
+def populate_joints(
     design: adsk.fusion.Design,
     joints: joint_pb2.Joints,
     signals: signal_pb2.Signals,
-    progressDialog: PDMessage,
+    progress_dialog: PDMessage,
     options: parse_options,
     assembly: assembly_pb2.Assembly,
 ):
@@ -94,11 +94,11 @@ def populateJoints(
                 #  Fusion has no instances of joints but lets roll with it anyway
 
                 # progressDialog.message = f"Exporting Joint configuration {joint.name}"
-                progressDialog.addJoint(joint.name)
+                progress_dialog.addJoint(joint.name)
 
                 # create the definition
                 joint_definition = joints.joint_definitions[joint.entityToken]
-                _addJoint(joint, joint_definition)
+                _add_joint(joint, joint_definition)
 
                 # create the instance of the single definition
                 joint_instance = joints.joint_instances[joint.entityToken]
@@ -133,12 +133,12 @@ def populateJoints(
                         # else:
                         #     signals.signal_map.remove(guid)
 
-                _addJointInstance(
+                _add_joint_instance(
                     joint, joint_instance, joint_definition, signals, options
                 )
 
                 # adds information for joint motion and limits
-                _motionFromJoint(joint.jointMotion, joint_definition)
+                _motion_from_joint(joint.jointMotion, joint_definition)
 
             except:
                 err_msg = "Failed:\n{}".format(traceback.format_exc())
@@ -148,10 +148,10 @@ def populateJoints(
                 continue
 
 
-def _addJoint(joint: adsk.fusion.Joint, joint_definition: joint_pb2.Joint):
+def _add_joint(joint: adsk.fusion.Joint, joint_definition: joint_pb2.Joint):
     fill_info(joint_definition, joint)
 
-    jointPivotTranslation = _jointOrigin(joint)
+    jointPivotTranslation = _joint_origin(joint)
 
     if jointPivotTranslation:
         joint_definition.origin.x = jointPivotTranslation.x
@@ -169,7 +169,7 @@ def _addJoint(joint: adsk.fusion.Joint, joint_definition: joint_pb2.Joint):
     joint_definition.break_magnitude = 0.0
 
 
-def _addJointInstance(
+def _add_joint_instance(
     joint: adsk.fusion.Joint,
     joint_instance: joint_pb2.JointInstance,
     joint_definition: joint_pb2.Joint,
@@ -233,16 +233,16 @@ def _addJointInstance(
                     joint_instance.signal_reference = ""
 
 
-def _motionFromJoint(
-    fusionMotionDefinition: adsk.fusion.JointMotion, proto_joint: joint_pb2.Joint
+def _motion_from_joint(
+    fusion_motion_definition: adsk.fusion.JointMotion, proto_joint: joint_pb2.Joint
 ) -> None:
     # if fusionJoint.geometryOrOriginOne.objectType == "adsk::fusion::JointGeometry"
     # create the DOF depending on what kind of information the joint has
 
     fillJointMotionFuncSwitcher = {
         0: noop,  # this should be ignored
-        1: fillRevoluteJointMotion,
-        2: fillSliderJointMotion,
+        1: fill_revolute_joint_motion,
+        2: fill_slider_joint_motion,
         3: noop,  # TODO: Implement - Ball Joint at least
         4: noop,  # TODO: Implement
         5: noop,  # TODO: Implement
@@ -250,19 +250,19 @@ def _motionFromJoint(
     }
 
     fillJointMotionFunc = fillJointMotionFuncSwitcher.get(
-        fusionMotionDefinition.jointType, lambda: None
+        fusion_motion_definition.jointType, lambda: None
     )
 
-    fillJointMotionFunc(fusionMotionDefinition, proto_joint)
+    fillJointMotionFunc(fusion_motion_definition, proto_joint)
 
 
-def fillRevoluteJointMotion(
-    revoluteMotion: adsk.fusion.RevoluteJointMotion, proto_joint: joint_pb2.Joint
+def fill_revolute_joint_motion(
+    revolute_motion: adsk.fusion.RevoluteJointMotion, proto_joint: joint_pb2.Joint
 ):
     """#### Fill Protobuf revolute joint motion data
 
     Args:
-        revoluteMotion (adsk.fusion.RevoluteJointMotion): Fusion 360 Revolute Joint Data
+        revolute_motion (adsk.fusion.RevoluteJointMotion): Fusion 360 Revolute Joint Data
         protoJoint (joint_pb2.Joint): Protobuf joint that is being modified
     """
 
@@ -279,19 +279,19 @@ def fillRevoluteJointMotion(
 
     dof.name = "Rotational Joint"
 
-    dof.value = revoluteMotion.rotationValue
+    dof.value = revolute_motion.rotationValue
 
-    if revoluteMotion.rotationLimits:
-        dof.limits.lower = revoluteMotion.rotationLimits.minimumValue
-        dof.limits.upper = revoluteMotion.rotationLimits.maximumValue
+    if revolute_motion.rotationLimits:
+        dof.limits.lower = revolute_motion.rotationLimits.minimumValue
+        dof.limits.upper = revolute_motion.rotationLimits.maximumValue
 
-    rotationAxisVector = revoluteMotion.rotationAxisVector
+    rotationAxisVector = revolute_motion.rotationAxisVector
     if rotationAxisVector:
         dof.axis.x = -rotationAxisVector.x
         dof.axis.y = rotationAxisVector.y
         dof.axis.z = rotationAxisVector.z
     else:
-        rotationAxis = revoluteMotion.rotationAxis
+        rotationAxis = revolute_motion.rotationAxis
         # don't handle 4 for now
         # There is a bug here https://jira.autodesk.com/browse/FUS-80533
         # I have 0 memory of why this is necessary
@@ -300,14 +300,14 @@ def fillRevoluteJointMotion(
         dof.axis.z = int(rotationAxis == 1)
 
 
-def fillSliderJointMotion(
-    sliderMotion: adsk.fusion.SliderJointMotion, proto_joint: joint_pb2.Joint
+def fill_slider_joint_motion(
+    slider_motion: adsk.fusion.SliderJointMotion, proto_joint: joint_pb2.Joint
 ) -> None:
     """#### Fill Protobuf slider joint motion data
 
     Args:
-        sliderMotion (adsk.fusion.SliderJointMotion): Fusion 360 Slider Joint Data
-        protoJoint (joint_pb2.Joint): Protobuf joint that is being modified
+        slider_motion (adsk.fusion.SliderJointMotion): Fusion 360 Slider Joint Data
+        proto_joint (joint_pb2.Joint): Protobuf joint that is being modified
 
     """
 
@@ -316,22 +316,22 @@ def fillSliderJointMotion(
     dof = proto_joint.prismatic.prismatic_freedom
 
     # dof.axis = sliderMotion.slideDirectionVector
-    dof.axis.x = -sliderMotion.slideDirectionVector.x
-    dof.axis.y = sliderMotion.slideDirectionVector.y
-    dof.axis.z = sliderMotion.slideDirectionVector.z
+    dof.axis.x = -slider_motion.slideDirectionVector.x
+    dof.axis.y = slider_motion.slideDirectionVector.y
+    dof.axis.z = slider_motion.slideDirectionVector.z
 
-    if sliderMotion.slideDirection is adsk.fusion.JointDirections.XAxisJointDirection:
+    if slider_motion.slideDirection is adsk.fusion.JointDirections.XAxisJointDirection:
         dof.pivotDirection = types_pb2.Axis.X
-    elif sliderMotion.slideDirection is adsk.fusion.JointDirections.YAxisJointDirection:
+    elif slider_motion.slideDirection is adsk.fusion.JointDirections.YAxisJointDirection:
         dof.pivotDirection = types_pb2.Axis.Y
-    elif sliderMotion.slideDirection is adsk.fusion.JointDirections.ZAxisJointDirection:
+    elif slider_motion.slideDirection is adsk.fusion.JointDirections.ZAxisJointDirection:
         dof.pivotDirection = types_pb2.Axis.Z
 
-    if sliderMotion.slideLimits:
-        dof.limits.lower = sliderMotion.slideLimits.minimumValue
-        dof.limits.upper = sliderMotion.slideLimits.maximumValue
+    if slider_motion.slideLimits:
+        dof.limits.lower = slider_motion.slideLimits.minimumValue
+        dof.limits.upper = slider_motion.slideLimits.maximumValue
 
-    dof.value = sliderMotion.slideValue
+    dof.value = slider_motion.slideValue
 
 
 def noop(*argv):
@@ -340,7 +340,7 @@ def noop(*argv):
     pass
 
 
-def _searchForGrounded(
+def _search_for_grounded(
     occ: adsk.fusion.Occurrence,
 ) -> Union[adsk.fusion.Occurrence, None]:
     """Search for a grounded component or occurrence in the assembly
@@ -366,7 +366,7 @@ def _searchForGrounded(
         collection = occ.childOccurrences
 
     for occ in collection:
-        searched = _searchForGrounded(occ)
+        searched = _search_for_grounded(occ)
 
         if searched != None:
             return searched
@@ -374,8 +374,8 @@ def _searchForGrounded(
     return None
 
 
-def _jointOrigin(
-    fusionJoint: Union[adsk.fusion.Joint, adsk.fusion.AsBuiltJoint]
+def _joint_origin(
+    fusion_joint: Union[adsk.fusion.Joint, adsk.fusion.AsBuiltJoint]
 ) -> adsk.core.Point3D:
     """#### Joint Origin Internal Finder that was orignally created for Synthesis by Liam Wang
 
@@ -387,12 +387,13 @@ def _jointOrigin(
     """
     geometryOrOrigin = (
         (
-            fusionJoint.geometryOrOriginOne
-            if fusionJoint.geometryOrOriginOne.objectType == "adsk::fusion::JointGeometry"
-            else fusionJoint.geometryOrOriginTwo
+            fusion_joint.geometryOrOriginOne
+            if fusion_joint.geometryOrOriginOne.objectType
+            == "adsk::fusion::JointGeometry"
+            else fusion_joint.geometryOrOriginTwo
         )
-        if fusionJoint.objectType == "adsk::fusion::Joint"
-        else fusionJoint.geometry
+        if fusion_joint.objectType == "adsk::fusion::Joint"
+        else fusion_joint.geometry
     )
 
     # This can apparently happen
@@ -404,7 +405,7 @@ def _jointOrigin(
         ent = geometryOrOrigin.entityOne
         if ent.objectType == "adsk::fusion::BRepEdge":
             if ent.assemblyContext is None:
-                newEnt = ent.createForAssemblyContext(fusionJoint.occurrenceOne)
+                newEnt = ent.createForAssemblyContext(fusion_joint.occurrenceOne)
                 min = newEnt.boundingBox.minPoint
                 max = newEnt.boundingBox.maxPoint
                 org = adsk.core.Point3D.create(
@@ -415,7 +416,7 @@ def _jointOrigin(
                 return geometryOrOrigin.origin
         if ent.objectType == "adsk::fusion::BRepFace":
             if ent.assemblyContext is None:
-                newEnt = ent.createForAssemblyContext(fusionJoint.occurrenceOne)
+                newEnt = ent.createForAssemblyContext(fusion_joint.occurrenceOne)
                 return newEnt.centroid
             else:
                 return geometryOrOrigin.origin
@@ -490,8 +491,8 @@ def createJointGraph(
         joint_tree.nodes.append(node)
 
 
-def addWheelsToGraph(
-    wheels: list, rootNode: types_pb2.Node, joint_tree: types_pb2.GraphContainer
+def add_wheels_to_graph(
+    wheels: list, root_node: types_pb2.Node, joint_tree: types_pb2.GraphContainer
 ):
     for wheel in wheels:
         # wheel name
@@ -500,5 +501,5 @@ def addWheelsToGraph(
         # these don't have children
         wheelNode = types_pb2.Node()
         wheelNode.value = wheel.occurrence_token
-        rootNode.children.append(wheelNode)
+        root_node.children.append(wheelNode)
         joint_tree.nodes.append(wheelNode)

@@ -167,7 +167,7 @@ class WheelCommandGroup(CommandGroup):
         """
         try:
             onSelect = gm.handlers[3]
-            wheelTableInput = UiGlobal.wheel_list_global
+            wheelTableInput = UiGlobal.wheel_table()
             # def addPreselections(child_occurrences):
             #     for occ in child_occurrences:
             #         onSelect.allWheelPreselections.append(occ.entityToken)
