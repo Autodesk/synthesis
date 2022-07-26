@@ -8,6 +8,7 @@ using Logger = SynthesisAPI.Utilities.Logger;
 using Synthesis.Replay;
 using Synthesis.Physics;
 using SynthesisAPI.EventBus;
+using Synthesis.Gizmo;
 
 namespace Synthesis.UI.Dynamic {
     public static class DynamicUIManager {
@@ -44,10 +45,11 @@ namespace Synthesis.UI.Dynamic {
         public static bool CreateModal<T>(params object[] args) where T : ModalDynamic {
 
             CloseActivePanel();
+            GizmoManager.ExitGizmo();
             if (ActiveModal != null)
                 CloseActiveModal();
             
-            var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("dynamic-modal-base"), GameObject.Find("UI").transform.Find("ScreenSpace").Find("ModalContainer"));
+            var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("dynamic-modal-base"), GameObject.Find("UI").transform.Find("ScreenSpace").Find("ModalContainer"));
 
             // var c = ColorManager.GetColor("SAMPLE");
 
@@ -60,28 +62,30 @@ namespace Synthesis.UI.Dynamic {
 
             SynthesisAssetCollection.BlurVolumeStatic.weight = 1f;
             PhysicsManager.IsFrozen = true;
+            MainHUD.Enabled = false;
             return true;
         }
 
         // Currently only going to allow one active panel
         public static bool CreatePanel<T>(params object[] args) where T : PanelDynamic {
-
+            
             if (ActiveModal != null)
                 return false;
 
             if (ActivePanel != null)
                 CloseActivePanel();
 
-            var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("dynamic-panel-base"), GameObject.Find("UI").transform.Find("ScreenSpace").Find("PanelContainer"));
+            var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("dynamic-panel-base"), GameObject.Find("UI").transform.Find("ScreenSpace").Find("PanelContainer"));
 
             // var c = ColorManager.GetColor("SAMPLE");
 
             PanelDynamic panel = (PanelDynamic)Activator.CreateInstance(typeof(T), args);
+            ActivePanel = panel;
             panel.Create_Internal(unityObject);
             panel.Create();
 
-            ActivePanel = panel;
-            EventBus.Push(new PanelCreatedEvent(panel));
+            if (ActivePanel != null)
+                EventBus.Push(new PanelCreatedEvent(panel));
 
             return true;
         }
@@ -100,6 +104,7 @@ namespace Synthesis.UI.Dynamic {
 
             SynthesisAssetCollection.BlurVolumeStatic.weight = 0f;
             PhysicsManager.IsFrozen = false;
+            MainHUD.Enabled = true;
             return true;
         }
 

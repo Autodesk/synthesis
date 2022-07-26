@@ -26,6 +26,14 @@ namespace Synthesis.Util {
         public static bool HasSignal(this JointInstance inst)
             => inst.SignalReference != null && !inst.SignalReference.Equals(string.Empty);
 
+        public static string ToHex(this Color c) {
+            string r = IntToHex((int)(c.r * 255));
+            string g = IntToHex((int)(c.g * 255));
+            string b = IntToHex((int)(c.b * 255));
+            string a = IntToHex((int)(c.a * 255));
+            return $"#{r}{g}{b}{a}";
+        }
+
         public static Color ColorFromHex(uint hex) => new Color(
             (float)((hex & 0xFF000000) >> 24) / 255f,
             (float)((hex & 0x00FF0000) >> 16) / 255f,
@@ -33,9 +41,11 @@ namespace Synthesis.Util {
             (float)(hex & 0x000000FF) / 255f
         );
 
-        public static Color ColorFromHex(string hex) {
+        public static Color ColorToHex(this string hex) {
             if (hex.Substring(0, 2) == "0x")
                 hex = hex.Substring(2);
+            else if (hex.Substring(0, 1) == "#")
+                hex = hex.Substring(1);
             
             if (hex.Length > 6) {
                 return new Color(
@@ -52,6 +62,30 @@ namespace Synthesis.Util {
         }
 
         public static byte HexToByte(string hex) => (byte)((HexToByte(hex[0]) * 16) + HexToByte(hex[1]));
+
+        public static string IntToHex(int ui) {
+            Func<int, char> getHex = i => {
+                switch (i) {
+                    case 10:
+                        return 'a';
+                    case 11:
+                        return 'b';
+                    case 12:
+                        return 'c';
+                    case 13:
+                        return 'd';
+                    case 14:
+                        return 'e';
+                    case 15:
+                        return 'f';
+                    default:
+                        return i.ToString()[0];
+                }
+            };
+            int a = (ui & 0x000000F0) >> 4;
+            int b = ui & 0x0000000F;
+            return $"{getHex(a)}{getHex(b)}";
+        }
 
         private static byte HexToByte(char hex) {
             switch (hex.ToString().ToUpper()[0]) {

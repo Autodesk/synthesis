@@ -13,13 +13,16 @@ public class SynthesisAssetCollection : MonoBehaviour {
     [SerializeField]
     public List<GameObject> PanelPrefabs;
     [SerializeField]
-    public List<GameObject> DynamicModalPrefabs;
+    public List<GameObject> DynamicUIPrefabs;
     [SerializeField]
     public List<TMPro.TMP_FontAsset> Fonts;
     [SerializeField]
     public GameObject BlurVolumePrefab;
     [SerializeField]
     public GameObject ReplaySlider;
+    [SerializeField]
+    public GameObject GizmoPrefab;
+
     private static Volume _blurVolumeStatic = null;
     public static Volume BlurVolumeStatic {
         get {
@@ -30,6 +33,7 @@ public class SynthesisAssetCollection : MonoBehaviour {
         }
     }
     public static GameObject ReplaySliderStatic => Instance.ReplaySlider;
+    public static GameObject GizmoPrefabStatic => Instance.GizmoPrefab;
 
 #nullable enable
     private GameObject? _defaultFloor = null;
@@ -58,8 +62,8 @@ public class SynthesisAssetCollection : MonoBehaviour {
     public static GameObject GetPanelByName(string name)
         => Instance.PanelPrefabs.First(x => x.name == name);
 
-    public static GameObject GetModalPrefab(string name)
-        => Instance.DynamicModalPrefabs.First(x => x.name == name);
+    public static GameObject GetUIPrefab(string name)
+        => Instance.DynamicUIPrefabs.First(x => x.name == name);
     public static TMPro.TMP_FontAsset GetFont(string name)
         => Instance.Fonts.First(x => x.name == name);
 }

@@ -16,36 +16,50 @@ namespace Synthesis.Physics {
         private static Dictionary<int, IPhysicsOverridable> _physObjects = new Dictionary<int, IPhysicsOverridable>();
         private static Dictionary<int, List<ContactRecorder>> _contactRecorders = new Dictionary<int, List<ContactRecorder>>();
 
-        private static bool _isFrozen = false;
+        private static bool _isFrozen;
+        private static int  _frozenCounter;
         public static bool IsFrozen {
             get => _isFrozen;
             set {
-                if (_isFrozen != value) {
-                    _isFrozen = value;
-                    if (_isFrozen) {
+                if (value)
+                    ++_frozenCounter;
+                else
+                    --_frozenCounter;
+
+                var shouldFreeze = _frozenCounter != 0;
+                if (shouldFreeze != _isFrozen)
+                {
+                    _isFrozen = shouldFreeze;
+
+                    Debug.Log($"Frozen: {_isFrozen}");
+                    if (_isFrozen)
+                    {
                         SimulationRunner.RemoveContext(SimulationRunner.RUNNING_SIM_CONTEXT);
                         SimulationRunner.AddContext(SimulationRunner.PAUSED_SIM_CONTEXT);
-                        UnityEngine.Physics.autoSimulation = false;
-                        _physObjects.ForEach(x => {
-                            x.Value.Freeze();
-                        });
-                    } else {
+                        //UnityEngine.Physics.autoSimulation = false;
+                        _physObjects.ForEach(x => { x.Value.Freeze(); });
+                    }
+                    else
+                    {
                         SimulationRunner.RemoveContext(SimulationRunner.PAUSED_SIM_CONTEXT);
                         SimulationRunner.AddContext(SimulationRunner.RUNNING_SIM_CONTEXT);
-                        UnityEngine.Physics.autoSimulation = true;
-                        _physObjects.ForEach(x => {
-                            x.Value.Unfreeze();
-                        });
+                        //UnityEngine.Physics.autoSimulation = true;
+                        _physObjects.ForEach(x => { x.Value.Unfreeze(); });
                     }
                     EventBus.Push(new PhysicsFreezeChangeEvent { IsFrozen = _isFrozen });
                 }
             }
+
         }
         
         public static bool Register<T>(T overridable) where T: class, IPhysicsOverridable {
             if (_physObjects.ContainsKey(overridable.GetHashCode()))
                 return false;
             _physObjects[overridable.GetHashCode()] = overridable;
+            if (_isFrozen)
+                    overridable.Freeze();
+            else
+                    overridable.Unfreeze();
             AddContactRecorders(overridable);
             return true;
         }
