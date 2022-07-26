@@ -7,13 +7,13 @@ class ExporterCommandGroup(CommandGroup):
         self.parent = parent
 
     def configure(self):
-        exporter_setings = self.parent.advanced_settings.children.addGroupCommandInput(
+        exporter_settings = self.parent.advanced_settings.children.addGroupCommandInput(
             "exporter_settings", "Exporter Settings"
         )
-        exporter_setings.isExpanded = True
-        exporter_setings.isEnabled = True
-        exporter_setings.tooltip = "tooltip"  # TODO: update tooltip
-        exporter_settings = exporter_setings.children
+        exporter_settings.isExpanded = True
+        exporter_settings.isEnabled = True
+        exporter_settings.tooltip = "tooltip"  # TODO: update tooltip
+        exporter_settings = exporter_settings.children
 
         self.parent.create_boolean_input(  # algorithm wheel selection checkbox.
             "algorithmic_selection",

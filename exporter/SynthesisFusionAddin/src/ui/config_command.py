@@ -32,6 +32,8 @@ from .command_groups.exporter_command_group import ExporterCommandGroup
 from .command_groups.physics_command_group import PhysicsCommandGroup
 from .command_groups.joint_settings_command_group import JointSettingsCommandGroup
 from .command_groups.controller_command_group import ControllerCommandGroup
+from .command_groups.export_mode_command_group import ExportModeCommandGroup
+
 
 # ====================================== CONFIG COMMAND ======================================
 
@@ -108,6 +110,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         self.inputs = None
         self.advanced_settings = None
 
+        self.export_mode_command_group = None
         self.weight_command_group = None
         self.wheel_command_group = None
         self.joint_command_group = None
@@ -182,23 +185,9 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             """
             cmd.helpFile = os.path.join(".", "src", "Resources", "HTML", "info.html")
 
-            # ~~~~~~~~~~~~~~~~ EXPORT MODE ~~~~~~~~~~~~~~~~
-            """
-            Dropdown to choose whether to export robot or field element
-            """
-            dropdown_export_mode = self.inputs.addDropDownCommandInput(
-                "mode",
-                "Export Mode",
-                dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
+            self.export_mode_command_group = self.configure_command_group(
+                ExportModeCommandGroup(self)
             )
-            dropdown_export_mode.listItems.add("Dynamic", True)
-            dropdown_export_mode.listItems.add("Static", False)
-
-            dropdown_export_mode.tooltip = "Export Mode"
-            dropdown_export_mode.tooltipDescription = (
-                "<hr>Does this object move dynamically?"
-            )
-
             self.weight_command_group = self.configure_command_group(
                 WeightCommandGroup(self)
             )
