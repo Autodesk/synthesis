@@ -11,7 +11,6 @@ from ..config_command import UiGlobal
 
 
 class WheelCommandGroup(CommandGroup):
-
     def __init__(self, parent):
         super().__init__()
         self.parent_menu = parent
@@ -46,7 +45,9 @@ class WheelCommandGroup(CommandGroup):
             50,
         )
 
-        add_wheel_input = wheel_inputs.addBoolValueInput("wheel_add", "Add", False)  # add button
+        add_wheel_input = wheel_inputs.addBoolValueInput(
+            "wheel_add", "Add", False
+        )  # add button
 
         remove_wheel_input = wheel_inputs.addBoolValueInput(  # remove button
             "wheel_delete", "Remove", False
@@ -60,14 +61,20 @@ class WheelCommandGroup(CommandGroup):
             "Selection",
             "Select the wheels joints in your drive-train assembly.",
         )
-        wheel_select_input.addSelectionFilter("Joints")  # filter selection to only occurrences
+        wheel_select_input.addSelectionFilter(
+            "Joints"
+        )  # filter selection to only occurrences
 
         wheel_select_input.setSelectionLimits(0)  # no selection count limit
         wheel_select_input.isEnabled = False
         wheel_select_input.isVisible = False
 
-        wheel_table_input.addToolbarCommandInput(add_wheel_input)  # add buttons to the toolbar
-        wheel_table_input.addToolbarCommandInput(remove_wheel_input)  # add buttons to the toolbar
+        wheel_table_input.addToolbarCommandInput(
+            add_wheel_input
+        )  # add buttons to the toolbar
+        wheel_table_input.addToolbarCommandInput(
+            remove_wheel_input
+        )  # add buttons to the toolbar
 
         """
         Algorithmic Wheel Selection Indicator
@@ -195,8 +202,9 @@ class WheelCommandGroup(CommandGroup):
             wheelType.listItems.add("Mecanum", False, "")
             wheelType.tooltip = "Wheel type"
             wheelType.tooltipDescription = "<Br>Omni-directional wheels can be used just like regular drive wheels but they have the advantage of being able to roll freely perpendicular to the drive direction.</Br>"
-            wheelType.toolClipFilename = os_helper.getOSPath(".", "src", "Resources") + os.path.join("WheelIcons",
-                                                                                                    "omni-wheel-preview.png")
+            wheelType.toolClipFilename = os_helper.getOSPath(
+                ".", "src", "Resources"
+            ) + os.path.join("WheelIcons", "omni-wheel-preview.png")
 
             signalType = cmdInputs.addDropDownCommandInput(
                 "signal_type_w",

@@ -6,16 +6,15 @@ from .. import icon_paths
 
 
 class GamepieceCommandGroup(CommandGroup):
-
     def __init__(self, parent):
         super().__init__()
         self.parent = parent
 
     def configure(self):
         """
-                  Gamepiece group command input, isVisible=False by default
-                      - Container for gamepiece selection table
-                  """
+        Gamepiece group command input, isVisible=False by default
+            - Container for gamepiece selection table
+        """
         gamepiece_config = self.parent.inputs.addGroupCommandInput(
             "gamepiece_config", "Gamepiece configuration"
         )
@@ -44,7 +43,7 @@ class GamepieceCommandGroup(CommandGroup):
             checked=False,
             tooltip="Approximate the weight of all your selected gamepieces.",
             enabled=True,
-            is_check_box=False
+            is_check_box=False,
         )
         auto_calc_weight_f.resourceFolder = icon_paths.stringIcons["calculate-enabled"]
         auto_calc_weight_f.isFullWidth = True
@@ -54,14 +53,26 @@ class GamepieceCommandGroup(CommandGroup):
             "Unit of Mass",
             adsk.core.DropDownStyles.LabeledIconDropDownStyle,
         )
-        weight_unit_f.listItems.add("‎", True, icon_paths.massIcons["LBS"])  # add listdropdown mass options
-        weight_unit_f.listItems.add("‎", False, icon_paths.massIcons["KG"])  # add listdropdown mass options
+        weight_unit_f.listItems.add(
+            "‎", True, icon_paths.massIcons["LBS"]
+        )  # add listdropdown mass options
+        weight_unit_f.listItems.add(
+            "‎", False, icon_paths.massIcons["KG"]
+        )  # add listdropdown mass options
         weight_unit_f.tooltip = "Unit of mass"
-        weight_unit_f.tooltipDescription = "<hr>Configure the unit of mass for for the weight calculation."
+        weight_unit_f.tooltipDescription = (
+            "<hr>Configure the unit of mass for for the weight calculation."
+        )
 
-        weight_table_input_f.addCommandInput(weight_name_f, 0, 0)  # add command inputs to table
-        weight_table_input_f.addCommandInput(auto_calc_weight_f, 0, 1)  # add command inputs to table
-        weight_table_input_f.addCommandInput(weight_unit_f, 0, 2)  # add command inputs to table
+        weight_table_input_f.addCommandInput(
+            weight_name_f, 0, 0
+        )  # add command inputs to table
+        weight_table_input_f.addCommandInput(
+            auto_calc_weight_f, 0, 1
+        )  # add command inputs to table
+        weight_table_input_f.addCommandInput(
+            weight_unit_f, 0, 2
+        )  # add command inputs to table
 
         # GAMEPIECE SELECTION TABLE
         """

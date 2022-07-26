@@ -44,4 +44,3 @@ def getOS():
     - Windows or win32 ?
     """
     return platform.system()
-

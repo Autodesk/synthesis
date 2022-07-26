@@ -28,6 +28,7 @@ class JointMotions(Enum):
     Args:
         Enum (enum.Enum)
     """
+
     RIGID = 0
     REVOLUTE = 1
     SLIDER = 2
@@ -38,7 +39,6 @@ class JointMotions(Enum):
 
 
 class JointCommandGroup(CommandGroup):
-
     def __init__(self, parent):
         super().__init__()
         self.parent = parent
@@ -60,23 +60,26 @@ class JointCommandGroup(CommandGroup):
         """
         All selection joints appear here.
         """
-        joint_table_input = self.parent.create_table_input(  # create tablecommandinput using helper
-            "joint_table",
-            "Joint Table",
-            joint_inputs,
-            6,
-            "1:2:2:2:2:2",
-            50,
+        joint_table_input = (
+            self.parent.create_table_input(  # create tablecommandinput using helper
+                "joint_table",
+                "Joint Table",
+                joint_inputs,
+                6,
+                "1:2:2:2:2:2",
+                50,
+            )
         )
 
-        add_joint_input = joint_inputs.addBoolValueInput("joint_add", "Add", False)  # add button
+        add_joint_input = joint_inputs.addBoolValueInput(
+            "joint_add", "Add", False
+        )  # add button
 
         remove_joint_input = joint_inputs.addBoolValueInput(  # remove button
             "joint_delete", "Remove", False
         )
 
-        add_joint_input.isEnabled = \
-            remove_joint_input.isEnabled = True
+        add_joint_input.isEnabled = remove_joint_input.isEnabled = True
 
         add_joint_input.tooltip = "Add a joint selection"  # tooltips
         remove_joint_input.tooltip = "Remove a joint selection"
@@ -92,8 +95,12 @@ class JointCommandGroup(CommandGroup):
         joint_select_input.isEnabled = False
         joint_select_input.isVisible = False  # make selection box invisible
 
-        joint_table_input.addToolbarCommandInput(add_joint_input)  # add bool inputs to the toolbar
-        joint_table_input.addToolbarCommandInput(remove_joint_input)  # add bool inputs to the toolbar
+        joint_table_input.addToolbarCommandInput(
+            add_joint_input
+        )  # add bool inputs to the toolbar
+        joint_table_input.addToolbarCommandInput(
+            remove_joint_input
+        )  # add bool inputs to the toolbar
 
         joint_table_input.addCommandInput(
             self.parent.create_text_box_input(  # create a textBoxCommandInput for the table header (Joint Motion), using helper
@@ -148,7 +155,7 @@ class JointCommandGroup(CommandGroup):
                 background=Colors.background,  # back color
             ),
             0,
-            4
+            4,
         )
 
         joint_table_input.addCommandInput(
@@ -160,13 +167,13 @@ class JointCommandGroup(CommandGroup):
                 background=Colors.background,  # back color
             ),
             0,
-            5
+            5,
         )
 
         for joint in gm.app.activeDocument.design.rootComponent.allJoints:
             if (
-                    joint.jointMotion.jointType == JointMotions.REVOLUTE.value
-                    or joint.jointMotion.jointType == JointMotions.SLIDER.value
+                joint.jointMotion.jointType == JointMotions.REVOLUTE.value
+                or joint.jointMotion.jointType == JointMotions.SLIDER.value
             ) and not joint.isSuppressed:
                 self.add_joint_to_table(joint)
 
@@ -213,7 +220,9 @@ class JointCommandGroup(CommandGroup):
                 )
                 icon.tooltip = "Pin slot joint"
 
-            elif joint.jointMotion.jointType == adsk.fusion.JointTypes.CylindricalJointType:
+            elif (
+                joint.jointMotion.jointType == adsk.fusion.JointTypes.CylindricalJointType
+            ):
                 icon = cmd_inputs.addImageCommandInput(
                     "placeholder", "Cylindrical", icon_paths.jointIcons["cylindrical"]
                 )
@@ -275,24 +284,20 @@ class JointCommandGroup(CommandGroup):
                     "joint_speed",
                     "Speed",
                     "deg",
-                    adsk.core.ValueInput.createByReal(3.1415926)
+                    adsk.core.ValueInput.createByReal(3.1415926),
                 )
-                jointSpeed.tooltip = 'Degrees per second'
+                jointSpeed.tooltip = "Degrees per second"
                 joint_table_input.addCommandInput(jointSpeed, row, 4)
 
             if joint.jointMotion.jointType == adsk.fusion.JointTypes.RevoluteJointType:
                 jointForce = cmd_inputs.addValueInput(
-                    "joint_force",
-                    "Force",
-                    "N",
-                    adsk.core.ValueInput.createByReal(5000)
+                    "joint_force", "Force", "N", adsk.core.ValueInput.createByReal(5000)
                 )
-                jointForce.tooltip = 'Newton-Meters***'
+                jointForce.tooltip = "Newton-Meters***"
                 joint_table_input.addCommandInput(jointForce, row, 5)
 
-
         except:
-            gm.ui.messageBox('Failed:\n{}'.format(traceback.format_exc()))
+            gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
             logging.getLogger("{INTERNAL_ID}.ui.ConfigCommand.addJointToTable()").error(
                 "Failed:\n{}".format(traceback.format_exc())
             )

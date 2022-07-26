@@ -13,6 +13,7 @@ from . import materials, components, joints, joint_hierarchy, pd_message
 
 from .utilities import *
 
+
 class Parser:
     def __init__(self, options: any):
         """Creates a new parser with the supplied options
@@ -29,7 +30,11 @@ class Parser:
             design = app.activeDocument.design
 
             assembly_out = assembly_pb2.Assembly()
-            fill_info(assembly_out, design.rootComponent, override_guid=design.parentDocument.name)
+            fill_info(
+                assembly_out,
+                design.rootComponent,
+                override_guid=design.parentDocument.name,
+            )
 
             # set int to 0 in dropdown selection for dynamic
             assembly_out.dynamic = self.parseOptions.mode == 0
@@ -100,8 +105,13 @@ class Parser:
             assembly_out.design_hierarchy.nodes.append(rootNode)
 
             # Problem Child
-            joints.populateJoints (
-                design, assembly_out.data.joints, assembly_out.data.signals, self.pdMessage, self.parseOptions, assembly_out
+            joints.populateJoints(
+                design,
+                assembly_out.data.joints,
+                assembly_out.data.signals,
+                self.pdMessage,
+                self.parseOptions,
+                assembly_out,
             )
 
             # add condition in here for advanced joints maybe idk
@@ -118,10 +128,10 @@ class Parser:
             joint_hierarchy.BuildJointPartHierarchy(
                 design, assembly_out.data.joints, self.parseOptions, self.pdMessage
             )
-            
+
             if self.parseOptions.compress:
                 self.logger.debug("Compressing file")
-                with gzip.open(self.parseOptions.fileLocation, 'wb', 9) as f:
+                with gzip.open(self.parseOptions.fileLocation, "wb", 9) as f:
                     f.write(assembly_out.SerializeToString())
             else:
                 f = open(self.parseOptions.fileLocation, "wb")
@@ -149,7 +159,11 @@ class Parser:
                             newnode.joint_reference
                         ]
 
-                        wheel_ = " wheel : true" if (jointdefinition.user_data.data["wheel"] != "") else ""
+                        wheel_ = (
+                            " wheel : true"
+                            if (jointdefinition.user_data.data["wheel"] != "")
+                            else ""
+                        )
 
                         joint_hierarchy_out = f"{joint_hierarchy_out}  |- {jointdefinition.info.name} type: {jointdefinition.joint_motion_type} {wheel_}\n"
 
@@ -163,7 +177,11 @@ class Parser:
                             jointdefinition = assembly_out.data.joints.joint_definitions[
                                 newnode.joint_reference
                             ]
-                            wheel_ = " wheel : true" if (jointdefinition.user_data.data["wheel"] != "") else ""
+                            wheel_ = (
+                                " wheel : true"
+                                if (jointdefinition.user_data.data["wheel"] != "")
+                                else ""
+                            )
                             joint_hierarchy_out = f"{joint_hierarchy_out}  |---> {jointdefinition.info.name} type: {jointdefinition.joint_motion_type} {wheel_}\n"
 
                 joint_hierarchy_out += "\n\n"
@@ -176,14 +194,10 @@ class Parser:
             self.logger.error("Failed:\n{}".format(traceback.format_exc()))
 
             if DEBUG:
-                gm.ui.messageBox(
-                    "Failed:\n{}".format(traceback.format_exc())
-                )
+                gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
             else:
-                gm.ui.messageBox(
-                    "An error occurred while exporting."
-                )
-                
+                gm.ui.messageBox("An error occurred while exporting.")
+
             return False
 
         return True

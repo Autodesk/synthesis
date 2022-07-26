@@ -133,12 +133,14 @@ def __parseChildOccurrence(
 
     fill_info(part, occurrence)
 
-    collision_attr = occurrence.attributes.itemByName('synthesis', 'collision_off')
+    collision_attr = occurrence.attributes.itemByName("synthesis", "collision_off")
     if collision_attr != None:
         part.skip_collider = True
 
     if occurrence.appearance:
-        part.appearance = "{}_{}".format(occurrence.appearance.name, occurrence.appearance.id)
+        part.appearance = "{}_{}".format(
+            occurrence.appearance.name, occurrence.appearance.id
+        )
         # TODO: Add phyical_material parser
 
     if occurrence.component.material:
@@ -209,9 +211,9 @@ def _ParseBRep(
             "Failed:\n{}".format(traceback.format_exc())
         )
 
+
 def _MapRigidGroups(
-    rootComponent: adsk.fusion.Component,
-    joints: joint_pb2.Joints
+    rootComponent: adsk.fusion.Component, joints: joint_pb2.Joints
 ) -> None:
     groups = rootComponent.allRigidGroups
     for group in groups:
@@ -231,7 +233,5 @@ def _MapRigidGroups(
             except RuntimeError:
                 occRef = occ.name
             mira_group.occurrences.append(occRef)
-        if (len(mira_group.occurrences) > 1):
+        if len(mira_group.occurrences) > 1:
             joints.rigid_groups.append(mira_group)
-    
-

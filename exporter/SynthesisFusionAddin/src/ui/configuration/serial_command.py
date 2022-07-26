@@ -30,7 +30,7 @@ class Struct:
 
 
 class SerialCommand:
-    """ All of the command inputs combined """
+    """All of the command inputs combined"""
 
     def __init__(self):
         self.general = General()
@@ -47,7 +47,7 @@ class SerialCommand:
 
 
 class General:
-    """ General Options """
+    """General Options"""
 
     def __init__(self):
         # This is the overall export decision point
@@ -89,7 +89,7 @@ class ExportMode:
 
 
 class RenderType:
-    """ This will modify the type of material shaders used """
+    """This will modify the type of material shaders used"""
 
     basic3D = 0
     URP = 1

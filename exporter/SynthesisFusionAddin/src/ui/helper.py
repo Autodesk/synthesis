@@ -7,8 +7,8 @@ from . import events, hui
 
 def check_solid_open() -> bool:
     """### Checks to see if the current design open is Fusion Solid
-    - Supplied as callback 
-    WARN - THIS NO LONGER FUNCTIONS 
+    - Supplied as callback
+    WARN - THIS NO LONGER FUNCTIONS
     """
     return True
 
@@ -47,12 +47,12 @@ def previouslyConfigured() -> Union[str, None]:
 
 def writeConfigure(serialized: str) -> bool:
     # app = adsk.core.Application.get()
-    #try:
-        #app.activeDocument.attributes.add(
-        #    f"{INTERNAL_ID}", "configuration", f"{serialized}"
-        #)
+    # try:
+    # app.activeDocument.attributes.add(
+    #    f"{INTERNAL_ID}", "configuration", f"{serialized}"
+    # )
     return True
-    #except:
+    # except:
     #    return False
 
 
@@ -68,7 +68,7 @@ def getDocName() -> str or None:
 
 
 def checkAttribute() -> bool:
-    """ ### Will process the file and look for a flag that unity is already using it. """
+    """### Will process the file and look for a flag that unity is already using it."""
     app = adsk.core.Application.get()
     try:
         connected = app.activeDocument.attributes.itemByName("UnityFile", "Connected")

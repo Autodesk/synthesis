@@ -84,7 +84,7 @@ class HPalette:
         self.palette.isVisible = True
 
     def deleteMe(self) -> None:
-        """ ## Removes the palette """
+        """## Removes the palette"""
         palette = gm.app.userInterface.palettes.itemById(self.uid)
         if palette:
             # I hope you like problems because this is nothing but problems

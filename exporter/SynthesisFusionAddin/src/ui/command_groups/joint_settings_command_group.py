@@ -18,7 +18,6 @@ from .command_group import CommandGroup
 
 
 class JointSettingsCommandGroup(CommandGroup):
-
     def __init__(self, parent):
         super().__init__()
         self.parent = parent
@@ -58,4 +57,3 @@ class JointSettingsCommandGroup(CommandGroup):
             tooltip="tooltip",  # TODO: update tooltip
             enabled=True,
         )
-

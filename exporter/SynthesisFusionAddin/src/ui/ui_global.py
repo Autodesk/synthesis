@@ -4,6 +4,7 @@ class UiGlobal:
     UiGlobal.INPUTS_ROOT (adsk.fusion.CommandInputs):
         - Provides access to the set of all commandInput ui elements in the panel
     """
+
     INPUTS_ROOT = None
 
     compress = False

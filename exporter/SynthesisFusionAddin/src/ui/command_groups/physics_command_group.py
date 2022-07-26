@@ -3,15 +3,14 @@ from .. import icon_paths
 
 
 class PhysicsCommandGroup(CommandGroup):
-
     def __init__(self, parent):
         super().__init__()
         self.parent = parent
 
     def configure(self):
         physics_settings = self.parent.advanced_settings.children.addGroupCommandInput(
-                "physics_settings", "Physics Settings"
-            )
+            "physics_settings", "Physics Settings"
+        )
 
         physics_settings.isExpanded = False
         physics_settings.isEnabled = True
@@ -60,13 +59,15 @@ class PhysicsCommandGroup(CommandGroup):
         friction_override = self.parent.create_boolean_input(
             "friction_override",
             "",
-        physics_settings,
+            physics_settings,
             checked=False,
             tooltip="Manually override the default friction values on the bodies in the assembly.",
             enabled=True,
             is_check_box=False,
         )
-        friction_override.resourceFolder = icon_paths.stringIcons["friction_override-enabled"]
+        friction_override.resourceFolder = icon_paths.stringIcons[
+            "friction_override-enabled"
+        ]
         friction_override.isFullWidth = True
 
         valueList = [1]
@@ -85,4 +86,3 @@ class PhysicsCommandGroup(CommandGroup):
 
         friction_override_table.addCommandInput(friction_override, 0, 0)
         friction_override_table.addCommandInput(frictionCoeff, 0, 1)
-
