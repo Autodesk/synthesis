@@ -23,7 +23,7 @@ namespace InventorMirabufExporter
             environment.PhysicalData = new PhysicalProperties();
             environment.DesignHierarchy = new GraphContainer();
             environment.JointHierarchy = new GraphContainer();
-            environment.Transform = new Transform();
+            //environment.Transform = new Transform();
         }
 
         public void Setup(AssemblyDocument assemblyDoc)
@@ -174,11 +174,8 @@ namespace InventorMirabufExporter
                     var NormalVectors = new double[] { };
                     var TextureCoordinates = new double[] { };
 
-                    doc.ComponentDefinition.SurfaceBodies[j].CalculateFacetsAndTextureMap(1, out VertexCount, out FacetCount, out VertexCoordinates, out NormalVectors, out VertexIndices, out TextureCoordinates);
-
-                    // print vertex coordinates
-                    try { MessageBox.Show("VCoords: " + VertexCoordinates.Length, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
-                    catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+                    // tolerance will be user specified (advanced option)
+                    doc.ComponentDefinition.SurfaceBodies[j].CalculateFacetsAndTextureMap(0.1, out VertexCount, out FacetCount, out VertexCoordinates, out NormalVectors, out VertexIndices, out TextureCoordinates);
 
                     foreach (double vert in VertexCoordinates)
                         solid.TriangleMesh.Mesh.Verts.Add((float)vert);
@@ -428,38 +425,15 @@ namespace InventorMirabufExporter
             */
 
             // Assembly > Design Hierarchy
-            environment.DesignHierarchy = new GraphContainer();
-            Node node = new Node();
-            node.Value = assemblyDoc.InternalName.Trim('{', '}');
 
-            // Recursion?
-            for (int i = 0; i < assemblyDoc.ReferencedDocuments.Count; i++)
-            {
-                PartDocument doc = (PartDocument)assemblyDoc.ReferencedDocuments[i + 1];
-                ComponentOccurrencesEnumerator occurence = assemblyDoc.ComponentDefinition.Occurrences.AllReferencedOccurrences[doc];
+            // tree stuff was here...
+            Node tree = new Node();
+            tree.Value = assemblyDoc.InternalName.Trim('{', '}');
 
-                for (int j = 0; j < occurence.Count; j++)
-                {
-                    Node subNode = new Node();
-                    subNode.Value = occurence[j+1].Name;
-                    node.Children.Add(subNode);
-
-                    // Assembly > Data > Joints > JointInstances > Parts > Nodes
-                    // Check For Grounded Joint
-                    if (occurence[j+1].Grounded)
-                    {
-                        MessageBox.Show("Grounded Occurence: " + occurence[j+1].Name, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK);
-                        jointInstance.Parts.Nodes.Add(subNode);
-                    }
-
-                    // UserData?
-                }
-            }
+            //environment.DesignHierarchy.Nodes.Add(node);
 
             // Assembly > Data > Joints > JointInstances
             environment.Data.Joints.JointInstances.Add(jointInstance.Info.Name, jointInstance);
-
-            environment.DesignHierarchy.Nodes.Add(node);
 
             // Assembly > Design Hierarchy > Node > UserData?
 
@@ -476,8 +450,6 @@ namespace InventorMirabufExporter
                 SpatialMatrix = { 1, 2 }
             };
             */
-
-            Serialize();
         }
 
         private Info SetInfo(string name, bool isPartInstance)
@@ -494,6 +466,64 @@ namespace InventorMirabufExporter
                 Data.GUID = Guid.NewGuid().ToString();
 
             return Data;
+        }
+
+        private Node GetModelTree(AssemblyDocument assemblyDoc, DocumentsEnumerator asmDoc, ref Node tree)
+        {
+            //DocumentsEnumerator asmDoc = assemblyDoc.ReferencedDocuments;
+
+            // Recursion?
+            for (int i = 0; i < asmDoc.Count; i++)
+            {
+                // determine if subassembly
+                if (asmDoc[i + 1].ReferencedDocuments.Count > 0)
+                {
+                    Node subassembly = new Node();
+                    subassembly.Value = asmDoc[i + 1].DisplayName;
+                    AssemblyDocument subassemblyDoc = (AssemblyDocument)asmDoc[i + 1];
+                    GetModelTree(subassemblyDoc, asmDoc[i + 1].ReferencedDocuments, ref subassembly);
+                    tree.Children.Add(subassembly);
+                    //asmDoc = asmDoc[i + 1].ReferencedDocuments;
+                }
+                else
+                {
+                    PartDocument doc = (PartDocument)asmDoc[i + 1];
+                    ComponentOccurrencesEnumerator occurence = assemblyDoc.ComponentDefinition.Occurrences.AllReferencedOccurrences[doc];
+
+                    for (int j = 0; j < occurence.Count; j++)
+                    {
+                        try { MessageBox.Show($"{j}: " + occurence[j+1].Name, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+                        catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
+
+                        Node partNode = new Node();
+                        partNode.Value = occurence[j + 1].Name;
+                        tree.Children.Add(partNode);
+
+                        // Assembly > Data > Joints > JointInstances > Parts > Nodes
+                        // Check For Grounded Joint
+                        //if (occurence[j+1].Grounded)
+                        //{
+                        //    MessageBox.Show("Grounded Occurence: " + occurence[j+1].Name, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK);
+                        //    jointInstance.Parts.Nodes.Add(subNode);
+                        //}
+
+                        // UserData?
+                    }
+                }
+            }
+
+            return tree;
+        }
+
+        public void Test(AssemblyDocument assemblyDoc)
+        {
+            environment.Info = SetInfo("subassembly test", true);
+
+            Node tree = new Node() { Value = assemblyDoc.InternalName.Trim('{', '}') };
+
+            GetModelTree(assemblyDoc, assemblyDoc.ReferencedDocuments, ref tree);
+
+            environment.DesignHierarchy.Nodes.Add(tree);
         }
 
         public void Serialize()
