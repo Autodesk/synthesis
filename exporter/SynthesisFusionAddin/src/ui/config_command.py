@@ -1496,18 +1496,21 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
 
                 wheelSelect.isEnabled = addJointInput.isEnabled = True
                 addWheelInput.isEnabled = False
+                UiGlobal.send_event("Wheel", "wheel_add")
 
             elif cmdInput.id == "joint_add":
                 self.reset()
 
                 addWheelInput.isEnabled = jointSelect.isEnabled = True
                 addJointInput.isEnabled = False
+                UiGlobal.send_event("Joint", "joint_add")
 
             elif cmdInput.id == "field_add":
                 self.reset()
 
                 gamepieceSelect.isEnabled = True
                 addFieldInput.isEnabled = False
+                UiGlobal.send_event("Field", "field_add")
 
             elif cmdInput.id == "wheel_delete":
                 gm.ui.activeSelections.clear()
@@ -1525,6 +1528,8 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                     index = UiGlobal.wheel_tableInput.selectedRow - 1
                     removeWheelFromTable(index)
 
+                UiGlobal.send_event("Wheel", "wheel_delete")
+
             elif cmdInput.id == "joint_delete":
                 gm.ui.activeSelections.clear()
 
@@ -1537,6 +1542,8 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                 else:
                     joint = UiGlobal.joint_list_global[jointTableInput.selectedRow - 1]
                     removeJointFromTable(joint)
+
+                UiGlobal.send_event("Joint", "joint_delete")
 
             elif cmdInput.id == "field_delete":
                 gm.ui.activeSelections.clear()
@@ -1553,11 +1560,15 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                     index = gamepieceTableInput.selectedRow - 1
                     removeGamePieceFromTable(index)
 
+                UiGlobal.send_event("Field", "field_delete")
+
             elif cmdInput.id == "wheel_select":
                 self.reset()
 
                 wheelSelect.isEnabled = False
                 addWheelInput.isEnabled = True
+
+                UiGlobal.send_event("Wheel", "wheel_select")
 
             elif cmdInput.id == "joint_select":
                 self.reset()
@@ -1565,11 +1576,15 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                 jointSelect.isEnabled = False
                 addJointInput.isEnabled = True
 
+                UiGlobal.send_event("Joint", "joint_select")
+
             elif cmdInput.id == "gamepiece_select":
                 self.reset()
 
                 gamepieceSelect.isEnabled = False
                 addFieldInput.isEnabled = True
+
+                UiGlobal.send_event("Gamepiece", "gamepiece_select")
 
             elif cmdInput.id == "friction_override":
                 boolValue = adsk.core.BoolValueCommandInput.cast(cmdInput)
@@ -1578,6 +1593,7 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                     frictionCoeff.isVisible = True
                 else:
                     frictionCoeff.isVisible = False
+                UiGlobal.send_event("Settings", "friction_override")
 
             elif cmdInput.id == "weight_unit":
                 unitDropdown = adsk.core.DropDownCommandInput.cast(cmdInput)
@@ -1590,6 +1606,9 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                     self.isLbs = False
 
                     weightInput.tooltipDescription = """<tt>(in kilograms)</tt><hr>This is the weight of the entire robot assembly."""
+
+                UiGlobal.send_event("Settings", "unit_change")
+
 
             elif cmdInput.id == "weight_unit_f":
                 unitDropdown = adsk.core.DropDownCommandInput.cast(cmdInput)
@@ -1634,6 +1653,8 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                             else:
                                 weight_input.value = self.allWeights[1]
 
+                    UiGlobal.send_event("Weight", "calculate_weight")
+
             elif cmdInput.id == "auto_calc_weight_f":
                 button = adsk.core.BoolValueCommandInput.cast(cmdInput)
 
@@ -1667,6 +1688,8 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                 checkBox = adsk.core.BoolValueCommandInput.cast(cmdInput)
                 if checkBox.value:
                     UiGlobal.compress = checkBox.value
+                UiGlobal.send_event("Settings", "compress_toggle")
+
             elif cmdInput.id == "algorithmic_selection":
                 checkBox = adsk.core.BoolValueCommandInput.cast(cmdInput)
                 onSelect.algorithmicSelection = checkBox.value

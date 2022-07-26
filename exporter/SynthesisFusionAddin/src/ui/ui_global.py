@@ -1,5 +1,8 @@
-class UiGlobal:
+from ..Analytics.poster import AnalyticsEndpoint
+from ..general_imports import *
 
+
+class UiGlobal:
     """
     UiGlobal.INPUTS_ROOT (adsk.fusion.CommandInputs):
         - Provides access to the set of all commandInput ui elements in the panel
@@ -12,6 +15,8 @@ class UiGlobal:
     gamepiece_list_global = []
     wheel_list_global = []
     joint_list_global = []
+
+    A_EP = AnalyticsEndpoint("UA-81892961-6", 1)
 
     @staticmethod
     def wheel_table():
@@ -39,3 +44,18 @@ class UiGlobal:
             adsk.fusion.TableCommandInput
         """
         return UiGlobal.INPUTS_ROOT.itemById("gamepiece_table")
+
+    @staticmethod
+    def send_event(category, action, label="default", value=1):
+        if UiGlobal.A_EP:
+            res = UiGlobal.A_EP.send_event(category, action, label, value)
+            if not res:
+                logging.getLogger(f"{INTERNAL_ID}.import_manager").error(
+                    "failed to post analytics")
+            else:
+                logging.getLogger(f"{INTERNAL_ID}.import_manager").error(
+                    "succeeded in posting analytics")
+            return res
+        else:
+            logging.getLogger(f"{INTERNAL_ID}.import_manager").error(
+                "failed to initialize analytics")

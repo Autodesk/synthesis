@@ -42,7 +42,7 @@ except:
 
 try:
     # simple analytics endpoint
-    # A_EP = AnalyticsEndpoint("UA-188467590-1", 1)
+    #A_EP = AnalyticsEndpoint("UA-81982961-6", 1)
     A_EP = None
 
     # Setup the global state
@@ -50,6 +50,6 @@ try:
     my_addin_path = os.path.dirname(os.path.realpath(__file__))
 except:
     # should also log this
-    logging.getLogger(f"{INTERNAL_ID}.import_manager").error(
-        "Failed\n{}".format(traceback.format_exc())
+    logging.getlogger(f"{internal_id}.import_manager").error(
+        "failed\n{}".format(traceback.format_exc())
     )

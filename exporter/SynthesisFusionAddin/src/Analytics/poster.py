@@ -70,8 +70,8 @@ class AnalyticsEndpoint:
         return (
             self.__form("tid", self.tracking)
             + self.__form("cid", CID)
-            + self.__form("v", self.version)
-            + self.__form("aip", 1)
+            + self.__form("v", str(self.version))
+            + self.__form("aip", str(1))
         )
 
     def send_event(self, category: str, action: str, label="default", value=1) -> bool:
