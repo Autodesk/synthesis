@@ -151,8 +151,6 @@ namespace Synthesis.Configuration
         private void disableGizmo() //makes sure values are set correctly when the gizmo is removed
         {
             RestoreCameraMode();
-            cam.PitchLowerLimit = originalLowerPitch;
-            cam.FocusPoint = originalCameraFocusPoint;
             PhysicsManager.IsFrozen = false;
             //SetRigidbodies(true);
         }
