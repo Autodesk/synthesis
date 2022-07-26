@@ -5,11 +5,11 @@ from .. import icon_paths
 class PhysicsCommandGroup(CommandGroup):
 
     def __init__(self, parent):
-        super().__init__(parent)
+        super().__init__()
         self.parent = parent
 
     def configure(self):
-        physics_settings = self.parent.advanced_settings.addGroupCommandInput(
+        physics_settings = self.parent.advanced_settings.children.addGroupCommandInput(
                 "physics_settings", "Physics Settings"
             )
 

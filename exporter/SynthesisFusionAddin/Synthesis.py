@@ -1,4 +1,4 @@
-from src.general_imports import root_logger, gm, INTERNAL_ID, APP_NAME, DESCRIPTION
+from .src.general_imports import root_logger, gm, INTERNAL_ID, APP_NAME, DESCRIPTION
 
 from src.ui import hui, handlers, camera, helper, config_command
 from src.ui.toolbar import Toolbar

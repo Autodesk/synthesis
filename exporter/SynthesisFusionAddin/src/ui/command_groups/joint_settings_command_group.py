@@ -14,10 +14,17 @@ from ...parser.parse_options import (
 
 from ..configuration.serial_command import SerialCommand
 
-class JointSettingsCommandGroup(MenuItem):
+from .command_group import CommandGroup
+
+
+class JointSettingsCommandGroup(CommandGroup):
+
+    def __init__(self, parent):
+        super().__init__()
+        self.parent = parent
 
     def configure(self):
-        jointsSettings = a_input.addGroupCommandInput(
+        jointsSettings = self.parent.advanced_settings.children.addGroupCommandInput(
             "joints_settings", "Joints Settings"
         )
         jointsSettings.isExpanded = False

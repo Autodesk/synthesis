@@ -4,10 +4,11 @@ from ..config_command import *
 class ExporterCommandGroup(CommandGroup):
 
     def __init__(self, parent):
-        super().__init__(parent)
+        super().__init__()
+        self.parent = parent
 
     def configure(self):
-        exporter_setings = self.parent.advanced_input.addGroupCommandInput(
+        exporter_setings = self.parent.advanced_settings.children.addGroupCommandInput(
             "exporter_settings", "Exporter Settings"
         )
         exporter_setings.isExpanded = True
@@ -37,7 +38,7 @@ class ExporterCommandGroup(CommandGroup):
             "compress",
             "Compress Output",
             exporter_settings,
-            checked=compress,
+            checked=UiGlobal.compress,
             tooltip="Compress the output file for a smaller file size.",
             tooltipadvanced="<hr>Use the GZIP compression system to compress the resulting file which will be opened in the simulator, perfect if you want to share the file.<br>",
             enabled=True

@@ -5,11 +5,11 @@ from ...general_imports import *
 class ControllerCommandGroup(CommandGroup):
 
     def __init__(self, parent):
-        super().__init__(parent)
+        super().__init__()
         self.parent = parent
 
     def configure(self):
-        controller_settings = self.parent.advanced_settigns.addGroupCommandInput(
+        controller_settings = self.parent.advanced_settings.children.addGroupCommandInput(
             "controller_settings", "Controller Settings"
         )
 

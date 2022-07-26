@@ -13,7 +13,7 @@ from ..config_command import UiGlobal
 class WheelCommandGroup(CommandGroup):
 
     def __init__(self, parent):
-        super().__init__(parent)
+        super().__init__()
         self.parent_menu = parent
 
     def configure(self):
@@ -151,6 +151,7 @@ class WheelCommandGroup(CommandGroup):
         #     enabled=True,
         # )
 
+    @staticmethod
     def add_wheel_to_table(wheel: adsk.fusion.Joint) -> None:
         """### Adds a wheel occurrence to its global list and wheel table.
 

@@ -8,7 +8,8 @@ from .. import icon_paths
 class GamepieceCommandGroup(CommandGroup):
 
     def __init__(self, parent):
-        super().__init__(parent)
+        super().__init__()
+        self.parent = parent
 
     def configure(self):
         """

@@ -3,8 +3,9 @@ from abc import ABC, abstractmethod
 
 class CommandGroup(ABC):
 
-    def __init__(self, parent):
-        self.parent = parent
+    @abstractmethod
+    def __init__(self):
+        pass
 
     @abstractmethod
     def configure(self):

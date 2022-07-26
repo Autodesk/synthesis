@@ -7,7 +7,8 @@ from .command_group import CommandGroup
 class WeightCommandGroup(CommandGroup):
 
     def __init__(self, parent):
-        super().__init__(parent)
+        super().__init__()
+        self.parent = parent
         self.wheel_list = []
 
     def configure(self):
@@ -18,7 +19,7 @@ class WeightCommandGroup(CommandGroup):
         weight_table_input = self.parent.create_table_input(
             "weight_table",
             "Weight Table",
-            self.parent.self.self.parent.inputs,
+            self.parent.inputs,
             4,
             "3:2:2:1",
             1,

@@ -14,7 +14,7 @@ from ...parser.parse_options import (
 )
 from ..configuration.serial_command import SerialCommand
 
-from ..config_command import UiGlobal
+from ..ui_global import UiGlobal
 
 import adsk.core, adsk.fusion, traceback, logging, os
 from types import SimpleNamespace
@@ -22,25 +22,26 @@ from types import SimpleNamespace
 from .command_group import CommandGroup
 
 
+class JointMotions(Enum):
+    """### Corresponds to the API JointMotions enum
+
+    Args:
+        Enum (enum.Enum)
+    """
+    RIGID = 0
+    REVOLUTE = 1
+    SLIDER = 2
+    CYLINDRICAL = 3
+    PIN_SLOT = 4
+    PLANAR = 5
+    BALL = 6
+
+
 class JointCommandGroup(CommandGroup):
 
-    class JointMotions(Enum):
-        """### Corresponds to the API JointMotions enum
-
-        Args:
-            Enum (enum.Enum)
-        """
-        RIGID = 0
-        REVOLUTE = 1
-        SLIDER = 2
-        CYLINDRICAL = 3
-        PIN_SLOT = 4
-        PLANAR = 5
-        BALL = 6
-
     def __init__(self, parent):
-        super.__init__(parent)
-        super().__init__(parent)
+        super().__init__()
+        self.parent = parent
 
     def configure(self):
         """
@@ -54,10 +55,6 @@ class JointCommandGroup(CommandGroup):
         joint_config.tooltip = "Select and define joint occurrences in your assembly."
 
         joint_inputs = joint_config.children
-        # ~~~~~~~~~~~~~~~~ WHEEL CONFIGURATION ~~~~~~~~~~~~~~~~
-        self.parent.configureWheels()
-
-        self.parent.configure_joint_menu()
 
         # JOINT SELECTION TABLE
         """
@@ -168,8 +165,8 @@ class JointCommandGroup(CommandGroup):
 
         for joint in gm.app.activeDocument.design.rootComponent.allJoints:
             if (
-                    joint.jointMotion.jointType == JointCommandGroup.JointMotions.REVOLUTE.value
-                    or joint.jointMotion.jointType == JointCommandGroup.JointMotions.SLIDER.value
+                    joint.jointMotion.jointType == JointMotions.REVOLUTE.value
+                    or joint.jointMotion.jointType == JointMotions.SLIDER.value
             ) and not joint.isSuppressed:
                 self.add_joint_to_table(joint)
 

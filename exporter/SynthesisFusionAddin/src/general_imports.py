@@ -12,8 +12,8 @@ DEBUG = True
 
 try:
     from .strings import *
-    from global_manager import *
-    from logging import setupLogger
+    from .global_manager import *
+    from .logging import setupLogger
 
     (root_logger, log_handler) = setupLogger()
 except ImportError as e:
