@@ -59,15 +59,15 @@ public class FreeCameraMode : ICameraMode
         float yawMod = InputManager.MappedValueInputs.ContainsKey(LEFT_YAW_KEY) && InputManager.MappedValueInputs.ContainsKey(RIGHT_YAW_KEY) ? 
             cam.YawSensitivity / 8 * (InputManager.MappedValueInputs[RIGHT_YAW_KEY].Value - InputManager.MappedValueInputs[LEFT_YAW_KEY].Value) : 0;
         float pitchMod = InputManager.MappedValueInputs.ContainsKey(UP_PITCH_KEY) && InputManager.MappedValueInputs.ContainsKey(DOWN_PITCH_KEY) ? 
-            cam.PitchSensitivity / 8 * (InputManager.MappedValueInputs[UP_PITCH_KEY].Value - InputManager.MappedValueInputs[DOWN_PITCH_KEY].Value) : 0;
+            cam.PitchSensitivity / 4 * (InputManager.MappedValueInputs[UP_PITCH_KEY].Value - InputManager.MappedValueInputs[DOWN_PITCH_KEY].Value) : 0;
         
         p -= pitchMod;
         y += yawMod;
 
         if (Input.GetKey(KeyCode.Mouse0))
         {
-            p = -cam.PitchSensitivity * Input.GetAxis("Mouse Y");
-            y = cam.YawSensitivity * Input.GetAxis("Mouse X");
+            p = cam.PitchSensitivity * Input.GetAxis("Mouse Y");
+            y = -cam.YawSensitivity * Input.GetAxis("Mouse X");
         }
 
         // make it so the user can't rotate the camera upside down
@@ -98,8 +98,6 @@ public class FreeCameraMode : ICameraMode
         
         Vector3 right = t.right * (InputManager.MappedDigitalInputs[RIGHT_KEY][0].Value -
                                    InputManager.MappedDigitalInputs[LEFT_KEY][0].Value);
-        
-        Debug.Log(InputManager.MappedValueInputs[DOWN_KEY].Modifier);
         
         Vector3 up = Vector3.up * (InputManager.MappedDigitalInputs[UP_KEY][0].Value -
                              InputManager.MappedValueInputs[DOWN_KEY].Value);
