@@ -95,9 +95,9 @@ public static class MainHUD {
         // Setup default HUD
         MainHUD.AddItemToDrawer("Spawn", b => DynamicUIManager.CreateModal<SpawningModal>(), icon: SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-            MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>());
+            MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
         // MainHUD.AddItemToDrawer("Lobbies", b => DynamicUIManager.CreateModal<ManageLobbiesModal>());
-        MainHUD.AddItemToDrawer("Exit", b => DynamicUIManager.CreateModal<ExitSynthesisModal>());
+        MainHUD.AddItemToDrawer("Exit", b => DynamicUIManager.CreateModal<ExitSynthesisModal>(), icon: SynthesisAssetCollection.GetSpriteByName("CloseIcon"));
 
         if (!_hasNewRobotListener) {
             EventBus.NewTypeListener<RobotSimObject.NewRobotEvent>(e => {
@@ -112,7 +112,7 @@ public static class MainHUD {
                 if (robotEvent.NewBot == string.Empty) {
                     RemoveItemFromDrawer("Configure");
                 } else if (robotEvent.OldBot == string.Empty) {
-                    MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>(), index: 1);
+                    MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>(), index: 1, icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
                 }
             });
             _hasNewRobotListener = true;
@@ -136,7 +136,7 @@ public static class MainHUD {
             if (color.HasValue) {
                 drawerIcon.SetColor(color.Value);
             } else {
-                drawerIcon.SetColor(ColorManager.SYNTHESIS_WHITE);
+                drawerIcon.SetColor(ColorManager.SYNTHESIS_ORANGE);
             }
         } else {
             if (color.HasValue) {

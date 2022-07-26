@@ -10,6 +10,8 @@ namespace Synthesis.UI.Dynamic {
             Title.SetText("Exit Synthesis");
             Description.SetText("");
             AcceptButton.AddOnClickedEvent(x => Application.Quit()).StepIntoLabel(l => l.SetText("Exit"));
+            ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"));
+            ModalImage.SetColor(ColorManager.SYNTHESIS_WHITE);
 
             MainContent.CreateLabel(40)
                 .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Center)
