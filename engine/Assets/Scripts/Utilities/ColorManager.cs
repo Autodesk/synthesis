@@ -45,6 +45,8 @@ namespace Synthesis.UI {
             // File.Delete(path);
             Load();
 
+            Debug.Log($"{Path.GetFullPath(PATH)}");
+
             LoadDefaultColors();
             Save();
         }
@@ -65,8 +67,14 @@ namespace Synthesis.UI {
         }
 
         private static void Load() {
-            if (!File.Exists(PATH))
+            var fullPath = Path.GetFullPath(PATH);
+            var dir = fullPath.Substring(0, fullPath.LastIndexOf(Path.AltDirectorySeparatorChar) + 1);
+            if (!Directory.Exists(dir)) {
+                Directory.CreateDirectory(dir);
                 return;
+            } else if (!File.Exists(PATH)) {
+                return;
+            }
 
             var jsonColors = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(PATH));
             jsonColors.ForEach(x => {
