@@ -97,7 +97,6 @@
      <Compile Include="Assets\Scripts\UI\Dynamic\Panels\Testing\RobotDetailsPanel.cs" />
      <Compile Include="Assets\Scripts\Scoring\ShootableGamepiece.cs" />
      <Compile Include="Assets\Scripts\Modes\IMode.cs" />
-     <Compile Include="Assets\Scripts\Importer\GamepieceTag.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\AudioSourceAdapter.cs" />
      <Compile Include="Assets\Scripts\Modes\ModeManager.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\DraggablePanel.cs" />
@@ -152,10 +151,8 @@
      <Compile Include="Assets\Scripts\FileSystem\FileSystem.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Input\InputPanel.cs" />
      <Compile Include="Assets\Scripts\UI\MainMenu\MenuButtonTween.cs" />
-     <Compile Include="Assets\Scripts\Importer\EntityMeta.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\SpriteAdapter.cs" />
      <Compile Include="Assets\Scripts\VersionManager.cs" />
-     <Compile Include="Assets\Scripts\Importer\DynamicObjectMeta.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Joints\ConfigureJointsPanel.cs" />
      <Compile Include="Assets\Scripts\UI\MainMenu\MenuManager.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\ModuleMetadata.cs" />

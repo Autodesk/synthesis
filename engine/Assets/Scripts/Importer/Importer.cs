@@ -10,7 +10,6 @@ using Mirabuf.Joint;
 using Mirabuf.Material;
 using Mirabuf.Signal;
 using Synthesis.Util;
-using SynthesisAPI.Proto;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
 using UnityEngine;

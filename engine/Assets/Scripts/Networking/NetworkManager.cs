@@ -169,5 +169,10 @@ namespace Synthesis.Networking {
         public void HandleSwapResponse(SwapResponse swapResponse) {
             throw new NotImplementedException();
         }
+
+        public void HandleChangeNameResponse(ChangeNameResponse changeNameResponse)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
