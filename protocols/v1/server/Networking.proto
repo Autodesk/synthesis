@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+message MessageHeader {
+	bool is_encrypted = 1;
+	string client_id = 2; // only necessary for UDP hole-punching
+}
+
+// Pack messages as the 'Any' type before sending
+
+message StatusMessage {
+	LogLevel log_level = 1;
+	string msg = 2;
+
+	enum LogLevel {
+		INFO = 0;
+		WARNING = 1;
+		ERROR = 2;
+	}
+}
+
+message GenericResponse {
+	bool success = 1;
+	string log_message = 2;
+}
+
+// Sent by both clients and server to establish shared secrets and client_ids
+message KeyExchange {
+	string p = 1;
+	string g = 2; 
+	string public_key = 3;
+	string client_id = 4; /// Determined by server and sent back. Whatever the client sends is ignored
+}
+
+message Heartbeat {
+	//string client_id = 1;
+}

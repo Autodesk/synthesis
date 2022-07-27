@@ -25,11 +25,13 @@ namespace SynthesisServer.Client {
         private byte[] _serverBuffer;
         private IClientHandler _handler;
         private Socket _tcpSocket;
-        private UdpClient _udpSocket = null;
+        private UdpClient _udpSocket;
 
         private IPAddress _serverIP;
         private Socket _connectedServer;
         private List<Socket> _connectedClients; // might be dictionary and might have UdpClient (subject to change)
+
+        private IUDPHandler _udpHandler;
 
         private int _tcpPort;
         private int _udpPort;
@@ -38,8 +40,6 @@ namespace SynthesisServer.Client {
         private bool _hasInit = false;
 
         private string _id;
-
-        //private MessageDescriptor _expectedMessageType;
 
         public byte[] SymmetricKey { get; private set; }
         private Task<AsymmetricCipherKeyPair> _keyPair;
@@ -77,8 +77,9 @@ namespace SynthesisServer.Client {
 
         public void Init(IClientHandler handler) {
             _handler = handler;
-            
+
             _tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            _udpSocket = new UdpClient();
             ErrorReport("Socket created");
             // _udpSocket = new UdpClient(new IPEndPoint(IPAddress.Any, _udpPort));
 
@@ -226,6 +227,8 @@ namespace SynthesisServer.Client {
                 else if (message.Is(StartLobbyResponse.Descriptor)) { handleFunc = () => _handler.HandleStartLobbyResponse(message.Unpack<StartLobbyResponse>()); }
                 else if (message.Is(SwapResponse.Descriptor)) { handleFunc = () => _handler.HandleSwapResponse(message.Unpack<SwapResponse>()); }
                 else if (message.Is(ChangeNameResponse.Descriptor)) { handleFunc = () => _handler.HandleChangeNameResponse(message.Unpack<ChangeNameResponse>()); }
+                else if (message.Is(ConnectionDataClient.Descriptor)) { handleFunc = () => _handler.HandleConnectionDataClient(message.Unpack<ConnectionDataClient>()); }
+                else if (message.Is(ConnectionDataHost.Descriptor)) { handleFunc = () => _handler.HandleConnectionDataHost(message.Unpack<ConnectionDataHost>()); }
 
                 try {
                     handleFunc();
