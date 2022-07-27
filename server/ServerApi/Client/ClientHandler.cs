@@ -9,5 +9,7 @@ namespace SynthesisServer.Client {
         void HandleStartLobbyResponse(StartLobbyResponse startLobbyResponse);
         void HandleSwapResponse(SwapResponse swapResponse);
         void HandleChangeNameResponse(ChangeNameResponse changeNameResponse);
+        void HandleConnectionDataClient(ConnectionDataClient connectionDataClient);
+        void HandleConnectionDataHost(ConnectionDataHost connectionDataHost);
     }
 }

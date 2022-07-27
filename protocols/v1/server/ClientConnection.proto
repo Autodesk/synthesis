@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-
+import "Networking.proto";
 import "google/protobuf/Any.proto";
 
 
@@ -9,13 +9,4 @@ message GameUpdate {
 	
 	// Most likely use signals from mirabuf here but this allows easy adapting of what is being sent
 	repeated google.protobuf.Any client_data = 1;
-
 }
-
-
-
-
-
-
-
-
