@@ -1309,7 +1309,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4602686676069116}
   - component: {fileID: 114632750974120752}
-  - component: {fileID: 7259845451573625542}
   m_Layer: 3
   m_Name: Gizmo
   m_TagString: Untagged
@@ -1355,17 +1354,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   snapRotationToDegree: 15
   snapTransformToUnit: 0.5
---- !u!114 &7259845451573625542
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1956879812176446}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b762157b69db44141a86b76356004982, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gizmo: {fileID: 1956879812176446}
-  gizmoScript: {fileID: 114632750974120752}

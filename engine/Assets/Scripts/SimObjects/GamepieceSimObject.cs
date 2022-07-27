@@ -8,14 +8,15 @@ using Bounds = UnityEngine.Bounds;
 
 public class GamepieceSimObject : SimObject {
 
-    private GameObject _gamepieceObject;
-    private Vector3 _initialPosition;
-    private Quaternion _initialRotation;
-    public GameObject GamepieceObject { get; private set; }
-    public Bounds GamepieceBounds { get; private set; }
-    public Vector3 InitialPosition { get; set; }
-    public Quaternion InitialRotation { get; set; }
-    public ShootableGamepiece Shootable { get; private set; }
+    private GameObject         _gamepieceObject;
+    private Vector3            _initialPosition;
+    private Quaternion         _initialRotation;
+    public  GameObject         GamepieceObject      { get; private set; }
+    public  Bounds             GamepieceBounds      { get; private set; }
+    public  Vector3            InitialPosition      { get; set; }
+    public  Quaternion         InitialRotation      { get; set; }
+    public  ShootableGamepiece Shootable            { get; private set; }
+    public  bool               IsCurrentlyPossessed { get; internal set; }
 
     public GamepieceSimObject(string name, GameObject g) : base(name, new ControllableState()) {
         GamepieceObject = g;

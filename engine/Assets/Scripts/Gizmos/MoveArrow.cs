@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Synthesis.Gizmo;
+using Synthesis.Physics;
 using UnityEngine;
 
 
@@ -111,7 +113,8 @@ namespace Synthesis.Configuration
         }
         private void setTransform() //called to set certain value when activated or when the parent changes
         {
-            SetRigidbodies(false);
+            //SetRigidbodies(false);
+            PhysicsManager.IsFrozen = true;
 
             parent = transform.parent;
             transform.localPosition = Vector3.zero;
@@ -126,23 +129,20 @@ namespace Synthesis.Configuration
         {
             cam.PitchLowerLimit = originalLowerPitch;
             cam.FocusPoint = originalCameraFocusPoint;
-            SetRigidbodies(true);
+            PhysicsManager.IsFrozen = false;
+            //SetRigidbodies(true);
         }
 
         private void OnTransformParentChanged()//only called for testing for changing parent transforms
         {
             if (transform.parent != null)
             {
-                setTransform();
+                //setTransform();
             }
         }
         private void OnEnable()
         {
             setTransform();
-        }
-        private void OnDisable()
-        {
-            disableGizmo();
         }
         private void OnDestroy()
         {
@@ -172,42 +172,6 @@ namespace Synthesis.Configuration
             {
                 // GizmoManager.OnEnter();
             }
-
-            // Manually raycast and check stuff
-            // Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            // RaycastHit hitInfo;
-            // bool hit = UnityEngine.Physics.Raycast(ray, out hitInfo);
-            // if (hit) {
-            //     Debug.Log(hitInfo.collider.name);
-            // } else {
-            //     Debug.Log("No hit");
-            // }
-            // if (!Input.GetKey(KeyCode.Mouse0)) {
-            //     if (hit) {
-            //         var arrow = hitInfo.collider.gameObject.GetComponent<SelectableArrow>();
-            //         if (arrow != null) {
-            //             if (_currentlyHovering != null) {
-            //                 _currentlyHovering.OnMouseExit();
-            //             }
-            //             _currentlyHovering = arrow;
-            //             _currentlyHovering.OnMouseEnter();
-            //         }
-            //     } else if (_currentlyHovering != null) {
-            //         _currentlyHovering.OnMouseExit();
-            //         _currentlyHovering = null;
-            //     }
-            // } else if (Input.GetKeyDown(KeyCode.Mouse0)) {
-            //     if (hit) {
-            //         var arrow = hitInfo.collider.gameObject.GetComponent<SelectableArrow>();
-            //         if (arrow != null) {
-            //             arrow.OnMouseDown();
-            //         }
-            //     }
-            // } else if (Input.GetKeyUp(KeyCode.Mouse0)) {
-            //     if (_currentlyHovering != null) {
-            //         _currentlyHovering.OnMouseUp();
-            //     }
-            // }
 
             if (activeArrow == ArrowType.None) // skip if there no gizmo components being dragged
                 return;
@@ -419,16 +383,29 @@ namespace Synthesis.Configuration
         /// </summary>
         /// <param name="enabled"></param>
         public void SetRigidbodies(bool enabled) {
-            foreach (KeyValuePair<Rigidbody, bool> rb in rigidbodiesKinematicStateInScene) {
-                if (rb.Key != null) {
-                    if (enabled) {
-                        rb.Key.isKinematic = rb.Value; //saved dictionary state for reactivating the rigidbody's motion
-                        rb.Key.detectCollisions = true;
-                    } else {
-                        rb.Key.isKinematic = true;
-                        rb.Key.detectCollisions = false;
-                    }
-                }
+
+
+            // Robot exists
+            if (RobotSimObject.CurrentlyPossessedRobot != String.Empty)
+            {
+                var robot = RobotSimObject.GetCurrentlyPossessedRobot();
+                var rbs = robot.RobotNode.GetComponentsInChildren<Rigidbody>();
+                rbs.ForEach(e => {
+                        e.isKinematic = !enabled;
+                        e.detectCollisions = enabled;
+                });
+            }
+
+            if (FieldSimObject.CurrentField != null)
+            {
+                FieldSimObject.CurrentField.GroundedNode.GetComponentsInChildren<Rigidbody>()
+                    .Where(e => e.name != "grounded" && !e.name.StartsWith("gamepiece")).Concat(
+                FieldSimObject.CurrentField.Gamepieces.Where(e => !e.IsCurrentlyPossessed)
+                    .Select(e => e.GamepieceObject.GetComponent<Rigidbody>())).ForEach(e =>
+                {
+                    e.isKinematic = !enabled;
+                    e.detectCollisions = enabled;
+                });
             }
         }
 
