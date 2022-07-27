@@ -12,7 +12,7 @@ namespace Synthesis.UI.Dynamic
         public ChangeInputsModal() : base(new Vector2(400, 400)) {}
         
         public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
-            var offset = (-u.Parent!.RectOfChildren(u).yMin) + 7.5f;
+            var offset = (-u.Parent!.RectOfChildren(u).yMin) + 12f;
             u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 0);
             return u;
         };
@@ -23,35 +23,42 @@ namespace Synthesis.UI.Dynamic
 
         private void PopulateInputSelections()
         {
-            if (RobotSimObject.CurrentlyPossessedRobot.Equals(string.Empty)) return;
+            if (RobotSimObject.CurrentlyPossessedRobot.Equals(string.Empty))
+            {
+                MainContent.CreateLabel().SetText("No robot loaded.");
+                return;
+            }
+
+            var inputScrollView = MainContent.CreateScrollView().SetHeight<ScrollView>(400);
             
             foreach (var inputKey in SimulationManager.SimulationObjects[RobotSimObject.CurrentlyPossessedRobot]?.GetAllReservedInputs()) {
                 var val = InputManager.MappedValueInputs[inputKey];
 
-
-                MainContent.CreateLabeledButton()
+                inputScrollView.Content.CreateLabeledButton()
                     .StepIntoLabel(l => l.SetText(inputKey))
                     .StepIntoButton(b =>
                     {
-                        b.StepIntoLabel(l => l.SetText(val.Name));
+                        b.SetHeight<Button>(8)
+                            .SetWidth<Button>(128);
+                        UpdateAnalogInputButton(b, val, val is Digital);
                         b.AddOnClickedEvent(_ =>
                         {
                             // handle changing input keybind here
-                            b.StepIntoLabel(l => l.SetText("Press anything"));
+                            b.Label.SetText("Press anything");
                             _currentlyReassigning = val;
                             _reassigningButton = b;
                             _reassigningKey = inputKey;
                         });
-                        b.SetWidth<Button>(128);
                     })
                     .ApplyTemplate(VerticalLayout);
             }
         }
 
-        private void UpdateAnalogInputButton(Button button, Analog input)
+        private void UpdateAnalogInputButton(Button button, Analog input, bool isDigital)
         {
             Label l = button.Label;
-            string text = (input.UsePositiveSide ? "(+)" : "(-)") + input.Name;
+            // don't show positive or negative if the input is digital
+            string text = (!isDigital ? input.UsePositiveSide ? "(+) " : "(-) " : "") + input.Name;
             
             int modifier = input.Modifier;
             if ((modifier & (int)ModKey.LeftShift) != 0) {
@@ -115,10 +122,10 @@ namespace Synthesis.UI.Dynamic
 
                     InputManager.AssignValueInput(_reassigningKey, input);
 
-                    if (input is Digital)
-                        _reassigningButton.StepIntoLabel(l => l.SetText(input.Name));
-                    else
-                        UpdateAnalogInputButton(_reassigningButton, input);
+                    // if (input is Digital)
+                    //     _reassigningButton.StepIntoLabel(l => l.SetText(input.Name));
+                    // else
+                        UpdateAnalogInputButton(_reassigningButton, input, input is Digital);
 
                     _currentlyReassigning = null;
                     _reassigningButton = null;
