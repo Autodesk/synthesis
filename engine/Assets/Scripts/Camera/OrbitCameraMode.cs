@@ -41,6 +41,7 @@ public class OrbitCameraMode : ICameraMode
         bool isGodMode = InputManager.MappedValueInputs.ContainsKey(GodMode.ENABLED_GOD_MODE_INPUT)
             ? InputManager.MappedValueInputs[GodMode.ENABLED_GOD_MODE_INPUT].Value == 1.0F
             : false;
+        
         if (enableOrbit && !isGodMode) {
             z = cam.ZoomSensitivity * -Input.mouseScrollDelta.y;
 

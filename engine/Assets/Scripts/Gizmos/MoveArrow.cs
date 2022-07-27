@@ -98,19 +98,15 @@ namespace Synthesis.Configuration
             }
         }
 
-        private void Start()
+        private void Awake()
         {
+            cam = Camera.main.GetComponent<CameraController>();
+            originalLowerPitch = cam.PitchLowerLimit;
+            originalCameraFocusPoint = (Func<Vector3>) OrbitCameraMode.FocusPoint.Clone();
             previousMode = cam.CameraMode;
             previousCameraPosition = cam.transform.position;
             previousCameraRotation = cam.transform.rotation;
             cam.CameraMode = CameraController.CameraModes["Orbit"];
-            originalLowerPitch = cam.PitchLowerLimit;
-            originalCameraFocusPoint = OrbitCameraMode.FocusPoint;
-        }
-
-        private void Awake()
-        {
-            cam = Camera.main.GetComponent<CameraController>();
 
             //makes a list of the rigidbodies in the hierarchy and their state
             HierarchyRigidbodiesToDictionary();
@@ -156,6 +152,7 @@ namespace Synthesis.Configuration
         private void disableGizmo() //makes sure values are set correctly when the gizmo is removed
         {
             RestoreCameraMode();
+            CameraController.isOverGizmo = false; // this doesn't get reset?
             PhysicsManager.IsFrozen = false;
             //SetRigidbodies(true);
         }
