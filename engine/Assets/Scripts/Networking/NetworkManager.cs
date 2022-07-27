@@ -6,7 +6,12 @@ using SynthesisAPI.Utilities;
 using SynthesisServer.Client;
 using UnityEngine;
 
+using SynthesisServer.Proto;
+
 using Logger = SynthesisAPI.Utilities.Logger;
+
+using PClient = SynthesisServer.Proto.Client;
+using Client = SynthesisServer.Client.Client;
 
 #nullable enable
 
@@ -15,8 +20,8 @@ namespace Synthesis.Networking {
 
         public static bool IsConnected => Instance.IsConnected;
 
-        public static bool ConnectToServer(string ip) {
-            return Instance.ConnectToServer(ip);
+        public static Task<bool> ConnectToServer(string ip, string name) {
+            return Instance.ConnectToServer(ip, name);
         }
 
         public static void DisconnectFromServer() {
@@ -53,20 +58,25 @@ namespace Synthesis.Networking {
                 Client.Instance.Init(_clientHandler);
             }
 
-            public bool ConnectToServer(string ip) {
-                if (Client.Instance.IsTcpConnected)
-                    return false;
+            public Task<bool> ConnectToServer(string _ip, string _name) {
+                return Task.Factory.StartNew(() => {
+                    string ip = _ip;
+                    string name = _name;
+                    if (Client.Instance.IsTcpConnected)
+                        return false;
 
-                var res = Client.Instance.Start(ip);
-                if (res) {
-                    Task.Factory.StartNew(() => {
-                        while (Client.Instance.IsTcpConnected && _innerInstance != null) {
-                            Thread.Sleep(1000);
-                            Client.Instance.TrySendHeartbeat();
-                        }
-                    });
-                }
-                return res;
+                    var res = Client.Instance.Start(ip);
+                    if (res) {
+                        Task.Factory.StartNew(() => {
+                            while (Client.Instance.IsTcpConnected && _innerInstance != null) {
+                                Thread.Sleep(1000);
+                                Client.Instance.TrySendHeartbeat();
+                            }
+                        });
+                        Client.Instance.TrySendChangeName(name);
+                    }
+                    return res;
+                });
             }
 
             public void DisconnectFromServer() {
@@ -171,6 +181,16 @@ namespace Synthesis.Networking {
         }
 
         public void HandleChangeNameResponse(ChangeNameResponse changeNameResponse)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void HandleConnectionDataClient(ConnectionDataClient connectionDataClient)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void HandleConnectionDataHost(ConnectionDataHost connectionDataHost)
         {
             throw new NotImplementedException();
         }

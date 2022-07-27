@@ -1,3 +1,5 @@
+using SynthesisServer.Proto;
+
 namespace SynthesisServer.Client {
     public interface IClientHandler {
         void HandleStatusMessage(StatusMessage statusMessage);

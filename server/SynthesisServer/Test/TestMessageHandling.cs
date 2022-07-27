@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 using NUnit.Framework;
+using SynthesisServer.Proto;
 using System;
 using System.Collections.Generic;
 using System.Text;

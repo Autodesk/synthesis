@@ -10,6 +10,9 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using SynthesisServer.Proto;
+
+using Client = SynthesisServer.Proto.Client;
 
 namespace SynthesisServer {
     public class ClientData {
@@ -46,5 +49,8 @@ namespace SynthesisServer {
         public String GetPublicKey() { return ((DHPublicKeyParameters)_keyPair.Public).Y.ToString(); }
 
         public void UpdateHeartbeat() { LastHeartbeat = System.DateTimeOffset.Now.ToUnixTimeMilliseconds(); }
+
+        public static implicit operator SynthesisServer.Proto.Client(ClientData data)
+            => new SynthesisServer.Proto.Client() { Id = data.ID, Name = data.Name };
     }
 }

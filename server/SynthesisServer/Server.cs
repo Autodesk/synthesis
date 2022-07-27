@@ -8,6 +8,7 @@ using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
+using SynthesisServer.Proto;
 using SynthesisServer.Utilities;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
+using PLobby = SynthesisServer.Proto.Lobby;
 
 namespace SynthesisServer {
     public sealed class Server {

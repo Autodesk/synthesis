@@ -14,6 +14,8 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
+using SynthesisServer.Proto;
+
 namespace SynthesisServer.Client {
     public class Client {
         private const int BUFFER_SIZE = 4096;
@@ -276,6 +278,19 @@ namespace SynthesisServer.Client {
                 CreateLobbyRequest request = new CreateLobbyRequest()
                 {
                     LobbyName = lobbyName
+                };
+                IO.SendEncryptedMessage(request, _id, SymmetricKey, _tcpSocket, _encryptor, new AsyncCallback(TCPSendCallback));
+                return true;
+            }
+            return false;
+        }
+        public bool TrySendChangeName(string name) {
+            LockUntilKeyAvailable();
+            if (_hasInit && _isRunning && _tcpSocket.Connected)
+            {
+                ChangeNameRequest request = new ChangeNameRequest()
+                {
+                    Name = name
                 };
                 IO.SendEncryptedMessage(request, _id, SymmetricKey, _tcpSocket, _encryptor, new AsyncCallback(TCPSendCallback));
                 return true;
