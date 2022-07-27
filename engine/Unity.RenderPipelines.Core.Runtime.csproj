@@ -84,8 +84,8 @@
      <Compile Include="Library\PackageCache\com.unity.render-pipelines.core@10.5.1\Runtime\RenderGraph\RenderGraphBuilder.cs" />
      <Compile Include="Library\PackageCache\com.unity.render-pipelines.core@10.5.1\Runtime\Debugging\DebugManager.Actions.cs" />
      <Compile Include="Library\PackageCache\com.unity.render-pipelines.core@10.5.1\Runtime\Volume\VolumeStack.cs" />
-     <Compile Include="Library\PackageCache\com.unity.render-pipelines.core@10.5.1\Runtime\Debugging\DebugUpdater.cs" />
      <Compile Include="Library\PackageCache\com.unity.render-pipelines.core@10.5.1\Runtime\Debugging\Prefabs\Scripts\DebugUIHandlerCanvas.cs" />
+     <Compile Include="Library\PackageCache\com.unity.render-pipelines.core@10.5.1\Runtime\Debugging\DebugUpdater.cs" />
      <Compile Include="Library\PackageCache\com.unity.render-pipelines.core@10.5.1\Runtime\RenderGraph\RenderGraphDefaultResources.cs" />
      <Compile Include="Library\PackageCache\com.unity.render-pipelines.core@10.5.1\Runtime\Common\IVirtualTexturingEnabledRenderPipeline.cs" />
      <Compile Include="Library\PackageCache\com.unity.render-pipelines.core@10.5.1\Runtime\Debugging\Prefabs\Scripts\DebugUIHandlerColor.cs" />

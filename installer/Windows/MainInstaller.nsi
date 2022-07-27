@@ -1,6 +1,6 @@
 !include MUI2.nsh
 !include x64.nsh
-!define PRODUCT_VERSION "4.3.3.3"
+!define PRODUCT_VERSION "5.B.0"
 
 Name "Synthesis"
 
@@ -70,6 +70,7 @@ IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
 		
 		; Remove fusion plugins
 		RMDir /r "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\FusionRobotExporter"
+    RMDir /r "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\Synthesis"
 		RMDir /r "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\FusionExporter"
 		RMDir /r "$APPDATA\Autodesk\ApplicationPlugins\FusionRobotExporter.bundle"
 		RMDir /r "$APPDATA\Autodesk\ApplicationPlugins\FusionSynth.bundle"
@@ -167,6 +168,7 @@ Section "Synthesis (required)" Synthesis
 
 SectionEnd
 
+/*
 Section "MixAndMatch Files" MaM
 
   ; Set extraction path for Mix&Match files
@@ -175,7 +177,9 @@ Section "MixAndMatch Files" MaM
   File /r "MixAndMatch\*"
 
 SectionEnd
+*/
 
+/*
 Section "Inventor Exporter Plugin" iExporter
 
   ; Set extraction path to Inventor plugin directory
@@ -186,27 +190,31 @@ Section "Inventor Exporter Plugin" iExporter
   File /r "InventorExporter\Autodesk.InventorRobotExporter.Inventor.addin"
 
 SectionEnd
+*/
 
 Section "Fusion Exporter Plugin" fExporter
 
   ; Set extraction path to Fusion plugin directories
-  SetOutPath "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\FusionRobotExporter"
-  File /r "FusionExporter\*"
+  SetOutPath "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\Synthesis"
+  File /r "..\..\exporter\SynthesisFusionAddin\*"
   
-  SetOutPath "$APPDATA\Autodesk\ApplicationPlugins\FusionRobotExporter.bundle\Contents\"
-  File /r "FusionExporter\FusionRobotExporter.dll"
+  ; SetOutPath "$APPDATA\Autodesk\ApplicationPlugins\FusionRobotExporter.bundle\Contents\"
+  ; File /r "FusionExporter\FusionRobotExporter.dll"
 
 SectionEnd
 
-Section "Robot Files" RobotFiles
+Section "Robots and Fields" RobotFiles
 
   ; Set extraction path for preloaded robot files
-  SetOutPath $APPDATA\Autodesk\Synthesis\Robots
-
+  SetOutPath $APPDATA\Autodesk\Synthesis\Mira
   File /r "Robots\*"
+
+  SetOutPath $APPDATA\Autodesk\Synthesis\Mira\Fields
+  File /r "Fields\*"
 
 SectionEnd
 
+/*
 Section "Code Emulator" Emulator
 
 	; INetC.dll must be installed to proper NSIS Plugins x86 directories
@@ -224,39 +232,42 @@ Section "Code Emulator" Emulator
 	${EndIf}
 		
 SectionEnd
+*/
 
+/*
 Section /o "Field Exporter" FieldExporter
 	SetOutPath $INSTDIR\FieldExporter
 	File /r "FieldExporter\*"
 	CreateShortCut "$DESKTOP\FieldExporter.lnk" "$INSTDIR\FieldExporter\FieldExporter.exe"
 SectionEnd
+*/
 
 ;--------------------------------
 ;Component Descriptions
 
   LangString DESC_Synthesis ${LANG_ENGLISH} "The Simulator Engine is the real-time physics environment which simulates the robots and fields."
-  LangString DESC_MaM ${LANG_ENGLISH} "Mix and Match allows you to quickly choose from pre-configured robot parts such as wheels, drive bases and manipulators within the simulator"
-  LangString DESC_iExporter ${LANG_ENGLISH} "The Inventor Exporter Plugin is an Inventor addin used to export Autodesk Inventor Assemblies directly into the simulator"
+  ; LangString DESC_MaM ${LANG_ENGLISH} "Mix and Match allows you to quickly choose from pre-configured robot parts such as wheels, drive bases and manipulators within the simulator"
+  ; LangString DESC_iExporter ${LANG_ENGLISH} "The Inventor Exporter Plugin is an Inventor addin used to export Autodesk Inventor Assemblies directly into the simulator"
   LangString DESC_fExporter ${LANG_ENGLISH} "The Fusion360 Exporter Plugin is a Fusion addin used to export Autodesk Fusion Assemblies directly into the simulator"
-  LangString DESC_RobotFiles ${LANG_ENGLISH} "A library of sample robots pre-loaded into the simulator"
-  LangString DESC_Emulator ${LANG_ENGLISH} "The Robot Code Emulator allows you to emulate your C++ & JAVA robot code in the simulator"
-  LangString DESC_FieldExporter ${LANG_ENGLISH} "A standalone exporter for exporting field environments into the simulator"
+  LangString DESC_RobotFiles ${LANG_ENGLISH} "A library of sample robots and fields pre-loaded into the simulator"
+  ; LangString DESC_Emulator ${LANG_ENGLISH} "The Robot Code Emulator allows you to emulate your C++ & JAVA robot code in the simulator"
+  ; LangString DESC_FieldExporter ${LANG_ENGLISH} "A standalone exporter for exporting field environments into the simulator"
 
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${Synthesis} $(DESC_Synthesis)
-  !insertmacro MUI_DESCRIPTION_TEXT ${MaM} $(DESC_MaM)
-  !insertmacro MUI_DESCRIPTION_TEXT ${iExporter} $(DESC_iExporter)
+  ; !insertmacro MUI_DESCRIPTION_TEXT ${MaM} $(DESC_MaM)
+  ; !insertmacro MUI_DESCRIPTION_TEXT ${iExporter} $(DESC_iExporter)
   !insertmacro MUI_DESCRIPTION_TEXT ${fExporter} $(DESC_fExporter)
   !insertmacro MUI_DESCRIPTION_TEXT ${RobotFiles} $(DESC_RobotFiles)
-  !insertmacro MUI_DESCRIPTION_TEXT ${Emulator} $(DESC_Emulator)
-  !insertmacro MUI_DESCRIPTION_TEXT ${FieldExporter} $(DESC_FieldExporter)
+  ; !insertmacro MUI_DESCRIPTION_TEXT ${Emulator} $(DESC_Emulator)
+  ; !insertmacro MUI_DESCRIPTION_TEXT ${FieldExporter} $(DESC_FieldExporter)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
   
 ;--------------------------------
   
 Section "Uninstall"
 
-  MessageBox MB_YESNO "Would you like to remove your robot/replay files?" IDNO NawFam
+  MessageBox MB_YESNO "Would you like to remove your robot files?" IDNO NawFam
   RMDir /r /REBOOTOK $APPDATA\Synthesis
   RMDir /r /REBOOTOK $APPDATA\Autodesk\Synthesis
   
@@ -275,6 +286,7 @@ Section "Uninstall"
   
   ; Remove fusion plugins
   RMDir /r "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\FusionRobotExporter"
+  RMDir /r "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\Synthesis"
   RMDir /r "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\FusionExporter"
   RMDir /r "$APPDATA\Autodesk\ApplicationPlugins\FusionRobotExporter.bundle"
   RMDir /r "$APPDATA\Autodesk\ApplicationPlugins\FusionSynth.bundle"
@@ -309,7 +321,7 @@ Section "Uninstall"
   Delete "$DESKTOP\FieldExporter.lnk"
   
   ; Execute QEMU uninstaller
-  IfFileExists "$PROGRAMFILES64\qemu" file_found uninstall_complete
+  ; IfFileExists "$PROGRAMFILES64\qemu" file_found uninstall_complete
   
 	file_found:
 	MessageBox MB_YESNO "Would you like to uninstall QEMU as well?" IDNO uninstall_complete

@@ -58,8 +58,8 @@
      <Compile Include="Library\PackageCache\com.unity.timeline@1.5.5\Editor\Manipulators\Utils\EditModeMixUtils.cs" />
      <Compile Include="Library\PackageCache\com.unity.timeline@1.5.5\Editor\Manipulators\Sequence\RectangleTool.cs" />
      <Compile Include="Library\PackageCache\com.unity.timeline@1.5.5\Editor\Manipulators\Sequence\TrackZoom.cs" />
-     <Compile Include="Library\PackageCache\com.unity.timeline@1.5.5\Editor\State\SequenceState.cs" />
      <Compile Include="Library\PackageCache\com.unity.timeline@1.5.5\Editor\Manipulators\Sequence\RectangleSelect.cs" />
+     <Compile Include="Library\PackageCache\com.unity.timeline@1.5.5\Editor\State\SequenceState.cs" />
      <Compile Include="Library\PackageCache\com.unity.timeline@1.5.5\Editor\Items\ClipItem.cs" />
      <Compile Include="Library\PackageCache\com.unity.timeline@1.5.5\Editor\TimelineSelection.cs" />
      <Compile Include="Library\PackageCache\com.unity.timeline@1.5.5\Editor\treeview\Drawers\Layers\ItemsLayer.cs" />
@@ -274,10 +274,10 @@
      <Compile Include="Library\PackageCache\com.unity.timeline@1.5.5\Editor\Utilities\ObjectReferenceField.cs" />
      <Compile Include="Library\PackageCache\com.unity.timeline@1.5.5\Editor\Utilities\Clipboard.cs" />
      <Compile Include="Library\PackageCache\com.unity.timeline@1.5.5\Editor\treeview\TrackGui\TimelineTrackErrorGUI.cs" />
+     <Compile Include="Library\PackageCache\com.unity.timeline@1.5.5\Editor\treeview\IPropertyKeyDataSource.cs" />
      <Compile Include="Library\PackageCache\com.unity.timeline@1.5.5\Editor\Utilities\TimeReferenceUtility.cs" />
      <Compile Include="Library\PackageCache\com.unity.timeline@1.5.5\Editor\treeview\TrackGui\TimelineTrackGUI.cs" />
      <Compile Include="Library\PackageCache\com.unity.timeline@1.5.5\Editor\Window\TimelineWindow_PlayRange.cs" />
-     <Compile Include="Library\PackageCache\com.unity.timeline@1.5.5\Editor\treeview\IPropertyKeyDataSource.cs" />
      <Compile Include="Library\PackageCache\com.unity.timeline@1.5.5\Editor\treeview\AnimationTrackKeyDataSource.cs" />
      <Compile Include="Library\PackageCache\com.unity.timeline@1.5.5\Editor\treeview\Drawers\AnimationTrackDrawer.cs" />
      <Compile Include="Library\PackageCache\com.unity.timeline@1.5.5\Editor\Utilities\Scopes\PropertyScope.cs" />

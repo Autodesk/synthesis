@@ -46,7 +46,7 @@ namespace Engine.ModuleLoader
 
 			SetupApplication(); // Always do this first
 
-			DontDestroyOnLoad(gameObject); // Do not destroy this game object when loading a new scene
+			DontDestroyOnLoad(gameObject); // Do not destroy this game object when loading a new scene. NOTE: Doesn't work in editor for some reason
 
 			ModuleManager.RegisterModuleAssemblyName(Assembly.GetExecutingAssembly().GetName().Name, "Core Engine");
 			Logger.RegisterLogger(new LoggerImpl());

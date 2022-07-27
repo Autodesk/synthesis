@@ -158,11 +158,11 @@
      <Compile Include="Library\PackageCache\com.unity.shadergraph@10.5.1\Editor\Data\Nodes\Input\Texture\Texture3DAssetNode.cs" />
      <Compile Include="Library\PackageCache\com.unity.shadergraph@10.5.1\Editor\Data\Nodes\Procedural\Noise\VoronoiNode.cs" />
      <Compile Include="Library\PackageCache\com.unity.shadergraph@10.5.1\Editor\Generation\Contexts\TargetSetupContext.cs" />
+     <Compile Include="Library\PackageCache\com.unity.shadergraph@10.5.1\Editor\Data\Graphs\GradientMaterialSlot.cs" />
      <Compile Include="Library\PackageCache\com.unity.shadergraph@10.5.1\Editor\Data\Interfaces\IMayRequireCameraOpaqueTexture.cs" />
      <Compile Include="Library\PackageCache\com.unity.shadergraph@10.5.1\Editor\Data\Nodes\Artistic\Normal\NormalUnpackNode.cs" />
      <Compile Include="Library\PackageCache\com.unity.shadergraph@10.5.1\Editor\Generation\Collections\DependencyCollection.cs" />
      <Compile Include="Library\PackageCache\com.unity.shadergraph@10.5.1\Editor\Data\Nodes\Math\Vector\DotProductNode.cs" />
-     <Compile Include="Library\PackageCache\com.unity.shadergraph@10.5.1\Editor\Data\Graphs\GradientMaterialSlot.cs" />
      <Compile Include="Library\PackageCache\com.unity.shadergraph@10.5.1\Editor\Serialization\FakeJsonObject.cs" />
      <Compile Include="Library\PackageCache\com.unity.shadergraph@10.5.1\Editor\Drawing\Views\HelpBoxRow.cs" />
      <Compile Include="Library\PackageCache\com.unity.shadergraph@10.5.1\Editor\Data\Graphs\DynamicValueMaterialSlot.cs" />
@@ -422,8 +422,8 @@
      <Compile Include="Library\PackageCache\com.unity.shadergraph@10.5.1\Editor\Data\Nodes\Channel\SplitNode.cs" />
      <Compile Include="Library\PackageCache\com.unity.shadergraph@10.5.1\Editor\Data\Nodes\Math\Range\MinimumNode.cs" />
      <Compile Include="Library\PackageCache\com.unity.shadergraph@10.5.1\Editor\Importers\ShaderGraphAssetPostProcessor.cs" />
-     <Compile Include="Library\PackageCache\com.unity.shadergraph@10.5.1\Editor\Generation\Enumerations\InstancingOptions.cs" />
      <Compile Include="Library\PackageCache\com.unity.shadergraph@10.5.1\Editor\Data\Nodes\NormalMapSpace.cs" />
+     <Compile Include="Library\PackageCache\com.unity.shadergraph@10.5.1\Editor\Generation\Enumerations\InstancingOptions.cs" />
      <Compile Include="Library\PackageCache\com.unity.shadergraph@10.5.1\Editor\Generation\TargetResources\StructFields.cs" />
      <Compile Include="Library\PackageCache\com.unity.shadergraph@10.5.1\Editor\Drawing\Views\ReorderableTextListView.cs" />
      <Compile Include="Library\PackageCache\com.unity.shadergraph@10.5.1\Editor\Data\Util\SlotValueTypeUtil.cs" />

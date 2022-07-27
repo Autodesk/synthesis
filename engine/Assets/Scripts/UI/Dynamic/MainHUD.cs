@@ -9,6 +9,7 @@ using System.Linq;
 using Synthesis.UI;
 using DigitalRuby.Tween;
 using SynthesisAPI.EventBus;
+using UnityEngine.SceneManagement;
 
 #nullable enable
 
@@ -119,6 +120,10 @@ public static class MainHUD {
         }
 
         _isSetup = true;
+
+        SceneManager.activeSceneChanged += (Scene a, Scene b) => {
+            _isSetup = false;
+        };
     }
 
     public static void AddItemToDrawer(string title, Action<Button> onClick, int index = -1, Sprite? icon = null, Color? color = null) {

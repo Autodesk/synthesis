@@ -11,6 +11,8 @@ using UnityEngine;
 
 using Logger = SynthesisAPI.Utilities.Logger;
 using Synthesis.UI;
+using UnityEngine.SceneManagement;
+using Synthesis.Physics;
 
 namespace Synthesis.Runtime {
     public class SimulationRunner : MonoBehaviour {
@@ -25,7 +27,26 @@ namespace Synthesis.Runtime {
 
         public static event Action OnUpdate;
 
+        private bool _setupSceneSwitchEvent = false;
+
         void Start() {
+
+            if (!_setupSceneSwitchEvent) {
+                SceneManager.sceneUnloaded += (Scene s) => {
+                    if (s.name == "MainScene") {
+                        FieldSimObject.DeleteField();
+                        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+                            SimulationManager.RemoveSimObject(RobotSimObject.GetCurrentlyPossessedRobot());
+
+                        PhysicsManager.Reset();
+                    }
+                    // SimulationManager.SimulationObjects.ForEach(x => {
+                    //     SimulationManager.RemoveSimObject(x.Value);
+                    // });
+                };
+                _setupSceneSwitchEvent = true;
+            }
+
             SetContext(RUNNING_SIM_CONTEXT);
             Synthesis.PreferenceManager.PreferenceManager.Load();
             MainHUD.Setup();
