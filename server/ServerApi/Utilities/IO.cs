@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
+using SynthesisServer.Proto;
 using System;
 using System.Collections.Generic;
 using System.Linq;

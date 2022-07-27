@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading;
+using SynthesisServer.Proto;
+
+using PLobby = SynthesisServer.Proto.Lobby;
 
 namespace SynthesisServer {
     public class Lobby {
@@ -78,11 +81,11 @@ namespace SynthesisServer {
             return false;
         }
 
-        public ServerInfoResponse.Types.Lobby ToProtobuf() {
-            var l = new ServerInfoResponse.Types.Lobby();
+        public PLobby ToProtobuf() {
+            var l = new PLobby();
             l.LobbyName = Name;
             Clients.ForEach(c => {
-                l.Clients.Add(c.ID);
+                l.Clients.Add(c.ID, c);
             });
             return l;
         }

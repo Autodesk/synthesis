@@ -290,6 +290,9 @@
     <Reference Include="System.Buffers">
         <HintPath>C:/Users/hunte/work/synthesis/engine/Assets/Packages/System.Buffers.4.4.0/lib/netstandard2.0/System.Buffers.dll</HintPath>
     </Reference>
+    <Reference Include="ServerApi">
+        <HintPath>C:/Users/hunte/work/synthesis/engine/Assets/Packages/ServerApi.dll</HintPath>
+    </Reference>
     <Reference Include="System.Drawing.Common">
         <HintPath>C:/Users/hunte/work/synthesis/engine/Assets/Packages/System.Drawing.Common.5.0.2/lib/net461/System.Drawing.Common.dll</HintPath>
     </Reference>
@@ -313,6 +316,9 @@
     </Reference>
     <Reference Include="ICSharpCode.NRefactory">
         <HintPath>C:/Users/hunte/work/synthesis/engine/Library/PackageCache/com.unity.render-pipelines.core@10.5.1/Editor/ShaderGenerator/ICSharpCode.NRefactory.dll</HintPath>
+    </Reference>
+    <Reference Include="BouncyCastle.Crypto">
+        <HintPath>C:/Users/hunte/work/synthesis/engine/Assets/Packages/BouncyCastle.Crypto.dll</HintPath>
     </Reference>
     <Reference Include="MathNet.Spatial">
         <HintPath>C:/Users/hunte/work/synthesis/engine/Assets/Packages/MathNet.Spatial.0.6.0/lib/net461/MathNet.Spatial.dll</HintPath>

@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Threading.Tasks;
 using Synthesis.UI;
 using System.Collections.Generic;
+using SynthesisServer.Proto;
 
 #nullable enable
 
@@ -21,7 +22,9 @@ public class ManageLobbiesModal : ModalDynamic {
     };
 
     private string _ip = "127.0.0.1";
+    private string _username = "Epic Gamer";
     private InputField _ipInput;
+    private InputField _nameInput;
     private Button _connectButton;
     private ScrollView _lobbiesScrollView;
 
@@ -33,10 +36,27 @@ public class ManageLobbiesModal : ModalDynamic {
         Description.SetText("See and manage all lobbies on controlling server");
 
         _ipInput = MainContent.CreateInputField().StepIntoHint(l => l.SetText("Server IP"))
-            .SetTopStretch<InputField>()
+            // .SetTopStretch<InputField>()
+            .StepIntoLabel(l => l.SetText("IP to LobbyHub"))
             .SetContentType(TMPro.TMP_InputField.ContentType.Standard)
             .AddOnValueChangedEvent((i, v) => _ip = v)
-            .SetValue("127.0.0.1");
+            .SetAnchor<InputField>(new Vector2(0, 1), new Vector2(0, 1))
+            .SetPivot<InputField>(new Vector2(0, 1))
+            .SetAnchoredPosition<InputField>(new Vector2(0, 0))
+            .SetWidth<InputField>(400f)
+            .SetValue(_ip);
+        
+        _nameInput = MainContent.CreateInputField().StepIntoHint(l => l.SetText("Name"))
+            // .SetTopStretch<InputField>()
+            .StepIntoLabel(l => l.SetText("Username"))
+            .SetContentType(TMPro.TMP_InputField.ContentType.Alphanumeric)
+            .AddOnValueChangedEvent((i, v) => _username = v)
+            .SetAnchor<InputField>(new Vector2(0, 1), new Vector2(0, 1))
+            .SetPivot<InputField>(new Vector2(0, 1))
+            .SetAnchoredPosition<InputField>(new Vector2(410f, 0))
+            .SetWidth<InputField>(400f)
+            .SetValue(_username);
+        
         _connectButton = MainContent.CreateButton().StepIntoLabel(l => l.SetText("Connect"))
             .ApplyTemplate<Button>(VerticalLayout)
             .AddOnClickedEvent(Connect);
@@ -46,8 +66,10 @@ public class ManageLobbiesModal : ModalDynamic {
 
         var footerButtons = MainContent.CreateSubContent(new Vector2(MainContent.Size.x, 40f))
             .SetBottomStretch<Content>();
-        footerButtons.CreateButton("Test Create Lobby").SetWidth<Button>(250f).SetRightStretch<Button>()
+        footerButtons.CreateButton("Create Lobby").SetWidth<Button>(200f).SetRightStretch<Button>()
             .AddOnClickedEvent(b => NetworkManager.CreateLobby($"Lobby{(int)UnityEngine.Random.Range(1, 500)}"));
+        footerButtons.CreateButton("Delete Lobby").SetWidth<Button>(200f).SetRightStretch<Button>(anchoredX: 210f)
+            .AddOnClickedEvent(b => Debug.Log("TODO: Remove lobby"));
     }
 
     private void Connect(Button b) {
@@ -57,7 +79,7 @@ public class ManageLobbiesModal : ModalDynamic {
                 NetworkManager.DisconnectFromServer();
                 break;
             case ConnectionStatus.NotConnected:
-                _connectionStatus = Task<bool>.Factory.StartNew(() => NetworkManager.ConnectToServer(_ip));
+                _connectionStatus = NetworkManager.ConnectToServer(_ip, _username);
                 break;
             default:
                 return;
@@ -148,7 +170,7 @@ public class ManageLobbiesModal : ModalDynamic {
         _lobbiesScrollView.Content.SetHeight<ScrollView>(height);
     }
 
-    public Content CreateLobbyInfo(ServerInfoResponse.Types.Lobby lobby, Content parent) {
+    public Content CreateLobbyInfo(Lobby lobby, Content parent) {
         var content = parent.CreateSubContent(new Vector2(50, 100))
             .SetTopStretch<Content>();
         content.EnsureImage().StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_WHITE));

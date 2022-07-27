@@ -312,6 +312,11 @@ namespace Synthesis.UI.Dynamic {
             RootRectTransform.anchoredPosition = pos;
             return (this as T)!;
         }
+        public T SetAnchor<T>(Vector2 anchorMin, Vector2 anchorMax) where T : UIComponent {
+            RootRectTransform.anchorMin = anchorMin;
+            RootRectTransform.anchorMax = anchorMax;
+            return (this as T)!;
+        }
         public T SetSize<T>(Vector2 size) where T: UIComponent {
             Size = size;
             RootRectTransform.sizeDelta = size;

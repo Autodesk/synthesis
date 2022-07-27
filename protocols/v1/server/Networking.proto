@@ -1,4 +1,5 @@
 syntax = "proto3";
+package SynthesisServer.Proto;
 
 message MessageHeader {
 	bool is_encrypted = 1;

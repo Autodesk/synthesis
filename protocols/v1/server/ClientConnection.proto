@@ -1,4 +1,5 @@
 syntax = "proto3";
+package SynthesisServer.Proto;
 
 import "Networking.proto";
 import "google/protobuf/Any.proto";
