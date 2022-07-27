@@ -34,10 +34,10 @@ public class FreeCameraMode : ICameraMode
             InputManager.AssignDigitalInput(BACK_KEY, new Digital("DownArrow"));
             InputManager.AssignDigitalInput(LEFT_KEY, new Digital("LeftArrow"));
             InputManager.AssignDigitalInput(RIGHT_KEY, new Digital("RightArrow"));
-            InputManager.AssignDigitalInput(UP_KEY, new Digital("Space"));
             // shift seems to be treated as a modifier rather than the actual input
             // there's probably a better way to do this though
-            InputManager.AssignValueInput(DOWN_KEY, new Digital("LeftShift").WithModifier((int)ModKey.LeftShift));
+            InputManager.AssignValueInput(UP_KEY, new Digital("LeftShift").WithModifier((int)ModKey.LeftShift));
+            InputManager.AssignValueInput(DOWN_KEY, new Digital("LeftControl").WithModifier((int)ModKey.LeftControl));
             InputManager.AssignValueInput(LEFT_YAW_KEY, new Digital("Q"));
             InputManager.AssignValueInput(RIGHT_YAW_KEY, new Digital("E"));
             InputManager.AssignValueInput(DOWN_PITCH_KEY, new Digital("Z"));
@@ -99,7 +99,7 @@ public class FreeCameraMode : ICameraMode
         Vector3 right = t.right * (InputManager.MappedDigitalInputs[RIGHT_KEY][0].Value -
                                    InputManager.MappedDigitalInputs[LEFT_KEY][0].Value);
         
-        Vector3 up = Vector3.up * (InputManager.MappedDigitalInputs[UP_KEY][0].Value -
+        Vector3 up = Vector3.up * (InputManager.MappedValueInputs[UP_KEY].Value -
                              InputManager.MappedValueInputs[DOWN_KEY].Value);
         
         t.Translate(Time.deltaTime * speed * (forward + right + up),Space.World);
