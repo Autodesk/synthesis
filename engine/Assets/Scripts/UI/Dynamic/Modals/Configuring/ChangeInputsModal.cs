@@ -38,8 +38,8 @@ namespace Synthesis.UI.Dynamic
                     .StepIntoLabel(l => l.SetText(inputKey))
                     .StepIntoButton(b =>
                     {
-                        b.SetHeight<Button>(8)
-                            .SetWidth<Button>(128);
+                        // b.SetHeight<Button>(8)
+                        //     .SetWidth<Button>(256);
                         UpdateAnalogInputButton(b, val, val is Digital);
                         b.AddOnClickedEvent(_ =>
                         {
@@ -67,10 +67,6 @@ namespace Synthesis.UI.Dynamic
             if ((modifier & (int)ModKey.LeftCommand) != 0) {
                 text += " + Left Command";
             }
-            // Idk the difference
-            if ((modifier & (int)ModKey.LeftApple) != 0) {
-                text += " + Left Command";
-            }
             if ((modifier & (int)ModKey.LeftAlt) != 0) {
                 text += " + Left Alt";
             }
@@ -78,9 +74,6 @@ namespace Synthesis.UI.Dynamic
                 text += " + Right Shift";
             }
             if ((modifier & (int)ModKey.RightCommand) != 0) {
-                text += " + Right Control";
-            }
-            if ((modifier & (int)ModKey.RightApple) != 0) {
                 text += " + Right Command";
             }
             if ((modifier & (int)ModKey.RightAlt) != 0) {
