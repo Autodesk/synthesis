@@ -59,14 +59,14 @@ public static class UtilExtensions {
         return new UnityEngine.Bounds(((max + min) / 2f) - top.position, max - min);
     }
     
-    public static void ApplyMatrix(this Transform trans, Matrix4x4 m) {
-        // m.Print();
-        trans.localPosition = m.GetPosition();
-        var rot = m.rotation;
-        rot = new Quaternion(-rot.x, rot.y, rot.z, -rot.w);
-        trans.localRotation = rot;
-        trans.localScale = m.lossyScale;
-    }
+    // public static void ApplyMatrix(this Transform trans, Matrix4x4 m) {
+    //     // m.Print();
+    //     trans.localPosition = m.GetPosition();
+    //     var rot = m.rotation;
+    //     rot = new Quaternion(-rot.x, rot.y, rot.z, -rot.w);
+    //     trans.localRotation = rot;
+    //     trans.localScale = m.lossyScale;
+    // }
 
     public static void Print(this Matrix4x4 m) {
         Debug.Log($"{m[0, 0]}, {m[0, 1]}, {m[0, 2]}, {m[0, 3]}\n{m[1, 0]}, {m[1, 1]}, {m[1, 2]}, {m[1, 3]}"
@@ -103,6 +103,6 @@ public static class UtilExtensions {
         => new Vector3(a.y * b.z - a.z * b.y, -(a.x * b.z - a.z * b.x), a.x * b.y - a.y * b.x);
     
     // TODO: This should be done when the matrix is created
-    public static UVector3 GetPosition(this Matrix4x4 m, bool mod = true)
-        => mod ? new UVector3(m.m03 * -0.01f, m.m13 * 0.01f, m.m23 * 0.01f) : new UVector3(m.m03, m.m13, m.m23);
+    public static UVector3 GetPosition(this Matrix4x4 m)
+        => new UVector3(m.m03, m.m13, m.m23);
 }

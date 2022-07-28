@@ -45,8 +45,6 @@ namespace Synthesis.UI {
             // File.Delete(path);
             Load();
 
-            Debug.Log($"{Path.GetFullPath(PATH)}");
-
             LoadDefaultColors();
             Save();
         }
@@ -67,8 +65,7 @@ namespace Synthesis.UI {
         }
 
         private static void Load() {
-            var fullPath = Path.GetFullPath(PATH);
-            var dir = fullPath.Substring(0, fullPath.LastIndexOf(Path.AltDirectorySeparatorChar) + 1);
+            var dir = Path.GetFullPath(PATH).Replace(Path.GetFileName(PATH), "");
             if (!Directory.Exists(dir)) {
                 Directory.CreateDirectory(dir);
                 return;
