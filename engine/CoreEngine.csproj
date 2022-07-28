@@ -92,9 +92,7 @@
      <Compile Include="Assets/Scripts/Utilities/IEnumerableExtensions.cs" />
      <Compile Include="Assets/Scripts/ModuleLoader/Adapters/MeshAdapter.cs" />
      <Compile Include="Assets/Scripts/UI/MainMenu/MenuButtonTween.cs" />
-     <Compile Include="Assets/Scripts/Importer/EntityMeta.cs" />
      <Compile Include="Assets/Scripts/ModuleLoader/Adapters/SpriteAdapter.cs" />
-     <Compile Include="Assets/Scripts/Importer/DynamicObjectMeta.cs" />
      <Compile Include="Assets/Scripts/ModuleLoader/Adapters/IApiAdapter.cs" />
      <Compile Include="Assets/Scripts/UI/Panels/Variants/AddPanel/AddPanel.cs" />
      <Compile Include="Assets/Scripts/UI/Tabs/HomeTab.cs" />
@@ -135,7 +133,6 @@
      <Compile Include="Assets/Scripts/UI/Panels/Variants/UpdatePromptPanel.cs" />
      <Compile Include="Assets/Scripts/UI/Dynamic/Modals/Testing/ScrollViewTestModal.cs" />
      <Compile Include="Assets/Scripts/UI/Dynamic/Panels/Testing/RobotDetailsPanel.cs" />
-     <Compile Include="Assets/Scripts/Importer/GamepieceTag.cs" />
      <Compile Include="Assets/Scripts/UI/Panels/DraggablePanel.cs" />
      <Compile Include="Assets/Scripts/Gizmos/SelectableArrow.cs" />
      <Compile Include="Assets/Scripts/UI/Dynamic/Modals/Spawning/SpawningModal.cs" />

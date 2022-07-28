@@ -87,6 +87,7 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         var position = FieldObject.transform.position;
         position.y -= FieldBounds.center.y - FieldBounds.extents.y;
         FieldObject.transform.position = position;
+        Debug.Log($"{FieldObject.transform.position.y}");
 
         _initialPosition = FieldObject.transform.position;
 
