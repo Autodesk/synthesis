@@ -16,10 +16,21 @@ To run the init script, you likely need to make it executable by running: `chmod
 
 Now run the init script and specify input directories for the version of synthesis you compiled as well as fields and robots: `./init.sh -f /path/to/fields/ -r /path/to/robots/ -b /path/to/synthesis/`
 
+Note: While it is not strictly necessary to include fields and robots, it is strongly recommended to include at least one of each
+
 ### Installing appimagetool ###
 appimagetool is the name of the program that is used to create AppImages. You can download and install appimagetool through the official website https://appimage.github.io/appimagetool/ or get it through your distribution's package manager.
 
 Note: appimagetool is usually packaged under AppImageKit rather than as a standalone application.
 
 ### Creating The AppImage ###
-Finally you can create your AppImage! Run: `appimagetool Synthesis.AppDir` which will create the Synthesis AppImage
+Finally you can create your AppImage! Run: `ARCH=x86_64 appimagetool Synthesis.AppDir` which will create the Synthesis AppImage
+
+Note: You might get an error saying that AppImage needs FUSE installed. Install it. For Arch users it should already be installed. For Debian users run: `apt install fuse`
+If you are still encountering issues, refer to this page: https://docs.appimage.org/user-guide/troubleshooting/fuse.html#ref-install-fuse
+
+### Troubleshooting ###
+Refer to the AppImage troubleshooting page first if you are having issues: https://docs.appimage.org/user-guide/troubleshooting/index.html
+The general documentation may be of use as well: https://docs.appimage.org/index.html
+If the issues persist, open a github issue with details about the problem.
+
