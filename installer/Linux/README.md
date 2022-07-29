@@ -1,33 +1,25 @@
-# `>_` Shell Script Installer
+# `>_` Synthesis App Image
 
-For installation on Linux operating systems, we use our own custom written shell script to extract all the necessary files to their proper locations in the file system. 
+For running Synthesis we have decided to package our application as an AppImage. It allows Synthesis to be packaged as a single .AppImage file. This also allows for users to run Synthesis without needing a specific distribution.
 
 ### Compiling The Package: ###
-In order to acheive the proper package structure for proper extraction, you must first compile a Unity build as `Synthesis.x86_64` which must reside in the `Synthesis` folder. 
+In order to acheive the proper package structure for proper extraction, you must first compile a Unity build as: `Synthesis.x86_64` and store it somewhere on your machine.
 
-Prior to compiling the package, you must first ensure that all scripts have the execute bit set properly using:   
-`$ chmod +x LinuxInstaller.sh`    
+Note: It is important that you do not modify or remove any of the files and folders that come built with the `Synthesis.x86_64` file.
 
-Then, download [makeself](https://makeself.io) and compile the `.run` executable using:  
-`$ ./makeself.sh LinuxInstaller/ SynthesisLinux4.X.X.run "Synthesis For Linux 4.X.X" ./LinuxInstaller.sh`   
-(Replace **4.X.X** with correct product version number)
+It is also strongly recommended that you have some fields and robots exported in the Mirabuf format.
 
-### Installing The Package (FOR USERS): ###
-Installing the package should be as simple as `$ ./SynthesisLinux*.run`.  
+### Running Init ###
+Before packaging, it is important to run the init script unless you really know what you are doing. At the very least it is recommended to read it to see what is needed for setup.
 
-An alternate method of execution using BA$H would be `$ sh SynthesisLinux*.run`.
+To run the init script, you likely need to make it executable by running: `chmod +x init.sh` in your preferred terminal.
 
-### Uninstalling The Package (FOR USERS): ###
-The uninstallation script can be found at `\home\.config\Autodesk\Synthesis\SynthesisUninstaller.sh`
+Now run the init script and specify input directories for the version of synthesis you compiled as well as fields and robots: `./init.sh -f /path/to/fields/ -r /path/to/robots/ -b /path/to/synthesis/`
 
-Uninstalling the package should be as simple as `$ ./SynthesisUninstaller.sh`.  
+### Installing appimagetool ###
+appimagetool is the name of the program that is used to create AppImages. You can download and install appimagetool through the official website https://appimage.github.io/appimagetool/ or get it through your distribution's package manager.
 
-An alternate method of execution using BA$H would be `$ sh SynthesisUninstaller.sh`.
+Note: appimagetool is usually packaged under AppImageKit rather than as a standalone application.
 
-### Troubleshooting: ###
-If you're having trouble executing the `.run` package, try ensuring that the execute bit is properly set by running  
-`chmod +x SynthesisLinux*.run`
-
-If still run into issues or have problems with the **installation itself**, please feel free to submit an [issue](https://github.com/Autodesk/synthesis/issues).
-
-For questions reguarding compilation, feel free to contact matthew.moradi@autodesk.com
+### Creating The AppImage ###
+Finally you can create your AppImage! Run: `appimagetool Synthesis.AppDir` which will create the Synthesis AppImage
