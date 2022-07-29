@@ -54,3 +54,6 @@ if [ -n "$robots" ] ; then
 fi
 
 cp -R "$build/"* "$APP_DIR/usr/bin" 
+chmod +x "$APP_DIR/AppRun"
+chmod +x "$APP_DIR/synthesis.desktop"
+chmod +x "$APP_DIR/usr/bin/Synthesis.x86_64"
