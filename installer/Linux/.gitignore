@@ -1,3 +1,5 @@
 Synthesis.AppDir/usr/bin/*
 Synthesis.AppDir/fields/*
 Synthesis.AppDir/robots/*
+
+*.AppImage
