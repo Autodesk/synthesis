@@ -1,7 +1,10 @@
 #!/bin/sh
 
 HERE="$(dirname "$(readlink -f "${0}")")"
+EXEC="$HERE/usr/bin/Synthesis.x86_64"
 
-mkdir ~/.config/Autodesk/Synthesis/Mira/Fields
-cp $(HERE)/fields/* ~/.config/Autodesk/Synthesis/Mira/Fields
-cp $(HERE)/robots/* ~/.config/Autodesk/Synthesis/Mira/
+mkdir -p ~/.config/Autodesk/Synthesis/Mira/Fields
+cp "$HERE/fields/"*.mira ~/.config/Autodesk/Synthesis/Mira/Fields
+cp "$HERE/robots/"*.mira ~/.config/Autodesk/Synthesis/Mira/
+
+exec "$EXEC"
