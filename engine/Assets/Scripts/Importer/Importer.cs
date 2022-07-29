@@ -113,7 +113,7 @@ namespace Synthesis.Import
 			EntireImport.Begin();
 
 			// Uncommenting this will delete all bodies so the JSON file isn't huge
-			DebugAssembly(assembly);
+			// DebugAssembly(assembly);
 			// return null;
 
 			if (assembly.Info.Version < CURRENT_MIRA_EXPORTER_VERSION) {

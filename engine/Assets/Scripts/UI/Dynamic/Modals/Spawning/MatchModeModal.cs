@@ -30,8 +30,15 @@ public class MatchModeModal : ModalDynamic
 
     public override void Create()
     {
-        _robotFiles = Directory.GetFiles(ParsePath("$appdata/Autodesk/Synthesis/Mira", '/')).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
-        _fieldFiles = Directory.GetFiles(ParsePath("$appdata/Autodesk/Synthesis/Mira/Fields", '/')).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
+        var robotsFolder = ParsePath("$appdata/Autodesk/Synthesis/Mira", '/');
+        if (!Directory.Exists(robotsFolder))
+            Directory.CreateDirectory(robotsFolder);
+        var fieldsFolder = ParsePath("$appdata/Autodesk/Synthesis/Mira/Fields", '/');
+        if (!Directory.Exists(fieldsFolder))
+            Directory.CreateDirectory(fieldsFolder);
+
+        _robotFiles = Directory.GetFiles(robotsFolder).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
+        _fieldFiles = Directory.GetFiles(fieldsFolder).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
 
         Title.SetText("Match Mode");
         Description.SetText("Configure Match Mode");

@@ -55,7 +55,7 @@ namespace Synthesis.Runtime {
 
             OnUpdate += DynamicUIManager.Update;
 
-            Screen.fullScreenMode = FullScreenMode.MaximizedWindow;
+            // Screen.fullScreenMode = FullScreenMode.MaximizedWindow;
 
             // TestColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
             // RotationalDriver.TestSphericalCoordinate();

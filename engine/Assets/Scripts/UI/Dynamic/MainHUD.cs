@@ -98,7 +98,7 @@ public static class MainHUD {
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
             MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
         // MainHUD.AddItemToDrawer("Lobbies", b => DynamicUIManager.CreateModal<ManageLobbiesModal>());
-        MainHUD.AddItemToDrawer("Exit", b => DynamicUIManager.CreateModal<ExitSynthesisModal>(), icon: SynthesisAssetCollection.GetSpriteByName("CloseIcon"));
+        // MainHUD.AddItemToDrawer("Exit", b => DynamicUIManager.CreateModal<ExitSynthesisModal>(), icon: SynthesisAssetCollection.GetSpriteByName("CloseIcon"));
 
         if (!_hasNewRobotListener) {
             EventBus.NewTypeListener<RobotSimObject.NewRobotEvent>(e => {

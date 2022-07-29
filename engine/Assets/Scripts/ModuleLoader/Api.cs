@@ -94,7 +94,7 @@ namespace Engine.ModuleLoader
 						*/
 					}
 				};
-			Screen.fullScreen = false;
+			// Screen.fullScreen = false;
 
 			// GameObject.Find("Screen").GetComponent<PanelScaler>().scaleMode = PanelScaler.ScaleMode.ConstantPhysicalSize;
 
