@@ -16,6 +16,10 @@ APP_NAME="Synthesis"
 INIT_DIR="$(dirname "$(readlink -f "${0}")")"
 APP_DIR="$INIT_DIR/$APP_NAME.AppDir"
 
+mkdir -p "$APP_DIR/usr/bin/"
+mkdir -p "$APP_DIR/fields"
+mkdir -p "$APP_DIR/robots"
+
 while getopts "h?f:r:b:" opt; do
 	case "$opt" in
 		h|\?)
