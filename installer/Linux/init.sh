@@ -40,22 +40,17 @@ done
 
 shift $((OPTIND-1))
 
-if [ ! -n "$fields" ] ; then
-	echo "Specify input directory for fields using \"-f\""
-	exit 1
-fi
-
-
-if [ ! -n "$robots" ] ; then
-	echo "Specify input directory for robots using \"-r\""
-	exit 1
-fi
-
 if [ ! -n "$build" ] ; then
 	echo "Specify synthesis build directory using \"-b\""
 	exit 1
 fi
 
-cp "$fields/"*.mira "$APP_DIR/fields/" 
-cp "$robots/"*.mira "$APP_DIR/robots/"
+if [ -n "$fields" ] ; then
+	cp "$fields/"*.mira "$APP_DIR/fields/" 
+fi
+
+if [ -n "$robots" ] ; then
+	cp "$robots/"*.mira "$APP_DIR/robots/"
+fi
+
 cp -R "$build/"* "$APP_DIR/usr/bin" 
