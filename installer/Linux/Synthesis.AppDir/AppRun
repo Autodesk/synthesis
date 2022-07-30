@@ -23,7 +23,7 @@ uninstall_synthesis() {
 	if [ -e ~/Applications/appimaged-*.AppImage ]
 	then
 		while true; do
-			read -p "Do You wish to try and uninstall appimaged? (recommended) [y/n] " yn
+			read -p "Do You wish to try and uninstall appimaged? (recommended) (y/n) " yn
 			case $yn in
 				[Yy]* ) 
 					rm ~/Applications/appimaged-*.AppImage
@@ -48,7 +48,7 @@ run_synthesis() {
 	if [ ! -e ~/Applications/appimaged-*.AppImage ] 
 	then
 		while true; do
-			read -p "Do You wish to install and start appimaged? (recommended) [y/n] " yn
+			read -p "Do You wish to install and start appimaged? (recommended) (y/n) " yn
 			case $yn in
 				[Yy]* ) 
 					install_appimaged;
