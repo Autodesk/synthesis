@@ -24,9 +24,11 @@ appimagetool is the name of the program that is used to create AppImages. You ca
 Note: appimagetool is usually packaged under AppImageKit rather than as a standalone application.
 
 ### Creating The AppImage ###
-Finally you can create your AppImage! Run: `ARCH=x86_64 appimagetool Synthesis.AppDir` which will create the Synthesis AppImage
+Finally you can create your AppImage! Run: `ARCH=x86_64 appimagetool Synthesis.AppDir` which will create the Synthesis AppImage.
 
-Note: You might get an error saying that AppImage needs FUSE installed. Install it. For Arch users it should already be installed. For Debian users run: `apt install fuse`
+Note: Run this instead if you installed appimagetool locally: `ARCH=x86_64 /path/to/appimagetool Synthesis.AppDir`
+
+Note: You might get an error saying that AppImage needs FUSE installed. Install it. For Arch users you may need to run: `pacman -S fuse`. For Debian users run: `apt install fuse`
 If you are still encountering issues, refer to this page: https://docs.appimage.org/user-guide/troubleshooting/fuse.html#ref-install-fuse
 
 ### Troubleshooting ###
