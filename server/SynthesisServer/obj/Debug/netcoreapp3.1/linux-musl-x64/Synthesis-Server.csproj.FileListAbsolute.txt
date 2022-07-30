@@ -1,5 +1,0 @@
-C:\Users\hunte\work\synthesis\server\obj\Debug\netcoreapp3.1\linux-musl-x64\Synthesis-Server.csproj.AssemblyReference.cache
-C:\Users\hunte\work\synthesis\server\obj\Debug\netcoreapp3.1\linux-musl-x64\Synthesis-Server.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\hunte\work\synthesis\server\obj\Debug\netcoreapp3.1\linux-musl-x64\Synthesis-Server.AssemblyInfoInputs.cache
-C:\Users\hunte\work\synthesis\server\obj\Debug\netcoreapp3.1\linux-musl-x64\Synthesis-Server.AssemblyInfo.cs
-C:\Users\hunte\work\synthesis\server\obj\Debug\netcoreapp3.1\linux-musl-x64\Synthesis-Server.csproj.CoreCompileInputs.cache
