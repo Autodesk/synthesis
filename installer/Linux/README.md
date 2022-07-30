@@ -31,6 +31,9 @@ Note: Run this instead if you installed appimagetool locally: `ARCH=x86_64 /path
 Note: You might get an error saying that AppImage needs FUSE installed. Install it. For Arch users you may need to run: `pacman -S fuse`. For Debian users run: `apt install fuse`
 If you are still encountering issues, refer to this page: https://docs.appimage.org/user-guide/troubleshooting/fuse.html#ref-install-fuse
 
+### Final Note ###
+When the end user is downloading the AppImage file, it is strongly recommended to have them put it in the `~/Applications/` directory. This allows it to be found by appimaged as well as itself when running uninstall.
+
 ### Troubleshooting ###
 Refer to the AppImage troubleshooting page first if you are having issues: https://docs.appimage.org/user-guide/troubleshooting/index.html
 The general documentation may be of use as well: https://docs.appimage.org/index.html
