@@ -19,7 +19,7 @@ cp "$HERE/robots/"*.mira ~/.config/Autodesk/Synthesis/Mira/
 if [ ! -e ~/Applications/appimaged-*.AppImage ] 
 then
   while true; do
-		read -p "Do You wish to install and start appimaged? (recommended) [y/n] " yn
+		read -p "Do You wish to install and start appimaged? (recommended) (y/n): " yn
 		case $yn in
 			[Yy]* ) 
 				install_appimaged;
