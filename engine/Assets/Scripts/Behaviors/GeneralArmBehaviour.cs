@@ -60,8 +60,10 @@ namespace Synthesis {
         private void OnValueInputAssigned(IEvent tmp) {
             ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
             if (args.InputKey.Equals(FORWARD) || args.InputKey.Equals(REVERSE)) {
+                if (base.SimObjectId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID) return;
+                RobotSimObject robot = SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject;
                 SimulationPreferences.SetRobotInput(
-                    (SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject).MiraAssembly.Info.GUID,
+                    robot.MiraGUID,
                     args.InputKey,
                     args.Input);
             }

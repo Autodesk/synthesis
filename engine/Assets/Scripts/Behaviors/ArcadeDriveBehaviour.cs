@@ -13,7 +13,8 @@ using Logger = SynthesisAPI.Utilities.Logger;
 using Math = SynthesisAPI.Utilities.Math;
 
 namespace Synthesis {
-	public class ArcadeDriveBehaviour : SimBehaviour {
+	public class ArcadeDriveBehaviour : SimBehaviour
+	{
 
 		internal const string FORWARD = "Arcade Forward";
 		internal const string BACKWARD = "Arcade Backward";
@@ -73,8 +74,10 @@ namespace Synthesis {
 				case BACKWARD:
 				case LEFT:
 				case RIGHT:
+					if (base.SimObjectId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID) return;
+					RobotSimObject robot = SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject;
 					SimulationPreferences.SetRobotInput(
-						(SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject).MiraAssembly.Info.GUID,
+						robot.MiraGUID,
 						args.InputKey,
 						args.Input);
 					break;
