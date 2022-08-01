@@ -1,5 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
+using System.Threading;
 using Synthesis.PreferenceManager;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.InputManager;
@@ -9,10 +10,17 @@ using UnityEngine;
 
 public class ChangeInputsModal : ModalDynamic
 {
-    public ChangeInputsModal() : base(new Vector2(400, 400)) {}
+    public ChangeInputsModal() : base(new Vector2(800, 330)) {}
+
+    private static bool RobotLoaded
+    {
+        get => !RobotSimObject.CurrentlyPossessedRobot.Equals(string.Empty);
+    }
+
+    private const float VERTICAL_PADDING = 12f;
     
     private readonly Func<UIComponent, UIComponent> VerticalLayout = (u) => {
-        var offset = (-u.Parent!.RectOfChildren(u).yMin) + 12f;
+        var offset = (-u.Parent!.RectOfChildren(u).yMin) + VERTICAL_PADDING;
         u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 8, rightPadding: 8);
         return u;
     };
@@ -23,38 +31,83 @@ public class ChangeInputsModal : ModalDynamic
 
     private void PopulateInputSelections()
     {
-        if (RobotSimObject.CurrentlyPossessedRobot.Equals(string.Empty))
+        (Content leftContent, Content rightContent) = MainContent.SplitLeftRight(400, 0);
+        if (RobotLoaded)
         {
-            MainContent.CreateLabel().SetText("No robot loaded.");
-            return;
+            leftContent.CreateLabel()
+                .SetText("Robot Controls")
+                .ApplyTemplate(VerticalLayout);
+            
+            var inputScrollView = leftContent.CreateScrollView()
+                .SetHeight<ScrollView>(300)
+                .ApplyTemplate(VerticalLayout);
+
+            SimObject robot = SimulationManager.SimulationObjects[RobotSimObject.CurrentlyPossessedRobot];
+            if (robot == null) return;
+
+            foreach (var inputKey in robot.GetAllReservedInputs())
+            {
+                var val = InputManager.MappedValueInputs[inputKey];
+
+                inputScrollView.Content.CreateLabeledButton()
+                    .StepIntoLabel(l => l.SetText(inputKey))
+                    .StepIntoButton(b =>
+                    {
+                        b.SetHeight<Button>(8)
+                            .SetWidth<Button>(200);
+                        UpdateAnalogInputButton(b, val, val is Digital);
+                        b.AddOnClickedEvent(_ =>
+                        {
+                            // handle changing input keybind here
+                            b.StepIntoLabel(l => l.SetText("Press anything"));
+                            _currentlyReassigning = val;
+                            _reassigningButton = b;
+                            _reassigningKey = inputKey;
+                        });
+                    })
+                    .ApplyTemplate(VerticalLayout);
+            }
+        }
+        else
+        {
+            leftContent.CreateLabel()
+                .SetText("No robot loaded.")
+                .ApplyTemplate(VerticalLayout);
         }
 
-        var inputScrollView = MainContent.CreateScrollView()
-            .SetHeight<ScrollView>(400);
+        rightContent.CreateLabel()
+            .SetText("Global Controls")
+            .ApplyTemplate(VerticalLayout);
 
-        SimObject robot = SimulationManager.SimulationObjects[RobotSimObject.CurrentlyPossessedRobot];
-        if (robot == null) return;
-        
-        foreach (var inputKey in robot.GetAllReservedInputs()) {
-            var val = InputManager.MappedValueInputs[inputKey];
+        var globalControlView = rightContent.CreateScrollView()
+            .SetHeight<ScrollView>(300)
+            .ApplyTemplate(VerticalLayout);
 
-            inputScrollView.Content.CreateLabeledButton()
-                .StepIntoLabel(l => l.SetText(inputKey))
-                .StepIntoButton(b =>
-                {
-                    b.SetHeight<Button>(8)
-                        .SetWidth<Button>(200);
-                    UpdateAnalogInputButton(b, val, val is Digital);
-                    b.AddOnClickedEvent(_ =>
+        foreach (var inputKey in InputManager.MappedValueInputs)
+        {
+            if (inputKey.Key.StartsWith("input/") && !Regex.IsMatch(inputKey.Value.Name, ".*Mouse.*"))
+            {
+                var val = inputKey.Value;
+                
+                string capitalized = Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(
+                    Regex.Replace(inputKey.Key.Replace("input/", ""), "[\\W_]", " "));
+                globalControlView.Content.CreateLabeledButton().StepIntoLabel(l => l.SetText(capitalized))
+                    .StepIntoButton(b =>
                     {
-                        // handle changing input keybind here
-                        b.StepIntoLabel(l => l.SetText("Press anything"));
-                        _currentlyReassigning = val;
-                        _reassigningButton = b;
-                        _reassigningKey = inputKey;
-                    });
-                })
-                .ApplyTemplate(VerticalLayout);
+                        b.SetHeight<Button>(8)
+                            .SetWidth<Button>(200);
+                        UpdateAnalogInputButton(b, val, val is Digital);
+                        b.AddOnClickedEvent(_ =>
+                        {
+                            // handle changing input keybind here
+                            b.StepIntoLabel(l => l.SetText("Press anything"));
+                            _currentlyReassigning = val;
+                            _reassigningButton = b;
+                            _reassigningKey = inputKey.Key;
+                        });
+                    })
+                    .ApplyTemplate(VerticalLayout);
+            }
         }
     }
 
