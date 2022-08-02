@@ -6,6 +6,7 @@ using Synthesis.UI.Dynamic;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
+using TMPro;
 using UnityEngine;
 
 public class ChangeInputsModal : ModalDynamic
@@ -70,9 +71,15 @@ public class ChangeInputsModal : ModalDynamic
         }
         else
         {
-            leftContent.CreateLabel()
-                .SetText("No robot loaded.")
-                .ApplyTemplate(VerticalLayout);
+            var noRobotLoadedLabel = leftContent.CreateLabel()
+                .SetText("No robot loaded.");
+            
+            TMP_Text text = noRobotLoadedLabel.RootGameObject.GetComponent<TMP_Text>();
+
+            text.alignment = TextAlignmentOptions.Center;
+            
+            noRobotLoadedLabel
+                .SetTopStretch(anchoredY: 165);
         }
 
         rightContent.CreateLabel()
