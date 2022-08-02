@@ -9,6 +9,11 @@ namespace Synthesis.UI {
             DynamicUIManager.CreateModal<TestModal>();
         }
 
+        public void OpenSettingsPanel()
+        {
+            DynamicUIManager.CreateModal<SettingsModal>();
+        }
+
         public void Singleplayer()
         {
             DynamicUIManager.CreateModal<ChooseModeModal>();

@@ -36,8 +36,8 @@ public class CameraController : MonoBehaviour {
 
     private void Start()
     { //Set Camera and Screen Settings
-        SettingsPanel.LoadSettings();
-        SettingsPanel.MaximizeScreen();
+        //SettingsPanel.LoadSettings();
+        //SettingsPanel.MaximizeScreen();
     }
     public void Update() {
   //      if (FollowTransform != null && transform.parent != FollowTransform)

@@ -7,7 +7,7 @@ namespace Synthesis.UI.Panels.Variant
 {
     public class SettingsInput : MonoBehaviour
     {
-        private SettingsPanel.InputType _type;//type
+        /*private SettingsPanel.InputType _type;//type
         public SettingsPanel.InputType Type
         {
             get => _type;
@@ -103,6 +103,6 @@ namespace Synthesis.UI.Panels.Variant
         public void OnValueChanged()
         {
             GameObject.FindObjectOfType<SettingsPanel>().onValueChanged(this);
-        }
+        }*/
     }
 }
