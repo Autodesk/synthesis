@@ -18,8 +18,6 @@ public class FreeCameraMode : ICameraMode
     private const string BACK_KEY = "input/FREECAM_BACK";
     private const string LEFT_KEY = "input/FREECAM_LEFT";
     private const string RIGHT_KEY = "input/FREECAM_RIGHT";
-    private const string UP_KEY = "input/FREECAM_UP";
-    private const string DOWN_KEY = "input/FREECAM_DOWN";
     private const string LEFT_YAW_KEY = "input/FREECAM_LEFT_YAW";
     private const string RIGHT_YAW_KEY = "input/FREECAM_RIGHT_YAW";
     private const string DOWN_PITCH_KEY = "input/FREECAM_DOWN_PITCH";
@@ -34,10 +32,6 @@ public class FreeCameraMode : ICameraMode
             InputManager.AssignDigitalInput(BACK_KEY, new Digital("DownArrow"));
             InputManager.AssignDigitalInput(LEFT_KEY, new Digital("LeftArrow"));
             InputManager.AssignDigitalInput(RIGHT_KEY, new Digital("RightArrow"));
-            // shift seems to be treated as a modifier rather than the actual input
-            // there's probably a better way to do this though
-            InputManager.AssignValueInput(UP_KEY, new Digital("LeftShift").WithModifier((int)ModKey.LeftShift));
-            InputManager.AssignValueInput(DOWN_KEY, new Digital("LeftControl").WithModifier((int)ModKey.LeftControl));
             InputManager.AssignValueInput(LEFT_YAW_KEY, new Digital("Q"));
             InputManager.AssignValueInput(RIGHT_YAW_KEY, new Digital("E"));
             InputManager.AssignValueInput(DOWN_PITCH_KEY, new Digital("Z"));
@@ -98,11 +92,8 @@ public class FreeCameraMode : ICameraMode
         
         Vector3 right = t.right * (InputManager.MappedDigitalInputs[RIGHT_KEY][0].Value -
                                    InputManager.MappedDigitalInputs[LEFT_KEY][0].Value);
-        
-        Vector3 up = Vector3.up * (InputManager.MappedValueInputs[UP_KEY].Value -
-                             InputManager.MappedValueInputs[DOWN_KEY].Value);
-        
-        t.Translate(Time.deltaTime * speed * (forward + right + up),Space.World);
+
+        t.Translate(Time.deltaTime * speed * (forward + right),Space.World);
 
         // we don't want the user to be able to move the camera under the map or so high they can't see the field
         t.position = new Vector3(t.position.x, Mathf.Clamp(t.position.y, 0, 100), t.position.z);
