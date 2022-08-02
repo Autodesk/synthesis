@@ -28,9 +28,6 @@ public class ManageLobbiesModal : ModalDynamic {
     private Button _connectButton;
     private ScrollView _lobbiesScrollView;
 
-    private Task<bool>? _connectionStatus;
-    private Task<ServerInfoResponse?>? _serverInfoResponse = null;
-
     public override void Create() {
         Title.SetText("Manage Lobbies");
         Description.SetText("See and manage all lobbies on controlling server");
@@ -67,19 +64,25 @@ public class ManageLobbiesModal : ModalDynamic {
         var footerButtons = MainContent.CreateSubContent(new Vector2(MainContent.Size.x, 40f))
             .SetBottomStretch<Content>();
         footerButtons.CreateButton("Create Lobby").SetWidth<Button>(200f).SetRightStretch<Button>()
-            .AddOnClickedEvent(b => NetworkManager.CreateLobby($"Lobby{(int)UnityEngine.Random.Range(1, 500)}"));
+            .AddOnClickedEvent(b => NetworkManager.CreateLobbyAsync(
+                $"Lobby{(int)UnityEngine.Random.Range(1, 500)}",
+                l => {
+                    Debug.Log($"Lobby Create: {l.LobbyName}");
+                    NetworkManager.UpdateServerInfoAsync(info => UpdateLobbies(info));
+                }
+            ));
         footerButtons.CreateButton("Delete Lobby").SetWidth<Button>(200f).SetRightStretch<Button>(anchoredX: 210f)
             .AddOnClickedEvent(b => Debug.Log("TODO: Remove lobby"));
     }
 
     private void Connect(Button b) {
 
-        switch (GetCurrentConnectionStatus()) {
+        switch (NetworkManager.Status) {
             case ConnectionStatus.Connected:
                 NetworkManager.DisconnectFromServer();
                 break;
             case ConnectionStatus.NotConnected:
-                _connectionStatus = NetworkManager.ConnectToServer(_ip, _username);
+                NetworkManager.ConnectToServerAsync(_ip, _username);
                 break;
             default:
                 return;
@@ -91,22 +94,22 @@ public class ManageLobbiesModal : ModalDynamic {
 
     public override void Delete() { }
 
-    private ConnectionStatus GetCurrentConnectionStatus() {
-        ConnectionStatus currentConStatus = ConnectionStatus.NotConnected;
-        if (_connectionStatus != null) {
-            if (_connectionStatus.IsCompleted) {
-                currentConStatus = _connectionStatus.Result ? ConnectionStatus.Connected : ConnectionStatus.NotConnected;
-            } else {
-                currentConStatus = ConnectionStatus.Idk;
-            }
-        }
-        return currentConStatus;
-    }
+    // private ConnectionStatus GetCurrentConnectionStatus() {
+    //     ConnectionStatus currentConStatus = ConnectionStatus.NotConnected;
+    //     if (_connectionStatus != null) {
+    //         if (_connectionStatus.IsCompleted) {
+    //             currentConStatus = _connectionStatus.Result ? ConnectionStatus.Connected : ConnectionStatus.NotConnected;
+    //         } else {
+    //             currentConStatus = ConnectionStatus.Idk;
+    //         }
+    //     }
+    //     return currentConStatus;
+    // }
 
     private ConnectionStatus _lastConStatus = ConnectionStatus.NotConnected;
     private float _lastInfoRequest = Time.realtimeSinceStartup;
     public override void Update() {
-        var currentConStatus = GetCurrentConnectionStatus();
+        var currentConStatus = NetworkManager.Status;
 
         if (_lastConStatus != currentConStatus) {
 
@@ -127,75 +130,76 @@ public class ManageLobbiesModal : ModalDynamic {
 
             _lastConStatus = currentConStatus;
         }
-
-        // Maybe throttle this down a bit
-        if (_serverInfoResponse != null && _serverInfoResponse.IsCompleted) {
-
-            // Debug.Log("Server Info Response received");
-            // Update to data
-            var info = _serverInfoResponse.Result;
-            if (info != null) {
-                UpdateLobbies(info);
-                // DebugServerInfo(info);
-            }
-
-            _serverInfoResponse = null;
-        }
-
-        if (_serverInfoResponse == null && NetworkManager.IsConnected && Time.realtimeSinceStartup - _lastInfoRequest > CHECK_INFO_DELAY) {
-            _lastInfoRequest = Time.realtimeSinceStartup;
-            // Debug.Log("Making Info Request");
-            _serverInfoResponse = NetworkManager.GetServerInfo();
-        }
     }
 
-    private List<Content> lobbyContents = new List<Content>();
-    public void UpdateLobbies(ServerInfoResponse info) {
+    private List<LobbyDisplay> lobbyContents = new List<LobbyDisplay>();
+    public void UpdateLobbies(ServerInfoResponse? info) {
+
+        Debug.Log($"Updating Lobbies: {info!.Lobbies.Count} Lobbies");
+
         // Purge
         _lobbiesScrollView.Content.DeleteAllChildren();
         lobbyContents.Clear();
 
+        if (info == null)
+            return; // Maybe display something saying there are no lobbies?
+
         // Make new
         foreach (var lobby in info.Lobbies) {
-            lobbyContents.Add(CreateLobbyInfo(lobby, _lobbiesScrollView.Content));
+            var disp = new LobbyDisplay(lobby);
+            disp.Create(_lobbiesScrollView.Content);
+            lobbyContents.Add(disp);
         }
 
         // Order
         float height = 0f;
         for (int i = 0; i < lobbyContents.Count; i++) {
             var c = lobbyContents[i];
-            c.SetAnchoredPosition<Content>(new Vector2(0f, -height));
-            height += c.Size.y;
+            c.MainContent.SetAnchoredPosition<Content>(new Vector2(0f, -height));
+            height += c.MainContent.Size.y;
         }
         _lobbiesScrollView.Content.SetHeight<ScrollView>(height);
     }
 
-    public Content CreateLobbyInfo(Lobby lobby, Content parent) {
-        var content = parent.CreateSubContent(new Vector2(50, 100))
-            .SetTopStretch<Content>();
-        content.EnsureImage().StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_WHITE));
-        content.CreateLabel(30).SetTopStretch<Label>(leftPadding: 20f, anchoredY: 10f)
-            .SetText($"Lobby Name: {lobby.LobbyName}")
-            .SetColor(ColorManager.SYNTHESIS_BLACK)
-            .SetFont(SynthesisAssetCollection.GetFont("Roboto-Regular SDF"));
-        var clientsLabel = content.CreateLabel(30).SetTopStretch<Label>(leftPadding: 20f, anchoredY: 47.5f)
-            .SetColor(ColorManager.SYNTHESIS_BLACK)
-            .SetFont(SynthesisAssetCollection.GetFont("Roboto-Regular SDF"));
-        clientsLabel.SetText("Clients: ");
-        lobby.Clients.ForEach(x => {
-            clientsLabel.SetText($"{clientsLabel.Text} '{x}'");
-        });
-        return content;
-    }
+    // public Content CreateLobbyInfo(Lobby lobby, Content parent) {
+        
+    // }
 
-    public void DebugServerInfo(ServerInfoResponse info) {
-        Debug.Log($"Current Lobby: {info.CurrentLobby}");
-        foreach (var lobby in info.Lobbies) {
-            Debug.Log($"Lobby '{lobby.LobbyName}' with '{lobby.Clients.Count}' client(s)");
+    public class LobbyDisplay {
+        public Lobby Lobby;
+
+        public Content MainContent;
+
+        public LobbyDisplay(Lobby l) {
+            Lobby = l;
         }
-    }
 
-    private enum ConnectionStatus {
-        Idk = 0, Connected = 1, NotConnected = 2
+        private Button _joinButton;
+
+        public void Create(Content c) {
+            MainContent = c.CreateSubContent(new Vector2(50, 100))
+                .SetTopStretch<Content>();
+            MainContent.EnsureImage().StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_ORANGE));
+            MainContent.CreateLabel(30).SetTopStretch<Label>(leftPadding: 20f, anchoredY: 10f)
+                .SetText($"{Lobby.LobbyName}")
+                .SetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT)
+                .SetFont(SynthesisAssetCollection.GetFont("Roboto-Bold SDF"));
+            var clientsLabel = MainContent.CreateLabel(22).SetTopStretch<Label>(leftPadding: 20f, anchoredY: 47.5f)
+                .SetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT)
+                .SetFontSize(22)
+                .SetFont(SynthesisAssetCollection.GetFont("Roboto-Regular SDF"));
+            clientsLabel.SetText("");
+            Lobby.Clients.ForEach(x => {
+                clientsLabel.SetText($"{clientsLabel.Text} {x.Value.Name}");
+            });
+
+            _joinButton = MainContent.CreateButton("Join").SetAnchor<Button>(new Vector2(1, 0.5f), new Vector2(1, 0.5f))
+                .SetPivot<Button>(new Vector2(1, 0.5f))
+                .SetAnchoredPosition<Button>(new Vector2(-10f, 0f))
+                .SetSize<Button>(new Vector2(100, 60))
+                .StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_BLACK))
+                .StepIntoLabel(l => l.SetColor(ColorManager.SYNTHESIS_WHITE))
+                .AddOnClickedEvent(b => Debug.Log($"Join Lobby '{Lobby.LobbyName}'"));
+        }
     }
 }

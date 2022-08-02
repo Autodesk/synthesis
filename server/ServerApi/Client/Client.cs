@@ -22,7 +22,7 @@ namespace SynthesisServer.Client {
 
         public static event Action<string> ErrorReport;
 
-        public bool IsTcpConnected => _isRunning && _tcpSocket.Connected;
+        public bool IsTcpConnected => _isRunning && (_tcpSocket != null && _tcpSocket.Connected);
 
         private byte[] _serverBuffer;
         private IClientHandler _handler;
@@ -57,6 +57,7 @@ namespace SynthesisServer.Client {
             }
         }
         private Task<DHParameters> _parameters;
+        public bool HasParameters => _hasInit && (_parameters != null && _parameters.IsCompleted);
         public DHParameters Parameters {
             get {
                 if (!_hasInit)
@@ -77,20 +78,24 @@ namespace SynthesisServer.Client {
 
         // Host will initiate connection with clients
 
-        public void Init(IClientHandler handler) {
+        public void Init(IClientHandler handler, DHParameters existingParameters = null) {
             _handler = handler;
 
-            _tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             _udpSocket = new UdpClient();
             ErrorReport("Socket created");
             // _udpSocket = new UdpClient(new IPEndPoint(IPAddress.Any, _udpPort));
 
             _encryptor = new SymmetricEncryptor();
-            _parameters = Task<DHParameters>.Factory.StartNew(() => {
-                var res = _encryptor.GenerateParameters();
-                ErrorReport("Generated Parameters");
-                return res;
-            });
+
+            if (existingParameters != null) {
+                _parameters = Task<DHParameters>.Factory.StartNew(() => existingParameters);
+            } else {
+                _parameters = Task<DHParameters>.Factory.StartNew(() => {
+                    var res = _encryptor.GenerateParameters();
+                    ErrorReport("Generated Parameters");
+                    return res;
+                });
+            }
             _keyPair = Task<AsymmetricCipherKeyPair>.Factory.StartNew(() => {
                 var res = _encryptor.GenerateKeys(Parameters);
                 ErrorReport("Generated Keys");
@@ -106,8 +111,8 @@ namespace SynthesisServer.Client {
 
             _tcpPort = tcpPort;
             _udpPort = udpPort;
-
             _serverIP = IPAddress.Parse(serverIP);
+            _tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
             if (_hasInit && TryConnectServer(_tcpSocket, _serverIP, _tcpPort, timeoutMS)) {
                 _isRunning = true;
@@ -123,20 +128,38 @@ namespace SynthesisServer.Client {
                 return false;
             }
         }
-        public void Stop(long timeout = 5000)
-        {
-            _isRunning = false;
-            TrySendDisconnectRequest();
-            try
-            {
+        public void Stop(long timeout = 5000) {
+            if (!TrySendDisconnectRequest())
+                throw new Exception();
+
+            try {
                 // Gives the server a chance to disconnect the client on its end
-                long start = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
-                while (_tcpSocket.Connected && System.DateTimeOffset.Now.ToUnixTimeMilliseconds() - start <= timeout) { Thread.Sleep(100); }
-                if (_tcpSocket.Connected) { _tcpSocket.Disconnect(true); }
+                //long start = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                //while (_tcpSocket.Connected && System.DateTimeOffset.Now.ToUnixTimeMilliseconds() - start <= timeout) {
+                //    try {
+                //        var rec = _tcpSocket.Receive(new byte[32]);
+                //        if (!_tcpSocket.Connected || rec == 0) {
+                //            throw new Exception();
+                //        }
+                //    } catch (Exception) {
+                //        break;
+                //    }
+                //}
+                _tcpSocket.Close();
+                _tcpSocket = null;
+                _id = string.Empty;
+                //if (_tcpSocket != null) {
+                //    ErrorReport("Forcing disconnect");
+                //    _tcpSocket.Disconnect(true);
+                //} else {
+                //    ErrorReport("Disconnected by remote");
+                //}
+                _isRunning = false;
                 if (_udpSocket != null)
                     _udpSocket.Close();
+            } catch (SocketException e) {
+                ErrorReport($"{e.Message}:\n{e.StackTrace}");
             }
-            catch (SocketException) { }
         }
         private bool TryConnectServer(Socket socket, IPAddress ip, int port, long timeoutMS)
         {
@@ -250,7 +273,7 @@ namespace SynthesisServer.Client {
         // Client Actions
 
         public void LockUntilKeyAvailable() {
-            while (SymmetricKey == null || SymmetricKey.Length == 0)
+            while (SymmetricKey == null || SymmetricKey.Length == 0 || _id == string.Empty)
                 Thread.Sleep(50);
         }
 
@@ -377,7 +400,10 @@ namespace SynthesisServer.Client {
             return false;
         }
         public bool TrySendHeartbeat() {
-            LockUntilKeyAvailable();
+            if (!HasParameters)
+                return false;
+
+            LockUntilKeyAvailable(); // Ensure keypair exists because that is sequential
             if (_hasInit && _isRunning && _tcpSocket.Connected)
             {
                 Heartbeat request = new Heartbeat();
@@ -387,7 +413,7 @@ namespace SynthesisServer.Client {
             return false;
         }
 
-        private bool TrySendDisconnectRequest()
+        public bool TrySendDisconnectRequest()
         {
             LockUntilKeyAvailable();
             if (_hasInit && _isRunning && _tcpSocket.Connected)
@@ -398,5 +424,7 @@ namespace SynthesisServer.Client {
             }
             return false;
         }
+
+        private void TCPEndReceiveCallback() {  }
     }
 }

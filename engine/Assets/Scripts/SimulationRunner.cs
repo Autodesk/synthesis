@@ -18,6 +18,7 @@ using Synthesis.Replay;
 using Synthesis.WS;
 using SynthesisAPI.RoboRIO;
 using Synthesis.Networking;
+using System.Threading.Tasks;
 
 namespace Synthesis.Runtime {
     public class SimulationRunner : MonoBehaviour {

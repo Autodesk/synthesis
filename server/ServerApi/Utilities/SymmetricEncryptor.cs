@@ -56,7 +56,7 @@ namespace SynthesisServer.Utilities
         public DHParameters GenerateParameters()
         {
             DHParametersGenerator generator = new DHParametersGenerator();
-            generator.Init(1024, 80, new SecureRandom()); // not too sure about these numbers
+            generator.Init(512, 80, new SecureRandom()); // not too sure about these numbers
             return generator.GenerateParameters();
         }
 
