@@ -1,7 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
 using System.Threading;
-using Synthesis.PreferenceManager;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
@@ -11,18 +10,19 @@ using UnityEngine;
 
 public class ChangeInputsModal : ModalDynamic
 {
-    public ChangeInputsModal() : base(new Vector2(800, 330)) {}
+    public ChangeInputsModal() : base(new Vector2(1200, CONTENT_HEIGHT + 30)) {}
 
     private static bool RobotLoaded
     {
         get => !RobotSimObject.CurrentlyPossessedRobot.Equals(string.Empty);
     }
 
-    private const float VERTICAL_PADDING = 12f;
+    private const float VERTICAL_PADDING = 16f;
+    private const int CONTENT_HEIGHT = 400;
     
     private readonly Func<UIComponent, UIComponent> VerticalLayout = (u) => {
         var offset = (-u.Parent!.RectOfChildren(u).yMin) + VERTICAL_PADDING;
-        u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 8, rightPadding: 8);
+        u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 0, rightPadding: 0);
         return u;
     };
 
@@ -32,7 +32,7 @@ public class ChangeInputsModal : ModalDynamic
 
     private void PopulateInputSelections()
     {
-        (Content leftContent, Content rightContent) = MainContent.SplitLeftRight(400, 0);
+        (Content leftContent, Content rightContent) = MainContent.SplitLeftRight(580, 20);
         if (RobotLoaded)
         {
             leftContent.CreateLabel()
@@ -40,8 +40,11 @@ public class ChangeInputsModal : ModalDynamic
                 .ApplyTemplate(VerticalLayout);
             
             var inputScrollView = leftContent.CreateScrollView()
-                .SetHeight<ScrollView>(300)
+                .SetHeight<ScrollView>(CONTENT_HEIGHT)
                 .ApplyTemplate(VerticalLayout);
+
+            // make background transparent
+            inputScrollView.RootGameObject.GetComponent<UnityEngine.UI.Image>().color = Color.clear;
 
             SimObject robot = SimulationManager.SimulationObjects[RobotSimObject.CurrentlyPossessedRobot];
             if (robot == null) return;
@@ -79,7 +82,7 @@ public class ChangeInputsModal : ModalDynamic
             text.alignment = TextAlignmentOptions.Center;
             
             noRobotLoadedLabel
-                .SetTopStretch(anchoredY: 165);
+                .SetTopStretch(anchoredY: CONTENT_HEIGHT / 2);
         }
 
         rightContent.CreateLabel()
@@ -87,8 +90,11 @@ public class ChangeInputsModal : ModalDynamic
             .ApplyTemplate(VerticalLayout);
 
         var globalControlView = rightContent.CreateScrollView()
-            .SetHeight<ScrollView>(300)
+            .SetHeight<ScrollView>(CONTENT_HEIGHT)
             .ApplyTemplate(VerticalLayout);
+        
+        globalControlView.RootGameObject.GetComponent<UnityEngine.UI.Image>().color = Color.clear;
+
 
         foreach (var inputKey in InputManager.MappedValueInputs)
         {
@@ -177,9 +183,6 @@ public class ChangeInputsModal : ModalDynamic
             // because the user clicks on the button
             if (input != null && !Regex.IsMatch(input.Name, ".*Mouse.*"))
             {
-                RobotSimObject robot = SimulationManager.SimulationObjects[RobotSimObject.CurrentlyPossessedRobot] as RobotSimObject;
-                if (robot == null) return;
-
                 InputManager.AssignValueInput(_reassigningKey, input);
                 
                 UpdateAnalogInputButton(_reassigningButton, input, input is Digital);
