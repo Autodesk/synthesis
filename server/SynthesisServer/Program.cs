@@ -15,8 +15,7 @@ namespace SynthesisServer {
     class Program {
         public static void Main(string[] args) {
 
-            Console.WriteLine("FUFHUJSDHUJFIKSDA");
-
+            // Default to start method
             if (args.Length == 0)
                 args = new string[] { "start" };
 

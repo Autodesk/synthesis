@@ -12,6 +12,7 @@ using UnityEngine;
 using Logger = SynthesisAPI.Utilities.Logger;
 using Synthesis.UI;
 using Synthesis.Networking;
+using System.Threading.Tasks;
 
 namespace Synthesis.Runtime {
     public class SimulationRunner : MonoBehaviour {

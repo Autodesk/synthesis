@@ -125,99 +125,71 @@ namespace SynthesisServer {
             try {
                 ClientState state = (ClientState)asyncResult.AsyncState;
                 int received = state.socket.EndReceive(asyncResult);
+                if (received != 0) {
 
-                byte[] data = new byte[received];
-                Array.Copy(state.buffer, data, received);
-                if (BitConverter.IsLittleEndian) { Array.Reverse(data); }
+                    byte[] data = new byte[received];
+                    Array.Copy(state.buffer, data, received);
+                    if (BitConverter.IsLittleEndian) { Array.Reverse(data); }
 
-                MessageHeader header;
-                Any message;
+                    MessageHeader header;
+                    Any message;
 
-                try
-                {
-                    header = MessageHeader.Parser.ParseFrom(IO.GetNextMessage(ref data));
-                    if (header.IsEncrypted)
-                    {
-                        byte[] decryptedData = _encryptor.Decrypt(data, _clients[header.ClientId].SymmetricKey);
-                        message = Any.Parser.ParseFrom(IO.GetNextMessage(ref decryptedData));
-                    }
-                    else if (!header.IsEncrypted)
-                    {
-                        message = Any.Parser.ParseFrom(IO.GetNextMessage(ref data));
-                    }
-                    else
-                    {
-                        message = Any.Pack(new StatusMessage()
-                        {
+                    try {
+                        header = MessageHeader.Parser.ParseFrom(IO.GetNextMessage(ref data));
+                        if (header.IsEncrypted) {
+                            byte[] decryptedData = _encryptor.Decrypt(data, _clients[header.ClientId].SymmetricKey);
+                            message = Any.Parser.ParseFrom(IO.GetNextMessage(ref decryptedData));
+                        } else if (!header.IsEncrypted) {
+                            message = Any.Parser.ParseFrom(IO.GetNextMessage(ref data));
+                        } else {
+                            message = Any.Pack(new StatusMessage() {
+                                LogLevel = StatusMessage.Types.LogLevel.Error,
+                                Msg = "Invalid Message Received"
+                            });
+                        }
+                    } catch (Exception e) {
+                        _logger.LogWarning("Error while parsing message");
+                        _logger.LogInformation($"{e.Message}\n{e.StackTrace}");
+                        _clientsLock.EnterReadLock();
+                        header = new MessageHeader() {
+                            ClientId = state.id,
+                            IsEncrypted = (_clients.ContainsKey(state.id) && _clients[state.id].SymmetricKey != null)
+                        };
+                        _clientsLock.ExitReadLock();
+                        message = Any.Pack(new StatusMessage() {
                             LogLevel = StatusMessage.Types.LogLevel.Error,
                             Msg = "Invalid Message Received"
                         });
                     }
-                }
-                catch (Exception e)
-                {
-                    _logger.LogWarning("Invalid Mesage Received");
-                    _clientsLock.EnterReadLock();
-                    header = new MessageHeader()
-                    {
-                        ClientId = state.id,
-                        IsEncrypted = (_clients.ContainsKey(state.id) && _clients[state.id].SymmetricKey != null)
-                    };
-                    _clientsLock.ExitReadLock();
-                    message = Any.Pack(new StatusMessage()
-                    {
-                        LogLevel = StatusMessage.Types.LogLevel.Error,
-                        Msg = "Invalid Message Received"
-                    });
+
+                    if (message.Is(KeyExchange.Descriptor)) {
+                        HandleKeyExchange(message.Unpack<KeyExchange>(), state.id, state.socket);
+                    } else if (message.Is(Heartbeat.Descriptor)) {
+                        HandleHeartbeat(message.Unpack<Heartbeat>(), header.ClientId);
+                    } else if (message.Is(CreateLobbyRequest.Descriptor)) {
+                        HandleCreateLobbyRequest(message.Unpack<CreateLobbyRequest>(), header.ClientId);
+                    } else if (message.Is(DeleteLobbyRequest.Descriptor)) {
+                        HandleDeleteLobbyRequest(message.Unpack<DeleteLobbyRequest>(), header.ClientId);
+                    } else if (message.Is(JoinLobbyRequest.Descriptor)) {
+                        HandleJoinLobbyRequest(message.Unpack<JoinLobbyRequest>(), header.ClientId);
+                    } else if (message.Is(LeaveLobbyRequest.Descriptor)) {
+                        HandleLeaveLobbyRequest(message.Unpack<LeaveLobbyRequest>(), header.ClientId);
+                    } else if (message.Is(StartLobbyRequest.Descriptor)) {
+                        HandleStartLobbyRequest(message.Unpack<StartLobbyRequest>(), header.ClientId);
+                    } else if (message.Is(SwapRequest.Descriptor)) {
+                        HandleSwapRequest(message.Unpack<SwapRequest>(), header.ClientId);
+                    } else if (message.Is(ServerInfoRequest.Descriptor)) {
+                        HandleServerInfoRequest(message.Unpack<ServerInfoRequest>(), header.ClientId);
+                    } else if (message.Is(ChangeNameRequest.Descriptor)) {
+                        HandleChangeNameRequest(message.Unpack<ChangeNameRequest>(), header.ClientId);
+                    } else if (message.Is(DisconnectRequest.Descriptor)) {
+                        HandleDisconnectRequest(message.Unpack<DisconnectRequest>(), header.ClientId);
+                    }
+                } else {
+                    HandleDisconnectRequest(new DisconnectRequest(), state.id);
                 }
 
-                if (message.Is(KeyExchange.Descriptor))
-                {
-                    HandleKeyExchange(message.Unpack<KeyExchange>(), state.id, state.socket);
-                }
-                else if (message.Is(Heartbeat.Descriptor))
-                {
-                    HandleHeartbeat(message.Unpack<Heartbeat>(), header.ClientId);
-                }
-                else if (message.Is(CreateLobbyRequest.Descriptor))
-                {
-                    HandleCreateLobbyRequest(message.Unpack<CreateLobbyRequest>(), header.ClientId);
-                }
-                else if (message.Is(DeleteLobbyRequest.Descriptor))
-                {
-                    HandleDeleteLobbyRequest(message.Unpack<DeleteLobbyRequest>(), header.ClientId);
-                }
-                else if (message.Is(JoinLobbyRequest.Descriptor))
-                {
-                    HandleJoinLobbyRequest(message.Unpack<JoinLobbyRequest>(), header.ClientId);
-                }
-                else if (message.Is(LeaveLobbyRequest.Descriptor))
-                {
-                    HandleLeaveLobbyRequest(message.Unpack<LeaveLobbyRequest>(), header.ClientId);
-                }
-                else if (message.Is(StartLobbyRequest.Descriptor))
-                {
-                    HandleStartLobbyRequest(message.Unpack<StartLobbyRequest>(), header.ClientId);
-                }
-                else if (message.Is(SwapRequest.Descriptor))
-                {
-                    HandleSwapRequest(message.Unpack<SwapRequest>(), header.ClientId);
-                }
-                else if (message.Is(ServerInfoRequest.Descriptor))
-                {
-                    HandleServerInfoRequest(message.Unpack<ServerInfoRequest>(), header.ClientId);
-                }
-                else if (message.Is(ChangeNameRequest.Descriptor))
-                {
-                    HandleChangeNameRequest(message.Unpack<ChangeNameRequest>(), header.ClientId);
-                }
-                else if (message.Is(DisconnectRequest.Descriptor))
-                {
-                    HandleDisconnectRequest(message.Unpack<DisconnectRequest>(), header.ClientId);
-                }
-
-
-                if (_isRunning) {
+                if (_isRunning && state.socket.Connected) {
                     state.socket.BeginReceive(state.buffer, 0, BUFFER_SIZE, SocketFlags.None, new AsyncCallback(TCPReceiveCallback), state);
                 }
             } catch (Exception e) {
@@ -708,7 +680,9 @@ namespace SynthesisServer {
                     _clients[clientID].CurrentLobby = string.Empty;
                 }
 
+                _clients[clientID].ClientSocket.Disconnect(false);
                 _clients[clientID].ClientSocket.Close();
+                _logger.LogInformation($"{clientID} is disconnected. Bye bye");
                 _clients.Remove(clientID);
                 _clientsLock.ExitWriteLock();
             }

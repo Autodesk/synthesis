@@ -31,7 +31,7 @@ namespace Synthesis.Physics {
                 {
                     _isFrozen = shouldFreeze;
 
-                    Debug.Log($"Frozen: {_isFrozen}");
+                    // Debug.Log($"Frozen: {_isFrozen}");
                     if (_isFrozen)
                     {
                         SimulationRunner.RemoveContext(SimulationRunner.RUNNING_SIM_CONTEXT);
