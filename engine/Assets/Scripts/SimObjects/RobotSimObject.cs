@@ -46,6 +46,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     private OrbitCameraMode orbit;
     private ICameraMode previousMode;
 
+    public bool InputFrozen { get; set; } = false;
+
     public string MiraGUID => MiraAssembly.Info.GUID;
 
     public Assembly MiraAssembly { get; private set; }

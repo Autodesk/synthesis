@@ -92,4 +92,6 @@ public class OrbitCameraMode : ICameraMode
         t.RotateAround(focus, up, _actualYaw);
         t.localPosition = (/*up * 0.5f +*/ t.forward * -_actualZoom) + t.localPosition;
     }
+    
+    public void End(CameraController cam) {}
 }

@@ -25,4 +25,8 @@ public class OverviewCameraMode : ICameraMode
     {
         
     }
+
+    public void End(CameraController cam)
+    {
+    }
 }

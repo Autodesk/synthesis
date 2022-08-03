@@ -14,24 +14,30 @@ public class FreeCameraMode : ICameraMode
     private float _actualPitch = 0.0f;
     private float _actualYaw = 0.0f;
 
-    private const string FORWARD_KEY = "input/FREECAM_FORWARD";
-    private const string BACK_KEY = "input/FREECAM_BACK";
-    private const string LEFT_KEY = "input/FREECAM_LEFT";
-    private const string RIGHT_KEY = "input/FREECAM_RIGHT";
-    private const string LEFT_YAW_KEY = "input/FREECAM_LEFT_YAW";
-    private const string RIGHT_YAW_KEY = "input/FREECAM_RIGHT_YAW";
-    private const string DOWN_PITCH_KEY = "input/FREECAM_DOWN_PITCH";
-    private const string UP_PITCH_KEY = "input/FREECAM_UP_PITCH";
+    private const string FORWARD_KEY = "FREECAM_FORWARD";
+    private const string BACK_KEY = "FREECAM_BACK";
+    private const string LEFT_KEY = "FREECAM_LEFT";
+    private const string RIGHT_KEY = "FREECAM_RIGHT";
+    private const string LEFT_YAW_KEY = "FREECAM_LEFT_YAW";
+    private const string RIGHT_YAW_KEY = "FREECAM_RIGHT_YAW";
+    private const string DOWN_PITCH_KEY = "FREECAM_DOWN_PITCH";
+    private const string UP_PITCH_KEY = "FREECAM_UP_PITCH";
+
+    private bool _wasFrozen = false;
 
     public void Start(CameraController cam)
     {
+        RobotSimObject robot = RobotSimObject.GetCurrentlyPossessedRobot();
+        _wasFrozen = robot.InputFrozen;
+        robot.InputFrozen = true;
+        
         // only assign inputs once
         if (!InputManager.MappedDigitalInputs.ContainsKey(FORWARD_KEY))
         {
-            InputManager.AssignDigitalInput(FORWARD_KEY, new Digital("UpArrow"));
-            InputManager.AssignDigitalInput(BACK_KEY, new Digital("DownArrow"));
-            InputManager.AssignDigitalInput(LEFT_KEY, new Digital("LeftArrow"));
-            InputManager.AssignDigitalInput(RIGHT_KEY, new Digital("RightArrow"));
+            InputManager.AssignDigitalInput(FORWARD_KEY, new Digital("W"));
+            InputManager.AssignDigitalInput(BACK_KEY, new Digital("S"));
+            InputManager.AssignDigitalInput(LEFT_KEY, new Digital("A"));
+            InputManager.AssignDigitalInput(RIGHT_KEY, new Digital("D"));
             InputManager.AssignValueInput(LEFT_YAW_KEY, new Digital("Q"));
             InputManager.AssignValueInput(RIGHT_YAW_KEY, new Digital("E"));
             InputManager.AssignValueInput(DOWN_PITCH_KEY, new Digital("Z"));
@@ -60,8 +66,8 @@ public class FreeCameraMode : ICameraMode
 
         if (Input.GetKey(KeyCode.Mouse0))
         {
-            p = cam.PitchSensitivity * Input.GetAxis("Mouse Y");
-            y = -cam.YawSensitivity * Input.GetAxis("Mouse X");
+            p = -cam.PitchSensitivity * Input.GetAxis("Mouse Y");
+            y = cam.YawSensitivity * Input.GetAxis("Mouse X");
         }
 
         // make it so the user can't rotate the camera upside down
@@ -99,5 +105,10 @@ public class FreeCameraMode : ICameraMode
         t.position = new Vector3(t.position.x, Mathf.Clamp(t.position.y, 0, 100), t.position.z);
 
         t.localRotation = Quaternion.Euler(_actualPitch, _actualYaw, 0.0f);
+    }
+
+    public void End(CameraController cam)
+    {
+        RobotSimObject.GetCurrentlyPossessedRobot().InputFrozen = _wasFrozen;
     }
 }
