@@ -9,12 +9,12 @@ using SynthesisAPI.InputManager;
 
 public class CameraController : MonoBehaviour {
     
-    [SerializeField, Range(1f, 15.0f)] public float PitchSensitivity;
-    [SerializeField, Range(1f, 15.0f)] public float YawSensitivity;
-    [SerializeField, Range(0.1f, 5f)] public float ZoomSensitivity;
+    [SerializeField, Range(1f, 15.0f)] public static float PitchSensitivity;
+    [SerializeField, Range(1f, 15.0f)] public static float YawSensitivity;
+    [SerializeField, Range(0.1f, 5f)] public static float ZoomSensitivity;
     [SerializeField] public float PitchLowerLimit;
     [SerializeField] public float PitchUpperLimit;
-    [SerializeField] public float ZoomLowerLimit;
+    [SerializeField] public float ZoomLowerLimit; 
     [SerializeField] public float ZoomUpperLimit;
     [SerializeField, Range(0.005f, 1.0f)] public float OrbitalAcceleration;
     [SerializeField, Range(0.005f, 1.0f)] public float ZoomAcceleration;
@@ -38,6 +38,7 @@ public class CameraController : MonoBehaviour {
     { //Set Camera and Screen Settings
         //SettingsPanel.LoadSettings();
         //SettingsPanel.MaximizeScreen();
+        
     }
     public void Update() {
   //      if (FollowTransform != null && transform.parent != FollowTransform)

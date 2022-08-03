@@ -18,7 +18,6 @@ namespace Synthesis.UI.Dynamic {
         };
         public override void Create() {
             //SetDefaultPreferences();
-            LoadSettings();
 
             // (var left, var right) = base.MainContent.SplitLeftRight(250, 100);
             Title.SetText("Settings");
@@ -26,7 +25,7 @@ namespace Synthesis.UI.Dynamic {
 
             AcceptButton.AddOnClickedEvent(b => {
                 SaveSettings();
-                //DynamicUIManager.CloseActiveModal();
+                DynamicUIManager.CloseActiveModal();
             });
             CancelButton.StepIntoLabel(b => { b.SetText("Close"); }).AddOnClickedEvent(b => DynamicUIManager.CloseActiveModal());
             
@@ -40,14 +39,33 @@ namespace Synthesis.UI.Dynamic {
                 .StepIntoLabel(l => l.SetText("Resolution"))
                 .StepIntoDropdown(
                     d => d.SetOptions(ResolutionList)
-                    .AddOnValueChangedEvent((d, i, o) => Set(RESOLUTION, i))
+                    .AddOnValueChangedEvent((d, i, o) => {
+                        Set(RESOLUTION, i);
+
+                        if (Get<int>(RESOLUTION) == ResolutionList.Length - 1)
+                            Set(MAX_RES, true);
+                        else
+                            Set(MAX_RES, false);
+                    })
                     .SetValue(Get<int>(RESOLUTION)));
 
             var screenModeDropdown = MainContent.CreateLabeledDropdown().ApplyTemplate(VerticalLayout)
                 .StepIntoLabel(l => l.SetText("Screen Mode"))
                 .StepIntoDropdown(
                     d => d.SetOptions(ScreenModeList)
-                    .AddOnValueChangedEvent((d, i, o) => Set(SCREEN_MODE,i))
+                    .AddOnValueChangedEvent((d, i, o) => { 
+                        Set(SCREEN_MODE, i);
+                        if (Get<int>(SCREEN_MODE) == 1)
+                        {  //2 is windowed mode                                    
+                            PopulateResolutionList();
+                            SetMaxResolution();
+                        }
+                        else
+                        {
+                            ResolutionList = new string[] { ResolutionList[ResolutionList.Length - 1] };
+                            SetMaxResolution();
+                        }
+                    })
                     .SetValue(Get<int>(SCREEN_MODE)));
 
             var qualitySettingsDropdown = MainContent.CreateLabeledDropdown().ApplyTemplate(VerticalLayout)
@@ -208,9 +226,6 @@ namespace Synthesis.UI.Dynamic {
 
             }
 
-            if (!customRes)
-            {//if user wants custom res, do not change it
-                //Checks if the user wants maximum resolution
                 if (Get<bool>(MAX_RES))
                 {
                     Set(RESOLUTION, ResolutionList.Length - 1);
@@ -233,15 +248,7 @@ namespace Synthesis.UI.Dynamic {
                         SetRes(ResolutionList.Length - 1, fsMode);
                     }
                 }
-            }
-            else
-            {
-                if (Get<int>(SCREEN_MODE) == 0)
-                {
-                    customRes = false;
-                    SetRes(ResolutionList.Length - 1, FullScreenMode.FullScreenWindow);
-                }
-            }
+            
             //Quality Settings
             QualitySettings.SetQualityLevel(Get<int>(QUALITY_SETTINGS), true);
 
@@ -252,12 +259,11 @@ namespace Synthesis.UI.Dynamic {
             useImperial = Get<bool>(MEASUREMENTS);
 
             //Camera
-            CameraController c = Camera.main.GetComponent<CameraController>();
-            /*c.ZoomSensitivity = Get<float>(ZOOM_SENSITIVITY) / 10;//scaled down by 10
-            c.PitchSensitivity = Get<int>(PITCH_SENSITIVITY);
-            c.YawSensitivity = Get<int>(YAW_SENSITIVITY);*/
+            CameraController.ZoomSensitivity = Get<float>(ZOOM_SENSITIVITY) / 10;//scaled down by 10
+            CameraController.PitchSensitivity = Get<int>(PITCH_SENSITIVITY);
+            CameraController.YawSensitivity = Get<int>(YAW_SENSITIVITY);
 
-
+            MaximizeScreen();
         }
         public static void SetDefaultPreferences()
         {

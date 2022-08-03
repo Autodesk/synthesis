@@ -4,6 +4,10 @@ using UnityEngine.SceneManagement;
 
 namespace Synthesis.UI {
     public class MenuManager : MonoBehaviour {
+        private void Start()
+        {
+            SettingsModal.LoadSettings();
+        }
         public void ButtonPrint(string s) {
             Debug.Log("Button Pressed: " + s);
             DynamicUIManager.CreateModal<TestModal>();
