@@ -32,6 +32,4 @@ message KeyExchange {
 	string client_id = 4; /// Determined by server and sent back. Whatever the client sends is ignored
 }
 
-message Heartbeat {
-	//string client_id = 1;
-}
+message Heartbeat {}

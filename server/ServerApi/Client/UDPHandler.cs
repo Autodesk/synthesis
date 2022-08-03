@@ -9,7 +9,6 @@ using System.Text;
 namespace SynthesisServer.Client
 {
     public interface IUDPHandler {
-        MessageDescriptor Descriptor { get; set; }
         DHParameters Parameters { get; set; }
         UdpClient UDPClient { get; set; }
 

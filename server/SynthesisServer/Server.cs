@@ -95,7 +95,8 @@ namespace SynthesisServer {
             Task.Run(() => {
                 while (_isRunning) {
                     CheckHeartbeats(5000);
-                    Thread.Sleep(500);
+                    CheckLobbies();
+                    Thread.Sleep(1000);
                 }
             });
         }
@@ -706,10 +707,11 @@ namespace SynthesisServer {
                 IO.SendEncryptedMessage(startMsg, lobby.Clients[i].ID, lobby.Clients[i].SymmetricKey, lobby.Clients[i].ClientSocket, _encryptor, new AsyncCallback(TCPSendCallback));
             }
 
+            // makes sure all clients are ready to start within the timeout window
             long start = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            bool allSet = true;
             while (System.DateTimeOffset.Now.ToUnixTimeMilliseconds() - start <= 5000) {
                 _clientsLock.EnterReadLock();
-                bool allSet = true;
                 foreach (ClientData x in lobby.Clients) {
                     if (x.UDPEndPoint == null) {
                         allSet = false;
@@ -723,34 +725,47 @@ namespace SynthesisServer {
                 Thread.Sleep(200);
             }
 
-            _clientsLock.EnterReadLock();
-            foreach (ClientData client in lobby.Clients) {
-                if (client.UDPEndPoint == null) {
-                    lobby.TryRemoveClient(client);
+            _clientsLock.EnterUpgradeableReadLock();
+            if (allSet)
+            {
+                ConnectionDataHost hostMsg = new ConnectionDataHost();
+                foreach (var client in lobby.Clients)
+                {
+                    hostMsg.ClientEnpoints.Add(client.UDPEndPoint.ToString());
+                }
+
+                ConnectionDataClient clientMsg = new ConnectionDataClient()
+                {
+                    HostEndpoint = lobby.Host.UDPEndPoint.ToString()
+                };
+
+                foreach (ClientData client in lobby.Clients)
+                {
+                    if (lobby.Host.Equals(client))
+                    {
+                        IO.SendEncryptedMessage(hostMsg, client.ID, client.SymmetricKey, client.ClientSocket, _encryptor, new AsyncCallback(TCPSendCallback));
+                    }
+                    else
+                    {
+                        IO.SendEncryptedMessage(clientMsg, client.ID, client.SymmetricKey, client.ClientSocket, _encryptor, new AsyncCallback(TCPSendCallback));
+                    }
+                    _clientsLock.EnterWriteLock();
+                    _clients.Remove(client.ID);
+                    _clientsLock.ExitWriteLock();
                 }
             }
-            _clientsLock.ExitReadLock();
-
-            ConnectionDataHost hostMsg = new ConnectionDataHost();
-            foreach (var client in lobby.Clients) {
-                hostMsg.ClientEnpoints.Add(client.UDPEndPoint.ToString());
-            }
-
-            ConnectionDataClient clientMsg = new ConnectionDataClient() {
-                HostEndpoint = lobby.Host.UDPEndPoint.ToString()
-            };
-
-            foreach (ClientData client in lobby.Clients) {
-                if (lobby.Host.Equals(client)) {
-                    IO.SendEncryptedMessage(hostMsg, client.ID, client.SymmetricKey, client.ClientSocket, _encryptor, new AsyncCallback(TCPSendCallback));
-                } else {
-                    IO.SendEncryptedMessage(clientMsg, client.ID, client.SymmetricKey, client.ClientSocket, _encryptor, new AsyncCallback(TCPSendCallback));
+            else
+            {
+                MatchStartFailure msg = new MatchStartFailure();
+                foreach (ClientData client in lobby.Clients)
+                {
+                    IO.SendEncryptedMessage(msg, client.ID, client.SymmetricKey, client.ClientSocket, _encryptor, new AsyncCallback(TCPSendCallback));
                 }
             }
-
+            _clientsLock.ExitUpgradeableReadLock();
         }
 
-        public void CheckHeartbeats(long clientTimeout) {
+        private void CheckHeartbeats(long clientTimeout) {
             _clientsLock.EnterUpgradeableReadLock();
             foreach (string client in _clients.Keys) {
                 if (System.DateTimeOffset.Now.ToUnixTimeMilliseconds() - _clients[client].LastHeartbeat >= clientTimeout) {
@@ -760,6 +775,21 @@ namespace SynthesisServer {
                 }
             }
             _clientsLock.ExitUpgradeableReadLock();
+        }
+
+        private void CheckLobbies()
+        {
+            _lobbiesLock.EnterUpgradeableReadLock();
+            foreach (var lobby in _lobbies)
+            {
+                if (lobby.Value.Clients.Count <= 0)
+                {
+                    _lobbiesLock.EnterWriteLock();
+                    _lobbies.Remove(lobby.Key);
+                    _lobbiesLock.ExitWriteLock();
+                }
+            }
+            _lobbiesLock.ExitUpgradeableReadLock();
         }
     }
 }
