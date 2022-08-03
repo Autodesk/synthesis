@@ -10,9 +10,12 @@ namespace SynthesisServer.Client
 {
     public class UDPHandlerClient : IUDPHandler
     {
-        public MessageDescriptor Descriptor { get; set; }
-        public DHParameters Parameters { get; set; }
         public UdpClient UDPClient { get; set; }
+
+        public UDPHandlerClient(DHParameters parameters)
+        {
+
+        }
 
         public void Start(UdpClient client, int port, long timeoutMS)
         {

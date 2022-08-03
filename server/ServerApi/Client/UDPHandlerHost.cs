@@ -10,9 +10,8 @@ namespace SynthesisServer.Client
 {
     public class UDPHandlerHost : IUDPHandler
     {
-        public DHParameters Parameters { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public UdpClient UDPClient { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        MessageDescriptor IUDPHandler.Descriptor { get; set; }
+        public DHParameters Parameters { get; set; }
+        public UdpClient UDPClient { get; set; }
 
         public void HandleDisconnect()
         {

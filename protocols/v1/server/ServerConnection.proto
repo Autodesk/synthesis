@@ -138,8 +138,4 @@ message ConnectionDataClient {
 	string host_endpoint = 1;
 }
 
-
-
-
-
-
+message MatchStartFailure {}
