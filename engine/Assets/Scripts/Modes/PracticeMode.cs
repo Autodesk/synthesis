@@ -18,7 +18,7 @@ public class PracticeMode : IMode
     public static GamepieceSimObject ChosenGamepiece { get; set; }
     public static PrimitiveType ChosenPrimitive { get; set; }
 
-    public const string TOGGLE_ESCAPE_MENU_INPUT = "input/escape_menu";
+    public const string TOGGLE_ESCAPE_MENU_INPUT = "escape_menu";
     
     private static Dictionary<GameObject, Vector3> _initialPositions = new Dictionary<GameObject, Vector3>();
     private static Dictionary<GameObject, Quaternion> _initialRotations = new Dictionary<GameObject, Quaternion>();

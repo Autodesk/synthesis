@@ -18,6 +18,7 @@ public class ChangeInputsModal : ModalDynamic
     }
 
     private const float VERTICAL_PADDING = 16f;
+    private const float TITLE_INDENT = 10f;
     private const int CONTENT_HEIGHT = 400;
     
     private readonly Func<UIComponent, UIComponent> VerticalLayout = (u) => {
@@ -37,7 +38,8 @@ public class ChangeInputsModal : ModalDynamic
         {
             leftContent.CreateLabel()
                 .SetText("Robot Controls")
-                .ApplyTemplate(VerticalLayout);
+                .ApplyTemplate(VerticalLayout)
+                .SetTopStretch(leftPadding: TITLE_INDENT);
             
             var inputScrollView = leftContent.CreateScrollView()
                 .SetHeight<ScrollView>(CONTENT_HEIGHT)
@@ -87,7 +89,8 @@ public class ChangeInputsModal : ModalDynamic
 
         rightContent.CreateLabel()
             .SetText("Global Controls")
-            .ApplyTemplate(VerticalLayout);
+            .ApplyTemplate(VerticalLayout)
+            .SetTopStretch(leftPadding: TITLE_INDENT);
 
         var globalControlView = rightContent.CreateScrollView()
             .SetHeight<ScrollView>(CONTENT_HEIGHT)
