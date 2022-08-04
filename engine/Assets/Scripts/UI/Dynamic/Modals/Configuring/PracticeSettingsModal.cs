@@ -7,8 +7,10 @@ using UnityEngine;
 public class PracticeSettingsModal : ModalDynamic
 {
 
-    private static Dictionary<string, GamepieceSimObject> _gamepieceMap = new Dictionary<string, GamepieceSimObject>();
-    private static List<GamepieceSimObject> _gamepieceSimObjects = new List<GamepieceSimObject>();
+    private static Dictionary<string, PracticeMode.GamepieceData> _gamepieceMap = new Dictionary<string, PracticeMode.GamepieceData>();
+    private static List<PracticeMode.GamepieceData> _gamepieceSimObjects = new List<PracticeMode.GamepieceData>();
+    
+    private static string lastField = "";
 
     private const float VERTICAL_PADDING = 10f;
     
@@ -77,9 +79,23 @@ public class PracticeSettingsModal : ModalDynamic
         }
         else
         {
+            if (field.MiraAssembly.Info.GUID != lastField)
+            {
+                _gamepieceSimObjects.Clear();
+                _gamepieceMap.Clear();
+                lastField = field.MiraAssembly.Info.GUID;
+            }
             if (_gamepieceSimObjects.Count == 0 && field.Gamepieces.Count > 0) {
-                _gamepieceSimObjects = field.Gamepieces
-                    .GroupBy(g => g.Name).Select(g => g.First()).ToList();
+                // group the gamepieces by their types, found via the name of the first child before :
+                var groups = field.Gamepieces.GroupBy(g =>
+                {
+                    if (g.GamepieceObject.transform.childCount > 0)
+                        return g.GamepieceObject.transform.GetChild(0).name.Split(':')[0];
+                    return g.GamepieceObject.name;
+                });
+                var uniqueGamepieces = groups.Select(g => g.First()).ToList();
+                
+                _gamepieceSimObjects = uniqueGamepieces.Map(g => new PracticeMode.GamepieceData(g.GamepieceObject));
                 _gamepieceSimObjects.ForEach(g => _gamepieceMap.Add(g.Name, g));
             }
             gamepieceDropdown.SetOptions(_gamepieceSimObjects.Map(g => g.Name).ToArray())
