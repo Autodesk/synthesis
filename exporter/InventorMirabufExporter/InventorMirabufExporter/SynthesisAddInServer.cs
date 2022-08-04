@@ -91,8 +91,7 @@ namespace InventorMirabufExporter
                 try
                 {
                     Serializer proto = new Serializer();
-                    //proto.Setup(doc);
-                    proto.Test(doc);
+                    proto.Setup(doc);
                     proto.Serialize();
                 }
                 catch (Exception x) { MessageBox.Show(x.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }

@@ -425,12 +425,9 @@ namespace InventorMirabufExporter
             */
 
             // Assembly > Design Hierarchy
-
-            // tree stuff was here...
             Node tree = new Node();
             tree.Value = assemblyDoc.InternalName.Trim('{', '}');
-
-            //environment.DesignHierarchy.Nodes.Add(node);
+            environment.DesignHierarchy.Nodes.Add(GetModelTree(assemblyDoc.ComponentDefinition.Occurrences, tree, ref jointInstance));
 
             // Assembly > Data > Joints > JointInstances
             environment.Data.Joints.JointInstances.Add(jointInstance.Info.Name, jointInstance);
@@ -442,14 +439,7 @@ namespace InventorMirabufExporter
             Node grounded = new Node() { Value = "ground" };
             environment.JointHierarchy.Nodes.Add(grounded);
 
-            /*
-            // needed?
-            // Assembly > Transform
-            environment.Transform = new Transform()
-            {
-                SpatialMatrix = { 1, 2 }
-            };
-            */
+            // Assembly > Transform?
         }
 
         private Info SetInfo(string name, bool isPartInstance)
@@ -468,50 +458,32 @@ namespace InventorMirabufExporter
             return Data;
         }
 
-        private Node GetModelTree(AssemblyDocument assemblyDoc, DocumentsEnumerator asmDoc, ref Node tree)
+        private static Node GetModelTree(ComponentOccurrences occurrences, Node tree, ref Mirabuf.Joint.JointInstance jointInstance)
         {
-            //DocumentsEnumerator asmDoc = assemblyDoc.ReferencedDocuments;
-
-            // Recursion?
-            for (int i = 0; i < asmDoc.Count; i++)
+            foreach (ComponentOccurrence occurrence in occurrences)
             {
-                // determine if subassembly
-                if (asmDoc[i + 1].ReferencedDocuments.Count > 0)
+                // Check for occurrence suppression
+                if (!occurrence.Suppressed)
                 {
-                    Node subassembly = new Node();
-                    subassembly.Value = asmDoc[i + 1].DisplayName;
-                    AssemblyDocument subassemblyDoc = (AssemblyDocument)asmDoc[i + 1];
-                    GetModelTree(subassemblyDoc, asmDoc[i + 1].ReferencedDocuments, ref subassembly);
-                    tree.Children.Add(subassembly);
-                    //asmDoc = asmDoc[i + 1].ReferencedDocuments;
-                }
-                else
-                {
-                    PartDocument doc = (PartDocument)asmDoc[i + 1];
-                    ComponentOccurrencesEnumerator occurence = assemblyDoc.ComponentDefinition.Occurrences.AllReferencedOccurrences[doc];
+                    Node node = new Node();
+                    node.Value = occurrence.Name;
 
-                    for (int j = 0; j < occurence.Count; j++)
+                    // Determine if subassembly for recursion
+                    if (occurrence.DefinitionDocumentType == DocumentTypeEnum.kAssemblyDocumentObject)
+                        node = GetModelTree((ComponentOccurrences)occurrence.SubOccurrences, node, ref jointInstance);
+
+                    tree.Children.Add(node);
+
+                    // Assembly > Data > Joints > JointInstances > Parts > Nodes
+                    // Check for grounded joint
+                    if (occurrence.Grounded)
                     {
-                        try { MessageBox.Show($"{j}: " + occurence[j+1].Name, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
-                        catch (Exception e) { MessageBox.Show(e.ToString(), "Synthesis: An Autodesk Technology", MessageBoxButtons.OK); }
-
-                        Node partNode = new Node();
-                        partNode.Value = occurence[j + 1].Name;
-                        tree.Children.Add(partNode);
-
-                        // Assembly > Data > Joints > JointInstances > Parts > Nodes
-                        // Check For Grounded Joint
-                        //if (occurence[j+1].Grounded)
-                        //{
-                        //    MessageBox.Show("Grounded Occurence: " + occurence[j+1].Name, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK);
-                        //    jointInstance.Parts.Nodes.Add(subNode);
-                        //}
-
-                        // UserData?
+                        MessageBox.Show("Grounded Occurence: " + occurrence.Name, "Synthesis: An Autodesk Technology", MessageBoxButtons.OK);
+                        jointInstance.Parts.Nodes.Add(node);
                     }
+                    // UserData?
                 }
             }
-
             return tree;
         }
 
@@ -521,9 +493,7 @@ namespace InventorMirabufExporter
 
             Node tree = new Node() { Value = assemblyDoc.InternalName.Trim('{', '}') };
 
-            GetModelTree(assemblyDoc, assemblyDoc.ReferencedDocuments, ref tree);
-
-            environment.DesignHierarchy.Nodes.Add(tree);
+            //environment.DesignHierarchy.Nodes.Add(GetModelTree(assemblyDoc.ComponentDefinition.Occurrences, tree));
         }
 
         public void Serialize()
