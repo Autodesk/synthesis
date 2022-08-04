@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Synthesis.Gizmo;
 using Synthesis.PreferenceManager;
 using Synthesis.Runtime;
 using Synthesis.UI.Dynamic;
@@ -39,7 +40,7 @@ public class PracticeMode : IMode
 
     public void Start()
     {
-        DynamicUIManager.CreateModal<SelectFieldModal>();
+        DynamicUIManager.CreateModal<AddFieldModal>();
         InputManager.AssignValueInput(TOGGLE_ESCAPE_MENU_INPUT, TryGetSavedInput(TOGGLE_ESCAPE_MENU_INPUT, new Digital("Escape", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
     }
     
@@ -118,11 +119,22 @@ public class PracticeMode : IMode
         Renderer renderer = _gamepieceSpawnpointObject.GetComponent<Renderer>();
         renderer.material = new Material(Shader.Find("Shader Graphs/DefaultSynthesisTransparentShader"));
 
-        GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, _gamepieceSpawnpointObject.transform, _gamepieceSpawnpointObject.transform.position);
+        GizmoManager.SpawnGizmo(
+            _gamepieceSpawnpointObject.transform,
+            t => {
+                _gamepieceSpawnpointObject.transform.position = t.Position;
+            },
+            t => {
+                Debug.Log("End Gizmo OMG");
+                EndConfigureGamepieceSpawnpoint();
+            }
+        );
+        // GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, _gamepieceSpawnpointObject.transform, _gamepieceSpawnpointObject.transform.position);
     }
 
     public static void EndConfigureGamepieceSpawnpoint()
     {
+        Debug.Log("End Config");
         GamepieceSpawnpoint = _gamepieceSpawnpointObject.transform.position;
         GameObject.Destroy(_gamepieceSpawnpointObject);
         _gamepieceSpawnpointObject = null;
@@ -130,6 +142,8 @@ public class PracticeMode : IMode
 
     public static void ResetRobot()
     {
+        return;
+
         RobotSimObject robot = RobotSimObject.GetCurrentlyPossessedRobot();
         if (robot == null) return;
         robot.RobotNode.GetComponentsInChildren<Rigidbody>().ForEach(rb =>
@@ -140,8 +154,10 @@ public class PracticeMode : IMode
         });
     }
 
-    public static void ResetField()
-    {
+    public static void ResetField() {
+        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+            RobotSimObject.GetCurrentlyPossessedRobot().ClearGamepieces();
+        
         FieldSimObject field = FieldSimObject.CurrentField;
         if (field != null)
             FieldSimObject.CurrentField.ResetField();

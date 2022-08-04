@@ -1,0 +1,89 @@
+#!/bin/sh
+
+show_help() {
+	echo "-h	display help message"
+	echo "-u	run uninstall script"
+}
+
+install_appimaged() {
+	mkdir -p ~/Applications
+	wget -c https://github.com/$(wget -q https://github.com/probonopd/go-appimage/releases -O - | grep "appimaged-.*-x86_64.AppImage" | head -n 1 | cut -d '"' -f 2) -P ~/Applications/
+	chmod +x ~/Applications/appimaged-*.AppImage
+	
+	# Launch
+	~/Applications/appimaged-*.AppImage &
+}
+
+uninstall_synthesis() {
+	rm -R ~/.config/Autodesk/Synthesis/
+	if [ -e ~/Applications/Synthesis*.AppImage ]
+	then 
+		rm ~/Applications/Synthesis*.AppImage
+	fi 
+	if [ -e ~/Applications/appimaged-*.AppImage ]
+	then
+		while true; do
+			read -p "Do You wish to try and uninstall appimaged? (recommended) (y/n): " yn
+			case $yn in
+				[Yy]* ) 
+					rm ~/Applications/appimaged-*.AppImage
+					break
+					;;
+				[Nn]* )
+					break
+					;;
+				* ) 
+					echo "Please answer yes or no."
+					;;
+			esac
+		done
+	fi
+}
+
+run_synthesis() {
+	mkdir -p ~/.config/Autodesk/Synthesis/Mira/Fields
+	cp "$HERE/fields/"*.mira ~/.config/Autodesk/Synthesis/Mira/Fields
+	cp "$HERE/robots/"*.mira ~/.config/Autodesk/Synthesis/Mira/
+
+	if [ ! -e ~/Applications/appimaged-*.AppImage ] 
+	then
+		while true; do
+			read -p "Do You wish to install and start appimaged? (recommended) (y/n): " yn
+			case $yn in
+				[Yy]* ) 
+					install_appimaged;
+					break
+					;;
+				[Nn]* )
+					break
+					;;
+				* ) 
+					echo "Please answer yes or no."
+					;;
+			esac
+		done
+	fi
+
+	exec "$EXEC"
+}
+
+HERE="$(dirname "$(readlink -f "${0}")")"
+EXEC="$HERE/usr/bin/Synthesis.x86_64"
+
+OPTIND=1
+while getopts ":hu" opt; do
+	case "$opt" in
+		h|\?)
+			show_help
+			exit 0
+			;;
+		u)
+			uninstall_synthesis
+			exit 0
+			;;
+	esac
+done
+
+shift $((OPTIND-1))
+
+run_synthesis

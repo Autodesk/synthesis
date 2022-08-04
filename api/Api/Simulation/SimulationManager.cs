@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using SynthesisAPI.EnvironmentManager;
+using SynthesisAPI.Utilities;
 
 namespace SynthesisAPI.Simulation {
     public static class SimulationManager {
@@ -10,9 +11,9 @@ namespace SynthesisAPI.Simulation {
         public static event SimObjectEvent OnNewSimulationObject;
         public static event SimObjectEvent OnRemoveSimulationObject;
         
-        internal static Dictionary<string, SimObject> _simulationObject = new Dictionary<string, SimObject>();
+        internal static Dictionary<string, SimObject> _simObjects = new Dictionary<string, SimObject>();
         public static IReadOnlyDictionary<string, SimObject> SimulationObjects
-            = new ReadOnlyDictionary<string, SimObject>(_simulationObject);
+            = new ReadOnlyDictionary<string, SimObject>(_simObjects);
 
         public delegate void UpdateDelegate();
         public static event UpdateDelegate OnDriverUpdate;
@@ -59,9 +60,9 @@ namespace SynthesisAPI.Simulation {
         }
 
         public static void RegisterSimObject(SimObject so) {
-            if (_simulationObject.ContainsKey(so.Name)) // Probably use some GUID
+            if (_simObjects.ContainsKey(so.Name)) // Probably use some GUID
                 throw new Exception("Name already exists");
-            _simulationObject[so.Name] = so;
+            _simObjects[so.Name] = so;
             Drivers[so.Name] = new List<Driver>();
             Behaviours[so.Name] = new List<SimBehaviour>();
 
@@ -70,21 +71,23 @@ namespace SynthesisAPI.Simulation {
         }
 
         public static bool RemoveSimObject(SimObject so) {
-            return RemoveSimObject(_simulationObject[so.Name]);
+            return RemoveSimObject(so.Name);
         }
 
         public static bool RemoveSimObject(string so) {
-            bool exists = _simulationObject.TryGetValue(so, out SimObject s);
+            bool exists = _simObjects.TryGetValue(so, out SimObject s);
             if (!exists)
                 return false;
             Drivers.Remove(so);
             Behaviours.Remove(so);
-            var res = _simulationObject.Remove(so);
+            var res = _simObjects.Remove(so);
             if (res) {
                 s.Destroy();
                 if (OnRemoveSimulationObject != null) {
                     OnRemoveSimulationObject(s);
                 }
+            } else {
+                Logger.Log("No sim object found by that name", LogLevel.Warning);
             }
             return res;
         }

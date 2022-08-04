@@ -11,6 +11,8 @@ using UButton = UnityEngine.UI.Button;
 using UToggle = UnityEngine.UI.Toggle;
 using USlider = UnityEngine.UI.Slider;
 using UImage = UnityEngine.UI.Image;
+using UScrollbar = UnityEngine.UI.Scrollbar;
+using UScrollView = UnityEngine.UI.ScrollRect;
 
 using Logger = SynthesisAPI.Utilities.Logger;
 using Math = System.Math;
@@ -28,6 +30,7 @@ namespace Synthesis.UI.Dynamic {
 
         private Vector2 _mainContentSize; // Shouldn't really be used after init is called
         private GameObject _unityObject;
+        protected GameObject UnityObject => _unityObject;
         // Default for Modal
         private Button _cancelButton;
         protected Button CancelButton => _cancelButton;
@@ -56,8 +59,12 @@ namespace Synthesis.UI.Dynamic {
             var header = _unityObject.transform.Find("Header");
             var headerRt = header.GetComponent<RectTransform>();
             _panelImage = new Image(null, header.Find("Image").gameObject);
+            // _panelImage.SetColor(new Color(1, 1, 1, 0));
+
             _panelBackground = new Image(null, unityObject);
+            _panelBackground.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK));
             _panelBackground.SetCornerRadius(15);
+
             _title = new Label(null, header.Find("Title").gameObject, null);
 
             var footer = _unityObject.transform.Find("Footer");
@@ -67,7 +74,11 @@ namespace Synthesis.UI.Dynamic {
                 if (!DynamicUIManager.CloseActivePanel())
                     Logger.Log("Failed to Close Panel", LogLevel.Error);
             });
+            _cancelButton.Image.SetColor(ColorManager.SYNTHESIS_CANCEL);
+            _cancelButton.Label.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT));
             _acceptButton = new Button(null!, footer.Find("Accept").gameObject, null);
+            _acceptButton.Image.SetColor(ColorManager.SYNTHESIS_ACCEPT);
+            _acceptButton.Label.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT));
 
             // Create Inital Content Component
             var hiddenContentT = _unityObject.transform.Find("Content");
@@ -77,7 +88,7 @@ namespace Synthesis.UI.Dynamic {
             hiddenRt.anchorMax = new Vector2(1, 1);
             hiddenRt.pivot = new Vector2(0.5f, 1);
             hiddenRt.anchoredPosition = new Vector2(0, -headerRt.sizeDelta.y);
-            var actualContentObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("content-base"), hiddenContentT);
+            var actualContentObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("content-base"), hiddenContentT);
             actualContentObj.name = "CentralContent";
             var contentRt = actualContentObj.GetComponent<RectTransform>();
             contentRt.offsetMax = new Vector2(-_rightContentPadding, contentRt.offsetMax.y);
@@ -134,10 +145,17 @@ namespace Synthesis.UI.Dynamic {
             var header = _unityObject.transform.Find("Header");
             var headerRt = header.GetComponent<RectTransform>();
             _modalImage = new Image(null, header.Find("Image").gameObject);
+            // _modalImage.SetColor(new Color(1, 1, 1, 0));
+
             _modalBackground = new Image(null, unityObject);
+            _modalBackground.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK));
             _modalBackground.SetCornerRadius(20);
+            
             _title = new Label(null, header.Find("Title").gameObject, null);
+            _title.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_WHITE));
+            
             _description = new Label( null, header.Find("Description").gameObject, null);
+            _description.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_WHITE));
 
             var footer = _unityObject.transform.Find("Footer");
             var footerRt = footer.GetComponent<RectTransform>();
@@ -146,7 +164,11 @@ namespace Synthesis.UI.Dynamic {
                 if (!DynamicUIManager.CloseActiveModal())
                     Logger.Log("Failed to Close Modal", LogLevel.Error);
             });
+            _cancelButton.Image.SetColor(ColorManager.SYNTHESIS_CANCEL);
+            _cancelButton.Label.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT));
             _acceptButton = new Button(null!, footer.Find("Accept").gameObject, null);
+            _acceptButton.Image.SetColor(ColorManager.SYNTHESIS_ACCEPT);
+            _acceptButton.Label.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT));
 
             // Create Inital Content Component
             var hiddenContentT = _unityObject.transform.Find("Content");
@@ -156,7 +178,7 @@ namespace Synthesis.UI.Dynamic {
             hiddenRt.anchorMax = new Vector2(1, 1);
             hiddenRt.pivot = new Vector2(0.5f, 1);
             hiddenRt.anchoredPosition = new Vector2(0, -headerRt.sizeDelta.y);
-            var actualContentObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("content-base"), hiddenContentT);
+            var actualContentObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("content-base"), hiddenContentT);
             actualContentObj.name = "CentralContent";
             var contentRt = actualContentObj.GetComponent<RectTransform>();
             contentRt.offsetMax = new Vector2(-MAIN_CONTENT_HORZ_PADDING, contentRt.offsetMax.y);
@@ -347,7 +369,7 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public (Content left, Content right) SplitLeftRight(float leftWidth, float padding) {
-            var leftContentObject = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("content-base"), base.RootGameObject.transform);
+            var leftContentObject = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("content-base"), base.RootGameObject.transform);
             var leftRt = leftContentObject.GetComponent<RectTransform>();
             leftRt.anchorMax = new Vector2(0f, 0.5f);
             leftRt.anchorMin = new Vector2(0f, 0.5f);
@@ -355,7 +377,7 @@ namespace Synthesis.UI.Dynamic {
             // leftRt.sizeDelta = new Vector2(leftWidth, leftRt.sizeDelta.y);
             var leftContent = new Content(this, leftContentObject, new Vector2(leftWidth, Size.y));
 
-            var rightContentObject = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("content-base"), base.RootGameObject.transform);
+            var rightContentObject = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("content-base"), base.RootGameObject.transform);
             var rightRt = rightContentObject.GetComponent<RectTransform>();
             rightRt.anchorMax = new Vector2(1f, 0.5f);
             rightRt.anchorMin = new Vector2(1f, 0.5f);
@@ -374,58 +396,62 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public Label CreateLabel(float height = 15f) {
-            var labelObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("label-base"), base.RootGameObject.transform);
+            var labelObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("label-base"), base.RootGameObject.transform);
             var label = new Label(this, labelObj, new Vector2(Size.x, height));
             base.Children.Add(label);
             return label;
         }
         public Toggle CreateToggle(bool isOn = false, string label = "New Toggle") {
-            var toggleObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("toggle-base"), base.RootGameObject.transform);
+            var toggleObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("toggle-base"), base.RootGameObject.transform);
             var toggle = new Toggle(this, toggleObj, isOn, label);
             base.Children.Add(toggle);
             return toggle;
         }
         public Slider CreateSlider(string label = "New Slider", string unitSuffix = "", float minValue = 0, float maxValue = 1, float currentValue = 0) {
-            var sliderObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("slider-base"), base.RootGameObject.transform);
+            var sliderObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("slider-base"), base.RootGameObject.transform);
             var slider = new Slider(this, sliderObj, label, unitSuffix, minValue, maxValue, currentValue);
             base.Children.Add(slider);
             return slider;
         }
         public Button CreateButton(string text = "New Button") {
-            var buttonObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("button-base"), base.RootGameObject.transform);
+            var buttonObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("button-base"), base.RootGameObject.transform);
             var button = new Button(this, buttonObj, null);
+            button.StepIntoLabel(l => l.SetText(text));
             base.Children.Add(button);
             return button;
         }
         public LabeledButton CreateLabeledButton() {
-            var lButtonObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("labeled-button-base"), base.RootGameObject.transform);
+            var lButtonObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("labeled-button-base"), base.RootGameObject.transform);
             var lButton = new LabeledButton(this, lButtonObj);
             base.Children.Add(lButton);
             return lButton;
         }
         public Dropdown CreateDropdown() {
-            var dropdownObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("dropdown-base"), base.RootGameObject.transform);
+            var dropdownObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("dropdown-base"), base.RootGameObject.transform);
             var dropdown = new Dropdown(this, dropdownObj, null);
             base.Children.Add(dropdown);
             return dropdown;
         }
         public LabeledDropdown CreateLabeledDropdown() {
-            var lDropdownObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("labeled-dropdown-base"), base.RootGameObject.transform);
+            var lDropdownObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("labeled-dropdown-base"), base.RootGameObject.transform);
             var lDropdown = new LabeledDropdown(this, lDropdownObj);
             base.Children.Add(lDropdown);
             return lDropdown;
         }
         public InputField CreateInputField() {
-            var inputFieldObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("input-field-base"), base.RootGameObject.transform);
+            var inputFieldObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("input-field-base"), base.RootGameObject.transform);
             var inputField = new InputField(this, inputFieldObj);
             base.Children.Add(inputField);
             return inputField;
         }
         public ScrollView CreateScrollView() {
-            throw new NotImplementedException();
+            var scrollViewObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("scroll-view-base"), base.RootGameObject.transform);
+            var scrollView = new ScrollView(this, scrollViewObj);
+            base.Children.Add(scrollView);
+            return scrollView;
         }
         public Content CreateSubContent(Vector2 size) {
-            var contentObj = GameObject.Instantiate(SynthesisAssetCollection.GetModalPrefab("content-base"), base.RootGameObject.transform);
+            var contentObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("content-base"), base.RootGameObject.transform);
             var content = new Content(this, contentObj, size);
             base.Children.Add(content);
             return content;
@@ -436,12 +462,37 @@ namespace Synthesis.UI.Dynamic {
                 mod(_image);
             return this;
         }
+
+        public Content EnsureImage() {
+            if (_image == null) {
+                base.RootGameObject.AddComponent<UImage>();
+                _image = new Image(this, base.RootGameObject);
+                _image.SetSprite(SynthesisAssetCollection.GetSpriteByName("250r-rounded"));
+                _image.SetMultiplier(50);
+            }
+            return this;
+        }
     }
 
     public class ScrollView : UIComponent {
+        private UScrollView _unityScrollView;
+        private Image _backgroundImage;
         private Content _content;
+        public Content Content => _content;
 
-        public ScrollView(UIComponent? parent, GameObject unityObject) : base(parent, unityObject) { }
+        public ScrollView(UIComponent? parent, GameObject unityObject) : base(parent, unityObject) {
+            _unityScrollView = unityObject.GetComponent<UScrollView>();
+
+            _content = new Content(this, unityObject.transform.Find("Viewport").Find("Content").gameObject, null);
+
+            _backgroundImage = new Image(this, unityObject);
+            _backgroundImage.SetColor(ColorManager.SYNTHESIS_BLACK_ACCENT);
+        }
+
+        public ScrollView StepIntoContent(Action<Content> mod) {
+            mod(_content);
+            return this;
+        }
     }
 
     public class Label : UIComponent {
@@ -468,6 +519,8 @@ namespace Synthesis.UI.Dynamic {
             } else {
                 size = RootRectTransform.sizeDelta;
             }
+
+            SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_WHITE));
         }
 
         public Label SetText(string text) {
@@ -494,6 +547,8 @@ namespace Synthesis.UI.Dynamic {
             _unityText.fontStyle = styles;
             return this;
         }
+        public Label SetColor(string c)
+            => SetColor(ColorManager.TryGetColor(c));
         public Label SetColor(Color c) {
             _unityText.color = c;
             return this;
@@ -520,6 +575,11 @@ namespace Synthesis.UI.Dynamic {
         public Label TitleLabel => _titleLabel;
         private UToggle _unityToggle;
 
+        private Image _disabledImage;
+        public Image DisabledImage => _disabledImage;
+        private Image _enabledImage;
+        public Image EnabledImage => _enabledImage;
+
         public bool State {
             get => _unityToggle.isOn;
             set {
@@ -536,6 +596,12 @@ namespace Synthesis.UI.Dynamic {
             }});
             DisableEvents<Toggle>().SetState(isOn).EnableEvents<Toggle>();
             _titleLabel.SetText(text);
+
+            _disabledImage = new Image(this, _unityToggle.transform.Find("Background").gameObject);
+            _disabledImage.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT));
+
+            _enabledImage = new Image(this, _unityToggle.transform.Find("Background").Find("Checkmark").gameObject);
+            _enabledImage.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
         }
 
         public Toggle SetState(bool state) {
@@ -580,8 +646,13 @@ namespace Synthesis.UI.Dynamic {
             });
 
             _backgroundImage = new Image(this, _unitySlider.transform.Find("Background").gameObject);
+            _backgroundImage.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT));
+
             _fillImage = new Image(this, _unitySlider.transform.Find("Fill Area").Find("Fill").gameObject);
+            _fillImage.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
+
             _handleImage = new Image(this, _unitySlider.transform.Find("Handle Slide Area").Find("Handle").gameObject);
+            _handleImage.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_ACCENT));
 
             if (unitSuffix != null)
                 _unitSuffix = unitSuffix;
@@ -651,6 +722,8 @@ namespace Synthesis.UI.Dynamic {
         public Label Hint => _hint;
         private Label _label;
         public Label Label => _label;
+        private Image _backgroundImage;
+        public Image BackgroundImage => _backgroundImage;
         private TMP_InputField _tmpInput;
         public TMP_InputField.ContentType ContentType => _tmpInput.contentType;
 
@@ -663,6 +736,9 @@ namespace Synthesis.UI.Dynamic {
                 if (_eventsActive && OnValueChanged != null)
                     OnValueChanged(this, x);
             });
+
+            _backgroundImage = new Image(this, ifObj.gameObject);
+            _backgroundImage.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT));
         }
 
         public InputField StepIntoHint(Action<Label> mod) {
@@ -719,9 +795,11 @@ namespace Synthesis.UI.Dynamic {
             => button.SetTopStretch<Button>(leftPadding: 15f, anchoredY: button.Parent!.HeightOfChildren - button.Size.y + 15f);
 
         public event Action<Button> OnClicked;
-        private Label _label;
-        public Label Label => _label;
+        private Label? _label;
+        public Label? Label => _label;
         private UButton _unityButton;
+        private Image _image;
+        public Image Image => _image;
         // public UButton UnityButton => _unityButton;
 
         public Button(UIComponent? parent, GameObject unityObject, Vector2? size) : base(parent, unityObject) {
@@ -729,17 +807,30 @@ namespace Synthesis.UI.Dynamic {
                 Size = size.Value;
             }
 
-            _label = new Label(this, unityObject.transform.Find("Text (TMP)").gameObject, null);
+            var labelTransform = unityObject.transform.Find("Text (TMP)");
+            if (labelTransform != null) {
+                _label = new Label(this, labelTransform.gameObject, null);
+                _label.SetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT);
+            }
+
             _unityButton = unityObject.GetComponent<UButton>();
             _unityButton.onClick.AddListener(() => {
                 if (_eventsActive && OnClicked != null) {
                     OnClicked(this);
                 }
             });
+
+            _image = new Image(this, unityObject);
+            _image.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
         }
 
         public Button StepIntoLabel(Action<Label> mod) {
-            mod(_label);
+            if (_label != null)
+                mod(_label);
+            return this;
+        }
+        public Button StepIntoImage(Action<Image> mod) {
+            mod(_image);
             return this;
         }
         public Button AddOnClickedEvent(Action<Button> callback) {
@@ -760,6 +851,20 @@ namespace Synthesis.UI.Dynamic {
         public Content Viewport => _viewport;
         private TMP_Dropdown _tmpDropdown;
         public IReadOnlyList<TMP_Dropdown.OptionData> Options => _tmpDropdown.options.AsReadOnly();
+        
+        private Image _headerImage;
+        public Image HeaderImage => _headerImage;
+        private Label _headerLabel;
+        public Label HeaderLabel => _headerLabel;
+
+        private Image _itemBackgroundImage;
+        public Image ItemBackgroundImage => _itemBackgroundImage;
+        private Image _itemCheckmarkImage;
+        public Image ItemCheckmarkImage => _itemCheckmarkImage;
+        private Label _itemLabel;
+        public Label ItemLabel => _itemLabel;
+        private Image _viewportImage;
+        public Image ViewportImage => ViewportImage;
 
         public Dropdown(UIComponent? parent, GameObject unityObject, Vector2? size) : base(parent, unityObject) {
             if (size != null) {
@@ -779,6 +884,26 @@ namespace Synthesis.UI.Dynamic {
             eventHandler.OnPointerClickedEvent += e => {
                 ShowOnTop();
             };
+
+            _headerImage = new Image(this, unityObject.transform.Find("Header").gameObject);
+            _headerImage.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
+
+            _headerLabel = new Label(this, unityObject.transform.Find("Header").Find("Label").gameObject, null);
+            _headerLabel.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT));
+
+            var itemObj = unityObject.transform.Find("Template").Find("Viewport").Find("Content").Find("Item");
+
+            _itemBackgroundImage = new Image(this, itemObj.Find("Item Background").gameObject);
+            _itemBackgroundImage.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
+
+            _itemCheckmarkImage = new Image(this, itemObj.Find("Item Checkmark").gameObject);
+            _itemCheckmarkImage.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK));
+
+            _itemLabel = new Label(this, itemObj.Find("Item Label").gameObject, null);
+            _itemLabel.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT));
+
+            _viewportImage = new Image(this, unityObject.transform.Find("Template").Find("Viewport").gameObject);
+            _viewportImage.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
 
             // TODO: Get some more control over the individual items in the dropdown
             // _viewport.StepIntoImage(i => i.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT)));
@@ -860,6 +985,8 @@ namespace Synthesis.UI.Dynamic {
             Sprite = s;
             return this;
         }
+        public Image SetColor(string c)
+            => SetColor(ColorManager.TryGetColor(c));
         public Image SetColor(Color c) {
             _unityImage.color = c;
             return this;
@@ -867,6 +994,29 @@ namespace Synthesis.UI.Dynamic {
         public Image SetCornerRadius(float r) {
             _unityImage.pixelsPerUnitMultiplier = 250f / r;
             return this;
+        }
+        public Image SetMultiplier(float m) {
+            _unityImage.pixelsPerUnitMultiplier = m;
+            return this;
+        }
+    }
+
+    public class Scrollbar : UIComponent {
+
+        public UScrollbar _unityScrollbar;
+        private Image _backgroundImage;
+        public Image BackgroundImage => _backgroundImage;
+        private Image _handleImage;
+        public Image HandleImage => _handleImage;
+
+        public Scrollbar(UIComponent? parent, GameObject unityObject) : base(parent, unityObject) {
+            _unityScrollbar = unityObject.GetComponent<UScrollbar>();
+            
+            _backgroundImage = new Image(this, unityObject);
+            _backgroundImage.SetColor(ColorManager.SYNTHESIS_WHITE_ACCENT);
+
+            _handleImage = new Image(this, unityObject.transform.Find("Sliding Area").Find("Handle").gameObject);
+            _handleImage.SetColor(ColorManager.SYNTHESIS_WHITE);
         }
     }
 
