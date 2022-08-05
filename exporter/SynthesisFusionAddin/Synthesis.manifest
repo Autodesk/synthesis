@@ -6,8 +6,8 @@
 	"description":	{
 		"":	"Synthesis Exporter"
 	},
-	"version":	"0.0.0.1",
-	"runOnStartup":	false,
+	"version":	"1.0.0",
+	"runOnStartup":	true,
 	"supportedOS":	"windows|mac",
 	"editEnabled":	true
 }

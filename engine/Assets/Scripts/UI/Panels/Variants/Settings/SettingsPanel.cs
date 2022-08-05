@@ -312,16 +312,16 @@ namespace Synthesis.UI.Panels.Variant
             QualitySettings.SetQualityLevel(Get<int>(QUALITY_SETTINGS), true);
 
             //Analytics
-            AnalyticsManager.useAnalytics = Get<bool>(ALLOW_DATA_GATHERING);
+            AnalyticsManager.UseAnalytics = Get<bool>(ALLOW_DATA_GATHERING);
 
             //imperial or metric
             useImperial = Get<bool>(MEASUREMENTS);
 
             //Camera
-            CameraController c = Camera.main.GetComponent<CameraController>();
-            c.ZoomSensitivity = Get<float>(ZOOM_SENSITIVITY) / 10;//scaled down by 10
-            c.PitchSensitivity = Get<int>(PITCH_SENSITIVITY);
-            c.YawSensitivity = Get<int>(YAW_SENSITIVITY);
+            // CameraController c = Camera.main.GetComponent<CameraController>();
+            // c.ZoomSensitivity = Get<float>(ZOOM_SENSITIVITY) / 10;//scaled down by 10
+            // c.PitchSensitivity = Get<int>(PITCH_SENSITIVITY);
+            // c.YawSensitivity = Get<int>(YAW_SENSITIVITY);
 
 
         }
@@ -380,6 +380,8 @@ namespace Synthesis.UI.Panels.Variant
 
         //screen resolution set
         private static void SetRes(int i, FullScreenMode f) {
+            return; // Disabiling for now
+
             if (ResolutionList[i] == "Custom")
                 return;
             string[] r = ResolutionList[i].Split('x');
