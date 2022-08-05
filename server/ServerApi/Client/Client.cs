@@ -27,7 +27,6 @@ namespace SynthesisServer.Client {
         private byte[] _serverBuffer;
         private IClientHandler _handler;
         private Socket _tcpSocket;
-        private UdpClient _udpSocket;
 
         private IPAddress _serverIP;
         private Socket _connectedServer;
@@ -81,7 +80,7 @@ namespace SynthesisServer.Client {
         public void Init(IClientHandler handler, DHParameters existingParameters = null) {
             _handler = handler;
 
-            _udpSocket = new UdpClient();
+            //_udpSocket = new UdpClient();
             ErrorReport("Socket created");
             // _udpSocket = new UdpClient(new IPEndPoint(IPAddress.Any, _udpPort));
 
@@ -155,8 +154,8 @@ namespace SynthesisServer.Client {
                 //    ErrorReport("Disconnected by remote");
                 //}
                 _isRunning = false;
-                if (_udpSocket != null)
-                    _udpSocket.Close();
+                //if (_udpSocket != null)
+                //    _udpSocket.Close();
             } catch (SocketException e) {
                 ErrorReport($"{e.Message}:\n{e.StackTrace}");
             }
@@ -177,29 +176,6 @@ namespace SynthesisServer.Client {
             }
             ErrorReport("Connected To Server");
             return _tcpSocket.Connected;
-        }
-        private bool DisconnectServer()
-        {
-            if (_tcpSocket.Connected)
-            {
-                try {
-                    _tcpSocket.Close();
-                    return true;
-                }
-                catch (SocketException)
-                {
-                    return false;
-                }
-            }
-            return false;
-        }
-        private bool TryAddClient(IPEndPoint remoteEP)
-        {
-            throw new NotImplementedException();
-        }
-        private bool TryRemoveClient()
-        {
-            throw new NotImplementedException();
         }
 
         // TCP Callbacks

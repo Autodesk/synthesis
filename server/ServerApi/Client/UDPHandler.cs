@@ -1,25 +1,34 @@
 ﻿using Google.Protobuf;
 using Google.Protobuf.Reflection;
 using Org.BouncyCastle.Crypto.Parameters;
+using SynthesisServer.Proto;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
 namespace SynthesisServer.Client
 {
     public interface IUDPHandler {
-        DHParameters Parameters { get; set; }
-        UdpClient UDPClient { get; set; }
-
-        void Start(UdpClient client, int port, long timeoutMS);
+        
+        void Start(long timeoutMS);
         void Stop();
 
-        void SendUpdate(IMessage Update);
-        void ReceiveUpdate();
+        void UDPReceiveCallback(IAsyncResult asyncResult);
+        void UDPSendCallback(IAsyncResult asyncResult);
 
-        void HandleKeyExchange();
-        void HandleGameData();
-        void HandleDisconnect();
+        void SendUpdate(IMessage Update);
+
+        void HandleKeyExchange(KeyExchange keyExchange, string id);
+        void HandleGameData(GameUpdate gameUpdate, string id);
+        void HandleDisconnect(DisconnectRequest disconnectRequest, string id);
+    }
+
+    public class UDPClientInfo
+    {
+        public DHParameters parameters { get; set; }
+        public IPEndPoint RemoteEP { get; set; }
+        public String ID { get; set; }
     }
 }
