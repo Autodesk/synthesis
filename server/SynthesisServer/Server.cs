@@ -731,12 +731,13 @@ namespace SynthesisServer {
                 ConnectionDataHost hostMsg = new ConnectionDataHost();
                 foreach (var client in lobby.Clients)
                 {
-                    hostMsg.ClientEnpoints.Add(client.UDPEndPoint.ToString());
+                    hostMsg.Clients.Add(client.ID, new IPEndpoint() { IpAddress = client.UDPEndPoint.Address.ToString(), Port = client.UDPEndPoint.Port });
                 }
 
                 ConnectionDataClient clientMsg = new ConnectionDataClient()
                 {
-                    HostEndpoint = lobby.Host.UDPEndPoint.ToString()
+                    HostEp = new IPEndpoint() { IpAddress = lobby.Host.UDPEndPoint.Address.ToString(), Port = lobby.Host.UDPEndPoint.Port },
+                    HostId = lobby.Host.ID
                 };
 
                 foreach (ClientData client in lobby.Clients)

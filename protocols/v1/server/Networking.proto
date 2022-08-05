@@ -32,4 +32,15 @@ message KeyExchange {
 	string client_id = 4; /// Determined by server and sent back. Whatever the client sends is ignored
 }
 
+message DisconnectRequest {}
+
+message DisconnectResponse {
+	GenericResponse generic_response = 1;
+}
+
 message Heartbeat {}
+
+message IPEndpoint {
+	string ip_address = 1;
+	int32 port = 2;
+}

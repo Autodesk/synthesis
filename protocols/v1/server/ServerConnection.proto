@@ -109,12 +109,6 @@ message ChangeNameResponse {
 	GenericResponse generic_response = 2;
 }
 
-message DisconnectRequest {}
-
-message DisconnectResponse {
-	GenericResponse generic_response = 1;
-}
-
 
 /*
 1. When lobby is started the server will send a MatchStart message over TCP with the open UDP port number
@@ -131,11 +125,12 @@ message MatchStart {
 message MatchStartResponse {}
 
 message ConnectionDataHost {
-	repeated string client_enpoints = 1; // includes the host as the index corresponds with lobby position
+	map<string, IPEndpoint> clients = 1; // includes the host as the index corresponds with lobby position
 }
 
 message ConnectionDataClient {
-	string host_endpoint = 1;
+	string host_id = 1;
+	IPEndpoint host_ep = 2;
 }
 
 message MatchStartFailure {}
