@@ -87,9 +87,7 @@ namespace Synthesis {
 			}
 		}
 
-		public override void Update()
-		{
-			if (_robot.InputFrozen) return;
+		public override void Update() {
 			var forwardInput = InputManager.MappedValueInputs[FORWARD];
 			var backwardInput = InputManager.MappedValueInputs[BACKWARD];
 			var leftInput = InputManager.MappedValueInputs[LEFT];

@@ -13,6 +13,14 @@ namespace SynthesisAPI.Simulation {
             get => _state;
         }
 
+        protected bool _behavioursEnabled = true;
+        public bool BehavioursEnabled {
+            get => _behavioursEnabled;
+            set {
+                _behavioursEnabled = value;
+            }
+        }
+
         // This was Init. No idea why but it might need to be
         public SimObject(string name, ControllableState state)
         {

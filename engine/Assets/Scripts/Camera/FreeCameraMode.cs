@@ -10,9 +10,9 @@ public class FreeCameraMode : ICameraMode
     private float _targetZoom = 15.0f;
     private float _targetPitch = 10.0f;
     private float _targetYaw = 135.0f;
-    private float _actualZoom = 5.0f;
-    private float _actualPitch = 0.0f;
-    private float _actualYaw = 0.0f;
+    private float _actualZoom = 15.0f;
+    private float _actualPitch = 10.0f;
+    private float _actualYaw = 135.0f;
 
     private const string FORWARD_KEY = "FREECAM_FORWARD";
     private const string BACK_KEY = "FREECAM_BACK";
@@ -23,30 +23,30 @@ public class FreeCameraMode : ICameraMode
     private const string DOWN_PITCH_KEY = "FREECAM_DOWN_PITCH";
     private const string UP_PITCH_KEY = "FREECAM_UP_PITCH";
 
-    private bool _wasFrozen = false;
+    private bool isActive = false;
 
-    public void Start(CameraController cam)
-    {
-        RobotSimObject robot = RobotSimObject.GetCurrentlyPossessedRobot();
-        _wasFrozen = robot.InputFrozen;
-        robot.InputFrozen = true;
+    public void Start(CameraController cam) {
         
         // only assign inputs once
-        if (!InputManager.MappedDigitalInputs.ContainsKey(FORWARD_KEY))
-        {
+        if (!InputManager.MappedDigitalInputs.ContainsKey(FORWARD_KEY)) {
             InputManager.AssignDigitalInput(FORWARD_KEY, new Digital("W"));
             InputManager.AssignDigitalInput(BACK_KEY, new Digital("S"));
             InputManager.AssignDigitalInput(LEFT_KEY, new Digital("A"));
             InputManager.AssignDigitalInput(RIGHT_KEY, new Digital("D"));
-            InputManager.AssignValueInput(LEFT_YAW_KEY, new Digital("Q"));
-            InputManager.AssignValueInput(RIGHT_YAW_KEY, new Digital("E"));
-            InputManager.AssignValueInput(DOWN_PITCH_KEY, new Digital("Z"));
-            InputManager.AssignValueInput(UP_PITCH_KEY, new Digital("X"));
+            // InputManager.AssignValueInput(LEFT_YAW_KEY, new Digital("Q"));
+            // InputManager.AssignValueInput(RIGHT_YAW_KEY, new Digital("E"));
+            // InputManager.AssignValueInput(DOWN_PITCH_KEY, new Digital("Z"));
+            // InputManager.AssignValueInput(UP_PITCH_KEY, new Digital("X"));
         }
     }
     
-    public void Update(CameraController cam)
-    {
+    public void Update(CameraController cam) {
+        if (Input.GetKeyDown(KeyCode.Mouse1)) {
+            SetActive(true);
+        } else if (Input.GetKeyUp(KeyCode.Mouse1)) {
+            SetActive(false);
+        }
+
         // don't allow camera movement when a modal is open
         if (DynamicUIManager.ActiveModal != null) return;
         float p = 0.0f;
@@ -54,18 +54,17 @@ public class FreeCameraMode : ICameraMode
         float z = 0.0f;
         
         // in old synthesis freecam mode, scrolling down zooms in and scrolling up zooms out
-        z = cam.ZoomSensitivity * Input.mouseScrollDelta.y;
+        // z = cam.ZoomSensitivity * Input.mouseScrollDelta.y;
         
-        float yawMod = InputManager.MappedValueInputs.ContainsKey(LEFT_YAW_KEY) && InputManager.MappedValueInputs.ContainsKey(RIGHT_YAW_KEY) ? 
-            cam.YawSensitivity / 8 * (InputManager.MappedValueInputs[RIGHT_YAW_KEY].Value - InputManager.MappedValueInputs[LEFT_YAW_KEY].Value) : 0;
-        float pitchMod = InputManager.MappedValueInputs.ContainsKey(UP_PITCH_KEY) && InputManager.MappedValueInputs.ContainsKey(DOWN_PITCH_KEY) ? 
-            cam.PitchSensitivity / 4 * (InputManager.MappedValueInputs[UP_PITCH_KEY].Value - InputManager.MappedValueInputs[DOWN_PITCH_KEY].Value) : 0;
+        // float yawMod = InputManager.MappedValueInputs.ContainsKey(LEFT_YAW_KEY) && InputManager.MappedValueInputs.ContainsKey(RIGHT_YAW_KEY) ? 
+        //     cam.YawSensitivity / 8 * (InputManager.MappedValueInputs[RIGHT_YAW_KEY].Value - InputManager.MappedValueInputs[LEFT_YAW_KEY].Value) : 0;
+        // float pitchMod = InputManager.MappedValueInputs.ContainsKey(UP_PITCH_KEY) && InputManager.MappedValueInputs.ContainsKey(DOWN_PITCH_KEY) ? 
+        //     cam.PitchSensitivity / 4 * (InputManager.MappedValueInputs[UP_PITCH_KEY].Value - InputManager.MappedValueInputs[DOWN_PITCH_KEY].Value) : 0;
         
-        p -= pitchMod;
-        y += yawMod;
+        // p -= pitchMod;
+        // y += yawMod;
 
-        if (Input.GetKey(KeyCode.Mouse0))
-        {
+        if (isActive) {
             p = -cam.PitchSensitivity * Input.GetAxis("Mouse Y");
             y = cam.YawSensitivity * Input.GetAxis("Mouse X");
         }
@@ -80,24 +79,24 @@ public class FreeCameraMode : ICameraMode
         _actualYaw = Mathf.Lerp(_actualYaw, _targetYaw, orbitLerpFactor);
         float zoomLerpFactor = Mathf.Clamp((cam.ZoomAcceleration * Time.deltaTime) / 0.018f, 0.01f, 1.0f);
         _actualZoom = Mathf.Lerp(_actualZoom, _targetZoom, zoomLerpFactor);
-    }
 
-    public void LateUpdate(CameraController cam)
-    {
-        // don't allow camera movement when a modal is open
-        if (DynamicUIManager.ActiveModal != null) return;
         var t = cam.transform;
 
         float speed = 10.0F;
         
         // transform forwards and backwards when forward and backward inputs are pressed
         // left and right when left and right are pressed
-        Vector3 forward = t.forward * (InputManager.MappedDigitalInputs[FORWARD_KEY][0].Value -
-                                       InputManager.MappedDigitalInputs[BACK_KEY][0].Value) +
-                          t.forward * (_targetZoom - _actualZoom) * cam.ZoomSensitivity;
-        
-        Vector3 right = t.right * (InputManager.MappedDigitalInputs[RIGHT_KEY][0].Value -
-                                   InputManager.MappedDigitalInputs[LEFT_KEY][0].Value);
+
+        Vector3 forward = Vector3.zero, right = Vector3.zero;
+
+        if (isActive) {
+            forward = t.forward * (InputManager.MappedDigitalInputs[FORWARD_KEY][0].Value -
+                                        InputManager.MappedDigitalInputs[BACK_KEY][0].Value) +
+                            t.forward * (_targetZoom - _actualZoom) * cam.ZoomSensitivity;
+            
+            right = t.right * (InputManager.MappedDigitalInputs[RIGHT_KEY][0].Value -
+                                    InputManager.MappedDigitalInputs[LEFT_KEY][0].Value);
+        }
 
         t.Translate(Time.deltaTime * speed * (forward + right),Space.World);
 
@@ -107,8 +106,32 @@ public class FreeCameraMode : ICameraMode
         t.localRotation = Quaternion.Euler(_actualPitch, _actualYaw, 0.0f);
     }
 
-    public void End(CameraController cam)
-    {
-        RobotSimObject.GetCurrentlyPossessedRobot().InputFrozen = _wasFrozen;
+    public void LateUpdate(CameraController cam) {
+
+        cam.GroundRenderer.material.SetVector("FOCUS_POINT", cam.transform.position);
+
+        // // don't allow camera movement when a modal is open
+        // if (DynamicUIManager.ActiveModal != null) return;
+        
+    }
+
+    public void SetActive(bool active) {
+        isActive = active;
+        if (active) {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+                RobotSimObject.GetCurrentlyPossessedRobot().BehavioursEnabled = false;
+        } else {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+                RobotSimObject.GetCurrentlyPossessedRobot().BehavioursEnabled = true;
+        }
+    }
+
+    public void End(CameraController cam) {
+        SetActive(false);
+        // RobotSimObject.GetCurrentlyPossessedRobot().InputFrozen = _wasFrozen;
     }
 }

@@ -17,6 +17,16 @@ public class OverviewCameraMode : ICameraMode
         // scrolling up zooms out in all other camera modes
         cam.transform.Translate(0, 0, cam.ZoomSensitivity * Input.mouseScrollDelta.y);
         Vector3 position = cam.transform.position;
+        
+        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
+            var robot = RobotSimObject.GetCurrentlyPossessedRobot();
+            var focus = robot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(robot.GroundedBounds.center);
+            position.x = focus.x;
+            position.z = focus.z;
+        }
+
+        cam.GroundRenderer.material.SetVector("FOCUS_POINT", position);
+
         // user can't go under the field or too far above that they can't see it
         cam.transform.position = new Vector3(position.x, Mathf.Clamp(position.y, 0, 100), position.z);
     }
