@@ -36,84 +36,84 @@ namespace Synthesis.UI.Dynamic
             //PanelImage.RootGameObject.SetActive(false);
             //Description.RootGameObject.SetActive(false);
 
-            Content panel = new Content(null, UnityObject, null);
-            panel.SetBottomStretch<Content>(Screen.width / 2 - width / 2 - 40f, Screen.width / 2 - width / 2 - 40f, 0);
-
-            AcceptButton
-                    .StepIntoLabel(label => label.SetText("Start"))
-                    .AddOnClickedEvent(b =>
-                    {
-                        if (!matchStarted)
-                        {
-                            matchStarted = true;
-                            StartMatch();
-
-                        }
-                    });
-            CancelButton
-                .StepIntoLabel(label => label.SetText("Cancel"))
-                .AddOnClickedEvent(b =>
-                {
-                    //if (FieldSimObject.CurrentField != null) FieldSimObject.CurrentField.DeleteField();
-                    //if (RobotSimObject.GetCurrentlyPossessedRobot() != null) RobotSimObject.GetCurrentlyPossessedRobot().Destroy();
-                    DynamicUIManager.CreateModal<MatchModeModal>();
-                });
-
-            /*MainContent.CreateLabel(50f).ApplyTemplate(VerticalLayout).SetText("Spawn Positions");
-            var spawnPosition = MainContent.CreateDropdown().ApplyTemplate(Dropdown.VerticalLayoutTemplate)
-                .SetOptions(new string[] { "Left", "Middle", "Right" })
-                .AddOnValueChangedEvent((d, i, data) => { }
-                //ADD: CHANGE SPAWN POSITION
-                ).ApplyTemplate(VerticalLayout);*/
-
-            
-
-
-            MainContent.CreateButton()
-                .ApplyTemplate(VerticalLayout)
-                .SetTopStretch<Button>(anchoredY: 10f)
-                .SetHeight<Button>(40f)
-                .ShiftOffsetMin<Button>(new Vector2(7.5f, 0f))
-                .StepIntoLabel(label => label.SetText("Set to Center").SetFontSize(20f))
-                .AddOnClickedEvent(b => {
-
-                    if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-                    {
-                        RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position = new Vector3(0f, 0f, 0f);
-                        Camera.main.GetComponent<CameraController>().FocusPoint = () => RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position;
-                    }
-                });
-
-            MainContent.CreateButton()
-                .ApplyTemplate(VerticalLayout)
-                .SetTopStretch<Button>(anchoredY: 60f)
-                .SetHeight<Button>(40f)
-                .ShiftOffsetMin<Button>(new Vector2(7.5f, 0f))
-                .StepIntoLabel(label => label.SetText("Set to Previous").SetFontSize(20f))
-                .AddOnClickedEvent(b => {
-                    if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-                    {
-                        PreferenceManager.PreferenceManager.Load();
-                        if (PreferenceManager.PreferenceManager.ContainsPreference(MatchMode.PREVIOUS_SPAWN_LOCATION))
-                        {
-                            var pos = PreferenceManager.PreferenceManager.GetPreference<float[]>(MatchMode.PREVIOUS_SPAWN_LOCATION);
-                            RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position = new Vector3(pos[0], pos[1], pos[2]);
-                            var rot = PreferenceManager.PreferenceManager.GetPreference<float[]>(MatchMode.PREVIOUS_SPAWN_ROTATION);
-                            RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.rotation = new Quaternion(rot[0], rot[1], rot[2], rot[3]).normalized;
-                        }
-                        else
-                        {
-                            RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position = new Vector3(0f, 0f, 0f);
-                            RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
-                        }
-                        Camera.main.GetComponent<CameraController>().FocusPoint = () => RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position;
-                    }
-                });
-
-
-            location = MainContent.CreateLabel(30f).ApplyTemplate(VerticalLayout).SetFontSize(30)
-                .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Center).SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Bottom)
-                .SetTopStretch(leftPadding: 10f, anchoredY: 130f).SetText("(0.00, 0.00, 0.00)");
+            // Content panel = new Content(null, UnityObject, null);
+            // panel.SetBottomStretch<Content>(Screen.width / 2 - width / 2 - 40f, Screen.width / 2 - width / 2 - 40f, 0);
+            //
+            // AcceptButton
+            //         .StepIntoLabel(label => label.SetText("Start"))
+            //         .AddOnClickedEvent(b =>
+            //         {
+            //             if (!matchStarted)
+            //             {
+            //                 matchStarted = true;
+            //                 StartMatch();
+            //
+            //             }
+            //         });
+            // CancelButton
+            //     .StepIntoLabel(label => label.SetText("Cancel"))
+            //     .AddOnClickedEvent(b =>
+            //     {
+            //         //if (FieldSimObject.CurrentField != null) FieldSimObject.CurrentField.DeleteField();
+            //         //if (RobotSimObject.GetCurrentlyPossessedRobot() != null) RobotSimObject.GetCurrentlyPossessedRobot().Destroy();
+            //         DynamicUIManager.CreateModal<MatchModeModal>();
+            //     });
+            //
+            // /*MainContent.CreateLabel(50f).ApplyTemplate(VerticalLayout).SetText("Spawn Positions");
+            // var spawnPosition = MainContent.CreateDropdown().ApplyTemplate(Dropdown.VerticalLayoutTemplate)
+            //     .SetOptions(new string[] { "Left", "Middle", "Right" })
+            //     .AddOnValueChangedEvent((d, i, data) => { }
+            //     //ADD: CHANGE SPAWN POSITION
+            //     ).ApplyTemplate(VerticalLayout);*/
+            //
+            //
+            //
+            //
+            // MainContent.CreateButton()
+            //     .ApplyTemplate(VerticalLayout)
+            //     .SetTopStretch<Button>(anchoredY: 10f)
+            //     .SetHeight<Button>(40f)
+            //     .ShiftOffsetMin<Button>(new Vector2(7.5f, 0f))
+            //     .StepIntoLabel(label => label.SetText("Set to Center").SetFontSize(20f))
+            //     .AddOnClickedEvent(b => {
+            //
+            //         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+            //         {
+            //             RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position = new Vector3(0f, 0f, 0f);
+            //             Camera.main.GetComponent<CameraController>().FocusPoint = () => RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position;
+            //         }
+            //     });
+            //
+            // MainContent.CreateButton()
+            //     .ApplyTemplate(VerticalLayout)
+            //     .SetTopStretch<Button>(anchoredY: 60f)
+            //     .SetHeight<Button>(40f)
+            //     .ShiftOffsetMin<Button>(new Vector2(7.5f, 0f))
+            //     .StepIntoLabel(label => label.SetText("Set to Previous").SetFontSize(20f))
+            //     .AddOnClickedEvent(b => {
+            //         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+            //         {
+            //             PreferenceManager.PreferenceManager.Load();
+            //             if (PreferenceManager.PreferenceManager.ContainsPreference(MatchMode.PREVIOUS_SPAWN_LOCATION))
+            //             {
+            //                 var pos = PreferenceManager.PreferenceManager.GetPreference<float[]>(MatchMode.PREVIOUS_SPAWN_LOCATION);
+            //                 RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position = new Vector3(pos[0], pos[1], pos[2]);
+            //                 var rot = PreferenceManager.PreferenceManager.GetPreference<float[]>(MatchMode.PREVIOUS_SPAWN_ROTATION);
+            //                 RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.rotation = new Quaternion(rot[0], rot[1], rot[2], rot[3]).normalized;
+            //             }
+            //             else
+            //             {
+            //                 RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position = new Vector3(0f, 0f, 0f);
+            //                 RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
+            //             }
+            //             Camera.main.GetComponent<CameraController>().FocusPoint = () => RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position;
+            //         }
+            //     });
+            //
+            //
+            // location = MainContent.CreateLabel(30f).ApplyTemplate(VerticalLayout).SetFontSize(30)
+            //     .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Center).SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Bottom)
+            //     .SetTopStretch(leftPadding: 10f, anchoredY: 130f).SetText("(0.00, 0.00, 0.00)");
 
 
             // PracticeMode.SetInitialState(GizmoManager.currentGizmo.transform.parent.gameObject);

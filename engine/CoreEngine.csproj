@@ -54,9 +54,11 @@
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Settings\SettingsPanel.cs" />
      <Compile Include="Assets\Scripts\SimObjects\RobotSimObject.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Configuring\SettingsModal.cs" />
+     <Compile Include="Assets\Scripts\Camera\OverviewCameraMode.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Panels\SpawnLocationPanel.cs" />
      <Compile Include="Assets\Scripts\UI\SynthesisAssetCollection.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Configuring\PracticeSettingsModal.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\TopBar.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Settings\SettingsInput.cs" />
      <Compile Include="Assets\Scripts\UI\ToastLogger\ToastManager.cs" />
      <Compile Include="Assets\Scripts\Tween\Demo\TweenDemo.cs" />
@@ -78,7 +80,9 @@
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Configuring\ChooseModeModal.cs" />
      <Compile Include="Assets\Scripts\PreferenceManager\PreferenceManager.cs" />
      <Compile Include="Assets\Scripts\Behaviors\ArcadeDriveBehaviour.cs" />
+     <Compile Include="Assets\Scripts\Camera\ICameraMode.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\LoadModuleEvent.cs" />
+     <Compile Include="Assets\Scripts\Camera\OrbitCameraMode.cs" />
      <Compile Include="Assets\Scripts\Utilities\Misc.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\MeshColliderAdapter.cs" />
      <Compile Include="Assets\Scripts\Physics\ReplayRunner.cs" />
@@ -105,11 +109,14 @@
      <Compile Include="Assets\Scripts\Drivers\RotationalDriver.cs" />
      <Compile Include="Assets\Scripts\UI\Tabs\ConfigTab.cs" />
      <Compile Include="Assets\Scripts\Gizmos\GizmoStore.cs" />
+     <Compile Include="Assets\Scripts\Camera\FreeCameraMode.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Spawning\SpawningModal.cs" />
+     <Compile Include="Assets\Scripts\UI\MainMenu\SocialMediaButtons.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Spawning\AddFieldModal.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Panels\Configuring\ConfigureShotTrajectoryPanel.cs" />
      <Compile Include="Assets\Scripts\UI\Hierarchy\Hierarchy.cs" />
      <Compile Include="Assets\Scripts\Gizmos\MoveArrow.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\ChangeViewModal.cs" />
      <Compile Include="Assets\Scripts\Utilities\IOHandler.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\JointsAdapter.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Input\InputSelection.cs" />
@@ -170,8 +177,6 @@
      <Compile Include="Assets\Scripts\Importer\Importer.cs" />
      <Compile Include="Assets\Scripts\Test\DebugJointAxes.cs" />
      <Compile Include="Assets\Scripts\UnityModalSpawner.cs" />
-     <Compile Include="Assets\Scripts\UI\Dynamic\TopBar.cs" />
-     <Compile Include="Assets\Scripts\UI\MainMenu\SocialMediaButtons.cs" />
      <None Include="Assets\Scripts\CoreEngine.asmdef" />
      <None Include="Assets\Scripts\Tween\Readme.txt" />
     <Reference Include="UnityEngine">

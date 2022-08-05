@@ -42,6 +42,10 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     public static int ControllableJointCounter = 0;
 
+    private CameraController cam;
+    private OrbitCameraMode orbit;
+    private ICameraMode previousMode;
+
     public string MiraGUID => MiraAssembly.Info.GUID;
 
     public Assembly MiraAssembly { get; private set; }
@@ -129,6 +133,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
         IntakeData = SimulationPreferences.GetRobotIntakeTriggerData(MiraAssembly.Info.GUID);
         TrajectoryData = SimulationPreferences.GetRobotTrajectoryData(MiraAssembly.Info.GUID);
+
+        cam = Camera.main.GetComponent<CameraController>();
     }
 
     public static void Setup() {
@@ -153,8 +159,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     public void Possess() {
         CurrentlyPossessedRobot = this.Name;
-        Camera.main.GetComponent<CameraController>().FocusPoint =
-            () => GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center);
+        OrbitCameraMode.FocusPoint =
+            () => GroundedNode != null && GroundedBounds != null ? GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center) : Vector3.zero;
     }
 
     public override void Destroy() {
@@ -162,8 +168,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         PhysicsManager.Unregister(this);
         if (CurrentlyPossessedRobot.Equals(this._name)) {
             CurrentlyPossessedRobot = string.Empty;
-            Camera.main.GetComponent<CameraController>().FocusPoint =
-                () => Vector3.zero;
+            // cam.CameraMode = previousMode;
         }
         MonoBehaviour.Destroy(GroundedNode.transform.parent.gameObject);
     }
