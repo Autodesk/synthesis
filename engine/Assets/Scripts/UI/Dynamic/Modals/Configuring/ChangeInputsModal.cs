@@ -12,8 +12,7 @@ public class ChangeInputsModal : ModalDynamic
 {
     public ChangeInputsModal() : base(new Vector2(1200, CONTENT_HEIGHT + 30)) {}
 
-    private static bool RobotLoaded
-    {
+    private static bool RobotLoaded {
         get => !RobotSimObject.CurrentlyPossessedRobot.Equals(string.Empty);
     }
 
@@ -39,7 +38,8 @@ public class ChangeInputsModal : ModalDynamic
             leftContent.CreateLabel()
                 .SetText("Robot Controls")
                 .ApplyTemplate(VerticalLayout)
-                .SetTopStretch(leftPadding: TITLE_INDENT);
+                .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
+                .SetTopStretch(leftPadding: 0f/*TITLE_INDENT*/);
             
             var inputScrollView = leftContent.CreateScrollView()
                 .SetHeight<ScrollView>(CONTENT_HEIGHT)
@@ -90,7 +90,8 @@ public class ChangeInputsModal : ModalDynamic
         rightContent.CreateLabel()
             .SetText("Global Controls")
             .ApplyTemplate(VerticalLayout)
-            .SetTopStretch(leftPadding: TITLE_INDENT);
+            .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
+            .SetTopStretch(leftPadding: 0f/*TITLE_INDENT*/);
 
         var globalControlView = rightContent.CreateScrollView()
             .SetHeight<ScrollView>(CONTENT_HEIGHT)
@@ -170,7 +171,7 @@ public class ChangeInputsModal : ModalDynamic
         Description.SetText("Configure keybinds for your robot.");
         
         // no cancel button because keybinds are saved automatically when set
-        AcceptButton.AddOnClickedEvent(b => DynamicUIManager.CloseActiveModal());
+        AcceptButton.AddOnClickedEvent(b => DynamicUIManager.CloseActiveModal()).StepIntoLabel(l => l.SetText("Close"));
         CancelButton.RootGameObject.SetActive(false);
         
         PopulateInputSelections();
