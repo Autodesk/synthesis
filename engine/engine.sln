@@ -59,6 +59,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Mathematics.Editor", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Sysroot.Linux_x86_64", "Unity.Sysroot.Linux_x86_64.csproj", "{e7acab16-a664-4413-cadb-36c0967ddb39}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Toolchain.Linux-x86_64", "Unity.Toolchain.Linux-x86_64.csproj", "{2ee14e63-34fe-bcc5-2519-6f4f8458e19c}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -122,6 +124,8 @@ Global
 		{49620b6f-321d-a414-c78f-d6301c4ef8d1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{e7acab16-a664-4413-cadb-36c0967ddb39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{e7acab16-a664-4413-cadb-36c0967ddb39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2ee14e63-34fe-bcc5-2519-6f4f8458e19c}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2ee14e63-34fe-bcc5-2519-6f4f8458e19c}.Debug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

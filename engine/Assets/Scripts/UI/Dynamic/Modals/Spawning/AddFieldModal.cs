@@ -24,6 +24,8 @@ namespace Synthesis.UI.Dynamic {
 
         public override void Create() {
             _root = ParsePath(Path.Combine("$appdata/Autodesk/Synthesis", Folder), '/');
+            if (!Directory.Exists(_root))
+                Directory.CreateDirectory(_root);
             _files = Directory.GetFiles(_root).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
             
             Title.SetText("Field Selection");

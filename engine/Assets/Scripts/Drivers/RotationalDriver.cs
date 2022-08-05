@@ -63,7 +63,7 @@ namespace Synthesis {
                 };
             }
 
-            Debug.Log($"Speed: {_motor.targetVelocity}\nForce: {_motor.force}");
+            // Debug.Log($"Speed: {_motor.targetVelocity}\nForce: {_motor.force}");
         }
 
         void EnableMotor()

@@ -113,7 +113,7 @@ namespace Synthesis.Import
 			EntireImport.Begin();
 
 			// Uncommenting this will delete all bodies so the JSON file isn't huge
-			DebugAssembly(assembly);
+			// DebugAssembly(assembly);
 			// return null;
 
 			if (assembly.Info.Version < CURRENT_MIRA_EXPORTER_VERSION) {
@@ -165,7 +165,11 @@ namespace Synthesis.Import
 						partObjects.Add(partInstance.Info.GUID, partObject);
 						partObject.transform.parent = groupObject.transform;
 						// MARK: If transform changes do work recursively, apply transformations here instead of in a separate loop
-						partObject.transform.ApplyMatrix(partInstance.GlobalTransform);
+						var gt = partInstance.GlobalTransform.CorrectUnityMatrix;
+						// Debug.Log(gt.GetPosition(mod: true));
+						partObject.transform.localPosition = gt.GetPosition();
+						partObject.transform.localRotation = gt.rotation;
+						// partObject.transform.ApplyMatrix(partInstance.GlobalTransform);
 						collectivePhysData.Add((partObject.transform, partDefinition.PhysicalData));
 					} else {
 						Logger.Log($"Duplicate Part\nGroup name: {group.Name}\nGUID: {part.Key}", LogLevel.Warning);

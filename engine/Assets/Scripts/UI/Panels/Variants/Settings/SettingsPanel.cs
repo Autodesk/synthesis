@@ -312,7 +312,7 @@ namespace Synthesis.UI.Panels.Variant
             QualitySettings.SetQualityLevel(Get<int>(QUALITY_SETTINGS), true);
 
             //Analytics
-            AnalyticsManager.useAnalytics = Get<bool>(ALLOW_DATA_GATHERING);
+            AnalyticsManager.UseAnalytics = Get<bool>(ALLOW_DATA_GATHERING);
 
             //imperial or metric
             useImperial = Get<bool>(MEASUREMENTS);
@@ -380,6 +380,8 @@ namespace Synthesis.UI.Panels.Variant
 
         //screen resolution set
         private static void SetRes(int i, FullScreenMode f) {
+            return; // Disabiling for now
+
             if (ResolutionList[i] == "Custom")
                 return;
             string[] r = ResolutionList[i].Split('x');

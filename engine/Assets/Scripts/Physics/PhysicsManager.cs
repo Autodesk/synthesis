@@ -26,12 +26,17 @@ namespace Synthesis.Physics {
                 else
                     --_frozenCounter;
 
+                if (_frozenCounter < 0) {
+                    // My guy
+                    _frozenCounter = 0;
+                }
+
                 var shouldFreeze = _frozenCounter != 0;
                 if (shouldFreeze != _isFrozen)
                 {
                     _isFrozen = shouldFreeze;
 
-                    Debug.Log($"Frozen: {_isFrozen}");
+                    // Debug.Log($"Frozen: {_isFrozen}");
                     if (_isFrozen)
                     {
                         SimulationRunner.RemoveContext(SimulationRunner.RUNNING_SIM_CONTEXT);
@@ -88,6 +93,13 @@ namespace Synthesis.Physics {
             if (!_contactRecorders.ContainsKey(overridable.GetHashCode()))
                 return null;
             return _contactRecorders[overridable.GetHashCode()];
+        }
+
+        public static void Reset() {
+            _physObjects = new Dictionary<int, IPhysicsOverridable>();
+            _contactRecorders = new Dictionary<int, List<ContactRecorder>>();
+            _frozenCounter = 0;
+            _isFrozen = false;
         }
     }
 
