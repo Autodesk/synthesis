@@ -318,10 +318,10 @@ namespace Synthesis.UI.Panels.Variant
             useImperial = Get<bool>(MEASUREMENTS);
 
             //Camera
-            CameraController c = Camera.main.GetComponent<CameraController>();
-            c.ZoomSensitivity = Get<float>(ZOOM_SENSITIVITY) / 10;//scaled down by 10
-            c.PitchSensitivity = Get<int>(PITCH_SENSITIVITY);
-            c.YawSensitivity = Get<int>(YAW_SENSITIVITY);
+            // CameraController c = Camera.main.GetComponent<CameraController>();
+            // c.ZoomSensitivity = Get<float>(ZOOM_SENSITIVITY) / 10;//scaled down by 10
+            // c.PitchSensitivity = Get<int>(PITCH_SENSITIVITY);
+            // c.YawSensitivity = Get<int>(YAW_SENSITIVITY);
 
 
         }
