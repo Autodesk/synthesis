@@ -17,7 +17,7 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
 
     public static FieldSimObject CurrentField { get; private set; }
 
-    public Assembly MiraAssembly { get; private set; }
+    public MirabufLive MiraLive { get; private set; }
     public GameObject GroundedNode { get; private set; }
     public GameObject FieldObject { get; private set; }
     public Bounds FieldBounds { get; private set; }
@@ -71,8 +71,8 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         return FieldObject;
     }
 
-    public FieldSimObject(string name, ControllableState state, Assembly assembly, GameObject groundedNode, List<GamepieceSimObject> gamepieces) : base(name, state) {
-        MiraAssembly = assembly;
+    public FieldSimObject(string name, ControllableState state, MirabufLive miraLive, GameObject groundedNode, List<GamepieceSimObject> gamepieces) : base(name, state) {
+        MiraLive = miraLive;
         GroundedNode = groundedNode;
         // grounded node is what gets grabbed in god mode so it needs field tag to not get moved
         GroundedNode.transform.tag = "field";
@@ -102,7 +102,7 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
     }
 
     public void ResetField() {
-        SpawnField(MiraAssembly);
+        SpawnField(MiraLive);
         // FieldObject.transform.position = _initialPosition;
         // FieldObject.transform.rotation = _initialRotation;
     }
@@ -138,7 +138,7 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         }
     }
 
-    public static void SpawnField(Assembly miraAssem) {
+    public static void SpawnField(MirabufLive miraAssem) {
         DeleteField();
 
         var mira = Importer.MirabufAssemblyImport(miraAssem);

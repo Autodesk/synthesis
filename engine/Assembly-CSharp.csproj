@@ -39,7 +39,6 @@
      <Compile Include="Assets\MenuPanelManager.cs" />
      <Compile Include="Assets\SimulationManagerInspector.cs" />
      <Compile Include="Assets\TestScript.cs" />
-     <Compile Include="Assets\MatchMode.cs" />
      <Compile Include="Assets\LineScript.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\Packages\System.Memory.4.5.3\useSharedDesignerContext.txt" />

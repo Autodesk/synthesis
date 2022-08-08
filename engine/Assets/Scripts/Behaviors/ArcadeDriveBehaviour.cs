@@ -69,7 +69,7 @@ namespace Synthesis {
         {
 	        if (_robot == null) _robot = SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject;
 	        return SimulationPreferences.GetRobotInput(
-		               _robot.MiraAssembly.Info.GUID, key)
+		               _robot.MiraLive.MiraAssembly.Info.GUID, key)
 	               ?? defaultInput;
         }
 
@@ -83,7 +83,7 @@ namespace Synthesis {
 					if (base.SimObjectId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID) return;
 					RobotSimObject robot = SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject;
 					SimulationPreferences.SetRobotInput(
-						_robot.MiraAssembly.Info.GUID,
+						_robot.MiraLive.MiraAssembly.Info.GUID,
 						args.InputKey,
 						args.Input);
 					break;
