@@ -126,7 +126,6 @@ public class PracticeMode : IMode
                 _gamepieceSpawnpointObject.transform.position = t.Position;
             },
             t => {
-                Debug.Log("End Gizmo OMG");
                 EndConfigureGamepieceSpawnpoint();
             }
         );
@@ -135,7 +134,6 @@ public class PracticeMode : IMode
 
     public static void EndConfigureGamepieceSpawnpoint()
     {
-        Debug.Log("End Config");
         GamepieceSpawnpoint = _gamepieceSpawnpointObject.transform.position;
         GameObject.Destroy(_gamepieceSpawnpointObject);
         _gamepieceSpawnpointObject = null;
@@ -143,10 +141,9 @@ public class PracticeMode : IMode
 
     public static void ResetRobot()
     {
-        return;
-
         RobotSimObject robot = RobotSimObject.GetCurrentlyPossessedRobot();
         if (robot == null) return;
+        robot.ClearGamepieces();
         robot.RobotNode.GetComponentsInChildren<Rigidbody>().ForEach(rb =>
         {
             GameObject go = rb.gameObject;
