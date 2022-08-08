@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Synthesis.Gizmo;
+using Synthesis.UI;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
 
@@ -17,6 +18,8 @@ public class ConfiguringModal : ModalDynamic {
     public override void Create() {
         Title.SetText("Configuring");
         Description.SetText("What do you want to change?");
+        ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+        ModalImage.SetColor(ColorManager.SYNTHESIS_WHITE);
 
         var gpmLabel = MainContent.CreateLabel(height: 30f).SetTopStretch<Label>().SetText("Gamepiece Manipulation");
         var subContent = MainContent.CreateSubContent(new Vector2(MainContent.Size.x, 50))

@@ -9,6 +9,7 @@ using System.Linq;
 using Synthesis.UI;
 using DigitalRuby.Tween;
 using SynthesisAPI.EventBus;
+using UnityEngine.SceneManagement;
 
 #nullable enable
 
@@ -21,10 +22,14 @@ public static class MainHUD {
         _tabDrawerContent?.SetWidth<Content>(v.CurrentValue);
     };
 
+    private static bool _isSetup = false;
     private static bool _enabled = true;
     public static bool Enabled {
         get => _enabled;
         set {
+            if (!_isSetup)
+                return;
+
             if (_enabled != value) {
                 _enabled = value;
                 if (_enabled) {
@@ -41,6 +46,9 @@ public static class MainHUD {
     public static bool Collapsed {
         get => _collapsed;
         set {
+            if (!_isSetup)
+                return;
+
             if (_collapsed != value) {
                 _collapsed = value;
                 if (_collapsed) {
@@ -88,7 +96,9 @@ public static class MainHUD {
         // Setup default HUD
         MainHUD.AddItemToDrawer("Spawn", b => DynamicUIManager.CreateModal<SpawningModal>(), icon: SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-            MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>());
+            MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+
+        MainHUD.AddItemToDrawer("Camera View", b => DynamicUIManager.CreateModal<ChangeViewModal>(), icon: SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
 
         if (!_hasNewRobotListener) {
             EventBus.NewTypeListener<RobotSimObject.NewRobotEvent>(e => {
@@ -103,11 +113,17 @@ public static class MainHUD {
                 if (robotEvent.NewBot == string.Empty) {
                     RemoveItemFromDrawer("Configure");
                 } else if (robotEvent.OldBot == string.Empty) {
-                    MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>());
+                    MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>(), index: 1, icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
                 }
             });
             _hasNewRobotListener = true;
         }
+
+        _isSetup = true;
+
+        SceneManager.activeSceneChanged += (Scene a, Scene b) => {
+            _isSetup = false;
+        };
     }
 
     public static void AddItemToDrawer(string title, Action<Button> onClick, int index = -1, Sprite? icon = null, Color? color = null) {
@@ -125,7 +141,7 @@ public static class MainHUD {
             if (color.HasValue) {
                 drawerIcon.SetColor(color.Value);
             } else {
-                drawerIcon.SetColor(ColorManager.SYNTHESIS_WHITE);
+                drawerIcon.SetColor(ColorManager.SYNTHESIS_ORANGE);
             }
         } else {
             if (color.HasValue) {

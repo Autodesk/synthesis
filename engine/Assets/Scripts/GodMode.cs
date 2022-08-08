@@ -62,8 +62,7 @@ public class GodMode : MonoBehaviour
                 bool hit = Physics.Raycast(ray, out hitInfo);
                 if (hit) {
                     grabbedObject = GetGameObjectWithRigidbody(hitInfo.collider.gameObject);
-                    if (grabbedObject != null)
-                    {
+                    if (grabbedObject != null) {
                         _lastUpdate = Time.realtimeSinceStartup;
                         _speed = Vector3.zero;
                         _lastPosition = grabbedObject.transform.position;

@@ -1,17 +1,49 @@
+using System;
 using System.Net;
+using Synthesis.PreferenceManager;
 using UnityEngine;
 
-public static class AnalyticsManager
-{
+public static class AnalyticsManager {
+
+    private const string CLIENT_ID_PREF = "analytics/client_id";
+    private const string USE_ANALYTICS_PREF = "analytics/use_analytics";
+
     private static string AllData = "";
 
     public const string TRACKING_ID = "UA-81892961-6";
-    public const string CLIENT_ID = "667";
+    public static string ClientID;
 
     public const string URL_COLLECT = "https://www.google-analytics.com/collect";
     public const string URL_BATCH = "https://www.google-analytics.com/batch";
 
-    public static bool useAnalytics = true;
+    private static bool _useAnalytics = true;
+    public static bool UseAnalytics {
+        get => _useAnalytics;
+        set {
+            _useAnalytics = value;
+            PreferenceManager.SetPreference<bool>(USE_ANALYTICS_PREF, _useAnalytics);
+            PreferenceManager.Save();
+        }
+    }
+
+    static AnalyticsManager() {
+        PreferenceManager.Load();
+        if (PreferenceManager.ContainsPreference(CLIENT_ID_PREF)) {
+            ClientID = PreferenceManager.GetPreference<string>(CLIENT_ID_PREF);
+        } else {
+            var rand = new System.Random((int)DateTime.Now.ToBinary());
+            ClientID = $"CLIENT_{rand.Next(1, int.MaxValue)}";
+            PreferenceManager.SetPreference<string>(CLIENT_ID_PREF, ClientID);
+            PreferenceManager.Save();
+        }
+
+        Debug.Log($"Client ID: {ClientID}");
+
+        if (PreferenceManager.ContainsPreference(USE_ANALYTICS_PREF)) {
+            _useAnalytics = PreferenceManager.GetPreference<bool>(USE_ANALYTICS_PREF);
+        }
+    }
+
     public static void LogEvent(AnalyticsEvent e)
     {
         LogAnalytic(e);
@@ -34,21 +66,25 @@ public static class AnalyticsManager
         LogAnalytic(e);
     }
 
-    public static void LogAnalytic(IAnalytics e)
-    {
-        AllData += $"v=1&tid={TRACKING_ID}&cid={CLIENT_ID}&{e.GetPostData()}\n";
+    public static void LogAnalytic(IAnalytics e) {
+        AllData += $"v=1&tid={TRACKING_ID}&cid={ClientID}&{e.GetPostData()}\n";
+        PostData();
     }
 
     public static PostResult PostData() {
-        if(useAnalytics){
+
+        #if UNITY_EDITOR
+        return new PostResult() { usedBatchUrl = false, result = "" };
+        #endif
+
+        if (UseAnalytics) {
             bool useBatch = AllData.Split('\n').Length > 2;
             WebClient cli = new WebClient();
             string res = cli.UploadString(useBatch ? URL_BATCH : URL_COLLECT, "POST", AllData);
             AllData = string.Empty;
             // Debug.Log(res);
             return new PostResult() { usedBatchUrl = useBatch, result = res };
-        }
-        else{
+        } else {
             return new PostResult(){ usedBatchUrl = false, result = ""};
         }
     }
