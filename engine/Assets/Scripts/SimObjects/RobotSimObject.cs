@@ -26,13 +26,14 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     public const string INTAKE_GAMEPIECES = "input/intake";
 
-    private static string _currentlyPossedRobot = string.Empty;
+    private static string _currentlyPossessedRobot = string.Empty;
     public static string CurrentlyPossessedRobot {
-        get => _currentlyPossedRobot;
+        get => _currentlyPossessedRobot;
         private set {
-            if (value != _currentlyPossedRobot) {
-                var old = _currentlyPossedRobot;
-                _currentlyPossedRobot = value;
+            if (value != _currentlyPossessedRobot) {
+                var old = _currentlyPossessedRobot;
+                _currentlyPossessedRobot = value;
+                
                 EventBus.Push(new NewRobotEvent { NewBot = value, OldBot = old });
             }
         }
