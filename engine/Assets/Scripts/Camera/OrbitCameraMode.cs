@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 public class OrbitCameraMode : ICameraMode
 {
     // [SerializeField] public Transform FollowTransform;
-    public static Func<Vector3> FocusPoint;
+    public static Func<Vector3> FocusPoint = () => Vector3.zero;
 
     private float _targetZoom = 15.0f;
     private float _targetPitch = 10.0f;
