@@ -18,7 +18,7 @@ using SynthesisServer.Proto;
 
 namespace SynthesisServer.Client {
     public class Client {
-        private const int BUFFER_SIZE = 4096;
+        private const int BUFFER_SIZE = 16384;
 
         public static event Action<string> ErrorReport;
 

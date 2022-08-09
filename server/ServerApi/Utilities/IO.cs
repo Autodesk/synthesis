@@ -22,13 +22,13 @@ namespace SynthesisServer.Utilities
             buffer = buffer.Skip(msgLength.Length + msg.Length).ToArray();
             return msg;
         }
-        public static void SendMessage(IMessage msg, Socket socket, AsyncCallback sendCallback)
+        public static void SendMessage(IMessage msg, string clientID, Socket socket, AsyncCallback sendCallback)
         {
             Any packedMsg = Any.Pack(msg);
             byte[] msgBytes = new byte[packedMsg.CalculateSize()];
             packedMsg.WriteTo(msgBytes);
 
-            MessageHeader header = new MessageHeader() { IsEncrypted = false };
+            MessageHeader header = new MessageHeader() { IsEncrypted = false, ClientId = clientID };
             byte[] headerBytes = new byte[header.CalculateSize()];
             header.WriteTo(headerBytes);
 

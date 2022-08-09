@@ -265,6 +265,7 @@ namespace SynthesisServer {
                     ClientId = clientID,
                     PublicKey = _clients[clientID].GetPublicKey()
                 },
+                clientID,
                 socket,
                 new AsyncCallback(TCPSendCallback)
             );
