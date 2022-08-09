@@ -17,13 +17,16 @@ namespace Synthesis.UI.Dynamic {
             return u;
         };
         public override void Create() {
+
+            if (Screen.fullScreenMode != FullScreenMode.FullScreenWindow) customRes = CustomScreen();
+            
             //SetDefaultPreferences();
 
             // (var left, var right) = base.MainContent.SplitLeftRight(250, 100);
             Title.SetText("Settings");
             Description.SetText("Select one of the settings in order to change simulation settings");
 
-            AcceptButton.AddOnClickedEvent(b => {
+            AcceptButton.StepIntoLabel(b => { b.SetText("Save"); }).AddOnClickedEvent(b => {
                 SaveSettings();
                 DynamicUIManager.CloseActiveModal();
             });
@@ -35,6 +38,12 @@ namespace Synthesis.UI.Dynamic {
             {
                 ResolutionList = ResolutionList.Concat(new string[] { "Custom" }).ToArray();
             }*/
+            /*int resValue = Get<int>(RESOLUTION);
+            if (customRes)
+            {
+                ResolutionList = ResolutionList.Concat(new string[] { "Custom" }).ToArray();
+                resValue = ResolutionList.Length - 1;
+            }
             var resolutionDropdown = MainContent.CreateLabeledDropdown().ApplyTemplate(VerticalLayout)
                 .StepIntoLabel(l => l.SetText("Resolution"))
                 .StepIntoDropdown(
@@ -42,29 +51,26 @@ namespace Synthesis.UI.Dynamic {
                     .AddOnValueChangedEvent((d, i, o) => {
                         Set(RESOLUTION, i);
 
+                        if ( ResolutionList.Last() == "Custom")
+                        {//if user wants to keep custom resolution, we won't change it
+                            if (i == ResolutionList.Length - 1)
+                                customRes = true;
+                            else
+                                customRes = false;
+                        }
                         if (Get<int>(RESOLUTION) == ResolutionList.Length - 1)
                             Set(MAX_RES, true);
                         else
                             Set(MAX_RES, false);
                     })
-                    .SetValue(Get<int>(RESOLUTION)));
-
+                    .SetValue(resValue));
+            */
             var screenModeDropdown = MainContent.CreateLabeledDropdown().ApplyTemplate(VerticalLayout)
                 .StepIntoLabel(l => l.SetText("Screen Mode"))
                 .StepIntoDropdown(
                     d => d.SetOptions(ScreenModeList)
                     .AddOnValueChangedEvent((d, i, o) => { 
                         Set(SCREEN_MODE, i);
-                        if (Get<int>(SCREEN_MODE) == 1)
-                        {  //2 is windowed mode                                    
-                            PopulateResolutionList();
-                            SetMaxResolution();
-                        }
-                        else
-                        {
-                            ResolutionList = new string[] { ResolutionList[ResolutionList.Length - 1] };
-                            SetMaxResolution();
-                        }
                     })
                     .SetValue(Get<int>(SCREEN_MODE)));
 
@@ -87,13 +93,19 @@ namespace Synthesis.UI.Dynamic {
                 .ApplyTemplate(VerticalLayout).AddOnValueChangedEvent((s, v) => Set(PITCH_SENSITIVITY, v))
                 .SetValue(Get<float>(PITCH_SENSITIVITY));
 
-            /*MainContent.CreateLabel().ApplyTemplate(Label.BigLabelTemplate).ApplyTemplate(VerticalLayout).SetText("Preferences");
-            var reportAnalyticsToggle = MainContent.CreateToggle().ApplyTemplate(VerticalLayout).ApplyTemplate(Toggle.VerticalLayoutTemplate);
-            reportAnalyticsToggle.AddOnStateChangedEvent(
+            MainContent.CreateLabel().ApplyTemplate(Label.BigLabelTemplate).ApplyTemplate(VerticalLayout).SetText("Preferences");
+            var reportAnalyticsToggle = MainContent.CreateToggle().ApplyTemplate(VerticalLayout).AddOnStateChangedEvent(
                 (t, s) => {
                 Set(ALLOW_DATA_GATHERING, s);
                 }
-            );*/
+            ).SetState(Get<bool>(ALLOW_DATA_GATHERING)).TitleLabel.SetText("Report Analytics");
+            var measurementsToggle = MainContent.CreateToggle().ApplyTemplate(VerticalLayout).AddOnStateChangedEvent(
+                (t, s) =>
+                {
+                    Set(MEASUREMENTS, s);
+                }
+            ).SetState(Get<bool>(MEASUREMENTS)).TitleLabel.SetText("Use Metric");
+            
 
         }
 
@@ -146,15 +158,6 @@ namespace Synthesis.UI.Dynamic {
 
         private static bool customRes = false;
 
-        public enum InputType
-        {
-            Toggle,
-            Dropdown,
-            Keybind,
-            Slider
-        }
-
-        bool setup = false;
 
         public void SaveSettings()
         {//writes settings back into preference manager when save button is clicked
@@ -166,15 +169,6 @@ namespace Synthesis.UI.Dynamic {
             AnalyticsManager.LogEvent(update);
             AnalyticsManager.PostData();
         }
-        /*
-        public override void Close()
-        {
-            Save();
-
-            var update = new AnalyticsEvent(category: "Settings", action: "Closed", label: $"Closed Settings");
-            AnalyticsManager.LogEvent(update);
-            AnalyticsManager.PostData();
-        }*/
 
         public void ResetSettings()
         {
@@ -186,46 +180,56 @@ namespace Synthesis.UI.Dynamic {
             AnalyticsManager.LogEvent(update);
             AnalyticsManager.PostData();
         }
-        private void SetMaxResolution()
-        {
-            Set(MAX_RES, true);
-            Set(RESOLUTION, ResolutionList.Length - 1);
-            //_settingsList[0].GetComponent<SettingsInput>().Init(RESOLUTION, ResolutionList, Get<int>(RESOLUTION));
-        }
         private void RepopulatePanel()
         {
             DynamicUIManager.CreateModal<SettingsModal>();
         }
-
         public static void LoadSettings()
         {
-            PopulateResolutionList();
+            //PopulateResolutionList();
 
 
             QualitySettingsList = QualitySettings.names;
 
             PreferenceManager.PreferenceManager.Load();
             //checks if preferences are initialized with default values
-            if (!PreferenceManager.PreferenceManager.ContainsPreference(RESOLUTION))
+            if (!PreferenceManager.PreferenceManager.ContainsPreference(SCREEN_MODE))
             {
                 SetDefaultPreferences();
             }
 
             //set screen mode
-            FullScreenMode fsMode = FullScreenMode.FullScreenWindow;
+            //FullScreenMode fsMode = FullScreenMode.FullScreenWindow;
             switch (Get<int>(SCREEN_MODE))
             {
                 case 0://Full Screen
-                    ResolutionList = new string[] { ResolutionList[ResolutionList.Length - 1] };
-                    Set(MAX_RES, true);
-                    Save();
+                    //ResolutionList = new string[] { ResolutionList[ResolutionList.Length - 1] };
+                    //Set(MAX_RES, true);
+                    //Save();
+                    if (Screen.fullScreenMode != FullScreenMode.FullScreenWindow)
+                    {
+                        Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+                        MaximizeScreen();
+                        
+                    }
                     break;
                 case 1:
-                    fsMode = FullScreenMode.Windowed;
+                    if (Screen.fullScreenMode != FullScreenMode.Windowed)
+                    {
+                        Screen.fullScreenMode = FullScreenMode.Windowed;
+                        //SetMaxResolution();
+
+                    }
                     break;
 
             }
 
+            //SetMaxResolution();
+            
+            //For Resolution Settings
+            /*if (!customRes)
+            {//if user wants custom res, do not change it
+                //Checks if the user wants maximum resolution
                 if (Get<bool>(MAX_RES))
                 {
                     Set(RESOLUTION, ResolutionList.Length - 1);
@@ -248,7 +252,16 @@ namespace Synthesis.UI.Dynamic {
                         SetRes(ResolutionList.Length - 1, fsMode);
                     }
                 }
-            
+
+            }
+            else
+            {
+                if (Get<int>(SCREEN_MODE) == 0)
+                {
+                    customRes = false;
+                    SetRes(ResolutionList.Length - 1, FullScreenMode.FullScreenWindow);
+                }
+            }*/
             //Quality Settings
             QualitySettings.SetQualityLevel(Get<int>(QUALITY_SETTINGS), true);
 
@@ -260,15 +273,15 @@ namespace Synthesis.UI.Dynamic {
 
             //Camera
             CameraController.ZoomSensitivity = Get<float>(ZOOM_SENSITIVITY) / 10;//scaled down by 10
-            CameraController.PitchSensitivity = Get<int>(PITCH_SENSITIVITY);
-            CameraController.YawSensitivity = Get<int>(YAW_SENSITIVITY);
+            CameraController.PitchSensitivity = Get<float>(PITCH_SENSITIVITY);
+            CameraController.YawSensitivity = Get<float>(YAW_SENSITIVITY);
 
-            MaximizeScreen();
+            //MaximizeScreen();
         }
         public static void SetDefaultPreferences()
         {
-            Set(RESOLUTION, (int)0);
-            Set(MAX_RES, (bool)true);
+            //Set(RESOLUTION, (int)0);
+            //Set(MAX_RES, (bool)true);
             Set(SCREEN_MODE, (int)0);//fullscreen
             Set(QUALITY_SETTINGS, (int)3);//high quality
             Set(ALLOW_DATA_GATHERING, (bool)true);
@@ -277,6 +290,20 @@ namespace Synthesis.UI.Dynamic {
             Set(YAW_SENSITIVITY, (int)10);
             Set(PITCH_SENSITIVITY, (int)3);
             Save();
+        }
+
+        private static void SetMaxResolution()
+        {
+            int maxX = 0, maxY = 0;
+            foreach (Resolution r in Screen.resolutions)
+            {
+                maxX = Math.Max(maxX, r.width);
+                maxY =Math.Max(maxY, r.height);
+            }
+
+            Screen.SetResolution(
+            Convert.ToInt32(maxX),
+            Convert.ToInt32(maxY), Screen.fullScreenMode);
         }
 
         //populate resolution list with availible resolutions  
@@ -293,16 +320,14 @@ namespace Synthesis.UI.Dynamic {
 
         private static bool CustomScreen()
         {
-            bool customScreen = true;
             foreach (Resolution r in Screen.resolutions)
             {
                 if (Screen.width == r.width && Screen.height == r.height)
                 {
-                    customScreen = false;
-                    break;
+                    return false;
                 }
             }
-            return customScreen;
+            return true;
         }
 
         //Sets Preference for better readability
@@ -319,7 +344,7 @@ namespace Synthesis.UI.Dynamic {
         public static void MaximizeScreen()
         {
             //auto maximizes if its a window and the resolution is maximum. 
-            if (Get<bool>(MAX_RES) && !Screen.fullScreen && !Application.isEditor)
+            if (!Screen.fullScreen && !Application.isEditor)
                 ShowWindowAsync(GetActiveWindow().ToInt32(), 3);
         }
 

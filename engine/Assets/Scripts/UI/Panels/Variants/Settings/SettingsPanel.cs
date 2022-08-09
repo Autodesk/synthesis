@@ -10,10 +10,10 @@ using System.Linq;
 
 namespace Synthesis.UI.Panels.Variant
 {
-    public class SettingsPanel : Panel
+    /*public class SettingsPanel : Panel
     {
 
-        /*[SerializeField]
+        [SerializeField]
         public GameObject list;
         [SerializeField]
         public GameObject keybindInputPrefab;
@@ -357,8 +357,7 @@ namespace Synthesis.UI.Panels.Variant
             {
                if(Screen.width == r.width && Screen.height == r.height)
                 {
-                    customScreen = false;
-                    break;
+                    return false;
                 }
             }
             return customScreen;
@@ -386,6 +385,6 @@ namespace Synthesis.UI.Panels.Variant
             Screen.SetResolution(
             Convert.ToInt32(r[0]),
             Convert.ToInt32(r[1]), f);
-        }*/
-    }
+        }
+    }*/
 }
