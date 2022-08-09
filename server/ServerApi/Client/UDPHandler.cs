@@ -27,8 +27,7 @@ namespace SynthesisServer.Client
 
     public class UDPClientInfo
     {
-        public DHParameters parameters { get; set; }
-        public IPEndPoint RemoteEP { get; set; }
+        public IPEndPoint Endpoint { get; set; }
         public String ID { get; set; }
     }
 }

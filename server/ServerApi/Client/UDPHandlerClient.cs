@@ -1,6 +1,7 @@
 ﻿using Google.Protobuf;
 using Google.Protobuf.Reflection;
 using Google.Protobuf.WellKnownTypes;
+using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using SynthesisServer.Proto;
 using SynthesisServer.Utilities;
@@ -9,31 +10,69 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 
 namespace SynthesisServer.Client
 {
     public class UDPHandlerClient : IUDPHandler
     {
+        private const int BUFFER_SIZE = 16384;
+
         private UDPClientInfo _hostInfo;
-        private UdpClient _localUdpClient;
+        private UDPClientInfo _localInfo;
+
+        private Socket _localUdpClient;
+
         private SymmetricEncryptor _encryptor;
+        private AsymmetricCipherKeyPair _keyPair;
         private byte[] _symmetricKey;
+        private DHParameters _parameters;
 
-        public UDPHandlerClient(DHParameters parameters, ConnectionDataClient connectionDataClient, int port, SymmetricEncryptor encryptor)
+        private byte[] _buffer;
+
+        public UDPHandlerClient(DHParameters parameters, string id, ConnectionDataClient connectionDataClient, int port, SymmetricEncryptor encryptor)
         {
-            _encryptor = encryptor;
-            _localUdpClient = new UdpClient(new IPEndPoint(IPAddress.Any, port));
-
+            _localInfo = new UDPClientInfo()
+            {
+                ID = id,
+                Endpoint = new IPEndPoint(IPAddress.Any, port)
+            };
             _hostInfo = new UDPClientInfo()
             {
-                parameters = parameters,
                 ID = connectionDataClient.HostId,
-                RemoteEP = new IPEndPoint(IPAddress.Parse(connectionDataClient.HostEp.IpAddress), connectionDataClient.HostEp.Port)
+                Endpoint = new IPEndPoint(IPAddress.Parse(connectionDataClient.HostEp.IpAddress), connectionDataClient.HostEp.Port)
             };
+
+            _localUdpClient = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            _localUdpClient.Bind(_localInfo.Endpoint);
+            _buffer = new byte[BUFFER_SIZE];
+
+            _encryptor = encryptor;
+            _parameters = parameters;
+            _keyPair = _encryptor.GenerateKeys(_parameters);
         }
 
         public void Start(long timeoutMS)
         {
+            EndPoint ep = new IPEndPoint(IPAddress.Any, _hostInfo.Endpoint.Port);
+            _localUdpClient.BeginReceiveFrom(_buffer, 0, BUFFER_SIZE, SocketFlags.None, ref ep, new AsyncCallback(UDPReceiveCallback), null);
+
+            long startTime = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            while (System.DateTimeOffset.Now.ToUnixTimeMilliseconds() - startTime <= timeoutMS)
+            {
+                HandleKeyExchange
+                (
+                    new KeyExchange()
+                    {
+                        ClientId = _localInfo.ID,
+                        G = _parameters.G.ToString(),
+                        P = _parameters.P.ToString(),
+                        PublicKey = ((DHPublicKeyParameters)_keyPair.Public).Y.ToString()
+                    },
+                    _localInfo.ID
+                );
+                Thread.Sleep(500);
+            }
             throw new NotImplementedException();
         }
 
@@ -49,6 +88,8 @@ namespace SynthesisServer.Client
 
         public void HandleKeyExchange(KeyExchange keyExchange, string id)
         {
+            IO.SendMessage(keyExchange, id, _localUdpClient, new AsyncCallback(UDPSendCallback));
+            
             throw new NotImplementedException();
         }
 
