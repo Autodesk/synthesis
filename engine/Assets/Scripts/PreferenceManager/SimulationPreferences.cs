@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
+using Synthesis.Import;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Utilities;
@@ -24,6 +25,9 @@ namespace Synthesis.PreferenceManager {
         public static void DestroyInstance() {
             _instance = null;
         }
+
+        public static void LoadFromMirabufLive(MirabufLive live)
+            => Instance.LoadFromMirabufLive(live);
 
         public static Analog GetRobotInput(string robot, string input)
             => Instance.GetRobotInput(robot, input);
@@ -65,6 +69,8 @@ namespace Synthesis.PreferenceManager {
 
         private class Inner {
 
+            public const string USER_DATA_KEY = "saved-data";
+
             private Dictionary<string, RobotData> _allRobotData = new  Dictionary<string, RobotData>();
 
             public Inner() {
@@ -85,7 +91,20 @@ namespace Synthesis.PreferenceManager {
             /// Load all the necessary data into PreferenceManager before it is saved
             /// </summary>
             public void PreSaveDump(IEvent _) {
-                PreferenceManager.SetPreference(ALL_ROBOT_DATA_KEY, _allRobotData);
+                // PreferenceManager.SetPreference(ALL_ROBOT_DATA_KEY, _allRobotData);
+                if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
+                    var live = RobotSimObject.GetCurrentlyPossessedRobot().MiraLive;
+                    if (live.MiraAssembly.Data.Parts.UserData == null)
+                        live.MiraAssembly.Data.Parts.UserData = new Mirabuf.UserData();
+                    live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY] = JsonConvert.SerializeObject(_allRobotData[live.MiraAssembly.Info.GUID]);
+                    live.Save();
+                }
+            }
+
+            public void LoadFromMirabufLive(MirabufLive live) {
+                if (live.MiraAssembly.Data.Parts.UserData != null && live.MiraAssembly.Data.Parts.UserData.Data.ContainsKey(USER_DATA_KEY)) {
+                    _allRobotData[live.MiraAssembly.Info.GUID] = JsonConvert.DeserializeObject<RobotData>(live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY])!;
+                }
             }
 
             public Analog GetRobotInput(string robot, string input) {

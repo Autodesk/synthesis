@@ -98,7 +98,8 @@ public static class MainHUD {
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
             MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
 
-        MainHUD.AddItemToDrawer("Camera View", b => DynamicUIManager.CreateModal<ChangeViewModal>(), icon: SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
+        MainHUD.AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("DriverStationView"));
+        MainHUD.AddItemToDrawer("Camera View", b => DynamicUIManager.CreateModal<ChangeViewModal>(), icon: SynthesisAssetCollection.GetSpriteByName("CameraIcon"));
 
         if (!_hasNewRobotListener) {
             EventBus.NewTypeListener<RobotSimObject.NewRobotEvent>(e => {

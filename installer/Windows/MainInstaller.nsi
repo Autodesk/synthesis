@@ -331,3 +331,7 @@ Section "Uninstall"
 	uninstall_complete:
 
 SectionEnd
+
+Function .OnInstSuccess
+  Exec "$INSTDIR\Synthesis\Synthesis.exe"
+FunctionEnd

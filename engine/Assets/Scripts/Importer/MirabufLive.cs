@@ -41,6 +41,7 @@ namespace Synthesis.Import {
             byte[] buff = new byte[MiraAssembly.CalculateSize()];
             MiraAssembly.WriteTo(new CodedOutputStream(buff));
             string backupPath = $"{_path}.bak";
+            File.Delete(backupPath);
             File.Move(_path, backupPath);
             File.WriteAllBytes(_path, buff);
         }
