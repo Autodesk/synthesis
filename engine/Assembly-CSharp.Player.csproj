@@ -57,9 +57,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\MenuPanelManager.cs" />
+    <Compile Include="Assets\SetLocation.cs" />
     <Compile Include="Assets\SimulationManagerInspector.cs" />
     <Compile Include="Assets\TestScript.cs" />
-    <Compile Include="Assets\MatchMode.cs" />
     <Compile Include="Assets\LineScript.cs" />
   </ItemGroup>
   <ItemGroup>

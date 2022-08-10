@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Synthesis.Gizmo;
+using Synthesis.Physics;
 using UnityEngine;
 
 
@@ -23,6 +26,10 @@ namespace Synthesis.Configuration
         Dictionary<Rigidbody, bool> rigidbodiesKinematicStateInScene;
 
         private CameraController cam;
+        private ICameraMode previousMode;
+        private Vector3 previousCameraPosition;
+        private Quaternion previousCameraRotation;
+        private OrbitCameraMode orbit;
         private float originalLowerPitch;
         private float gizmoPitch = -80f;
 
@@ -95,7 +102,11 @@ namespace Synthesis.Configuration
         {
             cam = Camera.main.GetComponent<CameraController>();
             originalLowerPitch = cam.PitchLowerLimit;
-            originalCameraFocusPoint = cam.FocusPoint;
+            originalCameraFocusPoint = (Func<Vector3>) OrbitCameraMode.FocusPoint.Clone();
+            previousMode = cam.CameraMode;
+            previousCameraPosition = cam.transform.position;
+            previousCameraRotation = cam.transform.rotation;
+            cam.CameraMode = CameraController.CameraModes["Orbit"];
 
             //makes a list of the rigidbodies in the hierarchy and their state
             HierarchyRigidbodiesToDictionary();
@@ -110,7 +121,8 @@ namespace Synthesis.Configuration
         }
         private void setTransform() //called to set certain value when activated or when the parent changes
         {
-            SetRigidbodies(false);
+            //SetRigidbodies(false);
+            PhysicsManager.IsFrozen = true;
 
             parent = transform.parent;
             transform.localPosition = Vector3.zero;
@@ -118,42 +130,56 @@ namespace Synthesis.Configuration
 
             gizmoCameraTransform = new GameObject().transform;
             gizmoCameraTransform.position = transform.parent.position; //camera shifting
-            cam.FocusPoint = () => gizmoCameraTransform.position;//camera focus
+            OrbitCameraMode.FocusPoint = () => gizmoCameraTransform.position;//camera focus
             cam.PitchLowerLimit = gizmoPitch; //camera pitch limits
         }
+
+        private void RestoreCameraMode()
+        {
+            cam.CameraMode = previousMode;
+            cam.transform.position = previousCameraPosition;
+            cam.transform.rotation = previousCameraRotation;
+            OrbitCameraMode.FocusPoint = originalCameraFocusPoint;
+
+            // test if cam.cameraMode is of type OrbitCameraMode
+            if (cam.CameraMode is OrbitCameraMode)
+            {
+                OrbitCameraMode orbit = (OrbitCameraMode)cam.CameraMode;
+                cam.PitchLowerLimit = originalLowerPitch;
+            }
+        }
+        
         private void disableGizmo() //makes sure values are set correctly when the gizmo is removed
         {
-            cam.PitchLowerLimit = originalLowerPitch;
-            cam.FocusPoint = originalCameraFocusPoint;
-            SetRigidbodies(true);
+            RestoreCameraMode();
+            CameraController.isOverGizmo = false; // this doesn't get reset?
+            PhysicsManager.IsFrozen = false;
+            //SetRigidbodies(true);
         }
 
         private void OnTransformParentChanged()//only called for testing for changing parent transforms
         {
             if (transform.parent != null)
             {
-                setTransform();
+                //setTransform();
             }
         }
         private void OnEnable()
         {
             setTransform();
         }
-        private void OnDisable()
-        {
-            disableGizmo();
-        }
         private void OnDestroy()
         {
             disableGizmo();
         }
 
-
+        private SelectableArrow _currentlyHovering;
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 GizmoManager.ExitGizmo();
+                RestoreCameraMode();
             }
             if (Input.GetKeyDown(KeyCode.R))//Reset on press R
             {
@@ -169,8 +195,9 @@ namespace Synthesis.Configuration
             }
             if (Input.GetKey(KeyCode.Return))
             {
-                GizmoManager.OnEnter();
+                // GizmoManager.OnEnter();
             }
+
             if (activeArrow == ArrowType.None) // skip if there no gizmo components being dragged
                 return;
 
@@ -363,7 +390,7 @@ namespace Synthesis.Configuration
 
             //move the camera
             gizmoCameraTransform.position = transform.parent.position;
-            cam.FocusPoint = () => gizmoCameraTransform.position;
+            OrbitCameraMode.FocusPoint = () => gizmoCameraTransform.position;
 
         }
         public void HierarchyRigidbodiesToDictionary() //save the state of all gameobject's rigidbodies as a dictionary
@@ -380,23 +407,30 @@ namespace Synthesis.Configuration
         /// Enables or disables rigidbodies using isKinematic and detect collisions
         /// </summary>
         /// <param name="enabled"></param>
-        public void SetRigidbodies(bool enabled)
-        {
-            foreach (KeyValuePair<Rigidbody, bool> rb in rigidbodiesKinematicStateInScene)
+        public void SetRigidbodies(bool enabled) {
+
+
+            // Robot exists
+            if (RobotSimObject.CurrentlyPossessedRobot != String.Empty)
             {
-                if (rb.Key != null)
+                var robot = RobotSimObject.GetCurrentlyPossessedRobot();
+                var rbs = robot.RobotNode.GetComponentsInChildren<Rigidbody>();
+                rbs.ForEach(e => {
+                        e.isKinematic = !enabled;
+                        e.detectCollisions = enabled;
+                });
+            }
+
+            if (FieldSimObject.CurrentField != null)
+            {
+                FieldSimObject.CurrentField.GroundedNode.GetComponentsInChildren<Rigidbody>()
+                    .Where(e => e.name != "grounded" && !e.name.StartsWith("gamepiece")).Concat(
+                FieldSimObject.CurrentField.Gamepieces.Where(e => !e.IsCurrentlyPossessed)
+                    .Select(e => e.GamepieceObject.GetComponent<Rigidbody>())).ForEach(e =>
                 {
-                    if (enabled)
-                    {
-                        rb.Key.isKinematic = rb.Value; //saved dictionary state for reactivating the rigidbody's motion
-                        rb.Key.detectCollisions = true;
-                    }
-                    else
-                    {
-                        rb.Key.isKinematic = true;
-                        rb.Key.detectCollisions = false;
-                    }
-                }
+                    e.isKinematic = !enabled;
+                    e.detectCollisions = enabled;
+                });
             }
         }
 

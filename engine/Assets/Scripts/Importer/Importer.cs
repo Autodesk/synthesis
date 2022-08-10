@@ -10,7 +10,6 @@ using Mirabuf.Joint;
 using Mirabuf.Material;
 using Mirabuf.Signal;
 using Synthesis.Util;
-using SynthesisAPI.Proto;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
 using UnityEngine;
@@ -114,7 +113,7 @@ namespace Synthesis.Import
 			EntireImport.Begin();
 
 			// Uncommenting this will delete all bodies so the JSON file isn't huge
-			DebugAssembly(assembly);
+			// DebugAssembly(assembly);
 			// return null;
 
 			if (assembly.Info.Version < CURRENT_MIRA_EXPORTER_VERSION) {
@@ -166,7 +165,11 @@ namespace Synthesis.Import
 						partObjects.Add(partInstance.Info.GUID, partObject);
 						partObject.transform.parent = groupObject.transform;
 						// MARK: If transform changes do work recursively, apply transformations here instead of in a separate loop
-						partObject.transform.ApplyMatrix(partInstance.GlobalTransform);
+						var gt = partInstance.GlobalTransform.CorrectUnityMatrix;
+						// Debug.Log(gt.GetPosition(mod: true));
+						partObject.transform.localPosition = gt.GetPosition();
+						partObject.transform.localRotation = gt.rotation;
+						// partObject.transform.ApplyMatrix(partInstance.GlobalTransform);
 						collectivePhysData.Add((partObject.transform, partDefinition.PhysicalData));
 					} else {
 						Logger.Log($"Duplicate Part\nGroup name: {group.Name}\nGUID: {part.Key}", LogLevel.Warning);
@@ -216,6 +219,13 @@ namespace Synthesis.Import
 
 			SimObject simObject;
 			if (assembly.Dynamic) {
+				List<string> foundRobots = new List<string>();
+				foreach (var kvp in SimulationManager.SimulationObjects) {
+					if (kvp.Value is RobotSimObject)
+						foundRobots.Add(kvp.Key);
+				}
+				foundRobots.ForEach(x => SimulationManager.RemoveSimObject(x));
+
 				simObject = new RobotSimObject(assembly.Info.Name, state, assembly, groupObjects["grounded"], jointToJointMap);
 				try {
 					SimulationManager.RegisterSimObject(simObject);
@@ -795,6 +805,18 @@ namespace Synthesis.Import
 							counter++;
 						})
 				);
+			}
+
+			// Make names reasonable
+			int shift = 0;
+			for (int i = 0; i < defs.Keys.Count; i++) {
+				var def = defs[defs.Keys.ElementAt(i)];
+				if (def.Name.Equals("grounded") || def.Name.Contains("gamepiece")) {
+					shift++;
+				} else {
+					def.Name = $"node_{i - shift}";
+				}
+				defs[defs.Keys.ElementAt(i)] = def;
 			}
 
 			return (defs, partMap);
