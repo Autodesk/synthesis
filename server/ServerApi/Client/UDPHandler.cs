@@ -19,15 +19,10 @@ namespace SynthesisServer.Client
         void UDPSendCallback(IAsyncResult asyncResult);
 
         void SendUpdate(IMessage Update);
+        void SendKeyExchange(KeyExchange keyExchange, string id, long timeoutMS);
 
-        void HandleKeyExchange(KeyExchange keyExchange, string id);
+        void HandleKeyExchange(KeyExchange keyExchange);
         void HandleGameData(GameUpdate gameUpdate, string id);
         void HandleDisconnect(DisconnectRequest disconnectRequest, string id);
-    }
-
-    public class UDPClientInfo
-    {
-        public IPEndPoint Endpoint { get; set; }
-        public String ID { get; set; }
     }
 }

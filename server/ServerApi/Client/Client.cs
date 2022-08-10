@@ -265,7 +265,7 @@ namespace SynthesisServer.Client {
                     PublicKey = ((DHPublicKeyParameters)KeyPair.Public).Y.ToString()
                 };
                 //_expectedMessageType = KeyExchange.Descriptor;
-                IO.SendMessage(exchangeMsg, _tcpSocket, new AsyncCallback(TCPSendCallback));
+                IO.SendMessage(exchangeMsg, _id, _tcpSocket, new AsyncCallback(TCPSendCallback));
                 return true;
             }
             return false;

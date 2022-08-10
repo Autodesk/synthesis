@@ -18,9 +18,11 @@ namespace SynthesisServer.Client
     {
         private const int BUFFER_SIZE = 16384;
 
-        private UDPClientInfo _hostInfo;
-        private UDPClientInfo _localInfo;
+        private EndPoint _hostEndpoint;
+        private string _hostID;
 
+        private IPEndPoint _localEndpoint;
+        private string _localID;
         private Socket _localUdpClient;
 
         private SymmetricEncryptor _encryptor;
@@ -29,22 +31,20 @@ namespace SynthesisServer.Client
         private DHParameters _parameters;
 
         private byte[] _buffer;
+        private bool _isRunning;
 
         public UDPHandlerClient(DHParameters parameters, string id, ConnectionDataClient connectionDataClient, int port, SymmetricEncryptor encryptor)
         {
-            _localInfo = new UDPClientInfo()
-            {
-                ID = id,
-                Endpoint = new IPEndPoint(IPAddress.Any, port)
-            };
-            _hostInfo = new UDPClientInfo()
-            {
-                ID = connectionDataClient.HostId,
-                Endpoint = new IPEndPoint(IPAddress.Parse(connectionDataClient.HostEp.IpAddress), connectionDataClient.HostEp.Port)
-            };
+            _isRunning = true;
 
+            _localID = id;
+            _localEndpoint = new IPEndPoint(IPAddress.Any, port);
             _localUdpClient = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            _localUdpClient.Bind(_localInfo.Endpoint);
+            _localUdpClient.Bind(_localEndpoint);
+
+            _hostID = connectionDataClient.HostId;
+            _hostEndpoint = new IPEndPoint(IPAddress.Parse(connectionDataClient.HostEp.IpAddress), connectionDataClient.HostEp.Port);
+
             _buffer = new byte[BUFFER_SIZE];
 
             _encryptor = encryptor;
@@ -54,45 +54,51 @@ namespace SynthesisServer.Client
 
         public void Start(long timeoutMS)
         {
-            EndPoint ep = new IPEndPoint(IPAddress.Any, _hostInfo.Endpoint.Port);
-            _localUdpClient.BeginReceiveFrom(_buffer, 0, BUFFER_SIZE, SocketFlags.None, ref ep, new AsyncCallback(UDPReceiveCallback), null);
+            //EndPoint ep = new IPEndPoint(IPAddress.Any, _hostInfo.Endpoint.Port);
+            _localUdpClient.BeginReceiveFrom(_buffer, 0, BUFFER_SIZE, SocketFlags.None, ref _hostEndpoint, new AsyncCallback(UDPReceiveCallback), null);
 
-            long startTime = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            while (System.DateTimeOffset.Now.ToUnixTimeMilliseconds() - startTime <= timeoutMS)
-            {
-                HandleKeyExchange
-                (
-                    new KeyExchange()
-                    {
-                        ClientId = _localInfo.ID,
-                        G = _parameters.G.ToString(),
-                        P = _parameters.P.ToString(),
-                        PublicKey = ((DHPublicKeyParameters)_keyPair.Public).Y.ToString()
-                    },
-                    _localInfo.ID
-                );
-                Thread.Sleep(500);
-            }
+            SendKeyExchange(
+                new KeyExchange()
+                {
+                    ClientId = _localID,
+                    G = _parameters.G.ToString(),
+                    P = _parameters.P.ToString(),
+                    PublicKey = ((DHPublicKeyParameters)_keyPair.Public).Y.ToString()
+                },
+                _localID,
+                timeoutMS
+            );
+
+
+
             throw new NotImplementedException();
         }
 
         public void Stop()
         {
+            _isRunning = false;
             throw new NotImplementedException();
         }
 
         public void SendUpdate(IMessage Update)
         {
-            throw new NotImplementedException();
+            IO.SendEncryptedMessage(Update, _localID, _symmetricKey, _localUdpClient, _encryptor, new AsyncCallback(UDPSendCallback));
         }
 
-        public void HandleKeyExchange(KeyExchange keyExchange, string id)
+        public void SendKeyExchange(KeyExchange keyExchange, string id, long timeoutMS)
         {
-            IO.SendMessage(keyExchange, id, _localUdpClient, new AsyncCallback(UDPSendCallback));
-            
-            throw new NotImplementedException();
+            long startTime = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            while (_isRunning && System.DateTimeOffset.Now.ToUnixTimeMilliseconds() - startTime <= timeoutMS)
+            {
+                IO.SendMessage(keyExchange, id, _localUdpClient, new AsyncCallback(UDPSendCallback));
+                Thread.Sleep(500);
+            }
         }
 
+        public void HandleKeyExchange(KeyExchange keyExchange)
+        {
+            throw new NotImplementedException();
+        }
         public void HandleGameData(GameUpdate gameUpdate, string id)
         {
             throw new NotImplementedException();
@@ -105,59 +111,73 @@ namespace SynthesisServer.Client
 
         public void UDPReceiveCallback(IAsyncResult asyncResult)
         {
-            IPEndPoint remoteEP = new IPEndPoint(IPAddress.Any, 0);
-            byte[] buffer = _localUdpClient.EndReceive(asyncResult, ref remoteEP);
-            if (BitConverter.IsLittleEndian) { Array.Reverse(buffer); } // make sure to do while sending
-
-            MessageHeader header;
-            Any message;
-
-            try
+            int received = _localUdpClient.EndReceive(asyncResult);
+            if (received != 0 && _isRunning)
             {
-                header = MessageHeader.Parser.ParseFrom(IO.GetNextMessage(ref buffer));
-                if (header.IsEncrypted && header.ClientId.Equals(_hostInfo))
+
+                byte[] data = new byte[received];
+                Array.Copy(_buffer, data, received);
+                if (BitConverter.IsLittleEndian) { Array.Reverse(data); }
+
+                MessageHeader header;
+                Any message;
+
+                try
                 {
-                    byte[] decryptedData = _encryptor.Decrypt(buffer, _symmetricKey);
-                    message = Any.Parser.ParseFrom(IO.GetNextMessage(ref decryptedData));
+                    header = MessageHeader.Parser.ParseFrom(IO.GetNextMessage(ref data));
+                    if (header.IsEncrypted && header.ClientId.Equals(_hostID))
+                    {
+                        byte[] decryptedData = _encryptor.Decrypt(data, _symmetricKey);
+                        message = Any.Parser.ParseFrom(IO.GetNextMessage(ref decryptedData));
+                    }
+                    else if (!header.IsEncrypted)
+                    {
+                        message = Any.Parser.ParseFrom(IO.GetNextMessage(ref data));
+                    }
+                    else
+                    {
+                        message = Any.Pack(new StatusMessage()
+                        {
+                            LogLevel = StatusMessage.Types.LogLevel.Error,
+                            Msg = "Invalid Message Received"
+                        });
+                    }
                 }
-                else if (!header.IsEncrypted)
+                catch (Exception e)
                 {
-                    message = Any.Parser.ParseFrom(IO.GetNextMessage(ref buffer));
-                }
-                else
-                {
+                    System.Diagnostics.Debug.WriteLine(e);
                     message = Any.Pack(new StatusMessage()
                     {
                         LogLevel = StatusMessage.Types.LogLevel.Error,
                         Msg = "Invalid Message Received"
                     });
                 }
-            }
-            catch (Exception e)
-            {
-                System.Diagnostics.Debug.WriteLine(e);
-                message = Any.Pack(new StatusMessage()
-                    {
-                        LogLevel = StatusMessage.Types.LogLevel.Error,
-                        Msg = "Invalid Message Received"
-                    });
+                if (message.Is(KeyExchange.Descriptor))
+                {
+
+                }
+                else if (message.Is(GameUpdate.Descriptor))
+                {
+                    HandleGameData(message.Unpack<GameUpdate>(), _hostID);
+                }
+                else if (message.Is(DisconnectRequest.Descriptor))
+                {
+                    HandleDisconnect(message.Unpack<DisconnectRequest>(), _hostID);
+                }
             }
 
-            if (message.Is(KeyExchange.Descriptor))
+            if (_isRunning)
             {
-                HandleKeyExchange(message.Unpack<KeyExchange>(), _hostInfo.ID);
-            } else if (message.Is(GameUpdate.Descriptor))
-            {
-                HandleGameData(message.Unpack<GameUpdate>(), _hostInfo.ID);
-            } else if (message.Is(DisconnectRequest.Descriptor))
-            {
-                HandleDisconnect(message.Unpack<DisconnectRequest>(), _hostInfo.ID);
+                _localUdpClient.BeginReceiveFrom(_buffer, 0, BUFFER_SIZE, SocketFlags.None, ref _hostEndpoint, new AsyncCallback(UDPReceiveCallback), null);
             }
-
-            _localUdpClient.BeginReceive(new AsyncCallback(UDPReceiveCallback), null);
         }
 
         public void UDPSendCallback(IAsyncResult asyncResult)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UDPEndReceiveCallback(IAsyncResult asyncResult)
         {
             throw new NotImplementedException();
         }
