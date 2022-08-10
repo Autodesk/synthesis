@@ -31,9 +31,9 @@ public class CameraController : MonoBehaviour
 
     public static bool isOverGizmo = false;
     
-    [SerializeField, Range(1f, 15.0f)] public float PitchSensitivity;
-    [SerializeField, Range(1f, 15.0f)] public float YawSensitivity;
-    [SerializeField, Range(0.1f, 5f)] public float ZoomSensitivity;
+    [SerializeField, Range(1f, 15.0f)] public static float PitchSensitivity;
+    [SerializeField, Range(1f, 15.0f)] public static float YawSensitivity;
+    [SerializeField, Range(0.1f, 5f)] public static float ZoomSensitivity;
     [SerializeField] public float PitchLowerLimit;
     [SerializeField] public float PitchUpperLimit;
     [SerializeField] public float ZoomLowerLimit;
@@ -46,9 +46,6 @@ public class CameraController : MonoBehaviour
     private void Start()
     { //Set Camera and Screen Settings
         CameraMode = CameraModes["Orbit"];
-        SettingsPanel.LoadSettings();
-        SettingsPanel.MaximizeScreen();
-        
         CameraMode.Start(this);
     }
     public void Update() {

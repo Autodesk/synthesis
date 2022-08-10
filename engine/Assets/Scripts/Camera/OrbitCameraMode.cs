@@ -43,7 +43,7 @@ public class OrbitCameraMode : ICameraMode
             : false;
         
         if (enableOrbit && !isGodMode) {
-            z = cam.ZoomSensitivity * -Input.mouseScrollDelta.y;
+            z = CameraController.ZoomSensitivity * -Input.mouseScrollDelta.y;
 
             //UNCOMMENT OUT TO ENABLE CURSOR-LOCKING WHEN ORBITING
             /*
@@ -60,8 +60,8 @@ public class OrbitCameraMode : ICameraMode
             _useOrbit = enableOrbit;
         } else {
             if (_useOrbit) {
-                p = -cam.PitchSensitivity * Input.GetAxis("Mouse Y");
-                y = cam.YawSensitivity * Input.GetAxis("Mouse X");
+                p = -CameraController.PitchSensitivity * Input.GetAxis("Mouse Y");
+                y = CameraController.YawSensitivity * Input.GetAxis("Mouse X");
             }
         }
 

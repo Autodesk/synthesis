@@ -169,7 +169,7 @@ namespace Synthesis.UI.Dynamic {
             QualitySettings.SetQualityLevel(Get<int>(QUALITY_SETTINGS), true);
 
             //Analytics
-            AnalyticsManager.useAnalytics = Get<bool>(ALLOW_DATA_GATHERING);
+            AnalyticsManager.UseAnalytics = Get<bool>(ALLOW_DATA_GATHERING);
 
             //imperial or metric
             useImperial = Get<bool>(MEASUREMENTS);
@@ -189,18 +189,6 @@ namespace Synthesis.UI.Dynamic {
             Set(YAW_SENSITIVITY, (int)10);
             Set(PITCH_SENSITIVITY, (int)3);
             Save();
-        }
-
-        private static bool CustomScreen()
-        {
-            foreach (Resolution r in Screen.resolutions)
-            {
-                if (Screen.width == r.width && Screen.height == r.height)
-                {
-                    return false;
-                }
-            }
-            return true;
         }
 
         //Sets Preference for better readability
