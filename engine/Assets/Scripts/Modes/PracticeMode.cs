@@ -151,19 +151,12 @@ public class PracticeMode : IMode
             go.transform.rotation = InitialRotations[go];
         });
     }
-
-    public static void ResetField() {
+    
+    public static void ResetGamepieces()
+    {
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
             RobotSimObject.GetCurrentlyPossessedRobot().ClearGamepieces();
         
-        FieldSimObject field = FieldSimObject.CurrentField;
-        if (field != null)
-            FieldSimObject.CurrentField.ResetField();
-        ResetGamepieces();
-    }
-
-    public static void ResetGamepieces()
-    {
         _gamepieces.ForEach(gp => { GameObject.Destroy(gp.GamepieceObject); });
         _gamepieces.Clear();
         FieldSimObject currentField = FieldSimObject.CurrentField;
@@ -175,8 +168,8 @@ public class PracticeMode : IMode
 
     public static void ResetAll()
     {
-        ResetField();
         ResetRobot();
+        ResetGamepieces();
     }
 
     public static void SpawnGamepiece(float scale = 1.0f, PrimitiveType type = PrimitiveType.Sphere)
