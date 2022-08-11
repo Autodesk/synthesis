@@ -35,7 +35,7 @@ namespace SynthesisServer.Client
 
         public UDPHandlerClient(DHParameters parameters, string id, ConnectionDataClient connectionDataClient, int port, SymmetricEncryptor encryptor)
         {
-            _isRunning = true;
+            _isRunning = false;
 
             _localID = id;
             _localEndpoint = new IPEndPoint(IPAddress.Any, port);
@@ -97,7 +97,7 @@ namespace SynthesisServer.Client
 
         public void HandleKeyExchange(KeyExchange keyExchange)
         {
-            throw new NotImplementedException();
+            _symmetricKey = _encryptor.GenerateSharedSecret(keyExchange.PublicKey, _parameters, _keyPair);
         }
         public void HandleGameData(GameUpdate gameUpdate, string id)
         {
@@ -174,12 +174,10 @@ namespace SynthesisServer.Client
 
         public void UDPSendCallback(IAsyncResult asyncResult)
         {
-            throw new NotImplementedException();
         }
 
         public void UDPEndReceiveCallback(IAsyncResult asyncResult)
         {
-            throw new NotImplementedException();
         }
     }
 }
