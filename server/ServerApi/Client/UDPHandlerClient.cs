@@ -82,7 +82,7 @@ namespace SynthesisServer.Client
 
         public void SendUpdate(IMessage Update)
         {
-            IO.SendEncryptedMessage(Update, _localID, _symmetricKey, _localUdpClient, _encryptor, new AsyncCallback(UDPSendCallback));
+            IO.SendEncryptedMessageTo(Update, _localID, _symmetricKey, _localUdpClient, _hostEndpoint, _encryptor, new AsyncCallback(UDPSendCallback));
         }
 
         public void SendKeyExchange(KeyExchange keyExchange, string id, long timeoutMS)
@@ -90,7 +90,7 @@ namespace SynthesisServer.Client
             long startTime = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
             while (_isRunning && System.DateTimeOffset.Now.ToUnixTimeMilliseconds() - startTime <= timeoutMS)
             {
-                IO.SendMessage(keyExchange, id, _localUdpClient, new AsyncCallback(UDPSendCallback));
+                IO.SendMessageTo(keyExchange, id, _localUdpClient, _hostEndpoint, new AsyncCallback(UDPSendCallback));
                 Thread.Sleep(500);
             }
         }

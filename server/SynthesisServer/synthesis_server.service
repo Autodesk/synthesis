@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 Type=simple # might be forking except main process never dies
-ExecStart=SynthesisServer --start # needs more configuring
+ExecStart=SynthesisServer --start --config /etc/synthesis/server/appsettings.json # directory subject to change
 Restart=on-failure
 
 # The install section is needed to use
