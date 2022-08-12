@@ -23,6 +23,8 @@ namespace SynthesisServer.Client
             public DHParameters parameters;
             public AsymmetricCipherKeyPair keyPair;
             public byte[] symmetricKey;
+            public bool exchangeStatus;
+            public long lastMessageTime;
         }
 
         private const int BUFFER_SIZE = 16384;
@@ -57,6 +59,9 @@ namespace SynthesisServer.Client
                 clientInfo.parameters = null;
                 clientInfo.keyPair = null;
                 clientInfo.symmetricKey = null;
+                clientInfo.exchangeStatus = false;
+
+                clientInfo.lastMessageTime = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
                 _clientsInfo.Add(client.Key, clientInfo); // Do not set parameters for each client; those will be sent by the client during key exchange
             }
@@ -71,17 +76,20 @@ namespace SynthesisServer.Client
                 EndPoint ep = client.remoteEP;
                 _localUdpClient.BeginReceiveFrom(client.buffer, 0, BUFFER_SIZE, SocketFlags.None, ref ep, new AsyncCallback(UDPReceiveCallback), client);
             }
-            throw new NotImplementedException();
         }
 
         public void Stop()
         {
+            _isRunning = false;
             throw new NotImplementedException();
         }
 
         public void SendUpdate(IMessage Update)
         {
-            throw new NotImplementedException();
+            foreach (var client in _clientsInfo.Values)
+            {
+                IO.SendEncryptedMessageTo(Update, client.id, client.symmetricKey, _localUdpClient, client.remoteEP, _encryptor, new AsyncCallback(UDPSendCallback)); 
+            }
         }
 
         public void SendKeyExchange(KeyExchange keyExchange, string id, long timeoutMS)

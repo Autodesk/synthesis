@@ -4,6 +4,7 @@ using SynthesisServer.Proto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
@@ -68,6 +69,53 @@ namespace SynthesisServer.Utilities
 
             if (BitConverter.IsLittleEndian) { Array.Reverse(data); }
             socket.BeginSend(data, 0, data.Length, SocketFlags.None, sendCallback, null);
+        }
+        public static void SendMessageTo(IMessage msg, string clientID, Socket socket, EndPoint remoteEP, AsyncCallback sendCallback)
+        {
+            Any packedMsg = Any.Pack(msg);
+            byte[] msgBytes = new byte[packedMsg.CalculateSize()];
+            packedMsg.WriteTo(msgBytes);
+
+            MessageHeader header = new MessageHeader() { IsEncrypted = false, ClientId = clientID };
+            byte[] headerBytes = new byte[header.CalculateSize()];
+            header.WriteTo(headerBytes);
+
+            byte[] data = new byte[sizeof(int) + headerBytes.Length + sizeof(int) + msgBytes.Length];
+
+            BitConverter.GetBytes(headerBytes.Length).CopyTo(data, 0);
+            headerBytes.CopyTo(data, sizeof(int));
+
+            BitConverter.GetBytes(msgBytes.Length).CopyTo(data, sizeof(int) + headerBytes.Length);
+            msgBytes.CopyTo(data, sizeof(int) + headerBytes.Length + sizeof(int));
+
+            if (BitConverter.IsLittleEndian) { Array.Reverse(data); }
+            socket.BeginSendTo(data, 0, data.Length, SocketFlags.None, remoteEP, sendCallback, null);
+        }
+        public static void SendEncryptedMessageTo(IMessage msg, string clientID, byte[] symmetricKey, Socket socket, EndPoint remoteEP, SymmetricEncryptor encryptor, AsyncCallback sendCallback)
+        {
+            Any packedMsg = Any.Pack(msg);
+            byte[] msgBytes = new byte[packedMsg.CalculateSize()];
+            packedMsg.WriteTo(msgBytes);
+
+            byte[] delimitedMessage = new byte[sizeof(int) + msgBytes.Length];
+            BitConverter.GetBytes(msgBytes.Length).CopyTo(delimitedMessage, 0);
+            msgBytes.CopyTo(delimitedMessage, sizeof(int));
+
+            byte[] encryptedMessage = encryptor.Encrypt(delimitedMessage, symmetricKey);
+
+            MessageHeader header = new MessageHeader() { IsEncrypted = true, ClientId = clientID };
+            byte[] headerBytes = new byte[header.CalculateSize()];
+            header.WriteTo(headerBytes);
+
+            byte[] data = new byte[sizeof(int) + headerBytes.Length + encryptedMessage.Length];
+
+            BitConverter.GetBytes(headerBytes.Length).CopyTo(data, 0);
+            headerBytes.CopyTo(data, sizeof(int));
+
+            encryptedMessage.CopyTo(data, sizeof(int) + headerBytes.Length);
+
+            if (BitConverter.IsLittleEndian) { Array.Reverse(data); }
+            socket.BeginSendTo(data, 0, data.Length, SocketFlags.None, remoteEP, sendCallback, null);
         }
     }
 }
