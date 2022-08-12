@@ -8,7 +8,7 @@ from ..Types.OString import OString
 from adsk.core import SaveImageFileOptions
 
 
-def captureThumbnail(size=200):
+def captureThumbnail(size=250):
     """
     ## Captures Thumbnail and saves it to a temporary path - needs to be cleared after or on startup
     - Size: int (Default: 200) : (width & height)
@@ -20,13 +20,6 @@ def captureThumbnail(size=200):
     if Helper.check_solid_open():
         try:
             originalCamera = app.activeViewport.camera
-
-            # TODO: Update this to work with OSX - return a PATH object
-            # Ill create a HStr
-            # path = "{}\\..\\Resources\\Icons\\Thumbnail_{}.jpg".format(
-            #    os.path.dirname(os.path.abspath(__file__)),
-            #    app.activeDocument.design.rootComponent.name.rsplit(" ", 1)[0],
-            # )
 
             name = "Thumbnail_{0}.png".format(
                 app.activeDocument.design.rootComponent.name.rsplit(" ", 1)[0].replace(

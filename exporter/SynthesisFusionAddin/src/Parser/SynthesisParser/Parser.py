@@ -137,8 +137,11 @@ class Parser:
             self.pdMessage.currentMessage = "Taking Photo for Thumbnail..."
             self.pdMessage.update()
 
+            # default image size
+            imgSize = 250
+
             # Can only save, cannot get the bytes directly
-            thumbnailLocation = captureThumbnail()
+            thumbnailLocation = captureThumbnail(imgSize)
 
             if thumbnailLocation != None:
                 # Load bytes into memory and write them to proto
@@ -148,8 +151,8 @@ class Parser:
 
                 if binaryImage != None:
                     # change these settings in the captureThumbnail Function
-                    assembly_out.thumbnail.width = 200
-                    assembly_out.thumbnail.height = 200
+                    assembly_out.thumbnail.width = imgSize
+                    assembly_out.thumbnail.height = imgSize
                     assembly_out.thumbnail.transparent = True
                     assembly_out.thumbnail.data = binaryImage
                     assembly_out.thumbnail.extension = "png"
