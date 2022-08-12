@@ -7,7 +7,7 @@ from .strings import *
 
 
 class GlobalManager(object):
-    """ Global Manager instance """
+    """Global Manager instance"""
 
     class __GlobalManager:
         def __init__(self):
