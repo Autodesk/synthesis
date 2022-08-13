@@ -71,7 +71,7 @@ HERE="$(dirname "$(readlink -f "${0}")")"
 EXEC="$HERE/usr/bin/Synthesis.x86_64"
 
 OPTIND=1
-while getopts ":huc" opt; do
+while getopts ":hu" opt; do
 	case "$opt" in
 		h|\?)
 			show_help
