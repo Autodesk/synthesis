@@ -13,7 +13,7 @@ show_help() {
 install_appimagetool() {
 	mkdir -p ~/Applications/
 	wget -c https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -P ~/Applications/
-	chmod +x ~/Applications/appimagetool-*.AppImage
+	chmod +x ~/Applications/appimagetool-x86_64.AppImage
 }
 
 create_appimage() {
@@ -89,7 +89,7 @@ if [ ! -e ~/Applications/appimagetool-*.AppImage ] ; then
 	done
 fi
 
-if [ -e ~/Applications/appimagetool-*.AppImage ] ; then
+if [ -e ~/Applications/appimagetool-x86_64.AppImage ] ; then
 	create_appimage
 else
 	echo "Install appimagetool before creating AppImage"
