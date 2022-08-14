@@ -47,15 +47,15 @@ namespace Synthesis.UI.Dynamic {
 
 
             MainContent.CreateLabel().ApplyTemplate(Label.BigLabelTemplate).ApplyTemplate(VerticalLayout).SetText("Camera Settings");
-            var zoomSensitivity = MainContent.CreateSlider(label: "Zoom Sensitivity", minValue: 1f, maxValue: 15f, currentValue: Get<float>(ZOOM_SENSITIVITY))
-                .ApplyTemplate(VerticalLayout).AddOnValueChangedEvent((s, v) => Set(ZOOM_SENSITIVITY, v))
-                .SetValue(Get<float>(ZOOM_SENSITIVITY));
-            var yawSensitivity = MainContent.CreateSlider(label: "Yaw Sensitivity", minValue: 1f, maxValue: 15f, currentValue: Get<float>(YAW_SENSITIVITY))
-                .ApplyTemplate(VerticalLayout).AddOnValueChangedEvent((s, v) => Set(YAW_SENSITIVITY, v))
-                .SetValue(Get<float>(YAW_SENSITIVITY));
-            var pitchSensitivity = MainContent.CreateSlider(label: "Pitch Sensitivity", minValue: 1f, maxValue: 15f, currentValue: Get<float>(PITCH_SENSITIVITY))
-                .ApplyTemplate(VerticalLayout).AddOnValueChangedEvent((s, v) => Set(PITCH_SENSITIVITY, v))
-                .SetValue(Get<float>(PITCH_SENSITIVITY));
+            var zoomSensitivity = MainContent.CreateSlider(label: "Zoom Sensitivity", minValue: 1f, maxValue: 15f, currentValue: Get<float>(CameraController.ZOOM_SENSITIVITY_PREF))
+                .ApplyTemplate(VerticalLayout).AddOnValueChangedEvent((s, v) => Set(CameraController.ZOOM_SENSITIVITY_PREF, v))
+                .SetValue(Get<float>(CameraController.ZOOM_SENSITIVITY_PREF));
+            var yawSensitivity = MainContent.CreateSlider(label: "Yaw Sensitivity", minValue: 1f, maxValue: 15f, currentValue: Get<float>(CameraController.YAW_SENSITIVITY_PREF))
+                .ApplyTemplate(VerticalLayout).AddOnValueChangedEvent((s, v) => Set(CameraController.YAW_SENSITIVITY_PREF, v))
+                .SetValue(Get<float>(CameraController.YAW_SENSITIVITY_PREF));
+            var pitchSensitivity = MainContent.CreateSlider(label: "Pitch Sensitivity", minValue: 1f, maxValue: 15f, currentValue: Get<float>(CameraController.PITCH_SENSITIVITY_PREF))
+                .ApplyTemplate(VerticalLayout).AddOnValueChangedEvent((s, v) => Set(CameraController.PITCH_SENSITIVITY_PREF, v))
+                .SetValue(Get<float>(CameraController.PITCH_SENSITIVITY_PREF));
 
             MainContent.CreateLabel().ApplyTemplate(Label.BigLabelTemplate).ApplyTemplate(VerticalLayout).SetText("Preferences");
             var reportAnalyticsToggle = MainContent.CreateToggle().ApplyTemplate(VerticalLayout).AddOnStateChangedEvent(
@@ -99,9 +99,6 @@ namespace Synthesis.UI.Dynamic {
         public const string ALLOW_DATA_GATHERING = "Allow Data Gathering";//Toggle
         public const string MEASUREMENTS = "Use Imperial Measurements";//toggle for imperial. if unchecked, uses metric. 
         public static bool useImperial = true;//for other scripts to know when to use imperial or metric
-        public const string ZOOM_SENSITIVITY = "Zoom Sensitivity";//camera settings
-        public const string YAW_SENSITIVITY = "Yaw Sensitivity";
-        public const string PITCH_SENSITIVITY = "Pitch Sensitivity";
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetActiveWindow();
@@ -175,9 +172,9 @@ namespace Synthesis.UI.Dynamic {
             useImperial = Get<bool>(MEASUREMENTS);
 
             //Camera
-            CameraController.ZoomSensitivity = Get<float>(ZOOM_SENSITIVITY) / 10;//scaled down by 10
-            CameraController.PitchSensitivity = Get<float>(PITCH_SENSITIVITY);
-            CameraController.YawSensitivity = Get<float>(YAW_SENSITIVITY);
+            CameraController.ZoomSensitivity = Get<float>(CameraController.ZOOM_SENSITIVITY_PREF) / 10;//scaled down by 10
+            CameraController.PitchSensitivity = Get<float>(CameraController.PITCH_SENSITIVITY_PREF);
+            CameraController.YawSensitivity = Get<float>(CameraController.YAW_SENSITIVITY_PREF);
         }
         public static void SetDefaultPreferences()
         {
@@ -185,9 +182,9 @@ namespace Synthesis.UI.Dynamic {
             Set(QUALITY_SETTINGS, (int)3);//high quality
             Set(ALLOW_DATA_GATHERING, (bool)true);
             Set(MEASUREMENTS, (bool)true);
-            Set(ZOOM_SENSITIVITY, (int)5);
-            Set(YAW_SENSITIVITY, (int)10);
-            Set(PITCH_SENSITIVITY, (int)3);
+            Set(CameraController.ZOOM_SENSITIVITY_PREF, (int)5);
+            Set(CameraController.YAW_SENSITIVITY_PREF, (int)10);
+            Set(CameraController.PITCH_SENSITIVITY_PREF, (int)3);
             Save();
         }
 
