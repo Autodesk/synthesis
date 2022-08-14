@@ -27,7 +27,7 @@ def run(_):
         register_ui()
 
         app = adsk.core.Application.get()
-        ui  = app.userInterface
+        ui = app.userInterface
 
         MarkingMenu.setupMarkingMenu(ui)
 
@@ -47,7 +47,7 @@ def stop(_):
         unregister_all()
 
         app = adsk.core.Application.get()
-        ui  = app.userInterface
+        ui = app.userInterface
 
         MarkingMenu.stopMarkingMenu(ui)
 
@@ -111,7 +111,7 @@ def unregister_all() -> None:
 
 
 def register_ui() -> None:
-    """ #### Generic Function to add all UI objects in a simple non destructive way."""
+    """#### Generic Function to add all UI objects in a simple non destructive way."""
 
     # if A_EP:
     #     A_EP.send_view("open")

@@ -39,7 +39,7 @@ class _Wheel:
     joint_token: str  # maybe just pass the component
     wheelType: WheelType
     signalType: SignalType
-    #joint_token: Union[str, None] # GUID of wheel's rotational joint. If no joint found, default to None
+    # joint_token: Union[str, None] # GUID of wheel's rotational joint. If no joint found, default to None
 
 
 @dataclass
@@ -114,7 +114,7 @@ class ParseOptions:
         joints=List[_Joint],  # [{Occurrence, wheeltype} , {entitytoken, wheeltype}]
         gamepieces=List[Gamepiece],
         weight=float,
-        compress=bool
+        compress=bool,
     ):
         """Generates the Parser Options for the given export
 
@@ -142,7 +142,7 @@ class ParseOptions:
         self.wheels = wheels
         self.joints = joints
         self.gamepieces = gamepieces
-        self.weight = weight # full weight of robot in KG
+        self.weight = weight  # full weight of robot in KG
         self.compress = compress
 
     def parse(self, _: bool) -> Union[str, bool]:
