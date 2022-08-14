@@ -38,7 +38,7 @@ namespace Engine.ModuleLoader
 
 		private static Queue<Action> MainThreadTasks = new Queue<Action>();
 
-
+		private static bool _registerCore = false;
 		public void Start() // Must happen after ResourceLedger is initialized (in Awake)
 		{
 			if (Instance == null)
@@ -48,10 +48,13 @@ namespace Engine.ModuleLoader
 
 			DontDestroyOnLoad(gameObject); // Do not destroy this game object when loading a new scene. NOTE: Doesn't work in editor for some reason
 
-			ModuleManager.RegisterModuleAssemblyName(Assembly.GetExecutingAssembly().GetName().Name, "Core Engine");
-			Logger.RegisterLogger(new LoggerImpl());
-			ApiProvider.RegisterApiProvider(new ApiProviderImpl());
-			Logger.RegisterLogger(new ToastLogger()); // Must happen after ApiProvider is registered
+			if (!_registerCore) {
+				_registerCore = true;
+				ModuleManager.RegisterModuleAssemblyName(Assembly.GetExecutingAssembly().GetName().Name, "Core Engine");
+				Logger.RegisterLogger(new LoggerImpl());
+				ApiProvider.RegisterApiProvider(new ApiProviderImpl());
+				Logger.RegisterLogger(new ToastLogger()); // Must happen after ApiProvider is registered
+			}
 
 			// ModuleLoader.PreloadApi();
 			// ModuleLoader.LoadModules(ModulesSourcePath, BaseModuleTargetPath);

@@ -101,12 +101,6 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         // Shooting.ConfigureGamepieces();
     }
 
-    public void ResetField() {
-        SpawnField(MiraAssembly);
-        // FieldObject.transform.position = _initialPosition;
-        // FieldObject.transform.rotation = _initialRotation;
-    }
-
     public static bool DeleteField() {
         if (CurrentField == null)
             return false;
