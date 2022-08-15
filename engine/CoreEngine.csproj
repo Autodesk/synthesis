@@ -80,6 +80,7 @@
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Configuring\ChooseModeModal.cs" />
      <Compile Include="Assets\Scripts\PreferenceManager\PreferenceManager.cs" />
      <Compile Include="Assets\Scripts\Behaviors\ArcadeDriveBehaviour.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Configuring\ChangeInputsModal.cs" />
      <Compile Include="Assets\Scripts\Camera\ICameraMode.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\LoadModuleEvent.cs" />
      <Compile Include="Assets\Scripts\Camera\OrbitCameraMode.cs" />

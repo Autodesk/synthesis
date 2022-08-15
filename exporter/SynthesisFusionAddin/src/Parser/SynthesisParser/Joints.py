@@ -105,17 +105,20 @@ def populateJoints(
 
                 for parse_joints in options.joints:
 
-                    if (parse_joints.joint_token == joint.entityToken):
+                    if parse_joints.joint_token == joint.entityToken:
                         guid = str(uuid.uuid4())
                         signal = signals.signal_map[guid]
                         construct_info(joint.name, signal, GUID=guid)
                         signal.io = signal_pb2.IOType.OUTPUT
 
                         # really could just map the enum to a friggin string
-                        if (parse_joints.signalType != ParseOptions.SignalType.PASSIVE and assembly.dynamic):
-                            if (parse_joints.signalType == ParseOptions.SignalType.CAN):
+                        if (
+                            parse_joints.signalType != ParseOptions.SignalType.PASSIVE
+                            and assembly.dynamic
+                        ):
+                            if parse_joints.signalType == ParseOptions.SignalType.CAN:
                                 signal.device_type = signal_pb2.DeviceType.CANBUS
-                            elif (parse_joints.signalType == ParseOptions.SignalType.PWM):
+                            elif parse_joints.signalType == ParseOptions.SignalType.PWM:
                                 signal.device_type = signal_pb2.DeviceType.PWM
 
                             motor = joints.motor_definitions[joint.entityToken]
@@ -123,16 +126,16 @@ def populateJoints(
                             simple_motor = motor.simple_motor
                             simple_motor.stall_torque = parse_joints.force
                             simple_motor.max_velocity = parse_joints.speed
-                            simple_motor.braking_constant = 0.8 # Default for now
+                            simple_motor.braking_constant = 0.8  # Default for now
                             joint_definition.motor_reference = joint.entityToken
 
                             joint_instance.signal_reference = signal.info.GUID
                         # else:
                         #     signals.signal_map.remove(guid)
 
-                _addJointInstance(joint, joint_instance, joint_definition, signals, options)
-
- 
+                _addJointInstance(
+                    joint, joint_instance, joint_definition, signals, options
+                )
 
                 # adds information for joint motion and limits
                 _motionFromJoint(joint.jointMotion, joint_definition)
@@ -166,13 +169,18 @@ def _addJoint(joint: adsk.fusion.Joint, joint_definition: joint_pb2.Joint):
     joint_definition.break_magnitude = 0.0
 
 
-def _addJointInstance(joint: adsk.fusion.Joint, joint_instance: joint_pb2.JointInstance, joint_definition: joint_pb2.Joint, signals: signal_pb2.Signals, options: ParseOptions):
+def _addJointInstance(
+    joint: adsk.fusion.Joint,
+    joint_instance: joint_pb2.JointInstance,
+    joint_definition: joint_pb2.Joint,
+    signals: signal_pb2.Signals,
+    options: ParseOptions,
+):
     fill_info(joint_instance, joint)
     # because there is only one and we are using the token - should be the same
     joint_instance.joint_reference = joint_instance.info.GUID
-    
-    # Need to check if it is in a rigidgroup first, if yes then make the parent the actual parent
 
+    # Need to check if it is in a rigidgroup first, if yes then make the parent the actual parent
 
     # assign part id values - bug with entity tokens
     try:
@@ -195,35 +203,34 @@ def _addJointInstance(joint: adsk.fusion.Joint, joint_instance: joint_pb2.JointI
     # There should almost never be multiple - unless this is a parent of something else... hmmmm TBD
     # for rigid_group in rigid_groups_1:
     #     joint_instance.parent_part = rigid_group.assemblyContext.entityToken
-        
 
     # for rigid_group in rigid_groups_2:
     #     joint_instance.child_part = rigid_group.assemblyContext.entityToken
 
     # ENDFIX
 
-    if (options.wheels):
+    if options.wheels:
         for wheel in options.wheels:
-            if (wheel.joint_token == joint.entityToken):
+            if wheel.joint_token == joint.entityToken:
                 joint_definition.user_data.data["wheel"] = "true"
 
                 # if it exists get it and overwrite the signal type
-                if (joint_instance.signal_reference):
+                if joint_instance.signal_reference:
                     signal = signals.signal_map[joint_instance.signal_reference]
-                else: # if not then create it and add the signal type
+                else:  # if not then create it and add the signal type
                     guid = str(uuid.uuid4())
                     signal = signals.signal_map[guid]
                     construct_info("joint_signal", signal, GUID=guid)
                     signal.io = signal_pb2.IOType.OUTPUT
                     joint_instance.signal_reference = signal.info.GUID
 
-                if (wheel.signalType != ParseOptions.SignalType.PASSIVE):
-                    if (wheel.signalType == ParseOptions.SignalType.CAN):
+                if wheel.signalType != ParseOptions.SignalType.PASSIVE:
+                    if wheel.signalType == ParseOptions.SignalType.CAN:
                         signal.device_type = signal_pb2.DeviceType.CANBUS
-                    elif (wheel.signalType == ParseOptions.SignalType.PWM):
+                    elif wheel.signalType == ParseOptions.SignalType.PWM:
                         signal.device_type = signal_pb2.DeviceType.PWM
                 else:
-                    joint_instance.signal_reference = ''
+                    joint_instance.signal_reference = ""
 
 
 def _motionFromJoint(
@@ -395,17 +402,19 @@ def _jointOrigin(
 
     if geometryOrOrigin.objectType == "adsk::fusion::JointGeometry":
         ent = geometryOrOrigin.entityOne
-        if (ent.objectType == "adsk::fusion::BRepEdge"):
-            if (ent.assemblyContext is None):
+        if ent.objectType == "adsk::fusion::BRepEdge":
+            if ent.assemblyContext is None:
                 newEnt = ent.createForAssemblyContext(fusionJoint.occurrenceOne)
                 min = newEnt.boundingBox.minPoint
                 max = newEnt.boundingBox.maxPoint
-                org = adsk.core.Point3D.create((max.x + min.x) / 2.0, (max.y + min.y) / 2.0, (max.z + min.z) / 2.0)
-                return org# ent.startVertex.geometry
+                org = adsk.core.Point3D.create(
+                    (max.x + min.x) / 2.0, (max.y + min.y) / 2.0, (max.z + min.z) / 2.0
+                )
+                return org  # ent.startVertex.geometry
             else:
                 return geometryOrOrigin.origin
-        if (ent.objectType == "adsk::fusion::BRepFace"):
-            if (ent.assemblyContext is None):
+        if ent.objectType == "adsk::fusion::BRepFace":
+            if ent.assemblyContext is None:
                 newEnt = ent.createForAssemblyContext(fusionJoint.occurrenceOne)
                 return newEnt.centroid
             else:

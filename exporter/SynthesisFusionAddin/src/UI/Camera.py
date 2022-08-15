@@ -5,11 +5,13 @@ import os
 
 from ..Types.OString import OString
 
+from adsk.core import SaveImageFileOptions
 
-def captureThumbnail() -> str:
-    """## Captures a thumbnail and store it at src/Resources/Icons
-    - Returns: str (path of the icon) (currently formatted for windows only)
-    TODO: create a better solution than this - or replace it with a static image
+
+def captureThumbnail(size=250):
+    """
+    ## Captures Thumbnail and saves it to a temporary path - needs to be cleared after or on startup
+    - Size: int (Default: 200) : (width & height)
     """
     app = adsk.core.Application.get()
 
@@ -19,28 +21,25 @@ def captureThumbnail() -> str:
         try:
             originalCamera = app.activeViewport.camera
 
-            # TODO: Update this to work with OSX - return a PATH object
-            # Ill create a HStr
-            # path = "{}\\..\\Resources\\Icons\\Thumbnail_{}.jpg".format(
-            #    os.path.dirname(os.path.abspath(__file__)),
-            #    app.activeDocument.design.rootComponent.name.rsplit(" ", 1)[0],
-            # )
-
             name = "Thumbnail_{0}.png".format(
-                app.activeDocument.design.rootComponent.name.rsplit(" ", 1)[0]
+                app.activeDocument.design.rootComponent.name.rsplit(" ", 1)[0].replace(
+                    " ", ""
+                )  # remove whitespace from just the filename
             )
-
-            # log.info(name)
 
             path = OString.ThumbnailPath(name)
 
-            # path = getOSPath("src", "Resources", "Icons", name)
+            saveOptions = SaveImageFileOptions.create(str(path.getPath()))
+            saveOptions.height = size
+            saveOptions.width = size
+            saveOptions.isAntiAliased = True
+            saveOptions.isBackgroundTransparent = True
 
             newCamera = app.activeViewport.camera
             newCamera.isFitView = True
 
             app.activeViewport.camera = newCamera
-            app.activeViewport.saveAsImageFile(str(path.getPath()), 500, 500)
+            app.activeViewport.saveAsImageFileWithOptions(saveOptions)
             app.activeViewport.camera = originalCamera
 
             return str(path.getPath())
@@ -63,7 +62,7 @@ def clearIconCache() -> None:
     """
     path = OString.ThumbnailPath("Whatever.png").getDirectory()
 
-    for r, d, f in os.walk(path):
+    for _r, _d, f in os.walk(path):
         for file in f:
             if ".png" in file:
                 fp = os.path.join(path, file)
