@@ -1,8 +1,8 @@
-import platform, subprocess, shlex
-from pathlib import Path, PurePath
-from os import system, chdir, __file__, getcwd, path
+import platform, subprocess
+from pathlib import Path
+from os import __file__, path
 
-import adsk.core, adsk.fusion, traceback
+import adsk.core, adsk.fusion
 
 def installCross(pipDeps: list) -> bool:
     """Attempts to fetch pip script and resolve dependencies with less user interaction
@@ -46,14 +46,21 @@ def installCross(pipDeps: list) -> bool:
         pythonFolder = Path(__file__).parents[2] / "bin"
         progressBar.message = f"Fetching pip..."
         adsk.doEvents()
-        subprocess.call(
-            f"curl https://bootstrap.pypa.io/get-pip.py -o \"{pythonFolder / 'get-pip.py'}\"",
-            creationflags=0x08000000,
-            shell=False,
-        )
+
+        # if nothing has previously fetched it
+        if (not path.exists({pythonFolder / 'get-pip.py'})) :
+            subprocess.call(
+                f"curl https://bootstrap.pypa.io/get-pip.py -o \"{pythonFolder / 'get-pip.py'}\"",
+                bufsize=1,
+                creationflags=subprocess.CREATE_NO_WINDOW,
+                shell=False,
+            )
+        
+
         subprocess.call(
             f"\"{pythonFolder / 'python'}\" \"{pythonFolder / 'get-pip.py'}\"",
-            creationflags=0x08000000,
+            bufsize=1,
+            creationflags=subprocess.CREATE_NO_WINDOW,
             shell=False,
         )
     else:
@@ -67,7 +74,8 @@ def installCross(pipDeps: list) -> bool:
         adsk.doEvents()
         subprocess.call(
             f"\"{pythonFolder / 'python'}\" -m pip install {depName}",
-            creationflags=0x08000000,
+            bufsize=1,
+            creationflags=subprocess.CREATE_NO_WINDOW,
             shell=False
         )
 
@@ -78,7 +86,8 @@ def installCross(pipDeps: list) -> bool:
             adsk.doEvents()
             subprocess.call(
                 f"\"{pythonFolder / 'python'}\" -m pip uninstall {depName} -y",
-                creationflags=0x08000000,
+                bufsize=1,
+                creationflags=subprocess.CREATE_NO_WINDOW,
                 shell=False,
             )
 
@@ -93,7 +102,6 @@ def installCross(pipDeps: list) -> bool:
 def _checkDeps() -> bool:
     try:
         from .proto_out import joint_pb2, assembly_pb2, types_pb2, material_pb2
-
         return True
     except ImportError:
         return False
@@ -110,7 +118,7 @@ try:
 except ImportError or ModuleNotFoundError:
     # Version 1 with built in Pip - cannot check if it works on OSX right now.
     # Works with fusion debug builds
-    installCross(["protobuf==3.19.4", "google==4.21.1"])
+    installCross(["protobuf==3.19.4"])
     from .proto_out import joint_pb2, assembly_pb2, types_pb2, material_pb2
 
     # Version 2 with no shell and fetched pip

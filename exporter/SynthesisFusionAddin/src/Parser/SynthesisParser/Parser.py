@@ -7,11 +7,14 @@ from google.protobuf.json_format import MessageToJson
 
 from proto.proto_out import assembly_pb2, types_pb2
 
+from ...UI.Camera import captureThumbnail, clearIconCache
+
 # from . import Joints, Materials, Components, Utilities
 
 from . import Materials, Components, Joints, JointHierarchy, PDMessage
 
 from .Utilities import *
+
 
 class Parser:
     def __init__(self, options: any):
@@ -29,7 +32,11 @@ class Parser:
             design = app.activeDocument.design
 
             assembly_out = assembly_pb2.Assembly()
-            fill_info(assembly_out, design.rootComponent, override_guid=design.parentDocument.name)
+            fill_info(
+                assembly_out,
+                design.rootComponent,
+                override_guid=design.parentDocument.name,
+            )
 
             # set int to 0 in dropdown selection for dynamic
             assembly_out.dynamic = self.parseOptions.mode == 0
@@ -100,8 +107,13 @@ class Parser:
             assembly_out.design_hierarchy.nodes.append(rootNode)
 
             # Problem Child
-            Joints.populateJoints (
-                design, assembly_out.data.joints, assembly_out.data.signals, self.pdMessage, self.parseOptions, assembly_out
+            Joints.populateJoints(
+                design,
+                assembly_out.data.joints,
+                assembly_out.data.signals,
+                self.pdMessage,
+                self.parseOptions,
+                assembly_out,
             )
 
             # add condition in here for advanced joints maybe idk
@@ -118,10 +130,43 @@ class Parser:
             JointHierarchy.BuildJointPartHierarchy(
                 design, assembly_out.data.joints, self.parseOptions, self.pdMessage
             )
-            
+
+            # These don't have an effect, I forgot how this is suppose to work
+            # progressDialog.message = "Taking Photo for thumbnail..."
+            # progressDialog.title = "Finishing Export"
+            self.pdMessage.currentMessage = "Taking Photo for Thumbnail..."
+            self.pdMessage.update()
+
+            # default image size
+            imgSize = 250
+
+            # Can only save, cannot get the bytes directly
+            thumbnailLocation = captureThumbnail(imgSize)
+
+            if thumbnailLocation != None:
+                # Load bytes into memory and write them to proto
+                binaryImage = None
+                with open(thumbnailLocation, "rb") as in_file:
+                    binaryImage = in_file.read()
+
+                if binaryImage != None:
+                    # change these settings in the captureThumbnail Function
+                    assembly_out.thumbnail.width = imgSize
+                    assembly_out.thumbnail.height = imgSize
+                    assembly_out.thumbnail.transparent = True
+                    assembly_out.thumbnail.data = binaryImage
+                    assembly_out.thumbnail.extension = "png"
+                    # clear the icon cache - src/resources/Icons
+                    clearIconCache()
+
+            self.pdMessage.currentMessage = "Compressing File..."
+            self.pdMessage.update()
+
             if self.parseOptions.compress:
                 self.logger.debug("Compressing file")
-                with gzip.open(self.parseOptions.fileLocation, 'wb', 9) as f:
+                with gzip.open(self.parseOptions.fileLocation, "wb", 9) as f:
+                    self.pdMessage.currentMessage = "Saving File..."
+                    self.pdMessage.update()
                     f.write(assembly_out.SerializeToString())
             else:
                 f = open(self.parseOptions.fileLocation, "wb")
@@ -149,7 +194,11 @@ class Parser:
                             newnode.joint_reference
                         ]
 
-                        wheel_ = " wheel : true" if (jointdefinition.user_data.data["wheel"] != "") else ""
+                        wheel_ = (
+                            " wheel : true"
+                            if (jointdefinition.user_data.data["wheel"] != "")
+                            else ""
+                        )
 
                         joint_hierarchy_out = f"{joint_hierarchy_out}  |- {jointdefinition.info.name} type: {jointdefinition.joint_motion_type} {wheel_}\n"
 
@@ -163,27 +212,28 @@ class Parser:
                             jointdefinition = assembly_out.data.joints.joint_definitions[
                                 newnode.joint_reference
                             ]
-                            wheel_ = " wheel : true" if (jointdefinition.user_data.data["wheel"] != "") else ""
+                            wheel_ = (
+                                " wheel : true"
+                                if (jointdefinition.user_data.data["wheel"] != "")
+                                else ""
+                            )
                             joint_hierarchy_out = f"{joint_hierarchy_out}  |---> {jointdefinition.info.name} type: {jointdefinition.joint_motion_type} {wheel_}\n"
 
                 joint_hierarchy_out += "\n\n"
 
                 gm.ui.messageBox(
-                    f"Appearances: {len(assembly_out.data.materials.appearances)} \nMaterials: {len(assembly_out.data.materials.physicalMaterials)} \nPart-Definitions: {len(part_defs)} \nParts: {len(parts)} \nSignals: {len(signals)} \nJoints: {len(joints)}\n {joint_hierarchy_out}"
+                    f"Appearances: {len(assembly_out.data.materials.appearances)} \nMaterials: {len(assembly_out.data.materials.physicalMaterials)} \nPart-Definitions: {len(part_defs)} \nParts: {len(parts)} \nSignals: {len(signals)} \nJoints: {len(joints)}\n {joint_hierarchy_out}",
+                    "DEBUG - Fusion Synthesis",
                 )
 
         except:
             self.logger.error("Failed:\n{}".format(traceback.format_exc()))
 
             if DEBUG:
-                gm.ui.messageBox(
-                    "Failed:\n{}".format(traceback.format_exc())
-                )
+                gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
             else:
-                gm.ui.messageBox(
-                    "An error occurred while exporting."
-                )
-                
+                gm.ui.messageBox("An error occurred while exporting.")
+
             return False
 
         return True

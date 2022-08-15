@@ -10,6 +10,7 @@ using Synthesis.UI;
 using DigitalRuby.Tween;
 using SynthesisAPI.EventBus;
 using UnityEngine.SceneManagement;
+using Synthesis.Runtime;
 
 #nullable enable
 
@@ -128,6 +129,10 @@ public static class MainHUD {
     }
 
     public static void AddItemToDrawer(string title, Action<Button> onClick, int index = -1, Sprite? icon = null, Color? color = null) {
+
+        if (!SimulationRunner.InSim)
+            return;
+
         var drawerButtonObj = GameObject.Instantiate(
             SynthesisAssetCollection.GetUIPrefab("hud-drawer-item-base"),
             _tabDrawerContent.RootGameObject.transform.Find("ItemContainer")
@@ -161,6 +166,10 @@ public static class MainHUD {
     }
 
     public static void RemoveItemFromDrawer(string title) {
+
+        if (!SimulationRunner.InSim)
+            return;
+
         var index = _drawerItems.FindIndex(0, _drawerItems.Count, x => x.button.Label.Text == title);
         if (index == -1)
             return;

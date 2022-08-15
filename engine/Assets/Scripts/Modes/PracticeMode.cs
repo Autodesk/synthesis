@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Synthesis.Gizmo;
+using Synthesis.Physics;
 using Synthesis.PreferenceManager;
 using Synthesis.Runtime;
 using Synthesis.UI.Dynamic;
@@ -15,7 +16,7 @@ public class PracticeMode : IMode
     private bool _lastEscapeValue = false;
     private bool _escapeMenuOpen = false;
     
-    public static GamepieceSimObject ChosenGamepiece { get; set; }
+    public static GamepieceData ChosenGamepiece { get; set; }
     public static PrimitiveType ChosenPrimitive { get; set; }
 
     public const string TOGGLE_ESCAPE_MENU_INPUT = "escape_menu";
@@ -125,7 +126,6 @@ public class PracticeMode : IMode
                 _gamepieceSpawnpointObject.transform.position = t.Position;
             },
             t => {
-                Debug.Log("End Gizmo OMG");
                 EndConfigureGamepieceSpawnpoint();
             }
         );
@@ -134,7 +134,6 @@ public class PracticeMode : IMode
 
     public static void EndConfigureGamepieceSpawnpoint()
     {
-        Debug.Log("End Config");
         GamepieceSpawnpoint = _gamepieceSpawnpointObject.transform.position;
         GameObject.Destroy(_gamepieceSpawnpointObject);
         _gamepieceSpawnpointObject = null;
@@ -142,10 +141,9 @@ public class PracticeMode : IMode
 
     public static void ResetRobot()
     {
-        return;
-
         RobotSimObject robot = RobotSimObject.GetCurrentlyPossessedRobot();
         if (robot == null) return;
+        robot.ClearGamepieces();
         robot.RobotNode.GetComponentsInChildren<Rigidbody>().ForEach(rb =>
         {
             GameObject go = rb.gameObject;
@@ -153,19 +151,12 @@ public class PracticeMode : IMode
             go.transform.rotation = InitialRotations[go];
         });
     }
-
-    public static void ResetField() {
+    
+    public static void ResetGamepieces()
+    {
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
             RobotSimObject.GetCurrentlyPossessedRobot().ClearGamepieces();
         
-        FieldSimObject field = FieldSimObject.CurrentField;
-        if (field != null)
-            FieldSimObject.CurrentField.ResetField();
-        ResetGamepieces();
-    }
-
-    public static void ResetGamepieces()
-    {
         _gamepieces.ForEach(gp => { GameObject.Destroy(gp.GamepieceObject); });
         _gamepieces.Clear();
         FieldSimObject currentField = FieldSimObject.CurrentField;
@@ -177,8 +168,8 @@ public class PracticeMode : IMode
 
     public static void ResetAll()
     {
-        ResetField();
         ResetRobot();
+        ResetGamepieces();
     }
 
     public static void SpawnGamepiece(float scale = 1.0f, PrimitiveType type = PrimitiveType.Sphere)
@@ -196,8 +187,11 @@ public class PracticeMode : IMode
         PrimitiveType type = PrimitiveType.Sphere)
     {
         FieldSimObject currentField = FieldSimObject.CurrentField;
-        GamepieceSimObject gamepiece = PracticeMode.ChosenGamepiece;
-        if (currentField == null || gamepiece == null)
+        GamepieceData data = ChosenGamepiece;
+
+        GamepieceSimObject gamepiece;
+        
+        if (currentField == null || data == null)
         {
             GameObject gameObject = GameObject.CreatePrimitive(type);
             gameObject.transform.position = spawnPosition;
@@ -206,20 +200,76 @@ public class PracticeMode : IMode
         }
         else
         {
-            GameObject go = GameObject.Instantiate(gamepiece.GamepieceObject);
-            go.transform.parent = gamepiece.GamepieceObject.transform.parent;
-            go.transform.position = Vector3.zero;
-            Transform childTransform = go.transform.GetChild(0);
+            GameObject parent = new GameObject(data.Name);
+            Rigidbody rb = parent.AddComponent<Rigidbody>();
+            rb.mass = data.Mass;
+            parent.AddComponent<ContactRecorder>();
+            
+            GameObject childWithTransform = new GameObject(data.Name);
+            childWithTransform.transform.parent = parent.transform;
+            
+            GameObject childWithMesh = new GameObject(data.Name);
+            childWithMesh.transform.parent = childWithTransform.transform;
+            childWithMesh.AddComponent<MeshFilter>().mesh = data.Mesh;
+            childWithMesh.AddComponent<MeshRenderer>().material = data.Material;
+            MeshCollider collider = childWithMesh.AddComponent<MeshCollider>();
+            collider.convex = true;
+            collider.material = data.ColliderMaterial;
 
-            if (childTransform != null)
-            {
-                childTransform.position = spawnPosition;
-            }
+            parent.transform.parent = data.Parent;
+            parent.transform.position = Vector3.zero;
+            childWithTransform.transform.position = spawnPosition;
+            // GameObject.Instantiate(parent);
+
+            // if (childTransform != null)
+            // {
+            //     childTransform.position = spawnPosition;
+            // }
             
             gamepiece =
-                new GamepieceSimObject(gamepiece.Name, go);
+                new GamepieceSimObject(data.Name, parent);
         }
 
         _gamepieces.Add(gamepiece);
+    }
+    
+    public class GamepieceData
+    {
+        public string Name;
+        public Mesh Mesh;
+        public Material Material;
+        public PhysicMaterial ColliderMaterial;
+        public Transform Parent;
+        public float Mass;
+        
+        public GamepieceData(GameObject gameObject)
+        {
+            if (gameObject == null) return;
+            
+            if (gameObject.transform.childCount > 0)
+                // standard game objects have children named block:# or balls:#
+                // so I use that for the name of the gamepiece
+                Name = gameObject.transform.GetChild(0).name.Split(':')[0];
+            else
+                Name = gameObject.name;
+
+            Parent = gameObject.transform.parent;
+            
+            MeshFilter meshFilter = gameObject.GetComponentInChildren<MeshFilter>();
+            if (meshFilter != null)
+                Mesh = meshFilter.mesh;
+
+            MeshCollider collider = gameObject.GetComponentInChildren<MeshCollider>();
+            if (collider != null)
+                ColliderMaterial = collider.material;
+
+            Rigidbody rb = gameObject.GetComponentInChildren<Rigidbody>();
+            if (rb != null)
+                Mass = rb.mass;
+
+            MeshRenderer meshRenderer = gameObject.GetComponentInChildren<MeshRenderer>();
+            if (meshRenderer != null)
+                Material = meshRenderer.material;       
+        }
     }
 }
