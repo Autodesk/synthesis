@@ -5,6 +5,7 @@ using SynthesisAPI.Utilities;
 using TMPro;
 using UnityEngine.UI;
 
+using Synthesis.UI.Dynamic;
 
 public class ToastConfig : MonoBehaviour
 {
@@ -19,14 +20,16 @@ public class ToastConfig : MonoBehaviour
     private static readonly Color InfoColor = new Color(0.03137255f,0.6745098f,0.8627451f);
 
     public TextMeshProUGUI t;
-    public Image icon;
-    public Image background;
+    public UnityEngine.UI.Image icon;
+    public UnityEngine.UI.Image background;
 
     private ToastManager tm;
+    private LogLevel toastLevel;
 
     public void Init(string text, LogLevel level, ToastManager tm)
     {
         t.text = text;
+        toastLevel = level;
         //SET ICON IMAGE
         switch (level)
         {
@@ -67,5 +70,10 @@ public class ToastConfig : MonoBehaviour
     public void ClearAll()
     {
         tm.ClearAll();
+    }
+    public void ExpandToast(){ 
+        ToastModal.toastLevel = toastLevel;  
+        ToastModal.toastText = t.text;     
+        DynamicUIManager.CreateModal<ToastModal>();
     }
 }
