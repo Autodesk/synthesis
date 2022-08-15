@@ -47,6 +47,7 @@
      <Compile Include="Assets\Scripts\UI\ContextMenu\ContextMenu.cs" />
      <Compile Include="Assets\Scripts\Physics\CustomWheel.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\MeshCollider2DAdapter.cs" />
+     <Compile Include="Assets\Scripts\Importer\MirabufLive.cs" />
      <Compile Include="Assets\Scripts\ServersMonoBehavior.cs" />
      <Compile Include="Assets\Scripts\Behaviors\GeneralArmBehaviour.cs" />
      <Compile Include="Assets\Scripts\Utilities\DeflateStreamWrapper.cs" />
@@ -178,7 +179,8 @@
      <Compile Include="Assets\Scripts\Importer\Importer.cs" />
      <Compile Include="Assets\Scripts\Test\DebugJointAxes.cs" />
      <Compile Include="Assets\Scripts\UnityModalSpawner.cs" />
-     <Compile Include="Assets\Scripts\Importer\MirabufLive.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Panels\Configuring\StartMatchModePanel.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\UpdateAvailableModal.cs" />
      <None Include="Assets\Scripts\CoreEngine.asmdef" />
      <None Include="Assets\Scripts\Tween\Readme.txt" />
     <Reference Include="UnityEngine">

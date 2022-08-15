@@ -45,12 +45,13 @@ public class AutoUpdater : MonoBehaviour
 
             var check = localVersion.CompareTo(globalVersion);
 
+            check = -1;
+
             if (check < 0) { // if outdated, set update prompt to true
                 Debug.Log($"Version {globalVersion.ToString()} available");
                 UpdateAvailable = true;
                 UpdaterLink = updater;
-                // TODO: Make update modal
-                // DynamicUIManager.CreateModal
+                DynamicUIManager.CreateModal<UpdateAvailableModal>();
             }
         }
     }
