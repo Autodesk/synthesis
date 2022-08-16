@@ -96,14 +96,8 @@ namespace Synthesis {
 			var leftInput = InputManager.MappedValueInputs[LEFT];
 			var rightInput = InputManager.MappedValueInputs[RIGHT];
 
-			if (backwardInput is Digital)
-				_xSpeed = forwardInput.Value - backwardInput.Value;
-			else
-				_xSpeed = forwardInput.Value + backwardInput.Value;
-			if (leftInput is Digital)
-				_zRot = rightInput.Value - leftInput.Value;
-			else
-				_zRot = rightInput.Value + leftInput.Value;
+			_xSpeed = Mathf.Abs(forwardInput.Value) - Mathf.Abs(backwardInput.Value);
+			_zRot = Mathf.Abs(rightInput.Value) - Mathf.Abs(leftInput.Value);
 
 			// Deadbanding
 			_xSpeed = Math.Abs(_xSpeed) > DEADBAND ? _xSpeed : 0;
