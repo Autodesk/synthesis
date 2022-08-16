@@ -141,6 +141,7 @@
      <Compile Include="Assets\Scripts\UI\ImageManager.cs" />
      <Compile Include="Assets\Scripts\AnalyticsManager.cs" />
      <Compile Include="Assets\Scripts\Behaviors\GeneralSliderBehaviour.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\DownloadAssetModal.cs" />
      <Compile Include="Assets\Scripts\Utilities\Highlighter.cs" />
      <Compile Include="Assets\Scripts\UI\Tabs\TopButton.cs" />
      <Compile Include="Assets\Scripts\UI\InteractableObject.cs" />

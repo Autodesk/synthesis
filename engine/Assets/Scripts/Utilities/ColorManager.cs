@@ -84,5 +84,8 @@ namespace Synthesis.UI {
                 return _colors[color];
             return defaultColor == default(Color) ? new Color(1, 1, 1, 1) : defaultColor;
         }
+
+        public static bool HasColor(string color)
+            => _colors.ContainsKey(color);
     }
 }
