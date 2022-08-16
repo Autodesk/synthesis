@@ -129,7 +129,7 @@ namespace Synthesis.UI.Dynamic
             
             foreach (string robotName in robots)
             {
-                bool alreadyDownloaded = _downloadedRobots.Contains(robotName);
+                bool alreadyDownloaded = _downloadedRobots.Exists(x => Path.GetFileName(x).Equals(robotName));
                 var downloadButton = robotScrollView.Content.CreateLabeledButton()
                     .StepIntoLabel(l => l.SetText(robotName.Split('.')[0]))
                     .StepIntoButton(b =>
@@ -148,7 +148,7 @@ namespace Synthesis.UI.Dynamic
             
             foreach (string fieldName in fields)
             {
-                bool alreadyDownloaded = _downloadedFields.Contains(fieldName);
+                bool alreadyDownloaded = _downloadedFields.Exists(x => Path.GetFileName(x).Equals(fieldName));
                 var downloadButton = fieldScrollView.Content.CreateLabeledButton()
                     .StepIntoLabel(l => l.SetText(fieldName.Split('.')[0]))
                     .StepIntoButton(b =>
