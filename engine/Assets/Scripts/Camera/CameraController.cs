@@ -54,9 +54,9 @@ public class CameraController : MonoBehaviour
         //Set Camera and Screen Settings
         CameraMode = CameraModes["Orbit"];
 
-        PitchSensitivity = TryGetPref(PITCH_SENSITIVITY_PREF, PITCH_SENSITIVITY_DEFAULT);
-        YawSensitivity = TryGetPref(YAW_SENSITIVITY_PREF, YAW_SENSITIVITY_DEFAULT);
-        ZoomSensitivity = TryGetPref(ZOOM_SENSITIVITY_PREF, ZOOM_SENSITIVITY_DEFAULT);
+        PitchSensitivity = TryGetPref<float>(PITCH_SENSITIVITY_PREF, PITCH_SENSITIVITY_DEFAULT);
+        YawSensitivity = TryGetPref<float>(YAW_SENSITIVITY_PREF, YAW_SENSITIVITY_DEFAULT);
+        ZoomSensitivity = TryGetPref<float>(ZOOM_SENSITIVITY_PREF, ZOOM_SENSITIVITY_DEFAULT);
 
         CameraMode.Start(this);
     }

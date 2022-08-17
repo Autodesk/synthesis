@@ -77,21 +77,6 @@ namespace Synthesis.UI.Dynamic {
 
         public override void Delete() { }
 
-
-        [SerializeField]
-        public GameObject list;
-        [SerializeField]
-        public GameObject keybindInputPrefab;
-        [SerializeField]
-        public GameObject dropdownInputPrefab;
-        [SerializeField]
-        public GameObject toggleInputPrefab;
-        [SerializeField]
-        public GameObject titleTextPrefab;
-        [SerializeField]
-        public GameObject sliderInputPrefab;
-
-
         public const string SCREEN_MODE = "Screen Mode";//Dropdown: Fullscreen or Windowed
         public static readonly string[] ScreenModeList = new string[] { "Fullscreen", "Windowed" };
         public const string QUALITY_SETTINGS = "Quality Settings";//Dropdown: Low Medium High
