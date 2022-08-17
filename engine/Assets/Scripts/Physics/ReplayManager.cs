@@ -45,7 +45,7 @@ namespace Synthesis.Replay {
                 if (pe!.IsFrozen) {
                     _startDesync = Time.realtimeSinceStartup;
                 } else {
-                    if (_startDesync == float.NaN)
+                    if (float.IsNaN(_startDesync))
                         return;
                     _desyncTime += Time.realtimeSinceStartup - _startDesync;
                     _startDesync = float.NaN;
@@ -133,7 +133,10 @@ namespace Synthesis.Replay {
         }
 
         public static void ShowContactsAtTime(float t, float giveOrTake = 0.25f, float impulseThreshold = 10f) {
-            if (_newestFrame == null || _contactReports.Count < 1 || CreateContactMarker == null || EraseContactMarkers == null)
+            if (_newestFrame == null
+                || _contactReports.Count < 1
+                || CreateContactMarker == null
+                || EraseContactMarkers == null)
                 return;
 
             EraseContactMarkers();
