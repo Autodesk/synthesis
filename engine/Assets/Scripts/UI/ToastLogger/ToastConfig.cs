@@ -73,7 +73,8 @@ public class ToastConfig : MonoBehaviour
     }
     public void ExpandToast(){ 
         ToastModal.toastLevel = toastLevel;  
-        ToastModal.toastText = t.text;     
+        ToastModal.toastText = t.text;
+        DynamicUIManager.CloseActiveModal();
         DynamicUIManager.CreateModal<ToastModal>();
     }
 }

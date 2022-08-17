@@ -4,6 +4,7 @@ using Synthesis.UI.Dynamic;
 using UnityEngine;
 using UnityEngine.UI;
 using SynthesisAPI.Utilities;
+using TMPro;
 
 public class ToastModal : ModalDynamic
 {
@@ -26,7 +27,9 @@ public class ToastModal : ModalDynamic
 
         var label = content.CreateLabel(0);
         label.SetText(toastText).SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Top);
+        label.SetFontStyle(TMPro.FontStyles.Normal);
         label.SetTopStretch<Content>();
+        label.SetFont(SynthesisAssetCollection.Instance.Fonts[1]);
         label.RootGameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
         label.RootGameObject.transform.SetParent(sv.Content.RootGameObject.transform);
 
