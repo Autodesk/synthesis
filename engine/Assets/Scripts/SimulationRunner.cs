@@ -26,20 +26,26 @@ namespace Synthesis.Runtime {
         public const uint GIZMO_SIM_CONTEXT =   0x00000008;
 
         public static event Action OnUpdate;
+        private static bool _inSim = false;
+        public static bool InSim {
+            get => _inSim;
+            set {
+                _inSim = value;
+                if (!_inSim)
+                    SimKill();
+            }
+        }
 
         private bool _setupSceneSwitchEvent = false;
 
         void Start() {
 
+            InSim = true;
 
             if (!_setupSceneSwitchEvent) {
                 SceneManager.sceneUnloaded += (Scene s) => {
                     if (s.name == "MainScene") {
-                        FieldSimObject.DeleteField();
-                        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-                            SimulationManager.RemoveSimObject(RobotSimObject.GetCurrentlyPossessedRobot());
-
-                        PhysicsManager.Reset();
+                        
                     }
                     // SimulationManager.SimulationObjects.ForEach(x => {
                     //     SimulationManager.RemoveSimObject(x.Value);
@@ -104,5 +110,13 @@ namespace Synthesis.Runtime {
         }
         public static bool HasContext(uint c)
             => (_simulationContext & c) != 0;
+
+        public static void SimKill() {
+            FieldSimObject.DeleteField();
+            if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+                SimulationManager.RemoveSimObject(RobotSimObject.GetCurrentlyPossessedRobot());
+
+            PhysicsManager.Reset();
+        }
     }
 }
