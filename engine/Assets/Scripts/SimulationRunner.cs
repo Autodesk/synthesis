@@ -31,6 +31,13 @@ namespace Synthesis.Runtime {
 
         void Start() {
 
+
+            //temporary for testing
+            ToastManager.Log("Test Text that is meant to test the capabilities of this toast logger" +
+                " \nThis is a test\nTest\nTest\nTest\nTest\nTest\nTest\nTest\nTest\nTest\nTest\nTest\nTest\nTest\nTest\nTest" +
+                "\nTest\nTest\nTest\nTest\nTest\nTest\nTest\nTest\nTest\nTest\nTest\nTest\nTest\nTest\nTest\nTest\nTest\nTest\nTest");
+
+
             if (!_setupSceneSwitchEvent) {
                 SceneManager.sceneUnloaded += (Scene s) => {
                     if (s.name == "MainScene") {
