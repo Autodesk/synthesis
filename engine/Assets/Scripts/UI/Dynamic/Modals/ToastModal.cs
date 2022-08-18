@@ -18,30 +18,8 @@ public class ToastModal : ModalDynamic
         Title.SetText("    " + toastLevel.ToString() + " Message: ").SetFontSize(30);
         AcceptButton.AddOnClickedEvent(b =>
         {
-            
-            string _root = AddRobotModal.ParsePath(Path.Combine("$appdata/Autodesk/Synthesis", "Log Messages"), '/');
-
-            try
-            {
-                if (!Directory.Exists(_root))
-                {
-                    Directory.CreateDirectory(_root);
-                }
-
-            }
-            catch (IOException ex)
-            {
-                ToastManager.Log(ex);
-            }
-
-            //Write some text to the test.txt file
-            StreamWriter writer = new StreamWriter(_root + "/message_"+ System.DateTime.Now.ToString().Replace('/','-').Replace(' ', '_').Replace(':','-') + ".txt", true);
-            writer.WriteLine(toastText);
-            writer.Close();
-            OpenFolder(_root);
-            ToastManager.Log("File written at path: " + _root);
-
-        }).Label.SetText("Write to File");
+            WriteToFile();
+        }).Label.SetText("Write File");
         Description.RootGameObject.SetActive(false);
         ModalImage.RootGameObject.SetActive(false);
         CancelButton.Label.SetText("Close");
@@ -66,7 +44,32 @@ public class ToastModal : ModalDynamic
 
     public override void Update() { }
 
-    public void OpenFolder(string path)
+    private void WriteToFile()
+    {
+        string _root = AddRobotModal.ParsePath(Path.Combine("$appdata/Autodesk/Synthesis", "Log Messages"), '/');
+
+        try
+        {
+            if (!Directory.Exists(_root))
+            {
+                Directory.CreateDirectory(_root);
+            }
+
+        }
+        catch (IOException ex)
+        {
+            ToastManager.Log(ex);
+        }
+
+        //Write some text to the test.txt file
+        StreamWriter writer = new StreamWriter(_root + "/message_" + System.DateTime.Now.ToString().Replace('/', '-').Replace(' ', '_').Replace(':', '-') + ".txt", true);
+        writer.WriteLine(toastText);
+        writer.Close();
+        OpenFolder(_root);
+        ToastManager.Log("File written at path: " + _root);
+    }
+
+    private void OpenFolder(string path)
     {
         path = path.Replace(@"/", @"\");  
         System.Diagnostics.Process.Start("explorer.exe", "/select," + path);
