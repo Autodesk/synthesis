@@ -39,8 +39,8 @@ Navigate to the Synthesis.pkg, and use that to install Synthesis.
 Download the Synthesis_x86_64.appimage file.
 You can run that directly or move it to your ~/Applications/ directory to have it registered as an app within ubuntu or whatever debian system you are using.
 
-NOTE FOR NOT DEBIAN USERS:
-Synthesis has been run on Arch before, however it is not supported and very tricky. Attempt at your own risk.
+NOTE FOR NON DEBIAN USERS:
+Synthesis can be installed and ran on other distros, however our linux package is tailored to Debian.
 
 ## Contributing
 
