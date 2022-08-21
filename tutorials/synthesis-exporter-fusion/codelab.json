@@ -1,0 +1,28 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2022-08-21T15:36:16-06:00",
+  "id": "synthesis-exporter-fusion",
+  "duration": 0,
+  "title": "Synthesis Fusion 360 Exporter Addin",
+  "summary": "Tutorial for using Fusion360 exporter",
+  "source": "FusionExporter.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "python",
+    "cad"
+  ],
+  "tags": [
+    "cad",
+    "exporter",
+    "fusion360",
+    "python"
+  ],
+  "feedback": "https://github.com/Autodesk/synthesis/issues",
+  "url": "synthesis-exporter-fusion"
+}
