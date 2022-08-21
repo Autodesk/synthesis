@@ -80,7 +80,7 @@ namespace Synthesis.UI.Dynamic {
         public const string SCREEN_MODE = "Screen Mode";//Dropdown: Fullscreen or Windowed
         public static readonly string[] ScreenModeList = new string[] { "Fullscreen", "Windowed" };
         public const string QUALITY_SETTINGS = "Quality Settings";//Dropdown: Low Medium High
-        public static string[] QualitySettingsList;
+        public static string[] QualitySettingsList = new string[]{"Very Low", "Low", "Medium", "High", "Very High", "Ultra"};
         public const string ALLOW_DATA_GATHERING = "Allow Data Gathering";//Toggle
         public const string MEASUREMENTS = "Use Imperial Measurements";//toggle for imperial. if unchecked, uses metric. 
         public static bool useImperial = true;//for other scripts to know when to use imperial or metric
