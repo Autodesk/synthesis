@@ -20,7 +20,27 @@ Synthesis is comprised of 4 separate components that are mostly developed indepe
 * [Fusion Robot Exporter (Fusion 360 Plugin)](/exporter/SynthesisFusionGltfExporter/)
 * [Controller API](/modules/Controller/)
 
+## Installing
 
+Get the latest release [here](https://github.com/Autodesk/synthesis/releases/latest/).
+You can find all of our other releases on the [releases page](https://github.com/Autodesk/synthesis/releases/)
+
+### Windows
+
+Download and run SynthesisWin[Version Number].exe.
+
+### MacOS
+
+Download and Unzip SynthesisOSX[Version Number].zip.
+Navigate to the Synthesis.pkg, and use that to install Synthesis.
+
+### Linux
+
+Download the Synthesis_x86_64.appimage file.
+You can run that directly or move it to your ~/Applications/ directory to have it registered as an app within ubuntu or whatever debian system you are using.
+
+NOTE FOR NOT DEBIAN USERS:
+Synthesis has been run on Arch before, however it is not supported and very tricky. Attempt at your own risk.
 
 ## Contributing
 
