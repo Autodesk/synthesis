@@ -47,7 +47,7 @@
   <PropertyGroup>
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <UnityProjectGenerator>Package</UnityProjectGenerator>
-    <UnityProjectGeneratorVersion>2.0.8</UnityProjectGeneratorVersion>
+    <UnityProjectGeneratorVersion>2.0.16</UnityProjectGeneratorVersion>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
     <UnityVersion>2020.3.12f1</UnityVersion>
@@ -57,9 +57,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\MenuPanelManager.cs" />
-    <Compile Include="Assets\SetLocation.cs" />
     <Compile Include="Assets\SimulationManagerInspector.cs" />
     <Compile Include="Assets\TestScript.cs" />
+    <Compile Include="Assets\MatchMode.cs" />
     <Compile Include="Assets\LineScript.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -339,6 +339,9 @@
     </Reference>
     <Reference Include="Unity.2D.Sprite.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.2D.Sprite.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Toolchain.Linux-x86_64">
+      <HintPath>Library\ScriptAssemblies\Unity.Toolchain.Linux-x86_64.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.UI">
       <HintPath>Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
@@ -780,9 +783,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="CoreEngine.csproj">
-      <Project>{660E7428-284B-EED1-7FFD-CA276D12197B}</Project>
-      <Name>CoreEngine</Name>
+    <ProjectReference Include="CoreEngine.Player.csproj">
+      <Project>{201B98B9-138B-E92C-A9AE-704F52406231}</Project>
+      <Name>CoreEngine.Player</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
