@@ -137,7 +137,7 @@ public static class AnalyticsManager {
                 }
                 catch (Exception e)
                 {
-                    Debug.Log("not pog");
+                    Debug.Log("Failed to post Analytics");
                 }
 
             }
