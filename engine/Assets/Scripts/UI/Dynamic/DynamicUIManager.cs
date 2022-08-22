@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using NUnit.Framework;
 using UnityEngine;
 using SynthesisAPI.Utilities;
 
@@ -63,6 +64,8 @@ namespace Synthesis.UI.Dynamic {
             SynthesisAssetCollection.BlurVolumeStatic.weight = 1f;
             PhysicsManager.IsFrozen = true;
             MainHUD.Enabled = false;
+            AnalyticsManager.LogEvent(new AnalyticsEvent(category: "ui", action: $"{typeof(T).Name}", label:"create"));
+            AnalyticsManager.PostData();
             return true;
         }
 
