@@ -1,6 +1,6 @@
 author: Synthesis Team
 summary: Tutorial for using Fusion360 exporter
-id: synthesis-exporter-fusion
+id: FusionExporterCodelab
 tags: Python, Exporter, CAD
 categories: Python, CAD
 environments: Fusion360
