@@ -130,9 +130,9 @@ public static class AnalyticsManager {
                     //var resp = cli.UploadValues(
                         //$"{ANALYTICS_URL}/analytics", "POST", reqparm);
 
-                        var resp = cli.UploadValues(URL_COLLECT, "POST", reqparm);
+                    var resp = cli.UploadValues(URL_COLLECT, "POST", reqparm);
 
-                    Debug.Log(resp);
+                    Debug.Log(System.Text.Encoding.Default.GetString(resp));
 
                 }
                 catch (Exception e)
