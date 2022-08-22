@@ -90,6 +90,7 @@ namespace Synthesis.UI.Dynamic {
             if (ActivePanel != null)
                 EventBus.Push(new PanelCreatedEvent(panel));
 
+            AnalyticsManager.LogEvent(new AnalyticsEvent(category: "ui", action: $"{typeof(T).Name}", label:"create"));
             return true;
         }
         
@@ -99,6 +100,8 @@ namespace Synthesis.UI.Dynamic {
             }
 
             EventBus.Push(new ModalClosedEvent(ActiveModal));
+
+            AnalyticsManager.LogEvent(new AnalyticsEvent(category: "ui", action: $"{ActiveModal.GetType().Name}", label:"create"));
 
             ActiveModal.Delete();
             ActiveModal.Delete_Internal();
@@ -116,6 +119,8 @@ namespace Synthesis.UI.Dynamic {
                 return false;
 
             EventBus.Push(new PanelClosedEvent(ActivePanel));
+
+            AnalyticsManager.LogEvent(new AnalyticsEvent(category: "ui", action: $"{ActiveModal.GetType().Name}", label:"create"));
 
             ActivePanel.Delete();
             ActivePanel.Delete_Internal();

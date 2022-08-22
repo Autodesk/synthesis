@@ -8,6 +8,7 @@ using Synthesis.PreferenceManager;
 using UnityEngine;
 
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 
 public static class AnalyticsManager {
@@ -20,9 +21,9 @@ public static class AnalyticsManager {
     public const string TRACKING_ID = "UA-81892961-6";
     public static string ClientID;
 
-    private static bool _useAnalytics = true;
+    public const string URL_COLLECT = "https://www.google-analytics.com/collect";
 
-    private static HttpClient _httpClient;
+    private static bool _useAnalytics = true;
 
     private static List<IAnalytics> _pendingEvents;
 
@@ -50,7 +51,6 @@ public static class AnalyticsManager {
 
         Debug.Log($"Client ID: {ClientID}");
 
-        _httpClient = new HttpClient();
         _pendingEvents = new List<IAnalytics>();
 
         if (PreferenceManager.ContainsPreference(USE_ANALYTICS_PREF)) {
@@ -83,7 +83,7 @@ public static class AnalyticsManager {
         _pendingEvents.Add(e);
     }
 
-    public static void  PostData()
+    /*public static void  PostData()
     {
         foreach (var _event in _pendingEvents)
         {
@@ -107,7 +107,47 @@ public static class AnalyticsManager {
             }
         }
         _pendingEvents.Clear();
+    } */
+
+    public static void  PostData()
+    {
+        foreach (var _event in _pendingEvents)
+        {
+            if (UseAnalytics)
+            {
+                var cli = new WebClient();
+                try
+                {
+                    var reqparm = new System.Collections.Specialized.NameValueCollection();
+                    reqparm.Add("v", "1");
+                    reqparm.Add("tid", TRACKING_ID);
+                    reqparm.Add("cid", ClientID);
+                    reqparm.Add("t", "event");
+                    reqparm.Add("ec", ((AnalyticsEvent) _event).Category);
+                    reqparm.Add("ea", ((AnalyticsEvent)_event).Action);
+                    reqparm.Add("el", ((AnalyticsEvent)_event).Label);
+
+                    //var resp = cli.UploadValues(
+                        //$"{ANALYTICS_URL}/analytics", "POST", reqparm);
+
+                        var resp = cli.UploadValues(URL_COLLECT, "POST", reqparm);
+
+                    Debug.Log(resp);
+
+                }
+                catch (Exception e)
+                {
+                    Debug.Log("not pog");
+                }
+
+            }
+        }
+        _pendingEvents.Clear();
     }
+
+    public static string GetActionTypeFromType<T>() =>
+        typeof(T).GetCustomAttributes<AnalyticsLabelAttribute>().ToList().Count > 0 ?
+            ((AnalyticsLabelAttribute) (typeof(T).GetCustomAttributes<AnalyticsLabelAttribute>().First())).Title : typeof(T).Name;
 
     public static void LogAnalytics(string s)
     {
@@ -145,8 +185,15 @@ public class AnalyticsEvent : IAnalytics
     */
 
     public string GetPostData()
-        => $"{Category}_{Action}_{Label}";
-    //=> $"t=event&ec={Category}&ea={Action}&el={Label}";
+    //    => $"{Category}_{Action}_{Label}";
+    => $"t=event&ec={Category}&ea={Action}&el={Label}";
+}
+
+
+[AttributeUsage(AttributeTargets.Class)]
+public class AnalyticsLabelAttribute : Attribute
+{
+    public string Title;
 }
 
 public class AnalyticsScreenView : IAnalytics
