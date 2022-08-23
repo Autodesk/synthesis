@@ -67,6 +67,7 @@
      <Compile Include="Assets\Scripts\MouseTracker.cs" />
      <Compile Include="Assets\Scripts\UI\ContextMenu\ContextItem.cs" />
      <Compile Include="Assets\Scripts\Attributes\ContextMenuOptionAttribute.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\ToastModal.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\DynamicUIManager.cs" />
      <Compile Include="Assets\Scripts\UI\ToastLogger\ToastLogger.cs" />
      <Compile Include="Assets\Scripts\Scoring\Shooting.cs" />

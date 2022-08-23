@@ -6164,7 +6164,7 @@ PrefabInstance:
     - target: {fileID: 8178300921806933664, guid: a164eb99c8d3069438923ac0c0b61657, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: e9dd0aa9bc51cd94fbb8e5ea1c01d03d, type: 3}
+      objectReference: {fileID: 21300000, guid: d939e97073dcb0440b758a3d8648149a, type: 3}
     - target: {fileID: 8178300921806933670, guid: a164eb99c8d3069438923ac0c0b61657, type: 3}
       propertyPath: m_Name
       value: MenuPanel

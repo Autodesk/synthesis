@@ -786,7 +786,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 165a3b2329adef54e8c1d72011b5bb69, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 580583d31fc3eb44a90c8c40461427db, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2293,7 +2293,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08fc19faaeba3544b82c75c038a060c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IndicateScaleFactor: 1.04
+  IndicateScaleFactor: 1.035
   ClickedScaleFactor: 0.99
 --- !u!1 &8178300921788833858
 GameObject:
@@ -3832,7 +3832,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08fc19faaeba3544b82c75c038a060c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IndicateScaleFactor: 1.117647
+  IndicateScaleFactor: 1.05
   ClickedScaleFactor: 0.98
 --- !u!1 &8178300923066430056
 GameObject:
@@ -3981,7 +3981,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08fc19faaeba3544b82c75c038a060c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IndicateScaleFactor: 1.117647
+  IndicateScaleFactor: 1.05
   ClickedScaleFactor: 0.98
 --- !u!1 &8178300923120546869
 GameObject:
