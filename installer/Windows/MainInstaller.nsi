@@ -147,7 +147,7 @@ Section "Synthesis (required)" Synthesis
                 "Publisher" "Autodesk"
   
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
-                "URLInfoAbout" "bxd.autodesk.com/tutorials"
+                "URLInfoAbout" "synthesis.autodesk.com/tutorials"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                  "DisplayVersion" "${PRODUCT_VERSION}"
@@ -310,5 +310,5 @@ Section "Uninstall"
 SectionEnd
 
 Function .OnInstSuccess
-  Exec "$INSTDIR\Synthesis\Synthesis.exe"
+  Exec "$INSTDIR\Synthesis.exe"
 FunctionEnd
