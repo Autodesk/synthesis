@@ -47,7 +47,6 @@
      <Compile Include="Assets\Scripts\UI\ContextMenu\ContextMenu.cs" />
      <Compile Include="Assets\Scripts\Physics\CustomWheel.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\MeshCollider2DAdapter.cs" />
-     <Compile Include="Assets\Scripts\Importer\MirabufLive.cs" />
      <Compile Include="Assets\Scripts\ServersMonoBehavior.cs" />
      <Compile Include="Assets\Scripts\Behaviors\GeneralArmBehaviour.cs" />
      <Compile Include="Assets\Scripts\Utilities\DeflateStreamWrapper.cs" />
@@ -67,7 +66,6 @@
      <Compile Include="Assets\Scripts\MouseTracker.cs" />
      <Compile Include="Assets\Scripts\UI\ContextMenu\ContextItem.cs" />
      <Compile Include="Assets\Scripts\Attributes\ContextMenuOptionAttribute.cs" />
-     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\ToastModal.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\DynamicUIManager.cs" />
      <Compile Include="Assets\Scripts\UI\ToastLogger\ToastLogger.cs" />
      <Compile Include="Assets\Scripts\Scoring\Shooting.cs" />
@@ -103,7 +101,6 @@
      <Compile Include="Assets\Scripts\Scoring\ShootableGamepiece.cs" />
      <Compile Include="Assets\Scripts\Modes\IMode.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\AudioSourceAdapter.cs" />
-     <Compile Include="Assets\Scripts\UI\Dynamic\Panels\Configuring\StartMatchModePanel.cs" />
      <Compile Include="Assets\Scripts\Modes\ModeManager.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\DraggablePanel.cs" />
      <Compile Include="Assets\Scripts\Gizmos\SelectableArrow.cs" />
@@ -144,7 +141,6 @@
      <Compile Include="Assets\Scripts\UI\ImageManager.cs" />
      <Compile Include="Assets\Scripts\AnalyticsManager.cs" />
      <Compile Include="Assets\Scripts\Behaviors\GeneralSliderBehaviour.cs" />
-     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\DownloadAssetModal.cs" />
      <Compile Include="Assets\Scripts\Utilities\Highlighter.cs" />
      <Compile Include="Assets\Scripts\UI\Tabs\TopButton.cs" />
      <Compile Include="Assets\Scripts\UI\InteractableObject.cs" />
@@ -169,7 +165,6 @@
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\IApiAdapter.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\SelectableAdapter.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\CameraAdapter.cs" />
-     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\UpdateAvailableModal.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\AddPanel\AddPanel.cs" />
      <Compile Include="Assets\Scripts\UI\Tabs\HomeTab.cs" />
      <Compile Include="Assets\Scripts\UI\Tabs\Buttons\TabButton.cs" />
@@ -183,6 +178,11 @@
      <Compile Include="Assets\Scripts\Importer\Importer.cs" />
      <Compile Include="Assets\Scripts\Test\DebugJointAxes.cs" />
      <Compile Include="Assets\Scripts\UnityModalSpawner.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\DownloadAssetModal.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\ToastModal.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\UpdateAvailableModal.cs" />
+     <Compile Include="Assets\Scripts\Importer\MirabufLive.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Panels\Configuring\StartMatchModePanel.cs" />
      <None Include="Assets\Scripts\CoreEngine.asmdef" />
      <None Include="Assets\Scripts\Tween\Readme.txt" />
     <Reference Include="UnityEngine">
