@@ -101,7 +101,7 @@ public static class MainHUD {
 
         MainHUD.AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("DriverStationView"));
         MainHUD.AddItemToDrawer("Camera View", b => DynamicUIManager.CreateModal<ChangeViewModal>(), icon: SynthesisAssetCollection.GetSpriteByName("CameraIcon"));
-        MainHUD.AddItemToDrawer("Download Asset", b => DynamicUIManager.CreateModal<DownloadAssetModal>());
+        MainHUD.AddItemToDrawer("Download Asset", b => DynamicUIManager.CreateModal<DownloadAssetModal>(), icon: SynthesisAssetCollection.GetSpriteByName("DownloadIcon"));
 
         MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("settings"));
 
