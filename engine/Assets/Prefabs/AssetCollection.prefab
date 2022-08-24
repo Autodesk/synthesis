@@ -54,6 +54,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 9edfc3e7b3f24c648afa74bdf0f956f9, type: 3}
   - {fileID: 21300000, guid: bf19f4039e670de45afb9cb6e509c177, type: 3}
   - {fileID: 21300000, guid: 40a7e85b3fe8cc34b8787ad2b1c162ea, type: 3}
+  - {fileID: 21300000, guid: 93fb5f56edb2a01419dcdb1fbf719983, type: 3}
   PanelPrefabs:
   - {fileID: 2702697856074163897, guid: 4056ba4f4255aef4b8976df3b1ed9449, type: 3}
   - {fileID: 8099976770030476227, guid: fb29a2ed7f63eea4fa63a5be33873450, type: 3}

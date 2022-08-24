@@ -13,6 +13,8 @@ using Logger = SynthesisAPI.Utilities.Logger;
 using Synthesis.UI;
 using UnityEngine.SceneManagement;
 using Synthesis.Physics;
+using SynthesisAPI.EventBus;
+using Synthesis.Replay;
 
 namespace Synthesis.Runtime {
     public class SimulationRunner : MonoBehaviour {
@@ -25,20 +27,33 @@ namespace Synthesis.Runtime {
         public const uint REPLAY_SIM_CONTEXT =  0x00000004;
         public const uint GIZMO_SIM_CONTEXT =   0x00000008;
 
+        /// <summary>
+        /// Called when going to the main menu.
+        /// Will be completely reset after called
+        /// </summary>
+        public static event Action OnSimKill;
+
         public static event Action OnUpdate;
+        private static bool _inSim = false;
+        public static bool InSim {
+            get => _inSim;
+            set {
+                _inSim = value;
+                if (!_inSim)
+                    SimKill();
+            }
+        }
 
         private bool _setupSceneSwitchEvent = false;
 
         void Start() {
 
+            InSim = true;
+
             if (!_setupSceneSwitchEvent) {
                 SceneManager.sceneUnloaded += (Scene s) => {
                     if (s.name == "MainScene") {
-                        FieldSimObject.DeleteField();
-                        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-                            SimulationManager.RemoveSimObject(RobotSimObject.GetCurrentlyPossessedRobot());
-
-                        PhysicsManager.Reset();
+                        
                     }
                     // SimulationManager.SimulationObjects.ForEach(x => {
                     //     SimulationManager.RemoveSimObject(x.Value);
@@ -59,6 +74,8 @@ namespace Synthesis.Runtime {
 
             // TestColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
             // RotationalDriver.TestSphericalCoordinate();
+
+            QualitySettings.SetQualityLevel(PreferenceManager.PreferenceManager.GetPreference<int>( "Quality Settings"), true);
         }
 
         private void TestColor(Color c) {
@@ -91,17 +108,51 @@ namespace Synthesis.Runtime {
             Synthesis.PreferenceManager.PreferenceManager.Save();
         }
 
+        /// <summary>
+        /// Set current context
+        /// </summary>
+        /// <param name="c">Mask for context</param>
         public static void SetContext(uint c) {
             _simulationContext = c;
         }
+        /// <summary>
+        /// Add an additional context to the current contexts
+        /// </summary>
+        /// <param name="c">Mask for context</param>
         public static void AddContext(uint c) {
             _simulationContext |= c;
         }
+        /// <summary>
+        /// Remove a context from the current context
+        /// </summary>
+        /// <param name="c">Mask for context</param>
         public static void RemoveContext(uint c) {
             if (HasContext(c))
                 _simulationContext ^= c;
         }
+        /// <summary>
+        /// Check if a context exists within the current context
+        /// </summary>
+        /// <param name="c">Mask for context</param>
+        /// <returns></returns>
         public static bool HasContext(uint c)
             => (_simulationContext & c) != 0;
+
+        /// <summary>
+        /// Teardown sim for recycle
+        /// </summary>
+        public static void SimKill() {
+            FieldSimObject.DeleteField();
+            if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+                SimulationManager.RemoveSimObject(RobotSimObject.GetCurrentlyPossessedRobot());
+
+            if (OnSimKill != null)
+                OnSimKill();
+
+            OnSimKill = null;
+
+            PhysicsManager.Reset();
+            ReplayManager.Teardown();
+        }
     }
 }

@@ -24,6 +24,7 @@ namespace Synthesis.Replay {
         private static float _timeSpan = 5f;
         public static float TimeSpan => _timeSpan;
         private static ReplayFrame? _newestFrame = null;
+        public static ReplayFrame? NewestFrame => _newestFrame;
         private static ReplayFrame? _oldestFrame = null;
         public static ReplayFrame CurrentFrame = null!;
 
@@ -45,7 +46,7 @@ namespace Synthesis.Replay {
                 if (pe!.IsFrozen) {
                     _startDesync = Time.realtimeSinceStartup;
                 } else {
-                    if (_startDesync == float.NaN)
+                    if (float.IsNaN(_startDesync))
                         return;
                     _desyncTime += Time.realtimeSinceStartup - _startDesync;
                     _startDesync = float.NaN;
@@ -133,7 +134,10 @@ namespace Synthesis.Replay {
         }
 
         public static void ShowContactsAtTime(float t, float giveOrTake = 0.25f, float impulseThreshold = 10f) {
-            if (_newestFrame == null || _contactReports.Count < 1 || CreateContactMarker == null || EraseContactMarkers == null)
+            if (_newestFrame == null
+                || _contactReports.Count < 1
+                || CreateContactMarker == null
+                || EraseContactMarkers == null)
                 return;
 
             EraseContactMarkers();
@@ -204,6 +208,14 @@ namespace Synthesis.Replay {
 
             CurrentFrame = null!;
         }
+
+        public static void Teardown() {
+            _startDesync = float.NaN;
+            _desyncTime = 0;
+            InvalidateRecording();
+            CurrentFrame = null!;
+            _isRecording = false;
+        }
     }
 
     public class ReplayFrame {
@@ -213,6 +225,10 @@ namespace Synthesis.Replay {
         [JsonConstructor]
         private ReplayFrame() { }
 
+        /// <summary>
+        /// Record the current simulation into a <see cref="Synthesis.Replay.ReplayFrame">Replay Frame</see>
+        /// </summary>
+        /// <returns></returns>
         public static ReplayFrame RecordFrame() {
             var frame = new ReplayFrame();
             frame.TimeStamp = Time.realtimeSinceStartup - ReplayManager.DesyncTime;
@@ -240,10 +256,10 @@ namespace Synthesis.Replay {
         public ReplayFrame LastFrame;
 
         /// <summary>
-        /// 
+        /// Lerps between two frames
         /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
+        /// <param name="a">From Frame</param>
+        /// <param name="b">To Frame</param>
         /// <param name="t">t is between 0.0 to 1.0</param>
         /// <returns></returns>
         public static ReplayFrame Lerp(ReplayFrame a, ReplayFrame b, float t) {
@@ -263,7 +279,15 @@ namespace Synthesis.Replay {
             });
             return c;
         }
+
+        /// <summary>
+        /// Apply this frame to current simulation
+        /// </summary>
         public void ApplyFrame() => ApplyFrame(this);
+        /// <summary>
+        /// Apply a frame to the current simulation
+        /// </summary>
+        /// <param name="a">Frame to apply</param>
         public static void ApplyFrame(ReplayFrame a) {
             a.RigidbodyData.ForEach(x => {
                 x.Key.transform.position = x.Value.Position;

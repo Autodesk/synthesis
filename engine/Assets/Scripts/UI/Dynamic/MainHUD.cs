@@ -10,6 +10,7 @@ using Synthesis.UI;
 using DigitalRuby.Tween;
 using SynthesisAPI.EventBus;
 using UnityEngine.SceneManagement;
+using Synthesis.Runtime;
 
 #nullable enable
 
@@ -99,6 +100,10 @@ public static class MainHUD {
             MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
 
         MainHUD.AddItemToDrawer("Camera View", b => DynamicUIManager.CreateModal<ChangeViewModal>(), icon: SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
+        
+        MainHUD.AddItemToDrawer("Download Asset", b => DynamicUIManager.CreateModal<DownloadAssetModal>());
+
+        MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("settings"));
 
         if (!_hasNewRobotListener) {
             EventBus.NewTypeListener<RobotSimObject.NewRobotEvent>(e => {
@@ -127,6 +132,10 @@ public static class MainHUD {
     }
 
     public static void AddItemToDrawer(string title, Action<Button> onClick, int index = -1, Sprite? icon = null, Color? color = null) {
+
+        if (!SimulationRunner.InSim)
+            return;
+
         var drawerButtonObj = GameObject.Instantiate(
             SynthesisAssetCollection.GetUIPrefab("hud-drawer-item-base"),
             _tabDrawerContent.RootGameObject.transform.Find("ItemContainer")
@@ -160,6 +169,10 @@ public static class MainHUD {
     }
 
     public static void RemoveItemFromDrawer(string title) {
+
+        if (!SimulationRunner.InSim)
+            return;
+
         var index = _drawerItems.FindIndex(0, _drawerItems.Count, x => x.button.Label.Text == title);
         if (index == -1)
             return;

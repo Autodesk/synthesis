@@ -73,8 +73,8 @@ namespace Synthesis.Physics {
             List<ContactRecorder> recorders = new List<ContactRecorder>();
             var rbs = overridable.GetRootGameObject().GetComponentsInChildren<Rigidbody>();
             rbs.ForEach(x => {
-                var recorder = x.gameObject.AddComponent<ContactRecorder>();
-                recorders.Add(recorder);
+                //var recorder = x.gameObject.AddComponent<ContactRecorder>();
+                //recorders.Add(recorder);
             });
             _contactRecorders[overridable.GetHashCode()] = recorders;
         }

@@ -478,7 +478,10 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         // GroundedNode.transform.position = data.Position - GroundedBounds.center;
     }
 
-    public void End(TransformData data) { }
+    public void End(TransformData data)
+    {
+        PracticeMode.SetInitialState(RobotNode);
+    }
 
     public struct IntakeTriggerData {
         public string NodeName;

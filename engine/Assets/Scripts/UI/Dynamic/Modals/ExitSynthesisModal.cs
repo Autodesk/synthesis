@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Synthesis.Runtime;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -17,6 +18,7 @@ namespace Synthesis.UI.Dynamic {
                 if (isOnMainMenu)
                     Application.Quit();
                 else
+                    SimulationRunner.InSim = false;
                     SceneManager.LoadScene("GridMenuScene", LoadSceneMode.Single);
             }).StepIntoLabel(l => l.SetText("Exit"));
             ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"));

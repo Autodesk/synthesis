@@ -10,6 +10,7 @@ using Synthesis.Replay;
 using Synthesis.Physics;
 using SynthesisAPI.EventBus;
 using Synthesis.Gizmo;
+using Synthesis.Runtime;
 
 namespace Synthesis.UI.Dynamic {
     public static class DynamicUIManager {
@@ -19,8 +20,10 @@ namespace Synthesis.UI.Dynamic {
         public static Content _screenSpaceContent = null;
         public static Content ScreenSpaceContent { 
             get {
-                if (_screenSpaceContent == null)
+                if (_screenSpaceContent == null) {
                     _screenSpaceContent = new Content(null, GameObject.Find("UI").transform.Find("ScreenSpace").gameObject, null);
+                    SimulationRunner.OnSimKill += () => _screenSpaceContent = null;
+                }
                 return _screenSpaceContent;
             }
         }
@@ -38,6 +41,7 @@ namespace Synthesis.UI.Dynamic {
                             .SetFontSize(20).SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK)))
                         .StepIntoValueLabel(l => l.SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Bottom)
                             .SetFontSize(20).SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK)));
+                    SimulationRunner.OnSimKill += () => { _replaySlider = null; };
                 return _replaySlider;
             }
         }

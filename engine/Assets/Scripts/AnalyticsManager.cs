@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 public static class AnalyticsManager {
 
     private const string CLIENT_ID_PREF = "analytics/client_id";
-    private const string USE_ANALYTICS_PREF = "analytics/use_analytics";
+    public const string USE_ANALYTICS_PREF = "analytics/use_analytics";
 
     private static string AllData = "";
 
@@ -33,7 +33,9 @@ public static class AnalyticsManager {
         get => _useAnalytics;
         set {
             _useAnalytics = value;
+            PreferenceManager.Load();
             PreferenceManager.SetPreference<bool>(USE_ANALYTICS_PREF, _useAnalytics);
+            Debug.Log(_useAnalytics);
             PreferenceManager.Save();
         }
     }
@@ -79,9 +81,9 @@ public static class AnalyticsManager {
     }
 
     public static void LogAnalytic(IAnalytics e) {
-        // #if UNITY_EDITOR
-        // return;
-        // #endif
+        #if UNITY_EDITOR
+        return;
+        #endif
         _pendingEvents.Add(e);
     }
 
@@ -134,7 +136,7 @@ public static class AnalyticsManager {
 
                     var resp = cli.UploadValues(URL_COLLECT, "POST", reqparm);
 
-                    Debug.Log(System.Text.Encoding.Default.GetString(resp));
+                    // Debug.Log(System.Text.Encoding.Default.GetString(resp));
 
                 }
                 catch (Exception e)
