@@ -2,4 +2,5 @@ Synthesis.AppDir/usr/bin/*
 Synthesis.AppDir/fields/*
 Synthesis.AppDir/robots/*
 
+*.md5
 *.AppImage
