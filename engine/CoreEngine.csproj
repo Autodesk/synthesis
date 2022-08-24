@@ -64,7 +64,6 @@
      <Compile Include="Assets\Scripts\MouseTracker.cs" />
      <Compile Include="Assets\Scripts\UI\ContextMenu\ContextItem.cs" />
      <Compile Include="Assets\Scripts\Attributes\ContextMenuOptionAttribute.cs" />
-     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\ToastModal.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\DynamicUIManager.cs" />
      <Compile Include="Assets\Scripts\UI\ToastLogger\ToastLogger.cs" />
      <Compile Include="Assets\Scripts\Scoring\Shooting.cs" />
@@ -140,7 +139,6 @@
      <Compile Include="Assets\Scripts\UI\ImageManager.cs" />
      <Compile Include="Assets\Scripts\AnalyticsManager.cs" />
      <Compile Include="Assets\Scripts\Behaviors\GeneralSliderBehaviour.cs" />
-     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\DownloadAssetModal.cs" />
      <Compile Include="Assets\Scripts\Utilities\Highlighter.cs" />
      <Compile Include="Assets\Scripts\UI\Tabs\TopButton.cs" />
      <Compile Include="Assets\Scripts\UI\InteractableObject.cs" />
@@ -178,6 +176,8 @@
      <Compile Include="Assets\Scripts\Importer\Importer.cs" />
      <Compile Include="Assets\Scripts\Test\DebugJointAxes.cs" />
      <Compile Include="Assets\Scripts\UnityModalSpawner.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\DownloadAssetModal.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\ToastModal.cs" />
      <None Include="Assets\Scripts\CoreEngine.asmdef" />
      <None Include="Assets\Scripts\Tween\Readme.txt" />
     <Reference Include="UnityEngine">

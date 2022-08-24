@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -76,4 +77,10 @@ public class SynthesisAssetCollection : MonoBehaviour {
         => Instance.DynamicUIPrefabs.First(x => x.name == name);
     public static TMPro.TMP_FontAsset GetFont(string name)
         => Instance.Fonts.First(x => x.name == name);
+
+
+    public void OnDestroy()
+    {
+        AnalyticsManager.LogEvent(new AnalyticsEvent(category: "app", action: $"close", label:""));
+    }
 }
