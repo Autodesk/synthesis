@@ -182,6 +182,8 @@ public class ChangeInputsModal : ModalDynamic
         if (_currentlyReassigning != null)
         {
             var input = InputManager.GetAny();
+            if (input != null && Mathf.Abs(input.Value) < 0.15f)
+                input = null;
 
             // if we allow mouse inputs the input will always get set to Mouse0
             // because the user clicks on the button

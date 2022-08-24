@@ -1,6 +1,6 @@
 !include MUI2.nsh
 !include x64.nsh
-!define PRODUCT_VERSION "5.0.0B"
+!define PRODUCT_VERSION "5.0.0"
 
 Name "Synthesis"
 
@@ -39,7 +39,7 @@ RequestExecutionLevel admin
   !define MUI_ABORTWARNING
   !define MUI_FINISHPAGE_TEXT 'Synthesis has been successfully installed on your system. $\r$\n $\r$\nIn order to improve this product and understand how it is used, we collect non-personal product usage information. This usage information may consist of custom events like Replay Mode, Driver Practice Mode, Tutorial Link Clicked, etc. $\r$\nThis information is not used to identify or contact you. $\r$\nYou can turn data collection off from the Control Panel within the simulator. $\r$\n $\r$\nBy clicking Finish, you agree that you have read the terms of service agreement and data collection statement above.'
   !define MUI_FINISHPAGE_LINK "Synthesis Tutorials Website"
-  !define MUI_FINISHPAGE_LINK_LOCATION "http://bxd.autodesk.com/tutorials.html"
+  !define MUI_FINISHPAGE_LINK_LOCATION "https://synthesis.autodesk.com/tutorials.html"
   
 ;--------------------------------
 
@@ -331,3 +331,7 @@ Section "Uninstall"
 	uninstall_complete:
 
 SectionEnd
+
+Function .OnInstSuccess
+  Exec "$INSTDIR\Synthesis\Synthesis.exe"
+FunctionEnd

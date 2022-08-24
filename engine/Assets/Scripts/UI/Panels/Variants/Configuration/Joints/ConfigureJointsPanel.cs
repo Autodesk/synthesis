@@ -24,7 +24,7 @@ namespace Synthesis.UI.Panels {
                 var rotItem = obj.GetComponent<RotationalJointItem>();
                 var rotDriver = y as RotationalDriver;
                 // Gross
-                rotItem.Label.text = RobotSimObject.GetCurrentlyPossessedRobot().MiraAssembly.Data.Signals.SignalMap[rotDriver.InputSignal].Info.Name;
+                rotItem.Label.text = RobotSimObject.GetCurrentlyPossessedRobot().MiraLive.MiraAssembly.Data.Signals.SignalMap[rotDriver.InputSignal].Info.Name;
                 // rotItem.SpeedInput.text = (0.123f).ToString(); // eh? TODO
                 rotItem.SpeedInput.text = rotDriver.Motor.targetVelocity.ToString();
                 rotItem.SpeedInput.onValueChanged.AddListener(val => {

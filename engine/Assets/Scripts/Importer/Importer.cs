@@ -84,30 +84,31 @@ namespace Synthesis.Import
 
 		#region Mirabuf Importer
 
-		public static (GameObject MainObject, Assembly MiraAssembly, SimObject Sim) MirabufAssemblyImport(string path, bool reverseSideJoints = false) {
-			byte[] buff = File.ReadAllBytes(path);
+		public static (GameObject MainObject, MirabufLive MiraAssembly, SimObject Sim) MirabufAssemblyImport(string path) {
+			return MirabufAssemblyImport(new MirabufLive(path));
+			// byte[] buff = File.ReadAllBytes(path);
 
-			if (buff[0] == 0x1f && buff[1] == 0x8b) {
+			// if (buff[0] == 0x1f && buff[1] == 0x8b) {
 
-				int originalLength = BitConverter.ToInt32(buff, buff.Length - 4);
+			// 	int originalLength = BitConverter.ToInt32(buff, buff.Length - 4);
 
-				MemoryStream mem = new MemoryStream(buff);
-				byte[] res = new byte[originalLength];
-				GZipStream decompresser = new GZipStream(mem, CompressionMode.Decompress);
-				decompresser.Read(res, 0, res.Length);
-				decompresser.Close();
-				mem.Close();
-				buff = res;
-			}
-			return MirabufAssemblyImport(buff, reverseSideJoints);
+			// 	MemoryStream mem = new MemoryStream(buff);
+			// 	byte[] res = new byte[originalLength];
+			// 	GZipStream decompresser = new GZipStream(mem, CompressionMode.Decompress);
+			// 	decompresser.Read(res, 0, res.Length);
+			// 	decompresser.Close();
+			// 	mem.Close();
+			// 	buff = res;
+			// }
+			// return MirabufAssemblyImport(buff, reverseSideJoints);
 		}
 
-		public static (GameObject MainObject, Assembly MiraAssembly, SimObject Sim) MirabufAssemblyImport(byte[] buffer, bool reverseSideJoints = false)
-			=> MirabufAssemblyImport(Assembly.Parser.ParseFrom(buffer), reverseSideJoints);
+		// public static (GameObject MainObject, MirabufLive MiraAssembly, SimObject Sim) MirabufAssemblyImport(MirabufLive live, bool reverseSideJoints = false)
+		// 	=> MirabufAssemblyImport(live, reverseSideJoints);
 
 		private static List<Collider> _collidersToIgnore;
 
-		public static (GameObject MainObject, Assembly MiraAssembly, SimObject Sim) MirabufAssemblyImport(Assembly assembly, bool reverseSideJoints = false)
+		public static (GameObject MainObject, MirabufLive MiraAssembly, SimObject Sim) MirabufAssemblyImport(MirabufLive miraLive)
 		{
 
 			EntireImport.Begin();
@@ -115,6 +116,8 @@ namespace Synthesis.Import
 			// Uncommenting this will delete all bodies so the JSON file isn't huge
 			// DebugAssembly(assembly);
 			// return null;
+
+			Assembly assembly = miraLive.MiraAssembly;
 
 			if (assembly.Info.Version < CURRENT_MIRA_EXPORTER_VERSION) {
 				Logger.Log($"Out-of-date Assembly\nCurrent Version: {CURRENT_MIRA_EXPORTER_VERSION}\nVersion of Assembly: {assembly.Info.Version}", LogLevel.Warning);
@@ -226,7 +229,7 @@ namespace Synthesis.Import
 				}
 				foundRobots.ForEach(x => SimulationManager.RemoveSimObject(x));
 
-				simObject = new RobotSimObject(assembly.Info.Name, state, assembly, groupObjects["grounded"], jointToJointMap);
+				simObject = new RobotSimObject(assembly.Info.Name, state, miraLive, groupObjects["grounded"], jointToJointMap);
 				try {
 					SimulationManager.RegisterSimObject(simObject);
 				} catch {
@@ -235,7 +238,7 @@ namespace Synthesis.Import
 					UnityEngine.Object.Destroy(assemblyObject);
 				}
 			} else {
-				simObject = new FieldSimObject(assembly.Info.Name, state, assembly, groupObjects["grounded"], gamepieces);
+				simObject = new FieldSimObject(assembly.Info.Name, state, miraLive, groupObjects["grounded"], gamepieces);
 				try {
 					SimulationManager.RegisterSimObject(simObject);
 				} catch {
@@ -294,7 +297,7 @@ namespace Synthesis.Import
 
 			EntireImport.End();
 
-			return (assemblyObject, assembly, simObject);
+			return (assemblyObject, miraLive, simObject);
 		}
 
 		#region Assistant Functions

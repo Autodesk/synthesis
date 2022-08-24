@@ -35,7 +35,7 @@ namespace Synthesis.UI {
 
         public void Help() {
             Process.Start(new ProcessStartInfo() {
-                FileName = "https://github.com/Autodesk/synthesis/issues/784",
+                FileName = "https://www.discord.gg/hHcF9AVgZA",
                 UseShellExecute = true
             });
         }

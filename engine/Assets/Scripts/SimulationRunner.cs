@@ -75,7 +75,11 @@ namespace Synthesis.Runtime {
             // TestColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
             // RotationalDriver.TestSphericalCoordinate();
 
-            QualitySettings.SetQualityLevel(PreferenceManager.PreferenceManager.GetPreference<int>( "Quality Settings"), true);
+            if (ColorManager.HasColor("tree")) {
+                GameObject.Instantiate(Resources.Load("Misc/Tree"));
+            }
+
+            QualitySettings.SetQualityLevel(PreferenceManager.PreferenceManager.GetPreference<int>("Quality Settings"), true);
         }
 
         private void TestColor(Color c) {

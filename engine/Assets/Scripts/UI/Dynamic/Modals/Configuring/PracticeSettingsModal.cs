@@ -80,11 +80,11 @@ public class PracticeSettingsModal : ModalDynamic
         }
         else
         {
-            if (field.MiraAssembly.Info.GUID != lastField)
+            if (field.MiraLive.MiraAssembly.Info.GUID != lastField)
             {
                 _gamepieceSimObjects.Clear();
                 _gamepieceMap.Clear();
-                lastField = field.MiraAssembly.Info.GUID;
+                lastField = field.MiraLive.MiraAssembly.Info.GUID;
             }
             if (_gamepieceSimObjects.Count == 0 && field.Gamepieces.Count > 0) {
                 // group the gamepieces by their types, found via the name of the first child before :
