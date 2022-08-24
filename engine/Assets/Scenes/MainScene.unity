@@ -546,7 +546,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9672af1c048041c49873cb09e0b71584, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  updaterPanelPrefab: {fileID: 3553336194045780531, guid: fd679c1960be81f4bb3583d47e637ba2, type: 3}
 --- !u!4 &525752674
 Transform:
   m_ObjectHideFlags: 0
@@ -1213,9 +1212,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bd9fc32d95451d90530109dceeae75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PitchSensitivity: 3
-  YawSensitivity: 10
-  ZoomSensitivity: 0.52
   PitchLowerLimit: 1
   PitchUpperLimit: 80
   ZoomLowerLimit: 0.5
