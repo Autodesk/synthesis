@@ -65,8 +65,8 @@ public class FreeCameraMode : ICameraMode
         // y += yawMod;
 
         if (isActive) {
-            p = -cam.PitchSensitivity * Input.GetAxis("Mouse Y");
-            y = cam.YawSensitivity * Input.GetAxis("Mouse X");
+            p = -CameraController.PitchSensitivity * Input.GetAxis("Mouse Y");
+            y = CameraController.YawSensitivity * Input.GetAxis("Mouse X");
         }
 
         // make it so the user can't rotate the camera upside down
@@ -92,7 +92,7 @@ public class FreeCameraMode : ICameraMode
         if (isActive) {
             forward = t.forward * (InputManager.MappedDigitalInputs[FORWARD_KEY][0].Value -
                                         InputManager.MappedDigitalInputs[BACK_KEY][0].Value) +
-                            t.forward * (_targetZoom - _actualZoom) * cam.ZoomSensitivity;
+                            t.forward * (_targetZoom - _actualZoom) * CameraController.ZoomSensitivity;
             
             right = t.right * (InputManager.MappedDigitalInputs[RIGHT_KEY][0].Value -
                                     InputManager.MappedDigitalInputs[LEFT_KEY][0].Value);

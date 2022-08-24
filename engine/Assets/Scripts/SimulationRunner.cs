@@ -74,6 +74,8 @@ namespace Synthesis.Runtime {
 
             // TestColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
             // RotationalDriver.TestSphericalCoordinate();
+
+            QualitySettings.SetQualityLevel(PreferenceManager.PreferenceManager.GetPreference<int>( "Quality Settings"), true);
         }
 
         private void TestColor(Color c) {

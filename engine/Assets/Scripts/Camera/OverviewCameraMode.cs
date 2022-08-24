@@ -15,7 +15,7 @@ public class OverviewCameraMode : ICameraMode
         // don't allow camera movement when a modal or panel is open
         if (DynamicUIManager.ActiveModal != null || DynamicUIManager.ActivePanel != null) return;
         // scrolling up zooms out in all other camera modes
-        cam.transform.Translate(0, 0, cam.ZoomSensitivity * Input.mouseScrollDelta.y);
+        cam.transform.Translate(0, 0, CameraController.ZoomSensitivity * Input.mouseScrollDelta.y);
         Vector3 position = cam.transform.position;
         
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {

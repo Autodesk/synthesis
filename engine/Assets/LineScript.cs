@@ -11,6 +11,7 @@ public class LineScript : MonoBehaviour
     {
         line = GetComponent<LineRenderer>();
         line.sortingLayerName = "Foreground";
+
     }
 
     // Update is called once per frame
