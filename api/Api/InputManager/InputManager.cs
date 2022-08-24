@@ -36,6 +36,8 @@ namespace SynthesisAPI.InputManager
         }
 
         public static void UnassignDigitalInput(string name) {
+            if (!_mappedDigitalInputs.ContainsKey(name))
+                return;
             _mappedDigitalInputs.Remove(name);
             EventBus.EventBus.RemoveAllTagListeners($"input/{name}");
         }
