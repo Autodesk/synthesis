@@ -60,9 +60,9 @@ namespace Synthesis.UI.Dynamic {
             MainContent.CreateLabel().ApplyTemplate(Label.BigLabelTemplate).ApplyTemplate(VerticalLayout).SetText("Preferences");
             var reportAnalyticsToggle = MainContent.CreateToggle().ApplyTemplate(VerticalLayout).AddOnStateChangedEvent(
                 (t, s) => {
-                Set(ALLOW_DATA_GATHERING, s);
+                    AnalyticsManager.UseAnalytics = s;
                 }
-            ).SetState(Get<bool>(ALLOW_DATA_GATHERING)).TitleLabel.SetText("Report Analytics");
+            ).SetState(Get<bool>(AnalyticsManager.USE_ANALYTICS_PREF)).TitleLabel.SetText("Report Analytics");
             var measurementsToggle = MainContent.CreateToggle().ApplyTemplate(VerticalLayout).AddOnStateChangedEvent(
                 (t, s) =>
                 {
@@ -81,7 +81,6 @@ namespace Synthesis.UI.Dynamic {
         public static readonly string[] ScreenModeList = new string[] { "Fullscreen", "Windowed" };
         public const string QUALITY_SETTINGS = "Quality Settings";//Dropdown: Low Medium High
         public static string[] QualitySettingsList = new string[]{"Very Low", "Low", "Medium", "High", "Very High", "Ultra"};
-        public const string ALLOW_DATA_GATHERING = "Allow Data Gathering";//Toggle
         public const string MEASUREMENTS = "Use Imperial Measurements";//toggle for imperial. if unchecked, uses metric. 
         public static bool useImperial = true;//for other scripts to know when to use imperial or metric
 
@@ -151,7 +150,7 @@ namespace Synthesis.UI.Dynamic {
             QualitySettings.SetQualityLevel(Get<int>(QUALITY_SETTINGS), true);
 
             //Analytics
-            AnalyticsManager.UseAnalytics = Get<bool>(ALLOW_DATA_GATHERING);
+            AnalyticsManager.UseAnalytics = Get<bool>(AnalyticsManager.USE_ANALYTICS_PREF);
 
             //imperial or metric
             useImperial = Get<bool>(MEASUREMENTS);
@@ -165,7 +164,7 @@ namespace Synthesis.UI.Dynamic {
         {
             Set(SCREEN_MODE, (int)0);//fullscreen
             Set(QUALITY_SETTINGS, (int)3);//high quality
-            Set(ALLOW_DATA_GATHERING, (bool)true);
+            Set(AnalyticsManager.USE_ANALYTICS_PREF, true);
             Set(MEASUREMENTS, (bool)true);
             Set(CameraController.ZOOM_SENSITIVITY_PREF, (int)5);
             Set(CameraController.YAW_SENSITIVITY_PREF, (int)10);
