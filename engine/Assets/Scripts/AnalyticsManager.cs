@@ -18,7 +18,7 @@ public static class AnalyticsManager {
 
     private static string AllData = "";
 
-    public const string TRACKING_ID = "UA-81892961-6";
+    public const string TRACKING_ID = "UA-81892961-7";
     public static string ClientID;
 
     public const string URL_COLLECT = "https://www.google-analytics.com/collect";
@@ -78,8 +78,10 @@ public static class AnalyticsManager {
         LogAnalytic(e);
     }
 
-    public static void LogAnalytic(IAnalytics e)
-    {
+    public static void LogAnalytic(IAnalytics e) {
+        // #if UNITY_EDITOR
+        // return;
+        // #endif
         _pendingEvents.Add(e);
     }
 
