@@ -78,6 +78,8 @@ namespace Synthesis.Runtime {
             if (ColorManager.HasColor("tree")) {
                 GameObject.Instantiate(Resources.Load("Misc/Tree"));
             }
+
+            QualitySettings.SetQualityLevel(PreferenceManager.PreferenceManager.GetPreference<int>("Quality Settings"), true);
         }
 
         private void TestColor(Color c) {

@@ -103,6 +103,8 @@ public static class MainHUD {
         MainHUD.AddItemToDrawer("Camera View", b => DynamicUIManager.CreateModal<ChangeViewModal>(), icon: SynthesisAssetCollection.GetSpriteByName("CameraIcon"));
         MainHUD.AddItemToDrawer("Download Asset", b => DynamicUIManager.CreateModal<DownloadAssetModal>());
 
+        MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("settings"));
+
         if (!_hasNewRobotListener) {
             EventBus.NewTypeListener<RobotSimObject.NewRobotEvent>(e => {
                 var robotEvent = e as RobotSimObject.NewRobotEvent;

@@ -55,6 +55,7 @@ public class SynthesisAssetCollection : MonoBehaviour {
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
+        /*
         Screen.fullScreenMode = FullScreenMode.MaximizedWindow;
         var biggestWidth = 0;
         for (int i = 1; i < Screen.resolutions.Length; i++) {
@@ -62,7 +63,7 @@ public class SynthesisAssetCollection : MonoBehaviour {
                 biggestWidth = i;
         }
         var res = Screen.resolutions[biggestWidth];
-        Screen.SetResolution(res.width, res.height, FullScreenMode.MaximizedWindow);
+        Screen.SetResolution(res.width, res.height, FullScreenMode.MaximizedWindow);*/
     }
 
     public static Sprite GetSpriteByName(string name)
