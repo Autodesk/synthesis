@@ -126,7 +126,7 @@ namespace Synthesis.UI.Dynamic {
 
             EventBus.Push(new PanelClosedEvent(ActivePanel));
 
-            AnalyticsManager.LogEvent(new AnalyticsEvent(category: "ui", action: $"{ActiveModal.GetType().Name}", label:"create"));
+            AnalyticsManager.LogEvent(new AnalyticsEvent(category: "ui", action: $"{ActivePanel.GetType().Name}", label:"create"));
             AnalyticsManager.PostData();
 
             ActivePanel.Delete();
