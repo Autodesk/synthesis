@@ -3,6 +3,7 @@
 """
 
 from enum import Enum
+import platform
 from ..general_imports import *
 from ..configure import NOTIFIED, write_configuration
 from ..Analytics.alert import showAnalyticsAlert
@@ -934,6 +935,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             """
             Instantiating all the event handlers
             """
+
             onExecute = ConfigureCommandExecuteHandler(
                 json.dumps(
                     previous, default=lambda o: o.__dict__, sort_keys=True, indent=1
@@ -1172,12 +1174,31 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             # defaultPath = self.fp
             # defaultPath = os.getenv()
 
-            if mode == 5:
-                savepath = FileDialogConfig.SaveFileDialog(
-                    defaultPath=self.fp, ext="Synthesis File (*.synth)"
-                )
+            # if mode == 5:
+            #     savepath = FileDialogConfig.SaveFileDialog(
+            #         defaultPath=self.fp, ext="Synthesis File (*.synth)"
+            #     )
+            # else:
+            #     savepath = FileDialogConfig.SaveFileDialog(defaultPath=self.fp)
+
+            processedFileName = gm.app.activeDocument.name.replace(' ', '_')
+            dropdownExportMode = INPUTS_ROOT.itemById("mode")
+            if dropdownExportMode.selectedItem.index == 0:
+                isRobot = True
+            elif dropdownExportMode.selectedItem.index == 1:
+                isRobot = False
+
+            if platform.system() == "Windows":
+                if isRobot:
+                    savepath = os.getenv("APPDATA") + "\\Autodesk\\Synthesis\\Mira\\" + processedFileName + ".mira"
+                else:
+                    savepath = os.getenv("APPDATA") + "\\Autodesk\\Synthesis\\Mira\\Fields\\" + processedFileName + ".mira"
             else:
-                savepath = FileDialogConfig.SaveFileDialog(defaultPath=self.fp)
+                if isRobot:
+                    savepath = "~/Applications/Autodesk/Synthesis/Mira/" + processedFileName + ".mira"
+                else:
+                    savepath = "~/Applications/Autodesk/Synthesis/Mira/Fields" + processedFileName + ".mira"
+
 
             if savepath == False:
                 # save was canceled
