@@ -55,8 +55,6 @@ namespace Synthesis.Physics {
                                 {
                                     var data = new RigidbodyFrameData
                                     {
-                                        Position = rb.transform.position,
-                                        Rotation = rb.transform.rotation,
                                         Velocity = rb.velocity,
                                         AngularVelocity = rb.angularVelocity
                                     };
@@ -82,8 +80,6 @@ namespace Synthesis.Physics {
                                 {
                                     try
                                     {
-                                        rb.transform.position = f.Position;
-                                        rb.transform.rotation = f.Rotation;
                                         rb.velocity = f.Velocity;
                                         rb.angularVelocity = f.AngularVelocity;
                                     }
