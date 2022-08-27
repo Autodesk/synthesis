@@ -75,6 +75,7 @@ public class ReplayRunner : MonoBehaviour {
         if (de.State == DigitalState.Down) {
             // if (PhysicsManager.IsFrozen)
             //     ReplayManager.MakeCurrentNewestFrame();
+            PhysicsManager.DisableLoadFromStoredDataOnce();
             PhysicsManager.IsFrozen = !PhysicsManager.IsFrozen;
             if (PhysicsManager.IsFrozen) {
                 ReplayManager.NewestFrame.ApplyFrame();

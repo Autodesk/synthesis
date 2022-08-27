@@ -79,6 +79,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             }
 
             SimulationPreferences.SetRobotIntakeTriggerData(MiraLive.MiraAssembly.Info.GUID, _intakeData);
+            PreferenceManager.Save();
         }
     }
 
@@ -95,6 +96,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             }
 
             SimulationPreferences.SetRobotTrajectoryData(MiraLive.MiraAssembly.Info.GUID, _trajectoryData);
+            PreferenceManager.Save();
         }
     }
 
