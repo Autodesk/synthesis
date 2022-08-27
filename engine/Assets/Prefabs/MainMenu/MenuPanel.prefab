@@ -2540,7 +2540,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08fc19faaeba3544b82c75c038a060c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IndicateScaleFactor: 1.117647
+  IndicateScaleFactor: 1.05
   ClickedScaleFactor: 0.98
 --- !u!1 &8178300922366409720
 GameObject:
