@@ -1195,9 +1195,9 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                     savepath = os.getenv("APPDATA") + "\\Autodesk\\Synthesis\\Mira\\Fields\\" + processedFileName + ".mira"
             else:
                 if isRobot:
-                    savepath = "~/Applications/Autodesk/Synthesis/Mira/" + processedFileName + ".mira"
+                    savepath = "~/.config/Autodesk/Synthesis/Mira/" + processedFileName + ".mira"
                 else:
-                    savepath = "~/Applications/Autodesk/Synthesis/Mira/Fields" + processedFileName + ".mira"
+                    savepath = "~/.config/Autodesk/Synthesis/Mira/Fields" + processedFileName + ".mira"
 
 
             if savepath == False:
