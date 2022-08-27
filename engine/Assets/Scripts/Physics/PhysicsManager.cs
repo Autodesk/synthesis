@@ -80,10 +80,16 @@ namespace Synthesis.Physics {
                             {
                                 _storedValues.ForEach((rb, f) =>
                                 {
-                                    rb.transform.position = f.Position;
-                                    rb.transform.rotation = f.Rotation;
-                                    rb.velocity = f.Velocity;
-                                    rb.angularVelocity = f.AngularVelocity;
+                                    try
+                                    {
+                                        rb.transform.position = f.Position;
+                                        rb.transform.rotation = f.Rotation;
+                                        rb.velocity = f.Velocity;
+                                        rb.angularVelocity = f.AngularVelocity;
+                                    } catch (Exception e)
+                                    {
+                                        Debug.Log($"Object deleted before restore: {e.ToString()}");
+                                    }
                                 });
                             }
 
