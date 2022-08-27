@@ -86,9 +86,10 @@ namespace Synthesis.Physics {
                                         rb.transform.rotation = f.Rotation;
                                         rb.velocity = f.Velocity;
                                         rb.angularVelocity = f.AngularVelocity;
-                                    } catch (Exception e)
+                                    }
+                                    catch (Exception e)
                                     {
-                                        Debug.Log($"Object deleted before restore: {e.ToString()}");
+                                        // ignored
                                     }
                                 });
                             }
