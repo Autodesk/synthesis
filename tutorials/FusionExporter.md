@@ -29,6 +29,34 @@ The first option in the general tab is the `Export Mode`
 
 The advanced tab has some optional toggles to disable/enable some features.
 
+## Design Hierarchy
+
+Synthesis not only relys on the joints between parts to determine structure of your robot or field, but also the hierarchy of all the parts in the design.
+If you look at the browser, you can see the parent child relation ship between all our your parts, and it is important that you have them set correctly in order to ensure Synthesis knows your intentions.
+<br/>
+The term node means a collection of parts that don't move relative to eachother. We use that term a lot in.
+
+### Basic Rules
+
+#### 1. Grounded Node
+
+You must ground one of your parts in the design. This tells Synthesis where to start branching off the rest of the nodes from.
+In the browser, you'll see there is a main root component. All other components under this root component will actually be used in the export.
+NOTE: Generally anything that is underdefined or "disjointed" from the rest of the design will be added under the grounded object, so if objects that are supposed to be moving relative to what you define as grounded aren't, that is likely why.
+<br />
+All child components of the component that is grounded (and disjointed components) will be attached to the grounded node.
+If a component is associated with any joint (rigidgroups are a big exception here) will not be attached to the grounded. Instead, they will start creating their own node.
+As a result, if you joint two child components together, it will create those components (and their children) as completely separate objects in Synthesis. You will need
+to specify which component in the joint should remain with the grounded node.
+
+#### 2. Rigidgroups
+
+Rigidgroups act as a bandage. They ensure that whatever components are within the rigidgroup exist in the same node. Use this to ensure which side of the joint should remain in the grounded joint.
+
+#### 3. Sub-joints
+
+You can follow the same logic as the grounded node, but instead its stemming from that parent joint.
+
 ## Robots
 ![image](img/fusion/exporter-robot.png)
 
@@ -48,4 +76,10 @@ The signal type specifies what type of IO is used to control the wheel. This wil
 
 ### Joint Configuration
 
-You can configure each type joint that will be used in the robot. All joints are automatically added to the list. If you want to ignore a joint you can either supress it, or remove it from the list.
+You can configure each type joint that will be used in the robot. All joints are automatically added to the list. If you want to ignore a joint you can either supress it, or remove it from the list. In the list, you can specify a max rotational speed for the joint, along with a stall torque for the joint.
+<br/>
+NOTE: These are not super accurate in Synthesis atm. They will be getting updates to be more accurate to user definitions for max angular speed and stall torque.
+<br/>
+NOTE: Linear joints are not fully supported yet.
+<br/>
+You can also specify a parent joint that the joint is supposed to stem from.
