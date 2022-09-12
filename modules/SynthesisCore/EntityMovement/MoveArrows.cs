@@ -118,13 +118,13 @@ namespace SynthesisCore.EntityMovement
         {
             if (selectedMarker != null)
             {
-                var xMod = InputManager.GetAxisValue("Mouse X");
-                var yMod = InputManager.GetAxisValue("Mouse Y");
+                // var xMod = InputManager.GetAxisValue("Mouse X");
+                // var yMod = InputManager.GetAxisValue("Mouse Y");
 
-                if (xMod != 0 || yMod != 0)
-                {
-                    selectedMarker.MoveEntityTransform(targetTransform, xMod, yMod);
-                }
+                //if (xMod != 0 || yMod != 0)
+                //{
+                //    selectedMarker.MoveEntityTransform(targetTransform, xMod, yMod);
+                //}
             }
         }
     }
