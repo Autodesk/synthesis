@@ -15,6 +15,8 @@ using UnityEngine.SceneManagement;
 using Synthesis.Physics;
 using SynthesisAPI.EventBus;
 using Synthesis.Replay;
+using Synthesis.WS;
+using SynthesisAPI.RoboRIO;
 
 namespace Synthesis.Runtime {
     public class SimulationRunner : MonoBehaviour {
@@ -67,6 +69,7 @@ namespace Synthesis.Runtime {
             MainHUD.Setup();
             ModeManager.Start();
             RobotSimObject.Setup();
+            WebSocketManager.Init();
 
             OnUpdate += DynamicUIManager.Update;
 
@@ -99,6 +102,9 @@ namespace Synthesis.Runtime {
 
             if (OnUpdate != null)
                 OnUpdate();
+
+            var socket = WebSocketManager.RioState.GetData<PWMData>("PWM", "0");
+            Debug.Log($"{socket.init}:{socket.speed}:{socket.position}");
 
             // if (Input.GetKeyDown(KeyCode.K)) {
             //     if (!SimulationManager.RemoveSimObject(RobotSimObject.CurrentlyPossessedRobot))
@@ -157,6 +163,7 @@ namespace Synthesis.Runtime {
 
             PhysicsManager.Reset();
             ReplayManager.Teardown();
+            WebSocketManager.Teardown();
         }
     }
 }
