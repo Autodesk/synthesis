@@ -121,6 +121,7 @@
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\ChangeViewModal.cs" />
      <Compile Include="Assets\Scripts\Utilities\IOHandler.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\JointsAdapter.cs" />
+     <Compile Include="Assets\Scripts\WebSockets\WebSocketManager.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Input\InputSelection.cs" />
      <Compile Include="Assets\Scripts\SimulationRunner.cs" />
      <Compile Include="Assets\Scripts\Camera\CameraController.cs" />
@@ -181,7 +182,6 @@
      <Compile Include="Assets\Scripts\Importer\Importer.cs" />
      <Compile Include="Assets\Scripts\Test\DebugJointAxes.cs" />
      <Compile Include="Assets\Scripts\UnityModalSpawner.cs" />
-     <Compile Include="Assets\Scripts\WebSockets\WebSocketManager.cs" />
      <None Include="Assets\Scripts\CoreEngine.asmdef" />
      <None Include="Assets\Scripts\Tween\Readme.txt" />
     <Reference Include="UnityEngine">
