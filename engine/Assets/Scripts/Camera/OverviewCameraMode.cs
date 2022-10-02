@@ -13,7 +13,7 @@ public class OverviewCameraMode : ICameraMode
     public void Update(CameraController cam)
     {
         // don't allow camera movement when a modal or panel is open
-        if (DynamicUIManager.ActiveModal != null || DynamicUIManager.ActivePanel != null) return;
+        if (DynamicUIManager.ActiveModal != null || DynamicUIManager.AnyPanels) return;
         // scrolling up zooms out in all other camera modes
         cam.transform.Translate(0, 0, CameraController.ZoomSensitivity * Input.mouseScrollDelta.y);
         Vector3 position = cam.transform.position;

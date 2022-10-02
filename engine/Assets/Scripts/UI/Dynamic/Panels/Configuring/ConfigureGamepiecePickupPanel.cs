@@ -30,7 +30,7 @@ namespace Synthesis.UI.Dynamic {
             Title.SetText("Configure Pickup");
 
             if (RobotSimObject.CurrentlyPossessedRobot == string.Empty) {
-                DynamicUIManager.CloseActivePanel();
+                DynamicUIManager.ClosePanel<ConfigureGamepiecePickupPanel>();
                 return;
             }
 
@@ -52,7 +52,7 @@ namespace Synthesis.UI.Dynamic {
 
             AcceptButton.AddOnClickedEvent(b => {
                 _save = true;
-                DynamicUIManager.CloseActivePanel();
+                DynamicUIManager.ClosePanel<ConfigureGamepiecePickupPanel>();
             }).StepIntoLabel(l => l.SetText("Save"));
 
             _zoneObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -72,7 +72,7 @@ namespace Synthesis.UI.Dynamic {
                         robot.RobotNode.transform.Find(_resultingData.NodeName) // Get Node
                         .transform.worldToLocalMatrix.MultiplyPoint(t.Position).ToArray(); // Transform point to local space
                     if (!_exiting)
-                        DynamicUIManager.CloseActivePanel();
+                        DynamicUIManager.ClosePanel<ConfigureGamepiecePickupPanel>();
                 }
             );
 

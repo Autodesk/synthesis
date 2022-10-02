@@ -130,8 +130,8 @@ namespace Synthesis.UI.Dynamic
             //TEMPORARY: FOR POWERUP ONLY
             
             Scoring.CreatePowerupScoreZones();
-            DynamicUIManager.CloseActivePanel();
-            DynamicUIManager.CreatePanel<Synthesis.UI.Dynamic.ScoreboardPanel>();
+            DynamicUIManager.CloseAllPanels(true);
+            DynamicUIManager.CreatePanel<Synthesis.UI.Dynamic.ScoreboardPanel>(true);
 
             GizmoManager.ExitGizmo();
         }

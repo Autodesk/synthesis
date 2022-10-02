@@ -18,7 +18,7 @@ namespace Synthesis.UI.Dynamic {
 
             CancelButton.RootGameObject.SetActive(false);
             AcceptButton.StepIntoLabel(l => l.SetText("Close"));
-            AcceptButton.AddOnClickedEvent(b => DynamicUIManager.CloseActivePanel());
+            AcceptButton.AddOnClickedEvent(b => DynamicUIManager.ClosePanel<RobotDetailsPanel>());
 
             var normalFont = SynthesisAssetCollection.GetFont(ROBOTO_REGULAR);
             Func<Label, Label> nonHighlightedLabel =

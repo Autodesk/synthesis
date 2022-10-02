@@ -46,6 +46,22 @@ namespace Synthesis.UI.Dynamic {
         private Content _mainContent;
         protected Content MainContent => _mainContent;
 
+        private bool _hidden = false;
+        public bool Hidden {
+            get => _hidden;
+            set {
+                if (value != _hidden) {
+                    _hidden = value;
+                    if (_hidden) {
+                        _unityObject.SetActive(false);
+                    } else {
+                        _unityObject.SetActive(true);
+                    }
+                    OnVisibilityChange();
+                }
+            }
+        }
+
         protected PanelDynamic(Vector2 mainContentSize, float leftContentPadding = 20f, float rightContentPadding = 20f) {
             _mainContentSize = mainContentSize;
             _leftContentPadding = leftContentPadding;
@@ -71,7 +87,7 @@ namespace Synthesis.UI.Dynamic {
             var footerRt = footer.GetComponent<RectTransform>();
             _cancelButton = new Button(null!, footer.Find("Cancel").gameObject, null);
             _cancelButton.AddOnClickedEvent(b => {
-                if (!DynamicUIManager.CloseActivePanel())
+                if (!DynamicUIManager.ClosePanel(this.GetType()))
                     Logger.Log("Failed to Close Panel", LogLevel.Error);
             });
             _cancelButton.Image.SetColor(ColorManager.SYNTHESIS_CANCEL);
@@ -104,6 +120,8 @@ namespace Synthesis.UI.Dynamic {
         public abstract void Create();
         public abstract void Update();
         public abstract void Delete();
+
+        protected virtual void OnVisibilityChange() { }
 
         public void Delete_Internal() {
             GameObject.Destroy(_unityObject);
