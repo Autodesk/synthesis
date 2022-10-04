@@ -18,6 +18,8 @@ namespace Synthesis.WS {
         private static WebSocketServer? _server;
         public static RoboRIOState RioState = new RoboRIOState();
 
+        public static bool HasClient => _server?.Clients.Count > 0;
+
         public static void Init(bool force = false) {
             if (_initialized && !force)
                 return;

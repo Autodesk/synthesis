@@ -103,18 +103,18 @@ namespace Synthesis.Runtime {
             if (OnUpdate != null)
                 OnUpdate();
 
-            var socket = WebSocketManager.RioState.GetData<PWMData>("PWM", "0");
-            if (socket.GetData() == null) {
-                Debug.Log("Data null");
-            }
-            Debug.Log($"{socket.Init}:{socket.Speed}:{socket.Position}");
+            // var socket = WebSocketManager.RioState.GetData<PWMData>("PWM", "0");
+            // if (socket.GetData() == null) {
+            //     Debug.Log("Data null");
+            // }
+            // Debug.Log($"{socket.Init}:{socket.Speed}:{socket.Position}");
 
-            var aiData = WebSocketManager.RioState.GetData<AIData>("AI", "3");
-            if (aiData.Init) {
-                WebSocketManager.UpdateData<AIData>("AI", "3", d => {
-                    d.Voltage = 2.3;
-                });
-            }
+            // var aiData = WebSocketManager.RioState.GetData<AIData>("AI", "3");
+            // if (aiData.Init) {
+            //     WebSocketManager.UpdateData<AIData>("AI", "3", d => {
+            //         d.Voltage = 2.3;
+            //     });
+            // }
 
             // if (Input.GetKeyDown(KeyCode.K)) {
             //     if (!SimulationManager.RemoveSimObject(RobotSimObject.CurrentlyPossessedRobot))
