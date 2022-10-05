@@ -4,4 +4,8 @@ using UnityEngine;
 
 public class RioTranslationLayer {
     
+
+    public struct RioTransJsonSpec {
+        
+    }
 }

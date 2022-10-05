@@ -11,7 +11,8 @@ namespace SynthesisAPI.RoboRIO {
         private Dictionary<string, Type> _registeredTypes = new Dictionary<string, Type>() {
             { "AI", typeof(AIData) },
             { "PWM", typeof(PWMData) },
-            { "DriverStation", typeof(DriverStationData) }
+            { "DriverStation", typeof(DriverStationData) },
+            { "dPWM", typeof(DPWMData) }
         };
 
         private Mutex _dataMutex = new Mutex();
@@ -171,6 +172,27 @@ namespace SynthesisAPI.RoboRIO {
             get => (bool)_rawData.TryGetDefault("<zero_latch", false);
             set {
                 _rawData["<zero_latch"] = value;
+            }
+        }
+    }
+
+    public class DPWMData : HardwareTypeData {
+        public bool Init {
+            get => (bool)_rawData.TryGetDefault("<init", false);
+            set {
+                _rawData["<init"] = value;
+            }
+        }
+        public double DutyCycle {
+            get => (double)_rawData.TryGetDefault("<duty_cycle", 0.0);
+            set {
+                _rawData["<duty_cycle"] = value;
+            }
+        }
+        public int DIOPin {
+            get => (int)_rawData.TryGetDefault("<dio_pin", 0);
+            set {
+                _rawData["<dio_pin"] = value;
             }
         }
     }
