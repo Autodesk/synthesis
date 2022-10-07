@@ -18,6 +18,7 @@
 /engine/[Aa]ssets/AssetStoreTools*
 
 /engine/*.csproj
+/engine/*.sln
 
 .vs/
 .DS_Store
