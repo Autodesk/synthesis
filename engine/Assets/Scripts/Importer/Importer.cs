@@ -52,69 +52,32 @@ namespace Synthesis.Import
 
 		public const UInt32 CURRENT_MIRA_EXPORTER_VERSION = 4;
 
-		public delegate GameObject ImportFuncString(string path);
-
-		public delegate GameObject ImportFuncBuffer(byte[] buffer);
-
-		/// <summary>
-		/// Default Importers that come stock with Synthesis. Leaves ability to add one post release
-		/// </summary>
-		public static Dictionary<SourceType, (ImportFuncString strFunc, ImportFuncBuffer bufFunc)> Importers
-			= new Dictionary<SourceType, (ImportFuncString strFunc, ImportFuncBuffer bufFunc)>()
-			{
-				// {SourceType.PROTOBUF_FIELD, (LegacyFieldImporter.ProtoFieldImport, LegacyFieldImporter.ProtoFieldImport) },
-				//{SourceType.MIRABUF_ASSEMBLY, (MirabufAssemblyImport, MirabufAssemblyImport)}
-			};
-
-		/// <summary>
-		/// Import a serialized DynamicObject into a Unity Environment
-		/// </summary>
-		/// <param name="path">Path to serialized data (this could be a directory or a file depending on your import/translate function)</param>
-		/// <param name="type">Type of import to conduct</param>
-		/// <param name="transType">Optional translation type to use before importing</param>
-		/// <param name="forceTranslate">Force a translation of source data regardless if a temp file exists. TODO: Probably remove in the future</param>
-		/// <returns>Root GameObject of whatever Entity/Model you imported</returns>
-		public static GameObject Import(string path, SourceType type)
-			=> Importers[type].strFunc(path);
-
-		public static GameObject Import(byte[] contents, SourceType type)
-			=> Importers[type].bufFunc(contents);
-
 		#endregion
 
 		#region Mirabuf Importer
 
+		/// <summary>
+		/// Import a mirabuf assembly
+		/// </summary>
+		/// <param name="miraLive">Path to mirabuf file</param>
+		/// <returns>A tuple of the main gameobject that contains the imported assembly, a reference to the live file, and the simobject controlling the assembly</returns>
 		public static (GameObject MainObject, MirabufLive MiraAssembly, SimObject Sim) MirabufAssemblyImport(string path) {
 			return MirabufAssemblyImport(new MirabufLive(path));
-			// byte[] buff = File.ReadAllBytes(path);
-
-			// if (buff[0] == 0x1f && buff[1] == 0x8b) {
-
-			// 	int originalLength = BitConverter.ToInt32(buff, buff.Length - 4);
-
-			// 	MemoryStream mem = new MemoryStream(buff);
-			// 	byte[] res = new byte[originalLength];
-			// 	GZipStream decompresser = new GZipStream(mem, CompressionMode.Decompress);
-			// 	decompresser.Read(res, 0, res.Length);
-			// 	decompresser.Close();
-			// 	mem.Close();
-			// 	buff = res;
-			// }
-			// return MirabufAssemblyImport(buff, reverseSideJoints);
 		}
-
-		// public static (GameObject MainObject, MirabufLive MiraAssembly, SimObject Sim) MirabufAssemblyImport(MirabufLive live, bool reverseSideJoints = false)
-		// 	=> MirabufAssemblyImport(live, reverseSideJoints);
 
 		private static List<Collider> _collidersToIgnore;
 
+		/// <summary>
+		/// Import a mirabuf assembly from a live file.
+		/// </summary>
+		/// <param name="miraLive">Live file for mirabuf data</param>
+		/// <returns>A tuple of the main gameobject that contains the imported assembly, a reference to the live file, and the simobject controlling the assembly</returns>
 		public static (GameObject MainObject, MirabufLive MiraAssembly, SimObject Sim) MirabufAssemblyImport(MirabufLive miraLive)
 		{
-
 			EntireImport.Begin();
 
 			// Uncommenting this will delete all bodies so the JSON file isn't huge
-			// DebugAssembly(assembly);
+			DebugAssembly(miraLive.MiraAssembly);
 			// return null;
 
 			Assembly assembly = miraLive.MiraAssembly;
@@ -290,9 +253,8 @@ namespace Synthesis.Import
 			#endregion
 
 			if (assembly.Dynamic) {
-				(simObject as RobotSimObject).ConfigureArcadeDrivetrain();
-				(simObject as RobotSimObject).ConfigureArmBehaviours();
-				(simObject as RobotSimObject).ConfigureSliderBehaviours();
+				// (simObject as RobotSimObject).ConfigureDefaultBehaviours();
+				(simObject as RobotSimObject).ConfigureTestSimulationBehaviours();
 			}
 
 			EntireImport.End();
