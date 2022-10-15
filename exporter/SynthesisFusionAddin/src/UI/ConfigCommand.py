@@ -1265,6 +1265,10 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                         row, 3
                     ).selectedItem.index  # signal type index, int
 
+                    # typeString = jointTableInput.getInputAtPosition(
+                    #     row, 0
+                    # ).name
+
                     jointSpeed = jointTableInput.getInputAtPosition(row, 4).value
 
                     jointForce = jointTableInput.getInputAtPosition(row, 5).value
@@ -2464,11 +2468,26 @@ def addJointToTable(joint: adsk.fusion.Joint) -> None:
             jointSpeed.tooltip = "Degrees per second"
             jointTableInput.addCommandInput(jointSpeed, row, 4)
 
-        if joint.jointMotion.jointType == adsk.fusion.JointTypes.RevoluteJointType:
             jointForce = cmdInputs.addValueInput(
                 "joint_force", "Force", "N", adsk.core.ValueInput.createByReal(5000)
             )
             jointForce.tooltip = "Newton-Meters***"
+            jointTableInput.addCommandInput(jointForce, row, 5)
+
+        if joint.jointMotion.jointType == adsk.fusion.JointTypes.SliderJointType:
+            jointSpeed = cmdInputs.addValueInput(
+                "joint_speed",
+                "Speed",
+                "m",
+                adsk.core.ValueInput.createByReal(100),
+            )
+            jointSpeed.tooltip = "Meters per second"
+            jointTableInput.addCommandInput(jointSpeed, row, 4)
+
+            jointForce = cmdInputs.addValueInput(
+                "joint_force", "Force", "N", adsk.core.ValueInput.createByReal(5000)
+            )
+            jointForce.tooltip = "Newtons"
             jointTableInput.addCommandInput(jointForce, row, 5)
 
     except:
