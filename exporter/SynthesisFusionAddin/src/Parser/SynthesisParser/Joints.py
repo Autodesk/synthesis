@@ -287,7 +287,7 @@ def fillRevoluteJointMotion(
 
     rotationAxisVector = revoluteMotion.rotationAxisVector
     if rotationAxisVector:
-        dof.axis.x = -rotationAxisVector.x
+        dof.axis.x = rotationAxisVector.x
         dof.axis.y = rotationAxisVector.y
         dof.axis.z = rotationAxisVector.z
     else:
