@@ -27,7 +27,9 @@ public class RioConfigurationModal : ModalDynamic {
         _scrollView = MainContent.CreateScrollView();
         _scrollView.SetStretch<ScrollView>();
 
-        CreateItem("WooOOOooo");
+        for (int i = 0; i < 10; i++) {
+            CreateItem("PWM " + i);
+        }
 
         CreateAddButton();
 
@@ -37,7 +39,7 @@ public class RioConfigurationModal : ModalDynamic {
     public void CreateItem(string text) {
         var content = _scrollView.Content.CreateSubContent(new Vector2(_scrollView.Content.Size.x, 80));
         content.EnsureImage().StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_ORANGE));
-        content.SetTopStretch<ScrollView>(anchoredY: -_scrollView.Content.RectOfChildren(content).yMin);
+        content.SetTopStretch<Content>(anchoredY: -_scrollView.Content.RectOfChildren(content).yMin);
         content.CreateLabel().SetStretch<Label>(leftPadding: 20, topPadding: 20, bottomPadding:20)
             .SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Middle).SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Left)
             .SetText(text).SetColor(ColorManager.SYNTHESIS_BLACK);
@@ -49,12 +51,43 @@ public class RioConfigurationModal : ModalDynamic {
 
     public void CreateAddButton() {
         var content = _scrollView.Content.CreateSubContent(new Vector2(_scrollView.Content.Size.x, 80));
-        content.EnsureImage().StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_ORANGE));
-        content.SetTopStretch<ScrollView>(anchoredY: -_scrollView.Content.RectOfChildren(content).yMin)
-            .SetPivot<ScrollView>(new Vector2(0.5f, 0.5f)).SetWidth<ScrollView>(100).SetHeight<ScrollView>(60);
-        content.CreateLabel().SetStretch<Label>(leftPadding: 20, topPadding: 20, bottomPadding:20)
-            .SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Middle).SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Center)
-            .SetText("Add").SetColor(ColorManager.SYNTHESIS_BLACK);
+        content.Image?.SetColor(new Color(0, 0, 0, 0));
+        content.SetTopStretch<Content>(anchoredY: -_scrollView.Content.RectOfChildren(content).yMin);
+        var button = content.CreateButton("Add");
+        button.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_ORANGE));
+        button.RootRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        button.RootRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        button.RootRectTransform.anchoredPosition = Vector2.zero;
+        button.SetPivot<Button>(new Vector2(0.5f, 0.5f));
+        button.SetSize<Button>(new Vector2(150, 50));
+        button.AddOnClickedEvent(b => {
+            DynamicUIManager.CreateModal<RCIOConfigModal>();
+        });
+    }
+
+    public override void Delete() { }
+
+    public override void Update() { }
+}
+
+public class RCIOConfigModal : ModalDynamic {
+    public RCIOConfigModal() : base(new Vector2(300, 200)) { }
+
+    public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
+        var offset = (-u.Parent!.RectOfChildren(u).yMin) + 7.5f;
+        u.SetTopStretch<UIComponent>(anchoredY: offset);
+        return u;
+    };
+
+    public override void Create() {
+        Title.SetText("Create IO");
+        Title.SetWidth<Label>(300);
+        Description.SetText("Make a RoboRIO IO");
+        ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+        ModalImage.SetColor(ColorManager.SYNTHESIS_WHITE);
+
+        var dropdown = MainContent.CreateLabeledDropdown().StepIntoLabel(l => l.SetText("Type"));
+        dropdown.StepIntoDropdown(d => d.SetOptions(new string[] { "PWM", "Analog", "Digital" }));
     }
 
     public override void Delete() { }

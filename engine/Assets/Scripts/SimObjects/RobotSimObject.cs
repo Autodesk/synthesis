@@ -57,6 +57,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     public GameObject RobotNode { get; private set; } // Doesn't work??
     public Bounds RobotBounds { get; private set; }
 
+    public RioTranslationLayer SimulationTranslationLayer { get; private set; }
+
     public SimBehaviour DriveBehaviour { get; private set; }
 
     private (List<JointInstance> leftWheels, List<JointInstance> rightWheels) _tankTrackWheels = (null, null);
