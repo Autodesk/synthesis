@@ -113,8 +113,8 @@ public static class MainHUD {
                 if (robotEvent == null)
                     throw new Exception("Event type parsed incorrectly. Shouldn't ever happen");
 
-                Debug.Log($"Old Bot: '{robotEvent.OldBot}'");
-                Debug.Log($"New Bot: '{robotEvent.NewBot}'");
+                // Debug.Log($"Old Bot: '{robotEvent.OldBot}'");
+                // Debug.Log($"New Bot: '{robotEvent.NewBot}'");
 
                 if (robotEvent.NewBot == string.Empty) {
                     RemoveItemFromDrawer("Configure");

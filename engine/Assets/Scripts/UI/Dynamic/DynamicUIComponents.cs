@@ -354,6 +354,21 @@ namespace Synthesis.UI.Dynamic {
             _eventsActive = false;
             return (this as T)!;
         }
+        public T SetAnchors<T>(Vector2 min, Vector2 max) where T : UIComponent {
+            RootRectTransform.anchorMin = min;
+            RootRectTransform.anchorMax = max;
+            return (this as T)!;
+        }
+        public T SetAnchorCenter<T>() where T : UIComponent {
+            RootRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+            RootRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+            return (this as T)!;
+        }
+        public T SetAnchorTop<T>() where T : UIComponent {
+            RootRectTransform.anchorMin = new Vector2(0.5f, 1);
+            RootRectTransform.anchorMax = new Vector2(0.5f, 1);
+            return (this as T)!;
+        }
     }
 
     #endregion
@@ -598,6 +613,23 @@ namespace Synthesis.UI.Dynamic {
         private Image _enabledImage;
         public Image EnabledImage => _enabledImage;
 
+        private Color _disabledColor;
+        private Color DisabledColor {
+            get => _disabledColor;
+            set {
+                _disabledColor = value;
+                _disabledImage.SetColor(_disabledColor);
+            }
+        }
+        private Color _enabledColor;
+        public Color EnabledColor {
+            get => _enabledColor;
+            set {
+                _enabledColor = value;
+                _enabledImage.SetColor(_enabledColor);
+            }
+        }
+
         public bool State {
             get => _unityToggle.isOn;
             set {
@@ -616,10 +648,10 @@ namespace Synthesis.UI.Dynamic {
             _titleLabel.SetText(text);
 
             _disabledImage = new Image(this, _unityToggle.transform.Find("Background").gameObject);
-            _disabledImage.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT));
-
             _enabledImage = new Image(this, _unityToggle.transform.Find("Background").Find("Checkmark").gameObject);
-            _enabledImage.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
+
+            DisabledColor = ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT);
+            EnabledColor = ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE);
         }
 
         public Toggle SetState(bool state) {
@@ -628,6 +660,22 @@ namespace Synthesis.UI.Dynamic {
         }
         public Toggle AddOnStateChangedEvent(Action<Toggle, bool> callback) {
             OnStateChanged += callback;
+            return this;
+        }
+        public Toggle SetEnabledColor(Color c) {
+            EnabledColor = c;
+            return this;
+        }
+        public Toggle SetEnabledColor(string s) {
+            EnabledColor = ColorManager.TryGetColor(s);
+            return this;
+        }
+        public Toggle SetDisabledColor(Color c) {
+            DisabledColor = c;
+            return this;
+        }
+        public Toggle SetDisabledColor(string s) {
+            DisabledColor = ColorManager.TryGetColor(s);
             return this;
         }
     }
@@ -744,6 +792,7 @@ namespace Synthesis.UI.Dynamic {
         public Image BackgroundImage => _backgroundImage;
         private TMP_InputField _tmpInput;
         public TMP_InputField.ContentType ContentType => _tmpInput.contentType;
+        public string Value => _tmpInput.text;
 
         public InputField(UIComponent? parent, GameObject unityObject) : base(parent, unityObject) {
             var ifObj = unityObject.transform.Find("InputField");
@@ -869,6 +918,8 @@ namespace Synthesis.UI.Dynamic {
         public Content Viewport => _viewport;
         private TMP_Dropdown _tmpDropdown;
         public IReadOnlyList<TMP_Dropdown.OptionData> Options => _tmpDropdown.options.AsReadOnly();
+        public int Value => _tmpDropdown.value;
+        public TMP_Dropdown.OptionData SelectedOption => _tmpDropdown.options[Value];
         
         private Image _headerImage;
         public Image HeaderImage => _headerImage;
