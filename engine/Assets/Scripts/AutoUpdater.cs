@@ -24,7 +24,7 @@ public class AutoUpdater : MonoBehaviour
     {
         // var versionText = GameObject.Find("VersionNumber").GetComponent<Text>();
         // versionText.text = "Version " + LocalVersion;
-        Debug.Log($"Version {LocalVersion}");
+        // Debug.Log($"Version {LocalVersion}");
         // game = GameObject.Find("UpdatePrompt");
 
         // Analytics For Client Startup

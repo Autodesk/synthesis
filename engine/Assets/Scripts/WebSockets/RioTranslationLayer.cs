@@ -19,6 +19,7 @@ namespace Synthesis.WS.Translation {
         public class PWMRioPointer : IRioPointer {
 
             private string _device;
+            public string Device => _device;
             private DataSelection _selection;
 
             public PWMRioPointer(string device, DataSelection selection) {

@@ -6,9 +6,42 @@ using Synthesis.Gizmo;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
+using SynthesisAPI.Utilities;
+
+using Logger = SynthesisAPI.Utilities.Logger;
+using Synthesis.WS.Translation;
+
+#nullable enable
 
 public class RioConfigurationModal : ModalDynamic {
-    public RioConfigurationModal() : base(new Vector2(1000, 600)) { }
+
+    private const float MODAL_WIDTH = 1000;
+    private const float MODAL_HEIGHT = 600;
+
+    public RioConfigurationModal() : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) { }
+    public RioConfigurationModal(bool reload = false) : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) {
+        if (reload && RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
+            var trans = RobotSimObject.GetCurrentlyPossessedRobot().SimulationTranslationLayer;
+
+            trans.Groupings.ForEach((name, group) => {
+                group.RioPointers.ForEach(rp => {
+                    var device = new DeviceEntry();
+                    switch (rp.GetType().Name) {
+                        case "PWMRioPointer":
+                            device.Type = PWM;
+                            device.ID = (rp as RioTranslationLayer.PWMRioPointer)!.Device;
+                            device.Signal = name.StartsWith("G_") ? name.Substring(2) : name;
+                            break;
+                        default:
+                            break;
+                    }
+                    Devices.Add(device);
+                });
+            });
+
+            trans.Groupings.Where(kvp => kvp.Key.StartsWith("G_")).ForEach(kvp => Groupings.Add(new GroupEntry { Name = kvp.Key.Substring(2), Signals = new List<string>(kvp.Value.Signals) }));
+        }
+    }
 
     private const string PWM = "PWM";
     private const string Analog = "Analog";
@@ -49,6 +82,8 @@ public class RioConfigurationModal : ModalDynamic {
         // for (int i = 0; i < 10; i++) {
         //     CreateItem("PWM " + i);
         // }
+
+        AcceptButton.AddOnClickedEvent(b => Apply());
 
         Devices.ForEach(e => {
             CreateItem($"{e.Type} {e.ID}", "Config", () => {
@@ -105,14 +140,59 @@ public class RioConfigurationModal : ModalDynamic {
         });
     }
 
+    public void Apply() {
+        RioTranslationLayer trans = new RioTranslationLayer();
+
+        trans.Groupings = new Dictionary<string, RioTranslationLayer.Grouping>();
+
+        Devices.ForEach(d => {
+
+            (string name, RioTranslationLayer.Grouping group) groupKvp;
+
+            if (trans.Groupings.ContainsKey(d.Signal)) {
+                groupKvp = (d.Signal, trans.Groupings[d.Signal]);
+            } else {
+                groupKvp = (d.Signal, new RioTranslationLayer.Grouping());
+                trans.Groupings.Add(groupKvp.name, groupKvp.group);
+            }
+
+            switch (d.Type) {
+                case PWM:
+                    groupKvp.group.RioPointers.Add(
+                        new RioTranslationLayer.PWMRioPointer(d.ID, RioTranslationLayer.PWMRioPointer.DataSelection.Speed)
+                    );
+                    break;
+                default:
+                    // Uhhhhh
+                    break;
+            }
+        });
+
+        Groupings.ForEach(ge => {
+            var g = trans.Groupings[ge.Name];
+            g.Signals.AddRange(ge.Signals);
+            trans.Groupings.Remove(ge.Name);
+            trans.Groupings[$"G_{ge.Name}"] = g;
+        });
+        trans.Groupings.Where(kvp => kvp.Value.Signals.Count == 0).ForEach(kvp => kvp.Value.Signals.Add(kvp.Key));
+
+        RobotSimObject.GetCurrentlyPossessedRobot().SimulationTranslationLayer = trans;
+    }
+
     public override void Delete() { }
 
-    public override void Update() { }
+    public override void Update() {
+        if (RobotSimObject.CurrentlyPossessedRobot == string.Empty) {
+            Logger.Log("Spawn a robot first", LogLevel.Info);
+            DynamicUIManager.CloseActiveModal();
+        }
+    }
 }
 
 public struct DeviceEntry {
     public string Type;
     public string ID;
+    public string Signal;
 }
 
 public struct GroupEntry {
@@ -128,6 +208,7 @@ public class RCConfigurePwmModal : ModalDynamic {
     private DeviceEntry _entry;
 
     private LabeledDropdown _signalDropdown;
+    private List<(string name, string guid)> _options;
 
     public override void Create() {
         Title.SetText("Configure PWM");
@@ -137,6 +218,9 @@ public class RCConfigurePwmModal : ModalDynamic {
         ModalImage.SetColor(ColorManager.SYNTHESIS_WHITE);
 
         AcceptButton.AddOnClickedEvent(b => {
+            _entry.Signal = _options[_signalDropdown.Dropdown.Value].guid;
+            RioConfigurationModal.Devices.RemoveAll(e => e.ID == _entry.ID && e.Type == _entry.Type);
+            RioConfigurationModal.Devices.Add(_entry);
             DynamicUIManager.CreateModal<RioConfigurationModal>();
         }).StepIntoLabel(l => l.SetText("Done"));
 
@@ -144,23 +228,28 @@ public class RCConfigurePwmModal : ModalDynamic {
             DynamicUIManager.CreateModal<RioConfigurationModal>();
         });
 
-        var options = new List<string>();
+        _options = new List<(string name, string guid)>();
 
-        RioConfigurationModal.Groupings.ForEach(g => options.Add($"[G] {g.Name}"));
+        RioConfigurationModal.Groupings.ForEach(g => _options.Add(($"[G] {g.Name}", g.Name)));
 
         // I apologize in advance
         RobotSimObject.GetCurrentlyPossessedRobot().MiraLive.MiraAssembly.Data.Joints.JointInstances.Values.Where(
             x => !x.Info.Name.Equals("grounded") && RobotSimObject.GetCurrentlyPossessedRobot().MiraLive.MiraAssembly.Data.Joints.JointDefinitions[x.JointReference].JointMotionType
                 == Mirabuf.Joint.JointMotion.Revolute
         ).Where(x => !RioConfigurationModal.Groupings.Exists(y => y.Signals.Contains(x.SignalReference)))
-            .ForEach(x => options.Add($"{x.Info.Name} ({x.SignalReference})"));
+            .ForEach(x => _options.Add(($"{x.Info.Name} ({x.SignalReference})", x.SignalReference)));
 
         _signalDropdown = MainContent.CreateLabeledDropdown();
         _signalDropdown.SetTopStretch<LabeledDropdown>().StepIntoLabel(
-            l => l.SetText("Signal")
+            l => l.SetText("Signal 😊")
         ).StepIntoDropdown(
-            d => d.SetOptions(options.ToArray())
+            d => d.SetOptions(_options.ToArray().Select(x => x.name).ToArray())
         );
+
+        if (_entry.Signal != null && _entry.Signal != string.Empty) {
+            int previousSelection = _options.FindIndex(0, _options.Count, x => x.guid == _entry.Signal);
+            _signalDropdown.StepIntoDropdown(d => d.SetValue(previousSelection, true));
+        }
     }
 
     public override void Delete() { }
@@ -188,7 +277,13 @@ public class RCCreateDeviceModal : ModalDynamic {
         ModalImage.SetColor(ColorManager.SYNTHESIS_WHITE);
 
         AcceptButton.AddOnClickedEvent(b => {
-            RioConfigurationModal.Devices.Add(new DeviceEntry { Type = _typeDropdown.Dropdown.SelectedOption.text, ID = _idDropdown.Dropdown.SelectedOption.text });
+            var entry = new DeviceEntry {
+                Type = _typeDropdown.Dropdown.SelectedOption.text,
+                ID = _idDropdown.Dropdown.SelectedOption.text
+            };
+            // RioConfigurationModal.Devices.RemoveAll(e => e.ID == entry.ID && e.Type == entry.Type);
+            RioConfigurationModal.Devices.Add(entry);
+            
             DynamicUIManager.CreateModal<RioConfigurationModal>();
         }).StepIntoLabel(l => l.SetText("Create"));
         CancelButton.AddOnClickedEvent(b => {
@@ -251,7 +346,8 @@ public class RCCreateGroupingModal : ModalDynamic {
             var entry = new GroupEntry { Name = _nameInput.Value, Signals = new List<string>() };
             _signalToggles.Where(x => x.Value.State).ForEach(x => entry.Signals.Add(x.Key));
 
-            RioConfigurationModal.Groupings.RemoveAll(x => x.Name.Equals(entry.Name));
+            if (_entry.HasValue)
+                RioConfigurationModal.Groupings.RemoveAll(x => x.Name.Equals(_entry.Value.Name));
 
             RioConfigurationModal.Groupings.Add(entry);
             DynamicUIManager.CreateModal<RioConfigurationModal>();
@@ -261,7 +357,7 @@ public class RCCreateGroupingModal : ModalDynamic {
             DynamicUIManager.CreateModal<RioConfigurationModal>();
         });
 
-        _nameInput = MainContent.CreateInputField().StepIntoLabel(l => l.SetText("Name")).StepIntoHint(h => h.SetText("Left Drivetrain..."));
+        _nameInput = MainContent.CreateInputField().StepIntoLabel(l => l.SetText("Name")).StepIntoHint(h => h.SetText("..."));
         _nameInput.SetTopStretch<InputField>();
         if (_entry.HasValue)
             _nameInput.SetValue(_entry.Value.Name);

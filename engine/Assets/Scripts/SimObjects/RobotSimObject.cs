@@ -57,7 +57,15 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     public GameObject RobotNode { get; private set; } // Doesn't work??
     public Bounds RobotBounds { get; private set; }
 
-    public RioTranslationLayer SimulationTranslationLayer { get; private set; }
+    private WSSimBehavior _simBehaviour;
+    private RioTranslationLayer _simulationTranslationLayer;
+    public RioTranslationLayer SimulationTranslationLayer {
+        get => _simulationTranslationLayer;
+        set {
+            _simulationTranslationLayer = value;
+            _simBehaviour.Translation = _simulationTranslationLayer;
+        }
+    }
 
     public SimBehaviour DriveBehaviour { get; private set; }
 
@@ -141,6 +149,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
         IntakeData = SimulationPreferences.GetRobotIntakeTriggerData(MiraLive.MiraAssembly.Info.GUID);
         TrajectoryData = SimulationPreferences.GetRobotTrajectoryData(MiraLive.MiraAssembly.Info.GUID);
+        _simulationTranslationLayer = new RioTranslationLayer();
 
         cam = Camera.main.GetComponent<CameraController>();
     }
@@ -329,34 +338,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     public void ConfigureTestSimulationBehaviours() {
-        var trans = new RioTranslationLayer();
-
-        var leftWheelGrouping = new Grouping();
-        leftWheelGrouping.Signals.AddRange(new string[] { 
-            "754f0d03-76c9-4462-b28e-196f6ad80f7d",
-            "4c2bb5d7-f47d-4352-94c1-cc6d25b8a1c7",
-            "51e6ada0-ac4a-498a-9a55-141743b4025b"
-        });
-        leftWheelGrouping.RioPointers.AddRange(new IRioPointer[] {
-            new PWMRioPointer("0", PWMRioPointer.DataSelection.Speed),
-            new PWMRioPointer("1", PWMRioPointer.DataSelection.Speed)
-        });
-        trans.Groupings.Add("left_wheels", leftWheelGrouping);
-
-        var rightWheelGrouping = new Grouping();
-        rightWheelGrouping.Signals.AddRange(new string[] { 
-            "b743d3df-a855-48d8-b19f-c931bef43eb6",
-            "5d6850bf-c031-4389-afa4-c414097ce5bb",
-            "3b0b83e8-fb4a-4be2-8531-28af670a9eb1"
-        });
-        rightWheelGrouping.RioPointers.AddRange(new IRioPointer[] {
-            new PWMRioPointer("2", PWMRioPointer.DataSelection.Speed),
-            new PWMRioPointer("3", PWMRioPointer.DataSelection.Speed)
-        });
-        trans.Groupings.Add("right_wheels", rightWheelGrouping);
-
-        var beva = new WSSimBehavior(this.Name, trans);
-        SimulationManager.AddBehaviour(this.Name, beva);
+        _simBehaviour = new WSSimBehavior(this.Name, _simulationTranslationLayer);
+        SimulationManager.AddBehaviour(this.Name, _simBehaviour);
     }
 
     // Account for passive joints
