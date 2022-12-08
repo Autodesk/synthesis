@@ -35,7 +35,7 @@ For support contact frc@autodesk.com</PackageReleaseNotes>
       <PackageReference Include="Google.Protobuf" Version="3.17.3" />
       <PackageReference Include="MathNet.Numerics" Version="4.15.0" />
       <PackageReference Include="MathNet.Spatial" Version="0.6.0" />
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
       <PackageReference Include="protobuf-net" Version="3.0.101" />
       <PackageReference Include="protobuf-net.BuildTools" Version="3.0.101">
         <PrivateAssets>all</PrivateAssets>
