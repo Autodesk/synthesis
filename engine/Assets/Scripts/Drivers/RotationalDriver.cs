@@ -63,6 +63,12 @@ namespace Synthesis {
                 };
             }
 
+            State.CurrentSignals[_outputs[0]] = new UpdateSignal() {
+                DeviceType = "PWM",
+                Io = UpdateIOType.Output,
+                Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(0)
+            };
+
             // Debug.Log($"Speed: {_motor.targetVelocity}\nForce: {_motor.force}");
         }
 
@@ -119,6 +125,12 @@ namespace Synthesis {
                     targetVelocity = (-Motor.targetVelocity) * val
                 };
             }
+
+            float jointAngle = _jointA.angle / 360.0f;
+            while (jointAngle > 1) jointAngle -= 1;
+            while (jointAngle < 0) jointAngle += 1;
+
+            State.CurrentSignals[_outputs[0]].Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(jointAngle);
 
             // var updateSignal = new UpdateSignals();
             // var key = _outputs[0];

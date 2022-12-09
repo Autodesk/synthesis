@@ -149,7 +149,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
         IntakeData = SimulationPreferences.GetRobotIntakeTriggerData(MiraLive.MiraAssembly.Info.GUID);
         TrajectoryData = SimulationPreferences.GetRobotTrajectoryData(MiraLive.MiraAssembly.Info.GUID);
-        _simulationTranslationLayer = new RioTranslationLayer();
+        _simulationTranslationLayer = SimulationPreferences.GetRobotSimTranslationLayer(MiraLive.MiraAssembly.Info.GUID) ?? new RioTranslationLayer();
 
         cam = Camera.main.GetComponent<CameraController>();
     }

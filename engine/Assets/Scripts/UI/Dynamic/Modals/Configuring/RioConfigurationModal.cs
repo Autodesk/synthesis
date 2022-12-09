@@ -21,6 +21,10 @@ public class RioConfigurationModal : ModalDynamic {
     public RioConfigurationModal() : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) { }
     public RioConfigurationModal(bool reload = false) : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) {
         if (reload && RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
+
+            Devices.Clear();
+            Groupings.Clear();
+
             var trans = RobotSimObject.GetCurrentlyPossessedRobot().SimulationTranslationLayer;
 
             trans.Groupings.ForEach((name, group) => {
@@ -145,7 +149,7 @@ public class RioConfigurationModal : ModalDynamic {
 
         trans.Groupings = new Dictionary<string, RioTranslationLayer.Grouping>();
 
-        Devices.ForEach(d => {
+        Devices.Where(d => d.Signal != null && d.Signal != string.Empty).ForEach(d => {
 
             (string name, RioTranslationLayer.Grouping group) groupKvp;
 
@@ -169,7 +173,12 @@ public class RioConfigurationModal : ModalDynamic {
         });
 
         Groupings.ForEach(ge => {
-            var g = trans.Groupings[ge.Name];
+            RioTranslationLayer.Grouping g;
+            if (!trans.Groupings.ContainsKey(ge.Name)) {
+                g = new RioTranslationLayer.Grouping();
+            } else {
+                g = trans.Groupings[ge.Name];
+            }
             g.Signals.AddRange(ge.Signals);
             trans.Groupings.Remove(ge.Name);
             trans.Groupings[$"G_{ge.Name}"] = g;
@@ -284,6 +293,13 @@ public class RCCreateDeviceModal : ModalDynamic {
             // RioConfigurationModal.Devices.RemoveAll(e => e.ID == entry.ID && e.Type == entry.Type);
             RioConfigurationModal.Devices.Add(entry);
             
+            // switch (entry.Type) {
+            //     case "PWM":
+            //         DynamicUIManager.CreateModal<RCConfigurePwmModal>(entry);
+            //         break;
+            //     default:
+            //         break;
+            // }
             DynamicUIManager.CreateModal<RioConfigurationModal>();
         }).StepIntoLabel(l => l.SetText("Create"));
         CancelButton.AddOnClickedEvent(b => {
