@@ -91,11 +91,7 @@ public class RioConfigurationModal : ModalDynamic {
 
         Devices.ForEach(e => {
             CreateItem($"{e.Type} {e.ID}", "Config", () => {
-                switch (e.Type) {
-                    case PWM:
-                        DynamicUIManager.CreateModal<RCConfigurePwmModal>(e);
-                        break;
-                }
+                OpenConfig(e);
             });
         });
         Groupings.ForEach(g => {
@@ -142,6 +138,14 @@ public class RioConfigurationModal : ModalDynamic {
         groupingButton.AddOnClickedEvent(b => {
             DynamicUIManager.CreateModal<RCCreateGroupingModal>();
         });
+    }
+
+    public static void OpenConfig(DeviceEntry e, bool cancelable = true) {
+        switch (e.Type) {
+            case PWM:
+                DynamicUIManager.CreateModal<RCConfigurePwmModal>(e, cancelable);
+                break;
+        }
     }
 
     public void Apply() {
@@ -210,11 +214,13 @@ public struct GroupEntry {
 }
 
 public class RCConfigurePwmModal : ModalDynamic {
-    public RCConfigurePwmModal(DeviceEntry entry) : base(new Vector2(500, 300)) {
+    public RCConfigurePwmModal(DeviceEntry entry, bool cancelable) : base(new Vector2(500, 300)) {
         _entry = entry;
+        _cancelable = cancelable;
     }
 
     private DeviceEntry _entry;
+    private bool _cancelable;
 
     private LabeledDropdown _signalDropdown;
     private List<(string name, string guid)> _options;
@@ -233,9 +239,13 @@ public class RCConfigurePwmModal : ModalDynamic {
             DynamicUIManager.CreateModal<RioConfigurationModal>();
         }).StepIntoLabel(l => l.SetText("Done"));
 
-        CancelButton.AddOnClickedEvent(b => {
-            DynamicUIManager.CreateModal<RioConfigurationModal>();
-        });
+        if (_cancelable) {
+            CancelButton.AddOnClickedEvent(b => {
+                DynamicUIManager.CreateModal<RioConfigurationModal>();
+            });
+        } else {
+            CancelButton.RootGameObject.SetActive(false);
+        }
 
         _options = new List<(string name, string guid)>();
 
@@ -300,7 +310,7 @@ public class RCCreateDeviceModal : ModalDynamic {
             //     default:
             //         break;
             // }
-            DynamicUIManager.CreateModal<RioConfigurationModal>();
+            RioConfigurationModal.OpenConfig(entry, false);
         }).StepIntoLabel(l => l.SetText("Create"));
         CancelButton.AddOnClickedEvent(b => {
             DynamicUIManager.CreateModal<RioConfigurationModal>();

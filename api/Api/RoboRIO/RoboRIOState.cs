@@ -12,7 +12,8 @@ namespace SynthesisAPI.RoboRIO {
             { "AI", typeof(AIData) },
             { "PWM", typeof(PWMData) },
             { "DriverStation", typeof(DriverStationData) },
-            { "dPWM", typeof(DPWMData) }
+            { "dPWM", typeof(DPWMData) },
+            { "Encoder", typeof(EncoderData) }
         };
 
         private Mutex _dataMutex = new Mutex();
@@ -193,6 +194,45 @@ namespace SynthesisAPI.RoboRIO {
             get => (int)_rawData.TryGetDefault("<dio_pin", 0);
             set {
                 _rawData["<dio_pin"] = value;
+            }
+        }
+    }
+
+    public class EncoderData : HardwareTypeData {
+        public bool Init {
+            get => (bool)_rawData.TryGetDefault("<init", false);
+            set {
+                _rawData["<init"] = value;
+            }
+        }
+        public int ChannelA {
+            get => (int)_rawData.TryGetDefault("<channel_a", -1);
+            set {
+                _rawData["<channel_a"] = value;
+            }
+        }
+        public int ChannelB {
+            get => (int)_rawData.TryGetDefault("<channel_b", -1);
+            set {
+                _rawData["_channel_b"] = value;
+            }
+        }
+        public int SamplesToAvg {
+            get => (int)_rawData.TryGetDefault("<samples_to_avg", 1);
+            set {
+                _rawData["<samples_to_avg"] = value;
+            }
+        }
+        public int Count {
+            get => (int)_rawData.TryGetDefault(">count", 0);
+            set {
+                _rawData[">count"] = value;
+            }
+        }
+        public float Period {
+            get => (float)_rawData.TryGetDefault(">period", 0f);
+            set {
+                _rawData[">period"] = value;
             }
         }
     }

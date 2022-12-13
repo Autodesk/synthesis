@@ -47,6 +47,8 @@ public class DriverStationPanel : PanelDynamic {
                 SetModeButton(true);
             }
         });
+
+        RobotSimObject.GetCurrentlyPossessedRobot().UseSimulationBehaviour = true;
     }
 
     private void SetModeButton(bool isEnabled) {
@@ -61,7 +63,9 @@ public class DriverStationPanel : PanelDynamic {
         }
     }
 
-    public override void Delete() { }
+    public override void Delete() {
+        RobotSimObject.GetCurrentlyPossessedRobot().UseSimulationBehaviour = false;
+    }
 
     public override void Update() { }
 }

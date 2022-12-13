@@ -67,6 +67,23 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         }
     }
 
+    private bool _useSimBehaviour = false;
+    public bool UseSimulationBehaviour {
+        get => _useSimBehaviour;
+        set {
+            if (_useSimBehaviour != value) {
+                _useSimBehaviour = value;
+                SimulationManager.Behaviours[this._name].ForEach(b => {
+                    // Kinda ugly but whatever
+                    if (_useSimBehaviour ? b.GetType() != typeof(WSSimBehavior) : b.GetType() == typeof(WSSimBehavior))
+                        b.Enabled = false;
+                    else
+                        b.Enabled = true;
+                });
+            }
+        }
+    }
+
     public SimBehaviour DriveBehaviour { get; private set; }
 
     private (List<JointInstance> leftWheels, List<JointInstance> rightWheels) _tankTrackWheels = (null, null);
@@ -335,6 +352,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         ConfigureArcadeDrivetrain();
 		ConfigureArmBehaviours();
 		ConfigureSliderBehaviours();
+        ConfigureTestSimulationBehaviours();
+        _simBehaviour.Enabled = false;
     }
 
     public void ConfigureTestSimulationBehaviours() {

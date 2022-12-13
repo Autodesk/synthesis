@@ -253,8 +253,8 @@ namespace Synthesis.Import
 			#endregion
 
 			if (assembly.Dynamic) {
-				// (simObject as RobotSimObject).ConfigureDefaultBehaviours();
-				(simObject as RobotSimObject).ConfigureTestSimulationBehaviours();
+				(simObject as RobotSimObject).ConfigureDefaultBehaviours();
+				// (simObject as RobotSimObject).ConfigureTestSimulationBehaviours();
 			}
 
 			EntireImport.End();

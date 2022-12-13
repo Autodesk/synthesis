@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using SynthesisAPI.EnvironmentManager;
@@ -29,7 +30,7 @@ namespace SynthesisAPI.Simulation {
                 OnDriverUpdate();
             Behaviours.ForEach(x => {
                 if (_simObjects[x.Key].BehavioursEnabled)
-                    x.Value.ForEach(y => y.Update());
+                    x.Value.Where(y => y.Enabled).ForEach(y => y.Update());
             });
             if (OnBehaviourUpdate != null)
                 OnBehaviourUpdate();
