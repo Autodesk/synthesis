@@ -52,6 +52,11 @@ namespace Synthesis.Import
 
 		public const UInt32 CURRENT_MIRA_EXPORTER_VERSION = 4;
 
+		private const int FIELD_LAYER = 7;
+		private const int DYNAMIC_1_LAYER = 8;
+		private const int DYNAMIC_2_LAYER = 9; // Reserved for later
+		private const int DYNAMIC_3_LAYER = 10; // Reserved for later
+
 		#endregion
 
 		#region Mirabuf Importer
@@ -77,7 +82,7 @@ namespace Synthesis.Import
 			EntireImport.Begin();
 
 			// Uncommenting this will delete all bodies so the JSON file isn't huge
-			DebugAssembly(miraLive.MiraAssembly);
+			// DebugAssembly(miraLive.MiraAssembly);
 			// return null;
 
 			Assembly assembly = miraLive.MiraAssembly;
@@ -127,6 +132,7 @@ namespace Synthesis.Import
 						var partInstance = part.Value;
 						var partDefinition = parts.PartDefinitions[partInstance.PartDefinitionReference];
 						GameObject partObject = new GameObject(partInstance.Info.Name);
+
 						MakePartDefinition(partObject, partDefinition, partInstance, assembly.Data, !isGamepiece, !isStatic);
 						partObjects.Add(partInstance.Info.GUID, partObject);
 						partObject.transform.parent = groupObject.transform;
@@ -141,6 +147,11 @@ namespace Synthesis.Import
 						Logger.Log($"Duplicate Part\nGroup name: {group.Name}\nGUID: {part.Key}", LogLevel.Warning);
 					}
 				}
+
+				if (!assembly.Dynamic && !isGamepiece)
+					groupObject.transform.GetComponentsInChildren<UnityEngine.Transform>().ForEach(x => x.gameObject.layer = FIELD_LAYER);
+				else if (assembly.Dynamic)
+					groupObject.transform.GetComponentsInChildren<UnityEngine.Transform>().ForEach(x => x.gameObject.layer = DYNAMIC_1_LAYER);
 
 				#endregion
 
@@ -240,13 +251,14 @@ namespace Synthesis.Import
 			CollisionIgnoring.Begin();
 
 			// TODO: This is really slow
-			for (var i = 0; i < _collidersToIgnore.Count - 1; i++)
-			{
-				for (var j = i + 1; j < _collidersToIgnore.Count; j++)
-				{
-					UnityEngine.Physics.IgnoreCollision(_collidersToIgnore[i], _collidersToIgnore[j]);
-				}
-			}
+			// for (var i = 0; i < _collidersToIgnore.Count/* - 1*/; i++)
+			// {
+			// 	_collidersToIgnore[i].gameObject.layer = 7;
+			// 	// for (var j = i + 1; j < _collidersToIgnore.Count; j++)
+			// 	// {
+			// 	// 	UnityEngine.Physics.IgnoreCollision(_collidersToIgnore[i], _collidersToIgnore[j]);
+			// 	// }
+			// }
 
 			CollisionIgnoring.End();
 
