@@ -10,6 +10,9 @@ using SynthesisAPI.Utilities;
 
 using Logger = SynthesisAPI.Utilities.Logger;
 using Synthesis.WS.Translation;
+using System.IO;
+using Newtonsoft.Json;
+using Synthesis.WS;
 
 #nullable enable
 
@@ -35,6 +38,7 @@ public class RioConfigurationModal : ModalDynamic {
     }
 
     public const string PWM = "PWM";
+    public const string ENCODER = "Encoder";
     public const string Analog = "Analog";
     public const string Digital = "Digital";
 
@@ -49,6 +53,9 @@ public class RioConfigurationModal : ModalDynamic {
     };
 
     public override void Create() {
+
+        File.WriteAllText("C:\\Users\\hunte\\rio.json", JsonConvert.SerializeObject(WebSocketManager.RioState));
+
         Title.SetText("RoboRIO Configuration");
         Title.SetWidth<Label>(300);
         Description.SetText("Configuring RoboRIO for Synthesis simulation");
@@ -64,9 +71,11 @@ public class RioConfigurationModal : ModalDynamic {
         }).StepIntoLabel(l => l.SetText("Save"));
 
         Entries.ForEach(e => {
-            CreateItem($"{e.Name}", "Config", () => {
+            CreateItem($"{e.GetDisplayName()}", "Config", () => {
                 if (e.GetType().Name.Equals(typeof(PWMGroupEntry).Name)) {
                     DynamicUIManager.CreateModal<RCConfigPwmGroupModal>(e);
+                } if (e.GetType().Name.Equals(typeof(EncoderEntry).Name)) {
+                    DynamicUIManager.CreateModal<RCConfigEncoderModal>(e);
                 } else {
                     Debug.Log($"{e.GetType().Name}");
                 }
@@ -175,4 +184,33 @@ public class PWMGroupEntry : RioEntry {
         => new PWMGroupEntry(group.GUID, group.Ports.ToArray(), group.Signals.ToArray());
     public static explicit operator RioTranslationLayer.PWMGroup(PWMGroupEntry group)
         => new RioTranslationLayer.PWMGroup(group.Name, group.Ports, group.Signals);
+}
+
+public class EncoderEntry : RioEntry {
+    public string Signal;
+    public string ChannelA;
+    public string ChannelB;
+    public float Mod;
+
+    public EncoderEntry(string name, string signal, string channelA, string channelB, float mod) : base(name) {
+        Signal = signal;
+        ChannelA = channelA;
+        ChannelB = channelB;
+        Mod = mod;
+    }
+
+    public override string GetDisplayName()
+        => $"{Name} (Encoder)";
+
+    public override int GetHashCode()
+        => Signal.GetHashCode() * 342564752
+        + ChannelA.GetHashCode() * 980451232
+        + ChannelB.GetHashCode() * 453678690
+        + Mod.GetHashCode() * 213434321
+        + base.GetHashCode();
+
+    public static explicit operator EncoderEntry(RioTranslationLayer.Encoder enc)
+        => new EncoderEntry(enc.GUID, enc.Signal, enc.ChannelA, enc.ChannelB, enc.Mod);
+    public static explicit operator RioTranslationLayer.Encoder(EncoderEntry enc)
+        => new RioTranslationLayer.Encoder(enc.Name, enc.ChannelA, enc.ChannelB, enc.Signal, enc.Mod);
 }

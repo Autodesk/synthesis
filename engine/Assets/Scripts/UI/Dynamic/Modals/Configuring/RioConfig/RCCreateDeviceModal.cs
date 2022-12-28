@@ -20,7 +20,8 @@ public class RCCreateDeviceModal : ModalDynamic {
     };
 
     public static readonly string[] EntryTypes = new string[] {
-        RioConfigurationModal.PWM
+        RioConfigurationModal.PWM,
+        RioConfigurationModal.ENCODER
     };
 
     public override void Create() {
@@ -34,6 +35,9 @@ public class RCCreateDeviceModal : ModalDynamic {
             switch (_typeDropdown.Dropdown.SelectedOption.text) {
                 case RioConfigurationModal.PWM:
                     DynamicUIManager.CreateModal<RCConfigPwmGroupModal>();
+                    break;
+                case RioConfigurationModal.ENCODER:
+                    DynamicUIManager.CreateModal<RCConfigEncoderModal>();
                     break;
                 default:
                     break;
@@ -176,6 +180,132 @@ public class RCConfigPwmGroupModal : ModalDynamic {
             _nameInput.Value.Length != 0
             && _signalToggles.Where(x => x.Value.State).Count() != 0
             && _portToggles.Where(x => x.Value.State).Count() != 0
+        ) {
+            AcceptButton.RootGameObject.SetActive(true);
+        } else {
+            AcceptButton.RootGameObject.SetActive(false);
+        }
+    }
+
+    public override void Delete() { }
+
+    public override void Update() { }
+}
+
+public class RCConfigEncoderModal : ModalDynamic {
+
+    private const int MODAL_WIDTH = 400, MODAL_HEIGHT = 400;
+
+    public RCConfigEncoderModal() : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) { }
+    public RCConfigEncoderModal(EncoderEntry entry) : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) {
+        _entry = entry;
+    }
+
+    private EncoderEntry? _entry;
+    
+    private InputField _nameInput;
+    private LabeledDropdown _signalDropdown;
+    private LabeledDropdown _channelADropdown;
+    private LabeledDropdown _channelBDropdown;
+    private InputField _modInput;
+
+    private List<(string name, string guid)> _signals;
+    private string[] _channelPorts = new string[] {
+        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
+    };
+
+    public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
+        var offset = (-u.Parent!.RectOfChildren(u).yMin) + 7.5f;
+        u.SetTopStretch<UIComponent>(anchoredY: offset);
+        return u;
+    };
+
+    public override void Create() {
+        Title.SetText("Create Device");
+        Title.SetWidth<Label>(400);
+        Description.SetText("Create a Motor Controller, Encoder, Etc.");
+        ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+        ModalImage.SetColor(ColorManager.SYNTHESIS_WHITE);
+
+        AcceptButton.AddOnClickedEvent(b => {
+            var entry = new EncoderEntry(
+                _nameInput.Value,
+                _signals[_signalDropdown.Dropdown.Value].guid,
+                _channelADropdown.Dropdown.SelectedOption.text,
+                _channelBDropdown.Dropdown.SelectedOption.text,
+                float.Parse(_modInput.Value)
+            );
+            if (_entry != null) {
+                int n = RioConfigurationModal.Entries.RemoveAll(e => e.Equals(_entry));
+            }
+            RioConfigurationModal.Entries.Add(entry);
+
+            DynamicUIManager.CreateModal<RioConfigurationModal>();
+        }).StepIntoLabel(l => l.SetText("Done"));
+        CancelButton.AddOnClickedEvent(b => {
+            DynamicUIManager.CreateModal<RioConfigurationModal>();
+        });
+
+        _nameInput = MainContent.CreateInputField();
+        _nameInput.SetTopStretch<InputField>().StepIntoLabel(l => l.SetText("Name"));
+        _nameInput.StepIntoHint(h => h.SetText("..."));
+        _nameInput.AddOnValueChangedEvent((i, v) => UpdateAcceptButton());
+
+        _signalDropdown = MainContent.CreateLabeledDropdown();
+        _signalDropdown.ApplyTemplate(VerticalLayout);
+        _signalDropdown.StepIntoLabel(l => l.SetText("Signal"));
+        _signals = new List<(string name, string guid)>();
+        _signals.AddRange(RobotSimObject.GetCurrentlyPossessedRobot().MiraLive.MiraAssembly.Data.Joints.JointInstances.Values
+            .Select<Mirabuf.Joint.JointInstance, (string name, string guid)>(x => (x.Info.Name, x.SignalReference))
+            .Where(x => RobotSimObject.GetCurrentlyPossessedRobot().State.CurrentSignals.ContainsKey($"{x.guid}_encoder"))
+            .Select(x => ($"{x.name} ({x.guid})", x.guid)));
+        _signalDropdown.StepIntoDropdown(d => d.SetOptions(_signals.Select(x => x.name).ToArray()));
+        _signalDropdown.Dropdown.AddOnValueChangedEvent((a, b, c) => UpdateAcceptButton());
+
+        _channelADropdown = MainContent.CreateLabeledDropdown();
+        _channelADropdown.ApplyTemplate(VerticalLayout);
+        _channelADropdown.StepIntoLabel(l => l.SetText("Channel A"));
+        _channelADropdown.StepIntoDropdown(d => d.SetOptions(_channelPorts));
+        _channelADropdown.Dropdown.AddOnValueChangedEvent((a, b, c) => UpdateAcceptButton());
+
+        _channelBDropdown = MainContent.CreateLabeledDropdown();
+        _channelBDropdown.ApplyTemplate(VerticalLayout);
+        _channelBDropdown.StepIntoLabel(l => l.SetText("Channel B"));
+        _channelBDropdown.StepIntoDropdown(d => d.SetOptions(_channelPorts));
+        _channelBDropdown.Dropdown.AddOnValueChangedEvent((a, b, c) => UpdateAcceptButton());
+
+        _modInput = MainContent.CreateInputField();
+        _modInput.ApplyTemplate(VerticalLayout);
+        _modInput.StepIntoLabel(l => l.SetText("Conversion Factor"));
+        _modInput.SetContentType(TMPro.TMP_InputField.ContentType.DecimalNumber);
+        _modInput.SetValue("1");
+        _modInput.AddOnValueChangedEvent((a, b) => UpdateAcceptButton());
+
+        if (_entry != null) {
+            _nameInput.SetValue(_entry.Name);
+
+            int signalIndex = _signals.FindIndex(0, _signals.Count, x => x.guid == _entry.Signal);
+            _signalDropdown.Dropdown.SetValue(signalIndex, true);
+
+            int channelAIndex = -1;
+            int.TryParse(_entry.ChannelA, out channelAIndex);
+            _channelADropdown.Dropdown.SetValue(channelAIndex);
+
+            int channelBIndex = -1;
+            int.TryParse(_entry.ChannelB, out channelBIndex);
+            _channelBDropdown.Dropdown.SetValue(channelBIndex);
+
+            _modInput.SetValue(_entry.Mod.ToString());
+        }
+
+        UpdateAcceptButton();
+    }
+
+    public void UpdateAcceptButton() {
+        if (
+            _nameInput.Value.Length != 0
+            && _channelADropdown.Dropdown.Value != _channelBDropdown.Dropdown.Value
+            && Mathf.Abs(int.Parse(_modInput.Value)) > 0.001
         ) {
             AcceptButton.RootGameObject.SetActive(true);
         } else {

@@ -73,6 +73,8 @@ namespace Synthesis.Runtime {
 
             OnUpdate += DynamicUIManager.Update;
 
+            WebSocketManager.RioState.OnUpdateReceived += s => Debug.Log(s);
+
             // Screen.fullScreenMode = FullScreenMode.MaximizedWindow;
 
             // TestColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));

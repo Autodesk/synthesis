@@ -29,11 +29,15 @@ namespace Synthesis.WS.Translation {
             private string _guid;
             public string GUID => _guid;
             private string _signal;
-            private int _channelA;
-            private int _channelB;
+            public string Signal => _signal;
+            private string _channelA;
+            public string ChannelA => _channelA;
+            private string _channelB;
+            public string ChannelB => _channelB;
             private float _mod;
+            public float Mod => _mod;
 
-            public Encoder(string guid, int channelA, int channelB, string signal, float mod) {
+            public Encoder(string guid, string channelA, string channelB, string signal, float mod) {
                 _guid = guid;
                 _channelA = channelA;
                 _channelB = channelB;
