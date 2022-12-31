@@ -64,6 +64,9 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         set {
             _simulationTranslationLayer = value;
             _simBehaviour.Translation = _simulationTranslationLayer;
+
+            SimulationPreferences.SetRobotSimTranslationLayer(MiraLive.MiraAssembly.Info.GUID, _simulationTranslationLayer);
+            PreferenceManager.Save();
         }
     }
 
@@ -167,6 +170,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         IntakeData = SimulationPreferences.GetRobotIntakeTriggerData(MiraLive.MiraAssembly.Info.GUID);
         TrajectoryData = SimulationPreferences.GetRobotTrajectoryData(MiraLive.MiraAssembly.Info.GUID);
         _simulationTranslationLayer = SimulationPreferences.GetRobotSimTranslationLayer(MiraLive.MiraAssembly.Info.GUID) ?? new RioTranslationLayer();
+        // _simulationTranslationLayer = new RioTranslationLayer();
 
         cam = Camera.main.GetComponent<CameraController>();
     }

@@ -45,24 +45,24 @@ namespace Synthesis.WS {
         /// Get Rio data from the RioState
         /// </summary>
         /// <typeparam name="T">Data requested</typeparam>
-        public static T GetData<T>(string type, string device) where T : HardwareTypeData
-            => RioState.GetData<T>(type, device);
+        public static T GetData<T>(string device) where T : HardwareTypeData
+            => RioState.GetData<T>(device);
 
         /// <summary>
         /// Update data in the RioState and upload it to a currently connected websocket client
         /// </summary>
         /// <typeparam name="T">Type of data</typeparam>
-        public static void UpdateData<T>(string type, string device, Action<T> change) where T : HardwareTypeData {
-            RioState.UpdateData(type, device, change);
+        public static void UpdateData<T>(string device, Action<T> change) where T : HardwareTypeData {
+            RioState.UpdateData(device, change);
 
             if (_server == null || _server.Clients.Count == 0)
                 return;
 
             var copy = new Dictionary<string, object>();
-            RioState.GetData<T>(type, device).GetData().ForEach(kvp => copy[kvp.Key] = kvp.Value);
+            RioState.GetData<T>(device).GetData().ForEach(kvp => copy[kvp.Key] = kvp.Value);
 
             var data = new RioJsonData {
-                type = type,
+                type = HardwareTypeData.GetMetaData<T>().RegisteredTypeName,
                 device = device,
                 data = copy
             };

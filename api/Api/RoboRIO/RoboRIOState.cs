@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 
@@ -55,12 +56,14 @@ namespace SynthesisAPI.RoboRIO {
         /// This overload of UpdateData is meant to be used by users of the API. The wonky design is due to thread safety, sorry. -Hunter
         /// </summary>
         /// <typeparam name="T">HardwareTypeData type associated with the data you are modifying</typeparam>
-        /// <param name="type">Websocket type alias</param>
         /// <param name="device">Device ID (Could be number or something else)</param>
         /// <param name="updateAct">Action in which to do your modifications. They will be ran within a mutex</param>
         /// <exception cref="Exception">Will throw if the type alias you use isn't registered to the T type you passed in</exception>
         /// <returns>Whether or not the data you tried to modify was successfully modified</returns>
-        public bool UpdateData<T>(string type, string device, Action<T> updateAct) where T : HardwareTypeData {
+        public bool UpdateData<T>(string device, Action<T> updateAct) where T : HardwareTypeData {
+
+            string type = HardwareTypeData.GetMetaData<T>().RegisteredTypeName;
+
             if (!_allHardware.ContainsKey(type))
                 return false;
 
@@ -84,16 +87,18 @@ namespace SynthesisAPI.RoboRIO {
         /// Get data from the RioState
         /// </summary>
         /// <typeparam name="T">Type of data</typeparam>
-        /// <param name="type">Type of data (in the string alias)</param>
         /// <param name="device">Device ID</param>
         /// <exception cref="Exception">Will throw if the type alias you use isn't registered to the T type you passed in</exception>
         /// <returns>Data if available. If type doesn't exist, returns null</returns>
-        public T GetData<T>(string type, string device) where T : HardwareTypeData {
+        public T GetData<T>(string device) where T : HardwareTypeData {
+
+            string type = HardwareTypeData.GetMetaData<T>().RegisteredTypeName;
+
             if (!_allHardware.ContainsKey(type))
                 return null;
 
             if (!_registeredTypes.ContainsKey(type) || _registeredTypes[type] != typeof(T))
-                throw new Exception($"Data type '{type}' isn't registered to C# type '{typeof(T).Name}'");
+                throw new Exception($"Data type '{type}' isn't registered to C# type '{typeof(T).FullName}'");
 
             _dataMutex.WaitOne();
 
@@ -109,6 +114,7 @@ namespace SynthesisAPI.RoboRIO {
         }
     }
 
+    [RioData("DriverStation")]
     public class DriverStationData : HardwareTypeData {
         public bool NewData {
             get => (bool)_rawData.TryGetDefault(">new_data", false);
@@ -122,8 +128,12 @@ namespace SynthesisAPI.RoboRIO {
                 _rawData[">enabled"] = value;
             }
         }
+
+        public override RioDataAttribute GetMetaData()
+            => GetMetaData<DriverStationData>();
     }
 
+    [RioData("AI")]
     public class AIData : HardwareTypeData {
         public bool Init {
             get => (bool)_rawData.TryGetDefault("<init", false);
@@ -137,8 +147,12 @@ namespace SynthesisAPI.RoboRIO {
                 _rawData[">voltage"] = value;
             }
         }
+
+        public override RioDataAttribute GetMetaData()
+            => GetMetaData<AIData>();
     }
 
+    [RioData("PWM")]
     public class PWMData : HardwareTypeData {
         public bool Init {
             get => (bool)_rawData.TryGetDefault("<init", false);
@@ -176,8 +190,12 @@ namespace SynthesisAPI.RoboRIO {
                 _rawData["<zero_latch"] = value;
             }
         }
+
+        public override RioDataAttribute GetMetaData()
+            => GetMetaData<PWMData>();
     }
 
+    [RioData("dPWM")]
     public class DPWMData : HardwareTypeData {
         public bool Init {
             get => (bool)_rawData.TryGetDefault("<init", false);
@@ -197,8 +215,12 @@ namespace SynthesisAPI.RoboRIO {
                 _rawData["<dio_pin"] = value;
             }
         }
+
+        public override RioDataAttribute GetMetaData()
+            => GetMetaData<DPWMData>();
     }
 
+    [RioData("Encoder")]
     public class EncoderData : HardwareTypeData {
         public bool Init {
             get => (bool)_rawData.TryGetDefault("<init", false);
@@ -206,14 +228,14 @@ namespace SynthesisAPI.RoboRIO {
                 _rawData["<init"] = value;
             }
         }
-        public int ChannelA {
-            get => (int)_rawData.TryGetDefault("<channel_a", -1);
+        public long ChannelA {
+            get => (long)_rawData.TryGetDefault("<channel_a", -1L);
             set {
                 _rawData["<channel_a"] = value;
             }
         }
-        public int ChannelB {
-            get => (int)_rawData.TryGetDefault("<channel_b", -1);
+        public long ChannelB {
+            get => (long)_rawData.TryGetDefault("<channel_b", -1L);
             set {
                 _rawData["_channel_b"] = value;
             }
@@ -236,6 +258,9 @@ namespace SynthesisAPI.RoboRIO {
                 _rawData[">period"] = value;
             }
         }
+
+        public override RioDataAttribute GetMetaData()
+            => GetMetaData<EncoderData>();
     }
 
     [JsonObject(MemberSerialization.OptIn)]
@@ -256,6 +281,25 @@ namespace SynthesisAPI.RoboRIO {
 
         public void Update(IReadOnlyDictionary<string, object> data) {
             data.ForEach(kvp => _rawData[kvp.Key] = kvp.Value);
+        }
+
+        public static RioDataAttribute GetMetaData<T>() where T : HardwareTypeData {
+            var attr = Attribute.GetCustomAttributes(typeof(T)).Where(x => x is RioDataAttribute);
+            if (!attr.Any() || !(attr.First() is RioDataAttribute))
+                throw new Exception($"Data type incorrectly registered: \"{typeof(T).FullName}\"");
+
+            return (RioDataAttribute)attr.First();
+        }
+
+        public abstract RioDataAttribute GetMetaData();
+    }
+
+    public class RioDataAttribute : Attribute {
+        private readonly string _typeName;
+        public string RegisteredTypeName => _typeName;
+
+        internal RioDataAttribute(string registeredTypeName) {
+            _typeName = registeredTypeName;
         }
     }
 }

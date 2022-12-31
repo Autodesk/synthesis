@@ -34,14 +34,14 @@ public class DriverStationPanel : PanelDynamic {
                 return;
             }
 
-            var currentData = WebSocketManager.RioState.GetData<DriverStationData>("DriverStation", "");
+            var currentData = WebSocketManager.RioState.GetData<DriverStationData>("");
             if (currentData.Enabled) {
-                WebSocketManager.UpdateData<DriverStationData>("DriverStation", "", d => {
+                WebSocketManager.UpdateData<DriverStationData>("", d => {
                     d.Enabled = false;
                 });
                 SetModeButton(false);
             } else {
-                WebSocketManager.UpdateData<DriverStationData>("DriverStation", "", d => {
+                WebSocketManager.UpdateData<DriverStationData>("", d => {
                     d.Enabled = true;
                 });
                 SetModeButton(true);

@@ -29,11 +29,7 @@ public class RioConfigurationModal : ModalDynamic {
 
             var trans = RobotSimObject.GetCurrentlyPossessedRobot().SimulationTranslationLayer;
 
-            trans.MotorGroups.ForEach(x => {
-                if (x.GetType() == typeof(RioTranslationLayer.PWMGroup)) {
-                    Entries.Add((PWMGroupEntry)x!);
-                }
-            });
+            trans.PWMGroups.ForEach(x => Entries.Add((PWMGroupEntry)x!));
 
             Entries.AddRange(trans.Encoders.Select<RioTranslationLayer.Encoder, EncoderEntry>(x => (EncoderEntry)x));
         }
@@ -120,12 +116,12 @@ public class RioConfigurationModal : ModalDynamic {
     public void Apply() {
         RioTranslationLayer trans = new RioTranslationLayer();
 
-        trans.MotorGroups = new List<RioTranslationLayer.MotorGroup>();
+        trans.PWMGroups = new List<RioTranslationLayer.PWMGroup>();
 
         Entries.ForEach(e => {
             if (e.GetType() == typeof(PWMGroupEntry)) {
                 var pwm = (e as PWMGroupEntry)!;
-                trans.MotorGroups.Add((RioTranslationLayer.PWMGroup)pwm);
+                trans.PWMGroups.Add((RioTranslationLayer.PWMGroup)pwm);
             } else if (e.GetType() == typeof(EncoderEntry)) {
                 var encoder = (e as EncoderEntry)!;
                 trans.Encoders.Add((RioTranslationLayer.Encoder)encoder);
@@ -186,7 +182,7 @@ public class PWMGroupEntry : RioEntry {
         + base.GetHashCode();
 
     public static explicit operator PWMGroupEntry(RioTranslationLayer.PWMGroup group)
-        => new PWMGroupEntry(group.GUID, group.Ports.ToArray(), group.Signals.ToArray());
+        => new PWMGroupEntry(group.Name, group.Ports.ToArray(), group.Signals.ToArray());
     public static explicit operator RioTranslationLayer.PWMGroup(PWMGroupEntry group)
         => new RioTranslationLayer.PWMGroup(group.Name, group.Ports, group.Signals);
 }

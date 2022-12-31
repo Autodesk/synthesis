@@ -73,7 +73,7 @@ namespace Synthesis.Runtime {
 
             OnUpdate += DynamicUIManager.Update;
 
-            WebSocketManager.RioState.OnUpdateReceived += s => Debug.Log(s);
+            // WebSocketManager.RioState.OnUpdateReceived += s => Debug.Log(s);
 
             // Screen.fullScreenMode = FullScreenMode.MaximizedWindow;
 
