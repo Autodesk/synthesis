@@ -34,6 +34,8 @@ public class RioConfigurationModal : ModalDynamic {
                     Entries.Add((PWMGroupEntry)x!);
                 }
             });
+
+            Entries.AddRange(trans.Encoders.Select<RioTranslationLayer.Encoder, EncoderEntry>(x => (EncoderEntry)x));
         }
     }
 
@@ -123,7 +125,10 @@ public class RioConfigurationModal : ModalDynamic {
         Entries.ForEach(e => {
             if (e.GetType() == typeof(PWMGroupEntry)) {
                 var pwm = (e as PWMGroupEntry)!;
-                trans.MotorGroups.Add(new RioTranslationLayer.PWMGroup(pwm.Name, pwm.Ports, pwm.Signals));
+                trans.MotorGroups.Add((RioTranslationLayer.PWMGroup)pwm);
+            } else if (e.GetType() == typeof(EncoderEntry)) {
+                var encoder = (e as EncoderEntry)!;
+                trans.Encoders.Add((RioTranslationLayer.Encoder)encoder);
             }
         });
 
