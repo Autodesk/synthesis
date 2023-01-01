@@ -23,6 +23,8 @@ namespace SynthesisAPI.RoboRIO {
         [JsonProperty]
         private Dictionary<string, Dictionary<string, HardwareTypeData>> _allHardware = new Dictionary<string, Dictionary<string, HardwareTypeData>>();
 
+        public event Action<string> OnUnrecognizedMessage;
+
         public RoboRIOState() {
             _registeredTypes.ForEach(kvp => _allHardware[kvp.Key] = new Dictionary<string, HardwareTypeData>());
         }
@@ -36,8 +38,13 @@ namespace SynthesisAPI.RoboRIO {
         /// <param name="jsonData">Data you wish to change. This will not dump keys that aren't included in jsonData</param>
         /// <returns>Whether or not the data you tried to modify was successfully modified</returns>
         public bool UpdateData(string type, string device, Dictionary<string, object> jsonData) {
-            if (!_allHardware.ContainsKey(type))
+            if (!_allHardware.ContainsKey(type)) {
+                string data = $"TYPE: \"{type}\"\n{JsonConvert.SerializeObject(jsonData)}";
+                // _unrecognizedMessages.Add(data);
+                if (OnUnrecognizedMessage != null)
+                    OnUnrecognizedMessage(data);
                 return false;
+            }
 
             _dataMutex.WaitOne();
 
@@ -237,7 +244,7 @@ namespace SynthesisAPI.RoboRIO {
         public long ChannelB {
             get => (long)_rawData.TryGetDefault("<channel_b", -1L);
             set {
-                _rawData["_channel_b"] = value;
+                _rawData["<channel_b"] = value;
             }
         }
         public int SamplesToAvg {

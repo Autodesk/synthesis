@@ -24,15 +24,16 @@ public class WSSimBehavior : SimBehaviour {
     }
 
     public override void Update() {
-        if (!WebSocketManager.RioState.GetData<DriverStationData>("").Enabled)
-            return; // TODO: This should zero out the signals because they aren't "pulled" towards a center point
+
+        // if (!WebSocketManager.RioState.GetData<DriverStationData>("").Enabled)
+        //     return; // TODO: This should zero out the signals because they aren't "pulled" towards a center point
 
         var signalState = SimulationManager.SimulationObjects[SimObjectId].State;
 
         // Motor Groups
         _translation.PWMGroups.ForEach(group => group.Update(WebSocketManager.RioState, signalState));
-        
+
         // Encoders
-        _translation.Encoders.ForEach(x => x.Update(WebSocketManager.RioState, signalState));
+        _translation.Encoders.ForEach(x => x.Update(signalState));
     }
 }

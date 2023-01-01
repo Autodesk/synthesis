@@ -35,6 +35,8 @@ namespace SynthesisAPI.WS {
 
         public void Close() {
             _listener.Stop();
+            _clientDict.ForEach(x => x.Value.Kill());
+            _clientDict.Clear();
         }
 
         private void AcceptTcpClient(IAsyncResult ar) {
@@ -94,6 +96,8 @@ namespace SynthesisAPI.WS {
             } catch (IOException _) {
             } finally {
                 _clientDictMut.WaitOne();
+                if (_clientDict.ContainsKey(client.GUID))
+                    _clientDict[client.GUID].Kill();
                 _clientDict.Remove(client.GUID);
                 _clientDictMut.ReleaseMutex();
                 if (OnDisconnect != null)
@@ -241,6 +245,11 @@ namespace SynthesisAPI.WS {
 
         public WSFrame ReadWS()
             => WSFrame.ParseNextFrame(_stream);
+
+        public void Kill() {
+            _stream.Close();
+            _client.Close();
+        }
     }
 
 }

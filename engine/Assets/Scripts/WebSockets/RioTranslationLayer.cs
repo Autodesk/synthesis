@@ -29,21 +29,33 @@ namespace Synthesis.WS.Translation {
 
             private string _rioDevice = string.Empty;
 
+            private (float time, float val) _periodTracker;
+
             public Encoder(string guid, string channelA, string channelB, string signal, float mod) {
                 _guid = guid;
                 _channelA = channelA;
                 _channelB = channelB;
                 _signal = signal;
                 _mod = mod;
+
+                _periodTracker = (Time.realtimeSinceStartup, 0);
             }
 
-            public void Update(RoboRIOState rioState, ControllableState signalState) {
+            public void Update(ControllableState signalState) {
                 int val = (int)(_mod * signalState.CurrentSignals[$"{_signal}_encoder"].Value.NumberValue);
                 // TODO: Update riostate
-                if (_rioDevice.Length == 0 && !AquireRioDevice(rioState))
+                if (_rioDevice.Length == 0 && !AquireRioDevice(WebSocketManager.RioState))
                     return;
 
-                rioState.UpdateData<EncoderData>(_rioDevice, e => e.Count = val);
+                float period;
+                var deltaVal = val - _periodTracker.val;
+                if (deltaVal == 0)
+                    period = float.MaxValue;
+                else
+                    period = (Time.realtimeSinceStartup - _periodTracker.time) / deltaVal;
+
+                WebSocketManager.UpdateData<EncoderData>(_rioDevice, e => e.Count = val);
+                WebSocketManager.UpdateData<EncoderData>(_rioDevice, e => e.Period = period);
             }
 
             private bool AquireRioDevice(RoboRIOState rioState) {
@@ -84,14 +96,18 @@ namespace Synthesis.WS.Translation {
             }
 
             public void Update(RoboRIOState rioState, ControllableState signalState) {
-                float avg = 0f;
-                _ports.ForEach(x => {
-                    avg += (float)rioState.GetData<PWMData>(x).Speed;
-                });
-                avg /= _ports.Count;
-                _signals.ForEach(x => {
-                    signalState.CurrentSignals[x].Value = Value.ForNumber(avg);
-                });
+                if (!WebSocketManager.RioState.GetData<DriverStationData>("").Enabled) {
+                    _signals.ForEach(x => signalState.CurrentSignals[x].Value = Value.ForNumber(0));
+                } else {
+                    float avg = 0f;
+                    _ports.ForEach(x => {
+                        avg += (float)rioState.GetData<PWMData>(x).Speed;
+                    });
+                    avg /= _ports.Count;
+                    _signals.ForEach(x => {
+                        signalState.CurrentSignals[x].Value = Value.ForNumber(avg);
+                    });
+                }
             }
         }
 

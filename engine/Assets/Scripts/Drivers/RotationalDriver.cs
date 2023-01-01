@@ -84,6 +84,7 @@ namespace Synthesis {
             _jointA.useMotor = false;
         }
 
+        private float _jointAngle = 0.0f;
         public override void Update() {
 
             // if (_useMotor) {
@@ -126,11 +127,10 @@ namespace Synthesis {
                 };
             }
 
-            float jointAngle = _jointA.angle / 360.0f;
-            while (jointAngle > 1) jointAngle -= 1;
-            while (jointAngle < 0) jointAngle += 1;
+            // Angle loops around so this works for now
+            _jointAngle += (_jointA.velocity * Time.deltaTime) / 360f;
 
-            State.CurrentSignals[_outputs[0]].Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(jointAngle);
+            State.CurrentSignals[_outputs[0]].Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(_jointAngle);
 
             // var updateSignal = new UpdateSignals();
             // var key = _outputs[0];
@@ -141,6 +141,8 @@ namespace Synthesis {
             // });
             // _state.Update(updateSignal);
         }
+
+        #region Rotational Inertia stuff that isn't used
 
         public float GetInertiaAroundParallelAxis(Rigidbody rb, Vector3 localAnchor, Vector3 localAxis) {
             var comInertia = GetInertiaFromAxisVector(rb, localAxis);
@@ -205,5 +207,7 @@ namespace Synthesis {
                 Mathf.Asin(cart.z / 1)
             );
         }
+
+        #endregion
     }
 }

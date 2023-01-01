@@ -77,6 +77,10 @@ public class RioConfigurationModal : ModalDynamic {
                 } else {
                     Debug.Log($"{e.GetType().Name}");
                 }
+            },
+            () => {
+                Entries.RemoveAll(x => x.Equals(e));
+                DynamicUIManager.CreateModal<RioConfigurationModal>();
             });
         });
 
@@ -85,18 +89,23 @@ public class RioConfigurationModal : ModalDynamic {
         _scrollView.Content.SetTopStretch<Content>().SetHeight<Content>(-_scrollView.Content.RectOfChildren().yMin);
     }
 
-    public void CreateItem(string text, string buttonText, Action onButton) {
+    public void CreateItem(string text, string buttonText, Action onButton, Action onDelete) {
         var content = _scrollView.Content.CreateSubContent(new Vector2(_scrollView.Content.Size.x, 80));
         content.EnsureImage().StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_ORANGE));
         content.SetTopStretch<Content>(anchoredY: -_scrollView.Content.RectOfChildren(content).yMin);
         content.CreateLabel().SetStretch<Label>(leftPadding: 20, topPadding: 20, bottomPadding:20)
             .SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Middle).SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Left)
             .SetText(text).SetColor(ColorManager.SYNTHESIS_BLACK);
-        var button = content.CreateButton(buttonText);
-        button.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_BLACK));
-        button.SetPivot<Button>(new Vector2(1, 0.5f)).SetRightStretch<Button>(20, 20, 15).SetWidth<Button>(150).SetHeight<Button>(-30);
-        button.StepIntoLabel(l => l.SetColor(ColorManager.SYNTHESIS_WHITE));
-        button.AddOnClickedEvent(b => onButton());
+        var confButton = content.CreateButton(buttonText);
+        confButton.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_BLACK));
+        confButton.SetPivot<Button>(new Vector2(1, 0.5f)).SetRightStretch<Button>(20, 20, 15).SetWidth<Button>(110).SetHeight<Button>(-30);
+        confButton.StepIntoLabel(l => l.SetColor(ColorManager.SYNTHESIS_WHITE));
+        confButton.AddOnClickedEvent(b => onButton());
+        var deleteButton = content.CreateButton("Remove");
+        deleteButton.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_BLACK));
+        deleteButton.SetPivot<Button>(new Vector2(1, 0.5f)).SetRightStretch<Button>(20, 20, 140).SetWidth<Button>(110).SetHeight<Button>(-30);
+        deleteButton.StepIntoLabel(l => l.SetColor(ColorManager.SYNTHESIS_WHITE));
+        deleteButton.AddOnClickedEvent(b => onDelete());
     }
 
     public void CreateAddButtons() {
