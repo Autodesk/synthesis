@@ -98,7 +98,12 @@ namespace Synthesis.UI.Dynamic {
             // ActivePanel = panel;
             _persistentPanels[typeof(T)] = (panel, persistent);
             panel.Create_Internal(unityObject);
-            panel.Create();
+            bool success = panel.Create();
+
+            if (!success) {
+                ClosePanel<T>();
+                return false;
+            }
 
             if (PanelExists(typeof(T)))
                 EventBus.Push(new PanelCreatedEvent(panel, persistent));

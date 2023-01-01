@@ -8,7 +8,7 @@ namespace Synthesis.UI.Dynamic {
 
         public StartMatchModePanel() : base(new Vector2(300f, 200f)) { }
 
-        public override void Create() {
+        public override bool Create() {
             Title.SetText("Almost Ready").SetFontSize(25f);
             PanelImage.RootGameObject.SetActive(false);
 
@@ -24,6 +24,8 @@ namespace Synthesis.UI.Dynamic {
                 });
 
             GizmoManager.SpawnGizmo<RobotSimObject>(RobotSimObject.GetCurrentlyPossessedRobot());
+
+            return true;
         }
 
         private void StartMatch() {

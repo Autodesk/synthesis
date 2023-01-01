@@ -117,7 +117,7 @@ namespace Synthesis.UI.Dynamic {
             _mainContent = new Content(null!, actualContentObj, _mainContentSize);
         }
 
-        public abstract void Create();
+        public abstract bool Create();
         public abstract void Update();
         public abstract void Delete();
 

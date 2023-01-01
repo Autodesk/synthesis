@@ -24,7 +24,7 @@ namespace Synthesis.UI.Dynamic {
             return u;
         };
 
-        public override void Create() {
+        public override bool Create() {
 
             CancelButton.RootGameObject.SetActive(false);
             AcceptButton.RootGameObject.SetActive(false);
@@ -52,8 +52,7 @@ namespace Synthesis.UI.Dynamic {
             blueScore = rightContent.CreateLabel(50f).ApplyTemplate(VerticalLayout).SetTopStretch(leftPadding: 0f, anchoredY: 60f).SetText("0")
                 .SetFontSize(50).SetHorizontalAlignment(HorizontalAlignmentOptions.Center);
 
-
-            
+            return false;
         }
         
         float targetTime = 135;
