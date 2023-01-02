@@ -51,9 +51,6 @@ public class RioConfigurationModal : ModalDynamic {
     };
 
     public override void Create() {
-
-        File.WriteAllText("C:\\Users\\hunte\\rio.json", JsonConvert.SerializeObject(WebSocketManager.RioState));
-
         Title.SetText("RoboRIO Configuration");
         Title.SetWidth<Label>(300);
         Description.SetText("Configuring RoboRIO for Synthesis simulation");

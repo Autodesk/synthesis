@@ -583,7 +583,6 @@ namespace Synthesis.Import
 			};
 
 			var paths = LoadPartTreePaths(assembly.DesignHierarchy);
-			// File.WriteAllText("C:\\Users\\hunte\\Documents\\paths.json", Newtonsoft.Json.JsonConvert.SerializeObject(paths));
 
 			var discoveredRigidGroups = new List<RigidGroup>();
 
