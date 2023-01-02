@@ -29,7 +29,7 @@ namespace Synthesis.UI.Dynamic
 
         Label location;
 
-        public override void Create() {
+        public override bool Create() {
             Title.SetText("Set Spawn").SetFontSize(25f);
             PanelImage.RootGameObject.SetActive(false);
             // Description.RootGameObject.SetActive(false);
@@ -114,6 +114,8 @@ namespace Synthesis.UI.Dynamic
                 .SetTopStretch(leftPadding: 10f, anchoredY: 130f).SetText("(0.00, 0.00, 0.00)");
 
             // PracticeMode.SetInitialState(GizmoManager.currentGizmo.transform.parent.gameObject);
+
+            return true;
         }
         private void StartMatch() {
             if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)

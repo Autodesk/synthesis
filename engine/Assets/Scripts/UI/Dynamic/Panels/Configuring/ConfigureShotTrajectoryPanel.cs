@@ -26,12 +26,11 @@ namespace Synthesis.UI.Dynamic {
             return u;
         };
 
-        public override void Create() {
+        public override bool Create() {
             Title.SetText("Configure Shooting");
 
             if (RobotSimObject.CurrentlyPossessedRobot == string.Empty) {
-                DynamicUIManager.ClosePanel<ConfigureShotTrajectoryPanel>();
-                return;
+                return false;
             }
 
             var robot = RobotSimObject.GetCurrentlyPossessedRobot();
@@ -103,6 +102,8 @@ namespace Synthesis.UI.Dynamic {
                         // TODO: Change the arrow?
                     })
                 .SetValue(_resultingData.EjectionSpeed);
+
+            return true;
         }
 
         public void SelectNodeButton(Button b) {

@@ -6,14 +6,25 @@ using Synthesis.UI.Dynamic;
 using Synthesis.UI;
 using Synthesis.WS;
 using SynthesisAPI.RoboRIO;
+using SynthesisAPI.Utilities;
+
+using Logger = SynthesisAPI.Utilities.Logger;
 
 public class DriverStationPanel : PanelDynamic {
+
+    private const string DRIVERSTATION_CONNECTED = "Driver Station (Connected)";
+    private const string DRIVERSTATION_NOT_CONNECTED = "Driver Station (Not Connected)";
 
     private Button _modeButton;
 
     public DriverStationPanel() : base(new Vector2(800, 60)) {}
 
-    public override void Create() {
+    public override bool Create() {
+
+        if (RobotSimObject.CurrentlyPossessedRobot == string.Empty) {
+            Logger.Log("Spawn a robot first", LogLevel.Info);
+            return false;
+        }
 
         // BottomCenter the panel
         var transform = base.UnityObject.GetComponent<RectTransform>();
@@ -22,7 +33,7 @@ public class DriverStationPanel : PanelDynamic {
         transform.anchorMin = new Vector2(0.5f, 0.0f);
         transform.anchoredPosition = new Vector2(0.0f, 10.0f);
 
-        Title.SetText("Driver Station (MOCKUP)");
+        Title.SetText("Driver Station (Not Connected)");
         Title.SetWidth<Label>(400);
 
         _modeButton = MainContent.CreateButton();
@@ -49,6 +60,8 @@ public class DriverStationPanel : PanelDynamic {
         });
 
         RobotSimObject.GetCurrentlyPossessedRobot().UseSimulationBehaviour = true;
+
+        return true;
     }
 
     private void SetModeButton(bool isEnabled) {
@@ -64,8 +77,15 @@ public class DriverStationPanel : PanelDynamic {
     }
 
     public override void Delete() {
-        RobotSimObject.GetCurrentlyPossessedRobot().UseSimulationBehaviour = false;
+        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+            RobotSimObject.GetCurrentlyPossessedRobot().UseSimulationBehaviour = false;
     }
 
-    public override void Update() { }
+    public override void Update() {
+        if (!WebSocketManager.Initialized || !WebSocketManager.HasClient) {
+            Title.SetText(DRIVERSTATION_NOT_CONNECTED);
+        } else {
+            Title.SetText(DRIVERSTATION_CONNECTED);
+        }
+    }
 }

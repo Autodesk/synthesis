@@ -26,12 +26,11 @@ namespace Synthesis.UI.Dynamic {
             return u;
         };
 
-        public override void Create() {
+        public override bool Create() {
             Title.SetText("Configure Pickup");
 
             if (RobotSimObject.CurrentlyPossessedRobot == string.Empty) {
-                DynamicUIManager.ClosePanel<ConfigureGamepiecePickupPanel>();
-                return;
+                return false;
             }
 
             var robot = RobotSimObject.GetCurrentlyPossessedRobot();
@@ -98,6 +97,8 @@ namespace Synthesis.UI.Dynamic {
                         _zoneObject.transform.localScale = new Vector3(v, v, v);
                     })
                 .SetValue(_resultingData.TriggerSize);
+
+            return true;
         }
 
         public void SelectNodeButton(Button b) {
