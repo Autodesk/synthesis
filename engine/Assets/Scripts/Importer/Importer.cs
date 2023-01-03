@@ -50,7 +50,7 @@ namespace Synthesis.Import
 
 		#region Importer Framework
 
-		public const UInt32 CURRENT_MIRA_EXPORTER_VERSION = 4;
+		public const UInt32 CURRENT_MIRA_EXPORTER_VERSION = 5;
 
 		private const int FIELD_LAYER = 7;
 		private const int DYNAMIC_1_LAYER = 8;
@@ -314,7 +314,12 @@ namespace Synthesis.Import
 					UVector3 jointOffset = instance.Offset ?? new Vector3();
 					revoluteA.anchor = originA + jointOffset;
 
-					var axisWut = new UVector3(definition.Rotational.RotationalFreedom.Axis.X, definition.Rotational.RotationalFreedom.Axis.Y, definition.Rotational.RotationalFreedom.Axis.Z);
+					UVector3 axisWut;
+					if (assembly.Info.Version < 5) {
+						axisWut = new UVector3(definition.Rotational.RotationalFreedom.Axis.X, definition.Rotational.RotationalFreedom.Axis.Y, definition.Rotational.RotationalFreedom.Axis.Z);
+					} else {
+						axisWut = new UVector3(-definition.Rotational.RotationalFreedom.Axis.X, definition.Rotational.RotationalFreedom.Axis.Y, definition.Rotational.RotationalFreedom.Axis.Z);
+					}
 
 					revoluteA.axis = axisWut;
 						// ((UVector3)definition.Rotational.RotationalFreedom.Axis).normalized;
