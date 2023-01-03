@@ -4,7 +4,8 @@
 
 Name "Synthesis"
 
-Icon "W16_SYN_launch.ico"
+;Icon "W16_SYN_launch.ico"
+Icon "synthesis-logo-64x64.ico"
 
 Caption "Synthesis ${PRODUCT_VERSION} Setup"
 
@@ -31,15 +32,15 @@ RequestExecutionLevel admin
 ;Interface Settings
   !define MUI_WELCOMEFINISHPAGE_BITMAP "W21_SYN_sidebar.bmp"
   !define MUI_UNWELCOMEFINISHPAGE_BITMAP "W21_SYN_sidebar.bmp"
-  !define MUI_ICON "W16_SYN_launch.ico"
-  !define MUI_UNICON "W16_SYN_launch.ico"
+  !define MUI_ICON "synthesis-logo-64x64.ico"
+  !define MUI_UNICON "synthesis-logo-64x64.ico"
   !define MUI_HEADERIMAGE
   !define MUI_HEADERIMAGE_BITMAP "orange-r.bmp"
   !define MUI_HEADERIMAGE_RIGHT
   !define MUI_ABORTWARNING
-  !define MUI_FINISHPAGE_TEXT 'Synthesis has been successfully installed on your system. $\r$\n $\r$\nIn order to improve this product and understand how it is used, we collect non-personal product usage information. This usage information may consist of custom events like Replay Mode, Driver Practice Mode, Tutorial Link Clicked, etc. $\r$\nThis information is not used to identify or contact you. $\r$\nYou can turn data collection off from the Control Panel within the simulator. $\r$\n $\r$\nBy clicking Finish, you agree that you have read the terms of service agreement and data collection statement above.'
-  !define MUI_FINISHPAGE_LINK "Synthesis Tutorials Website"
-  !define MUI_FINISHPAGE_LINK_LOCATION "https://synthesis.autodesk.com/tutorials.html"
+  !define MUI_FINISHPAGE_TEXT 'Synthesis has been successfully installed on your system. $\r$\n $\r$\nIn order to improve this product and understand how it is used, we collect non-personal product usage information. This usage information may consist of custom events like Replay Mode, Driver Practice Mode, etc. $\r$\nThis information is not used to identify or contact you. $\r$\nYou can turn data collection off from the Control Panel within the simulator. $\r$\n $\r$\nBy clicking Finish, you agree that you have read the terms of service agreement and data collection statement above.'
+  !define MUI_FINISHPAGE_LINK "Synthesis Discord"
+  !define MUI_FINISHPAGE_LINK_LOCATION "https://www.discord.gg/hHcF9AVgZA"
   
 ;--------------------------------
 
