@@ -63,6 +63,12 @@ namespace Synthesis {
                 };
             }
 
+            State.CurrentSignals[_outputs[0]] = new UpdateSignal() {
+                DeviceType = "PWM",
+                Io = UpdateIOType.Output,
+                Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(0)
+            };
+
             // Debug.Log($"Speed: {_motor.targetVelocity}\nForce: {_motor.force}");
         }
 
@@ -78,6 +84,7 @@ namespace Synthesis {
             _jointA.useMotor = false;
         }
 
+        private float _jointAngle = 0.0f;
         public override void Update() {
 
             // if (_useMotor) {
@@ -120,6 +127,11 @@ namespace Synthesis {
                 };
             }
 
+            // Angle loops around so this works for now
+            _jointAngle += (_jointA.velocity * Time.deltaTime) / 360f;
+
+            State.CurrentSignals[_outputs[0]].Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(_jointAngle);
+
             // var updateSignal = new UpdateSignals();
             // var key = _outputs[0];
             // var current = _state.CurrentSignals[key];
@@ -129,6 +141,8 @@ namespace Synthesis {
             // });
             // _state.Update(updateSignal);
         }
+
+        #region Rotational Inertia stuff that isn't used
 
         public float GetInertiaAroundParallelAxis(Rigidbody rb, Vector3 localAnchor, Vector3 localAxis) {
             var comInertia = GetInertiaFromAxisVector(rb, localAxis);
@@ -193,5 +207,7 @@ namespace Synthesis {
                 Mathf.Asin(cart.z / 1)
             );
         }
+
+        #endregion
     }
 }

@@ -51,7 +51,7 @@ public static class AnalyticsManager {
             PreferenceManager.Save();
         }
 
-        Debug.Log($"Client ID: {ClientID}");
+        // Debug.Log($"Client ID: {ClientID}");
 
         _pendingEvents = new List<IAnalytics>();
 

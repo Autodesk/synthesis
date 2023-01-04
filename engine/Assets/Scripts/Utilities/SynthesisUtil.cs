@@ -105,6 +105,5 @@ namespace Synthesis.Util {
                     return byte.Parse(hex.ToString());
             }
         }
-        
     }
 }

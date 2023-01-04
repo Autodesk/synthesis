@@ -52,69 +52,37 @@ namespace Synthesis.Import
 
 		public const UInt32 CURRENT_MIRA_EXPORTER_VERSION = 5;
 
-		public delegate GameObject ImportFuncString(string path);
-
-		public delegate GameObject ImportFuncBuffer(byte[] buffer);
-
-		/// <summary>
-		/// Default Importers that come stock with Synthesis. Leaves ability to add one post release
-		/// </summary>
-		public static Dictionary<SourceType, (ImportFuncString strFunc, ImportFuncBuffer bufFunc)> Importers
-			= new Dictionary<SourceType, (ImportFuncString strFunc, ImportFuncBuffer bufFunc)>()
-			{
-				// {SourceType.PROTOBUF_FIELD, (LegacyFieldImporter.ProtoFieldImport, LegacyFieldImporter.ProtoFieldImport) },
-				//{SourceType.MIRABUF_ASSEMBLY, (MirabufAssemblyImport, MirabufAssemblyImport)}
-			};
-
-		/// <summary>
-		/// Import a serialized DynamicObject into a Unity Environment
-		/// </summary>
-		/// <param name="path">Path to serialized data (this could be a directory or a file depending on your import/translate function)</param>
-		/// <param name="type">Type of import to conduct</param>
-		/// <param name="transType">Optional translation type to use before importing</param>
-		/// <param name="forceTranslate">Force a translation of source data regardless if a temp file exists. TODO: Probably remove in the future</param>
-		/// <returns>Root GameObject of whatever Entity/Model you imported</returns>
-		public static GameObject Import(string path, SourceType type)
-			=> Importers[type].strFunc(path);
-
-		public static GameObject Import(byte[] contents, SourceType type)
-			=> Importers[type].bufFunc(contents);
+		private const int FIELD_LAYER = 7;
+		private const int DYNAMIC_1_LAYER = 8;
+		private const int DYNAMIC_2_LAYER = 9; // Reserved for later
+		private const int DYNAMIC_3_LAYER = 10; // Reserved for later
 
 		#endregion
 
 		#region Mirabuf Importer
 
+		/// <summary>
+		/// Import a mirabuf assembly
+		/// </summary>
+		/// <param name="miraLive">Path to mirabuf file</param>
+		/// <returns>A tuple of the main gameobject that contains the imported assembly, a reference to the live file, and the simobject controlling the assembly</returns>
 		public static (GameObject MainObject, MirabufLive MiraAssembly, SimObject Sim) MirabufAssemblyImport(string path) {
 			return MirabufAssemblyImport(new MirabufLive(path));
-			// byte[] buff = File.ReadAllBytes(path);
-
-			// if (buff[0] == 0x1f && buff[1] == 0x8b) {
-
-			// 	int originalLength = BitConverter.ToInt32(buff, buff.Length - 4);
-
-			// 	MemoryStream mem = new MemoryStream(buff);
-			// 	byte[] res = new byte[originalLength];
-			// 	GZipStream decompresser = new GZipStream(mem, CompressionMode.Decompress);
-			// 	decompresser.Read(res, 0, res.Length);
-			// 	decompresser.Close();
-			// 	mem.Close();
-			// 	buff = res;
-			// }
-			// return MirabufAssemblyImport(buff, reverseSideJoints);
 		}
-
-		// public static (GameObject MainObject, MirabufLive MiraAssembly, SimObject Sim) MirabufAssemblyImport(MirabufLive live, bool reverseSideJoints = false)
-		// 	=> MirabufAssemblyImport(live, reverseSideJoints);
 
 		private static List<Collider> _collidersToIgnore;
 
+		/// <summary>
+		/// Import a mirabuf assembly from a live file.
+		/// </summary>
+		/// <param name="miraLive">Live file for mirabuf data</param>
+		/// <returns>A tuple of the main gameobject that contains the imported assembly, a reference to the live file, and the simobject controlling the assembly</returns>
 		public static (GameObject MainObject, MirabufLive MiraAssembly, SimObject Sim) MirabufAssemblyImport(MirabufLive miraLive)
 		{
-
 			EntireImport.Begin();
 
 			// Uncommenting this will delete all bodies so the JSON file isn't huge
-			// DebugAssembly(assembly);
+			// DebugAssembly(miraLive.MiraAssembly);
 			// return null;
 
 			Assembly assembly = miraLive.MiraAssembly;
@@ -164,6 +132,7 @@ namespace Synthesis.Import
 						var partInstance = part.Value;
 						var partDefinition = parts.PartDefinitions[partInstance.PartDefinitionReference];
 						GameObject partObject = new GameObject(partInstance.Info.Name);
+
 						MakePartDefinition(partObject, partDefinition, partInstance, assembly.Data, !isGamepiece, !isStatic);
 						partObjects.Add(partInstance.Info.GUID, partObject);
 						partObject.transform.parent = groupObject.transform;
@@ -178,6 +147,11 @@ namespace Synthesis.Import
 						Logger.Log($"Duplicate Part\nGroup name: {group.Name}\nGUID: {part.Key}", LogLevel.Warning);
 					}
 				}
+
+				if (!assembly.Dynamic && !isGamepiece)
+					groupObject.transform.GetComponentsInChildren<UnityEngine.Transform>().ForEach(x => x.gameObject.layer = FIELD_LAYER);
+				else if (assembly.Dynamic)
+					groupObject.transform.GetComponentsInChildren<UnityEngine.Transform>().ForEach(x => x.gameObject.layer = DYNAMIC_1_LAYER);
 
 				#endregion
 
@@ -277,22 +251,22 @@ namespace Synthesis.Import
 			CollisionIgnoring.Begin();
 
 			// TODO: This is really slow
-			for (var i = 0; i < _collidersToIgnore.Count - 1; i++)
-			{
-				for (var j = i + 1; j < _collidersToIgnore.Count; j++)
-				{
-					UnityEngine.Physics.IgnoreCollision(_collidersToIgnore[i], _collidersToIgnore[j]);
-				}
-			}
+			// for (var i = 0; i < _collidersToIgnore.Count/* - 1*/; i++)
+			// {
+			// 	_collidersToIgnore[i].gameObject.layer = 7;
+			// 	// for (var j = i + 1; j < _collidersToIgnore.Count; j++)
+			// 	// {
+			// 	// 	UnityEngine.Physics.IgnoreCollision(_collidersToIgnore[i], _collidersToIgnore[j]);
+			// 	// }
+			// }
 
 			CollisionIgnoring.End();
 
 			#endregion
 
 			if (assembly.Dynamic) {
-				(simObject as RobotSimObject).ConfigureArcadeDrivetrain();
-				(simObject as RobotSimObject).ConfigureArmBehaviours();
-				(simObject as RobotSimObject).ConfigureSliderBehaviours();
+				(simObject as RobotSimObject).ConfigureDefaultBehaviours();
+				// (simObject as RobotSimObject).ConfigureTestSimulationBehaviours();
 			}
 
 			EntireImport.End();
@@ -381,7 +355,7 @@ namespace Synthesis.Import
 					if (instance.HasSignal()) {
 						var driver = new RotationalDriver(
 							assembly.Data.Signals.SignalMap[instance.SignalReference].Info.GUID,
-							new string[] {instance.SignalReference}, Array.Empty<string>(), simObject, revoluteA, revoluteB,
+							new string[] {instance.SignalReference}, new string[] {$"{instance.SignalReference}_encoder"}, simObject, revoluteA, revoluteB,
 							assembly.Data.Joints.MotorDefinitions.ContainsKey(definition.MotorReference)
 								? assembly.Data.Joints.MotorDefinitions[definition.MotorReference]
 								: null
@@ -614,7 +588,6 @@ namespace Synthesis.Import
 			};
 
 			var paths = LoadPartTreePaths(assembly.DesignHierarchy);
-			// File.WriteAllText("C:\\Users\\hunte\\Documents\\paths.json", Newtonsoft.Json.JsonConvert.SerializeObject(paths));
 
 			var discoveredRigidGroups = new List<RigidGroup>();
 

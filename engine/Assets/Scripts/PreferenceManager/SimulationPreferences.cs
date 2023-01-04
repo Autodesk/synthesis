@@ -9,6 +9,7 @@ using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Utilities;
 using UnityEngine;
+using Synthesis.WS.Translation;
 
 using ITD = RobotSimObject.IntakeTriggerData;
 using STD = RobotSimObject.ShotTrajectoryData;
@@ -47,6 +48,9 @@ namespace Synthesis.PreferenceManager {
         public static STD? GetRobotTrajectoryData(string robot)
             => Instance.GetTrajectoryData(robot);
 
+        public static RioTranslationLayer? GetRobotSimTranslationLayer(string robot)
+            => Instance.GetSimTranslationLayer(robot);
+
         public static void SetRobotInput(string robot, string inputKey, Analog inputValue) {
             Instance.SetRobotInput(robot, inputKey, inputValue);
         }
@@ -65,6 +69,10 @@ namespace Synthesis.PreferenceManager {
 
         public static void SetRobotTrajectoryData(string robot, STD? data) {
             Instance.SetRobotTrajectoryData(robot, data);
+        }
+
+        public static void SetRobotSimTranslationLayer(string robot, RioTranslationLayer layer) {
+            Instance.SetRobotSimTranslationLayer(robot, layer);
         }
 
         private class Inner {
@@ -164,6 +172,13 @@ namespace Synthesis.PreferenceManager {
                 return _allRobotData[robot].TrajectoryPointer;
             }
 
+            public RioTranslationLayer? GetSimTranslationLayer(string robot) {
+                if (!_allRobotData.ContainsKey(robot))
+                    return null;
+
+                return _allRobotData[robot].SimTranslationLayer;
+            }
+
             public void SetRobotInput(string robot, string inputKey, Analog inputValue) {
                 if (!_allRobotData.ContainsKey(robot))
                     _allRobotData[robot] = new RobotData(robot);
@@ -198,6 +213,12 @@ namespace Synthesis.PreferenceManager {
                 if (!_allRobotData.ContainsKey(robot))
                     _allRobotData[robot] = new RobotData(robot);
                 _allRobotData[robot].TrajectoryPointer = data;
+            }
+
+            public void SetRobotSimTranslationLayer(string robot, RioTranslationLayer layer) {
+                if (!_allRobotData.ContainsKey(robot))
+                    _allRobotData[robot] = new RobotData(robot);
+                _allRobotData[robot].SimTranslationLayer = layer;
             }
         }
 
@@ -239,6 +260,8 @@ namespace Synthesis.PreferenceManager {
         public ITD? IntakeTrigger;
         [JsonProperty]
         public STD? TrajectoryPointer;
+        [JsonProperty]
+        public RioTranslationLayer? SimTranslationLayer;
     }
 
     [JsonObject(MemberSerialization.OptIn)]

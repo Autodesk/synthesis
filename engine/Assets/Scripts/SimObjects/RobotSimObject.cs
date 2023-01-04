@@ -21,6 +21,8 @@ using Synthesis.Runtime;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.EventBus;
+using Synthesis.WS.Translation;
+using static Synthesis.WS.Translation.RioTranslationLayer;
 
 public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
@@ -54,6 +56,36 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     public Bounds GroundedBounds { get; private set; }
     public GameObject RobotNode { get; private set; } // Doesn't work??
     public Bounds RobotBounds { get; private set; }
+
+    private WSSimBehavior _simBehaviour;
+    private RioTranslationLayer _simulationTranslationLayer;
+    public RioTranslationLayer SimulationTranslationLayer {
+        get => _simulationTranslationLayer;
+        set {
+            _simulationTranslationLayer = value;
+            _simBehaviour.Translation = _simulationTranslationLayer;
+
+            SimulationPreferences.SetRobotSimTranslationLayer(MiraLive.MiraAssembly.Info.GUID, _simulationTranslationLayer);
+            PreferenceManager.Save();
+        }
+    }
+
+    private bool _useSimBehaviour = false;
+    public bool UseSimulationBehaviour {
+        get => _useSimBehaviour;
+        set {
+            if (_useSimBehaviour != value) {
+                _useSimBehaviour = value;
+                SimulationManager.Behaviours[this._name].ForEach(b => {
+                    // Kinda ugly but whatever
+                    if (_useSimBehaviour ? b.GetType() != typeof(WSSimBehavior) : b.GetType() == typeof(WSSimBehavior))
+                        b.Enabled = false;
+                    else
+                        b.Enabled = true;
+                });
+            }
+        }
+    }
 
     public SimBehaviour DriveBehaviour { get; private set; }
 
@@ -137,6 +169,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
         IntakeData = SimulationPreferences.GetRobotIntakeTriggerData(MiraLive.MiraAssembly.Info.GUID);
         TrajectoryData = SimulationPreferences.GetRobotTrajectoryData(MiraLive.MiraAssembly.Info.GUID);
+        _simulationTranslationLayer = SimulationPreferences.GetRobotSimTranslationLayer(MiraLive.MiraAssembly.Info.GUID) ?? new RioTranslationLayer();
+        // _simulationTranslationLayer = new RioTranslationLayer();
 
         cam = Camera.main.GetComponent<CameraController>();
     }
@@ -316,6 +350,19 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         }
 
         return _tankTrackWheels;
+    }
+
+    public void ConfigureDefaultBehaviours() {
+        ConfigureArcadeDrivetrain();
+		ConfigureArmBehaviours();
+		ConfigureSliderBehaviours();
+        ConfigureTestSimulationBehaviours();
+        _simBehaviour.Enabled = false;
+    }
+
+    public void ConfigureTestSimulationBehaviours() {
+        _simBehaviour = new WSSimBehavior(this.Name, _simulationTranslationLayer);
+        SimulationManager.AddBehaviour(this.Name, _simBehaviour);
     }
 
     // Account for passive joints

@@ -36,6 +36,8 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\Behaviors\WSSimBehavior.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Configuring\RioConfigurationModal.cs" />
      <Compile Include="Assets\Scripts\Modes\PracticeMode.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\ParentAdapter.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Panels\Information\ScoreboardPanel.cs" />
@@ -47,6 +49,7 @@
      <Compile Include="Assets\Scripts\UI\ContextMenu\ContextMenu.cs" />
      <Compile Include="Assets\Scripts\Physics\CustomWheel.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\MeshCollider2DAdapter.cs" />
+     <Compile Include="Assets\Scripts\Gizmos\SignalsOverlayRenderer.cs" />
      <Compile Include="Assets\Scripts\Importer\MirabufLive.cs" />
      <Compile Include="Assets\Scripts\ServersMonoBehavior.cs" />
      <Compile Include="Assets\Scripts\Behaviors\GeneralArmBehaviour.cs" />
@@ -56,6 +59,7 @@
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Configuring\SettingsModal.cs" />
      <Compile Include="Assets\Scripts\Camera\OverviewCameraMode.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Panels\SpawnLocationPanel.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Configuring\RioConfig\RCCreateDeviceModal.cs" />
      <Compile Include="Assets\Scripts\UI\SynthesisAssetCollection.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Configuring\PracticeSettingsModal.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\TopBar.cs" />
@@ -121,6 +125,7 @@
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\ChangeViewModal.cs" />
      <Compile Include="Assets\Scripts\Utilities\IOHandler.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\JointsAdapter.cs" />
+     <Compile Include="Assets\Scripts\WebSockets\WebSocketManager.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Input\InputSelection.cs" />
      <Compile Include="Assets\Scripts\SimulationRunner.cs" />
      <Compile Include="Assets\Scripts\Camera\CameraController.cs" />
@@ -128,6 +133,7 @@
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\LoadingScreenModal.cs" />
      <Compile Include="Assets\Scripts\Utilities\ObjectLedger.cs" />
      <Compile Include="Assets\Scripts\Test\ConfigurableJointTest.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Panels\Simulation\DriverStationPanel.cs" />
      <Compile Include="Assets\Scripts\Utilities\UtilExtensions.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\MainHUD.cs" />
      <Compile Include="Assets\Scripts\Camera\MenuCamera.cs" />
@@ -162,6 +168,7 @@
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\SpriteAdapter.cs" />
      <Compile Include="Assets\Scripts\VersionManager.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Joints\ConfigureJointsPanel.cs" />
+     <Compile Include="Assets\Scripts\WebSockets\RioTranslationLayer.cs" />
      <Compile Include="Assets\Scripts\UI\MainMenu\MenuManager.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\ModuleMetadata.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\IApiAdapter.cs" />

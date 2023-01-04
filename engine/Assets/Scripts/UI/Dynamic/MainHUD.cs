@@ -104,6 +104,7 @@ public static class MainHUD {
         MainHUD.AddItemToDrawer("Download Asset", b => DynamicUIManager.CreateModal<DownloadAssetModal>(), icon: SynthesisAssetCollection.GetSpriteByName("DownloadIcon"));
 
         MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("settings"));
+        MainHUD.AddItemToDrawer("RoboRIO Conf.", b => DynamicUIManager.CreateModal<RioConfigurationModal>(true));
 
         if (!_hasNewRobotListener) {
             EventBus.NewTypeListener<RobotSimObject.NewRobotEvent>(e => {
@@ -112,8 +113,8 @@ public static class MainHUD {
                 if (robotEvent == null)
                     throw new Exception("Event type parsed incorrectly. Shouldn't ever happen");
 
-                Debug.Log($"Old Bot: '{robotEvent.OldBot}'");
-                Debug.Log($"New Bot: '{robotEvent.NewBot}'");
+                // Debug.Log($"Old Bot: '{robotEvent.OldBot}'");
+                // Debug.Log($"New Bot: '{robotEvent.NewBot}'");
 
                 if (robotEvent.NewBot == string.Empty) {
                     RemoveItemFromDrawer("Configure");

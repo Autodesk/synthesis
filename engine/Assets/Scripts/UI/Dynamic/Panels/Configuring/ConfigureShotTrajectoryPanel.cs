@@ -26,12 +26,11 @@ namespace Synthesis.UI.Dynamic {
             return u;
         };
 
-        public override void Create() {
+        public override bool Create() {
             Title.SetText("Configure Shooting");
 
             if (RobotSimObject.CurrentlyPossessedRobot == string.Empty) {
-                DynamicUIManager.CloseActivePanel();
-                return;
+                return false;
             }
 
             var robot = RobotSimObject.GetCurrentlyPossessedRobot();
@@ -49,7 +48,7 @@ namespace Synthesis.UI.Dynamic {
 
             AcceptButton.AddOnClickedEvent(b => {
                 _save = true;
-                DynamicUIManager.CloseActivePanel();
+                DynamicUIManager.ClosePanel<ConfigureShotTrajectoryPanel>();
             }).StepIntoLabel(l => l.SetText("Save"));
 
             _arrowObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -77,7 +76,7 @@ namespace Synthesis.UI.Dynamic {
                         (node.transform.worldToLocalMatrix * Matrix4x4.TRS(Vector3.zero, t.Rotation, Vector3.one))
                         .rotation.ToArray();
                     if (!_exiting)
-                        DynamicUIManager.CloseActivePanel();
+                        DynamicUIManager.ClosePanel<ConfigureShotTrajectoryPanel>();
                 }
             );
 
@@ -103,6 +102,8 @@ namespace Synthesis.UI.Dynamic {
                         // TODO: Change the arrow?
                     })
                 .SetValue(_resultingData.EjectionSpeed);
+
+            return true;
         }
 
         public void SelectNodeButton(Button b) {

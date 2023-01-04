@@ -43,6 +43,8 @@ public class PracticeMode : IMode
     {
         DynamicUIManager.CreateModal<AddFieldModal>();
         InputManager.AssignValueInput(TOGGLE_ESCAPE_MENU_INPUT, TryGetSavedInput(TOGGLE_ESCAPE_MENU_INPUT, new Digital("Escape", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
+    
+        MainHUD.AddItemToDrawer("DriverStation", b => DynamicUIManager.CreatePanel<DriverStationPanel>(true));
     }
     
     public static void SetInitialState(GameObject robot)

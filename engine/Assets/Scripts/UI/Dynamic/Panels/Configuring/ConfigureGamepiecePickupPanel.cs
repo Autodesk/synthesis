@@ -26,12 +26,11 @@ namespace Synthesis.UI.Dynamic {
             return u;
         };
 
-        public override void Create() {
+        public override bool Create() {
             Title.SetText("Configure Pickup");
 
             if (RobotSimObject.CurrentlyPossessedRobot == string.Empty) {
-                DynamicUIManager.CloseActivePanel();
-                return;
+                return false;
             }
 
             var robot = RobotSimObject.GetCurrentlyPossessedRobot();
@@ -52,7 +51,7 @@ namespace Synthesis.UI.Dynamic {
 
             AcceptButton.AddOnClickedEvent(b => {
                 _save = true;
-                DynamicUIManager.CloseActivePanel();
+                DynamicUIManager.ClosePanel<ConfigureGamepiecePickupPanel>();
             }).StepIntoLabel(l => l.SetText("Save"));
 
             _zoneObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -72,7 +71,7 @@ namespace Synthesis.UI.Dynamic {
                         robot.RobotNode.transform.Find(_resultingData.NodeName) // Get Node
                         .transform.worldToLocalMatrix.MultiplyPoint(t.Position).ToArray(); // Transform point to local space
                     if (!_exiting)
-                        DynamicUIManager.CloseActivePanel();
+                        DynamicUIManager.ClosePanel<ConfigureGamepiecePickupPanel>();
                 }
             );
 
@@ -98,6 +97,8 @@ namespace Synthesis.UI.Dynamic {
                         _zoneObject.transform.localScale = new Vector3(v, v, v);
                     })
                 .SetValue(_resultingData.TriggerSize);
+
+            return true;
         }
 
         public void SelectNodeButton(Button b) {
