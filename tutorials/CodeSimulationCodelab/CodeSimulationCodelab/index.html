@@ -1,0 +1,52 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Code Simulation in Synthesis</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/claat-public/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="CodeSimulationCodelab"
+                  title="Code Simulation in Synthesis"
+                  environment="web"
+                  feedback-link="https://github.com/Autodesk/synthesis/issues">
+    
+      <google-codelab-step label="Setup" duration="0">
+        <h2 is-upgraded>Setup (Project Side)</h2>
+<p>The Synthesis simulator comes with code simulation already integrated. However, a development environment for what ever code your are trying to simulate will be required. Synthesis&#39; code simulation relies on the WPILib HALSim extensions, specifically the websocket-client extension. To enable this for your project, add the following lines to your <code>build.gradle</code> file.</p>
+<pre><code language="language-java" class="language-java">wpi.sim.envVar(&#34;HALSIMWS_HOST&#34;, &#34;127.0.0.1&#34;)
+wpi.sim.addWebsocketsClient().defaultEnabled = true
+</code></pre>
+<p>NOTE: The GUI extension interfaces really well and add Joystick/Controller support to your code, whereas Synthesis currently only supports controllers for non-code simulation. If you wish to test using your controllers, I recommend using the GUI extension in conjunction.</p>
+<h2 is-upgraded>Setup (Robot Side)</h2>
+<p>Inside of Synthesis, you must configure your &#34;IO map&#34; so we know what signals go where. You can access the configuration modal on the side bar. Once inside the configuration modal, you can add the devices you want to add support for. <br><strong>NOTE :</strong> Currently, due to the way the websocket extension works, no CAN devices are supported. We plan on bringing CAN support for the 2023 Summer release or potentially earlier.</p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/claat-public/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/prettify.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>

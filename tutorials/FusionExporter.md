@@ -83,3 +83,7 @@ NOTE: These are not super accurate in Synthesis atm. They will be getting update
 NOTE: Linear joints are not fully supported yet.
 <br/>
 You can also specify a parent joint that the joint is supposed to stem from.
+
+## Need more help?
+
+If you need any help with the process, feel free to join our [Discord](https://www.discord.gg/hHcF9AVgZA) where you can be in direct contact with Synthesis developers.

@@ -14,6 +14,14 @@ These are the markdown files for the codelabs.
 
 `claat export -o ./[tutorial]Codelab [tutorial].md`
 
+or
+
+`make`
+
+or
+
+`make TUTORIAL` 
+
 ## Usage
 
 Upload these to their correct locations on the webserver. Ask @KyroVibe or contact a subteam lead
