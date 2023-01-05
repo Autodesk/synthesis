@@ -363,7 +363,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Synthesis  v5.0.0
+  m_text: Synthesis  v5.1.0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d773a0b9b3212ab4fb694b91237f4660, type: 2}
   m_sharedMaterial: {fileID: 7508162858481735423, guid: d773a0b9b3212ab4fb694b91237f4660, type: 2}
