@@ -17,7 +17,7 @@ public class AutoUpdater : MonoBehaviour
     public static string UpdaterLink { get; private set; }
 
     // public static string updater;
-    public const string LocalVersion = "5.0.0.0"; // must be a version value
+    public const string LocalVersion = "5.1.0.0"; // must be a version value
 
     // Start is called before the first frame update
     void Start()

@@ -1,5 +1,5 @@
 # Module API
-The Synthesis™ Module API allows for 3rd party development on the Synthesis™ platform through an open source [NuGet](https://www.nuget.org/packages/Autodesk.Synthesis.Module.API/) package. This enables users and contributors to develop their own addins for the platform without the need for compiling and building our Unity engine. This API is currently still under development and is scheduled for an offical release with Synthesis 5.0.0.
+The Synthesis™ Module API allows for 3rd party development on the Synthesis™ platform through an open source [NuGet](https://www.nuget.org/packages/Autodesk.Synthesis.Module.API/) package. This enables users and contributors to develop their own addins for the platform without the need for compiling and building our Unity engine. This API is currently still under development and is scheduled for an offical release with Synthesis 5.1.0.
 
 ## Using the API in Your Project
 ### Adding the API Nuget Package

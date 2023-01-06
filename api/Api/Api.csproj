@@ -17,7 +17,7 @@
         <PackageTags>Autodesk, Synthesis, FRC, Robotics, Simulator</PackageTags>
         <PackageReleaseNotes>An experimental release of the Synthesis Module API.
 
-This release is for those looking to kickstart their module development for the Synthesis platform early before the release of version 5.0.0. 
+This release is for those looking to kickstart their module development for the Synthesis platform early before the release of version 5.1.0. 
 To get started with this API, you'll need to acquire a development build of Synthesis from either one of the following outlets:
 - Clone from Git into your local Unity environment: https://github.com/Autodesk/synthesis.git
 - Download an Engine build from our CI build artifacts: https://github.com/Autodesk/synthesis/actions

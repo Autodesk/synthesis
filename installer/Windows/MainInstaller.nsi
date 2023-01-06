@@ -1,6 +1,6 @@
 !include MUI2.nsh
 !include x64.nsh
-!define PRODUCT_VERSION "5.0.0"
+!define PRODUCT_VERSION "5.1.0"
 
 Name "Synthesis"
 
