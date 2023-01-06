@@ -333,17 +333,37 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                 var globalAxis = GroundedNode.transform.rotation
                     * jointAxis.normalized;
                 var cross = Vector3.Cross(GroundedNode.transform.up, globalAxis);
-                if (Vector3.Dot(GroundedNode.transform.forward, cross) > 0) {
-                    var ogAxis = jointAxis;
-                    ogAxis.x *= -1;
-                    ogAxis.y *= -1;
-                    ogAxis.z *= -1;
-                    // Modify assembly for if a new behaviour evaluates this again
-                    // def.Rotational.RotationalFreedom.Axis = ogAxis; // I think this is irrelevant after the last few lines
-                    def.Rotational.RotationalFreedom.Axis = new MVector3() { X = jointAxis.x, Y = jointAxis.y, Z = jointAxis.z };
-                    var joints = _jointMap[x.Key];
-                    (joints.a as HingeJoint).axis = ogAxis;
-                    (joints.b as HingeJoint).axis = ogAxis;
+                if (MiraLive.MiraAssembly.Info.Version < 5) {
+                    if (Vector3.Dot(GroundedNode.transform.forward, cross) > 0) {
+                        var ogAxis = jointAxis;
+
+                        
+                            ogAxis.x *= -1;
+                            ogAxis.y *= -1;
+                            ogAxis.z *= -1;
+                            // Modify assembly for if a new behaviour evaluates this again
+                            // def.Rotational.RotationalFreedom.Axis = ogAxis; // I think this is irrelevant after the last few lines
+                            def.Rotational.RotationalFreedom.Axis = new MVector3() { X = jointAxis.x, Y = jointAxis.y, Z = jointAxis.z };
+                        
+                        var joints = _jointMap[x.Key];
+                        (joints.a as HingeJoint).axis = ogAxis;
+                        (joints.b as HingeJoint).axis = ogAxis;
+                    }
+                } else {
+                    if (Vector3.Dot(GroundedNode.transform.forward, cross) < 0) {
+                        jointAxis.x = -jointAxis.x;
+                        var ogAxis = jointAxis;
+                        ogAxis.x *= -1;
+                        ogAxis.y *= -1;
+                        ogAxis.z *= -1;
+                        // Modify assembly for if a new behaviour evaluates this again
+                        // def.Rotational.RotationalFreedom.Axis = ogAxis; // I think this is irrelevant after the last few lines
+                        def.Rotational.RotationalFreedom.Axis = new MVector3() { X = -jointAxis.x, Y = jointAxis.y, Z = jointAxis.z };
+                        
+                        var joints = _jointMap[x.Key];
+                        (joints.a as HingeJoint).axis = ogAxis;
+                        (joints.b as HingeJoint).axis = ogAxis;
+                    }
                 }
             });
             _tankTrackWheels = (leftWheels, rightWheels);
