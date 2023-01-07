@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Synthesis.Gizmo;
 using Synthesis.Physics;
@@ -44,7 +45,11 @@ public class PracticeMode : IMode
         DynamicUIManager.CreateModal<AddFieldModal>();
         InputManager.AssignValueInput(TOGGLE_ESCAPE_MENU_INPUT, TryGetSavedInput(TOGGLE_ESCAPE_MENU_INPUT, new Digital("Escape", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
     
-        MainHUD.AddItemToDrawer("DriverStation", b => DynamicUIManager.CreatePanel<DriverStationPanel>(true));
+        MainHUD.AddItemToDrawer(
+            "DriverStation",
+            b => DynamicUIManager.CreatePanel<BetaWarningPanel>(false, (Action)(() => DynamicUIManager.CreatePanel<DriverStationPanel>(true))),
+            icon: SynthesisAssetCollection.GetSpriteByName("driverstation-icon")
+        );
     }
     
     public static void SetInitialState(GameObject robot)

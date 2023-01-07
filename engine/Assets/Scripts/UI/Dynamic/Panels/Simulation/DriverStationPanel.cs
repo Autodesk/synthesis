@@ -16,6 +16,9 @@ public class DriverStationPanel : PanelDynamic {
     private const string DRIVERSTATION_NOT_CONNECTED = "Driver Station (Not Connected)";
 
     private Button _modeButton;
+    private Dropdown _modeSelection;
+
+    private bool _useAuto = false;
 
     public DriverStationPanel() : base(new Vector2(800, 60)) {}
 
@@ -57,6 +60,14 @@ public class DriverStationPanel : PanelDynamic {
                 });
                 SetModeButton(true);
             }
+        });
+
+        _modeSelection = MainContent.CreateDropdown();
+        _modeSelection.SetWidth<Dropdown>(150f).SetLeftStretch<Button>(topPadding: 0f, bottomPadding: 20f, anchoredX: 220);
+        _modeSelection.SetOptions(new string[] { "Teleop", "Auto" });
+        _modeSelection.AddOnValueChangedEvent((d, i, o) => {
+            _useAuto = i != 0; // Gonna have to change later
+            WebSocketManager.UpdateData<DriverStationData>("", d => d.Autonomous = _useAuto);
         });
 
         RobotSimObject.GetCurrentlyPossessedRobot().UseSimulationBehaviour = true;

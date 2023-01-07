@@ -135,6 +135,18 @@ namespace SynthesisAPI.RoboRIO {
                 _rawData[">enabled"] = value;
             }
         }
+        public bool Autonomous {
+            get => (bool)_rawData.TryGetDefault(">autonomous", false);
+            set {
+                _rawData[">autonomous"] = value;
+            }
+        }
+        public double MatchTime {
+            get => (double)_rawData.TryGetDefault(">match_time", -1.0);
+            set {
+                _rawData[">match_time"] = value;
+            }
+        }
 
         public override RioDataAttribute GetMetaData()
             => GetMetaData<DriverStationData>();
