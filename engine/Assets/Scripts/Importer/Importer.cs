@@ -68,7 +68,7 @@ namespace Synthesis.Import
 		/// <returns>A tuple of the main gameobject that contains the imported assembly, a reference to the live file, and the simobject controlling the assembly</returns>
 		public static (GameObject MainObject, MirabufLive miraLive, SimObject Sim) MirabufAssemblyImport(MirabufLive miraLive) {
 			// Uncommenting this will delete all bodies so the JSON file isn't huge
-			// DebugAssembly(miraLive.MiraAssembly);
+			DebugAssembly(miraLive.MiraAssembly);
 			// return null;
 
 			Assembly assembly = miraLive.MiraAssembly;
