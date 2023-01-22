@@ -266,6 +266,7 @@ namespace Synthesis.Import
 						+ instance.Offset ?? new Vector3();
 					UVector3 axis = definition.Prismatic.PrismaticFreedom.Axis;
 					axis = axis.normalized;
+					axis.x = -axis.x;
 					float midRange = ((definition.Prismatic.PrismaticFreedom.Limits.Lower + definition.Prismatic.PrismaticFreedom.Limits.Upper) / 2) * 0.01f;
 
 					var sliderA = a.AddComponent<ConfigurableJoint>();
@@ -277,14 +278,38 @@ namespace Synthesis.Import
 					sliderA.angularXMotion = ConfigurableJointMotion.Locked;
 					sliderA.angularYMotion = ConfigurableJointMotion.Locked;
 					sliderA.angularZMotion = ConfigurableJointMotion.Locked;
-					sliderA.xMotion = ConfigurableJointMotion.Limited;
+					// switch (definition.Prismatic.PrismaticFreedom.PivotDirection) {
+					// 	case Axis.Y:
+					// 		sliderA.xMotion = ConfigurableJointMotion.Locked;
+					// 		sliderA.yMotion = ConfigurableJointMotion.Limited;
+					// 		sliderA.zMotion = ConfigurableJointMotion.Locked;
+					// 		break;
+					// 	case Axis.Z:
+					// 		sliderA.xMotion = ConfigurableJointMotion.Locked;
+					// 		sliderA.yMotion = ConfigurableJointMotion.Locked;
+					// 		sliderA.zMotion = ConfigurableJointMotion.Limited;
+					// 		break;
+					// 	case Axis.X:
+					// 	default:
+					// 		sliderA.xMotion = ConfigurableJointMotion.Limited;
+					// 		sliderA.yMotion = ConfigurableJointMotion.Locked;
+					// 		sliderA.zMotion = ConfigurableJointMotion.Locked;
+					// 		break;
+					// }
+
 					sliderA.yMotion = ConfigurableJointMotion.Locked;
 					sliderA.zMotion = ConfigurableJointMotion.Locked;
+					if (Mathf.Abs(midRange) > 0.0001) {
+						sliderA.xMotion = ConfigurableJointMotion.Limited;
+						
+						var ulimitA = sliderA.linearLimit;
+						ulimitA.limit = Mathf.Abs(midRange);
+						sliderA.linearLimit = ulimitA;
+					} else {
+						sliderA.xMotion = ConfigurableJointMotion.Free;
+					}
 					sliderA.connectedBody = rbB;
 					sliderA.connectedMassScale = sliderA.connectedBody.mass / rbA.mass;
-					var ulimitA = sliderA.linearLimit;
-					ulimitA.limit = Mathf.Abs(midRange);
-					sliderA.linearLimit = ulimitA;
 
 					var sliderB = b.AddComponent<ConfigurableJoint>();
 					sliderB.anchor = sliderA.anchor;
