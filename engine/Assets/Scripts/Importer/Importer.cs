@@ -250,7 +250,7 @@ namespace Synthesis.Import
 					if (instance.HasSignal()) {
 						var driver = new RotationalDriver(
 							assembly.Data.Signals.SignalMap[instance.SignalReference].Info.GUID,
-							new string[] {instance.SignalReference}, new string[] {$"{instance.SignalReference}_encoder"}, simObject, revoluteA, revoluteB,
+							new string[] {instance.SignalReference, $"{instance.SignalReference}_mode"}, new string[] {$"{instance.SignalReference}_encoder", $"{instance.SignalReference}_absolute"}, simObject, revoluteA, revoluteB,
 							assembly.Data.Joints.MotorDefinitions.ContainsKey(definition.MotorReference)
 								? assembly.Data.Joints.MotorDefinitions[definition.MotorReference]
 								: null

@@ -397,10 +397,13 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                     || isWheel == "false")
                 && instance.Value.HasSignal()
                 && MiraLive.MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].JointMotionType == JointMotion.Revolute).ToList();
-        nonWheelInstances.ForEach(x => {
-            var genArmBehaviour = new GeneralArmBehaviour(this.Name, x.Value.SignalReference);
-            SimulationManager.AddBehaviour(this.Name, genArmBehaviour);
-        });
+        // nonWheelInstances.ForEach(x => {
+        //     var genArmBehaviour = new GeneralArmBehaviour(this.Name, x.Value.SignalReference);
+        //     SimulationManager.AddBehaviour(this.Name, genArmBehaviour);
+        // });
+        var swerveBehaviour = new SwerveDriveBehaviour(this.Name, nonWheelInstances.Select(x => x.Value.SignalReference).ToArray(), new string[0]);
+        SimulationManager.AddBehaviour(this.Name, swerveBehaviour);
+        // nonWheelInstances.Select(x => x.Value.SignalReference).ToArray();
     }
 
     public void ConfigureSliderBehaviours() {
