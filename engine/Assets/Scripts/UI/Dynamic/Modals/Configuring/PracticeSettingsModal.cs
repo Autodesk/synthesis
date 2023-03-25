@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class PracticeSettingsModal : ModalDynamic
 {
 
-    private static Dictionary<string, GamepieceSimObject> _gamepieceMap = new Dictionary<string, GamepieceSimObject>();
-    private static List<GamepieceSimObject> _gamepieceSimObjects = new List<GamepieceSimObject>();
+    private static Dictionary<string, PracticeMode.GamepieceData> _gamepieceMap = new Dictionary<string, PracticeMode.GamepieceData>();
+    private static List<PracticeMode.GamepieceData> _gamepieceSimObjects = new List<PracticeMode.GamepieceData>();
+    
+    private static string lastField = "";
 
     private const float VERTICAL_PADDING = 10f;
     
@@ -77,9 +80,23 @@ public class PracticeSettingsModal : ModalDynamic
         }
         else
         {
+            if (field.MiraLive.MiraAssembly.Info.GUID != lastField)
+            {
+                _gamepieceSimObjects.Clear();
+                _gamepieceMap.Clear();
+                lastField = field.MiraLive.MiraAssembly.Info.GUID;
+            }
             if (_gamepieceSimObjects.Count == 0 && field.Gamepieces.Count > 0) {
-                _gamepieceSimObjects = field.Gamepieces
-                    .GroupBy(g => g.Name).Select(g => g.First()).ToList();
+                // group the gamepieces by their types, found via the name of the first child before :
+                var groups = field.Gamepieces.GroupBy(g =>
+                {
+                    if (g.GamepieceObject.transform.childCount > 0)
+                        return g.GamepieceObject.transform.GetChild(0).name.Split(':')[0];
+                    return g.GamepieceObject.name;
+                });
+                var uniqueGamepieces = groups.Select(g => g.First()).ToList();
+                
+                _gamepieceSimObjects = uniqueGamepieces.Map(g => new PracticeMode.GamepieceData(g.GamepieceObject));
                 _gamepieceSimObjects.ForEach(g => _gamepieceMap.Add(g.Name, g));
             }
             gamepieceDropdown.SetOptions(_gamepieceSimObjects.Map(g => g.Name).ToArray())
@@ -104,7 +121,7 @@ public class PracticeSettingsModal : ModalDynamic
             });
 
         var resetLabel = MainContent.CreateLabel()
-            .SetText("Reset Gamepieces")
+            .SetText("Reset")
             .ApplyTemplate(Label.BigLabelTemplate)
             .ApplyTemplate(VerticalLayout);
 
@@ -120,23 +137,26 @@ public class PracticeSettingsModal : ModalDynamic
             .StepIntoLabel(label => label.SetText("Reset All"))
             .AddOnClickedEvent(b => PracticeMode.ResetAll());
         
-        bottomLeft.CreateButton()
-            .ApplyTemplate(VerticalLayout)
-            .ShiftOffsetMin<Button>(new Vector2(7.5f, 0f))
-            .StepIntoLabel(label => label.SetText("Reset Gamepieces"))
-            .AddOnClickedEvent(b => PracticeMode.ResetGamepieces());
+        // don't hide when field is not loaded because the user can still spawn gamepieces
         bottomRight.CreateButton()
             .SetTopStretch<Button>()
             .ShiftOffsetMax<Button>(new Vector2(-7.5f, 0f))
-            .StepIntoLabel(label => label.SetText("Reset Robot"))
-            .AddOnClickedEvent(b => PracticeMode.ResetRobot());
-            // .SetTopStretch<Button>(0, 0, VERTICAL_PADDING + (spawnButton.Size.y + VERTICAL_PADDING) * 2 + resetLabel.Size.y + VERTICAL_PADDING);
+            .StepIntoLabel(label => label.SetText("Reset Gamepieces"))
+            .AddOnClickedEvent(b => PracticeMode.ResetGamepieces());
 
-        bottomRight.CreateButton()
-            .ApplyTemplate(VerticalLayout)
-            .ShiftOffsetMax<Button>(new Vector2(-7.5f, 0f))
-            .StepIntoLabel(label => label.SetText("Reset Field"))
-            .AddOnClickedEvent(b => PracticeMode.ResetField());
+        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+        {
+            var resetFieldButton = bottomLeft.CreateButton()
+                .ApplyTemplate(VerticalLayout)
+                .ShiftOffsetMax<Button>(new Vector2(7.5f, 0f))
+                .StepIntoLabel(label => label.SetText("Reset Robot"))
+                .AddOnClickedEvent(b => PracticeMode.ResetRobot());
+
+            resetFieldButton.SetTopStretch<Button>(
+                anchoredY: -resetFieldButton.Parent!.RectOfChildren(resetFieldButton).yMin + VERTICAL_PADDING,
+                leftPadding: 7.5f
+            );
+        }
     }
     
     public override void Update(){}

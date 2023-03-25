@@ -21,18 +21,21 @@ using Synthesis.Runtime;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.EventBus;
+using Synthesis.WS.Translation;
+using static Synthesis.WS.Translation.RioTranslationLayer;
 
 public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     public const string INTAKE_GAMEPIECES = "input/intake";
 
-    private static string _currentlyPossedRobot = string.Empty;
+    private static string _currentlyPossessedRobot = string.Empty;
     public static string CurrentlyPossessedRobot {
-        get => _currentlyPossedRobot;
+        get => _currentlyPossessedRobot;
         private set {
-            if (value != _currentlyPossedRobot) {
-                var old = _currentlyPossedRobot;
-                _currentlyPossedRobot = value;
+            if (value != _currentlyPossessedRobot) {
+                var old = _currentlyPossessedRobot;
+                _currentlyPossessedRobot = value;
+                
                 EventBus.Push(new NewRobotEvent { NewBot = value, OldBot = old });
             }
         }
@@ -42,13 +45,47 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     public static int ControllableJointCounter = 0;
 
-    public string MiraGUID => MiraAssembly.Info.GUID;
+    private CameraController cam;
+    private OrbitCameraMode orbit;
+    private ICameraMode previousMode;
 
-    public Assembly MiraAssembly { get; private set; }
+    public string MiraGUID => MiraLive.MiraAssembly.Info.GUID;
+
+    public MirabufLive MiraLive { get; private set; }
     public GameObject GroundedNode { get; private set; }
     public Bounds GroundedBounds { get; private set; }
     public GameObject RobotNode { get; private set; } // Doesn't work??
     public Bounds RobotBounds { get; private set; }
+
+    private WSSimBehavior _simBehaviour;
+    private RioTranslationLayer _simulationTranslationLayer;
+    public RioTranslationLayer SimulationTranslationLayer {
+        get => _simulationTranslationLayer;
+        set {
+            _simulationTranslationLayer = value;
+            _simBehaviour.Translation = _simulationTranslationLayer;
+
+            SimulationPreferences.SetRobotSimTranslationLayer(MiraLive.MiraAssembly.Info.GUID, _simulationTranslationLayer);
+            PreferenceManager.Save();
+        }
+    }
+
+    private bool _useSimBehaviour = false;
+    public bool UseSimulationBehaviour {
+        get => _useSimBehaviour;
+        set {
+            if (_useSimBehaviour != value) {
+                _useSimBehaviour = value;
+                SimulationManager.Behaviours[this._name].ForEach(b => {
+                    // Kinda ugly but whatever
+                    if (_useSimBehaviour ? b.GetType() != typeof(WSSimBehavior) : b.GetType() == typeof(WSSimBehavior))
+                        b.Enabled = false;
+                    else
+                        b.Enabled = true;
+                });
+            }
+        }
+    }
 
     public SimBehaviour DriveBehaviour { get; private set; }
 
@@ -73,7 +110,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                 _intakeTrigger.SetActive(false);
             }
 
-            SimulationPreferences.SetRobotIntakeTriggerData(MiraAssembly.Info.GUID, _intakeData);
+            SimulationPreferences.SetRobotIntakeTriggerData(MiraLive.MiraAssembly.Info.GUID, _intakeData);
+            PreferenceManager.Save();
         }
     }
 
@@ -89,23 +127,25 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                 _trajectoryPointer.transform.localRotation = _trajectoryData.Value.RelativeRotation.ToQuaternion();
             }
 
-            SimulationPreferences.SetRobotTrajectoryData(MiraAssembly.Info.GUID, _trajectoryData);
+            SimulationPreferences.SetRobotTrajectoryData(MiraLive.MiraAssembly.Info.GUID, _trajectoryData);
+            PreferenceManager.Save();
         }
     }
 
     private Queue<GamepieceSimObject> _gamepiecesInPossession = new Queue<GamepieceSimObject>();
     public bool PickingUpGamepieces { get; private set; }
 
-    public RobotSimObject(string name, ControllableState state, Assembly assembly,
+    public RobotSimObject(string name, ControllableState state, MirabufLive miraLive,
             GameObject groundedNode, Dictionary<string, (Joint a, Joint b)> jointMap)
             : base(name, state) {
-        MiraAssembly = assembly;
+        MiraLive = miraLive;
         GroundedNode = groundedNode;
         _jointMap = jointMap;
         RobotNode = groundedNode.transform.parent.gameObject;
         RobotBounds = GetBounds(RobotNode.transform);
         GroundedBounds = GetBounds(GroundedNode.transform);
         DebugJointAxes.DebugBounds.Add((GroundedBounds, () => GroundedNode.transform.localToWorldMatrix));
+        SimulationPreferences.LoadFromMirabufLive(miraLive);
 
         _allRigidbodies = new List<Rigidbody>(RobotNode.transform.GetComponentsInChildren<Rigidbody>());
         PhysicsManager.Register(this);
@@ -127,8 +167,12 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         _trajectoryPointer.transform.position = Vector3.zero;
         _trajectoryPointer.transform.rotation = Quaternion.identity;
 
-        IntakeData = SimulationPreferences.GetRobotIntakeTriggerData(MiraAssembly.Info.GUID);
-        TrajectoryData = SimulationPreferences.GetRobotTrajectoryData(MiraAssembly.Info.GUID);
+        IntakeData = SimulationPreferences.GetRobotIntakeTriggerData(MiraLive.MiraAssembly.Info.GUID);
+        TrajectoryData = SimulationPreferences.GetRobotTrajectoryData(MiraLive.MiraAssembly.Info.GUID);
+        _simulationTranslationLayer = SimulationPreferences.GetRobotSimTranslationLayer(MiraLive.MiraAssembly.Info.GUID) ?? new RioTranslationLayer();
+        // _simulationTranslationLayer = new RioTranslationLayer();
+
+        cam = Camera.main.GetComponent<CameraController>();
     }
 
     public static void Setup() {
@@ -153,16 +197,16 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     public void Possess() {
         CurrentlyPossessedRobot = this.Name;
-        Camera.main.GetComponent<CameraController>().FocusPoint =
-            () => GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center);
+        OrbitCameraMode.FocusPoint =
+            () => GroundedNode != null && GroundedBounds != null ? GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center) : Vector3.zero;
     }
 
     public override void Destroy() {
+        ClearGamepieces();
         PhysicsManager.Unregister(this);
         if (CurrentlyPossessedRobot.Equals(this._name)) {
             CurrentlyPossessedRobot = string.Empty;
-            Camera.main.GetComponent<CameraController>().FocusPoint =
-                () => Vector3.zero;
+            // cam.CameraMode = previousMode;
         }
         MonoBehaviour.Destroy(GroundedNode.transform.parent.gameObject);
     }
@@ -246,10 +290,10 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     private (List<JointInstance> leftWheels, List<JointInstance> rightWheels) GetLeftRightWheels() {
         if (_tankTrackWheels.leftWheels == null) {
-            var wheelsInstances = MiraAssembly.Data.Joints.JointInstances.Where(instance =>
+            var wheelsInstances = MiraLive.MiraAssembly.Data.Joints.JointInstances.Where(instance =>
                 instance.Value.Info.Name != "grounded"
-                && MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].UserData != null
-                && MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].UserData.Data
+                && MiraLive.MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].UserData != null
+                && MiraLive.MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].UserData.Data
                     .TryGetValue("wheel", out var isWheel)
                 && isWheel == "true").ToList();
 
@@ -262,7 +306,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                 _state.CurrentSignals[wheelInstance.Value.SignalReference].Value = Value.ForNumber(0.0);
                 var jointAnchor =
                     (wheelInstance.Value.Offset ?? new Vector3()) +
-                    MiraAssembly.Data.Joints.JointDefinitions[wheelInstance.Value.JointReference].Origin ?? new Vector3();
+                    MiraLive.MiraAssembly.Data.Joints.JointDefinitions[wheelInstance.Value.JointReference].Origin ?? new Vector3();
                 // jointAnchor = jointAnchor;
                 wheelDotProducts[wheelInstance.Value] = Vector3.Dot(Vector3.right, jointAnchor);
             }
@@ -284,22 +328,42 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
             // Spin all of the wheels straight
             wheelsInstances.ForEach(x => {
-                var def = MiraAssembly.Data.Joints.JointDefinitions[x.Value.JointReference];
+                var def = MiraLive.MiraAssembly.Data.Joints.JointDefinitions[x.Value.JointReference];
                 var jointAxis = new Vector3(def.Rotational.RotationalFreedom.Axis.X, def.Rotational.RotationalFreedom.Axis.Y, def.Rotational.RotationalFreedom.Axis.Z);
                 var globalAxis = GroundedNode.transform.rotation
                     * jointAxis.normalized;
                 var cross = Vector3.Cross(GroundedNode.transform.up, globalAxis);
-                if (Vector3.Dot(GroundedNode.transform.forward, cross) > 0) {
-                    var ogAxis = jointAxis;
-                    ogAxis.x *= -1;
-                    ogAxis.y *= -1;
-                    ogAxis.z *= -1;
-                    // Modify assembly for if a new behaviour evaluates this again
-                    // def.Rotational.RotationalFreedom.Axis = ogAxis; // I think this is irrelevant after the last few lines
-                    def.Rotational.RotationalFreedom.Axis = new MVector3() { X = jointAxis.x, Y = jointAxis.y, Z = jointAxis.z };
-                    var joints = _jointMap[x.Key];
-                    (joints.a as HingeJoint).axis = ogAxis;
-                    (joints.b as HingeJoint).axis = ogAxis;
+                if (MiraLive.MiraAssembly.Info.Version < 5) {
+                    if (Vector3.Dot(GroundedNode.transform.forward, cross) > 0) {
+                        var ogAxis = jointAxis;
+
+                        
+                            ogAxis.x *= -1;
+                            ogAxis.y *= -1;
+                            ogAxis.z *= -1;
+                            // Modify assembly for if a new behaviour evaluates this again
+                            // def.Rotational.RotationalFreedom.Axis = ogAxis; // I think this is irrelevant after the last few lines
+                            def.Rotational.RotationalFreedom.Axis = new MVector3() { X = jointAxis.x, Y = jointAxis.y, Z = jointAxis.z };
+                        
+                        var joints = _jointMap[x.Key];
+                        (joints.a as HingeJoint).axis = ogAxis;
+                        (joints.b as HingeJoint).axis = ogAxis;
+                    }
+                } else {
+                    if (Vector3.Dot(GroundedNode.transform.forward, cross) < 0) {
+                        jointAxis.x = -jointAxis.x;
+                        var ogAxis = jointAxis;
+                        ogAxis.x *= -1;
+                        ogAxis.y *= -1;
+                        ogAxis.z *= -1;
+                        // Modify assembly for if a new behaviour evaluates this again
+                        // def.Rotational.RotationalFreedom.Axis = ogAxis; // I think this is irrelevant after the last few lines
+                        def.Rotational.RotationalFreedom.Axis = new MVector3() { X = -jointAxis.x, Y = jointAxis.y, Z = jointAxis.z };
+                        
+                        var joints = _jointMap[x.Key];
+                        (joints.a as HingeJoint).axis = ogAxis;
+                        (joints.b as HingeJoint).axis = ogAxis;
+                    }
                 }
             });
             _tankTrackWheels = (leftWheels, rightWheels);
@@ -308,18 +372,31 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         return _tankTrackWheels;
     }
 
+    public void ConfigureDefaultBehaviours() {
+        ConfigureArcadeDrivetrain();
+		ConfigureArmBehaviours();
+		ConfigureSliderBehaviours();
+        ConfigureTestSimulationBehaviours();
+        _simBehaviour.Enabled = false;
+    }
+
+    public void ConfigureTestSimulationBehaviours() {
+        _simBehaviour = new WSSimBehavior(this.Name, _simulationTranslationLayer);
+        SimulationManager.AddBehaviour(this.Name, _simBehaviour);
+    }
+
     // Account for passive joints
     public void ConfigureArmBehaviours() {
         // I pity the poor dev that has to look at this
-        var nonWheelInstances = MiraAssembly.Data.Joints.JointInstances.Where(instance =>
+        var nonWheelInstances = MiraLive.MiraAssembly.Data.Joints.JointInstances.Where(instance =>
                 instance.Value.Info.Name != "grounded"
                 && (
-                    MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].UserData == null
-                    || !MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].UserData.Data
+                    MiraLive.MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].UserData == null
+                    || !MiraLive.MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].UserData.Data
                         .TryGetValue("wheel", out var isWheel)
                     || isWheel == "false")
                 && instance.Value.HasSignal()
-                && MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].JointMotionType == JointMotion.Revolute).ToList();
+                && MiraLive.MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].JointMotionType == JointMotion.Revolute).ToList();
         nonWheelInstances.ForEach(x => {
             var genArmBehaviour = new GeneralArmBehaviour(this.Name, x.Value.SignalReference);
             SimulationManager.AddBehaviour(this.Name, genArmBehaviour);
@@ -327,9 +404,9 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     public void ConfigureSliderBehaviours() {
-        var sliderInstances = MiraAssembly.Data.Joints.JointInstances.Where(instance => 
+        var sliderInstances = MiraLive.MiraAssembly.Data.Joints.JointInstances.Where(instance => 
                 instance.Value.Info.Name != "grounded"
-                && MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].JointMotionType == JointMotion.Slider
+                && MiraLive.MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].JointMotionType == JointMotion.Slider
                 && instance.Value.HasSignal()).ToList();
         sliderInstances.ForEach(x => {
             var sliderBehaviour = new GeneralSliderBehaviour(this.Name, x.Value.SignalReference);
@@ -471,7 +548,10 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         // GroundedNode.transform.position = data.Position - GroundedBounds.center;
     }
 
-    public void End(TransformData data) { }
+    public void End(TransformData data)
+    {
+        PracticeMode.SetInitialState(RobotNode);
+    }
 
     public struct IntakeTriggerData {
         public string NodeName;

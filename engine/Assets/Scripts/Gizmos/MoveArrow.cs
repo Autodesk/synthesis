@@ -26,6 +26,10 @@ namespace Synthesis.Configuration
         Dictionary<Rigidbody, bool> rigidbodiesKinematicStateInScene;
 
         private CameraController cam;
+        private ICameraMode previousMode;
+        private Vector3 previousCameraPosition;
+        private Quaternion previousCameraRotation;
+        private OrbitCameraMode orbit;
         private float originalLowerPitch;
         private float gizmoPitch = -80f;
 
@@ -98,7 +102,11 @@ namespace Synthesis.Configuration
         {
             cam = Camera.main.GetComponent<CameraController>();
             originalLowerPitch = cam.PitchLowerLimit;
-            originalCameraFocusPoint = cam.FocusPoint;
+            originalCameraFocusPoint = (Func<Vector3>) OrbitCameraMode.FocusPoint.Clone();
+            previousMode = cam.CameraMode;
+            previousCameraPosition = cam.transform.position;
+            previousCameraRotation = cam.transform.rotation;
+            cam.CameraMode = CameraController.CameraModes["Orbit"];
 
             //makes a list of the rigidbodies in the hierarchy and their state
             HierarchyRigidbodiesToDictionary();
@@ -122,13 +130,29 @@ namespace Synthesis.Configuration
 
             gizmoCameraTransform = new GameObject().transform;
             gizmoCameraTransform.position = transform.parent.position; //camera shifting
-            cam.FocusPoint = () => gizmoCameraTransform.position;//camera focus
+            OrbitCameraMode.FocusPoint = () => gizmoCameraTransform.position;//camera focus
             cam.PitchLowerLimit = gizmoPitch; //camera pitch limits
         }
+
+        private void RestoreCameraMode()
+        {
+            cam.CameraMode = previousMode;
+            cam.transform.position = previousCameraPosition;
+            cam.transform.rotation = previousCameraRotation;
+            OrbitCameraMode.FocusPoint = originalCameraFocusPoint;
+
+            // test if cam.cameraMode is of type OrbitCameraMode
+            if (cam.CameraMode is OrbitCameraMode)
+            {
+                OrbitCameraMode orbit = (OrbitCameraMode)cam.CameraMode;
+                cam.PitchLowerLimit = originalLowerPitch;
+            }
+        }
+        
         private void disableGizmo() //makes sure values are set correctly when the gizmo is removed
         {
-            cam.PitchLowerLimit = originalLowerPitch;
-            cam.FocusPoint = originalCameraFocusPoint;
+            RestoreCameraMode();
+            CameraController.isOverGizmo = false; // this doesn't get reset?
             PhysicsManager.IsFrozen = false;
             //SetRigidbodies(true);
         }
@@ -155,6 +179,7 @@ namespace Synthesis.Configuration
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 GizmoManager.ExitGizmo();
+                RestoreCameraMode();
             }
             if (Input.GetKeyDown(KeyCode.R))//Reset on press R
             {
@@ -365,7 +390,7 @@ namespace Synthesis.Configuration
 
             //move the camera
             gizmoCameraTransform.position = transform.parent.position;
-            cam.FocusPoint = () => gizmoCameraTransform.position;
+            OrbitCameraMode.FocusPoint = () => gizmoCameraTransform.position;
 
         }
         public void HierarchyRigidbodiesToDictionary() //save the state of all gameobject's rigidbodies as a dictionary

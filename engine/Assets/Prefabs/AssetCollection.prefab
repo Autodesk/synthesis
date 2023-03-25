@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 507563843828576302}
   - component: {fileID: 507563843828576301}
+  - component: {fileID: 2992185900158993256}
   m_Layer: 0
   m_Name: AssetCollection
   m_TagString: Untagged
@@ -52,6 +53,14 @@ MonoBehaviour:
   - {fileID: 21300000, guid: d9c4c591714f10f448b52c61f82e1c5f, type: 3}
   - {fileID: 21300000, guid: 5bbd2928c42c0ed4a8364881e49b60d8, type: 3}
   - {fileID: 21300000, guid: 9edfc3e7b3f24c648afa74bdf0f956f9, type: 3}
+  - {fileID: 21300000, guid: bf19f4039e670de45afb9cb6e509c177, type: 3}
+  - {fileID: 21300000, guid: 40a7e85b3fe8cc34b8787ad2b1c162ea, type: 3}
+  - {fileID: 21300000, guid: 59eb2a6c2e9cd664dbf18186b2450f48, type: 3}
+  - {fileID: 21300000, guid: e68ca6ef632148345bea79ec9e046e1d, type: 3}
+  - {fileID: 21300000, guid: 93fb5f56edb2a01419dcdb1fbf719983, type: 3}
+  - {fileID: 21300000, guid: 2d3ef54de0360a24486485e8b646e227, type: 3}
+  - {fileID: 21300000, guid: 4dd82473f1add5f4fabb8cb70f719ab0, type: 3}
+  - {fileID: 21300000, guid: f86a06cf4a61d9146a85545034e33f5d, type: 3}
   PanelPrefabs:
   - {fileID: 2702697856074163897, guid: 4056ba4f4255aef4b8976df3b1ed9449, type: 3}
   - {fileID: 8099976770030476227, guid: fb29a2ed7f63eea4fa63a5be33873450, type: 3}
@@ -78,3 +87,15 @@ MonoBehaviour:
   BlurVolumePrefab: {fileID: 6580295389658322125, guid: 394aa61974565994b902f14a87446d95, type: 3}
   ReplaySlider: {fileID: 3705824443591556104, guid: f80559b316f43074b95161133cd3b4d2, type: 3}
   GizmoPrefab: {fileID: 1956879812176446, guid: 7f4443e0480835a40be41aa190e93374, type: 3}
+--- !u!114 &2992185900158993256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 507563843828576300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9672af1c048041c49873cb09e0b71584, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

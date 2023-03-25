@@ -26,12 +26,11 @@ namespace Synthesis.UI.Dynamic {
             return u;
         };
 
-        public override void Create() {
+        public override bool Create() {
             Title.SetText("Configure Shooting");
 
             if (RobotSimObject.CurrentlyPossessedRobot == string.Empty) {
-                DynamicUIManager.CloseActivePanel();
-                return;
+                return false;
             }
 
             var robot = RobotSimObject.GetCurrentlyPossessedRobot();
@@ -49,15 +48,15 @@ namespace Synthesis.UI.Dynamic {
 
             AcceptButton.AddOnClickedEvent(b => {
                 _save = true;
-                DynamicUIManager.CloseActivePanel();
+                DynamicUIManager.ClosePanel<ConfigureShotTrajectoryPanel>();
             }).StepIntoLabel(l => l.SetText("Save"));
 
             _arrowObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
             _arrowObject.transform.localScale = new Vector3(0.15f, 0.15f, 1f);
             var renderer = _arrowObject.GetComponent<Renderer>();
-            renderer.material = new Material(Shader.Find("Shader Graphs/DefaultSynthesisTransparentShader"));
-            renderer.material.SetColor("Color_48545d7793c14f3d9e1dd2264f072068", new Color(0f, 0f, 0f, 0.6f));
-            renderer.material.SetFloat("Vector1_d66a0e8b289a457c85b3b4408b4f3c2f", 0f);
+            renderer.material = new Material(Shader.Find("Shader Graphs/DefaultSynthesisShader"));
+            renderer.material.SetColor("Color_2aa135b32e7e4808b9be05c544657380", new Color(0f, 1f, 0f, 0.4f));
+            renderer.material.SetFloat("Vector1_dd87d7fcd1f1419f894566001d248ab9", 0f);
             var node = robot.RobotNode.transform.Find(_resultingData.NodeName);
             _arrowObject.transform.rotation = node.transform.rotation * _resultingData.RelativeRotation.ToQuaternion();
             _arrowObject.transform.position = node.transform.localToWorldMatrix.MultiplyPoint(_resultingData.RelativePosition.ToVector3());
@@ -77,14 +76,17 @@ namespace Synthesis.UI.Dynamic {
                         (node.transform.worldToLocalMatrix * Matrix4x4.TRS(Vector3.zero, t.Rotation, Vector3.one))
                         .rotation.ToArray();
                     if (!_exiting)
-                        DynamicUIManager.CloseActivePanel();
+                        DynamicUIManager.ClosePanel<ConfigureShotTrajectoryPanel>();
                 }
             );
 
             _selectNodeButton = MainContent.CreateLabeledButton()
                 .SetHeight<LabeledButton>(30)
-                .StepIntoLabel(l => l.SetText("Select a node"))
-                .StepIntoButton(b => b.StepIntoLabel(l => l.SetText("Select")).AddOnClickedEvent(SelectNodeButton))
+                .StepIntoLabel(l => l.SetText("Select a node")
+                    .SetLeftStretch<Label>()
+                    .SetWidth<Label>(125))
+                .StepIntoButton(b => b.StepIntoLabel(l => l.SetText("Select")).AddOnClickedEvent(SelectNodeButton)
+                    .SetWidth<Button>(125))
                 .ApplyTemplate<LabeledButton>(VerticalLayout);
             SetSelectUIState(false);
             // _moveTriggerButton = MainContent.CreateLabeledButton()
@@ -100,6 +102,8 @@ namespace Synthesis.UI.Dynamic {
                         // TODO: Change the arrow?
                     })
                 .SetValue(_resultingData.EjectionSpeed);
+
+            return true;
         }
 
         public void SelectNodeButton(Button b) {

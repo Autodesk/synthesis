@@ -18,10 +18,10 @@ TagManager:
   - Water
   - UI
   - UI2
-  - 
-  - 
-  - 
-  - 
+  - FieldCollisionLayer
+  - D1CollisionLayer
+  - D2CollisionLayer
+  - D3CollisionLayer
   - 
   - 
   - 

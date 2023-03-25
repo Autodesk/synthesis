@@ -11,8 +11,12 @@ using UnityEngine;
 
 using Logger = SynthesisAPI.Utilities.Logger;
 using Synthesis.UI;
-using Synthesis.Networking;
-using System.Threading.Tasks;
+using UnityEngine.SceneManagement;
+using Synthesis.Physics;
+using SynthesisAPI.EventBus;
+using Synthesis.Replay;
+using Synthesis.WS;
+using SynthesisAPI.RoboRIO;
 
 namespace Synthesis.Runtime {
     public class SimulationRunner : MonoBehaviour {
@@ -25,21 +29,62 @@ namespace Synthesis.Runtime {
         public const uint REPLAY_SIM_CONTEXT =  0x00000004;
         public const uint GIZMO_SIM_CONTEXT =   0x00000008;
 
+        /// <summary>
+        /// Called when going to the main menu.
+        /// Will be completely reset after called
+        /// </summary>
+        public static event Action OnSimKill;
+
         public static event Action OnUpdate;
+        private static bool _inSim = false;
+        public static bool InSim {
+            get => _inSim;
+            set {
+                _inSim = value;
+                if (!_inSim)
+                    SimKill();
+            }
+        }
+
+        private bool _setupSceneSwitchEvent = false;
 
         void Start() {
+
+            InSim = true;
+
+            if (!_setupSceneSwitchEvent) {
+                SceneManager.sceneUnloaded += (Scene s) => {
+                    if (s.name == "MainScene") {
+                        
+                    }
+                    // SimulationManager.SimulationObjects.ForEach(x => {
+                    //     SimulationManager.RemoveSimObject(x.Value);
+                    // });
+                };
+                _setupSceneSwitchEvent = true;
+            }
+
             SetContext(RUNNING_SIM_CONTEXT);
             Synthesis.PreferenceManager.PreferenceManager.Load();
             MainHUD.Setup();
             ModeManager.Start();
             RobotSimObject.Setup();
+            WebSocketManager.Init();
 
             OnUpdate += DynamicUIManager.Update;
 
-            NetworkManager.Init();
+            WebSocketManager.RioState.OnUnrecognizedMessage += s => Debug.Log(s);
+
+            // Screen.fullScreenMode = FullScreenMode.MaximizedWindow;
 
             // TestColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
             // RotationalDriver.TestSphericalCoordinate();
+
+            if (ColorManager.HasColor("tree")) {
+                GameObject.Instantiate(Resources.Load("Misc/Tree"));
+            }
+
+            QualitySettings.SetQualityLevel(PreferenceManager.PreferenceManager.GetPreference<int>("Quality Settings"), true);
         }
 
         private void TestColor(Color c) {
@@ -60,6 +105,19 @@ namespace Synthesis.Runtime {
             if (OnUpdate != null)
                 OnUpdate();
 
+            // var socket = WebSocketManager.RioState.GetData<PWMData>("PWM", "0");
+            // if (socket.GetData() == null) {
+            //     Debug.Log("Data null");
+            // }
+            // Debug.Log($"{socket.Init}:{socket.Speed}:{socket.Position}");
+
+            // var aiData = WebSocketManager.RioState.GetData<AIData>("AI", "3");
+            // if (aiData.Init) {
+            //     WebSocketManager.UpdateData<AIData>("AI", "3", d => {
+            //         d.Voltage = 2.3;
+            //     });
+            // }
+
             // if (Input.GetKeyDown(KeyCode.K)) {
             //     if (!SimulationManager.RemoveSimObject(RobotSimObject.CurrentlyPossessedRobot))
             //         Logger.Log("Failed", LogLevel.Debug);
@@ -70,20 +128,54 @@ namespace Synthesis.Runtime {
 
         void OnDestroy() {
             Synthesis.PreferenceManager.PreferenceManager.Save();
-            NetworkManager.Kill();
         }
 
+        /// <summary>
+        /// Set current context
+        /// </summary>
+        /// <param name="c">Mask for context</param>
         public static void SetContext(uint c) {
             _simulationContext = c;
         }
+        /// <summary>
+        /// Add an additional context to the current contexts
+        /// </summary>
+        /// <param name="c">Mask for context</param>
         public static void AddContext(uint c) {
             _simulationContext |= c;
         }
+        /// <summary>
+        /// Remove a context from the current context
+        /// </summary>
+        /// <param name="c">Mask for context</param>
         public static void RemoveContext(uint c) {
             if (HasContext(c))
                 _simulationContext ^= c;
         }
+        /// <summary>
+        /// Check if a context exists within the current context
+        /// </summary>
+        /// <param name="c">Mask for context</param>
+        /// <returns></returns>
         public static bool HasContext(uint c)
             => (_simulationContext & c) != 0;
+
+        /// <summary>
+        /// Teardown sim for recycle
+        /// </summary>
+        public static void SimKill() {
+            FieldSimObject.DeleteField();
+            if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+                SimulationManager.RemoveSimObject(RobotSimObject.GetCurrentlyPossessedRobot());
+
+            if (OnSimKill != null)
+                OnSimKill();
+
+            OnSimKill = null;
+
+            PhysicsManager.Reset();
+            ReplayManager.Teardown();
+            WebSocketManager.Teardown();
+        }
     }
 }

@@ -13,7 +13,8 @@ using Logger = SynthesisAPI.Utilities.Logger;
 using Math = SynthesisAPI.Utilities.Math;
 
 namespace Synthesis {
-	public class ArcadeDriveBehaviour : SimBehaviour {
+	public class ArcadeDriveBehaviour : SimBehaviour
+	{
 
 		internal const string FORWARD = "Arcade Forward";
 		internal const string BACKWARD = "Arcade Backward";
@@ -39,6 +40,8 @@ namespace Synthesis {
 
 		public double speedMult = 1.0f;
 
+		private RobotSimObject _robot;
+
 		public ArcadeDriveBehaviour(string simObjectId, List<string> leftSignals, List<string> rightSignals, string inputName = "") : base(
 			simObjectId) {
 			if (inputName == "")
@@ -63,18 +66,24 @@ namespace Synthesis {
         }
 
         public Analog TryLoadInput(string key, Analog defaultInput)
-            => SimulationPreferences.GetRobotInput((SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject).MiraAssembly.Info.GUID, key)
-                ?? defaultInput;
+        {
+	        if (_robot == null) _robot = SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject;
+	        return SimulationPreferences.GetRobotInput(
+		               _robot.MiraLive.MiraAssembly.Info.GUID, key)
+	               ?? defaultInput;
+        }
 
-		private void OnValueInputAssigned(IEvent tmp) {
+        private void OnValueInputAssigned(IEvent tmp) {
 			ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
 			switch (args.InputKey) {
 				case FORWARD:
 				case BACKWARD:
 				case LEFT:
 				case RIGHT:
+					if (base.SimObjectId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID) return;
+					RobotSimObject robot = SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject;
 					SimulationPreferences.SetRobotInput(
-						(SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject).MiraAssembly.Info.GUID,
+						_robot.MiraLive.MiraAssembly.Info.GUID,
 						args.InputKey,
 						args.Input);
 					break;
@@ -87,14 +96,8 @@ namespace Synthesis {
 			var leftInput = InputManager.MappedValueInputs[LEFT];
 			var rightInput = InputManager.MappedValueInputs[RIGHT];
 
-			if (backwardInput is Digital)
-				_xSpeed = forwardInput.Value - backwardInput.Value;
-			else
-				_xSpeed = forwardInput.Value + backwardInput.Value;
-			if (leftInput is Digital)
-				_zRot = rightInput.Value - leftInput.Value;
-			else
-				_zRot = rightInput.Value + leftInput.Value;
+			_xSpeed = Mathf.Abs(forwardInput.Value) - Mathf.Abs(backwardInput.Value);
+			_zRot = Mathf.Abs(rightInput.Value) - Mathf.Abs(leftInput.Value);
 
 			// Deadbanding
 			_xSpeed = Math.Abs(_xSpeed) > DEADBAND ? _xSpeed : 0;

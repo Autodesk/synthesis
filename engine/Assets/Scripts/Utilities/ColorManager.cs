@@ -65,8 +65,13 @@ namespace Synthesis.UI {
         }
 
         private static void Load() {
-            if (!File.Exists(PATH))
+            var dir = Path.GetFullPath(PATH).Replace(Path.GetFileName(PATH), "");
+            if (!Directory.Exists(dir)) {
+                Directory.CreateDirectory(dir);
                 return;
+            } else if (!File.Exists(PATH)) {
+                return;
+            }
 
             var jsonColors = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(PATH));
             jsonColors.ForEach(x => {
@@ -79,5 +84,8 @@ namespace Synthesis.UI {
                 return _colors[color];
             return defaultColor == default(Color) ? new Color(1, 1, 1, 1) : defaultColor;
         }
+
+        public static bool HasColor(string color)
+            => _colors.ContainsKey(color);
     }
 }

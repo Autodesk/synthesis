@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -54,6 +55,16 @@ public class SynthesisAssetCollection : MonoBehaviour {
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        /*
+        Screen.fullScreenMode = FullScreenMode.MaximizedWindow;
+        var biggestWidth = 0;
+        for (int i = 1; i < Screen.resolutions.Length; i++) {
+            if (Screen.resolutions[i].width > Screen.resolutions[biggestWidth].width)
+                biggestWidth = i;
+        }
+        var res = Screen.resolutions[biggestWidth];
+        Screen.SetResolution(res.width, res.height, FullScreenMode.MaximizedWindow);*/
     }
 
     public static Sprite GetSpriteByName(string name)
@@ -66,4 +77,10 @@ public class SynthesisAssetCollection : MonoBehaviour {
         => Instance.DynamicUIPrefabs.First(x => x.name == name);
     public static TMPro.TMP_FontAsset GetFont(string name)
         => Instance.Fonts.First(x => x.name == name);
+
+
+    public void OnDestroy()
+    {
+        AnalyticsManager.LogEvent(new AnalyticsEvent(category: "app", action: $"close", label:""));
+    }
 }

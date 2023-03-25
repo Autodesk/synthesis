@@ -6,6 +6,7 @@
 /engine/[Ll]ogs/
 /engine/[Mm]emoryCaptures/
 /engine/Packages/*
+/engine/[Uu]ser[Ss]ettings/
 
 !/engine/Packages/manifest.json
 !/engine/[Aa]ssets/**/*.meta
@@ -15,6 +16,9 @@
 /engine/Assets/Packages/*.meta
 
 /engine/[Aa]ssets/AssetStoreTools*
+
+/engine/*.csproj
+/engine/*.sln
 
 .vs/
 .DS_Store

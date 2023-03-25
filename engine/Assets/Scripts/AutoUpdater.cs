@@ -9,23 +9,26 @@ using System.Net.Security;
 using System.Diagnostics;
 using Synthesis.UI.Panels;
 using Debug = UnityEngine.Debug;
+using Synthesis.UI.Dynamic;
 
 public class AutoUpdater : MonoBehaviour
 {
+    public static bool UpdateAvailable { get; private set; } = false;
+    public static string UpdaterLink { get; private set; }
+
     // public static string updater;
-    public const string LocalVersion = "5.0.0.0"; // must be a version value
-    public GameObject updaterPanelPrefab;
+    public const string LocalVersion = "5.1.0.0"; // must be a version value
 
     // Start is called before the first frame update
     void Start()
     {
         // var versionText = GameObject.Find("VersionNumber").GetComponent<Text>();
         // versionText.text = "Version " + LocalVersion;
-        Debug.Log($"Version {LocalVersion} ALPHA");
+        // Debug.Log($"Version {LocalVersion}");
         // game = GameObject.Find("UpdatePrompt");
 
         // Analytics For Client Startup
-        var init = new AnalyticsEvent(category: "Startup", action: "Launched", label: $"Version {LocalVersion} ALPHA");
+        var init = new AnalyticsEvent(category: "Startup", action: "Launched", label: $"Version {LocalVersion} BETA");
         AnalyticsManager.LogEvent(init);
         AnalyticsManager.PostData();
 
@@ -44,10 +47,9 @@ public class AutoUpdater : MonoBehaviour
 
             if (check < 0) { // if outdated, set update prompt to true
                 Debug.Log($"Version {globalVersion.ToString()} available");
-                var result = LayoutManager.OpenPanel(updaterPanelPrefab, true);
-                if (result.success) { // This really shouldn't ever fail but just in case
-                    (result.panel as UpdatePromptPanel).UpdaterLink = updater;
-                }
+                UpdateAvailable = true;
+                UpdaterLink = updater;
+                DynamicUIManager.CreateModal<UpdateAvailableModal>();
             }
         }
     }

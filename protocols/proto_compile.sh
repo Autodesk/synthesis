@@ -1,4 +1,4 @@
-#!/usr/bash
+#!/bin/sh
 mkdir -p ../api/Api/Gen/Proto/
 mkdir -p ../api/Api/Gen/Mirabuf/
 mkdir -p ../server/ServerApi/Gen/Proto/

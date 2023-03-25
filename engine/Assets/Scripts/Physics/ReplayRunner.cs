@@ -27,7 +27,7 @@ public class ReplayRunner : MonoBehaviour {
             if (PhysicsManager.IsFrozen) {
                 var frame = ReplayManager.GetFrameAtTime(val);
                 frame?.ApplyFrame();
-                ReplayManager.ShowContactsAtTime(val);
+                ReplayManager.ShowContactsAtTime(val, 1.0f, 1.0f);
             }
         });
         DynamicUIManager.ReplaySlider.RootGameObject.SetActive(false);
@@ -43,6 +43,7 @@ public class ReplayRunner : MonoBehaviour {
                 context: SimulationRunner.RUNNING_SIM_CONTEXT | SimulationRunner.REPLAY_SIM_CONTEXT
             );
         }
+        InputManager.UnassignDigitalInput(TOGGLE_PLAY);
         InputManager.AssignDigitalInput(TOGGLE_PLAY, toggleReplayInput, TogglePlay);
 
         ReplayManager.SetupDesyncTracker();
@@ -74,12 +75,16 @@ public class ReplayRunner : MonoBehaviour {
         if (de.State == DigitalState.Down) {
             // if (PhysicsManager.IsFrozen)
             //     ReplayManager.MakeCurrentNewestFrame();
+            PhysicsManager.DisableLoadFromStoredDataOnce();
             PhysicsManager.IsFrozen = !PhysicsManager.IsFrozen;
             if (PhysicsManager.IsFrozen) {
+                ReplayManager.NewestFrame.ApplyFrame();
                 SimulationRunner.AddContext(SimulationRunner.REPLAY_SIM_CONTEXT);
                 DynamicUIManager.ReplaySlider.SetValue(0);
                 DynamicUIManager.ReplaySlider.RootGameObject.SetActive(true);
             } else {
+                ReplayManager.CurrentFrame.ApplyFrame();
+                ReplayManager.InvalidateRecording();
                 SimulationRunner.RemoveContext(SimulationRunner.REPLAY_SIM_CONTEXT);
                 DynamicUIManager.ReplaySlider.RootGameObject.SetActive(false);
                 if (ReplayManager.EraseContactMarkers != null)

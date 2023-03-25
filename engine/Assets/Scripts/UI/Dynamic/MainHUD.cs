@@ -9,6 +9,8 @@ using System.Linq;
 using Synthesis.UI;
 using DigitalRuby.Tween;
 using SynthesisAPI.EventBus;
+using UnityEngine.SceneManagement;
+using Synthesis.Runtime;
 
 #nullable enable
 
@@ -21,10 +23,14 @@ public static class MainHUD {
         _tabDrawerContent?.SetWidth<Content>(v.CurrentValue);
     };
 
+    private static bool _isSetup = false;
     private static bool _enabled = true;
     public static bool Enabled {
         get => _enabled;
         set {
+            if (!_isSetup)
+                return;
+
             if (_enabled != value) {
                 _enabled = value;
                 if (_enabled) {
@@ -41,6 +47,9 @@ public static class MainHUD {
     public static bool Collapsed {
         get => _collapsed;
         set {
+            if (!_isSetup)
+                return;
+
             if (_collapsed != value) {
                 _collapsed = value;
                 if (_collapsed) {
@@ -88,8 +97,18 @@ public static class MainHUD {
         // Setup default HUD
         MainHUD.AddItemToDrawer("Spawn", b => DynamicUIManager.CreateModal<SpawningModal>(), icon: SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-            MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>());
-        MainHUD.AddItemToDrawer("Lobbies", b => DynamicUIManager.CreateModal<ManageLobbiesModal>());
+            MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+
+        MainHUD.AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("DriverStationView"));
+        MainHUD.AddItemToDrawer("Camera View", b => DynamicUIManager.CreateModal<ChangeViewModal>(), icon: SynthesisAssetCollection.GetSpriteByName("CameraIcon"));
+        MainHUD.AddItemToDrawer("Download Asset", b => DynamicUIManager.CreateModal<DownloadAssetModal>(), icon: SynthesisAssetCollection.GetSpriteByName("DownloadIcon"));
+
+        MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("settings"));
+        MainHUD.AddItemToDrawer(
+            "RoboRIO Conf.",
+            b => DynamicUIManager.CreateModal<RioConfigurationModal>(true),
+            icon: SynthesisAssetCollection.GetSpriteByName("rio-config-icon")
+        );
 
         if (!_hasNewRobotListener) {
             EventBus.NewTypeListener<RobotSimObject.NewRobotEvent>(e => {
@@ -98,20 +117,30 @@ public static class MainHUD {
                 if (robotEvent == null)
                     throw new Exception("Event type parsed incorrectly. Shouldn't ever happen");
 
-                Debug.Log($"Old Bot: '{robotEvent.OldBot}'");
-                Debug.Log($"New Bot: '{robotEvent.NewBot}'");
+                // Debug.Log($"Old Bot: '{robotEvent.OldBot}'");
+                // Debug.Log($"New Bot: '{robotEvent.NewBot}'");
 
                 if (robotEvent.NewBot == string.Empty) {
                     RemoveItemFromDrawer("Configure");
                 } else if (robotEvent.OldBot == string.Empty) {
-                    MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>());
+                    MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>(), index: 1, icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
                 }
             });
             _hasNewRobotListener = true;
         }
+
+        _isSetup = true;
+
+        SceneManager.activeSceneChanged += (Scene a, Scene b) => {
+            _isSetup = false;
+        };
     }
 
     public static void AddItemToDrawer(string title, Action<Button> onClick, int index = -1, Sprite? icon = null, Color? color = null) {
+
+        if (!SimulationRunner.InSim)
+            return;
+
         var drawerButtonObj = GameObject.Instantiate(
             SynthesisAssetCollection.GetUIPrefab("hud-drawer-item-base"),
             _tabDrawerContent.RootGameObject.transform.Find("ItemContainer")
@@ -126,7 +155,7 @@ public static class MainHUD {
             if (color.HasValue) {
                 drawerIcon.SetColor(color.Value);
             } else {
-                drawerIcon.SetColor(ColorManager.SYNTHESIS_WHITE);
+                drawerIcon.SetColor(ColorManager.SYNTHESIS_ORANGE);
             }
         } else {
             if (color.HasValue) {
@@ -145,6 +174,10 @@ public static class MainHUD {
     }
 
     public static void RemoveItemFromDrawer(string title) {
+
+        if (!SimulationRunner.InSim)
+            return;
+
         var index = _drawerItems.FindIndex(0, _drawerItems.Count, x => x.button.Label.Text == title);
         if (index == -1)
             return;

@@ -1,10 +1,11 @@
 !include MUI2.nsh
 !include x64.nsh
-!define PRODUCT_VERSION "4.3.3.3"
+!define PRODUCT_VERSION "5.1.0"
 
 Name "Synthesis"
 
-Icon "W16_SYN_launch.ico"
+;Icon "W16_SYN_launch.ico"
+Icon "synthesis-logo-64x64.ico"
 
 Caption "Synthesis ${PRODUCT_VERSION} Setup"
 
@@ -20,7 +21,7 @@ RequestExecutionLevel admin
   ${If} ${RunningX64}
 	goto install_stuff
   ${Else}
-	MessageBox MB_OK "Whoa There! This install requires a 64 bit system. Sorry about that."
+	MessageBox MB_OK "ERROR: This install requires a 64 bit system."
 	Quit
   ${EndIf}
     install_stuff:
@@ -31,21 +32,21 @@ RequestExecutionLevel admin
 ;Interface Settings
   !define MUI_WELCOMEFINISHPAGE_BITMAP "W21_SYN_sidebar.bmp"
   !define MUI_UNWELCOMEFINISHPAGE_BITMAP "W21_SYN_sidebar.bmp"
-  !define MUI_ICON "W16_SYN_launch.ico"
-  !define MUI_UNICON "W16_SYN_launch.ico"
+  !define MUI_ICON "synthesis-logo-64x64.ico"
+  !define MUI_UNICON "synthesis-logo-64x64.ico"
   !define MUI_HEADERIMAGE
   !define MUI_HEADERIMAGE_BITMAP "orange-r.bmp"
   !define MUI_HEADERIMAGE_RIGHT
   !define MUI_ABORTWARNING
-  !define MUI_FINISHPAGE_TEXT 'Synthesis has been successfully installed on your system. $\r$\n $\r$\nIn order to improve this product and understand how it is used, we collect non-personal product usage information. This usage information may consist of custom events like Replay Mode, Driver Practice Mode, Tutorial Link Clicked, etc. $\r$\nThis information is not used to identify or contact you. $\r$\nYou can turn data collection off from the Control Panel within the simulator. $\r$\n $\r$\nBy clicking Finish, you agree that you have read the terms of service agreement and data collection statement above.'
-  !define MUI_FINISHPAGE_LINK "Synthesis Tutorials Website"
-  !define MUI_FINISHPAGE_LINK_LOCATION "http://bxd.autodesk.com/tutorials.html"
+  !define MUI_FINISHPAGE_TEXT 'Synthesis has been successfully installed on your system. $\r$\n $\r$\nIn order to improve this product and understand how it is used, we collect non-personal product usage information. This usage information may consist of custom events like Replay Mode, Driver Practice Mode, etc. $\r$\nThis information is not used to identify or contact you. $\r$\nYou can turn data collection off from the Control Panel within the simulator. $\r$\n $\r$\nBy clicking Finish, you agree that you have read the terms of service agreement and data collection statement above.'
+  !define MUI_FINISHPAGE_LINK "Synthesis Discord"
+  !define MUI_FINISHPAGE_LINK_LOCATION "https://www.discord.gg/hHcF9AVgZA"
   
 ;--------------------------------
 
   ; Installer GUI Pages
   !insertmacro MUI_PAGE_WELCOME
-  !insertmacro MUI_PAGE_LICENSE "Apache2.txt"
+  !insertmacro MUI_PAGE_LICENSE "..\..\LICENSE.txt"
   !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_INSTFILES
   !insertmacro MUI_PAGE_FINISH
@@ -70,6 +71,7 @@ IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
 		
 		; Remove fusion plugins
 		RMDir /r "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\FusionRobotExporter"
+		RMDir /r "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\Synthesis"
 		RMDir /r "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\FusionExporter"
 		RMDir /r "$APPDATA\Autodesk\ApplicationPlugins\FusionRobotExporter.bundle"
 		RMDir /r "$APPDATA\Autodesk\ApplicationPlugins\FusionSynth.bundle"
@@ -129,14 +131,12 @@ Section "Synthesis (required)" Synthesis
   SectionIn RO
 
   ; Set output path to the installation directory.
-  SetOutPath $INSTDIR\Synthesis
+  SetOutPath $INSTDIR
 
   File /r "Synthesis\*"
-
-  SetOutPath $INSTDIR
   
-  CreateShortCut "$SMPROGRAMS\Synthesis.lnk" "$INSTDIR\Synthesis\Synthesis.exe"
-  CreateShortCut "$DESKTOP\Synthesis.lnk" "$INSTDIR\Synthesis\Synthesis.exe"
+  CreateShortCut "$SMPROGRAMS\Synthesis.lnk" "$INSTDIR\Synthesis.exe"
+  CreateShortCut "$DESKTOP\Synthesis.lnk" "$INSTDIR\Synthesis.exe"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                 "DisplayName" "Autodesk Synthesis"
@@ -148,7 +148,7 @@ Section "Synthesis (required)" Synthesis
                 "Publisher" "Autodesk"
   
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
-                "URLInfoAbout" "BXD.Autodesk.com/tutorials"
+                "URLInfoAbout" "synthesis.autodesk.com/tutorials"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                  "DisplayVersion" "${PRODUCT_VERSION}"
@@ -167,15 +167,7 @@ Section "Synthesis (required)" Synthesis
 
 SectionEnd
 
-Section "MixAndMatch Files" MaM
-
-  ; Set extraction path for Mix&Match files
-  SetOutPath $APPDATA\Autodesk\Synthesis\MixAndMatch
-
-  File /r "MixAndMatch\*"
-
-SectionEnd
-
+/*
 Section "Inventor Exporter Plugin" iExporter
 
   ; Set extraction path to Inventor plugin directory
@@ -186,27 +178,31 @@ Section "Inventor Exporter Plugin" iExporter
   File /r "InventorExporter\Autodesk.InventorRobotExporter.Inventor.addin"
 
 SectionEnd
+*/
 
 Section "Fusion Exporter Plugin" fExporter
 
   ; Set extraction path to Fusion plugin directories
-  SetOutPath "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\FusionRobotExporter"
-  File /r "FusionExporter\*"
+  SetOutPath "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\Synthesis"
+  File /r "..\..\exporter\SynthesisFusionAddin\*"
   
-  SetOutPath "$APPDATA\Autodesk\ApplicationPlugins\FusionRobotExporter.bundle\Contents\"
-  File /r "FusionExporter\FusionRobotExporter.dll"
+  ; SetOutPath "$APPDATA\Autodesk\ApplicationPlugins\FusionRobotExporter.bundle\Contents\"
+  ; File /r "FusionExporter\FusionRobotExporter.dll"
 
 SectionEnd
 
-Section "Robot Files" RobotFiles
+Section "Robots and Fields" RobotFiles
 
   ; Set extraction path for preloaded robot files
-  SetOutPath $APPDATA\Autodesk\Synthesis\Robots
-
+  SetOutPath $APPDATA\Autodesk\Synthesis\Mira
   File /r "Robots\*"
+
+  SetOutPath $APPDATA\Autodesk\Synthesis\Mira\Fields
+  File /r "Fields\*"
 
 SectionEnd
 
+/*
 Section "Code Emulator" Emulator
 
 	; INetC.dll must be installed to proper NSIS Plugins x86 directories
@@ -224,39 +220,30 @@ Section "Code Emulator" Emulator
 	${EndIf}
 		
 SectionEnd
-
-Section /o "Field Exporter" FieldExporter
-	SetOutPath $INSTDIR\FieldExporter
-	File /r "FieldExporter\*"
-	CreateShortCut "$DESKTOP\FieldExporter.lnk" "$INSTDIR\FieldExporter\FieldExporter.exe"
-SectionEnd
+*/
 
 ;--------------------------------
 ;Component Descriptions
 
   LangString DESC_Synthesis ${LANG_ENGLISH} "The Simulator Engine is the real-time physics environment which simulates the robots and fields."
-  LangString DESC_MaM ${LANG_ENGLISH} "Mix and Match allows you to quickly choose from pre-configured robot parts such as wheels, drive bases and manipulators within the simulator"
-  LangString DESC_iExporter ${LANG_ENGLISH} "The Inventor Exporter Plugin is an Inventor addin used to export Autodesk Inventor Assemblies directly into the simulator"
+  ; LangString DESC_iExporter ${LANG_ENGLISH} "The Inventor Exporter Plugin is an Inventor addin used to export Autodesk Inventor Assemblies directly into the simulator"
   LangString DESC_fExporter ${LANG_ENGLISH} "The Fusion360 Exporter Plugin is a Fusion addin used to export Autodesk Fusion Assemblies directly into the simulator"
-  LangString DESC_RobotFiles ${LANG_ENGLISH} "A library of sample robots pre-loaded into the simulator"
-  LangString DESC_Emulator ${LANG_ENGLISH} "The Robot Code Emulator allows you to emulate your C++ & JAVA robot code in the simulator"
-  LangString DESC_FieldExporter ${LANG_ENGLISH} "A standalone exporter for exporting field environments into the simulator"
+  LangString DESC_RobotFiles ${LANG_ENGLISH} "A library of sample robots and fields pre-loaded into the simulator"
+  ; LangString DESC_Emulator ${LANG_ENGLISH} "The Robot Code Emulator allows you to emulate your C++ & JAVA robot code in the simulator"
 
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${Synthesis} $(DESC_Synthesis)
-  !insertmacro MUI_DESCRIPTION_TEXT ${MaM} $(DESC_MaM)
-  !insertmacro MUI_DESCRIPTION_TEXT ${iExporter} $(DESC_iExporter)
+  ; !insertmacro MUI_DESCRIPTION_TEXT ${iExporter} $(DESC_iExporter)
   !insertmacro MUI_DESCRIPTION_TEXT ${fExporter} $(DESC_fExporter)
   !insertmacro MUI_DESCRIPTION_TEXT ${RobotFiles} $(DESC_RobotFiles)
-  !insertmacro MUI_DESCRIPTION_TEXT ${Emulator} $(DESC_Emulator)
-  !insertmacro MUI_DESCRIPTION_TEXT ${FieldExporter} $(DESC_FieldExporter)
+  ; !insertmacro MUI_DESCRIPTION_TEXT ${Emulator} $(DESC_Emulator)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
   
 ;--------------------------------
   
 Section "Uninstall"
 
-  MessageBox MB_YESNO "Would you like to remove your robot/replay files?" IDNO NawFam
+  MessageBox MB_YESNO "Would you like to remove your robot files?" IDNO NawFam
   RMDir /r /REBOOTOK $APPDATA\Synthesis
   RMDir /r /REBOOTOK $APPDATA\Autodesk\Synthesis
   
@@ -275,6 +262,7 @@ Section "Uninstall"
   
   ; Remove fusion plugins
   RMDir /r "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\FusionRobotExporter"
+  RMDir /r "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\Synthesis"
   RMDir /r "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\FusionExporter"
   RMDir /r "$APPDATA\Autodesk\ApplicationPlugins\FusionRobotExporter.bundle"
   RMDir /r "$APPDATA\Autodesk\ApplicationPlugins\FusionSynth.bundle"
@@ -308,6 +296,7 @@ Section "Uninstall"
   Delete "$DESKTOP\Autodesk Synthesis.lnk"
   Delete "$DESKTOP\FieldExporter.lnk"
   
+  /*
   ; Execute QEMU uninstaller
   IfFileExists "$PROGRAMFILES64\qemu" file_found uninstall_complete
   
@@ -317,5 +306,10 @@ Section "Uninstall"
 	Quit
 	
 	uninstall_complete:
+  */
 
 SectionEnd
+
+Function .OnInstSuccess
+  Exec "$INSTDIR\Synthesis.exe"
+FunctionEnd
