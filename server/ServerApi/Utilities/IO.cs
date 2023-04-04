@@ -117,5 +117,11 @@ namespace SynthesisServer.Utilities
             if (BitConverter.IsLittleEndian) { Array.Reverse(data); }
             socket.BeginSendTo(data, 0, data.Length, SocketFlags.None, remoteEP, sendCallback, null);
         }
+
+        public static byte[] GetBuffer(this IMessage msg) {
+            byte[] buf = new byte[msg.CalculateSize()];
+            msg.WriteTo(buf);
+            return buf;
+        }
     }
 }

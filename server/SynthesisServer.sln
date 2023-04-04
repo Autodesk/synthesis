@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.32106.194
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SynthesisServer", "SynthesisServer\SynthesisServer.csproj", "{84EAB8C7-52CB-4D2F-9383-8BE061116581}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Patchbay", "Patchbay\Patchbay.csproj", "{84EAB8C7-52CB-4D2F-9383-8BE061116581}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerApi", "ServerApi\ServerApi.csproj", "{8B869D4E-C95E-4A38-BA48-127114CA7284}"
 EndProject

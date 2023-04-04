@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+import "ServerData.proto";
+
+message LobbyMessage {
+
+    oneof message_type {
+        ToRegisterClient to_register_client = 1;
+        ToClientHeartbeat to_client_heartbeat = 2;
+        ToGetFellowClients to_get_fellow_clients = 3;
+
+        FromRegisterClient from_register_client = 4;
+        FromGetFellowClients from_get_fellow_clients = 5;
+    }
+
+    // To The Server
+    message ToRegisterClient {
+        LobbyClientInformation client_info = 1;
+    }
+
+    message ToClientHeartbeat {
+        LobbyClientInformation client_info = 1;
+    }
+
+    message ToGetFellowClients {
+        uint64 sender_guid = 1;
+    }
+
+    // From The Server
+    message FromRegisterClient {
+        LobbyClientInformation updated_client_info = 1;
+    }
+
+    message FromGetFellowClients {
+        LobbyClientInformation host_info = 1;
+        repeated LobbyClientInformation clients_info = 2;
+    }
+
+}

@@ -1,0 +1,6 @@
+syntax = "proto3";
+
+message LobbyClientInformation {
+    uint64 guid = 1;
+    string username = 2;
+}
