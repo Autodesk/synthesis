@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BenchmarkApi", "BenchmarkAp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aardvark", "Aardvark\Aardvark.csproj", "{AEAC8A7A-4215-4E1E-AC6B-A4E310906466}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Patchbay", "Patchbay\Patchbay.csproj", "{F936B4C1-1360-46AE-9F12-7A022C1E00D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{AEAC8A7A-4215-4E1E-AC6B-A4E310906466}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AEAC8A7A-4215-4E1E-AC6B-A4E310906466}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AEAC8A7A-4215-4E1E-AC6B-A4E310906466}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F936B4C1-1360-46AE-9F12-7A022C1E00D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F936B4C1-1360-46AE-9F12-7A022C1E00D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F936B4C1-1360-46AE-9F12-7A022C1E00D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F936B4C1-1360-46AE-9F12-7A022C1E00D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

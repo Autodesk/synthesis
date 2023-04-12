@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace ServerApi.Patchbay {
+namespace SynthesisAPI.Aether.Patchbay {
     public class PatchbayClient {
         
     }

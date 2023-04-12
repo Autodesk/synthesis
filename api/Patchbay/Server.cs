@@ -9,7 +9,7 @@ using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
 using SynthesisServer.Proto;
-using SynthesisServer.Utilities;
+using SynthesisAPI.Aether;
 using System;
 using System.Collections.Generic;
 using System.Linq;

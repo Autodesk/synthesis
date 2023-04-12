@@ -8,7 +8,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace SynthesisServer.Utilities
+namespace SynthesisAPI.Aether
 {
     public static class IO
     {

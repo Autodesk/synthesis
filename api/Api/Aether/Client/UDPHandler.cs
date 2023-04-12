@@ -8,7 +8,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace SynthesisServer.Client
+namespace SynthesisAPI.Aether.Client
 {
     public interface IUDPHandler {
         

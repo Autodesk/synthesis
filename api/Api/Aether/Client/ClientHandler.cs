@@ -1,6 +1,6 @@
 using SynthesisServer.Proto;
 
-namespace SynthesisServer.Client {
+namespace SynthesisAPI.Aether.Client {
     public interface IClientHandler {
         void HandleStatusMessage(StatusMessage statusMessage);
         void HandleServerInfoResponse(ServerInfoResponse serverInfoResponse);

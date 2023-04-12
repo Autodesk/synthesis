@@ -4,14 +4,14 @@ using Google.Protobuf.WellKnownTypes;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using SynthesisServer.Proto;
-using SynthesisServer.Utilities;
+using SynthesisAPI.Aether;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace SynthesisServer.Client
+namespace SynthesisAPI.Aether.Client
 {
     public class UDPHandlerHost : IUDPHandler
     {

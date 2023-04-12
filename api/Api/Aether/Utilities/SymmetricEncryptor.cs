@@ -10,7 +10,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace SynthesisServer.Utilities
+namespace SynthesisAPI.Aether
 {
     public class SymmetricEncryptor
     {

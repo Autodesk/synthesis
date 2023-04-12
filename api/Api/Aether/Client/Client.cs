@@ -3,7 +3,7 @@ using Google.Protobuf.Reflection;
 using Google.Protobuf.WellKnownTypes;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
-using SynthesisServer.Utilities;
+using SynthesisAPI.Aether;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 using SynthesisServer.Proto;
 
-namespace SynthesisServer.Client {
+namespace SynthesisAPI.Aether.Client {
     public class Client {
         private const int BUFFER_SIZE = 16384;
 
