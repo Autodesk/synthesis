@@ -5,8 +5,11 @@ This is the main Simulator aspect to Synthesis. We take the robots and fields th
 ### Requirements
 - Unity 2020.3.12f1
 ## Prerequisites
-### Engine Importer & Simulator API
-1. Navigate to the [README](/importer/README.md) located inside of the [importer](/importer/) directory and follow the Building and Post Build steps.
+### Synthesis API
+1. Navigate to the [API README](/api/README.md) and follow the build instructions.
+2. Run the `post_build` script to copy the built binaries into engine.
+    - For Windows: `$ post_build.bat`
+    - For Linux/Macos: `$ ./post_build.sh`
 ## Compiling
 1. Open the [engine](/engine/) directory with Unity.
 2. Navigate to the top bar and open the NuGet package manager by going to `NuGet -> Manage NuGet Packages`
