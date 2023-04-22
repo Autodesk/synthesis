@@ -66,12 +66,15 @@ public class GodMode : MonoBehaviour
                         _lastUpdate = Time.realtimeSinceStartup;
                         _speed = Vector3.zero;
                         _lastPosition = grabbedObject.transform.position;
+                        Debug.Log($"{grabbedObject.name}");
+                        Debug.Log($"{_lastPosition.x}, {_lastPosition.y}, {_lastPosition.z}");
 
                         grabbedDistance = hitInfo.distance;
                         // add a joint to the grabbed object anchored at where the user clicked
                         Vector3 localCoords = grabbedObject.transform.worldToLocalMatrix.MultiplyPoint(hitInfo.point);
                         grabJoint = grabbedObject.AddComponent<ConfigurableJoint>();
                         grabJoint.anchor = localCoords;
+                        // grabJoint.connectedAnchor = localCoords;
                         grabJoint.autoConfigureConnectedAnchor = false;
                         grabJoint.xMotion = grabJoint.yMotion = grabJoint.zMotion = ConfigurableJointMotion.Locked;
                     }
@@ -84,11 +87,12 @@ public class GodMode : MonoBehaviour
                 mousePosition.z = (float)grabbedDistance;
                 Ray ray = camera.ScreenPointToRay(mousePosition);
                 // move grabbed object towards mouse cursor
-
+                
                 if (ray.GetPoint((float)grabbedDistance).y >= 0) {
+                    Debug.Log($"{(ray.GetPoint((float)grabbedDistance) - grabJoint.connectedAnchor).magnitude}");
                     var delta = (ray.GetPoint((float)grabbedDistance) - grabJoint.connectedAnchor) * (float)MovementSpeed * Time.deltaTime;
                     grabJoint.connectedAnchor += delta;
-
+                
                     _speed = delta / Time.deltaTime;
                 }
             }

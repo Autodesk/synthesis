@@ -2,47 +2,49 @@
 
 namespace Mirabuf {
     public partial class Transform {
-        // TODO: This doesn't adjust for the Fusion to Unity coordinate system. I have it fixed basically everytime I use it, just not here which
-        //      of all places for me to fix it. Here would solve basically everything.
-        private Matrix4x4 _unityMatrix;
-        public Matrix4x4 UnityMatrix {
+        /// <summary>
+        /// Transform data in the Fusion360 coordinate system.
+        /// 
+        /// It's used a lot because I forgot to translate it at first and its now translated
+        /// everywhere else except for right here. Hence, why UnityMatrix is now a thing
+        /// </summary>
+        private Matrix4x4 _mirabufMatrix;
+        public Matrix4x4 MirabufMatrix {
             get {
-                if (_unityMatrix == default) {
-                    _unityMatrix = new Matrix4x4(
+                if (_mirabufMatrix == default) {
+                    _mirabufMatrix = new Matrix4x4(
                         new Vector4(SpatialMatrix[0], SpatialMatrix[4], SpatialMatrix[8], SpatialMatrix[12]),
                         new Vector4(SpatialMatrix[1], SpatialMatrix[5], SpatialMatrix[9], SpatialMatrix[13]),
                         new Vector4(SpatialMatrix[2], SpatialMatrix[6], SpatialMatrix[10], SpatialMatrix[14]),
                         new Vector4(SpatialMatrix[3], SpatialMatrix[7], SpatialMatrix[11], SpatialMatrix[15])
                         );
-                    // _unityMatrix = _unityMatrix.transpose; // I'm tired
                 }
-                return _unityMatrix;
+                return _mirabufMatrix;
             }
         }
 
         /// <summary>
-        /// Only reason this exists is because there are multiple points in the Unity project where it expects the data to be wrong.
-        /// Dear future developer, I'm sorry. -Hunter
+        /// Puts the transform data into the Unity coordinate system
         /// </summary>
-        private Matrix4x4? _correctUnityMatrix;
-        public Matrix4x4 CorrectUnityMatrix {
+        private Matrix4x4? _unityMatrix;
+        public Matrix4x4 UnityMatrix {
             get {
-                if (!_correctUnityMatrix.HasValue) {
-                    _correctUnityMatrix = UnityMatrix;
-                    _correctUnityMatrix = Matrix4x4.TRS(
-                        new UnityEngine.Vector3(_correctUnityMatrix.Value.m03 * -0.01f, _correctUnityMatrix.Value.m13 * 0.01f, _correctUnityMatrix.Value.m23 * 0.01f),
-                        new Quaternion(-_correctUnityMatrix.Value.rotation.x, _correctUnityMatrix.Value.rotation.y,
-                            _correctUnityMatrix.Value.rotation.z, -_correctUnityMatrix.Value.rotation.w
+                if (!_unityMatrix.HasValue) {
+                    _unityMatrix = MirabufMatrix;
+                    _unityMatrix = Matrix4x4.TRS(
+                        new UnityEngine.Vector3(_unityMatrix.Value.m03 * -0.01f, _unityMatrix.Value.m13 * 0.01f, _unityMatrix.Value.m23 * 0.01f),
+                        new Quaternion(-_unityMatrix.Value.rotation.x, _unityMatrix.Value.rotation.y,
+                            _unityMatrix.Value.rotation.z, -_unityMatrix.Value.rotation.w
                         ),
                         UnityEngine.Vector3.one
                     );
                 }
-                return _correctUnityMatrix.Value;
+                return _unityMatrix.Value;
             }
         }
 
         public static implicit operator Matrix4x4(Transform t)
-            => t.UnityMatrix;
+            => t.MirabufMatrix;
 
         public static implicit operator Transform(Matrix4x4 m)
             => new Transform {SpatialMatrix = {
