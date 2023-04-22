@@ -43,8 +43,8 @@ namespace Synthesis.Import
 		public const UInt32 CURRENT_MIRA_EXPORTER_VERSION = 5;
 		public const UInt32 OLDEST_MIRA_EXPORTER_VERSION = 4;
 
-		private const int FIELD_LAYER = 7;
-		private const int DYNAMIC_1_LAYER = 8;
+		public const int FIELD_LAYER = 7;
+		public const int DYNAMIC_1_LAYER = 8;
 		private const int DYNAMIC_2_LAYER = 9; // Reserved for later
 		private const int DYNAMIC_3_LAYER = 10; // Reserved for later
 
@@ -82,10 +82,6 @@ namespace Synthesis.Import
 			UnityEngine.Physics.sleepThreshold = 0;
 
 			GameObject assemblyObject = new GameObject(assembly.Info.Name);
-			var parts = assembly.Data.Parts;
-			MakeGlobalTransformations(assembly);
-			var partObjects = new Dictionary<string, GameObject>(); // TODO: Do I need this?
-			var groupObjects = new Dictionary<string, GameObject>();
 			var jointToJointMap = new Dictionary<string, (UnityEngine.Joint a, UnityEngine.Joint b)>();
 			float totalMass = 0;
 
@@ -94,69 +90,18 @@ namespace Synthesis.Import
 			var gamepieces = new List<GamepieceSimObject>();
 			var rigidDefinitions = miraLive.Definitions;
 
-			foreach (var group in rigidDefinitions.Definitions.Values) {
+			var groupObjects = miraLive.GenerateDefinitionObjects(assemblyObject, true);
 
-				GameObject groupObject = new GameObject(group.Name);
-				var collectivePhysData = new List<(UnityEngine.Transform, MPhysicalProperties)>();
-				var isGamepiece = !assembly.Dynamic && group.Name.Contains("gamepiece");
-				var isStatic = !assembly.Dynamic && group.Name.Contains("grounded");
-				// Import Parts
-
-				#region Parts
-
-				foreach (var part in group.Parts) {
-					if (!partObjects.ContainsKey(part.Value.Info.GUID)) {
-						var partInstance = part.Value;
-						var partDefinition = parts.PartDefinitions[partInstance.PartDefinitionReference];
-						GameObject partObject = new GameObject(partInstance.Info.Name);
-
-						MakePartDefinition(partObject, partDefinition, partInstance, assembly.Data, !isGamepiece, !isStatic);
-						partObjects.Add(partInstance.Info.GUID, partObject);
-						partObject.transform.parent = groupObject.transform;
-						var gt = partInstance.GlobalTransform.CorrectUnityMatrix;
-						partObject.transform.localPosition = gt.GetPosition();
-						partObject.transform.localRotation = gt.rotation;
-						// partObject.transform.ApplyMatrix(partInstance.GlobalTransform);
-						collectivePhysData.Add((partObject.transform, partDefinition.PhysicalData));
-					} else {
-						Logger.Log($"Duplicate Part\nGroup name: {group.Name}\nGUID: {part.Key}", LogLevel.Warning);
-					}
+			groupObjects.Where(x => miraLive.Definitions.Definitions[x.Key].IsGamepiece).ForEach(x => {
+				var gpSim = new GamepieceSimObject(miraLive.Definitions.Definitions[x.Key].Name, x.Value);
+				try {
+					SimulationManager.RegisterSimObject(gpSim);
+				} catch (Exception e) {
+					// TODO: Fix
+					throw e;
 				}
-
-				groupObject.transform.parent = assemblyObject.transform;
-
-				#endregion
-
-				if (!assembly.Dynamic && !isGamepiece)
-					groupObject.transform.GetComponentsInChildren<UnityEngine.Transform>().ForEach(x => x.gameObject.layer = FIELD_LAYER);
-				else if (assembly.Dynamic)
-					groupObject.transform.GetComponentsInChildren<UnityEngine.Transform>().ForEach(x => x.gameObject.layer = DYNAMIC_1_LAYER);
-
-				// Combine all physical data for grouping
-				var combPhysProps = CombinePhysicalProperties(collectivePhysData);
-				var rb = groupObject.AddComponent<Rigidbody>();
-				if (isStatic)
-					rb.isKinematic = true;
-				rb.mass = (float) combPhysProps.Mass;
-				totalMass += rb.mass;
-				rb.centerOfMass = combPhysProps.Com; // I actually don't need to flip this
-				
-				if (isGamepiece) {
-					var gpSim = new GamepieceSimObject(group.Name, groupObject);
-					try {
-						SimulationManager.RegisterSimObject(gpSim);
-					} catch (Exception e) {
-						// TODO: Fix
-						throw e;
-						Logger.Log($"Gamepiece with name {gpSim.Name} already exists.");
-						UnityEngine.Object.Destroy(groupObject);
-					}
-					gamepieces.Add(gpSim);
-				} else {
-					groupObjects.Add(group.GUID, groupObject);
-				}
-				// DebugJointAxes.DebugPoints.Add((combPhysProps.Com, () => groupObject.transform.localToWorldMatrix));
-			}
+				gamepieces.Add(gpSim);
+			});
 
 			#endregion
 
@@ -380,126 +325,78 @@ namespace Synthesis.Import
 			}
 		}
 
-		public static Matrix4x4 DiffToTransformations(Matrix4x4 from, Matrix4x4 to) {
+		/// <summary>
+		/// Gets the change between 2 transformations
+		/// </summary>
+		/// <param name="from">Starting transformation</param>
+		/// <param name="to">End transformation</param>
+		/// <returns>Transformation to apply to move from start to end</returns>
+		public static Matrix4x4 TransformationDelta(Matrix4x4 from, Matrix4x4 to) {
 			return Matrix4x4.TRS(to.GetPosition() - from.GetPosition(), to.rotation * Quaternion.Inverse(from.rotation), UVector3.one);
 		}
 
-		public static string FindOriginalFromReferencePoint(Assembly assembly, PartDefinition def, UVector3 point) {
-			string closest = string.Empty;
-			float closestDist = float.MaxValue;
-			assembly.Data.Parts.PartInstances.Where(y => y.Value.PartDefinitionReference.Equals(def.Info.GUID)).ForEach(p => {
-				float dist = (p.Value.GlobalTransform.UnityMatrix.GetPosition() - point).magnitude;
-				if (dist < closestDist) {
-					closest = p.Key;
-					closestDist = dist;
-				}
-			});
-			return closest;
-		}
+		// public static void MakePartDefinition(GameObject container, PartDefinition definition, PartInstance instance,
+		// 	AssemblyData assemblyData, bool addToColliderIgnore = true, bool isConvex = true)
+		// {
+		// 	PhysicMaterial physMat = new PhysicMaterial
+		// 	{
+		// 		dynamicFriction = 0.6f, // definition.PhysicalData.,
+		// 		staticFriction = 0.6f // definition.PhysicalData.Friction
+		// 	};
+		// 	foreach (var body in definition.Bodies)
+		// 	{
+		// 		var bodyObject = new GameObject(body.Info.Name);
+		// 		var filter = bodyObject.AddComponent<MeshFilter>();
+		// 		var renderer = bodyObject.AddComponent<MeshRenderer>();
+		// 		filter.sharedMesh = body.TriangleMesh.UnityMesh;
+		// 		renderer.material = assemblyData.Materials.Appearances.ContainsKey(instance.Appearance)
+		// 			? assemblyData.Materials.Appearances[instance.Appearance].UnityMaterial
+		// 			: assemblyData.Materials.Appearances.ContainsKey(body.AppearanceOverride)
+		// 				? assemblyData.Materials.Appearances[body.AppearanceOverride].UnityMaterial
+		// 				: Appearance.DefaultAppearance.UnityMaterial; // Setup the override
+		// 		// renderer.material = assemblyData.Materials.Appearances.ContainsKey(instance.Appearance)
+		// 		// 	? assemblyData.Materials.Appearances[instance.Appearance].UnityMaterial
+		// 		// 	: Appearance.DefaultAppearance.UnityMaterial;
+		// 		if (!instance.SkipCollider) {
+		// 			MeshCollider collider = null;
+		// 			try {
+		// 				collider = bodyObject.AddComponent<MeshCollider>();
+		// 				if (isConvex) {
+		// 					collider.convex = true;
+		// 					collider.sharedMesh = body.TriangleMesh.ColliderMesh; // Again, not sure if this actually works
+		// 				} else {
+		// 					collider.convex = false;
+		// 					collider.sharedMesh = body.TriangleMesh.UnityMesh;
+		// 				}
+		// 			} catch (Exception e) {
+		// 				if (collider != null) {
+		// 					GameObject.Destroy(collider);
+		// 					collider = null;
+		// 				}
+		// 			}
+		//
+		// 			if (collider != null)
+		// 				collider.material = physMat;
+		// 				// if (addToColliderIgnore)
+		// 				// 	_collidersToIgnore.Add(collider);
+		// 		}
+		// 		bodyObject.transform.parent = container.transform;
+		// 		// Ensure all transformations are zeroed after assigning parent
+		// 		bodyObject.transform.localPosition = UVector3.zero;
+		// 		bodyObject.transform.localRotation = Quaternion.identity;
+		// 		bodyObject.transform.localScale = UVector3.one;
+		// 		// bodyObject.transform.ApplyMatrix(body.);
+		// 	}
+		// }
 
-		public static void MakePartDefinition(GameObject container, PartDefinition definition, PartInstance instance,
-			AssemblyData assemblyData, bool addToColliderIgnore = true, bool isConvex = true)
-		{
-			PhysicMaterial physMat = new PhysicMaterial
-			{
-				dynamicFriction = 0.6f, // definition.PhysicalData.,
-				staticFriction = 0.6f // definition.PhysicalData.Friction
-			};
-			foreach (var body in definition.Bodies)
-			{
-				var bodyObject = new GameObject(body.Info.Name);
-				var filter = bodyObject.AddComponent<MeshFilter>();
-				var renderer = bodyObject.AddComponent<MeshRenderer>();
-				filter.sharedMesh = body.TriangleMesh.UnityMesh;
-				renderer.material = assemblyData.Materials.Appearances.ContainsKey(instance.Appearance)
-					? assemblyData.Materials.Appearances[instance.Appearance].UnityMaterial
-					: assemblyData.Materials.Appearances.ContainsKey(body.AppearanceOverride)
-						? assemblyData.Materials.Appearances[body.AppearanceOverride].UnityMaterial
-						: Appearance.DefaultAppearance.UnityMaterial; // Setup the override
-				// renderer.material = assemblyData.Materials.Appearances.ContainsKey(instance.Appearance)
-				// 	? assemblyData.Materials.Appearances[instance.Appearance].UnityMaterial
-				// 	: Appearance.DefaultAppearance.UnityMaterial;
-				if (!instance.SkipCollider) {
-					MeshCollider collider = null;
-					try {
-						collider = bodyObject.AddComponent<MeshCollider>();
-						if (isConvex) {
-							collider.convex = true;
-							collider.sharedMesh = body.TriangleMesh.ColliderMesh; // Again, not sure if this actually works
-						} else {
-							collider.convex = false;
-							collider.sharedMesh = body.TriangleMesh.UnityMesh;
-						}
-					} catch (Exception e) {
-						if (collider != null) {
-							GameObject.Destroy(collider);
-							collider = null;
-						}
-					}
-
-					if (collider != null)
-						collider.material = physMat;
-						// if (addToColliderIgnore)
-						// 	_collidersToIgnore.Add(collider);
-				}
-				bodyObject.transform.parent = container.transform;
-				// Ensure all transformations are zeroed after assigning parent
-				bodyObject.transform.localPosition = UVector3.zero;
-				bodyObject.transform.localRotation = Quaternion.identity;
-				bodyObject.transform.localScale = UVector3.one;
-				// bodyObject.transform.ApplyMatrix(body.);
-			}
-		}
-
-		private static MPhysicalProperties CombinePhysicalProperties(List<(UnityEngine.Transform trans, MPhysicalProperties prop)> props) {
-			var total = 0.0f;
-			var com = new UVector3();
-			props.ForEach(x => total += (float)x.prop.Mass);
-			props.ForEach(x => com += (x.trans.localToWorldMatrix.MultiplyPoint(x.prop.Com)) * (float)x.prop.Mass);
-			com /= total;
-			return new MPhysicalProperties { Mass = total, Com = com };
-		}
-
-		public static Dictionary<string, Matrix4x4> MakeGlobalTransformations(Assembly assembly) {
-
-			var map = new Dictionary<string, Matrix4x4>();
-			foreach (Node n in assembly.DesignHierarchy.Nodes) {
-				Matrix4x4 trans = assembly.Data.Parts.PartInstances[n.Value].Transform == null
-					? assembly.Data.Parts
-						.PartDefinitions[assembly.Data.Parts.PartInstances[n.Value].PartDefinitionReference]
-						.BaseTransform == null
-						? Matrix4x4.identity
-						: assembly.Data.Parts
-							.PartDefinitions[assembly.Data.Parts.PartInstances[n.Value].PartDefinitionReference]
-							.BaseTransform.UnityMatrix
-					: assembly.Data.Parts.PartInstances[n.Value].Transform.UnityMatrix;
-				map.Add(n.Value, trans);
-				MakeGlobalTransformations(map, map[n.Value], assembly.Data.Parts, n);
-			}
-
-			foreach (var kvp in map) {
-				assembly.Data.Parts.PartInstances[kvp.Key].GlobalTransform = map[kvp.Key];
-			}
-
-			return map;
-		}
-
-		public static void MakeGlobalTransformations(Dictionary<string, Matrix4x4> map, Matrix4x4 parent, Parts parts,
-			Node node)
-		{
-			foreach (var child in node.Children)
-			{
-				if (!map.ContainsKey(child.Value))
-				{
-					map.Add(child.Value, parent * parts.PartInstances[child.Value].Transform.UnityMatrix);
-					MakeGlobalTransformations(map, map[child.Value], parts, child);
-				}
-				else
-				{
-					Logger.Log($"Key \"{child.Value}\" already present in map; ignoring", LogLevel.Error);
-				}
-			}
-		}
+		// private static MPhysicalProperties CombinePhysicalProperties(List<(UnityEngine.Transform trans, MPhysicalProperties prop)> props) {
+		// 	var total = 0.0f;
+		// 	var com = new UVector3();
+		// 	props.ForEach(x => total += (float)x.prop.Mass);
+		// 	props.ForEach(x => com += (x.trans.localToWorldMatrix.MultiplyPoint(x.prop.Com)) * (float)x.prop.Mass);
+		// 	com /= total;
+		// 	return new MPhysicalProperties { Mass = total, Com = com };
+		// }
 
 		#endregion
 

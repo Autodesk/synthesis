@@ -30,7 +30,7 @@ namespace SynthesisAPI.WS {
         }
 
         ~WebSocketServer() {
-            _listener.Stop();
+            Close();
         }
 
         public void Close() {

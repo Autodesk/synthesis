@@ -10,8 +10,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using SynthesisAPI.Utilities;
 using Google.Protobuf;
-
+using Mirabuf.Material;
 using Logger = SynthesisAPI.Utilities.Logger;
+using MPhysicalProperties = Mirabuf.PhysicalProperties;
+using Vector3 = Mirabuf.Vector3;
+using UVector3 = UnityEngine.Vector3;
 
 namespace Synthesis.Import {
     public class MirabufLive {
@@ -31,24 +34,30 @@ namespace Synthesis.Import {
 
         public MirabufLive(string path) {
             _path = path;
-            byte[] buff = File.ReadAllBytes(path);
-
-			if (buff[0] == 0x1f && buff[1] == 0x8b) {
-
-				int originalLength = BitConverter.ToInt32(buff, buff.Length - 4);
-
-				MemoryStream mem = new MemoryStream(buff);
-				byte[] res = new byte[originalLength];
-				GZipStream decompresser = new GZipStream(mem, CompressionMode.Decompress);
-				decompresser.Read(res, 0, res.Length);
-				decompresser.Close();
-				mem.Close();
-				buff = res;
-			}
-
-            MiraAssembly = Assembly.Parser.ParseFrom(buff);
+            Load();
 
             _findDefinitions = Task<RigidbodyDefinitions>.Factory.StartNew(() => FindRigidbodyDefinitions(MiraAssembly));
+        }
+        
+        #region File Management
+
+        private void Load() {
+	        byte[] buff = File.ReadAllBytes(_path);
+
+	        if (buff[0] == 0x1f && buff[1] == 0x8b) {
+
+		        int originalLength = BitConverter.ToInt32(buff, buff.Length - 4);
+
+		        MemoryStream mem = new MemoryStream(buff);
+		        byte[] res = new byte[originalLength];
+		        GZipStream decompresser = new GZipStream(mem, CompressionMode.Decompress);
+		        decompresser.Read(res, 0, res.Length);
+		        decompresser.Close();
+		        mem.Close();
+		        buff = res;
+	        }
+
+	        MiraAssembly = Assembly.Parser.ParseFrom(buff);
         }
 
         public void Save() {
@@ -63,6 +72,141 @@ namespace Synthesis.Import {
             File.Move(_path, backupPath);
             File.WriteAllBytes(_path, buff);
         }
+        
+        #endregion
+
+        #region Creation
+
+        public Dictionary<string, GameObject> GenerateDefinitionObjects(GameObject assemblyContainer, bool physics = true) {
+
+	        Dictionary<string, GameObject> groupObjects = new Dictionary<string, GameObject>();
+
+	        foreach (var group in Definitions.Definitions.Values) {
+
+				GameObject groupObject = new GameObject(group.Name);
+				var isGamepiece = group.IsGamepiece;
+				var isStatic = group.IsStatic;
+				// Import Parts
+
+				#region Parts
+
+				foreach (var part in group.Parts) {
+					var partInstance = part.Value;
+					var partDefinition = MiraAssembly.Data.Parts.PartDefinitions[partInstance.PartDefinitionReference];
+					GameObject partObject = new GameObject(partInstance.Info.Name);
+
+					MakePartDefinition(
+						partObject,
+						partDefinition,
+						partInstance,
+						MiraAssembly.Data,
+						!physics ? ColliderGenType.NoCollider : (isStatic ? ColliderGenType.Concave : ColliderGenType.Convex)
+						);
+					partObject.transform.parent = groupObject.transform;
+					var gt = partInstance.GlobalTransform.UnityMatrix;
+					partObject.transform.localPosition = gt.GetPosition();
+					partObject.transform.localRotation = gt.rotation;
+				}
+
+				groupObject.transform.parent = assemblyContainer.transform;
+
+				#endregion
+
+				if (!MiraAssembly.Dynamic && !isGamepiece)
+					groupObject.transform.GetComponentsInChildren<UnityEngine.Transform>().ForEach(x => x.gameObject.layer = Importer.FIELD_LAYER);
+				else if (MiraAssembly.Dynamic)
+					groupObject.transform.GetComponentsInChildren<UnityEngine.Transform>().ForEach(x => x.gameObject.layer = Importer.DYNAMIC_1_LAYER);
+
+				if (physics) {
+					// Combine all physical data for grouping
+					var rb = groupObject.AddComponent<Rigidbody>();
+					if (isStatic)
+						rb.isKinematic = true;
+					rb.mass = (float)group.CollectivePhysicalProperties.Mass;
+					rb.centerOfMass = group.CollectivePhysicalProperties.Com; // I actually don't need to flip this
+				}
+
+				// TODO: Do this in importer
+				// if (isGamepiece) {
+				// 	var gpSim = new GamepieceSimObject(group.Name, groupObject);
+				// 	try {
+				// 		// SimulationManager.RegisterSimObject(gpSim);
+				// 	} catch (Exception e) {
+				// 		// TODO: Fix
+				// 		throw e;
+				// 		Logger.Log($"Gamepiece with name {gpSim.Name} already exists.");
+				// 		UnityEngine.Object.Destroy(groupObject);
+				// 	}
+				// 	gamepieces.Add(gpSim);
+				// } else {
+				// 	
+				// }
+				groupObjects.Add(group.GUID, groupObject);
+			}
+
+	        return groupObjects;
+        }
+        
+        private enum ColliderGenType {
+	        NoCollider = 0, Convex = 1, Concave = 2
+        }
+        private static void MakePartDefinition(GameObject container, PartDefinition definition, PartInstance instance,
+			AssemblyData assemblyData, ColliderGenType colliderGenType = ColliderGenType.Convex) {
+			PhysicMaterial physMat = new PhysicMaterial
+			{
+				dynamicFriction = 0.6f, // definition.PhysicalData.,
+				staticFriction = 0.6f // definition.PhysicalData.Friction
+			};
+			foreach (var body in definition.Bodies)
+			{
+				var bodyObject = new GameObject(body.Info.Name);
+				var filter = bodyObject.AddComponent<MeshFilter>();
+				var renderer = bodyObject.AddComponent<MeshRenderer>();
+				filter.sharedMesh = body.TriangleMesh.UnityMesh;
+				renderer.material = assemblyData.Materials.Appearances.ContainsKey(instance.Appearance)
+					? assemblyData.Materials.Appearances[instance.Appearance].UnityMaterial
+					: assemblyData.Materials.Appearances.ContainsKey(body.AppearanceOverride)
+						? assemblyData.Materials.Appearances[body.AppearanceOverride].UnityMaterial
+						: Appearance.DefaultAppearance.UnityMaterial; // Setup the override
+				// renderer.material = assemblyData.Materials.Appearances.ContainsKey(instance.Appearance)
+				// 	? assemblyData.Materials.Appearances[instance.Appearance].UnityMaterial
+				// 	: Appearance.DefaultAppearance.UnityMaterial;
+				if (!instance.SkipCollider && colliderGenType > ColliderGenType.NoCollider) {
+					MeshCollider collider = null;
+					try {
+						collider = bodyObject.AddComponent<MeshCollider>();
+						if (colliderGenType == ColliderGenType.Convex) {
+							collider.convex = true;
+							collider.sharedMesh = body.TriangleMesh.ColliderMesh; // Again, not sure if this actually works
+						} else {
+							collider.convex = false;
+							collider.sharedMesh = body.TriangleMesh.UnityMesh;
+						}
+					} catch (Exception e) {
+						if (collider != null) {
+							GameObject.Destroy(collider);
+							collider = null;
+						}
+					}
+
+					if (collider != null)
+						collider.material = physMat;
+						// if (addToColliderIgnore)
+						// 	_collidersToIgnore.Add(collider);
+				}
+				bodyObject.transform.parent = container.transform;
+				// Ensure all transformations are zeroed after assigning parent
+				bodyObject.transform.localPosition = UVector3.zero;
+				bodyObject.transform.localRotation = Quaternion.identity;
+				bodyObject.transform.localScale = UVector3.one;
+				// bodyObject.transform.ApplyMatrix(body.);
+			}
+			
+		}
+        
+        #endregion
+        
+        #region Rigidbody Identification
 
         /// <summary>
 		/// I really don't like how I made this. It gets the job done but I feel like it
@@ -70,7 +214,6 @@ namespace Synthesis.Import {
 		/// TODO: Maybe get rid of the dictionary in the rigidbodyDefinitions and just
 		/// 	store keys. I feel like that would be a bit better.
 		/// </summary>
-		/// <param name="definitions"></param>
 		/// <param name="assembly"></param>
 		/// <returns></returns>
 		private static RigidbodyDefinitions FindRigidbodyDefinitions(Assembly assembly)
@@ -310,16 +453,51 @@ namespace Synthesis.Import {
 				}
 				defs[defs.Keys.ElementAt(i)] = def;
 			}
+            
+            // =====================================
+            // === Data setup for ease of access ===
+            // =====================================
 
+            MakeGlobalTransformations(assembly);
+
+            float totalMass = 0f;
+            HashSet<string> partDuplicateChecker = new HashSet<string>();
+            foreach (var group in defs.Values.Select(x => x.GUID)) {
+	            var collectivePhysData = new List<(Matrix4x4, Mirabuf.PhysicalProperties)>();
+	            
+	            foreach (var part in defs[group].Parts) {
+
+		            if (!partDuplicateChecker.Add(part.Value.Info.GUID)) {
+			            // Handle invalid state
+			            continue;
+		            }
+		            
+		            var partInstance = part.Value;
+		            var partDefinition = assembly.Data.Parts.PartDefinitions[partInstance.PartDefinitionReference];
+		            collectivePhysData.Add((partInstance.GlobalTransform.UnityMatrix, partDefinition.PhysicalData));
+	            }
+	            
+	            var combPhysProps = CombinePhysicalProperties(collectivePhysData);
+	            totalMass += (float)combPhysProps.Mass;
+	            { // Ugh, structs...
+		            var groupInstance = defs[group];
+		            groupInstance.CollectivePhysicalProperties = combPhysProps;
+		            groupInstance.IsGamepiece = !assembly.Dynamic && groupInstance.Name.Contains("gamepiece");
+		            groupInstance.IsStatic = !assembly.Dynamic && groupInstance.Name.Contains("grounded");
+		            defs[group] = groupInstance;
+	            }
+            }
+            
             var definitions = new RigidbodyDefinitions {
-                Definitions = defs,
-                PartToDefinitionMap = partMap
+	            Mass = totalMass,
+	            Definitions = defs,
+	            PartToDefinitionMap = partMap
             };
 
-			return definitions;
+            return definitions;
 		}
 
-        public static (string parent, string child) IdentifyParentSiblings(Dictionary<string, List<string>> paths, string parent, string child) {
+        private static (string parent, string child) IdentifyParentSiblings(Dictionary<string, List<string>> paths, string parent, string child) {
 			var parentAncestors = new List<string>();
 			var childAncestors = new List<string>();
 			parentAncestors.AddRange(paths[parent]);
@@ -338,7 +516,7 @@ namespace Synthesis.Import {
 			return (parentAncestors[0], childAncestors[0]);
 		}
 
-		public static Dictionary<string, List<string>> LoadPartTreePaths(GraphContainer designHierarchy) {
+		private static Dictionary<string, List<string>> LoadPartTreePaths(GraphContainer designHierarchy) {
 			Dictionary<string, List<string>> paths = new Dictionary<string, List<string>>();
 			foreach (Node n in designHierarchy.Nodes[0].Children) {
 				LoadPartTreePaths(n, paths);
@@ -346,7 +524,7 @@ namespace Synthesis.Import {
 			return paths;
 		}
 
-		public static void LoadPartTreePaths(Node n, Dictionary<string, List<string>> paths, List<string> currentPath = null) {
+		private static void LoadPartTreePaths(Node n, Dictionary<string, List<string>> paths, List<string> currentPath = null) {
 			paths[n.Value] = new List<string>();
 			if (currentPath != null && currentPath.Count > 0)
 				paths[n.Value].AddRange(currentPath);
@@ -360,7 +538,7 @@ namespace Synthesis.Import {
 			currentPath.RemoveAt(currentPath.Count - 1);
 		}
 
-		public static List<string> GetAllPartsInBranch(string rootPart, Dictionary<string, List<string>> paths, Node rootNode) {
+		private static List<string> GetAllPartsInBranch(string rootPart, Dictionary<string, List<string>> paths, Node rootNode) {
 			var parts = new List<string>();
 			var toCheck = new List<Node>();
 			toCheck.Add(NavigateDHPath(paths[rootPart].Append(rootPart).ToList(), rootNode));
@@ -379,7 +557,7 @@ namespace Synthesis.Import {
 			return parts;
 		}
 
-		public static Node NavigateDHPath(List<string> path, Node rootNode) {
+		private static Node NavigateDHPath(List<string> path, Node rootNode) {
 			var current = rootNode;
 			while (path.Count > 0) {
 				current = current.Children.First(x => x.Value.Equals(path[0]));
@@ -387,19 +565,79 @@ namespace Synthesis.Import {
 			}
 			return current;
 		}
+		
+		private static MPhysicalProperties CombinePhysicalProperties(List<(Matrix4x4 trans, MPhysicalProperties prop)> props) {
+			var total = 0.0f;
+			var com = new UVector3();
+			props.ForEach(x => total += (float)x.prop.Mass);
+			props.ForEach(x => com += (x.trans.MultiplyPoint(x.prop.Com)) * (float)x.prop.Mass);
+			com /= total;
+			return new MPhysicalProperties { Mass = total, Com = com };
+		}
+		
+		#endregion
 
+		#region Global Transformations
+		
+		private static Dictionary<string, Matrix4x4> MakeGlobalTransformations(Assembly assembly) {
+
+			var map = new Dictionary<string, Matrix4x4>();
+			foreach (Node n in assembly.DesignHierarchy.Nodes) {
+				Matrix4x4 trans = assembly.Data.Parts.PartInstances[n.Value].Transform == null
+					? assembly.Data.Parts
+						.PartDefinitions[assembly.Data.Parts.PartInstances[n.Value].PartDefinitionReference]
+						.BaseTransform == null
+						? Matrix4x4.identity
+						: assembly.Data.Parts
+							.PartDefinitions[assembly.Data.Parts.PartInstances[n.Value].PartDefinitionReference]
+							.BaseTransform.MirabufMatrix
+					: assembly.Data.Parts.PartInstances[n.Value].Transform.MirabufMatrix;
+				map.Add(n.Value, trans);
+				MakeGlobalTransformations(map, map[n.Value], assembly.Data.Parts, n);
+			}
+
+			foreach (var kvp in map) {
+				assembly.Data.Parts.PartInstances[kvp.Key].GlobalTransform = map[kvp.Key];
+			}
+
+			return map;
+		}
+
+		private static void MakeGlobalTransformations(Dictionary<string, Matrix4x4> map, Matrix4x4 parent, Parts parts,
+			Node node)
+		{
+			foreach (var child in node.Children)
+			{
+				if (!map.ContainsKey(child.Value))
+				{
+					map.Add(child.Value, parent * parts.PartInstances[child.Value].Transform.MirabufMatrix);
+					MakeGlobalTransformations(map, map[child.Value], parts, child);
+				}
+				else
+				{
+					Logger.Log($"Key \"{child.Value}\" already present in map; ignoring", LogLevel.Error);
+				}
+			}
+		}
+		
+		#endregion
+		
         /// <summary>
 		/// Collection of parts that move together
 		/// </summary>
 		public struct RigidbodyDefinition {
 			public string                           GUID;
 			public string                           Name;
+			public bool                             IsGamepiece;
+			public bool                             IsStatic;
+			public MPhysicalProperties              CollectivePhysicalProperties;
 			public Dictionary<string, PartInstance> Parts; // Using a dictionary to make Key searches faster
 		}
 
         public struct RigidbodyDefinitions {
+	        public float                                   Mass;
             public Dictionary<string, RigidbodyDefinition> Definitions;
-            public Dictionary<string, string> PartToDefinitionMap;
+            public Dictionary<string, string>              PartToDefinitionMap;
         }
     }
 }
