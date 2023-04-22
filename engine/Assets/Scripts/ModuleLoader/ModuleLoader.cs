@@ -19,6 +19,7 @@ using PreloadedModule = System.ValueTuple<Ionic.Zip.ZipFile, Engine.ModuleLoader
 
 using Directory = System.IO.Directory;
 using Type = System.Type;
+using ZipFile = Ionic.Zip.ZipFile;
 
 namespace Engine.ModuleLoader
 {
