@@ -22,6 +22,7 @@ namespace SynthesisAPI.Aether.Lobby {
 
         private LobbyClientInformation _hostInformation;
         private Dictionary<ulong, LobbyClientInformation> _clients;
+        private IReadOnlyCollection<ulong> ClientGuids => _clients.Keys;
 
         private LobbyServer() { }
 

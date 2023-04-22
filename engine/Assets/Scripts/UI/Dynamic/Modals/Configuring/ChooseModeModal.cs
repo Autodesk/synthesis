@@ -31,19 +31,19 @@ public class ChooseModeModal : ModalDynamic
                 SceneManager.LoadScene("MainScene");
             });
 
-        MainContent.CreateButton()
-            .StepIntoLabel(l => l.SetText("Coming Soon").SetColor(ColorManager.SYNTHESIS_WHITE))
-            .StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_BLACK_ACCENT))
-            .ApplyTemplate(VerticalLayout);
-
         // MainContent.CreateButton()
-        //     .StepIntoLabel(l => l.SetText("Match Mode"))
-        //     .ApplyTemplate(VerticalLayout)
-        //     .AddOnClickedEvent(b =>
-        //     {
-        //         ModeManager.CurrentMode = new MatchMode();
-        //         SceneManager.LoadScene("MainScene");
-        //     });
+        //     .StepIntoLabel(l => l.SetText("Coming Soon").SetColor(ColorManager.SYNTHESIS_WHITE))
+        //     .StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_BLACK_ACCENT))
+        //     .ApplyTemplate(VerticalLayout);
+
+        MainContent.CreateButton()
+            .StepIntoLabel(l => l.SetText("Client Test Mode"))
+            .ApplyTemplate(VerticalLayout)
+            .AddOnClickedEvent(b =>
+            {
+                ModeManager.CurrentMode = new MatchMode();
+                SceneManager.LoadScene("MainScene");
+            });
     }
     
     public override void Update() {}

@@ -50,15 +50,6 @@ public class PracticeMode : IMode
             b => DynamicUIManager.CreatePanel<BetaWarningPanel>(false, (Action)(() => DynamicUIManager.CreatePanel<DriverStationPanel>(true))),
             icon: SynthesisAssetCollection.GetSpriteByName("driverstation-icon")
         );
-        
-        MainHUD.AddItemToDrawer(
-            "Client Test",
-            b => DynamicUIManager.CreatePanel<LobbyClientTestPanel>(false)
-        );
-        MainHUD.AddItemToDrawer(
-            "Server Test",
-            b => DynamicUIManager.CreatePanel<LobbyServerTestPanel>(false)
-        );
     }
     
     public static void SetInitialState(GameObject robot)

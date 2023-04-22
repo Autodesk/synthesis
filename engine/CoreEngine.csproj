@@ -48,7 +48,6 @@
      <Compile Include="Assets\Scripts\UI\Dynamic\Panels\Information\ScoreboardPanel.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\TransformAdapter.cs" />
      <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyItem.cs" />
-     <Compile Include="Assets\Scripts\UI\Dynamic\Panels\Testing\LobbyClientTestPanel.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Api.cs" />
      <Compile Include="Assets\Scripts\Interactable3DDetector.cs" />
      <Compile Include="Assets\Scripts\Gizmos\GizmoManager.cs" />
@@ -160,7 +159,6 @@
      <Compile Include="Assets\Scripts\Behaviors\GeneralSliderBehaviour.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\DownloadAssetModal.cs" />
      <Compile Include="Assets\Scripts\Utilities\Highlighter.cs" />
-     <Compile Include="Assets\Scripts\UI\Dynamic\Panels\Testing\LobbyServerTestPanel.cs" />
      <Compile Include="Assets\Scripts\UI\Tabs\TopButton.cs" />
      <Compile Include="Assets\Scripts\UI\InteractableObject.cs" />
      <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyRootItem.cs" />
@@ -199,6 +197,10 @@
      <Compile Include="Assets\Scripts\Importer\Importer.cs" />
      <Compile Include="Assets\Scripts\Test\DebugJointAxes.cs" />
      <Compile Include="Assets\Scripts\UnityModalSpawner.cs" />
+     <Compile Include="Assets\Scripts\Modes\ClientTestMode.cs" />
+     <Compile Include="Assets\Scripts\Modes\ServerTestMode.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Testing\ClientTestModal.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Testing\ServerTestModal.cs" />
      <None Include="Assets\Scripts\CoreEngine.asmdef" />
      <None Include="Assets\Scripts\Tween\Readme.txt" />
      <Reference Include="UnityEngine">
