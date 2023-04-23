@@ -16,14 +16,15 @@ To use the API in your project, simply add the [Autodesk.Synthesis.Module.API](h
 ## Building the API from Source
 ### Requirements
 - .NET Standard 2.0 (Required)
-- .NET Core 3.1 (Required)
+- .NET Core 3.1 (Required for executables)
+- [Protobuf Compiler 3.19.4](https://github.com/protocolbuffers/protobuf/releases/tag/v3.19.4) (Required)
 - Visual Studio 2019 (Recommended)
-### Compiling the Synthesis API
-1. Use git to clone Synthesis from our repository.
-2. Navigate to the [`api`](/api/) directory in your clone of Synthesis.
-3. Compile [`api.sln`](/api/api.sln).
+## Prerequisites
+1. Follow the directions in the [`protocols`](/protocols) directory to generate the necessary protobuf files.
+## Compiling the Synthesis API
+1. Compile [`api.sln`](/api/api.sln).
 	- Use `dotnet` to compile the solution:
 		```
 		$ dotnet build
 		```
-	- Use Visual Studio to open the solution and compile the API.
+	- or, Use Visual Studio to open the solution and compile the API.
