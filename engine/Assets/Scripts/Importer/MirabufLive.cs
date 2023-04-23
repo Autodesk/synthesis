@@ -22,6 +22,13 @@ namespace Synthesis.Import {
         private string _path;
         public Assembly MiraAssembly;
 
+        public enum MirabufFileState {
+	        Valid = 1,
+	        DuplicateParts = 2
+        };
+
+        private MirabufFileState _state = MirabufFileState.Valid;
+
         private Task<RigidbodyDefinitions> _findDefinitions = null;
         public RigidbodyDefinitions Definitions {
             get {
@@ -36,7 +43,7 @@ namespace Synthesis.Import {
             _path = path;
             Load();
 
-            _findDefinitions = Task<RigidbodyDefinitions>.Factory.StartNew(() => FindRigidbodyDefinitions(MiraAssembly));
+            _findDefinitions = Task<RigidbodyDefinitions>.Factory.StartNew(() => FindRigidbodyDefinitions(this));
         }
         
         #region File Management
@@ -216,8 +223,9 @@ namespace Synthesis.Import {
 		/// </summary>
 		/// <param name="assembly"></param>
 		/// <returns></returns>
-		private static RigidbodyDefinitions FindRigidbodyDefinitions(Assembly assembly)
-		{
+		private static RigidbodyDefinitions FindRigidbodyDefinitions(MirabufLive live) {
+	        Assembly assembly = live.MiraAssembly;
+			
 			var defs = new Dictionary<string, RigidbodyDefinition>();
 			var partMap = new Dictionary<string, string>();
 
@@ -247,8 +255,6 @@ namespace Synthesis.Import {
 
 			(string guid, JointInstance joint) groundJoint = default;
 			int counter = 0;
-
-			
 
 			// Create initial definitions
 			foreach (var jInst in assembly.Data.Joints.JointInstances) {
@@ -468,7 +474,7 @@ namespace Synthesis.Import {
 	            foreach (var part in defs[group].Parts) {
 
 		            if (!partDuplicateChecker.Add(part.Value.Info.GUID)) {
-			            // Handle invalid state
+			            live._state = MirabufFileState.DuplicateParts;
 			            continue;
 		            }
 		            
