@@ -200,7 +200,7 @@ namespace Synthesis {
                 while (error < -180) { error += 360; }
                 while (error > 180) { error -= 360; }
 
-                Debug.Log($"Error: {error}");
+                // Debug.Log($"Error: {error}");
 
                 float output = error * 0.1f;
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,20 +19,24 @@ namespace Synthesis {
         internal const string RIGHT = "Swerve Right";
         internal const string TURN_LEFT = "Swerve Turn Left";
         internal const string TURN_RIGHT = "Swerve Turn Right";
+        internal const string RESET_FIELD_FORWARD = "Swerve Reset Forward";
 
-        private List<RotationalDriver> _azimuthDrivers;
-        private string[] _driveSignals;
+        private (RotationalDriver azimuth, RotationalDriver drive)[] _moduleDrivers;
         private RobotSimObject _robot;
 
-        public SwerveDriveBehaviour(RobotSimObject robot, IEnumerable<RotationalDriver> azimuthSignals, string[] driveSignals) : base(robot.Name) {
-            _azimuthDrivers = azimuthSignals.ToList();
-            _driveSignals = driveSignals;
+        private float _turnFavor = 1.5f;
+
+        private Vector3 _fieldForward;
+
+        public SwerveDriveBehaviour(RobotSimObject robot, (RotationalDriver azimuth, RotationalDriver drive)[] moduleDrivers) : base(robot.Name) {
+            _moduleDrivers = moduleDrivers;
 
             _robot = robot;
+            _fieldForward = Vector3.forward;
 
-            _azimuthDrivers.ForEach(x => {
-                x.ControlMode = RotationalDriver.RotationalControlMode.Position;
-                x.SetAxis(robot.GroundedNode.transform.up);
+            _moduleDrivers.ForEach(x => {
+                x.azimuth.ControlMode = RotationalDriver.RotationalControlMode.Position;
+                x.azimuth.SetAxis(robot.GroundedNode.transform.up);
             });
             
             InitInputs(GetInputs());
@@ -45,7 +50,8 @@ namespace Synthesis {
                 (LEFT, TryLoadInput(LEFT, new Digital("A"))),
                 (RIGHT, TryLoadInput(RIGHT, new Digital("D"))),
                 (TURN_LEFT, TryLoadInput(TURN_LEFT, new Digital("LeftArrow"))),
-                (TURN_RIGHT, TryLoadInput(TURN_RIGHT, new Digital("RightArrow")))
+                (TURN_RIGHT, TryLoadInput(TURN_RIGHT, new Digital("RightArrow"))),
+                (RESET_FIELD_FORWARD, TryLoadInput(RESET_FIELD_FORWARD, new Digital("R")))
             };
         }
         
@@ -64,6 +70,7 @@ namespace Synthesis {
                 case RIGHT: 
                 case TURN_LEFT: 
                 case TURN_RIGHT:
+                case RESET_FIELD_FORWARD:
                     if (base.SimObjectId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID) return;
                     RobotSimObject robot = SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject;
                     SimulationPreferences.SetRobotInput(
@@ -74,26 +81,93 @@ namespace Synthesis {
             }
         }
 
-        public override void Update() {
+        /// <summary>
+        /// A difference comparison with some wiggle room between the values
+        /// </summary>
+        /// <param name="a">Value A</param>
+        /// <param name="b">Value B</param>
+        /// <param name="acceptableDelta">Allowed difference between them to be considered the same essentially. Exclusive</param>
+        /// <returns></returns>
+        private bool Diff(float a, float b, float acceptableDelta) {
+            return Math.Abs(a - b) < acceptableDelta;
+        }
 
-            float forward = 0f;
-            float strafe = 0f;
-            float turn = 0f;
+        public override void Update() {
+            
+            if (Mathf.Abs(InputManager.MappedValueInputs[RESET_FIELD_FORWARD].Value) > 0.5f)
+                _fieldForward = _robot.GroundedNode.transform.forward;
+
+            Vector3 headingVector = _robot.GroundedNode.transform.forward - (Vector3.up * Vector3.Dot(Vector3.up, _robot.GroundedNode.transform.forward));
+            float headingVectorY = Vector3.Dot(_fieldForward, headingVector);
+            float headingVectorX = Vector3.Dot(Vector3.Cross(_fieldForward, Vector3.up), headingVector);
+            float chassisAngle = Mathf.Atan2(headingVectorX, headingVectorY) * Mathf.Rad2Deg;
+            
+            var forwardInput = InputManager.MappedValueInputs[FORWARD];
+            var backwardInput = InputManager.MappedValueInputs[BACKWARD];
+            var leftInput = InputManager.MappedValueInputs[LEFT];
+            var rightInput = InputManager.MappedValueInputs[RIGHT];
+            var turnLeftInput = InputManager.MappedValueInputs[TURN_LEFT];
+            var turnRightInput = InputManager.MappedValueInputs[TURN_RIGHT];
+
+            float forward = Mathf.Abs(forwardInput.Value) - Mathf.Abs(backwardInput.Value);
+            float strafe = Mathf.Abs(rightInput.Value) - Mathf.Abs(leftInput.Value);
+            float turn = Mathf.Abs(turnLeftInput.Value) - Mathf.Abs(turnRightInput.Value);
+            
+            forward = Diff(forward, 0f, 0.1f) ? 0f : forward;
+            strafe = Diff(strafe, 0f, 0.1f) ? 0f : strafe;
+            turn = Diff(turn, 0f, 0.1f) ? 0f : turn;
+
+            // Are the inputs basically zero
+            if (forward == 0f && turn == 0f && strafe == 0f) {
+                _moduleDrivers.ForEach(x => x.drive.MainInput = 0f);
+                return;
+            }
+
+            // Adjusts how much turning verse translation is favored
+            turn *= _turnFavor;
             
             var robotTransform = _robot.GroundedNode.transform;
 
             Vector3 chassisVelocity = robotTransform.forward * forward + robotTransform.right * strafe;
             Vector3 chassisAngularVelocity = robotTransform.up * turn;
+
+            // Normalize velocity so its between 1 and 0. Should only max out at like 1 sqrt(2), but still
+            if (chassisVelocity.magnitude > 1)
+                chassisVelocity = chassisVelocity.normalized;
             
-            Vector3[] speeds = new Vector3[_azimuthDrivers.Count];
-            for (int i = 0; i < _azimuthDrivers.Count; i++) {
-                var driver = _azimuthDrivers[i];
+            // Rotate chassis velocity by chassis angle
+            chassisVelocity = Quaternion.AngleAxis(chassisAngle, robotTransform.up) * chassisVelocity;
+
+            var maxVelocity = Vector3.zero;
+            Vector3[] velocities = new Vector3[_moduleDrivers.Length];
+            for (int i = 0; i < velocities.Length; i++) {
+                // TODO: We should do this only once for all azimuth drivers, but whatever for now
+                var driver = _moduleDrivers[i].azimuth;
                 var com = robotTransform.localToWorldMatrix.MultiplyPoint3x4(robotTransform.GetComponent<Rigidbody>().centerOfMass);
                 var radius = driver.Anchor - com;
                 // Remove axis component of radius
                 radius -= Vector3.Dot(driver.Axis, radius) * driver.Axis;
 
-                speeds[i] = Vector3.Cross(chassisAngularVelocity, radius) + chassisVelocity;
+                velocities[i] = Vector3.Cross(chassisAngularVelocity, radius) + chassisVelocity;
+                if (velocities[i].magnitude > maxVelocity.magnitude)
+                    maxVelocity = velocities[i];
+            }
+
+            // Normalize all if a velocity exceeds 1
+            if (maxVelocity.magnitude > 1) {
+                for (int i = 0; i < velocities.Length; i++) {
+                    velocities[i] /= maxVelocity.magnitude;
+                }
+            }
+
+            // (float angle, float speed)[] output = new (float angle, float speed)[velocities.Length];
+            for (int i = 0; i < velocities.Length; i++) {
+                float speed = velocities[i].magnitude;
+                var yComponent = Vector3.Dot(robotTransform.forward, velocities[i]);
+                var xComponent = Vector3.Dot(robotTransform.right, velocities[i]);
+                float angle = Mathf.Atan2(xComponent, yComponent) * Mathf.Rad2Deg;
+                _moduleDrivers[i].azimuth.MainInput = angle;
+                _moduleDrivers[i].drive.MainInput = speed;
             }
         }
     }

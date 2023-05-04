@@ -431,10 +431,27 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     public void ConfigureSwerveDrivetrain() {
+
+        List<RotationalDriver> potentialAzimuthDrivers = SimulationManager.Drivers[base._name].OfType<RotationalDriver>().Where(x =>
+            !x.IsWheel
+            && (x.Axis - Vector3.Dot(GroundedNode.transform.up, x.Axis) * GroundedNode.transform.up).magnitude < 0.05f
+            ).ToList();
+
+        var wheels = SimulationManager.Drivers[base._name].OfType<RotationalDriver>().Where(x => x.IsWheel);
+        (RotationalDriver azimuth, RotationalDriver driver)[] modules = new (RotationalDriver azimuth, RotationalDriver driver)[wheels.Count()];
+        int i = 0;
+        wheels.ForEach(x => {
+            RotationalDriver closest = null;
+            float distance = float.MaxValue;
+            potentialAzimuthDrivers.ForEach(y => closest = (y.Anchor - x.Anchor).magnitude < distance ? y : closest);
+            modules[i] = (closest, x);
+            potentialAzimuthDrivers.Remove(closest);
+            i++;
+        });
+        
         var swerveBehaviour = new SwerveDriveBehaviour(
             this,
-            SimulationManager.Drivers[base._name].OfType<RotationalDriver>().Where(x => !x.IsWheel),
-            Array.Empty<string>()
+            modules
         );
         DriveBehaviour = swerveBehaviour;
         

@@ -36,6 +36,7 @@ namespace Synthesis.Runtime {
         public static event Action OnSimKill;
 
         public static event Action OnUpdate;
+        
         private static bool _inSim = false;
         public static bool InSim {
             get => _inSim;
