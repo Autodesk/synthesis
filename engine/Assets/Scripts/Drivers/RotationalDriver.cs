@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Google.Protobuf.WellKnownTypes;
 using Synthesis.PreferenceManager;
 using SynthesisAPI.Simulation;
 using UnityEngine;
@@ -8,7 +9,59 @@ using UnityEngine;
 namespace Synthesis {
     public class RotationalDriver : Driver {
 
-        public string InputSignal => _inputs[0];
+        private bool _isWheel = false;
+        public bool IsWheel => _isWheel;
+        
+        /// <summary>
+        /// Global Coordinate Anchor Point for Joint
+        /// </summary>
+        public Vector3 Anchor {
+            get => _jointA.transform.localToWorldMatrix.MultiplyPoint3x4(_jointA.anchor);
+        }
+        
+        /// <summary>
+        /// Global Coordinate Axis for Joint
+        /// </summary>
+        public Vector3 Axis {
+            get => _jointA.transform.localToWorldMatrix.MultiplyVector(_jointA.axis);
+            set => SetAxis(value);
+        }
+
+        public enum RotationalControlMode {
+            Position, Velocity
+        }
+
+        public double MainInput {
+            get => State.CurrentSignals[_inputs[0]].Value.NumberValue;
+            set {
+                State.CurrentSignals[_inputs[0]].Value = Value.ForNumber(value);
+            }
+        }
+
+        public RotationalControlMode ControlMode {
+            get {
+                switch (State.CurrentSignals[_inputs[1]].Value.StringValue) {
+                    case "Velocity":
+                        return RotationalControlMode.Velocity;
+                    case "Position":
+                        return RotationalControlMode.Position;
+                    default:
+                        throw new Exception("No valid control mode");
+                }
+            }
+            set {
+                switch (value) {
+                    case RotationalControlMode.Position:
+                        State.CurrentSignals[_inputs[1]].Value = Value.ForString("Position");
+                        break;
+                    case RotationalControlMode.Velocity:
+                        State.CurrentSignals[_inputs[1]].Value = Value.ForString("Velocity");
+                        break;
+                    default:
+                        throw new Exception("Unrecognized Rotational Control Mode");
+                }
+            }
+        }
 
         private JointMotor _motor;
         public JointMotor Motor {
@@ -48,7 +101,7 @@ namespace Synthesis {
         }
 
         public RotationalDriver(string name, string[] inputs, string[] outputs, SimObject simObject,
-            HingeJoint jointA, HingeJoint jointB, Mirabuf.Motor.Motor? motor = null)
+            HingeJoint jointA, HingeJoint jointB, bool isWheel, Mirabuf.Motor.Motor? motor = null)
             : base(name, inputs, outputs, simObject) {
             _jointA = jointA;
             _jointB = jointB;
@@ -63,12 +116,13 @@ namespace Synthesis {
                 };
             }
 
+            _isWheel = isWheel;
+
             State.CurrentSignals[_inputs[1]] = new UpdateSignal() {
                 DeviceType = "Mode",
                 Io = UpdateIOType.Input,
                 Value = Google.Protobuf.WellKnownTypes.Value.ForString("Velocity")
             };
-
             State.CurrentSignals[_outputs[0]] = new UpdateSignal() {
                 DeviceType = "PWM",
                 Io = UpdateIOType.Output,
@@ -98,10 +152,13 @@ namespace Synthesis {
         private float _jointAngle = 0.0f;
         public override void Update() {
 
-            if (State.CurrentSignals[_inputs[1]].Value.StringValue.Equals("Velocity")) {
-                VelocityControl();
-            } else if (State.CurrentSignals[_inputs[1]].Value.StringValue.Equals("Position")) {
-                PositionControl();
+            switch (ControlMode) {
+                case RotationalControlMode.Position:
+                    PositionControl();
+                    break;
+                case RotationalControlMode.Velocity:
+                    VelocityControl();
+                    break;
             }
 
             // Angle loops around so this works for now
@@ -188,6 +245,15 @@ namespace Synthesis {
                     targetVelocity = (-Motor.targetVelocity) * val
                 };
             }
+        }
+
+        /// <summary>
+        /// Set a new axis for the joints
+        /// </summary>
+        /// <param name="newAxis">Global vector</param>
+        public void SetAxis(Vector3 newAxis) {
+            _jointA.axis = _jointA.transform.worldToLocalMatrix.MultiplyVector(newAxis).normalized;
+            _jointB.axis = _jointB.transform.worldToLocalMatrix.MultiplyVector(newAxis).normalized;
         }
 
         #region Rotational Inertia stuff that isn't used

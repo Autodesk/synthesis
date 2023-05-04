@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Google.Protobuf.WellKnownTypes;
@@ -373,7 +374,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     public void ConfigureDefaultBehaviours() {
-        ConfigureArcadeDrivetrain();
+        // ConfigureArcadeDrivetrain();
+        ConfigureSwerveDrivetrain();
 		ConfigureArmBehaviours();
 		ConfigureSliderBehaviours();
         ConfigureTestSimulationBehaviours();
@@ -401,9 +403,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         //     var genArmBehaviour = new GeneralArmBehaviour(this.Name, x.Value.SignalReference);
         //     SimulationManager.AddBehaviour(this.Name, genArmBehaviour);
         // });
-        var swerveBehaviour = new SwerveDriveBehaviour(this.Name, nonWheelInstances.Select(x => x.Value.SignalReference).ToArray(), new string[0]);
-        SimulationManager.AddBehaviour(this.Name, swerveBehaviour);
-        // nonWheelInstances.Select(x => x.Value.SignalReference).ToArray();
     }
 
     public void ConfigureSliderBehaviours() {
@@ -425,12 +424,21 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             this.Name,
             wheels.leftWheels.Select(j => j.SignalReference).ToList(),
             wheels.rightWheels.Select(j => j.SignalReference).ToList()
-        );
-        if (DriveBehaviour == null)
-            
+        );  
         DriveBehaviour = arcadeBehaviour;
 
         SimulationManager.AddBehaviour(this.Name, arcadeBehaviour);
+    }
+
+    public void ConfigureSwerveDrivetrain() {
+        var swerveBehaviour = new SwerveDriveBehaviour(
+            this,
+            SimulationManager.Drivers[base._name].OfType<RotationalDriver>().Where(x => !x.IsWheel),
+            Array.Empty<string>()
+        );
+        DriveBehaviour = swerveBehaviour;
+        
+        SimulationManager.AddBehaviour(this.Name, swerveBehaviour);
     }
 
     public static void SpawnRobot(string filePath) {
