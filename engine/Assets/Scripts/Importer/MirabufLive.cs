@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirabuf;
@@ -11,6 +10,7 @@ using System.Threading.Tasks;
 using SynthesisAPI.Utilities;
 using Google.Protobuf;
 using Mirabuf.Material;
+using Synthesis.PreferenceManager;
 using Logger = SynthesisAPI.Utilities.Logger;
 using MPhysicalProperties = Mirabuf.PhysicalProperties;
 using Vector3 = Mirabuf.Vector3;
@@ -43,6 +43,8 @@ namespace Synthesis.Import {
             _path = path;
             Load();
 
+            SimulationPreferences.LoadFromMirabufLive(this);
+            
             _findDefinitions = Task<RigidbodyDefinitions>.Factory.StartNew(() => FindRigidbodyDefinitions(this));
         }
         
@@ -97,8 +99,8 @@ namespace Synthesis.Import {
 
 				#region Parts
 
-				foreach (var part in group.Parts) {
-					var partInstance = part.Value;
+				foreach (var partGuid in group.PartGuids.Keys) {
+					var partInstance = MiraAssembly.Data.Parts.PartInstances[partGuid];
 					var partDefinition = MiraAssembly.Data.Parts.PartDefinitions[partInstance.PartDefinitionReference];
 					GameObject partObject = new GameObject(partInstance.Info.Name);
 
@@ -234,7 +236,7 @@ namespace Synthesis.Import {
 
 			// I'm using lambda functions so I can reuse repeated logic while taking advantage of variables in the current scope
 			Action<RigidbodyDefinition, RigidbodyDefinition> MergeDefinitions = (keep, delete) => {
-				delete.Parts.ForEach((k, v) => keep.Parts.Add(k, v));
+				delete.PartGuids.Keys.ForEach(partGuid => keep.PartGuids.Add(partGuid, true));
 				for (int i = 0; i < partMap.Keys.Count; i++) {
 					if (partMap[partMap.Keys.ElementAt(i)].Equals(delete.GUID))
 						partMap[partMap.Keys.ElementAt(i)] = keep.GUID;
@@ -243,9 +245,9 @@ namespace Synthesis.Import {
 			};
 			Action<string, string, string> MoveToDef = (part, from, to) => {
 				if (from != string.Empty)
-					defs[from].Parts.Remove(part);
+					defs[from].PartGuids.Remove(part);
 				var _a = assembly.Data.Parts.PartInstances[part];
-				defs[to].Parts.Add(part, _a);
+				defs[to].PartGuids.Add(part, false);
 				partMap[part] = to;
 			};
 
@@ -269,14 +271,14 @@ namespace Synthesis.Import {
 				mainDef = new RigidbodyDefinition {
 					GUID = $"{counter}",
 					Name = $"{jInst.Value.Info.Name}_Rigidgroup{counter}",
-					Parts = new Dictionary<string, PartInstance>()
+					PartGuids = new Dictionary<string, bool>()
 				};
 				defs[mainDef.GUID] = mainDef;
 
 				stubDef = new RigidbodyDefinition {
 						GUID = $"{counter}-2",
 						Name = $"{jInst.Value.Info.Name}_Rigidgroup{counter}-2",
-						Parts = new Dictionary<string, PartInstance>()
+						PartGuids = new Dictionary<string, bool>()
 				};
 				defs[stubDef.GUID] = stubDef;
 
@@ -325,8 +327,7 @@ namespace Synthesis.Import {
 						toCheck.ForEach(y => {
 							partMap.TryGetValue(y.Value, out string existingDef);
 							if (existingDef == null) {
-								var _partInst = assembly.Data.Parts.PartInstances[y.Value];
-								defs[definition].Parts.Add(y.Value, _partInst);
+								defs[definition].PartGuids.Add(y.Value, false);
 								partMap[y.Value] = definition;
 								tmp.AddRange(y.Children.Where(z => z != null && z.Value != null)); // Just to make sure
 							} else if (existingDef.Equals(originalDef)) {
@@ -352,7 +353,7 @@ namespace Synthesis.Import {
 			RigidbodyDefinition groundDef = new RigidbodyDefinition {
 				Name = "grounded",
 				GUID = "grounded",
-				Parts = new Dictionary<string, PartInstance>()
+				PartGuids = new Dictionary<string, bool>()
 			};
 			defs.Add(groundDef.GUID, groundDef);
 			groundJoint.joint.Parts?.Nodes?.AllTreeElements().Where(x => x.Value != null && x.Value != string.Empty).ForEach(x => {
@@ -378,7 +379,7 @@ namespace Synthesis.Import {
 				RigidbodyDefinition rigidDef = new RigidbodyDefinition {
 					Name = $"{x.Name}",
 					GUID = $"{counter}",
-					Parts = new Dictionary<string, PartInstance>()
+					PartGuids = new Dictionary<string, bool>()
 				};
 				defs.Add(rigidDef.GUID, rigidDef);
 				x.Occurrences.ForEach(y => {
@@ -404,7 +405,7 @@ namespace Synthesis.Import {
 			RigidbodyDefinition newGrounded = default;
 			// Clear excess rigidbodies
 			for (int i = 0; i < defs.Keys.Count; i++) {
-				if (defs[defs.Keys.ElementAt(i)].Parts.Count == 0) {
+				if (defs[defs.Keys.ElementAt(i)].PartGuids.Count == 0) {
 					if (defs.Keys.ElementAt(i).Equals("grounded")) {
 						var groundedPartGuid = assembly.Data.Joints.JointInstances.Find(x => x.Key.Equals("grounded")).Value.Parts.Nodes[0].Value;
 						newGrounded = defs[partMap[groundedPartGuid]];
@@ -437,7 +438,7 @@ namespace Synthesis.Import {
 							RigidbodyDefinition rigidDef = new RigidbodyDefinition {
 								Name = $"gamepiece_{gamepieceCounter}",
 								GUID = $"{counter}",
-								Parts = new Dictionary<string, PartInstance>()
+								PartGuids = new Dictionary<string, bool>()
 							};
 							defs.Add(rigidDef.GUID, rigidDef);
 							GetAllPartsInBranch(y.Key, paths, assembly.DesignHierarchy.Nodes.ElementAt(0)).ForEach(z => MoveToDef(z, partMap[z], rigidDef.GUID));
@@ -471,16 +472,16 @@ namespace Synthesis.Import {
             foreach (var group in defs.Values.Select(x => x.GUID)) {
 	            var collectivePhysData = new List<(Matrix4x4, Mirabuf.PhysicalProperties)>();
 	            
-	            foreach (var part in defs[group].Parts) {
+	            foreach (var partGuid in defs[group].PartGuids.Keys) {
 
-		            if (!partDuplicateChecker.Add(part.Value.Info.GUID)) {
+		            var part = assembly.Data.Parts.PartInstances[partGuid];
+
+		            if (!partDuplicateChecker.Add(part.Info.GUID)) {
 			            live._state = MirabufFileState.DuplicateParts;
 			            continue;
 		            }
-		            
-		            var partInstance = part.Value;
-		            var partDefinition = assembly.Data.Parts.PartDefinitions[partInstance.PartDefinitionReference];
-		            collectivePhysData.Add((partInstance.GlobalTransform.UnityMatrix, partDefinition.PhysicalData));
+		            var partDefinition = assembly.Data.Parts.PartDefinitions[part.PartDefinitionReference];
+		            collectivePhysData.Add((part.GlobalTransform.UnityMatrix, partDefinition.PhysicalData));
 	            }
 	            
 	            var combPhysProps = CombinePhysicalProperties(collectivePhysData);
@@ -637,7 +638,7 @@ namespace Synthesis.Import {
 			public bool                             IsGamepiece;
 			public bool                             IsStatic;
 			public MPhysicalProperties              CollectivePhysicalProperties;
-			public Dictionary<string, PartInstance> Parts; // Using a dictionary to make Key searches faster
+			public Dictionary<string, bool>         PartGuids; // Using a dictionary because hashset uses open addressing and I want chaining
 		}
 
         public struct RigidbodyDefinitions {

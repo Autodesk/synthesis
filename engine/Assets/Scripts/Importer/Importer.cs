@@ -68,7 +68,7 @@ namespace Synthesis.Import
 		/// <returns>A tuple of the main gameobject that contains the imported assembly, a reference to the live file, and the simobject controlling the assembly</returns>
 		public static (GameObject MainObject, MirabufLive miraLive, SimObject Sim) MirabufAssemblyImport(MirabufLive miraLive) {
 			// Uncommenting this will delete all bodies so the JSON file isn't huge
-			DebugAssembly(miraLive.MiraAssembly);
+			// DebugAssembly(miraLive.MiraAssembly);
 			// return null;
 
 			Assembly assembly = miraLive.MiraAssembly;
@@ -438,7 +438,7 @@ namespace Synthesis.Import
 			// debugAssembly.MergeFrom(assembly);
 			MemoryStream ms = new MemoryStream(new byte[assembly.CalculateSize()]);
 			ms.Seek(0, SeekOrigin.Begin);
-			assembly.WriteTo(ms);
+			assembly.WriteTo(ms); // TODO: Causing issues all of a sudden [May 5th, 2023]
 			ms.Seek(0, SeekOrigin.Begin);
 			debugAssembly = Assembly.Parser.ParseFrom(ms);
 
