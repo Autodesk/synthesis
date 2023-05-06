@@ -146,6 +146,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         RobotBounds = GetBounds(RobotNode.transform);
         GroundedBounds = GetBounds(GroundedNode.transform);
         DebugJointAxes.DebugBounds.Add((GroundedBounds, () => GroundedNode.transform.localToWorldMatrix));
+        SimulationPreferences.LoadFromMirabufLive(MiraLive);
 
         _allRigidbodies = new List<Rigidbody>(RobotNode.transform.GetComponentsInChildren<Rigidbody>());
         PhysicsManager.Register(this);

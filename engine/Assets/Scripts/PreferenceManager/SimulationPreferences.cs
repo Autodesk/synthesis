@@ -248,20 +248,13 @@ namespace Synthesis.PreferenceManager {
             JointMotors = new Dictionary<string, JointMotor>();
             JointSpeeds = new Dictionary<string, float>();
         }
-        [JsonProperty]
-        public string AssemblyGuid;
-        [JsonProperty]
-        public Dictionary<string, InputData> InputData;
-        [JsonProperty]
-        public Dictionary<string, JointMotor> JointMotors;
-        [JsonProperty]
-        public Dictionary<string, float> JointSpeeds;
-        [JsonProperty]
-        public ITD? IntakeTrigger;
-        [JsonProperty]
-        public STD? TrajectoryPointer;
-        [JsonProperty]
-        public RioTranslationLayer? SimTranslationLayer;
+        [JsonProperty] public string AssemblyGuid;
+        [JsonProperty] public Dictionary<string, InputData> InputData;
+        [JsonProperty] public Dictionary<string, JointMotor> JointMotors;
+        [JsonProperty] public Dictionary<string, float> JointSpeeds;
+        [JsonProperty] public ITD? IntakeTrigger;
+        [JsonProperty] public STD? TrajectoryPointer;
+        [JsonProperty] public RioTranslationLayer? SimTranslationLayer;
     }
 
     [JsonObject(MemberSerialization.OptIn)]

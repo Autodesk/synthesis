@@ -29,23 +29,26 @@ namespace Synthesis.Import {
 
         private MirabufFileState _state = MirabufFileState.Valid;
 
-        private Task<RigidbodyDefinitions> _findDefinitions = null;
+        private Task<RigidbodyDefinitions> _findDefinitionsTask;
+        private RigidbodyDefinitions? _rigidbodyDefinitions;
         public RigidbodyDefinitions Definitions {
             get {
-                if (_findDefinitions.Status < TaskStatus.RanToCompletion) {
-                    _findDefinitions.Wait();
+                if (!_rigidbodyDefinitions.HasValue) {
+	                _findDefinitionsTask.Wait();
+	                _rigidbodyDefinitions = _findDefinitionsTask.Result;
                 }
-                return _findDefinitions.Result;
+                
+                return _rigidbodyDefinitions.Value;
             }
         }
 
         public MirabufLive(string path) {
             _path = path;
             Load();
-
-            SimulationPreferences.LoadFromMirabufLive(this);
             
-            _findDefinitions = Task<RigidbodyDefinitions>.Factory.StartNew(() => FindRigidbodyDefinitions(this));
+            // if (SimulationPreferences.)
+            
+            _findDefinitionsTask = Task<RigidbodyDefinitions>.Factory.StartNew(() => FindRigidbodyDefinitions(this));
         }
         
         #region File Management
