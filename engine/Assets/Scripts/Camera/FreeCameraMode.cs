@@ -5,14 +5,16 @@ using SynthesisAPI.InputManager.Inputs;
 using UnityEngine;
 using Input = UnityEngine.Input;
 
+#nullable enable
+
 public class FreeCameraMode : ICameraMode
 {
-    private float _targetZoom = 15.0f;
-    private float _targetPitch = 10.0f;
-    private float _targetYaw = 135.0f;
-    private float _actualZoom = 15.0f;
-    private float _actualPitch = 10.0f;
-    private float _actualYaw = 135.0f;
+    public float TargetZoom { get; private set; } = 15.0f;
+    public float TargetPitch { get; private set; } = 10.0f;
+    public float TargetYaw { get; private set; } = 135.0f;
+    public float ActualZoom { get; private set; } = 15.0f;
+    public float ActualPitch { get; private set; } = 10.0f;
+    public float ActualYaw { get; private set; } = 135.0f;
 
     private const string FORWARD_KEY = "FREECAM_FORWARD";
     private const string BACK_KEY = "FREECAM_BACK";
@@ -25,7 +27,7 @@ public class FreeCameraMode : ICameraMode
 
     private bool isActive = false;
 
-    public void Start(CameraController cam) {
+    public void Start<T>(CameraController cam, T? previousCam) where T : ICameraMode {
         
         // only assign inputs once
         if (!InputManager.MappedDigitalInputs.ContainsKey(FORWARD_KEY)) {
@@ -37,6 +39,14 @@ public class FreeCameraMode : ICameraMode
             // InputManager.AssignValueInput(RIGHT_YAW_KEY, new Digital("E"));
             // InputManager.AssignValueInput(DOWN_PITCH_KEY, new Digital("Z"));
             // InputManager.AssignValueInput(UP_PITCH_KEY, new Digital("X"));
+        }
+
+        if (previousCam != null && previousCam.GetType() == typeof(OrbitCameraMode)) {
+            OrbitCameraMode orbitCam = (previousCam as OrbitCameraMode)!;
+            TargetPitch = orbitCam.TargetPitch;
+            TargetYaw = orbitCam.TargetYaw;
+            ActualPitch = orbitCam.ActualPitch;
+            ActualYaw = orbitCam.ActualYaw;
         }
     }
     
@@ -70,15 +80,15 @@ public class FreeCameraMode : ICameraMode
         }
 
         // make it so the user can't rotate the camera upside down
-        _targetPitch = Mathf.Clamp(_targetPitch + p, -90, 90);
-        _targetYaw += y;
-        _targetZoom = Mathf.Clamp(_targetZoom + z, cam.ZoomLowerLimit, cam.ZoomUpperLimit);
+        TargetPitch = Mathf.Clamp(TargetPitch + p, -90, 90);
+        TargetYaw += y;
+        TargetZoom = Mathf.Clamp(TargetZoom + z, cam.ZoomLowerLimit, cam.ZoomUpperLimit);
         
         float orbitLerpFactor = Mathf.Clamp((cam.OrbitalAcceleration * Time.deltaTime) / 0.018f, 0.01f, 1.0f);
-        _actualPitch = Mathf.Lerp(_actualPitch, _targetPitch, orbitLerpFactor);
-        _actualYaw = Mathf.Lerp(_actualYaw, _targetYaw, orbitLerpFactor);
+        ActualPitch = Mathf.Lerp(ActualPitch, TargetPitch, orbitLerpFactor);
+        ActualYaw = Mathf.Lerp(ActualYaw, TargetYaw, orbitLerpFactor);
         float zoomLerpFactor = Mathf.Clamp((cam.ZoomAcceleration * Time.deltaTime) / 0.018f, 0.01f, 1.0f);
-        _actualZoom = Mathf.Lerp(_actualZoom, _targetZoom, zoomLerpFactor);
+        ActualZoom = Mathf.Lerp(ActualZoom, TargetZoom, zoomLerpFactor);
 
         var t = cam.transform;
 
@@ -92,7 +102,7 @@ public class FreeCameraMode : ICameraMode
         if (isActive) {
             forward = t.forward * (InputManager.MappedDigitalInputs[FORWARD_KEY][0].Value -
                                         InputManager.MappedDigitalInputs[BACK_KEY][0].Value) +
-                            t.forward * (_targetZoom - _actualZoom) * CameraController.ZoomSensitivity;
+                            t.forward * (TargetZoom - ActualZoom) * CameraController.ZoomSensitivity;
             
             right = t.right * (InputManager.MappedDigitalInputs[RIGHT_KEY][0].Value -
                                     InputManager.MappedDigitalInputs[LEFT_KEY][0].Value);
@@ -103,7 +113,7 @@ public class FreeCameraMode : ICameraMode
         // we don't want the user to be able to move the camera under the map or so high they can't see the field
         t.position = new Vector3(t.position.x, Mathf.Clamp(t.position.y, 0, 100), t.position.z);
 
-        t.localRotation = Quaternion.Euler(_actualPitch, _actualYaw, 0.0f);
+        t.localRotation = Quaternion.Euler(ActualPitch, ActualYaw, 0.0f);
     }
 
     public void LateUpdate(CameraController cam) {
