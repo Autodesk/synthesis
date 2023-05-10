@@ -95,20 +95,7 @@ public static class MainHUD {
         expandIcon.SetColor(ColorManager.SYNTHESIS_ICON);
 
         // Setup default HUD
-        MainHUD.AddItemToDrawer("Spawn", b => DynamicUIManager.CreateModal<SpawningModal>(), icon: SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
-        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-            MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-
-        MainHUD.AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("DriverStationView"));
-        MainHUD.AddItemToDrawer("Camera View", b => DynamicUIManager.CreateModal<ChangeViewModal>(), icon: SynthesisAssetCollection.GetSpriteByName("CameraIcon"));
-        MainHUD.AddItemToDrawer("Download Asset", b => DynamicUIManager.CreateModal<DownloadAssetModal>(), icon: SynthesisAssetCollection.GetSpriteByName("DownloadIcon"));
-
-        MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("settings"));
-        MainHUD.AddItemToDrawer(
-            "RoboRIO Conf.",
-            b => DynamicUIManager.CreateModal<RioConfigurationModal>(true),
-            icon: SynthesisAssetCollection.GetSpriteByName("rio-config-icon")
-        );
+        // MOVED TO PRACTICE MODE
 
         if (!_hasNewRobotListener) {
             EventBus.NewTypeListener<RobotSimObject.NewRobotEvent>(e => {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Google.Protobuf.WellKnownTypes;
@@ -34,6 +35,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         private set {
             if (value != _currentlyPossessedRobot) {
                 var old = _currentlyPossessedRobot;
+                if (_currentlyPossessedRobot != string.Empty)
+                    GetCurrentlyPossessedRobot().Unpossess();
                 _currentlyPossessedRobot = value;
                 
                 EventBus.Push(new NewRobotEvent { NewBot = value, OldBot = old });
@@ -42,6 +45,9 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
     public static RobotSimObject GetCurrentlyPossessedRobot()
         => CurrentlyPossessedRobot == string.Empty ? null : SimulationManager._simObjects[CurrentlyPossessedRobot] as RobotSimObject;
+
+    private static Dictionary<string, RobotSimObject> _spawnedRobots = new Dictionary<string, RobotSimObject>(); // Open
+    public static Dictionary<string, RobotSimObject>.ValueCollection SpawnedRobots => _spawnedRobots.Values;
 
     public static int ControllableJointCounter = 0;
 
@@ -138,6 +144,12 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     public RobotSimObject(string name, ControllableState state, MirabufLive miraLive,
             GameObject groundedNode, Dictionary<string, (Joint a, Joint b)> jointMap)
             : base(name, state) {
+        
+        if (_spawnedRobots.ContainsKey(name)) {
+            throw new Exception("Robot with that name already loaded");
+        }
+        _spawnedRobots.Add(name, this);
+
         MiraLive = miraLive;
         GroundedNode = groundedNode;
         _jointMap = jointMap;
@@ -173,6 +185,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         // _simulationTranslationLayer = new RioTranslationLayer();
 
         cam = Camera.main.GetComponent<CameraController>();
+        
+        
     }
 
     public static void Setup() {
@@ -197,8 +211,15 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     public void Possess() {
         CurrentlyPossessedRobot = this.Name;
+        BehavioursEnabled = true;
         OrbitCameraMode.FocusPoint =
             () => GroundedNode != null && GroundedBounds != null ? GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center) : Vector3.zero;
+    }
+
+    public void Unpossess() {
+        BehavioursEnabled = false;
+        Vector3 currentPoint = OrbitCameraMode.FocusPoint();
+        OrbitCameraMode.FocusPoint = () => currentPoint;
     }
 
     public override void Destroy() {

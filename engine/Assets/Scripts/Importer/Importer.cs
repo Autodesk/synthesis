@@ -38,6 +38,8 @@ namespace Synthesis.Import
 	/// </summary>
 	public static class Importer {
 
+		private static ulong _robotTally = 0; // Just a number to add to the name of the sim object spawned
+
 		#region Importer Framework
 
 		public const UInt32 CURRENT_MIRA_EXPORTER_VERSION = 5;
@@ -114,19 +116,22 @@ namespace Synthesis.Import
 
 			SimObject simObject;
 			if (assembly.Dynamic) {
-				List<string> foundRobots = new List<string>();
-				foreach (var kvp in SimulationManager.SimulationObjects) {
-					if (kvp.Value is RobotSimObject)
-						foundRobots.Add(kvp.Key);
-				}
-				foundRobots.ForEach(x => SimulationManager.RemoveSimObject(x));
+				// List<string> foundRobots = new List<string>();
+				// foreach (var kvp in SimulationManager.SimulationObjects) {
+				// 	if (kvp.Value is RobotSimObject)
+				// 		foundRobots.Add(kvp.Key);
+				// }
+				// foundRobots.ForEach(x => SimulationManager.RemoveSimObject(x));
 
-				simObject = new RobotSimObject(assembly.Info.Name, state, miraLive, groupObjects["grounded"], jointToJointMap);
+				string name = $"{assembly.Info.Name}_{_robotTally}";
+				_robotTally++;
+				
+				simObject = new RobotSimObject(name, state, miraLive, groupObjects["grounded"], jointToJointMap);
 				try {
 					SimulationManager.RegisterSimObject(simObject);
 				} catch {
 					// TODO: Fix
-					Logger.Log($"Robot with assembly {assembly.Info.Name} already exists.");
+					Logger.Log($"Robot with assembly {name} already exists.");
 					UnityEngine.Object.Destroy(assemblyObject);
 				}
 			} else {
