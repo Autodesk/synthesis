@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Synthesis.Util;
 using SynthesisAPI.Utilities;
 using UnityEngine;
 using UnityEngine.UI;
@@ -273,6 +274,7 @@ namespace Synthesis.UI.Dynamic {
         public RectTransform RootRectTransform { get; protected set; }
         public UIComponent? Parent { get; protected set; }
         protected List<UIComponent> Children = new List<UIComponent>();
+        public IReadOnlyList<UIComponent> ChildrenReadOnly => Children.AsReadOnly();
 
         public UIComponent(UIComponent? parentComponent, GameObject rootGameObject) {
             Parent = parentComponent;
@@ -368,6 +370,11 @@ namespace Synthesis.UI.Dynamic {
             RootRectTransform.anchorMin = new Vector2(0.5f, 1);
             RootRectTransform.anchorMax = new Vector2(0.5f, 1);
             return (this as T)!;
+        }
+        
+        public void DeleteAllChildren() {
+            Children.ForEach(x => GameObject.Destroy(x.RootGameObject));
+            Children.Clear();
         }
     }
 
@@ -676,6 +683,10 @@ namespace Synthesis.UI.Dynamic {
         }
         public Toggle SetDisabledColor(string s) {
             DisabledColor = ColorManager.TryGetColor(s);
+            return this;
+        }
+        public Toggle StepIntoLabel(Action<Label> mod) {
+            mod(TitleLabel);
             return this;
         }
     }
