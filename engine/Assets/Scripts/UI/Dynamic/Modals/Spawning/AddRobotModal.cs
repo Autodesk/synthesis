@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Synthesis.UI.Dynamic;
+using SynthesisAPI.Utilities;
 using TMPro;
 using UnityEngine;
+using Logger = SynthesisAPI.Utilities.Logger;
 
 #nullable enable
 
@@ -49,9 +51,14 @@ namespace Synthesis.UI.Dynamic {
             // MainContent.CreateLabeledButton().SetTopStretch<LabeledButton>(anchoredY: 50).StepIntoLabel(l => l.SetText("Test"));
         }
 
-        public override void Update() { }
+        public override void Update() {
+            if (RobotSimObject.SpawnedRobots.Count >= RobotSimObject.MAX_ROBOTS) {
+                Logger.Log("Maximum number of bots reached", LogLevel.Info);
+                DynamicUIManager.CloseActiveModal();
+            }
+        }
         
-        public override void Delete() {}
+        public override void Delete() { }
 
         // private string[] GetFiles(string filePath) {
         //     string[] fullPaths = Directory.GetFiles(filePath);

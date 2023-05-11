@@ -98,8 +98,8 @@ public static class MainHUD {
         // MOVED TO PRACTICE MODE
 
         if (!_hasNewRobotListener) {
-            EventBus.NewTypeListener<RobotSimObject.NewRobotEvent>(e => {
-                var robotEvent = e as RobotSimObject.NewRobotEvent;
+            EventBus.NewTypeListener<RobotSimObject.PossessionChangeEvent>(e => {
+                var robotEvent = e as RobotSimObject.PossessionChangeEvent;
 
                 if (robotEvent == null)
                     throw new Exception("Event type parsed incorrectly. Shouldn't ever happen");
