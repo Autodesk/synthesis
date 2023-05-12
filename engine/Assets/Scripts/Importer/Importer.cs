@@ -42,13 +42,7 @@ namespace Synthesis.Import
 
 		#region Importer Framework
 
-		public const UInt32 CURRENT_MIRA_EXPORTER_VERSION = 5;
-		public const UInt32 OLDEST_MIRA_EXPORTER_VERSION = 4;
-
-		public const int FIELD_LAYER = 7;
-		public const int DYNAMIC_1_LAYER = 8;
-		private const int DYNAMIC_2_LAYER = 9; // Reserved for later
-		private const int DYNAMIC_3_LAYER = 10; // Reserved for later
+		
 
 		#endregion
 
@@ -75,9 +69,9 @@ namespace Synthesis.Import
 
 			Assembly assembly = miraLive.MiraAssembly;
 
-			if (assembly.Info.Version < OLDEST_MIRA_EXPORTER_VERSION) {
-				Logger.Log($"Out-of-date Assembly\nCurrent Version: {CURRENT_MIRA_EXPORTER_VERSION}\nVersion of Assembly: {assembly.Info.Version}", LogLevel.Warning);
-			} else if (assembly.Info.Version > CURRENT_MIRA_EXPORTER_VERSION) {
+			if (assembly.Info.Version < MirabufLive.OLDEST_MIRA_EXPORTER_VERSION) {
+				Logger.Log($"Out-of-date Assembly\nCurrent Version: {MirabufLive.CURRENT_MIRA_EXPORTER_VERSION}\nVersion of Assembly: {assembly.Info.Version}", LogLevel.Warning);
+			} else if (assembly.Info.Version > MirabufLive.CURRENT_MIRA_EXPORTER_VERSION) {
 				Logger.Log($"Hey Dev, the assembly you're importing is using a higher version than the current set version. Please update the CURRENT_MIRA_EXPORTER_VERSION constant", LogLevel.Debug);
 			}
 
