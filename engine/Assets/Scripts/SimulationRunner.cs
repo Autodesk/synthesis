@@ -17,7 +17,6 @@ using SynthesisAPI.EventBus;
 using Synthesis.Replay;
 using Synthesis.WS;
 using SynthesisAPI.RoboRIO;
-using Synthesis.Networking;
 using System.Threading.Tasks;
 
 namespace Synthesis.Runtime {
@@ -77,9 +76,6 @@ namespace Synthesis.Runtime {
 
             WebSocketManager.RioState.OnUnrecognizedMessage += s => Debug.Log(s);
 
-            // Screen.fullScreenMode = FullScreenMode.MaximizedWindow;
-            NetworkManager.Init();
-
             // TestColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
             // RotationalDriver.TestSphericalCoordinate();
 
@@ -131,7 +127,6 @@ namespace Synthesis.Runtime {
 
         void OnDestroy() {
             Synthesis.PreferenceManager.PreferenceManager.Save();
-            NetworkManager.Kill();
         }
 
         /// <summary>
