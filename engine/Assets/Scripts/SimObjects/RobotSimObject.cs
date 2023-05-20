@@ -19,6 +19,7 @@ using Vector3 = UnityEngine.Vector3;
 using Synthesis.Gizmo;
 using Synthesis.PreferenceManager;
 using Synthesis.Runtime;
+using Synthesis.UI;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.EventBus;
@@ -104,6 +105,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     private Dictionary<string, (UnityEngine.Joint a, UnityEngine.Joint b)> _jointMap;
     private List<Rigidbody> _allRigidbodies;
+    public IReadOnlyCollection<Rigidbody> AllRigidbodies => _allRigidbodies.AsReadOnly();
 
     // SHOOTING/PICKUP
     private GameObject _intakeTrigger;
@@ -191,6 +193,12 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         // _simulationTranslationLayer = new RioTranslationLayer();
 
         cam = Camera.main.GetComponent<CameraController>();
+
+        _allRigidbodies.ForEach(x => {
+            var rc = x.gameObject.AddComponent<HighlightComponent>();
+            rc.Color = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_HOVER);
+            rc.enabled = false;
+        });
     }
 
     public static void Setup() {
