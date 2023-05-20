@@ -21,6 +21,8 @@ namespace Synthesis.UI {
         public const string SYNTHESIS_ORANGE_CONTRAST_TEXT = "synthesis-orange-constrast-text";
         public const string SYNTHESIS_ICON = "synthesis-icon";
         public const string SYNTHESIS_ICON_ALT = "synthesis-icon-alt";
+        public const string SYNTHESIS_HIGHLIGHT_HOVER = "synthesis-highlight-hover";
+        public const string SYNTHESIS_HIGHLIGHT_SELECT = "synthesis-highlight-select";
 
         private static Dictionary<string, Color32> _colors = new Dictionary<string, Color32>();
 
@@ -38,7 +40,9 @@ namespace Synthesis.UI {
             (SYNTHESIS_CANCEL, new Color32(250, 82, 82, 255)),
             (SYNTHESIS_ORANGE_CONTRAST_TEXT, new Color32(0, 0, 0, 255)),
             (SYNTHESIS_ICON, new Color32(255, 255, 255, 255)),
-            (SYNTHESIS_ICON_ALT, new Color32(0, 0, 0, 255))
+            (SYNTHESIS_ICON_ALT, new Color32(0, 0, 0, 255)),
+            (SYNTHESIS_HIGHLIGHT_HOVER, new Color32(89, 255, 133, 255)),
+            (SYNTHESIS_HIGHLIGHT_SELECT, new Color32(255, 89, 133, 255))
         };
 
         static ColorManager() {
