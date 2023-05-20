@@ -2,9 +2,9 @@
 Lorem Ipsum
 
 ### Objectives
-- [x] Lorem Ipsum
+- [ ] Lorem Ipsum
 
-### Recommended Testing
+### Testing
 - Lorem Ipsum
 
-[JIRA Issue](/)
+[JIRA Issue](https://jira.autodesk.com/browse/AARD-XXXX)
