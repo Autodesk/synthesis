@@ -1,10 +1,11 @@
 using Synthesis.UI.Dynamic;
 using UnityEngine;
 
+#nullable enable
+
 public class OverviewCameraMode : ICameraMode
 {
-    public void Start(CameraController cam)
-    {
+    public void Start<T>(CameraController cam, T? previousCam) where T : ICameraMode {
         // camera should be positioned above the field looking down
         cam.transform.position = new Vector3(0, 10, 0);
         cam.transform.rotation = Quaternion.Euler(90, 0, 0);
