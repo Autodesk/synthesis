@@ -46,6 +46,7 @@
      <Compile Include="Assets\Scripts\UI\Dynamic\Panels\Information\ScoreboardPanel.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\TransformAdapter.cs" />
      <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyItem.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Panels\RobotSwitchPanel.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Api.cs" />
      <Compile Include="Assets\Scripts\Gizmos\GizmoManager.cs" />
      <Compile Include="Assets\Scripts\Physics\CustomWheel.cs" />

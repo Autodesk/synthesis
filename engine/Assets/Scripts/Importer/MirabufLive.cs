@@ -18,6 +18,30 @@ using UVector3 = UnityEngine.Vector3;
 
 namespace Synthesis.Import {
     public class MirabufLive {
+	    
+	    #region Framework
+	    
+	    public const UInt32 CURRENT_MIRA_EXPORTER_VERSION = 5;
+	    public const UInt32 OLDEST_MIRA_EXPORTER_VERSION = 4;
+
+	    public const int FIELD_LAYER = 7;
+	    public const int DYNAMIC_1_LAYER = 8;
+	    public const int DYNAMIC_2_LAYER = 9;
+	    public const int DYNAMIC_3_LAYER = 10;
+	    public const int DYNAMIC_4_LAYER = 11;
+	    public const int DYNAMIC_5_LAYER = 12;
+	    public const int DYNAMIC_6_LAYER = 13;
+
+	    private static Queue<int> dynamicLayers = new Queue<int>(new int[] {
+		    DYNAMIC_1_LAYER,
+		    DYNAMIC_2_LAYER,
+		    DYNAMIC_3_LAYER,
+		    DYNAMIC_4_LAYER,
+		    DYNAMIC_5_LAYER,
+		    DYNAMIC_6_LAYER
+	    });
+	    
+	    #endregion
 
         private string _path;
         public Assembly MiraAssembly;
@@ -88,6 +112,14 @@ namespace Synthesis.Import {
 
 	        Dictionary<string, GameObject> groupObjects = new Dictionary<string, GameObject>();
 
+	        int dynamicLayer = 0;
+	        if (physics) {
+		        if (dynamicLayers.Count == 0)
+			        throw new Exception("No more dynamic layers");
+		        dynamicLayer = dynamicLayers.Dequeue();
+		        assemblyContainer.AddComponent<DynamicLayerReserver>();
+	        }
+
 	        foreach (var group in Definitions.Definitions.Values) {
 
 				GameObject groupObject = new GameObject(group.Name);
@@ -119,10 +151,11 @@ namespace Synthesis.Import {
 
 				#endregion
 
-				if (!MiraAssembly.Dynamic && !isGamepiece)
-					groupObject.transform.GetComponentsInChildren<UnityEngine.Transform>().ForEach(x => x.gameObject.layer = Importer.FIELD_LAYER);
-				else if (MiraAssembly.Dynamic)
-					groupObject.transform.GetComponentsInChildren<UnityEngine.Transform>().ForEach(x => x.gameObject.layer = Importer.DYNAMIC_1_LAYER);
+				if (!MiraAssembly.Dynamic && !isGamepiece) {
+					groupObject.transform.GetComponentsInChildren<UnityEngine.Transform>().ForEach(x => x.gameObject.layer = FIELD_LAYER);
+				} else if (MiraAssembly.Dynamic && physics) {
+					groupObject.transform.GetComponentsInChildren<UnityEngine.Transform>().ForEach(x => x.gameObject.layer = dynamicLayer);
+				}
 
 				if (physics) {
 					// Combine all physical data for grouping
@@ -644,6 +677,12 @@ namespace Synthesis.Import {
 	        public float                                   Mass;
             public Dictionary<string, RigidbodyDefinition> Definitions;
             public Dictionary<string, string>              PartToDefinitionMap;
+        }
+        
+        public class DynamicLayerReserver : MonoBehaviour {
+	        private void OnDestroy() {
+		        dynamicLayers.Enqueue(gameObject.layer);
+	        }
         }
     }
 }

@@ -38,15 +38,11 @@ namespace Synthesis.Import
 	/// </summary>
 	public static class Importer {
 
+		private static ulong _robotTally = 0; // Just a number to add to the name of the sim object spawned
+
 		#region Importer Framework
 
-		public const UInt32 CURRENT_MIRA_EXPORTER_VERSION = 5;
-		public const UInt32 OLDEST_MIRA_EXPORTER_VERSION = 4;
-
-		public const int FIELD_LAYER = 7;
-		public const int DYNAMIC_1_LAYER = 8;
-		private const int DYNAMIC_2_LAYER = 9; // Reserved for later
-		private const int DYNAMIC_3_LAYER = 10; // Reserved for later
+		
 
 		#endregion
 
@@ -73,9 +69,9 @@ namespace Synthesis.Import
 
 			Assembly assembly = miraLive.MiraAssembly;
 
-			if (assembly.Info.Version < OLDEST_MIRA_EXPORTER_VERSION) {
-				Logger.Log($"Out-of-date Assembly\nCurrent Version: {CURRENT_MIRA_EXPORTER_VERSION}\nVersion of Assembly: {assembly.Info.Version}", LogLevel.Warning);
-			} else if (assembly.Info.Version > CURRENT_MIRA_EXPORTER_VERSION) {
+			if (assembly.Info.Version < MirabufLive.OLDEST_MIRA_EXPORTER_VERSION) {
+				Logger.Log($"Out-of-date Assembly\nCurrent Version: {MirabufLive.CURRENT_MIRA_EXPORTER_VERSION}\nVersion of Assembly: {assembly.Info.Version}", LogLevel.Warning);
+			} else if (assembly.Info.Version > MirabufLive.CURRENT_MIRA_EXPORTER_VERSION) {
 				Logger.Log($"Hey Dev, the assembly you're importing is using a higher version than the current set version. Please update the CURRENT_MIRA_EXPORTER_VERSION constant", LogLevel.Debug);
 			}
 
@@ -114,19 +110,22 @@ namespace Synthesis.Import
 
 			SimObject simObject;
 			if (assembly.Dynamic) {
-				List<string> foundRobots = new List<string>();
-				foreach (var kvp in SimulationManager.SimulationObjects) {
-					if (kvp.Value is RobotSimObject)
-						foundRobots.Add(kvp.Key);
-				}
-				foundRobots.ForEach(x => SimulationManager.RemoveSimObject(x));
+				// List<string> foundRobots = new List<string>();
+				// foreach (var kvp in SimulationManager.SimulationObjects) {
+				// 	if (kvp.Value is RobotSimObject)
+				// 		foundRobots.Add(kvp.Key);
+				// }
+				// foundRobots.ForEach(x => SimulationManager.RemoveSimObject(x));
 
-				simObject = new RobotSimObject(assembly.Info.Name, state, miraLive, groupObjects["grounded"], jointToJointMap);
+				string name = $"{assembly.Info.Name}_{_robotTally}";
+				_robotTally++;
+				
+				simObject = new RobotSimObject(name, state, miraLive, groupObjects["grounded"], jointToJointMap);
 				try {
 					SimulationManager.RegisterSimObject(simObject);
 				} catch {
 					// TODO: Fix
-					Logger.Log($"Robot with assembly {assembly.Info.Name} already exists.");
+					Logger.Log($"Robot with assembly {name} already exists.");
 					UnityEngine.Object.Destroy(assemblyObject);
 				}
 			} else {
@@ -255,7 +254,7 @@ namespace Synthesis.Import
 								? assembly.Data.Joints.MotorDefinitions[definition.MotorReference]
 								: null
 						);
-						SimulationManager.AddDriver(assembly.Info.Name, driver);
+						SimulationManager.AddDriver(simObject.Name, driver);
 					}
 
 					jointMap.Add(instance.Info.GUID, (revoluteA, revoluteB));
