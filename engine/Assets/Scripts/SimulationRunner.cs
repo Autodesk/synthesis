@@ -17,6 +17,7 @@ using SynthesisAPI.EventBus;
 using Synthesis.Replay;
 using Synthesis.WS;
 using SynthesisAPI.RoboRIO;
+using UnityEngine.Rendering;
 
 namespace Synthesis.Runtime {
     public class SimulationRunner : MonoBehaviour {
@@ -83,6 +84,11 @@ namespace Synthesis.Runtime {
             if (ColorManager.HasColor("tree")) {
                 GameObject.Instantiate(Resources.Load("Misc/Tree"));
             }
+
+            GraphicsSettings.allConfiguredRenderPipelines.ForEach(x => Debug.Log(x.name));
+
+            var pipeline = GraphicsSettings.currentRenderPipeline;
+            Debug.Log($"Current: {pipeline.name}");
 
             QualitySettings.SetQualityLevel(PreferenceManager.PreferenceManager.GetPreference<int>("Quality Settings"), true);
         }

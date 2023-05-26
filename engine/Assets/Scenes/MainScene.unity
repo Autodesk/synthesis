@@ -1305,7 +1305,7 @@ MonoBehaviour:
   m_Cameras:
   - {fileID: 1413913838}
   - {fileID: 473088723}
-  m_RendererIndex: -1
+  m_RendererIndex: 0
   m_VolumeLayerMask:
     serializedVersion: 2
     m_Bits: 1
