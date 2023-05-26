@@ -16,12 +16,15 @@ public class ChangeInputsModal : ModalDynamic
         get => !RobotSimObject.CurrentlyPossessedRobot.Equals(string.Empty);
     }
 
-    private const float VERTICAL_PADDING = 16f;
+    private const float VERTICAL_PADDING = 10f;
     private const float TITLE_INDENT = 10f;
     private const int CONTENT_HEIGHT = 400;
-    
+
+    private const float ENTRY_HEIGHT = 37f;
+    private const float ENTRY_RIGHT_PADDING = 5f;
+
     private readonly Func<UIComponent, UIComponent> VerticalLayout = (u) => {
-        var offset = (-u.Parent!.RectOfChildren(u).yMin) + VERTICAL_PADDING;
+        var offset = u.Parent!.ChildrenReadOnly.Count > 1 ? (-u.Parent!.RectOfChildren(u).yMin) + VERTICAL_PADDING : 0f;
         u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 0, rightPadding: 0);
         return u;
     };
@@ -55,12 +58,12 @@ public class ChangeInputsModal : ModalDynamic
             {
                 var val = InputManager.MappedValueInputs[inputKey];
 
-                inputScrollView.Content.CreateLabeledButton()
+                var item = inputScrollView.Content.CreateLabeledButton()
+                    .SetHeight<LabeledButton>(ENTRY_HEIGHT)
                     .StepIntoLabel(l => l.SetText(inputKey))
                     .StepIntoButton(b =>
                     {
-                        b.SetHeight<Button>(8)
-                            .SetWidth<Button>(200);
+                        b.SetRightStretch<Button>(anchoredX: ENTRY_RIGHT_PADDING).SetWidth<Button>(200);
                         UpdateAnalogInputButton(b, val, val is Digital);
                         b.AddOnClickedEvent(_ =>
                         {
@@ -73,6 +76,8 @@ public class ChangeInputsModal : ModalDynamic
                     })
                     .ApplyTemplate(VerticalLayout);
             }
+
+            inputScrollView.Content.SetHeight<Content>(Mathf.Abs(inputScrollView.Content.RectOfChildren().yMin));
         }
         else
         {
@@ -99,7 +104,7 @@ public class ChangeInputsModal : ModalDynamic
         
         globalControlView.RootGameObject.GetComponent<UnityEngine.UI.Image>().color = Color.clear;
 
-
+        
         foreach (var inputKey in InputManager.MappedValueInputs)
         {
             if (inputKey.Key.StartsWith("input/") && !Regex.IsMatch(inputKey.Value.Name, ".*Mouse.*"))
@@ -108,11 +113,11 @@ public class ChangeInputsModal : ModalDynamic
                 
                 string capitalized = Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(
                     Regex.Replace(inputKey.Key.Replace("input/", ""), "[\\W_]", " "));
-                globalControlView.Content.CreateLabeledButton().StepIntoLabel(l => l.SetText(capitalized))
+                globalControlView.Content.CreateLabeledButton().SetHeight<LabeledButton>(ENTRY_HEIGHT)
+                    .StepIntoLabel(l => l.SetText(capitalized))
                     .StepIntoButton(b =>
                     {
-                        b.SetHeight<Button>(8)
-                            .SetWidth<Button>(200);
+                        b.SetRightStretch<Button>(anchoredX: ENTRY_RIGHT_PADDING).SetWidth<Button>(200);
                         UpdateAnalogInputButton(b, val, val is Digital);
                         b.AddOnClickedEvent(_ =>
                         {
@@ -126,6 +131,8 @@ public class ChangeInputsModal : ModalDynamic
                     .ApplyTemplate(VerticalLayout);
             }
         }
+
+        globalControlView.Content.SetHeight<Content>(-globalControlView.Content.RectOfChildren().yMin);
     }
 
     private void UpdateAnalogInputButton(Button button, Analog input, bool isDigital)

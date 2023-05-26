@@ -17,6 +17,7 @@ using SynthesisAPI.EventBus;
 using Synthesis.Replay;
 using Synthesis.WS;
 using SynthesisAPI.RoboRIO;
+using UnityEngine.Rendering;
 
 namespace Synthesis.Runtime {
     public class SimulationRunner : MonoBehaviour {

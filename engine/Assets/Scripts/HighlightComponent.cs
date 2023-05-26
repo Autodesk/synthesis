@@ -31,7 +31,7 @@ public class HighlightComponent : MonoBehaviour {
             _renderers[i].material = _material;
         }
         
-        Debug.Log($"{transform.name}: Enabled");
+        // Debug.Log($"{transform.name}: Enabled");
     }
 
     public void OnDisable() {
@@ -39,6 +39,6 @@ public class HighlightComponent : MonoBehaviour {
             _renderers[i].material = _originalMaterials[i];
         }
         
-        Debug.Log($"{transform.name}: Disabled");
+        // Debug.Log($"{transform.name}: Disabled");
     }
 }
