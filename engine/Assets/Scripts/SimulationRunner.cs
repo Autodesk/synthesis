@@ -85,11 +85,6 @@ namespace Synthesis.Runtime {
                 GameObject.Instantiate(Resources.Load("Misc/Tree"));
             }
 
-            GraphicsSettings.allConfiguredRenderPipelines.ForEach(x => Debug.Log(x.name));
-
-            var pipeline = GraphicsSettings.currentRenderPipeline;
-            Debug.Log($"Current: {pipeline.name}");
-
             QualitySettings.SetQualityLevel(PreferenceManager.PreferenceManager.GetPreference<int>("Quality Settings"), true);
         }
 
