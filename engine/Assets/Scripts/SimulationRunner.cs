@@ -85,7 +85,8 @@ namespace Synthesis.Runtime {
                 GameObject.Instantiate(Resources.Load("Misc/Tree"));
             }
 
-            QualitySettings.SetQualityLevel(PreferenceManager.PreferenceManager.GetPreference<int>("Quality Settings"), true);
+            SettingsModal.LoadSettings();
+            SettingsModal.ApplySettings();
         }
 
         private void TestColor(Color c) {
