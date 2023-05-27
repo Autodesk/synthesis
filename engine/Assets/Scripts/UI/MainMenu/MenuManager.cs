@@ -7,22 +7,22 @@ using Debug = UnityEngine.Debug;
 
 namespace Synthesis.UI {
     public class MenuManager : MonoBehaviour {
-        private void Start()
-        {
+        
+        private void Start() {
             SettingsModal.LoadSettings();
+            SettingsModal.ApplySettings();
         }
+        
         public void ButtonPrint(string s) {
             Debug.Log("Button Pressed: " + s);
             DynamicUIManager.CreateModal<TestModal>();
         }
 
-        public void OpenSettingsPanel()
-        {
+        public void OpenSettingsPanel() {
             DynamicUIManager.CreateModal<SettingsModal>();
         }
 
-        public void Singleplayer()
-        {
+        public void Singleplayer() {
             DynamicUIManager.CreateModal<ChooseModeModal>();
         }
 
