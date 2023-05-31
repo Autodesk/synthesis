@@ -313,20 +313,23 @@
      <Reference Include="UnityEditor.UnityConnectModule">
      <HintPath>C:\Program Files\Unity\Hub\Editor\2021.3.9f1\Editor\Data\Managed\UnityEngine\UnityEditor.UnityConnectModule.dll</HintPath>
      </Reference>
-     <Reference Include="System.Runtime.CompilerServices.Unsafe">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Assets\Packages\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+     <Reference Include="Newtonsoft.Json">
+     <HintPath>C:\Users\hunte\git\synthesis\engine\Assets\Packages\Newtonsoft.Json.dll</HintPath>
+     </Reference>
+     <Reference Include="Api">
+     <HintPath>C:\Users\hunte\git\synthesis\engine\Assets\Packages\Api.dll</HintPath>
+     </Reference>
+     <Reference Include="MathNet.Spatial">
+     <HintPath>C:\Users\hunte\git\synthesis\engine\Assets\Packages\MathNet.Spatial.dll</HintPath>
      </Reference>
      <Reference Include="Unity.Burst.Unsafe">
      <HintPath>C:\Users\hunte\git\synthesis\engine\Library\PackageCache\com.unity.burst@1.7.3\Unity.Burst.Unsafe.dll</HintPath>
      </Reference>
-     <Reference Include="Unity.Burst.Cecil.Mdb">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Library\PackageCache\com.unity.burst@1.7.3\Unity.Burst.CodeGen\Unity.Burst.Cecil.Mdb.dll</HintPath>
-     </Reference>
      <Reference Include="MathNet.Numerics">
      <HintPath>C:\Users\hunte\git\synthesis\engine\Assets\Packages\MathNet.Numerics.dll</HintPath>
      </Reference>
-     <Reference Include="Api">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Assets\Packages\Api.dll</HintPath>
+     <Reference Include="Unity.Burst.Cecil.Mdb">
+     <HintPath>C:\Users\hunte\git\synthesis\engine\Library\PackageCache\com.unity.burst@1.7.3\Unity.Burst.CodeGen\Unity.Burst.Cecil.Mdb.dll</HintPath>
      </Reference>
      <Reference Include="Unity.Burst.Cecil.Pdb">
      <HintPath>C:\Users\hunte\git\synthesis\engine\Library\PackageCache\com.unity.burst@1.7.3\Unity.Burst.CodeGen\Unity.Burst.Cecil.Pdb.dll</HintPath>
@@ -334,17 +337,14 @@
      <Reference Include="Unity.Burst.Cecil">
      <HintPath>C:\Users\hunte\git\synthesis\engine\Library\PackageCache\com.unity.burst@1.7.3\Unity.Burst.CodeGen\Unity.Burst.Cecil.dll</HintPath>
      </Reference>
-     <Reference Include="MathNet.Spatial">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Assets\Packages\MathNet.Spatial.dll</HintPath>
-     </Reference>
      <Reference Include="Unity.Burst.Cecil.Rocks">
      <HintPath>C:\Users\hunte\git\synthesis\engine\Library\PackageCache\com.unity.burst@1.7.3\Unity.Burst.CodeGen\Unity.Burst.Cecil.Rocks.dll</HintPath>
      </Reference>
+     <Reference Include="System.Runtime.CompilerServices.Unsafe">
+     <HintPath>C:\Users\hunte\git\synthesis\engine\Assets\Packages\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+     </Reference>
      <Reference Include="Google.Protobuf">
      <HintPath>C:\Users\hunte\git\synthesis\engine\Assets\Packages\Google.Protobuf.dll</HintPath>
-     </Reference>
-     <Reference Include="Newtonsoft.Json">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Assets\Packages\Newtonsoft.Json.dll</HintPath>
      </Reference>
      <Reference Include="Aardvark">
      <HintPath>C:\Users\hunte\git\synthesis\engine\Assets\Packages\Aardvark.dll</HintPath>
