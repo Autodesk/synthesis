@@ -21,14 +21,14 @@ namespace Synthesis {
         internal const string TURN_RIGHT = "Swerve Turn Right";
         internal const string RESET_FIELD_FORWARD = "Swerve Reset Forward";
 
-        private (RotationalDriver azimuth, RotationalDriver drive)[] _moduleDrivers;
+        private (RotationalDriver azimuth, WheelDriver drive)[] _moduleDrivers;
         private RobotSimObject _robot;
 
         private float _turnFavor = 1.5f;
 
         private Vector3 _fieldForward;
 
-        public SwerveDriveBehaviour(RobotSimObject robot, (RotationalDriver azimuth, RotationalDriver drive)[] moduleDrivers) : base(robot.Name) {
+        public SwerveDriveBehaviour(RobotSimObject robot, (RotationalDriver azimuth, WheelDriver drive)[] moduleDrivers) : base(robot.Name) {
             _moduleDrivers = moduleDrivers;
 
             _robot = robot;

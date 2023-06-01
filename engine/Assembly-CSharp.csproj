@@ -353,6 +353,9 @@
      <Reference Include="MathNet.Numerics">
      <HintPath>C:\Users\hunte\work\synthesis\engine\Assets\Packages\MathNet.Numerics.4.15.0\lib\net461\MathNet.Numerics.dll</HintPath>
      </Reference>
+     <Reference Include="System.Drawing.Common">
+     <HintPath>C:\Users\hunte\work\synthesis\engine\Assets\Packages\System.Drawing.Common.7.0.0\lib\net462\System.Drawing.Common.dll</HintPath>
+     </Reference>
      <Reference Include="System.Runtime.CompilerServices.Unsafe">
      <HintPath>C:\Users\hunte\work\synthesis\engine\Assets\Packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
      </Reference>
@@ -373,9 +376,6 @@
      </Reference>
      <Reference Include="Aardvark">
      <HintPath>C:\Users\hunte\work\synthesis\engine\Assets\Packages\Aardvark.dll</HintPath>
-     </Reference>
-     <Reference Include="System.Drawing.Common">
-     <HintPath>C:\Users\hunte\work\synthesis\engine\Assets\Packages\System.Drawing.Common.7.0.0\lib\net462\System.Drawing.Common.dll</HintPath>
      </Reference>
      <Reference Include="mscorlib">
      <HintPath>C:\Program Files\Unity\Hub\Editor\2021.3.9f1\Editor\Data\UnityReferenceAssemblies\unity-4.8-api\mscorlib.dll</HintPath>

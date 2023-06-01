@@ -437,8 +437,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             && (x.Axis - Vector3.Dot(GroundedNode.transform.up, x.Axis) * GroundedNode.transform.up).magnitude < 0.05f
             ).ToList();
 
-        var wheels = SimulationManager.Drivers[base._name].OfType<RotationalDriver>().Where(x => x.IsWheel);
-        (RotationalDriver azimuth, RotationalDriver driver)[] modules = new (RotationalDriver azimuth, RotationalDriver driver)[wheels.Count()];
+        var wheels = SimulationManager.Drivers[base._name].OfType<WheelDriver>();
+        (RotationalDriver azimuth, WheelDriver driver)[] modules = new (RotationalDriver azimuth, WheelDriver driver)[wheels.Count()];
         int i = 0;
         wheels.ForEach(x => {
             RotationalDriver closest = null;
