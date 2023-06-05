@@ -50,5 +50,6 @@ namespace SynthesisAPI.Simulation {
         protected virtual void OnEnable() { }
         protected virtual void OnDisable() { }
         public abstract void Update();
+        public virtual void FixedUpdate() { }
     }
 }

@@ -74,6 +74,8 @@ namespace Synthesis {
             }
         }
 
+        public bool HasContacts => _customWheel.HasContacts;
+
         public RotationalControlMode ControlMode {
             get {
                 switch (State.CurrentSignals[_inputs[1]].Value.StringValue) {
@@ -179,6 +181,10 @@ namespace Synthesis {
             // _jointAngle += (_jointA.velocity * Time.deltaTime) / 360f;
             // State.CurrentSignals[_outputs[0]].Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(_jointAngle);
             // State.CurrentSignals[_outputs[1]].Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(_jointA.angle);
+        }
+        
+        public void WheelsPhysicsUpdate(float mod) {
+            _customWheel.GetFrictionForces(mod);
         }
 
         private void VelocityControl() {

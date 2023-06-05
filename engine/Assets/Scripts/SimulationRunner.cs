@@ -127,6 +127,10 @@ namespace Synthesis.Runtime {
             // }
         }
 
+        private void FixedUpdate() {
+            SimulationManager.FixedUpdate();
+        }
+
         void OnDestroy() {
             Synthesis.PreferenceManager.PreferenceManager.Save();
         }

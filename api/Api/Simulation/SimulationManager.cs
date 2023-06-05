@@ -19,6 +19,9 @@ namespace SynthesisAPI.Simulation {
         public delegate void UpdateDelegate();
         public static event UpdateDelegate OnDriverUpdate;
         public static event UpdateDelegate OnBehaviourUpdate;
+        public static event UpdateDelegate OnDriverFixedUpdate;
+        public static event UpdateDelegate OnBehaviourFixedUpdate;
+
 
         // TODO: Switch to using guids cuz all the signals have the same name
         public static Dictionary<string, List<Driver>>       Drivers    = new Dictionary<string, List<Driver>>();
@@ -34,6 +37,19 @@ namespace SynthesisAPI.Simulation {
             });
             if (OnBehaviourUpdate != null)
                 OnBehaviourUpdate();
+            // _drivers.ForEach(x => x.Update());
+        }
+
+        public static void FixedUpdate() {
+            Drivers.ForEach(x => x.Value.ForEach(y => y.FixedUpdate()));
+            if (OnDriverFixedUpdate != null)
+                OnDriverFixedUpdate();
+            Behaviours.ForEach(x => {
+                if (_simObjects[x.Key].BehavioursEnabled)
+                    x.Value.Where(y => y.Enabled).ForEach(y => y.FixedUpdate());
+            });
+            if (OnBehaviourFixedUpdate != null)
+                OnBehaviourFixedUpdate();
             // _drivers.ForEach(x => x.Update());
         }
 

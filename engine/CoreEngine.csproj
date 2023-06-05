@@ -196,6 +196,7 @@
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\SelectableAdapter.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\CameraAdapter.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\AddPanel\AddItem.cs" />
+     <Compile Include="Assets\Scripts\Behaviors\WheelPhysicsBehaviour.cs" />
      <None Include="Assets\Scripts\CoreEngine.asmdef" />
      <None Include="Assets\Scripts\Tween\Readme.txt" />
      <Reference Include="UnityEngine">

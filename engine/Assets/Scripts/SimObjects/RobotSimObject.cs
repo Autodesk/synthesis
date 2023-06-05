@@ -371,7 +371,9 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         
         var wheels = SimulationManager.Drivers[base.Name].OfType<WheelDriver>();
         wheels.ForEach(x => x.ImpulseMax = (GroundedNode.GetComponent<Rigidbody>().mass * Physics.gravity.magnitude * (1f / 120f)) / wheels.Count());
-        
+        // See WheelPhysicsBehaviour description for an explanation.
+        SimulationManager.AddBehaviour(this.Name, new WheelPhysicsBehaviour(this.Name, this));
+
         ConfigureArcadeDrivetrain();
         // ConfigureSwerveDrivetrain();
 		ConfigureArmBehaviours();

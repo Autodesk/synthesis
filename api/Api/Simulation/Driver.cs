@@ -37,6 +37,8 @@ namespace SynthesisAPI.Simulation {
 
         public abstract void Update();
 
+        public virtual void FixedUpdate() { }
+
         public override int GetHashCode()
             => _inputs.GetHashCode() * 374124789
                + _outputs.GetHashCode() * 875920184

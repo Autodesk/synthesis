@@ -54,6 +54,8 @@ public class CustomWheel : MonoBehaviour {
     private Vector3 _lastImpulseTotal;
     // private bool _lastIsRollingStatic;
     // private bool _lastIsSlidingStatic;
+
+    public bool HasContacts => _pairings.Count > 0;
     
     public void OnDrawGizmos() {
         Gizmos.color = Color.red;
@@ -80,17 +82,17 @@ public class CustomWheel : MonoBehaviour {
         // Gizmos.DrawSphere(Anchor + offset * 4.5f, 0.05f);
     }
 
-    void FixedUpdate() {
-        GetFrictionForces();
-    }
+    // void FixedUpdate() {
+    //     GetFrictionForces();
+    // }
 
-    public void GetFrictionForces() {
+    public void GetFrictionForces(float mod) {
         if (_pairings.Count > 0) {
             CalculateFriction();
 
             _lastImpulseTotal = (_staticImpulseVecAccum + _rollingImpulseVecAccum);
 
-            Rb.velocity += _lastImpulseTotal;// / Rb.mass;
+            Rb.velocity += _lastImpulseTotal * mod;// / Rb.mass;
 
             _staticImpulseVecAccum = new Vector3();
             _rollingImpulseVecAccum = new Vector3();
