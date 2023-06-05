@@ -21,8 +21,8 @@ namespace Synthesis {
 		internal const string LEFT = "Arcade Left";
 		internal const string RIGHT = "Arcade Right";
 
-		private List<string> _leftSignals;
-		private List<string> _rightSignals;
+		private List<WheelDriver> _leftWheels;
+		private List<WheelDriver> _rightWheels;
 
 		private double _leftSpeed;
 		private double _rightSpeed;
@@ -42,14 +42,14 @@ namespace Synthesis {
 
 		private RobotSimObject _robot;
 
-		public ArcadeDriveBehaviour(string simObjectId, List<string> leftSignals, List<string> rightSignals, string inputName = "") : base(
+		public ArcadeDriveBehaviour(string simObjectId, List<WheelDriver> leftWheels, List<WheelDriver> rightWheels, string inputName = "") : base(
 			simObjectId) {
 			if (inputName == "")
 				inputName = simObjectId;
 
 			SimObjectId = simObjectId;
-			_leftSignals = leftSignals;
-			_rightSignals = rightSignals;
+			_leftWheels = leftWheels;
+			_rightWheels = rightWheels;
 
 			InitInputs(GetInputs());
 
@@ -104,11 +104,11 @@ namespace Synthesis {
 			_zRot = Math.Abs(_zRot) > DEADBAND ? _zRot : 0;
 
 			(_leftSpeed, _rightSpeed) = SolveSpeed(_xSpeed, _zRot, _squareInputs);
-			foreach (var sig in _leftSignals) {
-				SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignals[sig].Value = Value.ForNumber(_leftSpeed*speedMult);
+			foreach (var wheel in _leftWheels) {
+				wheel.MainInput = _leftSpeed * speedMult;
 			}
-			foreach (var sig in _rightSignals) {
-				SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignals[sig].Value = Value.ForNumber(_rightSpeed*speedMult);
+			foreach (var wheel in _rightWheels) {
+				wheel.MainInput = _rightSpeed * speedMult;
 			}
 		}
 

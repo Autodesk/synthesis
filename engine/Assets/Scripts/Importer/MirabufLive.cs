@@ -134,7 +134,7 @@ namespace Synthesis.Import {
 					var rb = groupObject.AddComponent<Rigidbody>();
 					if (isStatic)
 						rb.isKinematic = true;
-					rb.mass = (float)group.CollectivePhysicalProperties.Mass;
+					rb.mass = Mathf.Clamp((float)group.CollectivePhysicalProperties.Mass, 0.001f, 100f);
 					rb.centerOfMass = group.CollectivePhysicalProperties.Com; // I actually don't need to flip this
 				}
 

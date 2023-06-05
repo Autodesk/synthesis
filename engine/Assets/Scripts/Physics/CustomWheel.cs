@@ -18,6 +18,8 @@ public class CustomWheel : MonoBehaviour {
         }
     }
 
+    public float ImpulseMax = 100f;
+
     public Vector3 LocalAxis;
     private Vector3 Axis => Rb.transform.localToWorldMatrix.MultiplyVector(LocalAxis);
 
@@ -88,7 +90,7 @@ public class CustomWheel : MonoBehaviour {
 
             _lastImpulseTotal = (_staticImpulseVecAccum + _rollingImpulseVecAccum);
 
-            Rb.velocity += _lastImpulseTotal;
+            Rb.velocity += _lastImpulseTotal;// / Rb.mass;
 
             _staticImpulseVecAccum = new Vector3();
             _rollingImpulseVecAccum = new Vector3();
@@ -109,6 +111,8 @@ public class CustomWheel : MonoBehaviour {
         _pairings.ForEach(x => { impulse += x.impulse; velocity += x.velocity; });
         velocity /= _pairings.Count; // The velocities are different and I don't know why
 
+        impulse = ClampMag(impulse, 0, ImpulseMax);
+        
         CalculateSlidingFriction(impulse, velocity);
         CalculateRollingFriction(impulse, velocity);
 

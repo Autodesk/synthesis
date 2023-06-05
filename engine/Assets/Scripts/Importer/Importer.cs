@@ -230,6 +230,7 @@ namespace Synthesis.Import
 								new string[] { instance.SignalReference, $"{instance.SignalReference}_mode" },
 								new string[] { $"{instance.SignalReference}_encoder", $"{instance.SignalReference}_absolute" },
 								simObject,
+								instance,
 								customWheel,
 								wheelA.anchor,
 								axisWut,

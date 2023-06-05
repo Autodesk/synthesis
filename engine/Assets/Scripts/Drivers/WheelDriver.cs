@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Google.Protobuf.WellKnownTypes;
+using Mirabuf.Joint;
 using Synthesis.PreferenceManager;
 using SynthesisAPI.Simulation;
 using UnityEngine;
@@ -13,11 +14,21 @@ namespace Synthesis {
 
         private CustomWheel _customWheel;
 
+        private JointInstance _jointInstance;
+        public JointInstance JointInstance => _jointInstance;
+
         private Vector3 _localAnchor = Vector3.zero;
         public Vector3 Anchor {
             get => _customWheel.Rb.transform.localToWorldMatrix.MultiplyPoint3x4(_localAnchor);
             set {
                 _localAnchor = _customWheel.Rb.transform.worldToLocalMatrix.MultiplyPoint3x4(value);
+                _customWheel.LocalAnchor = _localAnchor;
+            }
+        }
+        public Vector3 LocalAnchor {
+            get => _localAnchor;
+            set {
+                _localAnchor = value;
                 _customWheel.LocalAnchor = _localAnchor;
             }
         }
@@ -30,6 +41,13 @@ namespace Synthesis {
                 _customWheel.LocalAxis = _localAxis;
             }
         }
+        public Vector3 LocalAxis {
+            get => _localAxis;
+            set {
+                _localAxis = value;
+                _customWheel.LocalAxis = _localAxis;
+            }
+        }
 
         private float _radius = 0.05f;
         public float Radius {
@@ -38,6 +56,11 @@ namespace Synthesis {
                 _radius = value;
                 _customWheel.Radius = _radius;
             }
+        }
+
+        public float ImpulseMax {
+            get => _customWheel.ImpulseMax;
+            set => _customWheel.ImpulseMax = value;
         }
 
         public enum RotationalControlMode {
@@ -92,10 +115,11 @@ namespace Synthesis {
             get => _useMotor;
         }
 
-        public WheelDriver(string name, string[] inputs, string[] outputs, SimObject simObject,
+        public WheelDriver(string name, string[] inputs, string[] outputs, SimObject simObject, JointInstance jointInstance,
             CustomWheel customWheel, Vector3 anchor, Vector3 axis, float radius, Mirabuf.Motor.Motor? motor = null)
             : base(name, inputs, outputs, simObject) {
 
+            _jointInstance = jointInstance;
             _customWheel = customWheel;
             
             Anchor = _customWheel.Rb.transform.localToWorldMatrix.MultiplyPoint3x4(anchor);
@@ -167,7 +191,6 @@ namespace Synthesis {
                 : 0.0f);
 
             _customWheel.RotationSpeed = Mathf.PI * 8f * val;
-            Debug.Log(_customWheel.RotationSpeed);
         }
 
         #region Rotational Inertia stuff that isn't used
