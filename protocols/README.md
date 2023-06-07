@@ -6,12 +6,12 @@ The **mirabuf** folder is a pointer to a submodule which needs to be pulled down
 
 To pull down the submodule:
 ```
-git submodule update --init --recursive
+$ git submodule update --init --recursive
 ```
 
 to sync with new changes:
 ```
-git submodule sync --recursive
+$ git submodule sync --recursive
 ```
 
 ## Generate Protobuf Files
