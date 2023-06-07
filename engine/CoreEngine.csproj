@@ -46,6 +46,7 @@
      <Compile Include="Assets\Scripts\UI\Dynamic\Panels\Information\ScoreboardPanel.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\TransformAdapter.cs" />
      <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyItem.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Panels\RobotSwitchPanel.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Api.cs" />
      <Compile Include="Assets\Scripts\Gizmos\GizmoManager.cs" />
      <Compile Include="Assets\Scripts\Physics\CustomWheel.cs" />
@@ -62,12 +63,12 @@
      <Compile Include="Assets\Scripts\MouseTracker.cs" />
      <Compile Include="Assets\Scripts\UI\ContextMenu\ContextItem.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\ToastModal.cs" />
-     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Configuring\ChangeDrivetrainModal.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\DynamicUIManager.cs" />
      <Compile Include="Assets\Scripts\UI\ToastLogger\ToastLogger.cs" />
      <Compile Include="Assets\Scripts\Scoring\Shooting.cs" />
      <Compile Include="Assets\Scripts\AutoUpdater.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Configuring\ChooseModeModal.cs" />
+     <Compile Include="Assets\Scripts\HighlightComponent.cs" />
      <Compile Include="Assets\Scripts\Behaviors\ArcadeDriveBehaviour.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Configuring\ChangeInputsModal.cs" />
      <Compile Include="Assets\Scripts\Camera\ICameraMode.cs" />
@@ -99,7 +100,6 @@
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Input\InputSelection.cs" />
      <Compile Include="Assets\Scripts\Camera\CameraController.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\LoadingScreenModal.cs" />
-     <Compile Include="Assets\Scripts\Drivers\WheelDriver.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\MainHUD.cs" />
      <Compile Include="Assets\Scripts\Attributes\ControllableInputAttribute.cs" />
      <Compile Include="Assets\Scripts\Physics\PhysicsManager.cs" />
@@ -162,7 +162,6 @@
      <Compile Include="Assets\Scripts\UI\Dynamic\Panels\Configuring\ConfigureShotTrajectoryPanel.cs" />
      <Compile Include="Assets\Scripts\Utilities\IOHandler.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\JointsAdapter.cs" />
-     <Compile Include="Assets\Scripts\Behaviors\SwerveDriveBehaviour.cs" />
      <Compile Include="Assets\Scripts\SimulationRunner.cs" />
      <Compile Include="Assets\Scripts\Utilities\SynthesisUtil.cs" />
      <Compile Include="Assets\Scripts\Test\ConfigurableJointTest.cs" />
@@ -179,8 +178,6 @@
      <Compile Include="Assets\Scripts\AnalyticsManager.cs" />
      <Compile Include="Assets\Scripts\Behaviors\GeneralSliderBehaviour.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\DownloadAssetModal.cs" />
-     <Compile Include="Assets\Scripts\Behaviors\WheelPhysicsBehaviour.cs" />
-     <Compile Include="Assets\Scripts\Utilities\Highlighter.cs" />
      <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyRootItem.cs" />
      <Compile Include="Assets\Scripts\SimObjects\GamepieceSimObject.cs" />
      <Compile Include="Assets\Scripts\UI\ToastLogger\ToastConfig.cs" />

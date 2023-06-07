@@ -15,8 +15,9 @@ public class CameraController : MonoBehaviour
             {
                 _cameraMode.End(this);
             }
+            var previous = _cameraMode;
             _cameraMode = value;
-            _cameraMode.Start(this);
+            _cameraMode.Start(this, previous);
         }
     }
     
@@ -28,7 +29,6 @@ public class CameraController : MonoBehaviour
         CameraModes.Add("Freecam", new FreeCameraMode());
         CameraModes.Add("Overview", new OverviewCameraMode());
     }
-
 
     public static bool isOverGizmo = false;
     
@@ -57,8 +57,6 @@ public class CameraController : MonoBehaviour
         PitchSensitivity = TryGetPref<float>(PITCH_SENSITIVITY_PREF, PITCH_SENSITIVITY_DEFAULT);
         YawSensitivity = TryGetPref<float>(YAW_SENSITIVITY_PREF, YAW_SENSITIVITY_DEFAULT);
         ZoomSensitivity = TryGetPref<float>(ZOOM_SENSITIVITY_PREF, ZOOM_SENSITIVITY_DEFAULT);
-
-        CameraMode.Start(this);
     }
 
     public T TryGetPref<T>(string key, T defaultVal) {

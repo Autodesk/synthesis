@@ -19,32 +19,43 @@ using Vector3 = UnityEngine.Vector3;
 using Synthesis.Gizmo;
 using Synthesis.PreferenceManager;
 using Synthesis.Runtime;
+using Synthesis.UI;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.EventBus;
 using Synthesis.WS.Translation;
 using static Synthesis.WS.Translation.RioTranslationLayer;
+using Logger = SynthesisAPI.Utilities.Logger;
 
 #nullable enable
 
 public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
+
+    public const int MAX_ROBOTS = 6;
 
     public const string INTAKE_GAMEPIECES = "input/intake";
 
     private static string _currentlyPossessedRobot = string.Empty;
     public static string CurrentlyPossessedRobot {
         get => _currentlyPossessedRobot;
-        private set {
+        set {
             if (value != _currentlyPossessedRobot) {
                 var old = _currentlyPossessedRobot;
+                if (_currentlyPossessedRobot != string.Empty)
+                    GetCurrentlyPossessedRobot().Unpossess();
                 _currentlyPossessedRobot = value;
+                if (_currentlyPossessedRobot != string.Empty)
+                    GetCurrentlyPossessedRobot().Possess();
                 
-                EventBus.Push(new NewRobotEvent { NewBot = value, OldBot = old });
+                EventBus.Push(new PossessionChangeEvent { NewBot = value, OldBot = old });
             }
         }
     }
     public static RobotSimObject GetCurrentlyPossessedRobot()
-        => CurrentlyPossessedRobot == string.Empty ? null : SimulationManager._simObjects[CurrentlyPossessedRobot] as RobotSimObject;
+        => _currentlyPossessedRobot == string.Empty ? null : _spawnedRobots[_currentlyPossessedRobot];
+
+    private static Dictionary<string, RobotSimObject> _spawnedRobots = new Dictionary<string, RobotSimObject>(); // Open
+    public static Dictionary<string, RobotSimObject>.ValueCollection SpawnedRobots => _spawnedRobots.Values;
 
     public static int ControllableJointCounter = 0;
 
@@ -96,6 +107,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     private Dictionary<string, (UnityEngine.Joint a, UnityEngine.Joint b)> _jointMap;
     private List<Rigidbody> _allRigidbodies;
+    public IReadOnlyCollection<Rigidbody> AllRigidbodies => _allRigidbodies.AsReadOnly();
 
     // SHOOTING/PICKUP
     private GameObject _intakeTrigger;
@@ -152,6 +164,13 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     public RobotSimObject(string name, ControllableState state, MirabufLive miraLive,
             GameObject groundedNode, Dictionary<string, (Joint a, Joint b)> jointMap)
             : base(name, state) {
+        
+        if (_spawnedRobots.ContainsKey(name)) {
+            throw new Exception("Robot with that name already loaded");
+        }
+        _spawnedRobots.Add(name, this);
+        EventBus.Push(new RobotSpawnEvent { Bot = name });
+
         MiraLive = miraLive;
         GroundedNode = groundedNode;
         _jointMap = jointMap;
@@ -189,6 +208,12 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         // _simulationTranslationLayer = new RioTranslationLayer();
 
         cam = Camera.main.GetComponent<CameraController>();
+
+        _allRigidbodies.ForEach(x => {
+            var rc = x.gameObject.AddComponent<HighlightComponent>();
+            rc.Color = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_HOVER);
+            rc.enabled = false;
+        });
     }
 
     public static void Setup() {
@@ -211,10 +236,17 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         return defaultInput;
     }
 
-    public void Possess() {
+    private void Possess() {
         CurrentlyPossessedRobot = this.Name;
+        BehavioursEnabled = true;
         OrbitCameraMode.FocusPoint =
             () => GroundedNode != null && GroundedBounds != null ? GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center) : Vector3.zero;
+    }
+
+    private void Unpossess() {
+        BehavioursEnabled = false;
+        Vector3 currentPoint = OrbitCameraMode.FocusPoint();
+        OrbitCameraMode.FocusPoint = () => currentPoint;
     }
 
     public override void Destroy() {
@@ -530,6 +562,16 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         // GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, mira.MainObject.transform, mira.MainObject.transform.position);
     }
 
+    public static bool RemoveRobot(string robot) {
+        if (!_spawnedRobots.ContainsKey(robot))
+            return false;
+
+        if (robot == CurrentlyPossessedRobot)
+            CurrentlyPossessedRobot = string.Empty;
+        _spawnedRobots.Remove(robot);
+        return SimulationManager.RemoveSimObject(robot);
+    }
+
     private Dictionary<Rigidbody, (bool isKine, Vector3 vel, Vector3 angVel)> _preFreezeStates = new Dictionary<Rigidbody, (bool isKine, Vector3 vel, Vector3 angVel)>();
     private bool _isFrozen = false;
     public bool isFrozen()
@@ -645,8 +687,16 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         public float[] RelativeRotation;
     }
 
-    public class NewRobotEvent : IEvent {
+    public class PossessionChangeEvent : IEvent {
         public string NewBot;
         public string OldBot;
+    }
+
+    public class RobotSpawnEvent : IEvent {
+        public string Bot;
+    }
+
+    public class RobotRemoveEvent : IEvent {
+        public string Bot;
     }
 }

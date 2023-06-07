@@ -99,6 +99,7 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _LineSize: 0.05
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
@@ -109,10 +110,11 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
+    - _UnitLength: 1
     - _ZWrite: 1
     m_Colors:
     - Color_2717fd3cff164a8f917bd2c1ff16f3e0: {r: 1, g: 1, b: 1, a: 1}
-    - Color_494c73158fc5450082efb80fcbeadd6a: {r: 0, g: 0.38045335, b: 1, a: 0}
+    - Color_494c73158fc5450082efb80fcbeadd6a: {r: 0.25787643, g: 0.5619638, b: 0.8962264, a: 0}
     - FOCUS_POINT: {r: 0, g: 0, b: 0, a: 0}
     - Vector2_afc8cb7396b949b18e7f1b231b05f5dd: {r: 1000, g: 1000, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}

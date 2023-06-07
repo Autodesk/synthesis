@@ -35,7 +35,6 @@ public static class AnalyticsManager {
             _useAnalytics = value;
             PreferenceManager.Load();
             PreferenceManager.SetPreference<bool>(USE_ANALYTICS_PREF, _useAnalytics);
-            Debug.Log(_useAnalytics);
             PreferenceManager.Save();
         }
     }

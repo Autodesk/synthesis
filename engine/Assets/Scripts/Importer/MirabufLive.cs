@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirabuf;
@@ -10,7 +11,6 @@ using System.Threading.Tasks;
 using SynthesisAPI.Utilities;
 using Google.Protobuf;
 using Mirabuf.Material;
-using Synthesis.PreferenceManager;
 using Logger = SynthesisAPI.Utilities.Logger;
 using MPhysicalProperties = Mirabuf.PhysicalProperties;
 using Vector3 = Mirabuf.Vector3;
@@ -18,6 +18,30 @@ using UVector3 = UnityEngine.Vector3;
 
 namespace Synthesis.Import {
     public class MirabufLive {
+	    
+	    #region Framework
+	    
+	    public const UInt32 CURRENT_MIRA_EXPORTER_VERSION = 5;
+	    public const UInt32 OLDEST_MIRA_EXPORTER_VERSION = 4;
+
+	    public const int FIELD_LAYER = 7;
+	    public const int DYNAMIC_1_LAYER = 8;
+	    public const int DYNAMIC_2_LAYER = 9;
+	    public const int DYNAMIC_3_LAYER = 10;
+	    public const int DYNAMIC_4_LAYER = 11;
+	    public const int DYNAMIC_5_LAYER = 12;
+	    public const int DYNAMIC_6_LAYER = 13;
+
+	    private static Queue<int> dynamicLayers = new Queue<int>(new int[] {
+		    DYNAMIC_1_LAYER,
+		    DYNAMIC_2_LAYER,
+		    DYNAMIC_3_LAYER,
+		    DYNAMIC_4_LAYER,
+		    DYNAMIC_5_LAYER,
+		    DYNAMIC_6_LAYER
+	    });
+	    
+	    #endregion
 
         private string _path;
         public Assembly MiraAssembly;
@@ -29,26 +53,21 @@ namespace Synthesis.Import {
 
         private MirabufFileState _state = MirabufFileState.Valid;
 
-        private Task<RigidbodyDefinitions> _findDefinitionsTask;
-        private RigidbodyDefinitions? _rigidbodyDefinitions;
+        private Task<RigidbodyDefinitions> _findDefinitions = null;
         public RigidbodyDefinitions Definitions {
             get {
-                if (!_rigidbodyDefinitions.HasValue) {
-	                _findDefinitionsTask.Wait();
-	                _rigidbodyDefinitions = _findDefinitionsTask.Result;
+                if (_findDefinitions.Status < TaskStatus.RanToCompletion) {
+                    _findDefinitions.Wait();
                 }
-                
-                return _rigidbodyDefinitions.Value;
+                return _findDefinitions.Result;
             }
         }
 
         public MirabufLive(string path) {
             _path = path;
             Load();
-            
-            // if (SimulationPreferences.)
-            
-            _findDefinitionsTask = Task<RigidbodyDefinitions>.Factory.StartNew(() => FindRigidbodyDefinitions(this));
+
+            _findDefinitions = Task<RigidbodyDefinitions>.Factory.StartNew(() => FindRigidbodyDefinitions(this));
         }
         
         #region File Management
@@ -93,6 +112,14 @@ namespace Synthesis.Import {
 
 	        Dictionary<string, GameObject> groupObjects = new Dictionary<string, GameObject>();
 
+	        int dynamicLayer = 0;
+	        if (physics) {
+		        if (dynamicLayers.Count == 0)
+			        throw new Exception("No more dynamic layers");
+		        dynamicLayer = dynamicLayers.Dequeue();
+		        assemblyContainer.AddComponent<DynamicLayerReserver>();
+	        }
+
 	        foreach (var group in Definitions.Definitions.Values) {
 
 				GameObject groupObject = new GameObject(group.Name);
@@ -102,8 +129,8 @@ namespace Synthesis.Import {
 
 				#region Parts
 
-				foreach (var partGuid in group.PartGuids.Keys) {
-					var partInstance = MiraAssembly.Data.Parts.PartInstances[partGuid];
+				foreach (var part in group.Parts) {
+					var partInstance = part.Value;
 					var partDefinition = MiraAssembly.Data.Parts.PartDefinitions[partInstance.PartDefinitionReference];
 					GameObject partObject = new GameObject(partInstance.Info.Name);
 
@@ -124,17 +151,18 @@ namespace Synthesis.Import {
 
 				#endregion
 
-				if (!MiraAssembly.Dynamic && !isGamepiece)
-					groupObject.transform.GetComponentsInChildren<UnityEngine.Transform>().ForEach(x => x.gameObject.layer = Importer.FIELD_LAYER);
-				else if (MiraAssembly.Dynamic)
-					groupObject.transform.GetComponentsInChildren<UnityEngine.Transform>().ForEach(x => x.gameObject.layer = Importer.DYNAMIC_1_LAYER);
+				if (!MiraAssembly.Dynamic && !isGamepiece) {
+					groupObject.transform.GetComponentsInChildren<UnityEngine.Transform>().ForEach(x => x.gameObject.layer = FIELD_LAYER);
+				} else if (MiraAssembly.Dynamic && physics) {
+					groupObject.transform.GetComponentsInChildren<UnityEngine.Transform>().ForEach(x => x.gameObject.layer = dynamicLayer);
+				}
 
 				if (physics) {
 					// Combine all physical data for grouping
 					var rb = groupObject.AddComponent<Rigidbody>();
 					if (isStatic)
 						rb.isKinematic = true;
-					rb.mass = Mathf.Clamp((float)group.CollectivePhysicalProperties.Mass, 0.001f, 100f);
+					rb.mass = (float)group.CollectivePhysicalProperties.Mass;
 					rb.centerOfMass = group.CollectivePhysicalProperties.Com; // I actually don't need to flip this
 				}
 
@@ -239,7 +267,7 @@ namespace Synthesis.Import {
 
 			// I'm using lambda functions so I can reuse repeated logic while taking advantage of variables in the current scope
 			Action<RigidbodyDefinition, RigidbodyDefinition> MergeDefinitions = (keep, delete) => {
-				delete.PartGuids.Keys.ForEach(partGuid => keep.PartGuids.Add(partGuid, true));
+				delete.Parts.ForEach((k, v) => keep.Parts.Add(k, v));
 				for (int i = 0; i < partMap.Keys.Count; i++) {
 					if (partMap[partMap.Keys.ElementAt(i)].Equals(delete.GUID))
 						partMap[partMap.Keys.ElementAt(i)] = keep.GUID;
@@ -248,9 +276,9 @@ namespace Synthesis.Import {
 			};
 			Action<string, string, string> MoveToDef = (part, from, to) => {
 				if (from != string.Empty)
-					defs[from].PartGuids.Remove(part);
+					defs[from].Parts.Remove(part);
 				var _a = assembly.Data.Parts.PartInstances[part];
-				defs[to].PartGuids.Add(part, false);
+				defs[to].Parts.Add(part, _a);
 				partMap[part] = to;
 			};
 
@@ -274,14 +302,14 @@ namespace Synthesis.Import {
 				mainDef = new RigidbodyDefinition {
 					GUID = $"{counter}",
 					Name = $"{jInst.Value.Info.Name}_Rigidgroup{counter}",
-					PartGuids = new Dictionary<string, bool>()
+					Parts = new Dictionary<string, PartInstance>()
 				};
 				defs[mainDef.GUID] = mainDef;
 
 				stubDef = new RigidbodyDefinition {
 						GUID = $"{counter}-2",
 						Name = $"{jInst.Value.Info.Name}_Rigidgroup{counter}-2",
-						PartGuids = new Dictionary<string, bool>()
+						Parts = new Dictionary<string, PartInstance>()
 				};
 				defs[stubDef.GUID] = stubDef;
 
@@ -330,7 +358,8 @@ namespace Synthesis.Import {
 						toCheck.ForEach(y => {
 							partMap.TryGetValue(y.Value, out string existingDef);
 							if (existingDef == null) {
-								defs[definition].PartGuids.Add(y.Value, false);
+								var _partInst = assembly.Data.Parts.PartInstances[y.Value];
+								defs[definition].Parts.Add(y.Value, _partInst);
 								partMap[y.Value] = definition;
 								tmp.AddRange(y.Children.Where(z => z != null && z.Value != null)); // Just to make sure
 							} else if (existingDef.Equals(originalDef)) {
@@ -356,7 +385,7 @@ namespace Synthesis.Import {
 			RigidbodyDefinition groundDef = new RigidbodyDefinition {
 				Name = "grounded",
 				GUID = "grounded",
-				PartGuids = new Dictionary<string, bool>()
+				Parts = new Dictionary<string, PartInstance>()
 			};
 			defs.Add(groundDef.GUID, groundDef);
 			groundJoint.joint.Parts?.Nodes?.AllTreeElements().Where(x => x.Value != null && x.Value != string.Empty).ForEach(x => {
@@ -382,7 +411,7 @@ namespace Synthesis.Import {
 				RigidbodyDefinition rigidDef = new RigidbodyDefinition {
 					Name = $"{x.Name}",
 					GUID = $"{counter}",
-					PartGuids = new Dictionary<string, bool>()
+					Parts = new Dictionary<string, PartInstance>()
 				};
 				defs.Add(rigidDef.GUID, rigidDef);
 				x.Occurrences.ForEach(y => {
@@ -408,7 +437,7 @@ namespace Synthesis.Import {
 			RigidbodyDefinition newGrounded = default;
 			// Clear excess rigidbodies
 			for (int i = 0; i < defs.Keys.Count; i++) {
-				if (defs[defs.Keys.ElementAt(i)].PartGuids.Count == 0) {
+				if (defs[defs.Keys.ElementAt(i)].Parts.Count == 0) {
 					if (defs.Keys.ElementAt(i).Equals("grounded")) {
 						var groundedPartGuid = assembly.Data.Joints.JointInstances.Find(x => x.Key.Equals("grounded")).Value.Parts.Nodes[0].Value;
 						newGrounded = defs[partMap[groundedPartGuid]];
@@ -441,7 +470,7 @@ namespace Synthesis.Import {
 							RigidbodyDefinition rigidDef = new RigidbodyDefinition {
 								Name = $"gamepiece_{gamepieceCounter}",
 								GUID = $"{counter}",
-								PartGuids = new Dictionary<string, bool>()
+								Parts = new Dictionary<string, PartInstance>()
 							};
 							defs.Add(rigidDef.GUID, rigidDef);
 							GetAllPartsInBranch(y.Key, paths, assembly.DesignHierarchy.Nodes.ElementAt(0)).ForEach(z => MoveToDef(z, partMap[z], rigidDef.GUID));
@@ -475,16 +504,16 @@ namespace Synthesis.Import {
             foreach (var group in defs.Values.Select(x => x.GUID)) {
 	            var collectivePhysData = new List<(Matrix4x4, Mirabuf.PhysicalProperties)>();
 	            
-	            foreach (var partGuid in defs[group].PartGuids.Keys) {
+	            foreach (var part in defs[group].Parts) {
 
-		            var part = assembly.Data.Parts.PartInstances[partGuid];
-
-		            if (!partDuplicateChecker.Add(part.Info.GUID)) {
+		            if (!partDuplicateChecker.Add(part.Value.Info.GUID)) {
 			            live._state = MirabufFileState.DuplicateParts;
 			            continue;
 		            }
-		            var partDefinition = assembly.Data.Parts.PartDefinitions[part.PartDefinitionReference];
-		            collectivePhysData.Add((part.GlobalTransform.UnityMatrix, partDefinition.PhysicalData));
+		            
+		            var partInstance = part.Value;
+		            var partDefinition = assembly.Data.Parts.PartDefinitions[partInstance.PartDefinitionReference];
+		            collectivePhysData.Add((partInstance.GlobalTransform.UnityMatrix, partDefinition.PhysicalData));
 	            }
 	            
 	            var combPhysProps = CombinePhysicalProperties(collectivePhysData);
@@ -641,13 +670,19 @@ namespace Synthesis.Import {
 			public bool                             IsGamepiece;
 			public bool                             IsStatic;
 			public MPhysicalProperties              CollectivePhysicalProperties;
-			public Dictionary<string, bool>         PartGuids; // Using a dictionary because hashset uses open addressing and I want chaining
+			public Dictionary<string, PartInstance> Parts; // Using a dictionary to make Key searches faster
 		}
 
         public struct RigidbodyDefinitions {
 	        public float                                   Mass;
             public Dictionary<string, RigidbodyDefinition> Definitions;
             public Dictionary<string, string>              PartToDefinitionMap;
+        }
+        
+        public class DynamicLayerReserver : MonoBehaviour {
+	        private void OnDestroy() {
+		        dynamicLayers.Enqueue(gameObject.layer);
+	        }
         }
     }
 }

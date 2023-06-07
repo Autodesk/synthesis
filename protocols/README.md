@@ -4,24 +4,30 @@ The **mirabuf** folder is a pointer to a submodule which needs to be pulled down
 
 ## Fetching
 
-` git submodule update --init --recursive `
+To pull down the submodule:
+```
+git submodule update --init --recursive
+```
 
-to sync with new changes
+to sync with new changes:
+```
+git submodule sync --recursive
+```
 
-` git submodule sync --recursive `
-
-## Building
+## Generate Protobuf Files
 
 To run the following files or commands make sure that you are in the `synthesis/protocols` directory and not a child directory.
 
 ### Windows
 
 - Run `proto_compile.bat` while in the protocols directory
+    ```
+    $ proto_compile.bat
+    ``` 
 
-or
+### Linux / MacOS
 
-` protoc -I=./mirabuf --python_out=../exporter/SynthesisFusionAddin/proto/proto_out ./mirabuf/*.proto `
-
-### Linux
-
-(To be filled in by someone with linux to verify)
+- Run `proto_compile.sh` while in the protocols directory
+    ```
+    $ ./proto_compile.sh
+    ```
