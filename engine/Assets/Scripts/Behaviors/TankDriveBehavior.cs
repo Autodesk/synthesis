@@ -13,19 +13,40 @@ using UnityEngine;
 namespace Synthesis {
 	public class TankDriveBehavior : SimBehaviour {
 
-		internal const string LEFT_FORWARD = "Tank Left Forward";
-		internal const string LEFT_REVERSE = "Tank Left Reverse";
-		internal const string RIGHT_FORWARD = "Tank Right Forward";
-		internal const string RIGHT_REVERSE = "Tank Right Reverse";
+		internal const string LEFT_FORWARD = "Tank Left-Forward";
+		internal const string LEFT_BACKWARD = "Tank Left-Backward";
+		internal const string RIGHT_FORWARD = "Tank Right-Forward";
+		internal const string RIGHT_BACKWARD = "Tank Right-Backward";
 
-		private List<string> _leftSignals;
-		private List<string> _rightSignals;
-		private double       _speed;
+		private List<WheelDriver> _leftWheels;
+		private List<WheelDriver> _rightWheels;
 
-		public TankDriveBehavior(string simObjectId, List<string> leftSignals, List<string> rightSignals) : base(simObjectId) {
+		private double _leftSpeed;
+		private double _rightSpeed;
+
+		private float _xSpeed;
+		private float _zRot;
+
+		private bool _squareInputs; // TODO: Add ability to modify this
+
+		private bool _didUpdate;
+
+		private byte _keyMask;
+
+		private const double DEADBAND = 0.1;
+
+		public double speedMult = 1.0f;
+
+		private RobotSimObject _robot;
+
+		public TankDriveBehavior(string simObjectId, List<WheelDriver> leftWheels, List<WheelDriver> rightWheels, string inputName = "") : base(
+			simObjectId) {
+			if (inputName == "")
+				inputName = simObjectId;
+
 			SimObjectId = simObjectId;
-			_leftSignals = leftSignals;
-			_rightSignals = rightSignals;
+			_leftWheels = leftWheels;
+			_rightWheels = rightWheels;
 
 			InitInputs(GetInputs());
 
@@ -35,27 +56,31 @@ namespace Synthesis {
 		public (string key, Analog input)[] GetInputs() {
             return new (string key, Analog input)[] {
                 (LEFT_FORWARD, TryLoadInput(LEFT_FORWARD, new Digital("W"))),
-                (LEFT_REVERSE, TryLoadInput(LEFT_REVERSE, new Digital("S"))),
-				(RIGHT_FORWARD, TryLoadInput(RIGHT_FORWARD, new Digital("I"))),
-				(RIGHT_REVERSE, TryLoadInput(RIGHT_REVERSE, new Digital("K")))
+                (LEFT_BACKWARD, TryLoadInput(LEFT_BACKWARD, new Digital("S"))),
+				(RIGHT_FORWARD, TryLoadInput(RIGHT_FORWARD, new Digital("UpArrow"))),
+				(RIGHT_BACKWARD, TryLoadInput(RIGHT_BACKWARD, new Digital("DownArrow")))
             };
         }
 
         public Analog TryLoadInput(string key, Analog defaultInput)
-            => SimulationPreferences.GetRobotInput((SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject).MiraLive.MiraAssembly.Info.GUID, key)
-                ?? defaultInput;
+        {
+	        if (_robot == null) _robot = SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject;
+	        return SimulationPreferences.GetRobotInput(
+		               _robot.MiraLive.MiraAssembly.Info.GUID, key)
+	               ?? defaultInput;
+        }
 
-		private void OnValueInputAssigned(IEvent tmp) {
+        private void OnValueInputAssigned(IEvent tmp) {
 			ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
 			switch (args.InputKey) {
 				case LEFT_FORWARD:
-				case LEFT_REVERSE:
+				case LEFT_BACKWARD:
 				case RIGHT_FORWARD:
-				case RIGHT_REVERSE:
+				case RIGHT_BACKWARD:
 					if (base.SimObjectId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID) return;
 					RobotSimObject robot = SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject;
 					SimulationPreferences.SetRobotInput(
-						robot.MiraGUID,
+						_robot.MiraLive.MiraAssembly.Info.GUID,
 						args.InputKey,
 						args.Input);
 					break;
@@ -63,28 +88,19 @@ namespace Synthesis {
 		}
 
 		public override void Update() {
-			var lf = InputManager.MappedValueInputs[LEFT_FORWARD];
-			var lr = InputManager.MappedValueInputs[LEFT_REVERSE];
-			var rf = InputManager.MappedValueInputs[RIGHT_FORWARD];
-			var rr = InputManager.MappedValueInputs[RIGHT_REVERSE];
+			var leftForwardInput = InputManager.MappedValueInputs[LEFT_FORWARD];
+			var leftBackwardInput = InputManager.MappedValueInputs[LEFT_BACKWARD];
+			var rightForwardInput = InputManager.MappedValueInputs[RIGHT_FORWARD];
+			var rightBackwardInput = InputManager.MappedValueInputs[RIGHT_BACKWARD];
 
-			float leftIn = 0f;
-			float rightIn = 0f;
+			var leftSpeed = Mathf.Abs(leftForwardInput.Value) - Mathf.Abs(leftBackwardInput.Value);
+			var rightSpeed = Mathf.Abs(rightForwardInput.Value) - Mathf.Abs(rightBackwardInput.Value);
 
-			if (lr is Digital)
-				leftIn = lf.Value - lr.Value;
-			else
-				leftIn = lf.Value + lr.Value;
-			if (rr is Digital)
-				rightIn = rf.Value - rr.Value;
-			else
-				rightIn = rf.Value + rr.Value;
-
-			foreach (var sig in _leftSignals) {
-				SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignals[sig].Value = Value.ForNumber(leftIn*_speed);
+			foreach (var wheel in _leftWheels) {
+				wheel.MainInput = leftSpeed * speedMult;
 			}
-			foreach (var sig in _rightSignals) {
-				SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignals[sig].Value = Value.ForNumber(rightIn*_speed);
+			foreach (var wheel in _rightWheels) {
+				wheel.MainInput = rightSpeed * speedMult;
 			}
 		}
 	}

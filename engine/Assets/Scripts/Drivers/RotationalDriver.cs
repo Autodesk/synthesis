@@ -6,11 +6,17 @@ using Synthesis.PreferenceManager;
 using SynthesisAPI.Simulation;
 using UnityEngine;
 
+#nullable enable
+
 namespace Synthesis {
     public class RotationalDriver : Driver {
 
         private bool _isWheel = false;
         public bool IsWheel => _isWheel;
+
+        private SimBehaviour? _reservee;
+        public SimBehaviour? Reservee => _reservee;
+        public bool IsReserved => _reservee != null;
         
         /// <summary>
         /// Global Coordinate Anchor Point for Joint
@@ -62,6 +68,8 @@ namespace Synthesis {
                 }
             }
         }
+
+        public string Name => State.CurrentSignalLayout.SignalMap[_inputs[0]].Info.Name;
 
         private JointMotor _motor;
         public JointMotor Motor {
@@ -147,6 +155,17 @@ namespace Synthesis {
         {
             _useMotor = false;
             _jointA.useMotor = false;
+        }
+
+        public void Reserve(SimBehaviour? behaviour) {
+            if (behaviour == null)
+                return;
+            
+            _reservee = behaviour;
+        }
+
+        public void Unreserve() {
+            _reservee = null;
         }
 
         private float _jointAngle = 0.0f;

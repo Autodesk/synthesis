@@ -90,7 +90,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         }
     }
 
-    public SimBehaviour DriveBehaviour { get; private set; }
+    public SimBehaviour? DriveBehaviour { get; private set; }
 
     private (List<WheelDriver> leftWheels, List<WheelDriver> rightWheels)? _tankTrackWheels = null;
 
@@ -135,6 +135,17 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         }
     }
 
+    private DrivetrainType? _drivetrainType;
+    public DrivetrainType ConfiguredDrivetrainType {
+        get => _drivetrainType ?? RobotSimObject.DrivetrainType.ARCADE;
+        set {
+            _drivetrainType = value;
+            SimulationPreferences.SetRobotDrivetrainType(MiraLive.MiraAssembly.Info.GUID, value);
+            ConfigureDrivetrain();
+        }
+        
+    }
+
     private Queue<GamepieceSimObject> _gamepiecesInPossession = new Queue<GamepieceSimObject>();
     public bool PickingUpGamepieces { get; private set; }
 
@@ -149,6 +160,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         GroundedBounds = GetBounds(GroundedNode.transform);
         DebugJointAxes.DebugBounds.Add((GroundedBounds, () => GroundedNode.transform.localToWorldMatrix));
         SimulationPreferences.LoadFromMirabufLive(MiraLive);
+
+        _drivetrainType = SimulationPreferences.GetRobotDrivetrain(MiraLive.MiraAssembly.Info.GUID);
 
         _allRigidbodies = new List<Rigidbody>(RobotNode.transform.GetComponentsInChildren<Rigidbody>());
         PhysicsManager.Register(this);
@@ -374,12 +387,27 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         // See WheelPhysicsBehaviour description for an explanation.
         SimulationManager.AddBehaviour(this.Name, new WheelPhysicsBehaviour(this.Name, this));
 
-        ConfigureArcadeDrivetrain();
-        // ConfigureSwerveDrivetrain();
-		ConfigureArmBehaviours();
+        ConfigureDrivetrain();
+        ConfigureArmBehaviours();
 		ConfigureSliderBehaviours();
         ConfigureTestSimulationBehaviours();
         _simBehaviour.Enabled = false;
+    }
+
+    public void ConfigureDrivetrain() {
+
+        if (DriveBehaviour != null) {
+            SimulationManager.RemoveBehaviour(base.Name, DriveBehaviour);
+            DriveBehaviour = null;
+        }
+        
+        if (ConfiguredDrivetrainType.Value == DrivetrainType.ARCADE.Value) {
+            ConfigureArcadeDrivetrain();
+        } else if (ConfiguredDrivetrainType.Value == DrivetrainType.TANK.Value) {
+            ConfigureTankDrivetrain();
+        } else if (ConfiguredDrivetrainType.Value == DrivetrainType.SWERVE.Value) {
+            ConfigureSwerveDrivetrain();
+        }
     }
 
     public void ConfigureTestSimulationBehaviours() {
@@ -389,20 +417,12 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     // Account for passive joints
     public void ConfigureArmBehaviours() {
-        // I pity the poor dev that has to look at this
-        var nonWheelInstances = MiraLive.MiraAssembly.Data.Joints.JointInstances.Where(instance =>
-                instance.Value.Info.Name != "grounded"
-                && (
-                    MiraLive.MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].UserData == null
-                    || !MiraLive.MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].UserData.Data
-                        .TryGetValue("wheel", out var isWheel)
-                    || isWheel == "false")
-                && instance.Value.HasSignal()
-                && MiraLive.MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].JointMotionType == JointMotion.Revolute).ToList();
-        // nonWheelInstances.ForEach(x => {
-        //     var genArmBehaviour = new GeneralArmBehaviour(this.Name, x.Value.SignalReference);
-        //     SimulationManager.AddBehaviour(this.Name, genArmBehaviour);
-        // });
+        SimulationManager.Drivers[this.Name].ForEach(x => {
+            if (x is RotationalDriver driver && !driver.IsReserved) {
+                var genArmBehaviour = new GeneralArmBehaviour(this.Name, driver);
+                SimulationManager.AddBehaviour(this.Name, genArmBehaviour);
+            }
+        });
     }
 
     public void ConfigureSliderBehaviours() {
@@ -427,6 +447,19 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         DriveBehaviour = arcadeBehaviour;
 
         SimulationManager.AddBehaviour(this.Name, arcadeBehaviour);
+    }
+    
+    public void ConfigureTankDrivetrain() {
+        var wheels = GetLeftRightWheels();
+
+        var tankBehaviour = new TankDriveBehavior(
+            this.Name,
+            wheels!.Value.leftWheels,
+            wheels!.Value.rightWheels
+        );
+        DriveBehaviour = tankBehaviour;
+
+        SimulationManager.AddBehaviour(this.Name, tankBehaviour);
     }
 
     public void ConfigureSwerveDrivetrain() {
@@ -467,6 +500,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         var mira = Importer.MirabufAssemblyImport(filePath);
         RobotSimObject simObject = mira.Sim as RobotSimObject;
         mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
+        simObject.ConfigureDefaultBehaviours();
         
         
         mira.MainObject.transform.position = position;
@@ -579,6 +613,23 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     {
         PracticeMode.SetInitialState(RobotNode);
     }
+
+    public struct DrivetrainType {
+
+        public static readonly DrivetrainType NONE = new DrivetrainType(0);
+        public static readonly DrivetrainType TANK = new DrivetrainType(1);
+        public static readonly DrivetrainType ARCADE = new DrivetrainType(2);
+        public static readonly DrivetrainType SWERVE = new DrivetrainType(3);
+        
+        public int Value { get; private set; }
+        private DrivetrainType(int val) {
+            Value = val;
+        }
+    }
+    
+    public static readonly DrivetrainType[] DRIVETRAIN_TYPES = {
+        DrivetrainType.NONE, DrivetrainType.TANK, DrivetrainType.ARCADE, DrivetrainType.SWERVE
+    };
 
     public struct IntakeTriggerData {
         public string NodeName;

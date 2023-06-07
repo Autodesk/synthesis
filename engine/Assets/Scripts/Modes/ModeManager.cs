@@ -1,5 +1,5 @@
-public class ModeManager
-{
+public class ModeManager {
+    
     private static IMode _currentMode;
     public static IMode CurrentMode
     {

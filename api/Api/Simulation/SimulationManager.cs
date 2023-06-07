@@ -24,8 +24,8 @@ namespace SynthesisAPI.Simulation {
 
 
         // TODO: Switch to using guids cuz all the signals have the same name
-        public static Dictionary<string, List<Driver>>       Drivers    = new Dictionary<string, List<Driver>>();
-        public static Dictionary<string, List<SimBehaviour>> Behaviours = new Dictionary<string, List<SimBehaviour>>();
+        public static Dictionary<string, LinkedList<Driver>>       Drivers    = new Dictionary<string, LinkedList<Driver>>();
+        public static Dictionary<string, LinkedList<SimBehaviour>> Behaviours = new Dictionary<string, LinkedList<SimBehaviour>>();
 
         public static void Update() {
             Drivers.ForEach(x => x.Value.ForEach(y => y.Update()));
@@ -57,34 +57,65 @@ namespace SynthesisAPI.Simulation {
         {
             if (!Drivers.ContainsKey(simObjectName))
             {
-                Drivers[simObjectName] = new List<Driver>();
+                Drivers[simObjectName] = new LinkedList<Driver>();
             }
-            Drivers[simObjectName].Add(d);
+            Drivers[simObjectName].AddLast(d);
         }
 
         public static void AddBehaviour(string simObjectName, SimBehaviour d)
         {
             if (!Behaviours.ContainsKey(simObjectName))
             {
-                Behaviours[simObjectName] = new List<SimBehaviour>();
+                Behaviours[simObjectName] = new LinkedList<SimBehaviour>();
             }
-            Behaviours[simObjectName].Add(d);
+            Behaviours[simObjectName].AddLast(d);
         }
 
-        public static void RemoveDriver(string simObjectName, Driver d)
+        public static bool RemoveDriver(string simObjectName, Driver d)
         {
-            if (Drivers.ContainsKey(simObjectName))
-            {
-                Drivers[simObjectName].RemoveAll(x => x == d);
+            if (!Drivers.ContainsKey(simObjectName))
+                return false;
+
+            var list = Drivers[simObjectName];
+            bool removed = false;
+            var cursor = list.First;
+            while (!removed && cursor != null) {
+                if (cursor.Value.Equals(d)) {
+                    cursor.Value.OnRemove();
+                    list.Remove(cursor);
+                    removed = true;
+                }
+                cursor = cursor.Next;
             }
+
+            return removed;
+        }
+
+        public static bool RemoveBehaviour(string simObjectName, SimBehaviour b) {
+            if (!Behaviours.ContainsKey(simObjectName))
+                return false;
+
+            var list = Behaviours[simObjectName];
+            bool removed = false;
+            var cursor = list.First;
+            while (!removed && cursor != null) {
+                if (cursor.Value.Equals(b)) {
+                    cursor.Value.OnRemove();
+                    list.Remove(cursor);
+                    removed = true;
+                }
+                cursor = cursor.Next;
+            }
+
+            return removed;
         }
 
         public static void RegisterSimObject(SimObject so) {
             if (_simObjects.ContainsKey(so.Name)) // Probably use some GUID
                 throw new Exception("Name already exists");
             _simObjects[so.Name] = so;
-            Drivers[so.Name] = new List<Driver>();
-            Behaviours[so.Name] = new List<SimBehaviour>();
+            Drivers[so.Name] = new LinkedList<Driver>();
+            Behaviours[so.Name] = new LinkedList<SimBehaviour>();
 
             if (OnNewSimulationObject != null)
                 OnNewSimulationObject(so);

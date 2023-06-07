@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using Synthesis;
 using UnityEngine;
 
 public class CustomWheel : MonoBehaviour {
@@ -56,6 +57,8 @@ public class CustomWheel : MonoBehaviour {
     // private bool _lastIsSlidingStatic;
 
     public bool HasContacts => _pairings.Count > 0;
+
+    public float Inertia => WheelDriver.GetInertiaFromAxisVector(Rb, LocalAxis);
     
     public void OnDrawGizmos() {
         Gizmos.color = Color.red;

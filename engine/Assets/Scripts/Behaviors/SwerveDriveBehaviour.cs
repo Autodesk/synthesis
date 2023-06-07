@@ -35,6 +35,11 @@ namespace Synthesis {
             _fieldForward = Vector3.forward;
 
             _moduleDrivers.ForEach(x => {
+
+                if (x.azimuth.IsReserved) {
+                    SimulationManager.RemoveBehaviour(_robot.Name, x.azimuth.Reservee);
+                }
+
                 x.azimuth.ControlMode = RotationalDriver.RotationalControlMode.Position;
                 x.azimuth.SetAxis(robot.GroundedNode.transform.up);
             });
@@ -168,6 +173,14 @@ namespace Synthesis {
                 float angle = Mathf.Atan2(xComponent, yComponent) * Mathf.Rad2Deg;
                 _moduleDrivers[i].azimuth.MainInput = angle;
                 _moduleDrivers[i].drive.MainInput = speed;
+            }
+        }
+
+        public override void OnRemove() {
+            for (int i = 0; i < _moduleDrivers.Length; i++) {
+                _moduleDrivers[i].azimuth.ControlMode = RotationalDriver.RotationalControlMode.Velocity;
+                _moduleDrivers[i].azimuth.MainInput = 0f;
+                _moduleDrivers[i].azimuth.Unreserve();
             }
         }
     }

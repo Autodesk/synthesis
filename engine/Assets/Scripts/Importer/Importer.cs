@@ -167,10 +167,10 @@ namespace Synthesis.Import
 
 			#endregion
 
-			if (assembly.Dynamic) {
-				(simObject as RobotSimObject).ConfigureDefaultBehaviours();
-				// (simObject as RobotSimObject).ConfigureTestSimulationBehaviours();
-			}
+			// if (assembly.Dynamic) {
+			// 	(simObject as RobotSimObject).ConfigureDefaultBehaviours();
+			// 	// (simObject as RobotSimObject).ConfigureTestSimulationBehaviours();
+			// }
 
 			return (assemblyObject, miraLive, simObject);
 		}
@@ -234,7 +234,7 @@ namespace Synthesis.Import
 								customWheel,
 								wheelA.anchor,
 								axisWut,
-								0.127f,
+								float.NaN,
 								assembly.Data.Joints.MotorDefinitions.ContainsKey(definition.MotorReference)
 									? assembly.Data.Joints.MotorDefinitions[definition.MotorReference]
 									: null

@@ -117,6 +117,21 @@ namespace Synthesis {
             get => _useMotor;
         }
 
+        private float _targetRotationalSpeed = 0f;
+
+        /// <summary>
+        /// Creates a WheelDriver
+        /// </summary>
+        /// <param name="name">Name of signal</param>
+        /// <param name="inputs">Input Signals</param>
+        /// <param name="outputs">Output Signals</param>
+        /// <param name="simObject">SimObject of which the driver belongs</param>
+        /// <param name="jointInstance">Mirabuf Instance of the Joint constructing this wheel relation</param>
+        /// <param name="customWheel">Custom Physics Wheel</param>
+        /// <param name="anchor">Anchor of the Rotational Joint</param>
+        /// <param name="axis">Axis of the Rotational Joint</param>
+        /// <param name="radius">Radius of the wheel. Automatically calculated if set to NaN</param>
+        /// <param name="motor">Motor settings for the wheel</param>
         public WheelDriver(string name, string[] inputs, string[] outputs, SimObject simObject, JointInstance jointInstance,
             CustomWheel customWheel, Vector3 anchor, Vector3 axis, float radius, Mirabuf.Motor.Motor? motor = null)
             : base(name, inputs, outputs, simObject) {
@@ -126,7 +141,14 @@ namespace Synthesis {
             
             Anchor = _customWheel.Rb.transform.localToWorldMatrix.MultiplyPoint3x4(anchor);
             Axis = _customWheel.Rb.transform.localToWorldMatrix.MultiplyVector(axis);
-            Radius = radius;
+            
+            if (float.IsNaN(radius)) {
+                Radius = _customWheel.Rb.transform.GetBounds().extents.y;
+            } else {
+                Radius = radius;
+            }
+            
+            Debug.Log($"Radius: {Radius}");
             
             if (motor != null && motor.MotorTypeCase == Mirabuf.Motor.Motor.MotorTypeOneofCase.SimpleMotor) {
                 _motor = motor!.SimpleMotor.UnityMotor;
@@ -138,6 +160,8 @@ namespace Synthesis {
                     targetVelocity = 500,
                 };
             }
+            
+            Debug.Log($"Speed: {Mathf.Deg2Rad * _motor.targetVelocity} | Torque: {_motor.force}");
 
             State.CurrentSignals[_inputs[1]] = new UpdateSignal() {
                 DeviceType = "Mode",
@@ -196,12 +220,19 @@ namespace Synthesis {
                 ? State.CurrentSignals[_inputs[0]].Value.NumberValue
                 : 0.0f);
 
-            _customWheel.RotationSpeed = Mathf.PI * 8f * val;
+            _targetRotationalSpeed = val * Mathf.Deg2Rad * _motor.targetVelocity;
+
+            var delta = _targetRotationalSpeed - _customWheel.RotationSpeed;
+            var possibleDelta = (_motor.force * Time.deltaTime) / _customWheel.Inertia;
+            if (Mathf.Abs(delta) > possibleDelta)
+                delta = possibleDelta * Mathf.Sign(delta);
+
+            _customWheel.RotationSpeed = _customWheel.RotationSpeed + delta;
         }
 
         #region Rotational Inertia stuff that isn't used
 
-        public float GetInertiaAroundParallelAxis(Rigidbody rb, Vector3 localAnchor, Vector3 localAxis) {
+        public static float GetInertiaAroundParallelAxis(Rigidbody rb, Vector3 localAnchor, Vector3 localAxis) {
             var comInertia = GetInertiaFromAxisVector(rb, localAxis);
             var pointMassInertia = rb.mass * Mathf.Pow(Vector3.Distance(rb.centerOfMass, localAnchor), 2f);
             return comInertia + pointMassInertia;
@@ -213,7 +244,7 @@ namespace Synthesis {
         /// <param name="rb"></param>
         /// <param name="axis">Use local axis</param>
         /// <returns></returns>
-        public float GetInertiaFromAxisVector(Rigidbody rb, Vector3 localAxis) {
+        public static float GetInertiaFromAxisVector(Rigidbody rb, Vector3 localAxis) {
             var sph = CartesianToSphericalCoordinate(localAxis);
             var inertia = rb.inertiaTensorRotation * rb.inertiaTensor;
             return EllipsoidRadiusFromSphericalCoordinate(sph, inertia);

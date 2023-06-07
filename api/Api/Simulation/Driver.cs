@@ -35,8 +35,8 @@ namespace SynthesisAPI.Simulation {
             //     SimulationManager.OnDriverUpdate -= this.Update;
         }
 
+        public virtual void OnRemove() { }
         public abstract void Update();
-
         public virtual void FixedUpdate() { }
 
         public override int GetHashCode()
