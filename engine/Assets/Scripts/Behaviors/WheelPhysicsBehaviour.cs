@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Synthesis;
 using SynthesisAPI.Simulation;
@@ -11,15 +12,19 @@ using SynthesisAPI.Simulation;
 public class WheelPhysicsBehaviour : SimBehaviour {
 
     private RobotSimObject _robot;
+    private IEnumerable<WheelDriver> _wheels;
 
     public WheelPhysicsBehaviour(string simObjectId, RobotSimObject robot): base(simObjectId) {
         _robot = robot;
+        _wheels = SimulationManager.Drivers[_robot.Name].OfType<WheelDriver>();
+
+        float radius = _wheels.Average(x => x.Radius);
+        _wheels.ForEach(x => x.Radius = radius);
     }
     
     public override void Update() {
-        var wheels = SimulationManager.Drivers[_robot.Name].OfType<WheelDriver>();
-        int wheelsInContact = wheels.Count(x => x.HasContacts);
+        int wheelsInContact = _wheels.Count(x => x.HasContacts);
         float mod = wheelsInContact <= 4 ? 1f : (float)Math.Pow(0.7, (double)(wheelsInContact - 4));
-        wheels.ForEach(x => x.WheelsPhysicsUpdate(mod));
+        _wheels.ForEach(x => x.WheelsPhysicsUpdate(mod));
     }
 }
