@@ -10,7 +10,7 @@ using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Utilities;
 using UnityEngine;
 using Synthesis.WS.Translation;
-
+using UnityEngine.Windows;
 using ITD = RobotSimObject.IntakeTriggerData;
 using STD = RobotSimObject.ShotTrajectoryData;
 
@@ -188,7 +188,7 @@ namespace Synthesis.PreferenceManager {
             public RobotSimObject.DrivetrainType GetRobotDrivetrainType(string robot) {
                 if (!_allRobotData.ContainsKey(robot))
                     return RobotSimObject.DrivetrainType.ARCADE;
-                return _allRobotData[robot].DrivetrainType;
+                return _allRobotData[robot].DrivetrainType ?? RobotSimObject.DrivetrainType.ARCADE;
             }
 
             public void SetRobotInput(string robot, string inputKey, Analog inputValue) {
@@ -273,7 +273,7 @@ namespace Synthesis.PreferenceManager {
         [JsonProperty] public ITD? IntakeTrigger;
         [JsonProperty] public STD? TrajectoryPointer;
         [JsonProperty] public RioTranslationLayer? SimTranslationLayer;
-        [JsonProperty] public RobotSimObject.DrivetrainType DrivetrainType;
+        [JsonProperty] public RobotSimObject.DrivetrainType? DrivetrainType;
     }
 
     [JsonObject(MemberSerialization.OptIn)]

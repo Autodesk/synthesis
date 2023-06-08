@@ -148,8 +148,6 @@ namespace Synthesis {
                 Radius = radius;
             }
             
-            Debug.Log($"Radius: {Radius}");
-            
             if (motor != null && motor.MotorTypeCase == Mirabuf.Motor.Motor.MotorTypeOneofCase.SimpleMotor) {
                 _motor = motor!.SimpleMotor.UnityMotor;
             } else {
@@ -160,8 +158,6 @@ namespace Synthesis {
                     targetVelocity = 500,
                 };
             }
-            
-            Debug.Log($"Speed: {Mathf.Deg2Rad * _motor.targetVelocity} | Torque: {_motor.force}");
 
             State.CurrentSignals[_inputs[1]] = new UpdateSignal() {
                 DeviceType = "Mode",
@@ -227,7 +223,9 @@ namespace Synthesis {
             if (Mathf.Abs(delta) > possibleDelta)
                 delta = possibleDelta * Mathf.Sign(delta);
 
-            _customWheel.RotationSpeed = _customWheel.RotationSpeed + delta;
+            _customWheel.RotationSpeed += delta;
+            
+            Debug.Log(_customWheel.RotationSpeed);
         }
 
         #region Rotational Inertia stuff that isn't used

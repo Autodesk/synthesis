@@ -72,17 +72,19 @@ public class CustomWheel : MonoBehaviour {
         Gizmos.color = Color.cyan;
         Gizmos.DrawLine(Anchor, Anchor + _lastImpulseTotal);
 
-        // if (_lastIsRollingStatic)
-        //     Gizmos.color = Color.green;
-        // else
-        //     Gizmos.color = Color.red;
-        // Gizmos.DrawSphere(Anchor + offset * 4, 0.05f);
-        //
-        // if (_lastIsSlidingStatic)
-        //     Gizmos.color = Color.green;
-        // else
-        //     Gizmos.color = Color.red;
-        // Gizmos.DrawSphere(Anchor + offset * 4.5f, 0.05f);
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(Anchor, Anchor + (Axis * RotationSpeed));
+    }
+    
+    public void OnGUI() {
+        if (Application.isEditor && Rb != null) {
+            GUI.contentColor = Color.white;
+            var point = Camera.main.WorldToViewportPoint(Anchor);
+            GUI.Label(
+                Rect.MinMaxRect(point.x, point.y, 300, 50),
+                $"{_lastImpulseTotal} ns"
+            );
+        }
     }
 
     // void FixedUpdate() {

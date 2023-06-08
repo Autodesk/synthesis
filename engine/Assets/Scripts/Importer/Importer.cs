@@ -238,7 +238,7 @@ namespace Synthesis.Import
 									? assembly.Data.Joints.MotorDefinitions[definition.MotorReference]
 									: null
 							);
-							SimulationManager.AddDriver(assembly.Info.Name, driver);
+							SimulationManager.AddDriver(simObject.Name, driver);
 						}
 						
 						jointMap.Add(instance.Info.GUID, (wheelA, wheelB));

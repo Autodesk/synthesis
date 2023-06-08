@@ -4,6 +4,7 @@ using System.Linq;
 using Google.Protobuf.WellKnownTypes;
 using Mirabuf;
 using Mirabuf.Joint;
+using Newtonsoft.Json;
 using Synthesis;
 using Synthesis.Import;
 using Synthesis.Util;
@@ -153,6 +154,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         set {
             _drivetrainType = value;
             SimulationPreferences.SetRobotDrivetrainType(MiraLive.MiraAssembly.Info.GUID, value);
+            PreferenceManager.Save();
             ConfigureDrivetrain();
         }
         
@@ -179,9 +181,12 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         GroundedBounds = GetBounds(GroundedNode.transform);
         DebugJointAxes.DebugBounds.Add((GroundedBounds, () => GroundedNode.transform.localToWorldMatrix));
         SimulationPreferences.LoadFromMirabufLive(MiraLive);
-
+        
+        // Resets whatever Hunter corrupted
+        // SimulationPreferences.SetRobotDrivetrainType(MiraLive.MiraAssembly.Info.GUID, DrivetrainType.ARCADE);
+        // PreferenceManager.Save();
         _drivetrainType = SimulationPreferences.GetRobotDrivetrain(MiraLive.MiraAssembly.Info.GUID);
-
+        
         _allRigidbodies = new List<Rigidbody>(RobotNode.transform.GetComponentsInChildren<Rigidbody>());
         PhysicsManager.Register(this);
 
@@ -656,16 +661,21 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         PracticeMode.SetInitialState(RobotNode);
     }
 
+    [JsonObject(MemberSerialization.OptIn)]
     public struct DrivetrainType {
 
-        public static readonly DrivetrainType NONE = new DrivetrainType(0);
-        public static readonly DrivetrainType TANK = new DrivetrainType(1);
-        public static readonly DrivetrainType ARCADE = new DrivetrainType(2);
-        public static readonly DrivetrainType SWERVE = new DrivetrainType(3);
-        
-        public int Value { get; private set; }
-        private DrivetrainType(int val) {
-            Value = val;
+        public static readonly DrivetrainType NONE = new DrivetrainType(0, "None");
+        public static readonly DrivetrainType TANK = new DrivetrainType(1, "Tank");
+        public static readonly DrivetrainType ARCADE = new DrivetrainType(2, "Arcade");
+        public static readonly DrivetrainType SWERVE = new DrivetrainType(3, "Swerve");
+
+        [JsonProperty] private string _name;
+        public string Name => _name;
+        [JsonProperty] private int _value;
+        public int Value => _value;
+        private DrivetrainType(int val, string name) {
+            _value = val;
+            _name = name;
         }
     }
     

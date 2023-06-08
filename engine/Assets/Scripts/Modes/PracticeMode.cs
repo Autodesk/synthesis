@@ -67,6 +67,8 @@ public class PracticeMode : IMode
             b => DynamicUIManager.CreatePanel<BetaWarningPanel>(false, (Action)(() => DynamicUIManager.CreatePanel<DriverStationPanel>(true))),
             icon: SynthesisAssetCollection.GetSpriteByName("driverstation-icon")
         );
+        
+        MainHUD.AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>());
     }
     
     public static void SetInitialState(GameObject robot)
