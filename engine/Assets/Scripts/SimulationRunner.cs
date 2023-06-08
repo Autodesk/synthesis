@@ -131,6 +131,7 @@ namespace Synthesis.Runtime {
 
         private void FixedUpdate() {
             SimulationManager.FixedUpdate();
+            PhysicsManager.FixedUpdate();
         }
 
         void OnDestroy() {

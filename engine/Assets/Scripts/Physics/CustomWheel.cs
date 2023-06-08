@@ -7,6 +7,7 @@ using UnityEngine;
 
 public class CustomWheel : MonoBehaviour {
 
+    // When enabled, you get weird priority effects. Leave disabled for now.
     public static bool UseKineticFriction = false;
 
     private Rigidbody _rb = null;
@@ -31,40 +32,22 @@ public class CustomWheel : MonoBehaviour {
     public float SlidingStaticFriction = 1.3f;
     public float SlidingKineticFriction = 0.95f;
 
-    // Motor Stats
-    private MotorStats Motor = new MotorStats {
-        RadsPerSecondMax = Mathf.PI, // Radians / Second
-        StallTorque = 10, // Newton * Meters
-        BrakingConstant = 0.1f
-    };
-
-    private float _motorPercent = 0f;
-    public float MotorPercent {
-        get => _motorPercent;
-        set {
-            _motorPercent = Mathf.Clamp(value, -1f, 1f);
-        }
-    }
-
     // Wheel States
-    public float RotationSpeed = 0f; // rads/s TODO: Make private eventually
-    public float Radius = 0.05f;
+    public float RotationSpeed = 0f; // radians/second
+    public float Radius = 0.05f; // meters
 
     private float _startTime;
-    
-    private Vector3 _lastImpulseTotal;
-    // private bool _lastIsRollingStatic;
-    // private bool _lastIsSlidingStatic;
 
     public bool HasContacts => _pairings.Count > 0;
 
     public float Inertia => WheelDriver.GetInertiaFromAxisVector(Rb, LocalAxis);
     
+    // Debugging Information
+    private Vector3 _lastImpulseTotal;
+    
     public void OnDrawGizmos() {
         Gizmos.color = Color.red;
         Gizmos.DrawSphere(Anchor, 0.05f);
-
-        var offset = new Vector3(0, 0.2f, 0);
 
         Gizmos.color = Color.green;
         Gizmos.DrawLine(Anchor, Anchor + Axis);
@@ -75,22 +58,11 @@ public class CustomWheel : MonoBehaviour {
         Gizmos.color = Color.blue;
         Gizmos.DrawLine(Anchor, Anchor + (Axis * RotationSpeed));
     }
-    
-    public void OnGUI() {
-        if (Application.isEditor && Rb != null) {
-            GUI.contentColor = Color.white;
-            var point = Camera.main.WorldToViewportPoint(Anchor);
-            GUI.Label(
-                Rect.MinMaxRect(point.x, point.y, 300, 50),
-                $"{_lastImpulseTotal} ns"
-            );
-        }
-    }
 
-    // void FixedUpdate() {
-    //     GetFrictionForces();
-    // }
-
+    /// <summary>
+    /// Calculates friction forces for the wheel and applies them. Should be run every FixedUpdate
+    /// </summary>
+    /// <param name="mod">Modifier to account for janky Unity joints</param>
     public void GetFrictionForces(float mod) {
         if (_pairings.Count > 0) {
             CalculateFriction();
@@ -104,14 +76,18 @@ public class CustomWheel : MonoBehaviour {
         }
     }
 
+    // Tbh these variables are relics but I don't want to mess with anything
     private Vector3 _staticImpulseVecAccum = new Vector3();
     private Vector3 _rollingImpulseVecAccum = new Vector3();
     public void OnCollisionStay(Collision collision) {
         // _collisionCalls++;
         _pairings.Add((collision.impulse, collision.relativeVelocity));
     }
-
+    
     private List<(Vector3 impulse, Vector3 velocity)> _pairings = new List<(Vector3, Vector3)>();
+    /// <summary>
+    /// Compiles contacts and calculates friction forces
+    /// </summary>
     public void CalculateFriction() {
         Vector3 impulse = Vector3.zero;
         Vector3 velocity = Vector3.zero;
@@ -126,6 +102,11 @@ public class CustomWheel : MonoBehaviour {
         _pairings.Clear();
     }
 
+    /// <summary>
+    /// Calculates friction forces parallel to the axis of rotation
+    /// </summary>
+    /// <param name="impulse">Impulse of the collision data</param>
+    /// <param name="velocity">Relative velocity of the object to the contacted object</param>
     public void CalculateSlidingFriction(Vector3 impulse, Vector3 velocity) {
         var dirVelocity = Vector3.Dot(Axis, velocity);
         var dirMomentum = dirVelocity * Rb.mass;
@@ -140,6 +121,11 @@ public class CustomWheel : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Calculates friction forces perpendicular to the axis of rotation
+    /// </summary>
+    /// <param name="impulse">Impulse of the collision data</param>
+    /// <param name="velocity">Relative velocity of the object to the contacted object</param>
     public void CalculateRollingFriction(Vector3 impulse, Vector3 velocity) {
         // var torque = Torque(RotationSpeed, percentInput);
         
@@ -162,6 +148,13 @@ public class CustomWheel : MonoBehaviour {
         _rollingImpulseVecAccum += frictionImpulse;
     }
 
+    /// <summary>
+    /// Clamp function for the magnitude of a vector
+    /// </summary>
+    /// <param name="v">Vector to clamp</param>
+    /// <param name="min">Minimum magnitude</param>
+    /// <param name="max">Maximum magnitude</param>
+    /// <returns>Clamped Vector</returns>
     public Vector3 ClampMag(Vector3 v, float min, float max) {
         if (v.magnitude > max)
             return v.normalized * max;
@@ -170,18 +163,11 @@ public class CustomWheel : MonoBehaviour {
         return v;
     }
 
-    public float Torque(float speed, float percentVoltage) {
-        float targetTorque = Motor.StallTorque * Mathf.Clamp((Motor.RadsPerSecondMax - speed) / Motor.RadsPerSecondMax, -0.3f, 1);
-        return targetTorque;
-        // return targetTorque - (Motor.StallTorque * Motor.BrakingConstant);
-    }
-
+    /// <summary>
+    /// Utility function to print Vectors. Shows more detail than Vector.ToString().
+    /// </summary>
+    /// <param name="v">Vector to print</param>
+    /// <returns>Stringified vector</returns>
     public string Str(Vector3 v) => $"({v.x},{v.y},{v.z})";
 
-    public struct MotorStats {
-        public float RadsPerSecondMax;
-        public float StallTorque;
-        public float BrakingConstant;
-    }
-    
 }

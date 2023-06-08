@@ -187,6 +187,7 @@ namespace Synthesis {
         }
 
         private float _jointAngle = 0.0f;
+        private float _lastUpdate = float.NaN;
         public override void Update() {
 
             switch (ControlMode) {
@@ -195,12 +196,18 @@ namespace Synthesis {
                     break;
             }
 
-            // Angle loops around so this works for now
+            _lastUpdate = Time.realtimeSinceStartup;
             
-            // TODO
-            // _jointAngle += (_jointA.velocity * Time.deltaTime) / 360f;
-            // State.CurrentSignals[_outputs[0]].Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(_jointAngle);
-            // State.CurrentSignals[_outputs[1]].Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(_jointA.angle);
+            // I think these work?
+            State.CurrentSignals[_outputs[0]].Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(_jointAngle / (Mathf.PI * 2f));
+            State.CurrentSignals[_outputs[1]].Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(PositiveMod(_jointAngle, Mathf.PI));
+        }
+
+        public float PositiveMod(float val, float mod) {
+            var res = val % mod;
+            if (res < 0)
+                res += mod;
+            return res;
         }
         
         public void WheelsPhysicsUpdate(float mod) {
@@ -223,9 +230,18 @@ namespace Synthesis {
             if (Mathf.Abs(delta) > possibleDelta)
                 delta = possibleDelta * Mathf.Sign(delta);
 
+            var lastRotSpeed = _customWheel.RotationSpeed;
             _customWheel.RotationSpeed += delta;
-            
-            Debug.Log(_customWheel.RotationSpeed);
+
+            if (!float.IsNaN(_lastUpdate)) {
+                var deltaT = Time.realtimeSinceStartup - _lastUpdate;
+
+                if (deltaT == 0f)
+                    return;
+
+                var alpha = (_customWheel.RotationSpeed - lastRotSpeed) / deltaT;
+                _jointAngle += 0.5f * alpha * deltaT * deltaT + lastRotSpeed * deltaT;
+            }
         }
 
         #region Rotational Inertia stuff that isn't used

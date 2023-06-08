@@ -181,7 +181,6 @@
      <Compile Include="Assets\Scripts\AnalyticsManager.cs" />
      <Compile Include="Assets\Scripts\Behaviors\GeneralSliderBehaviour.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\DownloadAssetModal.cs" />
-     <Compile Include="Assets\Scripts\Behaviors\WheelPhysicsBehaviour.cs" />
      <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyRootItem.cs" />
      <Compile Include="Assets\Scripts\SimObjects\GamepieceSimObject.cs" />
      <Compile Include="Assets\Scripts\UI\ToastLogger\ToastConfig.cs" />

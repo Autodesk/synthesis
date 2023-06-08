@@ -99,6 +99,12 @@ namespace Synthesis.Physics {
             }
 
         }
+
+        public static void FixedUpdate() {
+            RobotSimObject.SpawnedRobots.ForEach(x => {
+                x.UpdateWheels();
+            });
+        }
         
         public static bool Register<T>(T overridable) where T: class, IPhysicsOverridable {
             if (_physObjects.ContainsKey(overridable.GetHashCode()))

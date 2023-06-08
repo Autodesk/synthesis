@@ -64,6 +64,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     private OrbitCameraMode orbit;
     private ICameraMode previousMode;
 
+    private IEnumerable<WheelDriver>? _wheelDrivers;
+
     public string MiraGUID => MiraLive.MiraAssembly.Info.GUID;
 
     public MirabufLive MiraLive { get; private set; }
@@ -326,6 +328,16 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         //     - gp.GamepieceObject.transform.localToWorldMatrix.MultiplyPoint(gp.GamepieceBounds.center);
         
     }
+    
+    public void UpdateWheels() {
+
+        if (_wheelDrivers == null)
+            return;
+        
+        int wheelsInContact = _wheelDrivers.Count(x => x.HasContacts);
+        float mod = wheelsInContact <= 4 ? 1f : Mathf.Pow(0.7f, wheelsInContact - 4);
+        _wheelDrivers.ForEach(x => x.WheelsPhysicsUpdate(mod));
+    }
 
     private static Bounds GetBounds(Transform top) {
         Vector3 min = new Vector3(float.MaxValue,float.MaxValue,float.MaxValue), max = new Vector3(float.MinValue,float.MinValue,float.MinValue);
@@ -418,11 +430,16 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     public void ConfigureDefaultBehaviours() {
-        
-        var wheels = SimulationManager.Drivers[base.Name].OfType<WheelDriver>();
-        wheels.ForEach(x => x.ImpulseMax = (GroundedNode.GetComponent<Rigidbody>().mass * Physics.gravity.magnitude * (1f / 120f)) / wheels.Count());
+
+        if (_wheelDrivers == null) {
+            _wheelDrivers = SimulationManager.Drivers[base.Name].OfType<WheelDriver>();
+            _wheelDrivers.ForEach(x => x.ImpulseMax = (GroundedNode.GetComponent<Rigidbody>().mass * Physics.gravity.magnitude * (1f / 120f)) / _wheelDrivers.Count());
+            float radius = _wheelDrivers.Average(x => x.Radius);
+            _wheelDrivers.ForEach(x => x.Radius = radius);
+        }
+
         // See WheelPhysicsBehaviour description for an explanation.
-        SimulationManager.AddBehaviour(this.Name, new WheelPhysicsBehaviour(this.Name, this));
+        // SimulationManager.AddBehaviour(this.Name, new WheelPhysicsBehaviour(this.Name, this));
 
         ConfigureDrivetrain();
         ConfigureArmBehaviours();
@@ -437,13 +454,20 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             SimulationManager.RemoveBehaviour(base.Name, DriveBehaviour);
             DriveBehaviour = null;
         }
+
+        bool success = true;
         
         if (ConfiguredDrivetrainType.Value == DrivetrainType.ARCADE.Value) {
             ConfigureArcadeDrivetrain();
         } else if (ConfiguredDrivetrainType.Value == DrivetrainType.TANK.Value) {
             ConfigureTankDrivetrain();
         } else if (ConfiguredDrivetrainType.Value == DrivetrainType.SWERVE.Value) {
-            ConfigureSwerveDrivetrain();
+            success = ConfigureSwerveDrivetrain();
+        }
+
+        if (!success) {
+            Logger.Log($"Failed to switch to '{ConfiguredDrivetrainType.Name}'. Please select another.", LogLevel.Error);
+            ConfiguredDrivetrainType = DrivetrainType.NONE;
         }
     }
 
@@ -499,25 +523,37 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         SimulationManager.AddBehaviour(this.Name, tankBehaviour);
     }
 
-    public void ConfigureSwerveDrivetrain() {
+    public bool ConfigureSwerveDrivetrain() {
 
-        List<RotationalDriver> potentialAzimuthDrivers = SimulationManager.Drivers[base._name].OfType<RotationalDriver>().Where(x =>
-            !x.IsWheel
-            && (x.Axis - Vector3.Dot(GroundedNode.transform.up, x.Axis) * GroundedNode.transform.up).magnitude < 0.05f
+        (RotationalDriver azimuth, WheelDriver driver)[] modules;
+
+        try {
+
+            List<RotationalDriver> potentialAzimuthDrivers = SimulationManager.Drivers[base._name].OfType<RotationalDriver>().Where(x =>
+                !x.IsWheel
+                && (x.Axis - Vector3.Dot(GroundedNode.transform.up, x.Axis) * GroundedNode.transform.up).magnitude < 0.05f
             ).ToList();
 
-        var wheels = SimulationManager.Drivers[base._name].OfType<WheelDriver>();
-        (RotationalDriver azimuth, WheelDriver driver)[] modules = new (RotationalDriver azimuth, WheelDriver driver)[wheels.Count()];
-        int i = 0;
-        wheels.ForEach(x => {
-            RotationalDriver closest = null;
-            float distance = float.MaxValue;
-            potentialAzimuthDrivers.ForEach(y => closest = (y.Anchor - x.Anchor).magnitude < distance ? y : closest);
-            modules[i] = (closest, x);
-            potentialAzimuthDrivers.Remove(closest);
-            i++;
-        });
-        
+            var wheels = SimulationManager.Drivers[base._name].OfType<WheelDriver>();
+
+            if (potentialAzimuthDrivers.Count() < wheels.Count())
+                return false;
+
+            modules = new (RotationalDriver azimuth, WheelDriver driver)[wheels.Count()];
+            int i = 0;
+            wheels.ForEach(x => {
+                RotationalDriver closest = null;
+                float distance = float.MaxValue;
+                potentialAzimuthDrivers.ForEach(y => closest = (y.Anchor - x.Anchor).magnitude < distance ? y : closest);
+                modules[i] = (closest, x);
+                potentialAzimuthDrivers.Remove(closest);
+                i++;
+            });
+
+        } catch (Exception _) {
+            return false;
+        }
+
         var swerveBehaviour = new SwerveDriveBehaviour(
             this,
             modules
@@ -525,6 +561,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         DriveBehaviour = swerveBehaviour;
         
         SimulationManager.AddBehaviour(this.Name, swerveBehaviour);
+        return true;
     }
 
     public static void SpawnRobot(string filePath) {
