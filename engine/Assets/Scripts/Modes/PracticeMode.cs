@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Synthesis.Gizmo;
+using Synthesis.Import;
 using Synthesis.Physics;
 using Synthesis.PreferenceManager;
 using Synthesis.Runtime;
@@ -42,7 +43,13 @@ public class PracticeMode : IMode
 
     public void Start()
     {
-        DynamicUIManager.CreateModal<AddFieldModal>();
+        // DynamicUIManager.CreateModal<AddFieldModal>();
+
+        var mira = new MirabufLive("C:\\Users\\hunte\\AppData\\Roaming\\Autodesk\\Synthesis\\Mira\\BrokenLinksRobot_v1.mira");
+
+        GameObject container = new GameObject();
+        mira.GenerateDefinitionObjects(container, false);
+        
         InputManager.AssignValueInput(TOGGLE_ESCAPE_MENU_INPUT, TryGetSavedInput(TOGGLE_ESCAPE_MENU_INPUT, new Digital("Escape", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
     
         MainHUD.AddItemToDrawer("Spawn", b => DynamicUIManager.CreateModal<SpawningModal>(), icon: SynthesisAssetCollection.GetSpriteByName("PlusIcon"));

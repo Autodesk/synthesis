@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using SynthesisAPI.Utilities;
 using Google.Protobuf;
 using Mirabuf.Material;
+using Newtonsoft.Json;
 using Logger = SynthesisAPI.Utilities.Logger;
 using MPhysicalProperties = Mirabuf.PhysicalProperties;
 using Vector3 = Mirabuf.Vector3;
@@ -258,8 +259,15 @@ namespace Synthesis.Import {
 		/// <returns></returns>
 		private static RigidbodyDefinitions FindRigidbodyDefinitions(MirabufLive live) {
 	        Assembly assembly = live.MiraAssembly;
-			
-			var defs = new Dictionary<string, RigidbodyDefinition>();
+	        
+	        // assembly.Data.Parts.PartDefinitions.ForEach(x => x.Value.Bodies.Clear());
+	        // var jFormatter = new JsonFormatter(JsonFormatter.Settings.Default);
+	        // File.WriteAllText(
+		       //  Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+		       //  + $"{Path.AltDirectorySeparatorChar}{assembly.Info.Name}.json",
+		       //  jFormatter.Format(assembly));
+
+	        var defs = new Dictionary<string, RigidbodyDefinition>();
 			var partMap = new Dictionary<string, string>();
 
 			// Create grounded node

@@ -28,7 +28,7 @@ from proto.proto_out import types_pb2, joint_pb2, signal_pb2, motor_pb2, assembl
 from typing import Union
 
 from ...general_imports import *
-from .Utilities import fill_info, construct_info
+from .Utilities import fill_info, construct_info, guid_occurrence
 from .PDMessage import PDMessage
 from .. import ParseOptions
 
@@ -183,15 +183,9 @@ def _addJointInstance(
     # Need to check if it is in a rigidgroup first, if yes then make the parent the actual parent
 
     # assign part id values - bug with entity tokens
-    try:
-        joint_instance.parent_part = joint.occurrenceOne.entityToken
-    except:
-        joint_instance.parent_part = joint.occurrenceOne.name
+    joint_instance.parent_part = guid_occurrence(joint.occurrenceOne)
 
-    try:
-        joint_instance.child_part = joint.occurrenceTwo.entityToken
-    except:
-        joint_instance.child_part = joint.occurrenceTwo.name
+    joint_instance.child_part = guid_occurrence(joint.occurrenceTwo)
 
     # FIX FOR ISSUE WHERE CHILD PART IS ACTUAL PART OF A LARGER GROUP THAT IS RIGID
     # MAY ALSO BE A FIX FR THE HIERARCHY DETECTION
