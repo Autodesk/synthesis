@@ -1,3 +1,5 @@
+#define DEBUG_MIRABUF
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -260,12 +262,29 @@ namespace Synthesis.Import {
 		private static RigidbodyDefinitions FindRigidbodyDefinitions(MirabufLive live) {
 	        Assembly assembly = live.MiraAssembly;
 	        
-	        // assembly.Data.Parts.PartDefinitions.ForEach(x => x.Value.Bodies.Clear());
-	        // var jFormatter = new JsonFormatter(JsonFormatter.Settings.Default);
-	        // File.WriteAllText(
-		       //  Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-		       //  + $"{Path.AltDirectorySeparatorChar}{assembly.Info.Name}.json",
-		       //  jFormatter.Format(assembly));
+	        #if DEBUG_MIRABUF
+	        MemoryStream ms = new MemoryStream();
+	        ms.Seek(0, SeekOrigin.Begin);
+	        assembly.WriteTo(ms);
+	        ms.Seek(0, SeekOrigin.Begin);
+	        var debugAssembly = Assembly.Parser.ParseFrom(ms);
+	        
+	        debugAssembly.Data.Parts.PartDefinitions.ForEach(x => x.Value.Bodies.Clear());
+	        var jFormatter = new JsonFormatter(JsonFormatter.Settings.Default);
+	        File.WriteAllText(
+		        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+		        + $"{Path.AltDirectorySeparatorChar}{debugAssembly.Info.Name}.json",
+		        jFormatter.Format(debugAssembly));
+
+	        bool allUnique = false;
+	        {
+		        var allNodes = debugAssembly.Data.Joints.RigidGroups.Select(x => x.Name);
+		        HashSet<string> uniqueGuids = new HashSet<string>((int)(allNodes.Count() * (1f / 0.75f)));
+		        allUnique = allNodes.All(x => uniqueGuids.Add(x));
+	        }
+	        if (!allUnique)
+		        Logger.Log("Not all unique", LogLevel.Warning);
+			#endif
 
 	        var defs = new Dictionary<string, RigidbodyDefinition>();
 			var partMap = new Dictionary<string, string>();

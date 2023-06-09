@@ -86,6 +86,11 @@ def populateJoints(
             if joint.isSuppressed:
                 continue
 
+            # turn RigidJoints into RigidGroups
+            if joint.jointMotion.jointType == 0:
+                _addRigidGroup(joint, assembly)
+                continue
+
             # for now if it's not a revolute or slider joint ignore it
             if joint.jointMotion.jointType != 1 and joint.jointMotion.jointType != 2:
                 continue
@@ -226,6 +231,18 @@ def _addJointInstance(
                 else:
                     joint_instance.signal_reference = ""
 
+def _addRigidGroup(
+    joint: adsk.fusion.Joint,
+    assembly: assembly_pb2.Assembly
+):
+    if joint.jointMotion.jointType != 0 or not (joint.occurrenceOne.isLightBulbOn and joint.occurrenceTwo.isLightBulbOn):
+        return
+    
+    mira_group = joint_pb2.RigidGroup()
+    mira_group.name = f"group_{joint.occurrenceOne.name}_{joint.occurrenceTwo.name}"
+    mira_group.occurrences.append(guid_occurrence(joint.occurrenceOne))
+    mira_group.occurrences.append(guid_occurrence(joint.occurrenceTwo))
+    assembly.data.joints.rigid_groups.append(mira_group)
 
 def _motionFromJoint(
     fusionMotionDefinition: adsk.fusion.JointMotion, proto_joint: joint_pb2.Joint
