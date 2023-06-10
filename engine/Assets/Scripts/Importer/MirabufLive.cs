@@ -269,7 +269,7 @@ namespace Synthesis.Import {
 	        ms.Seek(0, SeekOrigin.Begin);
 	        var debugAssembly = Assembly.Parser.ParseFrom(ms);
 	        
-	        debugAssembly.Data.Parts.PartDefinitions.ForEach(x => x.Value.Bodies.Clear());
+	        debugAssembly.Data.Parts.PartDefinitions.ForEach(x => x.Value.Bodies.ForEach(x => x.TriangleMesh = null));
 	        var jFormatter = new JsonFormatter(JsonFormatter.Settings.Default);
 	        File.WriteAllText(
 		        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
