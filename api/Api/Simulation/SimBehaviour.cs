@@ -7,8 +7,8 @@ using SynthesisAPI.Utilities;
 namespace SynthesisAPI.Simulation {
     public abstract class SimBehaviour {
 
-        protected List<string> _reservedInput = new List<string>();
-        public IReadOnlyCollection<string> ReservedInput => _reservedInput.AsReadOnly();
+        protected List<(string key, string displayName)> _reservedInput = new List<(string key, string displayName)>();
+        public IReadOnlyCollection<(string key, string displayName)> ReservedInput => _reservedInput.AsReadOnly();
 
         private bool _enabled = false;
         public bool Enabled {
@@ -36,9 +36,9 @@ namespace SynthesisAPI.Simulation {
             SimObjectId = simObjectId;
         }
 
-        public void InitInputs(params (string key, Analog defaultInput)[] inputs) {
+        public void InitInputs(params (string key, string displayName, Analog defaultInput)[] inputs) {
             inputs.ForEach(x => {
-                _reservedInput.Add(x.key);
+                _reservedInput.Add((x.key, x.displayName));
                 InputManager.InputManager.AssignValueInput(x.key, x.defaultInput, true);
             });
         }

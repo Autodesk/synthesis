@@ -32,12 +32,12 @@ namespace Synthesis {
 			EventBus.NewTypeListener<ValueInputAssignedEvent>(OnValueInputAssigned);
 		}
 
-		public (string key, Analog input)[] GetInputs() {
-            return new (string key, Analog input)[] {
-                (LEFT_FORWARD, TryLoadInput(LEFT_FORWARD, new Digital("W"))),
-                (LEFT_REVERSE, TryLoadInput(LEFT_REVERSE, new Digital("S"))),
-				(RIGHT_FORWARD, TryLoadInput(RIGHT_FORWARD, new Digital("I"))),
-				(RIGHT_REVERSE, TryLoadInput(RIGHT_REVERSE, new Digital("K")))
+		public (string key, string displayName, Analog input)[] GetInputs() {
+            return new (string key, string displayName, Analog input)[] {
+                (LEFT_FORWARD, LEFT_FORWARD, TryLoadInput(LEFT_FORWARD, new Digital("W"))),
+                (LEFT_REVERSE, LEFT_REVERSE, TryLoadInput(LEFT_REVERSE, new Digital("S"))),
+				(RIGHT_FORWARD, RIGHT_FORWARD, TryLoadInput(RIGHT_FORWARD, new Digital("I"))),
+				(RIGHT_REVERSE, RIGHT_REVERSE, TryLoadInput(RIGHT_REVERSE, new Digital("K")))
             };
         }
 

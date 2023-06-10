@@ -30,8 +30,8 @@ namespace SynthesisAPI.Simulation {
 
         public virtual void Destroy() { }
 
-        public List<string> GetAllReservedInputs() {
-            var res = new List<string>();
+        public List<(string key, string displayName)> GetAllReservedInputs() {
+            var res = new List<(string key, string displayName)>();
             SimulationManager.Behaviours[_name].ForEach(x => x.ReservedInput.ForEach(y => res.Add(y)));
             return res;
         }
