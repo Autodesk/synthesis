@@ -15,7 +15,7 @@ For more information on the product itself or the team, visit http://synthesis.a
 
 Synthesis is comprised of 4 separate components that are mostly developed independently of each other. You will want to clone the entire repository first, then follow a different set of steps depending on which component you wish to work on. The links below will lead you to specific instructions that will get you a copy of that component up and running on your local machine for development and testing purposes.
 
-* [Simulation Engine](/engine)
+* [Simulation Engine](/engine/README.md)
 * [Fusion Robot Exporter (Fusion 360 Plugin)](/exporter/SynthesisFusionAddin/)
 * [API](/api/)
 

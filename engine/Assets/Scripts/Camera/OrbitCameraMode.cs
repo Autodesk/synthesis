@@ -4,22 +4,27 @@ using SynthesisAPI.InputManager;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+#nullable enable
+
 public class OrbitCameraMode : ICameraMode
 {
     // [SerializeField] public Transform FollowTransform;
     public static Func<Vector3> FocusPoint = () => Vector3.zero;
 
-    private float _targetZoom = 15.0f;
-    private float _targetPitch = 10.0f;
-    private float _targetYaw = 135.0f;
-    private float _actualZoom = 5.0f;
-    private float _actualPitch = 0.0f;
-    private float _actualYaw = 0.0f;
+    public float TargetZoom { get; private set; } = 15.0f;
+    public float TargetPitch { get; private set; } = 10.0f;
+    public float TargetYaw { get; private set; } = 135.0f;
+    public float ActualZoom { get; private set; } = 5.0f;
+    public float ActualPitch { get; private set; } = 0.0f;
+    public float ActualYaw { get; private set; } = 0.0f;
     private bool _useOrbit = false;
 
-    public void Start(CameraController cam)
-    {
-        
+    public void Start<T>(CameraController cam, T? previousCam) where T : ICameraMode {
+        if (previousCam != null && previousCam.GetType() == typeof(FreeCameraMode)) {
+            FreeCameraMode freeCam = (previousCam as FreeCameraMode)!;
+            ActualPitch = freeCam.ActualPitch;
+            ActualYaw = freeCam.ActualYaw;
+        }
     }
 
     public void Update(CameraController cam)
@@ -65,15 +70,15 @@ public class OrbitCameraMode : ICameraMode
             }
         }
 
-        _targetPitch = Mathf.Clamp(_targetPitch + p, cam.PitchLowerLimit, cam.PitchUpperLimit);
-        _targetYaw += y;
-        _targetZoom = Mathf.Clamp(_targetZoom + z, cam.ZoomLowerLimit, cam.ZoomUpperLimit);
+        TargetPitch = Mathf.Clamp(TargetPitch + p, cam.PitchLowerLimit, cam.PitchUpperLimit);
+        TargetYaw += y;
+        TargetZoom = Mathf.Clamp(TargetZoom + z, cam.ZoomLowerLimit, cam.ZoomUpperLimit);
         
         float orbitLerpFactor = Mathf.Clamp((cam.OrbitalAcceleration * Time.deltaTime) / 0.018f, 0.01f, 1.0f);
-        _actualPitch = Mathf.Lerp(_actualPitch, _targetPitch, orbitLerpFactor);
-        _actualYaw = Mathf.Lerp(_actualYaw, _targetYaw, orbitLerpFactor);
+        ActualPitch = Mathf.Lerp(ActualPitch, TargetPitch, orbitLerpFactor);
+        ActualYaw = Mathf.Lerp(ActualYaw, TargetYaw, orbitLerpFactor);
         float zoomLerpFactor = Mathf.Clamp((cam.ZoomAcceleration * Time.deltaTime) / 0.018f, 0.01f, 1.0f);
-        _actualZoom = Mathf.Lerp(_actualZoom, _targetZoom, zoomLerpFactor);
+        ActualZoom = Mathf.Lerp(ActualZoom, TargetZoom, zoomLerpFactor);
     }
 
     public void LateUpdate(CameraController cam)
@@ -88,9 +93,9 @@ public class OrbitCameraMode : ICameraMode
         t.localRotation = Quaternion.identity;
 
         var up = t.up;
-        t.localRotation = Quaternion.Euler(_actualPitch, 0.0f, 0.0f);
-        t.RotateAround(focus, up, _actualYaw);
-        t.localPosition = (/*up * 0.5f +*/ t.forward * -_actualZoom) + t.localPosition;
+        t.localRotation = Quaternion.Euler(ActualPitch, 0.0f, 0.0f);
+        t.RotateAround(focus, up, ActualYaw);
+        t.localPosition = (/*up * 0.5f +*/ t.forward * -ActualZoom) + t.localPosition;
     }
     
     public void End(CameraController cam) {}

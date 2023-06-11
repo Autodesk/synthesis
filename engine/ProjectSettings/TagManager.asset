@@ -22,9 +22,9 @@ TagManager:
   - D1CollisionLayer
   - D2CollisionLayer
   - D3CollisionLayer
-  - 
-  - 
-  - 
+  - D4CollisionLayer
+  - D5CollisionLayer
+  - D6CollisionLayer
   - 
   - 
   - 

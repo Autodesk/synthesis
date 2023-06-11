@@ -26,6 +26,7 @@ namespace Synthesis.WS {
 
             if (_server != null) {
                 _server.Close();
+                Debug.Log("WebSocketServer closed by manager");
             }
 
             RioState = new RoboRIOState();
