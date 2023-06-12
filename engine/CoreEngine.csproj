@@ -51,17 +51,19 @@
      <Compile Include="Assets\Scripts\Gizmos\GizmoManager.cs" />
      <Compile Include="Assets\Scripts\Physics\CustomWheel.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\MeshCollider2DAdapter.cs" />
-     <Compile Include="Assets\Scripts\Gizmos\SignalsOverlayRenderer.cs" />
+     <Compile Include="Assets\Scripts\Networking\NetManager.cs" />
      <Compile Include="Assets\Scripts\Importer\MirabufLive.cs" />
      <Compile Include="Assets\Scripts\Utilities\DeflateStreamWrapper.cs" />
      <Compile Include="Assets\Scripts\Camera\GizmoCamera.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Configuring\SettingsModal.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Panels\SpawnLocationPanel.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Testing\ServerTestModal.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\TopBar.cs" />
      <Compile Include="Assets\Scripts\UI\ToastLogger\ToastManager.cs" />
      <Compile Include="Assets\Scripts\Tween\Demo\TweenDemo.cs" />
      <Compile Include="Assets\Scripts\MouseTracker.cs" />
      <Compile Include="Assets\Scripts\UI\ContextMenu\ContextItem.cs" />
+     <Compile Include="Assets\Scripts\Gizmos\SignalsOverlayRenderer.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\ToastModal.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\DynamicUIManager.cs" />
      <Compile Include="Assets\Scripts\UI\ToastLogger\ToastLogger.cs" />
@@ -82,9 +84,9 @@
      <Compile Include="Assets\Scripts\Scoring\ShootableGamepiece.cs" />
      <Compile Include="Assets\Scripts\Modes\IMode.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\AudioSourceAdapter.cs" />
+     <Compile Include="Assets\Scripts\Modes\ClientTestMode.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Panels\Configuring\StartMatchModePanel.cs" />
      <Compile Include="Assets\Scripts\Modes\ModeManager.cs" />
-     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\BetaWarning.cs" />
      <Compile Include="Assets\Scripts\PreferenceManager\SimulationPreferences.cs" />
      <Compile Include="Assets\Scripts\Modes\MatchMode.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\LoadModuleException.cs" />
@@ -101,6 +103,7 @@
      <Compile Include="Assets\Scripts\Camera\CameraController.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\LoadingScreenModal.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\MainHUD.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Testing\ClientTestModal.cs" />
      <Compile Include="Assets\Scripts\Attributes\ControllableInputAttribute.cs" />
      <Compile Include="Assets\Scripts\Physics\PhysicsManager.cs" />
      <Compile Include="Assets\Scripts\UI\ImageManager.cs" />
@@ -133,11 +136,14 @@
      <Compile Include="Assets\Scripts\Behaviors\GeneralArmBehaviour.cs" />
      <Compile Include="Assets\Scripts\SimObjects\RobotSimObject.cs" />
      <Compile Include="Assets\Scripts\Camera\OverviewCameraMode.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Networking\ManageLobbiesModal.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Configuring\RioConfig\RCCreateDeviceModal.cs" />
      <Compile Include="Assets\Scripts\UI\SynthesisAssetCollection.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Configuring\PracticeSettingsModal.cs" />
+     <Compile Include="Assets\Scripts\Networking\NetworkManager.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\RigidbodyAdapter.cs" />
      <Compile Include="Assets\Scripts\Attributes\ContextMenuOptionAttribute.cs" />
+     <Compile Include="Assets\Scripts\Modes\ServerTestMode.cs" />
      <Compile Include="Assets\Scripts\Scoring\TempScoreManager.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Panel.cs" />
      <Compile Include="Assets\Scripts\UI\NavigationBar.cs" />
@@ -157,6 +163,7 @@
      <Compile Include="Assets\Scripts\UI\Dynamic\Panels\Testing\RobotDetailsPanel.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\DraggablePanel.cs" />
      <Compile Include="Assets\Scripts\Gizmos\SelectableArrow.cs" />
+     <Compile Include="Assets\Scripts\UI\Dynamic\Modals\BetaWarning.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Spawning\SpawningModal.cs" />
      <Compile Include="Assets\Scripts\UI\MainMenu\SocialMediaButtons.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Panels\Configuring\ConfigureShotTrajectoryPanel.cs" />
@@ -447,28 +454,31 @@
      <HintPath>C:\Program Files\Unity\Hub\Editor\2021.3.9f1\Editor\Data\PlaybackEngines\WindowsStandaloneSupport\UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
      </Reference>
      <Reference Include="Api">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Assets\Packages\Api.dll</HintPath>
+     <HintPath>C:\Users\hunte\work\synthesis\engine\Assets\Packages\Api.dll</HintPath>
      </Reference>
      <Reference Include="MathNet.Spatial">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Assets\Packages\MathNet.Spatial.dll</HintPath>
+     <HintPath>C:\Users\hunte\work\synthesis\engine\Assets\Packages\MathNet.Spatial.dll</HintPath>
      </Reference>
      <Reference Include="MathNet.Numerics">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Assets\Packages\MathNet.Numerics.dll</HintPath>
+     <HintPath>C:\Users\hunte\work\synthesis\engine\Assets\Packages\MathNet.Numerics.dll</HintPath>
      </Reference>
      <Reference Include="Newtonsoft.Json">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Assets\Packages\Newtonsoft.Json.dll</HintPath>
+     <HintPath>C:\Users\hunte\work\synthesis\engine\Assets\Packages\Newtonsoft.Json.dll</HintPath>
      </Reference>
      <Reference Include="Google.Protobuf">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Assets\Packages\Google.Protobuf.dll</HintPath>
+     <HintPath>C:\Users\hunte\work\synthesis\engine\Assets\Packages\Google.Protobuf.dll</HintPath>
      </Reference>
      <Reference Include="Aardvark">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Assets\Packages\Aardvark.dll</HintPath>
+     <HintPath>C:\Users\hunte\work\synthesis\engine\Assets\Packages\Aardvark.dll</HintPath>
      </Reference>
      <Reference Include="System.Runtime.CompilerServices.Unsafe">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Assets\Packages\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+     <HintPath>C:\Users\hunte\work\synthesis\engine\Assets\Packages\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
      </Reference>
      <Reference Include="nunit.framework">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Library\PackageCache\com.unity.ext.nunit@1.0.6\net35\unity-custom\nunit.framework.dll</HintPath>
+     <HintPath>C:\Users\hunte\work\synthesis\engine\Library\PackageCache\com.unity.ext.nunit@1.0.6\net35\unity-custom\nunit.framework.dll</HintPath>
+     </Reference>
+     <Reference Include="BouncyCastle.Crypto">
+     <HintPath>C:\Users\hunte\work\synthesis\engine\Assets\Packages\BouncyCastle.Crypto.dll</HintPath>
      </Reference>
      <Reference Include="mscorlib">
      <HintPath>C:\Program Files\Unity\Hub\Editor\2021.3.9f1\Editor\Data\UnityReferenceAssemblies\unity-4.8-api\mscorlib.dll</HintPath>
@@ -846,13 +856,13 @@
      <HintPath>C:\Program Files\Unity\Hub\Editor\2021.3.9f1\Editor\Data\UnityReferenceAssemblies\unity-4.8-api\Facades\System.Xml.XPath.XDocument.dll</HintPath>
      </Reference>
      <Reference Include="Unity.RenderPipelines.Core.Runtime">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Library\ScriptAssemblies\Unity.RenderPipelines.Core.Runtime.dll</HintPath>
+     <HintPath>C:\Users\hunte\work\synthesis\engine\Library\ScriptAssemblies\Unity.RenderPipelines.Core.Runtime.dll</HintPath>
      </Reference>
      <Reference Include="UnityEditor.UI">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
+     <HintPath>C:\Users\hunte\work\synthesis\engine\Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
      </Reference>
      <Reference Include="UnityEngine.UI">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
+     <HintPath>C:\Users\hunte\work\synthesis\engine\Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
      </Reference>
   </ItemGroup>
   <ItemGroup>

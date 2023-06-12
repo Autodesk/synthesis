@@ -383,11 +383,6 @@ namespace Synthesis.UI.Dynamic {
             RootRectTransform.anchorMax = new Vector2(0.5f, 1);
             return (this as T)!;
         }
-        
-        public void DeleteAllChildren() {
-            Children.ForEach(x => GameObject.Destroy(x.RootGameObject));
-            Children.Clear();
-        }
     }
 
     #endregion
