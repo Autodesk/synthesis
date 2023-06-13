@@ -40,6 +40,7 @@ namespace Synthesis {
                     SimulationManager.RemoveBehaviour(_robot.Name, x.azimuth.Reservee);
                 }
 
+                x.azimuth.Reserve(this);
                 x.azimuth.ControlMode = RotationalDriver.RotationalControlMode.Position;
                 x.azimuth.SetAxis(robot.GroundedNode.transform.up);
             });

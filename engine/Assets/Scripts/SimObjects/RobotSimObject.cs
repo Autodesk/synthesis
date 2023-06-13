@@ -575,12 +575,10 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         RobotSimObject simObject = mira.Sim as RobotSimObject;
         mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
         simObject.ConfigureDefaultBehaviours();
-        
-        
+
         mira.MainObject.transform.position = position;
         mira.MainObject.transform.rotation = rotation;
 
-        
         //TEMPORARY: CREATING INSTAKE AT FRONT OF THE ROBOT
         // GameObject intake = GameObject.CreatePrimitive(PrimitiveType.Cube);
         // intake.transform.SetParent(simObject.GroundedNode.transform);

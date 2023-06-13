@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Google.Protobuf.WellKnownTypes;
 using Synthesis.PreferenceManager;
 using SynthesisAPI.Simulation;
+using SynthesisAPI.Utilities;
 using UnityEngine;
 
 #nullable enable
@@ -157,11 +158,12 @@ namespace Synthesis {
             _jointA.useMotor = false;
         }
 
-        public void Reserve(SimBehaviour? behaviour) {
-            if (behaviour == null)
-                return;
+        public bool Reserve(SimBehaviour? behaviour) {
+            if (behaviour == null || _reservee != null)
+                return false;
             
             _reservee = behaviour;
+            return true;
         }
 
         public void Unreserve() {
