@@ -41,7 +41,7 @@ public class ChooseModeModal : ModalDynamic
             .ApplyTemplate(VerticalLayout)
             .AddOnClickedEvent(b =>
             {
-                ModeManager.CurrentMode = new MatchMode();
+                ModeManager.CurrentMode = new ServerTestMode();
                 SceneManager.LoadScene("MainScene");
             });
     }

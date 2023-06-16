@@ -7,10 +7,12 @@ message LobbyMessage {
     oneof message_type {
         ToRegisterClient to_register_client = 1;
         ToClientHeartbeat to_client_heartbeat = 2;
-        ToGetFellowClients to_get_fellow_clients = 3;
+        ToGetLobbyInformation to_get_lobby_information = 3;
+        ToDataDump to_data_dump = 4;
 
-        FromRegisterClient from_register_client = 4;
-        FromGetFellowClients from_get_fellow_clients = 5;
+        FromRegisterClient from_register_client = 5;
+        FromGetLobbyInformation from_get_lobby_information = 6;
+        FromDataDumpConfirm from_data_dump_confirm = 7;
     }
 
     // To The Server
@@ -19,11 +21,16 @@ message LobbyMessage {
     }
 
     message ToClientHeartbeat {
-        LobbyClientInformation client_info = 1;
+        // LobbyClientInformation client_info = 1;
     }
 
-    message ToGetFellowClients {
+    message ToGetLobbyInformation {
         uint64 sender_guid = 1;
+    }
+
+    message ToDataDump {
+        string identifier = 1;
+        bytes data = 2;
     }
 
     // From The Server
@@ -31,9 +38,12 @@ message LobbyMessage {
         LobbyClientInformation updated_client_info = 1;
     }
 
-    message FromGetFellowClients {
-        LobbyClientInformation host_info = 1;
-        repeated LobbyClientInformation clients_info = 2;
+    message FromGetLobbyInformation {
+        LobbyInformation lobby_information = 1;
+    }
+
+    message FromDataDumpConfirm {
+        string identifier = 1;
     }
 
 }

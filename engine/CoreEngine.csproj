@@ -140,7 +140,6 @@
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Configuring\RioConfig\RCCreateDeviceModal.cs" />
      <Compile Include="Assets\Scripts\UI\SynthesisAssetCollection.cs" />
      <Compile Include="Assets\Scripts\UI\Dynamic\Modals\Configuring\PracticeSettingsModal.cs" />
-     <Compile Include="Assets\Scripts\Networking\NetworkManager.cs" />
      <Compile Include="Assets\Scripts\ModuleLoader\Adapters\RigidbodyAdapter.cs" />
      <Compile Include="Assets\Scripts\Attributes\ContextMenuOptionAttribute.cs" />
      <Compile Include="Assets\Scripts\Modes\ServerTestMode.cs" />

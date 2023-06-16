@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 using Google.Protobuf;
-using JetBrains.Annotations;
-using SynthesisAPI.Aether;
 using SynthesisAPI.Utilities;
 
 #nullable enable
@@ -14,7 +10,9 @@ using SynthesisAPI.Utilities;
 namespace SynthesisAPI.Aether.Lobby {
     public class LobbyClient : IDisposable {
 
-        public string IP => _instance?.IP;
+        private const long HEARTBEAT_FREQUENCY = 1000;
+
+        public string IP => _instance == null ? string.Empty : _instance.IP;
         private Inner? _instance;
         
         public LobbyClient(string ip, string name) {
@@ -23,8 +21,12 @@ namespace SynthesisAPI.Aether.Lobby {
 
         private class Inner : IDisposable {
 
-            public string IP;
+            private bool _isAlive = true;
+            
+            public readonly string IP;
             private LobbyClientHandler _handler;
+
+            private Thread _heartbeatThread;
 
             public Inner(string ip, string name) {
                 IP = ip;
@@ -36,6 +38,23 @@ namespace SynthesisAPI.Aether.Lobby {
                 if (handlerRes.isError)
                     throw handlerRes.GetError();
                 _handler = handlerRes.GetResult();
+
+                // TODO: Add lifetime stuff
+                _heartbeatThread = new Thread(ClientHeartbeat);
+                _heartbeatThread.Start();
+            }
+            
+            private void ClientHeartbeat() {
+                long lastUpdate = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                while (_isAlive) {
+                    long currentTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                    if (currentTime - lastUpdate > HEARTBEAT_FREQUENCY) {
+                        _handler.WriteMessage(new LobbyMessage());
+                        lastUpdate = currentTime;
+                    } else {
+                        Thread.Sleep(100);
+                    }
+                }
             }
 
             public void Dispose() { }
@@ -51,18 +70,15 @@ namespace SynthesisAPI.Aether.Lobby {
     
     public class LobbyClientHandler {
 
-        private readonly string _name;
-        public string Name => _name;
-        private readonly ulong _guid;
-        public ulong Guid => _guid;
+        private readonly LobbyClientInformation _clientInformation;
+        public LobbyClientInformation ClientInformation => _clientInformation.Clone();
 
         private TcpClient _tcp;
         private NetworkStream _stream; // Concurrency issues?
         
         private LobbyClientHandler(TcpClient tcp, string name, ulong guid) {
             _tcp = tcp;
-            _name = name;
-            _guid = Guid;
+            _clientInformation = new LobbyClientInformation { Name = name, Guid = guid };
             _stream = _tcp.GetStream();
         }
 
@@ -102,14 +118,6 @@ namespace SynthesisAPI.Aether.Lobby {
                 return new Result<bool, Exception>(e);
             }
         }
-
-        // private int? ReadInt32(Stream s) {
-        //     byte[] buf = new byte[4];
-        //     int size = s.Read(buf, 0, 4);
-        //     if (size != 4)
-        //         return null;
-        //     return BitConverter.ToInt32(buf, 0);
-        // }
 
         public static Result<LobbyClientHandler, Exception> InitServerSide(TcpClient tcp, ulong guid) {
             var msgTask = ReadMessage(tcp.GetStream());
