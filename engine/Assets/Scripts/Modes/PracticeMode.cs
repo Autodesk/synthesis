@@ -43,7 +43,7 @@ public class PracticeMode : IMode
 
     public void Start()
     {
-        // DynamicUIManager.CreateModal<AddFieldModal>();
+        DynamicUIManager.CreateModal<AddFieldModal>();
 
         // var mira = new MirabufLive("C:\\Users\\hunte\\AppData\\Roaming\\Autodesk\\Synthesis\\Mira\\BrokenLinksRobot_v1.mira");
         //
@@ -74,6 +74,8 @@ public class PracticeMode : IMode
             b => DynamicUIManager.CreatePanel<BetaWarningPanel>(false, (Action)(() => DynamicUIManager.CreatePanel<DriverStationPanel>(true))),
             icon: SynthesisAssetCollection.GetSpriteByName("driverstation-icon")
         );
+        
+        MainHUD.AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>());
     }
     
     public static void SetInitialState(GameObject robot)

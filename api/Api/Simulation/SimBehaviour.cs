@@ -49,6 +49,8 @@ namespace SynthesisAPI.Simulation {
 
         protected virtual void OnEnable() { }
         protected virtual void OnDisable() { }
+        public virtual void OnRemove() { }
         public abstract void Update();
+        public virtual void FixedUpdate() { }
     }
 }

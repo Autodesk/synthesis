@@ -37,6 +37,7 @@ namespace Synthesis.Runtime {
         public static event Action OnSimKill;
 
         public static event Action OnUpdate;
+        
         private static bool _inSim = false;
         public static bool InSim {
             get => _inSim;
@@ -126,6 +127,11 @@ namespace Synthesis.Runtime {
             //     else
             //         Logger.Log("Succeeded", LogLevel.Debug);
             // }
+        }
+
+        private void FixedUpdate() {
+            SimulationManager.FixedUpdate();
+            PhysicsManager.FixedUpdate();
         }
 
         void OnDestroy() {

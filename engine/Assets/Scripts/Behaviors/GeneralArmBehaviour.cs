@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Google.Protobuf.WellKnownTypes;
@@ -19,15 +20,19 @@ namespace Synthesis {
         private string _forwardDisplayName = " Forward";
         private string _reverseDisplayName = " Reverse";
 
-        private string _armSignal;
+        private RotationalDriver _armDriver;
         private float _speedMod = 0.4f;
 
-        public GeneralArmBehaviour(string simObjectId, string armSignal) : base(simObjectId) {// base(simObjectId, GetInputs(this, armSignal))
-            _armSignal = armSignal;
+        public GeneralArmBehaviour(string simObjectId, RotationalDriver armDriver) : base(simObjectId) {// base(simObjectId, GetInputs(this, armSignal))
 
-            _forwardInputKey = _armSignal + _forwardInputKey;
-            _reverseInputKey = _armSignal + _reverseInputKey;
-            var name = SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignalLayout.SignalMap[_armSignal].Info.Name;
+            if (armDriver.IsReserved)
+                throw new Exception("Rotational Driver already reserved");
+            armDriver.Reserve(this);
+            _armDriver = armDriver;
+
+            _forwardInputKey = _armDriver.Signal + _forwardInputKey;
+            _reverseInputKey = _armDriver.Signal + _reverseInputKey;
+            var name = _armDriver.Name;
             _forwardDisplayName = name + _forwardDisplayName;
             _reverseDisplayName = name + _reverseDisplayName;
 
@@ -67,7 +72,12 @@ namespace Synthesis {
             var rev = InputManager.MappedValueInputs[_reverseInputKey];
             float val = Mathf.Abs(forw.Value) - Mathf.Abs(rev.Value);
 
-            SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignals[_armSignal].Value = Value.ForNumber(val * _speedMod);
+            _armDriver.MainInput = val * _speedMod;
+        }
+
+        public override void OnRemove() {
+            _armDriver.MainInput = 0f;
+            _armDriver.Unreserve();
         }
     }
 }

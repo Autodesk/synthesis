@@ -1,25 +1,3 @@
-/engine/[Ll]ibrary/
-/engine/[Tt]emp/
-/engine/[Oo]bj/
-/engine/[Bb]uild/
-/engine/[Bb]uilds/
-/engine/[Ll]ogs/
-/engine/[Mm]emoryCaptures/
-/engine/Packages/*
-/engine/[Uu]ser[Ss]ettings/
-
-!/engine/Packages/manifest.json
-!/engine/[Aa]ssets/**/*.meta
-!/engine/Packages/packages-lock.json
-
-/engine/Assets/Packages/*
-/engine/Assets/Packages/*.meta
-
-/engine/[Aa]ssets/AssetStoreTools*
-
-/engine/*.csproj
-/engine/*.sln
-
 .vs/
 .DS_Store
 **/*/.idea/
@@ -39,10 +17,6 @@
 *.mdb.meta
 
 sysinfo.txt
-
-!/engine/Assets/Packages/Api.dll
-!/engine/Assets/Packages/Aardvark.dll
-!/engine/Assets/Packages/Nuget/Editor/NugetForUnity.dll
 
 !/api/libs/UnityEngine.dll
 
