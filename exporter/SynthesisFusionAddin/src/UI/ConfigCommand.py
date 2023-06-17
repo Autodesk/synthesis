@@ -4,6 +4,8 @@
 
 from enum import Enum
 import platform
+
+from ..Parser.SynthesisParser.Utilities import guid_occurrence
 from ..general_imports import *
 from ..configure import NOTIFIED, write_configuration
 from ..Analytics.alert import showAnalyticsAlert
@@ -1332,7 +1334,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
 
                     _exportGamepieces.append(
                         Gamepiece(
-                            GamepieceListGlobal[row - 1].entityToken,
+                            guid_occurrence(GamepieceListGlobal[row - 1]),
                             weightValue,
                             frictionValue,
                         )

@@ -28,17 +28,13 @@ def _MapAllComponents(
             raise RuntimeError("User canceled export")
         progressDialog.addComponent(component.name)
 
-        try:
-            comp_ref = component.entityToken
-        except RuntimeError:
-            # backup in case encountered the bug
-            comp_ref = component.name
+        comp_ref = guid_component(component)
 
         fill_info(partsData, None)
 
         partDefinition = partsData.part_definitions[comp_ref]
 
-        fill_info(partDefinition, component)
+        fill_info(partDefinition, component, comp_ref)
 
         PhysicalProperties.GetPhysicalProperties(component, partDefinition.physical_data)
 
@@ -74,16 +70,13 @@ def _ParseComponentRoot(
     node: types_pb2.Node,
 ) -> None:
 
-    try:
-        mapConstant = component.entityToken
-    except RuntimeError:
-        mapConstant = component.name
+    mapConstant = guid_component(component)
 
     part = partsData.part_instances[mapConstant]
 
     node.value = mapConstant
 
-    fill_info(part, component)
+    fill_info(part, component, mapConstant)
 
     def_map = partsData.part_definitions
 
@@ -117,21 +110,15 @@ def __parseChildOccurrence(
 
     progressDialog.addOccurrence(occurrence.name)
 
-    try:
-        mapConstant = occurrence.entityToken
-    except RuntimeError:
-        mapConstant = occurrence.name
+    mapConstant = guid_occurrence(occurrence)
 
-    try:
-        compRef = occurrence.component.entityToken
-    except RuntimeError:
-        compRef = occurrence.component.name
+    compRef = guid_component(occurrence.component)
 
     part = partsData.part_instances[mapConstant]
 
     node.value = mapConstant
 
-    fill_info(part, occurrence)
+    fill_info(part, occurrence, mapConstant)
 
     collision_attr = occurrence.attributes.itemByName("synthesis", "collision_off")
     if collision_attr != None:
@@ -228,10 +215,7 @@ def _MapRigidGroups(
             if not occ.isLightBulbOn:
                 continue
 
-            try:
-                occRef = occ.entityToken
-            except RuntimeError:
-                occRef = occ.name
+            occRef = guid_occurrence(occ)
             mira_group.occurrences.append(occRef)
         if len(mira_group.occurrences) > 1:
             joints.rigid_groups.append(mira_group)

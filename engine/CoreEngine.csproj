@@ -447,28 +447,28 @@
      <HintPath>C:\Program Files\Unity\Hub\Editor\2021.3.9f1\Editor\Data\PlaybackEngines\WindowsStandaloneSupport\UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
      </Reference>
      <Reference Include="Api">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Assets\Packages\Api.dll</HintPath>
+     <HintPath>C:\Users\hunte\work\synthesis\engine\Assets\Packages\Api.dll</HintPath>
      </Reference>
      <Reference Include="MathNet.Spatial">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Assets\Packages\MathNet.Spatial.dll</HintPath>
+     <HintPath>C:\Users\hunte\work\synthesis\engine\Assets\Packages\MathNet.Spatial.dll</HintPath>
      </Reference>
      <Reference Include="MathNet.Numerics">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Assets\Packages\MathNet.Numerics.dll</HintPath>
+     <HintPath>C:\Users\hunte\work\synthesis\engine\Assets\Packages\MathNet.Numerics.dll</HintPath>
      </Reference>
      <Reference Include="Newtonsoft.Json">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Assets\Packages\Newtonsoft.Json.dll</HintPath>
+     <HintPath>C:\Users\hunte\work\synthesis\engine\Assets\Packages\Newtonsoft.Json.dll</HintPath>
      </Reference>
      <Reference Include="Google.Protobuf">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Assets\Packages\Google.Protobuf.dll</HintPath>
+     <HintPath>C:\Users\hunte\work\synthesis\engine\Assets\Packages\Google.Protobuf.dll</HintPath>
      </Reference>
      <Reference Include="Aardvark">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Assets\Packages\Aardvark.dll</HintPath>
+     <HintPath>C:\Users\hunte\work\synthesis\engine\Assets\Packages\Aardvark.dll</HintPath>
      </Reference>
      <Reference Include="System.Runtime.CompilerServices.Unsafe">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Assets\Packages\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+     <HintPath>C:\Users\hunte\work\synthesis\engine\Assets\Packages\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
      </Reference>
      <Reference Include="nunit.framework">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Library\PackageCache\com.unity.ext.nunit@1.0.6\net35\unity-custom\nunit.framework.dll</HintPath>
+     <HintPath>C:\Users\hunte\work\synthesis\engine\Library\PackageCache\com.unity.ext.nunit@1.0.6\net35\unity-custom\nunit.framework.dll</HintPath>
      </Reference>
      <Reference Include="mscorlib">
      <HintPath>C:\Program Files\Unity\Hub\Editor\2021.3.9f1\Editor\Data\UnityReferenceAssemblies\unity-4.8-api\mscorlib.dll</HintPath>
@@ -846,13 +846,13 @@
      <HintPath>C:\Program Files\Unity\Hub\Editor\2021.3.9f1\Editor\Data\UnityReferenceAssemblies\unity-4.8-api\Facades\System.Xml.XPath.XDocument.dll</HintPath>
      </Reference>
      <Reference Include="Unity.RenderPipelines.Core.Runtime">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Library\ScriptAssemblies\Unity.RenderPipelines.Core.Runtime.dll</HintPath>
+     <HintPath>C:\Users\hunte\work\synthesis\engine\Library\ScriptAssemblies\Unity.RenderPipelines.Core.Runtime.dll</HintPath>
      </Reference>
      <Reference Include="UnityEditor.UI">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
+     <HintPath>C:\Users\hunte\work\synthesis\engine\Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
      </Reference>
      <Reference Include="UnityEngine.UI">
-     <HintPath>C:\Users\hunte\git\synthesis\engine\Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
+     <HintPath>C:\Users\hunte\work\synthesis\engine\Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
      </Reference>
   </ItemGroup>
   <ItemGroup>
