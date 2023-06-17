@@ -14,9 +14,9 @@ namespace Synthesis {
 	public class TankDriveBehavior : SimBehaviour {
 
 		internal const string LEFT_FORWARD = "Tank Left-Forward";
-		internal const string LEFT_BACKWARD = "Tank Left-Backward";
+		internal const string LEFT_REVERSE = "Tank Left-Reverse";
 		internal const string RIGHT_FORWARD = "Tank Right-Forward";
-		internal const string RIGHT_BACKWARD = "Tank Right-Backward";
+		internal const string RIGHT_REVERSE = "Tank Right-Reverse";
 
 		private List<WheelDriver> _leftWheels;
 		private List<WheelDriver> _rightWheels;
@@ -53,12 +53,12 @@ namespace Synthesis {
 			EventBus.NewTypeListener<ValueInputAssignedEvent>(OnValueInputAssigned);
 		}
 
-		public (string key, Analog input)[] GetInputs() {
-            return new (string key, Analog input)[] {
-                (LEFT_FORWARD, TryLoadInput(LEFT_FORWARD, new Digital("W"))),
-                (LEFT_BACKWARD, TryLoadInput(LEFT_BACKWARD, new Digital("S"))),
-				(RIGHT_FORWARD, TryLoadInput(RIGHT_FORWARD, new Digital("UpArrow"))),
-				(RIGHT_BACKWARD, TryLoadInput(RIGHT_BACKWARD, new Digital("DownArrow")))
+		public (string key, string displayName, Analog input)[] GetInputs() {
+            return new (string key, string displayName, Analog input)[] {
+                (LEFT_FORWARD, LEFT_FORWARD, TryLoadInput(LEFT_FORWARD, new Digital("W"))),
+                (LEFT_REVERSE, LEFT_REVERSE, TryLoadInput(LEFT_REVERSE, new Digital("S"))),
+				(RIGHT_FORWARD, RIGHT_FORWARD, TryLoadInput(RIGHT_FORWARD, new Digital("I"))),
+				(RIGHT_REVERSE, RIGHT_REVERSE, TryLoadInput(RIGHT_REVERSE, new Digital("K")))
             };
         }
 
@@ -74,9 +74,9 @@ namespace Synthesis {
 			ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
 			switch (args.InputKey) {
 				case LEFT_FORWARD:
-				case LEFT_BACKWARD:
+				case LEFT_REVERSE:
 				case RIGHT_FORWARD:
-				case RIGHT_BACKWARD:
+				case RIGHT_REVERSE:
 					if (base.SimObjectId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID) return;
 					RobotSimObject robot = SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject;
 					SimulationPreferences.SetRobotInput(
@@ -89,9 +89,9 @@ namespace Synthesis {
 
 		public override void Update() {
 			var leftForwardInput = InputManager.MappedValueInputs[LEFT_FORWARD];
-			var leftBackwardInput = InputManager.MappedValueInputs[LEFT_BACKWARD];
+			var leftBackwardInput = InputManager.MappedValueInputs[LEFT_REVERSE];
 			var rightForwardInput = InputManager.MappedValueInputs[RIGHT_FORWARD];
-			var rightBackwardInput = InputManager.MappedValueInputs[RIGHT_BACKWARD];
+			var rightBackwardInput = InputManager.MappedValueInputs[RIGHT_REVERSE];
 
 			var leftSpeed = Mathf.Abs(leftForwardInput.Value) - Mathf.Abs(leftBackwardInput.Value);
 			var rightSpeed = Mathf.Abs(rightForwardInput.Value) - Mathf.Abs(rightBackwardInput.Value);

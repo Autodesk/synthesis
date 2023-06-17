@@ -15,6 +15,8 @@ namespace Synthesis {
         private bool _isWheel = false;
         public bool IsWheel => _isWheel;
 
+        public string Signal => _inputs[0];
+
         private SimBehaviour? _reservee;
         public SimBehaviour? Reservee => _reservee;
         public bool IsReserved => _reservee != null;

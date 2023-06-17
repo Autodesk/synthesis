@@ -49,15 +49,15 @@ namespace Synthesis {
             EventBus.NewTypeListener<ValueInputAssignedEvent>(OnValueInputAssigned);
         }
         
-        public (string key, Analog input)[] GetInputs() {
-            return new (string key, Analog input)[] {
-                (FORWARD, TryLoadInput(FORWARD, new Digital("W"))),
-                (BACKWARD, TryLoadInput(BACKWARD, new Digital("S"))),
-                (LEFT, TryLoadInput(LEFT, new Digital("A"))),
-                (RIGHT, TryLoadInput(RIGHT, new Digital("D"))),
-                (TURN_LEFT, TryLoadInput(TURN_LEFT, new Digital("LeftArrow"))),
-                (TURN_RIGHT, TryLoadInput(TURN_RIGHT, new Digital("RightArrow"))),
-                (RESET_FIELD_FORWARD, TryLoadInput(RESET_FIELD_FORWARD, new Digital("R")))
+        public (string key, string name, Analog input)[] GetInputs() {
+            return new (string key, string name, Analog input)[] {
+                (FORWARD, FORWARD, TryLoadInput(FORWARD, new Digital("W"))),
+                (BACKWARD, BACKWARD, TryLoadInput(BACKWARD, new Digital("S"))),
+                (LEFT, LEFT, TryLoadInput(LEFT, new Digital("A"))),
+                (RIGHT, RIGHT, TryLoadInput(RIGHT, new Digital("D"))),
+                (TURN_LEFT, TURN_LEFT, TryLoadInput(TURN_LEFT, new Digital("LeftArrow"))),
+                (TURN_RIGHT, TURN_RIGHT, TryLoadInput(TURN_RIGHT, new Digital("RightArrow"))),
+                (RESET_FIELD_FORWARD, RESET_FIELD_FORWARD, TryLoadInput(RESET_FIELD_FORWARD, new Digital("R")))
             };
         }
         
