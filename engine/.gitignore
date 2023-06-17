@@ -17,8 +17,8 @@ Assets/Packages/*.meta
 
 [Aa]ssets/AssetStoreTools*
 
-./*.csproj
-./*.sln
+*.csproj
+*.sln
 
 !EngineDeps/EngineDeps.csproj
 
