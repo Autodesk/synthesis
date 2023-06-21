@@ -376,6 +376,11 @@ namespace Synthesis.UI.Dynamic {
             Children.ForEach(x => GameObject.Destroy(x.RootGameObject));
             Children.Clear();
         }
+
+        public T SetBackgroundColor<T>(Color color) where T : UIComponent {
+            RootGameObject.GetComponent<UnityEngine.UI.Image>().color = color;
+            return (this as T)!;
+        }
     }
 
     #endregion

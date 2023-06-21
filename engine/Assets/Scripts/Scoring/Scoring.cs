@@ -12,13 +12,17 @@ public static class Scoring
         blueScore = 0;
     }
     
-    public static void CreatePowerupScoreZones()
+    public static List<GameObject> CreatePowerupScoreZones()
     {
-        CreateRectangularScorezone(new Vector3(0, 1.8f, -1.83f), new Vector3(1, 0.5f, 0.7f), new Vector3(0, 0, 0), Alliance.RED);
-        CreateRectangularScorezone(new Vector3(0, 1.8f, 1.83f), new Vector3(1, 0.5f, 0.7f), new Vector3(0, 0, 0), Alliance.BLUE);
+        List<GameObject> gameObjects = new List<GameObject>();
+        gameObjects.Add(CreateRectangularScorezone(new Vector3(0, 1.8f, -1.83f), new Vector3(1, 0.5f, 0.7f),
+            new Vector3(0, 0, 0), Alliance.RED));
+        gameObjects.Add(CreateRectangularScorezone(new Vector3(0, 1.8f, 1.83f), new Vector3(1, 0.5f, 0.7f), new Vector3(0, 0, 0), Alliance.BLUE));
+        return gameObjects;
     }
 
-    private static void CreateRectangularScorezone(Vector3 position, Vector3 scale, Vector3 rotation, Alliance color)
+    private static GameObject CreateRectangularScorezone(Vector3 position, Vector3 scale, Vector3 rotation,
+        Alliance color)
     {
         GameObject zone = GameObject.CreatePrimitive(PrimitiveType.Cube);
         zone.transform.position = position;
@@ -27,7 +31,7 @@ public static class Scoring
         zone.GetComponent<Collider>().isTrigger = true;
         zone.GetComponent<MeshRenderer>().enabled = false;
         zone.tag = color == Alliance.RED ? "red zone" : "blue zone";
+
+        return zone;
     }
-    
-    
 }

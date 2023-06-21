@@ -76,6 +76,7 @@ public class PracticeMode : IMode
         );
         
         MainHUD.AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>());
+        MainHUD.AddItemToDrawer("Scoring Zones", b => DynamicUIManager.CreatePanel<ScoringZonesPanel>());
     }
     
     public static void SetInitialState(GameObject robot)
