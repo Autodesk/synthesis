@@ -625,8 +625,9 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             _preFreezeStates[x] = (x.isKinematic, x.velocity, x.angularVelocity);
             x.isKinematic = true;
             x.detectCollisions = false;
-            x.velocity = Vector3.zero;
-            x.angularVelocity = Vector3.zero;
+            // The following is no longer supported because there was a bug in PhysX.
+            // x.velocity = Vector3.zero;
+            // x.angularVelocity = Vector3.zero;
         });
 
         _isFrozen = true;

@@ -6,8 +6,6 @@ using System.Linq;
 using System.Net;
 using Synthesis.PreferenceManager;
 using UnityEngine;
-
-using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -15,8 +13,6 @@ public static class AnalyticsManager {
 
     private const string CLIENT_ID_PREF = "analytics/client_id";
     public const string USE_ANALYTICS_PREF = "analytics/use_analytics";
-
-    private static string AllData = "";
 
     public const string TRACKING_ID = "UA-81892961-7";
     public static string ClientID;
@@ -26,8 +22,6 @@ public static class AnalyticsManager {
     private static bool _useAnalytics = true;
 
     private static List<IAnalytics> _pendingEvents;
-
-    private const string ANALYTICS_URL = "http://192.168.1.7:8080";
 
     public static bool UseAnalytics {
         get => _useAnalytics;
