@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -5,13 +6,11 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using TMPro;
 using UnityEngine;
 
 namespace Synthesis.UI.Dynamic {
     public class DownloadAssetModal : ModalDynamic {
-
         private const string MANIFEST_URL   = "https://synthesis.autodesk.com/Downloadables/Mira/manifest.json";
         private const string BASE_ASSET_URL = "https://synthesis.autodesk.com/Downloadables/Mira/";
         private JObject manifest;
@@ -58,15 +57,19 @@ namespace Synthesis.UI.Dynamic {
             CancelButton.RootGameObject.SetActive(false);
 
             _robotDir = AddRobotModal.ParsePath(Path.Combine("$appdata/Autodesk/Synthesis", "Mira"), '/');
-            if (!Directory.Exists(_robotDir))
+            if (!Directory.Exists(_robotDir)) {
                 Directory.CreateDirectory(_robotDir);
+            }
+
             _downloadedRobots = Directory.GetFiles(_robotDir)
                                     .Where(x => Path.GetExtension(x).Equals(".mira"))
                                     .Map<string>(x => x.Split('/').Last());
 
             _fieldDir = AddRobotModal.ParsePath(Path.Combine("$appdata/Autodesk/Synthesis", "Mira", "Fields"), '/');
-            if (!Directory.Exists(_fieldDir))
+            if (!Directory.Exists(_fieldDir)) {
                 Directory.CreateDirectory(_fieldDir);
+            }
+
             _downloadedFields = Directory.GetFiles(_fieldDir)
                                     .Where(x => Path.GetExtension(x).Equals(".mira"))
                                     .Map<string>(x => x.Split('/').Last());
@@ -94,8 +97,9 @@ namespace Synthesis.UI.Dynamic {
         }
 
         private void DownloadAsset(string url, string path) {
-            if (client == null)
+            if (client == null) {
                 client = new WebClient();
+            }
 
             client.DownloadFile(url, path);
         }
@@ -152,11 +156,9 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public override void Update() {
-            if (manifest != null) {
-                if (manifestWasNull) {
-                    CreateAssetEntries();
-                    manifestWasNull = false;
-                }
+            if (manifest != null && manifestWasNull) {
+                CreateAssetEntries();
+                manifestWasNull = false;
             }
         }
 

@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Engine.Util;
+﻿using Engine.Util;
 using SynthesisAPI.Utilities;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
+
 using Logger = UnityEngine.Logger;
 using Mesh   = SynthesisAPI.EnvironmentManager.Components.Mesh;
 
@@ -14,10 +15,13 @@ namespace Engine.ModuleLoader.Adapters {
         public void SetInstance(Mesh mesh) {
             instance = mesh;
 
-            if ((filter = gameObject.GetComponent<MeshFilter>()) == null)
+            if ((filter = gameObject.GetComponent<MeshFilter>()) == null) {
                 filter = gameObject.AddComponent<MeshFilter>();
-            if ((renderer = gameObject.GetComponent<MeshRenderer>()) == null)
+            }
+
+            if ((renderer = gameObject.GetComponent<MeshRenderer>()) == null) {
                 renderer = gameObject.AddComponent<MeshRenderer>();
+            }
 
             if (defaultMaterial == null) {
                 var s                 = Shader.Find("Universal Render Pipeline/Lit");
@@ -25,6 +29,7 @@ namespace Engine.ModuleLoader.Adapters {
                 defaultMaterial.color = new Color(0.2f, 0.2f, 0.2f);
                 defaultMaterial.SetFloat("_Smoothness", 0.2f);
             }
+
             renderer.material = defaultMaterial;
 
             filter.mesh           = new UnityEngine.Mesh();

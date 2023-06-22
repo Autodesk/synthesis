@@ -1,16 +1,15 @@
 using System;
-using System.Net.Http;
+using Synthesis.PreferenceManager;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using Synthesis.PreferenceManager;
-using UnityEngine;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
+using UnityEngine;
 
 public static class AnalyticsManager {
-
     private const string CLIENT_ID_PREF    = "analytics/client_id";
     public const string USE_ANALYTICS_PREF = "analytics/use_analytics";
 
@@ -44,10 +43,7 @@ public static class AnalyticsManager {
             PreferenceManager.Save();
         }
 
-        // Debug.Log($"Client ID: {ClientID}");
-
         _pendingEvents = new List<IAnalytics>();
-
         if (PreferenceManager.ContainsPreference(USE_ANALYTICS_PREF)) {
             _useAnalytics = PreferenceManager.GetPreference<bool>(USE_ANALYTICS_PREF);
         }
@@ -76,36 +72,38 @@ public static class AnalyticsManager {
         _pendingEvents.Add(e);
     }
 
-    /*public static void  PostData()
-    {
-        foreach (var _event in _pendingEvents)
-        {
-            if (UseAnalytics)
-            {
-                var cli = new WebClient();
-                try
-                {
-                    var reqparm = new System.Collections.Specialized.NameValueCollection();
-                    reqparm.Add("event_name", System.Net.WebUtility.UrlEncode(_event.GetPostData()));
-                    var resp = cli.UploadValues(
-                        $"{ANALYTICS_URL}/analytics", "POST", reqparm);
-                    Debug.Log(resp);
+    // TODO: Determine if still needed as part of codebase cleanup
+    // public static void  PostData()
+    // {
+    //     foreach (var _event in _pendingEvents)
+    //     {
+    //         if (UseAnalytics)
+    //         {
+    //             var cli = new WebClient();
+    //             try
+    //             {
+    //                 var reqparm = new System.Collections.Specialized.NameValueCollection();
+    //                 reqparm.Add("event_name", System.Net.WebUtility.UrlEncode(_event.GetPostData()));
+    //                 var resp = cli.UploadValues(
+    //                     $"{ANALYTICS_URL}/analytics", "POST", reqparm);
+    //                 Debug.Log(resp);
 
-                }
-                catch (Exception e)
-                {
-                    Debug.Log("not pog");
-                }
+    //             }
+    //             catch (Exception e)
+    //             {
+    //                 Debug.Log("not pog");
+    //             }
 
-            }
-        }
-        _pendingEvents.Clear();
-    } */
+    //         }
+    //     }
+    //     _pendingEvents.Clear();
+    // }
 
     public static void PostData() {
         foreach (var _event in _pendingEvents) {
             if (UseAnalytics) {
                 var cli = new WebClient();
+
                 try {
                     var reqparm = new System.Collections.Specialized.NameValueCollection();
                     reqparm.Add("v", "1");
@@ -116,18 +114,13 @@ public static class AnalyticsManager {
                     reqparm.Add("ea", ((AnalyticsEvent)_event).Action);
                     reqparm.Add("el", ((AnalyticsEvent)_event).Label);
 
-                    // var resp = cli.UploadValues(
-                    //$"{ANALYTICS_URL}/analytics", "POST", reqparm);
-
                     var resp = cli.UploadValues(URL_COLLECT, "POST", reqparm);
-
-                    // Debug.Log(System.Text.Encoding.Default.GetString(resp));
-
                 } catch (Exception e) {
                     Debug.Log("Failed to post Analytics");
                 }
             }
         }
+
         _pendingEvents.Clear();
     }
 
@@ -149,6 +142,7 @@ public static class AnalyticsManager {
 public interface IAnalytics {
     public string GetPostData();
 }
+
 public class AnalyticsEvent : IAnalytics {
 
     public string Category, Value, Action, Label;
@@ -159,18 +153,7 @@ public class AnalyticsEvent : IAnalytics {
         Label    = label;
     }
 
-    /*
-    public AnalyticsEvent(string category, string action, string value)
-    {
-        Category = category;
-        Action = action;
-        Value = value;
-    }
-    */
-
-    public string GetPostData()
-        //    => $"{Category}_{Action}_{Label}";
-        => $"t=event&ec={Category}&ea={Action}&el={Label}";
+    public string GetPostData() => $"t=event&ec={Category}&ea={Action}&el={Label}";
 }
 
 [AttributeUsage(AttributeTargets.Class)]
@@ -188,9 +171,11 @@ public class AnalyticsScreenView : IAnalytics {
 
 public class AnalyticsPageView : IAnalytics {
     public string Title;
+
     public AnalyticsPageView(string title) {
         Title = title;
     }
+
     public string GetPostData() => $"t=pageview&dl={"http://test.com/" + Title}";
 }
 

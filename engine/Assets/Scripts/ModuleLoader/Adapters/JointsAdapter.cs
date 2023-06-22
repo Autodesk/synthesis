@@ -1,14 +1,14 @@
-﻿using UnityEngine;
+﻿using SynthesisAPI.EnvironmentManager.Components;
+using SynthesisAPI.Utilities;
+using System;
 using System.Collections;
-using SynthesisAPI.EnvironmentManager.Components;
 using System.Collections.Generic;
+using System.ComponentModel;
+using UnityEngine;
+
 using FixedJoint = SynthesisAPI.EnvironmentManager.Components.FixedJoint;
 using HingeJoint = SynthesisAPI.EnvironmentManager.Components.HingeJoint;
-using System.ComponentModel;
-using System;
-using SynthesisAPI.Utilities;
-
-using Logger = SynthesisAPI.Utilities.Logger;
+using Logger     = SynthesisAPI.Utilities.Logger;
 
 namespace Engine.ModuleLoader.Adapters {
     public class JointsAdapter : MonoBehaviour, IApiAdapter<Joints> {
@@ -20,20 +20,21 @@ namespace Engine.ModuleLoader.Adapters {
             instance.AddJoint += Add;
             instance.RemoveJoint += Remove;
 
-            foreach (var joint in instance.AllJoints)
+            foreach (var joint in instance.AllJoints) {
                 Add(joint);
+            }
         }
 
         public static Joints NewInstance => new Joints();
 
-        // Update is called once per frame
         public void Update() {
             for (var i = _jointAdapters.Count - 1; i >= 0; i--) {
                 IJointAdapter jointAdapter = _jointAdapters[i];
-                if (!jointAdapter.Exists())
+                if (!jointAdapter.Exists()) {
                     _jointAdapters.Remove(jointAdapter);
-                else
+                } else {
                     jointAdapter.Update();
+                }
             }
         }
 
@@ -80,8 +81,10 @@ namespace Engine.ModuleLoader.Adapters {
 
                 _unityJoint.massScale = _joint.connectedParent.mass / _joint.connectedChild.mass;
             }
+
             public void Update() {
             }
+
             private void UpdateProperty(object sender, PropertyChangedEventArgs args) {
                 if (_unityJoint == null) {
                     return;
@@ -112,6 +115,7 @@ namespace Engine.ModuleLoader.Adapters {
                 }
             }
         }
+
         class HingeJointAdapter : IJointAdapter {
             private HingeJoint _joint;
             public IJoint GetIJoint() => _joint;
@@ -126,8 +130,6 @@ namespace Engine.ModuleLoader.Adapters {
                 _unityJoint = GameObject.Find($"Entity {_joint.connectedParent.Entity?.Index}")
                                   .AddComponent<UnityEngine.HingeJoint>();
 
-                // Logger.Log($"Creating Joint on \"{_unityJoint.gameObject.name}\""); // Useful for debugging
-
                 _unityJoint.anchor          = _joint.anchor.Map() - _unityJoint.transform.position;
                 _unityJoint.axis            = _joint.axis.Map();
                 _unityJoint.breakForce      = _joint.breakForce;
@@ -141,10 +143,12 @@ namespace Engine.ModuleLoader.Adapters {
 
                 _unityJoint.massScale = _joint.connectedParent.mass / _joint.connectedChild.mass;
             }
+
             public void Update() {
                 _joint.velocity = _unityJoint.velocity;
                 _joint.angle    = _unityJoint.angle;
             }
+
             private void UpdateProperty(object sender, PropertyChangedEventArgs args) {
                 if (_unityJoint == null) {
                     // TODO: Need to do something else if joint breaks
@@ -190,5 +194,4 @@ namespace Engine.ModuleLoader.Adapters {
             }
         }
     }
-
 }

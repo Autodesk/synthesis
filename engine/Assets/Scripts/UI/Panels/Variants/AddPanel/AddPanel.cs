@@ -1,10 +1,10 @@
-﻿using UnityEngine;
-using System.IO;
-using System;
-using UnityEngine.UI;
-using Synthesis.UI.Bars;
+﻿using Synthesis.UI.Bars;
 using SynthesisAPI.Utilities;
+using System;
+using System.IO;
 using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 using Logger = SynthesisAPI.Utilities.Logger;
 
@@ -34,6 +34,7 @@ namespace Synthesis.UI.Panels.Variant {
         public static void ToggleReverseJoints() {
             ReverseSideJoints = !ReverseSideJoints;
             var go            = GameObject.Find("Reverse-Direction");
+
             if (go != null) {
                 go.GetComponent<Image>().color =
                     ReverseSideJoints ? new Color(0.5f, 0.5f, 0.5f) : new Color(0.35f, 0.35f, 0.35f);
@@ -46,13 +47,16 @@ namespace Synthesis.UI.Panels.Variant {
             } else {
                 GameObject.Find("Load-Item-Button").GetComponent<Image>().color = enabledColor;
             }
+
             _currentSelection = item;
             _currentSelection.Darken();
         }
 
         public void ClearSelection() {
-            if (_currentSelection != null)
+            if (_currentSelection != null) {
                 _currentSelection.Lighten();
+            }
+
             _currentSelection = null;
             LoadButton.color  = disabledColor;
         }
@@ -81,11 +85,14 @@ namespace Synthesis.UI.Panels.Variant {
         }
 
         public void RefreshFiles() {
-            foreach (Transform t in list.transform)
+            foreach (Transform t in list.transform) {
                 UnityEngine.Object.Destroy(t.gameObject);
+            }
+
             ShowDirectory(_root);
         }
 
+        // TODO: Remove whole thing?
         public void RequestDirectory() {
 
             Logger.Log("Todo", LogLevel.Debug);
@@ -101,19 +108,13 @@ namespace Synthesis.UI.Panels.Variant {
             if (!Directory.Exists(filePath)) {
                 Directory.CreateDirectory(filePath);
             } else if (list != null) {
-                foreach (string path in Directory.GetFiles(filePath)) // TRANSLATED FILE (SPR)
-                {
+                // TRANSLATED FILE (SPR)
+                foreach (string path in Directory.GetFiles(filePath)) {
                     Instantiate(addItem, list.transform)
                         .GetComponent<AddItem>()
                         .Init(path.Substring(_root.Length + Path.DirectorySeparatorChar.ToString().Length),
                             ParsePath(path, '\\'));
                 }
-                // foreach (string path in Directory.GetDirectories(filePath))//LEGACY FORMAT
-                // {
-                //     Instantiate(addItem, list.transform).GetComponent<AddItem>().Init(path.Substring(_root.Length +
-                //     Path.DirectorySeparatorChar.ToString().Length),
-                //         ParsePath(path, '\\'));
-                // }
             }
         }
 
@@ -129,10 +130,12 @@ namespace Synthesis.UI.Panels.Variant {
                         b += a[i];
                         break;
                 }
-                if (i != a.Length - 1)
+
+                if (i != a.Length - 1) {
                     b += Path.AltDirectorySeparatorChar;
+                }
             }
-            // Debug.Log(b);
+
             return b;
         }
     }

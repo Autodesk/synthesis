@@ -1,7 +1,7 @@
-using System.Linq;
 using Synthesis.Gizmo;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.Simulation;
+using System.Linq;
 
 namespace Synthesis.UI.Tabs {
     public class HomeTab : Tab {
@@ -18,15 +18,6 @@ namespace Synthesis.UI.Tabs {
             CreateDivider();
             CreateButton("Scoreboard", SynthesisAssetCollection.GetSpriteByName("fieldimport"),
                 () => LayoutManager.OpenPanel(SynthesisAssetCollection.GetPanelByName("Scoreboard-Panel")));
-            // CreateButton(
-            //     "Move",
-            //     SynthesisAssetCollection.GetSpriteByName("fieldimport"),
-            //     () => {
-            //         var robot = SimulationManager.SimulationObjects.Values.FirstOrDefault(x => x is RobotSimObject);
-            //         if (robot != null)
-            //             GizmoManager.SpawnGizmo(robot as RobotSimObject);
-            //     }
-            // );
             CreateButton("Test Modal", SynthesisAssetCollection.GetSpriteByName("fieldimport"),
                 () => { DynamicUIManager.CreateModal<ScrollViewTestModal>(); });
             CreateButton("Pickup", SynthesisAssetCollection.GetSpriteByName("fieldimport"),

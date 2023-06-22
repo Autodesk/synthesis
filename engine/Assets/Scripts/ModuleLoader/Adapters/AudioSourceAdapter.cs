@@ -1,6 +1,6 @@
-﻿using System;
-using SynthesisAPI.AssetManager;
+﻿using SynthesisAPI.AssetManager;
 using SynthesisAPI.EnvironmentManager.Components;
+using System;
 using UnityEngine;
 
 using AudioSource = SynthesisAPI.EnvironmentManager.Components.AudioSource;
@@ -41,10 +41,11 @@ namespace Engine.ModuleLoader.Adapters {
         public void Setter(string n, object o) {
             switch (n.ToLower()) {
                 case "isplaying":
-                    if ((bool)o && !unitySource.isPlaying)
+                    if ((bool)o && !unitySource.isPlaying) {
                         unitySource.Play();
-                    else if (!(bool)o && unitySource.isPlaying)
+                    } else if (!(bool)o && unitySource.isPlaying) {
                         unitySource.Stop();
+                    }
                     break;
                 case "clip":
                     currentClip      = (AudioClipAsset)o;

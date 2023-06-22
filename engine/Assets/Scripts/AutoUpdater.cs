@@ -1,39 +1,34 @@
 using Assets.Scripts;
 using Newtonsoft.Json;
+using Synthesis.UI.Dynamic;
+using Synthesis.UI.Panels;
+using System;
+using System.Diagnostics;
 using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Security.Cryptography.X509Certificates;
-using System;
-using System.Net.Security;
-using System.Diagnostics;
-using Synthesis.UI.Panels;
+
 using Debug = UnityEngine.Debug;
-using Synthesis.UI.Dynamic;
 
 public class AutoUpdater : MonoBehaviour {
     public static bool UpdateAvailable { get; private set; } = false;
     public static string UpdaterLink { get; private set; }
 
-    // public static string updater;
-    public const string LocalVersion = "5.1.0.0"; // must be a version value
+    public const string LocalVersion = "5.1.0.0"; // Must be a version value
 
-    // Start is called before the first frame update
-    void Start() {
-        // var versionText = GameObject.Find("VersionNumber").GetComponent<Text>();
-        // versionText.text = "Version " + LocalVersion;
-        // Debug.Log($"Version {LocalVersion}");
-        // game = GameObject.Find("UpdatePrompt");
-
+    private void Start() {
         // Analytics For Client Startup
         var init = new AnalyticsEvent(category: "Startup", action: "Launched", label: $"Version {LocalVersion} BETA");
         AnalyticsManager.LogEvent(init);
         AnalyticsManager.PostData();
 
         if (CheckConnection()) {
-            WebClient client                                        = new WebClient();
             ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
-            var json                                                = new WebClient().DownloadString(
+
+            WebClient client = new WebClient();
+            var json         = new WebClient().DownloadString(
                 "https://raw.githubusercontent.com/Autodesk/synthesis/master/VersionManager.json");
             VersionManager update = JsonConvert.DeserializeObject<VersionManager>(json);
             var updater           = update.URL;
@@ -43,7 +38,7 @@ public class AutoUpdater : MonoBehaviour {
 
             var check = localVersion.CompareTo(globalVersion);
 
-            if (check < 0) { // if outdated, set update prompt to true
+            if (check < 0) { // If outdated, set update prompt to true
                 Debug.Log($"Version {globalVersion.ToString()} available");
                 UpdateAvailable = true;
                 UpdaterLink     = updater;
@@ -68,6 +63,7 @@ public class AutoUpdater : MonoBehaviour {
     public bool MyRemoteCertificateValidationCallback(
         System.Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
         bool isOk = true;
+
         // If there are errors in the certificate chain, look at each error to determine the cause.
         if (sslPolicyErrors != SslPolicyErrors.None) {
             for (int i = 0; i < chain.ChainStatus.Length; i++) {
@@ -83,6 +79,7 @@ public class AutoUpdater : MonoBehaviour {
                 }
             }
         }
+
         return isOk;
     }
 }

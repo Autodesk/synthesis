@@ -1,15 +1,14 @@
+using Newtonsoft.Json;
+using Synthesis.Util;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Newtonsoft.Json;
 using UnityEngine;
-using Synthesis.Util;
 
 namespace Synthesis.UI {
     public static class ColorManager {
-
         public const string SYNTHESIS_BLACK                = "synthesis-black";
         public const string SYNTHESIS_BLACK_ACCENT         = "synthesis-black-accent";
         public const string SYNTHESIS_ORANGE               = "synthesis-orange";
@@ -42,7 +41,6 @@ namespace Synthesis.UI {
             (SYNTHESIS_HIGHLIGHT_SELECT, new Color32(255, 89, 133, 255)) };
 
         static ColorManager() {
-            // File.Delete(path);
             Load();
 
             LoadDefaultColors();
@@ -51,8 +49,9 @@ namespace Synthesis.UI {
 
         private static void LoadDefaultColors() {
             foreach (var c in _defaultColors) {
-                if (!_colors.ContainsKey(c.Item1))
+                if (!_colors.ContainsKey(c.Item1)) {
                     _colors[c.Item1] = c.Item2;
+                }
             }
         }
 
@@ -76,8 +75,10 @@ namespace Synthesis.UI {
         }
 
         public static Color TryGetColor(string color, Color defaultColor = default) {
-            if (_colors.ContainsKey(color))
+            if (_colors.ContainsKey(color)) {
                 return _colors[color];
+            }
+
             return defaultColor == default(Color) ? new Color(1, 1, 1, 1) : defaultColor;
         }
 

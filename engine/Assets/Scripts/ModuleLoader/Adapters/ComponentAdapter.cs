@@ -1,4 +1,5 @@
 ﻿using SynthesisAPI.EnvironmentManager;
+
 namespace Engine.ModuleLoader.Adapters {
     public class ComponentAdapter : UnityEngine.MonoBehaviour, IApiAdapter<Component> {
         public string Name;

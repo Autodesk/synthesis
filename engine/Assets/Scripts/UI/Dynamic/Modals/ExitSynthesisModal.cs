@@ -1,6 +1,6 @@
+using Synthesis.Runtime;
 using System.Collections;
 using System.Collections.Generic;
-using Synthesis.Runtime;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,7 +10,6 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public override void Create() {
-
             bool isOnMainMenu = SceneManager.GetActiveScene().name != "MainScene";
 
             Title.SetText("Exit Synthesis");
@@ -41,6 +40,7 @@ namespace Synthesis.UI.Dynamic {
 
         public override void Update() {
         }
+
         public override void Delete() {
         }
     }

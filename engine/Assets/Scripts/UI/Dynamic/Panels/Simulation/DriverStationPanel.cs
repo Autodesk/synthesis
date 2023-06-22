@@ -1,17 +1,16 @@
+using Synthesis.UI;
+using Synthesis.UI.Dynamic;
+using Synthesis.WS;
+using SynthesisAPI.RoboRIO;
+using SynthesisAPI.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Synthesis.UI.Dynamic;
-using Synthesis.UI;
-using Synthesis.WS;
-using SynthesisAPI.RoboRIO;
-using SynthesisAPI.Utilities;
 
 using Logger = SynthesisAPI.Utilities.Logger;
 
 public class DriverStationPanel : PanelDynamic {
-
     private const string DRIVERSTATION_CONNECTED     = "Driver Station (Connected)";
     private const string DRIVERSTATION_NOT_CONNECTED = "Driver Station (Not Connected)";
 
@@ -24,7 +23,6 @@ public class DriverStationPanel : PanelDynamic {
     }
 
     public override bool Create() {
-
         if (RobotSimObject.CurrentlyPossessedRobot == string.Empty) {
             Logger.Log("Spawn a robot first", LogLevel.Info);
             return false;
@@ -50,6 +48,7 @@ public class DriverStationPanel : PanelDynamic {
             }
 
             var currentData = WebSocketManager.RioState.GetData<DriverStationData>("");
+
             if (currentData.Enabled) {
                 WebSocketManager.UpdateData<DriverStationData>("", d => { d.Enabled = false; });
                 SetModeButton(false);
@@ -84,8 +83,9 @@ public class DriverStationPanel : PanelDynamic {
     }
 
     public override void Delete() {
-        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
             RobotSimObject.GetCurrentlyPossessedRobot().UseSimulationBehaviour = false;
+        }
     }
 
     public override void Update() {

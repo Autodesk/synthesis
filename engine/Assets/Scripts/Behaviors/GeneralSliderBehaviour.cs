@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using Google.Protobuf.WellKnownTypes;
 using Synthesis.PreferenceManager;
 using SynthesisAPI.EventBus;
@@ -7,6 +5,8 @@ using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 using Logger = SynthesisAPI.Utilities.Logger;
@@ -54,8 +54,10 @@ namespace Synthesis {
         private void OnValueInputAssigned(IEvent tmp) {
             ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
             if (args.InputKey.Equals(_forwardInputKey) || args.InputKey.Equals(_reverseInputKey)) {
-                if (base.SimObjectId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID)
+                if (base.SimObjectId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID) {
                     return;
+                }
+
                 RobotSimObject robot = SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject;
                 SimulationPreferences.SetRobotInput(robot.MiraGUID, args.InputKey, args.Input);
             }

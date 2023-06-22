@@ -1,28 +1,28 @@
-using System;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
+using Newtonsoft.Json;
 using Synthesis.Gizmo;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
-using UnityEngine;
+using Synthesis.WS;
+using Synthesis.WS.Translation;
 using SynthesisAPI.Utilities;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using UnityEngine;
 
 using Logger = SynthesisAPI.Utilities.Logger;
-using Synthesis.WS.Translation;
-using System.IO;
-using Newtonsoft.Json;
-using Synthesis.WS;
 
 #nullable enable
 
 public class RioConfigurationModal : ModalDynamic {
-
     private const float MODAL_WIDTH  = 1000;
     private const float MODAL_HEIGHT = 600;
 
     public RioConfigurationModal() : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) {
     }
+
     public RioConfigurationModal(bool reload = false) : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) {
         if (reload && RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
 
@@ -74,6 +74,7 @@ public class RioConfigurationModal : ModalDynamic {
                     if (e.GetType().Name.Equals(typeof(PWMGroupEntry).Name)) {
                         DynamicUIManager.CreateModal<RCConfigPwmGroupModal>(e);
                     }
+
                     if (e.GetType().Name.Equals(typeof(EncoderEntry).Name)) {
                         DynamicUIManager.CreateModal<RCConfigEncoderModal>(e);
                     } else {
@@ -173,11 +174,14 @@ public abstract class RioEntry {
     public override int GetHashCode() => Name.GetHashCode() * 849583721;
 
     public override sealed bool Equals(object obj) {
-        if (ReferenceEquals(obj, null))
+        if (ReferenceEquals(obj, null)) {
             return false;
+        }
 
-        if (obj.GetType() != this.GetType())
+        if (obj.GetType() != this.GetType()) {
             return false;
+        }
+
         return obj.GetHashCode() == GetHashCode();
     }
 }

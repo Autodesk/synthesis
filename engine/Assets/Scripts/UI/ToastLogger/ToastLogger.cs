@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using ILogger = SynthesisAPI.Utilities.ILogger;
 using UnityEngine;
+
+using ILogger = SynthesisAPI.Utilities.ILogger;
 
 namespace Engine {
     /// <summary>
@@ -64,10 +65,12 @@ namespace Engine {
                     var msg = new Toast(o.ToString(), logLevel, tooltip);
                     SendToast(msg);
                 }
+
                 currentlyLogging = false;
                 toastManager.onAddToast();
             }
         }
+
         public void SetUpToastObject(GameObject o, Transform t, ToastManager m) {
             toastObject     = o;
             scrollTransform = t;

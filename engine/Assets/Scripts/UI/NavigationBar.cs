@@ -1,11 +1,11 @@
+using Synthesis.UI.Dynamic;
+using Synthesis.UI.Tabs;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
-using UnityEngine.UI;
+using UnityEngine;
 using UnityEngine.EventSystems;
-using Synthesis.UI.Tabs;
-using Synthesis.UI.Dynamic;
+using UnityEngine.UI;
 
 using Image = UnityEngine.UI.Image;
 
@@ -66,9 +66,9 @@ namespace Synthesis.UI.Bars {
         }
 
         public void Exit() {
-            if (Application.isEditor)
+            if (Application.isEditor) {
                 Debug.Log("Would exit, but it's editor mode");
-            else {
+            } else {
                 var update = new AnalyticsEvent(category: "Exit", action: "Closed", label: $"Closed Synthesis");
                 AnalyticsManager.LogEvent(update);
                 AnalyticsManager.PostData();
@@ -93,12 +93,12 @@ namespace Synthesis.UI.Bars {
 
         public void OpenPanel(GameObject prefab) {
             if (prefab != null) {
-
                 LayoutManager.OpenPanel(prefab, true);
-                if (_currentPanelButton != null)
+                if (_currentPanelButton != null) {
                     changePanelButton(artifaktRegular, 1f);
+                }
 
-                // set current panel button to the button clicked
+                // Set current panel button to the button clicked
                 _currentPanelButton = EventSystem.current.currentSelectedGameObject;
                 changePanelButton(artifaktBold, 0.6f);
 
@@ -110,8 +110,9 @@ namespace Synthesis.UI.Bars {
 
         public void CloseAllPanels() {
             LayoutManager.ClosePanel();
-            if (_currentPanelButton != null)
+            if (_currentPanelButton != null) {
                 changePanelButton(artifaktRegular, 1f);
+            }
 
             PanelAnalytics(lastOpenedPanel, "Closed");
         }
@@ -119,8 +120,9 @@ namespace Synthesis.UI.Bars {
         private void changePanelButton(TMP_FontAsset f, float opacity) {
             // set font
             TextMeshProUGUI text = _currentPanelButton.transform.parent.GetComponentInChildren<TextMeshProUGUI>();
-            if (text != null)
+            if (text != null) {
                 text.font = f;
+            }
 
             Image img = _currentPanelButton.GetComponent<Image>();
             img.color = new Color(img.color.r, img.color.g, img.color.b, opacity);
@@ -135,13 +137,16 @@ namespace Synthesis.UI.Bars {
         }
 
         public void SelectTab(string name) {
-            if (_currentTab == name)
+            if (_currentTab == name) {
                 return;
+            }
+
             if (_currentTab != string.Empty) {
                 var prevTopButton = _registeredTabs[_currentTab].topButton;
                 prevTopButton.SetUnderlineColor(UnselectedTopButtonColor);
                 prevTopButton.SetUnderlineHeight(1f);
             }
+
             var currentTopButton = _registeredTabs[name].topButton;
             currentTopButton.SetUnderlineColor(SelectedTopButtonColor);
             currentTopButton.SetUnderlineHeight(2f);

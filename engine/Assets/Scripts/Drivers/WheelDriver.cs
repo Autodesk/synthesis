@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Google.Protobuf.WellKnownTypes;
+﻿using Google.Protobuf.WellKnownTypes;
 using Mirabuf.Joint;
 using Synthesis.PreferenceManager;
 using SynthesisAPI.Simulation;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 #nullable enable
 
 namespace Synthesis {
     public class WheelDriver : Driver {
-
         private CustomWheel _customWheel;
 
         private JointInstance _jointInstance;
@@ -149,7 +148,6 @@ namespace Synthesis {
             if (motor != null && motor.MotorTypeCase == Mirabuf.Motor.Motor.MotorTypeOneofCase.SimpleMotor) {
                 _motor = motor!.SimpleMotor.UnityMotor;
             } else {
-                // var m = SimulationPreferences.GetRobotJointMotor((_simObject as RobotSimObject).MiraGUID, name);
                 Motor = new JointMotor() {
                     // Default Motor. Slow but powerful enough. Also uses Motor to save it
                     force          = 2000,
@@ -164,8 +162,6 @@ namespace Synthesis {
                 Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(0) };
             State.CurrentSignals[_outputs[1]] = new UpdateSignal() { DeviceType = "Range", Io = UpdateIOType.Output,
                 Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(0) };
-
-            // Debug.Log($"Speed: {_motor.targetVelocity}\nForce: {_motor.force}");
         }
 
         void EnableMotor() {
@@ -197,8 +193,10 @@ namespace Synthesis {
 
         public float PositiveMod(float val, float mod) {
             var res = val % mod;
-            if (res < 0)
+            if (res < 0) {
                 res += mod;
+            }
+
             return res;
         }
 
@@ -207,9 +205,9 @@ namespace Synthesis {
         }
 
         private void VelocityControl() {
-
-            if (!_useMotor)
+            if (!_useMotor) {
                 return;
+            }
 
             var val = (float)(State.CurrentSignals.ContainsKey(_inputs[0])
                                   ? State.CurrentSignals[_inputs[0]].Value.NumberValue
@@ -228,8 +226,9 @@ namespace Synthesis {
             if (!float.IsNaN(_lastUpdate)) {
                 var deltaT = Time.realtimeSinceStartup - _lastUpdate;
 
-                if (deltaT == 0f)
+                if (deltaT == 0f) {
                     return;
+                }
 
                 var alpha = (_customWheel.RotationSpeed - lastRotSpeed) / deltaT;
                 _jointAngle += 0.5f * alpha * deltaT * deltaT + lastRotSpeed * deltaT;
@@ -245,7 +244,7 @@ namespace Synthesis {
         }
 
         /// <summary>
-        ///
+        /// TODO: Add summary?
         /// </summary>
         /// <param name="rb"></param>
         /// <param name="axis">Use local axis</param>
@@ -286,7 +285,7 @@ namespace Synthesis {
         }
 
         /// <summary>
-        ///
+        /// TODO: Add summary?
         /// </summary>
         /// <param name="cart"></param>
         /// <returns>X is radius, Y is theta, Z is phi</returns>
@@ -295,6 +294,6 @@ namespace Synthesis {
             return new Vector3(cart.magnitude, Mathf.Acos(cart.y / 1), Mathf.Asin(cart.z / 1));
         }
 
-#endregion
+#endregion // Rotational Inertia stuff that isn't used
     }
 }

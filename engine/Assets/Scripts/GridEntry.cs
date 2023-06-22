@@ -1,13 +1,12 @@
+using SynthesisAPI.Utilities;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using SynthesisAPI.Utilities;
 
 using Logger = SynthesisAPI.Utilities.Logger;
-using System;
 
 public class GridEntry : MonoBehaviour {
-
     public float Delay;
     public float Length;
 
@@ -18,6 +17,7 @@ public class GridEntry : MonoBehaviour {
 
     private float innerRadius;
     private float featherRadius;
+
     private void Start() {
         innerRadius   = FloorRenderer.material.GetFloat("INNER_RADIUS");
         featherRadius = FloorRenderer.material.GetFloat("FEATHER_RADIUS");
@@ -31,6 +31,7 @@ public class GridEntry : MonoBehaviour {
     }
 
     private float _startTime = 0f;
+
     private void Update() {
         if (Time.realtimeSinceStartup - _startTime > Length + Delay) {
             MatRef.SetFloat("INNER_RADIUS", innerRadius);

@@ -1,12 +1,11 @@
+using Synthesis.UI.Dynamic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Synthesis.UI.Dynamic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 public class PracticeSettingsModal : ModalDynamic {
-
     private static Dictionary<string, PracticeMode.GamepieceData> _gamepieceMap =
         new Dictionary<string, PracticeMode.GamepieceData>();
     private static List<PracticeMode.GamepieceData> _gamepieceSimObjects = new List<PracticeMode.GamepieceData>();
@@ -26,13 +25,9 @@ public class PracticeSettingsModal : ModalDynamic {
 
     public override void Create() {
         Title.SetText("Practice Settings");
-        // Description.SetText("Configuration actions for practice mode");
 
         AcceptButton.RootGameObject.SetActive(false);
-        CancelButton
-            // .SetAnchoredPosition<Button>(new Vector2(20f, CancelButton.RootRectTransform.anchoredPosition.y))
-            .StepIntoLabel(l => l.SetText("Close"))
-            .AddOnClickedEvent(b => { ModeManager.ModalClosed(); });
+        CancelButton.StepIntoLabel(l => l.SetText("Close")).AddOnClickedEvent(b => { ModeManager.ModalClosed(); });
 
         var gamepieceLabel = MainContent.CreateLabel()
                                  .SetText("Gamepiece Spawning")
@@ -40,8 +35,6 @@ public class PracticeSettingsModal : ModalDynamic {
                                  .ApplyTemplate(VerticalLayout);
 
         float leftRightPadding = 8;
-        // float leftWidth = (MainContent.Size.x - leftRightPadding) / 2;
-        // (Content leftContent, Content rightContent) = MainContent.SplitLeftRight(leftWidth, leftRightPadding);
 
         var top = MainContent.CreateSubContent(new Vector2(MainContent.Size.x, 110f))
                       .ApplyTemplate(VerticalLayout)
@@ -49,9 +42,6 @@ public class PracticeSettingsModal : ModalDynamic {
 
         (Content topleft, Content topRight) =
             top.SplitLeftRight((top.Size.x - leftRightPadding) / 2f, leftRightPadding);
-
-        // rightContent.SetTopStretch<Content>(leftWidth + leftRightPadding, 0, anchoredY: gamepieceLabel.Size.y +
-        // VERTICAL_PADDING);
 
         var spawnButton = topRight.CreateButton()
                               .StepIntoLabel(l => l.SetText("Spawn"))
@@ -78,6 +68,7 @@ public class PracticeSettingsModal : ModalDynamic {
                 _gamepieceMap.Clear();
                 lastField = field.MiraLive.MiraAssembly.Info.GUID;
             }
+
             if (_gamepieceSimObjects.Count == 0 && field.Gamepieces.Count > 0) {
                 // group the gamepieces by their types, found via the name of the first child before :
                 var groups           = field.Gamepieces.GroupBy(g => {
@@ -90,6 +81,7 @@ public class PracticeSettingsModal : ModalDynamic {
                 _gamepieceSimObjects = uniqueGamepieces.Map(g => new PracticeMode.GamepieceData(g.GamepieceObject));
                 _gamepieceSimObjects.ForEach(g => _gamepieceMap.Add(g.Name, g));
             }
+
             gamepieceDropdown.SetOptions(_gamepieceSimObjects.Map(g => g.Name).ToArray())
                 .SetValue(0)
 
@@ -125,7 +117,7 @@ public class PracticeSettingsModal : ModalDynamic {
             .StepIntoLabel(label => label.SetText("Reset All"))
             .AddOnClickedEvent(b => PracticeMode.ResetAll());
 
-        // don't hide when field is not loaded because the user can still spawn gamepieces
+        // Don't hide when field is not loaded because the user can still spawn gamepieces
         bottomRight.CreateButton()
             .SetTopStretch<Button>()
             .ShiftOffsetMax<Button>(new Vector2(-7.5f, 0f))

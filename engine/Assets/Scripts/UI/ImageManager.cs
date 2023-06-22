@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 namespace Synthesis.UI {
     public class ImageManager : MonoBehaviour {
-
         public Sprite closeIcon;
         public Sprite collapseIcon;
 
@@ -15,8 +14,10 @@ namespace Synthesis.UI {
         private static ImageManager instance;
         public static ImageManager Instance {
             get {
-                if (instance == null)
+                if (instance == null) {
                     instance = GameObject.FindObjectOfType<ImageManager>();
+                }
+
                 return instance;
             }
         }

@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using Synthesis.Gizmo;
 using SynthesisAPI.EventBus;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class TempScoreManager : MonoBehaviour {
@@ -15,6 +15,7 @@ public class TempScoreManager : MonoBehaviour {
             }
         }
     }
+
     private List<ScoringZone> ScoringZones;
     public static int redScore  = 0;
     public static int blueScore = 0;
@@ -30,6 +31,7 @@ public class TempScoreManager : MonoBehaviour {
             zones.Add(newZone);
             newZone.transform.parent = parent.transform;
         }
+
         CreateScoringZonesFromParent(parent, Alliance.RED, 1);
         CreateTestGamepiece(3, 1, 2, PrimitiveType.Cube);
 
@@ -43,6 +45,7 @@ public class TempScoreManager : MonoBehaviour {
                     blueScore += se.zone.points;
                     break;
             }
+
             Debug.Log($"{se.zone.alliance.ToString()} alliance scored {se.zone.points} points!");
         });
     }
@@ -63,7 +66,6 @@ public class TempScoreManager : MonoBehaviour {
         zone.transform.position = new Vector3(x, y, z);
         GizmoManager.SpawnGizmo(zone.transform, t => zone.transform.position = t.Position,
             t => { zone.GetComponent<Renderer>().enabled = false; });
-        // GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, zone.transform, zone.transform.position);
         ScoringZones.Add(new ScoringZone(zone, alliance, points, destroyObject));
     }
 

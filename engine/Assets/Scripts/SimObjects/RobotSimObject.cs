@@ -1,37 +1,38 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Google.Protobuf.WellKnownTypes;
 using Mirabuf;
 using Mirabuf.Joint;
 using Newtonsoft.Json;
 using Synthesis;
-using Synthesis.Import;
-using Synthesis.Util;
-using Synthesis.Physics;
-using SynthesisAPI.Simulation;
-using SynthesisAPI.Utilities;
-using UnityEngine;
-using Bounds    = UnityEngine.Bounds;
-using Joint     = UnityEngine.Joint;
-using MVector3  = Mirabuf.Vector3;
-using Transform = UnityEngine.Transform;
-using Vector3   = UnityEngine.Vector3;
 using Synthesis.Gizmo;
+using Synthesis.Import;
+using Synthesis.Physics;
 using Synthesis.PreferenceManager;
 using Synthesis.Runtime;
 using Synthesis.UI;
-using SynthesisAPI.InputManager.Inputs;
-using SynthesisAPI.InputManager;
-using SynthesisAPI.EventBus;
+using Synthesis.Util;
 using Synthesis.WS.Translation;
+using SynthesisAPI.EventBus;
+using SynthesisAPI.InputManager;
+using SynthesisAPI.InputManager.Inputs;
+using SynthesisAPI.Simulation;
+using SynthesisAPI.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
 using static Synthesis.WS.Translation.RioTranslationLayer;
-using Logger = SynthesisAPI.Utilities.Logger;
+
+using Bounds    = UnityEngine.Bounds;
+using Joint     = UnityEngine.Joint;
+using Logger    = SynthesisAPI.Utilities.Logger;
+using MVector3  = Mirabuf.Vector3;
+using Transform = UnityEngine.Transform;
+using Vector3   = UnityEngine.Vector3;
 
 #nullable enable
 
 public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
-
     public const int MAX_ROBOTS = 6;
 
     public const string INTAKE_GAMEPIECES = "input/intake";
@@ -42,16 +43,20 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         set {
             if (value != _currentlyPossessedRobot) {
                 var old = _currentlyPossessedRobot;
-                if (_currentlyPossessedRobot != string.Empty)
+                if (_currentlyPossessedRobot != string.Empty) {
                     GetCurrentlyPossessedRobot().Unpossess();
+                }
+
                 _currentlyPossessedRobot = value;
-                if (_currentlyPossessedRobot != string.Empty)
+                if (_currentlyPossessedRobot != string.Empty) {
                     GetCurrentlyPossessedRobot().Possess();
+                }
 
                 EventBus.Push(new PossessionChangeEvent { NewBot = value, OldBot = old });
             }
         }
     }
+
     public static RobotSimObject GetCurrentlyPossessedRobot() => _currentlyPossessedRobot == string.Empty
                                                                      ? null
                                                                      : _spawnedRobots[_currentlyPossessedRobot];
@@ -97,10 +102,12 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                 _useSimBehaviour = value;
                 SimulationManager.Behaviours[this._name].ForEach(b => {
                     // Kinda ugly but whatever
-                    if (_useSimBehaviour ? b.GetType() != typeof(WSSimBehavior) : b.GetType() == typeof(WSSimBehavior))
+                    if (_useSimBehaviour ? b.GetType() != typeof(WSSimBehavior)
+                                         : b.GetType() == typeof(WSSimBehavior)) {
                         b.Enabled = false;
-                    else
+                    } else {
                         b.Enabled = true;
+                    }
                 });
             }
         }
@@ -173,6 +180,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         if (_spawnedRobots.ContainsKey(name)) {
             throw new Exception("Robot with that name already loaded");
         }
+
         _spawnedRobots.Add(name, this);
         EventBus.Push(new RobotSpawnEvent { Bot = name });
 
@@ -193,7 +201,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         _allRigidbodies = new List<Rigidbody>(RobotNode.transform.GetComponentsInChildren<Rigidbody>());
         PhysicsManager.Register(this);
 
-        // tags every mesh collider component in the robot with a tag of robot
+        // Tags every mesh collider component in the robot with a tag of robot
         RobotNode.tag = "robot";
         RobotNode.GetComponentsInChildren<MeshCollider>().ForEach(g => g.tag = "robot");
 
@@ -215,7 +223,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         _simulationTranslationLayer =
             SimulationPreferences.GetRobotSimTranslationLayer(MiraLive.MiraAssembly.Info.GUID) ??
             new RioTranslationLayer();
-        // _simulationTranslationLayer = new RioTranslationLayer();
 
         cam = Camera.main.GetComponent<CameraController>();
 
@@ -267,14 +274,15 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         PhysicsManager.Unregister(this);
         if (CurrentlyPossessedRobot.Equals(this._name)) {
             CurrentlyPossessedRobot = string.Empty;
-            // cam.CameraMode = previousMode;
         }
         MonoBehaviour.Destroy(GroundedNode.transform.parent.gameObject);
     }
 
     public void ClearGamepieces() {
-        if (_gamepiecesInPossession.Count == 0)
+        if (_gamepiecesInPossession.Count == 0) {
             return;
+        }
+
         _trajectoryPointer.transform.GetChild(0).transform.parent = FieldSimObject.CurrentField.FieldObject.transform;
         _gamepiecesInPossession.Clear();
         // TODO: Should robot handle this or is it expected that whatever calls this will have specific intention to do
@@ -282,11 +290,11 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     public void CollectGamepiece(GamepieceSimObject gp) {
-        if (!_intakeData.HasValue || !_trajectoryData.HasValue)
+        if (!_intakeData.HasValue || !_trajectoryData.HasValue) {
             return;
-
-        if (_gamepiecesInPossession.Count >= _intakeData.Value.StorageCapacity)
+        } else if (_gamepiecesInPossession.Count >= _intakeData.Value.StorageCapacity) {
             return;
+        }
 
         var rb              = gp.GamepieceObject.GetComponent<Rigidbody>();
         rb.detectCollisions = false;
@@ -296,13 +304,15 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         _gamepiecesInPossession.Enqueue(gp);
 
         gp.IsCurrentlyPossessed = true;
-        if (_gamepiecesInPossession.Count == 1)
+        if (_gamepiecesInPossession.Count == 1) {
             UpdateShownGamepiece();
+        }
     }
 
     public void ShootGamepiece() {
-        if (_gamepiecesInPossession.Count == 0)
+        if (_gamepiecesInPossession.Count == 0) {
             return;
+        }
 
         // Shoot Gamepiece
         var gp                              = _gamepiecesInPossession.Dequeue();
@@ -319,11 +329,11 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     private void UpdateShownGamepiece() {
         // Take the first gamepiece in the queue and display it at trajectory pointer
-        if (_gamepiecesInPossession.Count == 0)
+        if (_gamepiecesInPossession.Count == 0) {
             return;
-
-        if (_trajectoryPointer.transform.childCount > 0)
+        } else if (_trajectoryPointer.transform.childCount > 0) {
             return;
+        }
 
         var gp = _gamepiecesInPossession.Peek();
         gp.GamepieceObject.SetActive(true);
@@ -331,14 +341,12 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         gp.GamepieceObject.transform.localRotation = Quaternion.identity;
         gp.GamepieceObject.transform.localPosition = Vector3.zero;
         gp.GamepieceObject.transform.localPosition -= gp.GamepieceBounds.center;
-        // gp.GamepieceObject.transform.position = _trajectoryPointer.transform.position
-        //     - gp.GamepieceObject.transform.localToWorldMatrix.MultiplyPoint(gp.GamepieceBounds.center);
     }
 
     public void UpdateWheels() {
-
-        if (_wheelDrivers == null)
+        if (_wheelDrivers == null) {
             return;
+        }
 
         int wheelsInContact = _wheelDrivers.Count(x => x.HasContacts);
         float mod           = wheelsInContact <= 4 ? 1f : Mathf.Pow(0.7f, wheelsInContact - 4);
@@ -363,6 +371,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             if (max.z < b.max.z)
                 max.z = b.max.z;
         });
+
         return new Bounds(((max + min) / 2f) - top.position, max - min);
     }
 

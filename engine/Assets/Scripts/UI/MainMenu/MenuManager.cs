@@ -1,5 +1,5 @@
-using System.Diagnostics;
 using Synthesis.UI.Dynamic;
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,7 +7,6 @@ using Debug = UnityEngine.Debug;
 
 namespace Synthesis.UI {
     public class MenuManager : MonoBehaviour {
-
         private void Start() {
             SettingsModal.LoadSettings();
             SettingsModal.ApplySettings();

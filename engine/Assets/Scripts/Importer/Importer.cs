@@ -1,35 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Google.Protobuf;
+﻿using Google.Protobuf;
 using Google.Protobuf.Collections;
 using Google.Protobuf.WellKnownTypes;
 using Mirabuf;
 using Mirabuf.Joint;
 using Mirabuf.Material;
 using Mirabuf.Signal;
+using Synthesis;
 using Synthesis.Util;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
-using UnityEngine;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.IO.Compression;
-using Synthesis;
+using System.Linq;
 using Unity.Profiling;
+using UnityEngine;
 
-using UMaterial           = UnityEngine.Material;
-using UMesh               = UnityEngine.Mesh;
-using Logger              = SynthesisAPI.Utilities.Logger;
 using Assembly            = Mirabuf.Assembly;
 using AssemblyData        = Mirabuf.AssemblyData;
 using Enum                = System.Enum;
 using Joint               = Mirabuf.Joint.Joint;
-using Vector3             = Mirabuf.Vector3;
-using UVector3            = UnityEngine.Vector3;
-using Node                = Mirabuf.Node;
-using MPhysicalProperties = Mirabuf.PhysicalProperties;
 using JointMotor          = UnityEngine.JointMotor;
+using Logger              = SynthesisAPI.Utilities.Logger;
+using MPhysicalProperties = Mirabuf.PhysicalProperties;
+using Node                = Mirabuf.Node;
+using UMaterial           = UnityEngine.Material;
+using UMesh               = UnityEngine.Mesh;
 using UPhysicalMaterial   = UnityEngine.PhysicMaterial;
+using UVector3            = UnityEngine.Vector3;
+using Vector3             = Mirabuf.Vector3;
 
 namespace Synthesis.Import {
     /// <summary>
@@ -37,12 +37,7 @@ namespace Synthesis.Import {
     /// NOTE: This may be moved into the Engine instead of in it's own project.
     /// </summary>
     public static class Importer {
-
         private static ulong _robotTally = 0; // Just a number to add to the name of the sim object spawned
-
-#region Importer Framework
-
-#endregion
 
 #region Mirabuf Importer
 
@@ -105,7 +100,7 @@ namespace Synthesis.Import {
                 gamepieces.Add(gpSim);
             });
 
-#endregion
+#endregion // Rigid Definitions
 
 #region Joints
 
@@ -113,13 +108,6 @@ namespace Synthesis.Import {
 
             SimObject simObject;
             if (assembly.Dynamic) {
-                // List<string> foundRobots = new List<string>();
-                // foreach (var kvp in SimulationManager.SimulationObjects) {
-                // 	if (kvp.Value is RobotSimObject)
-                // 		foundRobots.Add(kvp.Key);
-                // }
-                // foundRobots.ForEach(x => SimulationManager.RemoveSimObject(x));
-
                 string name = $"{assembly.Info.Name}_{_robotTally}";
                 _robotTally++;
 
@@ -144,47 +132,39 @@ namespace Synthesis.Import {
             }
 
             foreach (var jointKvp in assembly.Data.Joints.JointInstances) {
-                if (jointKvp.Key == "grounded")
+                if (jointKvp.Key == "grounded") {
                     continue;
+                }
 
-                // Logger.Log($"Joint Instance: {jointKvp.Key}", LogLevel.Debug);
-                // Logger.Log($"Parent: {jointKvp.Value.ParentPart}", LogLevel.Debug);
                 var aKey = rigidDefinitions.PartToDefinitionMap[jointKvp.Value.ParentPart];
                 var a    = groupObjects[aKey];
-                // Logger.Log($"Child: {jointKvp.Value.ChildPart}", LogLevel.Debug);
                 var bKey = rigidDefinitions.PartToDefinitionMap[jointKvp.Value.ChildPart];
                 var b    = groupObjects[bKey];
 
                 MakeJoint(a, b, jointKvp.Value, totalMass, assembly, simObject, jointToJointMap);
             }
 
-#endregion
-
-            // if (assembly.Dynamic) {
-            // 	(simObject as RobotSimObject).ConfigureDefaultBehaviours();
-            // 	// (simObject as RobotSimObject).ConfigureTestSimulationBehaviours();
-            // }
+#endregion // Joints
 
             return (assemblyObject, miraLive, simObject);
         }
 
-#endregion
+#endregion // Mirabuf Importer
 
 #region Assistant Functions
 
         public static void MakeJoint(GameObject a, GameObject b, JointInstance instance, float totalMass,
             Assembly assembly, SimObject simObject,
             Dictionary<string, (UnityEngine.Joint a, UnityEngine.Joint b)> jointMap) {
-            // Logger.Log($"Obj A: {a.name}, Obj B: {b.name}");
+
             // Stuff I'm gonna use for all joints
             var definition = assembly.Data.Joints.JointDefinitions[instance.JointReference];
             var rbA        = a.GetComponent<Rigidbody>();
             var rbB        = b.GetComponent<Rigidbody>();
             switch (definition.JointMotionType) {
-                case JointMotion.Revolute: // Hinge/Revolution joint
+                case JointMotion.Revolute: // Hinge / Revolution joint
 
                     if (instance.IsWheel(assembly)) {
-
                         rbA.transform.GetComponentsInChildren<Collider>().ForEach(x => {
                             x.material.dynamicFriction = 0f;
                             x.material.staticFriction  = 0f;
@@ -231,9 +211,7 @@ namespace Synthesis.Import {
                         }
 
                         jointMap.Add(instance.Info.GUID, (wheelA, wheelB));
-
                     } else {
-
                         var revoluteA = a.AddComponent<HingeJoint>();
 
                         var parentPartInstance = assembly.Data.Parts.PartInstances[instance.ParentPart];
@@ -266,8 +244,6 @@ namespace Synthesis.Import {
                             revoluteA.limits    = new JointLimits() { min = -limits.Upper * Mathf.Rad2Deg,
                                    max                                    = -limits.Lower * Mathf.Rad2Deg };
                         }
-                        // revoluteA.useLimits = true;
-                        // revoluteA.limits = new JointLimits { min = -15, max = 15 };
 
                         var revoluteB = b.AddComponent<HingeJoint>();
 
@@ -298,7 +274,6 @@ namespace Synthesis.Import {
 
                     break;
                 case JointMotion.Slider:
-
                     UVector3 anchor = definition.Origin ?? new Vector3() + instance.Offset ?? new Vector3();
                     UVector3 axis   = definition.Prismatic.PrismaticFreedom.Axis;
                     axis            = axis.normalized;
@@ -320,6 +295,7 @@ namespace Synthesis.Import {
                     sliderA.xMotion                      = ConfigurableJointMotion.Limited;
                     sliderA.yMotion                      = ConfigurableJointMotion.Locked;
                     sliderA.zMotion                      = ConfigurableJointMotion.Locked;
+
                     if (Mathf.Abs(midRange) > 0.0001) {
                         sliderA.xMotion = ConfigurableJointMotion.Limited;
 
@@ -329,6 +305,7 @@ namespace Synthesis.Import {
                     } else {
                         sliderA.xMotion = ConfigurableJointMotion.Free;
                     }
+
                     sliderA.connectedBody      = rbB;
                     sliderA.connectedMassScale = sliderA.connectedBody.mass / rbA.mass;
 
@@ -361,13 +338,11 @@ namespace Synthesis.Import {
                     rigidA.axis          = UVector3.forward;
                     rigidA.connectedBody = rbB;
                     rigidA.connectedMassScale = rigidA.connectedBody.mass / rbA.mass;
-                    // rigidA.massScale = Mathf.Pow(totalMass / rbA.mass, 1); // Not sure if this works
-                    var rigidB           = b.AddComponent<FixedJoint>();
+                    var rigidB                = b.AddComponent<FixedJoint>();
                     rigidB.anchor        = (definition.Origin ?? new Vector3()) + (instance.Offset ?? new Vector3());
                     rigidB.axis          = UVector3.forward;
                     rigidB.connectedBody = rbA;
                     rigidB.connectedMassScale = rigidB.connectedBody.mass / rbB.mass;
-                    // rigidB.connectedMassScale = Mathf.Pow(totalMass / rbA.mass, 1);
                     break;
             }
         }
@@ -443,13 +418,12 @@ namespace Synthesis.Import {
         // new MPhysicalProperties { Mass = total, Com = com };
         // }
 
-#endregion
+#endregion // Assistant funcitons
 
 #region Debug Functions
 
         public static void DebugAssembly(Assembly assembly) {
             Assembly debugAssembly;
-            // debugAssembly.MergeFrom(assembly);
             MemoryStream ms = new MemoryStream(new byte[assembly.CalculateSize()]);
             ms.Seek(0, SeekOrigin.Begin);
             assembly.WriteTo(ms); // TODO: Causing issues all of a sudden [May 5th, 2023]
@@ -457,7 +431,6 @@ namespace Synthesis.Import {
             debugAssembly = Assembly.Parser.ParseFrom(ms);
 
             // Remove mesh data
-            // debugAssembly.Data.Parts.PartDefinitions.ForEach((x, y) => { y.Bodies.Clear(); });
             debugAssembly.Data.Parts.PartDefinitions.Select(kvp => kvp.Value.Bodies).ForEach(x => x.ForEach(y => {
                 y.TriangleMesh = new TriangleMesh();
             }));
@@ -491,7 +464,7 @@ namespace Synthesis.Import {
             Debug.Log(Enum.GetName(typeof(Joint.JointMotionOneofCase), definition.JointMotionCase));
         }
 
-#endregion
+#endregion // Debug Functions
 
 #region Assistant Types
 
@@ -500,7 +473,6 @@ namespace Synthesis.Import {
         /// </summary>
         public struct SourceType {
             public static readonly SourceType MIRABUF_ASSEMBLY = new SourceType("mirabuf_assembly", "mira");
-            // public static readonly SourceType PROTOBUF_FIELD = new SourceType("proto_field", ProtoField.FILE_ENDING);
 
             public string FileEnding { get; private set; }
             public string Indentifier { get; private set; }
@@ -511,6 +483,6 @@ namespace Synthesis.Import {
             }
         }
 
-#endregion
+#endregion // Assistant Types
     }
 }

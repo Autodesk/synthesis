@@ -1,13 +1,12 @@
-using System;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.InputManager;
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 #nullable enable
 
 public class OrbitCameraMode : ICameraMode {
-    // [SerializeField] public Transform FollowTransform;
     public static Func<Vector3> FocusPoint = () => Vector3.zero;
 
     public float TargetZoom { get; private set; }  = 15.0f;
@@ -28,9 +27,11 @@ public class OrbitCameraMode : ICameraMode {
     }
 
     public void Update(CameraController cam) {
-        // don't allow camera movement when a modal is open
-        if (DynamicUIManager.ActiveModal != null)
+        // Don't allow camera movement when a modal is open
+        if (DynamicUIManager.ActiveModal != null) {
             return;
+        }
+
         var pitchTest = cam.PitchUpperLimit - cam.PitchLowerLimit;
         if (pitchTest < 0)
             Debug.LogError("No range exists for pitch to reside in");
@@ -50,6 +51,7 @@ public class OrbitCameraMode : ICameraMode {
         if (enableOrbit && !isGodMode) {
             z = CameraController.ZoomSensitivity * -Input.mouseScrollDelta.y;
 
+            // TODO: Determine if still needed
             // UNCOMMENT OUT TO ENABLE CURSOR-LOCKING WHEN ORBITING
             /*
             if (Input.GetKeyDown(KeyCode.Mouse0)) {
@@ -94,7 +96,7 @@ public class OrbitCameraMode : ICameraMode {
         var up          = t.up;
         t.localRotation = Quaternion.Euler(ActualPitch, 0.0f, 0.0f);
         t.RotateAround(focus, up, ActualYaw);
-        t.localPosition = (/*up * 0.5f +*/ t.forward * -ActualZoom) + t.localPosition;
+        t.localPosition = (t.forward * -ActualZoom) + t.localPosition;
     }
 
     public void End(CameraController cam) {

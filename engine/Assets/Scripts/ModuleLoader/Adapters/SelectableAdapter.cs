@@ -1,14 +1,14 @@
-﻿using SynthesisAPI.EnvironmentManager;
+﻿using static Engine.ModuleLoader.Api;
+using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
+using SynthesisAPI.EventBus;
+using SynthesisAPI.InputManager;
+using SynthesisAPI.InputManager.InputEvents;
+using SynthesisAPI.InputManager.Inputs;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using static Engine.ModuleLoader.Api;
-using SynthesisAPI.InputManager;
-using SynthesisAPI.InputManager.Inputs;
-using SynthesisAPI.InputManager.InputEvents;
 using System.Linq;
-using SynthesisAPI.EventBus;
+using UnityEngine;
 
 namespace Engine.ModuleLoader.Adapters {
     public class SelectableAdapter : MonoBehaviour, IApiAdapter<Selectable> {
@@ -44,12 +44,12 @@ namespace Engine.ModuleLoader.Adapters {
                         selectable.OnDeselect();
                     }
                 }
+
                 Selectable.ResetSelected();
             }
         }
 
         private void Select() {
-            // Debug.Log("Select()");
             var currentClickTime = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
             var lastSelected     = Selectable.Selected;
             if (!instance.IsSelected) {
@@ -67,11 +67,12 @@ namespace Engine.ModuleLoader.Adapters {
                 else
                     instance.SetSelected(Selectable.SelectionType.Selected);
             }
+
             lastClickTime = currentClickTime;
         }
 
-        private IEnumerator FlashYellow() // TODO maybe make it highlight the mesh using some kind of shader
-        {
+        // TODO maybe make it highlight the mesh using some kind of shader
+        private IEnumerator FlashYellow() {
             List<Color> backupColors = new List<Color>(materials.Count);
             foreach (var m in materials) {
                 backupColors.Add(m.color);
@@ -113,6 +114,7 @@ namespace Engine.ModuleLoader.Adapters {
                     }
                 }
             }
+
             InputManager.AssignDigitalInput(
                 $"_internal SelectableAdapter select {myIndex}", new Digital($"mouse 0 non-ui"), e => {
                     if (!isDestroyed)
@@ -137,11 +139,13 @@ namespace Engine.ModuleLoader.Adapters {
             if (selectableAdapterCount == 0) {
                 InputManager.UnassignDigitalInput($"_internal SelectableAdapter deselect {myIndex}");
             }
+
             if (Selectable.Selected?.Entity != null && Selectable.Selected?.Entity == instance.Entity) {
                 var lastSelected = Selectable.Selected;
                 Deselect();
                 EventBus.Push(new Selectable.SelectionChangeEvent(Selectable.Selected, lastSelected));
             }
+
             selectableAdapterCount--;
         }
 
@@ -171,6 +175,7 @@ namespace Engine.ModuleLoader.Adapters {
                                     }
                                 }
                             }
+
                             if (!hitMe) {
 
                                 hitIntercepted = true;
@@ -178,6 +183,7 @@ namespace Engine.ModuleLoader.Adapters {
                         }
                     }
                 }
+
                 if (hitMe && (!hitIntercepted || isAlwaysOnTop)) {
                     Select();
                 }

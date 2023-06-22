@@ -1,10 +1,9 @@
-using System;
 using Synthesis.UI.Dynamic;
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class LoadingScreenModal : ModalDynamic {
-
     public LoadingScreenModal() : base(new Vector2(300, -80)) {
     }
 

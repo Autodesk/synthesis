@@ -1,12 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
-using System.Linq;
 
 public class SynthesisAssetCollection : MonoBehaviour {
-
     public static SynthesisAssetCollection Instance;
 
     [SerializeField]
@@ -30,9 +29,11 @@ public class SynthesisAssetCollection : MonoBehaviour {
             if (_blurVolumeStatic == null) {
                 _blurVolumeStatic = GameObject.Instantiate(Instance.BlurVolumePrefab).GetComponent<Volume>();
             }
+
             return _blurVolumeStatic;
         }
     }
+
     public static GameObject ReplaySliderStatic => Instance.ReplaySlider;
     public static GameObject GizmoPrefabStatic  => Instance.GizmoPrefab;
 
@@ -53,6 +54,7 @@ public class SynthesisAssetCollection : MonoBehaviour {
             Destroy(gameObject);
             return;
         }
+
         Instance = this;
         DontDestroyOnLoad(gameObject);
 

@@ -1,8 +1,8 @@
+using Synthesis.UI.Dynamic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Synthesis.UI.Dynamic;
 using UnityEngine;
 
 public class ChangeDrivetrainModal : ModalDynamic {
@@ -14,6 +14,7 @@ public class ChangeDrivetrainModal : ModalDynamic {
 
     public ChangeDrivetrainModal() : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) {
     }
+
     public override void Create() {
         Title.SetText("Change Drivetrain");
 
@@ -32,8 +33,10 @@ public class ChangeDrivetrainModal : ModalDynamic {
                          .AddOnValueChangedEvent((d, i, o) => _selectedType = RobotSimObject.DRIVETRAIN_TYPES[i])
                          .SetValue(_selectedType.Value));
     }
+
     public override void Update() {
     }
+
     public override void Delete() {
     }
 }

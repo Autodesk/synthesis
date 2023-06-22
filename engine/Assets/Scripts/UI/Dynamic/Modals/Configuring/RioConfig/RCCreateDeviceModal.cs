@@ -1,9 +1,9 @@
+using Synthesis.UI;
+using Synthesis.UI.Dynamic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Synthesis.UI;
-using Synthesis.UI.Dynamic;
 using UnityEngine;
 
 #nullable enable
@@ -49,11 +49,6 @@ public class RCCreateDeviceModal : ModalDynamic {
         _typeDropdown = MainContent.CreateLabeledDropdown().StepIntoLabel(l => l.SetText("Type"));
         _typeDropdown.StepIntoDropdown(d => d.SetOptions(EntryTypes));
         _typeDropdown.SetTopStretch<LabeledDropdown>();
-        // _typeDropdown.StepIntoDropdown(d => d.AddOnValueChangedEvent(UpdateIDSelection));
-
-        // _idDropdown.StepIntoDropdown(d => d.AddOnValueChangedEvent((d, i, data) => {
-        //     _selectedId = data.text;
-        // }));
     }
 
     public override void Delete() {
@@ -69,6 +64,7 @@ public class RCConfigPwmGroupModal : ModalDynamic {
 
     public RCConfigPwmGroupModal() : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) {
     }
+
     public RCConfigPwmGroupModal(PWMGroupEntry entry) : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) {
         _entry = entry;
     }
@@ -104,6 +100,7 @@ public class RCConfigPwmGroupModal : ModalDynamic {
                 if (_entry != null) {
                     int n = RioConfigurationModal.Entries.RemoveAll(e => e.Equals(_entry));
                 }
+
                 RioConfigurationModal.Entries.Add(entry);
 
                 DynamicUIManager.CreateModal<RioConfigurationModal>();
@@ -141,6 +138,7 @@ public class RCConfigPwmGroupModal : ModalDynamic {
 
             _portToggles.Add($"{i}", toggle);
         }
+
         _portSelection.Content.SetTopStretch<Content>().SetHeight<Content>(
             -_portSelection.Content.RectOfChildren().yMin);
 
@@ -173,6 +171,7 @@ public class RCConfigPwmGroupModal : ModalDynamic {
 
                 _signalToggles.Add(j.SignalReference, toggle);
             });
+
         _signalSelection.Content.SetTopStretch<Content>().SetHeight<Content>(
             -_signalSelection.Content.RectOfChildren().yMin);
 

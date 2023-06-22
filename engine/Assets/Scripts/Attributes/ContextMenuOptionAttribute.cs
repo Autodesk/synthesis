@@ -1,13 +1,12 @@
+using Synthesis.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Synthesis.UI;
 
 namespace Synthesis.Attributes {
     public class ContextMenuOptionAttribute : Attribute {
-
         public string Title { get; private set; }    = string.Empty;
         public Action Callback { get; private set; } = null;
         public Sprite Icon { get; private set; }     = null;

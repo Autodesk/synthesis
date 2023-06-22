@@ -3,6 +3,7 @@ using Synthesis.Runtime;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using UnityEngine;
+
 using Input = UnityEngine.Input;
 
 public class GodMode : MonoBehaviour {
@@ -16,10 +17,12 @@ public class GodMode : MonoBehaviour {
 
     private GameObject GetGameObjectWithRigidbody(GameObject gameObj) {
         Rigidbody rb = gameObj.GetComponent<Rigidbody>();
-        if (rb != null && !rb.isKinematic)
+        if (rb != null && !rb.isKinematic) {
             return gameObj;
-        return gameObj.transform.parent != null ? GetGameObjectWithRigidbody(gameObj.transform.parent.gameObject)
-                                                : null;
+        } else {
+            return gameObj.transform.parent != null ? GetGameObjectWithRigidbody(gameObj.transform.parent.gameObject)
+                                                    : null;
+        }
     }
 
     public const string ENABLED_GOD_MODE_INPUT = "input/enable_god_mode";
@@ -45,6 +48,7 @@ public class GodMode : MonoBehaviour {
 
     private float _lastUpdate = float.NaN;
     private Vector3 _speed, _lastPosition;
+
     private void Update() {
         bool godModeKeyDown = InputManager.MappedValueInputs[ENABLED_GOD_MODE_INPUT].Value == 1.0F;
         bool mouseDown      = InputManager.MappedValueInputs[GOD_MODE_DRAG_INPUT].Value == 1.0F;
@@ -68,30 +72,29 @@ public class GodMode : MonoBehaviour {
 
                         grabbedDistance                 = hitInfo.distance;
                         _pointerBody.transform.position = hitInfo.point;
-                        // add a joint to the grabbed object anchored at where the user clicked
+                        // Add a joint to the grabbed object anchored at where the user clicked
                         Vector3 localCoords = grabbedObject.transform.worldToLocalMatrix.MultiplyPoint(hitInfo.point);
                         grabJoint           = grabbedObject.AddComponent<ConfigurableJoint>();
                         grabJoint.connectedBody = _pointerBody;
                         grabJoint.anchor        = localCoords;
-                        // grabJoint.autoConfigureConnectedAnchor = false;
-                        // grabJoint.connectedAnchor = localCoords;
+                        // GrabJoint.autoConfigureConnectedAnchor = false;
+                        // GrabJoint.connectedAnchor = localCoords;
                         grabJoint.xMotion = grabJoint.yMotion = grabJoint.zMotion = ConfigurableJointMotion.Locked;
                     }
                 }
             } else if (mouseDown && grabJoint != null) {
-                // move towards and away from the camera on scroll
+                // Move towards and away from the camera on scroll
                 grabbedDistance += ZoomSensitivity * Input.mouseScrollDelta.y;
                 Camera camera         = Camera.main;
                 Vector3 mousePosition = Input.mousePosition;
                 mousePosition.z       = (float)grabbedDistance;
                 Ray ray               = camera.ScreenPointToRay(mousePosition);
-                // move grabbed object towards mouse cursor
 
+                // Move grabbed object towards mouse cursor
                 if (ray.GetPoint((float)grabbedDistance).y >= 0) {
                     var delta = (ray.GetPoint((float)grabbedDistance) - _pointerBody.position) * (float)MovementSpeed *
                                 Time.deltaTime;
                     _pointerBody.position += delta;
-
                     _speed = delta / Time.deltaTime;
                 }
             }

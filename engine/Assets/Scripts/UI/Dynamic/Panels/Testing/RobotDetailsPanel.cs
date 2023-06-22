@@ -1,12 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
-using System;
+using UnityEngine;
 
 namespace Synthesis.UI.Dynamic {
     public class RobotDetailsPanel : PanelDynamic {
-
         public const string ROBOTO_BOLD    = "Roboto-Bold SDF";
         public const string ROBOTO_REGULAR = "Roboto-Regular SDF";
 
@@ -16,7 +15,6 @@ namespace Synthesis.UI.Dynamic {
         private Label X, Y, Z;
 
         public override bool Create() {
-
             CancelButton.RootGameObject.SetActive(false);
             AcceptButton.StepIntoLabel(l => l.SetText("Close"));
             AcceptButton.AddOnClickedEvent(b => DynamicUIManager.ClosePanel<RobotDetailsPanel>());

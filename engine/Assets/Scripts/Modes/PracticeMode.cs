@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Synthesis.Gizmo;
 using Synthesis.Import;
 using Synthesis.Physics;
@@ -8,6 +6,8 @@ using Synthesis.Runtime;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PracticeMode : IMode {
@@ -25,7 +25,7 @@ public class PracticeMode : IMode {
     private static Dictionary<GameObject, Vector3> _initialPositions    = new Dictionary<GameObject, Vector3>();
     private static Dictionary<GameObject, Quaternion> _initialRotations = new Dictionary<GameObject, Quaternion>();
 
-    // for resetting the robot in practice mode
+    // For resetting the robot in practice mode
     public static Dictionary<GameObject, Vector3> InitialPositions {
         get => _initialPositions;
         set => _initialPositions = value;
@@ -41,21 +41,16 @@ public class PracticeMode : IMode {
     public void Start() {
         DynamicUIManager.CreateModal<AddFieldModal>();
 
-        // var mira = new
-        // MirabufLive("C:\\Users\\hunte\\AppData\\Roaming\\Autodesk\\Synthesis\\Mira\\BrokenLinksRobot_v1.mira");
-        //
-        // GameObject container = new GameObject();
-        // mira.GenerateDefinitionObjects(container, false);
-
         InputManager.AssignValueInput(
             TOGGLE_ESCAPE_MENU_INPUT, TryGetSavedInput(TOGGLE_ESCAPE_MENU_INPUT,
                                           new Digital("Escape", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
 
         MainHUD.AddItemToDrawer("Spawn", b => DynamicUIManager.CreateModal<SpawningModal>(),
             icon: SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
-        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
             MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>(),
                 icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+        }
 
         MainHUD.AddItemToDrawer("Multibot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>());
 
@@ -95,6 +90,7 @@ public class PracticeMode : IMode {
             input.ContextBitmask = defaultInput.ContextBitmask;
             return input;
         }
+
         return defaultInput;
     }
 
@@ -138,15 +134,13 @@ public class PracticeMode : IMode {
             _gamepieceSpawnpointObject.transform.parent = currentField.FieldObject.transform;
         }
 
-        // make it transparent
+        // Make it transparent
         Renderer renderer = _gamepieceSpawnpointObject.GetComponent<Renderer>();
         renderer.material = new Material(Shader.Find("Shader Graphs/DefaultSynthesisTransparentShader"));
 
         GizmoManager.SpawnGizmo(_gamepieceSpawnpointObject.transform,
             t => { _gamepieceSpawnpointObject.transform.position = t.Position; },
             t => { EndConfigureGamepieceSpawnpoint(); });
-        // GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, _gamepieceSpawnpointObject.transform,
-        // _gamepieceSpawnpointObject.transform.position);
     }
 
     public static void EndConfigureGamepieceSpawnpoint() {
@@ -157,8 +151,10 @@ public class PracticeMode : IMode {
 
     public static void ResetRobot() {
         RobotSimObject robot = RobotSimObject.GetCurrentlyPossessedRobot();
-        if (robot == null)
+        if (robot == null) {
             return;
+        }
+
         robot.ClearGamepieces();
         robot.RobotNode.GetComponentsInChildren<Rigidbody>().ForEach(rb => {
             GameObject go         = rb.gameObject;
@@ -168,8 +164,9 @@ public class PracticeMode : IMode {
     }
 
     public static void ResetGamepieces() {
-        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
             RobotSimObject.GetCurrentlyPossessedRobot().ClearGamepieces();
+        }
 
         _gamepieces.ForEach(gp => { GameObject.Destroy(gp.GamepieceObject); });
         _gamepieces.Clear();
@@ -225,12 +222,6 @@ public class PracticeMode : IMode {
             parent.transform.parent               = data.Parent;
             parent.transform.position             = Vector3.zero;
             childWithTransform.transform.position = spawnPosition;
-            // GameObject.Instantiate(parent);
-
-            // if (childTransform != null)
-            // {
-            //     childTransform.position = spawnPosition;
-            // }
 
             gamepiece = new GamepieceSimObject(data.Name, parent);
         }
@@ -247,33 +238,39 @@ public class PracticeMode : IMode {
         public float Mass;
 
         public GamepieceData(GameObject gameObject) {
-            if (gameObject == null)
+            if (gameObject == null) {
                 return;
+            }
 
-            if (gameObject.transform.childCount > 0)
+            if (gameObject.transform.childCount > 0) {
                 // standard game objects have children named block:# or balls:#
                 // so I use that for the name of the gamepiece
                 Name = gameObject.transform.GetChild(0).name.Split(':')[0];
-            else
+            } else {
                 Name = gameObject.name;
+            }
 
             Parent = gameObject.transform.parent;
 
             MeshFilter meshFilter = gameObject.GetComponentInChildren<MeshFilter>();
-            if (meshFilter != null)
+            if (meshFilter != null) {
                 Mesh = meshFilter.mesh;
+            }
 
             MeshCollider collider = gameObject.GetComponentInChildren<MeshCollider>();
-            if (collider != null)
+            if (collider != null) {
                 ColliderMaterial = collider.material;
+            }
 
             Rigidbody rb = gameObject.GetComponentInChildren<Rigidbody>();
-            if (rb != null)
+            if (rb != null) {
                 Mass = rb.mass;
+            }
 
             MeshRenderer meshRenderer = gameObject.GetComponentInChildren<MeshRenderer>();
-            if (meshRenderer != null)
+            if (meshRenderer != null) {
                 Material = meshRenderer.material;
+            }
         }
     }
 }

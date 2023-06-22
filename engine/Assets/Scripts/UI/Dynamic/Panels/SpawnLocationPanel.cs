@@ -1,15 +1,14 @@
+using Synthesis.Gizmo;
+using Synthesis.PreferenceManager;
+using Synthesis.Runtime;
+using Synthesis.UI.Dynamic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Synthesis.UI.Dynamic;
-using Synthesis.PreferenceManager;
 using UnityEngine;
-using Synthesis.Gizmo;
-using Synthesis.Runtime;
 
 namespace Synthesis.UI.Dynamic {
     public class SpawnLocationPanel : PanelDynamic {
-
         private static float width  = 300f;
         private static float height = 200f;
 
@@ -29,7 +28,6 @@ namespace Synthesis.UI.Dynamic {
         public override bool Create() {
             Title.SetText("Set Spawn").SetFontSize(25f);
             PanelImage.RootGameObject.SetActive(false);
-            // Description.RootGameObject.SetActive(false);
 
             Content panel = new Content(null, UnityObject, null);
             panel.SetBottomStretch<Content>(Screen.width / 2 - width / 2 - 40f, Screen.width / 2 - width / 2 - 40f, 0);
@@ -40,13 +38,12 @@ namespace Synthesis.UI.Dynamic {
                     StartMatch();
                 }
             });
+
             CancelButton.StepIntoLabel(label => label.SetText("Cancel")).AddOnClickedEvent(b => {
-                // if (FieldSimObject.CurrentField != null) FieldSimObject.CurrentField.DeleteField();
-                // if (RobotSimObject.GetCurrentlyPossessedRobot() != null)
-                // RobotSimObject.GetCurrentlyPossessedRobot().Destroy();
                 DynamicUIManager.CreateModal<MatchModeModal>();
             });
 
+            // TODO: Massive code block need to determine if we need this or not.
             /*MainContent.CreateLabel(50f).ApplyTemplate(VerticalLayout).SetText("Spawn Positions");
             var spawnPosition = MainContent.CreateDropdown().ApplyTemplate(Dropdown.VerticalLayoutTemplate)
                 .SetOptions(new string[] { "Left", "Middle", "Right" })
@@ -111,10 +108,9 @@ namespace Synthesis.UI.Dynamic {
                            .SetTopStretch(leftPadding: 10f, anchoredY: 130f)
                            .SetText("(0.00, 0.00, 0.00)");
 
-            // PracticeMode.SetInitialState(GizmoManager.currentGizmo.transform.parent.gameObject);
-
             return true;
         }
+
         private void StartMatch() {
             if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
                 Vector3 p = RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position;
@@ -126,10 +122,6 @@ namespace Synthesis.UI.Dynamic {
                 PreferenceManager.PreferenceManager.Save();
             }
 
-            // Shooting.ConfigureGamepieces();
-
-            // TEMPORARY: FOR POWERUP ONLY
-
             Scoring.CreatePowerupScoreZones();
             DynamicUIManager.CloseAllPanels(true);
             DynamicUIManager.CreatePanel<Synthesis.UI.Dynamic.ScoreboardPanel>(true);
@@ -138,9 +130,10 @@ namespace Synthesis.UI.Dynamic {
         }
 
         private bool matchStarted = false;
-        public override void Update() {
 
+        public override void Update() {
             Vector3 robotPosition = new Vector3();
+
             if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
                 robotPosition = RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position;
             }

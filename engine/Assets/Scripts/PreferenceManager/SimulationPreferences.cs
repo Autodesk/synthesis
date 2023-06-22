@@ -1,16 +1,17 @@
+using Newtonsoft.Json;
+using Synthesis.Import;
+using Synthesis.WS.Translation;
+using SynthesisAPI.EventBus;
+using SynthesisAPI.InputManager.Inputs;
+using SynthesisAPI.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Newtonsoft.Json;
-using Synthesis.Import;
-using SynthesisAPI.EventBus;
-using SynthesisAPI.InputManager.Inputs;
-using SynthesisAPI.Utilities;
 using UnityEngine;
-using Synthesis.WS.Translation;
 using UnityEngine.Windows;
+
 using ITD = RobotSimObject.IntakeTriggerData;
 using STD = RobotSimObject.ShotTrajectoryData;
 
@@ -103,8 +104,10 @@ namespace Synthesis.PreferenceManager {
                 // PreferenceManager.SetPreference(ALL_ROBOT_DATA_KEY, _allRobotData);
                 if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
                     var live = RobotSimObject.GetCurrentlyPossessedRobot().MiraLive;
-                    if (live.MiraAssembly.Data.Parts.UserData == null)
+                    if (live.MiraAssembly.Data.Parts.UserData == null) {
                         live.MiraAssembly.Data.Parts.UserData = new Mirabuf.UserData();
+                    }
+
                     live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY] =
                         JsonConvert.SerializeObject(_allRobotData[live.MiraAssembly.Info.GUID]);
                     live.Save();
@@ -120,19 +123,23 @@ namespace Synthesis.PreferenceManager {
             }
 
             public Analog GetRobotInput(string robot, string input) {
-                if (!_allRobotData.ContainsKey(robot))
+                if (!_allRobotData.ContainsKey(robot)) {
                     return null;
+                }
 
                 var rData = _allRobotData[robot];
-                if (!rData.InputData.ContainsKey(input))
+
+                if (!rData.InputData.ContainsKey(input)) {
                     return null;
+                }
 
                 return rData.InputData[input].GetInput();
             }
 
             public Dictionary<string, Analog> GetRobotInputs(string robot) {
-                if (!_allRobotData.ContainsKey(robot))
+                if (!_allRobotData.ContainsKey(robot)) {
                     return null;
+                }
 
                 var inputs = new Dictionary<string, Analog>();
                 var rData  = _allRobotData[robot];
@@ -141,99 +148,119 @@ namespace Synthesis.PreferenceManager {
             }
 
             public JointMotor? GetRobotJointMotor(string robot, string motorKey) {
-                if (!_allRobotData.ContainsKey(robot))
+                if (!_allRobotData.ContainsKey(robot)) {
                     return null;
+                }
 
                 var motors = _allRobotData[robot].JointMotors;
-                if (!motors.ContainsKey(motorKey))
+                if (!motors.ContainsKey(motorKey)) {
                     return null;
+                }
 
                 return motors[motorKey];
             }
 
             public float? GetRobotJointSpeed(string robot, string speedKey) {
-                if (!_allRobotData.ContainsKey(robot))
+                if (!_allRobotData.ContainsKey(robot)) {
                     return null;
+                }
 
                 var speeds = _allRobotData[robot].JointSpeeds;
-                if (!speeds.ContainsKey(speedKey))
+                if (!speeds.ContainsKey(speedKey)) {
                     return null;
+                }
 
                 return speeds[speedKey];
             }
 
             public ITD? GetRobotIntakeTriggerData(string robot) {
-                if (!_allRobotData.ContainsKey(robot))
+                if (!_allRobotData.ContainsKey(robot)) {
                     return null;
+                }
 
                 return _allRobotData[robot].IntakeTrigger;
             }
 
             public STD? GetTrajectoryData(string robot) {
-                if (!_allRobotData.ContainsKey(robot))
+                if (!_allRobotData.ContainsKey(robot)) {
                     return null;
+                }
 
                 return _allRobotData[robot].TrajectoryPointer;
             }
 
             public RioTranslationLayer? GetSimTranslationLayer(string robot) {
-                if (!_allRobotData.ContainsKey(robot))
+                if (!_allRobotData.ContainsKey(robot)) {
                     return null;
+                }
 
                 return _allRobotData[robot].SimTranslationLayer;
             }
 
             public RobotSimObject.DrivetrainType GetRobotDrivetrainType(string robot) {
-                if (!_allRobotData.ContainsKey(robot))
+                if (!_allRobotData.ContainsKey(robot)) {
                     return RobotSimObject.DrivetrainType.ARCADE;
-                return _allRobotData[robot].DrivetrainType ?? RobotSimObject.DrivetrainType.ARCADE;
+                } else {
+                    return _allRobotData[robot].DrivetrainType ?? RobotSimObject.DrivetrainType.ARCADE;
+                }
             }
 
             public void SetRobotInput(string robot, string inputKey, Analog inputValue) {
-                if (!_allRobotData.ContainsKey(robot))
+                if (!_allRobotData.ContainsKey(robot)) {
                     _allRobotData[robot] = new RobotData(robot);
+                }
+
                 var rData                 = _allRobotData[robot];
                 rData.InputData[inputKey] = new InputData(inputValue);
-                // _allRobotData[robot] = rData; // I changed it to a class so Im not sure if this is needed
             }
 
             public void SetRobotJointMotor(string robot, string motorKey, JointMotor m) {
-                if (!_allRobotData.ContainsKey(robot))
+                if (!_allRobotData.ContainsKey(robot)) {
                     _allRobotData[robot] = new RobotData(robot);
+                }
+
                 var rData                   = _allRobotData[robot];
                 rData.JointMotors[motorKey] = m;
-                // _allRobotData[robot] = rData;
             }
 
             public void SetRobotJointSpeed(string robot, string speedKey, float speed) {
-                if (!_allRobotData.ContainsKey(robot))
+                if (!_allRobotData.ContainsKey(robot)) {
                     _allRobotData[robot] = new RobotData(robot);
+                }
+
                 var rData                   = _allRobotData[robot];
                 rData.JointSpeeds[speedKey] = speed;
-                // _allRobotData[robot] = rData;
             }
 
             public void SetRobotIntakeTriggerData(string robot, ITD? data) {
-                if (!_allRobotData.ContainsKey(robot))
+                if (!_allRobotData.ContainsKey(robot)) {
                     _allRobotData[robot] = new RobotData(robot);
+                }
+
                 _allRobotData[robot].IntakeTrigger = data;
             }
 
             public void SetRobotTrajectoryData(string robot, STD? data) {
-                if (!_allRobotData.ContainsKey(robot))
+                if (!_allRobotData.ContainsKey(robot)) {
                     _allRobotData[robot] = new RobotData(robot);
+                }
+
                 _allRobotData[robot].TrajectoryPointer = data;
             }
 
             public void SetRobotSimTranslationLayer(string robot, RioTranslationLayer layer) {
-                if (!_allRobotData.ContainsKey(robot))
+                if (!_allRobotData.ContainsKey(robot)) {
                     _allRobotData[robot] = new RobotData(robot);
+                }
+
                 _allRobotData[robot].SimTranslationLayer = layer;
             }
 
             public void SetRobotDrivetrainType(string robot, RobotSimObject.DrivetrainType drivetrainType) {
-                if (!_allRobotData.ContainsKey(robot))
+                if (!_allRobotData.ContainsKey(robot)) {
                     _allRobotData[robot] = new RobotData(robot);
+                }
+
                 _allRobotData[robot].DrivetrainType = drivetrainType;
             }
         }
@@ -244,6 +271,7 @@ namespace Synthesis.PreferenceManager {
                 if (_instance == null) {
                     _instance = new Inner();
                 }
+
                 return _instance;
             }
         }
@@ -258,12 +286,14 @@ namespace Synthesis.PreferenceManager {
             JointMotors  = new Dictionary<string, JointMotor>();
             JointSpeeds  = new Dictionary<string, float>();
         }
+
         public RobotData(string guid) {
             AssemblyGuid = guid;
             InputData    = new Dictionary<string, InputData>();
             JointMotors  = new Dictionary<string, JointMotor>();
             JointSpeeds  = new Dictionary<string, float>();
         }
+
         [JsonProperty]
         public string AssemblyGuid;
         [JsonProperty]
@@ -313,6 +343,7 @@ namespace Synthesis.PreferenceManager {
             null, new string[] { Data });
     }
 
+    // TODO: Determine if this is still needed.
     // [JsonObject(MemberSerialization.OptIn)]
     // public class JsonFriendlyData<T> {
     //     [JsonProperty]

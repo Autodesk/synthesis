@@ -1,7 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 using Image = UnityEngine.UI.Image;

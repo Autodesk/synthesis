@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using UnityEngine;
 
 namespace Synthesis.UI.Hierarchy.HierarchyItems {
     public class HierarchyModelItem : HierarchyItem {

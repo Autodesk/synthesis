@@ -5,6 +5,7 @@ using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.InputEvents;
 using SynthesisAPI.InputManager.Inputs;
 using UnityEngine;
+
 using static Engine.ModuleLoader.Api;
 
 using MeshCollider = UnityEngine.MeshCollider;
@@ -26,6 +27,7 @@ namespace Engine.ModuleLoader.Adapters {
                 meshCollider.sharedMesh = new UnityEngine.Mesh();
                 meshCollider.convex     = true;
             }
+
             InputManager.AssignDigitalInput($"_internal MeshCollider2DAdapter select", new Digital($"mouse 0 non-ui"),
                 e => ProcessInput((DigitalEvent)e)); // TODO use preference manager for this
         }
@@ -66,12 +68,12 @@ namespace Engine.ModuleLoader.Adapters {
                                 hitIntercepted = true;
                             } else {
                                 if (!hitMe) {
-
                                     hitIntercepted = true;
                                 }
                             }
                         }
                     }
+
                     if (hitMe && (!hitIntercepted || isAlwaysOnTop)) {
                         instance.OnMouseDown();
                     }

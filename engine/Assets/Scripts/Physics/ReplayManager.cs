@@ -1,10 +1,10 @@
-using System;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
 using Newtonsoft.Json;
 using Synthesis.Physics;
 using SynthesisAPI.EventBus;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 #nullable enable
@@ -14,13 +14,9 @@ namespace Synthesis.Replay {
         private static bool _isRecording = false;
         public static bool IsRecording {
             get => _isRecording;
-            set {
-                _isRecording = value;
-                // if (!_isRecording) {
-                //     InvalidateRecording();
-                // }
-            }
+            set { _isRecording = value; }
         }
+
         private static float _timeSpan            = 5f;
         public static float TimeSpan             => _timeSpan;
         private static ReplayFrame? _newestFrame  = null;
@@ -46,21 +42,26 @@ namespace Synthesis.Replay {
                 if (pe!.IsFrozen) {
                     _startDesync = Time.realtimeSinceStartup;
                 } else {
-                    if (float.IsNaN(_startDesync))
+                    if (float.IsNaN(_startDesync)) {
                         return;
+                    }
+
                     _desyncTime += Time.realtimeSinceStartup - _startDesync;
                     _startDesync = float.NaN;
                 }
             });
         }
+
         public static void SetupContactUI(Action<ContactReport, float> create, Action erase) {
             _createContactMarker = create;
             _eraseContactMarkers = erase;
         }
 
         public static void PushContactReport(ContactReport r) {
-            if (_contactReports.ContainsKey(r.TimeStamp))
+            if (_contactReports.ContainsKey(r.TimeStamp)) {
                 return;
+            }
+
             _contactReports.Add(r.TimeStamp, r);
         }
 
@@ -73,8 +74,9 @@ namespace Synthesis.Replay {
         /// MARK: Bug in here I think
         /// </summary>
         public static void RecordFrame() {
-            if (!IsRecording || PhysicsManager.IsFrozen)
+            if (!IsRecording || PhysicsManager.IsFrozen) {
                 return;
+            }
 
             var newFrame = ReplayFrame.RecordFrame();
             if (_newestFrame == null) {
@@ -88,8 +90,9 @@ namespace Synthesis.Replay {
                     _oldestFrame           = _oldestFrame?.NextFrame;
                     _oldestFrame.LastFrame = null!;
                     // Debug.Log("Frame dropped");
-                    if (_oldestFrame == _newestFrame)
+                    if (_oldestFrame == _newestFrame) {
                         break;
+                    }
                 }
             }
 
@@ -98,14 +101,6 @@ namespace Synthesis.Replay {
                 (Time.realtimeSinceStartup - _desyncTime) - _contactReports.ElementAt(0).Value.TimeStamp > _timeSpan) {
                 _contactReports.RemoveAt(0);
             }
-
-            // int frameCount = 1;
-            // var tmp = _newestFrame;
-            // while (tmp.LastFrame != null) {
-            //     tmp = tmp.LastFrame;
-            //     frameCount++;
-            // }
-            // Debug.Log($"Replay Frames: {frameCount}");
         }
 
         /// <summary>
@@ -114,8 +109,9 @@ namespace Synthesis.Replay {
         /// <param name="t">Use negative range to show relative to the latest frame</param>
         public static ReplayFrame? GetFrameAtTime(float t) {
 
-            if (_newestFrame == null)
+            if (_newestFrame == null) {
                 return null;
+            }
 
             if (t > 0) {
                 throw new NotImplementedException();
@@ -128,8 +124,11 @@ namespace Synthesis.Replay {
                     }
                     a = a.LastFrame;
                 }
-                if (a.NextFrame == null)
+
+                if (a.NextFrame == null) {
                     return a;
+                }
+
                 b = a.NextFrame;
                 return ReplayFrame.Lerp(
                     a, b, ((_newestFrame.TimeStamp + t) - a.TimeStamp) / (b.TimeStamp - a.TimeStamp));
@@ -138,14 +137,15 @@ namespace Synthesis.Replay {
 
         public static void ShowContactsAtTime(float t, float giveOrTake = 0.25f, float impulseThreshold = 10f) {
             if (_newestFrame == null || _contactReports.Count < 1 || CreateContactMarker == null ||
-                EraseContactMarkers == null)
+                EraseContactMarkers == null) {
                 return;
+            }
 
             EraseContactMarkers();
 
             var targetTimeStamp = t > 0 ? t : _newestFrame.TimeStamp + t;
 
-            // locate closest index using binary search (NOTE FOR FUTURE DEVS: I was too lazy to google a binary search
+            // Locate closest index using binary search (NOTE FOR FUTURE DEVS: I was too lazy to google a binary search
             // algo so I made this in like a minute)
             int a = 0, b = _contactReports.Count - 1;
             int index = (a + b) / 2;
@@ -167,26 +167,36 @@ namespace Synthesis.Replay {
             int indexBefore = index;
             while (indexBefore > -1) {
                 var dist = Math.Abs(_contactReports.ElementAt(indexBefore).Value.TimeStamp - targetTimeStamp);
-                if (dist >= giveOrTake)
+                if (dist >= giveOrTake) {
                     break;
-                if (_contactReports.ElementAt(indexBefore).Value.Impulse.magnitude >= impulseThreshold)
+                }
+
+                if (_contactReports.ElementAt(indexBefore).Value.Impulse.magnitude >= impulseThreshold) {
                     CreateContactMarker(_contactReports.ElementAt(indexBefore).Value, (giveOrTake - dist) / giveOrTake);
+                }
+
                 indexBefore--;
             }
+
             int indexAfter = index + 1;
             while (indexAfter < _contactReports.Count) {
                 var dist = Math.Abs(_contactReports.ElementAt(indexAfter).Value.TimeStamp - targetTimeStamp);
-                if (dist >= giveOrTake)
+                if (dist >= giveOrTake) {
                     break;
-                if (_contactReports.ElementAt(indexAfter).Value.Impulse.magnitude >= impulseThreshold)
+                }
+
+                if (_contactReports.ElementAt(indexAfter).Value.Impulse.magnitude >= impulseThreshold) {
                     CreateContactMarker(_contactReports.ElementAt(indexAfter).Value, (giveOrTake - dist) / giveOrTake);
+                }
+
                 indexAfter++;
             }
         }
 
         public static void MakeCurrentNewestFrame() {
-            if (_newestFrame == null || CurrentFrame == null)
+            if (_newestFrame == null || CurrentFrame == null) {
                 return;
+            }
 
             var originalNewestTimestamp = _newestFrame.TimeStamp;
 
@@ -194,6 +204,7 @@ namespace Synthesis.Replay {
                 if (_newestFrame == _oldestFrame) {
                     throw new Exception("Current Frame is too outdated");
                 }
+
                 _newestFrame = _newestFrame.LastFrame;
             }
 
@@ -243,11 +254,8 @@ namespace Synthesis.Replay {
                         Rotation = y.transform.rotation, Velocity = y.velocity, AngularVelocity = y.angularVelocity };
                     frame.RigidbodyData[y] = data;
                 });
-                // PhysicsManager.GetContactRecorders(x)?.ForEach(y => {
-                //     frame.ContactReports[x] = y.Reports;
-                //     y.Reports = new List<ContactReport>();
-                // });
             });
+
             return frame;
         }
 
@@ -275,9 +283,9 @@ namespace Synthesis.Replay {
                         AngularVelocity =
                             Vector3.Lerp(x.Value.AngularVelocity, b.RigidbodyData[x.Key].AngularVelocity, t) };
                     c.RigidbodyData[x.Key] = data;
-                    // c.ContactReports = new Dictionary<IPhysicsOverridable, List<ContactReport>>(b.ContactReports);
                 }
             });
+
             return c;
         }
 
@@ -296,10 +304,7 @@ namespace Synthesis.Replay {
                 x.Key.velocity           = x.Value.Velocity;
                 x.Key.angularVelocity    = x.Value.AngularVelocity;
             });
-            // if (ReplayManager.ResetContactUI != null) {
-            //     ReplayManager.ResetContactUI();
-            //     a.ContactReports.ForEach(x => x.Value.ForEach(y => ReplayManager.CreateContactUI!(y)));
-            // }
+
             ReplayManager.CurrentFrame = a;
         }
     }

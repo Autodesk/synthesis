@@ -1,11 +1,10 @@
+using Synthesis.UI.Dynamic;
+using SynthesisAPI.Utilities;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using SynthesisAPI.Utilities;
 using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
-
-using Synthesis.UI.Dynamic;
 
 public class ToastConfig : MonoBehaviour {
     public Sprite DebugIcon;
@@ -52,15 +51,19 @@ public class ToastConfig : MonoBehaviour {
                 break;
             }
         }
+
         this.tm = tm;
     }
+
     public void CloseToast() {
         tm.onRemoveToast();
         Destroy(gameObject);
     }
+
     public void ClearAll() {
         tm.ClearAll();
     }
+
     public void ExpandToast() {
         ToastModal.toastLevel = toastLevel;
         ToastModal.toastText  = t.text;

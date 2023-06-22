@@ -1,11 +1,10 @@
+using Synthesis.Gizmo;
 using System.Collections;
 using System.Collections.Generic;
-using Synthesis.Gizmo;
 using UnityEngine;
 
 namespace Synthesis.UI.Dynamic {
     public class StartMatchModePanel : PanelDynamic {
-
         public StartMatchModePanel() : base(new Vector2(300f, 200f)) {
         }
 
@@ -34,11 +33,6 @@ namespace Synthesis.UI.Dynamic {
                 PreferenceManager.PreferenceManager.Save();
             }
 
-            // Shooting.ConfigureGamepieces();
-
-            // TEMPORARY: FOR POWERUP ONLY
-
-            // Scoring.CreatePowerupScoreZones();
             DynamicUIManager.CloseAllPanels(true);
             DynamicUIManager.CreatePanel<Synthesis.UI.Dynamic.ScoreboardPanel>(true);
 

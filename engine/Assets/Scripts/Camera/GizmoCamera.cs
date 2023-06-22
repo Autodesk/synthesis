@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class GizmoCamera : MonoBehaviour {
     Camera cam;
-    // configures some values of Gizmo Camera to be the same as the main cam
-    void Awake() {
+
+    // Configures some values of Gizmo Camera to be the same as the main cam
+    private void Awake() {
         cam               = gameObject.GetComponent<Camera>();
         cam.fieldOfView   = Camera.main.fieldOfView;
         cam.focalLength   = Camera.main.focalLength;

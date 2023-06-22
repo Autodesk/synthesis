@@ -1,8 +1,8 @@
-
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using UnityEngine;
+
 using Input = UnityEngine.Input;
 
 #nullable enable
@@ -29,16 +29,12 @@ public class FreeCameraMode : ICameraMode {
     public void Start<T>(CameraController cam, T? previousCam)
         where T : ICameraMode {
 
-        // only assign inputs once
+        // Only assign inputs once
         if (!InputManager.MappedDigitalInputs.ContainsKey(FORWARD_KEY)) {
             InputManager.AssignDigitalInput(FORWARD_KEY, new Digital("W"));
             InputManager.AssignDigitalInput(BACK_KEY, new Digital("S"));
             InputManager.AssignDigitalInput(LEFT_KEY, new Digital("A"));
             InputManager.AssignDigitalInput(RIGHT_KEY, new Digital("D"));
-            // InputManager.AssignValueInput(LEFT_YAW_KEY, new Digital("Q"));
-            // InputManager.AssignValueInput(RIGHT_YAW_KEY, new Digital("E"));
-            // InputManager.AssignValueInput(DOWN_PITCH_KEY, new Digital("Z"));
-            // InputManager.AssignValueInput(UP_PITCH_KEY, new Digital("X"));
         }
 
         if (previousCam != null && previousCam.GetType() == typeof(OrbitCameraMode)) {
@@ -57,34 +53,21 @@ public class FreeCameraMode : ICameraMode {
             SetActive(false);
         }
 
-        // don't allow camera movement when a modal is open
-        if (DynamicUIManager.ActiveModal != null)
+        // Don't allow camera movement when a modal is open
+        if (DynamicUIManager.ActiveModal != null) {
             return;
+        }
+
         float p = 0.0f;
         float y = 0.0f;
         float z = 0.0f;
-
-        // in old synthesis freecam mode, scrolling down zooms in and scrolling up zooms out
-        // z = cam.ZoomSensitivity * Input.mouseScrollDelta.y;
-
-        // float yawMod = InputManager.MappedValueInputs.ContainsKey(LEFT_YAW_KEY) &&
-        // InputManager.MappedValueInputs.ContainsKey(RIGHT_YAW_KEY) ?
-        //     cam.YawSensitivity / 8 * (InputManager.MappedValueInputs[RIGHT_YAW_KEY].Value -
-        //     InputManager.MappedValueInputs[LEFT_YAW_KEY].Value) : 0;
-        // float pitchMod = InputManager.MappedValueInputs.ContainsKey(UP_PITCH_KEY) &&
-        // InputManager.MappedValueInputs.ContainsKey(DOWN_PITCH_KEY) ?
-        //     cam.PitchSensitivity / 4 * (InputManager.MappedValueInputs[UP_PITCH_KEY].Value -
-        //     InputManager.MappedValueInputs[DOWN_PITCH_KEY].Value) : 0;
-
-        // p -= pitchMod;
-        // y += yawMod;
 
         if (isActive) {
             p = -CameraController.PitchSensitivity * Input.GetAxis("Mouse Y");
             y = CameraController.YawSensitivity * Input.GetAxis("Mouse X");
         }
 
-        // make it so the user can't rotate the camera upside down
+        // Make it so the user can't rotate the camera upside down
         TargetPitch = Mathf.Clamp(TargetPitch + p, -90, 90);
         TargetYaw += y;
         TargetZoom = Mathf.Clamp(TargetZoom + z, cam.ZoomLowerLimit, cam.ZoomUpperLimit);
@@ -99,7 +82,7 @@ public class FreeCameraMode : ICameraMode {
 
         float speed = 10.0F;
 
-        // transform forwards and backwards when forward and backward inputs are pressed
+        // Transform forwards and backwards when forward and backward inputs are pressed
         // left and right when left and right are pressed
 
         Vector3 forward = Vector3.zero, right = Vector3.zero;
@@ -115,18 +98,14 @@ public class FreeCameraMode : ICameraMode {
 
         t.Translate(Time.deltaTime * speed * (forward + right), Space.World);
 
-        // we don't want the user to be able to move the camera under the map or so high they can't see the field
+        // We don't want the user to be able to move the camera under the map or so high they can't see the field
         t.position = new Vector3(t.position.x, Mathf.Clamp(t.position.y, 0, 100), t.position.z);
 
         t.localRotation = Quaternion.Euler(ActualPitch, ActualYaw, 0.0f);
     }
 
     public void LateUpdate(CameraController cam) {
-
         cam.GroundRenderer.material.SetVector("FOCUS_POINT", cam.transform.position);
-
-        // // don't allow camera movement when a modal is open
-        // if (DynamicUIManager.ActiveModal != null) return;
     }
 
     public void SetActive(bool active) {
@@ -134,18 +113,19 @@ public class FreeCameraMode : ICameraMode {
         if (active) {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible   = false;
-            if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+            if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
                 RobotSimObject.GetCurrentlyPossessedRobot().BehavioursEnabled = false;
+            }
         } else {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible   = true;
-            if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+            if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
                 RobotSimObject.GetCurrentlyPossessedRobot().BehavioursEnabled = true;
+            }
         }
     }
 
     public void End(CameraController cam) {
         SetActive(false);
-        // RobotSimObject.GetCurrentlyPossessedRobot().InputFrozen = _wasFrozen;
     }
 }

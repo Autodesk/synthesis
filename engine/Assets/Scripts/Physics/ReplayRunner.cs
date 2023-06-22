@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Newtonsoft.Json;
 using Synthesis.Physics;
 using Synthesis.PreferenceManager;
@@ -11,6 +8,9 @@ using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.InputEvents;
 using SynthesisAPI.InputManager.Inputs;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ReplayRunner : MonoBehaviour {
@@ -22,7 +22,6 @@ public class ReplayRunner : MonoBehaviour {
     private void Start() {
         ReplayManager.IsRecording = true;
 
-        // DynamicUIManager.ReplaySlider.minValue = -ReplayManager.TimeSpan;
         DynamicUIManager.ReplaySlider.AddOnValueChangedEvent((s, val) => {
             if (PhysicsManager.IsFrozen) {
                 var frame = ReplayManager.GetFrameAtTime(val);
@@ -30,6 +29,7 @@ public class ReplayRunner : MonoBehaviour {
                 ReplayManager.ShowContactsAtTime(val, 1.0f, 1.0f);
             }
         });
+
         DynamicUIManager.ReplaySlider.RootGameObject.SetActive(false);
 
         EventBus.NewTypeListener<PhysicsFreezeChangeEvent>(PhysChange);
@@ -43,6 +43,7 @@ public class ReplayRunner : MonoBehaviour {
             toggleReplayInput = new Digital(Enum.GetName(typeof(KeyCode), KeyCode.Tab),
                 context: SimulationRunner.RUNNING_SIM_CONTEXT | SimulationRunner.REPLAY_SIM_CONTEXT);
         }
+
         InputManager.UnassignDigitalInput(TOGGLE_PLAY);
         InputManager.AssignDigitalInput(TOGGLE_PLAY, toggleReplayInput, TogglePlay);
 
@@ -73,8 +74,6 @@ public class ReplayRunner : MonoBehaviour {
     private void TogglePlay(IEvent e) {
         var de = e as DigitalEvent;
         if (de.State == DigitalState.Down) {
-            // if (PhysicsManager.IsFrozen)
-            //     ReplayManager.MakeCurrentNewestFrame();
             PhysicsManager.DisableLoadFromStoredDataOnce();
             PhysicsManager.IsFrozen = !PhysicsManager.IsFrozen;
             if (PhysicsManager.IsFrozen) {
@@ -87,8 +86,10 @@ public class ReplayRunner : MonoBehaviour {
                 ReplayManager.InvalidateRecording();
                 SimulationRunner.RemoveContext(SimulationRunner.REPLAY_SIM_CONTEXT);
                 DynamicUIManager.ReplaySlider.RootGameObject.SetActive(false);
-                if (ReplayManager.EraseContactMarkers != null)
+                if (ReplayManager.EraseContactMarkers != null) {
                     ReplayManager.EraseContactMarkers();
+                }
+
                 ReplayManager.MakeCurrentNewestFrame();
             }
         }
@@ -101,7 +102,6 @@ public class ReplayRunner : MonoBehaviour {
 }
 
 public class ContactMarkerHandler : MonoBehaviour {
-
     public const int LEFT_BOUNDS   = 30;
     public const int RIGHT_BOUNDS  = 30;
     public const int TOP_BOUNDS    = 100;
@@ -115,6 +115,7 @@ public class ContactMarkerHandler : MonoBehaviour {
 
     private void FixedUpdate() {
         var sp = Camera.main.WorldToScreenPoint(transform.position);
+
         // Hate it but whatever
         if (sp.x < LEFT_BOUNDS || sp.x > Screen.currentResolution.width - RIGHT_BOUNDS || sp.y < BOTTOM_BOUNDS ||
             sp.y > Screen.currentResolution.height - TOP_BOUNDS) {

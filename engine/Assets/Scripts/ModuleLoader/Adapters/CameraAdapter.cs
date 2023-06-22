@@ -22,6 +22,7 @@ namespace Engine.ModuleLoader.Adapters {
                     defaultCamera = Util.Misc.FindGameObject("Main Camera").GetComponent<UnityEngine.Camera>();
                     // TODO rename Main Camera in scene to something like Default Camera Settings
                 }
+
                 camera = gameObject.AddComponent<UnityEngine.Camera>();
                 camera.CopyFrom(defaultCamera);
                 gameObject.AddComponent<PhysicsRaycaster>();

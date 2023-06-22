@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Google.Protobuf.WellKnownTypes;
 using Synthesis.PreferenceManager;
 using SynthesisAPI.EventBus;
@@ -8,13 +5,15 @@ using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 using Logger = SynthesisAPI.Utilities.Logger;
 
 namespace Synthesis {
     public class GeneralArmBehaviour : SimBehaviour {
-
         private string _forwardInputKey    = "_forward";
         private string _reverseInputKey    = "_reverse";
         private string _forwardDisplayName = " Forward";
@@ -61,15 +60,16 @@ namespace Synthesis {
         private void OnValueInputAssigned(IEvent tmp) {
             ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
             if (args.InputKey.Equals(_forwardInputKey) || args.InputKey.Equals(_reverseInputKey)) {
-                if (base.SimObjectId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID)
+                if (base.SimObjectId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID) {
                     return;
+                }
+
                 RobotSimObject robot = SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject;
                 SimulationPreferences.SetRobotInput(robot.MiraGUID, args.InputKey, args.Input);
             }
         }
 
         public override void Update() {
-
             var forw  = InputManager.MappedValueInputs[_forwardInputKey];
             var rev   = InputManager.MappedValueInputs[_reverseInputKey];
             float val = Mathf.Abs(forw.Value) - Mathf.Abs(rev.Value);

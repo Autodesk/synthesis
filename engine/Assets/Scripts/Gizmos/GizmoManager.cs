@@ -1,8 +1,8 @@
-using System;
 using Synthesis.Physics;
 using Synthesis.Runtime;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
+using System;
 using UnityEngine;
 
 #nullable enable
@@ -14,7 +14,7 @@ namespace Synthesis.Gizmo {
     public static class GizmoManager {
 
 #region OLD
-
+        // TODO: Remove?
         // private static GameObject gizmo = null;
         // public static GameObject currentGizmo
         // {
@@ -65,7 +65,7 @@ namespace Synthesis.Gizmo {
         //     Object.Destroy(gizmo);
         // }
 
-#endregion
+#endregion // OLD
 
         private static GizmoConfig? _currentGizmoConfig;
         public static GizmoConfig? CurrentGizmoConfig => _currentGizmoConfig;
@@ -95,10 +95,9 @@ namespace Synthesis.Gizmo {
         });
 
         public static void SpawnGizmo(GizmoConfig config) {
-            if (_currentGizmoConfig.HasValue)
+            if (_currentGizmoConfig.HasValue) {
                 ExitGizmo();
-
-            // Debug.Log("spawn gizmo");
+            }
 
             // Check if modal is opened?
 
@@ -114,17 +113,17 @@ namespace Synthesis.Gizmo {
         }
 
         private static void UpdateGizmo() {
-            if (!_currentGizmoConfig.HasValue || _currentTargetTransform == null)
+            if (!_currentGizmoConfig.HasValue || _currentTargetTransform == null) {
                 return;
+            }
 
             _currentGizmoConfig.Value.UpdateCallback(_currentTargetTransform);
         }
 
         public static void ExitGizmo() {
-            if (!_currentGizmoConfig.HasValue || _currentTargetTransform == null)
+            if (!_currentGizmoConfig.HasValue || _currentTargetTransform == null) {
                 return;
-
-            // Debug.Log("Exit Gizmo");
+            }
 
             SimulationRunner.RemoveContext(SimulationRunner.GIZMO_SIM_CONTEXT);
 
@@ -137,7 +136,6 @@ namespace Synthesis.Gizmo {
     }
 
     public struct TransformData {
-
         public static TransformData Default =
             new TransformData { Position = Vector3.zero, Rotation = Quaternion.identity };
 

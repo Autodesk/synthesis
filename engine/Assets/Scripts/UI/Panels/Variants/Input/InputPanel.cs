@@ -1,12 +1,13 @@
+using SynthesisAPI.InputManager;
+using SynthesisAPI.InputManager.Inputs;
+using SynthesisAPI.Simulation;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using SynthesisAPI.InputManager;
-using SynthesisAPI.InputManager.Inputs;
-using SynthesisAPI.Simulation;
 using UnityEngine;
 
+// TODO: Remove whole thing?
 namespace Synthesis.UI.Panels {
     // public class InputPanel : Panel {
     //

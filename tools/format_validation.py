@@ -1,6 +1,5 @@
 import os
 import sys
-from sys import platform
 
 FILES_DIRS = ["engine/Assets/Scripts"]
 FILE_TARGETS = [".cs"]

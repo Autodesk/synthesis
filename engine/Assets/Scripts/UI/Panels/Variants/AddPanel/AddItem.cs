@@ -1,6 +1,6 @@
-﻿using UnityEngine;
-using Synthesis.UI.Panels;
+﻿using Synthesis.UI.Panels;
 using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class AddItem : MonoBehaviour {
@@ -20,7 +20,6 @@ public class AddItem : MonoBehaviour {
     }
 
     public void AddModel(bool reverseSideMotors) {
-        // ModelManager.AddModel(_fullPath, reverseSideMotors);
         RobotSimObject.SpawnRobot(_fullPath);
         ItemAnalytics("Robot");
     }

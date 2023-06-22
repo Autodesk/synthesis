@@ -1,14 +1,13 @@
+using Synthesis.PreferenceManager;
 using Synthesis.UI.Dynamic;
-using UnityEngine;
+using Synthesis.UI.Dynamic;
+using System;
+using System.Collections;
 using System.IO;
 using System.Linq;
-using System;
-using Synthesis.UI.Dynamic;
-using System.Collections;
-using Synthesis.PreferenceManager;
+using UnityEngine;
 
 public class MatchModeModal : ModalDynamic {
-
     private int _robotIndex = -1;
     private int _fieldIndex = -1;
     private string[] _robotFiles;
@@ -28,11 +27,15 @@ public class MatchModeModal : ModalDynamic {
 
     public override void Create() {
         var robotsFolder = ParsePath("$appdata/Autodesk/Synthesis/Mira", '/');
-        if (!Directory.Exists(robotsFolder))
+        if (!Directory.Exists(robotsFolder)) {
             Directory.CreateDirectory(robotsFolder);
+        }
+
         var fieldsFolder = ParsePath("$appdata/Autodesk/Synthesis/Mira/Fields", '/');
-        if (!Directory.Exists(fieldsFolder))
+
+        if (!Directory.Exists(fieldsFolder)) {
             Directory.CreateDirectory(fieldsFolder);
+        }
 
         _robotFiles = Directory.GetFiles(robotsFolder).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
         _fieldFiles = Directory.GetFiles(fieldsFolder).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
@@ -50,6 +53,7 @@ public class MatchModeModal : ModalDynamic {
                 }
             }
         });
+
         CancelButton.AddOnClickedEvent(b => { // need to add in isMatchModalOpen integration
             DynamicUIManager.CloseActiveModal();
         });
@@ -76,31 +80,28 @@ public class MatchModeModal : ModalDynamic {
                                     .SetOptions(new string[] { "Red", "Blue" })
                                     .AddOnValueChangedEvent((d, i, data) => _allianceColor = i)
                                     .ApplyTemplate(VerticalLayout);
-
-        /*MainContent.CreateLabel().ApplyTemplate(VerticalLayout).SetText("Select Spawn Position");
-        var spawnPosition = MainContent.CreateDropdown().ApplyTemplate(Dropdown.VerticalLayoutTemplate)
-            .SetOptions(new string[] { "Left", "Middle", "Right" })
-            .AddOnValueChangedEvent((d, i, data) => _spawnPosition = i).ApplyTemplate(VerticalLayout);*/
     }
 
     public IEnumerator LoadMatch() {
         yield return new WaitForSeconds(0.05f);
 
         if (MatchMode.currentFieldIndex != _fieldIndex) {
-            if (FieldSimObject.CurrentField != null)
+            if (FieldSimObject.CurrentField != null) {
                 FieldSimObject.DeleteField();
+            }
+
             FieldSimObject.SpawnField(_fieldFiles[_fieldIndex]);
             MatchMode.currentFieldIndex = _fieldIndex;
         }
 
         if (MatchMode.currentRobotIndex != _robotIndex) {
-            if (RobotSimObject.GetCurrentlyPossessedRobot() != null)
+            if (RobotSimObject.GetCurrentlyPossessedRobot() != null) {
                 RobotSimObject.GetCurrentlyPossessedRobot().Destroy();
+            }
 
             PreferenceManager.Load();
             if (PreferenceManager.ContainsPreference(MatchMode.PREVIOUS_SPAWN_LOCATION) &&
                 PreferenceManager.ContainsPreference(MatchMode.PREVIOUS_SPAWN_ROTATION)) {
-
                 var pos = PreferenceManager.GetPreference<float[]>(MatchMode.PREVIOUS_SPAWN_LOCATION);
                 var rot = PreferenceManager.GetPreference<float[]>(MatchMode.PREVIOUS_SPAWN_ROTATION);
 
@@ -112,16 +113,11 @@ public class MatchModeModal : ModalDynamic {
 
             MatchMode.currentRobotIndex = _robotIndex;
         }
+
         Scoring.ResetScore();
 
         DynamicUIManager.CloseActiveModal();
-
-        // DynamicUIManager.CreatePanel<Synthesis.UI.Dynamic.SpawnLocationPanel>();
         DynamicUIManager.CreatePanel<StartMatchModePanel>();
-    }
-
-    public override void Update() {
-        // Shooting.Update();
     }
 
     public override void Delete() {
@@ -142,7 +138,7 @@ public class MatchModeModal : ModalDynamic {
             if (i != a.Length - 1)
                 b += System.IO.Path.AltDirectorySeparatorChar;
         }
-        // Debug.Log(b);
+
         return b;
     }
 }

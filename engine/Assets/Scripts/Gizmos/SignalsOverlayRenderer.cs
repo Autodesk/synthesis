@@ -17,7 +17,6 @@ public class SignalsOverlayRenderer : MonoBehaviour {
     }
 
     public void OnGUI() {
-
         var style = new GUIStyle() {
             alignment = TextAnchor.MiddleCenter,
             font      = GuiFont,
@@ -34,7 +33,6 @@ public class SignalsOverlayRenderer : MonoBehaviour {
 }
 
 public class Line {
-
     private const string POINT_A              = "_PointA";
     private const string POINT_B              = "_PointB";
     private const string COLOR                = "_Color";

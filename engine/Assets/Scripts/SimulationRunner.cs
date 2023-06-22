@@ -1,27 +1,27 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Synthesis.PreferenceManager;
 using Synthesis.UI.Dynamic;
+using Synthesis.Util;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
-using Synthesis.Util;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-using Logger = SynthesisAPI.Utilities.Logger;
-using Synthesis.UI;
-using UnityEngine.SceneManagement;
 using Synthesis.Physics;
-using SynthesisAPI.EventBus;
 using Synthesis.Replay;
+using Synthesis.UI;
 using Synthesis.WS;
+using SynthesisAPI.EventBus;
 using SynthesisAPI.RoboRIO;
 using UnityEngine.Rendering;
+using UnityEngine.SceneManagement;
+
+using Logger = SynthesisAPI.Utilities.Logger;
 
 namespace Synthesis.Runtime {
     public class SimulationRunner : MonoBehaviour {
-
         private static uint _simulationContext  = 0x00000001;
         public static uint SimulationContext   => _simulationContext;
 
@@ -48,22 +48,8 @@ namespace Synthesis.Runtime {
             }
         }
 
-        private bool _setupSceneSwitchEvent = false;
-
-        void Start() {
-
+        private void Start() {
             InSim = true;
-
-            if (!_setupSceneSwitchEvent) {
-                SceneManager.sceneUnloaded += (Scene s) => {
-                    if (s.name == "MainScene") {
-                    }
-                    // SimulationManager.SimulationObjects.ForEach(x => {
-                    //     SimulationManager.RemoveSimObject(x.Value);
-                    // });
-                };
-                _setupSceneSwitchEvent = true;
-            }
 
             SetContext(RUNNING_SIM_CONTEXT);
             Synthesis.PreferenceManager.PreferenceManager.Load();
@@ -75,11 +61,6 @@ namespace Synthesis.Runtime {
             OnUpdate += DynamicUIManager.Update;
 
             WebSocketManager.RioState.OnUnrecognizedMessage += s => Debug.Log(s);
-
-            // Screen.fullScreenMode = FullScreenMode.MaximizedWindow;
-
-            // TestColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
-            // RotationalDriver.TestSphericalCoordinate();
 
             if (ColorManager.HasColor("tree")) {
                 GameObject.Instantiate(Resources.Load("Misc/Tree"));
@@ -97,35 +78,14 @@ namespace Synthesis.Runtime {
             Debug.Log($"{color.r * 255}, {color.g * 255}, {color.b * 255}, {color.a * 255}");
         }
 
-        void Update() {
+        private void Update() {
             InputManager.UpdateInputs(_simulationContext);
             SimulationManager.Update();
             ModeManager.Update();
 
-            // Debug.Log($"WHAT: {Time.realtimeSinceStartup}");
-
-            if (OnUpdate != null)
+            if (OnUpdate != null) {
                 OnUpdate();
-
-            // var socket = WebSocketManager.RioState.GetData<PWMData>("PWM", "0");
-            // if (socket.GetData() == null) {
-            //     Debug.Log("Data null");
-            // }
-            // Debug.Log($"{socket.Init}:{socket.Speed}:{socket.Position}");
-
-            // var aiData = WebSocketManager.RioState.GetData<AIData>("AI", "3");
-            // if (aiData.Init) {
-            //     WebSocketManager.UpdateData<AIData>("AI", "3", d => {
-            //         d.Voltage = 2.3;
-            //     });
-            // }
-
-            // if (Input.GetKeyDown(KeyCode.K)) {
-            //     if (!SimulationManager.RemoveSimObject(RobotSimObject.CurrentlyPossessedRobot))
-            //         Logger.Log("Failed", LogLevel.Debug);
-            //     else
-            //         Logger.Log("Succeeded", LogLevel.Debug);
-            // }
+            }
         }
 
         private void FixedUpdate() {
@@ -133,7 +93,7 @@ namespace Synthesis.Runtime {
             PhysicsManager.FixedUpdate();
         }
 
-        void OnDestroy() {
+        private void OnDestroy() {
             Synthesis.PreferenceManager.PreferenceManager.Save();
         }
 
@@ -144,6 +104,7 @@ namespace Synthesis.Runtime {
         public static void SetContext(uint c) {
             _simulationContext = c;
         }
+
         /// <summary>
         /// Add an additional context to the current contexts
         /// </summary>
@@ -151,14 +112,17 @@ namespace Synthesis.Runtime {
         public static void AddContext(uint c) {
             _simulationContext |= c;
         }
+
         /// <summary>
         /// Remove a context from the current context
         /// </summary>
         /// <param name="c">Mask for context</param>
         public static void RemoveContext(uint c) {
-            if (HasContext(c))
+            if (HasContext(c)) {
                 _simulationContext ^= c;
+            }
         }
+
         /// <summary>
         /// Check if a context exists within the current context
         /// </summary>
@@ -171,11 +135,13 @@ namespace Synthesis.Runtime {
         /// </summary>
         public static void SimKill() {
             FieldSimObject.DeleteField();
-            if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+            if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
                 SimulationManager.RemoveSimObject(RobotSimObject.GetCurrentlyPossessedRobot());
+            }
 
-            if (OnSimKill != null)
+            if (OnSimKill != null) {
                 OnSimKill();
+            }
 
             OnSimKill = null;
 

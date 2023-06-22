@@ -1,18 +1,17 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using Google.Protobuf.WellKnownTypes;
 using Synthesis.PreferenceManager;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Synthesis {
     public class SwerveDriveBehaviour : SimBehaviour {
-
         internal const string FORWARD             = "Swerve Forward";
         internal const string BACKWARD            = "Swerve Backward";
         internal const string LEFT                = "Swerve Left";
@@ -74,8 +73,10 @@ namespace Synthesis {
                 case TURN_LEFT:
                 case TURN_RIGHT:
                 case RESET_FIELD_FORWARD:
-                    if (base.SimObjectId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID)
+                    if (base.SimObjectId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID) {
                         return;
+                    }
+
                     RobotSimObject robot = SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject;
                     SimulationPreferences.SetRobotInput(
                         _robot.MiraLive.MiraAssembly.Info.GUID, args.InputKey, args.Input);
@@ -164,7 +165,6 @@ namespace Synthesis {
                 }
             }
 
-            // (float angle, float speed)[] output = new (float angle, float speed)[velocities.Length];
             for (int i = 0; i < velocities.Length; i++) {
                 float speed                         = velocities[i].magnitude;
                 var yComponent                      = Vector3.Dot(robotTransform.forward, velocities[i]);

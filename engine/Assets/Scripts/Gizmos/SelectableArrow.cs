@@ -25,11 +25,11 @@ namespace Synthesis.Configuration {
             selectable = true;
         }
         private void LateUpdate() {
-            if (arrowType == ArrowType.P) // keeps marker looking at the camera
-            {
+            // Keeps marker looking at the camera
+            if (arrowType == ArrowType.P) {
                 transform.LookAt(Camera.main.transform.position);
-            } else if (arrowType <= ArrowType.Z) // keeps axis arrows looking at the camera
-            {
+            } else if (arrowType <= ArrowType.Z) {
+                // Keeps axis arrows looking at the camera
                 transform.RotateAround(transform.position, transform.up,
                     CalcSignedCentralAngle(transform.forward,
                         Vector3.Normalize(Camera.main.transform.position - transform.position), transform.up) *
@@ -37,9 +37,9 @@ namespace Synthesis.Configuration {
             }
         }
 
-        private float CalcSignedCentralAngle(
-            Vector3 dir1, Vector3 dir2, Vector3 normal) // calculates signed angle projected to a plane
-            => Mathf.Atan2(Vector3.Dot(Vector3.Cross(dir1, dir2), normal), Vector3.Dot(dir1, dir2));
+        // Calculates signed angle projected to a plane
+        private float CalcSignedCentralAngle(Vector3 dir1, Vector3 dir2, Vector3 normal) => Mathf.Atan2(
+            Vector3.Dot(Vector3.Cross(dir1, dir2), normal), Vector3.Dot(dir1, dir2));
 
         /// <summary>
         /// Sends a message upwards when this <see cref="SelectableArrow"/>
@@ -48,6 +48,7 @@ namespace Synthesis.Configuration {
         public void OnMouseDown() {
             SendMessageUpwards("OnArrowSelected", arrowType);
         }
+
         /// <summary>
         /// Sends a message upwards when this <see cref="SelectableArrow"/>
         /// is released.
@@ -62,8 +63,9 @@ namespace Synthesis.Configuration {
         /// </summary>
         public void OnMouseEnter() {
             CameraController.isOverGizmo = true;
-            if (selectable)
+            if (selectable) {
                 material.color = Color.Lerp(color, new Color(30.0f / 255.0f, 164f / 255f, 212f / 255f, 1), 0.75f);
+            }
         }
 
         /// <summary>
@@ -72,8 +74,9 @@ namespace Synthesis.Configuration {
         /// </summary>
         public void OnMouseExit() {
             CameraController.isOverGizmo = false;
-            if (selectable)
+            if (selectable) {
                 material.color = color;
+            }
         }
 
         /// <summary>

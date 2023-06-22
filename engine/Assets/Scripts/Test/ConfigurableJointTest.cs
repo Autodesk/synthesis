@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ConfigurableJointTest : MonoBehaviour {
-
     private Rigidbody _rb;
     private ConfigurableJoint _joint;
 

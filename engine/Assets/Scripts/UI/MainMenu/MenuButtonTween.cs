@@ -1,16 +1,14 @@
+using DigitalRuby.Tween;
+using Synthesis.UI;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-using DigitalRuby.Tween;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using System;
-using Synthesis.UI;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(Button))]
 public class MenuButtonTween : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler {
-
     public float IndicateScaleFactor = 1.1f;
     public float ClickedScaleFactor  = 0.98f;
     private float _completionTime    = 0.2f;
@@ -39,6 +37,7 @@ public class MenuButtonTween : MonoBehaviour, IPointerEnterHandler, IPointerExit
         _activeTween = gameObject.Tween(gameObject.name + INDICATE_TWEEN, gameObject.transform.localScale,
             Vector3.one * IndicateScaleFactor, _completionTime, TweenScaleFunctions.CubicEaseOut, updateButtonScale);
     }
+
     public void OnPointerExit(PointerEventData eventData) {
         _state = "exit";
         TweenFactory.RemoveTweenKey(gameObject.name + INDICATE_TWEEN, TweenStopBehavior.DoNotModify);
@@ -57,6 +56,7 @@ public class MenuButtonTween : MonoBehaviour, IPointerEnterHandler, IPointerExit
         if (TweenFactory.RemoveTweenKey(gameObject.name + CLICKED_TWEEN, TweenStopBehavior.DoNotModify)) {
             gameObject.transform.localScale = Vector3.one;
         }
+
         TweenFactory.RemoveTweenKey(gameObject.name + INDICATE_TWEEN, TweenStopBehavior.DoNotModify);
         _activeTween = gameObject.Tween(gameObject.name + CLICKED_TWEEN, gameObject.transform.localScale,
             Vector3.one * ClickedScaleFactor, _completionTime, TweenScaleFunctions.CubicEaseOut, updateButtonScale,

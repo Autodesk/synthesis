@@ -35,17 +35,20 @@ public class DraggablePanel : MonoBehaviour, IDragHandler, IBeginDragHandler {
 
         float h  = parent.rect.height / 2;
         float dh = draggableArea.rect.height;
-        if (lastRectPosition.y > dh - h)
+        if (lastRectPosition.y > dh - h) {
             lastRectPosition = new Vector3(lastRectPosition.x, dh - h);
-        else if (lastRectPosition.y < h)
+        } else if (lastRectPosition.y < h) {
             lastRectPosition = new Vector3(lastRectPosition.x, h);
+        }
 
         float w  = parent.rect.width / 2;
         float dw = draggableArea.rect.width;
-        if (lastRectPosition.x > dw - w)
+
+        if (lastRectPosition.x > dw - w) {
             lastRectPosition = new Vector3(dw - w, lastRectPosition.y);
-        else if (lastRectPosition.x < w)
+        } else if (lastRectPosition.x < w) {
             lastRectPosition = new Vector3(w, lastRectPosition.y);
+        }
 
         parent.position = lastRectPosition;
     }

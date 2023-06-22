@@ -1,12 +1,11 @@
+using Synthesis.PreferenceManager;
+using SynthesisAPI.Simulation;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using SynthesisAPI.Simulation;
-using Synthesis.PreferenceManager;
 
 namespace Synthesis {
     public class LinearDriver : Driver {
-
         public ConfigurableJoint JointA { get; private set; }
         public ConfigurableJoint JointB { get; private set; }
         private float _maxSpeed;
@@ -17,6 +16,7 @@ namespace Synthesis {
                 SimulationPreferences.SetRobotJointSpeed((_simObject as RobotSimObject).MiraGUID, Name, _maxSpeed);
             }
         }
+
         public float _position = 0f;
         public float Position {
             get => _position;
@@ -27,6 +27,7 @@ namespace Synthesis {
                 _position              = newPos;
             }
         }
+
         private float _velocity  = 0f;
         public float Velocity   => _velocity;
         public (float Upper, float Lower) Limits { get; private set; }

@@ -1,13 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 using Bounds = UnityEngine.Bounds;
 
 public class GamepieceSimObject : SimObject {
-
     private GameObject _gamepieceObject;
     private Vector3 _initialPosition;
     private Quaternion _initialRotation;
@@ -37,6 +36,8 @@ public class GamepieceSimObject : SimObject {
                 max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
         top.GetComponentsInChildren<Renderer>().ForEach(x => {
             var b = x.bounds;
+
+            // TODO: Fix this whole thing pls
             if (min.x > b.min.x)
                 min.x = b.min.x;
             if (min.y > b.min.y)
@@ -50,6 +51,7 @@ public class GamepieceSimObject : SimObject {
             if (max.z < b.max.z)
                 max.z = b.max.z;
         });
+
         return new Bounds(((max + min) / 2f) - top.position, max - min);
     }
 

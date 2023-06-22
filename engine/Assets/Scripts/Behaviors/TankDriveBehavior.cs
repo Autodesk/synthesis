@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Google.Protobuf.WellKnownTypes;
+﻿using Google.Protobuf.WellKnownTypes;
 using Mirabuf;
 using Synthesis.PreferenceManager;
 using SynthesisAPI.EnvironmentManager;
@@ -8,11 +7,11 @@ using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Synthesis {
     public class TankDriveBehavior : SimBehaviour {
-
         internal const string LEFT_FORWARD  = "Tank Left-Forward";
         internal const string LEFT_REVERSE  = "Tank Left-Reverse";
         internal const string RIGHT_FORWARD = "Tank Right-Forward";
@@ -42,8 +41,9 @@ namespace Synthesis {
         public TankDriveBehavior(
             string simObjectId, List<WheelDriver> leftWheels, List<WheelDriver> rightWheels, string inputName = "")
             : base(simObjectId) {
-            if (inputName == "")
+            if (inputName == "") {
                 inputName = simObjectId;
+            }
 
             SimObjectId  = simObjectId;
             _leftWheels  = leftWheels;
@@ -63,8 +63,10 @@ namespace Synthesis {
         }
 
         public Analog TryLoadInput(string key, Analog defaultInput) {
-            if (_robot == null)
+            if (_robot == null) {
                 _robot = SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject;
+            }
+
             return SimulationPreferences.GetRobotInput(_robot.MiraLive.MiraAssembly.Info.GUID, key) ?? defaultInput;
         }
 
@@ -96,6 +98,7 @@ namespace Synthesis {
             foreach (var wheel in _leftWheels) {
                 wheel.MainInput = leftSpeed * speedMult;
             }
+
             foreach (var wheel in _rightWheels) {
                 wheel.MainInput = rightSpeed * speedMult;
             }

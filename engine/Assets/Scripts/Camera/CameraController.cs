@@ -1,7 +1,7 @@
+using Synthesis.PreferenceManager;
+using Synthesis.UI.Panels.Variant;
 using System.Collections.Generic;
 using UnityEngine;
-using Synthesis.UI.Panels.Variant;
-using Synthesis.PreferenceManager;
 
 public class CameraController : MonoBehaviour {
     private ICameraMode _cameraMode;
@@ -71,9 +71,6 @@ public class CameraController : MonoBehaviour {
     }
 
     public void Update() {
-        // if (FollowTransform != null && transform.parent != FollowTransform)
-        //     transform.parent = FollowTransform;
-
         CameraMode.Update(this);
     }
 

@@ -1,19 +1,19 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+
 using Logger = SynthesisAPI.Utilities.Logger;
 
 #nullable enable
 
 public class RobotSwitchPanel : PanelDynamic {
-
     private const float PANEL_WIDTH = 400f;
 
     private ScrollView _scrollView;
@@ -41,7 +41,6 @@ public class RobotSwitchPanel : PanelDynamic {
 
     // Update is called once per frame
     public override bool Create() {
-
         Title.SetText("Robot Switcher");
         CancelButton.RootGameObject.SetActive(false);
         AcceptButton.StepIntoLabel(l => l.SetText("Close"));
@@ -61,11 +60,13 @@ public class RobotSwitchPanel : PanelDynamic {
 
         PopulateScrollView();
 
-        if (RobotSimObject.CurrentlyPossessedRobot == string.Empty)
+        if (RobotSimObject.CurrentlyPossessedRobot == string.Empty) {
             _removeButton.ApplyTemplate(DisableButton);
+        }
 
-        if (RobotSimObject.SpawnedRobots.Count >= RobotSimObject.MAX_ROBOTS)
+        if (RobotSimObject.SpawnedRobots.Count >= RobotSimObject.MAX_ROBOTS) {
             _addButton.ApplyTemplate(DisableButton);
+        }
 
         EventBus.NewTypeListener<RobotSimObject.PossessionChangeEvent>(PossessedRobotChanged);
         EventBus.NewTypeListener<RobotSimObject.RobotSpawnEvent>(RobotSpawned);
@@ -98,6 +99,7 @@ public class RobotSwitchPanel : PanelDynamic {
                 x.State = false;
                 x.EnableEvents<Toggle>();
             });
+
             toggle.DisableEvents<Toggle>();
             toggle.State = true;
             toggle.EnableEvents<Toggle>();
@@ -109,27 +111,31 @@ public class RobotSwitchPanel : PanelDynamic {
     private void PossessedRobotChanged(IEvent e) {
         var possChangeEvent = e as RobotSimObject.PossessionChangeEvent;
 
-        if (possChangeEvent == null)
+        if (possChangeEvent == null) {
             return;
+        }
 
-        if (possChangeEvent.NewBot == string.Empty)
+        if (possChangeEvent.NewBot == string.Empty) {
             _removeButton.ApplyTemplate(DisableButton);
-        else
+        } else {
             _removeButton.ApplyTemplate(EnableButton);
+        }
     }
 
     private void RobotSpawned(IEvent e) {
         var newRobotEvent = e as RobotSimObject.RobotSpawnEvent;
-        if (newRobotEvent == null)
+        if (newRobotEvent == null) {
             return;
+        }
 
         PopulateScrollView();
     }
 
     private void RobotRemoved(IEvent e) {
         var newRobotEvent = e as RobotSimObject.RobotRemoveEvent;
-        if (newRobotEvent == null)
+        if (newRobotEvent == null) {
             return;
+        }
 
         PopulateScrollView();
     }

@@ -1,16 +1,15 @@
+using Synthesis.UI.Dynamic;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using Synthesis.UI.Dynamic;
-using UnityEngine;
-using TMPro;
-using System;
-using System.Runtime.InteropServices;
 using System.Linq;
+using System.Runtime.InteropServices;
+using TMPro;
+using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Synthesis.UI.Dynamic {
     public class SettingsModal : ModalDynamic {
-
         public const string SCREEN_MODE      = "Screen Mode";      // Dropdown: Fullscreen or Windowed
         public const string QUALITY_SETTINGS = "Quality Settings"; // Dropdown: Low Medium High
         public const string MEASUREMENTS =
@@ -37,7 +36,6 @@ namespace Synthesis.UI.Dynamic {
         };
 
         public override void Create() {
-
             Title.SetText("Settings");
             Description.SetText("Select one of the settings in order to change simulation settings");
 
@@ -170,12 +168,12 @@ namespace Synthesis.UI.Dynamic {
             _qualitySettingsList = QualitySettings.names;
 
             PreferenceManager.PreferenceManager.Load();
-            // checks if preferences are initialized with default values
+            // Checks if preferences are initialized with default values
             if (!PreferenceManager.PreferenceManager.ContainsPreference(SCREEN_MODE)) {
                 SetDefaultPreferences();
             }
 
-            // set screen mode
+            // Set screen mode
             switch (Get<int>(SCREEN_MODE)) {
                 case 0: // Full Screen
                     if (Screen.fullScreenMode != FullScreenMode.FullScreenWindow) {
@@ -195,9 +193,6 @@ namespace Synthesis.UI.Dynamic {
 
             // Analytics
             AnalyticsManager.UseAnalytics = Get<bool>(AnalyticsManager.USE_ANALYTICS_PREF);
-
-            // imperial or metric
-            //  useImperial = Get<bool>(MEASUREMENTS);
 
             // Camera
             CameraController.ZoomSensitivity =
@@ -224,9 +219,10 @@ namespace Synthesis.UI.Dynamic {
         private static void Save() => PreferenceManager.PreferenceManager.Save();
 
         public static void MaximizeScreen() {
-            // auto maximizes if its a window and the resolution is maximum.
-            if (!Screen.fullScreen && !Application.isEditor)
+            // Auto maximizes if its a window and the resolution is maximum.
+            if (!Screen.fullScreen && !Application.isEditor) {
                 ShowWindowAsync(GetActiveWindow().ToInt32(), 3);
+            }
         }
     }
 }

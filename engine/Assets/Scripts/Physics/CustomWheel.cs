@@ -1,12 +1,11 @@
+using Synthesis;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using Synthesis;
 using UnityEngine;
 
 public class CustomWheel : MonoBehaviour {
-
     // When enabled, you get weird priority effects. Leave disabled for now.
     public static bool UseKineticFriction = false;
 
@@ -16,6 +15,7 @@ public class CustomWheel : MonoBehaviour {
             if (_rb == null) {
                 _rb = GetComponent<Rigidbody>();
             }
+
             return _rb;
         }
     }
@@ -80,11 +80,11 @@ public class CustomWheel : MonoBehaviour {
     private Vector3 _staticImpulseVecAccum  = new Vector3();
     private Vector3 _rollingImpulseVecAccum = new Vector3();
     public void OnCollisionStay(Collision collision) {
-        // _collisionCalls++;
         _pairings.Add((collision.impulse, collision.relativeVelocity));
     }
 
     private List<(Vector3 impulse, Vector3 velocity)> _pairings = new List<(Vector3, Vector3)>();
+
     /// <summary>
     /// Compiles contacts and calculates friction forces
     /// </summary>
@@ -131,8 +131,6 @@ public class CustomWheel : MonoBehaviour {
     /// <param name="impulse">Impulse of the collision data</param>
     /// <param name="velocity">Relative velocity of the object to the contacted object</param>
     public void CalculateRollingFriction(Vector3 impulse, Vector3 velocity) {
-        // var torque = Torque(RotationSpeed, percentInput);
-
         var direction             = Vector3.Cross(impulse.normalized, Axis).normalized;
         var wheelSurfaceVelocity  = Vector3.Cross(impulse.normalized * Radius, Axis * RotationSpeed);
         var groundSurfaceVelocity = Vector3.Dot(direction, wheelSurfaceVelocity) + Vector3.Dot(-direction, velocity);
@@ -159,10 +157,14 @@ public class CustomWheel : MonoBehaviour {
     /// <param name="max">Maximum magnitude</param>
     /// <returns>Clamped Vector</returns>
     public Vector3 ClampMag(Vector3 v, float min, float max) {
-        if (v.magnitude > max)
+        if (v.magnitude > max) {
             return v.normalized * max;
-        if (v.magnitude < min)
+        }
+
+        if (v.magnitude < min) {
             return v.normalized * min;
+        }
+
         return v;
     }
 

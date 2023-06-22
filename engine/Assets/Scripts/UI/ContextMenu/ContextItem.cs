@@ -1,10 +1,10 @@
-using System.Net.Http.Headers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.Http.Headers;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 namespace Synthesis.UI.ContextMenus {
     public class ContextItem : MonoBehaviour {

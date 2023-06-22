@@ -1,15 +1,16 @@
-﻿using System;
-using UnityEngine;
+﻿using static Engine.ModuleLoader.Api;
+using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.Utilities;
-using MeshCollider               = SynthesisAPI.EnvironmentManager.Components.MeshCollider;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using UnityEngine;
+
+using Logger                     = SynthesisAPI.Utilities.Logger;
 using Mesh                       = SynthesisAPI.EnvironmentManager.Components.Mesh;
+using MeshCollider               = SynthesisAPI.EnvironmentManager.Components.MeshCollider;
 using MeshColliderCookingOptions = SynthesisAPI.EnvironmentManager.Components.MeshColliderCookingOptions;
 using PhysicsMaterial            = SynthesisAPI.EnvironmentManager.Components.PhysicsMaterial;
-using Logger                     = SynthesisAPI.Utilities.Logger;
-using System.ComponentModel;
-using SynthesisAPI.EnvironmentManager;
-using static Engine.ModuleLoader.Api;
-using System.Collections.Generic;
 
 namespace Engine.ModuleLoader.Adapters {
     public class MeshColliderAdapter : MonoBehaviour, IApiAdapter<MeshCollider> {
@@ -25,11 +26,13 @@ namespace Engine.ModuleLoader.Adapters {
         public void SetInstance(MeshCollider collider) {
             instance = collider;
 
-            if ((unityCollider = GetComponent<UnityEngine.MeshCollider>()) == null)
+            if ((unityCollider = GetComponent<UnityEngine.MeshCollider>()) == null) {
                 unityCollider = gameObject.AddComponent<UnityEngine.MeshCollider>();
+            }
 
-            if (instance.Entity?.GetComponent<Mesh>() == null)
+            if (instance.Entity?.GetComponent<Mesh>() == null) {
                 throw new SynthesisException("Cannot add a MeshCollider to an entity without a Mesh");
+            }
 
             instance.PropertyChanged += UnityProperty;
 
@@ -89,6 +92,7 @@ namespace Engine.ModuleLoader.Adapters {
             if (ApiProviderData.GameObjects.TryGetValue(collision.collider.transform.gameObject, out Entity otherE)) {
                 e = otherE;
             }
+
             return new MeshCollider.Collision(collision.impulse.Map(), collision.relativeVelocity.Map(), e);
         }
 

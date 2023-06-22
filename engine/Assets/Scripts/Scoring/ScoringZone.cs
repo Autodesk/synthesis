@@ -1,6 +1,6 @@
-using System;
 using Synthesis.Runtime;
 using SynthesisAPI.EventBus;
+using System;
 using UnityEngine;
 
 public enum Alliance {
@@ -9,7 +9,6 @@ public enum Alliance {
 }
 
 public class ScoringZone {
-
     public Alliance alliance;
     public int points;
     public bool destroyObject;
@@ -22,10 +21,11 @@ public class ScoringZone {
         this.alliance      = alliance;
         this.points        = points;
         this.destroyObject = destroyObject;
-        // configure gameobject to have translucent material and have box collider as trigger
+
+        // Configure gameobject to have translucent material and have box collider as trigger
         gameObject.name = "Test Scoring Zone";
 
-        // make scoring zone transparent
+        // Make scoring zone transparent
         Renderer renderer = gameObject.GetComponent<Renderer>();
         renderer.material = new Material(Shader.Find("Shader Graphs/DefaultSynthesisTransparentShader"));
 
@@ -46,20 +46,21 @@ public class ScoringZone {
 public class ScoringZoneListener : MonoBehaviour {
     public ScoringZone scoringZone;
     private void OnTriggerEnter(Collider other) {
-        if (other.gameObject == gameObject)
+        if (other.gameObject == gameObject) {
             return;
-        if (!other.transform.CompareTag("gamepiece"))
+        } else if (!other.transform.CompareTag("gamepiece")) {
             return;
+        } else if (SimulationRunner.HasContext(SimulationRunner.GIZMO_SIM_CONTEXT)) {
+            // Don't destroy gamepiece if user is moving the zone
+            return;
+        }
 
-        // don't destroy gamepiece if user is moving the zone
-        if (SimulationRunner.HasContext(SimulationRunner.GIZMO_SIM_CONTEXT))
-            return;
-
-        // trigger scoring
+        // Trigger scoring
         EventBus.Push(new OnScoreEvent(other.name, scoringZone));
 
-        if (scoringZone.destroyObject)
+        if (scoringZone.destroyObject) {
             Destroy(other.gameObject);
+        }
     }
 }
 

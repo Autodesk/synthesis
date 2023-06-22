@@ -5,6 +5,7 @@ using UnityEngine;
 public static class Scoring {
     public static int redScore  = 0;
     public static int blueScore = 0;
+
     public static void ResetScore() {
         redScore  = 0;
         blueScore = 0;

@@ -1,4 +1,5 @@
 ﻿using MathNet.Spatial.Euclidean;
+using Quaternion = MathNet.Spatial.Euclidean.Quaternion;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.Utilities;
@@ -7,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Quaternion = MathNet.Spatial.Euclidean.Quaternion;
 
 namespace Engine.Util {
     public static class Misc {
@@ -27,8 +27,9 @@ namespace Engine.Util {
 
         public static IEnumerable<TOutput> MapAll<TInput, TOutput>(
             IEnumerable<TInput> input, Func<TInput, TOutput> converter) {
-            if (input == null)
+            if (input == null) {
                 return null;
+            }
 
             List<TOutput> output = new List<TOutput>();
 
@@ -41,8 +42,9 @@ namespace Engine.Util {
 
         public static TOutput[] MapAllToArray<TInput, TOutput>(
             IEnumerable<TInput> input, Func<TInput, TOutput> converter) {
-            if (input == null)
+            if (input == null) {
                 return null;
+            }
 
             List<TOutput> output = new List<TOutput>();
 

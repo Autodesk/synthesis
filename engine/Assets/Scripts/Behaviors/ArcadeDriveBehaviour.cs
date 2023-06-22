@@ -1,20 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using Google.Protobuf.WellKnownTypes;
+﻿using Google.Protobuf.WellKnownTypes;
 using Synthesis.PreferenceManager;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
+using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+
 using Input  = UnityEngine.Input;
 using Logger = SynthesisAPI.Utilities.Logger;
 using Math   = SynthesisAPI.Utilities.Math;
 
 namespace Synthesis {
     public class ArcadeDriveBehaviour : SimBehaviour {
-
         internal const string FORWARD  = "Arcade Forward";
         internal const string BACKWARD = "Arcade Backward";
         internal const string LEFT     = "Arcade Left";
@@ -44,8 +44,9 @@ namespace Synthesis {
         public ArcadeDriveBehaviour(
             string simObjectId, List<WheelDriver> leftWheels, List<WheelDriver> rightWheels, string inputName = "")
             : base(simObjectId) {
-            if (inputName == "")
+            if (inputName == "") {
                 inputName = simObjectId;
+            }
 
             SimObjectId  = simObjectId;
             _leftWheels  = leftWheels;
@@ -65,8 +66,10 @@ namespace Synthesis {
         }
 
         public Analog TryLoadInput(string key, Analog defaultInput) {
-            if (_robot == null)
+            if (_robot == null) {
                 _robot = SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject;
+            }
+
             return SimulationPreferences.GetRobotInput(_robot.MiraLive.MiraAssembly.Info.GUID, key) ?? defaultInput;
         }
 
@@ -77,8 +80,10 @@ namespace Synthesis {
                 case BACKWARD:
                 case LEFT:
                 case RIGHT:
-                    if (base.SimObjectId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID)
+                    if (base.SimObjectId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID) {
                         return;
+                    }
+
                     RobotSimObject robot = SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject;
                     SimulationPreferences.SetRobotInput(
                         _robot.MiraLive.MiraAssembly.Info.GUID, args.InputKey, args.Input);
@@ -114,6 +119,7 @@ namespace Synthesis {
             if (xSpeed == 0 && zRot == 0) {
                 return (0, 0);
             }
+
             xSpeed = Math.Clamp(xSpeed, -1, 1);
             zRot   = Math.Clamp(zRot, -1, 1);
 

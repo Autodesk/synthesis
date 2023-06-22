@@ -1,8 +1,8 @@
+using Synthesis.UI;
+using Synthesis.UI.Dynamic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Synthesis.UI;
-using Synthesis.UI.Dynamic;
 using UnityEngine;
 
 public class SpawningModal : ModalDynamic {

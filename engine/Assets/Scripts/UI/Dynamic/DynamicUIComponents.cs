@@ -1,19 +1,19 @@
+using Synthesis.Util;
+using SynthesisAPI.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Synthesis.Util;
-using SynthesisAPI.Utilities;
-using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 using UButton     = UnityEngine.UI.Button;
-using UToggle     = UnityEngine.UI.Toggle;
-using USlider     = UnityEngine.UI.Slider;
 using UImage      = UnityEngine.UI.Image;
 using UScrollbar  = UnityEngine.UI.Scrollbar;
 using UScrollView = UnityEngine.UI.ScrollRect;
+using USlider     = UnityEngine.UI.Slider;
+using UToggle     = UnityEngine.UI.Toggle;
 
 using Logger = SynthesisAPI.Utilities.Logger;
 using Math   = System.Math;
@@ -58,6 +58,7 @@ namespace Synthesis.UI.Dynamic {
                     } else {
                         _unityObject.SetActive(true);
                     }
+
                     OnVisibilityChange();
                 }
             }
@@ -77,7 +78,6 @@ namespace Synthesis.UI.Dynamic {
             var header   = _unityObject.transform.Find("Header");
             var headerRt = header.GetComponent<RectTransform>();
             _panelImage  = new Image(null, header.Find("Image").gameObject);
-            // _panelImage.SetColor(new Color(1, 1, 1, 0));
 
             _panelBackground = new Image(null, unityObject);
             _panelBackground.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK));
@@ -89,9 +89,11 @@ namespace Synthesis.UI.Dynamic {
             var footerRt  = footer.GetComponent<RectTransform>();
             _cancelButton = new Button(null!, footer.Find("Cancel").gameObject, null);
             _cancelButton.AddOnClickedEvent(b => {
-                if (!DynamicUIManager.ClosePanel(this.GetType()))
+                if (!DynamicUIManager.ClosePanel(this.GetType())) {
                     Logger.Log("Failed to Close Panel", LogLevel.Error);
+                }
             });
+
             _cancelButton.Image.SetColor(ColorManager.SYNTHESIS_CANCEL);
             _cancelButton.Label.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT));
             _acceptButton = new Button(null!, footer.Find("Accept").gameObject, null);
@@ -165,7 +167,6 @@ namespace Synthesis.UI.Dynamic {
             var header   = _unityObject.transform.Find("Header");
             var headerRt = header.GetComponent<RectTransform>();
             _modalImage  = new Image(null, header.Find("Image").gameObject);
-            // _modalImage.SetColor(new Color(1, 1, 1, 0));
 
             _modalBackground = new Image(null, unityObject);
             _modalBackground.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK));
@@ -181,16 +182,18 @@ namespace Synthesis.UI.Dynamic {
             var footerRt  = footer.GetComponent<RectTransform>();
             _cancelButton = new Button(null!, footer.Find("Cancel").gameObject, null);
             _cancelButton.AddOnClickedEvent(b => {
-                if (!DynamicUIManager.CloseActiveModal())
+                if (!DynamicUIManager.CloseActiveModal()) {
                     Logger.Log("Failed to Close Modal", LogLevel.Error);
+                }
             });
+
             _cancelButton.Image.SetColor(ColorManager.SYNTHESIS_CANCEL);
             _cancelButton.Label.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT));
             _acceptButton = new Button(null!, footer.Find("Accept").gameObject, null);
             _acceptButton.Image.SetColor(ColorManager.SYNTHESIS_ACCEPT);
             _acceptButton.Label.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT));
 
-            // Create Inital Content Component
+            // Create initial content component
             var hiddenContentT        = _unityObject.transform.Find("Content");
             var hiddenRt              = hiddenContentT.GetComponent<RectTransform>();
             hiddenRt.sizeDelta        = new Vector2(hiddenRt.sizeDelta.x, _mainContentSize.y);
@@ -220,12 +223,6 @@ namespace Synthesis.UI.Dynamic {
     }
 
     public abstract class UIComponent {
-
-        // public static readonly Func<UIComponent, UIComponent> VerticalLayoutTemplate = (UIComponent component) => {
-        //     return component.SetTopStretch<UIComponent>(anchoredY: component.Parent!.HeightOfChildren -
-        //     component.Size.y);
-        // };
-
         public float HeightOfChildren {
             get {
                 float sum = 0f;
@@ -241,20 +238,27 @@ namespace Synthesis.UI.Dynamic {
             }
         }
         public Rect RectOfChildren(UIComponent negate = null!) {
-            if (Children.Count == 0)
+            if (Children.Count == 0) {
                 return new Rect();
+            }
+
             bool hasInital = false;
             Rect r         = new Rect();
+
             for (int i = 0; i < Children.Count; i++) {
-                if (Children[i] == negate)
+                if (Children[i] == negate) {
                     continue;
+                }
+
                 if (!hasInital) {
                     r = Children[i].RootRectTransform.GetOffsetRect();
                     continue;
                 }
+
                 var childTrans = Children[i].RootRectTransform;
                 var childRect  = childTrans.GetOffsetRect();
 
+                // TODO: Another nasty if stack
                 if (childRect.xMin < r.xMin)
                     r.xMin = childRect.xMin;
                 if (childRect.xMax > r.xMax)
@@ -264,6 +268,7 @@ namespace Synthesis.UI.Dynamic {
                 if (childRect.yMax > r.yMax)
                     r.yMax = childRect.yMax;
             }
+
             return r;
         }
 
@@ -290,6 +295,7 @@ namespace Synthesis.UI.Dynamic {
             RootRectTransform.offsetMin = oMin;
             RootRectTransform.offsetMax = oMax;
         }
+
         public T SetTopStretch<T>(float leftPadding = 0f, float rightPadding = 0f, float anchoredY = 0f)
             where T : UIComponent {
             SetAnchorOffset(
@@ -298,6 +304,7 @@ namespace Synthesis.UI.Dynamic {
             RootRectTransform.anchoredPosition = new Vector2(RootRectTransform.anchoredPosition.x, -anchoredY);
             return (this as T)!;
         }
+
         public T SetBottomStretch<T>(float leftPadding = 0f, float rightPadding = 0f, float anchoredY = 0f)
             where T : UIComponent {
             SetAnchorOffset(
@@ -306,6 +313,7 @@ namespace Synthesis.UI.Dynamic {
             RootRectTransform.anchoredPosition = new Vector2(RootRectTransform.anchoredPosition.x, anchoredY);
             return (this as T)!;
         }
+
         public T SetLeftStretch<T>(float topPadding = 0f, float bottomPadding = 0f, float anchoredX = 0f)
             where T : UIComponent {
             SetAnchorOffset(
@@ -314,6 +322,7 @@ namespace Synthesis.UI.Dynamic {
             RootRectTransform.anchoredPosition = new Vector2(anchoredX, RootRectTransform.anchoredPosition.y);
             return (this as T)!;
         }
+
         public T SetRightStretch<T>(float topPadding = 0f, float bottomPadding = 0f, float anchoredX = 0f)
             where T : UIComponent {
             SetAnchorOffset(
@@ -322,6 +331,7 @@ namespace Synthesis.UI.Dynamic {
             RootRectTransform.anchoredPosition = new Vector2(-anchoredX, RootRectTransform.anchoredPosition.y);
             return (this as T)!;
         }
+
         public T SetStretch<T>(
             float leftPadding = 0f, float rightPadding = 0f, float topPadding = 0f, float bottomPadding = 0f)
             where T : UIComponent {
@@ -329,66 +339,78 @@ namespace Synthesis.UI.Dynamic {
                 new Vector2(-rightPadding, -topPadding));
             return (this as T)!;
         }
+
         public T SetPivot<T>(Vector2 pivot)
             where T : UIComponent {
             RootRectTransform.pivot = pivot;
             return (this as T)!;
         }
+
         public T SetAnchoredPosition<T>(Vector2 pos)
             where T : UIComponent {
             RootRectTransform.anchoredPosition = pos;
             return (this as T)!;
         }
+
         public T SetSize<T>(Vector2 size)
             where T : UIComponent {
             Size                        = size;
             RootRectTransform.sizeDelta = size;
             return (this as T)!;
         }
+
         public T SetWidth<T>(float width)
             where T : UIComponent {
             Size                        = new Vector2(width, Size.y);
             RootRectTransform.sizeDelta = Size;
             return (this as T)!;
         }
+
         public T SetHeight<T>(float height)
             where T : UIComponent {
             Size                        = new Vector2(Size.x, height);
             RootRectTransform.sizeDelta = Size;
             return (this as T)!;
         }
+
         public T ShiftOffsetMax<T>(Vector2 shift)
             where T : UIComponent {
             RootRectTransform.offsetMax += shift;
             return (this as T)!;
         }
+
         public T ShiftOffsetMin<T>(Vector2 shift)
             where T : UIComponent {
             RootRectTransform.offsetMin += shift;
             return (this as T)!;
         }
+
         public T EnableEvents<T>()
             where T : UIComponent {
             _eventsActive = true;
             return (this as T)!;
         }
+
         public T DisableEvents<T>()
             where T : UIComponent {
             _eventsActive = false;
             return (this as T)!;
         }
+
         public T SetAnchors<T>(Vector2 min, Vector2 max)
             where T : UIComponent {
             RootRectTransform.anchorMin = min;
             RootRectTransform.anchorMax = max;
             return (this as T)!;
         }
+
         public T SetAnchorCenter<T>()
             where T : UIComponent {
             RootRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
             RootRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
             return (this as T)!;
         }
+
         public T SetAnchorTop<T>()
             where T : UIComponent {
             RootRectTransform.anchorMin = new Vector2(0.5f, 1);
@@ -402,12 +424,11 @@ namespace Synthesis.UI.Dynamic {
         }
     }
 
-#endregion
+#endregion // Abstracts
 
 #region Components
 
     public class Content : UIComponent {
-
         private Image? _image;
         public Image? Image => _image;
 
@@ -439,8 +460,7 @@ namespace Synthesis.UI.Dynamic {
             leftRt.anchorMax        = new Vector2(0f, 0.5f);
             leftRt.anchorMin        = new Vector2(0f, 0.5f);
             leftRt.anchoredPosition = new Vector2(leftWidth / 2f, 0f);
-            // leftRt.sizeDelta = new Vector2(leftWidth, leftRt.sizeDelta.y);
-            var leftContent = new Content(this, leftContentObject, new Vector2(leftWidth, Size.y));
+            var leftContent         = new Content(this, leftContentObject, new Vector2(leftWidth, Size.y));
 
             var rightContentObject = GameObject.Instantiate(
                 SynthesisAssetCollection.GetUIPrefab("content-base"), base.RootGameObject.transform);
@@ -449,14 +469,14 @@ namespace Synthesis.UI.Dynamic {
             rightRt.anchorMin        = new Vector2(1f, 0.5f);
             float rightWidth         = (Size.x - leftWidth) - padding;
             rightRt.anchoredPosition = new Vector2(-rightWidth / 2f, 0f);
-            // rightRt.sizeDelta = new Vector2(rightWidth, rightRt.sizeDelta.y);
-            var rightContent = new Content(this, rightContentObject, new Vector2(rightWidth, Size.y));
+            var rightContent         = new Content(this, rightContentObject, new Vector2(rightWidth, Size.y));
 
             base.Children.Add(leftContent);
             base.Children.Add(rightContent);
 
             return (leftContent, rightContent);
         }
+
         public (Content top, Content bottom) SplitTopBottom(float topHeight, float padding) {
             throw new NotImplementedException();
         }
@@ -468,6 +488,7 @@ namespace Synthesis.UI.Dynamic {
             base.Children.Add(label);
             return label;
         }
+
         public Toggle CreateToggle(bool isOn = false, string label = "New Toggle") {
             var toggleObj = GameObject.Instantiate(
                 SynthesisAssetCollection.GetUIPrefab("toggle-base"), base.RootGameObject.transform);
@@ -475,6 +496,7 @@ namespace Synthesis.UI.Dynamic {
             base.Children.Add(toggle);
             return toggle;
         }
+
         public Slider CreateSlider(string label = "New Slider", string unitSuffix = "", float minValue = 0,
             float maxValue = 1, float currentValue = 0) {
             var sliderObj = GameObject.Instantiate(
@@ -483,6 +505,7 @@ namespace Synthesis.UI.Dynamic {
             base.Children.Add(slider);
             return slider;
         }
+
         public Button CreateButton(string text = "New Button") {
             var buttonObj = GameObject.Instantiate(
                 SynthesisAssetCollection.GetUIPrefab("button-base"), base.RootGameObject.transform);
@@ -491,6 +514,7 @@ namespace Synthesis.UI.Dynamic {
             base.Children.Add(button);
             return button;
         }
+
         public LabeledButton CreateLabeledButton() {
             var lButtonObj = GameObject.Instantiate(
                 SynthesisAssetCollection.GetUIPrefab("labeled-button-base"), base.RootGameObject.transform);
@@ -498,6 +522,7 @@ namespace Synthesis.UI.Dynamic {
             base.Children.Add(lButton);
             return lButton;
         }
+
         public Dropdown CreateDropdown() {
             var dropdownObj = GameObject.Instantiate(
                 SynthesisAssetCollection.GetUIPrefab("dropdown-base"), base.RootGameObject.transform);
@@ -505,6 +530,7 @@ namespace Synthesis.UI.Dynamic {
             base.Children.Add(dropdown);
             return dropdown;
         }
+
         public LabeledDropdown CreateLabeledDropdown() {
             var lDropdownObj = GameObject.Instantiate(
                 SynthesisAssetCollection.GetUIPrefab("labeled-dropdown-base"), base.RootGameObject.transform);
@@ -512,6 +538,7 @@ namespace Synthesis.UI.Dynamic {
             base.Children.Add(lDropdown);
             return lDropdown;
         }
+
         public InputField CreateInputField() {
             var inputFieldObj = GameObject.Instantiate(
                 SynthesisAssetCollection.GetUIPrefab("input-field-base"), base.RootGameObject.transform);
@@ -519,6 +546,7 @@ namespace Synthesis.UI.Dynamic {
             base.Children.Add(inputField);
             return inputField;
         }
+
         public ScrollView CreateScrollView() {
             var scrollViewObj = GameObject.Instantiate(
                 SynthesisAssetCollection.GetUIPrefab("scroll-view-base"), base.RootGameObject.transform);
@@ -526,6 +554,7 @@ namespace Synthesis.UI.Dynamic {
             base.Children.Add(scrollView);
             return scrollView;
         }
+
         public Content CreateSubContent(Vector2 size) {
             var contentObj = GameObject.Instantiate(
                 SynthesisAssetCollection.GetUIPrefab("content-base"), base.RootGameObject.transform);
@@ -535,8 +564,10 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public Content StepIntoImage(Action<Image> mod) {
-            if (_image != null)
+            if (_image != null) {
                 mod(_image);
+            }
+
             return this;
         }
 
@@ -547,6 +578,7 @@ namespace Synthesis.UI.Dynamic {
                 _image.SetSprite(SynthesisAssetCollection.GetSpriteByName("250r-rounded"));
                 _image.SetMultiplier(50);
             }
+
             return this;
         }
     }
@@ -582,6 +614,7 @@ namespace Synthesis.UI.Dynamic {
         public static readonly Func<Label, Label> VerticalLayoutTemplate = (Label label) => {
             return label.SetTopStretch(anchoredY: label.Parent!.HeightOfChildren - label.Size.y + 15f);
         };
+
         public static readonly Func<Label, Label> BigLabelTemplate = (Label label) => {
             return label.SetHeight<Label>(30)
                 .SetFontSize(24)
@@ -607,31 +640,39 @@ namespace Synthesis.UI.Dynamic {
             _unityText.text = text;
             return this;
         }
+
         public Label SetFontSize(float fontSize) {
             _unityText.fontSize = fontSize;
             return this;
         }
+
         public Label SetHorizontalAlignment(HorizontalAlignmentOptions alignment) {
             _unityText.horizontalAlignment = alignment;
             return this;
         }
+
         public Label SetVerticalAlignment(VerticalAlignmentOptions alignment) {
             _unityText.verticalAlignment = alignment;
             return this;
         }
+
         public Label SetFont(TMP_FontAsset font) {
             _unityText.font = font;
             return this;
         }
+
         public Label SetFontStyle(FontStyles styles) {
             _unityText.fontStyle = styles;
             return this;
         }
+
         public Label SetColor(string c) => SetColor(ColorManager.TryGetColor(c));
+
         public Label SetColor(Color c) {
             _unityText.color = c;
             return this;
         }
+
         public Label SetTopStretch(float leftPadding = 0f, float rightPadding = 0f,
             float anchoredY = 0f)     => base.SetTopStretch<Label>(leftPadding, rightPadding, anchoredY);
         public Label SetBottomStretch(float leftPadding = 0f, float rightPadding = 0f,
@@ -645,7 +686,6 @@ namespace Synthesis.UI.Dynamic {
     }
 
     public class Toggle : UIComponent {
-
         public static readonly Func<Toggle, Toggle> VerticalLayoutTemplate = (Toggle toggle) =>
             toggle.SetTopStretch<Toggle>(
                 leftPadding: 15f, anchoredY: toggle.Parent!.HeightOfChildren - toggle.Size.y + 15f);
@@ -687,10 +727,12 @@ namespace Synthesis.UI.Dynamic {
             _unityToggle = RootGameObject.transform.Find("Toggle").GetComponent<UToggle>();
             _unityToggle.onValueChanged.AddListener(x => {
                 {
-                    if (_eventsActive && OnStateChanged != null)
+                    if (_eventsActive && OnStateChanged != null) {
                         OnStateChanged(this, x);
+                    }
                 }
             });
+
             DisableEvents<Toggle>().SetState(isOn).EnableEvents<Toggle>();
             _titleLabel.SetText(text);
 
@@ -705,26 +747,32 @@ namespace Synthesis.UI.Dynamic {
             _unityToggle.isOn = state;
             return this;
         }
+
         public Toggle AddOnStateChangedEvent(Action<Toggle, bool> callback) {
             OnStateChanged += callback;
             return this;
         }
+
         public Toggle SetEnabledColor(Color c) {
             EnabledColor = c;
             return this;
         }
+
         public Toggle SetEnabledColor(string s) {
             EnabledColor = ColorManager.TryGetColor(s);
             return this;
         }
+
         public Toggle SetDisabledColor(Color c) {
             DisabledColor = c;
             return this;
         }
+
         public Toggle SetDisabledColor(string s) {
             DisabledColor = ColorManager.TryGetColor(s);
             return this;
         }
+
         public Toggle StepIntoLabel(Action<Label> mod) {
             mod(TitleLabel);
             return this;
@@ -732,7 +780,6 @@ namespace Synthesis.UI.Dynamic {
     }
 
     public class Slider : UIComponent {
-
         public static readonly Func<Slider, Slider> VerticalLayoutTemplate = (Slider slider) =>
             slider.SetTopStretch<Slider>(
                 leftPadding: 15f, anchoredY: slider.Parent!.HeightOfChildren - slider.Size.y + 15f);
@@ -782,11 +829,13 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public Slider SetRange((float min, float max)range) => SetRange(range.min, range.max);
+
         public Slider SetRange(float min, float max) {
             _unitySlider.minValue = min;
             _unitySlider.maxValue = max;
             return this;
         }
+
         public Slider SetValue(float value, bool mute = false) {
             var before = _eventsActive;
             if (mute)
@@ -796,36 +845,44 @@ namespace Synthesis.UI.Dynamic {
                 _eventsActive = before;
             return this;
         }
+
         public Slider AddOnValueChangedEvent(Action<Slider, float> callback) {
             OnValueChanged += callback;
             return this;
         }
+
         public Slider SetSlideDirection(USlider.Direction direction) {
             _unitySlider.direction = direction;
             return this;
         }
+
         public Slider SetCustomValuePresentation(Func<float, string> mod) {
             if (_customValuePresentation == null)
                 return this;
             _customValuePresentation = mod;
             return this;
         }
+
         public Slider StepIntoTitleLabel(Action<Label> mod) {
             mod(_titleLabel);
             return this;
         }
+
         public Slider StepIntoValueLabel(Action<Label> mod) {
             mod(_valueLabel);
             return this;
         }
+
         public Slider StepIntoBackgroundImage(Action<Image> mod) {
             mod(_backgroundImage);
             return this;
         }
+
         public Slider StepIntoFillImage(Action<Image> mod) {
             mod(_fillImage);
             return this;
         }
+
         public Slider StepIntoHandleImage(Action<Image> mod) {
             mod(_handleImage);
             return this;
@@ -833,7 +890,6 @@ namespace Synthesis.UI.Dynamic {
     }
 
     public class InputField : UIComponent {
-
         public static readonly Func<InputField, InputField> VerticalLayoutTemplate = (InputField inputField) =>
             inputField.SetTopStretch<InputField>(
                 leftPadding: 15f, anchoredY: inputField.Parent!.HeightOfChildren - inputField.Size.y + 15f);
@@ -855,8 +911,9 @@ namespace Synthesis.UI.Dynamic {
             _hint     = new Label(this, ifObj.Find("Text Area").Find("Placeholder").gameObject, null);
             _label    = new Label(this, unityObject.transform.Find("Label").gameObject, null);
             _tmpInput.onValueChanged.AddListener(x => {
-                if (_eventsActive && OnValueChanged != null)
+                if (_eventsActive && OnValueChanged != null) {
                     OnValueChanged(this, x);
+                }
             });
 
             _backgroundImage = new Image(this, ifObj.gameObject);
@@ -913,7 +970,6 @@ namespace Synthesis.UI.Dynamic {
     }
 
     public class Button : UIComponent {
-
         public static readonly Func<Button, Button> VerticalLayoutTemplate = (Button button) =>
             button.SetTopStretch<Button>(
                 leftPadding: 15f, anchoredY: button.Parent!.HeightOfChildren - button.Size.y + 15f);
@@ -924,7 +980,6 @@ namespace Synthesis.UI.Dynamic {
         private UButton _unityButton;
         private Image _image;
         public Image Image => _image;
-        // public UButton UnityButton => _unityButton;
 
         public Button(UIComponent? parent, GameObject unityObject, Vector2? size) : base(parent, unityObject) {
             if (size != null) {
@@ -949,14 +1004,18 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public Button StepIntoLabel(Action<Label> mod) {
-            if (_label != null)
+            if (_label != null) {
                 mod(_label);
+            }
+
             return this;
         }
+
         public Button StepIntoImage(Action<Image> mod) {
             mod(_image);
             return this;
         }
+
         public Button AddOnClickedEvent(Action<Button> callback) {
             OnClicked += callback;
             return this;
@@ -964,7 +1023,6 @@ namespace Synthesis.UI.Dynamic {
     }
 
     public class Dropdown : UIComponent {
-
         public static readonly Func<Dropdown, Dropdown> VerticalLayoutTemplate = (Dropdown dropdown) =>
             dropdown.SetTopStretch<Dropdown>(
                 leftPadding: 15f, anchoredY: dropdown.Parent!.HeightOfChildren - dropdown.Size.y + 15f);
@@ -1004,9 +1062,11 @@ namespace Synthesis.UI.Dynamic {
 
             _tmpDropdown.onValueChanged.AddListener(x => {
                 // TODO?
-                if (_eventsActive && OnValueChanged != null)
+                if (_eventsActive && OnValueChanged != null) {
                     OnValueChanged(this, x, this.Options[x]);
+                }
             });
+
             var eventHandler                         = _tmpDropdown.gameObject.AddComponent<UIEventHandler>();
             eventHandler.OnPointerClickedEvent += e => { ShowOnTop(); };
 
@@ -1031,7 +1091,6 @@ namespace Synthesis.UI.Dynamic {
             _viewportImage.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
 
             // TODO: Get some more control over the individual items in the dropdown
-            // _viewport.StepIntoImage(i => i.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT)));
         }
 
         public Dropdown SetOptions(string[] options) {
@@ -1041,6 +1100,7 @@ namespace Synthesis.UI.Dynamic {
             _tmpDropdown.AddOptions(optionData);
             return this;
         }
+
         public Dropdown SetValue(int index, bool mute = false) {
             var original = _eventsActive;
             if (mute)
@@ -1050,14 +1110,17 @@ namespace Synthesis.UI.Dynamic {
                 _eventsActive = original;
             return this;
         }
+
         public Dropdown AddOnValueChangedEvent(Action<Dropdown, int, TMP_Dropdown.OptionData> callback) {
             OnValueChanged += callback;
             return this;
         }
+
         public Dropdown ShowOnTop() {
             RootRectTransform.SetAsLastSibling();
             return this;
         }
+
         public Dropdown StepIntoImage(Action<Image> mod) {
             mod(_image);
             return this;
@@ -1065,7 +1128,6 @@ namespace Synthesis.UI.Dynamic {
     }
 
     public class LabeledDropdown : UIComponent {
-
         private Dropdown _dropdown;
         public Dropdown Dropdown => _dropdown;
         private Label _label;
@@ -1080,6 +1142,7 @@ namespace Synthesis.UI.Dynamic {
             mod(_dropdown);
             return this;
         }
+
         public LabeledDropdown StepIntoLabel(Action<Label> mod) {
             mod(_label);
             return this;
@@ -1106,15 +1169,18 @@ namespace Synthesis.UI.Dynamic {
             Sprite = s;
             return this;
         }
+
         public Image SetColor(string c) => SetColor(ColorManager.TryGetColor(c));
         public Image SetColor(Color c) {
             _unityImage.color = c;
             return this;
         }
+
         public Image SetCornerRadius(float r) {
             _unityImage.pixelsPerUnitMultiplier = 250f / r;
             return this;
         }
+
         public Image SetMultiplier(float m) {
             _unityImage.pixelsPerUnitMultiplier = m;
             return this;
@@ -1122,7 +1188,6 @@ namespace Synthesis.UI.Dynamic {
     }
 
     public class Scrollbar : UIComponent {
-
         public UScrollbar _unityScrollbar;
         private Image _backgroundImage;
         public Image BackgroundImage => _backgroundImage;
@@ -1140,14 +1205,15 @@ namespace Synthesis.UI.Dynamic {
         }
     }
 
-#endregion
+#endregion // Components
 
     public class UIEventHandler : MonoBehaviour, IPointerClickHandler {
         public event Action<PointerEventData> OnPointerClickedEvent;
 
         public void OnPointerClick(PointerEventData pointerEventData) {
-            if (OnPointerClickedEvent != null)
+            if (OnPointerClickedEvent != null) {
                 OnPointerClickedEvent(pointerEventData);
+            }
         }
     }
 }

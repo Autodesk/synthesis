@@ -24,14 +24,17 @@ public static class UtilExtensions {
         foreach (var a in e) {
             l.Add(c(a));
         }
+
         return l;
     }
 
     public static T Find<T>(this IEnumerable<T> e, Func<T, bool> c) {
         foreach (var a in e) {
-            if (c(a))
+            if (c(a)) {
                 return a;
+            }
         }
+
         return default;
     }
 
@@ -46,6 +49,8 @@ public static class UtilExtensions {
                 max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
         top.GetComponentsInChildren<Renderer>().ForEach(x => {
             var b = x.bounds;
+
+            // TODO: Another if stack
             if (min.x > b.min.x)
                 min.x = b.min.x;
             if (min.y > b.min.y)
@@ -59,17 +64,9 @@ public static class UtilExtensions {
             if (max.z < b.max.z)
                 max.z = b.max.z;
         });
+
         return new UnityEngine.Bounds(((max + min) / 2f) - top.position, max - min);
     }
-
-    // public static void ApplyMatrix(this Transform trans, Matrix4x4 m) {
-    //     // m.Print();
-    //     trans.localPosition = m.GetPosition();
-    //     var rot = m.rotation;
-    //     rot = new Quaternion(-rot.x, rot.y, rot.z, -rot.w);
-    //     trans.localRotation = rot;
-    //     trans.localScale = m.lossyScale;
-    // }
 
     public static void Print(this Matrix4x4 m) {
         Debug.Log($"{m[0, 0]}, {m[0, 1]}, {m[0, 2]}, {m[0, 3]}\n{m[1, 0]}, {m[1, 1]}, {m[1, 2]}, {m[1, 3]}" +
@@ -81,6 +78,7 @@ public static class UtilExtensions {
         ns.ForEach(x => elm.AddRange(x.AllTreeElements()));
         return elm;
     }
+
     /// <summary>
     /// DO NOT USE List<Mirabuf.Node> AllTreeElements(this IEnumerable<Mirabuf.Node> ns)
     /// INSIDE THIS FUNCTION. WILL CREATE RACE CASE
@@ -93,14 +91,6 @@ public static class UtilExtensions {
         n.Children.ForEach(x => elm.AddRange(x.AllTreeElements()));
         return elm;
     }
-
-    // public static IEnumerable<Node> UnravelNodes(this IEnumerable<Edge> edges) {
-    //     var nodes = new Node[edges.Count()];
-    //     for (int i = 0; i < nodes.Length; i++) {
-    //         nodes[i] = edges.ElementAt(i).Node;
-    //     }
-    //     return nodes;
-    // }
 
     public static Vector3 DotProduct(this Vector3 a, Vector3 b) => new Vector3(
         a.y * b.z - a.z * b.y, -(a.x *b.z - a.z * b.x), a.x *b.y - a.y * b.x);

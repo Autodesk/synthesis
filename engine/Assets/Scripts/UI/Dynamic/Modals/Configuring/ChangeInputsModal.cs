@@ -43,12 +43,13 @@ public class ChangeInputsModal : ModalDynamic {
             var inputScrollView =
                 leftContent.CreateScrollView().SetHeight<ScrollView>(CONTENT_HEIGHT).ApplyTemplate(VerticalLayout);
 
-            // make background transparent
+            // Make background transparent
             inputScrollView.RootGameObject.GetComponent<UnityEngine.UI.Image>().color = Color.clear;
 
             SimObject robot = SimulationManager.SimulationObjects[RobotSimObject.CurrentlyPossessedRobot];
-            if (robot == null)
+            if (robot == null) {
                 return;
+            }
 
             foreach (var inputKey in robot.GetAllReservedInputs()) {
                 var val = InputManager.MappedValueInputs[inputKey.key];
@@ -125,31 +126,38 @@ public class ChangeInputsModal : ModalDynamic {
         var l = button.Label;
         if (l == null)
             return;
-        // don't show positive or negative if the input is digital
+        // Don't show positive or negative if the input is digital
         var text = (!isDigital ? input.UsePositiveSide ? "(+) " : "(-) " : "") + input.Name;
 
         var modifier = input.Modifier;
         if ((modifier & (int)ModKey.LeftShift) != 0) {
             text += " + Left Shift";
         }
+
         if ((modifier & (int)ModKey.LeftCommand) != 0) {
             text += " + Left Command";
         }
+
         if ((modifier & (int)ModKey.LeftAlt) != 0) {
             text += " + Left Alt";
         }
+
         if ((modifier & (int)ModKey.RightShift) != 0) {
             text += " + Right Shift";
         }
+
         if ((modifier & (int)ModKey.RightCommand) != 0) {
             text += " + Right Command";
         }
+
         if ((modifier & (int)ModKey.RightAlt) != 0) {
             text += " + Right Alt";
         }
+
         if ((modifier & (int)ModKey.LeftControl) != 0) {
             text += " + Left Control";
         }
+
         if ((modifier & (int)ModKey.RightControl) != 0) {
             text += " + Right Control";
         }
@@ -161,7 +169,7 @@ public class ChangeInputsModal : ModalDynamic {
         Title.SetText("Keybinds");
         Description.SetText("Configure keybinds for your robot.");
 
-        // no cancel button because keybinds are saved automatically when set
+        // No cancel button because keybinds are saved automatically when set
         AcceptButton.AddOnClickedEvent(b => DynamicUIManager.CloseActiveModal()).StepIntoLabel(l => l.SetText("Close"));
         CancelButton.RootGameObject.SetActive(false);
 
@@ -171,10 +179,11 @@ public class ChangeInputsModal : ModalDynamic {
     public override void Update() {
         if (_currentlyReassigning != null) {
             var input = InputManager.GetAny();
-            if (input != null && Mathf.Abs(input.Value) < 0.15f)
+            if (input != null && Mathf.Abs(input.Value) < 0.15f) {
                 input = null;
+            }
 
-            // if we allow mouse inputs the input will always get set to Mouse0
+            // If we allow mouse inputs the input will always get set to Mouse0
             // because the user clicks on the button
             if (input != null && !Regex.IsMatch(input.Name, ".*Mouse.*")) {
                 InputManager.AssignValueInput(_reassigningKey, input);

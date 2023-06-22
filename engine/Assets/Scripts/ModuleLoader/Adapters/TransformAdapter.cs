@@ -1,13 +1,13 @@
-﻿using UnityEngine;
-using Transform = SynthesisAPI.EnvironmentManager.Components.Transform;
+﻿using Engine.Util;
+using MathNet.Spatial.Euclidean;
 using SynthesisAPI.Utilities;
 using System;
+using System.ComponentModel;
+using UnityEngine;
 
 using Quaternion    = UnityEngine.Quaternion;
 using SynQuaternion = MathNet.Spatial.Euclidean.Quaternion;
-using MathNet.Spatial.Euclidean;
-using Engine.Util;
-using System.ComponentModel;
+using Transform     = SynthesisAPI.EnvironmentManager.Components.Transform;
 
 namespace Engine.ModuleLoader.Adapters {
     public class TransformAdapter : MonoBehaviour, IApiAdapter<Transform> {
@@ -18,16 +18,12 @@ namespace Engine.ModuleLoader.Adapters {
 
             unityTransform = gameObject.transform;
 
-            // SynthesisAPI.Utilities.Logger.Log($"Parent: {gameObject.transform.parent.name}");
-
             unityTransform.localPosition = instance.Position.Map();
             unityTransform.localRotation = instance.Rotation.Map();
             unityTransform.localScale    = instance.Scale.Map();
         }
 
         private void UpdateProperty(object sender, PropertyChangedEventArgs args) {
-            // SynthesisAPI.Utilities.Logger.Log($"Updating Property: {instance.Entity.Value.Index}");
-
             switch (args.PropertyName) {
                 case "Position":
                     unityTransform.localPosition = instance.Position.Map();

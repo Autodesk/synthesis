@@ -1,11 +1,11 @@
-﻿using System.Net.NetworkInformation;
+﻿using Synthesis.Attributes;
+using Synthesis.Util;
 using System;
+using System.Collections;
+using System.Net.NetworkInformation;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
-using Synthesis.Attributes;
-using Synthesis.Util;
-using TMPro;
 
 #nullable enable
 
@@ -46,8 +46,9 @@ namespace Synthesis.UI.Hierarchy.HierarchyItems {
                 return Parent.Depth + 1;
             }
         }
+
         public TMP_Text TitleText = null!;
-        // public Transform Root;
+
         public HierarchyFolderItem? Parent;
         private string title = String.Empty;
         public string Title {
@@ -72,7 +73,7 @@ namespace Synthesis.UI.Hierarchy.HierarchyItems {
         private readonly Color NormalColor      = SynthesisUtil.ColorFromHex(0xf3f3f3ff);
         private readonly Color InteractionColor = SynthesisUtil.ColorFromHex(0xe8cc2aff);
 
-#endregion
+#endregion // Properties
 
         // Use this for initialization
         protected void Awake() {
@@ -81,13 +82,15 @@ namespace Synthesis.UI.Hierarchy.HierarchyItems {
         }
 
         protected override sealed void OnInteraction(bool isInteractedWith) {
-            if (imageComponent == null)
+            if (imageComponent == null) {
                 imageComponent = GetComponent<Image>();
+            }
 
-            if (isInteractedWith)
+            if (isInteractedWith) {
                 imageComponent.color = InteractionColor;
-            else
+            } else {
                 imageComponent.color = NormalColor;
+            }
         }
 
 #region Hierarchy
@@ -95,12 +98,10 @@ namespace Synthesis.UI.Hierarchy.HierarchyItems {
         public virtual void Init(string title, HierarchyFolderItem? parent) {
             Title = title;
             if (parent != null) {
-                // Parent = parent;
                 parent.Add(this);
             }
+
             Visible = true;
-            // if (Parent != null)
-            //     Root = Parent.Root;
         }
 
         protected virtual void SetVisible(bool visible) {
@@ -119,7 +120,7 @@ namespace Synthesis.UI.Hierarchy.HierarchyItems {
             Hierarchy.Changes = true;
         }
 
-#endregion
+#endregion // Hierarchy
 
 #region ContextMenu
 
@@ -128,6 +129,6 @@ namespace Synthesis.UI.Hierarchy.HierarchyItems {
             Remove();
         }
 
-#endregion
+#endregion // ContextMenu
     }
 }

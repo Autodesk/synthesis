@@ -1,17 +1,16 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Google.Protobuf.WellKnownTypes;
 using Synthesis.PreferenceManager;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 #nullable enable
 
 namespace Synthesis {
     public class RotationalDriver : Driver {
-
         private bool _isWheel  = false;
         public bool IsWheel   => _isWheel;
 
@@ -79,6 +78,7 @@ namespace Synthesis {
                 SimulationPreferences.SetRobotJointMotor((_simObject as RobotSimObject).MiraGUID, Name, _motor);
             }
         }
+
         private HingeJoint _jointA;
         public HingeJoint JointA => _jointA;
         private HingeJoint _jointB;
@@ -114,7 +114,6 @@ namespace Synthesis {
             if (motor != null && motor.MotorTypeCase == Mirabuf.Motor.Motor.MotorTypeOneofCase.SimpleMotor) {
                 _motor = motor!.SimpleMotor.UnityMotor;
             } else {
-                // var m = SimulationPreferences.GetRobotJointMotor((_simObject as RobotSimObject).MiraGUID, name);
                 Motor = new JointMotor() {
                     // Default Motor. Slow but powerful enough. Also uses Motor to save it
                     force          = 2000,
@@ -131,8 +130,6 @@ namespace Synthesis {
                 Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(0) };
             State.CurrentSignals[_outputs[1]] = new UpdateSignal() { DeviceType = "Range", Io = UpdateIOType.Output,
                 Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(0) };
-
-            // Debug.Log($"Speed: {_motor.targetVelocity}\nForce: {_motor.force}");
         }
 
         void EnableMotor() {
@@ -146,8 +143,9 @@ namespace Synthesis {
         }
 
         public bool Reserve(SimBehaviour? behaviour) {
-            if (behaviour == null || _reservee != null)
+            if (behaviour == null || _reservee != null) {
                 return false;
+            }
 
             _reservee = behaviour;
             return true;
@@ -158,8 +156,8 @@ namespace Synthesis {
         }
 
         private float _jointAngle = 0.0f;
-        public override void Update() {
 
+        public override void Update() {
             switch (ControlMode) {
                 case RotationalControlMode.Position:
                     PositionControl();
@@ -173,46 +171,25 @@ namespace Synthesis {
             _jointAngle += (_jointA.velocity * Time.deltaTime) / 360f;
             State.CurrentSignals[_outputs[0]].Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(_jointAngle);
             State.CurrentSignals[_outputs[1]].Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(_jointA.angle);
-
-            // var updateSignal = new UpdateSignals();
-            // var key = _outputs[0];
-            // var current = _state.CurrentSignals[key];
-            // updateSignal.SignalMap.Add(key, new UpdateSignal() {
-            //     Class = current.Class, Io = current.Io,
-            //     Value = new Value { NumberValue = _jointA.angle }
-            // });
-            // _state.Update(updateSignal);
         }
 
         private void PositionControl() {
             if (_jointA.useMotor) {
-
                 var targetPosition = (float)(State.CurrentSignals.ContainsKey(_inputs[0])
                                                  ? State.CurrentSignals[_inputs[0]].Value.NumberValue
                                                  : 0.0f);
 
-                // Debug.Log($"D: {_inputs[0]}");
-                // Debug.Log($"Target: {targetPosition}");
-
                 var inertiaA = GetInertiaAroundParallelAxis(_jointA.connectedBody, _jointB.anchor, _jointB.axis);
-                // var angAccelA = (Motor.force * val) / inertiaA;
-                // _jointA.connectedBody.AddTorque(_jointB.axis.normalized * angAccelA * Mathf.Rad2Deg,
-                // ForceMode.Acceleration); Debug.Log($"{angAccelA} to {_jointA.connectedBody.name}");
-
                 var inertiaB = GetInertiaAroundParallelAxis(_jointB.connectedBody, _jointA.anchor, _jointA.axis);
-                // var angAccelB = (-Motor.force * val) / inertiaB;
-                // _jointB.connectedBody.AddTorque(_jointA.axis.normalized * angAccelB * Mathf.Rad2Deg,
-                // ForceMode.Acceleration); Debug.Log($"{angAccelB} to {_jointB.connectedBody.name}");
+                float error  = (float)(targetPosition - _jointA.angle);
 
-                float error = (float)(targetPosition - _jointA.angle);
                 while (error < -180) {
                     error += 360;
                 }
+
                 while (error > 180) {
                     error -= 360;
                 }
-
-                // Debug.Log($"Error: {error}");
 
                 float output = error * 0.1f;
 
@@ -231,14 +208,7 @@ namespace Synthesis {
                                       : 0.0f);
 
                 var inertiaA = GetInertiaAroundParallelAxis(_jointA.connectedBody, _jointB.anchor, _jointB.axis);
-                // var angAccelA = (Motor.force * val) / inertiaA;
-                // _jointA.connectedBody.AddTorque(_jointB.axis.normalized * angAccelA * Mathf.Rad2Deg,
-                // ForceMode.Acceleration); Debug.Log($"{angAccelA} to {_jointA.connectedBody.name}");
-
                 var inertiaB = GetInertiaAroundParallelAxis(_jointB.connectedBody, _jointA.anchor, _jointA.axis);
-                // var angAccelB = (-Motor.force * val) / inertiaB;
-                // _jointB.connectedBody.AddTorque(_jointA.axis.normalized * angAccelB * Mathf.Rad2Deg,
-                // ForceMode.Acceleration); Debug.Log($"{angAccelB} to {_jointB.connectedBody.name}");
 
                 _jointA.motor = new JointMotor { force = Motor.force * (inertiaA / (inertiaA + inertiaB)),
                     freeSpin = Motor.freeSpin, targetVelocity = (Motor.targetVelocity) * val };
@@ -265,7 +235,7 @@ namespace Synthesis {
         }
 
         /// <summary>
-        ///
+        /// TODO: Add summary?
         /// </summary>
         /// <param name="rb"></param>
         /// <param name="axis">Use local axis</param>
@@ -306,7 +276,7 @@ namespace Synthesis {
         }
 
         /// <summary>
-        ///
+        /// TODO: Add summary?
         /// </summary>
         /// <param name="cart"></param>
         /// <returns>X is radius, Y is theta, Z is phi</returns>
@@ -315,6 +285,6 @@ namespace Synthesis {
             return new Vector3(cart.magnitude, Mathf.Acos(cart.y / 1), Mathf.Asin(cart.z / 1));
         }
 
-#endregion
+#endregion // Rotational Inertia stuff that isn't used
     }
 }

@@ -1,12 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using Mirabuf;
 using Synthesis.Gizmo;
 using Synthesis.Import;
 using Synthesis.Physics;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 using Bounds    = UnityEngine.Bounds;
@@ -14,7 +14,6 @@ using Transform = Mirabuf.Transform;
 using Vector3   = UnityEngine.Vector3;
 
 public class FieldSimObject : SimObject, IPhysicsOverridable {
-
     public static FieldSimObject CurrentField { get; private set; }
 
     public MirabufLive MiraLive { get; private set; }
@@ -32,8 +31,10 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
     public bool isFrozen() => _isFrozen;
 
     public void Freeze() {
-        if (_isFrozen)
+        if (_isFrozen) {
             return;
+        }
+
         FieldObject.GetComponentsInChildren<Rigidbody>()
             .Where(e => e.name != "grounded")
             .Concat(
@@ -45,9 +46,11 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
 
         _isFrozen = true;
     }
+
     public void Unfreeze() {
-        if (!_isFrozen)
+        if (!_isFrozen) {
             return;
+        }
 
         FieldObject.GetComponentsInChildren<Rigidbody>()
             .Where(e => e.name != "grounded")
@@ -73,7 +76,8 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         : base(name, state) {
         MiraLive     = miraLive;
         GroundedNode = groundedNode;
-        // grounded node is what gets grabbed in god mode so it needs field tag to not get moved
+
+        // Grounded node is what gets grabbed in god mode so it needs field tag to not get moved
         GroundedNode.transform.tag = "field";
         FieldObject                = groundedNode.transform.parent.gameObject;
         FieldBounds                = groundedNode.transform.GetBounds();
@@ -86,7 +90,6 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         var position = FieldObject.transform.position;
         position.y -= FieldBounds.center.y - FieldBounds.extents.y;
         FieldObject.transform.position = position;
-        // Debug.Log($"{FieldObject.transform.position.y}");
 
         _initialPosition = FieldObject.transform.position;
 
@@ -96,23 +99,20 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
             gp.InitialPosition                = gpTransform.position;
             gp.InitialRotation                = gpTransform.rotation;
         });
-        // Shooting.ConfigureGamepieces();
     }
 
     public void ResetField() {
         SpawnField(MiraLive);
-        // FieldObject.transform.position = _initialPosition;
-        // FieldObject.transform.rotation = _initialRotation;
     }
 
     public static bool DeleteField() {
-        if (CurrentField == null)
+        if (CurrentField == null) {
             return false;
+        }
 
-        // Debug.Log($"GP count: {CurrentField.Gamepieces.Count}");
-
-        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
             RobotSimObject.GetCurrentlyPossessedRobot().ClearGamepieces();
+        }
 
         CurrentField.Gamepieces.ForEach(x => x.DeleteGamepiece());
         CurrentField.Gamepieces.Clear();
@@ -120,7 +120,6 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         SimulationManager.RemoveSimObject(CurrentField);
         CurrentField = null;
         return true;
-        // SynthesisAssetCollection.DefaultFloor.SetActive(true);
     }
 
     public static void SpawnField(string filePath) {

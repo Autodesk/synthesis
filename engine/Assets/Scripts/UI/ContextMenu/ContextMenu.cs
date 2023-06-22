@@ -1,12 +1,12 @@
+using Synthesis.Util;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using Synthesis.Util;
-using TMPro;
 
 // Todo: Descriptions
 namespace Synthesis.UI.ContextMenus {
@@ -19,25 +19,16 @@ namespace Synthesis.UI.ContextMenus {
 
         public GameObject ContextItem;
         public Transform ContentContainer;
-        // public TMP_Text ContextTitle;
         private List<GameObject> SpawnedItems = new List<GameObject>();
 
         private static ContextMenu contextMenu;
         private static InteractableObject CurrentInteraction = null;
-
-        // public delegate void OnContextItemSelect(string uuid, string item);
-        // public static event OnContextItemSelect ContextItemSelected;
 
         private bool isMouseOverMe = false;
 
         private void Awake() {
             contextMenu = this;
             gameObject.SetActive(false);
-        }
-
-        private void Update() {
-            // if (!isMouseOverMe && (Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Mouse1)))
-            //     ContextMenu.Hide();
         }
 
         public static void Show<T>(InteractableObject sender, Vector2 pos, string title, T interactable)
@@ -51,10 +42,9 @@ namespace Synthesis.UI.ContextMenus {
             // This order??
             Hide();
             contextMenu.gameObject.SetActive(true);
-            if (IsShowing)
+            if (IsShowing) {
                 ResetItems();
-
-            // contextMenu.ContextTitle.text = title == string.Empty ? "" : title; // A bit useless?
+            }
 
             // Spawn in items
             description.ForEach(x => {
@@ -81,13 +71,13 @@ namespace Synthesis.UI.ContextMenus {
 
         public static void Hide() {
             ResetItems();
+
             if (CurrentInteraction != null) {
                 CurrentInteraction.IsBeingInteractedWith = false;
                 CurrentInteraction                       = null;
             }
 
             contextMenu.gameObject.SetActive(false);
-
             IsShowing = false;
         }
 

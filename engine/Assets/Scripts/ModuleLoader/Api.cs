@@ -1,30 +1,30 @@
-﻿using System;
+﻿using Api.GUI;
+using Engine.ModuleLoader.Adapters;
+using SynthesisAPI.EnvironmentManager;
+using SynthesisAPI.Modules;
+using SynthesisAPI.Runtime;
+using SynthesisAPI.UIManager;
+using SynthesisAPI.Utilities;
+using SynthesisAPI.VirtualFileSystem;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Threading;
-using SynthesisAPI.EnvironmentManager;
-using SynthesisAPI.Modules;
-using SynthesisAPI.Runtime;
-using SynthesisAPI.Utilities;
-using SynthesisAPI.VirtualFileSystem;
-using UnityEngine.UIElements;
+using System.Threading.Tasks;
 using UnityEngine;
-using Engine.ModuleLoader.Adapters;
-using Logger    = SynthesisAPI.Utilities.Logger;
+using UnityEngine.UIElements;
+
 using Component = SynthesisAPI.EnvironmentManager.Component;
 using Debug     = UnityEngine.Debug;
-using SynthesisAPI.UIManager;
-using System.Collections;
-using Api.GUI;
+using Logger    = SynthesisAPI.Utilities.Logger;
 
 namespace Engine.ModuleLoader {
     public class Api : MonoBehaviour {
-        private static Api Instance = null;
-
+        private static Api Instance                      = null;
         private static readonly string ModulesSourcePath = FileSystem.BasePath + "modules";
         private static readonly string BaseModuleTargetPath =
             SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar + "modules";
@@ -38,15 +38,17 @@ namespace Engine.ModuleLoader {
         private static Queue<Action> MainThreadTasks = new Queue<Action>();
 
         private static bool _registerCore = false;
-        public void Start() // Must happen after ResourceLedger is initialized (in Awake)
-        {
+
+        // Must happen after ResourceLedger is initialized (in Awake)
+        public void Start() {
             if (Instance == null)
                 Instance = this;
 
             SetupApplication(); // Always do this first
 
-            DontDestroyOnLoad(gameObject); // Do not destroy this game object when loading a new scene. NOTE: Doesn't
-                                           // work in editor for some reason
+            // Do not destroy this game object when loading a new scene. NOTE: Doesn't
+            // work in editor for some reason
+            DontDestroyOnLoad(gameObject);
 
             if (!_registerCore) {
                 _registerCore = true;
@@ -92,10 +94,6 @@ namespace Engine.ModuleLoader {
                     */
                 }
             };
-            // Screen.fullScreen = false;
-
-            // GameObject.Find("Screen").GetComponent<PanelScaler>().scaleMode =
-            // PanelScaler.ScaleMode.ConstantPhysicalSize;
 
             Task.Run(() => {
                 SynthesisAPI.UIManager.VisualElements.VisualElement root = null;
@@ -103,8 +101,6 @@ namespace Engine.ModuleLoader {
                     root = UIManager.RootElement;
                     Thread.Sleep(200);
                 }
-
-                // UIManager.Setup();
             });
         }
 
@@ -143,6 +139,7 @@ namespace Engine.ModuleLoader {
                 debugLogsEnabled = enable;
             }
         }
+
         private void RerouteConsoleOutput() {
             var writer = new StreamWriter(_newConsoleStream);
             Console.SetOut(writer);
@@ -196,9 +193,12 @@ namespace Engine.ModuleLoader {
                     { typeof(SynthesisAPI.EnvironmentManager.Components.MeshCollider2D), typeof(MeshCollider2DAdapter)}
                 };
             }
+
             public void AddEntityToScene(Entity entity) {
-                if (ApiProviderData.GameObjects.Contains(entity))
+                if (ApiProviderData.GameObjects.Contains(entity)) {
                     throw new Exception($"Entity \"{entity}\" already exists");
+                }
+
                 var gameObject = new GameObject($"Entity {entity.Index}");
                 gameObject.transform.SetParent(ApiProviderData.EntityParent.transform);
                 ApiProviderData.GameObjects.Add(entity, gameObject);
@@ -206,15 +206,18 @@ namespace Engine.ModuleLoader {
 
             public void RemoveEntityFromScene(Entity entity) {
                 GameObject gameObject;
-                if (!ApiProviderData.GameObjects.TryGetValue(entity, out gameObject))
+                if (!ApiProviderData.GameObjects.TryGetValue(entity, out gameObject)) {
                     throw new Exception($"Entity \"{entity}\" does not exist");
+                }
+
                 Destroy(gameObject);
             }
 
             public Component AddComponentToScene(Entity entity, Type t) {
                 GameObject gameObject;
-                if (!ApiProviderData.GameObjects.TryGetValue(entity, out gameObject))
+                if (!ApiProviderData.GameObjects.TryGetValue(entity, out gameObject)) {
                     throw new Exception($"Entity \"{entity}\" does not exist");
+                }
 
                 Type type;
                 Component component;
@@ -244,6 +247,7 @@ namespace Engine.ModuleLoader {
                             $"Failed to create instance of component with type {t.FullName}", e);
                     }
                 }
+
                 component.SetEntity(entity);
                 var gameObjectComponent = gameObject.AddComponent(type);
                 type.GetMethod("SetInstance").Invoke(gameObjectComponent, new[] { component });
@@ -253,8 +257,10 @@ namespace Engine.ModuleLoader {
 
             public void AddComponentToScene(Entity entity, Component component) {
                 GameObject gameObject;
-                if (!ApiProviderData.GameObjects.TryGetValue(entity, out gameObject))
+                if (!ApiProviderData.GameObjects.TryGetValue(entity, out gameObject)) {
                     throw new Exception($"Entity \"{entity}\" does not exist");
+                }
+
                 Type componentType = component.GetType();
                 Type type;
                 if (_builtins.ContainsKey(componentType)) {
@@ -264,6 +270,7 @@ namespace Engine.ModuleLoader {
                 } else {
                     type = typeof(ComponentAdapter);
                 }
+
                 component.SetEntity(entity);
                 var gameObjectComponent = gameObject.AddComponent(type);
                 type.GetMethod("SetInstance").Invoke(gameObjectComponent, new[] { component });
@@ -281,6 +288,7 @@ namespace Engine.ModuleLoader {
                 } else {
                     type = typeof(ComponentAdapter);
                 }
+
                 Destroy(gameObject.GetComponent(type));
             }
 
@@ -291,6 +299,7 @@ namespace Engine.ModuleLoader {
                         () => { Logger.Log("Cannot make VisualElement outside of main thread", LogLevel.Error); });
                     return null;
                 }
+
                 return (T)Activator.CreateInstance(typeof(T), args);
             }
 

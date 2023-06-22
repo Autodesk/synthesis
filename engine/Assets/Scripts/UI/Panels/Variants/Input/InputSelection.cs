@@ -1,11 +1,12 @@
+using SynthesisAPI.InputManager.Inputs;
 using System.Collections;
 using System.Collections.Generic;
-using SynthesisAPI.InputManager.Inputs;
 using TMPro;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
 
+// TODO: Remove whole thing?
 namespace Synthesis.UI.Panels {
     // public class InputSelection : MonoBehaviour {
     //     private string _inputKey;

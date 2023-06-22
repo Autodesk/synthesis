@@ -1,11 +1,11 @@
+using Synthesis.UI.Dynamic;
+using SynthesisAPI.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Synthesis.UI.Dynamic;
 using TMPro;
 using UnityEngine;
-using SynthesisAPI.Utilities;
 
 using Logger = SynthesisAPI.Utilities.Logger;
 
@@ -13,7 +13,6 @@ using Logger = SynthesisAPI.Utilities.Logger;
 
 namespace Synthesis.UI.Dynamic {
     public class AddFieldModal : ModalDynamic {
-
         private string _root;
         private int _selectedIndex = -1;
         private string[] _files;
@@ -25,8 +24,10 @@ namespace Synthesis.UI.Dynamic {
 
         public override void Create() {
             _root = ParsePath(Path.Combine("$appdata/Autodesk/Synthesis", Folder), '/');
-            if (!Directory.Exists(_root))
+            if (!Directory.Exists(_root)) {
                 Directory.CreateDirectory(_root);
+            }
+
             _files = Directory.GetFiles(_root).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
 
             Title.SetText("Field Selection");
@@ -48,9 +49,6 @@ namespace Synthesis.UI.Dynamic {
                                           .SetTopStretch<Dropdown>();
 
             _selectedIndex = _files.Length > 0 ? 0 : -1;
-
-            // MainContent.CreateLabeledButton().SetTopStretch<LabeledButton>(anchoredY: 50).StepIntoLabel(l =>
-            // l.SetText("Test"));
         }
 
         public override void Update() {
@@ -58,14 +56,6 @@ namespace Synthesis.UI.Dynamic {
 
         public override void Delete() {
         }
-
-        // private string[] GetFiles(string filePath) {
-        //     string[] fullPaths = Directory.GetFiles(filePath);
-        //     // exclude .DS_Store and other files; someone else can change or remove this
-        //     fullPaths = Array.FindAll(fullPaths, path => path.EndsWith(".mira"));
-        //     return Array.ConvertAll(fullPaths, path => path.Substring(_root.Length +
-        //     Path.DirectorySeparatorChar.ToString().Length));
-        // }
 
         private string ParsePath(string p, char c) {
             string[] a = p.Split(c);
@@ -79,10 +69,11 @@ namespace Synthesis.UI.Dynamic {
                         b += a[i];
                         break;
                 }
+
                 if (i != a.Length - 1)
                     b += Path.AltDirectorySeparatorChar;
             }
-            // Debug.Log(b);
+
             return b;
         }
     }

@@ -1,10 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.IO;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace Synthesis.PreferenceManager {
     public static class PreferenceManager {
@@ -19,8 +19,9 @@ namespace Synthesis.PreferenceManager {
         private static string FilePath = Path.Combine(FileSystem.FileSystem.Preferences, "preferences.json");
 
         public static void Load() {
-            if (!File.Exists(FilePath))
+            if (!File.Exists(FilePath)) {
                 return;
+            }
 
             try {
                 string data = File.ReadAllText(FilePath);
@@ -42,6 +43,7 @@ namespace Synthesis.PreferenceManager {
                 _data.CoherenceId = COHERENCE_ID;
                 File.WriteAllText(FilePath, JsonConvert.SerializeObject(_data));
             }
+
             UnsavedChanges = false;
         }
 

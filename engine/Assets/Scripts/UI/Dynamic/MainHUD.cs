@@ -1,21 +1,20 @@
+using DigitalRuby.Tween;
+using Synthesis.Runtime;
+using Synthesis.UI;
+using Synthesis.UI.Dynamic;
+using SynthesisAPI.EventBus;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using Synthesis.UI.Dynamic;
+using UnityEngine.SceneManagement;
 
 using UButton = UnityEngine.UI.Button;
-using System.Linq;
-using Synthesis.UI;
-using DigitalRuby.Tween;
-using SynthesisAPI.EventBus;
-using UnityEngine.SceneManagement;
-using Synthesis.Runtime;
 
 #nullable enable
 
 public static class MainHUD {
-
     private const string COLLAPSE_TWEEN = "collapse";
     private const string EXPAND_TWEEN   = "expand";
 
@@ -27,8 +26,9 @@ public static class MainHUD {
     public static bool Enabled {
         get => _enabled;
         set {
-            if (!_isSetup)
+            if (!_isSetup) {
                 return;
+            }
 
             if (_enabled != value) {
                 _enabled = value;
@@ -46,8 +46,9 @@ public static class MainHUD {
     public static bool Collapsed {
         get => _collapsed;
         set {
-            if (!_isSetup)
+            if (!_isSetup) {
                 return;
+            }
 
             if (_collapsed != value) {
                 _collapsed = value;
@@ -89,11 +90,9 @@ public static class MainHUD {
             EventBus.NewTypeListener<RobotSimObject.PossessionChangeEvent>(e => {
                 var robotEvent = e as RobotSimObject.PossessionChangeEvent;
 
-                if (robotEvent == null)
+                if (robotEvent == null) {
                     throw new Exception("Event type parsed incorrectly. Shouldn't ever happen");
-
-                // Debug.Log($"Old Bot: '{robotEvent.OldBot}'");
-                // Debug.Log($"New Bot: '{robotEvent.NewBot}'");
+                }
 
                 if (robotEvent.NewBot == string.Empty) {
                     RemoveItemFromDrawer("Configure");
@@ -102,6 +101,7 @@ public static class MainHUD {
                         index: 1, icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
                 }
             });
+
             _hasNewRobotListener = true;
         }
 
@@ -113,8 +113,9 @@ public static class MainHUD {
     public static void AddItemToDrawer(
         string title, Action<Button> onClick, int index = -1, Sprite? icon = null, Color? color = null) {
 
-        if (!SimulationRunner.InSim)
+        if (!SimulationRunner.InSim) {
             return;
+        }
 
         var drawerButtonObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("hud-drawer-item-base"),
             _tabDrawerContent.RootGameObject.transform.Find("ItemContainer"));
@@ -123,6 +124,7 @@ public static class MainHUD {
         drawerButton.Image.SetColor(new Color(1, 1, 1, 0));
         drawerButton.AddOnClickedEvent(onClick);
         var drawerIcon = new Image(_tabDrawerContent, drawerButtonObj.transform.Find("ItemIcon").gameObject);
+
         if (icon != null) {
             drawerIcon.SetSprite(icon);
             if (color.HasValue) {
@@ -137,6 +139,7 @@ public static class MainHUD {
                 drawerIcon.SetColor(ColorManager.SYNTHESIS_ORANGE);
             }
         }
+
         if (index < 0 || index > _drawerItems.Count) {
             _drawerItems.Add((drawerButton, drawerIcon));
         } else {
@@ -147,13 +150,15 @@ public static class MainHUD {
     }
 
     public static void RemoveItemFromDrawer(string title) {
-
-        if (!SimulationRunner.InSim)
+        if (!SimulationRunner.InSim) {
             return;
+        }
 
         var index = _drawerItems.FindIndex(0, _drawerItems.Count, x => x.button.Label.Text == title);
-        if (index == -1)
+
+        if (index == -1) {
             return;
+        }
 
         GameObject.Destroy(_drawerItems[index].button.RootGameObject);
         _drawerItems.RemoveAt(index);
@@ -165,6 +170,7 @@ public static class MainHUD {
         for (int i = 0; i < _drawerItems.Count; i++) {
             _drawerItems[i].button.SetTopStretch<Button>(anchoredY: i * 55);
         }
+
         _tabDrawerContent.SetHeight<Content>((_drawerItems.Count * 55) + 70);
     }
 }

@@ -1,9 +1,9 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Synthesis.Gizmo;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ConfiguringModal : ModalDynamic {
@@ -27,6 +27,7 @@ public class ConfiguringModal : ModalDynamic {
         var subContent = MainContent.CreateSubContent(new Vector2(MainContent.Size.x, 50))
                              .SetTopStretch<Content>(anchoredY: gpmLabel.Size.y + 7.5f);
         var spacing = 15f;
+
         {
             (var left, var right) = subContent.SplitLeftRight((MainContent.Size.x / 2f) - (spacing / 2f), spacing);
             var robot             = left.CreateButton()
@@ -44,6 +45,7 @@ public class ConfiguringModal : ModalDynamic {
                             })
                             .StepIntoLabel(l => l.SetText("Ejector"));
         }
+
         var robotLabel = MainContent.CreateLabel(height: 30f).ApplyTemplate(VerticalLayout).SetText("General Robot");
         var subContent2 =
             MainContent.CreateSubContent(new Vector2(MainContent.Size.x, 50)).ApplyTemplate(VerticalLayout);
@@ -54,10 +56,6 @@ public class ConfiguringModal : ModalDynamic {
                 DynamicUIManager.CloseActiveModal();
                 GizmoManager.SpawnGizmo(RobotSimObject.GetCurrentlyPossessedRobot());
                          });
-            // var field = right.CreateButton("Field")
-            //     .ApplyTemplate<Button>(VerticalLayout)
-            //     .AddOnClickedEvent(b => DynamicUIManager.CreateModal<AddFieldModal>())
-            //     .StepIntoLabel(l => l.SetText("Fields"));
         }
     }
 

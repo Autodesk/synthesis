@@ -1,19 +1,19 @@
-﻿using System;
-using UnityEngine;
-using System.Collections.Generic;
+﻿using Synthesis.Attributes;
+using Synthesis.UI.ContextMenus;
+using Synthesis.Util;
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
-using Synthesis.UI.ContextMenus;
 using UnityEngine.UI;
-using Synthesis.Attributes;
-using Synthesis.Util;
-using System.Linq;
+
 using ContextMenu = Synthesis.UI.ContextMenus.ContextMenu;
 
 namespace Synthesis.UI {
     public class InteractableObject : MonoBehaviour, IPointerClickHandler, IPointerExitHandler, IPointerEnterHandler {
-        // public class ContextItemEvent : UnityEvent { }
         public bool useReflection = true;
 
         private bool isBeingInteractedWith = false;
@@ -37,11 +37,10 @@ namespace Synthesis.UI {
         public void OnPointerClick(PointerEventData eventData) {
             Debug.Log(gameObject.name);
             if (eventData.button == PointerEventData.InputButton.Right) {
-                // open right click floating window
-                //  Debug.Log(eventData.position);
+                // Open right click floating window
 
-                Vector2 position = new Vector2(eventData.position.x,
-                    eventData.position.y); // Maybe have that 1080 number adjust but for rn it's fine
+                // Maybe have that 1080 number adjust but for rn it's fine
+                Vector2 position = new Vector2(eventData.position.x, eventData.position.y);
                 OnPointerClick(position);
             } else {
                 ContextMenu.Hide();
@@ -49,7 +48,6 @@ namespace Synthesis.UI {
         }
 
         public void OnPointerClick(Vector2 position) {
-            // Debug.Log($"{position.x}, {position.y}");
             if (useReflection) {
                 ContextMenu.Show(this, position, ContextMenuUID, this);
             } else {
@@ -82,12 +80,8 @@ namespace Synthesis.UI {
             Type type = interactable.GetType();
 
             if (InteractableTypes.ContainsKey(type)) {
-
-                // Debug.Log(type.Name);
                 return InteractableTypes[type];
-
             } else {
-
                 var list = new List<(string title, Sprite icon, Action<object> callback)>();
                 type.GetMethods().ForEach(x => {
                     if (x.DeclaringType == type) {
@@ -98,15 +92,17 @@ namespace Synthesis.UI {
                             string title;
                             Action<object> callback;
 
-                            if (attr.Title == string.Empty)
+                            if (attr.Title == string.Empty) {
                                 title = x.Name;
-                            else
+                            } else {
                                 title = attr.Title;
+                            }
 
-                            if (attr.Callback == null)
+                            if (attr.Callback == null) {
                                 callback = a => x.Invoke(a, null);
-                            else
+                            } else {
                                 callback = a => attr.Callback();
+                            }
 
                             list.Add((title, attr.Icon, callback));
                         }
@@ -118,6 +114,6 @@ namespace Synthesis.UI {
             }
         }
 
-#endregion
+#endregion // Static Methods
     }
 }

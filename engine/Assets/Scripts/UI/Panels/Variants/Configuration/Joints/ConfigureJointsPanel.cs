@@ -1,9 +1,10 @@
+using SynthesisAPI.Simulation;
 using System.Collections;
 using System.Collections.Generic;
-using SynthesisAPI.Simulation;
-using UnityEngine;
 using System.Linq;
+using UnityEngine;
 
+// TODO: Remove whole thing?
 namespace Synthesis.UI.Panels {
     public class ConfigureJointsPanel : Panel {
 

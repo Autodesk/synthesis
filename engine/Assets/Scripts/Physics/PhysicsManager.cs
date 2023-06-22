@@ -1,10 +1,10 @@
-using UnityEngine;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using SynthesisAPI.EventBus;
 using Synthesis.Replay;
 using Synthesis.Runtime;
+using SynthesisAPI.EventBus;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 #nullable enable
@@ -28,10 +28,11 @@ namespace Synthesis.Physics {
         public static bool IsFrozen {
             get => _isFrozen;
             set {
-                if (value)
+                if (value) {
                     ++_frozenCounter;
-                else
+                } else {
                     --_frozenCounter;
+                }
 
                 if (_frozenCounter < 0) {
                     // My guy
@@ -42,11 +43,9 @@ namespace Synthesis.Physics {
                 if (shouldFreeze != _isFrozen) {
                     _isFrozen = shouldFreeze;
 
-                    // Debug.Log($"Frozen: {_isFrozen}");
                     if (_isFrozen) {
                         SimulationRunner.RemoveContext(SimulationRunner.RUNNING_SIM_CONTEXT);
                         SimulationRunner.AddContext(SimulationRunner.PAUSED_SIM_CONTEXT);
-                        // UnityEngine.Physics.autoSimulation = false;
                         _physObjects.ForEach(x => {
                             if (_storeOnFreeze) {
                                 x.Value.GetAllRigidbodies().ForEach(rb => {
@@ -60,7 +59,6 @@ namespace Synthesis.Physics {
                     } else {
                         SimulationRunner.RemoveContext(SimulationRunner.PAUSED_SIM_CONTEXT);
                         SimulationRunner.AddContext(SimulationRunner.RUNNING_SIM_CONTEXT);
-                        // UnityEngine.Physics.autoSimulation = true;
 
                         _physObjects.ForEach(x => {
                             x.Value.Unfreeze();
@@ -70,7 +68,7 @@ namespace Synthesis.Physics {
                                         rb.velocity        = f.Velocity;
                                         rb.angularVelocity = f.AngularVelocity;
                                     } catch (Exception e) {
-                                        // ignored
+                                        // Ignored
                                     }
                                 });
                             }
@@ -79,6 +77,7 @@ namespace Synthesis.Physics {
                             _storeOnFreeze = true;
                         });
                     }
+
                     EventBus.Push(new PhysicsFreezeChangeEvent { IsFrozen = _isFrozen });
                 }
             }
@@ -90,32 +89,33 @@ namespace Synthesis.Physics {
 
         public static bool Register<T>(T overridable)
             where T : class, IPhysicsOverridable {
-            if (_physObjects.ContainsKey(overridable.GetHashCode()))
+            if (_physObjects.ContainsKey(overridable.GetHashCode())) {
                 return false;
+            }
+
             _physObjects[overridable.GetHashCode()] = overridable;
-            if (_isFrozen)
+            if (_isFrozen) {
                 overridable.Freeze();
-            else
+            } else {
                 overridable.Unfreeze();
+            }
+
             AddContactRecorders(overridable);
             return true;
         }
 
         public static void AddContactRecorders<T>(T overridable)
             where T : class, IPhysicsOverridable {
-            List<ContactRecorder> recorders = new List<ContactRecorder>();
-            var rbs                         = overridable.GetRootGameObject().GetComponentsInChildren<Rigidbody>();
-            rbs.ForEach(x => {
-                // var recorder = x.gameObject.AddComponent<ContactRecorder>();
-                // recorders.Add(recorder);
-            });
+            List<ContactRecorder> recorders              = new List<ContactRecorder>();
             _contactRecorders[overridable.GetHashCode()] = recorders;
         }
 
         public static bool Unregister<T>(T overridable)
             where T : class, IPhysicsOverridable {
-            if (!_physObjects.ContainsKey(overridable.GetHashCode()))
+            if (!_physObjects.ContainsKey(overridable.GetHashCode())) {
                 return false;
+            }
+
             _physObjects.Remove(overridable.GetHashCode());
             return true;
         }
@@ -130,8 +130,10 @@ namespace Synthesis.Physics {
 
         public static List<ContactRecorder>? GetContactRecorders<T>(T overridable)
             where T : class, IPhysicsOverridable {
-            if (!_contactRecorders.ContainsKey(overridable.GetHashCode()))
+            if (!_contactRecorders.ContainsKey(overridable.GetHashCode())) {
                 return null;
+            }
+
             return _contactRecorders[overridable.GetHashCode()];
         }
 
@@ -145,8 +147,9 @@ namespace Synthesis.Physics {
 
     public class ContactRecorder : MonoBehaviour {
         public void OnCollisionEnter(Collision c) {
-            if (GetComponent<Rigidbody>().isKinematic && c.rigidbody.isKinematic)
+            if (GetComponent<Rigidbody>().isKinematic && c.rigidbody.isKinematic) {
                 return;
+            }
 
             ReplayManager.PushContactReport(new ContactReport(this, c));
         }
@@ -171,7 +174,7 @@ namespace Synthesis.Physics {
             RelativeVelocity = c.relativeVelocity;
             Impulse          = c.impulse;
 
-            // averages contact points
+            // Averages contact points
             Vector3 averageContactPoint = Vector3.zero;
             Vector3 averageNormal       = Vector3.zero;
             float averageSeperation     = 0;
@@ -180,6 +183,7 @@ namespace Synthesis.Physics {
                 averageNormal += x.normal;
                 averageSeperation += x.separation;
             });
+
             point      = averageContactPoint / c.contactCount;
             normal     = Vector3.Normalize(averageNormal);
             seperation = averageSeperation / c.contactCount;

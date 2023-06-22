@@ -1,5 +1,5 @@
-using System;
 using Synthesis.Gizmo;
+using System;
 using UnityEngine;
 
 using STD = RobotSimObject.ShotTrajectoryData;
@@ -38,6 +38,7 @@ namespace Synthesis.UI.Dynamic {
 
             var robot        = RobotSimObject.GetCurrentlyPossessedRobot();
             var existingData = robot.TrajectoryData;
+
             if (existingData.HasValue) {
                 _resultingData = existingData.Value;
             } else {
@@ -48,6 +49,7 @@ namespace Synthesis.UI.Dynamic {
 
             var selectedRb = RobotSimObject.GetCurrentlyPossessedRobot().AllRigidbodies.Find(
                 x => x.name.Equals(_resultingData.NodeName));
+
             if (selectedRb) {
                 _selectedNode         = selectedRb.GetComponent<HighlightComponent>();
                 _selectedNode.enabled = true;
@@ -98,11 +100,6 @@ namespace Synthesis.UI.Dynamic {
                                              .SetWidth<Button>(125))
                     .ApplyTemplate<LabeledButton>(VerticalLayout);
             SetSelectUIState(false);
-            // _moveTriggerButton = MainContent.CreateLabeledButton()
-            //     .SetHeight<LabeledButton>(30)
-            //     .StepIntoLabel(l => l.SetText("Move pickup zone"))
-            //     .StepIntoButton(b => b.StepIntoLabel(l => l.SetText("Move")))
-            //     .ApplyTemplate<LabeledButton>(VerticalLayout);
             _exitSpeedSlider = MainContent.CreateSlider(label: "Speed", minValue: 0f, maxValue: 10f)
                                    .ApplyTemplate<Slider>(VerticalLayout)
                                    .AddOnValueChangedEvent((s, v) => {
@@ -145,6 +142,7 @@ namespace Synthesis.UI.Dynamic {
             if (_hoveringNode != null) {
                 _hoveringNode.enabled = false;
             }
+
             if (_selectedNode != null) {
                 _selectedNode.enabled = false;
             }
@@ -154,55 +152,55 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public override void Update() {
-            if (_selectingNode) {
+            if (!_selectingNode) {
+                return;
+            }
 
-                // Enable Collision Detection for the Robot
-                RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.GetComponentsInChildren<Rigidbody>().ForEach(
-                    x => x.detectCollisions = true);
+            // Enable Collision Detection for the Robot
+            RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.GetComponentsInChildren<Rigidbody>().ForEach(
+                x => x.detectCollisions = true);
 
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hitInfo;
-                bool hit = UnityEngine.Physics.Raycast(ray, out hitInfo);
-                if (hit && hitInfo.rigidbody != null &&
-                    hitInfo.rigidbody.transform.parent ==
-                        RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform) {
-                    Debug.Log($"Selecting Node: {hitInfo.rigidbody.name}");
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hitInfo;
+            bool hit = UnityEngine.Physics.Raycast(ray, out hitInfo);
+            if (hit && hitInfo.rigidbody != null &&
+                hitInfo.rigidbody.transform.parent == RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform) {
+                Debug.Log($"Selecting Node: {hitInfo.rigidbody.name}");
 
-                    if (_hoveringNode != null) {
-                        _hoveringNode.enabled = false;
-                    }
-                    _hoveringNode = hitInfo.rigidbody.GetComponent<HighlightComponent>();
-                    if (hitInfo.rigidbody.name != _selectedNode.name) {
-                        _hoveringNode.enabled = true;
-                        _hoveringNode.Color   = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_HOVER);
-                    }
-
-                    if (Input.GetKeyDown(KeyCode.Mouse0)) {
-                        if (_selectedNode != null) {
-                            _selectedNode.enabled = false;
-                        }
-
-                        _selectedNode         = _hoveringNode;
-                        _selectedNode.enabled = true;
-                        _selectedNode.Color   = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_SELECT);
-                        _hoveringNode         = null;
-
-                        _resultingData.NodeName = hitInfo.rigidbody.name;
-                        _selectingNode          = false;
-                        SetSelectUIState(false);
-                    }
-                } else {
-                    if (_hoveringNode != null &&
-                        (_selectedNode == null ? true : !_selectedNode.name.Equals(_hoveringNode.name))) {
-                        _hoveringNode.enabled = false;
-                        _hoveringNode         = null;
-                    }
+                if (_hoveringNode != null) {
+                    _hoveringNode.enabled = false;
+                }
+                _hoveringNode = hitInfo.rigidbody.GetComponent<HighlightComponent>();
+                if (hitInfo.rigidbody.name != _selectedNode.name) {
+                    _hoveringNode.enabled = true;
+                    _hoveringNode.Color   = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_HOVER);
                 }
 
-                // Disable Collision Detection for the Robot
-                RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.GetComponentsInChildren<Rigidbody>().ForEach(
-                    x => x.detectCollisions = true);
+                if (Input.GetKeyDown(KeyCode.Mouse0)) {
+                    if (_selectedNode != null) {
+                        _selectedNode.enabled = false;
+                    }
+
+                    _selectedNode         = _hoveringNode;
+                    _selectedNode.enabled = true;
+                    _selectedNode.Color   = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_SELECT);
+                    _hoveringNode         = null;
+
+                    _resultingData.NodeName = hitInfo.rigidbody.name;
+                    _selectingNode          = false;
+                    SetSelectUIState(false);
+                }
+            } else {
+                if (_hoveringNode != null &&
+                    (_selectedNode == null ? true : !_selectedNode.name.Equals(_hoveringNode.name))) {
+                    _hoveringNode.enabled = false;
+                    _hoveringNode         = null;
+                }
             }
+
+            // Disable Collision Detection for the Robot
+            RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.GetComponentsInChildren<Rigidbody>().ForEach(
+                x => x.detectCollisions = true);
         }
     }
 }

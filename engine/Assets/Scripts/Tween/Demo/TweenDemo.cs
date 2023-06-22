@@ -41,7 +41,7 @@ namespace DigitalRuby.Tween {
             Vector3 endPos     = Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 0.5f));
             currentPos.z = startPos.z = midPos.z = endPos.z = 0.0f;
 
-            // completion defaults to null if not passed in
+            // Completion defaults to null if not passed in
             Circle.gameObject
                 .Tween("MoveCircle", currentPos, startPos, 1.75f, TweenScaleFunctions.CubicEaseIn, updateCirclePos)
                 .ContinueWith(
@@ -55,14 +55,14 @@ namespace DigitalRuby.Tween {
 
             Color endColor = UnityEngine.Random.ColorHSV(0.0f, 1.0f, 0.0f, 1.0f, 0.5f, 1.0f, 1.0f, 1.0f);
 
-            // completion defaults to null if not passed in
+            // Completion defaults to null if not passed in
             Circle.gameObject.Tween(
                 "ColorCircle", spriteRenderer.color, endColor, 1.0f, TweenScaleFunctions.QuadraticEaseOut, updateColor);
         }
 
         private void TweenRotate() {
             System.Action<ITween<float>> circleRotate = (t) => {
-                // start rotation from identity to ensure no stuttering
+                // Start rotation from identity to ensure no stuttering
                 Circle.transform.rotation = Quaternion.identity;
                 Circle.transform.Rotate(Camera.main.transform.forward, t.CurrentValue);
             };
@@ -70,7 +70,7 @@ namespace DigitalRuby.Tween {
             float startAngle = Circle.transform.rotation.eulerAngles.z;
             float endAngle   = startAngle + 720.0f;
 
-            // completion defaults to null if not passed in
+            // Completion defaults to null if not passed in
             Circle.gameObject.Tween(
                 "RotateCircle", startAngle, endAngle, 2.0f, TweenScaleFunctions.CubicEaseInOut, circleRotate);
         }
@@ -80,7 +80,7 @@ namespace DigitalRuby.Tween {
         }
 
         private void Start() {
-            // for demo purposes, clear all tweens when new level loads, default is false
+            // For demo purposes, clear all tweens when new level loads, default is false
             TweenFactory.ClearTweensOnLevelLoad = true;
             spriteRenderer                      = Circle.GetComponent<SpriteRenderer>();
         }

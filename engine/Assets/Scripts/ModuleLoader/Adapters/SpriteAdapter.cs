@@ -1,6 +1,7 @@
 ﻿using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using UnityEngine;
+
 using Sprite = SynthesisAPI.EnvironmentManager.Components.Sprite;
 
 namespace Engine.ModuleLoader.Adapters {
@@ -11,12 +12,14 @@ namespace Engine.ModuleLoader.Adapters {
         private bool updated = false;
 
         public void Awake() {
-            if ((renderer = gameObject.GetComponent<SpriteRenderer>()) == null)
+            if ((renderer = gameObject.GetComponent<SpriteRenderer>()) == null) {
                 renderer = gameObject.AddComponent<SpriteRenderer>();
+            }
 
             if (instance == null) {
                 gameObject.SetActive(false);
             }
+
             defaultMaterial = renderer.material;
         }
 
@@ -26,19 +29,20 @@ namespace Engine.ModuleLoader.Adapters {
                 if (collider != null) {
                     collider.Changed = true;
                 }
+
                 updated = false;
             }
+
             if (instance.Changed) {
                 renderer.sprite = instance._sprite;
-                if (instance.Entity?.GetComponent<AlwaysOnTop>() != null)
+                if (instance.Entity?.GetComponent<AlwaysOnTop>() != null) {
                     renderer.material = new Material(Shader.Find("Custom/AlwaysOnTop"));
-                else
+                } else {
                     renderer.material = defaultMaterial;
+                }
 
-                renderer.flipX = instance._flipX;
-                renderer.flipY = instance._flipY;
-                // renderer.color = new Color32(instance._color.R, instance._color.G, instance._color.B,
-                // instance._color.A);
+                renderer.flipX          = instance._flipX;
+                renderer.flipY          = instance._flipY;
                 renderer.enabled        = instance._visible;
                 instance.Bounds._bounds = renderer.bounds;
                 instance.ProcessedChanges();

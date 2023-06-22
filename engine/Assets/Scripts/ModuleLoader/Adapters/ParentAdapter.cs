@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using SynthesisAPI.EnvironmentManager.Components;
+﻿using static Engine.ModuleLoader.Api;
 using SynthesisAPI.EnvironmentManager;
-using static Engine.ModuleLoader.Api;
+using SynthesisAPI.EnvironmentManager.Components;
+using UnityEngine;
 
 namespace Engine.ModuleLoader.Adapters {
     public class ParentAdapter : MonoBehaviour, IApiAdapter<Parent> {

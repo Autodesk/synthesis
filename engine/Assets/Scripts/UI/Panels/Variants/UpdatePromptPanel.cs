@@ -1,8 +1,9 @@
+using Synthesis.UI.Panels;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Synthesis.UI.Panels;
 using UnityEngine;
+
 using Debug = UnityEngine.Debug;
 
 namespace Synthesis.UI.Panels {
@@ -10,7 +11,6 @@ namespace Synthesis.UI.Panels {
         public string UpdaterLink = string.Empty;
 
         public void Agreed() {
-
             bool updateAgreed = false;
 
             if (UpdaterLink == string.Empty) {
@@ -34,10 +34,11 @@ namespace Synthesis.UI.Panels {
 
             AnalyticsManager.PostData();
 
-            if (Application.isEditor)
+            if (Application.isEditor) {
                 Debug.Log("Would exit, but it's editor mode");
-            else
+            } else {
                 Application.Quit();
+            }
 
             base.Close();
         }

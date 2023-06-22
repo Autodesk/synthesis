@@ -5,12 +5,12 @@ using System.Linq;
 using UnityEngine;
 
 public class HighlightComponent : MonoBehaviour {
-
     private Material _material;
     private MeshRenderer[] _renderers;
     private Material[] _originalMaterials;
 
     private Color _color;
+
     public Color Color {
         get => _color;
         set {
@@ -30,15 +30,11 @@ public class HighlightComponent : MonoBehaviour {
         for (int i = 0; i < _renderers.Length; i++) {
             _renderers[i].material = _material;
         }
-
-        // Debug.Log($"{transform.name}: Enabled");
     }
 
     public void OnDisable() {
         for (int i = 0; i < _renderers.Length; i++) {
             _renderers[i].material = _originalMaterials[i];
         }
-
-        // Debug.Log($"{transform.name}: Disabled");
     }
 }

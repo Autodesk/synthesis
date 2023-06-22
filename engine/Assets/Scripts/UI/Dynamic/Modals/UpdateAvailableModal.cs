@@ -1,17 +1,15 @@
+using Synthesis.UI.Dynamic;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Synthesis.UI.Dynamic;
 using UnityEngine;
 
 namespace Synthesis.UI.Dynamic {
     public class UpdateAvailableModal : ModalDynamic {
-
         public UpdateAvailableModal() : base(new Vector2(350, 50)) {
         }
 
         public override void Create() {
-
             Title.SetText("Exit Synthesis");
             Description.SetText("");
             AcceptButton
@@ -39,6 +37,7 @@ namespace Synthesis.UI.Dynamic {
 
         public override void Update() {
         }
+
         public override void Delete() {
         }
     }

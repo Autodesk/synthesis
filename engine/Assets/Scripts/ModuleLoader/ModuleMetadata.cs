@@ -41,8 +41,9 @@ namespace Engine.ModuleLoader {
         public void Serialize(Stream stream, bool keepPosition = true) {
             var pos = stream.Position;
             new XmlSerializer(typeof(ModuleMetadata)).Serialize(new StreamWriter(stream), this);
-            if (keepPosition)
+            if (keepPosition) {
                 stream.Position = pos;
+            }
         }
 
         public override string ToString() {

@@ -1,6 +1,6 @@
+using Synthesis.UI.Dynamic;
 using System.Collections;
 using System.Collections.Generic;
-using Synthesis.UI.Dynamic;
 using UnityEngine;
 
 public class ScrollViewTestModal : ModalDynamic {

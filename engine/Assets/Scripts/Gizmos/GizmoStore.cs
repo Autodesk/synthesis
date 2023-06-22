@@ -7,8 +7,10 @@ public class GizmoStore : MonoBehaviour {
     public static GameObject GizmoPrefabStatic;
 
     public void Awake() {
-        if (GizmoPrefab == null)
+        if (GizmoPrefab == null) {
             throw new System.Exception();
+        }
+
         GizmoPrefabStatic = GizmoPrefab;
     }
 }

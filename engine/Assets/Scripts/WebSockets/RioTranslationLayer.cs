@@ -1,16 +1,15 @@
+using Google.Protobuf.WellKnownTypes;
+using SynthesisAPI.RoboRIO;
+using SynthesisAPI.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using SynthesisAPI.RoboRIO;
-using Google.Protobuf.WellKnownTypes;
-using SynthesisAPI.Utilities;
 
 using Type = System.Type;
 
 namespace Synthesis.WS.Translation {
     public class RioTranslationLayer {
-
         // I seriously hate json and its like 4am so deal
         public List<PWMGroup> PWMGroups = new List<PWMGroup>();
         public List<Encoder> Encoders   = new List<Encoder>();
@@ -44,15 +43,17 @@ namespace Synthesis.WS.Translation {
             public void Update(ControllableState signalState) {
                 int val = (int)(_mod * signalState.CurrentSignals[$"{_signal}_encoder"].Value.NumberValue);
                 // TODO: Update riostate
-                if (_rioDevice.Length == 0 && !AquireRioDevice(WebSocketManager.RioState))
+                if (_rioDevice.Length == 0 && !AquireRioDevice(WebSocketManager.RioState)) {
                     return;
+                }
 
                 float period;
                 var deltaVal = val - _periodTracker.val;
-                if (deltaVal == 0)
+                if (deltaVal == 0) {
                     period = float.MaxValue;
-                else
+                } else {
                     period = (Time.realtimeSinceStartup - _periodTracker.time) / deltaVal;
+                }
 
                 WebSocketManager.UpdateData<EncoderData>(_rioDevice, e => e.Count = val);
                 WebSocketManager.UpdateData<EncoderData>(_rioDevice, e => e.Period = period);
@@ -68,6 +69,7 @@ namespace Synthesis.WS.Translation {
                             _rioDevice = i.ToString();
                         }
                     }
+
                     i++;
                 }
 
@@ -79,7 +81,6 @@ namespace Synthesis.WS.Translation {
         /// A Grouping of signals in which you can write the value of the the signals
         /// </summary>
         public class PWMGroup {
-
             private string _name;
             public string Name => _name;
             private List<string> _ports;
@@ -107,6 +108,7 @@ namespace Synthesis.WS.Translation {
             }
         }
 
+        // TODO: Still needed?
         // public class Grouping {
         //     public List<IRioPointer> RioPointers = new List<IRioPointer>();
         //     public List<string> Signals = new List<string>();

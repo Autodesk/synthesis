@@ -1,16 +1,15 @@
+using Mirabuf;
+using Mirabuf.Joint;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
-using Mirabuf;
-using Mirabuf.Joint;
+using UnityEngine;
 
 using Color = UnityEngine.Color;
 
 namespace Synthesis.Util {
     public static class SynthesisUtil {
-
         public static void ForEach<T>(this IEnumerable<T> e, Action<T> a) {
             foreach (var i in e) {
                 a(i);
@@ -39,10 +38,11 @@ namespace Synthesis.Util {
             (float)(hex & 0x000000FF) / 255f);
 
         public static Color ColorToHex(this string hex) {
-            if (hex.Substring(0, 2) == "0x")
+            if (hex.Substring(0, 2) == "0x") {
                 hex = hex.Substring(2);
-            else if (hex.Substring(0, 1) == "#")
+            } else if (hex.Substring(0, 1) == "#") {
                 hex = hex.Substring(1);
+            }
 
             if (hex.Length > 6) {
                 return new Color((float)HexToByte(hex.Substring(0, 2)) / 255f,
@@ -75,6 +75,7 @@ namespace Synthesis.Util {
                         return i.ToString()[0];
                 }
             };
+
             int a = (ui & 0x000000F0) >> 4;
             int b = ui & 0x0000000F;
             return $"{getHex(a)}{getHex(b)}";

@@ -1,17 +1,19 @@
+using Synthesis.UI.Dynamic;
+using SynthesisAPI.Utilities;
 using System.Collections;
 using System.Collections.Generic;
-using Synthesis.UI.Dynamic;
+using System.IO;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using SynthesisAPI.Utilities;
-using TMPro;
-using System.IO;
 
 public class ToastModal : ModalDynamic {
     public ToastModal() : base(new Vector2(500, 500)) {
     }
+
     public static string toastText    = "";
     public static LogLevel toastLevel = LogLevel.Info;
+
     public override void Create() {
         Title.SetStretch<Content>();
         Title.SetText("    " + toastLevel.ToString() + " Message: ").SetFontSize(30);
@@ -50,7 +52,6 @@ public class ToastModal : ModalDynamic {
             if (!Directory.Exists(_root)) {
                 Directory.CreateDirectory(_root);
             }
-
         } catch (IOException ex) {
             ToastManager.Log(ex);
         }

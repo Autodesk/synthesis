@@ -1,13 +1,13 @@
-﻿using System;
-using Rigidbody = SynthesisAPI.EnvironmentManager.Components.Rigidbody;
-using UnityEngine;
-using SynthesisAPI.Utilities;
+﻿using Engine.Util;
 using MathNet.Spatial.Euclidean;
-using Engine.Util;
-
-using RigidbodyConstraints   = SynthesisAPI.EnvironmentManager.Components.RigidbodyConstraints;
-using CollisionDetectionMode = SynthesisAPI.EnvironmentManager.Components.CollisionDetectionMode;
+using SynthesisAPI.Utilities;
+using System;
 using System.ComponentModel;
+using UnityEngine;
+
+using CollisionDetectionMode = SynthesisAPI.EnvironmentManager.Components.CollisionDetectionMode;
+using Rigidbody              = SynthesisAPI.EnvironmentManager.Components.Rigidbody;
+using RigidbodyConstraints   = SynthesisAPI.EnvironmentManager.Components.RigidbodyConstraints;
 
 namespace Engine.ModuleLoader.Adapters {
     public class RigidbodyAdapter : MonoBehaviour, IApiAdapter<Rigidbody> {
@@ -18,8 +18,9 @@ namespace Engine.ModuleLoader.Adapters {
             instance         = rigidbody;
             instance.Adapter = this;
 
-            if ((unityRigidbody = GetComponent<UnityEngine.Rigidbody>()) == null)
+            if ((unityRigidbody = GetComponent<UnityEngine.Rigidbody>()) == null) {
                 unityRigidbody = gameObject.AddComponent<UnityEngine.Rigidbody>();
+            }
 
             instance.PropertyChanged += UpdateProperty;
 
@@ -87,39 +88,34 @@ namespace Engine.ModuleLoader.Adapters {
         }
 
         public void Update() {
-            // instance.useGravity = unityRigidbody.useGravity;
-            // instance.isKinematic = unityRigidbody.isKinematic;
-            instance.mass     = unityRigidbody.mass;
-            instance.velocity = unityRigidbody.velocity.Map();
-            // instance.drag = unityRigidbody.drag;
+            instance.mass            = unityRigidbody.mass;
+            instance.velocity        = unityRigidbody.velocity.Map();
             instance.angularVelocity = unityRigidbody.angularVelocity.Map();
-            // instance.angularDrag = unityRigidbody.angularDrag;
-            // instance.maxAngularVelocity = unityRigidbody.maxAngularVelocity;
-            // instance.maxDepenetrationVelocity = unityRigidbody.maxDepenetrationVelocity;
-            // instance.collisionDetectionMode =
-            // unityRigidbody.collisionDetectionMode.Convert<CollisionDetectionMode>(); instance.constraints =
-            // unityRigidbody.constraints.Convert<RigidbodyConstraints>();
 
             if (instance.AdditionalForces.Count > 0) {
                 foreach (var force in instance.AdditionalForces) {
-                    if (force.Position != Vector3D.NaN)
+                    if (force.Position != Vector3D.NaN) {
                         unityRigidbody.AddForceAtPosition(
                             force.Force.Map(), force.Position.Map(), ConvertEnum<ForceMode>(force.Mode));
-                    else if (force.Relative)
+                    } else if (force.Relative) {
                         unityRigidbody.AddRelativeForce(force.Force.Map(), ConvertEnum<ForceMode>(force.Mode));
-                    else
+                    } else {
                         unityRigidbody.AddForce(force.Force.Map(), ConvertEnum<ForceMode>(force.Mode));
+                    }
                 }
+
                 instance.AdditionalForces.Clear();
             }
 
             if (instance.AdditionalTorques.Count > 0) {
                 foreach (var torque in instance.AdditionalTorques) {
-                    if (torque.Relative)
+                    if (torque.Relative) {
                         unityRigidbody.AddRelativeTorque(torque.Torque.Map(), ConvertEnum<ForceMode>(torque.Mode));
-                    else
+                    } else {
                         unityRigidbody.AddTorque(torque.Torque.Map(), ConvertEnum<ForceMode>(torque.Mode));
+                    }
                 }
+
                 instance.AdditionalTorques.Clear();
             }
         }

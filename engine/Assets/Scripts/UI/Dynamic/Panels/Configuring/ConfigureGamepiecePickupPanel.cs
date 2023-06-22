@@ -1,5 +1,5 @@
-using System;
 using Synthesis.Gizmo;
+using System;
 using UnityEngine;
 
 using ITD = RobotSimObject.IntakeTriggerData;
@@ -38,6 +38,7 @@ namespace Synthesis.UI.Dynamic {
 
             var robot        = RobotSimObject.GetCurrentlyPossessedRobot();
             var existingData = robot.IntakeData;
+
             if (existingData.HasValue) {
                 _resultingData = existingData.Value;
             } else {
@@ -47,6 +48,7 @@ namespace Synthesis.UI.Dynamic {
 
             var selectedRb = RobotSimObject.GetCurrentlyPossessedRobot().AllRigidbodies.Find(
                 x => x.name.Equals(_resultingData.NodeName));
+
             if (selectedRb) {
                 _selectedNode         = selectedRb.GetComponent<HighlightComponent>();
                 _selectedNode.enabled = true;
@@ -91,11 +93,6 @@ namespace Synthesis.UI.Dynamic {
                                              .SetWidth<Button>(125))
                     .ApplyTemplate<LabeledButton>(VerticalLayout);
             SetSelectUIState(false);
-            // _moveTriggerButton = MainContent.CreateLabeledButton()
-            //     .SetHeight<LabeledButton>(30)
-            //     .StepIntoLabel(l => l.SetText("Move pickup zone"))
-            //     .StepIntoButton(b => b.StepIntoLabel(l => l.SetText("Move")))
-            //     .ApplyTemplate<LabeledButton>(VerticalLayout);
             _zoneSizeSlider = MainContent.CreateSlider(label: "Zone Size", minValue: 0.1f, maxValue: 1f)
                                   .ApplyTemplate<Slider>(VerticalLayout)
                                   .AddOnValueChangedEvent((s, v) => {
@@ -113,6 +110,7 @@ namespace Synthesis.UI.Dynamic {
             } else {
                 _selectingNode = false;
             }
+
             SetSelectUIState(_selectingNode);
         }
 
@@ -143,6 +141,7 @@ namespace Synthesis.UI.Dynamic {
             if (_hoveringNode != null) {
                 _hoveringNode.enabled = false;
             }
+
             if (_selectedNode != null) {
                 _selectedNode.enabled = false;
             }
@@ -153,7 +152,6 @@ namespace Synthesis.UI.Dynamic {
 
         public override void Update() {
             if (_selectingNode) {
-
                 // Enable Collision Detection for the Robot
                 RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.GetComponentsInChildren<Rigidbody>().ForEach(
                     x => x.detectCollisions = true);
@@ -164,13 +162,14 @@ namespace Synthesis.UI.Dynamic {
                 if (hit && hitInfo.rigidbody != null &&
                     hitInfo.rigidbody.transform.parent ==
                         RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform) {
-                    // Debug.Log($"Selecting Node: {hitInfo.rigidbody.name}");
 
                     if (_hoveringNode != null &&
                         (_selectedNode == null ? true : !_selectedNode.name.Equals(_hoveringNode.name))) {
                         _hoveringNode.enabled = false;
                     }
+
                     _hoveringNode = hitInfo.rigidbody.GetComponent<HighlightComponent>();
+
                     if (hitInfo.rigidbody.name != _selectedNode.name) {
                         _hoveringNode.enabled = true;
                         _hoveringNode.Color   = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_HOVER);

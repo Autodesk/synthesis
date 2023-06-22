@@ -1,17 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using SynthesisAPI.EventBus;
-using TMPro;
-using System;
 using Synthesis.Gizmo;
 using Synthesis.Runtime;
+using SynthesisAPI.EventBus;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
 
 namespace Synthesis.UI.Dynamic {
     public class ScoreboardPanel : PanelDynamic {
-
         private static float width  = 200f;
         private static float height = 80f;
+
         public ScoreboardPanel() : base(new Vector2(width, height)) {
         }
 
@@ -26,7 +26,6 @@ namespace Synthesis.UI.Dynamic {
         };
 
         public override bool Create() {
-
             CancelButton.RootGameObject.SetActive(false);
             AcceptButton.RootGameObject.SetActive(false);
             Title.RootGameObject.SetActive(false);
@@ -76,6 +75,7 @@ namespace Synthesis.UI.Dynamic {
 
         float targetTime = 135;
         bool matchEnd    = false;
+
         public override void Update() {
             if ((SimulationRunner.HasContext(SimulationRunner.GIZMO_SIM_CONTEXT) ||
                     SimulationRunner.HasContext(SimulationRunner.PAUSED_SIM_CONTEXT)) &&
@@ -85,7 +85,7 @@ namespace Synthesis.UI.Dynamic {
                 redScore.SetText(Scoring.redScore.ToString());
                 blueScore.SetText(Scoring.blueScore.ToString());
             } else if (!matchEnd) {
-                // end match
+                // End match
                 matchEnd = true;
             }
         }

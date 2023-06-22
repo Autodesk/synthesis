@@ -1,11 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
-using System;
+using UnityEngine;
 
 public class DebugJointAxes : MonoBehaviour {
-
     public static List<(Vector3 point, Func<Matrix4x4> trans)> DebugPoints =
         new List<(Vector3 point, Func<Matrix4x4> trans)>();
     public static List<(UnityEngine.Bounds bounds, Func<Matrix4x4> trans)> DebugBounds =
@@ -13,10 +12,11 @@ public class DebugJointAxes : MonoBehaviour {
 
     public void OnDrawGizmos() {
         if (Application.isPlaying) {
-            SynthesisAPI.Simulation.SimulationManager.Drivers.Select(x => x.Value)
+            SynthesisAPI.Simulation.SimulationManager.Drivers
+                .Select(x => x.Value)
+                // TODO: This next part seems oddly specific, do we still need?
                 .ForEach(a => a /*.Where(c => c.Name == "e94f72e4-2d00-48a6-bf88-4d3eb98f9d22")*/.ForEach(y => {
                     if (y is Synthesis.RotationalDriver) {
-
                         var ArmDriver = y as Synthesis.RotationalDriver;
 
                         var anchorA = ArmDriver.JointA.anchor;
@@ -36,19 +36,14 @@ public class DebugJointAxes : MonoBehaviour {
                         Gizmos.color = Color.green;
                         Gizmos.DrawSphere(globalAnchorA, 0.01f);
                         Gizmos.DrawLine(globalAnchorA, globalAnchorA + (globalAxisA.normalized * 0.2f));
-                        // Gizmos.color = Color.magenta;
-                        // Gizmos.DrawSphere(globalAnchorB, 0.01f);
-                        // Gizmos.DrawLine(globalAnchorB, globalAnchorB + (globalAxisB.normalized * 0.2f));
-
-                        // Gizmos.color = Color.white;
-                        // Gizmos.DrawSphere(ArmDriver.JointA.gameObject.transform.position, 0.05f);
-                        // Gizmos.DrawSphere(ArmDriver.JointB.gameObject.transform.position, 0.05f);
                     }
                 }));
+
             DebugPoints.ForEach(x => {
                 Gizmos.color = Color.white;
                 Gizmos.DrawSphere(x.trans().MultiplyPoint(x.point), 0.01f);
             });
+
             DebugBounds.ForEach(x => {
                 Gizmos.color = Color.magenta;
                 Gizmos.DrawWireCube(x.trans().MultiplyPoint(x.bounds.center), x.bounds.extents * 2f);
