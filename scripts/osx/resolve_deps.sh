@@ -34,7 +34,7 @@ check_internet_connection() {
   local host="google.com"
   local timeout=2
 
-  if ping -q -w $timeout -c 1 $host >/dev/null 2>&1;then
+  if ping -q -W $timeout -c 2 $host >/dev/null 2>&1;then
     pretty_print "Connected to the internet"
   else
     bad_print "No internet connection - please connect to the internet to continue."
