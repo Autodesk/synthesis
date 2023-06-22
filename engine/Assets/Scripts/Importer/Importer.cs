@@ -411,8 +411,9 @@ namespace Synthesis.Import {
         // 				collider = bodyObject.AddComponent<MeshCollider>();
         // 				if (isConvex) {
         // 					collider.convex = true;
-        // 					collider.sharedMesh = body.TriangleMesh.ColliderMesh; // Again, not sure if this
-        // actually works 				} else { 					collider.convex = false; 					collider.sharedMesh = body.TriangleMesh.UnityMesh;
+        // 					collider.sharedMesh = body.TriangleMesh.ColliderMesh; // Again, not sure
+        // if this actually works 				} else { collider.convex = false;
+        // collider.sharedMesh = body.TriangleMesh.UnityMesh;
         // 				}
         // 			} catch (Exception e) {
         // 				if (collider != null) {
@@ -436,9 +437,10 @@ namespace Synthesis.Import {
         // }
 
         // private static MPhysicalProperties CombinePhysicalProperties(List<(UnityEngine.Transform trans,
-        // MPhysicalProperties prop)> props) { 	var total = 0.0f; 	var com = new UVector3(); 	props.ForEach(x => total +=
-        // (float)x.prop.Mass); 	props.ForEach(x => com += (x.trans.localToWorldMatrix.MultiplyPoint(x.prop.Com)) *
-        // (float)x.prop.Mass); 	com /= total; 	return new MPhysicalProperties { Mass = total, Com = com };
+        // MPhysicalProperties prop)> props) { 	var total = 0.0f; 	var com = new UVector3();
+        // props.ForEach(x => total += (float)x.prop.Mass); 	props.ForEach(x => com +=
+        // (x.trans.localToWorldMatrix.MultiplyPoint(x.prop.Com)) * (float)x.prop.Mass); 	com /= total; 	return
+        // new MPhysicalProperties { Mass = total, Com = com };
         // }
 
 #endregion

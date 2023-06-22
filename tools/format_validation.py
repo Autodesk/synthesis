@@ -29,17 +29,11 @@ def main():
 
         # Compare the previous file state with the new file state after formatting
         for i, (previous_line, new_line) in enumerate(zip(previous_file_state, new_file_state)):
-            previous_line = previous_line.strip()
-            new_line = new_line.strip()
-
             if previous_line != new_line:
                 print(f"File {file} is not formatted correctly!")
-                print(f"Previous: {previous_line}")
-                print(f"New: {new_line}")
-                print(f"Index: {i}")
+                print(f"Line: {i + 1}")
                 exit_code = 1
                 break
-
 
     if exit_code == 0:
         print("All files are formatted correctly!")
