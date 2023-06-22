@@ -34,7 +34,6 @@ namespace Synthesis {
             _robot = robot;
             _fieldForward = Vector3.forward;
 
-
             _moduleDrivers.ForEach(x => {
 
                 if (x.azimuth.IsReserved) {
