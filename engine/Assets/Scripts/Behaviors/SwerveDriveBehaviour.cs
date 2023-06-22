@@ -34,6 +34,7 @@ namespace Synthesis {
             _robot = robot;
             _fieldForward = Vector3.forward;
 
+
             _moduleDrivers.ForEach(x => {
 
                 if (x.azimuth.IsReserved) {
@@ -99,7 +100,7 @@ namespace Synthesis {
         }
 
         public override void Update() {
-            
+
             if (Mathf.Abs(InputManager.MappedValueInputs[RESET_FIELD_FORWARD].Value) > 0.5f)
                 _fieldForward = _robot.GroundedNode.transform.forward;
 
@@ -117,7 +118,7 @@ namespace Synthesis {
 
             float forward = Mathf.Abs(forwardInput.Value) - Mathf.Abs(backwardInput.Value);
             float strafe = Mathf.Abs(rightInput.Value) - Mathf.Abs(leftInput.Value);
-            float turn = Mathf.Abs(turnLeftInput.Value) - Mathf.Abs(turnRightInput.Value);
+            float turn = Mathf.Abs(turnRightInput.Value) - Mathf.Abs(turnLeftInput.Value);
             
             forward = Diff(forward, 0f, 0.1f) ? 0f : forward;
             strafe = Diff(strafe, 0f, 0.1f) ? 0f : strafe;
