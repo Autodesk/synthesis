@@ -1,0 +1,30 @@
+name: Format Validation
+
+on:
+  push: { }
+  pull_request:
+    branches: [ master, dev ]
+
+jobs:
+  runFormatValidationScript:
+    name: Run Clang Format Validation Script
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+    - name: Python Setup
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+    - name: Run Script
+      run: python tests/format_validation.py --ignore-changes
+      id: format-validation
+      continue-on-error: true
+    - name: Check Success
+      run: |
+        if [ ${{ steps.format-validation.outcome }} == "success" ]; then
+          echo "Format Validation Passed"
+        else
+          echo "Format Validation Failed"
+          exit 1
+        fi
