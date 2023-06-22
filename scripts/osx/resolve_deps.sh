@@ -52,7 +52,6 @@ brew_install() {
     pretty_print "Updating Homebrew..."
     brew update
 
-
     local package="$1"
     local cask="${2:-true}";
 
@@ -86,7 +85,9 @@ dep_exists_brew() {
 
 pretty_print "Installing necessary Synthesis Deps."
 
-dep_exists_brew "protoc" "protobuf@23.3"
-dep_exists_brew "dotnet" "dotnet" true
+dep_exists_brew "protoc" "protobuf@23"
+
+# This fails to install .net standard 2.0
+# dep_exists_brew "dotnet" "dotnet" true
 
 pretty_print "Finished Installing Dependencies"
