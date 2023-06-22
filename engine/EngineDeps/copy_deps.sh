@@ -9,7 +9,7 @@ remove_package() {
   rm -v ../Assets/Packages/$1
 }
 
-remove_package "*.dll"
+remove_package "*"
 
 cp -v ~/.nuget/packages/google.protobuf/3.23.3/lib/netstandard2.0/Google.Protobuf.dll ../Assets/Packages/Google.Protobuf.dll
 cp -v ~/.nuget/packages/mathnet.numerics/4.15.0/lib/netstandard2.0/MathNet.Numerics.dll ../Assets/Packages/MathNet.Numerics.dll

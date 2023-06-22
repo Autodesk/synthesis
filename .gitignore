@@ -19,8 +19,6 @@
 
 sysinfo.txt
 
-!/api/libs/UnityEngine.dll
-
 importer/Backup/
 importer/Backup1/
 importer/UpgradeLog.htm
