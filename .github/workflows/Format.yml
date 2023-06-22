@@ -15,7 +15,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install --no-install-recommends -y
         sudo apt-get install clang-format-15
-        sudo mv /usr/bin/clang-format-16 /usr/bin/clang-format
+        sudo mv /usr/bin/clang-format-15 /usr/bin/clang-format
     - name: Checkout Code
       uses: actions/checkout@v2
     - name: Python Setup
