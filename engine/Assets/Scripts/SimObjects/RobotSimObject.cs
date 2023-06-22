@@ -38,8 +38,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     public const string INTAKE_GAMEPIECES = "input/intake";
     public const string OUTTAKE_GAMEPIECES = "input/shoot-gamepiece";
 
-    private static readonly float TIME_BETWEEN_SHOTS = 0.5f;
-    public double LastShotTime = 0;
+    private const float TIME_BETWEEN_SHOTS = 0.5f;
+    public float LastShotTime = 0;
 
     private static string _currentlyPossessedRobot = string.Empty;
     public static string CurrentlyPossessedRobot {
