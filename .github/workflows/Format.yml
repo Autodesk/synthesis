@@ -13,6 +13,7 @@ jobs:
     - name: Get Clang Format
       run: |
         sudo apt-get update
+        sudo apt-get install --no-install-recommends -y
         sudo apt-get install clang-format-16
         sudo mv /usr/bin/clang-format-16 /usr/bin/clang-format
     - name: Checkout Code
