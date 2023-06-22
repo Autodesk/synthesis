@@ -1,8 +1,10 @@
 using Synthesis.UI.Dynamic;
 using System.Collections;
 using System.Collections.Generic;
+using SynthesisAPI.Utilities;
 using UnityEngine;
 using TMPro;
+using Logger = SynthesisAPI.Utilities.Logger;
 
 public class MatchMode : IMode {
     //PracticeMode practiceMode = new PracticeMode();
@@ -34,7 +36,17 @@ public class MatchMode : IMode {
                 Debug.Log($"{zone.Alliance.ToString()} scored {zone.Points} points! Blue: {_blueScore} Red: {_redScore}");
             });
         
-        MainHUD.AddItemToDrawer("Scoring Zones", b => DynamicUIManager.CreatePanel<ScoringZonesPanel>());
+        MainHUD.AddItemToDrawer("Scoring Zones", b =>
+        {
+            if (FieldSimObject.CurrentField == null)
+            {
+                Logger.Log("No field loaded!", LogLevel.Info);
+            }
+            else
+            {
+                DynamicUIManager.CreatePanel<ScoringZonesPanel>();
+            }
+        });
     }
 
     // Update is called once per frame

@@ -1,5 +1,6 @@
 using System;
 using Synthesis.Gizmo;
+using Synthesis.UI;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
 
@@ -15,6 +16,7 @@ public class ZoneConfigPanel : PanelDynamic
         private Button _zonePointsDecreaseButton;
         private Button _zonePointsIncreaseButton;
         private Label _zonePointsLabel;
+        private Toggle _deleteGamepieceToggle;
         private Slider _xScaleSlider;
         private Slider _yScaleSlider;
         private Slider _zScaleSlider;
@@ -81,6 +83,13 @@ public class ZoneConfigPanel : PanelDynamic
                     _data.Points++;
                     UpdatePointsLabel();
                     DataUpdated();
+                }).ApplyTemplate(VerticalLayout);
+
+            _deleteGamepieceToggle = MainContent.CreateToggle(false, "Destroy Gamepiece")
+                .AddOnStateChangedEvent((t, v) =>
+                {
+                    _data.DestroyGamepiece = !_data.DestroyGamepiece;
+                    t.State = _data.DestroyGamepiece; // just in case
                 }).ApplyTemplate(VerticalLayout);
 
             _xScaleSlider = MainContent.CreateSlider(label: "X Scale", minValue: 0.1f, maxValue: 10f, currentValue: 1)

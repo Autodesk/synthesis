@@ -16,6 +16,7 @@ using Vector3 = UnityEngine.Vector3;
 public class FieldSimObject : SimObject, IPhysicsOverridable {
 
     public static FieldSimObject CurrentField { get; private set; }
+    public List<ScoringZone> ScoringZones = new();
 
     public MirabufLive MiraLive { get; private set; }
     public GameObject GroundedNode { get; private set; }
@@ -23,8 +24,6 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
     public Bounds FieldBounds { get; private set; }
     public List<GamepieceSimObject> Gamepieces { get; private set; }
     
-    public List<ScoringZone> ScoringZones { get; private set; }
-
     private Vector3 _initialPosition;
     private Quaternion _initialRotation;
 

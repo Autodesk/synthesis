@@ -10,6 +10,7 @@ public record ScoringZoneData()
     public string Name { get; set; } = "";
     public Alliance Alliance { get; set; } = Alliance.Blue;
     public int Points { get; set; } = 0;
+    public bool DestroyGamepiece { get; set; } = false;
     public float XScale { get; set; } = 1.0f;
     public float YScale { get; set; } = 1.0f;
     public float ZScale { get; set; } = 1.0f;
@@ -26,9 +27,7 @@ public class ScoringZonesPanel : PanelDynamic
 
     private ScrollView _zonesScrollView;
     private Button _addZoneButton;
-
-    private List<ScoringZone> _scoringZones = new List<ScoringZone>();
-
+    
     private readonly Func<UIComponent, UIComponent> VerticalLayout = (u) => {
         var offset = (-u.Parent!.RectOfChildren(u).yMin) + VERTICAL_PADDING;
         u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 0, rightPadding: 0);
@@ -47,7 +46,7 @@ public class ScoringZonesPanel : PanelDynamic
         
         AcceptButton
             .StepIntoLabel(l => l.SetText("Close"))
-            .AddOnClickedEvent(b => DynamicUIManager.CloseAllPanels());
+            .AddOnClickedEvent(b => DynamicUIManager.ClosePanel<ScoringZonesPanel>());
         CancelButton.RootGameObject.SetActive(false);
 
         _zonesScrollView = MainContent.CreateScrollView().SetRightStretch<ScrollView>().ApplyTemplate(VerticalLayout);
@@ -70,7 +69,7 @@ public class ScoringZonesPanel : PanelDynamic
 
     private void AddZoneEntries()
     {
-        foreach (ScoringZone zone in _scoringZones)
+        foreach (ScoringZone zone in FieldSimObject.CurrentField.ScoringZones)
         {
             AddZoneEntry(zone);
         }
@@ -97,7 +96,7 @@ public class ScoringZonesPanel : PanelDynamic
                 obj.transform.rotation = t.Rotation;
             },
             t => {
-                _scoringZones.Add(zone);
+                FieldSimObject.CurrentField.ScoringZones.Add(zone);
                 AddZoneEntry(zone);
             });
     }
@@ -110,6 +109,7 @@ public class ScoringZonesPanel : PanelDynamic
         zone.Alliance = data.Alliance;
         zone.Points = data.Points;
         zone.GameObject.transform.localScale = new Vector3(data.XScale, data.YScale, data.ZScale);
+        zone.DestroyObject = data.DestroyGamepiece;
         return true;
     }
     

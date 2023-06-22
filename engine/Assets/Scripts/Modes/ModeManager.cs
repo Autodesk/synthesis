@@ -16,7 +16,7 @@ public class ModeManager {
     {
         // should this be here? or somewhere else, or not at all?
         if (CurrentMode == null)
-            CurrentMode = new MatchMode();
+            CurrentMode = new PracticeMode();
         CurrentMode.Start();
         // Shooting.Start();
     }

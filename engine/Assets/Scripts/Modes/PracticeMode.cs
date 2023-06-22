@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Generic;
 using Synthesis.Gizmo;
-using Synthesis.Import;
 using Synthesis.Physics;
 using Synthesis.PreferenceManager;
 using Synthesis.Runtime;
 using Synthesis.UI.Dynamic;
+using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
+using SynthesisAPI.Utilities;
 using UnityEngine;
+using Logger = SynthesisAPI.Utilities.Logger;
 
 public class PracticeMode : IMode
 {
@@ -17,6 +19,9 @@ public class PracticeMode : IMode
   
     private bool _lastEscapeValue = false;
     private bool _escapeMenuOpen = false;
+
+    private int _redScore = 0;
+    private int _blueScore = 0;
     
     public static GamepieceData ChosenGamepiece { get; set; }
     public static PrimitiveType ChosenPrimitive { get; set; }
@@ -76,7 +81,33 @@ public class PracticeMode : IMode
         );
         
         MainHUD.AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>());
-        MainHUD.AddItemToDrawer("Scoring Zones", b => DynamicUIManager.CreatePanel<ScoringZonesPanel>());
+        MainHUD.AddItemToDrawer("Scoring Zones", b =>
+        {
+            if (FieldSimObject.CurrentField == null)
+            {
+                Logger.Log("No field loaded!", LogLevel.Info);
+            }
+            else
+            {
+                DynamicUIManager.CreatePanel<ScoringZonesPanel>();
+            }
+        });
+        
+        EventBus.NewTypeListener<OnScoreEvent>(
+            e =>
+            {
+                ScoringZone zone = ((OnScoreEvent)e).zone;
+                switch (zone.Alliance)
+                {
+                    case Alliance.Blue:
+                        _blueScore += zone.Points;
+                        break;
+                    case Alliance.Red:
+                        _redScore += zone.Points;
+                        break;
+                }
+                Debug.Log($"{zone.Alliance.ToString()} scored {zone.Points} points! Blue: {_blueScore} Red: {_redScore}");
+            });
     }
     
     public static void SetInitialState(GameObject robot)
