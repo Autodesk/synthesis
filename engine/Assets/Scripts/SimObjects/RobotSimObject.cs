@@ -539,6 +539,9 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     public bool ConfigureSwerveDrivetrain() {
 
+        // Sets wheels rotating forward
+        GetLeftRightWheels();
+
         (RotationalDriver azimuth, WheelDriver driver)[] modules;
 
         try {
