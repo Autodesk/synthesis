@@ -22,7 +22,4 @@ Assets/Packages/*.meta
 
 !EngineDeps/EngineDeps.csproj
 
-!Assets/Packages/Api.dll
-!Assets/Packages/Aardvark.dll
-
 .vscode/
