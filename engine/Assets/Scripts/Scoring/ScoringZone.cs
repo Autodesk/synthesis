@@ -1,49 +1,65 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using Synthesis.Runtime;
 using SynthesisAPI.EventBus;
 using UnityEngine;
 
 public enum Alliance
 {
-    RED,
-    BLUE
+    Red,
+    Blue
 }
 
 public class ScoringZone
 {
-    
-    public Alliance alliance;
-    public int points;
-    public bool destroyObject;
-    private GameObject gameObject;
-    private Collider collider;
-    private MeshRenderer meshRenderer;
+    public string Name;
 
-    public ScoringZone(GameObject gameObject, Alliance alliance, int points, bool destroyObject)
+    private Alliance _alliance;
+    public Alliance Alliance
     {
-        this.gameObject = gameObject;
-        this.alliance = alliance;
-        this.points = points;
-        this.destroyObject = destroyObject;
-        // configure gameobject to have translucent material and have box collider as trigger
-        gameObject.name = "Test Scoring Zone";
+        get => _alliance;
+        set {
+            _alliance = value;
+            _renderer.material.color = value == Alliance.Red ? Color.red : Color.blue;
+        }
+    }
+    public int Points;
+    public bool DestroyObject;
+    public GameObject GameObject;
+    private Collider _collider;
+    private MeshRenderer _meshRenderer;
+    private Renderer _renderer;
+
+    public ScoringZone(GameObject gameObject, string name, Alliance alliance, int points, bool destroyObject)
+    {
+        this.Name = name;
+        this.GameObject = gameObject;
+        
+        // configure gameobject to have box collider as trigger
+        gameObject.name = name;
         
         // make scoring zone transparent
-        Renderer renderer = gameObject.GetComponent<Renderer>();
-        renderer.material = new Material(Shader.Find("Shader Graphs/DefaultSynthesisTransparentShader"));
+        _renderer = gameObject.GetComponent<Renderer>();
+        // renderer.material = new Material(Shader.Find("Shader Graphs/DefaultSynthesisTransparentShader"));
+        _renderer.material.color = alliance == Alliance.Red ? Color.red : Color.blue;
 
         ScoringZoneListener listener = gameObject.AddComponent<ScoringZoneListener>();
         listener.scoringZone = this;
         
-        collider = gameObject.GetComponent<Collider>();
-        meshRenderer = gameObject.GetComponent<MeshRenderer>();
+        _collider = gameObject.GetComponent<Collider>();
+        _meshRenderer = gameObject.GetComponent<MeshRenderer>();
 
-        collider.isTrigger = true;
+        _collider.isTrigger = true;
+        
+        Alliance = alliance;
+        Points = points;
+        DestroyObject = destroyObject;
     }
 
     public void SetVisibility(bool visible)
     {
-        gameObject.GetComponent<Renderer>().enabled = visible;
+        GameObject.GetComponent<Renderer>().enabled = visible;
     }
 }
 
@@ -61,7 +77,7 @@ public class ScoringZoneListener : MonoBehaviour
         // trigger scoring
         EventBus.Push(new OnScoreEvent(other.name, scoringZone));
         
-        if (scoringZone.destroyObject) Destroy(other.gameObject);
+        if (scoringZone.DestroyObject) Destroy(other.gameObject);
     }
 }
 
@@ -70,6 +86,11 @@ public class OnScoreEvent : IEvent
     public string name;
     public ScoringZone zone;
 
+    /// <summary>
+    /// OnScoreEvent pushed when gamepiece collides with scoring zone
+    /// </summary>
+    /// <param name="name">Name of gamepiece object</param>
+    /// <param name="zone">Scoring Zone</param>
     public OnScoreEvent(string name, ScoringZone zone)
     {
         this.name = name;

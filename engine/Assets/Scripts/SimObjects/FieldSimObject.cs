@@ -151,19 +151,6 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         }
     }
 
-    public void CreateScoringZone(Alliance alliance, int points, bool destroyObject = true)
-    {
-        GameObject zone = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        ScoringZones.Add(new ScoringZone(zone, alliance, points, destroyObject));
-    }
-
-    public void CreateTestGamepiece(PrimitiveType type)
-    {
-        GameObject gamepiece = GameObject.CreatePrimitive(type);
-        gamepiece.tag = "gamepiece";
-        gamepiece.AddComponent<Rigidbody>();
-    }
-
     public override void Destroy()
     {
         PhysicsManager.Unregister(this);

@@ -16,8 +16,8 @@ public static class Scoring
     {
         List<GameObject> gameObjects = new List<GameObject>();
         gameObjects.Add(CreateRectangularScorezone(new Vector3(0, 1.8f, -1.83f), new Vector3(1, 0.5f, 0.7f),
-            new Vector3(0, 0, 0), Alliance.RED));
-        gameObjects.Add(CreateRectangularScorezone(new Vector3(0, 1.8f, 1.83f), new Vector3(1, 0.5f, 0.7f), new Vector3(0, 0, 0), Alliance.BLUE));
+            new Vector3(0, 0, 0), Alliance.Red));
+        gameObjects.Add(CreateRectangularScorezone(new Vector3(0, 1.8f, 1.83f), new Vector3(1, 0.5f, 0.7f), new Vector3(0, 0, 0), Alliance.Blue));
         return gameObjects;
     }
 
@@ -30,7 +30,7 @@ public static class Scoring
         zone.transform.eulerAngles = rotation;
         zone.GetComponent<Collider>().isTrigger = true;
         zone.GetComponent<MeshRenderer>().enabled = false;
-        zone.tag = color == Alliance.RED ? "red zone" : "blue zone";
+        zone.tag = color == Alliance.Red ? "red zone" : "blue zone";
 
         return zone;
     }
