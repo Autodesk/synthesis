@@ -17,9 +17,8 @@ def main():
             print(f"File {file} is not formatted correctly!")
             # sys.exit(1)
 
-        # Restore the previous state of the file pre-formatting
-        if len(sys.argv) == 1 or sys.argv[1] != "--ignore-changes":
-            pass
+    print("Done!")
+    sys.exit(0)
 
 if __name__ == '__main__':
     main()
