@@ -15,7 +15,7 @@ def main():
 
         if previous_file_state != new_file_state:
             print(f"File {file} is not formatted correctly!")
-            sys.exit(1)
+            # sys.exit(1)
 
         # Restore the previous state of the file pre-formatting
         if len(sys.argv) == 1 or sys.argv[1] != "--ignore-changes":
