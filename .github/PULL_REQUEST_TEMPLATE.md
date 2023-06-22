@@ -2,7 +2,7 @@
 Lorem Ipsum
 
 ### Objectives
-- [x] Lorem Ipsum
+- [ ] Lorem Ipsum
 
 ### Testing Done
 - Lorem Ipsum

@@ -25,13 +25,14 @@ namespace Synthesis.WS {
                 return;
 
             if (_server != null) {
-                _server.Close();
+                _server.Dispose();
+                Debug.Log("WebSocketServer closed by manager");
             }
 
             RioState = new RoboRIOState();
 
             _server = new WebSocketServer("127.0.0.1", 3300);
-            _server.OnMessage += OnMessage;
+            _server.AddOnMessageListener(OnMessage);
 
             _initialized = true;
         }
@@ -83,7 +84,7 @@ namespace Synthesis.WS {
         /// </summary>
         public static void Teardown() {
             if (_server != null) {
-                _server.Close();
+                _server.Dispose();
             }
             _server = null;
 

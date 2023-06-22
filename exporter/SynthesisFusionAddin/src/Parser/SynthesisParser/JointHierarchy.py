@@ -1,3 +1,4 @@
+from .Utilities import guid_component, guid_occurrence
 from ...general_imports import *
 import adsk.core, adsk.fusion, traceback, logging, enum
 from typing import *
@@ -533,10 +534,21 @@ def createTreeParts(
         return
 
     # set the occurrence / component id to reference the part
+
     try:
-        node.value = dynNode.data.entityToken
-    except RuntimeError:
-        node.value = dynNode.data.name
+        objectType = dynNode.data.objectType
+    except:
+        objectType = ''
+
+    if objectType == "adsk::fusion::Occurrence":
+        node.value = guid_occurrence(dynNode.data)
+    elif objectType == "adsk::fusion::Component":
+        node.value = guid_component(dynNode.data)
+    else:
+        try:
+            node.value = dynNode.data.entityToken
+        except RuntimeError:
+            node.value = dynNode.data.name
 
     # if DEBUG:
     #    print(f" -- {dynNode.data.name} + rel : {relationship}\n")

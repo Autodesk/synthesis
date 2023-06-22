@@ -19,7 +19,7 @@ jobs:
         projectPath:
           - engine
         unityVersion:
-          - 2020.3.12f1
+          - 2022.3.2f1
         targetPlatform:
           - StandaloneOSX # Build a macOS standalone (Intel 64-bit).
           - StandaloneWindows # Build a Windows standalone.

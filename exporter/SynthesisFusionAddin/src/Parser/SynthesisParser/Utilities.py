@@ -1,8 +1,17 @@
 import math, uuid
-from adsk.core import Vector3D
+from adsk.core import Vector3D, Base
+from adsk.fusion import Component, Occurrence
 
 # from proto.proto_out import types_pb2
 
+def guid_component(comp: Component) -> str:
+    return f"{comp.entityToken}_{comp.id}"
+
+def guid_occurrence(occ: Occurrence) -> str:
+    return f"{occ.entityToken}_{guid_component(occ.component)}"
+
+def guid_none(_: None) -> str:
+    return str(uuid.uuid4())
 
 def fill_info(proto_obj, fus_object, override_guid=None) -> None:
     construct_info("", proto_obj, fus_object=fus_object, GUID=override_guid)

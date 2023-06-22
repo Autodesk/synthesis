@@ -4,6 +4,8 @@
 
 from enum import Enum
 import platform
+
+from ..Parser.SynthesisParser.Utilities import guid_occurrence
 from ..general_imports import *
 from ..configure import NOTIFIED, write_configuration
 from ..Analytics.alert import showAnalyticsAlert
@@ -834,7 +836,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 columnSpacing=25,
             )
             frictionOverrideTable.tablePresentationStyle = 2
-            frictionOverrideTable.isFullWidth = True
+            # frictionOverrideTable.isFullWidth = True
 
             frictionOverride = self.createBooleanInput(
                 "friction_override",
@@ -1332,7 +1334,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
 
                     _exportGamepieces.append(
                         Gamepiece(
-                            GamepieceListGlobal[row - 1].entityToken,
+                            guid_occurrence(GamepieceListGlobal[row - 1]),
                             weightValue,
                             frictionValue,
                         )
@@ -2022,18 +2024,23 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
             elif cmdInput.id == "wheel_add":
                 self.reset()
 
-                wheelSelect.isEnabled = addJointInput.isEnabled = True
+                wheelSelect.isVisible = True
+                wheelSelect.isEnabled = True
+                addJointInput.isEnabled = True
                 addWheelInput.isEnabled = False
 
             elif cmdInput.id == "joint_add":
                 self.reset()
 
-                addWheelInput.isEnabled = jointSelect.isEnabled = True
+                addWheelInput.isEnabled = True
+                jointSelect.isVisible = True
+                jointSelect.isEnabled = True
                 addJointInput.isEnabled = False
 
             elif cmdInput.id == "field_add":
                 self.reset()
 
+                gamepieceSelect.isVisible = True
                 gamepieceSelect.isEnabled = True
                 addFieldInput.isEnabled = False
 
@@ -2080,18 +2087,21 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                 self.reset()
 
                 wheelSelect.isEnabled = False
+                wheelSelect.isVisible = False
                 addWheelInput.isEnabled = True
 
             elif cmdInput.id == "joint_select":
                 self.reset()
 
                 jointSelect.isEnabled = False
+                jointSelect.isVisible = False
                 addJointInput.isEnabled = True
 
             elif cmdInput.id == "gamepiece_select":
                 self.reset()
 
                 gamepieceSelect.isEnabled = False
+                gamepieceSelect.isVisible = False
                 addFieldInput.isEnabled = True
 
             elif cmdInput.id == "friction_override":

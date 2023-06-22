@@ -17,6 +17,7 @@ using SynthesisAPI.EventBus;
 using Synthesis.Replay;
 using Synthesis.WS;
 using SynthesisAPI.RoboRIO;
+using UnityEngine.Rendering;
 
 namespace Synthesis.Runtime {
     public class SimulationRunner : MonoBehaviour {
@@ -36,6 +37,7 @@ namespace Synthesis.Runtime {
         public static event Action OnSimKill;
 
         public static event Action OnUpdate;
+        
         private static bool _inSim = false;
         public static bool InSim {
             get => _inSim;
@@ -84,7 +86,8 @@ namespace Synthesis.Runtime {
                 GameObject.Instantiate(Resources.Load("Misc/Tree"));
             }
 
-            QualitySettings.SetQualityLevel(PreferenceManager.PreferenceManager.GetPreference<int>("Quality Settings"), true);
+            SettingsModal.LoadSettings();
+            SettingsModal.ApplySettings();
         }
 
         private void TestColor(Color c) {
@@ -124,6 +127,11 @@ namespace Synthesis.Runtime {
             //     else
             //         Logger.Log("Succeeded", LogLevel.Debug);
             // }
+        }
+
+        private void FixedUpdate() {
+            SimulationManager.FixedUpdate();
+            PhysicsManager.FixedUpdate();
         }
 
         void OnDestroy() {

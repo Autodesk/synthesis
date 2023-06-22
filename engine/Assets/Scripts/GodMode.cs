@@ -13,6 +13,8 @@ public class GodMode : MonoBehaviour
     private ConfigurableJoint grabJoint;
     private double grabbedDistance = 0.0;
 
+    private Rigidbody _pointerBody = null;
+
     private GameObject GetGameObjectWithRigidbody(GameObject gameObj)
     {
         Rigidbody rb = gameObj.GetComponent<Rigidbody>();
@@ -63,16 +65,24 @@ public class GodMode : MonoBehaviour
                 if (hit) {
                     grabbedObject = GetGameObjectWithRigidbody(hitInfo.collider.gameObject);
                     if (grabbedObject != null) {
+                        
+                        GameObject gameObj = new GameObject("GODMODE_POINTER_RB");
+                        _pointerBody = gameObj.AddComponent<Rigidbody>();
+                        _pointerBody.isKinematic = true;
+                        
                         _lastUpdate = Time.realtimeSinceStartup;
                         _speed = Vector3.zero;
                         _lastPosition = grabbedObject.transform.position;
 
                         grabbedDistance = hitInfo.distance;
+                        _pointerBody.transform.position = hitInfo.point;
                         // add a joint to the grabbed object anchored at where the user clicked
                         Vector3 localCoords = grabbedObject.transform.worldToLocalMatrix.MultiplyPoint(hitInfo.point);
                         grabJoint = grabbedObject.AddComponent<ConfigurableJoint>();
+                        grabJoint.connectedBody = _pointerBody;
                         grabJoint.anchor = localCoords;
-                        grabJoint.autoConfigureConnectedAnchor = false;
+                        // grabJoint.autoConfigureConnectedAnchor = false;
+                        // grabJoint.connectedAnchor = localCoords;
                         grabJoint.xMotion = grabJoint.yMotion = grabJoint.zMotion = ConfigurableJointMotion.Locked;
                     }
                 }
@@ -84,11 +94,11 @@ public class GodMode : MonoBehaviour
                 mousePosition.z = (float)grabbedDistance;
                 Ray ray = camera.ScreenPointToRay(mousePosition);
                 // move grabbed object towards mouse cursor
-
+                
                 if (ray.GetPoint((float)grabbedDistance).y >= 0) {
-                    var delta = (ray.GetPoint((float)grabbedDistance) - grabJoint.connectedAnchor) * (float)MovementSpeed * Time.deltaTime;
-                    grabJoint.connectedAnchor += delta;
-
+                    var delta = (ray.GetPoint((float)grabbedDistance) - _pointerBody.position) * (float)MovementSpeed * Time.deltaTime;
+                    _pointerBody.position += delta;
+                
                     _speed = delta / Time.deltaTime;
                 }
             }
@@ -96,6 +106,8 @@ public class GodMode : MonoBehaviour
 
         if (!mouseDown && grabJoint != null) {
             Destroy(grabJoint);
+            Destroy(_pointerBody);
+            _pointerBody = null;
             grabbedObject.GetComponent<Rigidbody>().velocity = _speed;
             grabbedObject = null;
             grabJoint = null;

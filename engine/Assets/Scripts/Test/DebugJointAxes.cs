@@ -38,13 +38,23 @@ public class DebugJointAxes : MonoBehaviour{
                     // Gizmos.DrawSphere(ArmDriver.JointB.gameObject.transform.position, 0.05f);
                 }
             }));
-            DebugPoints.ForEach(x => {
-                Gizmos.color = Color.white;
-                Gizmos.DrawSphere(x.trans().MultiplyPoint(x.point), 0.01f);
+            DebugPoints.RemoveAll(x => {
+                try {
+                    Gizmos.color = Color.white;
+                    Gizmos.DrawSphere(x.trans().MultiplyPoint(x.point), 0.01f);
+                    return false;
+                } catch (Exception) {
+                    return true;
+                }
             });
-            DebugBounds.ForEach(x => {
-                Gizmos.color = Color.magenta;
-                Gizmos.DrawWireCube(x.trans().MultiplyPoint(x.bounds.center), x.bounds.extents * 2f);
+            DebugBounds.RemoveAll(x => {
+                try {
+                    Gizmos.color = Color.magenta;
+                    Gizmos.DrawWireCube(x.trans().MultiplyPoint(x.bounds.center), x.bounds.extents * 2f);
+                    return false;
+                } catch (Exception) {
+                    return true;
+                }
             });
         }
     }
