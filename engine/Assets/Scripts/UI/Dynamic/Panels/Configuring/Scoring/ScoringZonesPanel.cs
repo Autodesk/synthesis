@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Synthesis.Gizmo;
 using Synthesis.UI.Dynamic;
+using Synthesis.PreferenceManager;
 using UnityEngine;
 
 public record ScoringZoneData()
@@ -117,9 +118,10 @@ public class ScoringZonesPanel : PanelDynamic
 
     public override void Delete()
     {
-        // foreach (ScoringZone zone in _scoringZones)
-        // {
-            // zone.GameObject.GetComponent<Renderer>().enabled = false;
-        // }
+        bool visible = PreferenceManager.GetPreference<bool>(SettingsModal.RENDER_SCORE_ZONES);
+        foreach (ScoringZone zone in FieldSimObject.CurrentField.ScoringZones)
+        {
+            zone.GameObject.GetComponent<Renderer>().enabled = visible;
+        }
     }
 }

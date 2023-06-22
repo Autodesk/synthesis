@@ -5,6 +5,8 @@ using Mirabuf;
 using Synthesis.Gizmo;
 using Synthesis.Import;
 using Synthesis.Physics;
+using Synthesis.PreferenceManager;
+using Synthesis.UI.Dynamic;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
 using UnityEngine;
@@ -96,6 +98,12 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
             UnityEngine.Transform gpTransform = gp.GamepieceObject.transform;
             gp.InitialPosition = gpTransform.position;
             gp.InitialRotation = gpTransform.rotation;
+        });
+        
+        SynthesisAPI.EventBus.EventBus.NewTypeListener<PostPreferenceSaveEvent>(e =>
+        {
+            bool visible = PreferenceManager.GetPreference<bool>(SettingsModal.RENDER_SCORE_ZONES);
+            ScoringZones.ForEach(zone => zone.SetVisibility(visible));
         });
         // Shooting.ConfigureGamepieces();
     }
