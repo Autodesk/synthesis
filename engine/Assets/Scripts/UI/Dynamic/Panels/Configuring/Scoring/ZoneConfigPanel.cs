@@ -13,9 +13,7 @@ public class ZoneConfigPanel : PanelDynamic
         
         private InputField _zoneNameInput;
         private Button _zoneAllianceButton;
-        private Button _zonePointsDecreaseButton;
-        private Button _zonePointsIncreaseButton;
-        private Label _zonePointsLabel;
+        private NumberInputField _pointsInputField;
         private Toggle _deleteGamepieceToggle;
         private Slider _xScaleSlider;
         private Slider _yScaleSlider;
@@ -80,23 +78,16 @@ public class ZoneConfigPanel : PanelDynamic
                         b.StepIntoLabel(l => l.SetText("Blue Alliance")).SetBackgroundColor<Button>(Color.blue);
                         _data.Alliance = Alliance.Blue;
                     }
+                    DataUpdated();
                 })
                 .SetBackgroundColor<Button>(Color.blue)
                 .ApplyTemplate(VerticalLayout);
 
-            _zonePointsDecreaseButton = MainContent.CreateButton().StepIntoLabel(l => l.SetText("-")).AddOnClickedEvent(
-                b =>
-                {
-                    _data.Points--;
-                    UpdatePointsLabel();
-                }).ApplyTemplate(VerticalLayout);
-            _zonePointsLabel = MainContent.CreateLabel().SetText(_data.Points.ToString()).ApplyTemplate(VerticalLayout);
-            _zonePointsIncreaseButton = MainContent.CreateButton().StepIntoLabel(l => l.SetText("+")).AddOnClickedEvent(
-                b =>
-                {
-                    _data.Points++;
-                    UpdatePointsLabel();
-                }).ApplyTemplate(VerticalLayout);
+            _pointsInputField = MainContent.CreateNumberInputField()
+                .StepIntoLabel(l => l.SetText("Points"))
+                .StepIntoHint(l => l.SetText("Points"))
+                .ApplyTemplate(VerticalLayout)
+                .AddOnValueChangedEvent((f, n) => _data.Points = n);
 
             _deleteGamepieceToggle = MainContent.CreateToggle(false, "Destroy Gamepiece")
                 .AddOnStateChangedEvent((t, v) =>
@@ -110,6 +101,7 @@ public class ZoneConfigPanel : PanelDynamic
                     (s, v) =>
                     {
                         _data.XScale = v;
+                        DataUpdated();
                     });
             
             _yScaleSlider = MainContent.CreateSlider(label: "Y Scale", minValue: 0.1f, maxValue: 10f, currentValue: 1)
@@ -117,6 +109,7 @@ public class ZoneConfigPanel : PanelDynamic
                     (s, v) =>
                     {
                         _data.YScale = v;
+                        DataUpdated();
                     });
             
             _zScaleSlider = MainContent.CreateSlider(label: "Z Scale", minValue: 0.1f, maxValue: 10f, currentValue: 1)
@@ -124,6 +117,7 @@ public class ZoneConfigPanel : PanelDynamic
                     (s, v) =>
                     {
                         _data.ZScale = v;
+                        DataUpdated();
                     });
             
             GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -140,14 +134,16 @@ public class ZoneConfigPanel : PanelDynamic
             return true;
         }
 
+        private void DataUpdated()
+        {
+            _zone.Alliance = _data.Alliance;
+            _zone.Points = _data.Points;
+            _zone.GameObject.transform.localScale = new Vector3(_data.XScale, _data.YScale, _data.ZScale);
+        }
+
         public void SetCallback(Action<ScoringZone> callback)
         {
             _callback = callback;
-        }
-
-        private void UpdatePointsLabel()
-        {
-            _zonePointsLabel.SetText(_data.Points.ToString());
         }
 
         public override void Update()

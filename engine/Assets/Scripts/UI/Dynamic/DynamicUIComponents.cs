@@ -502,6 +502,14 @@ namespace Synthesis.UI.Dynamic {
             return content;
         }
 
+        public NumberInputField CreateNumberInputField()
+        {
+            var numberInputFieldObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("number-input-field-base"), base.RootGameObject.transform);
+            var numberInputField = new NumberInputField(this, numberInputFieldObj);
+            base.Children.Add(numberInputField);
+            return numberInputField;
+        }
+
         public Content StepIntoImage(Action<Image> mod) {
             if (_image != null)
                 mod(_image);
@@ -1102,6 +1110,83 @@ namespace Synthesis.UI.Dynamic {
 
             _handleImage = new Image(this, unityObject.transform.Find("Sliding Area").Find("Handle").gameObject);
             _handleImage.SetColor(ColorManager.SYNTHESIS_WHITE);
+        }
+    }
+    
+    public class NumberInputField : UIComponent {
+
+        public static readonly Func<NumberInputField, NumberInputField> VerticalLayoutTemplate = (NumberInputField inputField)
+            => inputField.SetTopStretch<NumberInputField>(leftPadding: 15f, anchoredY: inputField.Parent!.HeightOfChildren - inputField.Size.y + 15f);
+
+        public event Action<NumberInputField, int> OnValueChanged;
+        private Label _hint;
+        public Label Hint => _hint;
+        private Button _incrementButton;
+        public Button IncrementButton => _incrementButton;
+        private Button _decrementButton;
+        public Button DecrementButton => _decrementButton;
+        private Label _label;
+        public Label Label => _label;
+        private Image _backgroundImage;
+        public Image BackgroundImage => _backgroundImage;
+        private TMP_InputField _tmpInput;
+        public TMP_InputField.ContentType ContentType => _tmpInput.contentType;
+        private int _value = 0;
+        public int Value
+        {
+            get => _value;
+            set
+            {
+                _value = value;
+                _tmpInput.text = _value.ToString();
+            }
+        }
+
+        public NumberInputField(UIComponent? parent, GameObject unityObject) : base(parent, unityObject) {
+            var ifObj = unityObject.transform.Find("InputField");
+            _tmpInput = ifObj.GetComponent<TMP_InputField>();
+            _tmpInput.contentType = TMP_InputField.ContentType.IntegerNumber;
+            _hint = new Label(this, ifObj.Find("Text Area").Find("Placeholder").gameObject, null);
+            _label = new Label(this, unityObject.transform.Find("Label").gameObject, null);
+            _tmpInput.onValueChanged.AddListener(x => {
+                if (_eventsActive && OnValueChanged != null)
+                    OnValueChanged(this, int.Parse(x));
+            });
+
+            _incrementButton = new Button(this, unityObject.transform.Find("IncrementButton").gameObject, null)
+                .AddOnClickedEvent(b => Value++);
+            _decrementButton = new Button(this, unityObject.transform.Find("DecrementButton").gameObject, null)
+                .AddOnClickedEvent(b => Value--);
+
+            _backgroundImage = new Image(this, ifObj.gameObject);
+            _backgroundImage.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT));
+        }
+
+        public NumberInputField StepIntoHint(Action<Label> mod) {
+            mod(_hint);
+            return this;
+        }
+        public NumberInputField StepIntoLabel(Action<Label> mod) {
+            mod(_label);
+            return this;
+        }
+        public NumberInputField StepIntoIncrementButton(Action<Button> mod) {
+            mod(_incrementButton);
+            return this;
+        }
+        public NumberInputField StepIntoDecrementButton(Action<Button> mod) {
+            mod(_decrementButton);
+            return this;
+        }
+        public NumberInputField AddOnValueChangedEvent(Action<NumberInputField, int> callback) {
+            OnValueChanged += callback;
+            return this;
+        }
+        public NumberInputField SetValue(int val)
+        {
+            _value = val;
+            _tmpInput.text = val.ToString();
+            return this;
         }
     }
 
