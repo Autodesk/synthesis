@@ -10,6 +10,11 @@ jobs:
     name: Run Clang Format Validation Script
     runs-on: ubuntu-latest
     steps:
+    - name: Get Clang Format
+      run: |
+        apt-get update
+        apt-get install clang-format-16
+        mv /usr/bin/clang-format-16 /usr/bin/clang-format
     - name: Checkout Code
       uses: actions/checkout@v2
     - name: Python Setup
