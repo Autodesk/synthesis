@@ -37,9 +37,9 @@ def main():
                 print(f"Previous: {previous_line}")
                 print(f"New: {new_line}")
                 print(f"Index: {i}")
+                exit_code = 1
                 break
 
-                exit_code = 1
 
     if exit_code == 0:
         print("All files are formatted correctly!")
