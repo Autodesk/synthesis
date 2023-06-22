@@ -38,8 +38,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     public const string INTAKE_GAMEPIECES = "input/intake";
     public const string OUTTAKE_GAMEPIECES = "input/shoot-gamepiece";
 
-    private const float TIME_BETWEEN_SHOTS = 0.5f;
-    public bool CanShoot = true;
+    private static readonly float TIME_BETWEEN_SHOTS = 0.5f;
+    public double LastShotTime = 0;
 
     private static string _currentlyPossessedRobot = string.Empty;
     public static string CurrentlyPossessedRobot {
@@ -241,14 +241,9 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             RobotSimObject.GetCurrentlyPossessedRobot().PickingUpGamepieces = pickup;
             bool shootGamepiece = InputManager.MappedValueInputs[OUTTAKE_GAMEPIECES].Value == 1.0F;
 
-            if (shootGamepiece && RobotSimObject.GetCurrentlyPossessedRobot().CanShoot) {
-                RobotSimObject.GetCurrentlyPossessedRobot().CanShoot = false;
+            if (shootGamepiece && RobotSimObject.GetCurrentlyPossessedRobot().LastShotTime + TIME_BETWEEN_SHOTS < Time.realtimeSinceStartup) {
+                RobotSimObject.GetCurrentlyPossessedRobot().LastShotTime = Time.realtimeSinceStartup;
                 RobotSimObject.GetCurrentlyPossessedRobot().ShootGamepiece();
-
-                // Find any generic MonoBehaviour to run the coroutine on, this is a workaround for the fact that
-                // this controller script itself is not inheriting from MonoBehaviour.
-                MonoBehaviour mb = GameObject.FindObjectOfType<MonoBehaviour>();
-                mb.StartCoroutine(WaitForNextShot());
             }
         };
     }
@@ -327,11 +322,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         gp.IsCurrentlyPossessed = false;
 
         UpdateShownGamepiece();
-    }
-
-    private static IEnumerator WaitForNextShot() {
-        yield return new WaitForSeconds(TIME_BETWEEN_SHOTS);
-        RobotSimObject.GetCurrentlyPossessedRobot().CanShoot = true;
     }
 
     private void UpdateShownGamepiece() {
