@@ -18,32 +18,33 @@ namespace Synthesis {
             }
         }
         public float _position = 0f;
-        public float Position { 
+        public float Position {
             get => _position;
-            private set {
-                var newPos = Mathf.Clamp(value, Limits.Lower, Limits.Upper);
+        private
+            set {
+                var newPos             = Mathf.Clamp(value, Limits.Lower, Limits.Upper);
                 JointA.connectedAnchor = JointA.anchor + (JointA.axis * newPos);
-                _position = newPos;
+                _position              = newPos;
             }
         }
-        private float _velocity = 0f;
-        public float Velocity => _velocity;
+        private float _velocity  = 0f;
+        public float Velocity   => _velocity;
         public (float Upper, float Lower) Limits { get; private set; }
 
         public LinearDriver(string name, string[] inputs, string[] outputs, SimObject simObject,
-            ConfigurableJoint jointA, ConfigurableJoint jointB, float maxSpeed, (float, float) limits)
+            ConfigurableJoint jointA, ConfigurableJoint jointB, float maxSpeed, (float, float)limits)
             : base(name, inputs, outputs, simObject) {
 
             // Takeover joint configuration and make it more suited to control rather than passive
-            var l = jointA.linearLimit;
-            l.limit = 0f;
+            var l              = jointA.linearLimit;
+            l.limit            = 0f;
             jointA.linearLimit = l;
-            
-            JointA = jointA;
-            JointB = jointB;
+
+            JointA   = jointA;
+            JointB   = jointB;
             MaxSpeed = maxSpeed;
             Position = 0f;
-            Limits = limits;
+            Limits   = limits;
 
             _velocity = MaxSpeed;
         }
@@ -52,8 +53,8 @@ namespace Synthesis {
             // TODO: Velocity?
 
             float value = State.CurrentSignals.ContainsKey(_inputs[0])
-                ? (float)State.CurrentSignals[_inputs[0]].Value.NumberValue
-                : 0f;
+                              ? (float)State.CurrentSignals[_inputs[0]].Value.NumberValue
+                              : 0f;
 
             _velocity = value * MaxSpeed;
             Position += Time.deltaTime * _velocity;

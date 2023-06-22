@@ -17,11 +17,10 @@ using Synthesis.Runtime;
 public static class MainHUD {
 
     private const string COLLAPSE_TWEEN = "collapse";
-    private const string EXPAND_TWEEN = "expand";
+    private const string EXPAND_TWEEN   = "expand";
 
-    private static Action<ITween<float>> collapseTweenProgress = v => {
-        _tabDrawerContent?.SetWidth<Content>(v.CurrentValue);
-    };
+    private static Action<ITween<float>> collapseTweenProgress =
+        v => { _tabDrawerContent?.SetWidth<Content>(v.CurrentValue); };
 
     private static bool _isSetup = false;
     private static bool _enabled = true;
@@ -54,24 +53,12 @@ public static class MainHUD {
                 _collapsed = value;
                 if (_collapsed) {
                     TweenFactory.RemoveTweenKey(EXPAND_TWEEN, TweenStopBehavior.DoNotModify);
-                    _tabDrawerContent.RootGameObject.Tween(
-                        COLLAPSE_TWEEN,
-                        _tabDrawerContent.Size.x,
-                        20 + 15 + 40 + 15,
-                        0.2f,
-                        TweenScaleFunctions.CubicEaseOut,
-                        collapseTweenProgress
-                    );
+                    _tabDrawerContent.RootGameObject.Tween(COLLAPSE_TWEEN, _tabDrawerContent.Size.x, 20 + 15 + 40 + 15,
+                        0.2f, TweenScaleFunctions.CubicEaseOut, collapseTweenProgress);
                 } else {
                     TweenFactory.RemoveTweenKey(COLLAPSE_TWEEN, TweenStopBehavior.DoNotModify);
-                    _tabDrawerContent.RootGameObject.Tween(
-                        EXPAND_TWEEN,
-                        _tabDrawerContent.Size.x,
-                        20 + 15 + 200 + 15,
-                        0.2f,
-                        TweenScaleFunctions.CubicEaseOut,
-                        collapseTweenProgress
-                    );
+                    _tabDrawerContent.RootGameObject.Tween(EXPAND_TWEEN, _tabDrawerContent.Size.x, 20 + 15 + 200 + 15,
+                        0.2f, TweenScaleFunctions.CubicEaseOut, collapseTweenProgress);
                 }
             }
         }
@@ -88,7 +75,8 @@ public static class MainHUD {
         _drawerItems.Clear();
         _tabDrawerContent = new Content(null, GameObject.Find("MainHUD").transform.Find("TabDrawer").gameObject, null);
         _tabDrawerContent.Image!.SetColor(ColorManager.SYNTHESIS_BLACK);
-        _expandDrawerButton = new Button(_tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("ExpandButton").gameObject, null);
+        _expandDrawerButton = new Button(
+            _tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("ExpandButton").gameObject, null);
         _expandDrawerButton.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_BLACK));
         _expandDrawerButton.AddOnClickedEvent(b => MainHUD.Collapsed = !MainHUD.Collapsed);
         var expandIcon = new Image(null, _expandDrawerButton.RootGameObject.transform.Find("Icon").gameObject);
@@ -110,7 +98,8 @@ public static class MainHUD {
                 if (robotEvent.NewBot == string.Empty) {
                     RemoveItemFromDrawer("Configure");
                 } else if (robotEvent.OldBot == string.Empty) {
-                    MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>(), index: 1, icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+                    MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>(),
+                        index: 1, icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
                 }
             });
             _hasNewRobotListener = true;
@@ -118,21 +107,18 @@ public static class MainHUD {
 
         _isSetup = true;
 
-        SceneManager.activeSceneChanged += (Scene a, Scene b) => {
-            _isSetup = false;
-        };
+        SceneManager.activeSceneChanged += (Scene a, Scene b) => { _isSetup = false; };
     }
 
-    public static void AddItemToDrawer(string title, Action<Button> onClick, int index = -1, Sprite? icon = null, Color? color = null) {
+    public static void AddItemToDrawer(
+        string title, Action<Button> onClick, int index = -1, Sprite? icon = null, Color? color = null) {
 
         if (!SimulationRunner.InSim)
             return;
 
-        var drawerButtonObj = GameObject.Instantiate(
-            SynthesisAssetCollection.GetUIPrefab("hud-drawer-item-base"),
-            _tabDrawerContent.RootGameObject.transform.Find("ItemContainer")
-        );
-        var drawerButton = new Button(_tabDrawerContent, drawerButtonObj, null);
+        var drawerButtonObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("hud-drawer-item-base"),
+            _tabDrawerContent.RootGameObject.transform.Find("ItemContainer"));
+        var drawerButton    = new Button(_tabDrawerContent, drawerButtonObj, null);
         drawerButton.Label!.SetText(title).SetColor(ColorManager.SYNTHESIS_WHITE);
         drawerButton.Image.SetColor(new Color(1, 1, 1, 0));
         drawerButton.AddOnClickedEvent(onClick);

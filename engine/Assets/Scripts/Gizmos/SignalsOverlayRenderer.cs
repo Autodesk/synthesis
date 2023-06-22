@@ -20,9 +20,9 @@ public class SignalsOverlayRenderer : MonoBehaviour {
 
         var style = new GUIStyle() {
             alignment = TextAnchor.MiddleCenter,
-            font = GuiFont,
-            fontSize = 36,
-            normal = new GUIStyleState() { textColor = Color.white },
+            font      = GuiFont,
+            fontSize  = 36,
+            normal    = new GUIStyleState() { textColor = Color.white },
         };
 
         GUI.contentColor = Color.white;
@@ -30,16 +30,15 @@ public class SignalsOverlayRenderer : MonoBehaviour {
         GUI.Label(new Rect(100f, 100f, 50f, 50f), "0", style);
     }
 
-    public static GameObject BuildNewLinePrefab()
-        => Instantiate(Instance.LinePrefab, Instance.Canvas);
+    public static GameObject BuildNewLinePrefab() => Instantiate(Instance.LinePrefab, Instance.Canvas);
 }
 
 public class Line {
 
-    private const string POINT_A = "_PointA";
-    private const string POINT_B = "_PointB";
-    private const string COLOR = "_Color";
-    private const string STROKE = "_Stroke";
+    private const string POINT_A              = "_PointA";
+    private const string POINT_B              = "_PointB";
+    private const string COLOR                = "_Color";
+    private const string STROKE               = "_Stroke";
     private const string ACTUAL_SCREEN_PARAMS = "_ActualScreenParams";
 
     private Material _lineMaterial;
@@ -88,16 +87,16 @@ public class Line {
     }
 
     public Line(Vector2 a, Vector2 b) {
-        _lineObject = SignalsOverlayRenderer.BuildNewLinePrefab();
-        var img = _lineObject.GetComponent<Image>();
+        _lineObject   = SignalsOverlayRenderer.BuildNewLinePrefab();
+        var img       = _lineObject.GetComponent<Image>();
         _lineMaterial = new Material(img.material);
-        img.material = _lineMaterial;
-        
+        img.material  = _lineMaterial;
+
         // Init
-        PointA = a;
-        PointB = b;
-        Color = _color;
-        Stroke = _stroke;
+        PointA             = a;
+        PointB             = b;
+        Color              = _color;
+        Stroke             = _stroke;
         ActualScreenParams = _ASP;
     }
 
@@ -106,4 +105,3 @@ public class Line {
         GameObject.Destroy(_lineObject);
     }
 }
-

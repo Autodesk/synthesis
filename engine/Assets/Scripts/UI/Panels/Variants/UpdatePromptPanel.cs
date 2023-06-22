@@ -6,31 +6,29 @@ using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 namespace Synthesis.UI.Panels {
-    public class UpdatePromptPanel: Panel {
+    public class UpdatePromptPanel : Panel {
         public string UpdaterLink = string.Empty;
 
         public void Agreed() {
 
             bool updateAgreed = false;
 
-            if (UpdaterLink == string.Empty)
-            {
+            if (UpdaterLink == string.Empty) {
                 Debug.LogWarning("No updater link provided");
-            }
-            else
-            {
+            } else {
                 updateAgreed = true;
 
                 Process.Start(UpdaterLink);
 
-                var update = new AnalyticsEvent(category: "Startup", action: "Update Prompted", label: $"Update Agreed");
+                var update =
+                    new AnalyticsEvent(category: "Startup", action: "Update Prompted", label: $"Update Agreed");
                 AnalyticsManager.LogEvent(update);
             }
 
-            if(updateAgreed == false)
-            {
+            if (updateAgreed == false) {
                 Debug.Log("Update Declined");
-                var update = new AnalyticsEvent(category: "Startup", action: "Update Prompted", label: $"Update Declined");
+                var update =
+                    new AnalyticsEvent(category: "Startup", action: "Update Prompted", label: $"Update Declined");
                 AnalyticsManager.LogEvent(update);
             }
 

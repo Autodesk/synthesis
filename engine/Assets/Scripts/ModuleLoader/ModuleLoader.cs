@@ -61,7 +61,8 @@
 // 					LoadModule((archive, metadata));
 //
 // 					EventBus.Push(new LoadModuleEvent(metadata.Name, metadata.Version));
-// 					ModuleManager.AddToLoadedModuleList(new ModuleManager.ModuleInfo(metadata.Name, metadata.Version, metadata.Author, metadata.Description));
+// 					ModuleManager.AddToLoadedModuleList(new ModuleManager.ModuleInfo(metadata.Name,
+// metadata.Version, metadata.Author, metadata.Description));
 // 				}
 // 				catch (Exception e)
 // 				{
@@ -82,7 +83,8 @@
 // 			var modules = new List<PreloadedModule>();
 //
 // 			// Discover and preload all modules
-// 			foreach (var file in Directory.GetFiles(_moduleSourcePath).Where(fn => Path.GetExtension(fn) == ".zip"))
+// 			foreach (var file in Directory.GetFiles(_moduleSourcePath).Where(fn => Path.GetExtension(fn) ==
+// ".zip"))
 // 			{
 // 				var module = PreloadModule(Path.GetFileName(file));
 // 				if (module is null)
@@ -95,7 +97,8 @@
 // 						{
 // 							archive.Dispose();
 // 						}
-// 						throw new LoadModuleException($"Attempting to load module with duplicate name: {metadata.Name}");
+// 						throw new LoadModuleException($"Attempting to load module with duplicate name:
+// {metadata.Name}");
 // 					}
 // 					if (metadata.TargetPath == module?.Item2.TargetPath)
 // 					{
@@ -103,7 +106,8 @@
 // 						{
 // 							archive.Dispose();
 // 						}
-// 						throw new LoadModuleException($"Attempting to load modules into same target path: {metadata.TargetPath}");
+// 						throw new LoadModuleException($"Attempting to load modules into same target path:
+// {metadata.TargetPath}");
 // 					}
 // 				}
 // 				modules.Add(module.Value);
@@ -135,7 +139,8 @@
 // 			catch (Exception e)
 // 			{
 // 				module.Dispose();
-// 				throw new LoadModuleException($"Failed to deserialize metadata in module: {fullPath}", e);
+// 				throw new LoadModuleException($"Failed to deserialize metadata in module: {fullPath}",
+// e);
 // 			}
 // 		}
 //
@@ -147,12 +152,14 @@
 // 				{
 // 					if (moduleList.All(m => m.metadata.Name != dependency.Name))
 // 					{
-// 						throw new LoadModuleException($"Module {metadata.Name} is missing dependency module {dependency.Name}");
+// 						throw new LoadModuleException($"Module {metadata.Name} is missing dependency module
+// {dependency.Name}");
 // 					}
 // 					var present_dep = moduleList.First(m => m.metadata.Name == dependency.Name);
 // 					if (present_dep.metadata.Version != dependency.Version)
 // 					{
-// 						throw new LoadModuleException($"Module {metadata.Name} requires dependency module {dependency.Name} version {dependency.Version} but its version is {present_dep.metadata.Version}");
+// 						throw new LoadModuleException($"Module {metadata.Name} requires dependency module
+// {dependency.Name} version {dependency.Version} but its version is {present_dep.metadata.Version}");
 // 					}
 // 				}
 // 			}
@@ -168,11 +175,11 @@
 // 				var element = resolvedEntries.PopAt(0);
 // 				solutionSet.Enqueue(element);
 // 				foreach (var dep in moduleList.Where(t =>
-// 					t.metadata.Dependencies.Any(d => d.Name == element.metadata.Name && d.Version == element.metadata.Version)).ToList())
+// 					t.metadata.Dependencies.Any(d => d.Name == element.metadata.Name && d.Version ==
+// element.metadata.Version)).ToList())
 // 				{
-// 					dep.metadata.Dependencies.RemoveAll(d => d.Name == element.metadata.Name && d.Version == element.metadata.Version);
-// 					if (dep.metadata.Dependencies.Count == 0)
-// 						resolvedEntries.Add(dep);
+// 					dep.metadata.Dependencies.RemoveAll(d => d.Name == element.metadata.Name && d.Version ==
+// element.metadata.Version); 					if (dep.metadata.Dependencies.Count == 0) 						resolvedEntries.Add(dep);
 // 				}
 // 			}
 //
@@ -182,8 +189,8 @@
 //
 // 		private static string GetPath(string fullName)
 // 		{
-// 			var i = fullName.LastIndexOf(SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar, fullName.Length - 1, fullName.Length - 2);
-// 			if (i == -1 || i == (fullName.Length - 1))
+// 			var i = fullName.LastIndexOf(SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar,
+// fullName.Length - 1, fullName.Length - 2); 			if (i == -1 || i == (fullName.Length - 1))
 // 			{
 // 				return "";
 // 			}
@@ -204,14 +211,17 @@
 // 			var fileManifest = new List<string>();
 // 			fileManifest.AddRange(moduleInfo.metadata.FileManifest);
 //
-// 			var metadataPath = GetPath(moduleInfo.archive.Entries.First(e => e.FileName == ModuleMetadata.MetadataFilename).FileName);
+// 			var metadataPath = GetPath(moduleInfo.archive.Entries.First(e => e.FileName ==
+// ModuleMetadata.MetadataFilename).FileName);
 //
-// 			List<(Assembly assembly, string owningModule)> loadedAssemblies = new List<(Assembly assembly, string owningModule)>();
+// 			List<(Assembly assembly, string owningModule)> loadedAssemblies = new List<(Assembly assembly, string
+// owningModule)>();
 //
 // 			foreach (var entry in moduleInfo.archive.Entries.Where(e =>
 // 			{
 // 				var name = RemovePath(metadataPath, e.FileName);
-// 				return name != ModuleMetadata.MetadataFilename && moduleInfo.metadata.FileManifest.Contains(name);
+// 				return name != ModuleMetadata.MetadataFilename &&
+// moduleInfo.metadata.FileManifest.Contains(name);
 // 			}))
 // 			{
 // 				fileManifest.Remove(RemovePath(metadataPath, entry.FileName));
@@ -221,31 +231,36 @@
 // 				{
 // 					if (!LoadModuleAssembly(stream, moduleInfo.metadata.Name, loadedAssemblies))
 // 					{
-// 						throw new LoadModuleException($"Failed to load assembly: {entry.FileName}");
+// 						throw new LoadModuleException($"Failed to load assembly:
+// {entry.FileName}");
 // 					}
 // 				}
 // 				else
 // 				{
-// 					var targetPath = _baseModuleTargetPath + SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar +
-// 						moduleInfo.metadata.TargetPath + SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar +
-// 						GetPath(RemovePath(metadataPath, entry.FileName));
+// 					var targetPath = _baseModuleTargetPath +
+// SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar + 						moduleInfo.metadata.TargetPath +
+// SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar + 						GetPath(RemovePath(metadataPath, entry.FileName));
 // 					var perm = Permissions.PublicReadWrite;
 // 					var type = AssetManager.GetTypeFromFileExtension(extension);
 // 					if (type == null)
 // 					{
-// 						throw new LoadModuleException($"Failed to determine asset type from file extension of asset: {entry.FileName}");
+// 						throw new LoadModuleException($"Failed to determine asset type from file extension of
+// asset: {entry.FileName}");
 // 					}
 // 					else if (AssetManager.Import(type,
-// 						new DeflateStreamWrapper(stream, entry.UncompressedSize), targetPath, entry.FileName, perm, "") == null)
+// 						new DeflateStreamWrapper(stream, entry.UncompressedSize), targetPath, entry.FileName,
+// perm, "") == null)
 // 					{
-// 						throw new LoadModuleException($"Failed to import asset: {entry.FileName}");
+// 						throw new LoadModuleException($"Failed to import asset:
+// {entry.FileName}");
 // 					}
 // 				}
 // 			}
 // 			ProcessLoadedAssemblies(loadedAssemblies);
 // 			foreach (var file in fileManifest)
 // 			{
-// 				Logger.Log($"Module \"{moduleInfo.metadata.Name}\" is missing file from manifest: {file}", LogLevel.Warning);
+// 				Logger.Log($"Module \"{moduleInfo.metadata.Name}\" is missing file from manifest: {file}",
+// LogLevel.Warning);
 // 			}
 // 		}
 //
@@ -254,15 +269,13 @@
 // 			// Set up Api
 // 			try
 // 			{
-// 				var apiAssembly = AppDomain.CurrentDomain.GetAssemblies().First(a => a.GetName().Name == "Api");
-// 				var types = apiAssembly.GetTypes()
-// 					.Where(t => t.GetCustomAttribute<ModuleOmitAttribute>() == null &&
+// 				var apiAssembly = AppDomain.CurrentDomain.GetAssemblies().First(a => a.GetName().Name ==
+// "Api"); 				var types = apiAssembly.GetTypes() 					.Where(t => t.GetCustomAttribute<ModuleOmitAttribute>() == null &&
 // 					            (t.IsSubclassOf(typeof(SystemBase)) ||
-// 					             t.GetMethods().Any(m => m.GetCustomAttribute<CallbackAttribute>() != null ||
-// 					                                     m.GetCustomAttribute<TaggedCallbackAttribute>() != null))).ToList();
-// 				var prioritizedTypes = ResolveInitializationOrder(types, "API");
-// 				var instances = new Dictionary<Type, object>();
-// 				foreach (var (_, system, callback) in prioritizedTypes)
+// 					             t.GetMethods().Any(m => m.GetCustomAttribute<CallbackAttribute>() != null
+// || 					                                     m.GetCustomAttribute<TaggedCallbackAttribute>() != null))).ToList(); 				var prioritizedTypes =
+// ResolveInitializationOrder(types, "API"); 				var instances = new Dictionary<Type, object>(); 				foreach (var (_, system,
+// callback) in prioritizedTypes)
 // 				{
 // 					if (system != null)
 // 					{
@@ -307,7 +320,8 @@
 //
 // 			return true;
 // 		}
-// 		public static bool LoadModuleAssembly(Stream stream, string owningModule, List<(Assembly assembly, string owningModule)> loadedAssemblies)
+// 		public static bool LoadModuleAssembly(Stream stream, string owningModule, List<(Assembly assembly, string
+// owningModule)> loadedAssemblies)
 // 			{
 // 			// Load module assembly
 // 			var memStream = new MemoryStream();
@@ -333,7 +347,8 @@
 // 				{
 // 					foreach (var inner in reflectionTypeLoadException.LoaderExceptions)
 // 					{
-// 						Logger.Log($"Loading module {owningModule} resulted in type errors\n{inner}", LogLevel.Error);
+// 						Logger.Log($"Loading module {owningModule} resulted in type errors\n{inner}",
+// LogLevel.Error);
 // 					}
 // 				}
 // 				return false;
@@ -349,8 +364,8 @@
 // 					(t.IsSubclassOf(typeof(SystemBase))
 // 					 || t.GetMethods().Any(
 // 						 m => m.GetCustomAttribute<CallbackAttribute>() != null
-// 						      || m.GetCustomAttribute<TaggedCallbackAttribute>() != null))).ToList();
-// 			var prioritizedInitializations = ResolveInitializationOrder(exportedModuleClasses, owningModule);
+// 						      || m.GetCustomAttribute<TaggedCallbackAttribute>() !=
+// null))).ToList(); 			var prioritizedInitializations = ResolveInitializationOrder(exportedModuleClasses, owningModule);
 // 			var instances = new Dictionary<Type, object>();
 //
 // 			foreach (var (initializer, system, callback) in prioritizedInitializations)
@@ -366,7 +381,8 @@
 // 						}
 // 						else
 // 						{
-// 							Logger.Log($"Initializer for module {owningModule} does not have a valid Initialize method", LogLevel.Warning);
+// 							Logger.Log($"Initializer for module {owningModule} does not have a valid
+// Initialize method", LogLevel.Warning);
 // 						}
 // 					}
 // 					else if (system != null)
@@ -402,12 +418,14 @@
 // 				catch (TypeLoadException e)
 // 				{
 // 					var errorSource = system == null ? callback.DeclaringType : system;
-// 					Logger.Log($"Module loader failed to process type {errorSource} from module {owningModule}\nType: {e.TypeName}, Site: {e.TargetSite}\n{e}", LogLevel.Error);
+// 					Logger.Log($"Module loader failed to process type {errorSource} from module
+// {owningModule}\nType: {e.TypeName}, Site: {e.TargetSite}\n{e}", LogLevel.Error);
 // 				}
 // 				catch (Exception e)
 // 				{
 // 					var errorSource = system == null ? callback.DeclaringType : system;
-// 					Logger.Log($"Module loader failed to process type {errorSource} from module {owningModule}\n{e}", LogLevel.Error);
+// 					Logger.Log($"Module loader failed to process type {errorSource} from module
+// {owningModule}\n{e}", LogLevel.Error);
 // 					// TODO unload assembly? return false?
 // 					continue;
 // 				}
@@ -432,15 +450,16 @@
 // 					{
 // 						foreach (var inner in reflectionTypeLoadException.LoaderExceptions)
 // 						{
-// 							Logger.Log($"Loading module {loadedAssembly.owningModule} resulted in type errors\n{inner}", LogLevel.Error);
+// 							Logger.Log($"Loading module {loadedAssembly.owningModule} resulted in type
+// errors\n{inner}", LogLevel.Error);
 // 						}
 // 					}
 // 					return false;
 // 				}
 // 				catch (Exception e)
 // 				{
-// 					Logger.Log($"Failed to get types from module {loadedAssembly.owningModule}\n{e}", LogLevel.Error);
-// 					return false;
+// 					Logger.Log($"Failed to get types from module {loadedAssembly.owningModule}\n{e}",
+// LogLevel.Error); 					return false;
 // 				}
 //
 // 				var exportedModuleClasses =
@@ -448,9 +467,9 @@
 // 						(t.IsSubclassOf(typeof(SystemBase))
 // 						 || t.GetMethods().Any(
 // 							 m => m.GetCustomAttribute<CallbackAttribute>() != null
-// 								  || m.GetCustomAttribute<TaggedCallbackAttribute>() != null))).ToList();
-// 				var prioritizedInitializations = ResolveInitializationOrder(exportedModuleClasses, loadedAssembly.owningModule);
-// 				var instances = new Dictionary<Type, object>();
+// 								  || m.GetCustomAttribute<TaggedCallbackAttribute>() !=
+// null))).ToList(); 				var prioritizedInitializations = ResolveInitializationOrder(exportedModuleClasses,
+// loadedAssembly.owningModule); 				var instances = new Dictionary<Type, object>();
 //
 // 				foreach (var (initializer, system, callback) in prioritizedInitializations)
 // 				{
@@ -465,7 +484,8 @@
 // 							}
 // 							else
 // 							{
-// 								Logger.Log($"Initializer for module {loadedAssembly.owningModule} does not have a valid Initialize method", LogLevel.Warning);
+// 								Logger.Log($"Initializer for module {loadedAssembly.owningModule} does not
+// have a valid Initialize method", LogLevel.Warning);
 // 							}
 // 						}
 // 						else if (system != null)
@@ -487,7 +507,8 @@
 // 								instances[declaringType] = instance;
 // 							}
 //
-// 							if (callback.GetCustomAttribute<TaggedCallbackAttribute>() != null)
+// 							if (callback.GetCustomAttribute<TaggedCallbackAttribute>() !=
+// null)
 // 							{
 // 								RegisterTagCallback(callback, instance);
 // 							}
@@ -501,23 +522,27 @@
 // 					catch (TypeLoadException e)
 // 					{
 // 						var errorSource = system == null ? callback.DeclaringType : system;
-// 						Logger.Log($"Module loader failed to process type {errorSource} from module {loadedAssembly.owningModule}\nType: {e.TypeName}, Site: {e.TargetSite}\n{e}", LogLevel.Error);
+// 						Logger.Log($"Module loader failed to process type {errorSource} from module
+// {loadedAssembly.owningModule}\nType: {e.TypeName}, Site: {e.TargetSite}\n{e}", LogLevel.Error);
 // 					}
 // 					catch (Exception e)
 // 					{
 // 						var errorSource = system == null ? callback.DeclaringType : system;
-// 						Logger.Log($"Module loader failed to process type {errorSource} from module {loadedAssembly.owningModule}\n{e}", LogLevel.Error);
+// 						Logger.Log($"Module loader failed to process type {errorSource} from module
+// {loadedAssembly.owningModule}\n{e}", LogLevel.Error);
 // 						// TODO unload assembly? return false?
 // 						continue;
 // 					}
 // 				}
 //
-// 				ModuleManager.RegisterModuleAssemblyName(loadedAssembly.assembly.GetName().Name, loadedAssembly.owningModule);
+// 				ModuleManager.RegisterModuleAssemblyName(loadedAssembly.assembly.GetName().Name,
+// loadedAssembly.owningModule);
 // 			}
 // 			return true;
 // 		}
 //
-// 		private static List<(Type initializer, Type system, MethodInfo callback)> ResolveInitializationOrder(List<Type> types, string moduleName)
+// 		private static List<(Type initializer, Type system, MethodInfo callback)>
+// ResolveInitializationOrder(List<Type> types, string moduleName)
 // 		{
 // 			var systems = types.Where(t => t.IsSubclassOf(typeof(SystemBase))).ToList();
 // 			var callbacks = types.Where(t => !t.IsSubclassOf(typeof(SystemBase)) || t.GetMethods().Any(m =>
@@ -530,7 +555,8 @@
 // 				systems.Where(t =>
 // 					t.GetCustomAttribute<InitializationPriorityAttribute>() != null).OrderBy(t =>
 // 					t.GetCustomAttribute<InitializationPriorityAttribute>().Value).ToList();
-// 			var prioritizedCallbacks = callbacks.Where(m => m.GetCustomAttribute<InitializationPriorityAttribute>() != null).OrderBy(m =>
+// 			var prioritizedCallbacks = callbacks.Where(m =>
+// m.GetCustomAttribute<InitializationPriorityAttribute>() != null).OrderBy(m =>
 // 				m.GetCustomAttribute<InitializationPriorityAttribute>().Value).ToList();
 // 			var prioritizedElements = new List<(Type, Type, MethodInfo)>();
 // 			var systemIndex = 0;
@@ -548,24 +574,29 @@
 //
 // 			for (var i = 0; i < prioritizedSystems.Count + prioritizedCallbacks.Count; ++i)
 // 			{
-// 				if (GetPriority(prioritizedSystems.ElementAtOrDefault(systemIndex))-1 <= GetPriority(prioritizedCallbacks.ElementAtOrDefault(callbackIndex))-1)
+// 				if (GetPriority(prioritizedSystems.ElementAtOrDefault(systemIndex))-1 <=
+// GetPriority(prioritizedCallbacks.ElementAtOrDefault(callbackIndex))-1)
 // 				{
-// 					prioritizedElements.Add((null, prioritizedSystems.ElementAtOrDefault(systemIndex), null));
+// 					prioritizedElements.Add((null, prioritizedSystems.ElementAtOrDefault(systemIndex),
+// null));
 // 					++systemIndex;
 // 				}
 // 				else
 // 				{
-// 					prioritizedElements.Add((null, null, prioritizedCallbacks.ElementAtOrDefault(callbackIndex)));
+// 					prioritizedElements.Add((null, null,
+// prioritizedCallbacks.ElementAtOrDefault(callbackIndex)));
 // 					++callbackIndex;
 // 				}
 // 			}
 //
-// 			foreach (var system in systems.Where(t => t.GetCustomAttribute<InitializationPriorityAttribute>() == null))
+// 			foreach (var system in systems.Where(t => t.GetCustomAttribute<InitializationPriorityAttribute>() ==
+// null))
 // 			{
 // 				prioritizedElements.Add((null, system, null));
 // 			}
 //
-// 			foreach (var callback in callbacks.Where(m => m.GetCustomAttribute<InitializationPriorityAttribute>() == null))
+// 			foreach (var callback in callbacks.Where(m => m.GetCustomAttribute<InitializationPriorityAttribute>()
+// == null))
 // 			{
 // 				prioritizedElements.Add((null,null, callback));
 // 			}
@@ -575,7 +606,8 @@
 // 			{
 // 				if (!(initClass.IsAbstract && initClass.IsSealed))
 // 				{
-// 					Logger.Log($"Initializer for module {moduleName} is not static. Please make this class static.", LogLevel.Warning);
+// 					Logger.Log($"Initializer for module {moduleName} is not static. Please make this class
+// static.", LogLevel.Warning);
 // 				}
 // 				else
 // 				{
@@ -592,7 +624,8 @@
 // 			if (instance.GetType() != callback.DeclaringType) // Sanity check
 // 			{
 // 				throw new LoadModuleException(
-// 					$"Type of instance variable \"{instance.GetType()}\" does not match declaring type of callback \"{callback.Name}\" (expected \"{callback.DeclaringType}\"");
+// 					$"Type of instance variable \"{instance.GetType()}\" does not match declaring type of
+// callback \"{callback.Name}\" (expected \"{callback.DeclaringType}\"");
 // 			}
 // 			var eventType = callback.GetParameters().First().ParameterType;
 // 			var tag = callback.GetCustomAttribute<TaggedCallbackAttribute>().Tag;
@@ -609,7 +642,8 @@
 // 			if (instance.GetType() != callback.DeclaringType) // Sanity check
 // 			{
 // 				throw new LoadModuleException(
-// 					$"Type of instance variable \"{instance.GetType()}\" does not match declaring type of callback \"{callback.Name}\" (expected \"{callback.DeclaringType}\"");
+// 					$"Type of instance variable \"{instance.GetType()}\" does not match declaring type of
+// callback \"{callback.Name}\" (expected \"{callback.DeclaringType}\"");
 // 			}
 // 			var eventType = callback.GetParameters().First().ParameterType;
 // 			typeof(EventBus).GetMethod("NewTypeListener")

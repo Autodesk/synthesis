@@ -13,7 +13,7 @@ namespace Synthesis.WS.Translation {
 
         // I seriously hate json and its like 4am so deal
         public List<PWMGroup> PWMGroups = new List<PWMGroup>();
-        public List<Encoder> Encoders = new List<Encoder>();
+        public List<Encoder> Encoders   = new List<Encoder>();
 
         public class Encoder {
             private string _guid;
@@ -32,11 +32,11 @@ namespace Synthesis.WS.Translation {
             private (float time, float val) _periodTracker;
 
             public Encoder(string guid, string channelA, string channelB, string signal, float mod) {
-                _guid = guid;
+                _guid     = guid;
                 _channelA = channelA;
                 _channelB = channelB;
-                _signal = signal;
-                _mod = mod;
+                _signal   = signal;
+                _mod      = mod;
 
                 _periodTracker = (Time.realtimeSinceStartup, 0);
             }
@@ -60,7 +60,7 @@ namespace Synthesis.WS.Translation {
 
             private bool AquireRioDevice(RoboRIOState rioState) {
                 _rioDevice = string.Empty;
-                int i = 0;
+                int i      = 0;
                 while (i < 8 && _rioDevice.Length == 0) {
                     var data = rioState.GetData<EncoderData>(i.ToString());
                     if (data != null) {
@@ -79,7 +79,7 @@ namespace Synthesis.WS.Translation {
         /// A Grouping of signals in which you can write the value of the the signals
         /// </summary>
         public class PWMGroup {
-            
+
             private string _name;
             public string Name => _name;
             private List<string> _ports;
@@ -88,9 +88,9 @@ namespace Synthesis.WS.Translation {
             public IReadOnlyList<string> Signals => _signals.AsReadOnly();
 
             public PWMGroup(string name, string[] ports, string[] signals) {
-                _name = name;
+                _name    = name;
                 _signals = new List<string>();
-                _ports = new List<string>();
+                _ports   = new List<string>();
                 _signals.AddRange(signals);
                 _ports.AddRange(ports);
             }
@@ -100,13 +100,9 @@ namespace Synthesis.WS.Translation {
                     _signals.ForEach(x => signalState.CurrentSignals[x].Value = Value.ForNumber(0));
                 } else {
                     float avg = 0f;
-                    _ports.ForEach(x => {
-                        avg += (float)rioState.GetData<PWMData>(x).Speed;
-                    });
+                    _ports.ForEach(x => { avg += (float)rioState.GetData<PWMData>(x).Speed; });
                     avg /= _ports.Count;
-                    _signals.ForEach(x => {
-                        signalState.CurrentSignals[x].Value = Value.ForNumber(avg);
-                    });
+                    _signals.ForEach(x => { signalState.CurrentSignals[x].Value = Value.ForNumber(avg); });
                 }
             }
         }

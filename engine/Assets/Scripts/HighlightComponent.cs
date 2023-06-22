@@ -20,9 +20,9 @@ public class HighlightComponent : MonoBehaviour {
     }
 
     public void Awake() {
-        _renderers = gameObject.GetComponentsInChildren<MeshRenderer>();
+        _renderers         = gameObject.GetComponentsInChildren<MeshRenderer>();
         _originalMaterials = _renderers.Select(x => x.material).ToArray();
-        _material = new Material(Shader.Find("Shader Graphs/HighlightShader"));
+        _material          = new Material(Shader.Find("Shader Graphs/HighlightShader"));
     }
 
     public void OnEnable() {
@@ -30,7 +30,7 @@ public class HighlightComponent : MonoBehaviour {
         for (int i = 0; i < _renderers.Length; i++) {
             _renderers[i].material = _material;
         }
-        
+
         // Debug.Log($"{transform.name}: Enabled");
     }
 
@@ -38,7 +38,7 @@ public class HighlightComponent : MonoBehaviour {
         for (int i = 0; i < _renderers.Length; i++) {
             _renderers[i].material = _originalMaterials[i];
         }
-        
+
         // Debug.Log($"{transform.name}: Disabled");
     }
 }

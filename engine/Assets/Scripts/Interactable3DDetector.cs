@@ -7,8 +7,7 @@ using Synthesis.UI.ContextMenus;
 
 using ContextMenu = Synthesis.UI.ContextMenus.ContextMenu;
 
-public class Interactable3DDetector : MonoBehaviour
-{
+public class Interactable3DDetector : MonoBehaviour {
     private static Interactable3DDetector instance = null;
     private void Start() {
         if (instance != null) {
@@ -26,8 +25,9 @@ public class Interactable3DDetector : MonoBehaviour
             // Debug.Log($"{Input.mousePosition.x}, {Input.mousePosition.y}");
 
             Vector2 screen = new Vector2(Screen.currentResolution.width, Screen.currentResolution.height);
-            Vector2 mouse = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-            Vector2 adjustedPos = new Vector2(refResolution.x * (mouse.x / screen.x), refResolution.y * (mouse.y / screen.y));
+            Vector2 mouse  = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+            Vector2 adjustedPos =
+                new Vector2(refResolution.x * (mouse.x / screen.x), refResolution.y * (mouse.y / screen.y));
 
             // Debug.Log("Mouse clicked");
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);

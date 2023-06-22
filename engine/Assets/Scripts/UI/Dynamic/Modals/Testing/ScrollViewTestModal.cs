@@ -4,7 +4,8 @@ using Synthesis.UI.Dynamic;
 using UnityEngine;
 
 public class ScrollViewTestModal : ModalDynamic {
-    public ScrollViewTestModal() : base(new Vector2(1200, 700)) { }
+    public ScrollViewTestModal() : base(new Vector2(1200, 700)) {
+    }
 
     public override void Create() {
         Title.SetText("Testing Scrollview");
@@ -22,7 +23,9 @@ public class ScrollViewTestModal : ModalDynamic {
         content.SetTopStretch<ScrollView>(anchoredY: -sv.Content.RectOfChildren(content).yMin);
     }
 
-    public override void Delete() { }
+    public override void Delete() {
+    }
 
-    public override void Update() { }
+    public override void Update() {
+    }
 }

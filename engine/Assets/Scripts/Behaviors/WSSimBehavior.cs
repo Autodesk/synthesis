@@ -12,9 +12,7 @@ public class WSSimBehavior : SimBehaviour {
     private RioTranslationLayer _translation;
     public RioTranslationLayer Translation {
         get => _translation;
-        set {
-            _translation = value;
-        }
+        set { _translation = value; }
     }
 
     public WSSimBehavior(string simObjectId, RioTranslationLayer translation) : base(simObjectId) {

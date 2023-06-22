@@ -10,14 +10,15 @@
 // {
 //     private const float TIME_BETWEEN_SHOTS = 0.5f;
 //     private static bool _canShoot = true;
-//     
-//     
+//
+//
 //     // private static Queue<ShootableGamepiece> _shootingQueue = new Queue<ShootableGamepiece>();
 //
 //     public const string TOGGLE_SHOOT_GAMEPIECE = "input/shoot-gamepiece";
 //
 //     public static void Start() {
-//         InputManager.AssignValueInput(TOGGLE_SHOOT_GAMEPIECE, TryGetSavedInput(TOGGLE_SHOOT_GAMEPIECE, new Digital("Space", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
+//         InputManager.AssignValueInput(TOGGLE_SHOOT_GAMEPIECE, TryGetSavedInput(TOGGLE_SHOOT_GAMEPIECE, new
+//         Digital("Space", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
 //     }
 //     private static Analog TryGetSavedInput(string key, Analog defaultInput)
 //     {
@@ -34,15 +35,15 @@
 //     // {
 //     //     //loop through all gamepieces and attach objects
 //     //     //call this from the mode manager
-//         
+//
 //     //     FieldSimObject.CurrentField.Gamepieces.ForEach(gp =>
 //     //     {
-//     //         //gp.GamepieceObject.GetComponentInChildren<MeshRenderer>().gameObject.AddComponent<ShootableGamepiece>();
+//     // //gp.GamepieceObject.GetComponentInChildren<MeshRenderer>().gameObject.AddComponent<ShootableGamepiece>();
 //     //         gp.GamepieceObject.AddComponent<ShootableGamepiece>();
 //     //     });
 //     // }
-//     
-//     
+//
+//
 //     public static void Update() {
 //
 //         if (RobotSimObject.CurrentlyPossessedRobot == string.Empty)
@@ -50,10 +51,10 @@
 //
 //         //call this from the mode manager update loop
 //         //update the current time, detect input, and perform shooting actions
-//         
+//
 //         bool shootGamepiece = InputManager.MappedValueInputs[TOGGLE_SHOOT_GAMEPIECE].Value == 1.0F;
 //         //Debug.Log($"Key: {shootGamepiece} | shooting q {shootingQueue.Count} | can shoot {canShoot}");
-//         
+//
 //         if (shootGamepiece && _canShoot) {
 //             _canShoot = false;
 //             RobotSimObject.GetCurrentlyPossessedRobot().ShootGamepiece();
@@ -72,8 +73,8 @@
 //         yield return new WaitForSeconds(TIME_BETWEEN_SHOTS);
 //         _canShoot = true;
 //     }
-//     
-//     
+//
+//
 //     private static float shootForce = 70.0f;
 //     private static float upwardsForce = 70.0f;
 //     private static Vector3 verticalOffset = new Vector3(0, 1.5f, 0);
@@ -94,9 +95,9 @@
 //     // {
 //     //     //add gamepiece to shooting queue
 //     //     shootingQueue.Enqueue(shootable);
-//         
+//
 //     // }
-//     
+//
 //     // public static void Reset()
 //     // {
 //     //     //clear gamepieces from queue and reset each one

@@ -15,14 +15,12 @@ namespace Synthesis.UI.Bars {
         // public GameObject homeTab;
         // public GameObject homeButton;
 
-
         public GameObject TopButtonContainer;
         public GameObject TopButtonPrefab;
 
         // TODO: Centralize colors
         public Color SelectedTopButtonColor;
         public Color UnselectedTopButtonColor;
-
 
         public TMP_Text VersionNumber;
 
@@ -45,7 +43,8 @@ namespace Synthesis.UI.Bars {
         public static NavigationBar Instance { get; private set; }
 
         private string _currentTab = string.Empty;
-        private Dictionary<string, (TopButton topButton, Tab tab)> _registeredTabs = new Dictionary<string, (TopButton topButton, Tab tab)>();
+        private Dictionary<string, (TopButton topButton, Tab tab)> _registeredTabs =
+            new Dictionary<string, (TopButton topButton, Tab tab)>();
 
         // private readonly Color unselectedPanelButton = new Color(0.23529f,0.23529f,0.23529f,1);
         // private readonly Color selectedPanelButton = new Color(0.1f, 0.1f, 0.1f, 1);
@@ -69,8 +68,7 @@ namespace Synthesis.UI.Bars {
         public void Exit() {
             if (Application.isEditor)
                 Debug.Log("Would exit, but it's editor mode");
-            else
-            {
+            else {
                 var update = new AnalyticsEvent(category: "Exit", action: "Closed", label: $"Closed Synthesis");
                 AnalyticsManager.LogEvent(update);
                 AnalyticsManager.PostData();
@@ -94,14 +92,15 @@ namespace Synthesis.UI.Bars {
         }
 
         public void OpenPanel(GameObject prefab) {
-            if(prefab!=null){
-                  
-                LayoutManager.OpenPanel(prefab, true);
-                if(_currentPanelButton!=null) changePanelButton(artifaktRegular,1f);
+            if (prefab != null) {
 
-                //set current panel button to the button clicked
+                LayoutManager.OpenPanel(prefab, true);
+                if (_currentPanelButton != null)
+                    changePanelButton(artifaktRegular, 1f);
+
+                // set current panel button to the button clicked
                 _currentPanelButton = EventSystem.current.currentSelectedGameObject;
-                changePanelButton(artifaktBold,0.6f);
+                changePanelButton(artifaktBold, 0.6f);
 
                 // Analytics Stuff
                 lastOpenedPanel = prefab.name; // this will need to be an array for movable panels
@@ -111,28 +110,27 @@ namespace Synthesis.UI.Bars {
 
         public void CloseAllPanels() {
             LayoutManager.ClosePanel();
-            if(_currentPanelButton!=null) changePanelButton(artifaktRegular,1f);
+            if (_currentPanelButton != null)
+                changePanelButton(artifaktRegular, 1f);
 
             PanelAnalytics(lastOpenedPanel, "Closed");
         }
 
-        private void changePanelButton(TMP_FontAsset f, float opacity) {   
-            //set font
+        private void changePanelButton(TMP_FontAsset f, float opacity) {
+            // set font
             TextMeshProUGUI text = _currentPanelButton.transform.parent.GetComponentInChildren<TextMeshProUGUI>();
-            if(text!=null)text.font = f;
+            if (text != null)
+                text.font = f;
 
             Image img = _currentPanelButton.GetComponent<Image>();
             img.color = new Color(img.color.r, img.color.g, img.color.b, opacity);
-            
         }
 
         public void RegisterTab(string name, Tab t) {
-            var obj = Instantiate(TopButtonPrefab, TopButtonContainer.transform);
-            var topB = obj.GetComponent<TopButton>();
+            var obj       = Instantiate(TopButtonPrefab, TopButtonContainer.transform);
+            var topB      = obj.GetComponent<TopButton>();
             topB.Tag.text = name;
-            topB.ActualButton.onClick.AddListener(() => {
-                SelectTab(name);
-            });
+            topB.ActualButton.onClick.AddListener(() => { SelectTab(name); });
             _registeredTabs[name] = (topB, t);
         }
 
@@ -159,8 +157,8 @@ namespace Synthesis.UI.Bars {
         //         changeTabButton(artifaktRegular,1,new Color(0.8f,0.8f,0.8f,1));
         //     }
         //     _currentTabButton = EventSystem.current.currentSelectedGameObject;
-        //     if(_currentTabButton == null) _currentTabButton = homeButton; //On the first call, there is no button pressed
-        //     changeTabButton(artifaktBold,2,new Color(0.02352941f,0.5882353f,0.8431373f,1));
+        //     if(_currentTabButton == null) _currentTabButton = homeButton; //On the first call, there is no button
+        //     pressed changeTabButton(artifaktBold,2,new Color(0.02352941f,0.5882353f,0.8431373f,1));
         // }
 
         // private void changeTabButton(TMP_FontAsset f, float underlineHeight, Color c){

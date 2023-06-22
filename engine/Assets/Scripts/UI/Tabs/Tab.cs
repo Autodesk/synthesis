@@ -12,10 +12,11 @@ namespace Synthesis.UI.Tabs {
         // public List<TabPanelButton> PanelButtons = new List<TabPanelButton>();
 
         public TabButton CreateButton(string name, Sprite sprite, UnityAction callback) {
-            var obj = Object.Instantiate(NavigationBar.Instance.TabPanelButtonPrefab, NavigationBar.Instance.ModalTab.transform);
-            var button = obj.GetComponent<TabButton>();
+            var obj = Object.Instantiate(
+                NavigationBar.Instance.TabPanelButtonPrefab, NavigationBar.Instance.ModalTab.transform);
+            var button                = obj.GetComponent<TabButton>();
             button.ButtonImage.sprite = sprite;
-            button.Name = name;
+            button.Name               = name;
             button.SetCallback(callback);
             return button;
         }

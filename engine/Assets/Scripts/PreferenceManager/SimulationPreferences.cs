@@ -27,33 +27,28 @@ namespace Synthesis.PreferenceManager {
             _instance = null;
         }
 
-        public static void LoadFromMirabufLive(MirabufLive live)
-            => Instance.LoadFromMirabufLive(live);
+        public static void LoadFromMirabufLive(MirabufLive live) => Instance.LoadFromMirabufLive(live);
 
-        public static Analog GetRobotInput(string robot, string input)
-            => Instance.GetRobotInput(robot, input);
+        public static Analog GetRobotInput(string robot, string input) => Instance.GetRobotInput(robot, input);
 
-        public static Dictionary<string, Analog> GetRobotInputs(string robot)
-            => Instance.GetRobotInputs(robot);
+        public static Dictionary<string, Analog> GetRobotInputs(string robot) => Instance.GetRobotInputs(robot);
 
-        public static JointMotor? GetRobotJointMotor(string robot, string motorKey)
-            => Instance.GetRobotJointMotor(robot, motorKey);
+        public static JointMotor? GetRobotJointMotor(string robot, string motorKey) => Instance.GetRobotJointMotor(
+            robot, motorKey);
 
-        public static float? GetRobotJointSpeed(string robot, string speedKey)
-            => Instance.GetRobotJointSpeed(robot, speedKey);
+        public static float? GetRobotJointSpeed(string robot, string speedKey) => Instance.GetRobotJointSpeed(
+            robot, speedKey);
 
-        public static ITD? GetRobotIntakeTriggerData(string robot)
-            => Instance.GetRobotIntakeTriggerData(robot);
+        public static ITD? GetRobotIntakeTriggerData(string robot) => Instance.GetRobotIntakeTriggerData(robot);
 
-        public static STD? GetRobotTrajectoryData(string robot)
-            => Instance.GetTrajectoryData(robot);
+        public static STD? GetRobotTrajectoryData(string robot) => Instance.GetTrajectoryData(robot);
 
-        public static RioTranslationLayer? GetRobotSimTranslationLayer(string robot)
-            => Instance.GetSimTranslationLayer(robot);
+        public static RioTranslationLayer? GetRobotSimTranslationLayer(string robot) => Instance.GetSimTranslationLayer(
+            robot);
 
-        public static RobotSimObject.DrivetrainType GetRobotDrivetrain(string robot)
-            => Instance.GetRobotDrivetrainType(robot);
-        
+        public static RobotSimObject.DrivetrainType GetRobotDrivetrain(string robot) => Instance.GetRobotDrivetrainType(
+            robot);
+
         public static void SetRobotInput(string robot, string inputKey, Analog inputValue) {
             Instance.SetRobotInput(robot, inputKey, inputValue);
         }
@@ -78,14 +73,14 @@ namespace Synthesis.PreferenceManager {
             Instance.SetRobotSimTranslationLayer(robot, layer);
         }
 
-        public static void SetRobotDrivetrainType(string robot, RobotSimObject.DrivetrainType drivetrainType)
-            => Instance.SetRobotDrivetrainType(robot, drivetrainType);
+        public static void SetRobotDrivetrainType(string robot,
+            RobotSimObject.DrivetrainType drivetrainType) => Instance.SetRobotDrivetrainType(robot, drivetrainType);
 
         private class Inner {
 
             public const string USER_DATA_KEY = "saved-data";
 
-            private Dictionary<string, RobotData> _allRobotData = new  Dictionary<string, RobotData>();
+            private Dictionary<string, RobotData> _allRobotData = new Dictionary<string, RobotData>();
 
             public Inner() {
                 EventBus.NewTypeListener<PrePreferenceSaveEvent>(PreSaveDump);
@@ -110,14 +105,17 @@ namespace Synthesis.PreferenceManager {
                     var live = RobotSimObject.GetCurrentlyPossessedRobot().MiraLive;
                     if (live.MiraAssembly.Data.Parts.UserData == null)
                         live.MiraAssembly.Data.Parts.UserData = new Mirabuf.UserData();
-                    live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY] = JsonConvert.SerializeObject(_allRobotData[live.MiraAssembly.Info.GUID]);
+                    live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY] =
+                        JsonConvert.SerializeObject(_allRobotData[live.MiraAssembly.Info.GUID]);
                     live.Save();
                 }
             }
 
             public void LoadFromMirabufLive(MirabufLive live) {
-                if (live.MiraAssembly.Data.Parts.UserData != null && live.MiraAssembly.Data.Parts.UserData.Data.ContainsKey(USER_DATA_KEY)) {
-                    _allRobotData[live.MiraAssembly.Info.GUID] = JsonConvert.DeserializeObject<RobotData>(live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY])!;
+                if (live.MiraAssembly.Data.Parts.UserData != null &&
+                    live.MiraAssembly.Data.Parts.UserData.Data.ContainsKey(USER_DATA_KEY)) {
+                    _allRobotData[live.MiraAssembly.Info.GUID] = JsonConvert.DeserializeObject<RobotData>(
+                        live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY])!;
                 }
             }
 
@@ -137,7 +135,7 @@ namespace Synthesis.PreferenceManager {
                     return null;
 
                 var inputs = new Dictionary<string, Analog>();
-                var rData = _allRobotData[robot];
+                var rData  = _allRobotData[robot];
                 rData.InputData.ForEach(x => inputs.Add(x.Key, x.Value.GetInput()));
                 return inputs;
             }
@@ -194,7 +192,7 @@ namespace Synthesis.PreferenceManager {
             public void SetRobotInput(string robot, string inputKey, Analog inputValue) {
                 if (!_allRobotData.ContainsKey(robot))
                     _allRobotData[robot] = new RobotData(robot);
-                var rData = _allRobotData[robot];
+                var rData                 = _allRobotData[robot];
                 rData.InputData[inputKey] = new InputData(inputValue);
                 // _allRobotData[robot] = rData; // I changed it to a class so Im not sure if this is needed
             }
@@ -202,7 +200,7 @@ namespace Synthesis.PreferenceManager {
             public void SetRobotJointMotor(string robot, string motorKey, JointMotor m) {
                 if (!_allRobotData.ContainsKey(robot))
                     _allRobotData[robot] = new RobotData(robot);
-                var rData = _allRobotData[robot];
+                var rData                   = _allRobotData[robot];
                 rData.JointMotors[motorKey] = m;
                 // _allRobotData[robot] = rData;
             }
@@ -210,7 +208,7 @@ namespace Synthesis.PreferenceManager {
             public void SetRobotJointSpeed(string robot, string speedKey, float speed) {
                 if (!_allRobotData.ContainsKey(robot))
                     _allRobotData[robot] = new RobotData(robot);
-                var rData = _allRobotData[robot];
+                var rData                   = _allRobotData[robot];
                 rData.JointSpeeds[speedKey] = speed;
                 // _allRobotData[robot] = rData;
             }
@@ -256,24 +254,32 @@ namespace Synthesis.PreferenceManager {
         [JsonConstructor]
         public RobotData() {
             AssemblyGuid = string.Empty;
-            InputData = new Dictionary<string, InputData>();
-            JointMotors = new Dictionary<string, JointMotor>();
-            JointSpeeds = new Dictionary<string, float>();
+            InputData    = new Dictionary<string, InputData>();
+            JointMotors  = new Dictionary<string, JointMotor>();
+            JointSpeeds  = new Dictionary<string, float>();
         }
         public RobotData(string guid) {
             AssemblyGuid = guid;
-            InputData = new Dictionary<string, InputData>();
-            JointMotors = new Dictionary<string, JointMotor>();
-            JointSpeeds = new Dictionary<string, float>();
+            InputData    = new Dictionary<string, InputData>();
+            JointMotors  = new Dictionary<string, JointMotor>();
+            JointSpeeds  = new Dictionary<string, float>();
         }
-        [JsonProperty] public string AssemblyGuid;
-        [JsonProperty] public Dictionary<string, InputData> InputData;
-        [JsonProperty] public Dictionary<string, JointMotor> JointMotors;
-        [JsonProperty] public Dictionary<string, float> JointSpeeds;
-        [JsonProperty] public ITD? IntakeTrigger;
-        [JsonProperty] public STD? TrajectoryPointer;
-        [JsonProperty] public RioTranslationLayer? SimTranslationLayer;
-        [JsonProperty] public RobotSimObject.DrivetrainType? DrivetrainType;
+        [JsonProperty]
+        public string AssemblyGuid;
+        [JsonProperty]
+        public Dictionary<string, InputData> InputData;
+        [JsonProperty]
+        public Dictionary<string, JointMotor> JointMotors;
+        [JsonProperty]
+        public Dictionary<string, float> JointSpeeds;
+        [JsonProperty]
+        public ITD? IntakeTrigger;
+        [JsonProperty]
+        public STD? TrajectoryPointer;
+        [JsonProperty]
+        public RioTranslationLayer? SimTranslationLayer;
+        [JsonProperty]
+        public RobotSimObject.DrivetrainType? DrivetrainType;
     }
 
     [JsonObject(MemberSerialization.OptIn)]
@@ -284,24 +290,27 @@ namespace Synthesis.PreferenceManager {
         public string Data;
 
         [JsonConstructor]
-        public InputData() { }
+        public InputData() {
+        }
 
         public InputData(Analog input) {
             this.Type = input.GetType();
-            Data = JsonConvert.SerializeObject(input);
+            Data      = JsonConvert.SerializeObject(input);
         }
 
         private static MethodInfo _deserializeMethod;
         private static MethodInfo DeserializeMethod {
             get {
                 if (_deserializeMethod == null)
-                    _deserializeMethod = typeof(JsonConvert).GetMethods().First(y => y.IsGenericMethod && y.Name.Equals("DeserializeObject"));
+                    _deserializeMethod = typeof(JsonConvert)
+                                             .GetMethods()
+                                             .First(y => y.IsGenericMethod && y.Name.Equals("DeserializeObject"));
                 return _deserializeMethod;
             }
         }
 
-        public Analog GetInput()
-            => (Analog)DeserializeMethod.MakeGenericMethod(this.Type).Invoke(null, new string[] { Data });
+        public Analog GetInput() => (Analog)DeserializeMethod.MakeGenericMethod(this.Type).Invoke(
+            null, new string[] { Data });
     }
 
     // [JsonObject(MemberSerialization.OptIn)]
@@ -323,7 +332,8 @@ namespace Synthesis.PreferenceManager {
     //     private static MethodInfo DeserializeMethod {
     //         get {
     //             if (_deserializeMethod == null)
-    //                 _deserializeMethod = typeof(JsonConvert).GetMethods().First(y => y.IsGenericMethod && y.Name.Equals("DeserializeObject"));
+    //                 _deserializeMethod = typeof(JsonConvert).GetMethods().First(y => y.IsGenericMethod &&
+    //                 y.Name.Equals("DeserializeObject"));
     //             return _deserializeMethod;
     //         }
     //     }
