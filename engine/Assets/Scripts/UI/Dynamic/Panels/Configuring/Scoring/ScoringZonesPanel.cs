@@ -85,33 +85,10 @@ public class ScoringZonesPanel : PanelDynamic
 
     private void OpenScoringZoneGizmo()
     {
-        GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        ScoringZone zone = new ScoringZone(obj, "temp scoring zone", Alliance.Blue, 0, false);
+        
         DynamicUIManager.CreatePanel<ZoneConfigPanel>();
         ZoneConfigPanel panel = DynamicUIManager.GetPanel<ZoneConfigPanel>();
-        panel.SetCallback(data => OnConfigModalUpdate(zone, data));
-        GizmoManager.SpawnGizmo(obj.transform,
-            t =>
-            {
-                obj.transform.position = t.Position;
-                obj.transform.rotation = t.Rotation;
-            },
-            t => {
-                FieldSimObject.CurrentField.ScoringZones.Add(zone);
-                AddZoneEntry(zone);
-            });
-    }
-
-    private bool OnConfigModalUpdate(ScoringZone zone, ScoringZoneData data)
-    {
-        zone.Name = data.Name;
-        zone.GameObject.name = data.Name;
-        zone.GameObject.tag = data.Alliance == Alliance.Red ? "red zone" : "blue zone";
-        zone.Alliance = data.Alliance;
-        zone.Points = data.Points;
-        zone.GameObject.transform.localScale = new Vector3(data.XScale, data.YScale, data.ZScale);
-        zone.DestroyObject = data.DestroyGamepiece;
-        return true;
+        panel.SetCallback(AddZoneEntry);
     }
     
     public override void Update() { }
