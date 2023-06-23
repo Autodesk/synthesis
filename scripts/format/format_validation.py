@@ -10,7 +10,7 @@ As of 6/23/2023, clang-format-16 is not available on Unbuntu through apt-get.
 Trying to validate these files on clang-format-15 will cause a segfault. This is the current workaround.
 """
 IGNORED_FILES = set([
-    "engine/Assets/Scripts/UI/Dynamic/DynamicUIManager.cs"
+    "engine/Assets/Scripts/UI/Dynamic/DynamicUIManager.cs",
     "engine/Assets/Scripts/WebSockets/WebSocketManager.cs"
 ])
 
