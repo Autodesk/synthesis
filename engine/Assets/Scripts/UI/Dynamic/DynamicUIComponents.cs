@@ -274,7 +274,9 @@ namespace Synthesis.UI.Dynamic {
         public GameObject RootGameObject { get; protected set; }
         public RectTransform RootRectTransform { get; protected set; }
         public UIComponent? Parent { get; protected set; }
-        protected List<UIComponent> Children                = new List<UIComponent>();
+        // clang-format off
+        protected List<UIComponent> Children = new List<UIComponent>();
+        // clang-format on
         public IReadOnlyList<UIComponent> ChildrenReadOnly => Children.AsReadOnly();
 
         public UIComponent(UIComponent? parentComponent, GameObject rootGameObject) {

@@ -641,7 +641,9 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     private Dictionary<Rigidbody, (bool isKine, Vector3 vel, Vector3 angVel)> _preFreezeStates =
         new Dictionary<Rigidbody, (bool isKine, Vector3 vel, Vector3 angVel)>();
-    private bool _isFrozen  = false;
+    // clang-format off
+    private bool _isFrozen = false;
+    // clang-format on
     public bool isFrozen() => _isFrozen;
 
     public void Freeze() {

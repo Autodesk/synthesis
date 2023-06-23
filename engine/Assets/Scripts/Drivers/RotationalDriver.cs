@@ -11,7 +11,9 @@ using UnityEngine;
 
 namespace Synthesis {
     public class RotationalDriver : Driver {
-        private bool _isWheel  = false;
+        // clang-format off
+        private bool _isWheel = false;
+        // clang-format on
         public bool IsWheel   => _isWheel;
 
         public string Signal => _inputs[0];

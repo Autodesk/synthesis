@@ -28,10 +28,10 @@ namespace Synthesis.Replay {
         public static ReplayFrame? NewestFrame   => _newestFrame;
         private static ReplayFrame? _oldestFrame = null;
         public static ReplayFrame CurrentFrame   = null!;
-        // clang-format on
 
-        private static float _desyncTime  = 0;
+        private static float _desyncTime = 0;
         public static float DesyncTime   => _desyncTime;
+        // clang-format on
 
         private static Action<ContactReport, float>? _createContactMarker;
         public static Action<ContactReport, float>? CreateContactMarker => _createContactMarker;
