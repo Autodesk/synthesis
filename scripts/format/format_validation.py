@@ -5,6 +5,15 @@ FILES_DIRS = ["engine/Assets/Scripts"]
 FILE_TARGETS = [".cs"]
 FORMAT_COMMAND = "clang-format -i -style=file"
 
+"""
+As of 6/23/2023, clang-format-16 is not available on Unbuntu through apt-get.
+Trying to validate these files on clang-format-15 will cause a segfault. This is the current workaround.
+"""
+IGNORED_FILES = set([
+    "engine/Assets/Scripts/UI/Dynamic/DynamicUIManager.cs"
+    "engine/Assets/Scripts/WebSockets/WebSocketManager.cs"
+])
+
 def main():
     if sys.platform != "linux":
         print("Warning: This script was designed to be run by github action linux machines")
@@ -13,7 +22,7 @@ def main():
     for dir in FILES_DIRS:
         for root, _, filenames in os.walk(dir):
             for filename in filenames:
-                if os.path.splitext(filename)[1] in FILE_TARGETS:
+                if os.path.splitext(filename)[1] in FILE_TARGETS and filename not in IGNORED_FILES:
                     files.append(os.path.join(root, filename))
 
     for file in files:
