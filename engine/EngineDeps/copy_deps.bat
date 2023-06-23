@@ -1,6 +1,6 @@
 @echo off
 
-DEL /S /Q /f "..\Assets\Packages\*"
+DEL /S /Q /f "..\Assets\Packages\*.dll"
 
 COPY  "%HOMEPATH%\.nuget\packages\google.protobuf\3.23.3\lib\netstandard2.0\Google.Protobuf.dll" "..\Assets\Packages\Google.Protobuf.dll"
 COPY  "%HOMEPATH%\.nuget\packages\mathnet.numerics\4.15.0\lib\netstandard2.0\MathNet.Numerics.dll" "..\Assets\Packages\MathNet.Numerics.dll"
