@@ -84,6 +84,8 @@ public static class MainHUD {
 
     private static List<(Button button, Image image)> _drawerItems = new List<(Button button, Image image)>();
 
+    public static List<string> DrawerTitles = new List<string>();
+
     public static void Setup() {
         _drawerItems.Clear();
         _tabDrawerContent = new Content(null, GameObject.Find("MainHUD").transform.Find("TabDrawer").gameObject, null);
@@ -156,6 +158,8 @@ public static class MainHUD {
         } else {
             _drawerItems.Insert(index, (drawerButton, drawerIcon));
         }
+
+        DrawerTitles.Add(title);
 
         UpdateDrawerSizing();
     }

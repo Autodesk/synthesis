@@ -15,9 +15,8 @@ public class ModeManager {
     public static void Start()
     {
         // should this be here? or somewhere else, or not at all?
-        if (CurrentMode == null)
-            CurrentMode = new PracticeMode();
-        CurrentMode.Start();
+        if (CurrentMode != null)
+            CurrentMode.Start();
         // Shooting.Start();
     }
     
