@@ -83,7 +83,10 @@ public class CustomWheel : MonoBehaviour
     
     private (Vector3 impulse, Vector3 velocity, int numCollisions) _collisionDataThisFrame;
     
-
+    /// <summary>
+    /// Compiles contacts and calculates friction forces
+    /// </summary>
+    /// <returns>The net friction force acting on the wheel from collisions this frame</returns>
     private Vector3 CalculateNetFriction()
     {
         Vector3 netImpulse = _collisionDataThisFrame.impulse;
@@ -103,6 +106,7 @@ public class CustomWheel : MonoBehaviour
     /// </summary>
     /// <param name="impulse">Impulse of the collision data</param>
     /// <param name="velocity">Relative velocity of the object to the contacted object</param>
+    /// <returns>A vector for sliding friction between the wheel and the ground</returns>
     private Vector3 CalculateSlidingFriction(Vector3 impulse, Vector3 velocity) {
         var dirVelocity = Vector3.Dot(Axis, velocity);
         var dirMomentum = dirVelocity * Rb.mass;
@@ -122,6 +126,7 @@ public class CustomWheel : MonoBehaviour
     /// </summary>
     /// <param name="impulse">Impulse of the collision data</param>
     /// <param name="velocity">Relative velocity of the object to the contacted object</param>
+    /// <returns>A vector for rolling friction between the wheel and the ground</returns>
     private Vector3 CalculateRollingFriction(Vector3 impulse, Vector3 velocity) {
         var direction = Vector3.Cross(impulse.normalized, Axis).normalized;
         var wheelSurfaceVelocity = Vector3.Cross(impulse.normalized * Radius, Axis * RotationSpeed);
