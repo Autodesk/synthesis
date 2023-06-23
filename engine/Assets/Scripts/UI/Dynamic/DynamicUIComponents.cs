@@ -265,8 +265,10 @@ namespace Synthesis.UI.Dynamic {
             return r;
         }
 
-        protected bool _eventsActive  = true;
-        public bool EventsActive     => _eventsActive;
+        // clang-format off
+        protected bool _eventsActive = true;
+        // clang-format on
+        public bool EventsActive => _eventsActive;
 
         public Vector2 Size { get; protected set; }
         public GameObject RootGameObject { get; protected set; }

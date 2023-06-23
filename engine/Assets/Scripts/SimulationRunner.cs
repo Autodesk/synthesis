@@ -21,8 +21,10 @@ using UnityEngine.Rendering;
 
 namespace Synthesis.Runtime {
     public class SimulationRunner : MonoBehaviour {
-        private static uint _simulationContext  = 0x00000001;
-        public static uint SimulationContext   => _simulationContext;
+        // clang-format off
+        private static uint _simulationContext = 0x00000001;
+        // clang-format on
+        public static uint SimulationContext => _simulationContext;
 
         public const uint RUNNING_SIM_CONTEXT = 0x00000001;
         public const uint PAUSED_SIM_CONTEXT  = 0x00000002;

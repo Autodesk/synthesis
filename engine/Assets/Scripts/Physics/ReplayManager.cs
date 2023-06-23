@@ -21,12 +21,14 @@ namespace Synthesis.Replay {
                 // }
             }
         }
-        private static float _timeSpan            = 5f;
-        public static float TimeSpan             => _timeSpan;
-        private static ReplayFrame? _newestFrame  = null;
+        // clang-format off
+        private static float _timeSpan = 5f;
+        public static float TimeSpan   => _timeSpan;
+        private static ReplayFrame? _newestFrame = null;
         public static ReplayFrame? NewestFrame   => _newestFrame;
-        private static ReplayFrame? _oldestFrame  = null;
-        public static ReplayFrame CurrentFrame    = null!;
+        private static ReplayFrame? _oldestFrame = null;
+        public static ReplayFrame CurrentFrame   = null!;
+        // clang-format on
 
         private static float _desyncTime  = 0;
         public static float DesyncTime   => _desyncTime;

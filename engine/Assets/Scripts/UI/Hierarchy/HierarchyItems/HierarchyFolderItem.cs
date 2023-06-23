@@ -28,8 +28,10 @@ namespace Synthesis.UI.Hierarchy.HierarchyItems {
                 // }
             }
         }
-        public int ChildrenCount                            => Items.Count;
-        public List<(bool owned, HierarchyItem item)> Items  = new List<(bool, HierarchyItem)>();
+        // clang-format off
+        public int ChildrenCount => Items.Count;
+        public List<(bool owned, HierarchyItem item)> Items = new List<(bool, HierarchyItem)>();
+        // clang-format on
 
 #endregion
 

@@ -13,8 +13,10 @@ namespace Synthesis.PreferenceManager {
 
         internal static PreferenceData _data;
         public static bool UnsavedChanges { get; private set; }
-        private static Dictionary<string, object> _preferences  = new Dictionary<string, object>();
-        public static bool AnyPrefs                            => _preferences.Keys.Count > 0;
+        // clang-format off
+        private static Dictionary<string, object> _preferences = new Dictionary<string, object>();
+        public static bool AnyPrefs => _preferences.Keys.Count > 0;
+        // clang-format on
         private static string FilePath = Path.Combine(FileSystem.FileSystem.Preferences, "preferences.json");
 
         public static void Load() {

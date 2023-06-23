@@ -661,8 +661,9 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     public void Unfreeze() {
-        if (!_isFrozen)
+        if (!_isFrozen) {
             return;
+        }
 
         _allRigidbodies.ForEach(x => {
             var originalState  = _preFreezeStates[x];

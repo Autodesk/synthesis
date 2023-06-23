@@ -118,10 +118,12 @@ namespace Synthesis.Configuration {
             transform.localPosition = Vector3.zero;
             transform.localRotation = Quaternion.identity;
 
+            // clang-format off
             gizmoCameraTransform          = new GameObject().transform;
-            gizmoCameraTransform.position = transform.parent.position;        // camera shifting
-            OrbitCameraMode.FocusPoint = () => gizmoCameraTransform.position; // camera focus
-            cam.PitchLowerLimit              = gizmoPitch;                    // camera pitch limits
+            gizmoCameraTransform.position = transform.parent.position;           // camera shifting
+            OrbitCameraMode.FocusPoint    = () => gizmoCameraTransform.position; // camera focus
+            cam.PitchLowerLimit           = gizmoPitch;                          // camera pitch limits
+            // clang-format on
         }
 
         private void RestoreCameraMode() {

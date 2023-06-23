@@ -29,8 +29,10 @@ public static class LayoutManager {
 
     // TAB MANAGER
 
-    private static Tab _currentTab  = null;
-    public static Tab CurrentTab   => _currentTab;
+    // clang-format off
+    private static Tab _currentTab = null;
+    // clang-format on
+    public static Tab CurrentTab => _currentTab;
 
     public static bool OpenTab(Tab tab, bool forceClose = true) {
         if (_currentTab != null) {

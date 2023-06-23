@@ -19,7 +19,9 @@ namespace Synthesis.UI.Hierarchy {
         public static GameObject ItemPrefab => HierarchyInstance.itemPrefab;
         public GameObject contentContainer;
         public static GameObject ContentContainer => HierarchyInstance.contentContainer;
-        public static bool Changes                 = true;
+        // clang-format off
+        public static bool Changes = true;
+        // clang-format on
 
         public float TabSize = 20f;
         public float Padding = 2.5f;

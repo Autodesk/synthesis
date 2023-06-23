@@ -26,8 +26,10 @@ namespace Synthesis {
                 _position              = newPos;
             }
         }
-        private float _velocity  = 0f;
-        public float Velocity   => _velocity;
+        // clang-format off
+        private float _velocity = 0f;
+        // clang-format on
+        public float Velocity => _velocity;
         public (float Upper, float Lower) Limits { get; private set; }
 
         public LinearDriver(string name, string[] inputs, string[] outputs, SimObject simObject,

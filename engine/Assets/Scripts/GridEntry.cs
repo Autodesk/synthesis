@@ -41,7 +41,9 @@ public class GridEntry : MonoBehaviour {
             float progress = Mathf.Clamp(
                 Mathf.Clamp(((Time.realtimeSinceStartup - _startTime) - Delay), 0f, float.MaxValue) / Length, 0f, 1f);
             Func<float, float> progressFunc = (float x) => (-Mathf.Pow((x - 1), 2)) + 1f;
-            progress                                     = progressFunc(progress);
+            // clang-format off
+            progress = progressFunc(progress);
+            // clang-format on
             MatRef.SetFloat("INNER_RADIUS", innerRadius * progress);
             MatRef.SetFloat("FEATHER_RADIUS", featherRadius * progress);
         }
