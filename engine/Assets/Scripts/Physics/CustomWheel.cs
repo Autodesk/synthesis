@@ -38,7 +38,7 @@ public class CustomWheel : MonoBehaviour {
 
     private float _startTime;
 
-    public bool HasContacts => _pairings.Count > 0;
+    public bool HasContacts => _collisionDataThisFrame.numCollisions > 0;
 
     public float Inertia => WheelDriver.GetInertiaFromAxisVector(Rb, LocalAxis);
     
@@ -64,7 +64,7 @@ public class CustomWheel : MonoBehaviour {
     /// </summary>
     /// <param name="mod">Modifier to account for janky Unity joints</param>
     public void GetFrictionForces(float mod) {
-        if (_pairings.Count > 0) {
+        if (_collisionDataThisFrame.numCollisions > 0) {
             CalculateFriction();
 
             _lastImpulseTotal = (_staticImpulseVecAccum + _rollingImpulseVecAccum);
@@ -79,29 +79,33 @@ public class CustomWheel : MonoBehaviour {
     // Tbh these variables are relics but I don't want to mess with anything
     private Vector3 _staticImpulseVecAccum = new Vector3();
     private Vector3 _rollingImpulseVecAccum = new Vector3();
-    public void OnCollisionStay(Collision collision) {
+  
+    public void OnCollisionStay(Collision collision)
+    {
         // Flip impulse vector if for whatever reason it is backwards (happens with mean machine robot)
         Vector3 impulse = (collision.impulse.y < 0f) ? -collision.impulse: collision.impulse;
         
-        _pairings.Add((impulse, collision.relativeVelocity));
+        _collisionDataThisFrame.impulse += impulse;
+        _collisionDataThisFrame.velocity += collision.relativeVelocity;
+        _collisionDataThisFrame.numCollisions++;
     }
     
-    private List<(Vector3 impulse, Vector3 velocity)> _pairings = new List<(Vector3, Vector3)>();
+    private (Vector3 impulse, Vector3 velocity, int numCollisions) _collisionDataThisFrame;
+    
     /// <summary>
     /// Compiles contacts and calculates friction forces
     /// </summary>
     public void CalculateFriction() {
-        Vector3 impulse = Vector3.zero;
-        Vector3 velocity = Vector3.zero;
-        _pairings.ForEach(x => { impulse += x.impulse; velocity += x.velocity; });
-        velocity /= _pairings.Count; // The velocities are different and I don't know why
+        Vector3 impulse = _collisionDataThisFrame.impulse;
+        Vector3 velocity = _collisionDataThisFrame.velocity;
+        velocity /= _collisionDataThisFrame.numCollisions; // The velocities are different and I don't know why
 
         impulse = ClampMag(impulse, 0, ImpulseMax);
         
         CalculateSlidingFriction(impulse, velocity);
         CalculateRollingFriction(impulse, velocity);
 
-        _pairings.Clear();
+        _collisionDataThisFrame = (Vector3.zero, Vector3.zero, 0);
     }
 
     /// <summary>
