@@ -42,7 +42,7 @@ def main():
         print(f"Formatting {file}...")
         os.system(f"{FORMAT_COMMAND} {file}")
 
-        print("Done!")
+    print("Done!")
 
 if __name__ == '__main__':
     main()
