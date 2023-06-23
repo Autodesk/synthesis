@@ -69,6 +69,8 @@ namespace Synthesis.Runtime {
             SetContext(RUNNING_SIM_CONTEXT);
             Synthesis.PreferenceManager.PreferenceManager.Load();
             MainHUD.Setup();
+            if (ModeManager.CurrentMode == null)
+                ModeManager.CurrentMode = new PracticeMode();
             ModeManager.Start();
             RobotSimObject.Setup();
             WebSocketManager.Init();
