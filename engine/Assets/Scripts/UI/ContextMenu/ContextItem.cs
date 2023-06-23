@@ -24,7 +24,7 @@ namespace Synthesis.UI.ContextMenus {
         public string Text {
             get => TextObj.text;
             set {
-                TextObj.text = value;
+                TextObj.text    = value;
                 gameObject.name = value;
             }
         }

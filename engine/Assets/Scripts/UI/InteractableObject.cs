@@ -11,10 +11,8 @@ using Synthesis.Util;
 using System.Linq;
 using ContextMenu = Synthesis.UI.ContextMenus.ContextMenu;
 
-namespace Synthesis.UI
-{
-    public class InteractableObject : MonoBehaviour, IPointerClickHandler, IPointerExitHandler, IPointerEnterHandler
-    {
+namespace Synthesis.UI {
+    public class InteractableObject : MonoBehaviour, IPointerClickHandler, IPointerExitHandler, IPointerEnterHandler {
         // public class ContextItemEvent : UnityEvent { }
         public bool useReflection = true;
 
@@ -33,18 +31,17 @@ namespace Synthesis.UI
         public event InteractionStateChange OnInteractionStateChanged;
 
         public string ContextMenuUID = string.Empty;
-        public List<(string title, Sprite icon, Action<object> callback)> Options
-            = new List<(string title, Sprite icon, Action<object> callback)>();
+        public List<(string title, Sprite icon, Action<object> callback)> Options =
+            new List<(string title, Sprite icon, Action<object> callback)>();
 
-        public void OnPointerClick(PointerEventData eventData)
-        {
+        public void OnPointerClick(PointerEventData eventData) {
             Debug.Log(gameObject.name);
-            if (eventData.button == PointerEventData.InputButton.Right)
-            {
-                //open right click floating window
-                // Debug.Log(eventData.position);
-                
-                Vector2 position = new Vector2(eventData.position.x, eventData.position.y); // Maybe have that 1080 number adjust but for rn it's fine
+            if (eventData.button == PointerEventData.InputButton.Right) {
+                // open right click floating window
+                //  Debug.Log(eventData.position);
+
+                Vector2 position = new Vector2(eventData.position.x,
+                    eventData.position.y); // Maybe have that 1080 number adjust but for rn it's fine
                 OnPointerClick(position);
             } else {
                 ContextMenu.Hide();
@@ -60,42 +57,40 @@ namespace Synthesis.UI
             }
         }
 
-        public void OnPointerEnter(PointerEventData eventData)
-        {
-            //open tooltips and highlight on
+        public void OnPointerEnter(PointerEventData eventData) {
+            // open tooltips and highlight on
         }
 
-        public void OnPointerExit(PointerEventData eventData)
-        {
-            //close tooltips and highlight off
+        public void OnPointerExit(PointerEventData eventData) {
+            // close tooltips and highlight off
         }
 
-        public void AddOption(string title, Sprite icon, Action<object> callback) => Options.Add((title, icon, callback));
+        public void AddOption(string title, Sprite icon, Action<object> callback) => Options.Add(
+            (title, icon, callback));
 
-        protected virtual void OnInteraction(bool isInteractedWith) { }
+        protected virtual void OnInteraction(bool isInteractedWith) {}
 
-        #region Static Methods
+#region Static Methods
 
-        private static Dictionary<Type, List<(string title, Sprite icon, Action<object> callback)>> InteractableTypes
-            = new Dictionary<Type, List<(string, Sprite, Action<object>)>>();
-        public static List<(string title, Sprite icon, Action<object> callback)> GetInteractableOptions<T>(T interactable) where T : InteractableObject {
-
+        private static Dictionary<Type, List<(string title, Sprite icon, Action<object> callback)>> InteractableTypes =
+            new Dictionary<Type, List<(string, Sprite, Action<object>)>>();
+        public static List<(string title, Sprite icon, Action<object> callback)> GetInteractableOptions<T>(
+            T interactable)
+            where T : InteractableObject {
             Type type = interactable.GetType();
 
             if (InteractableTypes.ContainsKey(type)) {
-
                 // Debug.Log(type.Name);
                 return InteractableTypes[type];
 
             } else {
-
                 var list = new List<(string title, Sprite icon, Action<object> callback)>();
                 type.GetMethods().ForEach(x => {
                     if (x.DeclaringType == type) {
                         // Debug.Log(x.Name);
                         var attrObj = x.GetCustomAttributes(typeof(ContextMenuOptionAttribute), false);
                         if (attrObj.Count() > 0 && attrObj[0] is ContextMenuOptionAttribute) {
-                            ContextMenuOptionAttribute attr = (ContextMenuOptionAttribute)attrObj[0];
+                            ContextMenuOptionAttribute attr = (ContextMenuOptionAttribute) attrObj[0];
                             string title;
                             Action<object> callback;
 
@@ -116,10 +111,9 @@ namespace Synthesis.UI
 
                 InteractableTypes.Add(type, list);
                 return list;
-
             }
         }
 
-        #endregion
+#endregion
     }
 }

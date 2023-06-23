@@ -11,7 +11,6 @@ using TMPro;
 // Todo: Descriptions
 namespace Synthesis.UI.ContextMenus {
     public class ContextMenu : MonoBehaviour, IPointerExitHandler, IPointerEnterHandler {
-
         public static bool IsShowing { get; private set; } = false;
 
         public CanvasScaler canvasScaler;
@@ -40,12 +39,13 @@ namespace Synthesis.UI.ContextMenus {
             //     ContextMenu.Hide();
         }
 
-        public static void Show<T>(InteractableObject sender, Vector2 pos, string title, T interactable) where T : InteractableObject {
+        public static void Show<T>(InteractableObject sender, Vector2 pos, string title, T interactable)
+            where T : InteractableObject {
             Show(sender, pos, title, InteractableObject.GetInteractableOptions(interactable));
         }
 
-        public static void Show(InteractableObject sender, Vector2 pos, string title, IEnumerable<(string title, Sprite icon, Action<object> callback)> description) {
-
+        public static void Show(InteractableObject sender, Vector2 pos, string title,
+            IEnumerable<(string title, Sprite icon, Action<object> callback)> description) {
             // This order??
             Hide();
             contextMenu.gameObject.SetActive(true);
@@ -56,7 +56,8 @@ namespace Synthesis.UI.ContextMenus {
 
             // Spawn in items
             description.ForEach(x => {
-                var item = Instantiate(contextMenu.ContextItem, contextMenu.ContentContainer).GetComponent<ContextItem>();
+                var item =
+                    Instantiate(contextMenu.ContextItem, contextMenu.ContentContainer).GetComponent<ContextItem>();
                 item.Text = x.title;
                 if (x.icon == null) {
                     item.IconImage.color = new Color(0, 0, 0, 0);
@@ -64,25 +65,25 @@ namespace Synthesis.UI.ContextMenus {
                     item.Icon = x.icon;
                 }
                 item.Callback = x.callback;
-                item.Creator = sender;
+                item.Creator  = sender;
                 contextMenu.SpawnedItems.Add(item.gameObject);
             });
 
             // Move menu
             contextMenu.GetComponent<RectTransform>().position = pos;
 
-            IsShowing = true;
+            IsShowing                    = true;
             sender.IsBeingInteractedWith = true;
-            CurrentInteraction = sender;
+            CurrentInteraction           = sender;
         }
 
         public static void Hide() {
             ResetItems();
             if (CurrentInteraction != null) {
                 CurrentInteraction.IsBeingInteractedWith = false;
-                CurrentInteraction = null;
+                CurrentInteraction                       = null;
             }
-            
+
             contextMenu.gameObject.SetActive(false);
 
             IsShowing = false;

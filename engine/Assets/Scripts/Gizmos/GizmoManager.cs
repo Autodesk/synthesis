@@ -12,8 +12,7 @@ namespace Synthesis.Gizmo {
     /// Manages Gizmos and ensures only one gizmo spawns at a time.
     /// </summary>
     public static class GizmoManager {
-
-        #region OLD
+#region OLD
 
         // private static GameObject gizmo = null;
         // public static GameObject currentGizmo
@@ -65,7 +64,7 @@ namespace Synthesis.Gizmo {
         //     Object.Destroy(gizmo);
         // }
 
-        #endregion
+#endregion
 
         private static GizmoConfig? _currentGizmoConfig;
         public static GizmoConfig? CurrentGizmoConfig => _currentGizmoConfig;
@@ -75,20 +74,24 @@ namespace Synthesis.Gizmo {
             SimulationRunner.OnUpdate += UpdateGizmo;
 
             InputManager.AssignDigitalInput(
-                "exit-gizmo",
-                new Digital("Return", context: SimulationRunner.GIZMO_SIM_CONTEXT),
-                e => ExitGizmo()
-            );
+                "exit-gizmo", new Digital("Return", context: SimulationRunner.GIZMO_SIM_CONTEXT), e => ExitGizmo());
         }
 
-        public static void SpawnGizmo<T>(T gizmoObject) where T : IGizmo
-            => SpawnGizmo(new GizmoConfig { Transform = gizmoObject.GetGizmoData(), UpdateCallback = gizmoObject.Update, EndCallback = gizmoObject.End });
+        public static void SpawnGizmo<T>(T gizmoObject)
+            where T : IGizmo => SpawnGizmo(new GizmoConfig { Transform          = gizmoObject.GetGizmoData(),
+                                                                 UpdateCallback = gizmoObject.Update,
+                                                                 EndCallback    = gizmoObject.End });
 
-        public static void SpawnGizmo(TransformData data, Action<TransformData> update, Action<TransformData> end)
-            => SpawnGizmo(new GizmoConfig { Transform = data, UpdateCallback = update, EndCallback = end });
+        public static void SpawnGizmo(TransformData data, Action<TransformData> update,
+            Action<TransformData> end) => SpawnGizmo(new GizmoConfig { Transform = data, UpdateCallback = update,
+            EndCallback = end });
 
-        public static void SpawnGizmo(Vector3 position, Quaternion rotation, Action<TransformData> update, Action<TransformData> end)
-            => SpawnGizmo(new GizmoConfig { Transform = new TransformData { Position = position, Rotation = rotation }, UpdateCallback = update, EndCallback = end });
+        public static void SpawnGizmo(Vector3 position, Quaternion rotation, Action<TransformData> update,
+            Action<TransformData> end) => SpawnGizmo(new GizmoConfig {
+            Transform = new TransformData {Position = position, Rotation = rotation},
+                UpdateCallback = update,
+            EndCallback = end
+        });
 
         public static void SpawnGizmo(GizmoConfig config) {
             if (_currentGizmoConfig.HasValue)
@@ -102,10 +105,10 @@ namespace Synthesis.Gizmo {
             _currentGizmoConfig = config;
 
             // Really duct-taped way of doing this
-            _currentTargetTransform = new GameObject("GIZMO_MARKER").transform;
+            _currentTargetTransform          = new GameObject("GIZMO_MARKER").transform;
             _currentTargetTransform.position = _currentGizmoConfig.Value.Transform.Position;
             _currentTargetTransform.rotation = _currentGizmoConfig.Value.Transform.Rotation;
-            
+
             var gizmo = GameObject.Instantiate(SynthesisAssetCollection.GizmoPrefabStatic, _currentTargetTransform);
         }
 
@@ -123,26 +126,26 @@ namespace Synthesis.Gizmo {
             // Debug.Log("Exit Gizmo");
 
             SimulationRunner.RemoveContext(SimulationRunner.GIZMO_SIM_CONTEXT);
-            
+
             _currentGizmoConfig.Value.EndCallback(_currentTargetTransform);
             GameObject.Destroy(_currentTargetTransform.gameObject);
 
-            _currentGizmoConfig = null;
+            _currentGizmoConfig     = null;
             _currentTargetTransform = null;
         }
     }
 
     public struct TransformData {
-
-        public static TransformData Default = new TransformData { Position = Vector3.zero, Rotation = Quaternion.identity };
+        public static TransformData Default =
+            new TransformData { Position = Vector3.zero, Rotation = Quaternion.identity };
 
         public Vector3 Position;
         public Quaternion Rotation;
 
-        public static implicit operator TransformData((Vector3, Quaternion) data)
-            => new TransformData { Position = data.Item1, Rotation = data.Item2 };
-        public static implicit operator TransformData(Transform t)
-            => new TransformData { Position = t.position, Rotation = t.rotation };
+        public static implicit operator TransformData(
+            (Vector3, Quaternion) data) => new TransformData { Position = data.Item1, Rotation = data.Item2 };
+        public static implicit operator TransformData(
+            Transform t) => new TransformData { Position = t.position, Rotation = t.rotation };
     }
 
     public struct GizmoConfig {

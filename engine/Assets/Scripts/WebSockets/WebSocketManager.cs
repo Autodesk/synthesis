@@ -12,9 +12,8 @@ using System.Linq;
 
 namespace Synthesis.WS {
     public static class WebSocketManager {
-
-        private static bool _initialized = false;
-        public static bool Initialized => _initialized;
+        private static bool _initialized  = false;
+        public static bool Initialized   => _initialized;
         private static WebSocketServer? _server;
         public static RoboRIOState RioState = new RoboRIOState();
 
@@ -46,14 +45,15 @@ namespace Synthesis.WS {
         /// Get Rio data from the RioState
         /// </summary>
         /// <typeparam name="T">Data requested</typeparam>
-        public static T GetData<T>(string device) where T : HardwareTypeData
-            => RioState.GetData<T>(device);
+        public static T GetData<T>(string device)
+            where T : HardwareTypeData => RioState.GetData<T>(device);
 
-        /// <summary>
-        /// Update data in the RioState and upload it to a currently connected websocket client
-        /// </summary>
-        /// <typeparam name="T">Type of data</typeparam>
-        public static void UpdateData<T>(string device, Action<T> change) where T : HardwareTypeData {
+  /// <summary>
+  /// Update data in the RioState and upload it to a currently connected websocket client
+  /// </summary>
+  /// <typeparam name="T">Type of data</typeparam>
+  public static void UpdateData<T>(string device, Action<T> change)
+            where T : HardwareTypeData {
             RioState.UpdateData(device, change);
 
             if (_server == null || _server.Clients.Count == 0)
@@ -62,11 +62,8 @@ namespace Synthesis.WS {
             var copy = new Dictionary<string, object>();
             RioState.GetData<T>(device).GetData().ForEach(kvp => copy[kvp.Key] = kvp.Value);
 
-            var data = new RioJsonData {
-                type = HardwareTypeData.GetMetaData<T>().RegisteredTypeName,
-                device = device,
-                data = copy
-            };
+            var data = new RioJsonData { type = HardwareTypeData.GetMetaData<T>().RegisteredTypeName, device = device,
+                data = copy };
             var json = JsonConvert.SerializeObject(data);
             _server.SendToClient(_server.Clients[0], json);
         }
@@ -80,7 +77,7 @@ namespace Synthesis.WS {
         }
 
         /// <summary>
-        /// Execute to prepare the sim for 
+        /// Execute to prepare the sim for
         /// </summary>
         public static void Teardown() {
             if (_server != null) {
@@ -90,7 +87,8 @@ namespace Synthesis.WS {
 
             _initialized = false;
 
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/riostate.json", JsonConvert.SerializeObject(RioState));
+            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/riostate.json",
+                JsonConvert.SerializeObject(RioState));
         }
     }
 

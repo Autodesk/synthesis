@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ShootableGamepiece : MonoBehaviour {
-
     public GamepieceSimObject SimObject;
     private MeshRenderer _mesh;
     private Rigidbody _rb;
@@ -12,15 +11,13 @@ public class ShootableGamepiece : MonoBehaviour {
     private bool _requireExit = false;
 
     void Start() {
-        _mesh = gameObject.GetComponentInChildren<MeshRenderer>();
-        _rb = gameObject.GetComponent<Rigidbody>();
+        _mesh     = gameObject.GetComponentInChildren<MeshRenderer>();
+        _rb       = gameObject.GetComponent<Rigidbody>();
         _collider = gameObject.GetComponentInChildren<MeshCollider>();
         // ResetGamepiece();
     }
 
-    void Update() {
-
-    }
+    void Update() {}
 
     public void RequireExit() {
         _requireExit = true;
@@ -32,25 +29,27 @@ public class ShootableGamepiece : MonoBehaviour {
     // {
     //     //configure being shown
     //     //add impulse
-    //     transform.position = location + (transform.position - gameObject.GetComponentInChildren<MeshCollider>().transform.position);
+    //     transform.position = location + (transform.position -
+    //     gameObject.GetComponentInChildren<MeshCollider>().transform.position);
     //     transform.GetComponentInChildren<MeshCollider>().gameObject.transform.rotation = rotation;
-    //     transform.position += GetComponentInChildren<MeshCollider>().gameObject.transform.forward * 0.4f;//forward offset
+    //     transform.position += GetComponentInChildren<MeshCollider>().gameObject.transform.forward * 0.4f;//forward
+    //     offset
     //     //transform.position = location;
-        
+
     //     SetPieceState(true);
     //     rb.AddForce(HorizontalImpulse, ForceMode.Impulse);
     //     rb.AddForce(VerticalImpulse, ForceMode.Impulse);
     //     //Debug.Log($"HorizontalImpulse: {HorizontalImpulse} | VerticalImpulse {VerticalImpulse}");
-        
+
     //     //reusing game objects
     //     scored = false;
     // }
 
     private bool scored = false;
-    private int value = 1;//TEMPORARY VALUES
-    
+    private int value   = 1; // TEMPORARY VALUES
+
     // private void OnCollisionEnter(Collision collision) {
-        
+
     // }
 
     private void OnTriggerStay(Collider collider) {
@@ -65,11 +64,9 @@ public class ShootableGamepiece : MonoBehaviour {
     }
 
     private void OnTriggerEnter(Collider collider) {
-        //Debug.Log("Collision Detected" + collision.transform.tag);
-        
-        
+        // Debug.Log("Collision Detected" + collision.transform.tag);
 
-        //TEMPORARY SCORING
+        // TEMPORARY SCORING
         if (collider.transform.CompareTag("blue zone") && !scored) {
             scored = true;
             Scoring.blueScore += value;
@@ -84,7 +81,7 @@ public class ShootableGamepiece : MonoBehaviour {
         if (collider.transform.CompareTag("robot"))
             _requireExit = false;
     }
-    
+
     // public void ResetGamepiece()
     // {
     //     SetPieceState(true);

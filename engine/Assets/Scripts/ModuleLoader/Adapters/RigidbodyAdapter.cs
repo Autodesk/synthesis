@@ -5,20 +5,17 @@ using SynthesisAPI.Utilities;
 using MathNet.Spatial.Euclidean;
 using Engine.Util;
 
-using RigidbodyConstraints = SynthesisAPI.EnvironmentManager.Components.RigidbodyConstraints;
+using RigidbodyConstraints   = SynthesisAPI.EnvironmentManager.Components.RigidbodyConstraints;
 using CollisionDetectionMode = SynthesisAPI.EnvironmentManager.Components.CollisionDetectionMode;
 using System.ComponentModel;
 
-namespace Engine.ModuleLoader.Adapters
-{
-    public class RigidbodyAdapter : MonoBehaviour, IApiAdapter<Rigidbody>
-    {
+namespace Engine.ModuleLoader.Adapters {
+    public class RigidbodyAdapter : MonoBehaviour, IApiAdapter<Rigidbody> {
         internal Rigidbody instance;
         internal UnityEngine.Rigidbody unityRigidbody;
 
-        public void SetInstance(Rigidbody rigidbody)
-        {
-            instance = rigidbody;
+        public void SetInstance(Rigidbody rigidbody) {
+            instance         = rigidbody;
             instance.Adapter = this;
 
             if ((unityRigidbody = GetComponent<UnityEngine.Rigidbody>()) == null)
@@ -28,26 +25,25 @@ namespace Engine.ModuleLoader.Adapters
 
             unityRigidbody.sleepThreshold = 0;
 
-            unityRigidbody.useGravity = instance.useGravity;
-            unityRigidbody.isKinematic = instance.isKinematic;
-            unityRigidbody.detectCollisions = instance.detectCollisions;
-            unityRigidbody.mass = instance.mass;
-            unityRigidbody.velocity = instance.velocity.Map();
-            unityRigidbody.drag = instance.drag;
-            unityRigidbody.angularVelocity = instance.angularVelocity.Map();
-            unityRigidbody.angularDrag = instance.angularDrag;
-            unityRigidbody.maxAngularVelocity = instance.maxAngularVelocity;
+            unityRigidbody.useGravity               = instance.useGravity;
+            unityRigidbody.isKinematic              = instance.isKinematic;
+            unityRigidbody.detectCollisions         = instance.detectCollisions;
+            unityRigidbody.mass                     = instance.mass;
+            unityRigidbody.velocity                 = instance.velocity.Map();
+            unityRigidbody.drag                     = instance.drag;
+            unityRigidbody.angularVelocity          = instance.angularVelocity.Map();
+            unityRigidbody.angularDrag              = instance.angularDrag;
+            unityRigidbody.maxAngularVelocity       = instance.maxAngularVelocity;
             unityRigidbody.maxDepenetrationVelocity = instance.maxDepenetrationVelocity;
-            unityRigidbody.collisionDetectionMode = instance.collisionDetectionMode.Convert<UnityEngine.CollisionDetectionMode>();
+            unityRigidbody.collisionDetectionMode =
+                instance.collisionDetectionMode.Convert<UnityEngine.CollisionDetectionMode>();
             unityRigidbody.constraints = instance.constraints.Convert<UnityEngine.RigidbodyConstraints>();
         }
 
         private void OnCollisionEnter(Collision collision) => instance.OnEnterCollision(collision.impulse.magnitude);
 
-        private void UpdateProperty(object sender, PropertyChangedEventArgs args)
-        {
-            switch (args.PropertyName.ToLower())
-            {
+        private void UpdateProperty(object sender, PropertyChangedEventArgs args) {
+            switch (args.PropertyName.ToLower()) {
                 case "usegravity":
                     unityRigidbody.useGravity = instance.useGravity;
                     break;
@@ -55,7 +51,7 @@ namespace Engine.ModuleLoader.Adapters
                     unityRigidbody.isKinematic = instance.isKinematic;
                     break;
                 case "detectcollisions":
-                    unityRigidbody.detectCollisions = instance.detectCollisions; 
+                    unityRigidbody.detectCollisions = instance.detectCollisions;
                     break;
                 case "mass":
                     unityRigidbody.mass = instance.mass;
@@ -79,7 +75,8 @@ namespace Engine.ModuleLoader.Adapters
                     unityRigidbody.maxDepenetrationVelocity = instance.maxDepenetrationVelocity;
                     break;
                 case "collisiondetectionmode":
-                    unityRigidbody.collisionDetectionMode = ConvertEnum<UnityEngine.CollisionDetectionMode>(instance.collisionDetectionMode);
+                    unityRigidbody.collisionDetectionMode =
+                        ConvertEnum<UnityEngine.CollisionDetectionMode>(instance.collisionDetectionMode);
                     break;
                 case "constraints":
                     unityRigidbody.constraints = ConvertEnum<UnityEngine.RigidbodyConstraints>(instance.constraints);
@@ -89,28 +86,26 @@ namespace Engine.ModuleLoader.Adapters
             }
         }
 
-        public void Update()
-        {
-            //instance.useGravity = unityRigidbody.useGravity;
-            //instance.isKinematic = unityRigidbody.isKinematic;
-            instance.mass = unityRigidbody.mass;
+        public void Update() {
+            // instance.useGravity = unityRigidbody.useGravity;
+            // instance.isKinematic = unityRigidbody.isKinematic;
+            instance.mass     = unityRigidbody.mass;
             instance.velocity = unityRigidbody.velocity.Map();
-            //instance.drag = unityRigidbody.drag;
+            // instance.drag = unityRigidbody.drag;
             instance.angularVelocity = unityRigidbody.angularVelocity.Map();
-            //instance.angularDrag = unityRigidbody.angularDrag;
-            //instance.maxAngularVelocity = unityRigidbody.maxAngularVelocity;
-            //instance.maxDepenetrationVelocity = unityRigidbody.maxDepenetrationVelocity;
-            //instance.collisionDetectionMode = unityRigidbody.collisionDetectionMode.Convert<CollisionDetectionMode>();
-            //instance.constraints = unityRigidbody.constraints.Convert<RigidbodyConstraints>();
+            // instance.angularDrag = unityRigidbody.angularDrag;
+            // instance.maxAngularVelocity = unityRigidbody.maxAngularVelocity;
+            // instance.maxDepenetrationVelocity = unityRigidbody.maxDepenetrationVelocity;
+            // instance.collisionDetectionMode =
+            // unityRigidbody.collisionDetectionMode.Convert<CollisionDetectionMode>(); instance.constraints =
+            // unityRigidbody.constraints.Convert<RigidbodyConstraints>();
 
-            if (instance.AdditionalForces.Count > 0)
-            {
-                foreach (var force in instance.AdditionalForces)
-                {
+            if (instance.AdditionalForces.Count > 0) {
+                foreach (var force in instance.AdditionalForces) {
                     if (force.Position != Vector3D.NaN)
-                        unityRigidbody.AddForceAtPosition(force.Force.Map(), force.Position.Map(), ConvertEnum<ForceMode>(force.Mode));
-                    else
-                        if (force.Relative)
+                        unityRigidbody.AddForceAtPosition(
+                            force.Force.Map(), force.Position.Map(), ConvertEnum<ForceMode>(force.Mode));
+                    else if (force.Relative)
                         unityRigidbody.AddRelativeForce(force.Force.Map(), ConvertEnum<ForceMode>(force.Mode));
                     else
                         unityRigidbody.AddForce(force.Force.Map(), ConvertEnum<ForceMode>(force.Mode));
@@ -118,10 +113,8 @@ namespace Engine.ModuleLoader.Adapters
                 instance.AdditionalForces.Clear();
             }
 
-            if (instance.AdditionalTorques.Count > 0)
-            {
-                foreach (var torque in instance.AdditionalTorques)
-                {
+            if (instance.AdditionalTorques.Count > 0) {
+                foreach (var torque in instance.AdditionalTorques) {
                     if (torque.Relative)
                         unityRigidbody.AddRelativeTorque(torque.Torque.Map(), ConvertEnum<ForceMode>(torque.Mode));
                     else
@@ -131,11 +124,10 @@ namespace Engine.ModuleLoader.Adapters
             }
         }
 
-        public static Rigidbody NewInstance()
-        {
+        public static Rigidbody NewInstance() {
             return new Rigidbody();
         }
 
-        public TResult ConvertEnum<TResult>(object i) => (TResult)Enum.Parse(typeof(TResult), i.ToString(), true);
+        public TResult ConvertEnum<TResult>(object i) => (TResult) Enum.Parse(typeof(TResult), i.ToString(), true);
     }
 }

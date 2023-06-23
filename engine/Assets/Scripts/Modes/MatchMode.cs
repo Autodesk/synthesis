@@ -5,7 +5,7 @@ using UnityEngine;
 using TMPro;
 
 public class MatchMode : IMode {
-    //PracticeMode practiceMode = new PracticeMode();
+    // PracticeMode practiceMode = new PracticeMode();
     public static int currentFieldIndex = -1;
     public static int currentRobotIndex = -1;
 
@@ -18,13 +18,11 @@ public class MatchMode : IMode {
     }
 
     // Update is called once per frame
-    public void Update() {
-    }
-    public void End() {
-    }
+    public void Update() {}
 
-    public void OpenMenu() { }
+    public void End() {}
 
-    public void CloseMenu() { }
+    public void OpenMenu() {}
 
+    public void CloseMenu() {}
 }
