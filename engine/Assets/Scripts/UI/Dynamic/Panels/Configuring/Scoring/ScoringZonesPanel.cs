@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using Synthesis.Gizmo;
 using Synthesis.UI.Dynamic;
 using Synthesis.PreferenceManager;
@@ -23,6 +24,10 @@ public class ScoringZonesPanel : PanelDynamic
     private const float MODAL_HEIGHT = 400f;
     
     private const float VERTICAL_PADDING = 16f;
+    private const float HORIZONTAL_PADDING = 16f;
+    private const float SCROLLBAR_WIDTH = 10f;
+    private const float BUTTON_WIDTH = 64f;
+    private const float ROW_HEIGHT = 64f;
 
     private float _scrollViewWidth;
 
@@ -37,7 +42,7 @@ public class ScoringZonesPanel : PanelDynamic
     
     private readonly Func<UIComponent, UIComponent> ListVerticalLayout = (u) => {
         var offset = (-u.Parent!.RectOfChildren(u).yMin) + VERTICAL_PADDING;
-        u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 15f, rightPadding: 15f);
+        u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: HORIZONTAL_PADDING, rightPadding: HORIZONTAL_PADDING);
         return u;
     };
 
@@ -51,7 +56,7 @@ public class ScoringZonesPanel : PanelDynamic
         CancelButton.RootGameObject.SetActive(false);
 
         _zonesScrollView = MainContent.CreateScrollView().SetRightStretch<ScrollView>().ApplyTemplate(VerticalLayout);
-        _scrollViewWidth = _zonesScrollView.Parent!.RectOfChildren().width;
+        _scrollViewWidth = _zonesScrollView.Parent!.RectOfChildren().width - SCROLLBAR_WIDTH - HORIZONTAL_PADDING * 2;
 
 
         _addZoneButton = MainContent.CreateButton()
@@ -70,23 +75,49 @@ public class ScoringZonesPanel : PanelDynamic
 
     private void AddZoneEntries()
     {
+        _zonesScrollView.Content.DeleteAllChildren();
         foreach (ScoringZone zone in FieldSimObject.CurrentField.ScoringZones)
         {
-            AddZoneEntry(zone);
+            AddZoneEntry(zone, true);
         }
     }
 
-    private void AddZoneEntry(ScoringZone zone)
-    {
-        (Content leftContent, Content rightContent) = _zonesScrollView.Content.CreateSubContent(new Vector2(_scrollViewWidth, 64f)).ApplyTemplate(VerticalLayout).SplitLeftRight(_scrollViewWidth / 2, 0);
-        leftContent.CreateLabel().SetText(zone.Name).ApplyTemplate(ListVerticalLayout);
-        rightContent.CreateLabel().SetText(zone.Alliance.ToString()).ApplyTemplate(ListVerticalLayout);
+    private void AddZoneEntry(ScoringZone zone, bool isNew) {
+        if (!isNew) return;
+        (Content leftContent, Content rightContent) = _zonesScrollView.Content.CreateSubContent(new Vector2(_scrollViewWidth - HORIZONTAL_PADDING * 2, ROW_HEIGHT))
+            .SetBackgroundColor<Content>(Color.black)
+            .ApplyTemplate(ListVerticalLayout)
+            .SplitLeftRight(BUTTON_WIDTH, HORIZONTAL_PADDING);
+        leftContent.SetBackgroundColor<Content>(zone.Alliance == Alliance.Red ? Color.red : Color.blue);
+        rightContent.SetBackgroundColor<Content>(Color.green);
+
+        (Content labelsContent, Content buttonsContent) = rightContent.SplitLeftRight(_scrollViewWidth - (HORIZONTAL_PADDING + BUTTON_WIDTH) * 3, HORIZONTAL_PADDING);
+        labelsContent.SetBackgroundColor<Content>(Color.magenta);
+        (Content topContent, Content bottomContent) = labelsContent.SplitTopBottom(ROW_HEIGHT / 2, 0);
+        topContent.CreateLabel().SetText(zone.Name)
+            .ApplyTemplate(VerticalLayout)
+            .SetAnchorLeft<Label>()
+            .SetAnchoredPosition<Label>(new Vector2(0, -ROW_HEIGHT / 4));
+        bottomContent.CreateLabel().SetText($"{zone.Points} points")
+            .ApplyTemplate(VerticalLayout)
+            .SetAnchorLeft<Label>()
+            .SetAnchoredPosition<Label>(new Vector2(0, -ROW_HEIGHT / 4));
+
+        (Content editButtonContent, Content deleteButtonContent) = buttonsContent.SplitLeftRight(BUTTON_WIDTH, HORIZONTAL_PADDING);
+        editButtonContent.CreateButton().StepIntoLabel(l => l.SetText("Edit"))
+            .AddOnClickedEvent(b => OpenScoringZoneGizmo(zone))
+            .ApplyTemplate(VerticalLayout).SetSize<Button>(new Vector2(BUTTON_WIDTH, ROW_HEIGHT)).SetStretch<Button>();
+        deleteButtonContent.CreateButton().StepIntoLabel(l => l.SetText("Delete"))
+            .AddOnClickedEvent(b => {
+                FieldSimObject.CurrentField.ScoringZones.Remove(zone);
+                GameObject.Destroy(zone.GameObject);
+                AddZoneEntries();
+            })
+            .ApplyTemplate(VerticalLayout).SetSize<Button>(new Vector2(BUTTON_WIDTH, ROW_HEIGHT)).SetStretch<Button>();
     }
 
-    private void OpenScoringZoneGizmo()
-    {
-        
-        DynamicUIManager.CreatePanel<ZoneConfigPanel>();
+    private void OpenScoringZoneGizmo(ScoringZone zone = null)    {
+        DynamicUIManager.CreatePanel<ZoneConfigPanel>(persistent: false, zone);
         ZoneConfigPanel panel = DynamicUIManager.GetPanel<ZoneConfigPanel>();
         panel.SetCallback(AddZoneEntry);
     }
