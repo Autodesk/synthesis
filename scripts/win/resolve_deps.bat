@@ -8,6 +8,21 @@ if %ERRORLEVEL% neq 0 (
     exit /b 1
 )
 
+where winget >nul 2>nul
+if %errorlevel% neq 0 (
+    echo winget not found. Installing winget...
+    echo Downloading winget...
+    powershell -Command "Invoke-WebRequest -Uri 'https://aka.ms/winget-cli' -OutFile 'C:\Temp\winget-cli.appxbundle'"
+    echo Installing winget...
+    powershell -Command "Add-AppxPackage -Path 'C:\Temp\winget-cli.appxbundle' -DisableDevelopmentMode"
+
+    echo Adding winget to PATH...
+    setx /m PATH "%PATH%;C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe"
+
+    echo.
+    echo Please restart your command prompt or PowerShell session to start using winget.
+)
+
 set "protobufVersion=23.3"
 set "protobufFolder=protoc-%protobufVersion%-win64"
 set "protobufGitDownloadUrl=https://github.com/protocolbuffers/protobuf/releases/download/v%protobufVersion%/%protobufFolder%.zip"
