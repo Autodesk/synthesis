@@ -371,6 +371,12 @@ namespace Synthesis.UI.Dynamic {
             RootRectTransform.anchorMax = new Vector2(0.5f, 1);
             return (this as T)!;
         }
+
+        public T SetAnchorLeft<T>() where T : UIComponent {
+            RootRectTransform.anchorMin = new Vector2(0, 0.5f);
+            RootRectTransform.anchorMax = new Vector2(1, 0.5f);
+            return (this as T)!;
+        }
         
         public void DeleteAllChildren() {
             Children.ForEach(x => GameObject.Destroy(x.RootGameObject));
@@ -437,7 +443,26 @@ namespace Synthesis.UI.Dynamic {
             return (leftContent, rightContent);
         }
         public (Content top, Content bottom) SplitTopBottom(float topHeight, float padding) {
-            throw new NotImplementedException();
+            var topContentObject = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("content-base"), base.RootGameObject.transform);
+            var topRt = topContentObject.GetComponent<RectTransform>();
+            topRt.anchorMax = new Vector2(0.5f, 1f);
+            topRt.anchorMin = new Vector2(0.5f, 1f);
+            topRt.anchoredPosition = new Vector2(0f, 0);
+            var topContent = new Content(this, topContentObject, new Vector2(Size.x, topHeight));
+
+            var bottomContentObject = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("content-base"), base.RootGameObject.transform);
+            var bottomRt = bottomContentObject.GetComponent<RectTransform>();
+            bottomRt.anchorMax = new Vector2(0.5f, 0.5f);
+            bottomRt.anchorMin = new Vector2(0.5f, 0.5f);
+            float bottomHeight = (Size.y - topHeight) - padding;
+            bottomRt.anchoredPosition = new Vector2(0f, 0);
+            // rightRt.sizeDelta = new Vector2(rightWidth, rightRt.sizeDelta.y);
+            var bottomContent = new Content(this, bottomContentObject, new Vector2(Size.x, bottomHeight));
+
+            base.Children.Add(topContent);
+            base.Children.Add(bottomContent);
+
+            return (topContent, bottomContent);
         }
 
         public Label CreateLabel(float height = 15f) {
@@ -572,7 +597,7 @@ namespace Synthesis.UI.Dynamic {
             } else {
                 size = RootRectTransform.sizeDelta;
             }
-
+            
             SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_WHITE));
         }
 
@@ -674,8 +699,10 @@ namespace Synthesis.UI.Dynamic {
             EnabledColor = ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE);
         }
 
-        public Toggle SetState(bool state) {
-            _unityToggle.isOn = state;
+        public Toggle SetState(bool state, bool notify = true) {
+            if (notify)
+                _unityToggle.isOn = state;
+            else _unityToggle.SetIsOnWithoutNotify(state);
             return this;
         }
         public Toggle AddOnStateChangedEvent(Action<Toggle, bool> callback) {
