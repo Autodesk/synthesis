@@ -80,8 +80,10 @@ public class CustomWheel : MonoBehaviour {
     private Vector3 _staticImpulseVecAccum = new Vector3();
     private Vector3 _rollingImpulseVecAccum = new Vector3();
     public void OnCollisionStay(Collision collision) {
-        // _collisionCalls++;
-        _pairings.Add((collision.impulse, collision.relativeVelocity));
+        // Flip impulse vector if for whatever reason it is backwards (happens with mean machine robot)
+        Vector3 impulse = (collision.impulse.y < 0f) ? -collision.impulse: collision.impulse;
+        
+        _pairings.Add((impulse, collision.relativeVelocity));
     }
     
     private List<(Vector3 impulse, Vector3 velocity)> _pairings = new List<(Vector3, Vector3)>();
