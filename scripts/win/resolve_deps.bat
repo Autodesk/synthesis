@@ -37,7 +37,7 @@ if /i "%executionPolicy%" neq "RemoteSigned" (
 )
 
 echo "Installing .NET SDK..."
-PowerShell -Command "Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -OutFile 'dotnet-install.ps1'; .\dotnet-install.ps1 -Channel LTS -InstallDir 'C:\Program Files\dotnet' -NoPath"
+PowerShell -Command "Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -OutFile 'dotnet-install.ps1'; .\dotnet-install.ps1 -Version 7.0.304 -InstallDir 'C:\Program Files\dotnet' -NoPath"
 
 echo "Adding .NET SDK to PATH..."
 setx /m PATH "%PATH%;C:\Program Files\dotnet"
