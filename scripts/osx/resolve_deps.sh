@@ -85,9 +85,20 @@ dep_exists_brew() {
 
 pretty_print "Installing necessary Synthesis Deps."
 
+# Install Protobuf if not found
 dep_exists_brew "protoc" "protobuf@23"
 
-# This fails to install .net standard 2.0
-# dep_exists_brew "dotnet" "dotnet" true
+# Install Dotnet if not found
+if ! command -v dotnet &> /dev/null
+then
+    pretty_print "dotnet could not be found - installing dotnet from Microsoft SDK store"
+    curl -sSL https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh | bash /dev/stdin -Version 7.0.0
+    pretty_print "Installed dotnet to \$HOME/.dotnet"
+    # Might be at /usr/local/share/dotnet ? Why is mine different than the documentation.
+    export PATH=$PATH:$HOME/.dotnet/bin
+else
+    good_print "dotnet is already installed!"
+fi
 
+# Finished Installing all dependencies.
 pretty_print "Finished Installing Dependencies"
