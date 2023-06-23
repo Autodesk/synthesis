@@ -1,4 +1,5 @@
 .vs/
+.vscode/
 .DS_Store
 **/*/.idea/
 .gradle/
@@ -17,8 +18,6 @@
 *.mdb.meta
 
 sysinfo.txt
-
-!/api/libs/UnityEngine.dll
 
 importer/Backup/
 importer/Backup1/
