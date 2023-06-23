@@ -14,7 +14,7 @@ namespace Synthesis {
         // clang-format off
         private bool _isWheel = false;
         // clang-format on
-        public bool IsWheel   => _isWheel;
+        public bool IsWheel => _isWheel;
 
         public string Signal => _inputs[0];
 

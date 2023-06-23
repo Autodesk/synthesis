@@ -1043,7 +1043,10 @@ namespace Synthesis.UI.Dynamic {
                 if (_eventsActive && OnValueChanged != null)
                     OnValueChanged(this, x, this.Options[x]);
             });
-            var eventHandler                         = _tmpDropdown.gameObject.AddComponent<UIEventHandler>();
+
+            // clang-format off
+            var eventHandler = _tmpDropdown.gameObject.AddComponent<UIEventHandler>();
+            // clang-format on
             eventHandler.OnPointerClickedEvent += e => { ShowOnTop(); };
 
             _headerImage = new Image(this, unityObject.transform.Find("Header").gameObject);
