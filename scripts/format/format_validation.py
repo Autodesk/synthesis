@@ -22,7 +22,7 @@ def main():
     for dir in FILES_DIRS:
         for root, _, filenames in os.walk(dir):
             for filename in filenames:
-                if os.path.splitext(filename)[1] in FILE_TARGETS and filename not in IGNORED_FILES:
+                if os.path.splitext(filename)[1] in FILE_TARGETS and f"{root}/{filename}" not in IGNORED_FILES:
                     files.append(os.path.join(root, filename))
 
     for file in files:
