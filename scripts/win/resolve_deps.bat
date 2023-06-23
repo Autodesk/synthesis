@@ -8,21 +8,6 @@ if %ERRORLEVEL% neq 0 (
     exit /b 1
 )
 
-where winget >nul 2>nul
-if %errorlevel% neq 0 (
-    echo winget not found. Installing winget...
-    echo Downloading winget...
-    powershell -Command "Invoke-WebRequest -Uri 'https://aka.ms/winget-cli' -OutFile 'C:\Temp\winget-cli.appxbundle'"
-    echo Installing winget...
-    powershell -Command "Add-AppxPackage -Path 'C:\Temp\winget-cli.appxbundle' -DisableDevelopmentMode"
-
-    echo Adding winget to PATH...
-    setx /m PATH "%PATH%;C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe"
-
-    echo.
-    echo Please restart your command prompt or PowerShell session to start using winget.
-)
-
 set "protobufVersion=23.3"
 set "protobufFolder=protoc-%protobufVersion%-win64"
 set "protobufGitDownloadUrl=https://github.com/protocolbuffers/protobuf/releases/download/v%protobufVersion%/%protobufFolder%.zip"
@@ -40,8 +25,25 @@ move "%protobufFolder%" "C:\Program Files\"
 echo "Linking %protobufFolder%/bin to system PATH..."
 setx /M PATH "C:\Program Files\%protobufFolder%\bin;%PATH%"
 
+echo "Protobuf installation complete."
+
+for /f "usebackq delims=" %%G in (`powershell -Command "Get-ExecutionPolicy"`) do set "executionPolicy=%%G"
+
+if /i "%executionPolicy%" neq "RemoteSigned" (
+    echo "Current Execution Policy is not RemoteSigned. This is required for the .NET installation."
+    echo "Setting Execution Policy to RemoteSigned..."
+    powershell -Command "Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned"
+    echo "Execution Policy set to RemoteSigned."
+)
+
 echo "Installing .NET SDK..."
-winget install Microsoft.DotNet.SDK.%dotnetVersion% --accept-source-agreements
+PowerShell -Command "Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -OutFile 'dotnet-install.ps1'; .\dotnet-install.ps1 -Channel LTS -InstallDir 'C:\Program Files\dotnet' -NoPath"
+
+echo "Adding .NET SDK to PATH..."
+setx /m PATH "%PATH%;C:\Program Files\dotnet"
+
+echo ".NET SDK installation complete."
 
 echo "Cleaning up..."
 del "%protobufFolder%.zip"
+del dotnet-install.ps1
