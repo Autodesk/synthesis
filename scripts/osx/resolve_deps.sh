@@ -92,16 +92,20 @@ dep_exists_brew "protoc" "protobuf@23"
 if ! command -v dotnet &> /dev/null
 then
     pretty_print "dotnet could not be found - installing dotnet from Microsoft SDK store"
-    curl -sSL https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh | bash /dev/stdin -Channel STS -Version 7.0
+    curl -sSL https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh | bash /dev/stdin -Channel STS -Version 7.0.7
+    
     pretty_print "Installed dotnet to \$HOME/.dotnet"
 
-    # Might be at /usr/local/share/dotnet ? Why is mine different than the documentation.
-    # That is only for the Visual Studio version
     echo 'export DOTNET_ROOT=$HOME/.dotnet' >> ~/.bashrc
     echo 'export PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools' >> ~/.bashrc
 
     echo 'export DOTNET_ROOT=$HOME/.dotnet' >> ~/.zshrc
     echo 'export PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools' >> ~/.zshrc
+
+    # For this terminal session
+    export DOTNET_ROOT=$HOME/.dotnet
+    export PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools
+
 else
     good_print "dotnet is already installed!"
 fi
