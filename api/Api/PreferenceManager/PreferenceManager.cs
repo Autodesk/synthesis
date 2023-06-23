@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using SynthesisAPI.AssetManager;
@@ -19,7 +18,7 @@ namespace SynthesisAPI.PreferenceManager
         
         private static readonly (string Directory, string Name) VirtualFilePath = ("/modules", "preferences.json");
 
-        private static JsonAsset? _asset;
+        private static JsonAsset _asset;
         private static void ImportPreferencesAsset()
         {
             _asset = AssetManager.AssetManager.Import<JsonAsset>("text/json", true, VirtualFilePath.Directory,

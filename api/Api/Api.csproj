@@ -28,7 +28,9 @@ For support contact frc@autodesk.com</PackageReleaseNotes>
         <NeutralLanguage>en-US</NeutralLanguage>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
+
 
     <ItemGroup>
 

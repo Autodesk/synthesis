@@ -13,6 +13,8 @@ namespace SynthesisAPI.AssetManager
     /// </summary>
     public class SpriteAsset : Asset
     {
+        internal Sprite? Sprite { get; private set; }
+
         public SpriteAsset(string name, Permissions perm, string sourcePath)
         {
             Init(name, perm, sourcePath);
@@ -27,7 +29,7 @@ namespace SynthesisAPI.AssetManager
                 throw new Exception("Failed to load image");
             }
 
-            Sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new UnityEngine.Vector2(.5f, .5f));
+            Sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f));
 
             return this;
         }
@@ -43,7 +45,5 @@ namespace SynthesisAPI.AssetManager
         {
             Sprite = Sprite.Create(texture, new Rect(MathUtil.MapVector2D(position), MathUtil.MapVector2D(size)), MathUtil.MapVector2D(pivot));
         }
-
-        internal Sprite Sprite { get; private set; }
     }
 }

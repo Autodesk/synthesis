@@ -23,7 +23,7 @@ namespace SynthesisAPI.VirtualFileSystem
         /// 
         /// (null if unset)
         /// </summary>
-        public Directory Parent { get; internal set; }
+        public Directory? Parent { get; internal set; }
 
         [ExposedApi]
         public void Delete();

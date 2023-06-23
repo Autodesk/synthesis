@@ -25,17 +25,17 @@ namespace SynthesisAPI.AssetManager
 
         public string Name => ((IEntry)this).Name;
         public Permissions Permissions => ((IEntry)this).Permissions;
-        public Directory Parent => ((IEntry)this).Parent;
+        public Directory? Parent => ((IEntry)this).Parent;
 
         public string SourcePath { get; private set; } = "";
 
         private string _name { get; set; } = "";
         private Permissions _permissions { get; set; }
-        private Directory _parent { get; set; }
+        private Directory? _parent { get; set; }
 
         string IEntry.Name { get => _name; set => _name = value; }
         Permissions IEntry.Permissions { get => _permissions; set => _permissions = value; }
-        Directory IEntry.Parent { get => _parent; set => _parent = value; }
+        Directory? IEntry.Parent { get => _parent; set => _parent = value; }
 
         [ExposedApi]
         public virtual void Delete()

@@ -1,19 +1,21 @@
-﻿using SynthesisAPI.Modules.Attributes;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text;
 using MathNet.Spatial.Euclidean;
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
     public class FixedJoint : IJoint
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        protected void OnPropertyChanged([CallerMemberName] string? name = null)
         {
+            if (name is null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 

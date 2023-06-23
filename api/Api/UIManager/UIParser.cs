@@ -12,6 +12,8 @@ using SynthesisAPI.Utilities;
 using Logger = SynthesisAPI.Utilities.Logger;
 using System.Reflection;
 
+#nullable enable
+
 namespace SynthesisAPI.UIManager
 {
     // ReSharper disable once InconsistentNaming
@@ -31,7 +33,13 @@ namespace SynthesisAPI.UIManager
             foreach (XmlNode node in nodes)
             {
                 if (node.Name.Replace("ui:", "") != "Style") {
-                    root.Add(CreateVisualElement(node).UnityVisualElement);
+                    VisualElementAsset? asset = CreateVisualElement(node);
+
+                    if (asset != null)
+                    {
+                        root.Add(asset.UnityVisualElement);
+                    }
+
                 }
             }
             return root.GetVisualElement();
@@ -43,7 +51,7 @@ namespace SynthesisAPI.UIManager
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        public static VisualElementAsset CreateVisualElement(XmlNode node)
+        public static VisualElementAsset? CreateVisualElement(XmlNode node)
         {
             if (node == null)
                 throw new Exception("Node is null");
@@ -146,7 +154,11 @@ namespace SynthesisAPI.UIManager
             {
                 if (entry != " ")
                 {
-                    element = ParseEntry(entry, element);
+                    var el = ParseEntry(entry, element);
+                    if (el != null) {
+                        element = el; // TODO: I have no clue what they were trying to accomplish with this but hopefully this works ? Technically this was returning nulls randomly before.
+                    }
+
                 }
             }
             return element;
@@ -201,10 +213,11 @@ namespace SynthesisAPI.UIManager
             return null;
         }
 
-        internal static _UnityVisualElement ParseEntry(string entry, _UnityVisualElement element)
+        internal static _UnityVisualElement? ParseEntry(string entry, _UnityVisualElement element)
         { 
             if(element == null)
             {
+                // I guess this is a non-critical failure so I will make it nullable
                 Logger.Log($"Failed to parse entry, element was null", LogLevel.Warning);
                 return null;
             }
@@ -219,22 +232,28 @@ namespace SynthesisAPI.UIManager
                 // Debug.Log($"Type of style: \"{typeof(element.style).FullName}\"");
             }
 
-            try
+            if (property != null)
             {
-                var value = ParseProperty(property, entrySplit[1]);
-                if (value == null)
+                try
                 {
-                    Logger.Log($"Failed to parse entry {property.Name}\n\"{entry}\"", LogLevel.Warning);
+                    var value = ParseProperty(property, entrySplit[1]);
+                    if (value == null)
+                    {
+                        Logger.Log($"Failed to parse entry {property.Name}\n\"{entry}\"", LogLevel.Warning);
+                    }
+                    else
+                    {
+                        property.SetValue(element.style, value);
+                    }
                 }
-                else
+                catch (Exception)
                 {
-                    property.SetValue(element.style, value);
+                    Logger.Log($"Failed to set property. Skipping {property.Name}\n\"{entry}\"", LogLevel.Warning);
                 }
+            } else {
+                Logger.Log($"Failed to set property. Property does not exist for \n\"{entry}\"");
             }
-            catch (Exception)
-            {
-                Logger.Log($"Failed to set property. Skipping {property.Name}\n\"{entry}\"", LogLevel.Warning);
-            }
+
 
             return element;
         }
@@ -357,7 +376,8 @@ namespace SynthesisAPI.UIManager
                 throw new SynthesisException("Cannot get visual element of null unity element");
             }
 
-            Type t = default;
+            Type? t = default;
+
             try
             {
                 t = typeof(VisualElementAsset).Assembly.GetTypes().First(t =>
@@ -367,6 +387,7 @@ namespace SynthesisAPI.UIManager
             {
                 throw new SynthesisException($"Failed to get visual element of {element.GetType().FullName}, could not find matching type", e);
             }
+
             try
             {
                 BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;

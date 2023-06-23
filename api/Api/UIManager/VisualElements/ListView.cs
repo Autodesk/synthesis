@@ -25,7 +25,7 @@ namespace SynthesisAPI.UIManager.VisualElements
         }
         */
 
-        private EventBus.EventBus.EventCallback _callback;
+        private EventBus.EventBus.EventCallback? _callback;
 
         private protected _UnityListView Element
         {
@@ -106,20 +106,22 @@ namespace SynthesisAPI.UIManager.VisualElements
 
         public void SubscribeOnSelectionChanged(Action<IEvent> callback)
         {
-            EventBus.EventBus.RemoveTagListener(SelectedEventTag, _callback);
+            if (_callback != null)
+                EventBus.EventBus.RemoveTagListener(SelectedEventTag, _callback);
             _callback = e => callback(e);
             EventBus.EventBus.NewTagListener(SelectedEventTag, _callback);
             
-            Element.onSelectionChanged += l => EventBus.EventBus.Push(SelectedEventTag, new SelectionChangedEvent(l));
+            Element.onSelectionChange += l => EventBus.EventBus.Push(SelectedEventTag, new SelectionChangedEvent((List<object>)l));
         }
 
         public void SubscribeOnItemChosen(Action<IEvent> callback)
         {
-            EventBus.EventBus.RemoveTagListener(ItemChosenEventTag, _callback);
+            if (_callback != null)
+                EventBus.EventBus.RemoveTagListener(ItemChosenEventTag, _callback);
             _callback = e => callback(e);
             EventBus.EventBus.NewTagListener(ItemChosenEventTag, _callback);
 
-            Element.onItemChosen += o => EventBus.EventBus.Push(ItemChosenEventTag, new ItemChosenEvent(o));
+            Element.onItemsChosen += o => EventBus.EventBus.Push(ItemChosenEventTag, new ItemChosenEvent(o));
         }
 
         public override IEnumerable<Object> PostUxmlLoad()
