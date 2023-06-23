@@ -3,9 +3,8 @@
 NET SESSION >nul 2>&1
 if %ERRORLEVEL% neq 0 (
     echo "Because this script edits the system PATH, it must be run as administrator."
-    echo "Please elevate this script's privileges by runing it as administrator."
+    echo "Please elevate this script's privileges and try again."
     pause
-    exit /b 1
 )
 
 set "protobufVersion=23.3"
@@ -39,11 +38,18 @@ if /i "%executionPolicy%" neq "RemoteSigned" (
 echo "Installing .NET SDK..."
 PowerShell -Command "Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -OutFile 'dotnet-install.ps1'; .\dotnet-install.ps1 -Version 7.0.304 -InstallDir 'C:\Program Files\dotnet' -NoPath"
 
-echo "Adding .NET SDK to PATH..."
-setx /m PATH "%PATH%;C:\Program Files\dotnet"
+echo "Linking .NET SDK to system PATH..."
+setx /m PATH "C:\Program Files\dotnet;%PATH%"
 
 echo ".NET SDK installation complete."
 
 echo "Cleaning up..."
 del "%protobufFolder%.zip"
 del dotnet-install.ps1
+
+if exist "%protobufFolder%" (
+    rmdir /s /q "%protobufFolder%"
+)
+
+echo "Done!"
+pause
