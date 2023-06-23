@@ -19,6 +19,5 @@ KeepEmptyLinesAtTheStartOfBlocks: false
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: All
 SeparateDefinitionBlocks: Always
-SortUsingDeclarations: Lexicographic
 SpaceAfterCStyleCast: true
 UseTab: Never
