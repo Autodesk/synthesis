@@ -1,6 +1,6 @@
 @echo off
 
-DEL /S /Q /f "..\Assets\Packages\*"
+DEL /S /Q /f "..\Assets\Packages\*.dll"
 
 RMDIR 
 

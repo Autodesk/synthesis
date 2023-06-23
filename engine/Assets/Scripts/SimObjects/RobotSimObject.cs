@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Google.Protobuf.WellKnownTypes;
@@ -35,6 +36,10 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     public const int MAX_ROBOTS = 6;
 
     public const string INTAKE_GAMEPIECES = "input/intake";
+    public const string OUTTAKE_GAMEPIECES = "input/shoot-gamepiece";
+
+    private const float TIME_BETWEEN_SHOTS = 0.5f;
+    public float LastShotTime = 0;
 
     private static string _currentlyPossessedRobot = string.Empty;
     public static string CurrentlyPossessedRobot {
@@ -225,11 +230,20 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     public static void Setup() {
         InputManager.AssignValueInput(INTAKE_GAMEPIECES, TryGetSavedInput(INTAKE_GAMEPIECES, new Digital("E", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
+        InputManager.AssignValueInput(OUTTAKE_GAMEPIECES, TryGetSavedInput(OUTTAKE_GAMEPIECES, new Digital("Q", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
 
         SimulationRunner.OnUpdate += () => {
-            if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
-                bool pickup = InputManager.MappedValueInputs[INTAKE_GAMEPIECES].Value == 1.0F;
-                RobotSimObject.GetCurrentlyPossessedRobot().PickingUpGamepieces = pickup;
+            if (RobotSimObject.CurrentlyPossessedRobot == string.Empty) {
+                return;
+            }
+
+            bool pickup = InputManager.MappedValueInputs[INTAKE_GAMEPIECES].Value == 1.0F;
+            RobotSimObject.GetCurrentlyPossessedRobot().PickingUpGamepieces = pickup;
+            bool shootGamepiece = InputManager.MappedValueInputs[OUTTAKE_GAMEPIECES].Value == 1.0F;
+
+            if (shootGamepiece && RobotSimObject.GetCurrentlyPossessedRobot().LastShotTime + TIME_BETWEEN_SHOTS < Time.realtimeSinceStartup) {
+                RobotSimObject.GetCurrentlyPossessedRobot().LastShotTime = Time.realtimeSinceStartup;
+                RobotSimObject.GetCurrentlyPossessedRobot().ShootGamepiece();
             }
         };
     }
@@ -295,10 +309,10 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     public void ShootGamepiece() {
-        if (_gamepiecesInPossession.Count == 0)
+        if (_gamepiecesInPossession.Count == 0) {
             return;
+        }
 
-        // Shoot Gamepiece
         var gp = _gamepiecesInPossession.Dequeue();
         var rb = gp.GamepieceObject.GetComponent<Rigidbody>();
         rb.detectCollisions = true;
@@ -524,6 +538,9 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     public bool ConfigureSwerveDrivetrain() {
+
+        // Sets wheels rotating forward
+        GetLeftRightWheels();
 
         (RotationalDriver azimuth, WheelDriver driver)[] modules;
 
