@@ -72,14 +72,14 @@ namespace Synthesis {
             }
         }
 
-        public string Name => State.CurrentSignalLayout.SignalMap[_inputs[0]].Info.Name;
+        public new string Name => State.CurrentSignalLayout!.SignalMap[_inputs[0]].Info.Name;
 
         private JointMotor _motor;
         public JointMotor Motor {
             get => _motor;
             set {
                 _motor = value;
-                SimulationPreferences.SetRobotJointMotor((_simObject as RobotSimObject).MiraGUID, Name, _motor);
+                SimulationPreferences.SetRobotJointMotor((_simObject as RobotSimObject)!.MiraGUID, Name, _motor);
             }
         }
         private HingeJoint _jointA;
@@ -87,7 +87,7 @@ namespace Synthesis {
         private HingeJoint _jointB;
         public HingeJoint JointB => _jointB;
 
-        private Rigidbody _rbA = null;
+        private Rigidbody? _rbA;
         public Rigidbody RbA {
             get {
                 if (_rbA == null)
@@ -95,12 +95,35 @@ namespace Synthesis {
                 return _rbA;
             }
         }
-        private Rigidbody _rbB = null;
+        private Rigidbody? _rbB;
         public Rigidbody RbB {
             get {
                 if (_rbB == null)
                     _rbB = _jointB.GetComponent<Rigidbody>();
                 return _rbB;
+            }
+        }
+
+        private float _fakedTheta = 0f;
+        private float _fakedOmega = 0f;
+
+        private JointLimits? _rotationalLimits;
+
+        private bool _useFakeMotion = false;
+        public bool UseFakeMotion {
+            get => _useFakeMotion;
+            set {
+                if (value != _useFakeMotion) {
+                    _useFakeMotion = value;
+                    if (_useFakeMotion) {
+                        // DisableMotor();
+                    } else {
+                        if (_rotationalLimits.HasValue) {
+                            _jointA.limits = _rotationalLimits.Value;
+                        }
+                        EnableMotor();
+                    }
+                }
             }
         }
 
@@ -116,6 +139,13 @@ namespace Synthesis {
             : base(name, inputs, outputs, simObject) {
             _jointA = jointA;
             _jointB = jointB;
+
+            if (_jointA.useLimits) {
+                _rotationalLimits = _jointA.limits;
+            }
+
+            UseFakeMotion = true;
+
             if (motor != null && motor.MotorTypeCase == Mirabuf.Motor.Motor.MotorTypeOneofCase.SimpleMotor) {
                 _motor = motor!.SimpleMotor.UnityMotor;
             } else {
@@ -173,14 +203,21 @@ namespace Synthesis {
         }
 
         private float _jointAngle = 0.0f;
+        private float _lastUpdate = float.NaN;
         public override void Update() {
+
+            float deltaT = 0f;
+            if (!float.IsNaN(_lastUpdate)) {
+                deltaT = Time.realtimeSinceStartup - _lastUpdate;
+            }
+            _lastUpdate = Time.realtimeSinceStartup;
 
             switch (ControlMode) {
                 case RotationalControlMode.Position:
                     PositionControl();
                     break;
                 case RotationalControlMode.Velocity:
-                    VelocityControl();
+                    VelocityControl(deltaT);
                     break;
             }
 
@@ -240,7 +277,7 @@ namespace Synthesis {
             }
         }
 
-        private void VelocityControl() {
+        private void VelocityControl(float deltaT) {
             if (_jointA.useMotor) {
 
                 var val = (float)(State.CurrentSignals.ContainsKey(_inputs[0])
@@ -257,16 +294,56 @@ namespace Synthesis {
                 // _jointB.connectedBody.AddTorque(_jointA.axis.normalized * angAccelB * Mathf.Rad2Deg, ForceMode.Acceleration);
                 // Debug.Log($"{angAccelB} to {_jointB.connectedBody.name}");
 
-                _jointA.motor = new JointMotor {
-                    force = Motor.force * (inertiaA / (inertiaA + inertiaB)),
-                    freeSpin = Motor.freeSpin,
-                    targetVelocity = (Motor.targetVelocity) * val
-                };
-                _jointB.motor = new JointMotor {
-                    force = Motor.force * (inertiaB / (inertiaA + inertiaB)),
-                    freeSpin = Motor.freeSpin,
-                    targetVelocity = (-Motor.targetVelocity) * val
-                };
+                if (_useFakeMotion) {
+
+                    float alpha = (val * Motor.force / inertiaA);
+
+                    if (Mathf.Abs(alpha) > 0.01) {
+                        Debug.Log("MOVE");
+                    }
+
+                    float fOmega = alpha * deltaT + _fakedOmega;
+
+                    // If max omega is exceeded, limit
+                    if (fOmega > Motor.targetVelocity * Mathf.Deg2Rad) {
+                        float accelTime = ((Motor.targetVelocity * Mathf.Deg2Rad) - _fakedOmega) / alpha;
+                        _fakedOmega = alpha * accelTime;
+                        _fakedTheta = alpha * accelTime * accelTime + _fakedOmega * accelTime + _fakedTheta + _fakedOmega * (deltaT - accelTime);
+                    } else {
+                        _fakedTheta = alpha * deltaT * deltaT + _fakedOmega * deltaT + _fakedTheta;
+                        _fakedOmega = fOmega;
+                    }
+
+                    if (_rotationalLimits.HasValue) {
+                        if (_fakedTheta > _rotationalLimits.Value.max * Mathf.Deg2Rad) {
+                            _fakedTheta = _rotationalLimits.Value.max * Mathf.Deg2Rad;
+                        } else if (_fakedTheta < _rotationalLimits.Value.min * Mathf.Deg2Rad) {
+                            _fakedTheta = _rotationalLimits.Value.min * Mathf.Deg2Rad;
+                        }
+
+                        _jointA.limits = new JointLimits {
+                            bounceMinVelocity = _rotationalLimits.Value.bounceMinVelocity,
+                            bounciness = _rotationalLimits.Value.bounciness,
+                            contactDistance = _rotationalLimits.Value.contactDistance,
+                            max = _fakedTheta * Mathf.Rad2Deg + 1,
+                            min = _fakedTheta * Mathf.Rad2Deg
+                        };
+
+                        Debug.Log($"Theta: {_fakedTheta}");
+                    }
+                    
+                } else {
+                    _jointA.motor = new JointMotor {
+                        force = Motor.force * (inertiaA / (inertiaA + inertiaB)),
+                        freeSpin = Motor.freeSpin,
+                        targetVelocity = (Motor.targetVelocity) * val
+                    };
+                    _jointB.motor = new JointMotor {
+                        force = Motor.force * (inertiaB / (inertiaA + inertiaB)),
+                        freeSpin = Motor.freeSpin,
+                        targetVelocity = (-Motor.targetVelocity) * val
+                    };
+                }
             }
         }
 
