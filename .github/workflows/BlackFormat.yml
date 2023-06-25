@@ -1,4 +1,4 @@
-name: Exporter Formatter
+name: Format Validation (Black)
 
 on:
   workflow_dispatch: {}
@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: rickstaa/action-black@v1
+      - uses: psf/black@stable
         with:
-          black_args: "./exporter/SynthesisFusionAddin/ --check"
+          options: "--check"
+          src: "./exporter/SynthesisFusionAddin/"
