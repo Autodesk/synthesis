@@ -36,7 +36,7 @@ namespace Mirabuf.Material {
                         _unityMaterial.SetFloat(OPAQUE_METALLIC, (float)Metallic);
                     }
                     
-                    _unityMaterial.renderQueue = 3000;
+                    // _unityMaterial.renderQueue = 3000;
                     _unityMaterial.enableInstancing = true;
                     // TODO: Specular and Metallic
                 }
