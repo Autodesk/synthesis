@@ -9,6 +9,7 @@ using Synthesis.Runtime;
 using UnityEditor;
 using UnityEngine.UIElements;
 
+
 namespace Synthesis.UI.Dynamic
 {
     public class SpawnLocationPanel : PanelDynamic
@@ -66,17 +67,13 @@ namespace Synthesis.UI.Dynamic
             panel.SetBottomStretch<Content>(padding, padding, 0);
             
             AcceptButton
-                    .StepIntoLabel(label => label.SetText("Start"))
+                    .StepIntoLabel(label => label.SetText("Accept"))
                     .AddOnClickedEvent(b =>
                     {
-                        if (!matchStarted)
-                        {
-                            matchStarted = true;
-                            StartMatch();
-                        }
+                        DynamicUIManager.CreateModal<MatchModeModal>();
                     });
             CancelButton
-                .StepIntoLabel(label => label.SetText("Cancel"))
+                .StepIntoLabel(label => label.SetText("Revert"))
                 .AddOnClickedEvent(b =>
                 {
                     DynamicUIManager.CreateModal<MatchModeModal>();
@@ -209,6 +206,9 @@ namespace Synthesis.UI.Dynamic
             }
         }
 
-        public override void Delete() { }
+        public override void Delete()
+        {
+            _positions.ForEach(x => UnityEngine.Object.Destroy(x.gameObject));
+        }
     }
 }
