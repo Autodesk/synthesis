@@ -24,7 +24,7 @@
         "System.IO.Compression.ZipFile",
         "DotNetZip.dll",
         "BouncyCastle.Crypto.dll",
-        "ServerApi.dll"
+        "ServerApi.dll",
         "Ionic.Zip.dll"
     ],
     "autoReferenced": true,

@@ -13,7 +13,7 @@ public class ClientTestMode : IMode {
     public void Start() {
         _instance = this;
         
-        _connectTask = NetManager.ClientManager.Instance.Connect();
+        // _connectTask = NetManager.ClientManager.Instance.Connect();
         DynamicUIManager.CreateModal<ClientTestModal>();
     }
 

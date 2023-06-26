@@ -40,14 +40,14 @@ namespace SynthesisAPI.Aether.Lobby {
 
             private void AcceptTcpClient(IAsyncResult result) {
                 var client = LobbyClientHandler.InitServerSide(_listener.EndAcceptTcpClient(result), _nextGuid++);
-                if (client.isError)
-                    return;
-                _clientsMutex.WaitOne();
-                var node = _clients.AddLast(client);
-                var clientThread = new Thread(() => ClientListener(node));
-                clientThread.Start();
-                _clientThreads.AddLast(clientThread);
-                _clientsMutex.ReleaseMutex();
+                if (!client.isError) {
+                    _clientsMutex.WaitOne();
+                    var node = _clients.AddLast(client);
+                    var clientThread = new Thread(() => ClientListener(node));
+                    clientThread.Start();
+                    _clientThreads.AddLast(clientThread);
+                    _clientsMutex.ReleaseMutex();
+                }
 
                 if (_isAlive)
                     _listener.BeginAcceptTcpClient(AcceptTcpClient, null);
