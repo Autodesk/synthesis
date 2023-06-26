@@ -285,27 +285,30 @@ public class PracticeMode : IMode
         }
     }
 
-    private void ToConfigMode()
+    public static void ToConfigMode()
     { 
         foreach (string name in MainHUD.DrawerTitles)
             MainHUD.RemoveItemFromDrawer(name);
 
-        MainHUD.AddItemToDrawer("Practice Mode", b => ToPracticeMode());
-        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-            MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+        MainHUD.AddItemToDrawer("Practice", b => ToPracticeMode());
+
+        MainHUD.AddItemToDrawer("Pickup", b => DynamicUIManager.CreatePanel<ConfigureGamepiecePickupPanel>());
+        MainHUD.AddItemToDrawer("Ejector", b => DynamicUIManager.CreatePanel<ConfigureShotTrajectoryPanel>());
         MainHUD.AddItemToDrawer("RoboRIO Conf.",b => DynamicUIManager.CreateModal<RioConfigurationModal>(true),icon: SynthesisAssetCollection.GetSpriteByName("rio-config-icon"));
         MainHUD.AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>());
         MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("settings"));
+        MainHUD.AddItemToDrawer("Move", b => GizmoManager.SpawnGizmo(RobotSimObject.GetCurrentlyPossessedRobot()));
 
         PhysicsManager.IsFrozen = true;
     }
 
-    private void ToPracticeMode()
+    private static void ToPracticeMode()
     {
         foreach (string name in MainHUD.DrawerTitles)
                 MainHUD.RemoveItemFromDrawer(name);
 
-        MainHUD.AddItemToDrawer("Config Mode", b => ToConfigMode());
+        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+            MainHUD.AddItemToDrawer("Configure", b => ToConfigMode());
         MainHUD.AddItemToDrawer("Spawn", b => DynamicUIManager.CreateModal<SpawningModal>(), icon: SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
         MainHUD.AddItemToDrawer("Multibot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>());
         MainHUD.AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("DriverStationView"));
