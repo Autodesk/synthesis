@@ -11,6 +11,7 @@ public record ScoringZoneData()
 {
     public string Name { get; set; } = "";
     public Alliance Alliance { get; set; } = Alliance.Blue;
+    public Transform Parent { get; set; } = null;
     public int Points { get; set; } = 0;
     public bool DestroyGamepiece { get; set; } = false;
     public float XScale { get; set; } = 1.0f;
@@ -20,8 +21,8 @@ public record ScoringZoneData()
 
 public class ScoringZonesPanel : PanelDynamic
 {
-    private const float MODAL_WIDTH = 400f;
-    private const float MODAL_HEIGHT = 400f;
+    private const float MODAL_WIDTH = 500f;
+    private const float MODAL_HEIGHT = 600f;
     
     private const float VERTICAL_PADDING = 16f;
     private const float HORIZONTAL_PADDING = 16f;
@@ -41,7 +42,7 @@ public class ScoringZonesPanel : PanelDynamic
         return u;
     };
     
-    private readonly Func<UIComponent, UIComponent> ListVerticalLayout = (u) => {
+    private readonly Func<UIComponent,  UIComponent> ListVerticalLayout = (u) => {
         var offset = (-u.Parent!.RectOfChildren(u).yMin) + VERTICAL_PADDING;
         u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: HORIZONTAL_PADDING, rightPadding: HORIZONTAL_PADDING);
         return u;
@@ -56,7 +57,8 @@ public class ScoringZonesPanel : PanelDynamic
             .AddOnClickedEvent(b => DynamicUIManager.ClosePanel<ScoringZonesPanel>());
         CancelButton.RootGameObject.SetActive(false);
 
-        _zonesScrollView = MainContent.CreateScrollView().SetRightStretch<ScrollView>().ApplyTemplate(VerticalLayout);
+        _zonesScrollView = MainContent.CreateScrollView().SetRightStretch<ScrollView>().ApplyTemplate(VerticalLayout)
+            .SetHeight<ScrollView>(MODAL_HEIGHT - VERTICAL_PADDING * 2 - 50);
         _scrollViewWidth = _zonesScrollView.Parent!.RectOfChildren().width - SCROLLBAR_WIDTH;
         _entryWidth = _scrollViewWidth - HORIZONTAL_PADDING * 2;
 
