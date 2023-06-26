@@ -56,11 +56,11 @@ public class ChangeInputsModal : ModalDynamic
 
             foreach (var inputKey in robot.GetAllReservedInputs())
             {
-                var val = InputManager.MappedValueInputs[inputKey];
+                var val = InputManager.MappedValueInputs[inputKey.key];
 
                 var item = inputScrollView.Content.CreateLabeledButton()
                     .SetHeight<LabeledButton>(ENTRY_HEIGHT)
-                    .StepIntoLabel(l => l.SetText(inputKey))
+                    .StepIntoLabel(l => l.SetText(inputKey.displayName))
                     .StepIntoButton(b =>
                     {
                         b.SetRightStretch<Button>(anchoredX: ENTRY_RIGHT_PADDING).SetWidth<Button>(200);
@@ -71,7 +71,7 @@ public class ChangeInputsModal : ModalDynamic
                             b.StepIntoLabel(l => l.SetText("Press anything"));
                             _currentlyReassigning = val;
                             _reassigningButton = b;
-                            _reassigningKey = inputKey;
+                            _reassigningKey = inputKey.key;
                         });
                     })
                     .ApplyTemplate(VerticalLayout);

@@ -32,7 +32,7 @@ For support contact frc@autodesk.com</PackageReleaseNotes>
 
     <ItemGroup>
 
-      <PackageReference Include="Google.Protobuf" Version="3.17.3" />
+      <PackageReference Include="Google.Protobuf" Version="3.23.3" />
       <PackageReference Include="MathNet.Numerics" Version="4.15.0" />
       <PackageReference Include="MathNet.Spatial" Version="0.6.0" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
@@ -42,7 +42,7 @@ For support contact frc@autodesk.com</PackageReleaseNotes>
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
-      <PackageReference Include="Google.Protobuf.Tools" Version="3.17.2" />
+      <PackageReference Include="Google.Protobuf.Tools" Version="3.23.3" />
       <PackageReference Include="System.Memory" Version="4.5.4" />
       <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>..\libs\UnityEngine.dll</HintPath>
@@ -52,6 +52,9 @@ For support contact frc@autodesk.com</PackageReleaseNotes>
       <PackageReference Include="System.IO.Compression.ZipFile" Version="4.3.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="Gen\Mirabuf\" />
+    </ItemGroup>
     <ItemGroup>
       <None Include="..\..\installer\Linux\synthesis.png">
         <Pack>True</Pack>
@@ -63,7 +66,9 @@ For support contact frc@autodesk.com</PackageReleaseNotes>
       <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>..\libs\UnityEngine.dll</HintPath>
       </Reference>
-      <ProjectReference Include="..\Aardvark\Aardvark.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Gen\Mirabuf\" />
+    </ItemGroup>
 </Project>

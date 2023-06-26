@@ -10,7 +10,7 @@ using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Utilities;
 using UnityEngine;
 using Synthesis.WS.Translation;
-
+using UnityEngine.Windows;
 using ITD = RobotSimObject.IntakeTriggerData;
 using STD = RobotSimObject.ShotTrajectoryData;
 
@@ -51,6 +51,9 @@ namespace Synthesis.PreferenceManager {
         public static RioTranslationLayer? GetRobotSimTranslationLayer(string robot)
             => Instance.GetSimTranslationLayer(robot);
 
+        public static RobotSimObject.DrivetrainType GetRobotDrivetrain(string robot)
+            => Instance.GetRobotDrivetrainType(robot);
+        
         public static void SetRobotInput(string robot, string inputKey, Analog inputValue) {
             Instance.SetRobotInput(robot, inputKey, inputValue);
         }
@@ -74,6 +77,9 @@ namespace Synthesis.PreferenceManager {
         public static void SetRobotSimTranslationLayer(string robot, RioTranslationLayer layer) {
             Instance.SetRobotSimTranslationLayer(robot, layer);
         }
+
+        public static void SetRobotDrivetrainType(string robot, RobotSimObject.DrivetrainType drivetrainType)
+            => Instance.SetRobotDrivetrainType(robot, drivetrainType);
 
         private class Inner {
 
@@ -179,6 +185,12 @@ namespace Synthesis.PreferenceManager {
                 return _allRobotData[robot].SimTranslationLayer;
             }
 
+            public RobotSimObject.DrivetrainType GetRobotDrivetrainType(string robot) {
+                if (!_allRobotData.ContainsKey(robot))
+                    return RobotSimObject.DrivetrainType.ARCADE;
+                return _allRobotData[robot].DrivetrainType ?? RobotSimObject.DrivetrainType.ARCADE;
+            }
+
             public void SetRobotInput(string robot, string inputKey, Analog inputValue) {
                 if (!_allRobotData.ContainsKey(robot))
                     _allRobotData[robot] = new RobotData(robot);
@@ -220,6 +232,12 @@ namespace Synthesis.PreferenceManager {
                     _allRobotData[robot] = new RobotData(robot);
                 _allRobotData[robot].SimTranslationLayer = layer;
             }
+
+            public void SetRobotDrivetrainType(string robot, RobotSimObject.DrivetrainType drivetrainType) {
+                if (!_allRobotData.ContainsKey(robot))
+                    _allRobotData[robot] = new RobotData(robot);
+                _allRobotData[robot].DrivetrainType = drivetrainType;
+            }
         }
 
         private static Inner _instance;
@@ -248,20 +266,14 @@ namespace Synthesis.PreferenceManager {
             JointMotors = new Dictionary<string, JointMotor>();
             JointSpeeds = new Dictionary<string, float>();
         }
-        [JsonProperty]
-        public string AssemblyGuid;
-        [JsonProperty]
-        public Dictionary<string, InputData> InputData;
-        [JsonProperty]
-        public Dictionary<string, JointMotor> JointMotors;
-        [JsonProperty]
-        public Dictionary<string, float> JointSpeeds;
-        [JsonProperty]
-        public ITD? IntakeTrigger;
-        [JsonProperty]
-        public STD? TrajectoryPointer;
-        [JsonProperty]
-        public RioTranslationLayer? SimTranslationLayer;
+        [JsonProperty] public string AssemblyGuid;
+        [JsonProperty] public Dictionary<string, InputData> InputData;
+        [JsonProperty] public Dictionary<string, JointMotor> JointMotors;
+        [JsonProperty] public Dictionary<string, float> JointSpeeds;
+        [JsonProperty] public ITD? IntakeTrigger;
+        [JsonProperty] public STD? TrajectoryPointer;
+        [JsonProperty] public RioTranslationLayer? SimTranslationLayer;
+        [JsonProperty] public RobotSimObject.DrivetrainType? DrivetrainType;
     }
 
     [JsonObject(MemberSerialization.OptIn)]

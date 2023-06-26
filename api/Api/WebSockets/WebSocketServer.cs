@@ -11,104 +11,128 @@ using System.Threading;
 
 namespace SynthesisAPI.WS {
 
-    public class WebSocketServer {
+    public class WebSocketServer : IDisposable {
 
-        private TcpListener _listener;
-        private Mutex _clientDictMut = new Mutex();
-
-        private Dictionary<Guid, WSClientHandler> _clientDict = new Dictionary<Guid, WSClientHandler>();
-        public IReadOnlyList<Guid> Clients => _clientDict.Keys.ToList().AsReadOnly();
-
-        public event Action<Guid, string> OnMessage;
-        public event Action<Guid> OnConnect;
-        public event Action<Guid> OnDisconnect;
+        private Inner _instance;
+        
+        public IReadOnlyList<Guid> Clients => _instance._clientDict.Keys.ToList().AsReadOnly();
 
         public WebSocketServer(string hostname, int port) {
-            _listener = new TcpListener(IPAddress.Parse(hostname), port);
-            _listener.Start(2);
-            _listener.BeginAcceptTcpClient(AcceptTcpClient, null);
+            _instance = new Inner(hostname, port);
         }
 
-        ~WebSocketServer() {
-            Close();
-        }
+        public void AddOnMessageListener(Action<Guid, string> onMessage)
+            => _instance.OnMessage += onMessage;
+        public void AddOnConnectListener(Action<Guid> onConnect)
+            => _instance.OnConnect += onConnect;
+        public void AddOnDisconnectListener(Action<Guid> onDisconnect)
+            => _instance.OnDisconnect += onDisconnect;
 
-        public void Close() {
-            _listener.Stop();
-            _clientDict.ForEach(x => x.Value.Kill());
-            _clientDict.Clear();
-        }
+        public void SendToClient(Guid client, string message)
+            => _instance.SendToClient(client, message);
 
-        private void AcceptTcpClient(IAsyncResult ar) {
-            var clientTcp = _listener.EndAcceptTcpClient(ar);
-
-            _listener.BeginAcceptTcpClient(AcceptTcpClient, null);
+        private class Inner {
             
-            if (!clientTcp.Connected) {
-                return;
+            private TcpListener _listener;
+            private Mutex _clientDictMut = new Mutex();
+
+            public Dictionary<Guid, WSClientHandler> _clientDict = new Dictionary<Guid, WSClientHandler>();
+            
+            public event Action<Guid, string> OnMessage;
+            public event Action<Guid> OnConnect;
+            public event Action<Guid> OnDisconnect;
+
+            public Inner(string hostname, int port) {
+                _listener = new TcpListener(IPAddress.Parse(hostname), port);
+                _listener.Start(2);
+                _listener.BeginAcceptTcpClient(AcceptTcpClient, null);
             }
 
-            _clientDictMut.WaitOne();
-            var client = new WSClientHandler(Guid.NewGuid(), clientTcp);
-            _clientDict.Add(client.GUID, client);
-            _clientDictMut.ReleaseMutex();
+            ~Inner() {
+                Close();
+            }
 
-            if (OnConnect != null)
-                OnConnect(client.GUID);
+            public void Close() {
+                _listener.Stop();
+                _clientDict.ForEach(x => x.Value.Kill());
+                _clientDict.Clear();
+            }
 
-            while (clientTcp.Available < 3) ;
-            byte[] bytes = new byte[clientTcp.Available];
-            clientTcp.GetStream().Read(bytes, 0, clientTcp.Available);
-            string request = Encoding.UTF8.GetString(bytes);
+            private void AcceptTcpClient(IAsyncResult ar) {
+                var clientTcp = _listener.EndAcceptTcpClient(ar);
 
-            // Console.WriteLine(request);
+                _listener.BeginAcceptTcpClient(AcceptTcpClient, null);
 
-            string eol = "\r\n"; // Apparently this is a thing
-            string response = "HTTP/1.1 101 Switching Protocols\n";
-
-            response += "Connection: Upgrade\n"
-                        + "Upgrade: websocket\n";
-
-            string key = request.Substring(request.IndexOf("Sec-WebSocket-Key: ") + 19);
-            key = key.Substring(0, key.IndexOf("==") + 2);
-            string what = key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
-            // Console.WriteLine(what);
-            var wsAccept = Convert.ToBase64String(
-                System.Security.Cryptography.SHA1.Create().ComputeHash(
-                    Encoding.UTF8.GetBytes(what)
-                )
-            );
-
-            response += "Sec-WebSocket-Accept: " + wsAccept + eol;
-            response += eol;
-
-
-            client.Write(response);
-
-            try {
-                while (client.Connected) {
-
-                    var frame = client.ReadWS();
-
-                    if (OnMessage != null)
-                        OnMessage(client.GUID, frame.ParseAsPlainText());
+                if (!clientTcp.Connected) {
+                    return;
                 }
-            } catch (IOException _) {
-            } finally {
+
                 _clientDictMut.WaitOne();
-                if (_clientDict.ContainsKey(client.GUID))
-                    _clientDict[client.GUID].Kill();
-                _clientDict.Remove(client.GUID);
+                var client = new WSClientHandler(Guid.NewGuid(), clientTcp);
+                _clientDict.Add(client.GUID, client);
                 _clientDictMut.ReleaseMutex();
-                if (OnDisconnect != null)
-                    OnDisconnect(client.GUID);
+
+                if (OnConnect != null)
+                    OnConnect(client.GUID);
+
+                while (clientTcp.Available < 3) ;
+                byte[] bytes = new byte[clientTcp.Available];
+                clientTcp.GetStream().Read(bytes, 0, clientTcp.Available);
+                string request = Encoding.UTF8.GetString(bytes);
+
+                // Console.WriteLine(request);
+
+                string eol = "\r\n"; // Apparently this is a thing
+                string response = "HTTP/1.1 101 Switching Protocols\n";
+
+                response += "Connection: Upgrade\n"
+                            + "Upgrade: websocket\n";
+
+                string key = request.Substring(request.IndexOf("Sec-WebSocket-Key: ") + 19);
+                key = key.Substring(0, key.IndexOf("==") + 2);
+                string what = key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+                // Console.WriteLine(what);
+                var wsAccept = Convert.ToBase64String(
+                    System.Security.Cryptography.SHA1.Create().ComputeHash(
+                        Encoding.UTF8.GetBytes(what)
+                    )
+                );
+
+                response += "Sec-WebSocket-Accept: " + wsAccept + eol;
+                response += eol;
+
+
+                client.Write(response);
+
+                try {
+                    while (client.Connected) {
+
+                        var frame = client.ReadWS();
+
+                        if (OnMessage != null)
+                            OnMessage(client.GUID, frame.ParseAsPlainText());
+                    }
+                } catch (IOException _) { } finally {
+                    _clientDictMut.WaitOne();
+                    if (_clientDict.ContainsKey(client.GUID))
+                        _clientDict[client.GUID].Kill();
+                    _clientDict.Remove(client.GUID);
+                    _clientDictMut.ReleaseMutex();
+                    if (OnDisconnect != null)
+                        OnDisconnect(client.GUID);
+                }
+            }
+
+            public void SendToClient(Guid client, string message) {
+                if (!_clientDict.ContainsKey(client))
+                    throw new Exception($"No client with guid '{client}'");
+                _clientDict[client].WriteWS(message);
             }
         }
 
-        public void SendToClient(Guid client, string message) {
-            if (!_clientDict.ContainsKey(client))
-                throw new Exception($"No client with guid '{client}'");
-            _clientDict[client].WriteWS(message);
+        public void Dispose() {
+            _instance.Close();
+            _instance = null;
         }
     }
 

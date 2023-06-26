@@ -28,7 +28,7 @@ from proto.proto_out import types_pb2, joint_pb2, signal_pb2, motor_pb2, assembl
 from typing import Union
 
 from ...general_imports import *
-from .Utilities import fill_info, construct_info
+from .Utilities import fill_info, construct_info, guid_occurrence
 from .PDMessage import PDMessage
 from .. import ParseOptions
 
@@ -84,6 +84,11 @@ def populateJoints(
             design.rootComponent.allAsBuiltJoints
         ):
             if joint.isSuppressed:
+                continue
+
+            # turn RigidJoints into RigidGroups
+            if joint.jointMotion.jointType == 0:
+                _addRigidGroup(joint, assembly)
                 continue
 
             # for now if it's not a revolute or slider joint ignore it
@@ -183,15 +188,9 @@ def _addJointInstance(
     # Need to check if it is in a rigidgroup first, if yes then make the parent the actual parent
 
     # assign part id values - bug with entity tokens
-    try:
-        joint_instance.parent_part = joint.occurrenceOne.entityToken
-    except:
-        joint_instance.parent_part = joint.occurrenceOne.name
+    joint_instance.parent_part = guid_occurrence(joint.occurrenceOne)
 
-    try:
-        joint_instance.child_part = joint.occurrenceTwo.entityToken
-    except:
-        joint_instance.child_part = joint.occurrenceTwo.name
+    joint_instance.child_part = guid_occurrence(joint.occurrenceTwo)
 
     # FIX FOR ISSUE WHERE CHILD PART IS ACTUAL PART OF A LARGER GROUP THAT IS RIGID
     # MAY ALSO BE A FIX FR THE HIERARCHY DETECTION
@@ -232,6 +231,18 @@ def _addJointInstance(
                 else:
                     joint_instance.signal_reference = ""
 
+def _addRigidGroup(
+    joint: adsk.fusion.Joint,
+    assembly: assembly_pb2.Assembly
+):
+    if joint.jointMotion.jointType != 0 or not (joint.occurrenceOne.isLightBulbOn and joint.occurrenceTwo.isLightBulbOn):
+        return
+    
+    mira_group = joint_pb2.RigidGroup()
+    mira_group.name = f"group_{joint.occurrenceOne.name}_{joint.occurrenceTwo.name}"
+    mira_group.occurrences.append(guid_occurrence(joint.occurrenceOne))
+    mira_group.occurrences.append(guid_occurrence(joint.occurrenceTwo))
+    assembly.data.joints.rigid_groups.append(mira_group)
 
 def _motionFromJoint(
     fusionMotionDefinition: adsk.fusion.JointMotion, proto_joint: joint_pb2.Joint

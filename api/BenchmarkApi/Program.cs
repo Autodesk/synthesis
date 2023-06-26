@@ -14,8 +14,8 @@ namespace BenchmarkApi
 
             var server = new WebSocketServer("127.0.0.1", 3300);
             // server.OnMessage += (guid, m) => Console.WriteLine(m + "\n");
-            server.OnConnect += (guid) => Console.WriteLine($"{guid} - Connected");
-            server.OnDisconnect += (guid) => Console.WriteLine($"{guid} - Disconnected");
+            server.AddOnConnectListener((guid) => Console.WriteLine($"{guid} - Connected"));
+            server.AddOnDisconnectListener((guid) => Console.WriteLine($"{guid} - Disconnected"));
 
             while (true) { }
         }

@@ -1,13 +1,8 @@
 name: Engine
 
 on:
-  pull_request: {}
+  workflow_dispatch: {}
   push: { branches: [master] }
-
-env:
-  UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-  UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-  UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
 
 jobs:
   buildForSomePlatforms:
@@ -17,18 +12,18 @@ jobs:
       fail-fast: false
       matrix:
         projectPath:
-          - engine
+          - engine/
         unityVersion:
-          - 2020.3.12f1
+          - 2022.3.2f1
         targetPlatform:
-          - StandaloneOSX # Build a macOS standalone (Intel 64-bit).
-          - StandaloneWindows # Build a Windows standalone.
-          - StandaloneWindows64 # Build a Windows 64-bit standalone.
-          - StandaloneLinux64 # Build a Linux 64-bit standalone.
+          - StandaloneWindows64
+          - StandaloneLinux64
+          - StandaloneOSX
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout Repository & Submodules
+        uses: actions/checkout@v2
         with:
-          lfs: true
+          submodules: recursive
       - uses: actions/cache@v1.1.0
         with:
           path: ${{ matrix.projectPath }}/Library
@@ -36,47 +31,29 @@ jobs:
           restore-keys: |
             Library-${{ matrix.projectPath }}-
             Library-
-      - uses: webbertakken/unity-builder@v1.0
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v2
         with:
-          buildName: Synthesis
-          projectPath: ${{ matrix.projectPath }}
-          unityVersion: ${{ matrix.unityVersion }}
+          version: "23.3"
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.0.x
+      - name: Setup Dependencies
+        run: |
+          bash ./init.sh
+          bash ./init.sh
+      - name: Build Unity
+        uses: game-ci/unity-builder@v2
+        env:
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        with:
           targetPlatform: ${{ matrix.targetPlatform }}
-      - uses: actions/upload-artifact@v1
-        with:
-          name: Synthesis
-          path: build
-
-  testAllModes:
-    name: Test for ${{ matrix.testMode }} modes on version ${{ matrix.unityVersion }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        projectPath:
-          - engine
-        unityVersion:
-          - 2019.4.0f1
-        testMode:
-          - all
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          lfs: true
-      - uses: actions/cache@v1.1.0
-        with:
-          path: ${{ matrix.projectPath }}/Library
-          key: Library-${{ matrix.projectPath }}
-          restore-keys: |
-            Library-
-      - uses: webbertakken/unity-test-runner@v1.4
-        id: tests
-        with:
           projectPath: ${{ matrix.projectPath }}
-          unityVersion: ${{ matrix.unityVersion }}
-          testMode: ${{ matrix.testMode }}
-          artifactsPath: ${{ matrix.testMode }}-artifacts
+          allowDirtyBuild: true
       - uses: actions/upload-artifact@v1
         with:
-          name: Test Results
-          path: ${{ steps.tests.outputs.artifactsPath }}
+          name: Synthesis-${{ matrix.targetPlatform }}
+          path: build
