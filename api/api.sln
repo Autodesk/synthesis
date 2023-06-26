@@ -40,6 +40,7 @@ Global
 		{F936B4C1-1360-46AE-9F12-7A022C1E00D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F936B4C1-1360-46AE-9F12-7A022C1E00D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F936B4C1-1360-46AE-9F12-7A022C1E00D9}.Release|Any CPU.Build.0 = Release|Any CPU
+v
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
