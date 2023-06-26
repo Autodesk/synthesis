@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 
 FILES_DIRS = ["engine/Assets/Scripts"]
@@ -21,10 +22,16 @@ def main():
         if clang_format is None:
             print("Error: clang-format.exe not found in PATH")
             return
-    elif sys.platform == "linux":
-        pass
-    elif sys.platform == "macos":
-        pass
+    elif sys.platform == "linux" or sys.platform == "macos":
+        try:
+            subprocess.check_output(["which", "clang-format"])
+        except subprocess.CalledProcessError:
+            if sys.platform == "linux":
+                print("Error: clang-format not installed. Run `sudo apt-get install clang-format` to install it.")
+            else:
+                print("Error: clang-format not installed. Run `brew install clang-format` to install it.")
+
+            return
     else:
         print("Error: Unknown operating system")
         return
