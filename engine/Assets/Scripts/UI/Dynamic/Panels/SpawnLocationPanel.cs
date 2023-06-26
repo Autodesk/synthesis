@@ -6,17 +6,30 @@ using Synthesis.PreferenceManager;
 using UnityEngine;
 using Synthesis.Gizmo;
 using Synthesis.Runtime;
+using UnityEditor;
+using UnityEngine.UIElements;
 
 namespace Synthesis.UI.Dynamic
 {
     public class SpawnLocationPanel : PanelDynamic
     {
+        private const float width = 400f;
+        private const float height = 150f;
+        private const float spawnDistanceFromSurface = 1f;
 
+        private static readonly Color redColor = new Color(1, 0, 0, 0.5f);
+        private static readonly Color blueColor = new Color(0, 0, 1, 0.5f);
+        private static readonly Material mat = new Material(Shader.Find("Shader Graphs/DefaultSynthesisTransparentShader"));
+
+        public Func<Button, Button> DisabledTemplate = b =>
+            b.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_BLACK_ACCENT))
+                .StepIntoLabel(l => l.SetColor(ColorManager.SYNTHESIS_WHITE));
         
-        private static float width = 300f;
-        private static float height = 200f;
-
         private const float VERTICAL_PADDING = 15f;
+
+        private Button[] buttons = new Button[6];
+        private Transform[] _positions = new Transform[6];
+        private int _selectedButton;
 
         public Func<UIComponent, UIComponent> VerticalLayout = (u) =>
         {
@@ -26,16 +39,31 @@ namespace Synthesis.UI.Dynamic
         };
 
         public SpawnLocationPanel() : base(new Vector2(width, height)) { }
+        
+        public override bool Create()
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                
+                var rend = obj.GetComponent<Renderer>();
+                rend.material = mat;
+                rend.material.SetColor("Color_48545d7793c14f3d9e1dd2264f072068", (i < 3) ? redColor : blueColor);
+                //rend.material.color = (i < 3) ? redColor : blueColor;
 
-        Label location;
+                obj.GetComponent<Collider>().isTrigger = true;
+                _positions[i] = obj.transform;
+            }
 
-        public override bool Create() {
             Title.SetText("Set Spawn").SetFontSize(25f);
             PanelImage.RootGameObject.SetActive(false);
-            // Description.RootGameObject.SetActive(false);
 
             Content panel = new Content(null, UnityObject, null);
-            panel.SetBottomStretch<Content>(Screen.width / 2 - width / 2 - 40f, Screen.width / 2 - width / 2 - 40f, 0);
+            panel.SetBottomStretch<Content>(0, 0, 0);
+            
+            //float padding = Screen.width / 2f - width/2f;
+            float padding = 700;
+            panel.SetBottomStretch<Content>(padding, padding, 0);
             
             AcceptButton
                     .StepIntoLabel(label => label.SetText("Start"))
@@ -45,80 +73,97 @@ namespace Synthesis.UI.Dynamic
                         {
                             matchStarted = true;
                             StartMatch();
-            
                         }
                     });
             CancelButton
                 .StepIntoLabel(label => label.SetText("Cancel"))
                 .AddOnClickedEvent(b =>
                 {
-                    //if (FieldSimObject.CurrentField != null) FieldSimObject.CurrentField.DeleteField();
-                    //if (RobotSimObject.GetCurrentlyPossessedRobot() != null) RobotSimObject.GetCurrentlyPossessedRobot().Destroy();
                     DynamicUIManager.CreateModal<MatchModeModal>();
                 });
             
-            /*MainContent.CreateLabel(50f).ApplyTemplate(VerticalLayout).SetText("Spawn Positions");
-            var spawnPosition = MainContent.CreateDropdown().ApplyTemplate(Dropdown.VerticalLayoutTemplate)
-                .SetOptions(new string[] { "Left", "Middle", "Right" })
-                .AddOnValueChangedEvent((d, i, data) => { }
-                //ADD: CHANGE SPAWN POSITION
-                ).ApplyTemplate(VerticalLayout);*/
+            float spacing = 15f;
+            var (left, rightSection) = MainContent.SplitLeftRight((MainContent.Size.x / 3f) - (spacing / 2f), spacing);
+            var (center, right) = rightSection.SplitLeftRight((MainContent.Size.x / 3f) - (spacing / 2f), spacing);
             
-            
-            
-            
-            // MainContent.CreateButton()
-            //     .ApplyTemplate(VerticalLayout)
-            //     .SetTopStretch<Button>(anchoredY: 10f)
-            //     .SetHeight<Button>(40f)
-            //     .ShiftOffsetMin<Button>(new Vector2(7.5f, 0f))
-            //     .StepIntoLabel(label => label.SetText("Set to Center").SetFontSize(20f))
-            //     .AddOnClickedEvent(b => {
-            
-            //         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-            //         {
-            //             RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position = new Vector3(0f, 0f, 0f);
-            //             Camera.main.GetComponent<CameraController>().FocusPoint = () => RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position;
-            //         }
-            //     });
-            
-            // MainContent.CreateButton()
-            //     .ApplyTemplate(VerticalLayout)
-            //     .SetTopStretch<Button>(anchoredY: 60f)
-            //     .SetHeight<Button>(40f)
-            //     .ShiftOffsetMin<Button>(new Vector2(7.5f, 0f))
-            //     .StepIntoLabel(label => label.SetText("Set to Previous").SetFontSize(20f))
-            //     .AddOnClickedEvent(b => {
-            //         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-            //         {
-            //             PreferenceManager.PreferenceManager.Load();
-            //             if (PreferenceManager.PreferenceManager.ContainsPreference(MatchMode.PREVIOUS_SPAWN_LOCATION))
-            //             {
-            //                 var pos = PreferenceManager.PreferenceManager.GetPreference<float[]>(MatchMode.PREVIOUS_SPAWN_LOCATION);
-            //                 RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position = new Vector3(pos[0], pos[1], pos[2]);
-            //                 var rot = PreferenceManager.PreferenceManager.GetPreference<float[]>(MatchMode.PREVIOUS_SPAWN_ROTATION);
-            //                 RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.rotation = new Quaternion(rot[0], rot[1], rot[2], rot[3]).normalized;
-            //             }
-            //             else
-            //             {
-            //                 RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position = new Vector3(0f, 0f, 0f);
-            //                 RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
-            //             }
-            //             Camera.main.GetComponent<CameraController>().FocusPoint = () => RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position;
-            //         }
-            //     });
-            
-            
-            location = MainContent.CreateLabel(30f).ApplyTemplate(VerticalLayout).SetFontSize(30)
-                .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Center).SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Bottom)
-                .SetTopStretch(leftPadding: 10f, anchoredY: 130f).SetText("(0.00, 0.00, 0.00)");
+            buttons[0] = left.CreateButton()
+                .StepIntoLabel(l => l.SetText("Red 1"))
+                .ApplyTemplate(VerticalLayout)
+                .ApplyTemplate(DisabledTemplate)
+                .AddOnClickedEvent(b =>
+                {
+                    selectButton(0);
+                });
+            buttons[1] = center.CreateButton()
+                .StepIntoLabel(l => l.SetText("Red 2"))
+                .ApplyTemplate(VerticalLayout)
+                .ApplyTemplate(DisabledTemplate)
+                .AddOnClickedEvent(b =>
+                {
+                    selectButton(1);
+                });
+            buttons[2] = right.CreateButton()
+                .StepIntoLabel(l => l.SetText("Red 3"))
+                .ApplyTemplate(VerticalLayout)
+                .ApplyTemplate(DisabledTemplate)
+                .AddOnClickedEvent(b =>
+                {
+                    selectButton(2);
+                });
+            buttons[3] = left.CreateButton()
+                .StepIntoLabel(l => l.SetText("Blue 1"))
+                .ApplyTemplate(VerticalLayout)
+                .ApplyTemplate(DisabledTemplate)
+                .AddOnClickedEvent(b =>
+                {
+                    selectButton(3);
 
-            // PracticeMode.SetInitialState(GizmoManager.currentGizmo.transform.parent.gameObject);
-
+                });
+            buttons[4] = center.CreateButton()
+                .StepIntoLabel(l => l.SetText("Blue 2"))
+                .ApplyTemplate(VerticalLayout)
+                .ApplyTemplate(DisabledTemplate)
+                .AddOnClickedEvent(b =>
+                {
+                    selectButton(4);
+                });
+            buttons[5] = right.CreateButton()
+                .StepIntoLabel(l => l.SetText("Blue 3"))
+                .ApplyTemplate(VerticalLayout)
+                .ApplyTemplate(DisabledTemplate)
+                .AddOnClickedEvent(b =>
+                {
+                    selectButton(5);
+                });
+            
+            selectButton(0);
             return true;
         }
+
+        private void selectButton(int index)
+        {
+            Debug.Log(index);
+            buttons[_selectedButton].Image.Color = ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT);
+            _selectedButton = index;
+
+            if (index < 3)
+            {
+                buttons[index].Image.Color = new Color(0.7f, 0, 0);
+            }
+            else
+                buttons[index].Image.Color = new Color(0, 0, 0.7f);
+        }
+
+        private void deselectAllButtons()
+        {
+            buttons.ForEach(x =>
+            {
+                x.ApplyTemplate(DisabledTemplate);
+            });
+        }
+        
         private void StartMatch() {
-            if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+            /*if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
             {
                 Vector3 p = RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position;
                 PreferenceManager.PreferenceManager.SetPreference(MatchMode.PREVIOUS_SPAWN_LOCATION, new float[] { p.x, p.y, p.z});
@@ -135,25 +180,32 @@ namespace Synthesis.UI.Dynamic
             DynamicUIManager.CloseAllPanels(true);
             DynamicUIManager.CreatePanel<Synthesis.UI.Dynamic.ScoreboardPanel>(true);
 
-            GizmoManager.ExitGizmo();
+            GizmoManager.ExitGizmo();*/
         }
 
         private bool matchStarted = false;
         public override void Update() {
-
-            Vector3 robotPosition = new Vector3();
-            if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
-                robotPosition = RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position;
-            }
-
-            location.SetText(
-                $"({String.Format("{0:0.00}", robotPosition.x)}, {String.Format("{0:0.00}", robotPosition.y)}, {String.Format("{0:0.00}", robotPosition.z)})");
-
-
+            
             if ((SimulationRunner.HasContext(SimulationRunner.GIZMO_SIM_CONTEXT) || SimulationRunner.HasContext(SimulationRunner.PAUSED_SIM_CONTEXT))
                     && !matchStarted) {
                 matchStarted = true;
                 StartMatch();
+            }
+
+            if (Input.GetMouseButton(1))
+            { 
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                if (UnityEngine.Physics.Raycast(ray, out var hit, 100,
+                        1 << LayerMask.NameToLayer("FieldCollisionLayer")))
+                {
+                    Debug.Log(hit.point); 
+                    //RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position = hit.point;
+                    Gizmos.color = new Color(0, 1, 0, 0.5f);
+                    //Debug.DrawRay(Camera.main.transform.position, hit.point);
+
+                    Vector3 position = hit.point + hit.normal * spawnDistanceFromSurface;
+                    _positions[_selectedButton].position = position;
+                }
             }
         }
 

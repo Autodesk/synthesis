@@ -100,6 +100,8 @@ namespace Synthesis.UI.Dynamic {
             panel.Create_Internal(unityObject);
             bool success = panel.Create();
 
+            Debug.Log($"Panel create: {success}");
+
             if (!success) {
                 ClosePanel<T>();
                 return false;

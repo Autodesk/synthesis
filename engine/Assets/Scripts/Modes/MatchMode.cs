@@ -25,7 +25,7 @@ public class MatchMode : IMode {
             if (value == _currentState)
             {
                 Debug.LogError($"New state is the same as the current state ({value})");
-                return;
+                return; 
             }
             
             _currentState = value;
@@ -33,10 +33,12 @@ public class MatchMode : IMode {
             {
                 case MatchState.MatchConfig:
                     DynamicUIManager.CreateModal<MatchModeModal>();
-                    return;
+                    ((MatchModeModal)DynamicUIManager.ActiveModal).OnAccepted += () => CurrentState = MatchState.RobotPositioning;
+                    return; 
                 case MatchState.RobotPositioning:
+                    DynamicUIManager.CreatePanel<StartMatchModePanel>();
                     return;
-                case MatchState.Auto:
+                case MatchState.Auto: 
                     return;
                 default:
                     Debug.LogError($"No behavior for current state ({value})");
@@ -67,6 +69,5 @@ public class MatchMode : IMode {
         MatchConfig,
         RobotPositioning,
         Auto
-        
     }
 }

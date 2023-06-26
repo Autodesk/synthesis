@@ -83,11 +83,6 @@ public class MatchModeModal : ModalDynamic
         var allianceSelection = MainContent.CreateDropdown().ApplyTemplate(Dropdown.VerticalLayoutTemplate)
             .SetOptions(new string[] { "Red", "Blue" })
             .AddOnValueChangedEvent((d, i, data) => _allianceColor = i).ApplyTemplate(VerticalLayout);
-
-        /*MainContent.CreateLabel().ApplyTemplate(VerticalLayout).SetText("Select Spawn Position");
-        var spawnPosition = MainContent.CreateDropdown().ApplyTemplate(Dropdown.VerticalLayoutTemplate)
-            .SetOptions(new string[] { "Left", "Middle", "Right" })
-            .AddOnValueChangedEvent((d, i, data) => _spawnPosition = i).ApplyTemplate(VerticalLayout);*/
     }
     
     public IEnumerator LoadMatch()
@@ -115,11 +110,11 @@ public class MatchModeModal : ModalDynamic
                 
                 RobotSimObject.SpawnRobot(_robotFiles[_robotIndex],
                     new Vector3(pos[0], pos[1], pos[2]),
-                    new Quaternion(rot[0], rot[1], rot[2], rot[3]).normalized);
-            }
-            else
+                    new Quaternion(rot[0], rot[1], rot[2], rot[3]).normalized, false);
+            }  
+            else 
             {
-                RobotSimObject.SpawnRobot(_robotFiles[_robotIndex]);
+                RobotSimObject.SpawnRobot(_robotFiles[_robotIndex], false);
             }
             
             
@@ -128,9 +123,9 @@ public class MatchModeModal : ModalDynamic
         Scoring.ResetScore();
 
         DynamicUIManager.CloseActiveModal();
-
+ 
         // DynamicUIManager.CreatePanel<Synthesis.UI.Dynamic.SpawnLocationPanel>();
-        DynamicUIManager.CreatePanel<StartMatchModePanel>();
+        DynamicUIManager.CreatePanel<SpawnLocationPanel>();
     }
     
     public override void Update() {
