@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public class ModeManager {
     
     private static IMode _currentMode;
@@ -14,9 +16,12 @@ public class ModeManager {
 
     public static void Start()
     {
-        // should this be here? or somewhere else, or not at all?
+        // should this be here? or somewhere else, or not at all? 
         if (CurrentMode == null)
-            CurrentMode = new PracticeMode();
+        {
+            CurrentMode = new MatchMode(); 
+        }
+
         CurrentMode.Start();
         // Shooting.Start();
     }
