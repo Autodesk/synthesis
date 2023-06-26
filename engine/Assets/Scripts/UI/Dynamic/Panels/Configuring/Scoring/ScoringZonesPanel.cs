@@ -30,6 +30,7 @@ public class ScoringZonesPanel : PanelDynamic
     private const float ROW_HEIGHT = 64f;
 
     private float _scrollViewWidth;
+    private float _entryWidth;
 
     private ScrollView _zonesScrollView;
     private Button _addZoneButton;
@@ -56,7 +57,8 @@ public class ScoringZonesPanel : PanelDynamic
         CancelButton.RootGameObject.SetActive(false);
 
         _zonesScrollView = MainContent.CreateScrollView().SetRightStretch<ScrollView>().ApplyTemplate(VerticalLayout);
-        _scrollViewWidth = _zonesScrollView.Parent!.RectOfChildren().width - SCROLLBAR_WIDTH - HORIZONTAL_PADDING * 2;
+        _scrollViewWidth = _zonesScrollView.Parent!.RectOfChildren().width - SCROLLBAR_WIDTH;
+        _entryWidth = _scrollViewWidth - HORIZONTAL_PADDING * 2;
 
 
         _addZoneButton = MainContent.CreateButton()
@@ -83,25 +85,25 @@ public class ScoringZonesPanel : PanelDynamic
     }
 
     private void AddZoneEntry(ScoringZone zone, bool isNew) {
-        if (!isNew) return;
-        (Content leftContent, Content rightContent) = _zonesScrollView.Content.CreateSubContent(new Vector2(_scrollViewWidth - HORIZONTAL_PADDING * 2, ROW_HEIGHT))
-            .SetBackgroundColor<Content>(Color.black)
+        if (!isNew) {
+            AddZoneEntries();
+            return;
+        }
+        (Content leftContent, Content rightContent) = _zonesScrollView.Content.CreateSubContent(new Vector2(_entryWidth, ROW_HEIGHT))
             .ApplyTemplate(ListVerticalLayout)
             .SplitLeftRight(BUTTON_WIDTH, HORIZONTAL_PADDING);
         leftContent.SetBackgroundColor<Content>(zone.Alliance == Alliance.Red ? Color.red : Color.blue);
-        rightContent.SetBackgroundColor<Content>(Color.green);
 
-        (Content labelsContent, Content buttonsContent) = rightContent.SplitLeftRight(_scrollViewWidth - (HORIZONTAL_PADDING + BUTTON_WIDTH) * 3, HORIZONTAL_PADDING);
-        labelsContent.SetBackgroundColor<Content>(Color.magenta);
+        (Content labelsContent, Content buttonsContent) = rightContent.SplitLeftRight(_entryWidth- (HORIZONTAL_PADDING + BUTTON_WIDTH) * 3, HORIZONTAL_PADDING);
         (Content topContent, Content bottomContent) = labelsContent.SplitTopBottom(ROW_HEIGHT / 2, 0);
         topContent.CreateLabel().SetText(zone.Name)
             .ApplyTemplate(VerticalLayout)
             .SetAnchorLeft<Label>()
-            .SetAnchoredPosition<Label>(new Vector2(0, -ROW_HEIGHT / 4));
+            .SetAnchoredPosition<Label>(new Vector2(0, -ROW_HEIGHT / 8));
         bottomContent.CreateLabel().SetText($"{zone.Points} points")
             .ApplyTemplate(VerticalLayout)
             .SetAnchorLeft<Label>()
-            .SetAnchoredPosition<Label>(new Vector2(0, -ROW_HEIGHT / 4));
+            .SetAnchoredPosition<Label>(new Vector2(0, -ROW_HEIGHT / 8));
 
         (Content editButtonContent, Content deleteButtonContent) = buttonsContent.SplitLeftRight(BUTTON_WIDTH, HORIZONTAL_PADDING);
         editButtonContent.CreateButton().StepIntoLabel(l => l.SetText("Edit"))
