@@ -1,10 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Synthesis.Runtime;
 using SynthesisAPI.EventBus;
 using UnityEngine;
-
 public enum Alliance
 {
     Red,
@@ -37,18 +33,18 @@ public class ScoringZone
         this.GameObject = gameObject;
         
         // configure gameobject to have box collider as trigger
-        gameObject.name = name;
+        GameObject.name = name;
         
         // make scoring zone transparent
-        _renderer = gameObject.GetComponent<Renderer>();
+        _renderer = GameObject.GetComponent<Renderer>();
         // renderer.material = new Material(Shader.Find("Shader Graphs/DefaultSynthesisTransparentShader"));
         _renderer.material.color = alliance == Alliance.Red ? Color.red : Color.blue;
 
-        ScoringZoneListener listener = gameObject.AddComponent<ScoringZoneListener>();
+        ScoringZoneListener listener = GameObject.AddComponent<ScoringZoneListener>();
         listener.scoringZone = this;
         
-        _collider = gameObject.GetComponent<Collider>();
-        _meshRenderer = gameObject.GetComponent<MeshRenderer>();
+        _collider = GameObject.GetComponent<Collider>();
+        _meshRenderer = GameObject.GetComponent<MeshRenderer>();
 
         _collider.isTrigger = true;
         
@@ -57,9 +53,8 @@ public class ScoringZone
         DestroyObject = destroyObject;
     }
 
-    public void SetVisibility(bool visible)
-    {
-        GameObject.GetComponent<Renderer>().enabled = visible;
+    public void SetVisibility(bool visible) {
+        _renderer.enabled = visible;
     }
 }
 
@@ -75,7 +70,7 @@ public class ScoringZoneListener : MonoBehaviour
         if (SimulationRunner.HasContext(SimulationRunner.GIZMO_SIM_CONTEXT)) return;
         
         // trigger scoring
-        EventBus.Push(new OnScoreEvent(other.name, scoringZone));
+        EventBus.Push<OnScoreEvent>(new OnScoreEvent(other.name, scoringZone));
         
         if (scoringZone.DestroyObject) Destroy(other.gameObject);
     }

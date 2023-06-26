@@ -70,6 +70,7 @@ public class ZoneConfigPanel : PanelDynamic {
             // don't want to update data and call callback on every character typed for name
             CopyDataToZone(_data, _zone);
             _data.Name = _zoneNameInput.Value;
+            _zone.GameObject.name = _data.Name;
             
             if (_isNewZone)
                 FieldSimObject.CurrentField.ScoringZones.Add(_zone);

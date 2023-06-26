@@ -35,6 +35,8 @@ public class ScoringZonesPanel : PanelDynamic
 
     private ScrollView _zonesScrollView;
     private Button _addZoneButton;
+
+    private bool _initiallyVisible = true;
     
     private readonly Func<UIComponent, UIComponent> VerticalLayout = (u) => {
         var offset = (-u.Parent!.RectOfChildren(u).yMin) + VERTICAL_PADDING;
@@ -66,13 +68,18 @@ public class ScoringZonesPanel : PanelDynamic
         _addZoneButton = MainContent.CreateButton()
             .SetTopStretch<Button>()
             .StepIntoLabel(l => l.SetText("Add Zone"))
-            .AddOnClickedEvent(button =>
+            .AddOnClickedEvent(_ =>
             {
                 OpenScoringZoneGizmo();
             })
             .ApplyTemplate(VerticalLayout);
         
         AddZoneEntries();
+
+        _initiallyVisible = PreferenceManager.GetPreference<bool>(SettingsModal.RENDER_SCORE_ZONES);
+        
+        if (!_initiallyVisible)
+            FieldSimObject.CurrentField.ScoringZones.ForEach(z => z.GameObject.GetComponent<MeshRenderer>().enabled = true);
 
         return true;
     }
@@ -130,10 +137,7 @@ public class ScoringZonesPanel : PanelDynamic
 
     public override void Delete()
     {
-        bool visible = PreferenceManager.GetPreference<bool>(SettingsModal.RENDER_SCORE_ZONES);
-        foreach (ScoringZone zone in FieldSimObject.CurrentField.ScoringZones)
-        {
-            zone.GameObject.GetComponent<Renderer>().enabled = visible;
-        }
+        if (!_initiallyVisible)
+            FieldSimObject.CurrentField.ScoringZones.ForEach(z => z.GameObject.GetComponent<MeshRenderer>().enabled = _initiallyVisible);
     }
 }
