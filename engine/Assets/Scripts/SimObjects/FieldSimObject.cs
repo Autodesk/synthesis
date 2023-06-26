@@ -6,6 +6,7 @@ using Synthesis.Gizmo;
 using Synthesis.Import;
 using Synthesis.Physics;
 using Synthesis.PreferenceManager;
+using Synthesis.UI;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
@@ -106,6 +107,12 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
             ScoringZones.ForEach(zone => zone.SetVisibility(visible));
         });
         // Shooting.ConfigureGamepieces();
+        
+        FieldObject.transform.GetComponentsInChildren<Rigidbody>().ForEach(x => {
+            var rc = x.gameObject.AddComponent<HighlightComponent>();
+            rc.Color = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_HOVER);
+            rc.enabled = false;
+        });
     }
 
     public void ResetField() {
