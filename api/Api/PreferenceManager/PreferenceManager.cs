@@ -6,6 +6,9 @@ using SynthesisAPI.VirtualFileSystem;
 using System.Threading.Tasks;
 using SynthesisAPI.Utilities;
 
+// This has a template that is possibly nullable 
+#nullable disable
+
 namespace SynthesisAPI.PreferenceManager
 {
     public static class PreferenceManager
@@ -109,7 +112,7 @@ namespace SynthesisAPI.PreferenceManager
                 Logger.Log($"There is no key of value \"{key}\" for module \"{moduleName}\"");
             }
             Logger.Log($"There is no module with name \"{moduleName}\"");
-            return default;
+            return default(T);
         }
 
         /// <summary>

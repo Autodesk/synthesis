@@ -303,7 +303,12 @@ namespace SynthesisAPI.UIManager
                 }
                 else
                 {
-                    return new StyleBackground(asset.Sprite.texture);
+                    if (asset.Sprite != null)
+                        return new StyleBackground(asset.Sprite!.texture);
+                    else {
+                        Logger.Log($"Failed to find Sprite for the given Asset : {asset.Name}", LogLevel.Warning);
+                        return new StyleBackground(StyleKeyword.Null);
+                    }
                 }
             }
             catch (Exception e)

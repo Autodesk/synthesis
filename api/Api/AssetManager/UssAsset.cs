@@ -4,6 +4,8 @@ using SynthesisAPI.UIManager;
 using SynthesisAPI.Utilities;
 using SynthesisAPI.VirtualFileSystem;
 
+#nullable enable
+
 namespace SynthesisAPI.AssetManager
 {
     /// <summary>

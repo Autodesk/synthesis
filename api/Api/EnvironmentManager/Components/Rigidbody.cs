@@ -1,25 +1,23 @@
 ﻿using MathNet.Spatial.Euclidean;
-using SynthesisAPI.EnvironmentManager;
-using SynthesisAPI.Modules.Attributes;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using SynthesisAPI.Utilities;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+
+#nullable enable
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
     public class Rigidbody : Component
     {
-        internal object Adapter = null;
+        internal object? Adapter = null;
 
         #region Properties
 
         public delegate void CollisionFeedback(float magn);
         public CollisionFeedback OnEnterCollision = m => { };
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         public string ExportedJointUuid { get; set; } = string.Empty;
 

@@ -4,6 +4,8 @@ using SynthesisAPI.VirtualFileSystem;
 using System;
 using UnityEngine;
 
+#nullable enable
+
 namespace SynthesisAPI.AssetManager
 {
     /// <summary>

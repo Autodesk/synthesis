@@ -4,6 +4,8 @@ using SynthesisAPI.Utilities;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
+#nullable enable
+
 namespace SynthesisAPI.EnvironmentManager.Components
 {
 	public class Mesh : Component

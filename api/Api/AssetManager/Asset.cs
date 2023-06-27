@@ -2,6 +2,8 @@
 using SynthesisAPI.VirtualFileSystem;
 using Directory = SynthesisAPI.VirtualFileSystem.Directory;
 
+#nullable enable
+
 namespace SynthesisAPI.AssetManager
 {
     /// <summary>

@@ -1,5 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+
+#nullable enable
 
 namespace Mirabuf {
     public partial class Assembly {

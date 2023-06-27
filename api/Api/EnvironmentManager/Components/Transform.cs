@@ -1,11 +1,10 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using MathNet.Spatial.Euclidean;
 using MathNet.Spatial.Units;
-using SynthesisAPI.Modules.Attributes;
-using SynthesisAPI.Runtime;
 using SynthesisAPI.Utilities;
+
+#nullable enable
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
@@ -21,7 +20,7 @@ namespace SynthesisAPI.EnvironmentManager.Components
 		public RotationValidatorDelegate RotationValidator = (Quaternion rotation) => rotation.Normalized;
 		public ScaleValidatorDelegate ScaleValidator = (Vector3D scale) => scale;
 
-		public event PropertyChangedEventHandler PropertyChanged;
+		public event PropertyChangedEventHandler? PropertyChanged;
 
 		internal Vector3D position = new Vector3D(0, 0, 0);
 		public Vector3D Position

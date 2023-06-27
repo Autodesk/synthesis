@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using UnityEngine.UIElements;
 using _UnityVisualElement = UnityEngine.UIElements.VisualElement;
 
+#nullable enable
+
 namespace SynthesisAPI.UIManager.VisualElements
 {
     public class VisualElement
@@ -201,7 +203,8 @@ namespace SynthesisAPI.UIManager.VisualElements
 
         public void SetStyleProperty(string name, string value)
         {
-            _visualElement = UIParser.ParseEntry($"{name}:{value}", _visualElement);
+            var elem = UIParser.ParseEntry($"{name}:{value}", _visualElement);
+            if (elem != null) _visualElement = elem;
         }
     }
 }

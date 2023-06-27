@@ -1,5 +1,6 @@
 ﻿using SynthesisAPI.Utilities;
-using System;
+
+#nullable enable
 
 namespace SynthesisAPI.VirtualFileSystem
 {

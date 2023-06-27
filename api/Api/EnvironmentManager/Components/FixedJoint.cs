@@ -3,6 +3,8 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using MathNet.Spatial.Euclidean;
 
+#nullable enable
+
 namespace SynthesisAPI.EnvironmentManager.Components
 {
     public class FixedJoint : IJoint
@@ -37,16 +39,16 @@ namespace SynthesisAPI.EnvironmentManager.Components
                 OnPropertyChanged();
             }
         }
-        internal Rigidbody connectedParent = null;
-        public Rigidbody ConnectedParent {
+        internal Rigidbody? connectedParent = null;
+        public Rigidbody? ConnectedParent {
             get => connectedParent;
             set {
                 connectedParent = value;
                 OnPropertyChanged();
             }
         }
-        internal Rigidbody connectedChild = null;
-        public Rigidbody ConnectedChild {
+        internal Rigidbody? connectedChild = null;
+        public Rigidbody? ConnectedChild {
             get => connectedChild;
             set {
                 connectedChild = value;

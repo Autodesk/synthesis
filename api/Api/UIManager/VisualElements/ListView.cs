@@ -7,6 +7,8 @@ using SynthesisAPI.Runtime;
 using _SelectionType = UnityEngine.UIElements.SelectionType;
 using _UnityListView = UnityEngine.UIElements.ListView;
 
+#nullable enable
+
 namespace SynthesisAPI.UIManager.VisualElements
 {
     public class ListView: VisualElement

@@ -2,6 +2,8 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
+#nullable enable
+
 namespace SynthesisAPI.EnvironmentManager.Components
 {
     public class HingeJoint : IJoint
