@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 
 FILES_DIRS = ["engine/Assets/Scripts"]
@@ -29,7 +30,12 @@ def main():
         with open(file, "r") as f:
             previous_file_state = f.readlines()
 
-        os.system(f"{FORMAT_COMMAND} {file}")
+        subprocess.call(
+            f"{FORMAT_COMMAND} -i -style=file {file}",
+            bufsize=1,
+            creationflags=subprocess.CREATE_NO_WINDOW,
+            shell=False,
+        )
         with open(file, "r") as f:
             new_file_state = f.readlines()
 
