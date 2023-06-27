@@ -1,7 +1,8 @@
 name: Format Validation (Clang Format)
 
 on:
-  push: {}
+  push: 
+    branches: [ master, dev ]
   pull_request:
     branches: [ master, dev ]
 
