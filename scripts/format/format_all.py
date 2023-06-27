@@ -48,7 +48,7 @@ def main():
     for file in files:
         print(f"Formatting {file}...")
         subprocess.call(
-            f"{FORMAT_COMMAND} -i -style=file {file}",
+            f"{FORMAT_COMMAND} {file}",
             bufsize=1,
             creationflags=subprocess.CREATE_NO_WINDOW,
             shell=False,

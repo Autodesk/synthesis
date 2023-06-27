@@ -31,7 +31,7 @@ def main():
             previous_file_state = f.readlines()
 
         subprocess.call(
-            f"{FORMAT_COMMAND} -i -style=file {file}",
+            f"{FORMAT_COMMAND} {file}",
             bufsize=1,
             shell=False,
         )
