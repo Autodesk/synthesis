@@ -92,7 +92,7 @@ dep_exists_brew "protoc" "protobuf@23"
 if ! command -v dotnet &> /dev/null
 then
     pretty_print "dotnet could not be found - installing dotnet from Microsoft SDK store"
-    curl -sSL https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh | bash /dev/stdin -Channel STS -Version 7.0.7
+    curl -sSL https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh | bash /dev/stdin -Channel STS -Version 7.0.305
     
     pretty_print "Installed dotnet to \$HOME/.dotnet"
 
