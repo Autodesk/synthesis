@@ -10,50 +10,14 @@ public class MatchMode : IMode {
 
     public const string PREVIOUS_SPAWN_LOCATION = "Previous Spawn Location";
     public const string PREVIOUS_SPAWN_ROTATION = "Previous Spawn Rotation";
-    
-    private MatchState _currentState;
 
-    public MatchState CurrentState
-    {
-        get
-        {
-            return _currentState;
-        }
-        set 
-        {
-            Debug.Log($"State set to {value}");
-            if (value == _currentState)
-            {
-                Debug.LogError($"New state is the same as the current state ({value})");
-                return; 
-            }
-            
-            _currentState = value;
-            switch (value)
-            {
-                case MatchState.MatchConfig:
-                    DynamicUIManager.CreateModal<MatchModeModal>();
-                    ((MatchModeModal)DynamicUIManager.ActiveModal).OnAccepted += () => CurrentState = MatchState.RobotPositioning;
-                    return; 
-                case MatchState.RobotPositioning:
-                    DynamicUIManager.CreatePanel<StartMatchModePanel>();
-                    return;
-                case MatchState.Auto: 
-                    return;
-                default:
-                    Debug.LogError($"No behavior for current state ({value})");
-                    return;
-            }
-        }
-    }
-
-    // Start is called before the first frame update
+    private MatchStateMachine _stateMachine;
     public void Start()
     {
-        CurrentState = MatchState.MatchConfig;
+        _stateMachine = new MatchStateMachine();
+        _stateMachine.CurrentState = MatchStateMachine.MatchState.MatchConfig;
     }
 
-    // Update is called once per frame
     public void Update() {
     }
     public void End() {
@@ -62,12 +26,5 @@ public class MatchMode : IMode {
     public void OpenMenu() { }
 
     public void CloseMenu() { }
-
-    public enum MatchState
-    {
-        None,
-        MatchConfig,
-        RobotPositioning,
-        Auto
-    }
+    
 }
