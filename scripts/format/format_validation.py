@@ -15,6 +15,7 @@ IGNORED_FILES = set([
     "engine/Assets/Scripts/WebSockets/WebSocketManager.cs"
 ])
 
+
 def main():
     if sys.platform != "linux":
         print("Warning: This script was designed to be run by github action linux machines")
@@ -26,10 +27,12 @@ def main():
                 if os.path.splitext(filename)[1] in FILE_TARGETS and f"{root}/{filename}" not in IGNORED_FILES:
                     files.append(os.path.join(root, filename))
 
+    exit_code = 0
     for file in files:
         with open(file, "r") as f:
             previous_file_state = f.readlines()
 
+        print(f"Calling command: {FORMAT_COMMAND} {file}")
         subprocess.call(
             f"{FORMAT_COMMAND} {file}",
             bufsize=1,
@@ -37,8 +40,6 @@ def main():
         )
         with open(file, "r") as f:
             new_file_state = f.readlines()
-
-        exit_code = 0
 
         for i, (previous_line, new_line) in enumerate(zip(previous_file_state, new_file_state)):
             if previous_line != new_line:
@@ -51,6 +52,7 @@ def main():
         print("All files are formatted correctly!")
 
     sys.exit(exit_code)
+
 
 if __name__ == '__main__':
     main()
