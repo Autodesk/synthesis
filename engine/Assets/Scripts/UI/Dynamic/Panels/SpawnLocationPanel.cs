@@ -1,18 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Synthesis.UI.Dynamic;
-using Synthesis.PreferenceManager;
-using UnityEngine;
 using Synthesis.Gizmo;
 using Synthesis.Runtime;
+using TMPro;
+using UnityEngine;
 
 namespace Synthesis.UI.Dynamic
 {
     public class SpawnLocationPanel : PanelDynamic
     {
-
-        
         private static float width = 300f;
         private static float height = 200f;
 
@@ -110,7 +105,7 @@ namespace Synthesis.UI.Dynamic
             
             
             location = MainContent.CreateLabel(30f).ApplyTemplate(VerticalLayout).SetFontSize(30)
-                .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Center).SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Bottom)
+                .SetHorizontalAlignment(HorizontalAlignmentOptions.Center).SetVerticalAlignment(VerticalAlignmentOptions.Bottom)
                 .SetTopStretch(leftPadding: 10f, anchoredY: 130f).SetText("(0.00, 0.00, 0.00)");
 
             // PracticeMode.SetInitialState(GizmoManager.currentGizmo.transform.parent.gameObject);
@@ -130,10 +125,10 @@ namespace Synthesis.UI.Dynamic
             // Shooting.ConfigureGamepieces();
             
             //TEMPORARY: FOR POWERUP ONLY
-            
+
             Scoring.CreatePowerupScoreZones();
             DynamicUIManager.CloseAllPanels(true);
-            DynamicUIManager.CreatePanel<Synthesis.UI.Dynamic.ScoreboardPanel>(true);
+            DynamicUIManager.CreatePanel<ScoreboardPanel>(true);
 
             GizmoManager.ExitGizmo();
         }

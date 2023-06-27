@@ -43,7 +43,7 @@ namespace Synthesis.UI.Dynamic {
             
             // Scoring.CreatePowerupScoreZones();
             DynamicUIManager.CloseAllPanels(true);
-            DynamicUIManager.CreatePanel<Synthesis.UI.Dynamic.ScoreboardPanel>(true);
+            DynamicUIManager.CreatePanel<ScoreboardPanel>(true);
 
             GizmoManager.ExitGizmo();
         }

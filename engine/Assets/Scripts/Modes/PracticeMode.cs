@@ -11,7 +11,6 @@ using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Utilities;
 using UnityEngine;
 using Logger = SynthesisAPI.Utilities.Logger;
-
 public class PracticeMode : IMode
 {
     public static Vector3 GamepieceSpawnpoint = new Vector3(0, 10, 0);
@@ -20,9 +19,6 @@ public class PracticeMode : IMode
     private bool _lastEscapeValue = false;
     private bool _escapeMenuOpen = false;
 
-    private int _redScore = 0;
-    private int _blueScore = 0;
-    
     public static GamepieceData ChosenGamepiece { get; set; }
     public static PrimitiveType ChosenPrimitive { get; set; }
 
@@ -90,6 +86,7 @@ public class PracticeMode : IMode
             else
             {
                 DynamicUIManager.CreatePanel<ScoringZonesPanel>();
+                DynamicUIManager.CreatePanel<ScoreboardPanel>(true);
             }
         });
         
@@ -100,13 +97,12 @@ public class PracticeMode : IMode
                 switch (zone.Alliance)
                 {
                     case Alliance.Blue:
-                        _blueScore += zone.Points;
+                        Scoring.blueScore += zone.Points;
                         break;
                     case Alliance.Red:
-                        _redScore += zone.Points;
+                        Scoring.redScore += zone.Points;
                         break;
                 }
-                Debug.Log($"{zone.Alliance.ToString()} scored {zone.Points} points! Blue: {_blueScore} Red: {_redScore}");
             });
     }
     
