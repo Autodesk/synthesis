@@ -33,7 +33,6 @@ def main():
         subprocess.call(
             f"{FORMAT_COMMAND} -i -style=file {file}",
             bufsize=1,
-            creationflags=subprocess.CREATE_NO_WINDOW,
             shell=False,
         )
         with open(file, "r") as f:
