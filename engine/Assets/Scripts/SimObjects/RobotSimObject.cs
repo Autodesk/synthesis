@@ -582,7 +582,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     public static void SpawnRobot(string filePath) {
-        SpawnRobot(filePath, new Vector3(0f, 0.5f, 0f), Quaternion.identity, false);
+        SpawnRobot(filePath, new Vector3(0f, 0.5f, 0f), Quaternion.identity, true);
     }
     public static void SpawnRobot(string filePath, bool spawnGizmo) {
         SpawnRobot(filePath, new Vector3(0f, 0.5f, 0f), Quaternion.identity, spawnGizmo);

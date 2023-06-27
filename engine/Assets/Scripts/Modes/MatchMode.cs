@@ -1,8 +1,10 @@
+using System;
 using Synthesis.UI.Dynamic;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Synthesis.Physics;
 using UnityEngine;
 using TMPro;
 
@@ -11,6 +13,8 @@ public class MatchMode : IMode {
     public static int[] SelectedRobots = new int[6];
 
     public static Vector3[] RobotSpawnLocations = new Vector3[6];
+    
+    public static List<RobotSimObject> Robots = new List<RobotSimObject>();
 
     public const string PREVIOUS_SPAWN_LOCATION = "Previous Spawn Location";
     public const string PREVIOUS_SPAWN_ROTATION = "Previous Spawn Rotation";
@@ -18,7 +22,8 @@ public class MatchMode : IMode {
     private MatchStateMachine _stateMachine;
     public void Start()
     {
-        SelectedRobots.ForEach(x => x = -1);
+        Array.Fill(SelectedRobots, -1);
+        Debug.Log(SelectedRobots.Length);
 
         _stateMachine = new MatchStateMachine();
         _stateMachine.CurrentState = MatchStateMachine.MatchState.MatchConfig;
@@ -39,16 +44,29 @@ public class MatchMode : IMode {
         if (!Directory.Exists(robotsFolder))
             Directory.CreateDirectory(robotsFolder);
         var robotFiles = Directory.GetFiles(robotsFolder).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
-
-        MatchMode.SelectedRobots.ForEach(x =>
+        
+        SelectedRobots.ForEach(x =>
         {
             Debug.Log($"Attempting to spawn {x}");
             if (x != -1)
             {
                 Debug.Log($"Spawned {x}");
                 RobotSimObject.SpawnRobot(robotFiles[x]);
+                Robots.Add(RobotSimObject.GetCurrentlyPossessedRobot());
+                /*RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.GetComponentsInChildren<Collider>().ForEach(c =>
+                    c.enabled = false);*/
+                /*RobotSimObject.GetCurrentlyPossessedRobot().AllRigidbodies.ForEach(
+                    rb => {
+                        rb.isKinematic = true;
+                        rb.useGravity = false;
+                    });*/
             }
         });
+
+        /*RobotSimObject.SpawnedRobots.ForEach(x =>
+        {
+            Robots.Add(x);
+        });*/
     }
     
     public static string ParsePath(string p, char c)

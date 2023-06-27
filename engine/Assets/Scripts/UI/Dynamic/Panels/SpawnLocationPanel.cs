@@ -208,10 +208,11 @@ namespace Synthesis.UI.Dynamic
                 }
             }
 
-            // Move robot object toward it's spawn position
-            for (int i = 0; i < 6; i++)
+            // Move robot objects toward thier spawn positions
+            for (int i = 0; i < MatchMode.Robots.Count; i++)
             {
-                Transform trf = _spawnPositionDisplays[i];
+                //Transform trf = _spawnPositionDisplays[i];
+                Transform trf = MatchMode.Robots[i].RobotNode.transform;
 
                 Vector3 prevPos = trf.position;
                 Vector3 target = MatchMode.RobotSpawnLocations[i];

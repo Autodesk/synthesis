@@ -116,8 +116,8 @@ namespace Synthesis.Import {
 	        Dictionary<string, GameObject> groupObjects = new Dictionary<string, GameObject>();
 
 	        int dynamicLayer = 0;
-	        if (physics) {
-		        Debug.Log("Dequeueing dynamic layer");
+	        
+	        if (physics && !MiraAssembly.Dynamic) {
 		        if (dynamicLayers.Count == 0)
 			        throw new Exception("No more dynamic layers");
 		        dynamicLayer = dynamicLayers.Dequeue();

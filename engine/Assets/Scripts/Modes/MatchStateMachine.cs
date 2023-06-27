@@ -3,6 +3,8 @@ using Synthesis.Util;
 using UnityEngine;
 using System.IO;
 using System.Linq;
+using Synthesis.Physics;
+using UnityEditor;
 
 public class MatchStateMachine {
     private MatchState _currentState;
@@ -30,7 +32,13 @@ public class MatchStateMachine {
                     ((MatchModeModal)DynamicUIManager.ActiveModal).OnAccepted += () => CurrentState = MatchState.RobotPositioning;
                     return; 
                 case MatchState.RobotPositioning:
-                    //MatchMode.SpawnAllRobots();
+                    MatchMode.SpawnAllRobots();
+                    RobotSimObject.SpawnedRobots.ForEach(x => x.Freeze());
+                    RobotSimObject.GetCurrentlyPossessedRobot().Freeze();
+                    PhysicsManager.IsFrozen = true;
+
+                    Camera.main.GetComponent<CameraController>().enabled = false;
+                    //Camera.main.GetComponent<CameraController>().CameraMode = CameraController.CameraModes["Freecam"];
                     return;
                 case MatchState.Auto: 
                     return;
