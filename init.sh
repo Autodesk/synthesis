@@ -8,6 +8,5 @@ cd ../engine/EngineDeps
 dotnet build
 ./copy_deps.sh
 cd ../../api
-dotnet build
-./post_build.sh
+./build.sh
 cd ..

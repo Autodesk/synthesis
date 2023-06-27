@@ -11,7 +11,7 @@ namespace Synthesis.UI.Dynamic {
 
         private Label _statusLabel;
 
-        public ServerTestModal(Vector2 mainContentSize): base(mainContentSize) { }
+        public ServerTestModal(): base(new Vector2(500, 500)) { }
 
         public override void Create() {
             _statusLabel = MainContent.CreateLabel(30).SetTopStretch<Label>();
@@ -33,5 +33,4 @@ namespace Synthesis.UI.Dynamic {
         }
         
     }
-
 }

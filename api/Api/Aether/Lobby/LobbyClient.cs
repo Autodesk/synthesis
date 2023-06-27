@@ -19,6 +19,10 @@ namespace SynthesisAPI.Aether.Lobby {
             _instance = new Inner(ip, name);
         }
 
+        public Task<LobbyMessage.Types.FromGetLobbyInformation?>? GetLobbyInformation() {
+            return _instance?.GetLobbyInformation();
+        }
+
         private class Inner : IDisposable {
 
             private bool _isAlive = true;
@@ -43,7 +47,30 @@ namespace SynthesisAPI.Aether.Lobby {
                 _heartbeatThread = new Thread(ClientHeartbeat);
                 _heartbeatThread.Start();
             }
-            
+
+            public Task<LobbyMessage.Types.FromGetLobbyInformation?>? GetLobbyInformation() {
+                var msg = new LobbyMessage{ 
+                    ToGetLobbyInformation = new LobbyMessage.Types.ToGetLobbyInformation{
+                        SenderGuid = _handler.Guid
+                    }
+                };
+
+                if (_handler.WriteMessage(msg).isError) {
+                    return null;
+                }
+
+                return Task<LobbyMessage.Types.FromGetLobbyInformation?>.Factory.StartNew(() => {
+                    var msgTask = _handler.ReadMessage();
+                    msgTask.Wait();
+                    var msgRes = msgTask.Result;
+                    if (msgRes == null || msgRes.MessageTypeCase != LobbyMessage.MessageTypeOneofCase.FromGetLobbyInformation) {
+                        return null;
+                    }
+
+                    return msgRes.FromGetLobbyInformation;
+                });
+            }
+
             private void ClientHeartbeat() {
                 long lastUpdate = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                 while (_isAlive) {
@@ -68,10 +95,12 @@ namespace SynthesisAPI.Aether.Lobby {
         
     }
     
-    public class LobbyClientHandler {
+    internal class LobbyClientHandler {
 
         private readonly LobbyClientInformation _clientInformation;
         public LobbyClientInformation ClientInformation => _clientInformation.Clone();
+
+        public ulong Guid => _clientInformation.Guid;
 
         private TcpClient _tcp;
         private NetworkStream _stream; // Concurrency issues?
@@ -85,7 +114,7 @@ namespace SynthesisAPI.Aether.Lobby {
         public Task<LobbyMessage?> ReadMessage()
             => ReadMessage(_stream);
 
-        public void WriteMessage(LobbyMessage message)
+        public Result<bool, Exception> WriteMessage(LobbyMessage message)
             => WriteMessage(message, _stream);
 
         private static Task<LobbyMessage?> ReadMessage(NetworkStream stream) {

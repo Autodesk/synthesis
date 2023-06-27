@@ -7,6 +7,5 @@ cd ..\engine\EngineDeps
 dotnet build
 call copy_deps.bat
 cd ..\..\api
-dotnet build
-call post_build.bat
+call build.bat
 cd ..

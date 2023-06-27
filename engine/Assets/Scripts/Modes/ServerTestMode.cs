@@ -2,32 +2,53 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Synthesis.UI.Dynamic;
-using SynthesisAPI.Aether.Lobby;
 using UnityEngine;
+using UnityEngine.Rendering.UI;
+using SynthesisAPI.Aether.Lobby;
+using System.Text;
 
 public class ServerTestMode : IMode {
-
     private LobbyServer _server;
-    
-    public void Start() {
+    // private Task<LobbyClient>? _connectTask;
+    private LobbyClient[] _clients;
 
+    private const float UPDATE = 0.2f;
+
+    public void Start() {
         _server = new LobbyServer();
-        
-        // _connectTask = NetManager.ClientManager.Instance.Connect();
+
+        int clientCount = 10;
+
+        _clients = new LobbyClient[clientCount];
+
+        for (int i = 0; i < clientCount; i++) {
+            int j = i;
+            Task.Factory.StartNew(() => _clients[j] = new LobbyClient("127.0.0.1", $"Client {j}"));
+        }
+
         DynamicUIManager.CreateModal<ServerTestModal>();
     }
 
-    // Update is called once per frame
+    private float _lastUpdate = 0;
     public void Update() {
-        
-    }
-    
-    public void End() {
-        
+        if (Time.realtimeSinceStartup - _lastUpdate > UPDATE) {
+            ServerTestModal.TrySetStatus("Connected");
+
+            string s = "";
+            _server.Clients.ForEach(x => {
+                Debug.Log($"{x.Guid}: {x.Name}");
+                s += $"{x.Name}, ";
+            });
+
+            ServerTestModal.TrySetStatus(s);
+
+            _lastUpdate = Time.realtimeSinceStartup;
+        }
     }
 
-    public void OpenMenu() { }
+    public void End() {}
 
-    public void CloseMenu() { }
-    
+    public void OpenMenu() {}
+
+    public void CloseMenu() {}
 }

@@ -20,7 +20,6 @@
 sysinfo.txt
 
 !/engine/Assets/Packages/Api.dll
-!/engine/Assets/Packages/Aardvark.dll
 !/engine/Assets/Packages/Nuget/Editor/NugetForUnity.dll
 !/engine/Assets/Packages/portable.bouncycastle.1.9.0.nupkg
 !/engine/Assets/Packages/BouncyCastle.Crypto.dll

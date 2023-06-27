@@ -37,7 +37,7 @@ public class ChooseModeModal : ModalDynamic
         //     .ApplyTemplate(VerticalLayout);
 
         MainContent.CreateButton()
-            .StepIntoLabel(l => l.SetText("Client Test Mode"))
+            .StepIntoLabel(l => l.SetText("Server Test Mode"))
             .ApplyTemplate(VerticalLayout)
             .AddOnClickedEvent(b =>
             {
