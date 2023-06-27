@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class CustomWheel : MonoBehaviour
 {
-    public float mainInput = 0;
-
     // When enabled, you get weird priority effects. Leave disabled for now.
     public static bool UseKineticFriction = false;
 
