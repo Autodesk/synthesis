@@ -119,6 +119,8 @@ namespace Synthesis {
 
         private float _targetRotationalSpeed = 0f;
 
+        public readonly string MotorRef;
+
         /// <summary>
         /// Creates a WheelDriver
         /// </summary>
@@ -131,9 +133,9 @@ namespace Synthesis {
         /// <param name="anchor">Anchor of the Rotational Joint</param>
         /// <param name="axis">Axis of the Rotational Joint</param>
         /// <param name="radius">Radius of the wheel. Automatically calculated if set to NaN</param>
-        /// <param name="motor">Motor settings for the wheel</param>
+        /// <param name="motorRef">Motor reference for the wheel</param>
         public WheelDriver(string name, string[] inputs, string[] outputs, SimObject simObject, JointInstance jointInstance,
-            CustomWheel customWheel, Vector3 anchor, Vector3 axis, float radius, Mirabuf.Motor.Motor? motor = null)
+            CustomWheel customWheel, Vector3 anchor, Vector3 axis, float radius, string motorRef = "")
             : base(name, inputs, outputs, simObject) {
 
             _jointInstance = jointInstance;
@@ -141,12 +143,16 @@ namespace Synthesis {
             
             Anchor = _customWheel.Rb.transform.localToWorldMatrix.MultiplyPoint3x4(anchor);
             Axis = _customWheel.Rb.transform.localToWorldMatrix.MultiplyVector(axis);
+
+            MotorRef = motorRef;
             
             if (float.IsNaN(radius)) {
                 Radius = _customWheel.Rb.transform.GetBounds().extents.y;
             } else {
                 Radius = radius;
             }
+
+            (simObject as RobotSimObject)!.MiraLive.MiraAssembly.Data.Joints.MotorDefinitions.TryGetValue(motorRef, out var motor);
             
             if (motor != null && motor.MotorTypeCase == Mirabuf.Motor.Motor.MotorTypeOneofCase.SimpleMotor) {
                 _motor = motor!.SimpleMotor.UnityMotor;

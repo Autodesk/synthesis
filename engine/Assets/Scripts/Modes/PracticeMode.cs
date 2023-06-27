@@ -289,11 +289,11 @@ public class PracticeMode : IMode
     { 
         foreach (string name in MainHUD.DrawerTitles)
             MainHUD.RemoveItemFromDrawer(name);
-
         MainHUD.AddItemToDrawer("Practice", b => ToPracticeMode());
 
         MainHUD.AddItemToDrawer("Pickup", b => DynamicUIManager.CreatePanel<ConfigureGamepiecePickupPanel>());
         MainHUD.AddItemToDrawer("Ejector", b => DynamicUIManager.CreatePanel<ConfigureShotTrajectoryPanel>());
+        MainHUD.AddItemToDrawer("Motors", b => DynamicUIManager.CreateModal<ConfigMotorModal>());
         MainHUD.AddItemToDrawer("RoboRIO Conf.",b => DynamicUIManager.CreateModal<RioConfigurationModal>(true),icon: SynthesisAssetCollection.GetSpriteByName("rio-config-icon"));
         MainHUD.AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>());
         MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("settings"));

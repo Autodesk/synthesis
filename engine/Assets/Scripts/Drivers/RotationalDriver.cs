@@ -112,10 +112,11 @@ namespace Synthesis {
         }
 
         public RotationalDriver(string name, string[] inputs, string[] outputs, SimObject simObject,
-            HingeJoint jointA, HingeJoint jointB, bool isWheel, Mirabuf.Motor.Motor? motor = null)
+            HingeJoint jointA, HingeJoint jointB, bool isWheel, string motorRef = "")
             : base(name, inputs, outputs, simObject) {
             _jointA = jointA;
             _jointB = jointB;
+            (simObject as RobotSimObject)!.MiraLive.MiraAssembly.Data.Joints.MotorDefinitions.TryGetValue(motorRef, out var motor);
             if (motor != null && motor.MotorTypeCase == Mirabuf.Motor.Motor.MotorTypeOneofCase.SimpleMotor) {
                 _motor = motor!.SimpleMotor.UnityMotor;
             } else {

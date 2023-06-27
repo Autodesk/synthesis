@@ -235,7 +235,7 @@ namespace Synthesis.Import
 								axisWut,
 								float.NaN,
 								assembly.Data.Joints.MotorDefinitions.ContainsKey(definition.MotorReference)
-									? assembly.Data.Joints.MotorDefinitions[definition.MotorReference]
+									? definition.MotorReference
 									: null
 							);
 							SimulationManager.AddDriver(simObject.Name, driver);
@@ -299,7 +299,7 @@ namespace Synthesis.Import
 								revoluteB,
 								instance.IsWheel(assembly),
 								assembly.Data.Joints.MotorDefinitions.ContainsKey(definition.MotorReference)
-									? assembly.Data.Joints.MotorDefinitions[definition.MotorReference]
+									? definition.MotorReference
 									: null
 							);
 							SimulationManager.AddDriver(simObject.Name, driver);

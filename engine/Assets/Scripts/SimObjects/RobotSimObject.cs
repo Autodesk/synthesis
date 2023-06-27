@@ -762,4 +762,38 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     public class RobotRemoveEvent : IEvent {
         public string Bot;
     }
+
+    public void DrivetrainConfig(float? leftTargetVel = null, float? rightTargetVel = null, float? leftForce = null, float? rightForce = null) {
+        foreach (WheelDriver driver in GetLeftRightWheels()!.Value.leftWheels) {
+            driver.Motor = new JointMotor() {
+                force =  leftForce ?? driver.Motor.force,
+                freeSpin = false,
+                targetVelocity = leftTargetVel ?? driver.Motor.targetVelocity
+            };
+
+
+            (driver._SimObject as RobotSimObject)!.MiraLive.MiraAssembly.Data.Joints.MotorDefinitions[driver.MotorRef] = new Mirabuf.Motor.Motor{ SimpleMotor = new Mirabuf.Motor.SimpleMotor{
+                MaxVelocity = leftTargetVel ?? driver.Motor.targetVelocity,
+                StallTorque = leftForce ?? driver.Motor.force,
+                BrakingConstant = 0.9f
+            }};
+            (driver._SimObject as RobotSimObject)!.MiraLive.Save();
+        }
+
+        foreach (WheelDriver driver in GetLeftRightWheels()!.Value.leftWheels) {
+            driver.Motor = new JointMotor() {
+                force =  leftForce ?? driver.Motor.force,
+                freeSpin = false,
+                targetVelocity = leftTargetVel ?? driver.Motor.targetVelocity
+            };
+
+
+            (driver._SimObject as RobotSimObject)!.MiraLive.MiraAssembly.Data.Joints.MotorDefinitions[driver.MotorRef] = new Mirabuf.Motor.Motor{ SimpleMotor = new Mirabuf.Motor.SimpleMotor{
+                MaxVelocity = leftTargetVel ?? driver.Motor.targetVelocity,
+                StallTorque = leftForce ?? driver.Motor.force,
+                BrakingConstant = 0.9f
+            }};
+            (driver._SimObject as RobotSimObject)!.MiraLive.Save();
+        }
+    }
 }
