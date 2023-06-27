@@ -70,7 +70,7 @@ public class ScoringZoneListener : MonoBehaviour
         if (SimulationRunner.HasContext(SimulationRunner.GIZMO_SIM_CONTEXT)) return;
         
         // trigger scoring
-        EventBus.Push<OnScoreEvent>(new OnScoreEvent(other.name, scoringZone));
+        EventBus.Push(new OnScoreEvent(other.name, scoringZone));
         
         if (scoringZone.DestroyObject) Destroy(other.gameObject);
     }
