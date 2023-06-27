@@ -9,7 +9,7 @@ namespace Synthesis.UI.Dynamic
     {
         private const float width = 400f;
         private const float height = 150f;
-        private const float spawnDistanceFromSurface = 0.2f;
+        private const float spawnDistanceFromSurface = 0.05f;
         private int fieldLayerMask = 1 << LayerMask.NameToLayer("FieldCollisionLayer");
 
         private static readonly Color redColor = new Color(1, 0, 0, 0.5f);
@@ -189,15 +189,15 @@ namespace Synthesis.UI.Dynamic
                 {
                     Transform selectedPosition = _robotTransforms[_selectedButton];
 
-                    Vector3 boxCastHalfSize =
-                        selectedPosition.localScale / 2f + Vector3.one * (spawnDistanceFromSurface / 2f);
+                    Vector3 boxHalfSize =
+                        selectedPosition.localScale / 2f;
                     
                     // Box cast down towards where the mouse is pointing to find the lowest suitable spawn position for the robot
-                    if (UnityEngine.Physics.BoxCast(hit.point + Vector3.up * 20f, boxCastHalfSize, 
+                    if (UnityEngine.Physics.BoxCast(hit.point + Vector3.up * 20f, boxHalfSize, 
                             Vector3.down, out var boxHit, Quaternion.identity, 30f, fieldLayerMask))
                     {
                         selectedPosition.position = new Vector3(hit.point.x, 
-                            boxHit.point.y + selectedPosition.localScale.y + spawnDistanceFromSurface, hit.point.z);
+                            boxHit.point.y + boxHalfSize.y + spawnDistanceFromSurface, hit.point.z);
                     }
                 }
             }
