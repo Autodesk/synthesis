@@ -1,13 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Synthesis.UI.Dynamic;
-using Synthesis.PreferenceManager;
 using UnityEngine;
-using Synthesis.Gizmo;
 using Synthesis.Runtime;
-using UnityEditor;
-using UnityEngine.UIElements;
 
 
 namespace Synthesis.UI.Dynamic
@@ -16,7 +9,8 @@ namespace Synthesis.UI.Dynamic
     {
         private const float width = 400f;
         private const float height = 150f;
-        private const float spawnDistanceFromSurface = 1f;
+        private const float spawnDistanceFromSurface = 0.2f;
+        private int fieldLayerMask = 1 << LayerMask.NameToLayer("FieldCollisionLayer");
 
         private static readonly Color redColor = new Color(1, 0, 0, 0.5f);
         private static readonly Color blueColor = new Color(0, 0, 1, 0.5f);
@@ -29,7 +23,7 @@ namespace Synthesis.UI.Dynamic
         private const float VERTICAL_PADDING = 15f;
 
         private Button[] buttons = new Button[6];
-        private Transform[] _positions = new Transform[6];
+        private Transform[] _robotTransforms = new Transform[6];
         private int _selectedButton;
 
         public Func<UIComponent, UIComponent> VerticalLayout = (u) =>
@@ -53,7 +47,7 @@ namespace Synthesis.UI.Dynamic
                 //rend.material.color = (i < 3) ? redColor : blueColor;
 
                 obj.GetComponent<Collider>().isTrigger = true;
-                _positions[i] = obj.transform;
+                _robotTransforms[i] = obj.transform;
             }
 
             Title.SetText("Set Spawn").SetFontSize(25f);
@@ -139,7 +133,6 @@ namespace Synthesis.UI.Dynamic
 
         private void selectButton(int index)
         {
-            Debug.Log(index);
             buttons[_selectedButton].Image.Color = ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT);
             _selectedButton = index;
 
@@ -180,35 +173,39 @@ namespace Synthesis.UI.Dynamic
             GizmoManager.ExitGizmo();*/
         }
 
-        private bool matchStarted = false;
         public override void Update() {
             
-            if ((SimulationRunner.HasContext(SimulationRunner.GIZMO_SIM_CONTEXT) || SimulationRunner.HasContext(SimulationRunner.PAUSED_SIM_CONTEXT))
+            /*if ((SimulationRunner.HasContext(SimulationRunner.GIZMO_SIM_CONTEXT) || SimulationRunner.HasContext(SimulationRunner.PAUSED_SIM_CONTEXT))
                     && !matchStarted) {
                 matchStarted = true;
                 StartMatch();
-            }
+            }*/
 
             if (Input.GetMouseButton(1))
-            { 
+            {
+                // Raycast out from camera to see where the mouse is pointing
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                if (UnityEngine.Physics.Raycast(ray, out var hit, 100,
-                        1 << LayerMask.NameToLayer("FieldCollisionLayer")))
+                if (UnityEngine.Physics.Raycast(ray, out var hit, 100, fieldLayerMask))
                 {
-                    Debug.Log(hit.point); 
-                    //RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position = hit.point;
-                    Gizmos.color = new Color(0, 1, 0, 0.5f);
-                    //Debug.DrawRay(Camera.main.transform.position, hit.point);
+                    Transform selectedPosition = _robotTransforms[_selectedButton];
 
-                    Vector3 position = hit.point + hit.normal * spawnDistanceFromSurface;
-                    _positions[_selectedButton].position = position;
+                    Vector3 boxCastHalfSize =
+                        selectedPosition.localScale / 2f + Vector3.one * (spawnDistanceFromSurface / 2f);
+                    
+                    // Box cast down towards where the mouse is pointing to find the lowest suitable spawn position for the robot
+                    if (UnityEngine.Physics.BoxCast(hit.point + Vector3.up * 20f, boxCastHalfSize, 
+                            Vector3.down, out var boxHit, Quaternion.identity, 30f, fieldLayerMask))
+                    {
+                        selectedPosition.position = new Vector3(hit.point.x, 
+                            boxHit.point.y + selectedPosition.localScale.y + spawnDistanceFromSurface, hit.point.z);
+                    }
                 }
             }
         }
 
         public override void Delete()
         {
-            _positions.ForEach(x => UnityEngine.Object.Destroy(x.gameObject));
+            _robotTransforms.ForEach(x => UnityEngine.Object.Destroy(x.gameObject));
         }
     }
 }
