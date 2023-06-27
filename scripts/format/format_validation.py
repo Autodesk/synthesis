@@ -4,7 +4,6 @@ import sys
 
 FILES_DIRS = ["engine/Assets/Scripts"]
 FILE_TARGETS = [".cs"]
-FORMAT_COMMAND = "clang-format -i -style=file"
 
 """
 As of 6/23/2023, clang-format-16 is not available on Ubuntu through apt-get.
@@ -32,12 +31,12 @@ def main():
         with open(file, "r") as f:
             previous_file_state = f.readlines()
 
-        print(f"Calling command: {FORMAT_COMMAND} {file}")
         subprocess.call(
-            f"{FORMAT_COMMAND} {file}",
+            ["clang-format", "-i", "-style=file", file],
             bufsize=1,
-            shell=True,
+            shell=False,
         )
+
         with open(file, "r") as f:
             new_file_state = f.readlines()
 
