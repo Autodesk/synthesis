@@ -112,6 +112,8 @@ namespace Synthesis.Import {
                 if (dynamicLayers.Count == 0)
                     throw new Exception("No more dynamic layers");
                 dynamicLayer = dynamicLayers.Dequeue();
+
+                assemblyContainer.layer = dynamicLayer;
                 assemblyContainer.AddComponent<DynamicLayerReserver>();
             }
 
@@ -149,13 +151,12 @@ namespace Synthesis.Import {
                         x => x.gameObject.layer = dynamicLayer);
                 }
 
-                if (physics) {
-                    // Combine all physical data for grouping
-                    var rb = groupObject.AddComponent<Rigidbody>();
-                    if (isStatic)
-                        rb.isKinematic = true;
-                    rb.mass         = (float) group.CollectivePhysicalProperties.Mass;
-                    rb.centerOfMass = group.CollectivePhysicalProperties.Com; // I actually don't need to flip this
+                if (!MiraAssembly.Dynamic && !isGamepiece) {
+                    groupObject.transform.GetComponentsInChildren<UnityEngine.Transform>().ForEach(
+                        x => x.gameObject.layer = FIELD_LAYER);
+                } else if (MiraAssembly.Dynamic && physics) {
+                    groupObject.transform.GetComponentsInChildren<UnityEngine.Transform>().ForEach(
+                        x => x.gameObject.layer = dynamicLayer);
                 }
 
                 // TODO: Do this in importer
