@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Google.Protobuf;
 using SynthesisAPI.Utilities;
+using SynthesisServer.Proto;
 
 #nullable enable
 
@@ -100,6 +101,8 @@ namespace SynthesisAPI.Aether.Lobby {
         private readonly LobbyClientInformation _clientInformation;
         public LobbyClientInformation ClientInformation => _clientInformation.Clone();
 
+        public DateTime LastHeartbeat { get; private set; }
+
         public ulong Guid => _clientInformation.Guid;
 
         private TcpClient _tcp;
@@ -109,6 +112,10 @@ namespace SynthesisAPI.Aether.Lobby {
             _tcp = tcp;
             _clientInformation = new LobbyClientInformation { Name = name, Guid = guid };
             _stream = _tcp.GetStream();
+        }
+
+        public void UpdateHeartbeat() {
+            LastHeartbeat = DateTime.UtcNow;
         }
 
         public Task<LobbyMessage?> ReadMessage()
@@ -205,6 +212,10 @@ namespace SynthesisAPI.Aether.Lobby {
             return handler == null ?
                 new Result<LobbyClientHandler, Exception>(new Exception("Failed to create ClientHandler")) :
                 new Result<LobbyClientHandler, Exception>(handler);
+        }
+
+        public override string ToString() {
+            return $"[{ClientInformation.Guid}] {ClientInformation.Name} <- {(DateTime.UtcNow - LastHeartbeat).Milliseconds}ms";
         }
             
     }

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using Org.BouncyCastle.Tls;
 
 namespace SynthesisAPI.Aether.Lobby {
     public class LobbyServer : IDisposable {
@@ -14,7 +14,7 @@ namespace SynthesisAPI.Aether.Lobby {
 
         private Inner _instance;
 
-        public ReadOnlyCollection<LobbyClientInformation> Clients => _instance.Clients;
+        public IReadOnlyCollection<string> Clients => _instance.Clients;
 
         public LobbyServer() {
             _instance = new Inner();
@@ -28,15 +28,16 @@ namespace SynthesisAPI.Aether.Lobby {
             private readonly ReaderWriterLockSlim _clientsLock;
             
             private readonly TcpListener _listener;
-            private Dictionary<ulong, LobbyClientHandler> _clients;
-            private LinkedList<Thread> _clientThreads;
+            private readonly Dictionary<ulong, LobbyClientHandler> _clients;
+            private readonly LinkedList<Thread> _clientThreads;
 
-            public ReadOnlyCollection<LobbyClientInformation> Clients {
+            public IReadOnlyCollection<string> Clients {
                 get {
-                    // _clientsLock.EnterReadLock();
-                    var clients = _clients.Values.Select(x => x.ClientInformation).ToList().AsReadOnly();
-                    // _clientsLock.ExitReadLock();
-                    return clients;
+                    _clientsLock.EnterReadLock();
+                    var clientsInfo = new List<string>(_clients.Count);
+                    _clients.Values.ForEach(x => clientsInfo.Add(x.ToString()));
+                    _clientsLock.ExitReadLock();
+                    return clientsInfo.AsReadOnly();
                 }
             }
 
@@ -45,29 +46,37 @@ namespace SynthesisAPI.Aether.Lobby {
                 _clientsLock = new ReaderWriterLockSlim();
 
                 _clients = new Dictionary<ulong, LobbyClientHandler>();
+                _clientThreads = new LinkedList<Thread>();
                 
                 _listener = new TcpListener(IPAddress.Any, TCP_PORT);
-                _listener.Start(3);
+                _listener.Start();
                 _listener.BeginAcceptTcpClient(AcceptTcpClient, null);
             }
 
             private void AcceptTcpClient(IAsyncResult result) {
+                try
+                {
+                    var clientTcp = _listener.EndAcceptTcpClient(result);
 
-                var clientTcp = _listener.EndAcceptTcpClient(result);
+                    if (clientTcp != null)
+                    {
 
-                if (clientTcp != null) {
+                        var client = LobbyClientHandler.InitServerSide(clientTcp, _nextGuid++);
+                        if (!client.isError)
+                        {
+                            _clientsLock.EnterWriteLock();
+                            var clientResult = client.GetResult();
+                            _clients.Add(clientResult.Guid, clientResult);
+                            var clientThread = new Thread(() => ClientListener(client));
+                            clientThread.Start();
+                            _clientThreads.AddLast(clientThread);
+                            _clientsLock.ExitWriteLock();
+                        }
 
-                    var client = LobbyClientHandler.InitServerSide(clientTcp, _nextGuid++);
-                    if (!client.isError) {
-                        // _clientsLock.EnterWriteLock();
-                        var clientResult = client.GetResult();
-                        _clients.Add(clientResult.Guid, clientResult);
-                        var clientThread = new Thread(() => ClientListener(client));
-                        clientThread.Start();
-                        _clientThreads.AddLast(clientThread);
-                        // _clientsLock.ExitWriteLock();
                     }
-
+                } catch (Exception e)
+                {
+                    UnityEngine.Debug.Log(e.StackTrace);
                 }
 
                 if (_isAlive)
@@ -90,6 +99,8 @@ namespace SynthesisAPI.Aether.Lobby {
                             break;
                         case LobbyMessage.MessageTypeOneofCase.ToDataDump:
                         case LobbyMessage.MessageTypeOneofCase.ToClientHeartbeat:
+                            handler.UpdateHeartbeat();
+                            break;
                         default:
                             break;
                     }
@@ -97,13 +108,13 @@ namespace SynthesisAPI.Aether.Lobby {
             }
 
             private void OnGetLobbyInformation(LobbyMessage.Types.ToGetLobbyInformation request, LobbyClientHandler handler) {
-                // _clientsLock.EnterReadLock();
+                _clientsLock.EnterReadLock();
 
                 LobbyMessage.Types.FromGetLobbyInformation response = new LobbyMessage.Types.FromGetLobbyInformation();
                 response.LobbyInformation = new LobbyInformation();
                 _clients.Values.ForEach(x => response.LobbyInformation.Clients.Add(x.ClientInformation));
                 
-                // _clientsLock.ExitReadLock();
+                _clientsLock.ExitReadLock();
                 
                 handler.WriteMessage(new LobbyMessage { FromGetLobbyInformation = response });
             }
