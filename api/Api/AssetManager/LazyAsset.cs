@@ -8,15 +8,15 @@ namespace SynthesisAPI.AssetManager
 {
     public class LazyAsset : Asset
     {
-        private Asset inner;
-        private Stream _sourceStream;
-        private string _targetPath;
+        private readonly Asset inner;
+        private readonly Stream _sourceStream;
+        private readonly string _targetPath;
 
         public LazyAsset(Asset asset, Stream sourceStream, string targetPath)
         {
             Init(asset.Name, asset.Permissions, asset.SourcePath);
             inner = asset;
-            _sourceStream = sourceStream;
+            _sourceStream = sourceStream; // this can be null technically?
             _targetPath = targetPath;
         }
 

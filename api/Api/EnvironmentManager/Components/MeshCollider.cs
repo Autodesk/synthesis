@@ -3,13 +3,15 @@ using SynthesisAPI.Utilities;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
+#nullable enable
+
 namespace SynthesisAPI.EnvironmentManager.Components
 {
     public class MeshCollider : Component
     {
         #region Properties
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         public class Collision
         {
@@ -26,9 +28,9 @@ namespace SynthesisAPI.EnvironmentManager.Components
 
         public delegate void CollisionHandler(Collision collision);
 
-        public CollisionHandler OnCollisionEnter;
-        public CollisionHandler OnCollisionStay;
-        public CollisionHandler OnCollisionExit;
+        public CollisionHandler? OnCollisionEnter;
+        public CollisionHandler? OnCollisionStay;
+        public CollisionHandler? OnCollisionExit;
 
         internal bool convex = true;
         /// <summary>
@@ -47,8 +49,8 @@ namespace SynthesisAPI.EnvironmentManager.Components
                 OnPropertyChanged();
             }
         }
-        internal Mesh sharedMesh = null; // If mesh is null, it will attempt to grab from the MeshAdapter
-        public Mesh SharedMesh {
+        internal Mesh? sharedMesh = null; // If mesh is null, it will attempt to grab from the MeshAdapter
+        public Mesh? SharedMesh {
             get => sharedMesh;
             set {
                 sharedMesh = value;
@@ -74,7 +76,7 @@ namespace SynthesisAPI.EnvironmentManager.Components
 
         #endregion
 
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        protected void OnPropertyChanged([CallerMemberName] string? name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }

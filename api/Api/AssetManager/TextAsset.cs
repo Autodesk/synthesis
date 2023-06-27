@@ -12,6 +12,12 @@ namespace SynthesisAPI.AssetManager
     /// </summary>
     public class TextAsset : Asset
     {
+        // please stop putting private members at the bottom.
+        // we get it. c++ is cool. But it's a mess and not effective unless there are headers.
+        private readonly Stream _stream;
+        protected SharedTextStream SharedStream { get; set; }
+        private readonly ReaderWriterLockSlim _rwLock;
+
         public enum WriteMode
         {
             Append,
@@ -21,8 +27,8 @@ namespace SynthesisAPI.AssetManager
         public TextAsset(string name, Permissions perm, string sourcePath)
         {
             Init(name, perm, sourcePath);
-
             _rwLock = new ReaderWriterLockSlim();
+            _stream = new MemoryStream();
             SharedStream = new SharedTextStream(new MemoryStream(), _rwLock);
         }
 
@@ -45,7 +51,6 @@ namespace SynthesisAPI.AssetManager
 
         public override IEntry Load(byte[] data)
         {
-            _stream = new MemoryStream();
             _stream.Write(data, 0, data.Length);
             _stream.Position = 0;
             SharedStream = new SharedTextStream(_stream, _rwLock)!;
@@ -71,9 +76,5 @@ namespace SynthesisAPI.AssetManager
             base.DeleteInner();
             _stream.Close();
         }
-
-        private Stream _stream;
-        protected SharedTextStream SharedStream { get; set; }
-        private readonly ReaderWriterLockSlim _rwLock;
     }
 }

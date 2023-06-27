@@ -6,9 +6,9 @@ namespace Api.GUI
 {
 	public class GUIManager
 	{
-		protected List<GUIInstance> _instances;
+		protected List<GUIInstance> _instances = new List<GUIInstance>();
 
-		protected Dictionary<Type, IGUIBuilderFactory> _builders;
+		protected Dictionary<Type, IGUIBuilderFactory> _builders = new Dictionary<Type, IGUIBuilderFactory>();
 
 		internal void RegisterBuilder<TGUI>(IGUIBuilderFactory builderFactory) where TGUI : GUIInstance
 		{

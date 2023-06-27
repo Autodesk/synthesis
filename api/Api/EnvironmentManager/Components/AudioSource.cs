@@ -1,8 +1,5 @@
 ﻿using SynthesisAPI.AssetManager;
-using SynthesisAPI.Modules.Attributes;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {

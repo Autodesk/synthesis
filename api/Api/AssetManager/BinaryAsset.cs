@@ -13,10 +13,15 @@ namespace SynthesisAPI.AssetManager
     /// </summary>
     public class BinaryAsset : Asset
     {
+        private readonly Stream _stream;
+        private SharedBinaryStream SharedStream { get; set; } = null!;
+        private readonly ReaderWriterLockSlim _rwLock;
+
         public BinaryAsset(string name, Permissions perm, string sourcePath)
         {
             Init(name, perm, sourcePath);
             _rwLock = new ReaderWriterLockSlim();
+            _stream = new MemoryStream();
         }
 
         [ExposedApi]
@@ -38,7 +43,6 @@ namespace SynthesisAPI.AssetManager
 
         public override IEntry Load(byte[] data)
         {
-            _stream = new MemoryStream();
             _stream.Write(data, 0, data.Length);
             _stream.Position = 0;
             SharedStream = new SharedBinaryStream(_stream, _rwLock);
@@ -64,9 +68,5 @@ namespace SynthesisAPI.AssetManager
             base.DeleteInner();
             _stream.Close();
         }
-
-        private Stream _stream;
-        private SharedBinaryStream SharedStream { get; set; } = null!;
-        private readonly ReaderWriterLockSlim _rwLock;
     }
 }

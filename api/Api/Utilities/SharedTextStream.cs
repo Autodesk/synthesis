@@ -2,6 +2,8 @@
 using System.IO;
 using System.Threading;
 
+#nullable enable
+
 namespace SynthesisAPI.Utilities
 {
     /// <summary>
@@ -131,7 +133,7 @@ namespace SynthesisAPI.Utilities
             }
             else
             {
-                throw new Exception();
+                throw new Exception("Cannot ReadLine, Thread lock timed out"); // why though and also what, should this be an empty string ?, probably should through a specific exception about the mutex lock
             }
         }
 
@@ -173,7 +175,7 @@ namespace SynthesisAPI.Utilities
             }
         }
 
-        public string TryReadToEnd()
+        public string? TryReadToEnd()
         {
             if (RwLock.TryEnterReadLock(Timeout))
             {

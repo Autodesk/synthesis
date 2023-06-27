@@ -12,37 +12,29 @@ namespace SynthesisAPI.VirtualFileSystem
     /// </summary>
     public sealed class Directory : IEntry
     {
-        /// <summary>
-        /// Initialize Entry data
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="perm"></param>
-        private void Init(string name, Permissions perm)
-        {
-            _name = name;
-            _permissions = perm;
-            _parent = null!;
-        }
-
         public string Name => ((IEntry)this).Name;
         public Permissions Permissions => ((IEntry)this).Permissions;
-        public Directory Parent => ((IEntry)this).Parent;
+        public Directory? Parent => ((IEntry)this).Parent;
 
         private string _name { get; set; }
         private Permissions _permissions { get; set; }
-        private Directory _parent { get; set; }
+        private Directory? _parent { get; set; }
 
         string IEntry.Name { get => _name; set => _name = value; }
         Permissions IEntry.Permissions { get => _permissions; set => _permissions = value; }
-        Directory IEntry.Parent { get => _parent; set => _parent = value; }
+        Directory? IEntry.Parent { get => _parent; set => _parent = value; }
 
         internal Dictionary<string, IEntry> Entries;
 
         public static readonly char DirectorySeparatorChar = '/';
 
         public Directory(string name, Permissions perm)
-        {
-            Init(name, perm);
+        { 
+            // unclear why init existed
+            _name = name;
+            _permissions = perm;
+            _parent = null!;
+
             Entries = new Dictionary<string, IEntry> {{".", this}, {"..", null!}};
         }
 
@@ -119,7 +111,7 @@ namespace SynthesisAPI.VirtualFileSystem
         internal string GetPathInner()
         {
             string path = "";
-            Directory dir = this;
+            Directory? dir = this;
             while (dir != null) {
                 path = dir.Name + DirectorySeparatorChar + path;
 
@@ -294,7 +286,8 @@ namespace SynthesisAPI.VirtualFileSystem
                 {
                     throw new DirectoryException($"Directory: adding entry \"{value.Name}\" with existing parent (entries cannot exist in multiple directories)");
                 }
-                dir.Entries[".."] = dir.Parent;
+                if (dir.Parent != null)
+                    dir.Entries[".."] = dir.Parent;
             }
 
             return Entries[value.Name];
