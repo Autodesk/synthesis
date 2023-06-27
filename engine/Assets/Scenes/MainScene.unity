@@ -1339,7 +1339,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 1981
+    m_Bits: 16317
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -2742,7 +2742,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3747646979102330408, guid: b3985e37a9d73f74ea11a43c72f5a391, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -19.999878
+      value: -20
+      objectReference: {fileID: 0}
+    - target: {fileID: 3747646979102330408, guid: b3985e37a9d73f74ea11a43c72f5a391, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -84.86926
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
