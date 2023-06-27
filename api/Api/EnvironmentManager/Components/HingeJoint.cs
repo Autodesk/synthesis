@@ -1,10 +1,8 @@
 ﻿using MathNet.Spatial.Euclidean;
-using SynthesisAPI.Modules.Attributes;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text;
+
+#nullable enable
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
@@ -45,16 +43,16 @@ namespace SynthesisAPI.EnvironmentManager.Components
                 OnPropertyChanged();
             }
         }
-        internal Rigidbody connectedParent = null;
-        public Rigidbody ConnectedParent {
+        internal Rigidbody? connectedParent = null;
+        public Rigidbody? ConnectedParent {
             get => connectedParent;
             set {
                 connectedParent = value;
                 OnPropertyChanged();
             }
         }
-        internal Rigidbody connectedChild = null;
-        public Rigidbody ConnectedChild {
+        internal Rigidbody? connectedChild = null;
+        public Rigidbody? ConnectedChild {
             get => connectedChild;
             set {
                 connectedChild = value;
@@ -110,9 +108,9 @@ namespace SynthesisAPI.EnvironmentManager.Components
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        protected void OnPropertyChanged([CallerMemberName] string? name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }

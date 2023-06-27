@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Protobuf" Version="3.19.4" />
+    <PackageReference Include="Google.Protobuf" Version="3.23.3" />
     <PackageReference Include="Ionic.Zip" Version="1.9.1.8" />
     <PackageReference Include="MathNet.Numerics" Version="4.15.0" />
     <PackageReference Include="MathNet.Spatial" Version="0.6.0" />

@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using MathNet.Spatial.Euclidean;
-using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Utilities;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+
+#nullable enable
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
@@ -85,8 +86,9 @@ namespace SynthesisAPI.EnvironmentManager.Components
 		public bool Changed { get; private set; }
 		internal void ProcessedChanges() => Changed = false;
 
-		public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
+		public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected void OnPropertyChanged([CallerMemberName] string? name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }

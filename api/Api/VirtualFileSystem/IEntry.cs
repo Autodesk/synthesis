@@ -1,5 +1,6 @@
 ﻿using SynthesisAPI.Utilities;
-using System;
+
+#nullable enable
 
 namespace SynthesisAPI.VirtualFileSystem
 {
@@ -23,7 +24,7 @@ namespace SynthesisAPI.VirtualFileSystem
         /// 
         /// (null if unset)
         /// </summary>
-        public Directory Parent { get; internal set; }
+        public Directory? Parent { get; internal set; }
 
         [ExposedApi]
         public void Delete();
