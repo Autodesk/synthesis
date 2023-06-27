@@ -5,15 +5,16 @@ using System.Linq;
 using System;
 using Synthesis.UI.Dynamic;
 using System.Collections;
+using System.Collections.Generic;
+using Google.Protobuf.Reflection;
 using Synthesis.PreferenceManager;
 
 public class MatchModeModal : ModalDynamic
 {
     public Action OnAccepted;
     
-    private int _robotIndex = -1;
     private int _fieldIndex = -1;
-    private string[] _robotFiles;
+    private List<String> _robotOptions = new List<string>();
     private string[] _fieldFiles;
 
     private int _allianceColor = 0;
@@ -27,7 +28,7 @@ public class MatchModeModal : ModalDynamic
         return u;
     };
 
-    public MatchModeModal() : base(new Vector2(500, 500)) { }
+    public MatchModeModal() : base(new Vector2(500, 800)) { }
 
     public override void Create()
     {
@@ -38,7 +39,10 @@ public class MatchModeModal : ModalDynamic
         if (!Directory.Exists(fieldsFolder))
             Directory.CreateDirectory(fieldsFolder);
 
-        _robotFiles = Directory.GetFiles(robotsFolder).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
+        var _robotFiles = Directory.GetFiles(robotsFolder).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
+        _robotOptions.Add("None");
+        _robotFiles.ForEach(x => _robotOptions.Add(x));
+        
         _fieldFiles = Directory.GetFiles(fieldsFolder).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
 
         Title.SetText("Match Mode");
@@ -49,7 +53,7 @@ public class MatchModeModal : ModalDynamic
             .AddOnClickedEvent(b =>
             {
                 OnAccepted.Invoke();
-                if (_robotIndex != -1 && _fieldIndex != -1)
+                if (_fieldIndex != -1)
                 {
                     DynamicUIManager.CreateModal<LoadingScreenModal>(); 
                     MonoBehaviour _mb = GameObject.FindObjectOfType<MonoBehaviour>();
@@ -65,13 +69,20 @@ public class MatchModeModal : ModalDynamic
             DynamicUIManager.CloseActiveModal();
         });
 
-        MainContent.CreateLabel().ApplyTemplate(VerticalLayout).SetText("Select Robot");
-        var chooseRobotDropdown = MainContent.CreateDropdown()
-            .SetOptions(_robotFiles.Select(x => Path.GetFileName(x)).ToArray())
-            .AddOnValueChangedEvent((d, i, data) => _robotIndex = i).ApplyTemplate(VerticalLayout);
+        for (int robot = 0; robot < 6; robot++)
+        {
+            int robotIndex = robot;
+            if (robotIndex % 3 == 0)
+                MainContent.CreateLabel().ApplyTemplate(VerticalLayout)
+                    .SetText($"Select {(robotIndex == 0 ? "Red" : "Blue")} Robots");
 
-        _robotIndex = _robotFiles.Length > 0 ? 0 : -1;
-
+            MainContent.CreateDropdown()
+                .SetOptions(_robotOptions.Select(x => Path.GetFileName(x)).ToArray())
+                .AddOnValueChangedEvent((d, i, data) =>
+                        MatchMode.SelectedRobots[robotIndex] = i - 1 // Subtract 1 to account for "None" option
+                ).ApplyTemplate(VerticalLayout).SetValue(0);
+        }
+        
         MainContent.CreateLabel().ApplyTemplate(VerticalLayout).SetText("Select Field");
         var chooseFieldDropdown = MainContent.CreateDropdown()
             .SetOptions(_fieldFiles.Select(x => Path.GetFileName(x)).ToArray())
@@ -79,24 +90,24 @@ public class MatchModeModal : ModalDynamic
 
         _fieldIndex = _fieldFiles.Length > 0 ? 0 : -1;
 
-        MainContent.CreateLabel().ApplyTemplate(VerticalLayout).SetText("Select Alliance Color");
+        /*MainContent.CreateLabel().ApplyTemplate(VerticalLayout).SetText("Select Alliance Color");
         var allianceSelection = MainContent.CreateDropdown().ApplyTemplate(Dropdown.VerticalLayoutTemplate)
             .SetOptions(new string[] { "Red", "Blue" })
-            .AddOnValueChangedEvent((d, i, data) => _allianceColor = i).ApplyTemplate(VerticalLayout);
+            .AddOnValueChangedEvent((d, i, data) => _allianceColor = i).ApplyTemplate(VerticalLayout);*/
     }
     
     public IEnumerator LoadMatch()
     {
         yield return new WaitForSeconds(0.05f);
 
-        if(MatchMode.currentFieldIndex != _fieldIndex)
+        if(MatchMode.CurrentFieldIndex != _fieldIndex)
         {
             if (FieldSimObject.CurrentField != null) FieldSimObject.DeleteField();
             FieldSimObject.SpawnField(_fieldFiles[_fieldIndex]);
-            MatchMode.currentFieldIndex = _fieldIndex;
+            MatchMode.CurrentFieldIndex = _fieldIndex;
         }
         
-        if(MatchMode.currentRobotIndex != _robotIndex)
+        /*if(MatchMode.CurrentRobotIndex != _robotIndex)
         {
             if (RobotSimObject.GetCurrentlyPossessedRobot() != null) RobotSimObject.GetCurrentlyPossessedRobot().Destroy();
 
@@ -118,9 +129,9 @@ public class MatchModeModal : ModalDynamic
             }
             
             
-            MatchMode.currentRobotIndex = _robotIndex;
+            MatchMode.CurrentRobotIndex = _robotIndex;
         }
-        Scoring.ResetScore();
+        Scoring.ResetScore();*/
 
         DynamicUIManager.CloseActiveModal();
  
@@ -154,7 +165,6 @@ public class MatchModeModal : ModalDynamic
             if (i != a.Length - 1)
                 b += System.IO.Path.AltDirectorySeparatorChar;
         }
-        // Debug.Log(b);
         return b;
     }
 }

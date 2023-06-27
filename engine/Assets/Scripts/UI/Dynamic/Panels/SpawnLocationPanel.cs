@@ -7,14 +7,20 @@ namespace Synthesis.UI.Dynamic
 {
     public class SpawnLocationPanel : PanelDynamic
     {
+        private const float robotMoveSpeed = 5f;
+        private const float robotTiltAmount = 0.2f;
+        
         private const float width = 400f;
         private const float height = 150f;
         private const float spawnDistanceFromSurface = 0.05f;
+        
         private int fieldLayerMask = 1 << LayerMask.NameToLayer("FieldCollisionLayer");
 
         private static readonly Color redColor = new Color(1, 0, 0, 0.5f);
         private static readonly Color blueColor = new Color(0, 0, 1, 0.5f);
         private static readonly Material mat = new Material(Shader.Find("Shader Graphs/DefaultSynthesisTransparentShader"));
+
+        private Transform[] _spawnPositionDisplays = new Transform[6];
 
         public Func<Button, Button> DisabledTemplate = b =>
             b.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_BLACK_ACCENT))
@@ -23,7 +29,6 @@ namespace Synthesis.UI.Dynamic
         private const float VERTICAL_PADDING = 15f;
 
         private Button[] buttons = new Button[6];
-        private Transform[] _robotTransforms = new Transform[6];
         private int _selectedButton;
 
         public Func<UIComponent, UIComponent> VerticalLayout = (u) =>
@@ -47,7 +52,7 @@ namespace Synthesis.UI.Dynamic
                 //rend.material.color = (i < 3) ? redColor : blueColor;
 
                 obj.GetComponent<Collider>().isTrigger = true;
-                _robotTransforms[i] = obj.transform;
+                _spawnPositionDisplays[i] = obj.transform;
             }
 
             Title.SetText("Set Spawn").SetFontSize(25f);
@@ -181,13 +186,14 @@ namespace Synthesis.UI.Dynamic
                 StartMatch();
             }*/
 
+            // Find robot spawn position
             if (Input.GetMouseButton(1))
             {
                 // Raycast out from camera to see where the mouse is pointing
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (UnityEngine.Physics.Raycast(ray, out var hit, 100, fieldLayerMask))
                 {
-                    Transform selectedPosition = _robotTransforms[_selectedButton];
+                    Transform selectedPosition = _spawnPositionDisplays[_selectedButton];
 
                     Vector3 boxHalfSize =
                         selectedPosition.localScale / 2f;
@@ -196,16 +202,30 @@ namespace Synthesis.UI.Dynamic
                     if (UnityEngine.Physics.BoxCast(hit.point + Vector3.up * 20f, boxHalfSize, 
                             Vector3.down, out var boxHit, Quaternion.identity, 30f, fieldLayerMask))
                     {
-                        selectedPosition.position = new Vector3(hit.point.x, 
+                        MatchMode.RobotSpawnLocations[_selectedButton] = new Vector3(hit.point.x, 
                             boxHit.point.y + boxHalfSize.y + spawnDistanceFromSurface, hit.point.z);
                     }
                 }
+            }
+
+            // Move robot object toward it's spawn position
+            for (int i = 0; i < 6; i++)
+            {
+                Transform trf = _spawnPositionDisplays[i];
+
+                Vector3 prevPos = trf.position;
+                Vector3 target = MatchMode.RobotSpawnLocations[i];
+                trf.position = Vector3.Lerp(prevPos, target, robotMoveSpeed * Time.deltaTime);
+
+                Vector3 movementDirection = (target - prevPos);
+                Vector3 robotTilt = (target - prevPos) * 45f * robotTiltAmount;
+                trf.rotation = Quaternion.Euler(robotTilt.z, 0, -robotTilt.x);
             }
         }
 
         public override void Delete()
         {
-            _robotTransforms.ForEach(x => UnityEngine.Object.Destroy(x.gameObject));
+            _spawnPositionDisplays.ForEach(x => UnityEngine.Object.Destroy(x.gameObject));
         }
     }
 }

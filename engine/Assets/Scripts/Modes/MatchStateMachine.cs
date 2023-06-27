@@ -1,16 +1,10 @@
 ﻿using Synthesis.UI.Dynamic;
-using System.Collections;
-using System.Collections.Generic;
+using Synthesis.Util;
 using UnityEngine;
-using TMPro;
+using System.IO;
+using System.Linq;
 
 public class MatchStateMachine {
-    public static int currentFieldIndex = -1;
-    public static int currentRobotIndex = -1;
-
-    public const string PREVIOUS_SPAWN_LOCATION = "Previous Spawn Location";
-    public const string PREVIOUS_SPAWN_ROTATION = "Previous Spawn Rotation";
-    
     private MatchState _currentState;
 
     public MatchState CurrentState
@@ -36,7 +30,7 @@ public class MatchStateMachine {
                     ((MatchModeModal)DynamicUIManager.ActiveModal).OnAccepted += () => CurrentState = MatchState.RobotPositioning;
                     return; 
                 case MatchState.RobotPositioning:
-                    DynamicUIManager.CreatePanel<StartMatchModePanel>();
+                    //MatchMode.SpawnAllRobots();
                     return;
                 case MatchState.Auto: 
                     return;
