@@ -34,6 +34,7 @@ public class ScoringZone : IPhysicsOverridable
     {
         this.Name = name;
         this.GameObject = gameObject;
+        this.GameObject.layer = 2; // ignore raycast layer
         
         // configure gameobject to have box collider as trigger
         GameObject.name = name;
