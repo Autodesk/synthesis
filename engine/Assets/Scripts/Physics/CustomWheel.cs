@@ -71,8 +71,17 @@ public class CustomWheel : MonoBehaviour
     
     public void OnCollisionStay(Collision collision)
     {
-        // Flip impulse vector if for whatever reason it is backwards (happens with mean machine robot)
-        Vector3 impulse = (collision.impulse.y < 0f) ? -collision.impulse: collision.impulse;
+        Vector3 impulse = collision.impulse;
+        
+        // If impulse vector is suspected of being backwards (happens with mean machine), calculate it manually
+        if (impulse.normalized.y < 0.01)
+        {
+            impulse = Vector3.zero;
+            collision.contacts.ForEach(contact =>
+            {
+                impulse += (Rb.worldCenterOfMass - contact.point).normalized * contact.impulse.magnitude;
+            });
+        }
         
         _collisionDataThisFrame.impulse += impulse;
         _collisionDataThisFrame.velocity += collision.relativeVelocity;
