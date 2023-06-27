@@ -44,6 +44,7 @@ public class PracticeMode : IMode
 
     public void Start()
     {
+        DynamicUIManager.CreatePanel<ScoreboardPanel>(true);
         DynamicUIManager.CreateModal<AddFieldModal>();
 
         // var mira = new MirabufLive("C:\\Users\\hunte\\AppData\\Roaming\\Autodesk\\Synthesis\\Mira\\BrokenLinksRobot_v1.mira");
@@ -86,7 +87,6 @@ public class PracticeMode : IMode
             else
             {
                 DynamicUIManager.CreatePanel<ScoringZonesPanel>();
-                DynamicUIManager.CreatePanel<ScoreboardPanel>(true);
             }
         });
         

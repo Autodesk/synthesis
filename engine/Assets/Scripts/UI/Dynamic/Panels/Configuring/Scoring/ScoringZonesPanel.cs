@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using Synthesis.Gizmo;
+using Synthesis.Physics;
 using Synthesis.UI.Dynamic;
 using Synthesis.PreferenceManager;
 using UnityEngine;
@@ -81,6 +82,10 @@ public class ScoringZonesPanel : PanelDynamic
         if (!_initiallyVisible)
             FieldSimObject.CurrentField.ScoringZones.ForEach(z => z.GameObject.GetComponent<MeshRenderer>().enabled = true);
 
+        // so that timer doesn't count while configuring
+        // will remove later once score zones can be configured before match start, per Luca's match mode state machine
+        PhysicsManager.IsFrozen = true;
+
         return true;
     }
 
@@ -135,9 +140,9 @@ public class ScoringZonesPanel : PanelDynamic
     
     public override void Update() { }
 
-    public override void Delete()
-    {
+    public override void Delete() {
         if (!_initiallyVisible)
             FieldSimObject.CurrentField.ScoringZones.ForEach(z => z.GameObject.GetComponent<MeshRenderer>().enabled = _initiallyVisible);
+        PhysicsManager.IsFrozen = false;
     }
 }

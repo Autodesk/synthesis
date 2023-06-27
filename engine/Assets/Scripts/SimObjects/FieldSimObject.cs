@@ -113,6 +113,7 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
             rc.Color = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_HOVER);
             rc.enabled = false;
         });
+        
     }
 
     public void ResetField() {
