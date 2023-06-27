@@ -24,10 +24,37 @@ foreach ($dir in $FILES_DIRS) {
 
 Write-Host "Found $($files.Count) files."
 
-foreach ($file in $files) {
-    Write-Host "Formatting $file..."
-    $commandArguments = "$FORMAT_ARGUMENTS $file"
-    Start-Process -FilePath $FORMAT_COMMAND -ArgumentList $commandArguments -NoNewWindow -Wait
+$jobResults = @()
+$jobCount = 5
+
+$formatScriptBlock = {
+    param($FormatCommand, $Arguments, $File)
+    & $FormatCommand $Arguments $File
 }
+
+$jobOptions = @{
+    ScriptBlock = $formatScriptBlock
+    ArgumentList = @($FORMAT_COMMAND, $FORMAT_ARGUMENTS)
+}
+
+$jobs = @()
+
+foreach ($file in $files) {
+    $arguments = @($FORMAT_COMMAND, $FORMAT_ARGUMENTS, $file)
+    $jobOptions.ArgumentList = $arguments
+
+    Write-Host "Formatting $file"
+    $job = Start-Job @jobOptions
+    $jobs += $job
+
+    if ($jobs.Count -ge $jobCount) {
+        $completedJob = Wait-Job -Job $jobs -Any
+        $jobResults += Receive-Job -Job $completedJob
+        $jobs = $jobs | Where-Object { $_ -ne $completedJob }
+    }
+}
+
+$jobResults += $jobs | Wait-Job | Receive-Job
+$jobs | Remove-Job -Force
 
 Write-Host "Done!"
