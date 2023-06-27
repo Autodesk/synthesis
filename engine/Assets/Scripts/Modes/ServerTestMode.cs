@@ -12,7 +12,7 @@ public class ServerTestMode : IMode {
     // private Task<LobbyClient>? _connectTask;
     private LobbyClient[] _clients;
 
-    private const float UPDATE = 0.2f;
+    public IReadOnlyCollection<string> ClientInformation => _server.Clients;
 
     public void Start() {
         _server = new LobbyServer();
@@ -31,19 +31,7 @@ public class ServerTestMode : IMode {
 
     private float _lastUpdate = 0;
     public void Update() {
-        if (Time.realtimeSinceStartup - _lastUpdate > UPDATE) {
-            ServerTestModal.TrySetStatus("Connected");
-
-            string s = "";
-            _server.Clients.ForEach(x => {
-                Debug.Log($"{x.Guid}: {x.Name}");
-                s += $"{x.Name}, ";
-            });
-
-            ServerTestModal.TrySetStatus(s);
-
-            _lastUpdate = Time.realtimeSinceStartup;
-        }
+        
     }
 
     public void End() {}

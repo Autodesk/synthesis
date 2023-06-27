@@ -5,32 +5,53 @@ using UnityEngine;
 
 namespace Synthesis.UI.Dynamic {
 
-    public class ServerTestModal: ModalDynamic {
+	public class ServerTestModal : ModalDynamic {
 
-        private static ServerTestModal _self;
+		private const float REFRESH_CLIENTS_INTERVAL = 0f;
 
-        private Label _statusLabel;
+		private static ServerTestModal _self;
 
-        public ServerTestModal(): base(new Vector2(500, 500)) { }
+		private Label _statusLabel;
+		private Button _refreshButton;
 
-        public override void Create() {
-            _statusLabel = MainContent.CreateLabel(30).SetTopStretch<Label>();
-            _statusLabel.SetText("Initializing...");
+		private float _lastRefresh = 0f;
 
-            _self = this;
-        }
+		public ServerTestModal() : base(new Vector2(500, 500)) { }
 
-        public override void Update() { }
+		public override void Create() {
+			_statusLabel = MainContent.CreateLabel(30).SetStretch<Label>(bottomPadding: 50)
+				.SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Top)
+				.SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Left);
 
-        public override void Delete() {
-            _statusLabel = null;
-        }
+			_statusLabel.SetText("Press Button...");
 
-        public static void TrySetStatus(string txt) {
-            if (_self != null) {
-                _self._statusLabel.SetText(txt);
-            }
-        }
-        
-    }
+			_refreshButton = MainContent.CreateButton(text: "Refresh").SetHeight<Button>(50).SetBottomStretch<Button>(30)
+				.AddOnClickedEvent(b => {
+					RefreshClientList();
+				});
+
+			RefreshClientList();
+
+			_self = this;
+		}
+
+		public override void Update() {
+			if (Time.realtimeSinceStartup - _lastRefresh > REFRESH_CLIENTS_INTERVAL) {
+				RefreshClientList();
+			}
+		}
+
+		public override void Delete() {
+			_statusLabel = null;
+		}
+
+		private void RefreshClientList() {
+			_lastRefresh = Time.realtimeSinceStartup;
+			var clients = (ModeManager.CurrentMode as ServerTestMode)!.ClientInformation;
+			string s = "";
+			clients.ForEach(x => s += $"{x}\n");
+			_statusLabel.SetText(s);
+		}
+
+	}
 }
