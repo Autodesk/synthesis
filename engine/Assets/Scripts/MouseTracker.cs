@@ -5,7 +5,8 @@ using Synthesis.UI.ContextMenus;
 
 using ContextMenu = Synthesis.UI.ContextMenus.ContextMenu;
 
-public class MouseTracker : MonoBehaviour {
+public class MouseTracker : MonoBehaviour
+{
     public RectTransform tracker;
 
     // Update is called once per frame
