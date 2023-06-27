@@ -69,15 +69,28 @@ def getPhysicalMaterialData(fusion_material, proto_material, options):
         """
         Thermal Properties
         """
-        thermalProperties.thermal_conductivity = materialProperties.itemById(
-            "thermal_Thermal_conductivity"
-        ).value
-        thermalProperties.specific_heat = materialProperties.itemById(
-            "structural_Specific_heat"
-        ).value
-        thermalProperties.thermal_expansion_coefficient = materialProperties.itemById(
-            "structural_Thermal_expansion_coefficient"
-        ).value
+
+        """ # These are causing temporary failures when trying to find value. Better to not throw this many exceptions.
+        if materialProperties.itemById(
+                "thermal_Thermal_conductivity"
+            ) is not None:
+            thermalProperties.thermal_conductivity = materialProperties.itemById(
+                "thermal_Thermal_conductivity"
+            ).value
+        if materialProperties.itemById(
+                "structural_Specific_heat"
+            ) is not None:
+            thermalProperties.specific_heat = materialProperties.itemById(
+                "structural_Specific_heat"
+            ).value
+        
+        if materialProperties.itemById(
+                "structural_Thermal_expansion_coefficient"
+            ) is not None:
+            thermalProperties.thermal_expansion_coefficient = materialProperties.itemById(
+                "structural_Thermal_expansion_coefficient"
+            ).value
+        """
 
         """
         Mechanical Properties
@@ -107,9 +120,11 @@ def getPhysicalMaterialData(fusion_material, proto_material, options):
         strengthProperties.tensile_strength = materialProperties.itemById(
             "structural_Minimum_tensile_strength"
         ).value
+        """
         strengthProperties.thermal_treatment = materialProperties.itemById(
             "structural_Thermally_treated"
         ).value
+        """
 
     except:
         logging.getLogger(
@@ -123,7 +138,6 @@ def _MapAllAppearances(
     options: ParseOptions,
     progressDialog: PDMessage,
 ) -> None:
-
     # in case there are no appearances on a body
     # this is just a color tho
     setDefaultAppearance(materials.appearances["default"])

@@ -69,7 +69,6 @@ def _ParseComponentRoot(
     material_map: dict,
     node: types_pb2.Node,
 ) -> None:
-
     mapConstant = guid_component(component)
 
     part = partsData.part_instances[mapConstant]
@@ -84,7 +83,6 @@ def _ParseComponentRoot(
         part.part_definition_reference = mapConstant
 
     for occur in component.occurrences:
-
         if progressDialog.wasCancelled():
             raise RuntimeError("User canceled export")
 
@@ -104,7 +102,6 @@ def __parseChildOccurrence(
     material_map: dict,
     node: types_pb2.Node,
 ) -> None:
-
     if occurrence.isLightBulbOn is False:
         return
 
@@ -207,7 +204,6 @@ def _MapRigidGroups(
         mira_group = joint_pb2.RigidGroup()
         mira_group.name = group.entityToken
         for occ in group.occurrences:
-
             if occ == None:
                 a = 1
                 continue

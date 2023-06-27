@@ -585,7 +585,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                     joint.jointMotion.jointType == JointMotions.REVOLUTE.value
                     or joint.jointMotion.jointType == JointMotions.SLIDER.value
                 ) and not joint.isSuppressed:
-
                     addJointToTable(joint)
 
             # ~~~~~~~~~~~~~~~~ GAMEPIECE CONFIGURATION ~~~~~~~~~~~~~~~~
@@ -1183,7 +1182,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             # else:
             #     savepath = FileDialogConfig.SaveFileDialog(defaultPath=self.fp)
 
-            processedFileName = gm.app.activeDocument.name.replace(' ', '_')
+            processedFileName = gm.app.activeDocument.name.replace(" ", "_")
             dropdownExportMode = INPUTS_ROOT.itemById("mode")
             if dropdownExportMode.selectedItem.index == 0:
                 isRobot = True
@@ -1192,15 +1191,30 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
 
             if platform.system() == "Windows":
                 if isRobot:
-                    savepath = os.getenv("APPDATA") + "\\Autodesk\\Synthesis\\Mira\\" + processedFileName + ".mira"
+                    savepath = (
+                        os.getenv("APPDATA")
+                        + "\\Autodesk\\Synthesis\\Mira\\"
+                        + processedFileName
+                        + ".mira"
+                    )
                 else:
-                    savepath = os.getenv("APPDATA") + "\\Autodesk\\Synthesis\\Mira\\Fields\\" + processedFileName + ".mira"
+                    savepath = (
+                        os.getenv("APPDATA")
+                        + "\\Autodesk\\Synthesis\\Mira\\Fields\\"
+                        + processedFileName
+                        + ".mira"
+                    )
             else:
                 if isRobot:
-                    savepath = "~/.config/Autodesk/Synthesis/Mira/" + processedFileName + ".mira"
+                    savepath = (
+                        "~/.config/Autodesk/Synthesis/Mira/" + processedFileName + ".mira"
+                    )
                 else:
-                    savepath = "~/.config/Autodesk/Synthesis/Mira/Fields" + processedFileName + ".mira"
-
+                    savepath = (
+                        "~/.config/Autodesk/Synthesis/Mira/Fields"
+                        + processedFileName
+                        + ".mira"
+                    )
 
             if savepath == False:
                 # save was canceled
@@ -1803,7 +1817,6 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
         """
         try:
             if gm.app.activeDocument.design:
-
                 massCalculation = FullMassCalculuation()
                 totalMass = massCalculation.getTotalMass()
 
