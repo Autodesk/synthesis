@@ -47,7 +47,13 @@ def main():
 
     for file in files:
         print(f"Formatting {file}...")
-        os.system(f"{FORMAT_COMMAND} {file}")
+        # os.system(f"{FORMAT_COMMAND} {file}")
+        subprocess.call(
+            f"{clang_format} -i -style=file {file}",
+            bufsize=1,
+            creationflags=subprocess.CREATE_NO_WINDOW,
+            shell=False,
+        )
 
     print("Done!")
 
