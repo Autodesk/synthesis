@@ -20,18 +20,12 @@ def main():
     if sys.platform != "linux":
         print("Warning: This script was designed to be run by github action linux machines")
 
-    subprocess.call(
-        "ls",
-        bufsize=1,
-        shell=False,
-    )
-
     files = []
     for dir in FILES_DIRS:
         for root, _, filenames in os.walk(dir):
             for filename in filenames:
                 if os.path.splitext(filename)[1] in FILE_TARGETS and f"{root}/{filename}" not in IGNORED_FILES:
-                    files.append(os.path.join(root, filename))
+                    files.append(os.path.abspath(os.path.join(root, filename)))
 
     exit_code = 0
     for file in files:
@@ -42,7 +36,7 @@ def main():
         subprocess.call(
             f"{FORMAT_COMMAND} {file}",
             bufsize=1,
-            shell=False,
+            shell=True,
         )
         with open(file, "r") as f:
             new_file_state = f.readlines()

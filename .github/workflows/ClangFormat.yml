@@ -25,7 +25,7 @@ jobs:
       with:
         python-version: '3.9'
     - name: Run Script
-      run: python scripts/format/format_validation.py
+      run: python3 scripts/format/format_validation.py
       id: format-validation
       continue-on-error: true
     - name: Check Success
