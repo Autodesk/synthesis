@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Synthesis.Physics;
 using Synthesis.Runtime;
 using SynthesisAPI.EventBus;
 using UnityEngine;
@@ -7,7 +9,7 @@ public enum Alliance
     Blue
 }
 
-public class ScoringZone
+public class ScoringZone : IPhysicsOverridable
 {
     public string Name;
 
@@ -17,7 +19,7 @@ public class ScoringZone
         get => _alliance;
         set {
             _alliance = value;
-            _renderer.material.color = value == Alliance.Red ? Color.red : Color.blue;
+            _meshRenderer.material.color = value == Alliance.Red ? Color.red : Color.blue;
         }
     }
     public int Points;
@@ -25,7 +27,8 @@ public class ScoringZone
     public GameObject GameObject;
     private Collider _collider;
     private MeshRenderer _meshRenderer;
-    private Renderer _renderer;
+
+    private bool _isFrozen;
 
     public ScoringZone(GameObject gameObject, string name, Alliance alliance, int points, bool destroyObject)
     {
@@ -35,44 +38,75 @@ public class ScoringZone
         // configure gameobject to have box collider as trigger
         GameObject.name = name;
         
-        // make scoring zone transparent
-        _renderer = GameObject.GetComponent<Renderer>();
-        // renderer.material = new Material(Shader.Find("Shader Graphs/DefaultSynthesisTransparentShader"));
-        _renderer.material.color = alliance == Alliance.Red ? Color.red : Color.blue;
-
         ScoringZoneListener listener = GameObject.AddComponent<ScoringZoneListener>();
-        listener.scoringZone = this;
+        listener.ScoringZone = this;
         
         _collider = GameObject.GetComponent<Collider>();
         _meshRenderer = GameObject.GetComponent<MeshRenderer>();
+        _meshRenderer.material.color = alliance == Alliance.Red ? Color.red : Color.blue;
 
         _collider.isTrigger = true;
         
         Alliance = alliance;
         Points = points;
         DestroyObject = destroyObject;
+
+        PhysicsManager.Register(this);
     }
 
     public void SetVisibility(bool visible) {
-        _renderer.enabled = visible;
+        _meshRenderer.enabled = visible;
     }
+
+    public bool isFrozen() => _isFrozen;
+    public void Freeze() {
+        _isFrozen = true;
+        _collider.isTrigger = false;
+    }
+    public void Unfreeze() {
+        _isFrozen = false;
+        _collider.isTrigger = true;
+    }
+
+    public List<Rigidbody> GetAllRigidbodies()
+        => new List<Rigidbody>{};
+    public GameObject GetRootGameObject()
+        => GameObject;
 }
 
 public class ScoringZoneListener : MonoBehaviour
 {
-    public ScoringZone scoringZone;
-    private void OnTriggerEnter(Collider other)
-    {
+    public ScoringZone ScoringZone;
+    
+    private SortedDictionary<int, Collider> _inScoringZone = new SortedDictionary<int, Collider>();
+    
+    private void OnTriggerEnter(Collider other) {
+        if (ScoringZone.isFrozen()) return;
         if (other.gameObject == gameObject) return;
         if (!other.transform.CompareTag("gamepiece")) return;
+        if (_inScoringZone.ContainsKey(other.GetHashCode())) return;
 
         // don't destroy gamepiece if user is moving the zone
         if (SimulationRunner.HasContext(SimulationRunner.GIZMO_SIM_CONTEXT)) return;
         
         // trigger scoring
-        EventBus.Push(new OnScoreEvent(other.name, scoringZone));
+        EventBus.Push(new OnScoreEvent(other.name, ScoringZone));
+        _inScoringZone.Add(other.GetHashCode(), other);
         
-        if (scoringZone.DestroyObject) Destroy(other.gameObject);
+        if (ScoringZone.DestroyObject) Destroy(other.gameObject);
+    }
+
+    private void OnTriggerExit(Collider other) {
+        if (ScoringZone.isFrozen()) return;
+        if (other.gameObject == gameObject) return;
+        if (!other.transform.CompareTag("gamepiece")) return;
+
+        if (_inScoringZone.ContainsKey(other.GetHashCode()))
+            _inScoringZone.Remove(other.GetHashCode());
+    }
+
+    private void OnDestroy() {
+        PhysicsManager.Unregister(ScoringZone);
     }
 }
 
