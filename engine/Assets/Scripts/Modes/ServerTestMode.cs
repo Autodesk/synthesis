@@ -7,12 +7,14 @@ using UnityEngine.Rendering.UI;
 using SynthesisAPI.Aether.Lobby;
 using System.Text;
 
-public class ServerTestMode : IMode {
-    private LobbyServer _server;
-    // private Task<LobbyClient>? _connectTask;
-    private LobbyClient[] _clients;
+#nullable enable
 
-    public IReadOnlyCollection<string> ClientInformation => _server.Clients;
+public class ServerTestMode : IMode {
+    private LobbyServer? _server;
+    // private Task<LobbyClient>? _connectTask;
+    private LobbyClient[]? _clients;
+
+    public IReadOnlyCollection<string> ClientInformation => _server == null ? new List<string>() : _server.Clients;
 
     public void Start() {
         _server = new LobbyServer();
@@ -29,12 +31,16 @@ public class ServerTestMode : IMode {
         DynamicUIManager.CreateModal<ServerTestModal>();
     }
 
-    private float _lastUpdate = 0;
-    public void Update() {
-        
+    public void KillClient(int i) {
+        _clients![i].Dispose();
     }
 
-    public void End() {}
+    public void Update() { }
+
+    public void End() {
+        _server?.Dispose();
+        _server = null;
+    }
 
     public void OpenMenu() {}
 

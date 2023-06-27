@@ -172,6 +172,9 @@ namespace Synthesis.Runtime {
         /// Teardown sim for recycle
         /// </summary>
         public static void SimKill() {
+
+            ModeManager.Teardown();
+
             FieldSimObject.DeleteField();
             if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
                 SimulationManager.RemoveSimObject(RobotSimObject.GetCurrentlyPossessedRobot());

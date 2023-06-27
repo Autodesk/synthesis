@@ -4,7 +4,9 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using Org.BouncyCastle.Math.EC.Rfc7748;
 using Org.BouncyCastle.Tls;
+using SynthesisAPI.Utilities;
 
 namespace SynthesisAPI.Aether.Lobby {
     public class LobbyServer : IDisposable {
@@ -23,7 +25,7 @@ namespace SynthesisAPI.Aether.Lobby {
         private class Inner : IDisposable {
 
             private ulong _nextGuid = 1;
-            private bool _isAlive = true;
+            private readonly Atomic<bool> _isAlive = true;
 
             private readonly ReaderWriterLockSlim _clientsLock;
             
@@ -84,7 +86,7 @@ namespace SynthesisAPI.Aether.Lobby {
             }
 
             private void ClientListener(LobbyClientHandler handler) {
-                while (_isAlive) {
+                while (_isAlive!) {
                     var msgTask = handler.ReadMessage();
                     var finishedBeforeTimeout = msgTask.Wait(CLIENT_LISTEN_TIMEOUT_MS);
                     if (!finishedBeforeTimeout || msgTask.Result == null) {
@@ -107,11 +109,12 @@ namespace SynthesisAPI.Aether.Lobby {
                 }
             }
 
-            private void OnGetLobbyInformation(LobbyMessage.Types.ToGetLobbyInformation request, LobbyClientHandler handler) {
+            private void OnGetLobbyInformation(LobbyMessage.Types.ToGetLobbyInformation _, LobbyClientHandler handler) {
                 _clientsLock.EnterReadLock();
 
-                LobbyMessage.Types.FromGetLobbyInformation response = new LobbyMessage.Types.FromGetLobbyInformation();
-                response.LobbyInformation = new LobbyInformation();
+                LobbyMessage.Types.FromGetLobbyInformation response = new LobbyMessage.Types.FromGetLobbyInformation {
+                    LobbyInformation = new LobbyInformation()
+                };
                 _clients.Values.ForEach(x => response.LobbyInformation.Clients.Add(x.ClientInformation));
                 
                 _clientsLock.ExitReadLock();
@@ -120,8 +123,10 @@ namespace SynthesisAPI.Aether.Lobby {
             }
 
             public void Dispose() {
-                _isAlive = false;
+                _isAlive.Value = false;
                 _listener.Stop();
+                _clients.ForEach(x => x.Value.Dispose());
+                _clientThreads.ForEach(x => x.Join());
             }
         }
 

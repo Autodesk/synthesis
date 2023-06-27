@@ -33,4 +33,8 @@ public class ModeManager {
         // so that the user doesn't have to press escape twice to open it again
         CurrentMode.CloseMenu();
     }
+
+    public static void Teardown() {
+        CurrentMode = null;
+    }
 }

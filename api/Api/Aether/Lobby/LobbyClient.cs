@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Google.Protobuf;
@@ -29,9 +30,9 @@ namespace SynthesisAPI.Aether.Lobby {
             private bool _isAlive = true;
             
             public readonly string IP;
-            private LobbyClientHandler _handler;
+            private readonly LobbyClientHandler _handler;
 
-            private Thread _heartbeatThread;
+            private readonly Thread _heartbeatThread;
 
             public Inner(string ip, string name) {
                 IP = ip;
@@ -85,7 +86,11 @@ namespace SynthesisAPI.Aether.Lobby {
                 }
             }
 
-            public void Dispose() { }
+            public void Dispose() {
+                _isAlive = false;
+                _handler.Dispose();
+                _heartbeatThread.Join();
+            }
             
         }
 
@@ -96,7 +101,9 @@ namespace SynthesisAPI.Aether.Lobby {
         
     }
     
-    internal class LobbyClientHandler {
+    internal class LobbyClientHandler : IDisposable {
+
+        private const int READ_TIMEOUT_MS = 1000;
 
         private readonly LobbyClientInformation _clientInformation;
         public LobbyClientInformation ClientInformation => _clientInformation.Clone();
@@ -105,13 +112,15 @@ namespace SynthesisAPI.Aether.Lobby {
 
         public ulong Guid => _clientInformation.Guid;
 
-        private TcpClient _tcp;
-        private NetworkStream _stream; // Concurrency issues?
+        private readonly TcpClient _tcp;
+        private readonly NetworkStream _stream; // Concurrency issues?
+        private readonly Mutex _streamLock;
         
         private LobbyClientHandler(TcpClient tcp, string name, ulong guid) {
             _tcp = tcp;
             _clientInformation = new LobbyClientInformation { Name = name, Guid = guid };
             _stream = _tcp.GetStream();
+            _streamLock = new Mutex();
         }
 
         public void UpdateHeartbeat() {
@@ -119,20 +128,33 @@ namespace SynthesisAPI.Aether.Lobby {
         }
 
         public Task<LobbyMessage?> ReadMessage()
-            => ReadMessage(_stream);
+            => ReadMessage(_stream, _streamLock);
 
         public Result<bool, Exception> WriteMessage(LobbyMessage message)
-            => WriteMessage(message, _stream);
+            => WriteMessage(message, _stream, _streamLock);
 
-        private static Task<LobbyMessage?> ReadMessage(NetworkStream stream) {
+        private static Task<LobbyMessage?> ReadMessage(NetworkStream stream, Mutex? mutex = null) {
             return Task<LobbyMessage?>.Factory.StartNew(() => {
                 try {
                     byte[] intBuf = new byte[4];
-                    _ = stream.Read(intBuf, 0, 4);
+                    {
+                        mutex?.WaitOne();
+                        if (stream.Read(intBuf, 0, 4) != 4) {
+                            return null;
+                        }
+                        mutex?.ReleaseMutex();
+                    }
                     int messageSize = BitConverter.ToInt32(intBuf, 0);
                     
                     byte[] messageBuf = new byte[messageSize];
-                    _ = stream.Read(messageBuf, 0, messageSize);
+                    {
+                        mutex?.WaitOne();
+                        if (stream.Read(messageBuf, 0, messageSize) != messageSize) {
+                            return null;
+                        }
+                        mutex?.ReleaseMutex();
+                    }
+
                     return LobbyMessage.Parser.ParseFrom(messageBuf);
                 } catch (Exception e) {
                     Logger.Log($"Read failure:\n{e.Message}\n{e.StackTrace}");
@@ -143,12 +165,14 @@ namespace SynthesisAPI.Aether.Lobby {
 
         private const bool TRUE = true;
         
-        private static Result<bool, Exception> WriteMessage(LobbyMessage message, NetworkStream stream) {
+        private static Result<bool, Exception> WriteMessage(LobbyMessage message, NetworkStream stream, Mutex? mutex = null) {
             try {
                 int size = message.CalculateSize();
+                mutex?.WaitOne();
                 stream.Write(BitConverter.GetBytes(size), 0, 4); 
                 message.WriteTo(stream);
                 stream.Flush();
+                mutex?.ReleaseMutex();
                 return new Result<bool, Exception>(TRUE);
             } catch (Exception e) {
                 return new Result<bool, Exception>(e);
@@ -156,6 +180,9 @@ namespace SynthesisAPI.Aether.Lobby {
         }
 
         public static Result<LobbyClientHandler, Exception> InitServerSide(TcpClient tcp, ulong guid) {
+
+            tcp.GetStream().ReadTimeout = READ_TIMEOUT_MS;
+
             var msgTask = ReadMessage(tcp.GetStream());
             msgTask.Wait();
             var msg = msgTask.Result;
@@ -186,6 +213,9 @@ namespace SynthesisAPI.Aether.Lobby {
         }
 
         public static Result<LobbyClientHandler, Exception> InitClientSide(TcpClient tcp, string name) {
+
+            tcp.GetStream().ReadTimeout = READ_TIMEOUT_MS;
+
             var request = new LobbyMessage.Types.ToRegisterClient { ClientInfo = new LobbyClientInformation { Name = name } };
             if (WriteMessage(new LobbyMessage { ToRegisterClient = request }, tcp.GetStream()).isError)
                 return new Result<LobbyClientHandler, Exception>(new Exception("Failed to send Register request"));
@@ -217,6 +247,9 @@ namespace SynthesisAPI.Aether.Lobby {
         public override string ToString() {
             return $"[{ClientInformation.Guid}] {ClientInformation.Name} <- {(DateTime.UtcNow - LastHeartbeat).Milliseconds}ms";
         }
-            
+
+        public void Dispose() {
+            _tcp.Dispose();
+        }
     }
 }

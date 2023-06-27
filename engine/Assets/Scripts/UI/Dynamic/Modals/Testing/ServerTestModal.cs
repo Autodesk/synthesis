@@ -7,7 +7,10 @@ namespace Synthesis.UI.Dynamic {
 
 	public class ServerTestModal : ModalDynamic {
 
-		private const float REFRESH_CLIENTS_INTERVAL = 0f;
+		private const float REFRESH_CLIENTS_INTERVAL = 0.3f;
+
+		private const float MAIN_CONTENT_WIDTH = 1000f;
+		private const float MAIN_CONTENT_HEIGHT = 700f;
 
 		private static ServerTestModal _self;
 
@@ -16,18 +19,27 @@ namespace Synthesis.UI.Dynamic {
 
 		private float _lastRefresh = 0f;
 
-		public ServerTestModal() : base(new Vector2(500, 500)) { }
+		public ServerTestModal() : base(new Vector2(MAIN_CONTENT_WIDTH, MAIN_CONTENT_HEIGHT)) { }
 
 		public override void Create() {
-			_statusLabel = MainContent.CreateLabel(30).SetStretch<Label>(bottomPadding: 50)
+
+			(var left, var right) = MainContent.SplitLeftRight(leftWidth: (MAIN_CONTENT_WIDTH - 20f) / 2, 20f);
+			left.EnsureImage().StepIntoImage(i => i.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT)));
+
+			_statusLabel = left.CreateLabel(30).SetStretch<Label>(15f, 15f, 15f, 15f)
 				.SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Top)
 				.SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Left);
 
 			_statusLabel.SetText("Press Button...");
 
-			_refreshButton = MainContent.CreateButton(text: "Refresh").SetHeight<Button>(50).SetBottomStretch<Button>(30)
+			_refreshButton = right.CreateButton(text: "Refresh").SetHeight<Button>(30f).SetTopStretch<Button>()
 				.AddOnClickedEvent(b => {
 					RefreshClientList();
+				});
+
+			right.CreateButton(text: "Kill").SetHeight<Button>(30f).SetTopStretch<Button>(45f)
+				.AddOnClickedEvent(b => {
+					(ModeManager.CurrentMode as ServerTestMode)!.KillClient(0);
 				});
 
 			RefreshClientList();
@@ -50,7 +62,7 @@ namespace Synthesis.UI.Dynamic {
 			var clients = (ModeManager.CurrentMode as ServerTestMode)!.ClientInformation;
 			string s = "";
 			clients.ForEach(x => s += $"{x}\n");
-			_statusLabel.SetText(s);
+			_statusLabel.SetText(s == string.Empty ? "Empty..." : s);
 		}
 
 	}
