@@ -1,4 +1,4 @@
-name: Format Validation (Clang Format)
+name: Format Validation (Clang)
 
 on:
   workflow_dispatch: {}
