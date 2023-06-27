@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Synthesis.Gizmo;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
@@ -35,6 +36,8 @@ public class ZoneConfigPanel : PanelDynamic {
     private HighlightComponent _selectedNode = null;
 
     private Action<ScoringZone, bool> _callback;
+
+    private SortedDictionary<int, bool> _initialFieldCollisions = new SortedDictionary<int, bool>();
 
     private readonly Func<UIComponent, UIComponent> VerticalLayout = (u) => {
         var offset = (-u.Parent!.RectOfChildren(u).yMin) + VERTICAL_PADDING;
@@ -214,8 +217,15 @@ public class ZoneConfigPanel : PanelDynamic {
     
     public void SelectParentButton(Button b) {
         if (!_selectingNode) {
+            // I don't like this; do we just want all field rigidbodies to detect collisions?
+            FieldSimObject.CurrentField.FieldObject.GetComponentsInChildren<Rigidbody>().ForEach(x => {
+                _initialFieldCollisions.Add(x.GetHashCode(), x.detectCollisions);
+                x.detectCollisions = true;
+            });
             _selectingNode = true;
         } else {
+            FieldSimObject.CurrentField.FieldObject.GetComponentsInChildren<Rigidbody>().ForEach(x => x.detectCollisions = _initialFieldCollisions[x.GetHashCode()]);
+            _initialFieldCollisions.Clear();
             _selectingNode = false;
         }
         SetSelectUIState(_selectingNode);
@@ -239,15 +249,11 @@ public class ZoneConfigPanel : PanelDynamic {
 
     public override void Update() {
         if (_selectingNode) {
-
-            // Enable Collision Detection for the Field
-            FieldSimObject.CurrentField.FieldObject.GetComponentsInChildren<Rigidbody>().ForEach(x => x.detectCollisions = true);
-
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hitInfo;
             bool hit = Physics.Raycast(ray, out hitInfo);
 
-            if (hit && hitInfo.rigidbody != null && hitInfo.rigidbody.transform.parent == FieldSimObject.CurrentField.FieldObject.transform) {
+            if (hit && hitInfo.rigidbody != null && hitInfo.rigidbody.transform.parent == FieldSimObject.CurrentField.FieldObject.transform && !hitInfo.rigidbody.transform.CompareTag("field")) {
                 if (_hoveringNode != null && (_selectedNode == null || !_selectedNode.name.Equals(_hoveringNode.name))) {
                     _hoveringNode.enabled = false;
                 }
@@ -277,9 +283,6 @@ public class ZoneConfigPanel : PanelDynamic {
                     _hoveringNode = null;
                 }
             }
-
-            // Disable Collision Detection for the Field
-            FieldSimObject.CurrentField.FieldObject.GetComponentsInChildren<Rigidbody>().ForEach(x => x.detectCollisions = false);
         }
     }
 

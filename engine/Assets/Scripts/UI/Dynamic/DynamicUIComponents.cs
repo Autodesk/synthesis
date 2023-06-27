@@ -384,7 +384,9 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public T SetBackgroundColor<T>(Color color) where T : UIComponent {
-            RootGameObject.GetComponent<UnityEngine.UI.Image>().color = color;
+            UnityEngine.UI.Image image = RootGameObject.GetComponent<UnityEngine.UI.Image>();
+            if (image)
+                image.color = color;
             return (this as T)!;
         }
     }
