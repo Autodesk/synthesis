@@ -176,6 +176,10 @@ class Parser:
             progressDialog.hide()
 
             if DEBUG:
+                part_defs = assembly_out.data.parts.part_definitions
+                parts = assembly_out.data.parts.part_instances
+                joints = assembly_out.data.joints.joint_definitions
+                signals = assembly_out.data.signals.signal_map
 
                 joint_hierarchy_out = "Joint Hierarchy :\n"
 
