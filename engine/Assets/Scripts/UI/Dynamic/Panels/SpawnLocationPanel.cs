@@ -47,7 +47,7 @@ namespace Synthesis.UI.Dynamic
         };
         
         private int _selectedButton;
-        private bool _renderBoxes = true;
+        private bool _renderBoxes = false;
         
         public SpawnLocationPanel() : base(new Vector2(WIDTH, HEIGHT)) { }
         

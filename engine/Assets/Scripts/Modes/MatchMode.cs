@@ -24,11 +24,13 @@ public class MatchMode : IMode {
     {
         Array.Fill(SelectedRobots, -1);
 
-        _stateMachine = new MatchStateMachine();
-        _stateMachine.CurrentState = MatchStateMachine.MatchState.MatchConfig;
+        _stateMachine = MatchStateMachine.Instance;
+        _stateMachine.SetState(MatchStateMachine.StateName.MatchConfig);
     }
 
     public void Update() {
+        /*Debug.Log(_stateMachine != null);
+        _stateMachine.Update();*/
     }
     public void End() {
     }

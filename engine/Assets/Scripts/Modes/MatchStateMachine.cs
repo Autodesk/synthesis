@@ -1,66 +1,134 @@
-﻿using Synthesis.UI.Dynamic;
-using Synthesis.Util;
+﻿using System.Collections.Generic;
+using Synthesis.UI.Dynamic;
 using UnityEngine;
-using System.IO;
-using System.Linq;
 using Synthesis.Physics;
-using UnityEditor;
 
-public class MatchStateMachine {
-    private MatchState _currentState;
+public class MatchStateMachine
+{
+    private static MatchStateMachine _instance;
 
-    public MatchState CurrentState
+    public static MatchStateMachine Instance
     {
         get
         {
-            return _currentState;
-        }
-        set 
-        {
-            Debug.Log($"State set to {value}");
-            if (value == _currentState)
-            {
-                Debug.LogError($"New state is the same as the current state ({value})");
-                return; 
-            }
+            if (_instance != null)
+                return _instance;
             
-            _currentState = value;
-            switch (value)
-            {
-                case MatchState.MatchConfig:
-                    DynamicUIManager.CreateModal<MatchModeModal>();
-                    ((MatchModeModal)DynamicUIManager.ActiveModal).OnAccepted += () => CurrentState = MatchState.RobotPositioning;
-                    return;
-                case MatchState.RobotPositioning:
-                    MatchMode.SpawnAllRobots();
-                    if (RobotSimObject.GetCurrentlyPossessedRobot() != null)
-                    {
-
-                        /*RobotSimObject.SpawnedRobots.ForEach(x => x.Freeze());
-                        RobotSimObject.GetCurrentlyPossessedRobot().Freeze();*/
-                    }
-
-                    PhysicsManager.IsFrozen = true;
-
-                    //Camera.main.GetComponent<CameraController>().enabled = false;
-                    Debug.Log("Setting camera mode");
-                    Camera.main.GetComponent<CameraController>().CameraMode = new FreeCameraMode();
-                    return;
-                case MatchState.Auto: 
-                    return;
-                default:
-                    Debug.LogError($"No behavior for current state ({value})");
-                    return;
-            }
+            return new MatchStateMachine();
         }
     }
-    
 
-    public enum MatchState
+    #region State Management
+    
+    private MatchState _currentState;
+    private Dictionary<StateName, MatchState> _matchStates = new Dictionary<StateName, MatchState>();
+
+    public void SetState(StateName stateName)
+    {
+        Debug.Log($"State set to {stateName}");
+        var newState = _matchStates[stateName];
+        if (newState == null)
+        {
+            Debug.LogError($"No state found for {stateName}");
+            return;
+        }
+
+        if (newState == _currentState)
+        {
+            Debug.LogError($"New state is the same as the current state ({stateName})");
+            return;
+        }
+        
+        _currentState.End();
+        _currentState = newState;
+        Debug.Log(newState.GetType());
+        _currentState.Start();
+    }
+    
+    public MatchStateMachine()
+    {
+        _matchStates.Add(StateName.None, new None());
+        _matchStates.Add(StateName.MatchConfig, new MatchConfig());
+        _matchStates.Add(StateName.RobotPositioning, new RobotPositioning());
+        _matchStates.Add(StateName.Auto, new Auto());
+        _matchStates.Add(StateName.Teliop, new Teliop());
+
+        _currentState = _matchStates[StateName.None];
+    }
+
+    public void Update()
+    {
+        _currentState.Update();
+    }
+    
+    #endregion
+
+    #region Match States
+    
+    public interface MatchState
+    {
+        public void Start();
+        public void Update();
+        public void End();
+    }
+    
+    public class None : MatchState
+    {
+        public void Start() { }
+        public void Update() { }
+        public void End() { }
+    }
+    
+    public class MatchConfig : MatchState
+    {
+        public void Start()
+        {
+            Debug.Log("Match config start");
+            DynamicUIManager.CreateModal<MatchModeModal>();
+            ((MatchModeModal)DynamicUIManager.ActiveModal).OnAccepted += 
+                () => MatchStateMachine.Instance.SetState(StateName.RobotPositioning);
+        }
+        public void Update() { }
+        public void End() { }
+    }
+    
+    public class RobotPositioning : MatchState
+    {
+        public void Start()
+        {
+            Debug.Log("Robot positioning start");
+            MatchMode.SpawnAllRobots();
+            PhysicsManager.IsFrozen = true;
+            
+            if (Camera.main != null) 
+                Camera.main.GetComponent<CameraController>().CameraMode = new FreeCameraMode();
+        }
+        public void Update() { }
+        public void End() { }
+    }
+    
+    public class Auto : MatchState
+    {
+        public void Start() { }
+        public void Update() { }
+        public void End() { }
+    }
+    
+    public class Teliop : MatchState
+    {
+        public void Start() { }
+        public void Update() { }
+        public void End() { }
+    }
+    
+    #endregion
+    
+    public enum StateName
     {
         None,
         MatchConfig,
         RobotPositioning,
-        Auto
+        Auto,
+        Teliop
     }
 }
