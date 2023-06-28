@@ -293,7 +293,10 @@ public class PracticeMode : IMode
 
         MainHUD.AddItemToDrawer("Pickup", b => DynamicUIManager.CreatePanel<ConfigureGamepiecePickupPanel>());
         MainHUD.AddItemToDrawer("Ejector", b => DynamicUIManager.CreatePanel<ConfigureShotTrajectoryPanel>());
-        MainHUD.AddItemToDrawer("Motors", b => DynamicUIManager.CreateModal<ConfigMotorModal>());
+        MainHUD.AddItemToDrawer("Motors", b => {
+            DynamicUIManager.CreateModal<ConfigMotorModal>();
+            RobotSimObject.GetCurrentlyPossessedRobot().DrivetrainConfig(600,600,600,600);
+        });
         MainHUD.AddItemToDrawer("RoboRIO Conf.",b => DynamicUIManager.CreateModal<RioConfigurationModal>(true),icon: SynthesisAssetCollection.GetSpriteByName("rio-config-icon"));
         MainHUD.AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>());
         MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("settings"));

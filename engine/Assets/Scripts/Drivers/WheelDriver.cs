@@ -153,7 +153,7 @@ namespace Synthesis {
             }
 
             (simObject as RobotSimObject)!.MiraLive.MiraAssembly.Data.Joints.MotorDefinitions.TryGetValue(motorRef, out var motor);
-            
+
             if (motor != null && motor.MotorTypeCase == Mirabuf.Motor.Motor.MotorTypeOneofCase.SimpleMotor) {
                 _motor = motor!.SimpleMotor.UnityMotor;
             } else {
@@ -181,7 +181,7 @@ namespace Synthesis {
                 Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(0)
             };
 
-            // Debug.Log($"Speed: {_motor.targetVelocity}\nForce: {_motor.force}");
+            Debug.Log($"Speed: {Motor.targetVelocity}\nForce: {Motor.force}");
         }
 
         void EnableMotor() {

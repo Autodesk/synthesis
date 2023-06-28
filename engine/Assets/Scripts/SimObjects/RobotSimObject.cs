@@ -402,6 +402,10 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                     leftWheels.Add(x.Key);
             });
 
+            leftWheels.ForEach(x =>
+                Debug.Log($"{x.Motor.force}")
+            );
+
             // Spin all of the wheels straight
             wheels.ForEach(x => {
                 var def = MiraLive.MiraAssembly.Data.Joints.JointDefinitions[x.JointInstance.JointReference];
@@ -763,37 +767,37 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         public string Bot;
     }
 
-    public void DrivetrainConfig(float? leftTargetVel = null, float? rightTargetVel = null, float? leftForce = null, float? rightForce = null) {
+    public void DrivetrainConfig(float leftTargetVel, float rightTargetVel, float leftForce, float rightForce) {
         foreach (WheelDriver driver in GetLeftRightWheels()!.Value.leftWheels) {
+            Debug.Log($"0: {driver.Motor.force} 1: {driver.Motor.targetVelocity}");
+
             driver.Motor = new JointMotor() {
-                force =  leftForce ?? driver.Motor.force,
+                force =  leftForce,
                 freeSpin = false,
-                targetVelocity = leftTargetVel ?? driver.Motor.targetVelocity
+                targetVelocity = leftTargetVel
             };
 
-
-            (driver._SimObject as RobotSimObject)!.MiraLive.MiraAssembly.Data.Joints.MotorDefinitions[driver.MotorRef] = new Mirabuf.Motor.Motor{ SimpleMotor = new Mirabuf.Motor.SimpleMotor{
-                MaxVelocity = leftTargetVel ?? driver.Motor.targetVelocity,
-                StallTorque = leftForce ?? driver.Motor.force,
-                BrakingConstant = 0.9f
+            MiraLive.MiraAssembly.Data.Joints.MotorDefinitions[driver.MotorRef] = new Mirabuf.Motor.Motor{ SimpleMotor = new Mirabuf.Motor.SimpleMotor{
+                MaxVelocity = leftTargetVel,
+                StallTorque = leftForce
             }};
-            (driver._SimObject as RobotSimObject)!.MiraLive.Save();
+            
         }
 
-        foreach (WheelDriver driver in GetLeftRightWheels()!.Value.leftWheels) {
+        foreach (WheelDriver driver in GetLeftRightWheels()!.Value.rightWheels) {
+            Debug.Log($"2: {driver.Motor.force} 3: {driver.Motor.targetVelocity}");
+
             driver.Motor = new JointMotor() {
-                force =  leftForce ?? driver.Motor.force,
+                force =  rightForce,
                 freeSpin = false,
-                targetVelocity = leftTargetVel ?? driver.Motor.targetVelocity
+                targetVelocity = rightTargetVel
             };
 
-
             (driver._SimObject as RobotSimObject)!.MiraLive.MiraAssembly.Data.Joints.MotorDefinitions[driver.MotorRef] = new Mirabuf.Motor.Motor{ SimpleMotor = new Mirabuf.Motor.SimpleMotor{
-                MaxVelocity = leftTargetVel ?? driver.Motor.targetVelocity,
-                StallTorque = leftForce ?? driver.Motor.force,
-                BrakingConstant = 0.9f
+                MaxVelocity = rightTargetVel,
+                StallTorque = rightForce
             }};
-            (driver._SimObject as RobotSimObject)!.MiraLive.Save();
         }
+        MiraLive.Save();
     }
 }

@@ -238,6 +238,7 @@ namespace Synthesis.Import
 									? definition.MotorReference
 									: null
 							);
+							Debug.Log($"force {driver.Motor.force}");
 							SimulationManager.AddDriver(simObject.Name, driver);
 						}
 						
