@@ -20,8 +20,8 @@ public class MatchStateMachine {
 
     #region State Management
 
+    private readonly Dictionary<StateName, MatchState> _matchStates = new Dictionary<StateName, MatchState>();
     private MatchState _currentState;
-    private Dictionary<StateName, MatchState> _matchStates = new Dictionary<StateName, MatchState>();
 
     public void SetState(StateName stateName) {
         Debug.Log($"State set to {stateName}");
@@ -47,6 +47,7 @@ public class MatchStateMachine {
         _matchStates.Add(StateName.RobotPositioning, new RobotPositioning());
         _matchStates.Add(StateName.Auto, new Auto());
         _matchStates.Add(StateName.Teleop, new Teleop());
+        _matchStates.Add(StateName.MatchResults, new MatachResults());
 
         _currentState = _matchStates[StateName.None];
     }
@@ -158,9 +159,15 @@ public class MatchStateMachine {
     public class Auto : MatchState {
         public override void Start() {
             base.Start();
+            
+            // TODO: start auto timer on scoreboard
         }
 
-        public override void Update() { }
+        public override void Update() {
+            // TEMP END CONDITION FOR STATE MACHINE TESTING
+            if (Input.GetKeyDown(KeyCode.RightArrow))
+                MatchStateMachine.Instance.SetState(StateName.Teleop);
+        }
 
         public override void End() {
             base.End();
@@ -172,12 +179,31 @@ public class MatchStateMachine {
     public class Teleop : MatchState {
         public override void Start() {
             base.Start();
+            
+            // TODO: start teleop timer on scoreboard
+        }
+
+        public override void Update() {
+            // TEMP END CONDITION FOR STATE MACHINE TESTING
+            if (Input.GetKeyDown(KeyCode.RightArrow))
+                MatchStateMachine.Instance.SetState(StateName.MatchResults);
+        }
+        public override void End() { }
+
+        public Teleop() : base(StateName.Teleop) { }
+    }
+    
+    public class MatachResults : MatchState {
+        public override void Start() {
+            base.Start();
+
+            DynamicUIManager.CreateModal<MatchResultsModal>();
         }
 
         public override void Update() { }
         public override void End() { }
 
-        public Teleop() : base(StateName.Teleop) { }
+        public MatachResults() : base(StateName.MatchResults) { }
     }
 
     #endregion
@@ -187,6 +213,7 @@ public class MatchStateMachine {
         MatchConfig,
         RobotPositioning,
         Auto,
-        Teleop
+        Teleop,
+        MatchResults
     }
 }

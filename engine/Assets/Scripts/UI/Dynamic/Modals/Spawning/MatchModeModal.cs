@@ -59,7 +59,6 @@ public class MatchModeModal : ModalDynamic
                     MonoBehaviour _mb = GameObject.FindObjectOfType<MonoBehaviour>();
                     if (_mb != null)
                     {
-                        Debug.Log("Found a MonoBehaviour.");
                         _mb.StartCoroutine(LoadMatch());
                     }
                 }
