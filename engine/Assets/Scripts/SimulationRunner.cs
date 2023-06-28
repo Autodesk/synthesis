@@ -176,6 +176,7 @@ namespace Synthesis.Runtime {
             List<string> robotIDs = new List<string>(RobotSimObject.SpawnedRobots.Count);
             RobotSimObject.SpawnedRobots.ForEach(x => robotIDs.Add(x.Name));
             robotIDs.ForEach(x => RobotSimObject.RemoveRobot(x));
+            OrbitCameraMode.FocusPoint = () => Vector3.zero;
 
             if (OnSimKill != null)
                 OnSimKill();
