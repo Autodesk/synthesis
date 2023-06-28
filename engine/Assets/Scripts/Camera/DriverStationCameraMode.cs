@@ -38,6 +38,7 @@ public class DriverStationCameraMode : ICameraMode {
         cam.transform.position = _origin;
 
         var relativePos = _target - cam.transform.position;
+        if (relativePos.magnitude == 0) return;
         var targetRotation = Quaternion.LookRotation(relativePos);
         cam.transform.rotation = Quaternion.Lerp(cam.transform.rotation, targetRotation, Time.deltaTime * 2);
     }
