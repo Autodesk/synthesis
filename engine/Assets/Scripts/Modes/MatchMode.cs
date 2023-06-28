@@ -23,7 +23,6 @@ public class MatchMode : IMode {
     public void Start()
     {
         Array.Fill(SelectedRobots, -1);
-        Debug.Log(SelectedRobots.Length);
 
         _stateMachine = new MatchStateMachine();
         _stateMachine.CurrentState = MatchStateMachine.MatchState.MatchConfig;
@@ -46,27 +45,15 @@ public class MatchMode : IMode {
         var robotFiles = Directory.GetFiles(robotsFolder).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
         
         SelectedRobots.ForEach(x =>
-        {
-            Debug.Log($"Attempting to spawn {x}");
+        {            
             if (x != -1)
             {
-                Debug.Log($"Spawned {x}");
                 RobotSimObject.SpawnRobot(robotFiles[x]);
                 Robots.Add(RobotSimObject.GetCurrentlyPossessedRobot());
-                /*RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.GetComponentsInChildren<Collider>().ForEach(c =>
-                    c.enabled = false);*/
-                /*RobotSimObject.GetCurrentlyPossessedRobot().AllRigidbodies.ForEach(
-                    rb => {
-                        rb.isKinematic = true;
-                        rb.useGravity = false;
-                    });*/
             }
+            else 
+                Robots.Add(null);
         });
-
-        /*RobotSimObject.SpawnedRobots.ForEach(x =>
-        {
-            Robots.Add(x);
-        });*/
     }
     
     public static string ParsePath(string p, char c)
