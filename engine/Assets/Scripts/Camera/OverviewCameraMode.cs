@@ -31,9 +31,6 @@ public class OverviewCameraMode : ICameraMode
         // user can't go under the field or too far above that they can't see it
         cam.transform.position = new Vector3(position.x, Mathf.Clamp(position.y, 0, 100), position.z);
     }
-    public void FixedUpdate(CameraController cam) {
-        
-    }
 
     public void LateUpdate(CameraController cam)
     {

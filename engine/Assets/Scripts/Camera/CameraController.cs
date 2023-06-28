@@ -17,6 +17,7 @@ public class CameraController : MonoBehaviour {
             }
             var previous = _cameraMode;
             _cameraMode = value;
+            _cameraMode.Start(this, previous);
         }
     }
     
@@ -71,11 +72,6 @@ public class CameraController : MonoBehaviour {
 
         CameraMode.Update(this);
     }
-
-    public void FixedUpdate() {
-        CameraMode.FixedUpdate(this);
-    }
-
     public void LateUpdate() {
         CameraMode.LateUpdate(this);
     }

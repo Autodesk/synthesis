@@ -80,10 +80,6 @@ public class OrbitCameraMode : ICameraMode
         float zoomLerpFactor = Mathf.Clamp((cam.ZoomAcceleration * Time.deltaTime) / 0.018f, 0.01f, 1.0f);
         ActualZoom = Mathf.Lerp(ActualZoom, TargetZoom, zoomLerpFactor);
     }
-    
-    public void FixedUpdate(CameraController cam) {
-        
-    }
 
     public void LateUpdate(CameraController cam)
     {

@@ -106,27 +106,18 @@ public class FreeCameraMode : ICameraMode
             
             right = t.right * (InputManager.MappedDigitalInputs[RIGHT_KEY][0].Value -
                                     InputManager.MappedDigitalInputs[LEFT_KEY][0].Value);
+            
+            t.Translate(Time.deltaTime * speed * (forward + right),Space.World);
+
+            // we don't want the user to be able to move the camera under the map or so high they can't see the field
+            t.position = new Vector3(t.position.x, Mathf.Clamp(t.position.y, 0, 100), t.position.z);
+
+            t.localRotation = Quaternion.Euler(ActualPitch, ActualYaw, 0.0f);
         }
-
-        t.Translate(Time.deltaTime * speed * (forward + right),Space.World);
-
-        // we don't want the user to be able to move the camera under the map or so high they can't see the field
-        t.position = new Vector3(t.position.x, Mathf.Clamp(t.position.y, 0, 100), t.position.z);
-
-        t.localRotation = Quaternion.Euler(ActualPitch, ActualYaw, 0.0f);
     }
-
-    public void FixedUpdate(CameraController cam) {
-        
-    }
-
+    
     public void LateUpdate(CameraController cam) {
-
         cam.GroundRenderer.material.SetVector("FOCUS_POINT", cam.transform.position);
-
-        // // don't allow camera movement when a modal is open
-        // if (DynamicUIManager.ActiveModal != null) return;
-        
     }
 
     public void SetActive(bool active) {
@@ -146,6 +137,5 @@ public class FreeCameraMode : ICameraMode
 
     public void End(CameraController cam) {
         SetActive(false);
-        // RobotSimObject.GetCurrentlyPossessedRobot().InputFrozen = _wasFrozen;
     }
 }
