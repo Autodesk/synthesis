@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Synthesis.Runtime;
+using UnityEngine.EventSystems;
 
 
 namespace Synthesis.UI.Dynamic
@@ -37,6 +38,14 @@ namespace Synthesis.UI.Dynamic
             u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 0f); // used to be 15f
             return u;
         };
+
+        private bool MouseOverUI
+        {
+            get
+            {
+                return EventSystem.current.IsPointerOverGameObject();
+            }
+        }
 
         public SpawnLocationPanel() : base(new Vector2(width, height)) { }
         
@@ -187,7 +196,7 @@ namespace Synthesis.UI.Dynamic
             }*/
 
             // Find robot spawn position
-            if (Input.GetMouseButton(0))
+            if (!MouseOverUI && Input.GetMouseButton(0))
             {
                 // Raycast out from camera to see where the mouse is pointing
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
