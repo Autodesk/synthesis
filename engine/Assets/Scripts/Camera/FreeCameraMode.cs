@@ -116,6 +116,10 @@ public class FreeCameraMode : ICameraMode
         t.localRotation = Quaternion.Euler(ActualPitch, ActualYaw, 0.0f);
     }
 
+    public void FixedUpdate(CameraController cam) {
+        
+    }
+
     public void LateUpdate(CameraController cam) {
 
         cam.GroundRenderer.material.SetVector("FOCUS_POINT", cam.transform.position);

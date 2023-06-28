@@ -18,7 +18,7 @@ public class OrbitCameraMode : ICameraMode
     public float ActualPitch { get; private set; } = 0.0f;
     public float ActualYaw { get; private set; } = 0.0f;
     private bool _useOrbit = false;
-
+    
     public void Start<T>(CameraController cam, T? previousCam) where T : ICameraMode {
         if (previousCam != null && previousCam.GetType() == typeof(FreeCameraMode)) {
             FreeCameraMode freeCam = (previousCam as FreeCameraMode)!;
@@ -79,6 +79,10 @@ public class OrbitCameraMode : ICameraMode
         ActualYaw = Mathf.Lerp(ActualYaw, TargetYaw, orbitLerpFactor);
         float zoomLerpFactor = Mathf.Clamp((cam.ZoomAcceleration * Time.deltaTime) / 0.018f, 0.01f, 1.0f);
         ActualZoom = Mathf.Lerp(ActualZoom, TargetZoom, zoomLerpFactor);
+    }
+    
+    public void FixedUpdate(CameraController cam) {
+        
     }
 
     public void LateUpdate(CameraController cam)

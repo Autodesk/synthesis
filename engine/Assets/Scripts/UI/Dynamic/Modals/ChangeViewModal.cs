@@ -1,8 +1,5 @@
-using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
-
 namespace Synthesis.UI.Dynamic
 {
     public class ChangeViewModal : ModalDynamic
@@ -46,8 +43,11 @@ namespace Synthesis.UI.Dynamic
             AcceptButton
                 .AddOnClickedEvent(b =>
                 {
-                    controller.CameraMode = CameraController.CameraModes[_selectedView];
                     DynamicUIManager.CloseActiveModal();
+                    var oldMode = controller.CameraMode;
+                    ICameraMode newMode = CameraController.CameraModes[_selectedView];
+                    controller.CameraMode = newMode;
+                    newMode.Configure(controller, oldMode, newMode.Start);
                 });
         }
 

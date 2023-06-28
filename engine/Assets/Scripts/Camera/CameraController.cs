@@ -1,10 +1,10 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Synthesis.UI.Panels.Variant;
 using Synthesis.PreferenceManager;
 
-public class CameraController : MonoBehaviour
-{
+public class CameraController : MonoBehaviour {
     private ICameraMode _cameraMode;
     public ICameraMode CameraMode
     {
@@ -17,7 +17,6 @@ public class CameraController : MonoBehaviour
             }
             var previous = _cameraMode;
             _cameraMode = value;
-            _cameraMode.Start(this, previous);
         }
     }
     
@@ -28,6 +27,7 @@ public class CameraController : MonoBehaviour
         CameraModes.Add("Orbit", new OrbitCameraMode());
         CameraModes.Add("Freecam", new FreeCameraMode());
         CameraModes.Add("Overview", new OverviewCameraMode());
+        CameraModes.Add("Driver Station", new DriverStationCameraMode());
     }
 
     public static bool isOverGizmo = false;
@@ -70,6 +70,10 @@ public class CameraController : MonoBehaviour
         //     transform.parent = FollowTransform;
 
         CameraMode.Update(this);
+    }
+
+    public void FixedUpdate() {
+        CameraMode.FixedUpdate(this);
     }
 
     public void LateUpdate() {
