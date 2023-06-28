@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
+using SynthesisAPI.Utilities;
+
+using Logger = SynthesisAPI.Utilities.Logger;
 
 public class ChangeDrivetrainModal : ModalDynamic {
 
@@ -13,9 +16,15 @@ public class ChangeDrivetrainModal : ModalDynamic {
     private RobotSimObject.DrivetrainType _selectedType;
 
     public ChangeDrivetrainModal(): base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) { }
-    public override void Create() {
-        Title.SetText("Change Drivetrain");
 
+    public override void Create() {
+
+        if (RobotSimObject.CurrentlyPossessedRobot == string.Empty) {
+            return;
+        }
+
+        Title.SetText("Change Drivetrain");
+        Description.SetText("Select the drivetrain you want to use");
         AcceptButton.AddOnClickedEvent(b => {
             RobotSimObject.GetCurrentlyPossessedRobot().ConfiguredDrivetrainType = _selectedType;
             DynamicUIManager.CloseActiveModal();
@@ -29,6 +38,13 @@ public class ChangeDrivetrainModal : ModalDynamic {
                     (d, i, o) => _selectedType = RobotSimObject.DRIVETRAIN_TYPES[i])
                 .SetValue(_selectedType.Value));
     }
-    public override void Update() { }
+
+    public override void Update() {
+        if (RobotSimObject.CurrentlyPossessedRobot == string.Empty) {
+            Logger.Log("Must spawn a robot first", LogLevel.Info);
+            DynamicUIManager.CloseActiveModal();
+        }
+    }
+
     public override void Delete() { }
 }

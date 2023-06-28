@@ -491,6 +491,10 @@ namespace SynthesisAPI.AssetManager
 
                 if (lazyImport)
                 {
+                    if (sourceStream == null) {
+                        // I have no clue if this is true but apparently so.
+                        throw new Exception("Cannot load a lazy asset without a source stream.");
+                    }
                     LazyAsset lazyAsset = new LazyAsset(newAsset, sourceStream, targetPath);
                     return (Asset?)FileSystem.AddEntry(targetPath, lazyAsset.Load(new byte[0]));
                 }

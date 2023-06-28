@@ -20,8 +20,7 @@ public class RobotSwitchPanel : PanelDynamic {
     private Button _addButton;
     private Button _removeButton;
     
-    public Func<UIComponent, UIComponent> VerticalLayout = (u) =>
-    {
+    public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
         var offset = (-u.Parent!.RectOfChildren(u).yMin);
         u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 15f, rightPadding: 15f); // used to be 15f
         return u;
@@ -59,6 +58,8 @@ public class RobotSwitchPanel : PanelDynamic {
             .AddOnClickedEvent(b => {
                 RobotSimObject.RemoveRobot(RobotSimObject.CurrentlyPossessedRobot);
                 PopulateScrollView();
+                if (RobotSimObject.SpawnedRobots.Count < RobotSimObject.MAX_ROBOTS)
+                    _addButton.ApplyTemplate<Button>(EnableButton);
             });
         
         PopulateScrollView();

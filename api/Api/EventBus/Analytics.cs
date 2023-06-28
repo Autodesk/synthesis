@@ -522,7 +522,7 @@ namespace SynthesisAPI.EventBus
                 StartTimes = new List<KeyValuePair<string, float>>();
             }
 
-            private static Inner? _inst;
+            private static Inner _inst;
             public static Inner InnerInstance => _inst ??= new Inner();
         }
         private static Queue<KeyValuePair<string, string>> LoggedData => Instance.LoggedData;

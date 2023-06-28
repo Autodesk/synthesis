@@ -28,7 +28,9 @@ For support contact frc@autodesk.com</PackageReleaseNotes>
         <NeutralLanguage>en-US</NeutralLanguage>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <Nullable>disable</Nullable>
     </PropertyGroup>
+
 
     <ItemGroup>
 
@@ -65,7 +67,6 @@ For support contact frc@autodesk.com</PackageReleaseNotes>
       <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>..\libs\UnityEngine.dll</HintPath>
       </Reference>
-      <ProjectReference Include="..\Aardvark\Aardvark.csproj" />
     </ItemGroup>
 
     <ItemGroup>
