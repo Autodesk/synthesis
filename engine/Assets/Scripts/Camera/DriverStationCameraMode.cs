@@ -79,28 +79,28 @@ public class DriverStationCameraMode : ICameraMode {
             p = -CameraController.PitchSensitivity * Input.GetAxis("Mouse Y");
             y = CameraController.YawSensitivity * Input.GetAxis("Mouse X");
         }
-
-        // make it so the user can't rotate the camera upside down
-        TargetPitch = Mathf.Clamp(TargetPitch + p, -90, 90);
-        TargetYaw += y;
-        TargetZoom = Mathf.Clamp(TargetZoom + z, cam.ZoomLowerLimit, cam.ZoomUpperLimit);
         
-        float orbitLerpFactor = Mathf.Clamp((cam.OrbitalAcceleration * Time.deltaTime) / 0.018f, 0.01f, 1.0f);
-        ActualPitch = Mathf.Lerp(ActualPitch, TargetPitch, orbitLerpFactor);
-        ActualYaw = Mathf.Lerp(ActualYaw, TargetYaw, orbitLerpFactor);
-        float zoomLerpFactor = Mathf.Clamp((cam.ZoomAcceleration * Time.deltaTime) / 0.018f, 0.01f, 1.0f);
-        ActualZoom = Mathf.Lerp(ActualZoom, TargetZoom, zoomLerpFactor);
-
         var t = cam.transform;
 
-        float speed = 10.0F;
-        
+        float speed = 5.0F;
+
         // transform forwards and backwards when forward and backward inputs are pressed
         // left and right when left and right are pressed
 
         Vector3 forward = Vector3.zero, right = Vector3.zero;
 
         if (isActive) {
+            // make it so the user can't rotate the camera upside down
+            TargetPitch = Mathf.Clamp(TargetPitch + p, -90, 90);
+            TargetYaw += y;
+            TargetZoom = Mathf.Clamp(TargetZoom + z, cam.ZoomLowerLimit, cam.ZoomUpperLimit);
+        
+            float orbitLerpFactor = Mathf.Clamp((cam.OrbitalAcceleration * Time.deltaTime) / 0.018f, 0.01f, 1.0f);
+            ActualPitch = Mathf.Lerp(ActualPitch, TargetPitch, orbitLerpFactor);
+            ActualYaw = Mathf.Lerp(ActualYaw, TargetYaw, orbitLerpFactor);
+            float zoomLerpFactor = Mathf.Clamp((cam.ZoomAcceleration * Time.deltaTime) / 0.018f, 0.01f, 1.0f);
+            ActualZoom = Mathf.Lerp(ActualZoom, TargetZoom, zoomLerpFactor);
+            
             forward = t.forward * (InputManager.MappedDigitalInputs[FORWARD_KEY][0].Value -
                                         InputManager.MappedDigitalInputs[BACK_KEY][0].Value) +
                             t.forward * (TargetZoom - ActualZoom) * CameraController.ZoomSensitivity;
@@ -115,7 +115,7 @@ public class DriverStationCameraMode : ICameraMode {
 
             t.localRotation = Quaternion.Euler(ActualPitch, ActualYaw, 0.0f);
         }
-        
+
         RobotSimObject currentRobot = RobotSimObject.GetCurrentlyPossessedRobot();
         _target = currentRobot is null ? Vector3.zero : currentRobot.GroundedNode.transform.TransformPoint(currentRobot.GroundedBounds.center);
     }
@@ -127,6 +127,8 @@ public class DriverStationCameraMode : ICameraMode {
             if (relativePos.magnitude == 0) return;
             var targetRotation = Quaternion.LookRotation(relativePos);
             cam.transform.rotation = Quaternion.Lerp(cam.transform.rotation, targetRotation, Time.deltaTime * 5);
+            TargetPitch = ActualPitch = cam.transform.rotation.eulerAngles.x;
+            TargetYaw = ActualYaw = cam.transform.rotation.eulerAngles.y;
         }
     }
 
