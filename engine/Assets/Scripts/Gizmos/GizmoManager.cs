@@ -119,9 +119,7 @@ namespace Synthesis.Gizmo {
         public static void ExitGizmo() {
             if (!_currentGizmoConfig.HasValue || _currentTargetTransform == null)
                 return;
-
-            // Debug.Log("Exit Gizmo");
-
+            
             SimulationRunner.RemoveContext(SimulationRunner.GIZMO_SIM_CONTEXT);
             
             _currentGizmoConfig.Value.EndCallback(_currentTargetTransform);

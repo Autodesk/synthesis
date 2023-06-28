@@ -51,7 +51,9 @@ public class MatchStateMachine
         _matchStates.Add(StateName.MatchConfig, new MatchConfig());
         _matchStates.Add(StateName.RobotPositioning, new RobotPositioning());
         _matchStates.Add(StateName.Auto, new Auto());
-        _matchStates.Add(StateName.Teliop, new Teliop());
+        _matchStates.Add(StateName.Teleop
+        , new Teleop
+        ());
 
         _currentState = _matchStates[StateName.None];
     }
@@ -99,9 +101,12 @@ public class MatchStateMachine
             Debug.Log("Robot positioning start");
             MatchMode.SpawnAllRobots();
             PhysicsManager.IsFrozen = true;
-            
-            if (Camera.main != null) 
-                Camera.main.GetComponent<CameraController>().CameraMode = new FreeCameraMode();
+
+            if (Camera.main != null)
+            {
+                Camera.main.GetComponent<CameraController>().CameraMode = CameraController.CameraModes["Freecam"];
+            }
+                
         }
         public void Update() { }
         public void End() { }
@@ -114,7 +119,8 @@ public class MatchStateMachine
         public void End() { }
     }
     
-    public class Teliop : MatchState
+    public class Teleop
+     : MatchState
     {
         public void Start() { }
         public void Update() { }
@@ -129,6 +135,7 @@ public class MatchStateMachine
         MatchConfig,
         RobotPositioning,
         Auto,
-        Teliop
+        Teleop
+        
     }
 }

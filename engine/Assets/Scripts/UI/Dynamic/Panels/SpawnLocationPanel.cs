@@ -17,7 +17,7 @@ namespace Synthesis.UI.Dynamic
 
         private const float rotateRobotSpeed = 450f;
         
-        private const float spawnDistanceFromSurface = 0.05f;
+        private const float spawnDistanceFromSurface = 0.1524f;
         
         private static readonly Color redBoxColor = new Color(1, 0, 0, 0.5f);
         private static readonly Color blueBoxColor = new Color(0, 0, 1, 0.5f);
