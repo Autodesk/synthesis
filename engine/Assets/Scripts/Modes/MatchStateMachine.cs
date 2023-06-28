@@ -30,15 +30,21 @@ public class MatchStateMachine {
                 case MatchState.MatchConfig:
                     DynamicUIManager.CreateModal<MatchModeModal>();
                     ((MatchModeModal)DynamicUIManager.ActiveModal).OnAccepted += () => CurrentState = MatchState.RobotPositioning;
-                    return; 
+                    return;
                 case MatchState.RobotPositioning:
                     MatchMode.SpawnAllRobots();
-                    RobotSimObject.SpawnedRobots.ForEach(x => x.Freeze());
-                    RobotSimObject.GetCurrentlyPossessedRobot().Freeze();
+                    if (RobotSimObject.GetCurrentlyPossessedRobot() != null)
+                    {
+
+                        /*RobotSimObject.SpawnedRobots.ForEach(x => x.Freeze());
+                        RobotSimObject.GetCurrentlyPossessedRobot().Freeze();*/
+                    }
+
                     PhysicsManager.IsFrozen = true;
 
-                    Camera.main.GetComponent<CameraController>().enabled = false;
-                    //Camera.main.GetComponent<CameraController>().CameraMode = CameraController.CameraModes["Freecam"];
+                    //Camera.main.GetComponent<CameraController>().enabled = false;
+                    Debug.Log("Setting camera mode");
+                    Camera.main.GetComponent<CameraController>().CameraMode = new FreeCameraMode();
                     return;
                 case MatchState.Auto: 
                     return;

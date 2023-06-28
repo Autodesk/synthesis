@@ -94,7 +94,7 @@ namespace Synthesis.Gizmo {
             if (_currentGizmoConfig.HasValue)
                 ExitGizmo();
 
-            // Debug.Log("spawn gizmo");
+            Debug.Log("spawn gizmo");
 
             // Check if modal is opened?
 

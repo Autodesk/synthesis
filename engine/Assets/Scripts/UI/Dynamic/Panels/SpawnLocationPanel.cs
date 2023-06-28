@@ -187,7 +187,7 @@ namespace Synthesis.UI.Dynamic
             }*/
 
             // Find robot spawn position
-            if (Input.GetMouseButton(1))
+            if (Input.GetMouseButton(0))
             {
                 // Raycast out from camera to see where the mouse is pointing
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);

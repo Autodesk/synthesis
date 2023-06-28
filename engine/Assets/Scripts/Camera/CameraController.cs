@@ -11,6 +11,7 @@ public class CameraController : MonoBehaviour
         get { return _cameraMode; }
         set
         {
+            Debug.Log(value.GetType());
             if (_cameraMode != null && _cameraMode != value)
             {
                 _cameraMode.End(this);
@@ -69,10 +70,12 @@ public class CameraController : MonoBehaviour
         // if (FollowTransform != null && transform.parent != FollowTransform)
         //     transform.parent = FollowTransform;
 
-        CameraMode.Update(this);
+        if (CameraMode != null)
+            CameraMode.Update(this);
     }
 
     public void LateUpdate() {
-        CameraMode.LateUpdate(this);
+        if (CameraMode != null)
+            CameraMode.LateUpdate(this);
     }
 }

@@ -48,7 +48,7 @@ public class MatchMode : IMode {
         {            
             if (x != -1)
             {
-                RobotSimObject.SpawnRobot(robotFiles[x]);
+                RobotSimObject.SpawnRobot(robotFiles[x], false);
                 Robots.Add(RobotSimObject.GetCurrentlyPossessedRobot());
             }
             else 
