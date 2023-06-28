@@ -173,8 +173,9 @@ namespace Synthesis.Runtime {
         /// </summary>
         public static void SimKill() {
             FieldSimObject.DeleteField();
-            if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-                SimulationManager.RemoveSimObject(RobotSimObject.GetCurrentlyPossessedRobot());
+            List<string> robotIDs = new List<string>(RobotSimObject.SpawnedRobots.Count);
+            RobotSimObject.SpawnedRobots.ForEach(x => robotIDs.Add(x.Name));
+            robotIDs.ForEach(x => RobotSimObject.RemoveRobot(x));
 
             if (OnSimKill != null)
                 OnSimKill();
