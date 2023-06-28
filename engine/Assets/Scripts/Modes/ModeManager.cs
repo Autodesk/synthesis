@@ -1,3 +1,5 @@
+using Synthesis.Runtime;
+using Synthesis.UI.Dynamic;
 public class ModeManager {
     
     private static IMode _currentMode;
@@ -14,16 +16,16 @@ public class ModeManager {
 
     public static void Start()
     {
-        // should this be here? or somewhere else, or not at all?
         if (CurrentMode == null)
             CurrentMode = new PracticeMode();
         CurrentMode.Start();
         // Shooting.Start();
+        SimulationRunner.OnUpdate += Update;
     }
     
     public static void Update()
     {
-        CurrentMode.Update();
+        CurrentMode?.Update();
         // Shooting.Update();
     }
 

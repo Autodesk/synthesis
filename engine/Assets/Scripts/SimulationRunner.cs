@@ -101,7 +101,6 @@ namespace Synthesis.Runtime {
         void Update() {
             InputManager.UpdateInputs(_simulationContext);
             SimulationManager.Update();
-            ModeManager.Update();
 
             // Debug.Log($"WHAT: {Time.realtimeSinceStartup}");
 

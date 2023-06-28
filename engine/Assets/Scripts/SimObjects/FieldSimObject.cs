@@ -131,6 +131,7 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
             RobotSimObject.GetCurrentlyPossessedRobot().ClearGamepieces();
 
+        CurrentField.ScoringZones.Clear();
         CurrentField.Gamepieces.ForEach(x => x.DeleteGamepiece());
         CurrentField.Gamepieces.Clear();
         GameObject.Destroy(CurrentField.FieldObject);
