@@ -12,7 +12,7 @@ public class MatchMode : IMode {
     public static int CurrentFieldIndex = -1;
     public static int[] SelectedRobots = new int[6];
 
-    public static Vector3[] RobotSpawnLocations = new Vector3[6];
+    public static (Vector3 position, Quaternion rotation)[] RobotSpawnLocations = new (Vector3 position, Quaternion rotation)[6];
     
     public static List<RobotSimObject> Robots = new List<RobotSimObject>();
 

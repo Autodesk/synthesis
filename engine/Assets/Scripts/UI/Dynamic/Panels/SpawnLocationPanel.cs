@@ -14,6 +14,8 @@ namespace Synthesis.UI.Dynamic
 
         private const float robotMoveSpeed = 7f;
         private const float robotTiltAmount = 0.32f;
+
+        private const float rotateRobotSpeed = 450f;
         
         private const float spawnDistanceFromSurface = 0.05f;
         
@@ -95,7 +97,8 @@ namespace Synthesis.UI.Dynamic
        }*/
 
         public override void Update() {
-            RaycastSpawnPosition();
+            FindSpawnPosition();
+            RotateRobot();
             MoveRobots();
         }
         
@@ -126,7 +129,9 @@ namespace Synthesis.UI.Dynamic
                 if (simObject != null)
                 {
                     obj.transform.localScale = MatchMode.Robots[i].RobotBounds.size;
-                    _robotOffsets[i] = simObject.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(simObject.GroundedBounds.center);
+                    _robotOffsets[i] =
+                        simObject.RobotNode.transform.localToWorldMatrix.MultiplyPoint(simObject.RobotBounds
+                            .center) + Vector3.down*0.496f;
                 }
 
                 _robotHighlights[i] = obj.transform;
@@ -176,7 +181,7 @@ namespace Synthesis.UI.Dynamic
         /// <summary>
         /// Sets the selected robots spawn position based on where the mouse is pointing
         /// </summary>
-        private void RaycastSpawnPosition()
+        private void FindSpawnPosition()
         {
             if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButton(0))
             {
@@ -191,12 +196,23 @@ namespace Synthesis.UI.Dynamic
                     
                     // Box cast down towards where the mouse is pointing to find the lowest suitable spawn position for the robot
                     if (UnityEngine.Physics.BoxCast(hit.point + Vector3.up * 20f, boxHalfSize, 
-                            Vector3.down, out var boxHit, Quaternion.identity, 30f, fieldLayerMask))
+                            Vector3.down, out var boxHit,
+                            MatchMode.RobotSpawnLocations[_selectedButton].rotation, 30f, fieldLayerMask))
                     {
-                        MatchMode.RobotSpawnLocations[_selectedButton] = new Vector3(hit.point.x,
+                        MatchMode.RobotSpawnLocations[_selectedButton].position = new Vector3(hit.point.x,
                             boxHit.point.y + boxHalfSize.y + spawnDistanceFromSurface, hit.point.z);
                     }
                 }
+            }
+        }
+
+        private void RotateRobot()
+        {
+            if (Mathf.Abs(Input.mouseScrollDelta.y) > 0.001f)
+            {
+                //var rotation = MatchMode.RobotSpawnLocations[_selectedButton].rotation;
+                MatchMode.RobotSpawnLocations[_selectedButton].rotation.eulerAngles += Vector3.up 
+                    * (Input.mouseScrollDelta.y * rotateRobotSpeed * Time.deltaTime);
             }
         }
 
@@ -214,17 +230,19 @@ namespace Synthesis.UI.Dynamic
                 var box = _robotHighlights[i];
 
                 Vector3 prevPos = box.position;
-                Vector3 target = MatchMode.RobotSpawnLocations[i];
+                Vector3 target = MatchMode.RobotSpawnLocations[i].position;
                 box.position = Vector3.Lerp(prevPos, target, robotMoveSpeed * Time.deltaTime);
 
                 Vector3 robotTilt = (target - prevPos) * (45f * robotTiltAmount);
-                box.rotation = Quaternion.Euler(robotTilt.z, 0, -robotTilt.x);
+                box.rotation = Quaternion.Euler(robotTilt.z, MatchMode.RobotSpawnLocations[i].rotation.eulerAngles.y, -robotTilt.x);
 
-                if (_renderBoxes)
-                {
-                    robot.position = box.position - _robotOffsets[i];
-                    robot.rotation = box.rotation;
-                }
+                RobotSimObject simObject = MatchMode.Robots[i];
+                
+                robot.rotation = Quaternion.identity;
+                robot.position = Vector3.zero;
+                
+                robot.rotation = box.rotation * Quaternion.Inverse(simObject.GroundedNode.transform.rotation);
+                robot.position = box.position - simObject.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(simObject.GroundedBounds.center);
             }
         }
     }
