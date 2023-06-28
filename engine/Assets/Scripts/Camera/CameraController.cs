@@ -11,7 +11,6 @@ public class CameraController : MonoBehaviour
         get { return _cameraMode; }
         set
         {
-            Debug.Log(value.GetType());
             if (_cameraMode != null && _cameraMode != value)
             {
                 _cameraMode.End(this);
