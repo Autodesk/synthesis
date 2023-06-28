@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Synthesis.Gizmo;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class ZoneConfigPanel : PanelDynamic {
@@ -25,6 +26,7 @@ public class ZoneConfigPanel : PanelDynamic {
     private Vector3 _initialPosition;
     private Quaternion _initialRotation;
     private ScoringZone _zone;
+    private string _initialParent;
 
     private bool _isNewZone = true;
     
@@ -52,7 +54,12 @@ public class ZoneConfigPanel : PanelDynamic {
             _isNewZone = false;
             _initialData.Name = zone.Name;
             _initialData.Alliance = zone.Alliance;
-            _initialData.Parent = zone.GameObject.transform.parent;
+            var parent = zone.GameObject.transform.parent;
+            if (parent is not null) {
+                
+                _initialParent = parent.name;
+                _initialData.Parent = parent;
+            }
             _initialData.DestroyGamepiece = zone.DestroyObject;
             _initialData.Points = zone.Points;
             var scale = zone.GameObject.transform.localScale;
@@ -89,6 +96,10 @@ public class ZoneConfigPanel : PanelDynamic {
                 CopyDataToZone(_initialData, _zone);
                 _zone.GameObject.transform.position = _initialPosition;
                 _zone.GameObject.transform.rotation = _initialRotation;
+                if (_initialParent is null || _initialParent == "")
+                    _zone.GameObject.transform.parent = null;
+                else
+                    _zone.GameObject.transform.parent = GameObject.Find(_initialParent).transform;
             }
             DynamicUIManager.ClosePanel<ZoneConfigPanel>();
         });
@@ -106,7 +117,7 @@ public class ZoneConfigPanel : PanelDynamic {
             .ApplyTemplate(VerticalLayout);
 
         _zoneParentButton = MainContent.CreateLabeledButton()
-            .StepIntoLabel(l => l.SetText(_initialData.Parent != null ? _initialData.Parent.name : "Parent Object"))
+            .StepIntoLabel(l => l.SetText(_initialParent is not null && _initialParent != "" ? _initialParent : "Parent Object"))
             .StepIntoButton(b => {
                 b.StepIntoLabel(l => l.SetText("Click to select...")).AddOnClickedEvent(SelectParentButton);
             }).ApplyTemplate(VerticalLayout);
@@ -218,10 +229,11 @@ public class ZoneConfigPanel : PanelDynamic {
     public void SelectParentButton(Button b) {
         if (!_selectingNode) {
             // I don't like this; do we just want all field rigidbodies to detect collisions?
-            FieldSimObject.CurrentField.FieldObject.GetComponentsInChildren<Rigidbody>().ForEach(x => {
-                _initialFieldCollisions.Add(x.GetHashCode(), x.detectCollisions);
-                x.detectCollisions = true;
-            });
+            if (_initialFieldCollisions.Count == 0)
+                FieldSimObject.CurrentField.FieldObject.GetComponentsInChildren<Rigidbody>().ForEach(x => {
+                    _initialFieldCollisions.Add(x.GetHashCode(), x.detectCollisions);
+                    x.detectCollisions = true;
+                });
             _selectingNode = true;
         } else {
             FieldSimObject.CurrentField.FieldObject.GetComponentsInChildren<Rigidbody>().ForEach(x => x.detectCollisions = _initialFieldCollisions[x.GetHashCode()]);
@@ -231,7 +243,7 @@ public class ZoneConfigPanel : PanelDynamic {
         SetSelectUIState(_selectingNode);
     }
     
-    public void SetSelectUIState(bool isUserSelecting) {
+    private void SetSelectUIState(bool isUserSelecting) {
         if (isUserSelecting) {
             _zoneParentButton.StepIntoLabel(l => l.SetText("Selecting..."));
             _zoneParentButton.StepIntoButton(
@@ -239,7 +251,8 @@ public class ZoneConfigPanel : PanelDynamic {
                     .StepIntoLabel(l => l.SetText("..."))
             );
         } else {
-            _zoneParentButton.StepIntoLabel(l => l.SetText(_selectedNode.name));
+            if (_selectedNode is null) _data.Parent = null;
+            _zoneParentButton.StepIntoLabel(l => l.SetText(_selectedNode is not null ? _selectedNode.name : "Parent Object"));
             _zoneParentButton.StepIntoButton(
                 b => b.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_ORANGE))
                     .StepIntoLabel(l => l.SetText("Select"))
@@ -254,17 +267,17 @@ public class ZoneConfigPanel : PanelDynamic {
             bool hit = Physics.Raycast(ray, out hitInfo);
 
             if (hit && hitInfo.rigidbody != null && hitInfo.rigidbody.transform.parent == FieldSimObject.CurrentField.FieldObject.transform && !hitInfo.rigidbody.transform.CompareTag("field")) {
-                if (_hoveringNode != null && (_selectedNode == null || !_selectedNode.name.Equals(_hoveringNode.name))) {
+                if (_hoveringNode is not null && (_selectedNode is null || !_selectedNode.name.Equals(_hoveringNode.name))) {
                     _hoveringNode.enabled = false;
                 }
                 _hoveringNode = hitInfo.rigidbody.GetComponent<HighlightComponent>();
-                if (_selectedNode == null || hitInfo.rigidbody.name != _selectedNode.name) {
+                if (_selectedNode is null || hitInfo.rigidbody.name != _selectedNode.name) {
                     _hoveringNode.enabled = true;
                     _hoveringNode.Color = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_HOVER);
                 }
 
                 if (Input.GetKeyDown(KeyCode.Mouse0)) {
-                    if (_selectedNode != null) {
+                    if (_selectedNode is not null) {
                         _selectedNode.enabled = false;
                     }
 
@@ -277,20 +290,24 @@ public class ZoneConfigPanel : PanelDynamic {
                     _selectingNode = false;
                     SetSelectUIState(false);
                 }
-            } else {
-                if (_hoveringNode != null && (_selectedNode == null || !_selectedNode.name.Equals(_hoveringNode.name))) {
-                    _hoveringNode.enabled = false;
-                    _hoveringNode = null;
+            } else if (_hoveringNode is not null && (_selectedNode is null || !_selectedNode.name.Equals(_hoveringNode.name))) {
+                _hoveringNode.enabled = false;
+                _hoveringNode = null;
+            } else if (hit && hitInfo.rigidbody is null) {
+                if (Input.GetKeyDown(KeyCode.Mouse0)) {
+                    _data.Parent = null;
+                    _selectingNode = false;
+                    SetSelectUIState(false);
                 }
             }
         }
     }
 
     public override void Delete() {
-        if (_hoveringNode != null) {
+        if (_hoveringNode is not null) {
             _hoveringNode.enabled = false;
         }
-        if (_selectedNode != null) {
+        if (_selectedNode is not null) {
             _selectedNode.enabled = false;
         }
         GizmoManager.ExitGizmo();
