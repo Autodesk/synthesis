@@ -402,10 +402,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                     leftWheels.Add(x.Key);
             });
 
-            leftWheels.ForEach(x =>
-                Debug.Log($"{x.Motor.force}")
-            );
-
             // Spin all of the wheels straight
             wheels.ForEach(x => {
                 var def = MiraLive.MiraAssembly.Data.Joints.JointDefinitions[x.JointInstance.JointReference];
@@ -769,7 +765,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     public void DrivetrainConfig(float leftTargetVel, float rightTargetVel, float leftForce, float rightForce) {
         foreach (WheelDriver driver in GetLeftRightWheels()!.Value.leftWheels) {
-            Debug.Log($"0: {driver.Motor.force} 1: {driver.Motor.targetVelocity}");
 
             driver.Motor = new JointMotor() {
                 force =  leftForce,
@@ -785,7 +780,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         }
 
         foreach (WheelDriver driver in GetLeftRightWheels()!.Value.rightWheels) {
-            Debug.Log($"2: {driver.Motor.force} 3: {driver.Motor.targetVelocity}");
 
             driver.Motor = new JointMotor() {
                 force =  rightForce,

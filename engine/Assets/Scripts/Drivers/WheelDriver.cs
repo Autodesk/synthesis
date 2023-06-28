@@ -11,6 +11,7 @@ using UnityEngine;
 
 namespace Synthesis {
     public class WheelDriver : Driver {
+        private const float MIRABUF_TO_UNITY_FORCE = 40f;
 
         private CustomWheel _customWheel;
 
@@ -181,7 +182,7 @@ namespace Synthesis {
                 Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(0)
             };
 
-            Debug.Log($"Speed: {Motor.targetVelocity}\nForce: {Motor.force}");
+            // Debug.Log($"Speed: {Motor.targetVelocity}\nForce: {Motor.force}");
         }
 
         void EnableMotor() {
@@ -229,10 +230,10 @@ namespace Synthesis {
                 ? State.CurrentSignals[_inputs[0]].Value.NumberValue
                 : 0.0f);
 
-            _targetRotationalSpeed = val * Mathf.Deg2Rad * _motor.targetVelocity;
+            _targetRotationalSpeed = val * _motor.targetVelocity;
 
             var delta = _targetRotationalSpeed - _customWheel.RotationSpeed;
-            var possibleDelta = (_motor.force * Time.deltaTime) / _customWheel.Inertia;
+            var possibleDelta = (_motor.force * MIRABUF_TO_UNITY_FORCE * Time.deltaTime) / _customWheel.Inertia;
             if (Mathf.Abs(delta) > possibleDelta)
                 delta = possibleDelta * Mathf.Sign(delta);
 
