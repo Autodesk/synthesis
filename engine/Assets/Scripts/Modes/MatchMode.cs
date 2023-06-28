@@ -23,14 +23,14 @@ public class MatchMode : IMode {
     public void Start()
     {
         Array.Fill(SelectedRobots, -1);
+        Array.Fill(RobotSpawnLocations, (Vector3.zero, Quaternion.identity));
 
         _stateMachine = MatchStateMachine.Instance;
         _stateMachine.SetState(MatchStateMachine.StateName.MatchConfig);
     }
 
     public void Update() {
-        /*Debug.Log(_stateMachine != null);
-        _stateMachine.Update();*/
+        _stateMachine.Update();
     }
     public void End() {
     }

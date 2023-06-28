@@ -234,7 +234,14 @@ namespace Synthesis.UI.Dynamic
                 box.position = Vector3.Lerp(prevPos, target, robotMoveSpeed * Time.deltaTime);
 
                 Vector3 robotTilt = (target - prevPos) * (45f * robotTiltAmount);
-                box.rotation = Quaternion.Euler(robotTilt.z, MatchMode.RobotSpawnLocations[i].rotation.eulerAngles.y, -robotTilt.x);
+                //box.rotation = Quaternion.Euler(robotTilt.z, MatchMode.RobotSpawnLocations[i].rotation.eulerAngles.y, -robotTilt.x);
+                
+                //Quaternion rotation 
+
+                Quaternion robotYaw = MatchMode.RobotSpawnLocations[i].rotation;
+                
+                box.rotation = Quaternion.Euler(robotTilt.z, 0, -robotTilt.x) 
+                               * (MatchMode.RobotSpawnLocations[i].rotation);
 
                 RobotSimObject simObject = MatchMode.Robots[i];
                 
