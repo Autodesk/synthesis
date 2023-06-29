@@ -15,6 +15,7 @@ public record ScoringZoneData()
     public Transform Parent { get; set; } = null;
     public int Points { get; set; } = 0;
     public bool DestroyGamepiece { get; set; } = false;
+    public bool PersistentPoints { get; set; } = true;
     public float XScale { get; set; } = 1.0f;
     public float YScale { get; set; } = 1.0f;
     public float ZScale { get; set; } = 1.0f;

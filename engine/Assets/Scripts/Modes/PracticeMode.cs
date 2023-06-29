@@ -10,6 +10,7 @@ using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Utilities;
 using UnityEngine;
+using UnityEngine.XR;
 using Logger = SynthesisAPI.Utilities.Logger;
 public class PracticeMode : IMode
 {
@@ -90,20 +91,26 @@ public class PracticeMode : IMode
             }
         });
         
-        EventBus.NewTypeListener<OnScoreEvent>(
-            e =>
-            {
-                ScoringZone zone = ((OnScoreEvent)e).zone;
-                switch (zone.Alliance)
-                {
-                    case Alliance.Blue:
-                        Scoring.blueScore += zone.Points;
-                        break;
-                    case Alliance.Red:
-                        Scoring.redScore += zone.Points;
-                        break;
-                }
-            });
+        EventBus.NewTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
+    }
+
+    private void HandleScoreEvent(IEvent e) {
+        if (e.GetType() != typeof(OnScoreUpdateEvent)) return;
+        OnScoreUpdateEvent scoreUpdateEvent = e as OnScoreUpdateEvent;
+        if (scoreUpdateEvent == null) return;
+        
+        ScoringZone zone = scoreUpdateEvent.Zone;
+        int points = zone.Points * (scoreUpdateEvent.IncreaseScore ? 1 : -1);
+                
+        switch (zone.Alliance)
+        {
+            case Alliance.Blue:
+                Scoring.blueScore += points;
+                break;
+            case Alliance.Red:
+                Scoring.redScore += points;
+                break;
+        }
     }
     
     public static void SetInitialState(GameObject robot)

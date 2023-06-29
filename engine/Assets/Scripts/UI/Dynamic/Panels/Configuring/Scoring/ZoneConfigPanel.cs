@@ -17,6 +17,7 @@ public class ZoneConfigPanel : PanelDynamic {
     private LabeledButton _zoneParentButton;
     private NumberInputField _pointsInputField;
     private Toggle _deleteGamepieceToggle;
+    private Toggle _persistentPointsToggle;
     private Slider _xScaleSlider;
     private Slider _yScaleSlider;
     private Slider _zScaleSlider;
@@ -27,6 +28,9 @@ public class ZoneConfigPanel : PanelDynamic {
     private Quaternion _initialRotation;
     private ScoringZone _zone;
     private string _initialParent;
+
+    private const float MIN_XYZ_SCALE = 0.025f;
+    private const float MAX_XYZ_SCALE = 10f;
 
     private bool _isNewZone = true;
     
@@ -60,7 +64,8 @@ public class ZoneConfigPanel : PanelDynamic {
                 _initialParent = parent.name;
                 _initialData.Parent = parent;
             }
-            _initialData.DestroyGamepiece = zone.DestroyObject;
+            _initialData.DestroyGamepiece = zone.DestroyGamepiece;
+            _initialData.PersistentPoints = zone.PersistentPoints;
             _initialData.Points = zone.Points;
             var scale = zone.GameObject.transform.localScale;
             _initialData.XScale = scale.x;
@@ -105,7 +110,7 @@ public class ZoneConfigPanel : PanelDynamic {
         });
 
         _zoneNameInput = MainContent.CreateInputField().StepIntoLabel(l => l.SetText("Name"))
-            .StepIntoHint(h => h.SetText("Zone Name"))
+            .StepIntoHint(h => h.SetText(_initialData.Name is not null ? _initialData.Name : "Zone Name"))
             .ApplyTemplate(VerticalLayout);
         _zoneAllianceButton = MainContent.CreateButton().StepIntoLabel(l => l.SetText("Blue Alliance")).AddOnClickedEvent(
                 b => {
@@ -126,29 +131,36 @@ public class ZoneConfigPanel : PanelDynamic {
             .StepIntoLabel(l => l.SetText("Points"))
             .StepIntoHint(l => l.SetText("Points"))
             .ApplyTemplate(VerticalLayout)
+            .SetValue(_initialData.Points)
             .AddOnValueChangedEvent((f, n) => _data.Points = n);
 
-        _deleteGamepieceToggle = MainContent.CreateToggle(false, "Destroy Gamepiece")
+        _deleteGamepieceToggle = MainContent.CreateToggle(_initialData.DestroyGamepiece, "Destroy Gamepiece")
             .AddOnStateChangedEvent((t, v) => {
                 _data.DestroyGamepiece = !_data.DestroyGamepiece;
                 t.State = _data.DestroyGamepiece; // just in case
             }).ApplyTemplate(VerticalLayout);
 
-        _xScaleSlider = MainContent.CreateSlider(label: "X Scale", minValue: 0.1f, maxValue: 10f, currentValue: 1)
+        _persistentPointsToggle = MainContent.CreateToggle(_initialData.PersistentPoints, "Persistent Points")
+            .AddOnStateChangedEvent((t, v) => {
+                _data.PersistentPoints = !_data.PersistentPoints;
+                t.State = _data.DestroyGamepiece;
+            }).ApplyTemplate(VerticalLayout);
+
+        _xScaleSlider = MainContent.CreateSlider(label: "X Scale", minValue: MIN_XYZ_SCALE, maxValue: MAX_XYZ_SCALE, currentValue: _initialData.XScale)
             .ApplyTemplate(VerticalLayout).AddOnValueChangedEvent(
                 (s, v) => {
                     _data.XScale = v;
                     DataUpdated();
                 });
 
-        _yScaleSlider = MainContent.CreateSlider(label: "Y Scale", minValue: 0.1f, maxValue: 10f, currentValue: 1)
+        _yScaleSlider = MainContent.CreateSlider(label: "Y Scale", minValue: MIN_XYZ_SCALE, maxValue: MAX_XYZ_SCALE, currentValue: _initialData.YScale)
             .ApplyTemplate(VerticalLayout).AddOnValueChangedEvent(
                 (s, v) => {
                     _data.YScale = v;
                     DataUpdated();
                 });
 
-        _zScaleSlider = MainContent.CreateSlider(label: "Z Scale", minValue: 0.1f, maxValue: 10f, currentValue: 1)
+        _zScaleSlider = MainContent.CreateSlider(label: "Z Scale", minValue: MIN_XYZ_SCALE, maxValue: MAX_XYZ_SCALE, currentValue: _initialData.ZScale)
             .ApplyTemplate(VerticalLayout).AddOnValueChangedEvent(
                 (s, v) => {
                     _data.ZScale = v;
@@ -158,7 +170,7 @@ public class ZoneConfigPanel : PanelDynamic {
         GameObject obj;
         if (_zone is null) {
             obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            _zone = new ScoringZone(obj, "temp scoring zone", Alliance.Blue, 0, false);
+            _zone = new ScoringZone(obj, "temp scoring zone", Alliance.Blue, 0, false, true);
         } else {
             obj = _zone.GameObject;
             UseZone(_zone);
@@ -182,7 +194,8 @@ public class ZoneConfigPanel : PanelDynamic {
         zone.Alliance = data.Alliance;
         zone.Points = data.Points;
         zone.GameObject.transform.localScale = new Vector3(data.XScale, data.YScale, data.ZScale);
-        zone.DestroyObject = data.DestroyGamepiece;
+        zone.DestroyGamepiece = data.DestroyGamepiece;
+        zone.PersistentPoints = data.PersistentPoints;
     }
 
     private void ConfigureAllianceButton() {
@@ -204,8 +217,8 @@ public class ZoneConfigPanel : PanelDynamic {
         _data.Points = zone.Points;
         _pointsInputField.SetValue(_zone.Points);
         
-        _data.DestroyGamepiece = zone.DestroyObject;
-        _deleteGamepieceToggle.SetState(_zone.DestroyObject, notify: false);
+        _data.DestroyGamepiece = zone.DestroyGamepiece;
+        _deleteGamepieceToggle.SetState(_zone.DestroyGamepiece, notify: false);
         
         var localScale = zone.GameObject.transform.localScale;
         _data.XScale = localScale.x;
