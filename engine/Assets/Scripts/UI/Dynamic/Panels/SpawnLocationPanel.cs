@@ -1,27 +1,32 @@
 using System;
 using UnityEngine;
 using Synthesis.Runtime;
+using SynthesisAPI.InputManager;
+using SynthesisAPI.InputManager.Inputs;
 using UnityEngine.EventSystems;
+using Input = UnityEngine.Input;
 
 
 namespace Synthesis.UI.Dynamic
 {
     public class SpawnLocationPanel : PanelDynamic
     {
+        private const string SNAP_MODE_KEY = "ROBOT_PLACEMENT_SNAPPING";
+        
         private const float WIDTH = 400f;
         private const float HEIGHT = 150f;
         private const float VERTICAL_PADDING = 15f;
 
-        private const float robotMoveSpeed = 7f;
-        private const float robotTiltAmount = 0.32f;
-        private const float maxTiltDegrees = 10f;
+        private const float ROBOT_MOVE_SPEED = 7f;
+        private const float ROBOT_TILT_AMOUNT = 0.32f;
+        private const float MAX_TILT_DEGREES = 10f;
 
-        private const float movementSnappingMeters = 0.5f;
-        private const float rotationSnappingDegrees = 22.5f;
+        private const float MOVEMENT_SNAPPING_METERS = 0.5f;
+        private const float ROTATION_SNAPPING_DEGREES = 22.5f;
 
-        private const float rotateRobotSpeed = 17;
+        private const float ROTATE_ROBOT_SPEED = 17;
         
-        private const float spawnDistanceFromSurface = 0.1524f;
+        private const float SPAWN_HEIGHT_FROM_GROUND = 0.1524f;
         
         private static readonly Color redBoxColor = new Color(1, 0, 0, 0.5f);
         private static readonly Color blueBoxColor = new Color(0, 0, 1, 0.5f);
@@ -57,6 +62,9 @@ namespace Synthesis.UI.Dynamic
         
         public override bool Create()
         {
+            if (!InputManager.MappedDigitalInputs.ContainsKey(SNAP_MODE_KEY))
+                    InputManager.AssignDigitalInput(SNAP_MODE_KEY, (Digital)new Digital("LeftShift").WithModifier((int) ModKey.LeftShift));
+                
             Title.SetText("Set Spawn Locations").SetFontSize(25f);
             PanelImage.RootGameObject.SetActive(false);
 
@@ -81,14 +89,21 @@ namespace Synthesis.UI.Dynamic
             SelectButton(0);
             return true;
         }
-        
-        public override void Update() {
-            MatchMode.RoundSpawnLocation[_selectedButton] = Input.GetKey(KeyCode.LeftShift);
 
-            if (Input.GetKeyUp(KeyCode.LeftShift))
+        private DigitalState prevInput = DigitalState.None;
+        public override void Update()
+        {
+            var currentInput = InputManager.MappedDigitalInputs[SNAP_MODE_KEY][0].State;
+            MatchMode.RoundSpawnLocation[_selectedButton] = currentInput == DigitalState.Held;
+
+            // True the frame the input is pressed or released
+            if (prevInput != currentInput)
             {
-                MatchMode.RawSpawnLocations[_selectedButton] = RoundSpawnLocation(MatchMode.RawSpawnLocations[_selectedButton]);
+                MatchMode.RawSpawnLocations[_selectedButton] =
+                    RoundSpawnLocation(MatchMode.RawSpawnLocations[_selectedButton]);
             }
+
+            prevInput = currentInput;
             
             FindSpawnPosition();
             RotateRobot();
@@ -195,7 +210,7 @@ namespace Synthesis.UI.Dynamic
                             MatchMode.GetSpawnLocation(_selectedButton).rotation, 30f, fieldLayerMask))
                     {
                         MatchMode.RawSpawnLocations[_selectedButton].position = new Vector3(hit.point.x,
-                            boxHit.point.y + boxHalfSize.y + spawnDistanceFromSurface, hit.point.z);
+                            boxHit.point.y + boxHalfSize.y + SPAWN_HEIGHT_FROM_GROUND, hit.point.z);
                     }
                 }
             }
@@ -213,17 +228,17 @@ namespace Synthesis.UI.Dynamic
                 return;
             
             MatchMode.RawSpawnLocations[_selectedButton].rotation.eulerAngles += 
-                    Vector3.up * (Mathf.Sign(scrollSpeed) * rotateRobotSpeed);
+                    Vector3.up * (Mathf.Sign(scrollSpeed) * ROTATE_ROBOT_SPEED);
         }
 
         public static (Vector3 position, Quaternion rotation) RoundSpawnLocation((Vector3 position, Quaternion rotation) spawnLocation)
         {
             return (
-                new Vector3( Mathf.Round(spawnLocation.position.x/movementSnappingMeters)*movementSnappingMeters, 
+                new Vector3( Mathf.Round(spawnLocation.position.x/MOVEMENT_SNAPPING_METERS)*MOVEMENT_SNAPPING_METERS, 
                             spawnLocation.position.y, 
-                            Mathf.Round(spawnLocation.position.z/movementSnappingMeters)*movementSnappingMeters),
-                Quaternion.Euler(0, Mathf.Round(spawnLocation.rotation.eulerAngles.y/rotationSnappingDegrees)
-                                    * rotationSnappingDegrees, 0));
+                            Mathf.Round(spawnLocation.position.z/MOVEMENT_SNAPPING_METERS)*MOVEMENT_SNAPPING_METERS),
+                Quaternion.Euler(0, Mathf.Round(spawnLocation.rotation.eulerAngles.y/ROTATION_SNAPPING_DEGREES)
+                                    * ROTATION_SNAPPING_DEGREES, 0));
         }
 
         /// <summary>
@@ -241,15 +256,15 @@ namespace Synthesis.UI.Dynamic
 
                 Vector3 prevPos = box.position;
                 Vector3 target = MatchMode.GetSpawnLocation(i).position;
-                box.position = Vector3.Lerp(prevPos, target, robotMoveSpeed * Time.deltaTime);
+                box.position = Vector3.Lerp(prevPos, target, ROBOT_MOVE_SPEED * Time.deltaTime);
 
-                Vector3 robotTilt = (target - prevPos) * (45f * robotTiltAmount);
+                Vector3 robotTilt = (target - prevPos) * (45f * ROBOT_TILT_AMOUNT);
 
                 Quaternion robotYaw = MatchMode.GetSpawnLocation(i).rotation;
                 
                 box.rotation = Quaternion.Euler(
-                    Mathf.Clamp(robotTilt.z, -maxTiltDegrees, maxTiltDegrees), 0,
-                    Mathf.Clamp(-robotTilt.x, -maxTiltDegrees, maxTiltDegrees)) * robotYaw;
+                    Mathf.Clamp(robotTilt.z, -MAX_TILT_DEGREES, MAX_TILT_DEGREES), 0,
+                    Mathf.Clamp(-robotTilt.x, -MAX_TILT_DEGREES, MAX_TILT_DEGREES)) * robotYaw;
 
                 RobotSimObject simObject = MatchMode.Robots[i];
                 
