@@ -87,7 +87,8 @@ public class PracticeMode : IMode
             }
             else
             {
-                DynamicUIManager.CreatePanel<ScoringZonesPanel>();
+                if (!DynamicUIManager.PanelExists<ScoringZonesPanel>())
+                    DynamicUIManager.CreatePanel<ScoringZonesPanel>();
             }
         });
         

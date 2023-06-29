@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Synthesis.Gizmo;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
+using SynthesisAPI.EventBus;
 using UnityEngine;
 public class ZoneConfigPanel : PanelDynamic {
     private const float MODAL_WIDTH = 500f;
@@ -31,6 +32,8 @@ public class ZoneConfigPanel : PanelDynamic {
     private const float MAX_XYZ_SCALE = 10f;
 
     private bool _isNewZone = true;
+
+    private bool _pressedButtonToClose = false;
     
     private bool _selectingNode;
 
@@ -73,12 +76,23 @@ public class ZoneConfigPanel : PanelDynamic {
             _initialRotation = zone.GameObject.transform.rotation;
             _data = _initialData;
         }
+        
+        // so that entering another panel doesn't cause the zone to be created
+        // maybe not the best way to handle this
+        // EventBus.NewTypeListener<DynamicUIManager.PanelCreatedEvent>(e => {
+        //     DynamicUIManager.PanelCreatedEvent panelCreatedEvent = (DynamicUIManager.PanelCreatedEvent) e;
+        //     if (panelCreatedEvent.Panel != this && panelCreatedEvent.Panel.GetType() != typeof(ScoreboardPanel)) {
+        //         DoCancel();
+        //         DynamicUIManager.ClosePanel<ZoneConfigPanel>();
+        //     }
+        // });
     }
 
     public override bool Create() {
         Title.SetText("Scoring Zone Config");
 
         AcceptButton.AddOnClickedEvent(b => {
+            _pressedButtonToClose = true;
             // call one last time to update data
             // don't want to update data and call callback on every character typed for name
             CopyDataToZone(_data, _zone);
@@ -88,22 +102,18 @@ public class ZoneConfigPanel : PanelDynamic {
             if (_isNewZone)
                 FieldSimObject.CurrentField.ScoringZones.Add(_zone);
             
-            _callback.Invoke(_zone, _isNewZone);
+            if (!DynamicUIManager.PanelExists<ScoringZonesPanel>())
+                DynamicUIManager.CreatePanel<ScoringZonesPanel>();
+
+            if (DynamicUIManager.PanelExists<ScoringZonesPanel>())
+                _callback.Invoke(_zone, _isNewZone);
+            
             DynamicUIManager.ClosePanel<ZoneConfigPanel>();
         });
 
         CancelButton.AddOnClickedEvent(b => {
-            if (_isNewZone)
-                GameObject.Destroy(_zone.GameObject);
-            else {
-                CopyDataToZone(_initialData, _zone);
-                _zone.GameObject.transform.position = _initialPosition;
-                _zone.GameObject.transform.rotation = _initialRotation;
-                if (_initialParent is null || _initialParent == "")
-                    _zone.GameObject.transform.parent = null;
-                else
-                    _zone.GameObject.transform.parent = GameObject.Find(_initialParent).transform;
-            }
+            _pressedButtonToClose = true;
+            DoCancel();
             DynamicUIManager.ClosePanel<ZoneConfigPanel>();
         });
 
@@ -141,7 +151,7 @@ public class ZoneConfigPanel : PanelDynamic {
         _persistentPointsToggle = MainContent.CreateToggle(_initialData.PersistentPoints, "Persistent Points")
             .AddOnStateChangedEvent((t, v) => {
                 _data.PersistentPoints = !_data.PersistentPoints;
-                t.State = _data.DestroyGamepiece;
+                t.State = _data.PersistentPoints;
             }).ApplyTemplate(VerticalLayout);
 
         _xScaleSlider = MainContent.CreateSlider(label: "X Scale", minValue: MIN_XYZ_SCALE, maxValue: MAX_XYZ_SCALE, currentValue: _initialData.XScale)
@@ -182,6 +192,20 @@ public class ZoneConfigPanel : PanelDynamic {
             t => { });
 
         return true;
+    }
+
+    private void DoCancel() {
+        if (_isNewZone)
+            GameObject.Destroy(_zone.GameObject);
+        else {
+            CopyDataToZone(_initialData, _zone);
+            _zone.GameObject.transform.position = _initialPosition;
+            _zone.GameObject.transform.rotation = _initialRotation;
+            if (_initialParent is null || _initialParent == "")
+                _zone.GameObject.transform.parent = null;
+            else
+                _zone.GameObject.transform.parent = GameObject.Find(_initialParent).transform;
+        }
     }
 
     private void CopyDataToZone(ScoringZoneData data, ScoringZone zone) {
@@ -329,6 +353,7 @@ public class ZoneConfigPanel : PanelDynamic {
         if (_selectedNode is not null) {
             _selectedNode.enabled = false;
         }
+        if (!_pressedButtonToClose) DoCancel();
         GizmoManager.ExitGizmo();
     }
 }

@@ -1,11 +1,8 @@
 using Synthesis.UI.Dynamic;
-using System.Collections;
-using System.Collections.Generic;
+using SynthesisAPI.EventBus;
 using SynthesisAPI.Utilities;
 using UnityEngine;
-using TMPro;
 using Logger = SynthesisAPI.Utilities.Logger;
-
 public class MatchMode : IMode {
     //PracticeMode practiceMode = new PracticeMode();
     public static int currentFieldIndex = -1;
@@ -20,7 +17,7 @@ public class MatchMode : IMode {
     // Start is called before the first frame update
     public void Start() {
         DynamicUIManager.CreateModal<MatchModeModal>();
-        SynthesisAPI.EventBus.EventBus.NewTypeListener<OnScoreUpdateEvent>(
+        EventBus.NewTypeListener<OnScoreUpdateEvent>(
             e =>
             {
                 ScoringZone zone = ((OnScoreUpdateEvent)e).Zone;
