@@ -15,6 +15,8 @@ namespace Patchbay {
 
             if (udpPort == tcpPort) {
                 logger.LogError("UDP and TCP can't operate on the same port");
+                _udpSocket = null!;
+                _tcpListener = null!;
                 return; // TODO: Can I do this? Should I do this?
             }
             

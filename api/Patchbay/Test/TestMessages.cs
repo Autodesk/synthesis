@@ -25,30 +25,30 @@ namespace SynthesisServer.Test
     [TestFixture]
     public static class TestMessages
     {
-        private static UdpClient _udpClient;
+        // private static UdpClient _udpClient;
         private static Socket _tcpSocket;
 
         private static int _tcpPort;
-        private static int _udpPort;
+        // private static int _udpPort;
         private static IPAddress _serverIP;
 
-        private static string _clientID;
+        // private static string _clientID;
 
-        private static SymmetricEncryptor _encryptor;
+        private static SymmetricEncryptor _encryptor = default;
         private static AsymmetricCipherKeyPair _keyPair;
         private static DHParameters _dhParameters;
         private static byte[] _symmetricKey;
 
-        private static bool _isRunning = false;
+        // private static bool _isRunning = false;
 
-        private static Heartbeat _heartbeat;
+        // private static Heartbeat _heartbeat;
 
         private static void Init()
         {
             
 
             _tcpPort = 18001;
-            _udpPort = 18000;
+            // _udpPort = 18000;
 
             _serverIP = IPAddress.Parse("76.144.67.63"); // Specify during actual test 
 

@@ -40,7 +40,7 @@ namespace SynthesisServer {
                 _clients[firstIndex] = _clients[secondIndex];
                 _clients[secondIndex] = x;
                 return true;
-            } catch (IndexOutOfRangeException e) {
+            } catch (IndexOutOfRangeException) {
                 return false;
             }
         }
