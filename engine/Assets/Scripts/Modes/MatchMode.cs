@@ -57,16 +57,21 @@ public class MatchMode : IMode {
         if (!Directory.Exists(robotsFolder))
             Directory.CreateDirectory(robotsFolder);
         var robotFiles = Directory.GetFiles(robotsFolder).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
-        
+
+        int i = 0;
         SelectedRobots.ForEach(x =>
-        {            
+        {
             if (x != -1)
             {
-                RobotSimObject.SpawnRobot(robotFiles[x], false);
+                Vector3 position = new Vector3(2 * i - 6, -2.5f, 0);
+                RawSpawnLocations[i].position = position;
+                
+                RobotSimObject.SpawnRobot(robotFiles[x], position, Quaternion.identity, false);
                 Robots.Add(RobotSimObject.GetCurrentlyPossessedRobot());
             }
             else 
                 Robots.Add(null);
+            i++;
         });
     }
     
