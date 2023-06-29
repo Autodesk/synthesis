@@ -17,7 +17,7 @@ public class MatchStateMachine {
             return _instance;
         }
     }
-
+ 
     #region State Management
 
     private readonly Dictionary<StateName, MatchState> _matchStates = new Dictionary<StateName, MatchState>();

@@ -87,7 +87,6 @@ namespace Synthesis.UI.Dynamic
 
             if (Input.GetKeyUp(KeyCode.LeftShift))
             {
-                Debug.Log("Fixed spawn location");
                 MatchMode.RawSpawnLocations[_selectedButton] = RoundSpawnLocation(MatchMode.RawSpawnLocations[_selectedButton]);
             }
             
@@ -202,13 +201,19 @@ namespace Synthesis.UI.Dynamic
             }
         }
 
+        /// <summary>
+        /// Rotate the robots yaw based on scroll wheel input. On mac, holding shift switches the scroll wheel to
+        /// the y axis, so the one line if statement checks for that
+        /// </summary>
         private void RotateRobot()
         {
-            if (Mathf.Abs(Input.mouseScrollDelta.y) > 0.001f)
-            {
-                MatchMode.RawSpawnLocations[_selectedButton].rotation.eulerAngles += 
-                    Vector3.up * (Mathf.Sign(Input.mouseScrollDelta.y) * rotateRobotSpeed);
-            }
+            Vector2 input = Input.mouseScrollDelta;
+            float scrollSpeed = (Mathf.Abs(input.x) > Mathf.Abs(input.y)) ? input.x : input.y;
+            if (Mathf.Abs(scrollSpeed) < 0.005f)
+                return;
+            
+            MatchMode.RawSpawnLocations[_selectedButton].rotation.eulerAngles += 
+                    Vector3.up * (Mathf.Sign(scrollSpeed) * rotateRobotSpeed);
         }
 
         public static (Vector3 position, Quaternion rotation) RoundSpawnLocation((Vector3 position, Quaternion rotation) spawnLocation)
