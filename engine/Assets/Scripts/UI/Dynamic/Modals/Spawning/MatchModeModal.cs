@@ -88,11 +88,6 @@ public class MatchModeModal : ModalDynamic
             .AddOnValueChangedEvent((d, i, data) => _fieldIndex = i).ApplyTemplate(VerticalLayout);
 
         _fieldIndex = _fieldFiles.Length > 0 ? 0 : -1;
-
-        /*MainContent.CreateLabel().ApplyTemplate(VerticalLayout).SetText("Select Alliance Color");
-        var allianceSelection = MainContent.CreateDropdown().ApplyTemplate(Dropdown.VerticalLayoutTemplate)
-            .SetOptions(new string[] { "Red", "Blue" })
-            .AddOnValueChangedEvent((d, i, data) => _allianceColor = i).ApplyTemplate(VerticalLayout);*/
     }
     
     public IEnumerator LoadMatch()
@@ -106,40 +101,11 @@ public class MatchModeModal : ModalDynamic
             MatchMode.CurrentFieldIndex = _fieldIndex;
         }
         
-        /*if(MatchMode.CurrentRobotIndex != _robotIndex)
-        {
-            if (RobotSimObject.GetCurrentlyPossessedRobot() != null) RobotSimObject.GetCurrentlyPossessedRobot().Destroy();
-
-            PreferenceManager.Load();
-            if (PreferenceManager.ContainsPreference(MatchMode.PREVIOUS_SPAWN_LOCATION)
-                && PreferenceManager.ContainsPreference(MatchMode.PREVIOUS_SPAWN_ROTATION))
-            {
-
-                var pos = PreferenceManager.GetPreference<float[]>(MatchMode.PREVIOUS_SPAWN_LOCATION);
-                var rot = PreferenceManager.GetPreference<float[]>(MatchMode.PREVIOUS_SPAWN_ROTATION);
-                
-                RobotSimObject.SpawnRobot(_robotFiles[_robotIndex],
-                    new Vector3(pos[0], pos[1], pos[2]),
-                    new Quaternion(rot[0], rot[1], rot[2], rot[3]).normalized, false);
-            }  
-            else 
-            {
-                RobotSimObject.SpawnRobot(_robotFiles[_robotIndex], false);
-            }
-            
-            
-            MatchMode.CurrentRobotIndex = _robotIndex;
-        }
-        Scoring.ResetScore();*/
-
         DynamicUIManager.CloseActiveModal();
- 
-        // DynamicUIManager.CreatePanel<Synthesis.UI.Dynamic.SpawnLocationPanel>();
         DynamicUIManager.CreatePanel<SpawnLocationPanel>();
     }
     
     public override void Update() {
-        // Shooting.Update();
     }
 
     public override void Delete()

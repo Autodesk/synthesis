@@ -11,7 +11,6 @@ namespace Synthesis.UI.Dynamic {
         public override bool Create() {
 
             Title.SetText("Start Match?").SetFontSize(25f);
-            //PanelImage.RootGameObject.SetActive(false); 
 
             AcceptButton
                 .StepIntoLabel(label => label.SetText("Start"))
@@ -23,9 +22,7 @@ namespace Synthesis.UI.Dynamic {
                 .AddOnClickedEvent(b => {
                     DynamicUIManager.CreateModal<MatchModeModal>();
                 });
- 
-            //GizmoManager.SpawnGizmo<RobotSimObject>(RobotSimObject.GetCurrentlyPossessedRobot());
-
+            
             return true;
         }
 

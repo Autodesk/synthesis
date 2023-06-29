@@ -82,27 +82,6 @@ namespace Synthesis.UI.Dynamic
             return true;
         }
         
-        /*private void StartMatch() {
-           if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-           {
-               Vector3 p = RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.position;
-               PreferenceManager.PreferenceManager.SetPreference(MatchMode.PREVIOUS_SPAWN_LOCATION, new float[] { p.x, p.y, p.z});
-               Quaternion q = RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform.rotation;
-               PreferenceManager.PreferenceManager.SetPreference(MatchMode.PREVIOUS_SPAWN_ROTATION, new float[] { q.x, q.y, q.z, q.w });
-               PreferenceManager.PreferenceManager.Save();
-           }
-           
-           // Shooting.ConfigureGamepieces();
-           
-           //TEMPORARY: FOR POWERUP ONLY
-           
-           Scoring.CreatePowerupScoreZones();
-           DynamicUIManager.CloseAllPanels(true);
-           DynamicUIManager.CreatePanel<Synthesis.UI.Dynamic.ScoreboardPanel>(true);
-
-           GizmoManager.ExitGizmo();
-       }*/
-
         public override void Update() {
             FindSpawnPosition();
             RotateRobot();

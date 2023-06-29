@@ -29,11 +29,6 @@ public class MatchMode : IMode {
         Array.Fill(SelectedRobots, -1);
         Array.Fill(RobotSpawnLocations, (Vector3.zero, Quaternion.identity));
         Array.Fill(RoundedSpawnLocation, (Vector3.zero, Quaternion.identity));
-        
-        /*SynthesisAPI.EventBus.EventBus.NewTypeListener<MatchStateMachine.OnStateStarted>(e =>
-        {
-            Debug.Log(((MatchStateMachine.OnStateStarted)e).state.GetType());
-        });*/
 
         _stateMachine = MatchStateMachine.Instance;
         _stateMachine.SetState(MatchStateMachine.StateName.MatchConfig);
