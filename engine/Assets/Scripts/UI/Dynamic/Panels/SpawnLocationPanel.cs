@@ -165,8 +165,6 @@ namespace Synthesis.UI.Dynamic
             buttons[index].Image.Color = (index < 3) ? redButtonColor : blueButtonColor;
         }
 
-       
-
         /// <summary>
         /// Sets the selected robots spawn position based on where the mouse is pointing
         /// </summary>
@@ -182,9 +180,13 @@ namespace Synthesis.UI.Dynamic
 
                     Vector3 boxHalfSize =
                         selectedPosition.localScale / 2f;
+
+                    Vector3 rayOrigin = (MatchMode.RoundSpawnLocation[_selectedButton]) ? 
+                        RoundSpawnLocation((hit.point + Vector3.up * 20f, Quaternion.identity)).position
+                        : hit.point + Vector3.up * 20f;
                     
                     // Box cast down towards where the mouse is pointing to find the lowest suitable spawn position for the robot
-                    if (UnityEngine.Physics.BoxCast(hit.point + Vector3.up * 20f, boxHalfSize, 
+                    if (UnityEngine.Physics.BoxCast(rayOrigin, boxHalfSize, 
                             Vector3.down, out var boxHit,
                             MatchMode.GetSpawnLocation(_selectedButton).rotation, 30f, fieldLayerMask))
                     {
