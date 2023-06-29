@@ -118,7 +118,7 @@ public class FreeCameraMode : ICameraMode
 
     public void LateUpdate(CameraController cam) {
 
-        cam.GroundRenderer.material.SetVector("FOCUS_POINT", cam.transform.position);
+        cam.GroundRenderer.material.SetVector("_GridFocusPoint", cam.transform.position);
 
         // // don't allow camera movement when a modal is open
         // if (DynamicUIManager.ActiveModal != null) return;

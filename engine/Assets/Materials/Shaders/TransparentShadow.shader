@@ -8,7 +8,7 @@ Shader "Custom/TransparentShadow"
 
         [Header(Grid)]
         [Space(5)]
-        _GridFocusPoint("Focus Point", COlor) = (0, 0, 0, 1)
+        _GridFocusPoint("Focus Point", Vector) = (0, 0, 0)
         _GridColor("Color", Color) = (1, 1, 1, 1)
         _GridUnit("Unit Size", Range(1, 10)) = 1.0
         _GridFalloffRadius("Falloff Radius", Range(0.1, 100)) = 20
@@ -64,7 +64,7 @@ Shader "Custom/TransparentShadow"
 
             float   _ShadowWeight;
 
-            float4  _GridFocusPoint;
+            float3  _GridFocusPoint;
 
             float4  _GridColor;
             float   _GridLineWidth;
@@ -228,7 +228,7 @@ Shader "Custom/TransparentShadow"
                 );
                 float shouldGrid = max(shouldZ, shouldX);
 
-                float distFromFocus = distance(i.worldVertex.xyz, _GridFocusPoint.xyz);
+                float distFromFocus = distance(i.worldVertex.xyz, _GridFocusPoint);
                 shouldGrid = lerp(
                     shouldGrid,
                     lerp(shouldGrid, 0, (distFromFocus - _GridFalloffRadius) / _GridFalloffFeatherDistance),
