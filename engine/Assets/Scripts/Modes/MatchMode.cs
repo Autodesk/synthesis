@@ -35,7 +35,8 @@ public class MatchMode : IMode {
     }
 
     public void Update() {
-        _stateMachine.Update();
+        if (_stateMachine != null)
+            _stateMachine.Update();
     }
     public void End() {
     }
