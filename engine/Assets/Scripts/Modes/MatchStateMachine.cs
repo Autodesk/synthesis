@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 
 public class MatchStateMachine {
     private static MatchStateMachine _instance;
-
+    
     public static MatchStateMachine Instance {
         get {
             if (_instance == null)
@@ -23,6 +23,8 @@ public class MatchStateMachine {
     private readonly Dictionary<StateName, MatchState> _matchStates = new Dictionary<StateName, MatchState>();
     private MatchState _currentState;
 
+    /// Sets the current state. Automatically calls any event functions in the state
+    /// <param name="stateName">The new state to switch to</param>
     public void SetState(StateName stateName) {
         Debug.Log($"State set to {stateName}");
         var newState = _matchStates[stateName];
@@ -41,6 +43,7 @@ public class MatchStateMachine {
         _currentState.Start();
     }
 
+    /// Manages the state of the match (ex: match config, teleop, match results)
     public MatchStateMachine() {
         _matchStates.Add(StateName.None, new None());
         _matchStates.Add(StateName.MatchConfig, new MatchConfig());
@@ -60,6 +63,7 @@ public class MatchStateMachine {
 
     #region Match States
 
+    /// Called whenever a new match state is started
     public class OnStateStarted : IEvent {
         public MatchState state;
         public StateName stateName;
@@ -70,6 +74,7 @@ public class MatchStateMachine {
         }
     }
 
+    /// Called whenever a match state is ended
     public class OnStateEnded : IEvent {
         public MatchState state;
         public StateName stateName;
@@ -79,7 +84,8 @@ public class MatchStateMachine {
             this.stateName = stateName;
         }
     }
-
+    
+    /// A specific state during match mode
     public abstract class MatchState {
         private StateName _stateName;
 
@@ -98,6 +104,7 @@ public class MatchStateMachine {
         }
     }
 
+    /// An empty state
     public class None : MatchState {
         public override void Start() {
             base.Start();
@@ -112,6 +119,7 @@ public class MatchStateMachine {
         public None() : base(StateName.None) { }
     }
 
+    /// When the user is choosing which robots to spawn in and other match settings
     public class MatchConfig : MatchState {
         public override void Start() {
             base.Start();
@@ -129,6 +137,7 @@ public class MatchStateMachine {
         public MatchConfig() : base(StateName.MatchConfig) { }
     }
 
+    /// When the user is choosing where the robot will spawn
     public class RobotPositioning : MatchState {
         public override void Start() {
             base.Start();
@@ -156,6 +165,7 @@ public class MatchStateMachine {
         public RobotPositioning() : base(StateName.RobotPositioning) { }
     }
 
+    /// The autonomous state at the beginning of a match
     public class Auto : MatchState {
         public override void Start() {
             base.Start();
@@ -176,6 +186,7 @@ public class MatchStateMachine {
         public Auto() : base(StateName.Auto) { }
     }
 
+    /// The teleop state of a match
     public class Teleop : MatchState {
         public override void Start() {
             base.Start();
@@ -193,6 +204,7 @@ public class MatchStateMachine {
         public Teleop() : base(StateName.Teleop) { }
     }
     
+    /// A state when a modal is displayed after a match showing info about the match
     public class MatchResults : MatchState {
         public override void Start() {
             base.Start();
@@ -211,6 +223,7 @@ public class MatchStateMachine {
 
     #endregion
 
+    /// Represents a specific MatchState
     public enum StateName {
         None,
         MatchConfig,

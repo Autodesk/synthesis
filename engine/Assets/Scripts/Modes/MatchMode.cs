@@ -12,10 +12,14 @@ public class MatchMode : IMode {
     public static int CurrentFieldIndex = -1;
     public static int[] SelectedRobots = new int[6];
     
+    /// Whether or not the robot should snap to a grid in positioning mode
     public static bool[] RoundSpawnLocation = new bool[6];
+    
+    /// The un-rounded spawn position of all robots
     public static (Vector3 position, Quaternion rotation)[] RawSpawnLocations = 
         new (Vector3 position, Quaternion rotation)[6];
 
+    /// Rounds the robots spawn position if the user chooses to
     public static (Vector3 position, Quaternion rotation) GetSpawnLocation(int robot)
     {
         if (RoundSpawnLocation[robot])
@@ -34,7 +38,6 @@ public class MatchMode : IMode {
     {
         Array.Fill(SelectedRobots, -1);
         Array.Fill(RawSpawnLocations, (Vector3.zero, Quaternion.identity));
-        Array.Fill(RoundSpawnLocation, true);
 
         _stateMachine = MatchStateMachine.Instance;
         _stateMachine.SetState(MatchStateMachine.StateName.MatchConfig);
@@ -51,6 +54,7 @@ public class MatchMode : IMode {
 
     public void CloseMenu() { }
 
+    /// Spawns in all of the selected robots and disables physics for spawn location selection
     public static void SpawnAllRobots()
     {
         var robotsFolder = ParsePath("$appdata/Autodesk/Synthesis/Mira", '/');
