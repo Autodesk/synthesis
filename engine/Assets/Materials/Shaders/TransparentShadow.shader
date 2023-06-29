@@ -2,11 +2,25 @@ Shader "Custom/TransparentShadow"
 {
     Properties
     {
-        [Header(Transparent Shadow Receiver)]
-        [Space(20)]
+        [Header(Shadow)]
+        [Space(5)]
         _ShadowWeight("Shadow Weight", Range(0,1)) = 0.5
-        _GridColor("Grid Color", Color) = (1, 1, 1, 1)
+
+        [Header(Grid)]
+        [Space(5)]
+        _GridFocusPoint("Focus Point", COlor) = (0, 0, 0, 1)
+        _GridColor("Color", Color) = (1, 1, 1, 1)
+        _GridUnit("Unit Size", Range(1, 10)) = 1.0
+        _GridFalloffRadius("Falloff Radius", Range(0.1, 100)) = 20
+        _GridFalloffFeatherDistance("Falloff Feather Distance", Range(0.0001, 100)) = 10
+        
+        [Header(LineSpecifics)]
+        [Space(5)]
         _GridLineWidth("Grid Line Width", Range(0,0.3)) = 0.04
+        _GridLineFeather("Grid Line Feather", Range(0.0, 0.5)) = 0.0
+        _GridBoldInterval("Grid Bold Interval", Range(3, 10)) = 5
+        _GridLineWidthBold("Grid Line Width Bold", Range(0.005, 0.2)) = 0.08
+        _GridLineFeatherBold("Grid Line Feather Bold", Range(0.0, 0.5)) = 0.0
     }  
 
     SubShader
@@ -49,8 +63,19 @@ Shader "Custom/TransparentShadow"
             CBUFFER_START(UnityPerMaterial)
 
             float   _ShadowWeight;
+
+            float4  _GridFocusPoint;
+
             float4  _GridColor;
             float   _GridLineWidth;
+            float   _GridUnit;
+            int     _GridBoldInterval;
+            float   _GridLineWidthBold;
+            float   _GridLineFeather;
+            float   _GridLineFeatherBold;
+
+            float   _GridFalloffRadius;
+            float   _GridFalloffFeatherDistance;
 
             uniform float4x4 _ProjectMat;
 
@@ -114,9 +139,29 @@ Shader "Custom/TransparentShadow"
                 return o;
             }
 
-            float shouldGrid(float axisPos)
+            float gridUnitMod(float axisPos, float unit)
             {
-                return step( axisPos % 1 + step(axisPos, 0), _GridLineWidth );
+                return fmod(axisPos, unit)
+                    + unit * step(0, -axisPos);
+            }
+
+            float shouldGrid(float axisPos, float thickness, float feather)
+            {
+                float mod = gridUnitMod(axisPos, _GridUnit);
+                float roundMod = 1;
+                if (mod < thickness * feather)
+                {
+                    return (mod / (thickness * feather));
+                }
+                else if (mod > thickness * (1 - feather) && mod <= thickness)
+                {
+                    return max(
+                        0,
+                        1 - ((mod - (thickness * (1 - feather))) / (thickness * feather))
+                    );
+                } else {
+                    return 1 - step(thickness, mod);
+                } 
             }
 
             float4 transformPoint(float4 worldPos)
@@ -158,12 +203,40 @@ Shader "Custom/TransparentShadow"
 
                 // return float4(projectedSize, projectedSize, projectedSize, 1);
 
-                float shouldX = shouldGrid(i.worldVertex.x);
-                float shouldZ = shouldGrid(i.worldVertex.z);
-                float shouldGrid = step(0.01, shouldX + shouldZ);
+                float isBoldX = (1 - step(
+                    0.999,
+                    floor(gridUnitMod(i.worldVertex.x, _GridUnit * _GridBoldInterval))
+                ));
+                float isBoldZ = (1 - step(
+                    0.999,
+                    floor(gridUnitMod(i.worldVertex.z, _GridUnit * _GridBoldInterval))
+                ));
+
+                float shouldX = shouldGrid(i.worldVertex.x, lerp(
+                        _GridLineWidth,
+                        _GridLineWidthBold,
+                        isBoldX
+                    ),
+                    lerp(_GridLineFeather, _GridLineFeatherBold, isBoldX)
+                );
+                float shouldZ = shouldGrid(i.worldVertex.z, lerp(
+                        _GridLineWidth,
+                        _GridLineWidthBold,
+                        isBoldZ
+                    ),
+                    lerp(_GridLineFeather, _GridLineFeatherBold, isBoldZ)
+                );
+                float shouldGrid = max(shouldZ, shouldX);
+
+                float distFromFocus = distance(i.worldVertex.xyz, _GridFocusPoint.xyz);
+                shouldGrid = lerp(
+                    shouldGrid,
+                    lerp(shouldGrid, 0, (distFromFocus - _GridFalloffRadius) / _GridFalloffFeatherDistance),
+                    step(0, distFromFocus - _GridFalloffRadius)
+                );
                 
                 // float4 col = tex2D(_MainTex, i.uv) * _TintColor;
-                float4 col = _GridColor * shouldGrid;
+                float4 col = float4(_GridColor.xyz, _GridColor.w * shouldGrid);
                 // float4 col = float4(0,0,0,1);
 
                 //below texture sampling code does not use in material inspector             
