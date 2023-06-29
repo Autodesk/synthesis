@@ -19,7 +19,6 @@ jobs:
       uses: arduino/setup-protoc@v2
       with:
         version: "23.3"
-      submodules: recursive
     - name: Generate Protobuf Files
       run: |
         cd protocols/
