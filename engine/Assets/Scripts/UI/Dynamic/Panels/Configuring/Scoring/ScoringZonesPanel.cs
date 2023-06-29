@@ -114,7 +114,11 @@ public class ScoringZonesPanel : PanelDynamic
             .ApplyTemplate(VerticalLayout)
             .SetAnchorLeft<Label>()
             .SetAnchoredPosition<Label>(new Vector2(0, -ROW_HEIGHT / 8));
-        bottomContent.CreateLabel().SetText($"{zone.Points} points")
+        string points = "points";
+        if (zone.Points == 1) {
+            points = "point";
+        }
+        bottomContent.CreateLabel().SetText($"{zone.Points} {points}")
             .ApplyTemplate(VerticalLayout)
             .SetAnchorLeft<Label>()
             .SetAnchoredPosition<Label>(new Vector2(0, -ROW_HEIGHT / 8));
