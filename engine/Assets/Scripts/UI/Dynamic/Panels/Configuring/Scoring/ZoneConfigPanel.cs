@@ -29,6 +29,9 @@ public class ZoneConfigPanel : PanelDynamic {
     private ScoringZone _zone;
     private string _initialParent;
 
+    private const float MIN_XYZ_SCALE = 0.025f;
+    private const float MAX_XYZ_SCALE = 10f;
+
     private bool _isNewZone = true;
     
     private bool _selectingNode;
@@ -143,21 +146,21 @@ public class ZoneConfigPanel : PanelDynamic {
                 t.State = _data.DestroyGamepiece;
             }).ApplyTemplate(VerticalLayout);
 
-        _xScaleSlider = MainContent.CreateSlider(label: "X Scale", minValue: 0.1f, maxValue: 10f, currentValue: _initialData.XScale)
+        _xScaleSlider = MainContent.CreateSlider(label: "X Scale", minValue: MIN_XYZ_SCALE, maxValue: MAX_XYZ_SCALE, currentValue: _initialData.XScale)
             .ApplyTemplate(VerticalLayout).AddOnValueChangedEvent(
                 (s, v) => {
                     _data.XScale = v;
                     DataUpdated();
                 });
 
-        _yScaleSlider = MainContent.CreateSlider(label: "Y Scale", minValue: 0.1f, maxValue: 10f, currentValue: _initialData.YScale)
+        _yScaleSlider = MainContent.CreateSlider(label: "Y Scale", minValue: MIN_XYZ_SCALE, maxValue: MAX_XYZ_SCALE, currentValue: _initialData.YScale)
             .ApplyTemplate(VerticalLayout).AddOnValueChangedEvent(
                 (s, v) => {
                     _data.YScale = v;
                     DataUpdated();
                 });
 
-        _zScaleSlider = MainContent.CreateSlider(label: "Z Scale", minValue: 0.1f, maxValue: 10f, currentValue: _initialData.ZScale)
+        _zScaleSlider = MainContent.CreateSlider(label: "Z Scale", minValue: MIN_XYZ_SCALE, maxValue: MAX_XYZ_SCALE, currentValue: _initialData.ZScale)
             .ApplyTemplate(VerticalLayout).AddOnValueChangedEvent(
                 (s, v) => {
                     _data.ZScale = v;
