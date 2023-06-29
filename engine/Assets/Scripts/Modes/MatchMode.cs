@@ -16,9 +16,6 @@ public class MatchMode : IMode {
     public static (Vector3 position, Quaternion rotation)[] RawSpawnLocations = 
         new (Vector3 position, Quaternion rotation)[6];
 
-    public static void SetSpawnLocation(int robot, (Vector3 position, Quaternion rotation) value) =>
-        RawSpawnLocations[robot] = value;
-
     public static (Vector3 position, Quaternion rotation) GetSpawnLocation(int robot)
     {
         if (RoundSpawnLocation[robot])
