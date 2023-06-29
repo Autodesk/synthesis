@@ -67,7 +67,6 @@ def populateJoints(
     # This is for creating all of the Joint Definition objects
     # So we need to iterate through the joints and construct them and add them to the map
     if options.joints or DEBUG:
-
         # Add the grounded joints object - TODO: rename some of the protobuf stuff for the love of god
 
         joint_definition_ground = joints.joint_definitions["grounded"]
@@ -109,7 +108,6 @@ def populateJoints(
                 joint_instance = joints.joint_instances[joint.entityToken]
 
                 for parse_joints in options.joints:
-
                     if parse_joints.joint_token == joint.entityToken:
                         guid = str(uuid.uuid4())
                         signal = signals.signal_map[guid]
@@ -231,18 +229,19 @@ def _addJointInstance(
                 else:
                     joint_instance.signal_reference = ""
 
-def _addRigidGroup(
-    joint: adsk.fusion.Joint,
-    assembly: assembly_pb2.Assembly
-):
-    if joint.jointMotion.jointType != 0 or not (joint.occurrenceOne.isLightBulbOn and joint.occurrenceTwo.isLightBulbOn):
+
+def _addRigidGroup(joint: adsk.fusion.Joint, assembly: assembly_pb2.Assembly):
+    if joint.jointMotion.jointType != 0 or not (
+        joint.occurrenceOne.isLightBulbOn and joint.occurrenceTwo.isLightBulbOn
+    ):
         return
-    
+
     mira_group = joint_pb2.RigidGroup()
     mira_group.name = f"group_{joint.occurrenceOne.name}_{joint.occurrenceTwo.name}"
     mira_group.occurrences.append(guid_occurrence(joint.occurrenceOne))
     mira_group.occurrences.append(guid_occurrence(joint.occurrenceTwo))
     assembly.data.joints.rigid_groups.append(mira_group)
+
 
 def _motionFromJoint(
     fusionMotionDefinition: adsk.fusion.JointMotion, proto_joint: joint_pb2.Joint
@@ -346,7 +345,6 @@ def fillSliderJointMotion(
 
 
 def noop(*argv):
-
     """Easy way to keep track of no-op code that required function pointers"""
     pass
 
@@ -456,7 +454,6 @@ def createJointGraph(
     joint_tree: types_pb2.GraphContainer,
     progressDialog: PDMessage,
 ) -> None:
-
     # progressDialog.message = f"Building Joint Graph Map from given joints"
 
     progressDialog.currentMessage = f"Building Joint Graph Map from given joints"

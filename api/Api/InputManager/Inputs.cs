@@ -133,7 +133,7 @@ namespace SynthesisAPI.InputManager.Inputs
                 Value = State > 0 ? 1 : 0;
                 return State != DigitalState.None;
             }
-            catch (ArgumentException e)
+            catch (ArgumentException)
             {
                 Utilities.Logger.Log($"Key {Name} is invalid." );
                 return false;

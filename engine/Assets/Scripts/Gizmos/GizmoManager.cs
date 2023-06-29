@@ -109,7 +109,8 @@ namespace Synthesis.Gizmo {
             _currentTargetTransform.position = _currentGizmoConfig.Value.Transform.Position;
             _currentTargetTransform.rotation = _currentGizmoConfig.Value.Transform.Rotation;
 
-            var gizmo = GameObject.Instantiate(SynthesisAssetCollection.GizmoPrefabStatic, _currentTargetTransform);
+            var gizmo  = GameObject.Instantiate(SynthesisAssetCollection.GizmoPrefabStatic, _currentTargetTransform);
+            gizmo.name = "GIZMO";
         }
 
         private static void UpdateGizmo() {
@@ -129,6 +130,7 @@ namespace Synthesis.Gizmo {
 
             _currentGizmoConfig.Value.EndCallback(_currentTargetTransform);
             GameObject.Destroy(_currentTargetTransform.gameObject);
+            // GameObject.Destroy(gizmo);
 
             _currentGizmoConfig     = null;
             _currentTargetTransform = null;
@@ -142,6 +144,10 @@ namespace Synthesis.Gizmo {
         public Vector3 Position;
         public Quaternion Rotation;
 
+        public static implicit operator TransformData(
+            Vector3 position) => new TransformData { Position = position, Rotation = Quaternion.identity };
+        public static implicit operator TransformData(
+            Quaternion rotation) => new TransformData { Position = Vector3.zero, Rotation = rotation };
         public static implicit operator TransformData(
             (Vector3, Quaternion) data) => new TransformData { Position = data.Item1, Rotation = data.Item2 };
         public static implicit operator TransformData(

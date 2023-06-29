@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Synthesis.UI.Panels.Variant;
@@ -23,6 +24,7 @@ public class CameraController : MonoBehaviour {
         CameraModes.Add("Orbit", new OrbitCameraMode());
         CameraModes.Add("Freecam", new FreeCameraMode());
         CameraModes.Add("Overview", new OverviewCameraMode());
+        CameraModes.Add("Driver Station", new DriverStationCameraMode());
     }
 
     public static bool isOverGizmo = false;

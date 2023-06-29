@@ -1,11 +1,13 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.VirtualFileSystem;
 using System.Threading.Tasks;
 using SynthesisAPI.Utilities;
+
+// This has a template that is possibly nullable 
+#nullable disable
 
 namespace SynthesisAPI.PreferenceManager
 {
@@ -19,7 +21,7 @@ namespace SynthesisAPI.PreferenceManager
         
         private static readonly (string Directory, string Name) VirtualFilePath = ("/modules", "preferences.json");
 
-        private static JsonAsset? _asset;
+        private static JsonAsset _asset;
         private static void ImportPreferencesAsset()
         {
             _asset = AssetManager.AssetManager.Import<JsonAsset>("text/json", true, VirtualFilePath.Directory,
@@ -110,7 +112,7 @@ namespace SynthesisAPI.PreferenceManager
                 Logger.Log($"There is no key of value \"{key}\" for module \"{moduleName}\"");
             }
             Logger.Log($"There is no module with name \"{moduleName}\"");
-            return default;
+            return default(T);
         }
 
         /// <summary>
