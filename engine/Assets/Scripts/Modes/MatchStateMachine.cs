@@ -47,7 +47,7 @@ public class MatchStateMachine {
         _matchStates.Add(StateName.RobotPositioning, new RobotPositioning());
         _matchStates.Add(StateName.Auto, new Auto());
         _matchStates.Add(StateName.Teleop, new Teleop());
-        _matchStates.Add(StateName.MatchResults, new MatachResults());
+        _matchStates.Add(StateName.MatchResults, new MatchResults());
 
         _currentState = _matchStates[StateName.None];
     }
@@ -193,7 +193,7 @@ public class MatchStateMachine {
         public Teleop() : base(StateName.Teleop) { }
     }
     
-    public class MatachResults : MatchState {
+    public class MatchResults : MatchState {
         public override void Start() {
             base.Start();
 
@@ -201,9 +201,12 @@ public class MatchStateMachine {
         }
 
         public override void Update() { }
-        public override void End() { }
 
-        public MatachResults() : base(StateName.MatchResults) { }
+        public override void End() {
+            
+        }
+
+        public MatchResults() : base(StateName.MatchResults) { }
     }
 
     #endregion

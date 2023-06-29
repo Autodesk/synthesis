@@ -14,27 +14,11 @@ namespace Synthesis.UI.Dynamic {
 
             Title.SetText("Match Results");
             Description.SetText("Placeholder panel to show match results");
-            /*Description.SetText("");
+            Description.SetText("");
             AcceptButton.AddOnClickedEvent(x => {
-                if (isOnMainMenu)
-                    Application.Quit();
-                else
-                {
-                    SimulationRunner.InSim = false;
-                    DynamicUIManager.CloseAllPanels(true);
-                    SceneManager.LoadScene("GridMenuScene", LoadSceneMode.Single);
-                }
-            }).StepIntoLabel(l => l.SetText("Exit"));
-            ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"));
-            ModalImage.SetColor(ColorManager.SYNTHESIS_WHITE);
+                MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.None);
 
-            MainContent.CreateLabel(40)
-                .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Center)
-                .SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Middle)
-                .SetAnchoredPosition<Label>(new Vector2(0, 15))
-                .SetText(isOnMainMenu ? "Are you sure you wish to Exit?" : "Are you sure you wish to\nleave to main menu?")
-                .SetFont(SynthesisAssetCollection.GetFont("Roboto-Regular SDF"))
-                .SetFontSize(20);*/
+            }).StepIntoLabel(l => l.SetText("Exit"));
         }
 
         public override void Update() { }
