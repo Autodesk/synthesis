@@ -109,6 +109,7 @@ public class ZoneConfigPanel : PanelDynamic {
 
         _zoneNameInput = MainContent.CreateInputField().StepIntoLabel(l => l.SetText("Name"))
             .StepIntoHint(h => h.SetText(_initialData.Name is not null ? _initialData.Name : "Zone Name"))
+            .SetCharacterLimit(16)
             .ApplyTemplate(VerticalLayout);
         _zoneAllianceButton = MainContent.CreateButton().StepIntoLabel(l => l.SetText("Blue Alliance")).AddOnClickedEvent(
                 b => {

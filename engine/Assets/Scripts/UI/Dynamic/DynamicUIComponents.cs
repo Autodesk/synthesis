@@ -633,6 +633,10 @@ namespace Synthesis.UI.Dynamic {
             _unityText.color = c;
             return this;
         }
+        public Label SetOverflowMode(TextOverflowModes mode) {
+            _unityText.overflowMode = mode;
+            return this;
+        }
         public Label SetTopStretch(float leftPadding = 0f, float rightPadding = 0f, float anchoredY = 0f)
             => base.SetTopStretch<Label>(leftPadding, rightPadding, anchoredY);
         public Label SetBottomStretch(float leftPadding = 0f, float rightPadding = 0f, float anchoredY = 0f)
@@ -879,6 +883,11 @@ namespace Synthesis.UI.Dynamic {
         }
         public InputField SetValue(string val) {
             _tmpInput.SetTextWithoutNotify(val);
+            return this;
+        }
+
+        public InputField SetCharacterLimit(int length) {
+            _tmpInput.characterLimit = length;
             return this;
         }
     }
@@ -1175,17 +1184,19 @@ namespace Synthesis.UI.Dynamic {
             var ifObj = unityObject.transform.Find("InputField");
             _tmpInput = ifObj.GetComponent<TMP_InputField>();
             _tmpInput.contentType = TMP_InputField.ContentType.IntegerNumber;
+            _tmpInput.characterLimit = 9;
             _hint = new Label(this, ifObj.Find("Text Area").Find("Placeholder").gameObject, null);
             _label = new Label(this, unityObject.transform.Find("Label").gameObject, null);
             _tmpInput.onValueChanged.AddListener(x => {
+                _value = x == "" ? 0 : int.Parse(x);
                 if (_eventsActive && OnValueChanged != null)
-                    OnValueChanged(this, int.Parse(x));
+                    OnValueChanged(this, Value);
             });
 
             _incrementButton = new Button(this, unityObject.transform.Find("IncrementButton").gameObject, null)
-                .AddOnClickedEvent(b => Value++);
+                .AddOnClickedEvent(b => Value += Value < Int32.MaxValue ? 1 : 0);
             _decrementButton = new Button(this, unityObject.transform.Find("DecrementButton").gameObject, null)
-                .AddOnClickedEvent(b => Value--);
+                .AddOnClickedEvent(b => Value -= Value > Int32.MinValue ? 1 : 0);
 
             _backgroundImage = new Image(this, ifObj.gameObject);
             _backgroundImage.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT));
