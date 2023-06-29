@@ -124,7 +124,7 @@ public class ZoneConfigPanel : PanelDynamic {
         _zoneParentButton = MainContent.CreateLabeledButton()
             .StepIntoLabel(l => l.SetText(_initialParent is not null && _initialParent != "" ? _initialParent : "Parent Object"))
             .StepIntoButton(b => {
-                b.StepIntoLabel(l => l.SetText("Click to select...")).AddOnClickedEvent(SelectParentButton);
+                b.StepIntoLabel(l => l.SetText(_initialParent is not null ? "Remove" : "Click to select...")).AddOnClickedEvent(SelectParentButton);
             }).ApplyTemplate(VerticalLayout);
 
         _pointsInputField = MainContent.CreateNumberInputField()
@@ -241,13 +241,21 @@ public class ZoneConfigPanel : PanelDynamic {
     
     public void SelectParentButton(Button b) {
         if (!_selectingNode) {
-            // I don't like this; do we just want all field rigidbodies to detect collisions?
-            if (_initialFieldCollisions.Count == 0)
-                FieldSimObject.CurrentField.FieldObject.GetComponentsInChildren<Rigidbody>().ForEach(x => {
-                    _initialFieldCollisions.Add(x.GetHashCode(), x.detectCollisions);
-                    x.detectCollisions = true;
-                });
-            _selectingNode = true;
+            if (_selectedNode || _data.Parent) {
+                if (_selectedNode)
+                    _selectedNode.enabled = false;
+                _selectedNode = null;
+                _hoveringNode = null;
+                _data.Parent = null;
+            } else {
+                // I don't like this; do we just want all field rigidbodies to detect collisions?
+                if (_initialFieldCollisions.Count == 0)
+                    FieldSimObject.CurrentField.FieldObject.GetComponentsInChildren<Rigidbody>().ForEach(x => {
+                        _initialFieldCollisions.Add(x.GetHashCode(), x.detectCollisions);
+                        x.detectCollisions = true;
+                    });
+                _selectingNode = true;
+            }
         } else {
             FieldSimObject.CurrentField.FieldObject.GetComponentsInChildren<Rigidbody>().ForEach(x => x.detectCollisions = _initialFieldCollisions[x.GetHashCode()]);
             _initialFieldCollisions.Clear();
@@ -268,7 +276,7 @@ public class ZoneConfigPanel : PanelDynamic {
             _zoneParentButton.StepIntoLabel(l => l.SetText(_selectedNode is not null ? _selectedNode.name : "Parent Object"));
             _zoneParentButton.StepIntoButton(
                 b => b.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_ORANGE))
-                    .StepIntoLabel(l => l.SetText("Select"))
+                    .StepIntoLabel(l => l.SetText(_selectedNode is not null ? "Remove" : "Click to select..."))
             );
         }
     }
