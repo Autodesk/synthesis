@@ -133,8 +133,8 @@ public class MatchStateMachine {
         public override void Start() {
             base.Start();
             
-            MatchMode.SpawnAllRobots();
             PhysicsManager.IsFrozen = true;
+            MatchMode.SpawnAllRobots();
 
             if (Camera.main != null) {
                 Camera.main.GetComponent<CameraController>().CameraMode = CameraController.CameraModes["Freecam"];

@@ -12,12 +12,21 @@ public class MatchMode : IMode {
     public static int CurrentFieldIndex = -1;
     public static int[] SelectedRobots = new int[6];
     
-    public static (Vector3 position, Quaternion rotation)[] RobotSpawnLocations = 
+    public static bool[] RoundSpawnLocation = new bool[6];
+    public static (Vector3 position, Quaternion rotation)[] RawSpawnLocations = 
         new (Vector3 position, Quaternion rotation)[6];
 
-    public static (Vector3 position, Quaternion rotation)[] RoundedSpawnLocation =
-        new (Vector3 position, Quaternion rotation)[6];
-        
+    public static void SetSpawnLocation(int robot, (Vector3 position, Quaternion rotation) value) =>
+        RawSpawnLocations[robot] = value;
+
+    public static (Vector3 position, Quaternion rotation) GetSpawnLocation(int robot)
+    {
+        if (RoundSpawnLocation[robot])
+            return SpawnLocationPanel.RoundSpawnLocation(RawSpawnLocations[robot]);
+
+        return RawSpawnLocations[robot];
+    }
+
     public static List<RobotSimObject> Robots = new List<RobotSimObject>();
 
     public const string PREVIOUS_SPAWN_LOCATION = "Previous Spawn Location";
@@ -27,8 +36,8 @@ public class MatchMode : IMode {
     public void Start()
     {
         Array.Fill(SelectedRobots, -1);
-        Array.Fill(RobotSpawnLocations, (Vector3.zero, Quaternion.identity));
-        Array.Fill(RoundedSpawnLocation, (Vector3.zero, Quaternion.identity));
+        Array.Fill(RawSpawnLocations, (Vector3.zero, Quaternion.identity));
+        Array.Fill(RoundSpawnLocation, true);
 
         _stateMachine = MatchStateMachine.Instance;
         _stateMachine.SetState(MatchStateMachine.StateName.MatchConfig);
