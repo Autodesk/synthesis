@@ -41,12 +41,20 @@ public class FreeCameraMode : ICameraMode
             // InputManager.AssignValueInput(UP_PITCH_KEY, new Digital("X"));
         }
 
-        if (previousCam != null && previousCam.GetType() == typeof(OrbitCameraMode)) {
-            OrbitCameraMode orbitCam = (previousCam as OrbitCameraMode)!;
-            TargetPitch = orbitCam.TargetPitch;
-            TargetYaw = orbitCam.TargetYaw;
-            ActualPitch = orbitCam.ActualPitch;
-            ActualYaw = orbitCam.ActualYaw;
+        if (previousCam != null) {
+            if (previousCam.GetType() == typeof(OrbitCameraMode)) {
+                OrbitCameraMode orbitCam = (previousCam as OrbitCameraMode)!;
+                TargetPitch = orbitCam.TargetPitch;
+                TargetYaw = orbitCam.TargetYaw;
+                ActualPitch = orbitCam.ActualPitch;
+                ActualYaw = orbitCam.ActualYaw;
+            } else if (previousCam.GetType() == typeof(DriverStationCameraMode)) {
+                DriverStationCameraMode driverStationCam = (previousCam as DriverStationCameraMode)!;
+                TargetPitch = driverStationCam.TargetPitch;
+                TargetYaw = driverStationCam.TargetYaw;
+                ActualPitch = driverStationCam.ActualPitch;
+                ActualYaw = driverStationCam.ActualYaw;
+            }
         }
     }
     

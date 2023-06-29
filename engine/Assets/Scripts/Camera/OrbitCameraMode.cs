@@ -20,10 +20,16 @@ public class OrbitCameraMode : ICameraMode
     private bool _useOrbit = false;
     
     public void Start<T>(CameraController cam, T? previousCam) where T : ICameraMode {
-        if (previousCam != null && previousCam.GetType() == typeof(FreeCameraMode)) {
-            FreeCameraMode freeCam = (previousCam as FreeCameraMode)!;
-            ActualPitch = freeCam.ActualPitch;
-            ActualYaw = freeCam.ActualYaw;
+        if (previousCam != null) {
+            if (previousCam.GetType() == typeof(FreeCameraMode)) {
+                FreeCameraMode freeCam = (previousCam as FreeCameraMode)!;
+                ActualPitch = freeCam.ActualPitch;
+                ActualYaw = freeCam.ActualYaw;
+            } else if (previousCam.GetType() == typeof(DriverStationCameraMode)) {
+                DriverStationCameraMode driverCam = (previousCam as DriverStationCameraMode)!;
+                ActualPitch = driverCam.ActualPitch;
+                ActualYaw = driverCam.ActualYaw;
+            }
         }
     }
 
