@@ -76,16 +76,6 @@ public class ZoneConfigPanel : PanelDynamic {
             _initialRotation = zone.GameObject.transform.rotation;
             _data = _initialData;
         }
-        
-        // so that entering another panel doesn't cause the zone to be created
-        // maybe not the best way to handle this
-        // EventBus.NewTypeListener<DynamicUIManager.PanelCreatedEvent>(e => {
-        //     DynamicUIManager.PanelCreatedEvent panelCreatedEvent = (DynamicUIManager.PanelCreatedEvent) e;
-        //     if (panelCreatedEvent.Panel != this && panelCreatedEvent.Panel.GetType() != typeof(ScoreboardPanel)) {
-        //         DoCancel();
-        //         DynamicUIManager.ClosePanel<ZoneConfigPanel>();
-        //     }
-        // });
     }
 
     public override bool Create() {
