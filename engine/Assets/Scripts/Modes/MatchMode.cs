@@ -20,10 +20,10 @@ public class MatchMode : IMode {
     // Start is called before the first frame update
     public void Start() {
         DynamicUIManager.CreateModal<MatchModeModal>();
-        SynthesisAPI.EventBus.EventBus.NewTypeListener<OnScoreEvent>(
+        SynthesisAPI.EventBus.EventBus.NewTypeListener<OnScoreUpdateEvent>(
             e =>
             {
-                ScoringZone zone = ((OnScoreEvent)e).zone;
+                ScoringZone zone = ((OnScoreUpdateEvent)e).Zone;
                 switch (zone.Alliance)
                 {
                     case Alliance.Blue:
