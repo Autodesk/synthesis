@@ -22,7 +22,7 @@ jobs:
     - name: Generate Protobuf Files
       run: |
         cd protocols/
-        bash ./proto_compile.bat
+        bash ./proto_compile.sh
         cd ..
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v3
