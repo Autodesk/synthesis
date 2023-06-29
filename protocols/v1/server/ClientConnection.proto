@@ -1,9 +1,7 @@
 syntax = "proto3";
 package SynthesisServer.Proto;
 
-import "Networking.proto";
 import "google/protobuf/Any.proto";
-
 
 // All information about clients both on host and client side
 message GameUpdate {
