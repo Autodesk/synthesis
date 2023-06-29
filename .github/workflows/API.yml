@@ -33,7 +33,7 @@ jobs:
     - name: Build API Solution
       run: dotnet build api/api.sln --configuration Release --no-restore
     - name: Test API Solution
-      run: dotnet test api/api.sln --no-restore --verbosity normal --filter FullyQualifiedName~TestCategory!=Warning
+      run: dotnet test api/api.sln --no-restore --verbosity normal
       
 #    - name: Install Module Dependencies
 #      run: dotnet restore modules/modules.sln
