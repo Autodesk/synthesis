@@ -83,12 +83,17 @@ namespace Synthesis.UI.Dynamic
         }
         
         public override void Update() {
+            MatchMode.RoundSpawnLocation[_selectedButton] = Input.GetKey(KeyCode.LeftShift);
+
+            if (Input.GetKeyUp(KeyCode.LeftShift))
+            {
+                Debug.Log("Fixed spawn location");
+                MatchMode.RawSpawnLocations[_selectedButton] = RoundSpawnLocation(MatchMode.RawSpawnLocations[_selectedButton]);
+            }
+            
             FindSpawnPosition();
             RotateRobot();
             MoveRobots();
-
-            if (Input.GetKeyDown(KeyCode.LeftShift))
-                MatchMode.RoundSpawnLocation[_selectedButton] = !MatchMode.RoundSpawnLocation[_selectedButton];
         }
         
         public override void Delete()
