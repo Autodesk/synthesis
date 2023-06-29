@@ -4,21 +4,26 @@ using Synthesis.UI.Dynamic;
 using TMPro;
 using UnityEngine;
 public class ScoreboardPanel : PanelDynamic {
-    private const float WIDTH = 200f;
-    private const float HEIGHT = 150f;
-    
-    public ScoreboardPanel() : base(new Vector2(WIDTH, HEIGHT)) { }
+
+    private const float VERTICAL_PADDING = 10f;
+    private static readonly float WIDTH = 200f;
+    private static float HEIGHT;
+
+    private readonly bool _showTimer;
 
     private Label time, redScore, blueScore;
     private Content topContent, bottomContent;
 
-    private const float VERTICAL_PADDING = 10f;
-    
-    public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
-        var offset = (-u.Parent!.RectOfChildren(u).yMin) + VERTICAL_PADDING;
+    public Func<UIComponent, UIComponent> VerticalLayout = u => {
+        float offset = -u.Parent!.RectOfChildren(u).yMin + VERTICAL_PADDING;
         u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 0f); // used to be 15f
         return u;
     };
+
+    public ScoreboardPanel(bool showTimer = true) : base(new Vector2(WIDTH, showTimer ? 150 : 100)) {
+        _showTimer = showTimer;
+        HEIGHT = showTimer ? 150f : 100f;
+    }
 
     public override bool Create() {
 
@@ -27,30 +32,36 @@ public class ScoreboardPanel : PanelDynamic {
         Title.RootGameObject.SetActive(false);
         PanelImage.RootGameObject.SetActive(false);
 
-        Content panel = new Content(null, UnityObject, null);
-        panel.SetBottomStretch<Content>(Screen.width / 2 - WIDTH / 2, Screen.width / 2 - WIDTH / 2, 0);
+        var panel = new Content(null, UnityObject, null);
+        panel.SetBottomStretch<Content>(Screen.width / 2 - WIDTH / 2, Screen.width / 2 - WIDTH / 2);
 
-        const float topHeight = 50f;
-        const float bottomHeight = HEIGHT - topHeight;
-        (topContent, bottomContent) = MainContent.SplitTopBottom(topHeight, 0f);
+        float bottomHeight = HEIGHT;
 
-        topContent.SetAnchoredPosition<Content>(new Vector2(0, -topHeight / 2));
-        bottomContent.SetAnchoredPosition<Content>(new Vector2(0, -topHeight / 2));
-        time = topContent.CreateLabel(topHeight)
-            .SetStretch<Label>()
-            .ApplyTemplate(VerticalLayout)
-            .SetAnchors<Label>(new Vector2(0, 0.5f), new Vector2(1, 0.5f))
-            .SetAnchoredPosition<Label>(new Vector2(0, topHeight / 2))
-            .SetText(Scoring.targetTime.ToString())
-            .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
-            .SetFontSize(40);
+        if (_showTimer) {
+            float topHeight = 50f;
+            bottomHeight -= topHeight;
+            (topContent, bottomContent) = MainContent.SplitTopBottom(topHeight, 0f);
+
+            topContent.SetAnchoredPosition<Content>(new Vector2(0, -topHeight / 2));
+            bottomContent.SetAnchoredPosition<Content>(new Vector2(0, -topHeight / 2));
+            time = topContent.CreateLabel(topHeight)
+                .SetStretch<Label>()
+                .ApplyTemplate(VerticalLayout)
+                .SetAnchors<Label>(new Vector2(0, 0.5f), new Vector2(1, 0.5f))
+                .SetAnchoredPosition<Label>(new Vector2(0, topHeight / 2))
+                .SetText(Scoring.targetTime.ToString())
+                .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
+                .SetFontSize(40);
+        } else {
+            bottomContent = MainContent;
+        }
 
         float leftRightPadding = 8;
         float leftWidth = (bottomContent.Size.x - leftRightPadding) / 2;
-        (Content leftContent, Content rightContent) = bottomContent.SplitLeftRight(leftWidth, leftRightPadding);
+        (var leftContent, var rightContent) = bottomContent.SplitLeftRight(leftWidth, leftRightPadding);
         leftContent.SetBackgroundColor<Content>(Color.red);
         rightContent.SetBackgroundColor<Content>(Color.blue);
-        
+
         const float titleSize = 20;
         const float scoreSize = 50;
 
@@ -87,20 +98,22 @@ public class ScoreboardPanel : PanelDynamic {
 
         return true;
     }
-    
+
     public override void Update() {
-        if (!(SimulationRunner.HasContext(SimulationRunner.GIZMO_SIM_CONTEXT) || SimulationRunner.HasContext(SimulationRunner.PAUSED_SIM_CONTEXT)) 
-                && Scoring.targetTime >= 0) {
+        if (SimulationRunner.HasContext(SimulationRunner.GIZMO_SIM_CONTEXT) || SimulationRunner.HasContext(SimulationRunner.PAUSED_SIM_CONTEXT)) return;
+
+        if (_showTimer) {
             Scoring.targetTime -= Time.deltaTime;
             time.SetText(Mathf.RoundToInt(Scoring.targetTime).ToString());
-            redScore.SetText(Scoring.redScore.ToString());
-            blueScore.SetText(Scoring.blueScore.ToString());
+
+            if (Scoring.targetTime <= 0) {
+                Scoring.matchEnd = true;
+                return;
+            }
         }
-        else if (!Scoring.matchEnd)
-        {
-            //end match
-            Scoring.matchEnd = true;
-        }
+
+        redScore.SetText(Scoring.redScore.ToString());
+        blueScore.SetText(Scoring.blueScore.ToString());
     }
 
     public override void Delete() { }

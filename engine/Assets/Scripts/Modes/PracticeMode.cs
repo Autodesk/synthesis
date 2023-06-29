@@ -19,6 +19,7 @@ public class PracticeMode : IMode
   
     private bool _lastEscapeValue = false;
     private bool _escapeMenuOpen = false;
+    private bool _showingScoreboard = false;
 
     public static GamepieceData ChosenGamepiece { get; set; }
     public static PrimitiveType ChosenPrimitive { get; set; }
@@ -45,7 +46,6 @@ public class PracticeMode : IMode
 
     public void Start()
     {
-        DynamicUIManager.CreatePanel<ScoreboardPanel>(true);
         DynamicUIManager.CreateModal<AddFieldModal>();
 
         // var mira = new MirabufLive("C:\\Users\\hunte\\AppData\\Roaming\\Autodesk\\Synthesis\\Mira\\BrokenLinksRobot_v1.mira");
@@ -136,6 +136,10 @@ public class PracticeMode : IMode
 
     public void Update()
     {
+        if (!_showingScoreboard && FieldSimObject.CurrentField != null && FieldSimObject.CurrentField.ScoringZones.Count > 0) {
+            _showingScoreboard = true;
+            DynamicUIManager.CreatePanel<ScoreboardPanel>(true, false);
+        }
         bool openEscapeMenu = InputManager.MappedValueInputs[TOGGLE_ESCAPE_MENU_INPUT].Value == 1.0F;
         if (openEscapeMenu && !_lastEscapeValue)
         {
