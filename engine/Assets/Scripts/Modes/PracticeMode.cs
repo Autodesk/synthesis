@@ -225,6 +225,8 @@ public class PracticeMode : IMode
         {
             FieldSimObject.CurrentField.Gamepieces.ForEach(gp => gp.Reset());
         }
+        
+        Scoring.ResetScore();
     }
 
     public static void ResetAll()

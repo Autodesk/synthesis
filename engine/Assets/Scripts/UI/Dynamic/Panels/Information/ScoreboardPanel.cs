@@ -28,7 +28,6 @@ public class ScoreboardPanel : PanelDynamic {
         PanelImage.RootGameObject.SetActive(false);
 
         Content panel = new Content(null, UnityObject, null);
-        // MainContent.SetTopStretch<Content>(Screen.width / 2 - _width / 2 - 40f, Screen.width / 2 - _width / 2 - 40f, 0);
         panel.SetBottomStretch<Content>(Screen.width / 2 - WIDTH / 2, Screen.width / 2 - WIDTH / 2, 0);
 
         const float topHeight = 50f;
@@ -42,7 +41,7 @@ public class ScoreboardPanel : PanelDynamic {
             .ApplyTemplate(VerticalLayout)
             .SetAnchors<Label>(new Vector2(0, 0.5f), new Vector2(1, 0.5f))
             .SetAnchoredPosition<Label>(new Vector2(0, topHeight / 2))
-            .SetText(targetTime.ToString())
+            .SetText(Scoring.targetTime.ToString())
             .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
             .SetFontSize(40);
 
@@ -89,20 +88,18 @@ public class ScoreboardPanel : PanelDynamic {
         return true;
     }
     
-    float targetTime = 135;
-    bool matchEnd = false;
     public override void Update() {
         if (!(SimulationRunner.HasContext(SimulationRunner.GIZMO_SIM_CONTEXT) || SimulationRunner.HasContext(SimulationRunner.PAUSED_SIM_CONTEXT)) 
-                && targetTime >= 0) {
-            targetTime -= Time.deltaTime;
-            time.SetText(Mathf.RoundToInt(targetTime).ToString());
+                && Scoring.targetTime >= 0) {
+            Scoring.targetTime -= Time.deltaTime;
+            time.SetText(Mathf.RoundToInt(Scoring.targetTime).ToString());
             redScore.SetText(Scoring.redScore.ToString());
             blueScore.SetText(Scoring.blueScore.ToString());
         }
-        else if (!matchEnd)
+        else if (!Scoring.matchEnd)
         {
             //end match
-            matchEnd = true;
+            Scoring.matchEnd = true;
         }
     }
 
