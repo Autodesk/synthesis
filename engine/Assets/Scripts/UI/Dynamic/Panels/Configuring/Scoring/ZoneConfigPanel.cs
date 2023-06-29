@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using Synthesis.Gizmo;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
-using UnityEditor.PackageManager;
 using UnityEngine;
-
 public class ZoneConfigPanel : PanelDynamic {
     private const float MODAL_WIDTH = 500f;
     private const float MODAL_HEIGHT = 600f;
