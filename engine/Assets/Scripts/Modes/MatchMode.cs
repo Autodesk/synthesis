@@ -11,9 +11,13 @@ using TMPro;
 public class MatchMode : IMode {
     public static int CurrentFieldIndex = -1;
     public static int[] SelectedRobots = new int[6];
-
-    public static (Vector3 position, Quaternion rotation)[] RobotSpawnLocations = new (Vector3 position, Quaternion rotation)[6];
     
+    public static (Vector3 position, Quaternion rotation)[] RobotSpawnLocations = 
+        new (Vector3 position, Quaternion rotation)[6];
+
+    public static (Vector3 position, Quaternion rotation)[] RoundedSpawnLocation =
+        new (Vector3 position, Quaternion rotation)[6];
+        
     public static List<RobotSimObject> Robots = new List<RobotSimObject>();
 
     public const string PREVIOUS_SPAWN_LOCATION = "Previous Spawn Location";
@@ -24,6 +28,7 @@ public class MatchMode : IMode {
     {
         Array.Fill(SelectedRobots, -1);
         Array.Fill(RobotSpawnLocations, (Vector3.zero, Quaternion.identity));
+        Array.Fill(RoundedSpawnLocation, (Vector3.zero, Quaternion.identity));
         
         /*SynthesisAPI.EventBus.EventBus.NewTypeListener<MatchStateMachine.OnStateStarted>(e =>
         {

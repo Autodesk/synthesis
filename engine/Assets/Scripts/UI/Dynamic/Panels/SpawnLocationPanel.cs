@@ -14,8 +14,12 @@ namespace Synthesis.UI.Dynamic
 
         private const float robotMoveSpeed = 7f;
         private const float robotTiltAmount = 0.32f;
+        private const float maxTiltDegrees = 10f;
 
-        private const float rotateRobotSpeed = 450f;
+        private const float movementSnappingMeters = 0.5f;
+        private const float rotationSnappingDegrees = 22.5f;
+
+        private const float rotateRobotSpeed = 1000;
         
         private const float spawnDistanceFromSurface = 0.1524f;
         
@@ -204,6 +208,11 @@ namespace Synthesis.UI.Dynamic
                     {
                         MatchMode.RobotSpawnLocations[_selectedButton].position = new Vector3(hit.point.x,
                             boxHit.point.y + boxHalfSize.y + spawnDistanceFromSurface, hit.point.z);
+                        
+                        MatchMode.RoundedSpawnLocation[_selectedButton].position = 
+                            new Vector3( Mathf.Round(hit.point.x/movementSnappingMeters)*movementSnappingMeters, 
+                                (boxHit.point.y + boxHalfSize.y + spawnDistanceFromSurface), 
+                                Mathf.Round(hit.point.z/movementSnappingMeters)*movementSnappingMeters);
                     }
                 }
             }
@@ -213,9 +222,12 @@ namespace Synthesis.UI.Dynamic
         {
             if (Mathf.Abs(Input.mouseScrollDelta.y) > 0.001f)
             {
-                //var rotation = MatchMode.RobotSpawnLocations[_selectedButton].rotation;
-                MatchMode.RobotSpawnLocations[_selectedButton].rotation.eulerAngles += Vector3.up 
-                    * (Input.mouseScrollDelta.y * rotateRobotSpeed * Time.deltaTime);
+                MatchMode.RobotSpawnLocations[_selectedButton].rotation.eulerAngles += 
+                    Vector3.up * (Mathf.Sign(Input.mouseScrollDelta.y) * rotateRobotSpeed * Time.deltaTime);
+
+                float rawRotation = MatchMode.RobotSpawnLocations[_selectedButton].rotation.eulerAngles.y;
+                MatchMode.RoundedSpawnLocation[_selectedButton].rotation.eulerAngles = 
+                    new Vector3(0, Mathf.Round(rawRotation/rotationSnappingDegrees)*rotationSnappingDegrees, 0);
             }
         }
 
@@ -233,18 +245,16 @@ namespace Synthesis.UI.Dynamic
                 var box = _robotHighlights[i];
 
                 Vector3 prevPos = box.position;
-                Vector3 target = MatchMode.RobotSpawnLocations[i].position;
+                Vector3 target = MatchMode.RoundedSpawnLocation[i].position;
                 box.position = Vector3.Lerp(prevPos, target, robotMoveSpeed * Time.deltaTime);
 
                 Vector3 robotTilt = (target - prevPos) * (45f * robotTiltAmount);
-                //box.rotation = Quaternion.Euler(robotTilt.z, MatchMode.RobotSpawnLocations[i].rotation.eulerAngles.y, -robotTilt.x);
-                
-                //Quaternion rotation 
 
-                Quaternion robotYaw = MatchMode.RobotSpawnLocations[i].rotation;
+                Quaternion robotYaw = MatchMode.RoundedSpawnLocation[i].rotation;
                 
-                box.rotation = Quaternion.Euler(robotTilt.z, 0, -robotTilt.x) 
-                               * (MatchMode.RobotSpawnLocations[i].rotation);
+                box.rotation = Quaternion.Euler(
+                    Mathf.Clamp(robotTilt.z, -maxTiltDegrees, maxTiltDegrees), 0,
+                    Mathf.Clamp(-robotTilt.x, -maxTiltDegrees, maxTiltDegrees)) * robotYaw;
 
                 RobotSimObject simObject = MatchMode.Robots[i];
                 
