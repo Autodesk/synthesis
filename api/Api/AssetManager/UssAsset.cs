@@ -4,6 +4,8 @@ using SynthesisAPI.UIManager;
 using SynthesisAPI.Utilities;
 using SynthesisAPI.VirtualFileSystem;
 
+#nullable enable
+
 namespace SynthesisAPI.AssetManager
 {
     /// <summary>
@@ -11,7 +13,7 @@ namespace SynthesisAPI.AssetManager
     /// </summary>
     public class UssAsset : Asset
     {
-        public StyleSheet StyleSheet { get; private set; }
+        public StyleSheet? StyleSheet { get; private set; }
         
         public UssAsset(string name, Permissions perm, string sourcePath)
         {

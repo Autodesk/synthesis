@@ -3,6 +3,7 @@ from . import Handlers
 
 from ..general_imports import *
 
+
 # no longer used
 class HPalette:
     handlers = []
