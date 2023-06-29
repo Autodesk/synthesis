@@ -12,7 +12,6 @@ public class ModeManager {
             if (_currentMode != null)
                 _currentMode.End();
             _currentMode = value;
-            _currentMode.Start();
         }
     }
 
@@ -22,6 +21,7 @@ public class ModeManager {
         {
             DynamicUIManager.CreateModal<ChooseModeModal>();
         }
+        else CurrentMode.Start();
     }
     
     public static void Update()

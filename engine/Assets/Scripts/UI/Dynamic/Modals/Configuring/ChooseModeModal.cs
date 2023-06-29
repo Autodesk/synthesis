@@ -27,8 +27,8 @@ public class ChooseModeModal : ModalDynamic
             .ApplyTemplate(VerticalLayout)
             .AddOnClickedEvent(b =>
             {
-                ModeManager.CurrentMode = new PracticeMode();
                 if (SceneManager.GetActiveScene().name != "MainScene") SceneManager.LoadScene("MainScene");
+                ModeManager.CurrentMode = new PracticeMode();
             });
 
         MainContent.CreateButton()
@@ -36,8 +36,8 @@ public class ChooseModeModal : ModalDynamic
             .ApplyTemplate(VerticalLayout)
             .AddOnClickedEvent(b =>
             {
-                ModeManager.CurrentMode = new MatchMode();
                 if (SceneManager.GetActiveScene().name != "MainScene") SceneManager.LoadScene("MainScene");
+                ModeManager.CurrentMode = new MatchMode();
             });
     }
     
