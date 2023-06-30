@@ -389,7 +389,7 @@ namespace Synthesis.UI.Dynamic {
             RootRectTransform.anchorMax = new Vector2(1, 0.5f);
             return (this as T)!;
         }
-
+        
         public T SetBackgroundColor<T>(Color color) where T : UIComponent {
             UnityEngine.UI.Image image = RootGameObject.GetComponent<UnityEngine.UI.Image>();
             if (image)

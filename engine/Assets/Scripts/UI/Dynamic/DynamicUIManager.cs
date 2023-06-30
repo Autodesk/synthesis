@@ -184,7 +184,10 @@ namespace Synthesis.UI.Dynamic {
             return PanelExists(typeof(T));
         } 
 
-    public static bool PanelExists(Type t) => _persistentPanels.ContainsKey(t);
+    public static bool PanelExists(Type t) {
+        return _persistentPanels.ContainsKey(t);
+
+    } 
 
         public static T GetPanel<T>() where T : PanelDynamic
         {

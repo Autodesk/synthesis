@@ -4,7 +4,6 @@ using Synthesis.Physics;
 using Synthesis.Runtime;
 using SynthesisAPI.EventBus;
 using UnityEngine;
-
 public enum Alliance {
     Red,
     Blue
