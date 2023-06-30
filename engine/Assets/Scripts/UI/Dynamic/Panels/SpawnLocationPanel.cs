@@ -77,9 +77,7 @@ namespace Synthesis.UI.Dynamic
                         DynamicUIManager.ClosePanel<SpawnLocationPanel>();
                         MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.FieldConfig);
                     });
-            CancelButton
-                .StepIntoLabel(label => label.SetText("Revert"))
-                .AddOnClickedEvent(b => { });
+            CancelButton.RootGameObject.SetActive(false);
             CreateRobotHighlights();
             CreateButtons();
             SelectButton(0);

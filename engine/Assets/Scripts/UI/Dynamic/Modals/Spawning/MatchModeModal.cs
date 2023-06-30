@@ -95,7 +95,7 @@ public class MatchModeModal : ModalDynamic
         }
         
         DynamicUIManager.CloseActiveModal();
-        DynamicUIManager.CreatePanel<SpawnLocationPanel>();
+        DynamicUIManager.CreatePanel<SpawnLocationPanel>(true);
     }
     
     public override void Update() {

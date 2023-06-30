@@ -1,18 +1,13 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using NUnit.Framework;
-using UnityEngine;
-using SynthesisAPI.Utilities;
-
-using Logger = SynthesisAPI.Utilities.Logger;
-using Synthesis.Replay;
-using Synthesis.Physics;
-using SynthesisAPI.EventBus;
-using Synthesis.Gizmo;
-using Synthesis.Runtime;
 using System.Linq;
-
+using Synthesis.Gizmo;
+using Synthesis.Physics;
+using Synthesis.Replay;
+using Synthesis.Runtime;
+using SynthesisAPI.EventBus;
+using TMPro;
+using UnityEngine;
 namespace Synthesis.UI.Dynamic {
     public static class DynamicUIManager {
 
@@ -41,9 +36,9 @@ namespace Synthesis.UI.Dynamic {
                         .SetSlideDirection(UnityEngine.UI.Slider.Direction.LeftToRight)
                         .StepIntoBackgroundImage(i => i.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE)))
                         .StepIntoFillImage(i => i.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK)))
-                        .StepIntoTitleLabel(l => l.SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Bottom)
+                        .StepIntoTitleLabel(l => l.SetVerticalAlignment(VerticalAlignmentOptions.Bottom)
                             .SetFontSize(20).SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK)))
-                        .StepIntoValueLabel(l => l.SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Bottom)
+                        .StepIntoValueLabel(l => l.SetVerticalAlignment(VerticalAlignmentOptions.Bottom)
                             .SetFontSize(20).SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK)));
                     SimulationRunner.OnSimKill += () => { _replaySlider = null; };
                 return _replaySlider;
@@ -58,11 +53,20 @@ namespace Synthesis.UI.Dynamic {
             GizmoManager.ExitGizmo();
             if (ActiveModal != null)
                 CloseActiveModal();
-            
+
+            return CreateModal_Internal<T>(args);
+        }
+
+        public static bool CreateModalWithoutOverwrite<T>(params object[] args) where T : ModalDynamic {
+            if (_persistentPanels.Count > 0) return false;
+            if (ActiveModal != null) return false;
+
+            return CreateModal_Internal<T>(args);
+        }
+
+        private static bool CreateModal_Internal<T>(params object[] args) where T : ModalDynamic {
             var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("dynamic-modal-base"), GameObject.Find("UI").transform.Find("ScreenSpace").Find("ModalContainer"));
-
-            // var c = ColorManager.GetColor("SAMPLE");
-
+            
             ModalDynamic modal = (ModalDynamic)Activator.CreateInstance(typeof(T), args);
             modal.Create_Internal(unityObject);
             modal.Create();
@@ -76,7 +80,7 @@ namespace Synthesis.UI.Dynamic {
             AnalyticsManager.LogEvent(new AnalyticsEvent(category: "ui", action: $"{typeof(T).Name}", label:"create"));
             AnalyticsManager.PostData();
             return true;
-        }
+        } 
 
         // Currently only going to allow one active panel
         public static bool CreatePanel<T>(bool persistent = false, params object[] args) where T : PanelDynamic {
