@@ -50,6 +50,7 @@ public class MatchMode : IMode {
             switch (onStateStarted.state.StateName) {
                 case MatchStateMachine.StateName.Auto:
                     Scoring.targetTime = 15;
+                    DynamicUIManager.CreatePanel<ScoreboardPanel>(true, true);
                     break;
                 case MatchStateMachine.StateName.Transition:
                     Scoring.targetTime = 135;
@@ -114,10 +115,6 @@ public class MatchMode : IMode {
 <<<<<<< HEAD
     
     public void Update() {
-        if (!_showingScoreboard && FieldSimObject.CurrentField != null && FieldSimObject.CurrentField.ScoringZones.Count > 0) {
-            _showingScoreboard = true;
-            DynamicUIManager.CreatePanel<ScoreboardPanel>(true, true);
-        }
         if (_stateMachine != null) {
             _stateMachine.Update();
 

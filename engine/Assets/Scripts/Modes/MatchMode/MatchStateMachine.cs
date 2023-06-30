@@ -175,8 +175,8 @@ public class MatchStateMachine {
     public class FieldConfig : MatchState {
         public override void Start() {
             base.Start();
-            DynamicUIManager.CreatePanel<ScoringZonesPanel>(true);
-            var panel               = DynamicUIManager.GetPanel<ScoringZonesPanel>();
+            DynamicUIManager.CreatePanel<ScoringZonesPanel>();
+            var panel = DynamicUIManager.GetPanel<ScoringZonesPanel>();
             panel.OnAccepted += () => {
                 DynamicUIManager.CreateModal<ConfirmModal>("Start Match?");
                 DynamicUIManager.ActiveModal.OnAccepted += () => {
