@@ -22,4 +22,6 @@ Assets/Packages/*.meta
 
 !EngineDeps/EngineDeps.csproj
 
+engine.sln.DotSettings.user
+
 .vscode/

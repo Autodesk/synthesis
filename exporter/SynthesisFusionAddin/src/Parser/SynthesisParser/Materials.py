@@ -123,7 +123,6 @@ def _MapAllAppearances(
     options: ParseOptions,
     progressDialog: PDMessage,
 ) -> None:
-
     # in case there are no appearances on a body
     # this is just a color tho
     setDefaultAppearance(materials.appearances["default"])
