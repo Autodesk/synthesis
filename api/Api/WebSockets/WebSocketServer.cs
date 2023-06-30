@@ -13,7 +13,7 @@ namespace SynthesisAPI.WS {
 
     public class WebSocketServer : IDisposable {
 
-        private Inner _instance;
+        private readonly Inner _instance; // On dispose we close this instance, one construct we create the instance, this isn't nullable
         
         public IReadOnlyList<Guid> Clients => _instance._clientDict.Keys.ToList().AsReadOnly();
 
@@ -21,10 +21,13 @@ namespace SynthesisAPI.WS {
             _instance = new Inner(hostname, port);
         }
 
+        // It is beyond me why someone would do this. these should be supplied either as a passthrough or to the constructor  
         public void AddOnMessageListener(Action<Guid, string> onMessage)
             => _instance.OnMessage += onMessage;
+
         public void AddOnConnectListener(Action<Guid> onConnect)
             => _instance.OnConnect += onConnect;
+
         public void AddOnDisconnectListener(Action<Guid> onDisconnect)
             => _instance.OnDisconnect += onDisconnect;
 
@@ -33,14 +36,14 @@ namespace SynthesisAPI.WS {
 
         private class Inner {
             
-            private TcpListener _listener;
-            private Mutex _clientDictMut = new Mutex();
+            private readonly TcpListener _listener;
+            private readonly Mutex _clientDictMut = new Mutex();
 
             public Dictionary<Guid, WSClientHandler> _clientDict = new Dictionary<Guid, WSClientHandler>();
             
-            public event Action<Guid, string> OnMessage;
-            public event Action<Guid> OnConnect;
-            public event Action<Guid> OnDisconnect;
+            public event Action<Guid, string>? OnMessage;
+            public event Action<Guid>? OnConnect;
+            public event Action<Guid>? OnDisconnect;
 
             public Inner(string hostname, int port) {
                 _listener = new TcpListener(IPAddress.Parse(hostname), port);
@@ -109,17 +112,15 @@ namespace SynthesisAPI.WS {
 
                         var frame = client.ReadWS();
 
-                        if (OnMessage != null)
-                            OnMessage(client.GUID, frame.ParseAsPlainText());
+                        OnMessage?.Invoke(client.GUID, frame.ParseAsPlainText());
                     }
-                } catch (IOException _) { } finally {
+                } catch (IOException) { } finally {
                     _clientDictMut.WaitOne();
                     if (_clientDict.ContainsKey(client.GUID))
                         _clientDict[client.GUID].Kill();
                     _clientDict.Remove(client.GUID);
                     _clientDictMut.ReleaseMutex();
-                    if (OnDisconnect != null)
-                        OnDisconnect(client.GUID);
+                    OnDisconnect?.Invoke(client.GUID);
                 }
             }
 
@@ -132,7 +133,6 @@ namespace SynthesisAPI.WS {
 
         public void Dispose() {
             _instance.Close();
-            _instance = null;
         }
     }
 

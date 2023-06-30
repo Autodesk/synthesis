@@ -2,7 +2,6 @@
 using System.Linq;
 using UnityEngine;
 using UMesh = UnityEngine.Mesh;
-using UVector3 = UnityEngine.Vector3;
 
 namespace Mirabuf {
     public partial class TriangleMesh {
@@ -22,9 +21,10 @@ namespace Mirabuf {
                     try {
                         _colliderMesh = MakeMesh();
                         Physics.BakeMesh(_colliderMesh.GetInstanceID(), true);
-                    } catch (Exception e) {
+                    } catch (Exception) {
                         // TODO: Maybe don't silently fail
                         _colliderMesh = new UMesh();
+                        Debug.LogError("Failed to bake physics mesh!");
                     }
                 }
                 return _colliderMesh;

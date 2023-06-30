@@ -265,6 +265,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     private void Unpossess() {
+        GizmoManager.ExitGizmo();
         BehavioursEnabled = false;
         Vector3 currentPoint = OrbitCameraMode.FocusPoint();
         OrbitCameraMode.FocusPoint = () => currentPoint;
@@ -630,6 +631,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     public static bool RemoveRobot(string robot) {
         if (!_spawnedRobots.ContainsKey(robot))
             return false;
+        
+        GizmoManager.ExitGizmo();
 
         if (robot == CurrentlyPossessedRobot)
             CurrentlyPossessedRobot = string.Empty;

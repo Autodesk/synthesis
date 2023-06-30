@@ -1,0 +1,19 @@
+name: Format Validation (Black)
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [ master, dev ]
+  pull_request:
+    branches: [ master, dev ]
+
+jobs:
+  blackFormatChecker:
+    name: Black Formatter for Python Exporter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: psf/black@stable
+        with:
+          options: "--check"
+          src: "./exporter/SynthesisFusionAddin/"

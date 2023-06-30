@@ -1,11 +1,6 @@
-﻿using SynthesisAPI.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Mirabuf.Signal;
-using Mirabuf;
-using Google.Protobuf;
-using System.Net.Sockets;
 
 namespace SynthesisAPI.Utilities
 {
@@ -19,8 +14,8 @@ namespace SynthesisAPI.Utilities
     {
         private int _generation;
         private bool _isFree;
-        private Signals? _currentSignalLayout;
-        public Signals? CurrentSignalLayout
+        private Signals _currentSignalLayout;
+        public Signals CurrentSignalLayout
         {
             get => _currentSignalLayout;
             set

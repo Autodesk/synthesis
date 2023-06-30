@@ -1,0 +1,6 @@
+# This file is used to auto request reviews for a pull request
+# For each new dev team this file needs to be updated
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# 2023 Dev Team
+* @a-crowell @BrandonPacewic @KyroVibe @Markytt @PepperLola @LucaHaverty
