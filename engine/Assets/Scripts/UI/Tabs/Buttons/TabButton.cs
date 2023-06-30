@@ -16,7 +16,7 @@ public class TabButton : MonoBehaviour {
     public string Name {
         get => _name;
         set {
-            _name = value;
+            _name           = value;
             ButtonText.text = _name;
         }
     }
