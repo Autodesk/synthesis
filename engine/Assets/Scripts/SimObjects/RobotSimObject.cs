@@ -583,9 +583,16 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     public static void SpawnRobot(string filePath) {
-        SpawnRobot(filePath, new Vector3(0f, 0.5f, 0f), Quaternion.identity);
+        SpawnRobot(filePath, new Vector3(0f, 0.5f, 0f), Quaternion.identity, true);
     }
-    public static void SpawnRobot(string filePath, Vector3 position, Quaternion rotation) {
+    public static void SpawnRobot(string filePath, bool spawnGizmo) {
+        SpawnRobot(filePath, new Vector3(0f, 0.5f, 0f), Quaternion.identity, spawnGizmo);
+    }
+    public static void SpawnRobot(string filePath, Vector3 position, Quaternion rotation)
+    {
+        SpawnRobot(filePath, position, rotation, true);
+    }
+    public static void SpawnRobot(string filePath, Vector3 position, Quaternion rotation, bool spawnGizmo) {
 
         // GizmoManager.ExitGizmo();
 
@@ -616,7 +623,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
         simObject.Possess();
 
-        GizmoManager.SpawnGizmo(simObject);
+        if (spawnGizmo)
+            GizmoManager.SpawnGizmo(simObject);
         // GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, mira.MainObject.transform, mira.MainObject.transform.position);
     }
 

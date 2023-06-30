@@ -70,9 +70,11 @@ public class CameraController : MonoBehaviour {
         // if (FollowTransform != null && transform.parent != FollowTransform)
         //     transform.parent = FollowTransform;
 
-        CameraMode.Update(this);
+        if (CameraMode != null)
+            CameraMode.Update(this);
     }
     public void LateUpdate() {
-        CameraMode.LateUpdate(this);
+        if (CameraMode != null)
+            CameraMode.LateUpdate(this);
     }
 }

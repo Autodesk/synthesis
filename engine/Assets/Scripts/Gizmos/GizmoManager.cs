@@ -93,11 +93,8 @@ namespace Synthesis.Gizmo {
         public static void SpawnGizmo(GizmoConfig config) {
             if (_currentGizmoConfig.HasValue)
                 ExitGizmo();
-
-            // Debug.Log("spawn gizmo");
-
+            
             // Check if modal is opened?
-
             SimulationRunner.AddContext(SimulationRunner.GIZMO_SIM_CONTEXT);
             _currentGizmoConfig = config;
 
