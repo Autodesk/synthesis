@@ -1,13 +1,12 @@
 using System;
-using Synthesis.UI.Dynamic;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Synthesis.Physics;
+using Synthesis.UI.Dynamic;
+using SynthesisAPI.EventBus;
+using SynthesisAPI.Utilities;
 using UnityEngine;
-using TMPro;
-
+using Logger = SynthesisAPI.Utilities.Logger;
 public class MatchMode : IMode {
     public static int CurrentFieldIndex = -1;
     public static int[] SelectedRobots = new int[6];
@@ -30,19 +29,46 @@ public class MatchMode : IMode {
 
     public static List<RobotSimObject> Robots = new List<RobotSimObject>();
 
+    private int _redScore = 0;
+    private int _blueScore = 0;
+
     public const string PREVIOUS_SPAWN_LOCATION = "Previous Spawn Location";
     public const string PREVIOUS_SPAWN_ROTATION = "Previous Spawn Rotation";
-
+    
     private MatchStateMachine _stateMachine;
-    public void Start()
-    {
+
+    // Start is called before the first frame update
+    public void Start() {
+        DynamicUIManager.CreateModal<MatchModeModal>();
+        EventBus.NewTypeListener<OnScoreUpdateEvent>(
+            e => {
+                ScoringZone zone = ((OnScoreUpdateEvent)e).Zone;
+                switch (zone.Alliance) {
+                    case Alliance.Blue:
+                        _blueScore += zone.Points;
+                        break;
+                    case Alliance.Red:
+                        _redScore += zone.Points;
+                        break;
+                }
+                Debug.Log($"{zone.Alliance.ToString()} scored {zone.Points} points! Blue: {_blueScore} Red: {_redScore}");
+            });
+
+        MainHUD.AddItemToDrawer("Scoring Zones", b => {
+            if (FieldSimObject.CurrentField == null) {
+                Logger.Log("No field loaded!", LogLevel.Info);
+            } else {
+                DynamicUIManager.CreatePanel<ScoringZonesPanel>();
+            }
+        });
+        
         Array.Fill(SelectedRobots, -1);
         Array.Fill(RawSpawnLocations, (Vector3.zero, Quaternion.identity));
 
         _stateMachine = MatchStateMachine.Instance;
         _stateMachine.SetState(MatchStateMachine.StateName.MatchConfig);
     }
-
+    
     public void Update() {
         if (_stateMachine != null)
             _stateMachine.Update();
@@ -88,14 +114,14 @@ public class MatchMode : IMode {
             switch (a[i])
             {
                 case "$appdata":
-                    b += System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
+                    b += Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
                     break;
                 default:
                     b += a[i];
                     break;
             }
             if (i != a.Length - 1)
-                b += System.IO.Path.AltDirectorySeparatorChar;
+                b += Path.AltDirectorySeparatorChar;
         }
         return b;
     }

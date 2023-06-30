@@ -5,6 +5,9 @@ using Mirabuf;
 using Synthesis.Gizmo;
 using Synthesis.Import;
 using Synthesis.Physics;
+using Synthesis.PreferenceManager;
+using Synthesis.UI;
+using Synthesis.UI.Dynamic;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
 using UnityEngine;
@@ -16,6 +19,7 @@ using Vector3 = UnityEngine.Vector3;
 public class FieldSimObject : SimObject, IPhysicsOverridable {
 
     public static FieldSimObject CurrentField { get; private set; }
+    public List<ScoringZone> ScoringZones = new();
 
     public MirabufLive MiraLive { get; private set; }
     public GameObject GroundedNode { get; private set; }
@@ -23,8 +27,6 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
     public Bounds FieldBounds { get; private set; }
     public List<GamepieceSimObject> Gamepieces { get; private set; }
     
-    public List<ScoringZone> ScoringZones { get; private set; }
-
     private Vector3 _initialPosition;
     private Quaternion _initialRotation;
 
@@ -98,7 +100,20 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
             gp.InitialPosition = gpTransform.position;
             gp.InitialRotation = gpTransform.rotation;
         });
+        
+        SynthesisAPI.EventBus.EventBus.NewTypeListener<PostPreferenceSaveEvent>(e =>
+        {
+            bool visible = PreferenceManager.GetPreference<bool>(SettingsModal.RENDER_SCORE_ZONES);
+            ScoringZones.ForEach(zone => zone.SetVisibility(visible));
+        });
         // Shooting.ConfigureGamepieces();
+        
+        FieldObject.transform.GetComponentsInChildren<Rigidbody>().ForEach(x => {
+            var rc = x.gameObject.AddComponent<HighlightComponent>();
+            rc.Color = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_HOVER);
+            rc.enabled = false;
+        });
+        
     }
 
     public void ResetField() {
@@ -116,6 +131,7 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
             RobotSimObject.GetCurrentlyPossessedRobot().ClearGamepieces();
 
+        CurrentField.ScoringZones.Clear();
         CurrentField.Gamepieces.ForEach(x => x.DeleteGamepiece());
         CurrentField.Gamepieces.Clear();
         GameObject.Destroy(CurrentField.FieldObject);
@@ -149,19 +165,6 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
             GizmoManager.SpawnGizmo(RobotSimObject.GetCurrentlyPossessedRobot());
             // TODO: Move robot to default spawn location for field
         }
-    }
-
-    public void CreateScoringZone(Alliance alliance, int points, bool destroyObject = true)
-    {
-        GameObject zone = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        ScoringZones.Add(new ScoringZone(zone, alliance, points, destroyObject));
-    }
-
-    public void CreateTestGamepiece(PrimitiveType type)
-    {
-        GameObject gamepiece = GameObject.CreatePrimitive(type);
-        gamepiece.tag = "gamepiece";
-        gamepiece.AddComponent<Rigidbody>();
     }
 
     public override void Destroy()

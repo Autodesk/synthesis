@@ -383,6 +383,24 @@ namespace Synthesis.UI.Dynamic {
             RootRectTransform.anchorMax = new Vector2(0.5f, 1);
             return (this as T)!;
         }
+
+        public T SetAnchorLeft<T>() where T : UIComponent {
+            RootRectTransform.anchorMin = new Vector2(0, 0.5f);
+            RootRectTransform.anchorMax = new Vector2(1, 0.5f);
+            return (this as T)!;
+        }
+        
+        public void DeleteAllChildren() {
+            Children.ForEach(x => GameObject.Destroy(x.RootGameObject));
+            Children.Clear();
+        }
+
+        public T SetBackgroundColor<T>(Color color) where T : UIComponent {
+            UnityEngine.UI.Image image = RootGameObject.GetComponent<UnityEngine.UI.Image>();
+            if (image)
+                image.color = color;
+            return (this as T)!;
+        }
     }
 
     #endregion
@@ -439,7 +457,26 @@ namespace Synthesis.UI.Dynamic {
             return (leftContent, rightContent);
         }
         public (Content top, Content bottom) SplitTopBottom(float topHeight, float padding) {
-            throw new NotImplementedException();
+            var topContentObject = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("content-base"), base.RootGameObject.transform);
+            var topRt = topContentObject.GetComponent<RectTransform>();
+            topRt.anchorMax = new Vector2(0.5f, 1f);
+            topRt.anchorMin = new Vector2(0.5f, 1f);
+            topRt.anchoredPosition = new Vector2(0f, 0);
+            var topContent = new Content(this, topContentObject, new Vector2(Size.x, topHeight));
+
+            var bottomContentObject = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("content-base"), base.RootGameObject.transform);
+            var bottomRt = bottomContentObject.GetComponent<RectTransform>();
+            bottomRt.anchorMax = new Vector2(0.5f, 0.5f);
+            bottomRt.anchorMin = new Vector2(0.5f, 0.5f);
+            float bottomHeight = (Size.y - topHeight) - padding;
+            bottomRt.anchoredPosition = new Vector2(0f, 0);
+            // rightRt.sizeDelta = new Vector2(rightWidth, rightRt.sizeDelta.y);
+            var bottomContent = new Content(this, bottomContentObject, new Vector2(Size.x, bottomHeight));
+
+            base.Children.Add(topContent);
+            base.Children.Add(bottomContent);
+
+            return (topContent, bottomContent);
         }
 
         public Label CreateLabel(float height = 15f) {
@@ -504,6 +541,14 @@ namespace Synthesis.UI.Dynamic {
             return content;
         }
 
+        public NumberInputField CreateNumberInputField()
+        {
+            var numberInputFieldObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("number-input-field-base"), base.RootGameObject.transform);
+            var numberInputField = new NumberInputField(this, numberInputFieldObj);
+            base.Children.Add(numberInputField);
+            return numberInputField;
+        }
+
         public Content StepIntoImage(Action<Image> mod) {
             if (_image != null)
                 mod(_image);
@@ -566,7 +611,7 @@ namespace Synthesis.UI.Dynamic {
             } else {
                 size = RootRectTransform.sizeDelta;
             }
-
+            
             SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_WHITE));
         }
 
@@ -598,6 +643,10 @@ namespace Synthesis.UI.Dynamic {
             => SetColor(ColorManager.TryGetColor(c));
         public Label SetColor(Color c) {
             _unityText.color = c;
+            return this;
+        }
+        public Label SetOverflowMode(TextOverflowModes mode) {
+            _unityText.overflowMode = mode;
             return this;
         }
         public Label SetTopStretch(float leftPadding = 0f, float rightPadding = 0f, float anchoredY = 0f)
@@ -668,8 +717,10 @@ namespace Synthesis.UI.Dynamic {
             EnabledColor = ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE);
         }
 
-        public Toggle SetState(bool state) {
-            _unityToggle.isOn = state;
+        public Toggle SetState(bool state, bool notify = true) {
+            if (notify)
+                _unityToggle.isOn = state;
+            else _unityToggle.SetIsOnWithoutNotify(state);
             return this;
         }
         public Toggle AddOnStateChangedEvent(Action<Toggle, bool> callback) {
@@ -844,6 +895,11 @@ namespace Synthesis.UI.Dynamic {
         }
         public InputField SetValue(string val) {
             _tmpInput.SetTextWithoutNotify(val);
+            return this;
+        }
+
+        public InputField SetCharacterLimit(int length) {
+            _tmpInput.characterLimit = length;
             return this;
         }
     }
@@ -1104,6 +1160,85 @@ namespace Synthesis.UI.Dynamic {
 
             _handleImage = new Image(this, unityObject.transform.Find("Sliding Area").Find("Handle").gameObject);
             _handleImage.SetColor(ColorManager.SYNTHESIS_WHITE);
+        }
+    }
+    
+    public class NumberInputField : UIComponent {
+
+        public static readonly Func<NumberInputField, NumberInputField> VerticalLayoutTemplate = (NumberInputField inputField)
+            => inputField.SetTopStretch<NumberInputField>(leftPadding: 15f, anchoredY: inputField.Parent!.HeightOfChildren - inputField.Size.y + 15f);
+
+        public event Action<NumberInputField, int> OnValueChanged;
+        private Label _hint;
+        public Label Hint => _hint;
+        private Button _incrementButton;
+        public Button IncrementButton => _incrementButton;
+        private Button _decrementButton;
+        public Button DecrementButton => _decrementButton;
+        private Label _label;
+        public Label Label => _label;
+        private Image _backgroundImage;
+        public Image BackgroundImage => _backgroundImage;
+        private TMP_InputField _tmpInput;
+        public TMP_InputField.ContentType ContentType => _tmpInput.contentType;
+        private int _value = 0;
+        public int Value
+        {
+            get => _value;
+            set
+            {
+                _value = value;
+                _tmpInput.text = _value.ToString();
+            }
+        }
+
+        public NumberInputField(UIComponent? parent, GameObject unityObject) : base(parent, unityObject) {
+            var ifObj = unityObject.transform.Find("InputField");
+            _tmpInput = ifObj.GetComponent<TMP_InputField>();
+            _tmpInput.contentType = TMP_InputField.ContentType.IntegerNumber;
+            _tmpInput.characterLimit = 9;
+            _hint = new Label(this, ifObj.Find("Text Area").Find("Placeholder").gameObject, null);
+            _label = new Label(this, unityObject.transform.Find("Label").gameObject, null);
+            _tmpInput.onValueChanged.AddListener(x => {
+                _value = x == "" ? 0 : int.Parse(x);
+                if (_eventsActive && OnValueChanged != null)
+                    OnValueChanged(this, Value);
+            });
+
+            _incrementButton = new Button(this, unityObject.transform.Find("IncrementButton").gameObject, null)
+                .AddOnClickedEvent(b => Value += Value < Int32.MaxValue ? 1 : 0);
+            _decrementButton = new Button(this, unityObject.transform.Find("DecrementButton").gameObject, null)
+                .AddOnClickedEvent(b => Value -= Value > Int32.MinValue ? 1 : 0);
+
+            _backgroundImage = new Image(this, ifObj.gameObject);
+            _backgroundImage.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT));
+        }
+
+        public NumberInputField StepIntoHint(Action<Label> mod) {
+            mod(_hint);
+            return this;
+        }
+        public NumberInputField StepIntoLabel(Action<Label> mod) {
+            mod(_label);
+            return this;
+        }
+        public NumberInputField StepIntoIncrementButton(Action<Button> mod) {
+            mod(_incrementButton);
+            return this;
+        }
+        public NumberInputField StepIntoDecrementButton(Action<Button> mod) {
+            mod(_decrementButton);
+            return this;
+        }
+        public NumberInputField AddOnValueChangedEvent(Action<NumberInputField, int> callback) {
+            OnValueChanged += callback;
+            return this;
+        }
+        public NumberInputField SetValue(int val)
+        {
+            _value = val;
+            _tmpInput.text = val.ToString();
+            return this;
         }
     }
 

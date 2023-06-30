@@ -74,6 +74,7 @@ namespace Synthesis.Runtime {
             WebSocketManager.Init();
 
             OnUpdate += DynamicUIManager.Update;
+            OnUpdate += ModeManager.Update;
 
             WebSocketManager.RioState.OnUnrecognizedMessage += s => Debug.Log(s);
 
@@ -101,7 +102,6 @@ namespace Synthesis.Runtime {
         void Update() {
             InputManager.UpdateInputs(_simulationContext);
             SimulationManager.Update();
-            ModeManager.Update();
 
             // Debug.Log($"WHAT: {Time.realtimeSinceStartup}");
 
