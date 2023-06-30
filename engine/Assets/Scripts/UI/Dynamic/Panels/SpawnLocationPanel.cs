@@ -1,12 +1,10 @@
 using System;
-using UnityEngine;
-using Synthesis.Runtime;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using Input = UnityEngine.Input;
-
-
+using Object = UnityEngine.Object;
 namespace Synthesis.UI.Dynamic
 {
     public class SpawnLocationPanel : PanelDynamic
@@ -82,10 +80,8 @@ namespace Synthesis.UI.Dynamic
             CancelButton
                 .StepIntoLabel(label => label.SetText("Revert"))
                 .AddOnClickedEvent(b => { });
-            
             CreateRobotHighlights();
             CreateButtons();
-
             SelectButton(0);
             return true;
         }
@@ -112,7 +108,7 @@ namespace Synthesis.UI.Dynamic
         
         public override void Delete()
         {
-            _robotHighlights.ForEach(x => UnityEngine.Object.Destroy(x.gameObject));
+            _robotHighlights.ForEach(x => Object.Destroy(x.gameObject));
         }
 
         /// <summary>

@@ -76,6 +76,7 @@ namespace Synthesis.Runtime {
             WebSocketManager.Init();
 
             OnUpdate += DynamicUIManager.Update;
+            OnUpdate += ModeManager.Update;
 
             WebSocketManager.RioState.OnUnrecognizedMessage += s => Debug.Log(s);
 
@@ -103,7 +104,6 @@ namespace Synthesis.Runtime {
         void Update() {
             InputManager.UpdateInputs(_simulationContext);
             SimulationManager.Update();
-            ModeManager.Update();
 
             // Debug.Log($"WHAT: {Time.realtimeSinceStartup}");
 
@@ -174,6 +174,9 @@ namespace Synthesis.Runtime {
         /// Teardown sim for recycle
         /// </summary>
         public static void SimKill() {
+
+            ModeManager.Teardown();
+
             FieldSimObject.DeleteField();
             List<string> robotIDs = new List<string>(RobotSimObject.SpawnedRobots.Count);
             RobotSimObject.SpawnedRobots.ForEach(x => robotIDs.Add(x.Name));
