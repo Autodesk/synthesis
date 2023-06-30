@@ -12,7 +12,7 @@ namespace Synthesis.UI.Panels {
     //
     //     public GameObject Content;
     //     public GameObject InputSelection;
-    //     
+    //
     //     private InputSelection awaitingReassignment = null;
     //
     //     public bool RequestInput(InputSelection selection)
@@ -27,7 +27,8 @@ namespace Synthesis.UI.Panels {
     //         if (RobotSimObject.CurrentlyPossessedRobot.Equals(string.Empty))
     //             return;
     //
-    //         foreach (var inputKey in SimulationManager.SimulationObjects[RobotSimObject.CurrentlyPossessedRobot]?.GetAllReservedInputs()) {
+    //         foreach (var inputKey in
+    //         SimulationManager.SimulationObjects[RobotSimObject.CurrentlyPossessedRobot]?.GetAllReservedInputs()) {
     //             var val = InputManager.MappedValueInputs[inputKey];
     //             var selectionObject = Instantiate(InputSelection, Content.transform);
     //             var selection = selectionObject.GetComponent<InputSelection>();
@@ -55,7 +56,8 @@ namespace Synthesis.UI.Panels {
     //                 if(input is Digital)
     //                     awaitingReassignment.UpdateUI(input.Name, input.Modifier);
     //                 else
-    //                     awaitingReassignment.UpdateUI(input.UsePositiveSide ? $"(+) {input.Name}" : $"(-) {input.Name}", input.Modifier);
+    //                     awaitingReassignment.UpdateUI(input.UsePositiveSide ? $"(+) {input.Name}" : $"(-)
+    //                     {input.Name}", input.Modifier);
     //                 awaitingReassignment = null;
     //             }
     //         }

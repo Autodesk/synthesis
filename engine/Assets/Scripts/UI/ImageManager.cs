@@ -5,11 +5,10 @@ using UnityEngine.UI;
 
 namespace Synthesis.UI {
     public class ImageManager : MonoBehaviour {
-
         public Sprite closeIcon;
         public Sprite collapseIcon;
 
-        public static Sprite CloseIcon => Instance.closeIcon;
+        public static Sprite CloseIcon    => Instance.closeIcon;
         public static Sprite CollapseIcon => Instance.collapseIcon;
 
         private static ImageManager instance;
@@ -20,6 +19,5 @@ namespace Synthesis.UI {
                 return instance;
             }
         }
-
     }
 }

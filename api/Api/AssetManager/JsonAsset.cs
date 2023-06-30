@@ -42,6 +42,11 @@ namespace SynthesisAPI.AssetManager
             {
                 SharedStream.Seek(returnPosition.Value);
             }
+
+            if (obj == null) {
+                throw new System.Exception("Failed to deserialize a Json object!");
+            }
+
             return obj;
         }
 

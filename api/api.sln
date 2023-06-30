@@ -11,8 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestApi", "TestApi\TestApi.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BenchmarkApi", "BenchmarkApi\BenchmarkApi.csproj", "{AC669A38-8C1C-4A3B-AFB8-368620018AA1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aardvark", "Aardvark\Aardvark.csproj", "{AEAC8A7A-4215-4E1E-AC6B-A4E310906466}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Patchbay", "Patchbay\Patchbay.csproj", "{F936B4C1-1360-46AE-9F12-7A022C1E00D9}"
 EndProject
+
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,10 +36,10 @@ Global
 		{AC669A38-8C1C-4A3B-AFB8-368620018AA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC669A38-8C1C-4A3B-AFB8-368620018AA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC669A38-8C1C-4A3B-AFB8-368620018AA1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AEAC8A7A-4215-4E1E-AC6B-A4E310906466}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AEAC8A7A-4215-4E1E-AC6B-A4E310906466}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AEAC8A7A-4215-4E1E-AC6B-A4E310906466}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AEAC8A7A-4215-4E1E-AC6B-A4E310906466}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F936B4C1-1360-46AE-9F12-7A022C1E00D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F936B4C1-1360-46AE-9F12-7A022C1E00D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F936B4C1-1360-46AE-9F12-7A022C1E00D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F936B4C1-1360-46AE-9F12-7A022C1E00D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
