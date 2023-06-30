@@ -7,8 +7,6 @@ using Synthesis.UI.Dynamic;
 using UnityEngine;
 public class MatchModeModal : ModalDynamic
 {
-    public Action OnAccepted;
-    
     private int _fieldIndex = -1;
     private List<String> _robotOptions = new List<string>();
     private string[] _fieldFiles;
@@ -48,7 +46,6 @@ public class MatchModeModal : ModalDynamic
             .StepIntoLabel(label => label.SetText("Load"))
             .AddOnClickedEvent(b =>
             {
-                OnAccepted.Invoke();
                 if (_fieldIndex != -1)
                 {
                     DynamicUIManager.CreateModal<LoadingScreenModal>(); 

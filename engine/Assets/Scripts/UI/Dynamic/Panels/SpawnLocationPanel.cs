@@ -75,7 +75,7 @@ namespace Synthesis.UI.Dynamic
                     .StepIntoLabel(label => label.SetText("Accept"))
                     .AddOnClickedEvent(b => {
                         DynamicUIManager.ClosePanel<SpawnLocationPanel>();
-                        MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.Auto);
+                        MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.FieldConfig);
                     });
             CancelButton
                 .StepIntoLabel(label => label.SetText("Revert"))

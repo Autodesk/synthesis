@@ -32,6 +32,8 @@ public class MatchMode : IMode {
     private int _redScore = 0;
     private int _blueScore = 0;
 
+    private bool _showingScoreboard = false;
+
     public const string PREVIOUS_SPAWN_LOCATION = "Previous Spawn Location";
     public const string PREVIOUS_SPAWN_ROTATION = "Previous Spawn Rotation";
     
@@ -40,19 +42,19 @@ public class MatchMode : IMode {
     // Start is called before the first frame update
     public void Start() {
         DynamicUIManager.CreateModal<MatchModeModal>();
-        EventBus.NewTypeListener<OnScoreUpdateEvent>(
-            e => {
-                ScoringZone zone = ((OnScoreUpdateEvent)e).Zone;
-                switch (zone.Alliance) {
-                    case Alliance.Blue:
-                        _blueScore += zone.Points;
-                        break;
-                    case Alliance.Red:
-                        _redScore += zone.Points;
-                        break;
-                }
-                Debug.Log($"{zone.Alliance.ToString()} scored {zone.Points} points! Blue: {_blueScore} Red: {_redScore}");
-            });
+        EventBus.NewTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
+        
+        EventBus.NewTypeListener<MatchStateMachine.OnStateStarted>(e => {
+            MatchStateMachine.OnStateStarted onStateStarted = (MatchStateMachine.OnStateStarted)e;
+            switch (onStateStarted.state.StateName) {
+                case MatchStateMachine.StateName.Auto:
+                    Scoring.targetTime = 15;
+                    break;
+                case MatchStateMachine.StateName.Transition:
+                    Scoring.targetTime = 135;
+                    break;
+            }
+        });
 
         MainHUD.AddItemToDrawer("Scoring Zones", b => {
             if (FieldSimObject.CurrentField == null) {
@@ -61,7 +63,8 @@ public class MatchMode : IMode {
                 DynamicUIManager.CreatePanel<ScoringZonesPanel>();
             }
         });
-        
+        MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("settings"));
+
         Array.Fill(SelectedRobots, -1);
         Array.Fill(RawSpawnLocations, (Vector3.zero, Quaternion.identity));
 
@@ -69,9 +72,36 @@ public class MatchMode : IMode {
         _stateMachine.SetState(MatchStateMachine.StateName.MatchConfig);
     }
     
+    private void HandleScoreEvent(IEvent e) {
+        if (e.GetType() != typeof(OnScoreUpdateEvent)) return;
+        OnScoreUpdateEvent scoreUpdateEvent = e as OnScoreUpdateEvent;
+        if (scoreUpdateEvent == null) return;
+        
+        ScoringZone zone = scoreUpdateEvent.Zone;
+        int points = zone.Points * (scoreUpdateEvent.IncreaseScore ? 1 : -1);
+                
+        switch (zone.Alliance)
+        {
+            case Alliance.Blue:
+                Scoring.blueScore += points;
+                break;
+            case Alliance.Red:
+                Scoring.redScore += points;
+                break;
+        }
+    }
+    
     public void Update() {
-        if (_stateMachine != null)
+        if (!_showingScoreboard && FieldSimObject.CurrentField != null && FieldSimObject.CurrentField.ScoringZones.Count > 0) {
+            _showingScoreboard = true;
+            DynamicUIManager.CreatePanel<ScoreboardPanel>(true, true);
+        }
+        if (_stateMachine != null) {
             _stateMachine.Update();
+
+            if (Scoring.targetTime <= 0 && _stateMachine.CurrentState.StateName is >= MatchStateMachine.StateName.Auto and <= MatchStateMachine.StateName.Teleop)
+                _stateMachine.AdvanceState();
+        }
     }
     public void End() {
     }

@@ -1,6 +1,7 @@
 using System;
 using Synthesis.Runtime;
 using Synthesis.UI.Dynamic;
+using SynthesisAPI.EventBus;
 using TMPro;
 using UnityEngine;
 public class ScoreboardPanel : PanelDynamic {
@@ -103,12 +104,11 @@ public class ScoreboardPanel : PanelDynamic {
         if (SimulationRunner.HasContext(SimulationRunner.GIZMO_SIM_CONTEXT) || SimulationRunner.HasContext(SimulationRunner.PAUSED_SIM_CONTEXT)) return;
 
         if (_showTimer) {
-            Scoring.targetTime -= Time.deltaTime;
-            time.SetText(Mathf.RoundToInt(Scoring.targetTime).ToString());
-
-            if (Scoring.targetTime <= 0) {
-                Scoring.matchEnd = true;
-                return;
+            // state advances in MatchMode update
+            if (MatchStateMachine.Instance.CurrentState.StateName == MatchStateMachine.StateName.Auto ||
+                MatchStateMachine.Instance.CurrentState.StateName == MatchStateMachine.StateName.Teleop) {
+                Scoring.targetTime -= Time.deltaTime;
+                time.SetText(Mathf.RoundToInt(Scoring.targetTime).ToString());
             }
         }
 
