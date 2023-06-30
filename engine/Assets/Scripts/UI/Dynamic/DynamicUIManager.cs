@@ -8,7 +8,6 @@ using Synthesis.Runtime;
 using SynthesisAPI.EventBus;
 using TMPro;
 using UnityEngine;
-
 namespace Synthesis.UI.Dynamic {
     public static class DynamicUIManager {
         public static ModalDynamic ActiveModal { get; private set; }
@@ -66,22 +65,17 @@ namespace Synthesis.UI.Dynamic {
             return CreateModal_Internal<T>(args);
         }
 
-        public static bool CreateModalWithoutOverwrite<T>(params object[] args)
-            where T : ModalDynamic {
-            if (_persistentPanels.Count > 0)
-                return false;
-            if (ActiveModal != null)
-                return false;
+        public static bool CreateModalWithoutOverwrite<T>(params object[] args) where T : ModalDynamic {
+            if (_persistentPanels.Count > 0) return false;
+            if (ActiveModal != null) return false;
 
             return CreateModal_Internal<T>(args);
         }
 
-        private static bool CreateModal_Internal<T>(params object[] args)
-            where T : ModalDynamic {
-            var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("dynamic-modal-base"),
-                GameObject.Find("UI").transform.Find("ScreenSpace").Find("ModalContainer"));
-
-            ModalDynamic modal = (ModalDynamic) Activator.CreateInstance(typeof(T), args);
+        private static bool CreateModal_Internal<T>(params object[] args) where T : ModalDynamic {
+            var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("dynamic-modal-base"), GameObject.Find("UI").transform.Find("ScreenSpace").Find("ModalContainer"));
+            
+            ModalDynamic modal = (ModalDynamic)Activator.CreateInstance(typeof(T), args);
             modal.Create_Internal(unityObject);
             modal.Create();
 
@@ -94,7 +88,7 @@ namespace Synthesis.UI.Dynamic {
             AnalyticsManager.LogEvent(new AnalyticsEvent(category: "ui", action: $"{typeof(T).Name}", label: "create"));
             AnalyticsManager.PostData();
             return true;
-        }
+        } 
 
         // Currently only going to allow one active panel
         public static bool CreatePanel<T>(bool persistent = false, params object[] args)
