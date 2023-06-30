@@ -36,7 +36,13 @@ namespace Mirabuf.Material {
                         _unityMaterial.SetFloat(OPAQUE_METALLIC, (float)Metallic);
                     }
                     
-                    // _unityMaterial.renderQueue = 3000;
+                    ///
+                    /// To enable the use of the renderQueue use the following:
+                    ///     _unityMaterial.renderQueue = 3000;
+                    /// 
+                    /// It was disabled because it make the Grid shader work
+                    ///
+
                     _unityMaterial.enableInstancing = true;
                     // TODO: Specular and Metallic
                 }
