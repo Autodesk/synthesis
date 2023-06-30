@@ -44,7 +44,8 @@ public class MatchMode : IMode {
         DynamicUIManager.CreateModal<MatchModeModal>();
         EventBus.NewTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
 
-        MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("settings"));
+        MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(),
+            icon: SynthesisAssetCollection.GetSpriteByName("settings"));
 
         Array.Fill(SelectedRobots, -1);
         Array.Fill(RawSpawnLocations, (Vector3.zero, Quaternion.identity));
@@ -52,17 +53,18 @@ public class MatchMode : IMode {
         _stateMachine = MatchStateMachine.Instance;
         _stateMachine.SetState(MatchStateMachine.StateName.MatchConfig);
     }
-    
+
     private void HandleScoreEvent(IEvent e) {
-        if (e.GetType() != typeof(OnScoreUpdateEvent)) return;
+        if (e.GetType() != typeof(OnScoreUpdateEvent))
+            return;
         OnScoreUpdateEvent scoreUpdateEvent = e as OnScoreUpdateEvent;
-        if (scoreUpdateEvent == null) return;
-        
+        if (scoreUpdateEvent == null)
+            return;
+
         ScoringZone zone = scoreUpdateEvent.Zone;
-        int points = zone.Points * (scoreUpdateEvent.IncreaseScore ? 1 : -1);
-                
-        switch (zone.Alliance)
-        {
+        int points       = zone.Points * (scoreUpdateEvent.IncreaseScore ? 1 : -1);
+
+        switch (zone.Alliance) {
             case Alliance.Blue:
                 Scoring.blueScore += points;
                 break;
@@ -71,12 +73,14 @@ public class MatchMode : IMode {
                 break;
         }
     }
-    
+
     public void Update() {
         if (_stateMachine != null) {
             _stateMachine.Update();
 
-            if (Scoring.targetTime <= 0 && _stateMachine.CurrentState.StateName is >= MatchStateMachine.StateName.Auto and <= MatchStateMachine.StateName.Teleop)
+            if (Scoring.targetTime <= 0 && _stateMachine.CurrentState.StateName is >=
+                                               MatchStateMachine.StateName.Auto and <=
+                                               MatchStateMachine.StateName.Teleop)
                 _stateMachine.AdvanceState();
         }
     }

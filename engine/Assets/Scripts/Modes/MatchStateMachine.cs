@@ -46,7 +46,7 @@ public class MatchStateMachine {
 
     public void AdvanceState() {
         StateName currentStateName = _currentState.StateName;
-        var nextStateName = currentStateName + 1;
+        var nextStateName          = currentStateName + 1;
         SetState(nextStateName);
     }
 
@@ -133,7 +133,7 @@ public class MatchStateMachine {
         public override void Start() {
             base.Start();
             DynamicUIManager.CreateModal<MatchModeModal>();
-            DynamicUIManager.ActiveModal.OnAccepted += () => 
+            DynamicUIManager.ActiveModal.OnAccepted += () =>
                 MatchStateMachine.Instance.SetState(StateName.RobotPositioning);
         }
 
@@ -157,7 +157,7 @@ public class MatchStateMachine {
             if (Camera.main != null) {
                 Camera.main.GetComponent<CameraController>().CameraMode = CameraController.CameraModes["Freecam"];
             }
-            
+
             // state passes to next in SpawnLocationPanel accept button
         }
 
@@ -181,7 +181,7 @@ public class MatchStateMachine {
         public override void Start() {
             base.Start();
             DynamicUIManager.CreatePanel<ScoringZonesPanel>(true);
-            var panel = DynamicUIManager.GetPanel<ScoringZonesPanel>();
+            var panel               = DynamicUIManager.GetPanel<ScoringZonesPanel>();
             panel.OnAccepted += () => {
                 DynamicUIManager.CreateModal<ConfirmModal>("Start Match?");
                 DynamicUIManager.ActiveModal.OnAccepted += () => {
@@ -191,14 +191,14 @@ public class MatchStateMachine {
                 };
             };
         }
-        
+
         public override void Update() {}
 
         public override void End() {
             base.End();
         }
 
-        public FieldConfig() : base(StateName.FieldConfig) { }
+        public FieldConfig() : base(StateName.FieldConfig) {}
     }
 
     /// <summary>
@@ -207,13 +207,12 @@ public class MatchStateMachine {
     public class Auto : MatchState {
         public override void Start() {
             base.Start();
-        
+
             Scoring.targetTime = 15;
             DynamicUIManager.CreatePanel<ScoreboardPanel>(true, true);
         }
 
-        public override void Update() {
-        }
+        public override void Update() {}
 
         public override void End() {
             base.End();
@@ -227,6 +226,7 @@ public class MatchStateMachine {
     /// </summary>
     public class Transition : MatchState {
         private float _timer;
+
         public override void Start() {
             base.Start();
             Scoring.targetTime = 135;
@@ -245,7 +245,7 @@ public class MatchStateMachine {
             RobotSimObject.SpawnedRobots.ForEach(r => r.BehavioursEnabled = true);
         }
 
-        public Transition() : base(StateName.Transition) { }
+        public Transition() : base(StateName.Transition) {}
     }
 
     /// <summary>
@@ -256,8 +256,7 @@ public class MatchStateMachine {
             base.Start();
         }
 
-        public override void Update() {
-        }
+        public override void Update() {}
 
         public override void End() {}
 
