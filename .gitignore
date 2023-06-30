@@ -19,10 +19,17 @@
 
 sysinfo.txt
 
+!/engine/Assets/Packages/Api.dll
+!/engine/Assets/Packages/Nuget/Editor/NugetForUnity.dll
+!/engine/Assets/Packages/portable.bouncycastle.1.9.0.nupkg
+!/engine/Assets/Packages/BouncyCastle.Crypto.dll
+!/engine/Assets/Packages/ServerApi.dll
+
+!/api/libs/UnityEngine.dll
+
 importer/Backup/
 importer/Backup1/
 importer/UpgradeLog.htm
 importer/UpgradeLog2.htm
 
 api/Api/Gen/
-

@@ -17,10 +17,10 @@ namespace Synthesis.UI.Dynamic {
             AcceptButton.AddOnClickedEvent(x => {
                 if (isOnMainMenu)
                     Application.Quit();
-                else
-                {
+                else {
                     SimulationRunner.InSim = false;
                     DynamicUIManager.CloseAllPanels(true);
+                    ModeManager.CurrentMode = null;
                     SceneManager.LoadScene("GridMenuScene", LoadSceneMode.Single);
                 }
             }).StepIntoLabel(l => l.SetText("Exit"));

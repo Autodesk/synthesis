@@ -14,6 +14,7 @@ namespace Synthesis.UI.Dynamic {
         public const string SCREEN_MODE = "Screen Mode";//Dropdown: Fullscreen or Windowed
         public const string QUALITY_SETTINGS = "Quality Settings";//Dropdown: Low Medium High
         public const string MEASUREMENTS = "Use Imperial Measurements";//toggle for imperial. if unchecked, uses metric.
+        public const string RENDER_SCORE_ZONES = "Render Score Zones";
         
         private static string[] _screenModeList = { "Fullscreen", "Windowed" };
         private static string[] _qualitySettingsList = { "Low", "Medium", "High", "Ultra" };
@@ -25,6 +26,7 @@ namespace Synthesis.UI.Dynamic {
         private static float _pitchSensitivity;
         private static bool _useAnalytics;
         private static bool _useMetric;
+        private static bool _renderScoreZones;
 
         public SettingsModal() : base(new Vector2(500, 500)) { }
         
@@ -80,15 +82,14 @@ namespace Synthesis.UI.Dynamic {
 
             MainContent.CreateLabel().ApplyTemplate(Label.BigLabelTemplate).ApplyTemplate(VerticalLayout).SetText("Preferences");
             var reportAnalyticsToggle = MainContent.CreateToggle().ApplyTemplate(VerticalLayout).AddOnStateChangedEvent(
-                (t, s) => {
-                    _useAnalytics = s;
-                }
-            ).SetState(Get<bool>(AnalyticsManager.USE_ANALYTICS_PREF)).TitleLabel.SetText("Report Analytics");
+                (t, s) => _useAnalytics = s)
+                .SetState(Get<bool>(AnalyticsManager.USE_ANALYTICS_PREF)).TitleLabel.SetText("Report Analytics");
             var measurementsToggle = MainContent.CreateToggle().ApplyTemplate(VerticalLayout).AddOnStateChangedEvent(
-                (t, s) => {
-                    _useMetric = s;
-                }
-            ).SetState(Get<bool>(MEASUREMENTS)).TitleLabel.SetText("Use Metric");
+                    (t, s) => _useMetric = s)
+                .SetState(Get<bool>(MEASUREMENTS)).TitleLabel.SetText("Use Metric");
+            var renderScoreModesToggle = MainContent.CreateToggle().ApplyTemplate(VerticalLayout).AddOnStateChangedEvent(
+                    (t, s) => _renderScoreZones = s)
+                .SetState(Get<bool>(RENDER_SCORE_ZONES)).TitleLabel.SetText("Render Score Zones");
         }
 
         public override void Update() { }
@@ -110,6 +111,7 @@ namespace Synthesis.UI.Dynamic {
             Set(CameraController.PITCH_SENSITIVITY_PREF, _pitchSensitivity);
             Set(AnalyticsManager.USE_ANALYTICS_PREF, _useAnalytics);
             Set(MEASUREMENTS, _useMetric);
+            Set(RENDER_SCORE_ZONES, _renderScoreZones);
             
             Save();
 

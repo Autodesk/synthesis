@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+message LobbyClientInformation {
+    uint64 guid = 1;
+    string name = 2;
+}
+
+message LobbyInformation {
+    string lobby_name = 1;
+    repeated LobbyClientInformation clients = 2;
+    uint64 lobby_host = 3;
+}
