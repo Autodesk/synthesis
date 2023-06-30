@@ -1,12 +1,13 @@
-﻿using SynthesisAPI.Modules.Attributes;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+
+#nullable enable
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
     public class Parent : Component
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         internal Entity parentEntity = 0;
         public static implicit operator Entity(Parent p) => p.parentEntity;
@@ -23,7 +24,7 @@ namespace SynthesisAPI.EnvironmentManager.Components
         public bool Changed { get; private set; }
         internal void ProcessedChanges() => Changed = false;
 
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        protected void OnPropertyChanged([CallerMemberName] string? name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }

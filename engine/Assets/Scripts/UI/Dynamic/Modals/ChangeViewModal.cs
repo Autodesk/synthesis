@@ -1,8 +1,5 @@
-using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
-
 namespace Synthesis.UI.Dynamic
 {
     public class ChangeViewModal : ModalDynamic

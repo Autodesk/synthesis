@@ -1,8 +1,5 @@
 ﻿using SynthesisAPI.VirtualFileSystem;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -10,9 +7,10 @@ namespace SynthesisAPI.AssetManager
 {
     public class AudioClipAsset : Asset
     {
-        private AudioClip? _clip;
+        private AudioClip _clip;
 
-        internal AudioClip? GetClip() => _clip;
+        // this should always return a clip but it's up to the user to decide if it's valid
+        internal AudioClip GetClip() => _clip;
 
         public AudioClipAsset(string name, Permissions perm, string sourcePath)
         {

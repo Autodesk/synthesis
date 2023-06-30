@@ -15,6 +15,7 @@ namespace SynthesisAPI.Runtime
 	{
 		private static IApiProvider? Instance => Inner.Instance;
 
+		// why does this exist 
 		public static void RegisterApiProvider(IApiProvider provider)
 		{
 			if (Inner.Instance != null)
@@ -33,30 +34,31 @@ namespace SynthesisAPI.Runtime
 			internal static IApiProvider? Instance;
 		}
 
-		public static void AddEntityToScene(Entity entity) => Instance?.AddEntityToScene(entity);
+		// Why would we get this far without having instance defined ?
+		// Why would the provider not just have possibly undefined function links if you are worried about unity?
+		// Why wouldn't instance be defined as a part of the construction process and make this a scoped object that stays alive and is part of a singleton ?
+		// This is very poorly designed, Blame Nick and Logan we gotta do better code reviews and teach people about nullable types.
 
-		public static void RemoveEntityFromScene(Entity entity) => Instance?.RemoveEntityFromScene(entity);
+		public static void AddEntityToScene(Entity entity) => Instance!.AddEntityToScene(entity);
 
-		public static Component? AddComponentToScene(Entity entity, Type t) => Instance?.AddComponentToScene(entity,t);
+		public static void RemoveEntityFromScene(Entity entity) => Instance!.RemoveEntityFromScene(entity);
 
-		public static void AddComponentToScene(Entity entity, Component component) => Instance?.AddComponentToScene(entity, component);
+		public static Component? AddComponentToScene(Entity entity, Type t) => Instance!.AddComponentToScene(entity,t);
 
-		public static void RemoveComponentFromScene(Entity entity, Type t) => Instance?.RemoveComponentFromScene(entity, t);
+		public static void AddComponentToScene(Entity entity, Component component) => Instance!.AddComponentToScene(entity, component);
 
-		public static void EnqueueTaskForMainThread(Action task) => Instance?.EnqueueTaskForMainThread(task);
+		public static void RemoveComponentFromScene(Entity entity, Type t) => Instance!.RemoveComponentFromScene(entity, t);
 
-		public static UnityEngine.Coroutine? StartCoroutine(IEnumerator routine) => Instance?.StartCoroutine(routine);
+		public static void EnqueueTaskForMainThread(Action task) => Instance!.EnqueueTaskForMainThread(task);
+
+		public static UnityEngine.Coroutine? StartCoroutine(IEnumerator routine) => Instance!.StartCoroutine(routine);
 		public static void StopCoroutine(IEnumerator routine) => Instance?.StopCoroutine(routine);
 
-		public static T? CreateUnityType<T>(params object[] args) where T : class => Instance?.CreateUnityType<T>(args);
+		public static T CreateUnityType<T>(params object[] args) where T : class => Instance!.CreateUnityType<T>(args);
 
-		// public static TUnityType? InstantiateFocusable<TUnityType>()
-		// 	where TUnityType : UnityEngine.UIElements.Focusable =>
-		// 	Instance?.InstantiateFocusable<TUnityType>();
-
-		public static UnityEngine.UIElements.VisualElement? GetRootVisualElement() =>
+		public static VisualElement? GetRootVisualElement() =>
 			Instance?.GetRootVisualElement();
 
-		internal static GUIManager GetGUIManager() => Instance?.GetGUIManager();
+		internal static GUIManager GetGUIManager() => Instance!.GetGUIManager();
 	}
 }

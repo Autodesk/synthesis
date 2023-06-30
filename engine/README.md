@@ -1,4 +1,6 @@
 # Synthesis Engine
+[![Engine](https://github.com/Autodesk/synthesis/actions/workflows/Engine.yml/badge.svg?branch=master)](https://github.com/Autodesk/synthesis/actions/workflows/Engine.yml)
+
 This is the main Simulator aspect to Synthesis. We take the robots and fields that have been exported using our exporter, and simulate them with realtime physics within Unity.
 
 # Building

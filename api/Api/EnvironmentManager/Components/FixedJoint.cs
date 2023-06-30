@@ -1,19 +1,23 @@
-﻿using SynthesisAPI.Modules.Attributes;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text;
 using MathNet.Spatial.Euclidean;
+
+#nullable enable
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
     public class FixedJoint : IJoint
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        protected void OnPropertyChanged([CallerMemberName] string? name = null)
         {
+            if (name is null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
@@ -35,16 +39,16 @@ namespace SynthesisAPI.EnvironmentManager.Components
                 OnPropertyChanged();
             }
         }
-        internal Rigidbody connectedParent = null;
-        public Rigidbody ConnectedParent {
+        internal Rigidbody? connectedParent = null;
+        public Rigidbody? ConnectedParent {
             get => connectedParent;
             set {
                 connectedParent = value;
                 OnPropertyChanged();
             }
         }
-        internal Rigidbody connectedChild = null;
-        public Rigidbody ConnectedChild {
+        internal Rigidbody? connectedChild = null;
+        public Rigidbody? ConnectedChild {
             get => connectedChild;
             set {
                 connectedChild = value;
