@@ -218,7 +218,7 @@ namespace Synthesis {
         }
         
         public void WheelsPhysicsUpdate(float mod) {
-            _customWheel.GetFrictionForces(mod);
+            _customWheel.CalculateAndApplyFriction(mod);
         }
 
         private void VelocityControl() {

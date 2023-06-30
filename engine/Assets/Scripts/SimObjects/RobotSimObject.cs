@@ -265,6 +265,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     private void Unpossess() {
+        GizmoManager.ExitGizmo();
         BehavioursEnabled = false;
         Vector3 currentPoint = OrbitCameraMode.FocusPoint();
         OrbitCameraMode.FocusPoint = () => currentPoint;
@@ -582,9 +583,16 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     public static void SpawnRobot(string filePath) {
-        SpawnRobot(filePath, new Vector3(0f, 0.5f, 0f), Quaternion.identity);
+        SpawnRobot(filePath, new Vector3(0f, 0.5f, 0f), Quaternion.identity, true);
     }
-    public static void SpawnRobot(string filePath, Vector3 position, Quaternion rotation) {
+    public static void SpawnRobot(string filePath, bool spawnGizmo) {
+        SpawnRobot(filePath, new Vector3(0f, 0.5f, 0f), Quaternion.identity, spawnGizmo);
+    }
+    public static void SpawnRobot(string filePath, Vector3 position, Quaternion rotation)
+    {
+        SpawnRobot(filePath, position, rotation, true);
+    }
+    public static void SpawnRobot(string filePath, Vector3 position, Quaternion rotation, bool spawnGizmo) {
 
         // GizmoManager.ExitGizmo();
 
@@ -615,13 +623,16 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
         simObject.Possess();
 
-        GizmoManager.SpawnGizmo(simObject);
+        if (spawnGizmo)
+            GizmoManager.SpawnGizmo(simObject);
         // GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, mira.MainObject.transform, mira.MainObject.transform.position);
     }
 
     public static bool RemoveRobot(string robot) {
         if (!_spawnedRobots.ContainsKey(robot))
             return false;
+        
+        GizmoManager.ExitGizmo();
 
         if (robot == CurrentlyPossessedRobot)
             CurrentlyPossessedRobot = string.Empty;
