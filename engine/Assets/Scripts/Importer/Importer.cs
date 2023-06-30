@@ -380,6 +380,7 @@ namespace Synthesis.Import {
                 to.GetPosition() - from.GetPosition(), to.rotation * Quaternion.Inverse(from.rotation), UVector3.one);
         }
 
+        // clang-format off
         // public static void MakePartDefinition(GameObject container, PartDefinition definition, PartInstance instance,
         // 	AssemblyData assemblyData, bool addToColliderIgnore = true, bool isConvex = true)
         // {
@@ -437,6 +438,7 @@ namespace Synthesis.Import {
         // (float)x.prop.Mass); 	props.ForEach(x => com += (x.trans.localToWorldMatrix.MultiplyPoint(x.prop.Com)) *
         // (float)x.prop.Mass); 	com /= total; 	return new MPhysicalProperties { Mass = total, Com = com };
         // }
+        // clang-format on
 
 #endregion
 

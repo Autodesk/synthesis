@@ -270,8 +270,10 @@ namespace Synthesis.UI.Dynamic {
             Children.Clear();
         }
 
-        protected bool _eventsActive  = true;
-        public bool EventsActive     => _eventsActive;
+        protected bool _eventsActive = true;
+        // clang-format off
+        public bool EventsActive => _eventsActive;
+        // clang-format on
 
         public Vector2 Size { get; protected set; }
         public GameObject RootGameObject { get; protected set; }

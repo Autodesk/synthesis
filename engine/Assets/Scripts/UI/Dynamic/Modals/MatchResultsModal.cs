@@ -14,11 +14,12 @@ namespace Synthesis.UI.Dynamic {
             Title.SetText("Match Results");
             Description.SetText("Placeholder panel to show match results");
             Description.SetText("");
-            AcceptButton
-                .AddOnClickedEvent(x => {
+            // clang-format off
+            AcceptButton.AddOnClickedEvent(x => {
                     MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.None);
                 })
                 .StepIntoLabel(l => l.SetText("Exit"));
+            // clang-format on
         }
 
         public override void Update() {}
