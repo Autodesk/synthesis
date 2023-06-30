@@ -43,25 +43,38 @@ namespace Synthesis.Physics {
                     _isFrozen = shouldFreeze;
 
                     // Debug.Log($"Frozen: {_isFrozen}");
-                    if (_isFrozen) {
-                        SimulationRunner.RemoveContext(SimulationRunner.RUNNING_SIM_CONTEXT);
-                        SimulationRunner.AddContext(SimulationRunner.PAUSED_SIM_CONTEXT);
-                        // UnityEngine.Physics.autoSimulation = false;
-                        _physObjects.ForEach(x => {
-                            if (_storeOnFreeze) {
-                                x.Value.GetAllRigidbodies().ForEach(rb => {
-                                    var data          = new RigidbodyFrameData { Velocity = rb.velocity,
-                                        AngularVelocity                          = rb.angularVelocity };
+
+                    if (_isFrozen)
+                    {
+                        
+                        //UnityEngine.Physics.autoSimulation = false;
+                        _physObjects.ForEach(x =>
+                        {
+                            if (_storeOnFreeze)
+                            {
+                                x.Value.GetAllRigidbodies().ForEach(rb =>
+                                {
+                                    var data = new RigidbodyFrameData
+                                    {
+                                        Velocity = rb.velocity,
+                                        AngularVelocity = rb.angularVelocity
+                                    };
                                     _storedValues[rb] = data;
                                 });
                             }
                             x.Value.Freeze();
                         });
-                    } else {
-                        SimulationRunner.RemoveContext(SimulationRunner.PAUSED_SIM_CONTEXT);
-                        SimulationRunner.AddContext(SimulationRunner.RUNNING_SIM_CONTEXT);
-                        // UnityEngine.Physics.autoSimulation = true;
 
+                        SimulationRunner.RemoveContext(SimulationRunner.RUNNING_SIM_CONTEXT);
+                        SimulationRunner.AddContext(SimulationRunner.PAUSED_SIM_CONTEXT);
+                    }
+                    else
+                    {
+                        
+                        //UnityEngine.Physics.autoSimulation = true;
+
+                        _physObjects.ForEach(x =>
+                        {
                         _physObjects.ForEach(x => {
                             x.Value.Unfreeze();
                             if (_storeOnFreeze) {
@@ -78,10 +91,13 @@ namespace Synthesis.Physics {
                             _storedValues.Clear();
                             _storeOnFreeze = true;
                         });
-                    }
+                        SimulationRunner.RemoveContext(SimulationRunner.PAUSED_SIM_CONTEXT);
+                        SimulationRunner.AddContext(SimulationRunner.RUNNING_SIM_CONTEXT);
+                    });
                     EventBus.Push(new PhysicsFreezeChangeEvent { IsFrozen = _isFrozen });
                 }
             }
+        }
         }
 
         public static void FixedUpdate() {

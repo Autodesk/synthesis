@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
 public class ShootableGamepiece : MonoBehaviour {
     public GamepieceSimObject SimObject;
     private MeshRenderer _mesh;
@@ -64,17 +61,7 @@ public class ShootableGamepiece : MonoBehaviour {
     }
 
     private void OnTriggerEnter(Collider collider) {
-        // Debug.Log("Collision Detected" + collision.transform.tag);
-
-        // TEMPORARY SCORING
-        if (collider.transform.CompareTag("blue zone") && !scored) {
-            scored = true;
-            Scoring.blueScore += value;
-        }
-        if (collider.transform.CompareTag("red zone") && !scored) {
-            scored = true;
-            Scoring.redScore += value;
-        }
+        //Debug.Log("Collision Detected" + collision.transform.tag);
     }
 
     private void OnTriggerExit(Collider collider) {

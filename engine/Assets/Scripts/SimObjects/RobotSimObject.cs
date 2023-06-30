@@ -604,12 +604,12 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     {
         SpawnRobot(filePath, position, rotation, true);
     }
+
     public static void SpawnRobot(string filePath, Vector3 position, Quaternion rotation, bool spawnGizmo) {
 
-    public static void SpawnRobot(string filePath, Vector3 position, Quaternion rotation) {
         // GizmoManager.ExitGizmo();
 
-        var mira                 = Importer.MirabufAssemblyImport(filePath);
+        var mira = Importer.MirabufAssemblyImport(filePath);
         RobotSimObject simObject = mira.Sim as RobotSimObject;
         mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
         simObject.ConfigureDefaultBehaviours();
@@ -617,19 +617,19 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         mira.MainObject.transform.position = position;
         mira.MainObject.transform.rotation = rotation;
 
-        // TEMPORARY: CREATING INSTAKE AT FRONT OF THE ROBOT
-        //  GameObject intake = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        //  intake.transform.SetParent(simObject.GroundedNode.transform);
-
+        //TEMPORARY: CREATING INSTAKE AT FRONT OF THE ROBOT
+        // GameObject intake = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        // intake.transform.SetParent(simObject.GroundedNode.transform);
+        
         // intake.transform.localPosition = new Vector3(0, 0.2f, 0.3f);
         // intake.transform.localScale = new Vector3(0.5f, 0.2f, 0.5f);
         // intake.transform.localRotation = Quaternion.identity;
-
+        
         // intake.GetComponent<Collider>().isTrigger = true;
         // intake.GetComponent<MeshRenderer>().enabled = false;
         // intake.tag = "robot";
         // Shooting.intakeObject = intake;
-
+        
         // TODO: Event call?
 
         simObject.Possess();

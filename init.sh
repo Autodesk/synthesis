@@ -7,6 +7,5 @@ cd protocols
 cd ../engine/EngineDeps
 ./setup.sh
 cd ../../api
-dotnet build
-./post_build.sh
+./build.sh
 cd ..

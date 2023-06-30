@@ -1,14 +1,10 @@
-using Synthesis.UI.Dynamic;
-using UnityEngine;
-using System.IO;
-using System.Linq;
 using System;
-using Synthesis.UI.Dynamic;
 using System.Collections;
 using System.Collections.Generic;
-using Google.Protobuf.Reflection;
-using Synthesis.PreferenceManager;
-
+using System.IO;
+using System.Linq;
+using Synthesis.UI.Dynamic;
+using UnityEngine;
 public class MatchModeModal : ModalDynamic
 {
     public Action OnAccepted;
@@ -113,14 +109,14 @@ public class MatchModeModal : ModalDynamic
         for (int i = 0; i < a.Length; i++) {
             switch (a[i]) {
                 case "$appdata":
-                    b += System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
+                    b += Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
                     break;
                 default:
                     b += a[i];
                     break;
             }
             if (i != a.Length - 1)
-                b += System.IO.Path.AltDirectorySeparatorChar;
+                b += Path.AltDirectorySeparatorChar;
         }
         return b;
     }

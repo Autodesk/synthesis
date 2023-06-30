@@ -27,5 +27,6 @@ cp -v ~/.nuget/packages/system.buffers/4.4.0/lib/netstandard2.0/System.Buffers.d
 cp -v ~/.nuget/packages/system.memory/4.5.3/lib/netstandard2.0/System.Memory.dll ../Assets/Packages/System.Memory.dll
 cp -v ~/.nuget/packages/system.runtime.compilerservices.unsafe/6.0.0/lib/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll ../Assets/Packages/System.Runtime.CompilerServices.Unsafe.dll
 cp -v ~/.nuget/packages/ionic.zip/1.9.1.8/lib/Ionic.Zip.dll ../Assets/Packages/Ionic.Zip.dll
+cp -v ~/.nuget/packages/portable.bouncycastle/1.9.0/lib/netstandard2.0/BouncyCastle.Crypto.dll ../Assets/Packages/BouncyCastle.Crypto.dll
 
 text_highlight "\n!!! Finished Copying Dependencies !!!\n"

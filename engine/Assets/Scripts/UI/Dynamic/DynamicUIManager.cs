@@ -180,16 +180,26 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public static bool PanelExists<T>()
-            where T : PanelDynamic => PanelExists(typeof(T));
+            where T : PanelDynamic {
+            return PanelExists(typeof(T));
+        } 
 
-  public static bool PanelExists(Type t) => _persistentPanels.ContainsKey(t);
+    public static bool PanelExists(Type t) => _persistentPanels.ContainsKey(t);
 
-  public static void HideAllPanels() {
+        public static T GetPanel<T>() where T : PanelDynamic
+        {
+            if (!PanelExists<T>()) return null;
+            return (T) _persistentPanels[typeof(T)].Item1;
+        }
+
+        public static void HideAllPanels() {
             _persistentPanels.ForEach(kvp => HidePanel(kvp.Value.Item1.GetType()));
         }
 
         public static void HidePanel<T>()
-            where T : PanelDynamic => HidePanel(typeof(T));
+            where T : PanelDynamic {
+                HidePanel(typeof(T));
+        } 
 
   public static bool HidePanel(Type t) {
             if (!PanelExists(t))

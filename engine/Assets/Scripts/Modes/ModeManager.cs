@@ -1,3 +1,5 @@
+using Synthesis.Runtime;
+using Synthesis.UI.Dynamic;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -11,7 +13,8 @@ public class ModeManager {
                 _currentMode.End();
             _currentMode = value;
             
-            if (SceneManager.GetActiveScene().name == "MainScene") _currentMode.Start();
+            if (SceneManager.GetActiveScene().name == "MainScene" && _currentMode != null)
+                _currentMode.Start();
         }
     }
 
@@ -27,13 +30,16 @@ public class ModeManager {
     
     public static void Update()
     {
-        if (CurrentMode != null)
-            CurrentMode.Update();
+        CurrentMode?.Update();
     }
 
     public static void ModalClosed()
     {
         if (CurrentMode != null) 
             CurrentMode.CloseMenu();
+    }
+
+    public static void Teardown() {
+        CurrentMode = null;
     }
 }

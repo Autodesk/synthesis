@@ -1,74 +1,130 @@
-using System;
+using System.Collections.Generic;
+using System.Security.Policy;
+using Synthesis.Physics;
 using Synthesis.Runtime;
 using SynthesisAPI.EventBus;
 using UnityEngine;
 
 public enum Alliance {
-    RED,
-    BLUE
+    Red,
+    Blue
 }
 
-public class ScoringZone {
-    public Alliance alliance;
-    public int points;
-    public bool destroyObject;
-    private GameObject gameObject;
-    private Collider collider;
-    private MeshRenderer meshRenderer;
+public class ScoringZone : IPhysicsOverridable {
+    public string Name;
 
-    public ScoringZone(GameObject gameObject, Alliance alliance, int points, bool destroyObject) {
-        this.gameObject    = gameObject;
-        this.alliance      = alliance;
-        this.points        = points;
-        this.destroyObject = destroyObject;
-        // configure gameobject to have translucent material and have box collider as trigger
-        gameObject.name = "Test Scoring Zone";
+    private Alliance _alliance;
+    public Alliance Alliance {
+        get => _alliance;
+        set {
+            _alliance = value;
+            _meshRenderer.material.color = value == Alliance.Red ? Color.red : Color.blue;
+        }
+    }
+    public int Points;
+    public bool DestroyGamepiece;
+    public bool PersistentPoints;
+    public GameObject GameObject;
+    private Collider _collider;
+    private MeshRenderer _meshRenderer;
 
-        // make scoring zone transparent
-        Renderer renderer = gameObject.GetComponent<Renderer>();
-        renderer.material = new Material(Shader.Find("Shader Graphs/DefaultSynthesisTransparentShader"));
+    private bool _isFrozen;
 
-        ScoringZoneListener listener = gameObject.AddComponent<ScoringZoneListener>();
-        listener.scoringZone         = this;
+    public ScoringZone(GameObject gameObject, string name, Alliance alliance, int points, bool destroyGamepiece, bool persistentPoints) {
+        this.Name = name;
+        this.GameObject = gameObject;
+        this.GameObject.layer = 2; // ignore raycast layer
+        this.PersistentPoints = persistentPoints;
 
-        collider     = gameObject.GetComponent<Collider>();
-        meshRenderer = gameObject.GetComponent<MeshRenderer>();
+        // configure gameobject to have box collider as trigger
+        GameObject.name = name;
 
-        collider.isTrigger = true;
+        ScoringZoneListener listener = GameObject.AddComponent<ScoringZoneListener>();
+        listener.ScoringZone = this;
+
+        _collider = GameObject.GetComponent<Collider>();
+        _meshRenderer = GameObject.GetComponent<MeshRenderer>();
+        _meshRenderer.material.color = alliance == Alliance.Red ? Color.red : Color.blue;
+
+        _collider.isTrigger = true;
+
+        Alliance = alliance;
+        Points = points;
+        DestroyGamepiece = destroyGamepiece;
+
+        PhysicsManager.Register(this);
     }
 
     public void SetVisibility(bool visible) {
-        gameObject.GetComponent<Renderer>().enabled = visible;
+        _meshRenderer.enabled = visible;
     }
+
+    public bool isFrozen() => _isFrozen;
+    public void Freeze() {
+        _isFrozen = true;
+        _collider.isTrigger = false;
+    }
+    public void Unfreeze() {
+        _isFrozen = false;
+        _collider.isTrigger = true;
+    }
+
+    public List<Rigidbody> GetAllRigidbodies()
+        => new List<Rigidbody> { };
+    public GameObject GetRootGameObject()
+        => GameObject;
 }
 
 public class ScoringZoneListener : MonoBehaviour {
-    public ScoringZone scoringZone;
+    public ScoringZone ScoringZone;
+
+    private SortedDictionary<int, Collider> _inScoringZone = new SortedDictionary<int, Collider>();
 
     private void OnTriggerEnter(Collider other) {
-        if (other.gameObject == gameObject)
-            return;
-        if (!other.transform.CompareTag("gamepiece"))
-            return;
+        if (ScoringZone.isFrozen()) return;
+        if (other.gameObject == gameObject) return;
+        if (!other.transform.CompareTag("gamepiece")) return;
+        if (_inScoringZone.ContainsKey(other.GetHashCode())) return;
 
         // don't destroy gamepiece if user is moving the zone
-        if (SimulationRunner.HasContext(SimulationRunner.GIZMO_SIM_CONTEXT))
-            return;
+        if (SimulationRunner.HasContext(SimulationRunner.GIZMO_SIM_CONTEXT)) return;
 
         // trigger scoring
-        EventBus.Push(new OnScoreEvent(other.name, scoringZone));
+        EventBus.Push(new OnScoreUpdateEvent(other.name, ScoringZone));
+        _inScoringZone.Add(other.GetHashCode(), other);
 
-        if (scoringZone.destroyObject)
-            Destroy(other.gameObject);
+        if (ScoringZone.DestroyGamepiece) Destroy(other.gameObject);
+    }
+
+    private void OnTriggerExit(Collider other) {
+        if (ScoringZone.isFrozen()) return;
+        if (other.gameObject == gameObject) return;
+        if (!other.transform.CompareTag("gamepiece")) return;
+
+        if (_inScoringZone.ContainsKey(other.GetHashCode())) {
+            if (!ScoringZone.PersistentPoints)
+                EventBus.Push(new OnScoreUpdateEvent(other.name, ScoringZone, false));
+            _inScoringZone.Remove(other.GetHashCode());
+        }
+    }
+
+    private void OnDestroy() {
+        PhysicsManager.Unregister(ScoringZone);
     }
 }
 
-public class OnScoreEvent : IEvent {
-    public string name;
-    public ScoringZone zone;
-
-    public OnScoreEvent(string name, ScoringZone zone) {
-        this.name = name;
-        this.zone = zone;
+public class OnScoreUpdateEvent : IEvent {
+    public string Name;
+    public ScoringZone Zone;
+    public bool IncreaseScore;
+    /// <summary>
+    /// OnScoreEvent pushed when gamepiece collides with scoring zone
+    /// </summary>
+    /// <param name="name">Name of gamepiece object</param>
+    /// <param name="zone">Scoring Zone</param>
+    public OnScoreUpdateEvent(string name, ScoringZone zone, bool increaseScore = true) {
+        Name = name;
+        Zone = zone;
+        IncreaseScore = increaseScore;
     }
 }
