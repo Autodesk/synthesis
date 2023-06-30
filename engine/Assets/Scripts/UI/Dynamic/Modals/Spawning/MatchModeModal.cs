@@ -6,9 +6,9 @@ using System.Linq;
 using Modes.MatchMode;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
-public class MatchModeModal : ModalDynamic
-{
-    private int _fieldIndex = -1;
+
+public class MatchModeModal : ModalDynamic {
+    private int _fieldIndex            = -1;
     private List<String> _robotOptions = new List<string>();
     private string[] _fieldFiles;
 

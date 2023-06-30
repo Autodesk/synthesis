@@ -3,6 +3,7 @@
 using System;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
+
 public class ManageLobbiesModal : ModalDynamic {
     public const float CHECK_INFO_DELAY = 1.5f;
     private const float MODAL_WIDTH     = 1200f;

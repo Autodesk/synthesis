@@ -127,7 +127,11 @@ public class MatchStateMachine {
             base.Start();
             DynamicUIManager.CreateModal<MatchModeModal>();
             DynamicUIManager.ActiveModal.OnAccepted += () =>
+<<<<<<< HEAD:engine/Assets/Scripts/Modes/MatchMode/MatchStateMachine.cs
                 Instance.SetState(StateName.RobotPositioning);
+=======
+                MatchStateMachine.Instance.SetState(StateName.RobotPositioning);
+>>>>>>> 95f4ffd7f (ran formatter):engine/Assets/Scripts/Modes/MatchStateMachine.cs
         }
 
         public override void Update() {}
@@ -150,6 +154,10 @@ public class MatchStateMachine {
             if (Camera.main != null) {
                 Camera.main.GetComponent<CameraController>().CameraMode = CameraController.CameraModes["Freecam"];
             }
+<<<<<<< HEAD:engine/Assets/Scripts/Modes/MatchMode/MatchStateMachine.cs
+=======
+
+>>>>>>> 95f4ffd7f (ran formatter):engine/Assets/Scripts/Modes/MatchStateMachine.cs
             // state passes to next in SpawnLocationPanel accept button
         }
 
@@ -174,10 +182,14 @@ public class MatchStateMachine {
             base.Start();
             DynamicUIManager.CreatePanel<ScoringZonesPanel>(true);
 <<<<<<< HEAD:engine/Assets/Scripts/Modes/MatchMode/MatchStateMachine.cs
+<<<<<<< HEAD:engine/Assets/Scripts/Modes/MatchMode/MatchStateMachine.cs
             var panel               = DynamicUIManager.GetPanel<ScoringZonesPanel>();
 =======
             var panel = DynamicUIManager.GetPanel<ScoringZonesPanel>();
 >>>>>>> e7c59c915 (moved timer events into state start methods):engine/Assets/Scripts/Modes/MatchStateMachine.cs
+=======
+            var panel               = DynamicUIManager.GetPanel<ScoringZonesPanel>();
+>>>>>>> 95f4ffd7f (ran formatter):engine/Assets/Scripts/Modes/MatchStateMachine.cs
             panel.OnAccepted += () => {
                 DynamicUIManager.CreateModal<ConfirmModal>("Start Match?");
                 DynamicUIManager.ActiveModal.OnAccepted += () => {
@@ -208,10 +220,14 @@ public class MatchStateMachine {
         public override void Start() {
             base.Start();
 <<<<<<< HEAD:engine/Assets/Scripts/Modes/MatchMode/MatchStateMachine.cs
+<<<<<<< HEAD:engine/Assets/Scripts/Modes/MatchMode/MatchStateMachine.cs
 
 =======
             
 >>>>>>> e7c59c915 (moved timer events into state start methods):engine/Assets/Scripts/Modes/MatchStateMachine.cs
+=======
+
+>>>>>>> 95f4ffd7f (ran formatter):engine/Assets/Scripts/Modes/MatchStateMachine.cs
             Scoring.targetTime = 15;
             DynamicUIManager.CreatePanel<ScoreboardPanel>(true, true);
         }
