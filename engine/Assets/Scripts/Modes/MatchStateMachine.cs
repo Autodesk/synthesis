@@ -230,7 +230,7 @@ public class MatchStateMachine {
         public override void Start() {
             base.Start();
             Scoring.targetTime = 135;
-            RobotSimObject.SpawnedRobots.ForEach(r => r.Freeze());
+            RobotSimObject.SpawnedRobots.ForEach(r => r.BehavioursEnabled = false);
             _timer = 3;
         }
 
@@ -242,7 +242,7 @@ public class MatchStateMachine {
         }
 
         public override void End() {
-            RobotSimObject.SpawnedRobots.ForEach(r => r.Unfreeze());
+            RobotSimObject.SpawnedRobots.ForEach(r => r.BehavioursEnabled = true);
         }
 
         public Transition() : base(StateName.Transition) { }
