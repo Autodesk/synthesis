@@ -172,6 +172,9 @@ namespace Synthesis.Runtime {
         /// Teardown sim for recycle
         /// </summary>
         public static void SimKill() {
+
+            ModeManager.Teardown();
+
             FieldSimObject.DeleteField();
             List<string> robotIDs = new List<string>(RobotSimObject.SpawnedRobots.Count);
             RobotSimObject.SpawnedRobots.ForEach(x => robotIDs.Add(x.Name));

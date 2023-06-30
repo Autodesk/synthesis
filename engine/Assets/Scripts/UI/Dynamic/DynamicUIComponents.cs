@@ -266,6 +266,13 @@ namespace Synthesis.UI.Dynamic {
             return r;
         }
 
+        public void DeleteAllChildren() {
+            Children.ForEach(x => {
+                GameObject.Destroy(x.RootGameObject);
+            });
+            Children.Clear();
+        }
+
         protected bool _eventsActive = true;
         public bool EventsActive => _eventsActive;
 
@@ -323,6 +330,11 @@ namespace Synthesis.UI.Dynamic {
         }
         public T SetAnchoredPosition<T>(Vector2 pos) where T : UIComponent {
             RootRectTransform.anchoredPosition = pos;
+            return (this as T)!;
+        }
+        public T SetAnchor<T>(Vector2 anchorMin, Vector2 anchorMax) where T : UIComponent {
+            RootRectTransform.anchorMin = anchorMin;
+            RootRectTransform.anchorMax = anchorMax;
             return (this as T)!;
         }
         public T SetSize<T>(Vector2 size) where T: UIComponent {

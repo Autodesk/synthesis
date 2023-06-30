@@ -12,7 +12,7 @@ public class ChooseModeModal : ModalDynamic
         return u;
     };
     
-    public ChooseModeModal() : base(new Vector2(300, 120)) {}
+    public ChooseModeModal() : base(new Vector2(300, 170)) {}
 
     public override void Create()
     {
@@ -38,6 +38,15 @@ public class ChooseModeModal : ModalDynamic
             {
                 if (SceneManager.GetActiveScene().name != "MainScene") SceneManager.LoadScene("MainScene");
                 ModeManager.CurrentMode = new MatchMode();
+            });
+
+        MainContent.CreateButton()
+            .StepIntoLabel(l => l.SetText("Server Test Mode"))
+            .ApplyTemplate(VerticalLayout)
+            .AddOnClickedEvent(b =>
+            {
+                ModeManager.CurrentMode = new ServerTestMode();
+                SceneManager.LoadScene("MainScene");
             });
     }
     
