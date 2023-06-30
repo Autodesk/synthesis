@@ -43,27 +43,7 @@ public class MatchMode : IMode {
     public void Start() {
         DynamicUIManager.CreateModal<MatchModeModal>();
         EventBus.NewTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
-        
-        EventBus.NewTypeListener<MatchStateMachine.OnStateStarted>(e => {
-            MatchStateMachine.OnStateStarted onStateStarted = (MatchStateMachine.OnStateStarted)e;
-            switch (onStateStarted.state.StateName) {
-                case MatchStateMachine.StateName.Auto:
-                    Scoring.targetTime = 15;
-                    DynamicUIManager.CreatePanel<ScoreboardPanel>(true, true);
-                    break;
-                case MatchStateMachine.StateName.Transition:
-                    Scoring.targetTime = 135;
-                    break;
-            }
-        });
 
-        MainHUD.AddItemToDrawer("Scoring Zones", b => {
-            if (FieldSimObject.CurrentField == null) {
-                Logger.Log("No field loaded!", LogLevel.Info);
-            } else {
-                DynamicUIManager.CreatePanel<ScoringZonesPanel>();
-            }
-        });
         MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("settings"));
 
         Array.Fill(SelectedRobots, -1);

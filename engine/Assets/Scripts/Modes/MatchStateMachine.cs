@@ -180,7 +180,7 @@ public class MatchStateMachine {
     public class FieldConfig : MatchState {
         public override void Start() {
             base.Start();
-            DynamicUIManager.CreatePanel<ScoringZonesPanel>();
+            DynamicUIManager.CreatePanel<ScoringZonesPanel>(true);
             var panel = DynamicUIManager.GetPanel<ScoringZonesPanel>();
             panel.OnAccepted += () => {
                 DynamicUIManager.CreateModal<ConfirmModal>("Start Match?");
@@ -207,6 +207,9 @@ public class MatchStateMachine {
     public class Auto : MatchState {
         public override void Start() {
             base.Start();
+            
+            Scoring.targetTime = 15;
+            DynamicUIManager.CreatePanel<ScoreboardPanel>(true, true);
         }
 
         public override void Update() {
@@ -226,6 +229,7 @@ public class MatchStateMachine {
         private float _timer;
         public override void Start() {
             base.Start();
+            Scoring.targetTime = 135;
             RobotSimObject.SpawnedRobots.ForEach(r => r.Freeze());
             _timer = 3;
         }
