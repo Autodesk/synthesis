@@ -1,15 +1,17 @@
 using System;
 using System.Collections.Generic;
 using Synthesis.Gizmo;
-using Synthesis.Import;
 using Synthesis.Physics;
 using Synthesis.PreferenceManager;
 using Synthesis.Runtime;
 using Synthesis.UI.Dynamic;
+using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
+using SynthesisAPI.Utilities;
 using UnityEngine;
-
+using UnityEngine.XR;
+using Logger = SynthesisAPI.Utilities.Logger;
 public class PracticeMode : IMode
 {
     public static Vector3 GamepieceSpawnpoint = new Vector3(0, 10, 0);
@@ -17,7 +19,8 @@ public class PracticeMode : IMode
   
     private bool _lastEscapeValue = false;
     private bool _escapeMenuOpen = false;
-    
+    private bool _showingScoreboard = false;
+
     public static GamepieceData ChosenGamepiece { get; set; }
     public static PrimitiveType ChosenPrimitive { get; set; }
 
@@ -76,6 +79,39 @@ public class PracticeMode : IMode
         );
         
         MainHUD.AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>());
+        MainHUD.AddItemToDrawer("Scoring Zones", b =>
+        {
+            if (FieldSimObject.CurrentField == null)
+            {
+                Logger.Log("No field loaded!", LogLevel.Info);
+            }
+            else
+            {
+                if (!DynamicUIManager.PanelExists<ScoringZonesPanel>())
+                    DynamicUIManager.CreatePanel<ScoringZonesPanel>();
+            }
+        });
+        
+        EventBus.NewTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
+    }
+
+    private void HandleScoreEvent(IEvent e) {
+        if (e.GetType() != typeof(OnScoreUpdateEvent)) return;
+        OnScoreUpdateEvent scoreUpdateEvent = e as OnScoreUpdateEvent;
+        if (scoreUpdateEvent == null) return;
+        
+        ScoringZone zone = scoreUpdateEvent.Zone;
+        int points = zone.Points * (scoreUpdateEvent.IncreaseScore ? 1 : -1);
+                
+        switch (zone.Alliance)
+        {
+            case Alliance.Blue:
+                Scoring.blueScore += points;
+                break;
+            case Alliance.Red:
+                Scoring.redScore += points;
+                break;
+        }
     }
     
     public static void SetInitialState(GameObject robot)
@@ -101,6 +137,10 @@ public class PracticeMode : IMode
 
     public void Update()
     {
+        if (!_showingScoreboard && FieldSimObject.CurrentField != null && FieldSimObject.CurrentField.ScoringZones.Count > 0) {
+            _showingScoreboard = true;
+            DynamicUIManager.CreatePanel<ScoreboardPanel>(true, false);
+        }
         bool openEscapeMenu = InputManager.MappedValueInputs[TOGGLE_ESCAPE_MENU_INPUT].Value == 1.0F;
         if (openEscapeMenu && !_lastEscapeValue)
         {
@@ -197,6 +237,8 @@ public class PracticeMode : IMode
         {
             FieldSimObject.CurrentField.Gamepieces.ForEach(gp => gp.Reset());
         }
+        
+        Scoring.ResetScore();
     }
 
     public static void ResetAll()

@@ -1984,6 +1984,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: AssetCollection
       objectReference: {fileID: 0}
+    - target: {fileID: 507563843828576301, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
+      propertyPath: DynamicUIPrefabs.Array.size
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 507563843828576301, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
+      propertyPath: DynamicUIPrefabs.Array.data[13]
+      value: 
+      objectReference: {fileID: 1527420503741984729, guid: 279a5651df55344728b4d03a9746439e, type: 3}
     - target: {fileID: 507563843828576302, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
       propertyPath: m_RootOrder
       value: 8
