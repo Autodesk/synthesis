@@ -5,6 +5,7 @@ using System.Linq;
 using Google.Protobuf.WellKnownTypes;
 using Mirabuf;
 using Mirabuf.Joint;
+using Modes.MatchMode;
 using Newtonsoft.Json;
 using Synthesis;
 using Synthesis.Import;
@@ -239,7 +240,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             if (RobotSimObject.CurrentlyPossessedRobot == string.Empty) {
                 return;
             }
-
+            
             bool pickup = InputManager.MappedValueInputs[INTAKE_GAMEPIECES].Value == 1.0F;
             RobotSimObject.GetCurrentlyPossessedRobot().PickingUpGamepieces = pickup;
             bool shootGamepiece = InputManager.MappedValueInputs[OUTTAKE_GAMEPIECES].Value == 1.0F;

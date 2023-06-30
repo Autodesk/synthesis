@@ -44,6 +44,7 @@ public class MatchMode : IMode {
         DynamicUIManager.CreateModal<MatchModeModal>();
         EventBus.NewTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
 <<<<<<< HEAD
+<<<<<<< HEAD
         
         EventBus.NewTypeListener<MatchStateMachine.OnStateStarted>(e => {
             MatchStateMachine.OnStateStarted onStateStarted = (MatchStateMachine.OnStateStarted)e;
@@ -57,14 +58,9 @@ public class MatchMode : IMode {
                     break;
             }
         });
+=======
+>>>>>>> e7c59c915 (moved timer events into state start methods)
 
-        MainHUD.AddItemToDrawer("Scoring Zones", b => {
-            if (FieldSimObject.CurrentField == null) {
-                Logger.Log("No field loaded!", LogLevel.Info);
-            } else {
-                DynamicUIManager.CreatePanel<ScoringZonesPanel>();
-            }
-        });
         MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("settings"));
 =======
 
