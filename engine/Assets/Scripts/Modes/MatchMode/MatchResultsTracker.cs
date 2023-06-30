@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -5,12 +6,13 @@ using UnityEngine;
 
 public class MatchResultsTracker
 {
-    public Dictionary<string, ITrackedData> TrackedResults = new Dictionary<string, ITrackedData>();
+    public Dictionary<Type, ITrackedData> TrackedResults = new Dictionary<Type, ITrackedData>();
 
     public MatchResultsTracker()
     {
-        TrackedResults.Add("BluePoints", new BluePoints());
-        TrackedResults.Add("RedPoints", new RedPoints());
+        TrackedResults.Add(typeof(BluePoints), new BluePoints());
+        TrackedResults.Add(typeof(RedPoints), new RedPoints());
+        TrackedResults.Add(typeof(TestEntry), new TestEntry());
     }
     
     public interface ITrackedData
@@ -44,7 +46,22 @@ public class MatchResultsTracker
         
         public string GetName()
         {
-            return "Blue Points";
+            return "Red Points";
+        }
+    }
+
+    public class TestEntry : ITrackedData
+    {
+        public float Value;
+        
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
+        
+        public string GetName()
+        {
+            return "Test Entry";
         }
     }
 }

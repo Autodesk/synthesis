@@ -4,12 +4,14 @@ using System.IO;
 using System.Linq;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
+using static MatchResultsTracker;
 using Logger = SynthesisAPI.Utilities.Logger;
+
 public class MatchMode : IMode {
     public static MatchResultsTracker MatchResultsTracker;
 
     public static int CurrentFieldIndex = -1;
-    public static int[] SelectedRobots = new int[6];
+    public static int[] SelectedRobots = new int[6]; 
     
     /// Whether or not the robot should snap to a grid in positioning mode
     public static bool[] RoundSpawnLocation = new bool[6];
@@ -44,9 +46,11 @@ public class MatchMode : IMode {
                 ScoringZone zone = ((OnScoreUpdateEvent)e).Zone;
                 switch (zone.Alliance) {
                     case Alliance.Blue:
+                        ((BluePoints)MatchResultsTracker.TrackedResults[typeof(BluePoints)]).Points += zone.Points;
                         _blueScore += zone.Points;
                         break;
                     case Alliance.Red:
+                        ((RedPoints)MatchResultsTracker.TrackedResults[typeof(RedPoints)]).Points += zone.Points;
                         _redScore += zone.Points;
                         break;
                 }
@@ -55,7 +59,7 @@ public class MatchMode : IMode {
 
         MainHUD.AddItemToDrawer("Scoring Zones", b => {
             if (FieldSimObject.CurrentField == null) {
-                Logger.Log("No field loaded!",  SynthesisAPI.Utilities.LogLevel.Info);
+                Logger.Log("No field loaded!");
             } else {
                 DynamicUIManager.CreatePanel<ScoringZonesPanel>();
             }
@@ -73,6 +77,8 @@ public class MatchMode : IMode {
     public void Update() {
         if (_stateMachine != null)
             _stateMachine.Update();
+
+        ((TestEntry)MatchResultsTracker.TrackedResults[typeof(TestEntry)]).Value++;
     }
     public void End() {
     }
