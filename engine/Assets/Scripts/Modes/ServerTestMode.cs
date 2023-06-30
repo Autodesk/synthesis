@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Synthesis.Runtime;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.Aether.Lobby;
-
+    
 public class ServerTestMode : IMode {
     private LobbyServer? _server;
     // clang-format off

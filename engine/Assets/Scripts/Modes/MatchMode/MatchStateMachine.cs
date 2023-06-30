@@ -150,7 +150,6 @@ public class MatchStateMachine {
             if (Camera.main != null) {
                 Camera.main.GetComponent<CameraController>().CameraMode = CameraController.CameraModes["Freecam"];
             }
-
             // state passes to next in SpawnLocationPanel accept button
         }
 
@@ -259,7 +258,7 @@ public class MatchStateMachine {
 
         public Teleop() : base(StateName.Teleop) {}
     }
-
+    
     /// A state when a modal is displayed after a match showing info about the match
     public class MatchResults : MatchState {
         public override void Start() {
