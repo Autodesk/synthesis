@@ -61,12 +61,17 @@ public class MatchMode : IMode {
 =======
 >>>>>>> e7c59c915 (moved timer events into state start methods)
 
+<<<<<<< HEAD
         MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("settings"));
 =======
 
         MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(),
             icon: SynthesisAssetCollection.GetSpriteByName("settings"));
 >>>>>>> origin/feature/1553/match-state-flow
+=======
+        MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(),
+            icon: SynthesisAssetCollection.GetSpriteByName("settings"));
+>>>>>>> 95f4ffd7f (ran formatter)
 
         Array.Fill(SelectedRobots, -1);
         Array.Fill(RawSpawnLocations, (Vector3.zero, Quaternion.identity));
@@ -75,13 +80,20 @@ public class MatchMode : IMode {
         _stateMachine.SetState(MatchStateMachine.StateName.MatchConfig);
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 95f4ffd7f (ran formatter)
     private void HandleScoreEvent(IEvent e) {
-        if (e.GetType() != typeof(OnScoreUpdateEvent)) return;
+        if (e.GetType() != typeof(OnScoreUpdateEvent))
+            return;
         OnScoreUpdateEvent scoreUpdateEvent = e as OnScoreUpdateEvent;
-        if (scoreUpdateEvent == null) return;
-        
+        if (scoreUpdateEvent == null)
+            return;
+
         ScoringZone zone = scoreUpdateEvent.Zone;
+<<<<<<< HEAD
         int points = zone.Points * (scoreUpdateEvent.IncreaseScore ? 1 : -1);
                 
         switch (zone.Alliance)
@@ -100,6 +112,11 @@ public class MatchMode : IMode {
 
         switch (zone.Alliance) {
 >>>>>>> origin/feature/1553/match-state-flow
+=======
+        int points       = zone.Points * (scoreUpdateEvent.IncreaseScore ? 1 : -1);
+
+        switch (zone.Alliance) {
+>>>>>>> 95f4ffd7f (ran formatter)
             case Alliance.Blue:
                 Scoring.blueScore += points;
                 break;
@@ -109,12 +126,18 @@ public class MatchMode : IMode {
         }
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 95f4ffd7f (ran formatter)
     public void Update() {
         if (_stateMachine != null) {
             _stateMachine.Update();
 
-            if (Scoring.targetTime <= 0 && _stateMachine.CurrentState.StateName is >= MatchStateMachine.StateName.Auto and <= MatchStateMachine.StateName.Teleop)
+            if (Scoring.targetTime <= 0 && _stateMachine.CurrentState.StateName is >=
+                                               MatchStateMachine.StateName.Auto and <=
+                                               MatchStateMachine.StateName.Teleop)
                 _stateMachine.AdvanceState();
         }
     }
