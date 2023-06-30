@@ -92,7 +92,7 @@ public class OrbitCameraMode : ICameraMode {
         // Construct orientation of the camera
         Vector3 focus = FocusPoint == null ? Vector3.zero : FocusPoint();
 
-        cam.GroundRenderer.material.SetVector("FOCUS_POINT", focus);
+        cam.GroundRenderer.material.SetVector("_GridFocusPoint", focus);
 
         var t           = cam.transform;
         t.localPosition = focus;

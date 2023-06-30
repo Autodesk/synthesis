@@ -107,11 +107,16 @@ namespace Synthesis.Import {
             GameObject assemblyContainer, bool physics = true) {
             Dictionary<string, GameObject> groupObjects = new Dictionary<string, GameObject>();
 
-            int dynamicLayer = 0;
-            if (physics) {
-                if (dynamicLayers.Count == 0)
-                    throw new Exception("No more dynamic layers");
-                dynamicLayer = dynamicLayers.Dequeue();
+	        int dynamicLayer = 0;
+	        
+	        if (physics && !MiraAssembly.Dynamic) {
+		        if (dynamicLayers.Count == 0)
+			        throw new Exception("No more dynamic layers");
+		        dynamicLayer = dynamicLayers.Dequeue();
+		        
+		        assemblyContainer.layer = dynamicLayer;
+		        assemblyContainer.AddComponent<DynamicLayerReserver>();
+	        }
 
                 assemblyContainer.layer = dynamicLayer;
                 assemblyContainer.AddComponent<DynamicLayerReserver>();

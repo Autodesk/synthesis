@@ -10,13 +10,12 @@ using UnityEngine.Rendering;
 
 namespace Synthesis.UI.Dynamic {
     public class SettingsModal : ModalDynamic {
-        public const string SCREEN_MODE      = "Screen Mode";      // Dropdown: Fullscreen or Windowed
-        public const string QUALITY_SETTINGS = "Quality Settings"; // Dropdown: Low Medium High
-        public const string MEASUREMENTS =
-            "Use Imperial Measurements"; // toggle for imperial. if unchecked, uses metric.
-
-        private static string[] _screenModeList      = { "Fullscreen", "Windowed" };
-        private static string[] _qualitySettingsList = { "Very Low", "Low", "Medium", "High", "Very High", "Ultra" };
+        public const string SCREEN_MODE = "Screen Mode";//Dropdown: Fullscreen or Windowed
+        public const string QUALITY_SETTINGS = "Quality Settings";//Dropdown: Low Medium High
+        public const string MEASUREMENTS = "Use Imperial Measurements";//toggle for imperial. if unchecked, uses metric.
+        
+        private static string[] _screenModeList = { "Fullscreen", "Windowed" };
+        private static string[] _qualitySettingsList = { "Low", "Medium", "High", "Ultra" };
 
         private static int _screenModeIndex;
         private static int _qualitySettingsIndex;

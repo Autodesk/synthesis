@@ -8,16 +8,20 @@ namespace Synthesis.UI.Dynamic {
         public StartMatchModePanel() : base(new Vector2(300f, 200f)) {}
 
         public override bool Create() {
-            Title.SetText("Almost Ready").SetFontSize(25f);
-            PanelImage.RootGameObject.SetActive(false);
 
-            AcceptButton.StepIntoLabel(label => label.SetText("Start")).AddOnClickedEvent(b => { StartMatch(); });
-            CancelButton.StepIntoLabel(label => label.SetText("Cancel")).AddOnClickedEvent(b => {
-                DynamicUIManager.CreateModal<MatchModeModal>();
-            });
+            Title.SetText("Start Match?").SetFontSize(25f);
 
-            GizmoManager.SpawnGizmo<RobotSimObject>(RobotSimObject.GetCurrentlyPossessedRobot());
-
+            AcceptButton
+                .StepIntoLabel(label => label.SetText("Start"))
+                .AddOnClickedEvent(b => {
+                    StartMatch();
+                });
+            CancelButton
+                .StepIntoLabel(label => label.SetText("Cancel"))
+                .AddOnClickedEvent(b => {
+                    DynamicUIManager.CreateModal<MatchModeModal>();
+                });
+            
             return true;
         }
 
