@@ -1,12 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
-using Synthesis.Runtime;
+using Synthesis.UI.Dynamic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Synthesis.UI.Dynamic {
+namespace UI.Dynamic.Modals {
     public class MatchResultsModal : ModalDynamic {
-        public MatchResultsModal() : base(new Vector2(350, 50)) { }
+        private const float MODAL_WIDTH = 500f;
+        private const float MODAL_HEIGHT = 600f;
+        public MatchResultsModal() : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) { }
 
         public override void Create() {
 
@@ -19,6 +19,8 @@ namespace Synthesis.UI.Dynamic {
                 MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.None);
 
             }).StepIntoLabel(l => l.SetText("Exit"));
+            
+            
         }
 
         public override void Update() { }
