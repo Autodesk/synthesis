@@ -1105,7 +1105,8 @@ namespace Synthesis.UI.Dynamic {
                 if (_eventsActive && OnValueChanged != null)
                     OnValueChanged(this, x, this.Options[x]);
             });
-            var eventHandler                         = _tmpDropdown.gameObject.AddComponent<UIEventHandler>();
+            var eventHandler = _tmpDropdown.gameObject.AddComponent<UIEventHandler>();
+
             eventHandler.OnPointerClickedEvent += e => { ShowOnTop(); };
 
             _headerImage = new Image(this, unityObject.transform.Find("Header").gameObject);
@@ -1262,7 +1263,8 @@ namespace Synthesis.UI.Dynamic {
         public Image BackgroundImage => _backgroundImage;
         private TMP_InputField _tmpInput;
         public TMP_InputField.ContentType ContentType => _tmpInput.contentType;
-        private int _value                             = 0;
+
+        private int _value = 0;
         public int Value {
             get => _value;
             set {
