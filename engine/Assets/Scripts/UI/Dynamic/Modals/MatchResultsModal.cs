@@ -39,8 +39,10 @@ namespace UI.Dynamic.Modals {
             
             AcceptButton.AddOnClickedEvent(x => {
                 MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.None);
-
+                DynamicUIManager.CreateModal<ExitSynthesisModal>();
             }).StepIntoLabel(l => l.SetText("Exit"));
+            
+            CancelButton.RootGameObject.SetActive(false);
             
             CreateScrollMenu();
         }
