@@ -6,20 +6,21 @@ using UnityEngine;
 
 public class MatchResultsTracker
 {
-    public Dictionary<Type, ITrackedData> TrackedResults = new Dictionary<Type, ITrackedData>();
+    public readonly Dictionary<Type, ITrackedData> MatchResultEntries = new Dictionary<Type, ITrackedData>();
 
     public MatchResultsTracker()
     {
-        TrackedResults.Add(typeof(BluePoints), new BluePoints());
-        TrackedResults.Add(typeof(RedPoints), new RedPoints());
-        TrackedResults.Add(typeof(TestEntry), new TestEntry());
+        MatchResultEntries.Add(typeof(BluePoints), new BluePoints());
+        MatchResultEntries.Add(typeof(RedPoints), new RedPoints());
     }
     
+    /// The base interface for any tracked match statistics. Implement this to track a new statistic
     public interface ITrackedData
     {
         public string GetName();
     }
-
+    
+    /// The number of points scored by the blue team
     public class BluePoints : ITrackedData
     {
         public int Points;
@@ -34,7 +35,8 @@ public class MatchResultsTracker
             return "Blue Points";
         }
     }
-
+    
+    /// The number of points scored by the red team
     public class RedPoints : ITrackedData
     {
         public int Points;
@@ -47,21 +49,6 @@ public class MatchResultsTracker
         public string GetName()
         {
             return "Red Points";
-        }
-    }
-
-    public class TestEntry : ITrackedData
-    {
-        public float Value;
-        
-        public override string ToString()
-        {
-            return Value.ToString();
-        }
-        
-        public string GetName()
-        {
-            return "Test Entry";
         }
     }
 }

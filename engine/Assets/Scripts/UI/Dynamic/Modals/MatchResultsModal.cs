@@ -1,4 +1,5 @@
 using System;
+using Modes.MatchMode;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
@@ -33,28 +34,31 @@ namespace UI.Dynamic.Modals {
         public MatchResultsModal() : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) { }
 
         public override void Create() {
-
-            bool isOnMainMenu = SceneManager.GetActiveScene().name != "MainScene";
-
             Title.SetText("Match Results");
-            Description.SetText("Placeholder panel to show match results");
-            Description.SetText("");
+            Description.SetText("Statistics about the match");
+            
             AcceptButton.AddOnClickedEvent(x => {
                 MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.None);
 
             }).StepIntoLabel(l => l.SetText("Exit"));
             
-            var _scrollView = MainContent.CreateScrollView().SetRightStretch<ScrollView>().ApplyTemplate(VerticalLayout)
+            CreateScrollMenu();
+        }
+
+        /// Creates the main scroll menu and adds all of the match result entries
+        public void CreateScrollMenu()
+        {
+            var scrollView = MainContent.CreateScrollView().SetRightStretch<ScrollView>().ApplyTemplate(VerticalLayout)
                 .SetHeight<ScrollView>(MODAL_HEIGHT - VERTICAL_PADDING * 2 - 50);
 
-            MatchMode.MatchResultsTracker.TrackedResults.ForEach(x =>
+            MatchMode.MatchResultsTracker.MatchResultEntries.ForEach(x =>
             {
                 var entry = x.Value;
 
-                _scrollViewWidth = _scrollView.Parent!.RectOfChildren().width - SCROLLBAR_WIDTH;
+                _scrollViewWidth = scrollView.Parent!.RectOfChildren().width - SCROLLBAR_WIDTH;
                 _entryWidth = _scrollViewWidth - HORIZONTAL_PADDING * 2;
 
-                Content entryContent = _scrollView.Content
+                Content entryContent = scrollView.Content
                     .CreateSubContent(new Vector2(_entryWidth, ROW_HEIGHT))
                     .ApplyTemplate(ListVerticalLayout);
 
