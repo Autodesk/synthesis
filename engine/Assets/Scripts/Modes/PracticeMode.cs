@@ -54,7 +54,7 @@ public class PracticeMode : IMode {
         InputManager.AssignValueInput(
             TOGGLE_ESCAPE_MENU_INPUT, TryGetSavedInput(TOGGLE_ESCAPE_MENU_INPUT,
                                           new Digital("Escape", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
-        
+
         EventBus.NewTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
 
         ConfigureMainHUD();

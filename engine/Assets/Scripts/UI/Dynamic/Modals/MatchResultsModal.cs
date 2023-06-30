@@ -80,6 +80,7 @@ namespace UI.Dynamic.Modals {
                     .SetText(entry.ToString());
             });
         }
+
         public override void Update() {}
 
         public override void Delete() {}
