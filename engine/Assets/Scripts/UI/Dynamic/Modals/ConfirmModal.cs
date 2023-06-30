@@ -10,6 +10,7 @@ public class ConfirmModal : ModalDynamic {
     public ConfirmModal(string message) : base(new Vector2(_width, _height)) {
         _message = message;
     }
+
     public override void Create() {
         Title.SetText(_message);
         Description.RootGameObject.SetActive(false);

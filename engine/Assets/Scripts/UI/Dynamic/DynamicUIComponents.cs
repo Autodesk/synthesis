@@ -68,7 +68,6 @@ namespace Synthesis.UI.Dynamic {
         protected PanelDynamic(Vector2 mainContentSize, float leftContentPadding = 20f, float rightContentPadding = 20f) {
             _mainContentSize = mainContentSize;
             _leftContentPadding = leftContentPadding;
-            _rightContentPadding = rightContentPadding;
         }
 
         public void Create_Internal(GameObject unityObject) {
