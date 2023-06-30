@@ -75,8 +75,9 @@ namespace Synthesis.PreferenceManager {
         }
     }
 
-    public class PrePreferenceSaveEvent : IEvent { }
-    public class PostPreferenceSaveEvent : IEvent { }
+    public class PrePreferenceSaveEvent : IEvent {}
+
+    public class PostPreferenceSaveEvent : IEvent {}
 
     internal struct PreferenceData {
         public string CoherenceId;

@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 
 public class MatchStateMachine {
     private static MatchStateMachine _instance;
-    
+
     public static MatchStateMachine Instance {
         get {
             if (_instance == null)
@@ -17,8 +17,8 @@ public class MatchStateMachine {
             return _instance;
         }
     }
- 
-    #region State Management
+
+#region State Management
 
     private readonly Dictionary<StateName, MatchState> _matchStates = new Dictionary<StateName, MatchState>();
     private MatchState _currentState;
@@ -59,9 +59,9 @@ public class MatchStateMachine {
         _currentState.Update();
     }
 
-    #endregion
+#endregion
 
-    #region Match States
+#region Match States
 
     /// Called whenever a new match state is started
     public class OnStateStarted : IEvent {
@@ -69,7 +69,7 @@ public class MatchStateMachine {
         public StateName stateName;
 
         public OnStateStarted(MatchState state, StateName stateName) {
-            this.state = state;
+            this.state     = state;
             this.stateName = stateName;
         }
     }
@@ -80,11 +80,11 @@ public class MatchStateMachine {
         public StateName stateName;
 
         public OnStateEnded(MatchState state, StateName stateName) {
-            this.state = state;
+            this.state     = state;
             this.stateName = stateName;
         }
     }
-    
+
     /// A specific state during match mode
     public abstract class MatchState {
         private StateName _stateName;
@@ -110,13 +110,13 @@ public class MatchStateMachine {
             base.Start();
         }
 
-        public override void Update() { }
+        public override void Update() {}
 
         public override void End() {
             base.End();
         }
 
-        public None() : base(StateName.None) { }
+        public None() : base(StateName.None) {}
     }
 
     /// When the user is choosing which robots to spawn in and other match settings
@@ -124,24 +124,24 @@ public class MatchStateMachine {
         public override void Start() {
             base.Start();
             DynamicUIManager.CreateModal<MatchModeModal>();
-            ((MatchModeModal)DynamicUIManager.ActiveModal).OnAccepted +=
-                () => MatchStateMachine.Instance.SetState(StateName.RobotPositioning);
+            ((MatchModeModal) DynamicUIManager.ActiveModal).OnAccepted += () =>
+                MatchStateMachine.Instance.SetState(StateName.RobotPositioning);
         }
 
-        public override void Update() { }
+        public override void Update() {}
 
         public override void End() {
             base.End();
         }
 
-        public MatchConfig() : base(StateName.MatchConfig) { }
+        public MatchConfig() : base(StateName.MatchConfig) {}
     }
 
     /// When the user is choosing where the robot will spawn
     public class RobotPositioning : MatchState {
         public override void Start() {
             base.Start();
-            
+
             PhysicsManager.IsFrozen = true;
             MatchMode.SpawnAllRobots();
 
@@ -150,11 +150,11 @@ public class MatchStateMachine {
             }
         }
 
-        public override void Update() { }
+        public override void Update() {}
 
         public override void End() {
             base.End();
-            
+
             PhysicsManager.IsFrozen = false;
 
             if (Camera.main != null) {
@@ -162,14 +162,14 @@ public class MatchStateMachine {
             }
         }
 
-        public RobotPositioning() : base(StateName.RobotPositioning) { }
+        public RobotPositioning() : base(StateName.RobotPositioning) {}
     }
 
     /// The autonomous state at the beginning of a match
     public class Auto : MatchState {
         public override void Start() {
             base.Start();
-            
+
             // TODO: start auto timer on scoreboard
         }
 
@@ -183,14 +183,14 @@ public class MatchStateMachine {
             base.End();
         }
 
-        public Auto() : base(StateName.Auto) { }
+        public Auto() : base(StateName.Auto) {}
     }
 
     /// The teleop state of a match
     public class Teleop : MatchState {
         public override void Start() {
             base.Start();
-            
+
             // TODO: start teleop timer on scoreboard
         }
 
@@ -199,11 +199,12 @@ public class MatchStateMachine {
             if (Input.GetKeyDown(KeyCode.RightArrow))
                 MatchStateMachine.Instance.SetState(StateName.MatchResults);
         }
-        public override void End() { }
 
-        public Teleop() : base(StateName.Teleop) { }
+        public override void End() {}
+
+        public Teleop() : base(StateName.Teleop) {}
     }
-    
+
     /// A state when a modal is displayed after a match showing info about the match
     public class MatchResults : MatchState {
         public override void Start() {
@@ -212,16 +213,14 @@ public class MatchStateMachine {
             DynamicUIManager.CreateModal<MatchResultsModal>();
         }
 
-        public override void Update() { }
+        public override void Update() {}
 
-        public override void End() {
-            
-        }
+        public override void End() {}
 
-        public MatchResults() : base(StateName.MatchResults) { }
+        public MatchResults() : base(StateName.MatchResults) {}
     }
 
-    #endregion
+#endregion
 
     /// Represents a specific MatchState
     public enum StateName {

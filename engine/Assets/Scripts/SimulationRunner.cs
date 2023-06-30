@@ -173,7 +173,6 @@ namespace Synthesis.Runtime {
         /// Teardown sim for recycle
         /// </summary>
         public static void SimKill() {
-
             ModeManager.Teardown();
 
             FieldSimObject.DeleteField();

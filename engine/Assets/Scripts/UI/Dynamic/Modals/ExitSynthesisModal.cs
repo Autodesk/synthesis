@@ -14,16 +14,18 @@ namespace Synthesis.UI.Dynamic {
             Title.SetText("Exit Synthesis");
             Description.SetText("");
 
-            AcceptButton.AddOnClickedEvent(x => {
-                if (isOnMainMenu)
-                    Application.Quit();
-                else {
-                    SimulationRunner.InSim = false;
-                    DynamicUIManager.CloseAllPanels(true);
-                    ModeManager.CurrentMode = null;
-                    SceneManager.LoadScene("GridMenuScene", LoadSceneMode.Single);
-                }
-            }).StepIntoLabel(l => l.SetText("Exit"));
+            AcceptButton
+                .AddOnClickedEvent(x => {
+                    if (isOnMainMenu)
+                        Application.Quit();
+                    else {
+                        SimulationRunner.InSim = false;
+                        DynamicUIManager.CloseAllPanels(true);
+                        ModeManager.CurrentMode = null;
+                        SceneManager.LoadScene("GridMenuScene", LoadSceneMode.Single);
+                    }
+                })
+                .StepIntoLabel(l => l.SetText("Exit"));
 
             ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"));
             ModalImage.SetColor(ColorManager.SYNTHESIS_WHITE);

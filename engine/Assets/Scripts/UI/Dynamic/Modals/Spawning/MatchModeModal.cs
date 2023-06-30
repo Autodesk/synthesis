@@ -5,11 +5,11 @@ using System.IO;
 using System.Linq;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
-public class MatchModeModal : ModalDynamic
-{
+
+public class MatchModeModal : ModalDynamic {
     public Action OnAccepted;
-    
-    private int _fieldIndex = -1;
+
+    private int _fieldIndex            = -1;
     private List<String> _robotOptions = new List<string>();
     private string[] _fieldFiles;
 
@@ -22,7 +22,7 @@ public class MatchModeModal : ModalDynamic
         return u;
     };
 
-    public MatchModeModal() : base(new Vector2(500, 800)) { }
+    public MatchModeModal() : base(new Vector2(500, 800)) {}
 
     public override void Create() {
         var robotsFolder = ParsePath("$appdata/Autodesk/Synthesis/Mira", '/');
@@ -35,46 +35,42 @@ public class MatchModeModal : ModalDynamic
         var _robotFiles = Directory.GetFiles(robotsFolder).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
         _robotOptions.Add("None");
         _robotFiles.ForEach(x => _robotOptions.Add(x));
-        
-        _fieldFiles = Directory.GetFiles(fieldsFolder).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
 
+        _fieldFiles = Directory.GetFiles(fieldsFolder).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
 
         Title.SetText("Match Mode");
         Description.SetText("Configure Match Mode");
 
-        AcceptButton
-            .StepIntoLabel(label => label.SetText("Load"))
-            .AddOnClickedEvent(b =>
-            {
-                OnAccepted.Invoke();
-                if (_fieldIndex != -1)
-                {
-                    DynamicUIManager.CreateModal<LoadingScreenModal>(); 
-                    MonoBehaviour _mb = GameObject.FindObjectOfType<MonoBehaviour>();
-                    if (_mb != null)
-                    {
-                        _mb.StartCoroutine(LoadMatch());
-                    }
+        AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
+            OnAccepted.Invoke();
+            if (_fieldIndex != -1) {
+                DynamicUIManager.CreateModal<LoadingScreenModal>();
+                MonoBehaviour _mb = GameObject.FindObjectOfType<MonoBehaviour>();
+                if (_mb != null) {
+                    _mb.StartCoroutine(LoadMatch());
                 }
-            });
+            }
+        });
         CancelButton.AddOnClickedEvent(b => { // need to add in isMatchModalOpen integration
             DynamicUIManager.CloseActiveModal();
         });
 
-        for (int robot = 0; robot < 6; robot++)
-        {
+        for (int robot = 0; robot < 6; robot++) {
             int robotIndex = robot;
             if (robotIndex % 3 == 0)
-                MainContent.CreateLabel().ApplyTemplate(VerticalLayout)
+                MainContent.CreateLabel()
+                    .ApplyTemplate(VerticalLayout)
                     .SetText($"Select {(robotIndex == 0 ? "Red" : "Blue")} Robots");
 
             MainContent.CreateDropdown()
                 .SetOptions(_robotOptions.Select(x => Path.GetFileName(x)).ToArray())
-                .AddOnValueChangedEvent((d, i, data) =>
-                        MatchMode.SelectedRobots[robotIndex] = i - 1 // Subtract 1 to account for "None" option
-                ).ApplyTemplate(VerticalLayout).SetValue(0);
+                .AddOnValueChangedEvent((d, i, data) => MatchMode.SelectedRobots[robotIndex] =
+                                            i - 1 // Subtract 1 to account for "None" option
+                    )
+                .ApplyTemplate(VerticalLayout)
+                .SetValue(0);
         }
-        
+
         MainContent.CreateLabel().ApplyTemplate(VerticalLayout).SetText("Select Field");
         var chooseFieldDropdown = MainContent.CreateDropdown()
                                       .SetOptions(_fieldFiles.Select(x => Path.GetFileName(x)).ToArray())
@@ -87,19 +83,18 @@ public class MatchModeModal : ModalDynamic
     public IEnumerator LoadMatch() {
         yield return new WaitForSeconds(0.05f);
 
-        if(MatchMode.CurrentFieldIndex != _fieldIndex)
-        {
-            if (FieldSimObject.CurrentField != null) FieldSimObject.DeleteField();
+        if (MatchMode.CurrentFieldIndex != _fieldIndex) {
+            if (FieldSimObject.CurrentField != null)
+                FieldSimObject.DeleteField();
             FieldSimObject.SpawnField(_fieldFiles[_fieldIndex], false);
             MatchMode.CurrentFieldIndex = _fieldIndex;
         }
-        
+
         DynamicUIManager.CloseActiveModal();
         DynamicUIManager.CreatePanel<SpawnLocationPanel>();
     }
 
-    public override void Update() {
-    }
+    public override void Update() {}
 
     public override void Delete() {}
 

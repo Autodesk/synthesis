@@ -12,30 +12,25 @@ public class ModeManager {
             if (_currentMode != null)
                 _currentMode.End();
             _currentMode = value;
-            
+
             if (SceneManager.GetActiveScene().name == "MainScene" && _currentMode != null)
                 _currentMode.Start();
         }
     }
 
-    public static void Start()
-    {
-        if (CurrentMode == null)
-        {
+    public static void Start() {
+        if (CurrentMode == null) {
             DynamicUIManager.CreateModal<ChooseModeModal>();
-        }
-        else 
+        } else
             CurrentMode.Start();
     }
-    
-    public static void Update()
-    {
+
+    public static void Update() {
         CurrentMode?.Update();
     }
 
-    public static void ModalClosed()
-    {
-        if (CurrentMode != null) 
+    public static void ModalClosed() {
+        if (CurrentMode != null)
             CurrentMode.CloseMenu();
     }
 
