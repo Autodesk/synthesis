@@ -9,8 +9,8 @@ namespace Synthesis.UI.Dynamic {
         public StartMatchModePanel() : base(new Vector2(300f, 200f)) { }
 
         public override bool Create() {
-            Title.SetText("Almost Ready").SetFontSize(25f);
-            PanelImage.RootGameObject.SetActive(false);
+
+            Title.SetText("Start Match?").SetFontSize(25f);
 
             AcceptButton
                 .StepIntoLabel(label => label.SetText("Start"))
@@ -22,9 +22,7 @@ namespace Synthesis.UI.Dynamic {
                 .AddOnClickedEvent(b => {
                     DynamicUIManager.CreateModal<MatchModeModal>();
                 });
-
-            GizmoManager.SpawnGizmo<RobotSimObject>(RobotSimObject.GetCurrentlyPossessedRobot());
-
+            
             return true;
         }
 

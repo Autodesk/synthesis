@@ -9,6 +9,7 @@ from proto.proto_out import types_pb2, joint_pb2
 
 # ____________________________ DATA TYPES __________________
 
+
 # this is more of a tree - todo rewrite
 class GraphNode:
     def __init__(self, data: any):
@@ -538,7 +539,7 @@ def createTreeParts(
     try:
         objectType = dynNode.data.objectType
     except:
-        objectType = ''
+        objectType = ""
 
     if objectType == "adsk::fusion::Occurrence":
         node.value = guid_occurrence(dynNode.data)
