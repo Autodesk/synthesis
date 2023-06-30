@@ -14,7 +14,7 @@ public class TopButton : MonoBehaviour {
 
     public void SetUnderlineHeight(float height) {
         RectTransform rt = Underline.GetComponent<RectTransform>();
-        rt.sizeDelta = new Vector2 (rt.sizeDelta.x, height);
+        rt.sizeDelta     = new Vector2(rt.sizeDelta.x, height);
     }
 
     public void SetUnderlineColor(Color c) {

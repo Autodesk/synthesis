@@ -6,24 +6,22 @@ using UnityEngine;
 
 namespace Synthesis.UI.Dynamic {
     public class UpdateAvailableModal : ModalDynamic {
-
-        public UpdateAvailableModal() : base(new Vector2(350, 50)) { }
+        public UpdateAvailableModal() : base(new Vector2(350, 50)) {}
 
         public override void Create() {
-
             Title.SetText("Exit Synthesis");
             Description.SetText("");
-            AcceptButton.AddOnClickedEvent(x => {
-                Process.Start(new ProcessStartInfo() {
-                    FileName = AutoUpdater.UpdaterLink,
-                    UseShellExecute = true
-                });
-            }).StepIntoLabel(l => l.SetText("Yes Please"))
-            .SetPivot<Button>(new Vector2(1.0f, 0.0f))
-            .SetWidth<Button>(125);
+            AcceptButton
+                .AddOnClickedEvent(x => {
+                    Process.Start(
+                        new ProcessStartInfo() { FileName = AutoUpdater.UpdaterLink, UseShellExecute = true });
+                })
+                .StepIntoLabel(l => l.SetText("Yes Please"))
+                .SetPivot<Button>(new Vector2(1.0f, 0.0f))
+                .SetWidth<Button>(125);
             CancelButton.StepIntoLabel(l => l.SetText("I'm Good"))
-            .SetPivot<Button>(new Vector2(0.0f, 0.0f))
-            .SetWidth<Button>(125);
+                .SetPivot<Button>(new Vector2(0.0f, 0.0f))
+                .SetWidth<Button>(125);
             ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"));
             ModalImage.SetColor(ColorManager.SYNTHESIS_WHITE);
 
@@ -36,7 +34,8 @@ namespace Synthesis.UI.Dynamic {
                 .SetFontSize(20);
         }
 
-        public override void Update() { }
-        public override void Delete() { }
+        public override void Update() {}
+
+        public override void Delete() {}
     }
 }

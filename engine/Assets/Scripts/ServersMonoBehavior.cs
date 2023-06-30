@@ -4,18 +4,14 @@ using UnityEngine;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
 
-public class ServersMonoBehavior : MonoBehaviour
-{
+public class ServersMonoBehavior : MonoBehaviour {
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start() {
         TcpServerManager.Start();
         UdpServerManager.Start();
     }
 
-
-    void OnDestroy()
-    {
+    void OnDestroy() {
         TcpServerManager.Stop();
         UdpServerManager.Stop();
     }
