@@ -125,7 +125,7 @@ public class FreeCameraMode : ICameraMode
     }
     
     public void LateUpdate(CameraController cam) {
-        cam.GroundRenderer.material.SetVector("FOCUS_POINT", cam.transform.position);
+        cam.GroundRenderer.material.SetVector("_GridFocusPoint", cam.transform.position);
     }
 
     public void SetActive(bool active) {

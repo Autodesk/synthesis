@@ -64,6 +64,9 @@ public class ZoneConfigPanel : PanelDynamic {
                 
                 _initialParent = parent.name;
                 _initialData.Parent = parent;
+                HighlightComponent highlight = parent.GetComponent<Rigidbody>().GetComponent<HighlightComponent>();
+                highlight.Color = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_SELECT);
+                highlight.enabled = true;
             }
             _initialData.DestroyGamepiece = zone.DestroyGamepiece;
             _initialData.PersistentPoints = zone.PersistentPoints;
@@ -343,6 +346,10 @@ public class ZoneConfigPanel : PanelDynamic {
         }
         if (_selectedNode is not null) {
             _selectedNode.enabled = false;
+        }
+        if (_data.Parent is not null) {
+            HighlightComponent highlight = _data.Parent.GetComponent<Rigidbody>().GetComponent<HighlightComponent>();
+            highlight.enabled = false;
         }
         if (!_pressedButtonToClose) DoCancel();
         GizmoManager.ExitGizmo();

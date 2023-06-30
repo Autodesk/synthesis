@@ -17,7 +17,7 @@ namespace Synthesis.UI.Dynamic {
         public const string RENDER_SCORE_ZONES = "Render Score Zones";
         
         private static string[] _screenModeList = { "Fullscreen", "Windowed" };
-        private static string[] _qualitySettingsList = { "Very Low", "Low", "Medium", "High", "Very High", "Ultra" };
+        private static string[] _qualitySettingsList = { "Low", "Medium", "High", "Ultra" };
 
         private static int _screenModeIndex;
         private static int _qualitySettingsIndex;
