@@ -182,7 +182,14 @@ public class MatchStateMachine {
             base.Start();
             DynamicUIManager.CreatePanel<ScoringZonesPanel>();
             var panel = DynamicUIManager.GetPanel<ScoringZonesPanel>();
-            panel.OnAccepted += () => MatchStateMachine.Instance.SetState(StateName.Auto);
+            panel.OnAccepted += () => {
+                DynamicUIManager.CreateModal<ConfirmModal>("Start Match?");
+                DynamicUIManager.ActiveModal.OnAccepted += () => {
+                    DynamicUIManager.CloseActiveModal();
+                    DynamicUIManager.CreatePanel<ScoreboardPanel>(true, true);
+                    MatchStateMachine.Instance.SetState(StateName.Auto);
+                };
+            };
         }
         
         public override void Update() {}
@@ -200,14 +207,9 @@ public class MatchStateMachine {
     public class Auto : MatchState {
         public override void Start() {
             base.Start();
-
-            // TODO: start auto timer on scoreboard
         }
 
         public override void Update() {
-            // TEMP END CONDITION FOR STATE MACHINE TESTING
-            if (Input.GetKeyDown(KeyCode.RightArrow))
-                MatchStateMachine.Instance.SetState(StateName.Teleop);
         }
 
         public override void End() {
@@ -251,9 +253,6 @@ public class MatchStateMachine {
         }
 
         public override void Update() {
-            // TEMP END CONDITION FOR STATE MACHINE TESTING
-            if (Input.GetKeyDown(KeyCode.RightArrow))
-                MatchStateMachine.Instance.SetState(StateName.MatchResults);
         }
         public override void End() { }
 
