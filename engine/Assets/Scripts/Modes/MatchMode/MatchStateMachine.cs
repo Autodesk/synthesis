@@ -173,7 +173,11 @@ public class MatchStateMachine {
         public override void Start() {
             base.Start();
             DynamicUIManager.CreatePanel<ScoringZonesPanel>(true);
+<<<<<<< HEAD:engine/Assets/Scripts/Modes/MatchMode/MatchStateMachine.cs
             var panel               = DynamicUIManager.GetPanel<ScoringZonesPanel>();
+=======
+            var panel = DynamicUIManager.GetPanel<ScoringZonesPanel>();
+>>>>>>> e7c59c915 (moved timer events into state start methods):engine/Assets/Scripts/Modes/MatchStateMachine.cs
             panel.OnAccepted += () => {
                 DynamicUIManager.CreateModal<ConfirmModal>("Start Match?");
                 DynamicUIManager.ActiveModal.OnAccepted += () => {
@@ -203,7 +207,11 @@ public class MatchStateMachine {
     public class Auto : MatchState {
         public override void Start() {
             base.Start();
+<<<<<<< HEAD:engine/Assets/Scripts/Modes/MatchMode/MatchStateMachine.cs
 
+=======
+            
+>>>>>>> e7c59c915 (moved timer events into state start methods):engine/Assets/Scripts/Modes/MatchStateMachine.cs
             Scoring.targetTime = 15;
             DynamicUIManager.CreatePanel<ScoreboardPanel>(true, true);
         }
@@ -226,7 +234,11 @@ public class MatchStateMachine {
         public override void Start() {
             base.Start();
             Scoring.targetTime = 135;
+<<<<<<< HEAD:engine/Assets/Scripts/Modes/MatchMode/MatchStateMachine.cs
             RobotSimObject.SpawnedRobots.ForEach(r => r.BehavioursEnabled = false);
+=======
+            RobotSimObject.SpawnedRobots.ForEach(r => r.Freeze());
+>>>>>>> e7c59c915 (moved timer events into state start methods):engine/Assets/Scripts/Modes/MatchStateMachine.cs
             _timer = 3;
         }
 
