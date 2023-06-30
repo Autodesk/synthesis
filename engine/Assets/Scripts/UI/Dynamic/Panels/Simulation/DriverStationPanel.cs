@@ -11,8 +11,7 @@ using SynthesisAPI.Utilities;
 using Logger = SynthesisAPI.Utilities.Logger;
 
 public class DriverStationPanel : PanelDynamic {
-
-    private const string DRIVERSTATION_CONNECTED = "Driver Station (Connected)";
+    private const string DRIVERSTATION_CONNECTED     = "Driver Station (Connected)";
     private const string DRIVERSTATION_NOT_CONNECTED = "Driver Station (Not Connected)";
 
     private Button _modeButton;
@@ -23,17 +22,16 @@ public class DriverStationPanel : PanelDynamic {
     public DriverStationPanel() : base(new Vector2(800, 60)) {}
 
     public override bool Create() {
-
         if (RobotSimObject.CurrentlyPossessedRobot == string.Empty) {
             Logger.Log("Spawn a robot first", LogLevel.Info);
             return false;
         }
 
         // BottomCenter the panel
-        var transform = base.UnityObject.GetComponent<RectTransform>();
-        transform.pivot = new Vector2(0.5f, 0.0f);
-        transform.anchorMax = new Vector2(0.5f, 0.0f);
-        transform.anchorMin = new Vector2(0.5f, 0.0f);
+        var transform              = base.UnityObject.GetComponent<RectTransform>();
+        transform.pivot            = new Vector2(0.5f, 0.0f);
+        transform.anchorMax        = new Vector2(0.5f, 0.0f);
+        transform.anchorMin        = new Vector2(0.5f, 0.0f);
         transform.anchoredPosition = new Vector2(0.0f, 10.0f);
 
         Title.SetText("Driver Station (Not Connected)");
@@ -50,20 +48,17 @@ public class DriverStationPanel : PanelDynamic {
 
             var currentData = WebSocketManager.RioState.GetData<DriverStationData>("");
             if (currentData.Enabled) {
-                WebSocketManager.UpdateData<DriverStationData>("", d => {
-                    d.Enabled = false;
-                });
+                WebSocketManager.UpdateData<DriverStationData>("", d => { d.Enabled = false; });
                 SetModeButton(false);
             } else {
-                WebSocketManager.UpdateData<DriverStationData>("", d => {
-                    d.Enabled = true;
-                });
+                WebSocketManager.UpdateData<DriverStationData>("", d => { d.Enabled = true; });
                 SetModeButton(true);
             }
         });
 
         _modeSelection = MainContent.CreateDropdown();
-        _modeSelection.SetWidth<Dropdown>(150f).SetLeftStretch<Button>(topPadding: 0f, bottomPadding: 20f, anchoredX: 220);
+        _modeSelection.SetWidth<Dropdown>(150f).SetLeftStretch<Button>(
+            topPadding: 0f, bottomPadding: 20f, anchoredX: 220);
         _modeSelection.SetOptions(new string[] { "Teleop", "Auto" });
         _modeSelection.AddOnValueChangedEvent((d, i, o) => {
             _useAuto = i != 0; // Gonna have to change later
@@ -78,12 +73,10 @@ public class DriverStationPanel : PanelDynamic {
     private void SetModeButton(bool isEnabled) {
         if (isEnabled) {
             _modeButton.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_BLACK_ACCENT))
-                .StepIntoLabel(l => l.SetColor(ColorManager.SYNTHESIS_ORANGE)
-                    .SetText("Enabled"));
+                .StepIntoLabel(l => l.SetColor(ColorManager.SYNTHESIS_ORANGE).SetText("Enabled"));
         } else {
             _modeButton.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_ORANGE))
-                .StepIntoLabel(l => l.SetColor(ColorManager.SYNTHESIS_BLACK)
-                    .SetText("Disabled"));
+                .StepIntoLabel(l => l.SetColor(ColorManager.SYNTHESIS_BLACK).SetText("Disabled"));
         }
     }
 

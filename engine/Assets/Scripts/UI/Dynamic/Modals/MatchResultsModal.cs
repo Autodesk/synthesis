@@ -6,22 +6,24 @@ using UnityEngine.SceneManagement;
 
 namespace Synthesis.UI.Dynamic {
     public class MatchResultsModal : ModalDynamic {
-        public MatchResultsModal() : base(new Vector2(350, 50)) { }
+        public MatchResultsModal() : base(new Vector2(350, 50)) {}
 
         public override void Create() {
-
             bool isOnMainMenu = SceneManager.GetActiveScene().name != "MainScene";
 
             Title.SetText("Match Results");
             Description.SetText("Placeholder panel to show match results");
             Description.SetText("");
+            // clang-format off
             AcceptButton.AddOnClickedEvent(x => {
-                MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.None);
-
-            }).StepIntoLabel(l => l.SetText("Exit"));
+                    MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.None);
+                })
+                .StepIntoLabel(l => l.SetText("Exit"));
+            // clang-format on
         }
 
-        public override void Update() { }
-        public override void Delete() { }
+        public override void Update() {}
+
+        public override void Delete() {}
     }
 }

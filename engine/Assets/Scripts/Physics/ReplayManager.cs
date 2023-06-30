@@ -21,15 +21,17 @@ namespace Synthesis.Replay {
                 // }
             }
         }
+        // clang-format off
         private static float _timeSpan = 5f;
-        public static float TimeSpan => _timeSpan;
+        public static float TimeSpan   => _timeSpan;
         private static ReplayFrame? _newestFrame = null;
-        public static ReplayFrame? NewestFrame => _newestFrame;
+        public static ReplayFrame? NewestFrame   => _newestFrame;
         private static ReplayFrame? _oldestFrame = null;
-        public static ReplayFrame CurrentFrame = null!;
+        public static ReplayFrame CurrentFrame   = null!;
 
         private static float _desyncTime = 0;
-        public static float DesyncTime => _desyncTime;
+        public static float DesyncTime   => _desyncTime;
+        // clang-format on
 
         private static Action<ContactReport, float>? _createContactMarker;
         public static Action<ContactReport, float>? CreateContactMarker => _createContactMarker;
@@ -39,10 +41,11 @@ namespace Synthesis.Replay {
         private static SortedList<float, ContactReport> _contactReports = new SortedList<float, ContactReport>();
 
         private static float _startDesync = float.NaN;
+
         public static void SetupDesyncTracker() {
             EventBus.NewTypeListener<PhysicsFreezeChangeEvent>(e => {
                 var pe = e as PhysicsFreezeChangeEvent;
-                
+
                 if (pe!.IsFrozen) {
                     _startDesync = Time.realtimeSinceStartup;
                 } else {
@@ -53,6 +56,7 @@ namespace Synthesis.Replay {
                 }
             });
         }
+
         public static void SetupContactUI(Action<ContactReport, float> create, Action erase) {
             _createContactMarker = create;
             _eraseContactMarkers = erase;
@@ -81,11 +85,11 @@ namespace Synthesis.Replay {
                 _newestFrame = newFrame;
                 _oldestFrame = newFrame;
             } else {
-                newFrame.LastFrame = _newestFrame;
+                newFrame.LastFrame     = _newestFrame;
                 _newestFrame.NextFrame = newFrame;
-                _newestFrame = newFrame;
+                _newestFrame           = newFrame;
                 while (_newestFrame.TimeStamp - _oldestFrame?.TimeStamp > _timeSpan) {
-                    _oldestFrame = _oldestFrame?.NextFrame;
+                    _oldestFrame           = _oldestFrame?.NextFrame;
                     _oldestFrame.LastFrame = null!;
                     // Debug.Log("Frame dropped");
                     if (_oldestFrame == _newestFrame)
@@ -93,7 +97,9 @@ namespace Synthesis.Replay {
                 }
             }
 
-            while (_contactReports.Count > 0 && (Time.realtimeSinceStartup - _desyncTime) - _contactReports.ElementAt(0).Value.TimeStamp > _timeSpan) {
+            while (
+                _contactReports.Count > 0 &&
+                (Time.realtimeSinceStartup - _desyncTime) - _contactReports.ElementAt(0).Value.TimeStamp > _timeSpan) {
                 _contactReports.RemoveAt(0);
             }
 
@@ -107,11 +113,10 @@ namespace Synthesis.Replay {
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="t">Use negative range to show relative to the latest frame</param>
         public static ReplayFrame? GetFrameAtTime(float t) {
-
             if (_newestFrame == null)
                 return null;
 
@@ -129,22 +134,22 @@ namespace Synthesis.Replay {
                 if (a.NextFrame == null)
                     return a;
                 b = a.NextFrame;
-                return ReplayFrame.Lerp(a, b, ((_newestFrame.TimeStamp + t) - a.TimeStamp) / (b.TimeStamp - a.TimeStamp));
+                return ReplayFrame.Lerp(
+                    a, b, ((_newestFrame.TimeStamp + t) - a.TimeStamp) / (b.TimeStamp - a.TimeStamp));
             }
         }
 
         public static void ShowContactsAtTime(float t, float giveOrTake = 0.25f, float impulseThreshold = 10f) {
-            if (_newestFrame == null
-                || _contactReports.Count < 1
-                || CreateContactMarker == null
-                || EraseContactMarkers == null)
+            if (_newestFrame == null || _contactReports.Count < 1 || CreateContactMarker == null ||
+                EraseContactMarkers == null)
                 return;
 
             EraseContactMarkers();
-            
+
             var targetTimeStamp = t > 0 ? t : _newestFrame.TimeStamp + t;
 
-            // locate closest index using binary search (NOTE FOR FUTURE DEVS: I was too lazy to google a binary search algo so I made this in like a minute)
+            // locate closest index using binary search (NOTE FOR FUTURE DEVS: I was too lazy to google a binary search
+            // algo so I made this in like a minute)
             int a = 0, b = _contactReports.Count - 1;
             int index = (a + b) / 2;
             while (a != b) {
@@ -187,7 +192,7 @@ namespace Synthesis.Replay {
                 return;
 
             var originalNewestTimestamp = _newestFrame.TimeStamp;
-            
+
             while (_newestFrame.TimeStamp > CurrentFrame.TimeStamp) {
                 if (_newestFrame == _oldestFrame) {
                     throw new Exception("Current Frame is too outdated");
@@ -197,21 +202,22 @@ namespace Synthesis.Replay {
 
             _desyncTime += originalNewestTimestamp - CurrentFrame.TimeStamp;
 
-            while (_contactReports.Count > 0 && _contactReports.ElementAt(_contactReports.Count - 1).Value.TimeStamp > CurrentFrame.TimeStamp) {
+            while (_contactReports.Count > 0 &&
+                   _contactReports.ElementAt(_contactReports.Count - 1).Value.TimeStamp > CurrentFrame.TimeStamp) {
                 _contactReports.RemoveAt(_contactReports.Count - 1);
             }
 
             _newestFrame.NextFrame = CurrentFrame;
             CurrentFrame.LastFrame = _newestFrame;
             CurrentFrame.NextFrame = null!;
-            _newestFrame = CurrentFrame;
+            _newestFrame           = CurrentFrame;
 
             CurrentFrame = null!;
         }
 
         public static void Teardown() {
             _startDesync = float.NaN;
-            _desyncTime = 0;
+            _desyncTime  = 0;
             InvalidateRecording();
             CurrentFrame = null!;
             _isRecording = false;
@@ -220,26 +226,23 @@ namespace Synthesis.Replay {
 
     public class ReplayFrame {
         public float TimeStamp;
-        public Dictionary<Rigidbody, RigidbodyFrameData> RigidbodyData = new Dictionary<Rigidbody, RigidbodyFrameData>();
+        public Dictionary<Rigidbody, RigidbodyFrameData> RigidbodyData =
+            new Dictionary<Rigidbody, RigidbodyFrameData>();
 
         [JsonConstructor]
-        private ReplayFrame() { }
+        private ReplayFrame() {}
 
         /// <summary>
         /// Record the current simulation into a <see cref="Synthesis.Replay.ReplayFrame">Replay Frame</see>
         /// </summary>
         /// <returns></returns>
         public static ReplayFrame RecordFrame() {
-            var frame = new ReplayFrame();
+            var frame       = new ReplayFrame();
             frame.TimeStamp = Time.realtimeSinceStartup - ReplayManager.DesyncTime;
             PhysicsManager.GetAllOverridable().ForEach(x => {
                 x.GetAllRigidbodies().ForEach(y => {
-                    var data = new RigidbodyFrameData {
-                        Position = y.transform.position,
-                        Rotation = y.transform.rotation,
-                        Velocity = y.velocity,
-                        AngularVelocity = y.angularVelocity
-                    };
+                    var data               = new RigidbodyFrameData { Position = y.transform.position,
+                        Rotation = y.transform.rotation, Velocity = y.velocity, AngularVelocity = y.angularVelocity };
                     frame.RigidbodyData[y] = data;
                 });
                 // PhysicsManager.GetContactRecorders(x)?.ForEach(y => {
@@ -263,16 +266,16 @@ namespace Synthesis.Replay {
         /// <param name="t">t is between 0.0 to 1.0</param>
         /// <returns></returns>
         public static ReplayFrame Lerp(ReplayFrame a, ReplayFrame b, float t) {
-            var c = new ReplayFrame();
+            var c       = new ReplayFrame();
             c.TimeStamp = Mathf.Lerp(a.TimeStamp, b.TimeStamp, t);
             a.RigidbodyData.ForEach(x => {
                 if (b.RigidbodyData.ContainsKey(x.Key)) {
-                    var data = new RigidbodyFrameData {
-                        Position = Vector3.Lerp(x.Value.Position, b.RigidbodyData[x.Key].Position, t),
+                    var data               = new RigidbodyFrameData { Position = Vector3.Lerp(
+                                                            x.Value.Position, b.RigidbodyData[x.Key].Position, t),
                         Rotation = Quaternion.Lerp(x.Value.Rotation, b.RigidbodyData[x.Key].Rotation, t),
                         Velocity = Vector3.Lerp(x.Value.Velocity, b.RigidbodyData[x.Key].Velocity, t),
-                        AngularVelocity = Vector3.Lerp(x.Value.AngularVelocity, b.RigidbodyData[x.Key].AngularVelocity, t)
-                    };
+                        AngularVelocity =
+                            Vector3.Lerp(x.Value.AngularVelocity, b.RigidbodyData[x.Key].AngularVelocity, t) };
                     c.RigidbodyData[x.Key] = data;
                     // c.ContactReports = new Dictionary<IPhysicsOverridable, List<ContactReport>>(b.ContactReports);
                 }
@@ -284,6 +287,7 @@ namespace Synthesis.Replay {
         /// Apply this frame to current simulation
         /// </summary>
         public void ApplyFrame() => ApplyFrame(this);
+
         /// <summary>
         /// Apply a frame to the current simulation
         /// </summary>
@@ -292,8 +296,8 @@ namespace Synthesis.Replay {
             a.RigidbodyData.ForEach(x => {
                 x.Key.transform.position = x.Value.Position;
                 x.Key.transform.rotation = x.Value.Rotation;
-                x.Key.velocity = x.Value.Velocity;
-                x.Key.angularVelocity = x.Value.AngularVelocity;
+                x.Key.velocity           = x.Value.Velocity;
+                x.Key.angularVelocity    = x.Value.AngularVelocity;
             });
             // if (ReplayManager.ResetContactUI != null) {
             //     ReplayManager.ResetContactUI();

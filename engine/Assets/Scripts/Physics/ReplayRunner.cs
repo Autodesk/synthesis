@@ -14,7 +14,6 @@ using SynthesisAPI.InputManager.Inputs;
 using UnityEngine;
 
 public class ReplayRunner : MonoBehaviour {
-
     public GameObject ContactMarker;
 
     public const string TOGGLE_PLAY = "input/toggle_play";
@@ -33,15 +32,15 @@ public class ReplayRunner : MonoBehaviour {
         DynamicUIManager.ReplaySlider.RootGameObject.SetActive(false);
 
         EventBus.NewTypeListener<PhysicsFreezeChangeEvent>(PhysChange);
-        
+
         Digital toggleReplayInput;
         if (PreferenceManager.ContainsPreference(TOGGLE_PLAY)) {
-            toggleReplayInput = (Digital)PreferenceManager.GetPreference<InputData[]>(TOGGLE_PLAY)[0].GetInput();
-            toggleReplayInput.ContextBitmask = SimulationRunner.RUNNING_SIM_CONTEXT | SimulationRunner.REPLAY_SIM_CONTEXT;
+            toggleReplayInput = (Digital) PreferenceManager.GetPreference<InputData[]>(TOGGLE_PLAY) [0].GetInput();
+            toggleReplayInput.ContextBitmask =
+                SimulationRunner.RUNNING_SIM_CONTEXT | SimulationRunner.REPLAY_SIM_CONTEXT;
         } else {
             toggleReplayInput = new Digital(Enum.GetName(typeof(KeyCode), KeyCode.Tab),
-                context: SimulationRunner.RUNNING_SIM_CONTEXT | SimulationRunner.REPLAY_SIM_CONTEXT
-            );
+                context: SimulationRunner.RUNNING_SIM_CONTEXT | SimulationRunner.REPLAY_SIM_CONTEXT);
         }
         InputManager.UnassignDigitalInput(TOGGLE_PLAY);
         InputManager.AssignDigitalInput(TOGGLE_PLAY, toggleReplayInput, TogglePlay);
@@ -51,6 +50,7 @@ public class ReplayRunner : MonoBehaviour {
     }
 
     private List<GameObject> _contactMarkers = new List<GameObject>();
+
     private void EraseContactMarkers() {
         _contactMarkers.ForEach(x => Destroy(x));
         _contactMarkers.Clear();
@@ -58,9 +58,9 @@ public class ReplayRunner : MonoBehaviour {
 
     private void CreateContactMarker(ContactReport report, float opacity = 1f) {
         var marker = Instantiate(ContactMarker, report.point, Quaternion.identity);
-        var mat = marker.GetComponent<Renderer>();
-        var color = mat.material.GetColor("TRANSPARENT_COLOR");
-        color.a = opacity;
+        var mat    = marker.GetComponent<Renderer>();
+        var color  = mat.material.GetColor("TRANSPARENT_COLOR");
+        color.a    = opacity;
         mat.material.SetColor("TRANSPARENT_COLOR", color);
         _contactMarkers.Add(marker);
         marker.AddComponent<ContactMarkerHandler>();
@@ -101,26 +101,25 @@ public class ReplayRunner : MonoBehaviour {
 }
 
 public class ContactMarkerHandler : MonoBehaviour {
+    public const int LEFT_BOUNDS   = 30;
+    public const int RIGHT_BOUNDS  = 30;
+    public const int TOP_BOUNDS    = 100;
+    public const int BOTTOM_BOUNDS = 150;
 
-        public const int LEFT_BOUNDS = 30;
-        public const int RIGHT_BOUNDS = 30;
-        public const int TOP_BOUNDS = 100;
-        public const int BOTTOM_BOUNDS = 150;
+    private Renderer? _r;
 
-        private Renderer? _r;
+    private void Start() {
+        _r = GetComponent<Renderer>();
+    }
 
-        private void Start() {
-            _r = GetComponent<Renderer>();
-        }
-
-        private void FixedUpdate() {
-            var sp = Camera.main.WorldToScreenPoint(transform.position);
-            // Hate it but whatever
-            if (sp.x < LEFT_BOUNDS || sp.x > Screen.currentResolution.width - RIGHT_BOUNDS
-                || sp.y < BOTTOM_BOUNDS || sp.y > Screen.currentResolution.height - TOP_BOUNDS) {
-                    _r!.enabled = false;
-            } else {
-                _r!.enabled = true;
-            }
+    private void FixedUpdate() {
+        var sp = Camera.main.WorldToScreenPoint(transform.position);
+        // Hate it but whatever
+        if (sp.x < LEFT_BOUNDS || sp.x > Screen.currentResolution.width - RIGHT_BOUNDS || sp.y < BOTTOM_BOUNDS ||
+            sp.y > Screen.currentResolution.height - TOP_BOUNDS) {
+            _r!.enabled = false;
+        } else {
+            _r!.enabled = true;
         }
     }
+}

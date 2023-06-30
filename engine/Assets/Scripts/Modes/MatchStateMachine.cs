@@ -18,7 +18,7 @@ public class MatchStateMachine {
         }
     }
 
-    #region State Management
+#region State Management
 
     private readonly Dictionary<StateName, MatchState> _matchStates = new Dictionary<StateName, MatchState>();
     private MatchState _currentState;
@@ -68,9 +68,9 @@ public class MatchStateMachine {
         _currentState.Update();
     }
 
-    #endregion
+#endregion
 
-    #region Match States
+#region Match States
 
     /// Called whenever a new match state is started
     public class OnStateStarted : IEvent {
@@ -78,7 +78,7 @@ public class MatchStateMachine {
         public StateName stateName;
 
         public OnStateStarted(MatchState state, StateName stateName) {
-            this.state = state;
+            this.state     = state;
             this.stateName = stateName;
         }
     }
@@ -89,7 +89,7 @@ public class MatchStateMachine {
         public StateName stateName;
 
         public OnStateEnded(MatchState state, StateName stateName) {
-            this.state = state;
+            this.state     = state;
             this.stateName = stateName;
         }
     }
@@ -119,13 +119,13 @@ public class MatchStateMachine {
             base.Start();
         }
 
-        public override void Update() { }
+        public override void Update() {}
 
         public override void End() {
             base.End();
         }
 
-        public None() : base(StateName.None) { }
+        public None() : base(StateName.None) {}
     }
 
     /// When the user is choosing which robots to spawn in and other match settings
@@ -133,17 +133,17 @@ public class MatchStateMachine {
         public override void Start() {
             base.Start();
             DynamicUIManager.CreateModal<MatchModeModal>();
-            DynamicUIManager.ActiveModal.OnAccepted +=
-                () => MatchStateMachine.Instance.SetState(StateName.RobotPositioning);
+            DynamicUIManager.ActiveModal.OnAccepted += () => 
+                MatchStateMachine.Instance.SetState(StateName.RobotPositioning);
         }
 
-        public override void Update() { }
+        public override void Update() {}
 
         public override void End() {
             base.End();
         }
 
-        public MatchConfig() : base(StateName.MatchConfig) { }
+        public MatchConfig() : base(StateName.MatchConfig) {}
     }
 
     /// When the user is choosing where the robot will spawn
@@ -161,7 +161,7 @@ public class MatchStateMachine {
             // state passes to next in SpawnLocationPanel accept button
         }
 
-        public override void Update() { }
+        public override void Update() {}
 
         public override void End() {
             base.End();
@@ -173,7 +173,7 @@ public class MatchStateMachine {
             }
         }
 
-        public RobotPositioning() : base(StateName.RobotPositioning) { }
+        public RobotPositioning() : base(StateName.RobotPositioning) {}
     }
 
     // might expand to include more than scoring zones if necessary
@@ -207,7 +207,7 @@ public class MatchStateMachine {
     public class Auto : MatchState {
         public override void Start() {
             base.Start();
-            
+        
             Scoring.targetTime = 15;
             DynamicUIManager.CreatePanel<ScoreboardPanel>(true, true);
         }
@@ -219,7 +219,7 @@ public class MatchStateMachine {
             base.End();
         }
 
-        public Auto() : base(StateName.Auto) { }
+        public Auto() : base(StateName.Auto) {}
     }
 
     /// <summary>
@@ -258,9 +258,10 @@ public class MatchStateMachine {
 
         public override void Update() {
         }
-        public override void End() { }
 
-        public Teleop() : base(StateName.Teleop) { }
+        public override void End() {}
+
+        public Teleop() : base(StateName.Teleop) {}
     }
 
     /// A state when a modal is displayed after a match showing info about the match
@@ -271,14 +272,14 @@ public class MatchStateMachine {
             DynamicUIManager.CreateModal<MatchResultsModal>();
         }
 
-        public override void Update() { }
+        public override void Update() {}
 
-        public override void End() { }
+        public override void End() {}
 
-        public MatchResults() : base(StateName.MatchResults) { }
+        public MatchResults() : base(StateName.MatchResults) {}
     }
 
-    #endregion
+#endregion
 
     /// Represents a specific MatchState
     public enum StateName {
