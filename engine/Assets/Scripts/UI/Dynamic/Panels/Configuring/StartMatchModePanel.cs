@@ -32,11 +32,6 @@ namespace Synthesis.UI.Dynamic {
                 PreferenceManager.PreferenceManager.Save();
             }
 
-            // Shooting.ConfigureGamepieces();
-
-            // TEMPORARY: FOR POWERUP ONLY
-
-            // Scoring.CreatePowerupScoreZones();
             DynamicUIManager.CloseAllPanels(true);
             DynamicUIManager.CreatePanel<Synthesis.UI.Dynamic.ScoreboardPanel>(true);
 

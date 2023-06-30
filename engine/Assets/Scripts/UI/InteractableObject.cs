@@ -13,7 +13,6 @@ using ContextMenu = Synthesis.UI.ContextMenus.ContextMenu;
 
 namespace Synthesis.UI {
     public class InteractableObject : MonoBehaviour, IPointerClickHandler, IPointerExitHandler, IPointerEnterHandler {
-        // public class ContextItemEvent : UnityEvent { }
         public bool useReflection = true;
 
         private bool isBeingInteractedWith = false;
@@ -38,8 +37,6 @@ namespace Synthesis.UI {
             Debug.Log(gameObject.name);
             if (eventData.button == PointerEventData.InputButton.Right) {
                 // open right click floating window
-                //  Debug.Log(eventData.position);
-
                 Vector2 position = new Vector2(eventData.position.x,
                     eventData.position.y); // Maybe have that 1080 number adjust but for rn it's fine
                 OnPointerClick(position);
@@ -49,20 +46,11 @@ namespace Synthesis.UI {
         }
 
         public void OnPointerClick(Vector2 position) {
-            // Debug.Log($"{position.x}, {position.y}");
             if (useReflection) {
                 ContextMenu.Show(this, position, ContextMenuUID, this);
             } else {
                 ContextMenu.Show(this, position, ContextMenuUID, Options);
             }
-        }
-
-        public void OnPointerEnter(PointerEventData eventData) {
-            // open tooltips and highlight on
-        }
-
-        public void OnPointerExit(PointerEventData eventData) {
-            // close tooltips and highlight off
         }
 
         public void AddOption(string title, Sprite icon, Action<object> callback) => Options.Add(
@@ -80,7 +68,6 @@ namespace Synthesis.UI {
             Type type = interactable.GetType();
 
             if (InteractableTypes.ContainsKey(type)) {
-                // Debug.Log(type.Name);
                 return InteractableTypes[type];
 
             } else {

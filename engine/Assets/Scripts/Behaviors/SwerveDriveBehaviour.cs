@@ -162,7 +162,6 @@ namespace Synthesis {
                 }
             }
 
-            // (float angle, float speed)[] output = new (float angle, float speed)[velocities.Length];
             for (int i = 0; i < velocities.Length; i++) {
                 float speed                         = velocities[i].magnitude;
                 var yComponent                      = Vector3.Dot(robotTransform.forward, velocities[i]);

@@ -74,11 +74,6 @@ public class MatchModeModal : ModalDynamic {
                                     .SetOptions(new string[] { "Red", "Blue" })
                                     .AddOnValueChangedEvent((d, i, data) => _allianceColor = i)
                                     .ApplyTemplate(VerticalLayout);
-
-        /*MainContent.CreateLabel().ApplyTemplate(VerticalLayout).SetText("Select Spawn Position");
-        var spawnPosition = MainContent.CreateDropdown().ApplyTemplate(Dropdown.VerticalLayoutTemplate)
-            .SetOptions(new string[] { "Left", "Middle", "Right" })
-            .AddOnValueChangedEvent((d, i, data) => _spawnPosition = i).ApplyTemplate(VerticalLayout);*/
     }
 
     public IEnumerator LoadMatch() {
@@ -112,14 +107,10 @@ public class MatchModeModal : ModalDynamic {
         Scoring.ResetScore();
 
         DynamicUIManager.CloseActiveModal();
-
-        // DynamicUIManager.CreatePanel<Synthesis.UI.Dynamic.SpawnLocationPanel>();
         DynamicUIManager.CreatePanel<StartMatchModePanel>();
     }
 
-    public override void Update() {
-        // Shooting.Update();
-    }
+    public override void Update() {}
 
     public override void Delete() {}
 
@@ -138,7 +129,6 @@ public class MatchModeModal : ModalDynamic {
             if (i != a.Length - 1)
                 b += System.IO.Path.AltDirectorySeparatorChar;
         }
-        // Debug.Log(b);
         return b;
     }
 }

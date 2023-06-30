@@ -41,12 +41,6 @@ public class PracticeMode : IMode {
     public void Start() {
         DynamicUIManager.CreateModal<AddFieldModal>();
 
-        // var mira = new
-        // MirabufLive("C:\\Users\\hunte\\AppData\\Roaming\\Autodesk\\Synthesis\\Mira\\BrokenLinksRobot_v1.mira");
-        //
-        // GameObject container = new GameObject();
-        // mira.GenerateDefinitionObjects(container, false);
-
         InputManager.AssignValueInput(
             TOGGLE_ESCAPE_MENU_INPUT, TryGetSavedInput(TOGGLE_ESCAPE_MENU_INPUT,
                                           new Digital("Escape", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
@@ -145,8 +139,6 @@ public class PracticeMode : IMode {
         GizmoManager.SpawnGizmo(_gamepieceSpawnpointObject.transform,
             t => { _gamepieceSpawnpointObject.transform.position = t.Position; },
             t => { EndConfigureGamepieceSpawnpoint(); });
-        // GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, _gamepieceSpawnpointObject.transform,
-        // _gamepieceSpawnpointObject.transform.position);
     }
 
     public static void EndConfigureGamepieceSpawnpoint() {
@@ -225,12 +217,6 @@ public class PracticeMode : IMode {
             parent.transform.parent               = data.Parent;
             parent.transform.position             = Vector3.zero;
             childWithTransform.transform.position = spawnPosition;
-            // GameObject.Instantiate(parent);
-
-            // if (childTransform != null)
-            // {
-            //     childTransform.position = spawnPosition;
-            // }
 
             gamepiece = new GamepieceSimObject(data.Name, parent);
         }

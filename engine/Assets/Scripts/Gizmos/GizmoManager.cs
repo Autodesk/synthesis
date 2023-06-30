@@ -12,60 +12,6 @@ namespace Synthesis.Gizmo {
     /// Manages Gizmos and ensures only one gizmo spawns at a time.
     /// </summary>
     public static class GizmoManager {
-#region OLD
-
-        // private static GameObject gizmo = null;
-        // public static GameObject currentGizmo
-        // {
-        //     get => gizmo;
-        // }
-        // /// <summary>
-        // /// Activates a Gizmo on a given Transform parent object
-        // /// </summary>
-        // /// <param name="Gizmo"></param>
-        // /// <param name="parent"></param>
-        // /// <param name="forceClose"></param>
-        // /// <returns></returns>
-        // public static bool SpawnGizmo(GameObject Gizmo, Transform parent, Vector3 location)
-        // {
-        //     if (gizmo != null)
-        //             Object.Destroy(gizmo);
-
-        //     parent.transform.position = location;
-        //     var g = Object.Instantiate(Gizmo,parent);//set transform
-        //     gizmo = g;
-        //     return true;
-        // }
-        // /// <summary>
-        // /// Destroys the Gizmo
-        // /// </summary>
-        // public static void ExitGizmo()
-        // {
-        //     if (gizmo != null && gizmo.transform != null)
-        //     {
-        //         Transform parent = gizmo.transform.parent;
-        //         if (parent != null && parent.CompareTag("gamepiece"))
-        //         {
-        //             PracticeMode.EndConfigureGamepieceSpawnpoint();
-        //         }
-        //     }
-
-        //     Object.Destroy(gizmo);
-        // }
-        // public static void OnEnter()
-        // {
-        //     if (gizmo.transform.parent.CompareTag("robot"))
-        //     {
-        //         PracticeMode.SetInitialState(gizmo.transform.parent.gameObject);
-        //     } else if (gizmo.transform.parent.CompareTag("gamepiece"))
-        //     {
-        //         PracticeMode.EndConfigureGamepieceSpawnpoint();
-        //     }
-        //     Object.Destroy(gizmo);
-        // }
-
-#endregion
-
         private static GizmoConfig? _currentGizmoConfig;
         public static GizmoConfig? CurrentGizmoConfig => _currentGizmoConfig;
         private static Transform? _currentTargetTransform;
@@ -97,8 +43,6 @@ namespace Synthesis.Gizmo {
             if (_currentGizmoConfig.HasValue)
                 ExitGizmo();
 
-            // Debug.Log("spawn gizmo");
-
             // Check if modal is opened?
 
             SimulationRunner.AddContext(SimulationRunner.GIZMO_SIM_CONTEXT);
@@ -122,8 +66,6 @@ namespace Synthesis.Gizmo {
         public static void ExitGizmo() {
             if (!_currentGizmoConfig.HasValue || _currentTargetTransform == null)
                 return;
-
-            // Debug.Log("Exit Gizmo");
 
             SimulationRunner.RemoveContext(SimulationRunner.GIZMO_SIM_CONTEXT);
 

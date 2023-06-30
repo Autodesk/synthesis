@@ -139,19 +139,11 @@ namespace Synthesis.Configuration {
             }
         }
 
-        private void disableGizmo() // makes sure values are set correctly when the gizmo is removed
+        private void DisableGizmo() // makes sure values are set correctly when the gizmo is removed
         {
             RestoreCameraMode();
             CameraController.isOverGizmo = false; // this doesn't get reset?
             PhysicsManager.IsFrozen      = false;
-            // SetRigidbodies(true);
-        }
-
-        private void OnTransformParentChanged() // only called for testing for changing parent transforms
-        {
-            if (transform.parent != null) {
-                // setTransform();
-            }
         }
 
         private void OnEnable() {
@@ -159,7 +151,7 @@ namespace Synthesis.Configuration {
         }
 
         private void OnDestroy() {
-            disableGizmo();
+            DisableGizmo();
         }
 
         private SelectableArrow _currentlyHovering;
@@ -178,9 +170,6 @@ namespace Synthesis.Configuration {
                 snapEnabled = true;
             } else {
                 snapEnabled = false;
-            }
-            if (Input.GetKey(KeyCode.Return)) {
-                // GizmoManager.OnEnter();
             }
 
             if (activeArrow == ArrowType.None) // skip if there no gizmo components being dragged

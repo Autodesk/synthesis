@@ -34,10 +34,6 @@ public class FreeCameraMode : ICameraMode {
             InputManager.AssignDigitalInput(BACK_KEY, new Digital("S"));
             InputManager.AssignDigitalInput(LEFT_KEY, new Digital("A"));
             InputManager.AssignDigitalInput(RIGHT_KEY, new Digital("D"));
-            // InputManager.AssignValueInput(LEFT_YAW_KEY, new Digital("Q"));
-            // InputManager.AssignValueInput(RIGHT_YAW_KEY, new Digital("E"));
-            // InputManager.AssignValueInput(DOWN_PITCH_KEY, new Digital("Z"));
-            // InputManager.AssignValueInput(UP_PITCH_KEY, new Digital("X"));
         }
 
         if (previousCam != null && previousCam.GetType() == typeof(OrbitCameraMode)) {
@@ -62,21 +58,6 @@ public class FreeCameraMode : ICameraMode {
         float p = 0.0f;
         float y = 0.0f;
         float z = 0.0f;
-
-        // in old synthesis freecam mode, scrolling down zooms in and scrolling up zooms out
-        // z = cam.ZoomSensitivity * Input.mouseScrollDelta.y;
-
-        // float yawMod = InputManager.MappedValueInputs.ContainsKey(LEFT_YAW_KEY) &&
-        // InputManager.MappedValueInputs.ContainsKey(RIGHT_YAW_KEY) ?
-        //     cam.YawSensitivity / 8 * (InputManager.MappedValueInputs[RIGHT_YAW_KEY].Value -
-        //     InputManager.MappedValueInputs[LEFT_YAW_KEY].Value) : 0;
-        // float pitchMod = InputManager.MappedValueInputs.ContainsKey(UP_PITCH_KEY) &&
-        // InputManager.MappedValueInputs.ContainsKey(DOWN_PITCH_KEY) ?
-        //     cam.PitchSensitivity / 4 * (InputManager.MappedValueInputs[UP_PITCH_KEY].Value -
-        //     InputManager.MappedValueInputs[DOWN_PITCH_KEY].Value) : 0;
-
-        // p -= pitchMod;
-        // y += yawMod;
 
         if (isActive) {
             p = -CameraController.PitchSensitivity * Input.GetAxis("Mouse Y");
@@ -122,9 +103,6 @@ public class FreeCameraMode : ICameraMode {
 
     public void LateUpdate(CameraController cam) {
         cam.GroundRenderer.material.SetVector("FOCUS_POINT", cam.transform.position);
-
-        // // don't allow camera movement when a modal is open
-        // if (DynamicUIManager.ActiveModal != null) return;
     }
 
     public void SetActive(bool active) {
@@ -144,6 +122,5 @@ public class FreeCameraMode : ICameraMode {
 
     public void End(CameraController cam) {
         SetActive(false);
-        // RobotSimObject.GetCurrentlyPossessedRobot().InputFrozen = _wasFrozen;
     }
 }

@@ -188,9 +188,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         DebugJointAxes.DebugBounds.Add((GroundedBounds, () => GroundedNode.transform.localToWorldMatrix));
         SimulationPreferences.LoadFromMirabufLive(MiraLive);
 
-        // Resets whatever Hunter corrupted
-        // SimulationPreferences.SetRobotDrivetrainType(MiraLive.MiraAssembly.Info.GUID, DrivetrainType.ARCADE);
-        // PreferenceManager.Save();
         _drivetrainType = SimulationPreferences.GetRobotDrivetrain(MiraLive.MiraAssembly.Info.GUID);
 
         _allRigidbodies = new List<Rigidbody>(RobotNode.transform.GetComponentsInChildren<Rigidbody>());
@@ -218,8 +215,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         _simulationTranslationLayer =
             SimulationPreferences.GetRobotSimTranslationLayer(MiraLive.MiraAssembly.Info.GUID) ??
             new RioTranslationLayer();
-        // _simulationTranslationLayer = new RioTranslationLayer();
-
         cam = Camera.main.GetComponent<CameraController>();
 
         _allRigidbodies.ForEach(x => {
@@ -281,7 +276,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         PhysicsManager.Unregister(this);
         if (CurrentlyPossessedRobot.Equals(this._name)) {
             CurrentlyPossessedRobot = string.Empty;
-            // cam.CameraMode = previousMode;
         }
         MonoBehaviour.Destroy(GroundedNode.transform.parent.gameObject);
     }
@@ -291,8 +285,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             return;
         _trajectoryPointer.transform.GetChild(0).transform.parent = FieldSimObject.CurrentField.FieldObject.transform;
         _gamepiecesInPossession.Clear();
-        // TODO: Should robot handle this or is it expected that whatever calls this will have specific intention to do
-        // something else
     }
 
     public void CollectGamepiece(GamepieceSimObject gp) {
@@ -345,8 +337,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         gp.GamepieceObject.transform.localRotation = Quaternion.identity;
         gp.GamepieceObject.transform.localPosition = Vector3.zero;
         gp.GamepieceObject.transform.localPosition -= gp.GamepieceBounds.center;
-        // gp.GamepieceObject.transform.position = _trajectoryPointer.transform.position
-        //     - gp.GamepieceObject.transform.localToWorldMatrix.MultiplyPoint(gp.GamepieceBounds.center);
     }
 
     public void UpdateWheels() {
@@ -381,13 +371,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     private (List<WheelDriver> leftWheels, List<WheelDriver> rightWheels)? GetLeftRightWheels() {
         if (!_tankTrackWheels.HasValue) {
-            // var wheelsInstances = MiraLive.MiraAssembly.Data.Joints.JointInstances.Where(instance =>
-            //     instance.Value.Info.Name != "grounded"
-            //     && MiraLive.MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].UserData != null
-            //     && MiraLive.MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].UserData.Data
-            //         .TryGetValue("wheel", out var isWheel)
-            //     && isWheel == "true").ToList();
-
             var wheels = SimulationManager.Drivers[base.Name].OfType<WheelDriver>();
 
             var leftWheels  = new List<WheelDriver>();
@@ -428,9 +411,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                         ogAxis.x *= -1;
                         ogAxis.y *= -1;
                         ogAxis.z *= -1;
-                        // Modify assembly for if a new behaviour evaluates this again
-                        // def.Rotational.RotationalFreedom.Axis = ogAxis; // I think this is irrelevant after the last
-                        // few lines
                         def.Rotational.RotationalFreedom.Axis =
                             new MVector3() { X = jointAxis.x, Y = jointAxis.y, Z = jointAxis.z };
 
@@ -443,9 +423,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                         ogAxis.x *= -1;
                         ogAxis.y *= -1;
                         ogAxis.z *= -1;
-                        // Modify assembly for if a new behaviour evaluates this again
-                        // def.Rotational.RotationalFreedom.Axis = ogAxis; // I think this is irrelevant after the last
-                        // few lines
                         def.Rotational.RotationalFreedom.Axis =
                             new MVector3() { X = -jointAxis.x, Y = jointAxis.y, Z = jointAxis.z };
 
@@ -468,9 +445,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             float radius = _wheelDrivers.Average(x => x.Radius);
             _wheelDrivers.ForEach(x => x.Radius = radius);
         }
-
-        // See WheelPhysicsBehaviour description for an explanation.
-        // SimulationManager.AddBehaviour(this.Name, new WheelPhysicsBehaviour(this.Name, this));
 
         ConfigureDrivetrain();
         ConfigureArmBehaviours();
@@ -597,8 +571,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     public static void SpawnRobot(string filePath, Vector3 position, Quaternion rotation) {
-        // GizmoManager.ExitGizmo();
-
         var mira                 = Importer.MirabufAssemblyImport(filePath);
         RobotSimObject simObject = mira.Sim as RobotSimObject;
         mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
@@ -607,26 +579,9 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         mira.MainObject.transform.position = position;
         mira.MainObject.transform.rotation = rotation;
 
-        // TEMPORARY: CREATING INSTAKE AT FRONT OF THE ROBOT
-        //  GameObject intake = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        //  intake.transform.SetParent(simObject.GroundedNode.transform);
-
-        // intake.transform.localPosition = new Vector3(0, 0.2f, 0.3f);
-        // intake.transform.localScale = new Vector3(0.5f, 0.2f, 0.5f);
-        // intake.transform.localRotation = Quaternion.identity;
-
-        // intake.GetComponent<Collider>().isTrigger = true;
-        // intake.GetComponent<MeshRenderer>().enabled = false;
-        // intake.tag = "robot";
-        // Shooting.intakeObject = intake;
-
-        // TODO: Event call?
-
         simObject.Possess();
 
         GizmoManager.SpawnGizmo(simObject);
-        // GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, mira.MainObject.transform,
-        // mira.MainObject.transform.position);
     }
 
     public static bool RemoveRobot(string robot) {
@@ -654,9 +609,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             _preFreezeStates[x] = (x.isKinematic, x.velocity, x.angularVelocity);
             x.isKinematic       = true;
             x.detectCollisions  = false;
-            // The following is no longer supported because there was a bug in PhysX.
-            // x.velocity = Vector3.zero;
-            // x.angularVelocity = Vector3.zero;
         });
 
         _isFrozen = true;
@@ -671,8 +623,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             var originalState  = _preFreezeStates[x];
             x.isKinematic      = originalState.isKine;
             x.detectCollisions = true;
-            // I think replay might take care of this
-            // if (x.velocity != Vector3.zero || x.angularVelocity != Vector3.zero);
         });
         _preFreezeStates.Clear();
 
@@ -692,37 +642,12 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     public void Update(TransformData data) {
-        // GroundedNode.transform.rotation = data.Rotation;
-
-        /*
-        GroundedNode.transform.position -=
-        GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center); GroundedNode.transform.rotation
-        = Quaternion.identity;
-
-        Matrix4x4 transformation = Matrix4x4.identity;
-
-        // transformation =
-        Matrix4x4.TRS(-GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center),
-        Quaternion.identity, Vector3.one) * transformation; transformation = Matrix4x4.TRS(Vector3.zero, data.Rotation,
-        Vector3.one) * transformation;
-        // transformation *= Matrix4x4.TRS(data.Position, Quaternion.identity, Vector3.one);
-
-        // Apply Gizmo
-        GroundedNode.transform.rotation = transformation.rotation;
-        GroundedNode.transform.position -=
-        GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center); GroundedNode.transform.position
-        += transformation.GetPosition(mod: false);
-        */
-
         RobotNode.transform.rotation = Quaternion.identity;
         RobotNode.transform.position = Vector3.zero;
 
         RobotNode.transform.rotation = data.Rotation * Quaternion.Inverse(GroundedNode.transform.rotation);
         RobotNode.transform.position =
             data.Position - GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center);
-
-        // GroundedNode.transform.RotateAround()
-        // GroundedNode.transform.position = data.Position - GroundedBounds.center;
     }
 
     public void End(TransformData data) {

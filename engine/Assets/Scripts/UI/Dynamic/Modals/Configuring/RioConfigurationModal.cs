@@ -123,7 +123,6 @@ public class RioConfigurationModal : ModalDynamic {
         content.SetTopStretch<Content>(anchoredY: -_scrollView.Content.RectOfChildren(content).yMin)
             .SetAnchorTop<Content>();
         content.SetWidth<Content>(1000);
-        // (Content left, Content right) = content.SplitLeftRight((1000f / 2f) - (20f / 2f), 20f);
         var deviceButton = content.CreateButton("Create Device");
         deviceButton.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_ORANGE));
         deviceButton.SetStretch<Button>(leftPadding: 300, rightPadding: 300, topPadding: 20, bottomPadding: 20);

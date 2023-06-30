@@ -54,16 +54,6 @@ public class SynthesisAssetCollection : MonoBehaviour {
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
-
-        /*
-        Screen.fullScreenMode = FullScreenMode.MaximizedWindow;
-        var biggestWidth = 0;
-        for (int i = 1; i < Screen.resolutions.Length; i++) {
-            if (Screen.resolutions[i].width > Screen.resolutions[biggestWidth].width)
-                biggestWidth = i;
-        }
-        var res = Screen.resolutions[biggestWidth];
-        Screen.SetResolution(res.width, res.height, FullScreenMode.MaximizedWindow);*/
     }
 
     public static Sprite GetSpriteByName(string name) => Instance.SpriteAssets.First(x => x.name == name);

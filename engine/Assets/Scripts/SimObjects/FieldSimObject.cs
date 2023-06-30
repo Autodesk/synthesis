@@ -86,7 +86,6 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         var position = FieldObject.transform.position;
         position.y -= FieldBounds.center.y - FieldBounds.extents.y;
         FieldObject.transform.position = position;
-        // Debug.Log($"{FieldObject.transform.position.y}");
 
         _initialPosition = FieldObject.transform.position;
 
@@ -96,20 +95,15 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
             gp.InitialPosition                = gpTransform.position;
             gp.InitialRotation                = gpTransform.rotation;
         });
-        // Shooting.ConfigureGamepieces();
     }
 
     public void ResetField() {
         SpawnField(MiraLive);
-        // FieldObject.transform.position = _initialPosition;
-        // FieldObject.transform.rotation = _initialRotation;
     }
 
     public static bool DeleteField() {
         if (CurrentField == null)
             return false;
-
-        // Debug.Log($"GP count: {CurrentField.Gamepieces.Count}");
 
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
             RobotSimObject.GetCurrentlyPossessedRobot().ClearGamepieces();
@@ -120,26 +114,21 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         SimulationManager.RemoveSimObject(CurrentField);
         CurrentField = null;
         return true;
-        // SynthesisAssetCollection.DefaultFloor.SetActive(true);
     }
 
-    public static void SpawnField(string filePath) {
+    public static void SpawnField<T>(T type) {
         DeleteField();
+        MirabufLive mira = null;
 
-        var mira = Importer.MirabufAssemblyImport(filePath);
-        mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
-        mira.MainObject.tag = "field";
-
-        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
-            GizmoManager.SpawnGizmo(RobotSimObject.GetCurrentlyPossessedRobot());
-            // TODO: Move robot to default spawn location for field
+        switch (typeof(T)) {
+            case typeof(string):
+                mira = Importer.MirabufAssemblyImport(type);
+                break;
+            case typeof(MirabufLive):
+                mira = Importer.MirabufAssemblyImport(type);
+                break;
         }
-    }
 
-    public static void SpawnField(MirabufLive miraAssem) {
-        DeleteField();
-
-        var mira = Importer.MirabufAssemblyImport(miraAssem);
         mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
         mira.MainObject.tag = "field";
 

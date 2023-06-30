@@ -19,9 +19,8 @@ namespace Synthesis.UI.Dynamic {
 
         private static Dictionary<Type, (PanelDynamic, bool)> _persistentPanels =
             new Dictionary<Type, (PanelDynamic, bool)>();
-        public static bool AnyPanels => _persistentPanels.Count > 0;
-        // public static PanelDynamic ActivePanel { get; private set; }
-        public static Content _screenSpaceContent = null;
+        public static bool AnyPanels              => _persistentPanels.Count > 0;
+        public static Content _screenSpaceContent  = null;
         public static Content ScreenSpaceContent {
             get {
                 if (_screenSpaceContent == null) {
@@ -57,7 +56,6 @@ namespace Synthesis.UI.Dynamic {
                 return _replaySlider;
             }
         }
-        // public static GameObject ActiveModalGameObject;
 
         public static bool CreateModal<T>(params object[] args)
             where T : ModalDynamic {
@@ -69,8 +67,6 @@ namespace Synthesis.UI.Dynamic {
 
             var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("dynamic-modal-base"),
                 GameObject.Find("UI").transform.Find("ScreenSpace").Find("ModalContainer"));
-
-            // var c = ColorManager.GetColor("SAMPLE");
 
             ModalDynamic modal = (ModalDynamic) Activator.CreateInstance(typeof(T), args);
             modal.Create_Internal(unityObject);
@@ -96,16 +92,10 @@ namespace Synthesis.UI.Dynamic {
             if (_persistentPanels.ContainsKey(typeof(T)))
                 ClosePanel(typeof(T));
 
-            // if (ActivePanel != null)
-            //     CloseActivePanel();
-
             var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("dynamic-panel-base"),
                 GameObject.Find("UI").transform.Find("ScreenSpace").Find("PanelContainer"));
 
-            // var c = ColorManager.GetColor("SAMPLE");
-
-            PanelDynamic panel = (PanelDynamic) Activator.CreateInstance(typeof(T), args);
-            // ActivePanel = panel;
+            PanelDynamic panel           = (PanelDynamic) Activator.CreateInstance(typeof(T), args);
             _persistentPanels[typeof(T)] = (panel, persistent);
             panel.Create_Internal(unityObject);
             bool success = panel.Create();
@@ -174,7 +164,6 @@ namespace Synthesis.UI.Dynamic {
             panel.Delete();
             panel.Delete_Internal();
 
-            // ActivePanel = null;
             _persistentPanels.Remove(t);
             return true;
         }

@@ -159,21 +159,6 @@ namespace Synthesis.Import {
                         x => x.gameObject.layer = dynamicLayer);
                 }
 
-                // TODO: Do this in importer
-                // if (isGamepiece) {
-                // 	var gpSim = new GamepieceSimObject(group.Name, groupObject);
-                // 	try {
-                // 		// SimulationManager.RegisterSimObject(gpSim);
-                // 	} catch (Exception e) {
-                // 		// TODO: Fix
-                // 		throw e;
-                // 		Logger.Log($"Gamepiece with name {gpSim.Name} already exists.");
-                // 		UnityEngine.Object.Destroy(groupObject);
-                // 	}
-                // 	gamepieces.Add(gpSim);
-                // } else {
-                //
-                // }
                 groupObjects.Add(group.GUID, groupObject);
             }
 
@@ -202,9 +187,7 @@ namespace Synthesis.Import {
                                     : assemblyData.Materials.Appearances.ContainsKey(body.AppearanceOverride)
                                         ? assemblyData.Materials.Appearances[body.AppearanceOverride].UnityMaterial
                                         : Appearance.DefaultAppearance.UnityMaterial; // Setup the override
-                // renderer.material = assemblyData.Materials.Appearances.ContainsKey(instance.Appearance)
-                // 	? assemblyData.Materials.Appearances[instance.Appearance].UnityMaterial
-                // 	: Appearance.DefaultAppearance.UnityMaterial;
+
                 if (!instance.SkipCollider && colliderGenType > ColliderGenType.NoCollider) {
                     MeshCollider collider = null;
                     try {
@@ -226,15 +209,12 @@ namespace Synthesis.Import {
 
                     if (collider != null)
                         collider.material = physMat;
-                    // if (addToColliderIgnore)
-                    // 	_collidersToIgnore.Add(collider);
                 }
                 bodyObject.transform.parent = container.transform;
                 // Ensure all transformations are zeroed after assigning parent
                 bodyObject.transform.localPosition = UVector3.zero;
                 bodyObject.transform.localRotation = Quaternion.identity;
                 bodyObject.transform.localScale    = UVector3.one;
-                // bodyObject.transform.ApplyMatrix(body.);
             }
         }
 
@@ -278,9 +258,6 @@ namespace Synthesis.Import {
 
             var defs    = new Dictionary<string, RigidbodyDefinition>();
             var partMap = new Dictionary<string, string>();
-
-            // Create grounded node
-            // var groundedJoint = assembly.Data.Joints.JointInstances["grounded"];
 
             // I'm using lambda functions so I can reuse repeated logic while taking advantage of variables in the
             // current scope
@@ -338,7 +315,6 @@ namespace Synthesis.Import {
                     var tmpRG = new RigidGroup { Name = $"discovered_{counter}" };
                     tmpRG.Occurrences.Add(tmpParts.Select(x => x.Value));
                     discoveredRigidGroups.Add(tmpRG);
-                    // tmpParts.ForEach(x => MoveToDef(x.Value, string.Empty, mainDef.GUID));
                 }
 
                 // Grab all parts eligable via design hierarchy
@@ -349,20 +325,14 @@ namespace Synthesis.Import {
                     List<Node> tmp     = new List<Node>();
                     string originalDef;
                     var path = paths[part];
-                    // Logger.Log($"{part}: Path length {path.Count}");
-                    Node n = assembly.DesignHierarchy.Nodes[0];
+                    Node n   = assembly.DesignHierarchy.Nodes[0];
                     for (int i = 0; i < path.Count; i++) {
                         n = n.Children.Find(y => y.Value.Equals(path[i]));
                     }
                     toCheck.Add(n.Children.Find(y => y.Value.Equals(part)));
-                    // if (path.Count == 0) {
-                    // 	toCheck.Add(assembly.DesignHierarchy.Nodes.Find(y => y.Value == part));
-                    // } else {
-
                     var defObj = defs[definition];
                     defObj.Name += $"_{assembly.Data.Parts.PartInstances[part]}";
 
-                    // }
                     if (partMap.ContainsKey(part))
                         originalDef = partMap[part];
                     else
@@ -433,8 +403,6 @@ namespace Synthesis.Import {
                             MergeDefinitions(groundDef, rigidDef);
                             rigidDef = groundDef;
                         } else {
-                            // Logger.Log($"MERGING DEFINITION: {defs[existingDef].Name} based on {x.Name}",
-                            // LogLevel.Debug);
                             rigidDef.Name += $"_{defs[existingDef].Name}";
                             MergeDefinitions(rigidDef, defs[existingDef]);
                         }
@@ -579,7 +547,6 @@ namespace Synthesis.Import {
             paths[n.Value] = new List<string>();
             if (currentPath != null && currentPath.Count > 0)
                 paths[n.Value].AddRange(currentPath);
-            // paths[n.Value] = currentPath == null ? new List<string>() : new List<string>(currentPath);
             if (currentPath == null)
                 currentPath = new List<string>();
             currentPath.Add(n.Value);

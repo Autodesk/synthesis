@@ -41,12 +41,9 @@ namespace Synthesis.Physics {
                 var shouldFreeze = _frozenCounter != 0;
                 if (shouldFreeze != _isFrozen) {
                     _isFrozen = shouldFreeze;
-
-                    // Debug.Log($"Frozen: {_isFrozen}");
                     if (_isFrozen) {
                         SimulationRunner.RemoveContext(SimulationRunner.RUNNING_SIM_CONTEXT);
                         SimulationRunner.AddContext(SimulationRunner.PAUSED_SIM_CONTEXT);
-                        // UnityEngine.Physics.autoSimulation = false;
                         _physObjects.ForEach(x => {
                             if (_storeOnFreeze) {
                                 x.Value.GetAllRigidbodies().ForEach(rb => {
@@ -60,7 +57,6 @@ namespace Synthesis.Physics {
                     } else {
                         SimulationRunner.RemoveContext(SimulationRunner.PAUSED_SIM_CONTEXT);
                         SimulationRunner.AddContext(SimulationRunner.RUNNING_SIM_CONTEXT);
-                        // UnityEngine.Physics.autoSimulation = true;
 
                         _physObjects.ForEach(x => {
                             x.Value.Unfreeze();
@@ -105,12 +101,7 @@ namespace Synthesis.Physics {
         public static void AddContactRecorders<T>(T overridable)
 
             where T : class, IPhysicsOverridable {
-            List<ContactRecorder> recorders = new List<ContactRecorder>();
-            var rbs                         = overridable.GetRootGameObject().GetComponentsInChildren<Rigidbody>();
-            rbs.ForEach(x => {
-                // var recorder = x.gameObject.AddComponent<ContactRecorder>();
-                // recorders.Add(recorder);
-            });
+            List<ContactRecorder> recorders              = new List<ContactRecorder>();
             _contactRecorders[overridable.GetHashCode()] = recorders;
         }
 

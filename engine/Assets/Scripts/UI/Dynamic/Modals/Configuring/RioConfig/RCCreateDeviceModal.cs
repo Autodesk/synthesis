@@ -48,11 +48,6 @@ public class RCCreateDeviceModal : ModalDynamic {
         _typeDropdown = MainContent.CreateLabeledDropdown().StepIntoLabel(l => l.SetText("Type"));
         _typeDropdown.StepIntoDropdown(d => d.SetOptions(EntryTypes));
         _typeDropdown.SetTopStretch<LabeledDropdown>();
-        // _typeDropdown.StepIntoDropdown(d => d.AddOnValueChangedEvent(UpdateIDSelection));
-
-        // _idDropdown.StepIntoDropdown(d => d.AddOnValueChangedEvent((d, i, data) => {
-        //     _selectedId = data.text;
-        // }));
     }
 
     public override void Delete() {}

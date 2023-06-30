@@ -14,12 +14,10 @@ public class ModeManager {
         if (CurrentMode == null)
             CurrentMode = new PracticeMode();
         CurrentMode.Start();
-        // Shooting.Start();
     }
 
     public static void Update() {
         CurrentMode.Update();
-        // Shooting.Update();
     }
 
     public static void ModalClosed() {

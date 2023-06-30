@@ -189,9 +189,6 @@ namespace Synthesis.UI.Dynamic {
             // Analytics
             AnalyticsManager.UseAnalytics = Get<bool>(AnalyticsManager.USE_ANALYTICS_PREF);
 
-            // imperial or metric
-            //  useImperial = Get<bool>(MEASUREMENTS);
-
             // Camera
             CameraController.ZoomSensitivity =
                 Get<float>(CameraController.ZOOM_SENSITIVITY_PREF) / 10; // scaled down by 10

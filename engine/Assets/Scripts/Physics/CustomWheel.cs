@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using Synthesis;
 using UnityEngine;
+using Synthesis.Util;
 
 public class CustomWheel : MonoBehaviour {
     // When enabled, you get weird priority effects. Leave disabled for now.
@@ -39,7 +40,7 @@ public class CustomWheel : MonoBehaviour {
 
     public bool HasContacts => _pairings.Count > 0;
 
-    public float Inertia => WheelDriver.GetInertiaFromAxisVector(Rb, LocalAxis);
+    public float Inertia => SynthesisUtil.GetInertiaFromAxisVector(Rb, LocalAxis);
 
     // Debugging Information
     private Vector3 _lastImpulseTotal;
@@ -132,8 +133,6 @@ public class CustomWheel : MonoBehaviour {
     /// <param name="impulse">Impulse of the collision data</param>
     /// <param name="velocity">Relative velocity of the object to the contacted object</param>
     public void CalculateRollingFriction(Vector3 impulse, Vector3 velocity) {
-        // var torque = Torque(RotationSpeed, percentInput);
-
         var direction             = Vector3.Cross(impulse.normalized, Axis).normalized;
         var wheelSurfaceVelocity  = Vector3.Cross(impulse.normalized * Radius, Axis * RotationSpeed);
         var groundSurfaceVelocity = Vector3.Dot(direction, wheelSurfaceVelocity) + Vector3.Dot(-direction, velocity);

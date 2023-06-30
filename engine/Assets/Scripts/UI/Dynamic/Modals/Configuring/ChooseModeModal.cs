@@ -32,15 +32,6 @@ public class ChooseModeModal : ModalDynamic {
             .StepIntoLabel(l => l.SetText("Coming Soon").SetColor(ColorManager.SYNTHESIS_WHITE))
             .StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_BLACK_ACCENT))
             .ApplyTemplate(VerticalLayout);
-
-        // MainContent.CreateButton()
-        //     .StepIntoLabel(l => l.SetText("Match Mode"))
-        //     .ApplyTemplate(VerticalLayout)
-        //     .AddOnClickedEvent(b =>
-        //     {
-        //         ModeManager.CurrentMode = new MatchMode();
-        //         SceneManager.LoadScene("MainScene");
-        //     });
     }
 
     public override void Update() {}

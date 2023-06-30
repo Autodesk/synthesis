@@ -97,16 +97,6 @@ namespace Engine.ModuleLoader {
 
             // GameObject.Find("Screen").GetComponent<PanelScaler>().scaleMode =
             // PanelScaler.ScaleMode.ConstantPhysicalSize;
-
-            Task.Run(() => {
-                SynthesisAPI.UIManager.VisualElements.VisualElement root = null;
-                while (root == null) {
-                    root = UIManager.RootElement;
-                    Thread.Sleep(200);
-                }
-
-                // UIManager.Setup();
-            });
         }
 
         private class LoggerImpl : SynthesisAPI.Utilities.ILogger {

@@ -41,7 +41,6 @@ namespace Synthesis.UI {
             (SYNTHESIS_HIGHLIGHT_SELECT, new Color32(255, 89, 133, 255)) };
 
         static ColorManager() {
-            // File.Delete(path);
             Load();
 
             LoadDefaultColors();

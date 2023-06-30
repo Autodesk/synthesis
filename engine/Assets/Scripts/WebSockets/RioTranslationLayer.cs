@@ -104,44 +104,5 @@ namespace Synthesis.WS.Translation {
                 }
             }
         }
-
-        // public class Grouping {
-        //     public List<IRioPointer> RioPointers = new List<IRioPointer>();
-        //     public List<string> Signals = new List<string>();
-
-        //     public float GetValue(RoboRIOState state) {
-        //         float sum = 0f;
-        //         RioPointers.Select(x => x.Get(state)).ForEach(x => sum += x);
-        //         return sum / RioPointers.Count;
-        //     }
-        // }
-
-        // public interface ISensor {
-        //     object GetData(ControllableState state);
-        // }
-
-        // /// <summary>
-        // /// Quadrature Encoder sensor that reads data from a provided
-        // /// signal.
-        // /// </summary>
-        // public class QuadratureEncoderSensor : ISensor {
-
-        //     private string _signal;
-        //     private int _conversionFactor;
-
-        //     /// <summary>
-        //     /// Constructs a quadrature encoder sensor for rio sim.
-        //     /// </summary>
-        //     /// <param name="signal">Signal compatible with supplying quadrature encoder data</param>
-        //     /// <param name="conversionFactor">Factor that is multiplied by the encoder value</param>
-        //     public QuadratureEncoderSensor(string signal, int conversionFactor) {
-        //         _signal = signal;
-        //         _conversionFactor = conversionFactor;
-        //     }
-
-        //     public object GetData(ControllableState state) {
-        //         return state.CurrentSignals[_signal].Value.NumberValue * _conversionFactor;
-        //     }
-        // }
     }
 }

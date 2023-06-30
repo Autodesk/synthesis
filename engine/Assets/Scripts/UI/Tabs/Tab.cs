@@ -8,8 +8,6 @@ using UnityEngine.Events;
 
 namespace Synthesis.UI.Tabs {
     public abstract class Tab {
-        // public List<TabPanelButton> PanelButtons = new List<TabPanelButton>();
-
         public TabButton CreateButton(string name, Sprite sprite, UnityAction callback) {
             var obj = Object.Instantiate(
                 NavigationBar.Instance.TabPanelButtonPrefab, NavigationBar.Instance.ModalTab.transform);

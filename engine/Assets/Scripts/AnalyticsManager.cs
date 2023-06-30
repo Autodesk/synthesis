@@ -43,8 +43,6 @@ public static class AnalyticsManager {
             PreferenceManager.Save();
         }
 
-        // Debug.Log($"Client ID: {ClientID}");
-
         _pendingEvents = new List<IAnalytics>();
 
         if (PreferenceManager.ContainsPreference(USE_ANALYTICS_PREF)) {
@@ -75,32 +73,6 @@ public static class AnalyticsManager {
         _pendingEvents.Add(e);
     }
 
-    /*public static void  PostData()
-    {
-        foreach (var _event in _pendingEvents)
-        {
-            if (UseAnalytics)
-            {
-                var cli = new WebClient();
-                try
-                {
-                    var reqparm = new System.Collections.Specialized.NameValueCollection();
-                    reqparm.Add("event_name", System.Net.WebUtility.UrlEncode(_event.GetPostData()));
-                    var resp = cli.UploadValues(
-                        $"{ANALYTICS_URL}/analytics", "POST", reqparm);
-                    Debug.Log(resp);
-
-                }
-                catch (Exception e)
-                {
-                    Debug.Log("not pog");
-                }
-
-            }
-        }
-        _pendingEvents.Clear();
-    } */
-
     public static void PostData() {
         foreach (var _event in _pendingEvents) {
             if (UseAnalytics) {
@@ -115,13 +87,7 @@ public static class AnalyticsManager {
                     reqparm.Add("ea", ((AnalyticsEvent) _event).Action);
                     reqparm.Add("el", ((AnalyticsEvent) _event).Label);
 
-                    // var resp = cli.UploadValues(
-                    //$"{ANALYTICS_URL}/analytics", "POST", reqparm);
-
                     var resp = cli.UploadValues(URL_COLLECT, "POST", reqparm);
-
-                    // Debug.Log(System.Text.Encoding.Default.GetString(resp));
-
                 } catch (Exception e) {
                     Debug.Log("Failed to post Analytics");
                 }
@@ -157,18 +123,7 @@ public class AnalyticsEvent : IAnalytics {
         Label    = label;
     }
 
-    /*
-    public AnalyticsEvent(string category, string action, string value)
-    {
-        Category = category;
-        Action = action;
-        Value = value;
-    }
-    */
-
-    public string GetPostData()
-        //    => $"{Category}_{Action}_{Label}";
-        => $"t=event&ec={Category}&ea={Action}&el={Label}";
+    public string GetPostData() => $"t=event&ec={Category}&ea={Action}&el={Label}";
 }
 
 [AttributeUsage(AttributeTargets.Class)]
