@@ -113,7 +113,6 @@ public class ScoringZonesPanel : PanelDynamic
         (Content labelsContent, Content buttonsContent) = rightContent.SplitLeftRight(_entryWidth- (HORIZONTAL_PADDING + BUTTON_WIDTH) * 3, HORIZONTAL_PADDING);
         (Content topContent, Content bottomContent) = labelsContent.SplitTopBottom(ROW_HEIGHT / 2, 0);
         topContent.CreateLabel().SetText(zone.Name)
-            .SetOverflowMode(TextOverflowModes.Ellipsis)
             .ApplyTemplate(VerticalLayout)
             .SetAnchorLeft<Label>()
             .SetAnchoredPosition<Label>(new Vector2(0, -ROW_HEIGHT / 8));
