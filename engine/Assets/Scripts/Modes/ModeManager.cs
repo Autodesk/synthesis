@@ -14,7 +14,8 @@ public class ModeManager {
                 _currentMode.End();
             _currentMode = value;
             
-            if (SceneManager.GetActiveScene().name == "MainScene") _currentMode.Start();
+            if (SceneManager.GetActiveScene().name == "MainScene" && _currentMode != null)
+                _currentMode.Start();
         }
     }
 
