@@ -235,10 +235,14 @@ public class MatchStateMachine {
             base.Start();
             Scoring.targetTime = 135;
 <<<<<<< HEAD:engine/Assets/Scripts/Modes/MatchMode/MatchStateMachine.cs
+<<<<<<< HEAD:engine/Assets/Scripts/Modes/MatchMode/MatchStateMachine.cs
             RobotSimObject.SpawnedRobots.ForEach(r => r.BehavioursEnabled = false);
 =======
             RobotSimObject.SpawnedRobots.ForEach(r => r.Freeze());
 >>>>>>> e7c59c915 (moved timer events into state start methods):engine/Assets/Scripts/Modes/MatchStateMachine.cs
+=======
+            RobotSimObject.SpawnedRobots.ForEach(r => r.BehavioursEnabled = false);
+>>>>>>> e3f223c0c (disable robot behaviours in transition mode instead of freezing them):engine/Assets/Scripts/Modes/MatchStateMachine.cs
             _timer = 3;
         }
 

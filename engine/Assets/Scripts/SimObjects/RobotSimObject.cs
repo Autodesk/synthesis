@@ -241,9 +241,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             if (RobotSimObject.CurrentlyPossessedRobot == string.Empty) {
                 return;
             }
-
-            if (ModeManager.CurrentMode.GetType() == typeof(MatchMode) && !MatchStateMachine.Instance.CurrentState.AllowRobotInput()) return;
-
+            
             bool pickup = InputManager.MappedValueInputs[INTAKE_GAMEPIECES].Value == 1.0F;
             RobotSimObject.GetCurrentlyPossessedRobot().PickingUpGamepieces = pickup;
             bool shootGamepiece = InputManager.MappedValueInputs[OUTTAKE_GAMEPIECES].Value == 1.0F;
