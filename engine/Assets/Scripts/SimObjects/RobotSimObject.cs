@@ -803,6 +803,5 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                 StallTorque = rightForce
             }};
         }
-        MiraLive.Save();
     }
 }
