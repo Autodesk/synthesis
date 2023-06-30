@@ -4,323 +4,292 @@ using Synthesis.UI.Dynamic;
 using SynthesisAPI.EventBus;
 using UnityEngine;
 
-public class MatchStateMachine {
-    private static MatchStateMachine _instance;
+namespace Modes.MatchMode {
+    public class MatchStateMachine {
+        private static MatchStateMachine _instance;
 
-    public static MatchStateMachine Instance {
-        get {
-            if (_instance == null)
-                _instance = new MatchStateMachine();
+        public static MatchStateMachine Instance {
+            get {
+                if (_instance == null)
+                    _instance = new MatchStateMachine();
 
-            return _instance;
+                return _instance;
+            }
         }
-    }
 
 #region State Management
 
-    private readonly Dictionary<StateName, MatchState> _matchStates = new Dictionary<StateName, MatchState>();
-    private MatchState _currentState;
-    public MatchState CurrentState => _currentState;
+        private readonly Dictionary<StateName, MatchState> _matchStates = new Dictionary<StateName, MatchState>();
+        private MatchState _currentState;
+        public MatchState CurrentState => _currentState;
 
-    /// Sets the current state. Automatically calls any event functions in the state
-    /// <param name="stateName">The new state to switch to</param>
-    public void SetState(StateName stateName) {
-        Debug.Log($"State set to {stateName}");
-        var newState = _matchStates[stateName];
-        if (newState == null) {
-            Debug.LogError($"No state found for {stateName}");
-            return;
+        /// Sets the current state. Automatically calls any event functions in the state
+        /// <param name="stateName">The new state to switch to</param>
+        public void SetState(StateName stateName) {
+            Debug.Log($"State set to {stateName}");
+            var newState = _matchStates[stateName];
+            if (newState == null) {
+                Debug.LogError($"No state found for {stateName}");
+                return;
+            }
+
+            _currentState.End();
+            _currentState = newState;
+            _currentState.Start();
         }
 
-        _currentState.End();
-        _currentState = newState;
-        _currentState.Start();
-    }
+        public void AdvanceState() {
+            StateName currentStateName = _currentState.StateName;
+            var       nextStateName    = currentStateName + 1;
+            SetState(nextStateName);
+        }
 
-    public void AdvanceState() {
-        StateName currentStateName = _currentState.StateName;
-        var nextStateName          = currentStateName + 1;
-        SetState(nextStateName);
-    }
+        /// Manages the state of the match (ex: match config, teleop, match results)
+        public MatchStateMachine() {
+            _matchStates.Add(StateName.None, new None());
+            _matchStates.Add(StateName.MatchConfig, new MatchConfig());
+            _matchStates.Add(StateName.RobotPositioning, new RobotPositioning());
+            _matchStates.Add(StateName.FieldConfig, new FieldConfig());
+            _matchStates.Add(StateName.Auto, new Auto());
+            _matchStates.Add(StateName.Transition, new Transition());
+            _matchStates.Add(StateName.Teleop, new Teleop());
+            _matchStates.Add(StateName.MatchResults, new MatchResults());
 
-    /// Manages the state of the match (ex: match config, teleop, match results)
-    public MatchStateMachine() {
-        _matchStates.Add(StateName.None, new None());
-        _matchStates.Add(StateName.MatchConfig, new MatchConfig());
-        _matchStates.Add(StateName.RobotPositioning, new RobotPositioning());
-        _matchStates.Add(StateName.FieldConfig, new FieldConfig());
-        _matchStates.Add(StateName.Auto, new Auto());
-        _matchStates.Add(StateName.Transition, new Transition());
-        _matchStates.Add(StateName.Teleop, new Teleop());
-        _matchStates.Add(StateName.MatchResults, new MatchResults());
+            _currentState = _matchStates[StateName.None];
+        }
 
-        _currentState = _matchStates[StateName.None];
-    }
-
-    public void Update() {
-        _currentState.Update();
-    }
+        public void Update() {
+            _currentState.Update();
+        }
 
 #endregion
 
 #region Match States
 
-    /// Called whenever a new match state is started
-    public class OnStateStarted : IEvent {
-        public MatchState state;
-        public StateName stateName;
+        /// Called whenever a new match state is started
+        public class OnStateStarted : IEvent {
+            public MatchState state;
+            public StateName stateName;
 
-        public OnStateStarted(MatchState state, StateName stateName) {
-            this.state     = state;
-            this.stateName = stateName;
-        }
-    }
-
-    /// Called whenever a match state is ended
-    public class OnStateEnded : IEvent {
-        public MatchState state;
-        public StateName stateName;
-
-        public OnStateEnded(MatchState state, StateName stateName) {
-            this.state     = state;
-            this.stateName = stateName;
-        }
-    }
-
-    /// A specific state during match mode
-    public abstract class MatchState {
-        public StateName StateName;
-
-        public MatchState(StateName stateName) {
-            this.StateName = stateName;
-        }
-
-        public virtual void Start() {
-            EventBus.Push(new OnStateStarted(this, StateName));
-        }
-
-        public abstract void Update();
-
-        public virtual void End() {
-            EventBus.Push(new OnStateEnded(this, StateName));
-        }
-    }
-
-    /// An empty state
-    public class None : MatchState {
-        public override void Start() {
-            base.Start();
-        }
-
-        public override void Update() {}
-
-        public override void End() {
-            base.End();
-        }
-
-        public None() : base(StateName.None) {}
-    }
-
-    /// When the user is choosing which robots to spawn in and other match settings
-    public class MatchConfig : MatchState {
-        public override void Start() {
-            base.Start();
-            DynamicUIManager.CreateModal<MatchModeModal>();
-            DynamicUIManager.ActiveModal.OnAccepted += () =>
-<<<<<<< HEAD:engine/Assets/Scripts/Modes/MatchMode/MatchStateMachine.cs
-                Instance.SetState(StateName.RobotPositioning);
-=======
-                MatchStateMachine.Instance.SetState(StateName.RobotPositioning);
->>>>>>> 95f4ffd7f (ran formatter):engine/Assets/Scripts/Modes/MatchStateMachine.cs
-        }
-
-        public override void Update() {}
-
-        public override void End() {
-            base.End();
-        }
-
-        public MatchConfig() : base(StateName.MatchConfig) {}
-    }
-
-    /// When the user is choosing where the robot will spawn
-    public class RobotPositioning : MatchState {
-        public override void Start() {
-            base.Start();
-
-            PhysicsManager.IsFrozen = true;
-            MatchMode.SpawnAllRobots();
-
-            if (Camera.main != null) {
-                Camera.main.GetComponent<CameraController>().CameraMode = CameraController.CameraModes["Freecam"];
-            }
-<<<<<<< HEAD:engine/Assets/Scripts/Modes/MatchMode/MatchStateMachine.cs
-=======
-
->>>>>>> 95f4ffd7f (ran formatter):engine/Assets/Scripts/Modes/MatchStateMachine.cs
-            // state passes to next in SpawnLocationPanel accept button
-        }
-
-        public override void Update() {}
-
-        public override void End() {
-            base.End();
-
-            PhysicsManager.IsFrozen = false;
-
-            if (Camera.main != null) {
-                Camera.main.GetComponent<CameraController>().CameraMode = CameraController.CameraModes["Orbit"];
+            public OnStateStarted(MatchState state, StateName stateName) {
+                this.state     = state;
+                this.stateName = stateName;
             }
         }
 
-        public RobotPositioning() : base(StateName.RobotPositioning) {}
-    }
+        /// Called whenever a match state is ended
+        public class OnStateEnded : IEvent {
+            public MatchState state;
+            public StateName stateName;
 
-    // might expand to include more than scoring zones if necessary
-    public class FieldConfig : MatchState {
-        public override void Start() {
-            base.Start();
-            DynamicUIManager.CreatePanel<ScoringZonesPanel>(true);
-<<<<<<< HEAD:engine/Assets/Scripts/Modes/MatchMode/MatchStateMachine.cs
-<<<<<<< HEAD:engine/Assets/Scripts/Modes/MatchMode/MatchStateMachine.cs
-            var panel               = DynamicUIManager.GetPanel<ScoringZonesPanel>();
-=======
-            var panel = DynamicUIManager.GetPanel<ScoringZonesPanel>();
->>>>>>> e7c59c915 (moved timer events into state start methods):engine/Assets/Scripts/Modes/MatchStateMachine.cs
-=======
-            var panel               = DynamicUIManager.GetPanel<ScoringZonesPanel>();
->>>>>>> 95f4ffd7f (ran formatter):engine/Assets/Scripts/Modes/MatchStateMachine.cs
-            panel.OnAccepted += () => {
-                DynamicUIManager.CreateModal<ConfirmModal>("Start Match?");
-                DynamicUIManager.ActiveModal.OnAccepted += () => {
-                    DynamicUIManager.CloseActiveModal();
-                    DynamicUIManager.CreatePanel<ScoreboardPanel>(true, true);
-                    Instance.SetState(StateName.Auto);
-                };
-                DynamicUIManager.ActiveModal.OnCancelled += () => {
-                    DynamicUIManager.CloseActiveModal();
-                    Instance.SetState(StateName.FieldConfig);
-                };
-                DynamicUIManager.ActiveModal.OnCancelled += () => {
-                    DynamicUIManager.CloseActiveModal();
-                    MatchStateMachine.Instance.SetState(StateName.FieldConfig);
-                };
-            };
-        }
-
-        public override void Update() {}
-
-        public override void End() {
-            base.End();
-        }
-
-        public FieldConfig() : base(StateName.FieldConfig) {}
-    }
-
-    /// <summary>
-    /// The autonomous state at the beginning of a match
-    /// </summary>
-    public class Auto : MatchState {
-        public override void Start() {
-            base.Start();
-<<<<<<< HEAD:engine/Assets/Scripts/Modes/MatchMode/MatchStateMachine.cs
-<<<<<<< HEAD:engine/Assets/Scripts/Modes/MatchMode/MatchStateMachine.cs
-
-=======
-            
->>>>>>> e7c59c915 (moved timer events into state start methods):engine/Assets/Scripts/Modes/MatchStateMachine.cs
-=======
-
->>>>>>> 95f4ffd7f (ran formatter):engine/Assets/Scripts/Modes/MatchStateMachine.cs
-            Scoring.targetTime = 15;
-            DynamicUIManager.CreatePanel<ScoreboardPanel>(true, true);
-        }
-
-        public override void Update() {}
-
-        public override void End() {
-            base.End();
-        }
-
-        public Auto() : base(StateName.Auto) {}
-    }
-
-    /// <summary>
-    ///  3 second transition state between Auto and Teleop
-    /// </summary>
-    public class Transition : MatchState {
-        private float _timer;
-
-        public override void Start() {
-            base.Start();
-            Scoring.targetTime = 135;
-<<<<<<< HEAD:engine/Assets/Scripts/Modes/MatchMode/MatchStateMachine.cs
-<<<<<<< HEAD:engine/Assets/Scripts/Modes/MatchMode/MatchStateMachine.cs
-            RobotSimObject.SpawnedRobots.ForEach(r => r.BehavioursEnabled = false);
-=======
-            RobotSimObject.SpawnedRobots.ForEach(r => r.Freeze());
->>>>>>> e7c59c915 (moved timer events into state start methods):engine/Assets/Scripts/Modes/MatchStateMachine.cs
-=======
-            RobotSimObject.SpawnedRobots.ForEach(r => r.BehavioursEnabled = false);
->>>>>>> e3f223c0c (disable robot behaviours in transition mode instead of freezing them):engine/Assets/Scripts/Modes/MatchStateMachine.cs
-            _timer = 3;
-        }
-
-        public override void Update() {
-            _timer -= Time.deltaTime;
-            if (_timer <= 0) {
-                Instance.AdvanceState();
+            public OnStateEnded(MatchState state, StateName stateName) {
+                this.state     = state;
+                this.stateName = stateName;
             }
         }
 
-        public override void End() {
-            RobotSimObject.SpawnedRobots.ForEach(r => r.BehavioursEnabled = true);
+        /// A specific state during match mode
+        public abstract class MatchState {
+            public StateName StateName;
+
+            public MatchState(StateName stateName) {
+                this.StateName = stateName;
+            }
+
+            public virtual void Start() {
+                EventBus.Push(new OnStateStarted(this, StateName));
+            }
+
+            public abstract void Update();
+
+            public virtual void End() {
+                EventBus.Push(new OnStateEnded(this, StateName));
+            }
         }
 
-        public Transition() : base(StateName.Transition) {}
-    }
+        /// An empty state
+        public class None : MatchState {
+            public override void Start() {
+                base.Start();
+            }
 
-    /// <summary>
-    /// The teleop state of a match
-    /// </summary>
-    public class Teleop : MatchState {
-        public override void Start() {
-            base.Start();
+            public override void Update() {}
+
+            public override void End() {
+                base.End();
+            }
+
+            public None() : base(StateName.None) {}
         }
 
-        public override void Update() {}
+        /// When the user is choosing which robots to spawn in and other match settings
+        public class MatchConfig : MatchState {
+            public override void Start() {
+                base.Start();
+                DynamicUIManager.CreateModal<MatchModeModal>();
+                DynamicUIManager.ActiveModal.OnAccepted += () =>
+                    Instance.SetState(StateName.RobotPositioning);
+            }
 
-        public override void End() {}
+            public override void Update() {}
 
-        public Teleop() : base(StateName.Teleop) {}
-    }
-    
-    /// A state when a modal is displayed after a match showing info about the match
-    public class MatchResults : MatchState {
-        public override void Start() {
-            base.Start();
+            public override void End() {
+                base.End();
+            }
 
-            DynamicUIManager.CreateModal<MatchResultsModal>();
+            public MatchConfig() : base(StateName.MatchConfig) {}
         }
 
-        public override void Update() {}
+        /// When the user is choosing where the robot will spawn
+        public class RobotPositioning : MatchState {
+            public override void Start() {
+                base.Start();
 
-        public override void End() {}
+                PhysicsManager.IsFrozen = true;
+                MatchMode.SpawnAllRobots();
 
-        public MatchResults() : base(StateName.MatchResults) {}
-    }
+                if (Camera.main != null) {
+                    Camera.main.GetComponent<CameraController>().CameraMode = CameraController.CameraModes["Freecam"];
+                }
+                // state passes to next in SpawnLocationPanel accept button
+            }
+
+            public override void Update() {}
+
+            public override void End() {
+                base.End();
+
+                PhysicsManager.IsFrozen = false;
+
+                if (Camera.main != null) {
+                    Camera.main.GetComponent<CameraController>().CameraMode = CameraController.CameraModes["Orbit"];
+                }
+            }
+
+            public RobotPositioning() : base(StateName.RobotPositioning) {}
+        }
+
+        // might expand to include more than scoring zones if necessary
+        public class FieldConfig : MatchState {
+            public override void Start() {
+                base.Start();
+                DynamicUIManager.CreatePanel<ScoringZonesPanel>(true);
+                var panel = DynamicUIManager.GetPanel<ScoringZonesPanel>();
+                panel.OnAccepted += () => {
+                    DynamicUIManager.CreateModal<ConfirmModal>("Start Match?");
+                    DynamicUIManager.ActiveModal.OnAccepted += () => {
+                        DynamicUIManager.CloseActiveModal();
+                        DynamicUIManager.CreatePanel<ScoreboardPanel>(true, true);
+                        Instance.SetState(StateName.Auto);
+                    };
+                    DynamicUIManager.ActiveModal.OnCancelled += () => {
+                        DynamicUIManager.CloseActiveModal();
+                        Instance.SetState(StateName.FieldConfig);
+                    };
+                    DynamicUIManager.ActiveModal.OnCancelled += () => {
+                        DynamicUIManager.CloseActiveModal();
+                        MatchStateMachine.Instance.SetState(StateName.FieldConfig);
+                    };
+                };
+            }
+
+            public override void Update() {}
+
+            public override void End() {
+                base.End();
+            }
+
+            public FieldConfig() : base(StateName.FieldConfig) {}
+        }
+
+        /// <summary>
+        /// The autonomous state at the beginning of a match
+        /// </summary>
+        public class Auto : MatchState {
+            public override void Start() {
+                base.Start();
+                Scoring.targetTime = 15;
+                DynamicUIManager.CreatePanel<ScoreboardPanel>(true, true);
+            }
+
+            public override void Update() {}
+
+            public override void End() {
+                base.End();
+            }
+
+            public Auto() : base(StateName.Auto) {}
+        }
+
+        /// <summary>
+        ///  3 second transition state between Auto and Teleop
+        /// </summary>
+        public class Transition : MatchState {
+            private float _timer;
+
+            public override void Start() {
+                base.Start();
+                Scoring.targetTime = 135;
+                RobotSimObject.SpawnedRobots.ForEach(r => r.BehavioursEnabled = false);
+                _timer = 3;
+            }
+
+            public override void Update() {
+                _timer -= Time.deltaTime;
+                if (_timer <= 0) {
+                    Instance.AdvanceState();
+                }
+            }
+
+            public override void End() {
+                RobotSimObject.SpawnedRobots.ForEach(r => r.BehavioursEnabled = true);
+            }
+
+            public Transition() : base(StateName.Transition) {}
+        }
+
+        /// <summary>
+        /// The teleop state of a match
+        /// </summary>
+        public class Teleop : MatchState {
+            public override void Start() {
+                base.Start();
+            }
+
+            public override void Update() {}
+
+            public override void End() {}
+
+            public Teleop() : base(StateName.Teleop) {}
+        }
+
+        /// A state when a modal is displayed after a match showing info about the match
+        public class MatchResults : MatchState {
+            public override void Start() {
+                base.Start();
+
+                DynamicUIManager.CreateModal<MatchResultsModal>();
+            }
+
+            public override void Update() {}
+
+            public override void End() {}
+
+            public MatchResults() : base(StateName.MatchResults) {}
+        }
 
 #endregion
 
-    /// Represents a specific MatchState
-    public enum StateName {
-        None,
-        MatchConfig,
-        RobotPositioning,
-        FieldConfig,
-        Auto,
-        Transition,
-        Teleop,
-        MatchResults
+        /// Represents a specific MatchState
+        public enum StateName {
+            None,
+            MatchConfig,
+            RobotPositioning,
+            FieldConfig,
+            Auto,
+            Transition,
+            Teleop,
+            MatchResults
+        }
     }
 }
