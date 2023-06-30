@@ -174,6 +174,12 @@ namespace Synthesis.UI.Dynamic {
         public static bool PanelExists(Type t)
             => _persistentPanels.ContainsKey(t);
 
+        public static T GetPanel<T>() where T : PanelDynamic
+        {
+            if (!PanelExists<T>()) return null;
+            return (T) _persistentPanels[typeof(T)].Item1;
+        }
+
         public static void HideAllPanels() {
             _persistentPanels.ForEach(kvp => HidePanel(kvp.Value.Item1.GetType()));
         }

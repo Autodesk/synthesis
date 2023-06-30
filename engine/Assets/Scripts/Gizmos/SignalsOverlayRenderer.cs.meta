@@ -1,4 +1,10 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD:engine/Assets/Scripts/Networking/NetworkManager.cs.meta
+guid: 1830ed1e942a3f14a989885bf2abd2b9
+=======
+>>>>>>> Basic UDP communcation
 guid: cf68f9e4e7b0b5d40a9dec8806dc9c78
 MonoImporter:
   externalObjects: {}

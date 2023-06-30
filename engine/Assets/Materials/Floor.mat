@@ -25,7 +25,8 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
-  m_InvalidKeywords: []
+  m_InvalidKeywords:
+  - _SURFACE_TYPE_TRANSPARENT
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -76,6 +77,14 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_62ed7a31dfb24a2e99fd6547bf544010_Texture_1_Texture2D:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_94c6fb4eff294a778ebbabb63bc2d9db_Texture_1_Texture2D:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -95,13 +104,21 @@ Material:
     - INNER_RADIUS: 30
     - Vector1_8159f882c7ae43e5951d332a5bb2c351: 15
     - Vector1_fdf532604aad4da3b057273975b23362: 5
+    - _AlphaClip: 0
+    - _AlphaToMask: 0
+    - _Blend: 0
+    - _BlendModePreserveSpecular: 0
     - _BumpScale: 1
+    - _CastShadows: 1
+    - _Cull: 2
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
-    - _DstBlend: 0
+    - _DstBlend: 10
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _GroundFeatherRadius: 2.1
+    - _GroundMod: 0.8
     - _LineSize: 0.05
     - _Metallic: 0
     - _Mode: 0
@@ -109,15 +126,20 @@ Material:
     - _Parallax: 0.02
     - _QueueControl: 0
     - _QueueOffset: 0
+    - _ReceiveShadows: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _SrcBlend: 1
+    - _SrcBlend: 5
+    - _Surface: 1
     - _UVSec: 0
     - _UnitLength: 1
-    - _ZWrite: 1
+    - _WorkflowMode: 0
+    - _ZTest: 4
+    - _ZWrite: 0
+    - _ZWriteControl: 0
     m_Colors:
-    - Color_2717fd3cff164a8f917bd2c1ff16f3e0: {r: 1, g: 1, b: 1, a: 1}
-    - Color_494c73158fc5450082efb80fcbeadd6a: {r: 0.25787643, g: 0.5619638, b: 0.8962264, a: 0}
+    - Color_2717fd3cff164a8f917bd2c1ff16f3e0: {r: 0, g: 0, b: 0, a: 1}
+    - Color_494c73158fc5450082efb80fcbeadd6a: {r: 0, g: 0, b: 0, a: 0}
     - FOCUS_POINT: {r: 0, g: 0, b: 0, a: 0}
     - Vector2_afc8cb7396b949b18e7f1b231b05f5dd: {r: 1000, g: 1000, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}

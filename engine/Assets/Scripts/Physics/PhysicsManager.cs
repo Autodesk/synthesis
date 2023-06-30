@@ -44,8 +44,7 @@ namespace Synthesis.Physics {
                     // Debug.Log($"Frozen: {_isFrozen}");
                     if (_isFrozen)
                     {
-                        SimulationRunner.RemoveContext(SimulationRunner.RUNNING_SIM_CONTEXT);
-                        SimulationRunner.AddContext(SimulationRunner.PAUSED_SIM_CONTEXT);
+                        
                         //UnityEngine.Physics.autoSimulation = false;
                         _physObjects.ForEach(x =>
                         {
@@ -63,11 +62,12 @@ namespace Synthesis.Physics {
                             }
                             x.Value.Freeze();
                         });
+                        SimulationRunner.RemoveContext(SimulationRunner.RUNNING_SIM_CONTEXT);
+                        SimulationRunner.AddContext(SimulationRunner.PAUSED_SIM_CONTEXT);
                     }
                     else
                     {
-                        SimulationRunner.RemoveContext(SimulationRunner.PAUSED_SIM_CONTEXT);
-                        SimulationRunner.AddContext(SimulationRunner.RUNNING_SIM_CONTEXT);
+                        
                         //UnityEngine.Physics.autoSimulation = true;
 
                         _physObjects.ForEach(x =>
@@ -93,6 +93,8 @@ namespace Synthesis.Physics {
                             _storedValues.Clear();
                             _storeOnFreeze = true;
                         });
+                        SimulationRunner.RemoveContext(SimulationRunner.PAUSED_SIM_CONTEXT);
+                        SimulationRunner.AddContext(SimulationRunner.RUNNING_SIM_CONTEXT);
                     }
                     EventBus.Push(new PhysicsFreezeChangeEvent { IsFrozen = _isFrozen });
                 }
