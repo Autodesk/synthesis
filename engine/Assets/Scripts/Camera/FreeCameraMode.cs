@@ -139,7 +139,7 @@ public class FreeCameraMode : ICameraMode {
     public void SetTransform(Vector3 position, Quaternion rotation) {
         _controller.transform.position = position;
         _controller.transform.rotation = rotation;
-        var euler = rotation.eulerAngles;
+        var euler                      = rotation.eulerAngles;
         TargetPitch = ActualPitch = euler.x;
         TargetYaw = ActualYaw = euler.y;
     }
