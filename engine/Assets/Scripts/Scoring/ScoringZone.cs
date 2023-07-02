@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Security.Policy;
+using Mirabuf.Material;
 using Synthesis.Physics;
 using Synthesis.Runtime;
+using Synthesis.UI;
 using SynthesisAPI.EventBus;
 using UnityEngine;
 
@@ -17,8 +19,8 @@ public class ScoringZone : IPhysicsOverridable {
     public Alliance Alliance {
         get => _alliance;
         set {
-            _alliance                    = value;
-            _meshRenderer.material.color = value == Alliance.Red ? Color.red : Color.blue;
+            _alliance = value;
+            UpdateColor();
         }
     }
     public int Points;
@@ -45,7 +47,6 @@ public class ScoringZone : IPhysicsOverridable {
 
         _collider                    = GameObject.GetComponent<Collider>();
         _meshRenderer                = GameObject.GetComponent<MeshRenderer>();
-        _meshRenderer.material.color = alliance == Alliance.Red ? Color.red : Color.blue;
 
         _collider.isTrigger = true;
 
@@ -54,6 +55,18 @@ public class ScoringZone : IPhysicsOverridable {
         DestroyGamepiece = destroyGamepiece;
 
         PhysicsManager.Register(this);
+    }
+
+    private void UpdateColor() {
+        Color color =
+            _alliance == Alliance.Red ?
+                ColorManager.TryGetColor(ColorManager.SYNTHESIS_RED_ALLIANCE) :
+                ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLUE_ALLIANCE);
+        color.a = 0.8f;
+        Material mat = new Material(Appearance.DefaultTransparentShader);
+        mat.SetColor(Appearance.TRANSPARENT_COLOR, color);
+        mat.SetFloat(Appearance.TRANSPARENT_SMOOTHNESS, 0);
+        _meshRenderer.material = mat;
     }
 
     public void SetVisibility(bool visible) {

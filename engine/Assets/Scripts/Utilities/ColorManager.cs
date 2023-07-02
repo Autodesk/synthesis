@@ -22,6 +22,8 @@ namespace Synthesis.UI {
         public const string SYNTHESIS_ICON_ALT             = "synthesis-icon-alt";
         public const string SYNTHESIS_HIGHLIGHT_HOVER      = "synthesis-highlight-hover";
         public const string SYNTHESIS_HIGHLIGHT_SELECT     = "synthesis-highlight-select";
+        public const string SYNTHESIS_RED_ALLIANCE         = "synthesis-red-alliance";
+        public const string SYNTHESIS_BLUE_ALLIANCE        = "synthesis-blue-alliance";
 
         private static Dictionary<string, Color32> _colors = new Dictionary<string, Color32>();
 
@@ -38,7 +40,10 @@ namespace Synthesis.UI {
             (SYNTHESIS_ORANGE_CONTRAST_TEXT, new Color32(0, 0, 0, 255)),
             (SYNTHESIS_ICON, new Color32(255, 255, 255, 255)), (SYNTHESIS_ICON_ALT, new Color32(0, 0, 0, 255)),
             (SYNTHESIS_HIGHLIGHT_HOVER, new Color32(89, 255, 133, 255)),
-            (SYNTHESIS_HIGHLIGHT_SELECT, new Color32(255, 89, 133, 255)) };
+            (SYNTHESIS_HIGHLIGHT_SELECT, new Color32(255, 89, 133, 255)),
+            (SYNTHESIS_RED_ALLIANCE, new Color32(240, 62, 62, 255)),
+            (SYNTHESIS_BLUE_ALLIANCE, new Color32(62, 80, 240, 255))
+        };
 
         static ColorManager() {
             // File.Delete(path);
