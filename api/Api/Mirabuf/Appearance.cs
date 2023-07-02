@@ -15,7 +15,7 @@ namespace Mirabuf.Material {
                     
                     // TODO: Something here breaks transparent materials for builds
                     
-                    if (c.a < 1.0f) {
+                    if (c.a < 255) {
                         _unityMaterial = new UMaterial(DefaultTransparentShader);
                         _unityMaterial.SetColor(TRANSPARENT_COLOR, c);
                         _unityMaterial.SetFloat(TRANSPARENT_SMOOTHNESS, 1 - (float)Roughness);

@@ -212,6 +212,15 @@ def getMaterialAppearance(
             baseColor = properties.itemById("metal_f0").value
         elif matModelType == 2:
             baseColor = properties.itemById("layered_diffuse").value
+        elif matModelType == 3:
+            baseColor = properties.itemById("transparent_color").value
+            transparent_distance = properties.itemById("transparent_distance").value
+            opac = (255.0 * transparent_distance) / (transparent_distance + 44.0)
+            if opac > 255:
+                opac = 255
+            elif opac < 0:
+                opac = 0
+            baseColor.opacity = int(round(opac))
 
         if baseColor:
             color.R = baseColor.red
