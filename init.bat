@@ -6,6 +6,5 @@ call proto_compile.bat
 cd ..\engine\EngineDeps
 call setup.bat
 cd ..\..\api
-dotnet build
-call post_build.bat
+call build.bat
 cd ..

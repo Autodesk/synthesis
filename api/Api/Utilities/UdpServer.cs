@@ -7,10 +7,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Google;
 using Google.Protobuf;
 using SynthesisAPI.Simulation;
-using UnityEngine;
 
 namespace SynthesisAPI.Utilities
 {
@@ -24,7 +22,7 @@ namespace SynthesisAPI.Utilities
             {
                 updates = new ConcurrentQueue<UpdateSignals>();
                 _isRunning = false;
-                updateSignalTasks = new List<Task<UpdateSignals?>>();
+                // updateSignalTasks = new List<Task<UpdateSignals>>();
 
                 listenerThread = new Thread(() =>
                 {
@@ -45,9 +43,9 @@ namespace SynthesisAPI.Utilities
                             });
                         }
                     }
-                    catch (SocketException e)
+                    catch (SocketException)
                     {
-                        Logger.Log("UDP Listener Stopped Successfully", LogLevel.Debug);
+                        Logger.Log("UDP Listener Stopped Successfully", LogLevel.Debug); //lol what
                     }
                     catch (AggregateException)
                     {
@@ -118,9 +116,9 @@ namespace SynthesisAPI.Utilities
             private IPEndPoint outputIpEndPoint;
             public int outputPort;
 
-            public Dictionary<string, SimObject>? SimObjectsTarget { get; set; }
+            public Dictionary<string, SimObject> SimObjectsTarget { get; set; }
             private ConcurrentQueue<UpdateSignals> updates;
-            private List<Task<UpdateSignals?>> updateSignalTasks;
+            // private List<Task<UpdateSignals>> updateSignalTasks;
             private Thread listenerThread;
             private Thread outputThread;
             private Thread queueThread;
@@ -135,7 +133,7 @@ namespace SynthesisAPI.Utilities
                     if (!value)
                     {
                         if (outputClient != null && outputClient.Client.Connected) { outputClient.Close(); }
-                        if (listenerClient != null) { listenerClient.Close(); }
+                        listenerClient?.Close();
                         if (listenerThread != null && listenerThread.IsAlive) { listenerThread.Join(); }
                         if (outputThread != null && outputThread.IsAlive) { outputThread.Join(); }
                         if (queueThread != null && queueThread.IsAlive) { queueThread.Join(); }

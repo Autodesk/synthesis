@@ -181,8 +181,8 @@ namespace SynthesisAPI.EventBus
                 if (AppDomain.CurrentDomain.GetAssemblies()
                     .Any(a => a.FullName.ToLowerInvariant().StartsWith("nunit.framework")))
                 {
-                    _inst!.TypeSubscribers = new Dictionary<string, EventCallback>();
-                    _inst!.TagSubscribers = new Dictionary<string, EventCallback>();
+                    _inst.TypeSubscribers = new Dictionary<string, EventCallback>();
+                    _inst.TagSubscribers = new Dictionary<string, EventCallback>();
                 }
                 else
                 {
@@ -196,7 +196,7 @@ namespace SynthesisAPI.EventBus
                 TagSubscribers = new Dictionary<string, EventCallback>();
             }
 
-            private static Inner? _inst;
+            private static Inner _inst;
             public static Inner InnerInstance => _inst ??= new Inner();
         }
 

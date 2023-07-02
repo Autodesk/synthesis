@@ -580,7 +580,9 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 5,
             )
 
-            for joint in gm.app.activeDocument.design.rootComponent.allJoints:
+            for joint in list(
+                gm.app.activeDocument.design.rootComponent.allJoints
+            ) + list(gm.app.activeDocument.design.rootComponent.allAsBuiltJoints):
                 if (
                     joint.jointMotion.jointType == JointMotions.REVOLUTE.value
                     or joint.jointMotion.jointType == JointMotions.SLIDER.value
@@ -1643,7 +1645,7 @@ class MySelectHandler(adsk.core.SelectionEventHandler):
             # eventArgs = adsk.core.SelectionEventArgs.cast(args)
 
             self.selectedOcc = adsk.fusion.Occurrence.cast(args.selection.entity)
-            self.selectedJoint = adsk.fusion.Joint.cast(args.selection.entity)
+            self.selectedJoint = args.selection.entity
 
             dropdownExportMode = INPUTS_ROOT.itemById("mode")
             duplicateSelection = INPUTS_ROOT.itemById("duplicate_selection")
@@ -2060,7 +2062,8 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                 addFieldInput.isEnabled = False
 
             elif cmdInput.id == "wheel_delete":
-                gm.ui.activeSelections.clear()
+                # Currently causes Internal Autodesk Error
+                # gm.ui.activeSelections.clear()
 
                 addWheelInput.isEnabled = True
                 if wheelTableInput.selectedRow == -1 or wheelTableInput.selectedRow == 0:
@@ -2376,7 +2379,8 @@ class MyCommandDestroyHandler(adsk.core.CommandEventHandler):
             for group in gm.app.activeDocument.design.rootComponent.customGraphicsGroups:
                 group.deleteMe()
 
-            gm.ui.activeSelections.clear()
+            # Currently causes Internal Autodesk Error
+            # gm.ui.activeSelections.clear()
             gm.app.activeDocument.design.rootComponent.opacity = 1
         except:
             if gm.ui:

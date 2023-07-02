@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text.RegularExpressions;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager.InputEvents;
 using SynthesisAPI.InputManager.Inputs;
-using SynthesisAPI.Utilities;
 using UnityEngine;
+
+#nullable enable
 
 using Input = SynthesisAPI.InputManager.Inputs.Input;
 
@@ -29,7 +29,7 @@ namespace SynthesisAPI.InputManager
             get => new ReadOnlyDictionary<string, Analog>(_mappedValueInputs);
         }
 
-        public static void AssignDigitalInput(string name, Digital input, EventBus.EventBus.EventCallback callback = null) { // TODO remove callback argument?
+        public static void AssignDigitalInput(string name, Digital input, EventBus.EventBus.EventCallback? callback = null) { // TODO remove callback argument?
             _mappedDigitalInputs[name] = new Digital[] { input };
             if (callback != null)
                 EventBus.EventBus.NewTagListener($"input/{name}", callback);
@@ -42,7 +42,7 @@ namespace SynthesisAPI.InputManager
             EventBus.EventBus.RemoveAllTagListeners($"input/{name}");
         }
 
-        public static void AssignDigitalInputs(string name, Digital[] input, EventBus.EventBus.EventCallback callback = null) {
+        public static void AssignDigitalInputs(string name, Digital[] input, EventBus.EventBus.EventCallback? callback = null) {
             _mappedDigitalInputs[name] = input;
             if(callback != null)
                 EventBus.EventBus.NewTagListener($"input/{name}", callback);
@@ -95,7 +95,7 @@ namespace SynthesisAPI.InputManager
         }
 
         // TODO: Exclusion cases
-        public static Analog GetAny() {
+        public static Analog? GetAny() {
             foreach (var k in AllInputs) {
                 if (k.Update(true))
                     return k.WithModifier(GetModifier());
@@ -117,7 +117,7 @@ namespace SynthesisAPI.InputManager
 
         public static List<Analog> GetAll() => AllInputs.Where(k => k.Update()).ToList();
 
-        private static List<Analog> _allInputs = null;
+        private static List<Analog>? _allInputs;
         public static IReadOnlyCollection<Analog> AllInputs {
             get {
                 if (_allInputs == null) {
@@ -145,7 +145,9 @@ namespace SynthesisAPI.InputManager
                 return _allInputs;
             }
         }
-        private static List<Digital> _modifierInputs = null;
+
+        // constructors need to call this and intialize the list properly, for now this works
+        private static List<Digital>? _modifierInputs;
         public static IReadOnlyCollection<Digital> ModifierInputs {
             get {
                 if (_modifierInputs == null) {

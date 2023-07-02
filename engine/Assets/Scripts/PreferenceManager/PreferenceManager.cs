@@ -8,14 +8,15 @@ using SynthesisAPI.InputManager;
 
 namespace Synthesis.PreferenceManager {
     public static class PreferenceManager {
-
         // Prevents Devs and Users from trying to load corruptted or no longer supported preference formats.
         internal const string COHERENCE_ID = "ppqwokopqkwkshjhcwhuyre";
 
         internal static PreferenceData _data;
         public static bool UnsavedChanges { get; private set; }
+        // clang-format off
         private static Dictionary<string, object> _preferences = new Dictionary<string, object>();
         public static bool AnyPrefs => _preferences.Keys.Count > 0;
+        // clang-format on
         private static string FilePath = Path.Combine(FileSystem.FileSystem.Preferences, "preferences.json");
 
         public static void Load() {
@@ -24,35 +25,36 @@ namespace Synthesis.PreferenceManager {
 
             try {
                 string data = File.ReadAllText(FilePath);
-                _data = JsonConvert.DeserializeObject<PreferenceData>(data);
+                _data       = JsonConvert.DeserializeObject<PreferenceData>(data);
                 if (_data.CoherenceId != COHERENCE_ID)
                     return;
                 _preferences = _data.BulkData != null ? _data.BulkData : _preferences;
-            } catch (Exception) { }
+            } catch (Exception) {
+            }
         }
 
         public static void Save() {
             EventBus.Push(new PrePreferenceSaveEvent());
             // TODO: Just save all inputs?
-            InputManager._mappedDigitalInputs.ForEach(x => {
-                SetPreference(x.Key, x.Value.Select(y => new InputData(y)).ToArray());
-            });
-            if(UnsavedChanges) {
-                _data.BulkData = _preferences;
+            InputManager._mappedDigitalInputs.ForEach(
+                x => { SetPreference(x.Key, x.Value.Select(y => new InputData(y)).ToArray()); });
+            if (UnsavedChanges) {
+                _data.BulkData    = _preferences;
                 _data.CoherenceId = COHERENCE_ID;
                 File.WriteAllText(FilePath, JsonConvert.SerializeObject(_data));
             }
             UnsavedChanges = false;
+            EventBus.Push(new PostPreferenceSaveEvent());
         }
 
         public static void SetPreferenceObject(string key, object value) {
             _preferences[key] = value;
-            UnsavedChanges = true;
+            UnsavedChanges    = true;
         }
 
         public static void SetPreference<T>(string key, T value) {
             _preferences[key] = JsonConvert.SerializeObject(value);
-            UnsavedChanges = true;
+            UnsavedChanges    = true;
         }
 
         public static object GetPreferenceObject(string key) {
@@ -60,21 +62,22 @@ namespace Synthesis.PreferenceManager {
         }
 
         public static T GetPreference<T>(string key) {
-            return ContainsPreference(key) ? JsonConvert.DeserializeObject<T>((string)_preferences[key]) : default;
+            return ContainsPreference(key) ? JsonConvert.DeserializeObject<T>((string) _preferences[key]) : default;
         }
 
         public static bool ContainsPreference(string key) {
             return _preferences.ContainsKey(key);
         }
 
-        public static void ClearPreferences()
-        {
+        public static void ClearPreferences() {
             _preferences.Clear();
             UnsavedChanges = true;
         }
     }
 
-    public class PrePreferenceSaveEvent : IEvent { }
+    public class PrePreferenceSaveEvent : IEvent {}
+
+    public class PostPreferenceSaveEvent : IEvent {}
 
     internal struct PreferenceData {
         public string CoherenceId;

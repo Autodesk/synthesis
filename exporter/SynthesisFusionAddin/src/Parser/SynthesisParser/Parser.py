@@ -224,10 +224,14 @@ class Parser:
 
                 joint_hierarchy_out += "\n\n"
 
+                debug_output = f"Appearances: {len(assembly_out.data.materials.appearances)} \nMaterials: {len(assembly_out.data.materials.physicalMaterials)} \nPart-Definitions: {len(part_defs)} \nParts: {len(parts)} \nSignals: {len(signals)} \nJoints: {len(joints)}\n {joint_hierarchy_out}"
+
                 gm.ui.messageBox(
-                    f"Appearances: {len(assembly_out.data.materials.appearances)} \nMaterials: {len(assembly_out.data.materials.physicalMaterials)} \nPart-Definitions: {len(part_defs)} \nParts: {len(parts)} \nSignals: {len(signals)} \nJoints: {len(joints)}\n {joint_hierarchy_out}",
+                    debug_output,
                     "DEBUG - Fusion Synthesis",
                 )
+
+                self.logger.debug(debug_output)
 
         except:
             self.logger.error("Failed:\n{}".format(traceback.format_exc()))

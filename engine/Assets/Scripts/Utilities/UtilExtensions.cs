@@ -35,30 +35,33 @@ public static class UtilExtensions {
         return default;
     }
 
-    public static Vector3 ToVector3(this float[] arr)
-        => new Vector3(arr[0], arr[1], arr[2]);
-    public static Quaternion ToQuaternion(this float[] arr)
-        => new Quaternion(arr[0], arr[1], arr[2], arr[3]);
+    public static Vector3 ToVector3(this float[] arr)       => new Vector3(arr[0], arr[1], arr[2]);
+    public static Quaternion ToQuaternion(this float[] arr) => new Quaternion(arr[0], arr[1], arr[2], arr[3]);
 
-    public static float[] ToArray(this Vector3 vec)
-        => new float[] { vec.x, vec.y, vec.z };
-    public static float[] ToArray(this Quaternion quat)
-        => new float[] { quat.x, quat.y, quat.z, quat.w };
+    public static float[] ToArray(this Vector3 vec)     => new float[] { vec.x, vec.y, vec.z };
+    public static float[] ToArray(this Quaternion quat) => new float[] { quat.x, quat.y, quat.z, quat.w };
 
     public static Bounds GetBounds(this Transform top) {
-        Vector3 min = new Vector3(float.MaxValue,float.MaxValue,float.MaxValue), max = new Vector3(float.MinValue,float.MinValue,float.MinValue);
+        Vector3 min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue),
+                max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
         top.GetComponentsInChildren<Renderer>().ForEach(x => {
             var b = x.bounds;
-            if (min.x > b.min.x) min.x = b.min.x;
-            if (min.y > b.min.y) min.y = b.min.y;
-            if (min.z > b.min.z) min.z = b.min.z;
-            if (max.x < b.max.x) max.x = b.max.x;
-            if (max.y < b.max.y) max.y = b.max.y;
-            if (max.z < b.max.z) max.z = b.max.z;
+            if (min.x > b.min.x)
+                min.x = b.min.x;
+            if (min.y > b.min.y)
+                min.y = b.min.y;
+            if (min.z > b.min.z)
+                min.z = b.min.z;
+            if (max.x < b.max.x)
+                max.x = b.max.x;
+            if (max.y < b.max.y)
+                max.y = b.max.y;
+            if (max.z < b.max.z)
+                max.z = b.max.z;
         });
         return new UnityEngine.Bounds(((max + min) / 2f) - top.position, max - min);
     }
-    
+
     // public static void ApplyMatrix(this Transform trans, Matrix4x4 m) {
     //     // m.Print();
     //     trans.localPosition = m.GetPosition();
@@ -69,8 +72,8 @@ public static class UtilExtensions {
     // }
 
     public static void Print(this Matrix4x4 m) {
-        Debug.Log($"{m[0, 0]}, {m[0, 1]}, {m[0, 2]}, {m[0, 3]}\n{m[1, 0]}, {m[1, 1]}, {m[1, 2]}, {m[1, 3]}"
-                  + $"\n{m[2, 0]}, {m[2, 1]}, {m[2, 2]}, {m[2, 3]}\n{m[3, 0]}, {m[3, 1]}, {m[3, 2]}, {m[3, 3]}");
+        Debug.Log($"{m[0, 0]}, {m[0, 1]}, {m[0, 2]}, {m[0, 3]}\n{m[1, 0]}, {m[1, 1]}, {m[1, 2]}, {m[1, 3]}" +
+                  $"\n{m[2, 0]}, {m[2, 1]}, {m[2, 2]}, {m[2, 3]}\n{m[3, 0]}, {m[3, 1]}, {m[3, 2]}, {m[3, 3]}");
     }
 
     public static List<Mirabuf.Node> AllTreeElements(this IEnumerable<Mirabuf.Node> ns) {
@@ -78,6 +81,7 @@ public static class UtilExtensions {
         ns.ForEach(x => elm.AddRange(x.AllTreeElements()));
         return elm;
     }
+
     /// <summary>
     /// DO NOT USE List<Mirabuf.Node> AllTreeElements(this IEnumerable<Mirabuf.Node> ns)
     /// INSIDE THIS FUNCTION. WILL CREATE RACE CASE
@@ -99,10 +103,9 @@ public static class UtilExtensions {
     //     return nodes;
     // }
 
-    public static Vector3 DotProduct(this Vector3 a, Vector3 b)
-        => new Vector3(a.y * b.z - a.z * b.y, -(a.x * b.z - a.z * b.x), a.x * b.y - a.y * b.x);
-    
+    public static Vector3 DotProduct(this Vector3 a, Vector3 b) => new Vector3(
+        a.y * b.z - a.z * b.y, -(a.x *b.z - a.z * b.x), a.x *b.y - a.y * b.x);
+
     // TODO: This should be done when the matrix is created
-    public static UVector3 GetPosition(this Matrix4x4 m)
-        => new UVector3(m.m03, m.m13, m.m23);
+    public static UVector3 GetPosition(this Matrix4x4 m) => new UVector3(m.m03, m.m13, m.m23);
 }

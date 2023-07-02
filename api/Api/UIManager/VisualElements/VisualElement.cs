@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using UnityEngine.UIElements;
 using _UnityVisualElement = UnityEngine.UIElements.VisualElement;
 
+#nullable enable
+
 namespace SynthesisAPI.UIManager.VisualElements
 {
     public class VisualElement
@@ -64,7 +66,7 @@ namespace SynthesisAPI.UIManager.VisualElements
             get => _visualElement;
         }
 
-        public virtual IEnumerable<Object> PostUxmlLoad()
+        public virtual IEnumerable<Object>? PostUxmlLoad()
         {
             foreach (var child in _visualElement.Children())
             {
@@ -107,7 +109,7 @@ namespace SynthesisAPI.UIManager.VisualElements
             return children;
         }
 
-        public VisualElement Get(string name = null, string className = null)
+        public VisualElement? Get(string? name = null, string? className = null)
         {
             if (_visualElement == null)
                 return null;
@@ -124,9 +126,9 @@ namespace SynthesisAPI.UIManager.VisualElements
             }
         }
 
-        private Manipulator tooltipManipulator = null;
+        private Manipulator? tooltipManipulator = null;
         
-        private string tooltip;
+        private string tooltip = "";
 
         public string Tooltip
         {
@@ -159,7 +161,7 @@ namespace SynthesisAPI.UIManager.VisualElements
         }
         
         private bool isDraggable = false;
-        private Manipulator dragManipulator = null;
+        private Manipulator? dragManipulator = null;
         public bool IsDraggable
         {
             get => isDraggable;
@@ -201,7 +203,8 @@ namespace SynthesisAPI.UIManager.VisualElements
 
         public void SetStyleProperty(string name, string value)
         {
-            _visualElement = UIParser.ParseEntry($"{name}:{value}", _visualElement);
+            var elem = UIParser.ParseEntry($"{name}:{value}", _visualElement);
+            if (elem != null) _visualElement = elem;
         }
     }
 }
