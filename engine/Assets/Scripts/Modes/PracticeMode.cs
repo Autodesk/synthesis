@@ -55,6 +55,13 @@ public class PracticeMode : IMode {
             TOGGLE_ESCAPE_MENU_INPUT, TryGetSavedInput(TOGGLE_ESCAPE_MENU_INPUT,
                                           new Digital("Escape", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
 
+        EventBus.NewTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
+
+        ConfigureMainHUD();
+    }
+
+    /// Adds buttons to the main hud (panel on left side)
+    public void ConfigureMainHUD() {
         MainHUD.AddItemToDrawer("Spawn", b => DynamicUIManager.CreateModal<SpawningModal>(),
             icon: SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
