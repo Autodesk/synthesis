@@ -1,5 +1,6 @@
 using Synthesis.Runtime;
 using Synthesis.UI.Dynamic;
+using Synthesis.UI.Dynamic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -20,7 +21,8 @@ public class ModeManager {
     public static void Start() {
         if (CurrentMode == null) {
             DynamicUIManager.CreateModal<ChooseModeModal>();
-        }
+        } else
+            CurrentMode.Start();
     }
 
     public static void Update() {
