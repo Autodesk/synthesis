@@ -1,6 +1,4 @@
-﻿using SynthesisAPI.Utilities;
-
-namespace SynthesisAPI.Simulation {
+﻿namespace SynthesisAPI.Simulation {
     public abstract class Driver {
         protected string _name;
         public string Name {

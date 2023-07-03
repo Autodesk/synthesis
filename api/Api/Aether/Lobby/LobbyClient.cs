@@ -65,11 +65,18 @@ namespace SynthesisAPI.Aether.Lobby {
                     var msgTask = _handler.ReadMessage();
                     msgTask.Wait();
                     var msgRes = msgTask.Result;
-                    if (msgRes == null || msgRes.MessageTypeCase != LobbyMessage.MessageTypeOneofCase.FromGetLobbyInformation) {
+
+                    if (msgRes.isError) {
+                        Logger.Log($"Failed to Read: [{msgRes.GetError().GetType().Name}] {msgRes.GetError().Message}\n\n{msgRes.GetError().StackTrace}");
+                    }
+
+                    var msg = msgRes.GetResult();
+
+                    if (msg.MessageTypeCase != LobbyMessage.MessageTypeOneofCase.FromGetLobbyInformation) {
                         return null;
                     }
 
-                    return msgRes.FromGetLobbyInformation;
+                    return msg.FromGetLobbyInformation;
                 });
             }
 
@@ -127,20 +134,22 @@ namespace SynthesisAPI.Aether.Lobby {
             LastHeartbeat = DateTime.UtcNow;
         }
 
-        public Task<LobbyMessage?> ReadMessage()
+        public Task<Result<LobbyMessage, ServerReadException>> ReadMessage()
             => ReadMessage(_stream, _streamLock);
 
         public Result<bool, Exception> WriteMessage(LobbyMessage message)
             => WriteMessage(message, _stream, _streamLock);
 
-        private static Task<LobbyMessage?> ReadMessage(NetworkStream stream, Mutex? mutex = null) {
-            return Task<LobbyMessage?>.Factory.StartNew(() => {
+        private static Task<Result<LobbyMessage, ServerReadException>> ReadMessage(NetworkStream stream, Mutex? mutex = null) {
+            return Task<Result<LobbyMessage, ServerReadException>>.Factory.StartNew(() => {
                 try {
                     byte[] intBuf = new byte[4];
                     {
                         mutex?.WaitOne();
-                        if (stream.Read(intBuf, 0, 4) != 4) {
-                            return null;
+                        var readTask = stream.ReadAsync(intBuf, 0, 4);
+                        var completedWithoutTimeout = readTask.Wait(READ_TIMEOUT_MS);
+                        if (!completedWithoutTimeout || readTask.Result != 4) {
+                            return new Result<LobbyMessage, ServerReadException>(new ReadTimeoutException());
                         }
                         mutex?.ReleaseMutex();
                     }
@@ -149,16 +158,19 @@ namespace SynthesisAPI.Aether.Lobby {
                     byte[] messageBuf = new byte[messageSize];
                     {
                         mutex?.WaitOne();
-                        if (stream.Read(messageBuf, 0, messageSize) != messageSize) {
-                            return null;
-                        }
-                        mutex?.ReleaseMutex();
+                        var readTask = stream.ReadAsync(messageBuf, 0, messageSize);
+                        var completedWithoutTimeout = readTask.Wait(READ_TIMEOUT_MS);
+                        if (!completedWithoutTimeout || readTask.Result != messageSize) {
+							return new Result<LobbyMessage, ServerReadException>(new ReadTimeoutException());
+						}
+						mutex?.ReleaseMutex();
                     }
 
-                    return LobbyMessage.Parser.ParseFrom(messageBuf);
+                    return new Result<LobbyMessage, ServerReadException>(LobbyMessage.Parser.ParseFrom(messageBuf));
                 } catch (Exception e) {
-                    Logger.Log($"Read failure:\n{e.Message}\n{e.StackTrace}");
-                    return null;
+                    return new Result<LobbyMessage, ServerReadException>(
+                        new ServerReadException($"Read failure:\n{e.Message}\n{e.StackTrace}")
+                    );
                 }
             });
         }
@@ -185,11 +197,15 @@ namespace SynthesisAPI.Aether.Lobby {
 
             var msgTask = ReadMessage(tcp.GetStream());
             msgTask.Wait();
-            var msg = msgTask.Result;
-            if (msg == null)
-                return new Result<LobbyClientHandler, Exception>(new Exception("Failed to read request"));
+            var msgRes = msgTask.Result;
+            if (msgRes.isError) {
+                Logger.Log($"Failed to Read: [{msgRes.GetError().GetType().Name}] {msgRes.GetError().Message}\n\n{msgRes.GetError().StackTrace}");
+				return new Result<LobbyClientHandler, Exception>(new Exception("Failed to read request"));
+			}
 
-            LobbyClientHandler? handler = null;
+            var msg = msgRes.GetResult();
+
+			LobbyClientHandler? handler = null;
 
             switch (msg.MessageTypeCase) {
                 case LobbyMessage.MessageTypeOneofCase.ToRegisterClient:
@@ -222,11 +238,15 @@ namespace SynthesisAPI.Aether.Lobby {
 
             var msgTask = ReadMessage(tcp.GetStream());
             msgTask.Wait();
-            var msg = msgTask.Result;
-            if (msg == null)
-                return new Result<LobbyClientHandler, Exception>(new Exception("Failed to read response"));
+            var msgRes = msgTask.Result;
+            if (msgRes.isError) {
+                Logger.Log($"Failed to Read: [{msgRes.GetError().GetType().Name}] {msgRes.GetError().Message}\n\n{msgRes.GetError().StackTrace}");
+				return new Result<LobbyClientHandler, Exception>(new Exception("Failed to read response"));
+			}
 
-            LobbyClientHandler? handler = null;
+            var msg = msgRes.GetResult();
+
+			LobbyClientHandler? handler = null;
             
             switch (msg.MessageTypeCase) {
                 case LobbyMessage.MessageTypeOneofCase.FromRegisterClient:
@@ -250,6 +270,14 @@ namespace SynthesisAPI.Aether.Lobby {
 
         public void Dispose() {
             _tcp.Dispose();
+        }
+
+        public class ServerReadException : Exception {
+            public ServerReadException() { }
+            public ServerReadException(string msg) : base(msg) { }
+        }
+        public class ReadTimeoutException : ServerReadException {
+            public ReadTimeoutException() : base("Timeout") { }
         }
     }
 }
