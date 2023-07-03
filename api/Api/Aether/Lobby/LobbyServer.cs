@@ -50,7 +50,7 @@ namespace SynthesisAPI.Aether.Lobby {
                 _clients = new Dictionary<ulong, LobbyClientHandler>();
                 _clientThreads = new LinkedList<Thread>();
                 
-                _listener = new TcpListener(IPAddress.Any, TCP_PORT);
+                _listener = new TcpListener(IPAddress.Parse("127.0.0.1"), TCP_PORT);
                 _listener.Start();
                 _listener.BeginAcceptTcpClient(AcceptTcpClient, null);
             }
