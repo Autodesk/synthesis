@@ -4,9 +4,11 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using Google.Protobuf;
 using Org.BouncyCastle.Math.EC.Rfc7748;
 using Org.BouncyCastle.Tls;
 using SynthesisAPI.Utilities;
+using SynthesisServer.Proto;
 
 namespace SynthesisAPI.Aether.Lobby {
     public class LobbyServer : IDisposable {
@@ -17,6 +19,7 @@ namespace SynthesisAPI.Aether.Lobby {
         private Inner _instance;
 
         public IReadOnlyCollection<string> Clients => _instance.Clients;
+        public IReadOnlyCollection<DataRobot> AvailableRobots => _instance.AvailableRobots;
 
         public LobbyServer() {
             _instance = new Inner();
@@ -40,6 +43,16 @@ namespace SynthesisAPI.Aether.Lobby {
                     _clients.Values.ForEach(x => clientsInfo.Add(x.ToString()));
                     _clientsLock.ExitReadLock();
                     return clientsInfo.AsReadOnly();
+                }
+            }
+
+            private List<DataRobot> _availableRobots;
+            public IReadOnlyCollection<DataRobot> AvailableRobots {
+                get {
+                    _clientsLock.EnterReadLock();
+                    var robots = new List<DataRobot>(_availableRobots);
+                    _clientsLock.ExitReadLock();
+                    return robots.AsReadOnly();
                 }
             }
 
@@ -99,7 +112,9 @@ namespace SynthesisAPI.Aether.Lobby {
                         case LobbyMessage.MessageTypeOneofCase.ToGetLobbyInformation:
                             OnGetLobbyInformation(msg.ToGetLobbyInformation, handler);
                             break;
-                        case LobbyMessage.MessageTypeOneofCase.ToDataDump:
+                        case LobbyMessage.MessageTypeOneofCase.DataRobot:
+                            AcceptRobotData(msg.DataRobot);
+                            break;
                         case LobbyMessage.MessageTypeOneofCase.ToClientHeartbeat:
                             handler.UpdateHeartbeat();
                             break;
@@ -120,6 +135,12 @@ namespace SynthesisAPI.Aether.Lobby {
                 _clientsLock.ExitReadLock();
                 
                 handler.WriteMessage(new LobbyMessage { FromGetLobbyInformation = response });
+            }
+
+            private void AcceptRobotData(DataRobot robot) {
+                _clientsLock.EnterWriteLock();
+                _availableRobots.Add(robot);
+                _clientsLock.ExitWriteLock();
             }
 
             public void Dispose() {

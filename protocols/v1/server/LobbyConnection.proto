@@ -9,10 +9,11 @@ message LobbyMessage {
         ToClientHeartbeat to_client_heartbeat = 2;
         ToGetLobbyInformation to_get_lobby_information = 3;
         ToDataDump to_data_dump = 4;
+        DataRobot data_robot = 5;
 
-        FromRegisterClient from_register_client = 5;
-        FromGetLobbyInformation from_get_lobby_information = 6;
-        FromDataDumpConfirm from_data_dump_confirm = 7;
+        FromRegisterClient from_register_client = 6;
+        FromGetLobbyInformation from_get_lobby_information = 7;
+        FromDataDumpConfirm from_data_dump_confirm = 8;
     }
 
     // To The Server

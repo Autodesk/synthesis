@@ -25,6 +25,11 @@ namespace SynthesisAPI.Aether.Lobby {
             return _instance?.GetLobbyInformation();
         }
 
+        // TODO: Upload robot data to the server
+        public Task<bool> UploadRobotData(DataRobot robotData) {
+            return Task<bool>.Factory.StartNew(() => false);
+        }
+
         private class Inner : IDisposable {
 
             private bool _isAlive = true;
