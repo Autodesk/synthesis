@@ -19,14 +19,14 @@ public class ServerTestMode : IMode {
     public void Start() {
         _server = new LobbyServer();
 
-        //int clientCount = 10;
+        int clientCount = 10;
 
-        //_clients = new LobbyClient[clientCount];
+        _clients = new LobbyClient[clientCount];
 
-        //for (int i = 0; i < clientCount; i++) {
-        //    int j = i;
-        //    Task.Factory.StartNew(() => _clients[j] = new LobbyClient("127.0.0.1", $"Client {j}"));
-        //}
+        for (int i = 0; i < clientCount; i++) {
+            int j = i;
+            Task.Factory.StartNew(() => _clients[j] = new LobbyClient("127.0.0.1", $"Client {j}"));
+        }
 
         DynamicUIManager.CreateModal<ServerTestModal>();
     }
