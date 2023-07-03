@@ -45,22 +45,14 @@ namespace SynthesisAPI.Aether.Lobby {
 
             public Inner() {
 
-                Logger.Log("Starting server");
-
                 _clientsLock = new ReaderWriterLockSlim();
 
                 _clients = new Dictionary<ulong, LobbyClientHandler>();
                 _clientThreads = new LinkedList<Thread>();
                 
-                _listener = new TcpListener(IPAddress.Parse("127.0.0.1"), TCP_PORT);
+                _listener = new TcpListener(IPAddress.Any, TCP_PORT);
                 _listener.Start();
                 _listener.BeginAcceptTcpClient(AcceptTcpClient, null);
-
-                Logger.Log("Server Started");
-            }
-
-            ~Inner() {
-                Dispose();
             }
 
             private void AcceptTcpClient(IAsyncResult result) {
@@ -102,15 +94,7 @@ namespace SynthesisAPI.Aether.Lobby {
                         continue;
                     }
 
-                    var msgRes = msgTask.Result;
-                    if (msgRes.isError) {
-                        if (!(msgRes.GetError() is LobbyClientHandler.ReadTimeoutException)) {
-                            Logger.Log($"Failed to Read: [{msgRes.GetError().GetType().Name}] {msgRes.GetError().Message}\n\n{msgRes.GetError().StackTrace}");
-                        }
-                        return;
-                    }
-
-                    var msg = msgRes.GetResult();
+                    var msg = msgTask.Result!;
                     switch (msg.MessageTypeCase) {
                         case LobbyMessage.MessageTypeOneofCase.ToGetLobbyInformation:
                             OnGetLobbyInformation(msg.ToGetLobbyInformation, handler);
@@ -139,15 +123,10 @@ namespace SynthesisAPI.Aether.Lobby {
             }
 
             public void Dispose() {
-
-                Logger.Log("Disposing Server");
-
                 _isAlive.Value = false;
                 _listener.Stop();
                 _clients.ForEach(x => x.Value.Dispose());
                 _clientThreads.ForEach(x => x.Join());
-
-                Logger.Log("Server Disposed");
             }
         }
 

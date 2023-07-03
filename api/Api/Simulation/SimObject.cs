@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SynthesisAPI.Utilities;
+using System.Collections.Generic;
 
 namespace SynthesisAPI.Simulation {
     public class SimObject {

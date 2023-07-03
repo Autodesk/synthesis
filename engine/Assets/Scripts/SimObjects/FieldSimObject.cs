@@ -85,8 +85,9 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         PhysicsManager.Register(this);
 
         // Level the field
-        FieldObject.transform.position =
-            new Vector3(-FieldBounds.center.x, FieldBounds.extents.y - FieldBounds.center.y, -FieldBounds.center.z);
+        var position = FieldObject.transform.position;
+        position.y -= FieldBounds.center.y - FieldBounds.extents.y;
+        FieldObject.transform.position = position;
         // Debug.Log($"{FieldObject.transform.position.y}");
 
         _initialPosition = FieldObject.transform.position;
