@@ -42,9 +42,9 @@ public class ChooseModeModal : ModalDynamic {
             .StepIntoLabel(l => l.SetText("Server Test Mode"))
             .ApplyTemplate(VerticalLayout)
             .AddOnClickedEvent(b => {
-				if (SceneManager.GetActiveScene().name != "MainScene")
-					SceneManager.LoadScene("MainScene");
-				ModeManager.CurrentMode = new ServerTestMode();
+                if (SceneManager.GetActiveScene().name != "MainScene")
+                    SceneManager.LoadScene("MainScene");
+                ModeManager.CurrentMode = new ServerTestMode();
             });
     }
 
