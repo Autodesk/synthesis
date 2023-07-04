@@ -135,6 +135,7 @@ namespace Synthesis.Runtime {
 
         void OnDestroy() {
             Synthesis.PreferenceManager.PreferenceManager.Save();
+            // SimKill();
         }
 
         /// <summary>

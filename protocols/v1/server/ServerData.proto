@@ -10,3 +10,12 @@ message LobbyInformation {
     repeated LobbyClientInformation clients = 2;
     uint64 lobby_host = 3;
 }
+
+message ServerTransformData {
+    repeated float matrixData = 1;
+}
+
+message ServerTransforms {
+    uint64 guid = 1;
+    map<string, ServerTransformData> transforms = 2;
+}

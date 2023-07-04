@@ -257,7 +257,7 @@ public class RCConfigEncoderModal : ModalDynamic {
             RobotSimObject.GetCurrentlyPossessedRobot()
                 .MiraLive.MiraAssembly.Data.Joints.JointInstances.Values
                 .Select<Mirabuf.Joint.JointInstance, (string name, string guid)>(x => (x.Info.Name, x.SignalReference))
-                .Where(x => RobotSimObject.GetCurrentlyPossessedRobot().State.CurrentSignals.ContainsKey(
+                .Where(x => RobotSimObject.GetCurrentlyPossessedRobot().State.SignalMap.ContainsKey(
                            $"{x.guid}_encoder"))
                 .Select(x => ($"{x.name} ({x.guid})", x.guid)));
         _signalDropdown.StepIntoDropdown(d => d.SetOptions(_signals.Select(x => x.name).ToArray()));

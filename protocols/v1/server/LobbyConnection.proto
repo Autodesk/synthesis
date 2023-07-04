@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "v1/server/ServerData.proto";
+import "v1/controller.proto";
 
 message LobbyMessage {
 
@@ -9,13 +10,18 @@ message LobbyMessage {
         ToClientHeartbeat to_client_heartbeat = 2;
         ToGetLobbyInformation to_get_lobby_information = 3;
         ToDataDump to_data_dump = 4;
+        ToUpdateControllableState to_update_controllable_state = 8;
 
         FromRegisterClient from_register_client = 5;
         FromGetLobbyInformation from_get_lobby_information = 6;
         FromDataDumpConfirm from_data_dump_confirm = 7;
+        FromSimulationTransformData from_simulation_transform_data = 9;
     }
 
+    /////////////////////
     // To The Server
+    /////////////////////
+
     message ToRegisterClient {
         LobbyClientInformation client_info = 1;
     }
@@ -33,7 +39,15 @@ message LobbyMessage {
         bytes data = 2;
     }
 
+    message ToUpdateControllableState {
+        uint64 guid = 1;
+        repeated SynthesisAPI.Controller.SignalData data = 2;
+    }
+
+    /////////////////////
     // From The Server
+    /////////////////////
+
     message FromRegisterClient {
         LobbyClientInformation updated_client_info = 1;
     }
@@ -44,6 +58,10 @@ message LobbyMessage {
 
     message FromDataDumpConfirm {
         string identifier = 1;
+    }
+
+    message FromSimulationTransformData {
+        repeated ServerTransforms transform_data = 1;
     }
 
 }

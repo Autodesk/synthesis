@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Google.Protobuf;
+using SynthesisAPI.Controller;
 using SynthesisAPI.Utilities;
 using SynthesisServer.Proto;
 
@@ -25,9 +26,11 @@ namespace SynthesisAPI.Aether.Lobby {
             return _instance?.GetLobbyInformation();
         }
 
+        public void SendTestSignalData(SignalData data) => _instance?.SendTestSignalData(data);
+
         private class Inner : IDisposable {
 
-            private bool _isAlive = true;
+            private Atomic<bool> _isAlive = new Atomic<bool>(true);
             
             public readonly string IP;
             private readonly LobbyClientHandler _handler;
@@ -47,7 +50,12 @@ namespace SynthesisAPI.Aether.Lobby {
 
                 // TODO: Add lifetime stuff
                 _heartbeatThread = new Thread(ClientHeartbeat);
-                _heartbeatThread.Start();
+                _heartbeatThread.Start((_isAlive, _handler));
+            }
+
+            ~Inner() {
+                if (_isAlive)
+                    Dispose();
             }
 
             public Task<LobbyMessage.Types.FromGetLobbyInformation?>? GetLobbyInformation() {
@@ -80,26 +88,48 @@ namespace SynthesisAPI.Aether.Lobby {
                 });
             }
 
-            private void ClientHeartbeat() {
+            private static void ClientHeartbeat(object parameters) {
+                (var isAlive, var handler) = ((Atomic<bool>, LobbyClientHandler))parameters;
                 long lastUpdate = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-                while (_isAlive) {
+                while (isAlive) {
                     long currentTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                     if (currentTime - lastUpdate > HEARTBEAT_FREQUENCY) {
-                        _handler.WriteMessage(new LobbyMessage());
+                        var res = handler.WriteMessage(new LobbyMessage());
+                        if (res.isError)
+                            Logger.Log($"[{handler.Name}] Failed to sent heartbeat");
                         lastUpdate = currentTime;
                     } else {
                         Thread.Sleep(100);
                     }
                 }
+
+                Logger.Log($"Heartbeat for client '{handler.Name}' is ending");
+            }
+
+            public void SendTestSignalData(SignalData signal) {
+
+                if (!_isAlive)
+                    return;
+
+                var request = new LobbyMessage.Types.ToUpdateControllableState {
+                    Guid = _handler.Guid
+                };
+                request.Data.Add(signal);
+                _handler.WriteMessage(new LobbyMessage { ToUpdateControllableState = request });
             }
 
             public void Dispose() {
-                _isAlive = false;
+
+                Logger.Log($"Client '{_handler.Name}' is Disposing...");
+
+                _isAlive.Value = false;
                 _handler.Dispose();
                 _heartbeatThread.Join();
-            }
-            
-        }
+
+				Logger.Log($"Client '{_handler.Name}' has been Disposed");
+			}
+
+		}
 
         public void Dispose() {
             _instance?.Dispose();
@@ -111,13 +141,15 @@ namespace SynthesisAPI.Aether.Lobby {
     internal class LobbyClientHandler : IDisposable {
 
         private const int READ_TIMEOUT_MS = 1000;
+        private const int READ_BUFFER_SIZE = 2048;
 
         private readonly LobbyClientInformation _clientInformation;
         public LobbyClientInformation ClientInformation => _clientInformation.Clone();
 
-        public DateTime LastHeartbeat { get; private set; }
+        public DateTime LastHeartbeat { get; private set; } // Milliseconds
 
         public ulong Guid => _clientInformation.Guid;
+        public string Name => _clientInformation.Name;
 
         private readonly TcpClient _tcp;
         private readonly NetworkStream _stream; // Concurrency issues?
@@ -142,36 +174,20 @@ namespace SynthesisAPI.Aether.Lobby {
 
         private static Task<Result<LobbyMessage, ServerReadException>> ReadMessage(NetworkStream stream, Mutex? mutex = null) {
             return Task<Result<LobbyMessage, ServerReadException>>.Factory.StartNew(() => {
-                try {
-                    byte[] intBuf = new byte[4];
-                    {
-                        mutex?.WaitOne();
-                        var readTask = stream.ReadAsync(intBuf, 0, 4);
-                        var completedWithoutTimeout = readTask.Wait(READ_TIMEOUT_MS);
-                        if (!completedWithoutTimeout || readTask.Result != 4) {
-                            return new Result<LobbyMessage, ServerReadException>(new ReadTimeoutException());
-                        }
-                        mutex?.ReleaseMutex();
-                    }
-                    int messageSize = BitConverter.ToInt32(intBuf, 0);
-                    
-                    byte[] messageBuf = new byte[messageSize];
-                    {
-                        mutex?.WaitOne();
-                        var readTask = stream.ReadAsync(messageBuf, 0, messageSize);
-                        var completedWithoutTimeout = readTask.Wait(READ_TIMEOUT_MS);
-                        if (!completedWithoutTimeout || readTask.Result != messageSize) {
-							return new Result<LobbyMessage, ServerReadException>(new ReadTimeoutException());
-						}
-						mutex?.ReleaseMutex();
-                    }
+                Result<LobbyMessage, ServerReadException>? result = null;
+				try {
 
-                    return new Result<LobbyMessage, ServerReadException>(LobbyMessage.Parser.ParseFrom(messageBuf));
+                    int s
+
                 } catch (Exception e) {
-                    return new Result<LobbyMessage, ServerReadException>(
-                        new ServerReadException($"Read failure:\n{e.Message}\n{e.StackTrace}")
-                    );
+                    if (result == null) {
+                        result = new Result<LobbyMessage, ServerReadException>(
+                            new ServerReadException($"Read failure:\n{e.Message}\n{e.StackTrace}")
+                        );
+                    }
                 }
+
+                return result!;
             });
         }
 
@@ -265,7 +281,7 @@ namespace SynthesisAPI.Aether.Lobby {
         }
 
         public override string ToString() {
-            return $"[{ClientInformation.Guid}] {ClientInformation.Name} <- {(DateTime.UtcNow - LastHeartbeat).Milliseconds}ms";
+            return $"[{ClientInformation.Guid}] {ClientInformation.Name} <- {System.Math.Round((DateTime.UtcNow - LastHeartbeat).TotalMilliseconds)}ms";
         }
 
         public void Dispose() {

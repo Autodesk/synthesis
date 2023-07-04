@@ -30,6 +30,7 @@ using Node                = Mirabuf.Node;
 using MPhysicalProperties = Mirabuf.PhysicalProperties;
 using JointMotor          = UnityEngine.JointMotor;
 using UPhysicalMaterial   = UnityEngine.PhysicMaterial;
+using SynthesisAPI.Controller;
 
 namespace Synthesis.Import {
     /// <summary>
@@ -38,10 +39,6 @@ namespace Synthesis.Import {
     /// </summary>
     public static class Importer {
         private static ulong _robotTally = 0; // Just a number to add to the name of the sim object spawned
-
-#region Importer Framework
-
-#endregion
 
 #region Mirabuf Importer
 
@@ -104,11 +101,13 @@ namespace Synthesis.Import {
                 gamepieces.Add(gpSim);
             });
 
-#endregion
+            #endregion
 
-#region Joints
+            #region Joints
 
-            var state = new ControllableState { CurrentSignalLayout = assembly.Data.Signals ?? new Signals() };
+            var state = assembly.Data.Signals == null ?
+                new ControllableState() :
+                new ControllableState(assembly.Data.Signals);
 
             SimObject simObject;
             if (assembly.Dynamic) {

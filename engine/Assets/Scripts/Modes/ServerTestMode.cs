@@ -14,7 +14,7 @@ public class ServerTestMode : IMode {
     // private Task<LobbyClient>? _connectTask;
     private LobbyClient[]? _clients;
 
-    public IReadOnlyCollection<string> ClientInformation => _server == null ? new List<string>() : _server.Clients;
+    public IReadOnlyCollection<string> ClientInformation => _server?.Clients ?? new List<string>();
 
     public void Start() {
         _server = new LobbyServer();
@@ -35,10 +35,17 @@ public class ServerTestMode : IMode {
         _clients![i].Dispose();
     }
 
+    public void KillClients() {
+        for (int i = 0; i < 10; i++) {
+            _clients![i].Dispose();
+        }
+    }
+
     public void Update() {}
 
     public void End() {
-        _server?.Dispose();
+		KillClients();
+		_server?.Dispose();
         _server = null;
     }
 

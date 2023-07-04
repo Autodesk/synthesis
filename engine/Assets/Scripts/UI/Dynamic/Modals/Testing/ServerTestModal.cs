@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Synthesis.UI.Dynamic {
 
     public class ServerTestModal : ModalDynamic {
-        private const float REFRESH_CLIENTS_INTERVAL = 0.3f;
+        private const float REFRESH_CLIENTS_INTERVAL = 0.05f;
 
         private const float MAIN_CONTENT_WIDTH  = 1000f;
         private const float MAIN_CONTENT_HEIGHT = 700f;
@@ -37,9 +37,13 @@ namespace Synthesis.UI.Dynamic {
                                  .SetTopStretch<Button>()
                                  .AddOnClickedEvent(b => { RefreshClientList(); });
 
-            right.CreateButton(text: "Kill").SetHeight<Button>(30f).SetTopStretch<Button>(45f).AddOnClickedEvent(b => {
+            right.CreateButton(text: "Kill").SetHeight<Button>(30f).SetTopStretch<Button>(anchoredY: 45f).AddOnClickedEvent(b => {
                 (ModeManager.CurrentMode as ServerTestMode)!.KillClient(0);
             });
+
+            right.CreateButton(text: "Kill All").SetHeight<Button>(30f).SetTopStretch<Button>(anchoredY: 45f * 2f).AddOnClickedEvent(b => {
+                (ModeManager.CurrentMode as ServerTestMode)!.KillClients();
+			});
 
             RefreshClientList();
 
