@@ -98,7 +98,6 @@ namespace SynthesisAPI.Aether.Lobby {
 
             private void ClientListener(LobbyClientHandler handler) {
                 while (_isAlive) {
-                    Logger.Log("Reading message");
                     var msgTask = handler.ReadMessage();
                     var finishedBeforeTimeout = msgTask.Wait(CLIENT_LISTEN_TIMEOUT_MS);
                     if (!finishedBeforeTimeout || msgTask.Result == null) {
@@ -116,20 +115,16 @@ namespace SynthesisAPI.Aether.Lobby {
                     var msg = msgRes.GetResult();
                     switch (msg.MessageTypeCase) {
                         case LobbyMessage.MessageTypeOneofCase.ToGetLobbyInformation:
-                            Logger.Log($"Received Lobby Info Request");
                             OnGetLobbyInformation(msg.ToGetLobbyInformation, handler);
                             break;
                         case LobbyMessage.MessageTypeOneofCase.ToUpdateControllableState:
-                            Logger.Log($"Received Update Controllable Request");
                             OnControllableStateUpdate(msg.ToUpdateControllableState, handler);
                             break;
                         case LobbyMessage.MessageTypeOneofCase.ToDataDump:
                         case LobbyMessage.MessageTypeOneofCase.ToClientHeartbeat:
-							Logger.Log($"Received Heartbeat for Client '{handler.Name}'");
 							handler.UpdateHeartbeat();
                             break;
                         default:
-                            Logger.Log($"Unknown message: {msg.MessageTypeCase.GetType().Name}");
                             break;
                     }
                 }

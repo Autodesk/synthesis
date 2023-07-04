@@ -12,21 +12,16 @@ using Synthesis.Runtime;
 
 public class ServerTestMode : IMode {
     private LobbyServer? _server;
-    // private Task<LobbyClient>? _connectTask;
-    private LobbyClient[]? _clients;
-
-    private GameObject _lifeline;
+    public LobbyServer? Server => _server;
+    private readonly LobbyClient?[] _clients = new LobbyClient?[10];
+    public LobbyClient?[] Clients => _clients;
 
     public IReadOnlyCollection<string> ClientInformation => _server?.Clients ?? new List<string>();
 
     public void Start() {
         _server = new LobbyServer();
 
-        int clientCount = 10;
-
-        _clients = new LobbyClient[clientCount];
-
-        for (int i = 0; i < clientCount; i++) {
+        for (int i = 0; i < _clients.Length; i++) {
             int j = i;
             Task.Factory.StartNew(() => _clients[j] = new LobbyClient("127.0.0.1", $"Client {j}"));
         }
@@ -37,12 +32,12 @@ public class ServerTestMode : IMode {
     }
 
     public void KillClient(int i) {
-        _clients![i].Dispose();
+        _clients[i]?.Dispose();
     }
 
     public void KillClients() {
-        for (int i = 0; i < (_clients?.Length ?? 0); i++) {
-            _clients![i].Dispose();
+        foreach (var client in _clients) {
+            client?.Dispose();
         }
     }
 

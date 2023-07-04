@@ -11,14 +11,17 @@ namespace SynthesisAPI.Controller {
 
 	public partial class ControllableState {
 
-		private readonly ReaderWriterLockSlim _signalMapLock;
+		private ReaderWriterLockSlim? _signalMapLock;
+		public ReaderWriterLockSlim SignalMapLock {
+			get => _signalMapLock ?? (_signalMapLock = new ReaderWriterLockSlim());
+		}
 
-		private Dictionary<string, bool> _modifiedSignals;
+		private Dictionary<string, bool>? _modifiedSignals;
+		private Dictionary<string, bool> ModifiedSignals {
+			get => _modifiedSignals ?? (_modifiedSignals = new Dictionary<string, bool>());
+		}
 
 		public ControllableState(Signals signals) {
-			_signalMapLock = new ReaderWriterLockSlim();
-			_modifiedSignals = new Dictionary<string, bool>();
-
 			signals.SignalMap.ForEach(x => {
 				SignalMap.Add(
 					x.Key,
@@ -35,12 +38,12 @@ namespace SynthesisAPI.Controller {
 			// TODO: Limit read to tho classified as output and write to inputs
 			Value? result = null;
 
-			_signalMapLock.EnterReadLock();
+			SignalMapLock.EnterReadLock();
 			SignalMap.TryGetValue(signal_guid, out SignalData sig);
 			if (sig != null) {
 				result = new Value(sig.Value);
 			}
-			_signalMapLock.ExitReadLock();
+			SignalMapLock.ExitReadLock();
 
 			return result;
 		}
@@ -53,17 +56,18 @@ namespace SynthesisAPI.Controller {
 			} else {
 				s = SignalMap[signal_guid];
 			}
-			_signalMapLock.EnterWriteLock();
+			SignalMapLock.EnterWriteLock();
 			s.Value = new Value(v);
-			_modifiedSignals[signal_guid] = false;
-			_signalMapLock.ExitWriteLock();
+			ModifiedSignals[signal_guid] = false;
+			SignalMapLock.ExitWriteLock();
 		}
 
 		public List<SignalData> CompileChanges() {
-			_signalMapLock.EnterReadLock();
-			List<SignalData> updatedSignals = new List<SignalData>(_modifiedSignals.Count);
-			_modifiedSignals.ForEach(x => updatedSignals.Add(new SignalData(SignalMap[x.Key])));
-			_signalMapLock.ExitReadLock();
+			SignalMapLock.EnterWriteLock();
+			List<SignalData> updatedSignals = new List<SignalData>(ModifiedSignals.Count);
+			ModifiedSignals.ForEach(x => updatedSignals.Add(new SignalData(SignalMap[x.Key])));
+			ModifiedSignals.Clear();
+			SignalMapLock.ExitWriteLock();
 			return updatedSignals;
 		}
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -7,6 +8,7 @@ using Google.Protobuf;
 using SynthesisAPI.Controller;
 using SynthesisAPI.Utilities;
 using SynthesisServer.Proto;
+using System.Collections.Concurrent;
 
 #nullable enable
 
@@ -17,6 +19,9 @@ namespace SynthesisAPI.Aether.Lobby {
 
         public string IP => _instance == null ? string.Empty : _instance.IP;
         private Inner? _instance;
+
+        public ulong? Guid => _instance?.Handler.Guid;
+        public string Name => _instance?.Handler.Name ?? "--unknown--";
         
         public LobbyClient(string ip, string name) {
             _instance = new Inner(ip, name);
@@ -26,7 +31,8 @@ namespace SynthesisAPI.Aether.Lobby {
             return _instance?.GetLobbyInformation();
         }
 
-        public void SendTestSignalData(SignalData data) => _instance?.SendTestSignalData(data);
+        public Task<Result<LobbyMessage?, Exception>> UpdateControllableState(List<SignalData> updates)
+            => _instance?.UpdateControllableState(updates) ?? Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("No instance")));
 
         private class Inner : IDisposable {
 
@@ -34,11 +40,23 @@ namespace SynthesisAPI.Aether.Lobby {
             
             public readonly string IP;
             private readonly LobbyClientHandler _handler;
+            public LobbyClientHandler Handler => _handler;
+
+            private ReaderWriterLockSlim _transformDataLock;
+            private Dictionary<ulong, ServerTransforms> _transformData;
+
+            private ConcurrentQueue<Task<Result<LobbyMessage?, Exception>>> _requestQueue;
 
             private readonly Thread _heartbeatThread;
+            private readonly Thread _requestSenderThread;
 
             public Inner(string ip, string name) {
                 IP = ip;
+
+                _transformData = new Dictionary<ulong, ServerTransforms>();
+                _transformDataLock = new ReaderWriterLockSlim();
+
+                _requestQueue = new ConcurrentQueue<Task<Result<LobbyMessage?, Exception>>>();
 
                 var tcp = new TcpClient();
                 tcp.Connect(ip, LobbyServer.TCP_PORT);
@@ -50,7 +68,10 @@ namespace SynthesisAPI.Aether.Lobby {
 
                 // TODO: Add lifetime stuff
                 _heartbeatThread = new Thread(ClientHeartbeat);
-                _heartbeatThread.Start((_isAlive, _handler));
+                _heartbeatThread.Start();
+
+                _requestSenderThread = new Thread(RequestQueueProcessor);
+                _requestSenderThread.Start();
             }
 
             ~Inner() {
@@ -88,15 +109,30 @@ namespace SynthesisAPI.Aether.Lobby {
                 });
             }
 
-            private static void ClientHeartbeat(object parameters) {
-                (var isAlive, var handler) = ((Atomic<bool>, LobbyClientHandler))parameters;
+            private void RequestQueueProcessor() {
+                while (_isAlive) {
+                    var success = _requestQueue.TryDequeue(out var task);
+                    if (!success)
+                        continue;
+
+                    task.Start();
+                    task.Wait();
+                }
+            }
+
+            private void ClientHeartbeat() {
                 long lastUpdate = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-                while (isAlive) {
+                while (_isAlive) {
                     long currentTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                     if (currentTime - lastUpdate > HEARTBEAT_FREQUENCY) {
-                        var res = handler.WriteMessage(new LobbyMessage { ToClientHeartbeat = new LobbyMessage.Types.ToClientHeartbeat() });
-                        if (res.isError)
-                            Logger.Log($"[{handler.Name}] Failed to sent heartbeat");
+                        var task = new Task<Result<LobbyMessage?, Exception>>(() => {
+                            var res = _handler.WriteMessage(new LobbyMessage { ToClientHeartbeat = new LobbyMessage.Types.ToClientHeartbeat() });
+                            if (res.isError)
+                                return new Result<LobbyMessage?, Exception>(res.GetError());
+                            return new Result<LobbyMessage?, Exception>(val: null);
+                        });
+                        _requestQueue.Enqueue(task);
+                        
                         lastUpdate = currentTime;
                     } else {
                         Thread.Sleep(100);
@@ -104,22 +140,62 @@ namespace SynthesisAPI.Aether.Lobby {
                 }
             }
 
-            public void SendTestSignalData(SignalData signal) {
-
-                if (!_isAlive)
-                    return;
+            public Task<Result<LobbyMessage?, Exception>> UpdateControllableState(List<SignalData> updates) {
+                if (!_isAlive.Value)
+                    return Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("Client no longer alive")));
 
                 var request = new LobbyMessage.Types.ToUpdateControllableState {
                     Guid = _handler.Guid
                 };
-                request.Data.Add(signal);
-                _handler.WriteMessage(new LobbyMessage { ToUpdateControllableState = request });
+                request.Data.Add(updates);
+
+                var task = new Task<Result<LobbyMessage?, Exception>>(() => {
+
+                    var response = HandleResponseBoilerplate(new LobbyMessage { ToUpdateControllableState = request });
+                    if (response.isError) {
+                        return response;
+                    }
+
+                    var msg = response.GetResult()!;
+                    switch (msg.MessageTypeCase) {
+                        case LobbyMessage.MessageTypeOneofCase.FromSimulationTransformData:
+                            // TODO: Update transform data
+                            Logger.Log("Received transform response");
+                            break;
+                        default:
+                            return new Result<LobbyMessage?, Exception>(new Exception("Invalid message"));
+                    }
+
+                    return new Result<LobbyMessage?, Exception>(msg);
+                    
+                });
+                _requestQueue.Enqueue(task);
+                return task;
+            }
+
+            /// <summary>
+            /// TODO: Rename
+            /// </summary>
+            private Result<LobbyMessage?, Exception> HandleResponseBoilerplate(LobbyMessage request) {
+                var writeResult = _handler.WriteMessage(request);
+                if (writeResult.isError)
+                    return new Result<LobbyMessage?, Exception>(writeResult.GetError());
+
+                var readResult = _handler.ReadMessage();
+                var completedBeforeTimeout = readResult.Wait(1000);
+                if (!completedBeforeTimeout)
+                    return new Result<LobbyMessage?, Exception>(new Exception("Task Timeout"));
+                else if (readResult.Result.isError)
+                    return new Result<LobbyMessage?, Exception>(readResult.Result.GetError());
+
+                return new Result<LobbyMessage?, Exception>(readResult.Result.GetResult());
             }
 
             public void Dispose() {
                 _isAlive.Value = false;
                 _handler.Dispose();
                 _heartbeatThread.Join();
+                _requestSenderThread.Join();
 			}
 
 		}
