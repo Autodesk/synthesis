@@ -41,15 +41,27 @@ namespace UI.Dynamic.Modals {
 
             AcceptButton
                 .AddOnClickedEvent(x => {
-                    MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.None);
-                    DynamicUIManager.CreateModal<ExitSynthesisModal>();
+                    
                 })
-                .StepIntoLabel(l => l.SetText("Exit"));
+                .StepIntoLabel(l => l.SetText("3"));
+            
+            MiddleButton
+                .AddOnClickedEvent(x =>
+                {
 
-            CancelButton.RootGameObject.SetActive(false);
+                })
+                .StepIntoLabel(l => l.SetText("2"));
+
+            CancelButton
+                .AddOnClickedEvent(x => {
+                    
+                })
+                .StepIntoLabel(l => l.SetText("1"));
 
             CreateScrollMenu();
         }
+
+        private RectTransform _middleButtonObject;
 
         /// Creates the main scroll menu and adds all of the match result entries
         public void CreateScrollMenu() {
@@ -81,7 +93,9 @@ namespace UI.Dynamic.Modals {
             });
         }
 
-        public override void Update() {}
+        public override void Update()
+        {
+        }
 
         public override void Delete() {}
     }
