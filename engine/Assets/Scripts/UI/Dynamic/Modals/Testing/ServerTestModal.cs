@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Synthesis.UI.Dynamic {
 
     public class ServerTestModal : ModalDynamic {
-        private const float REFRESH_CLIENTS_INTERVAL = 0.05f;
+        private const float REFRESH_CLIENTS_INTERVAL = 0.3f;
 
         private const float MAIN_CONTENT_WIDTH  = 1000f;
         private const float MAIN_CONTENT_HEIGHT = 700f;

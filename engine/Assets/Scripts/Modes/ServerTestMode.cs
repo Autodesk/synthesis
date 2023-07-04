@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Rendering.UI;
 using SynthesisAPI.Aether.Lobby;
 using System.Text;
+using Synthesis.Runtime;
 
 #nullable enable
 
@@ -13,6 +14,8 @@ public class ServerTestMode : IMode {
     private LobbyServer? _server;
     // private Task<LobbyClient>? _connectTask;
     private LobbyClient[]? _clients;
+
+    private GameObject _lifeline;
 
     public IReadOnlyCollection<string> ClientInformation => _server?.Clients ?? new List<string>();
 
@@ -29,6 +32,8 @@ public class ServerTestMode : IMode {
         }
 
         DynamicUIManager.CreateModal<ServerTestModal>();
+
+        SimulationRunner.OnGameObjectDestroyed += End;
     }
 
     public void KillClient(int i) {
@@ -36,7 +41,7 @@ public class ServerTestMode : IMode {
     }
 
     public void KillClients() {
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < (_clients?.Length ?? 0); i++) {
             _clients![i].Dispose();
         }
     }
@@ -44,9 +49,11 @@ public class ServerTestMode : IMode {
     public void Update() {}
 
     public void End() {
+        Engine.ModuleLoader.Api.ToastLogger.SetEnabled(false);
 		KillClients();
 		_server?.Dispose();
         _server = null;
+        Engine.ModuleLoader.Api.ToastLogger.SetEnabled(true);
     }
 
     public void OpenMenu() {}

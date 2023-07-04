@@ -53,9 +53,6 @@ namespace SynthesisAPI.Aether.Lobby {
             }
 
             public Inner() {
-
-                Logger.Log("Starting server");
-
                 _clientsLock = new ReaderWriterLockSlim();
 
                 _clients = new Dictionary<ulong, LobbyClientHandler>();
@@ -66,8 +63,6 @@ namespace SynthesisAPI.Aether.Lobby {
                 _listener = new TcpListener(IPAddress.Parse("127.0.0.1"), TCP_PORT);
                 _listener.Start();
                 _listener.BeginAcceptTcpClient(AcceptTcpClient, null);
-
-                Logger.Log("Server Started");
             }
 
             ~Inner() {
@@ -107,16 +102,12 @@ namespace SynthesisAPI.Aether.Lobby {
                     var msgTask = handler.ReadMessage();
                     var finishedBeforeTimeout = msgTask.Wait(CLIENT_LISTEN_TIMEOUT_MS);
                     if (!finishedBeforeTimeout || msgTask.Result == null) {
-                        // TODO: Handle disconnect
-                        Logger.Log("Supposed to disconnect");
                         continue;
                     }
 
-                    Logger.Log("Received Message");
-
                     var msgRes = msgTask.Result;
                     if (msgRes.isError) {
-                        if (!(msgRes.GetError() is LobbyClientHandler.ReadTimeoutException)) {
+                        if (!(msgRes.GetError() is LobbyClientHandler.ReadTimeoutException) && !(msgRes.GetError() is LobbyClientHandler.NoDataException)) {
                             Logger.Log($"Failed to Read: [{msgRes.GetError().GetType().Name}] {msgRes.GetError().Message}\n\n{msgRes.GetError().StackTrace}");
                         }
                         continue;
@@ -125,18 +116,20 @@ namespace SynthesisAPI.Aether.Lobby {
                     var msg = msgRes.GetResult();
                     switch (msg.MessageTypeCase) {
                         case LobbyMessage.MessageTypeOneofCase.ToGetLobbyInformation:
+                            Logger.Log($"Received Lobby Info Request");
                             OnGetLobbyInformation(msg.ToGetLobbyInformation, handler);
                             break;
                         case LobbyMessage.MessageTypeOneofCase.ToUpdateControllableState:
+                            Logger.Log($"Received Update Controllable Request");
                             OnControllableStateUpdate(msg.ToUpdateControllableState, handler);
                             break;
                         case LobbyMessage.MessageTypeOneofCase.ToDataDump:
                         case LobbyMessage.MessageTypeOneofCase.ToClientHeartbeat:
-							Logger.Log($"Received heartbeat for client '{handler.Name}'");
+							Logger.Log($"Received Heartbeat for Client '{handler.Name}'");
 							handler.UpdateHeartbeat();
                             break;
                         default:
-                            Logger.Log("Unknown message");
+                            Logger.Log($"Unknown message: {msg.MessageTypeCase.GetType().Name}");
                             break;
                     }
                 }
