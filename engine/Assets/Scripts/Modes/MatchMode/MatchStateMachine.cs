@@ -128,8 +128,7 @@ public class MatchStateMachine {
         public override void Start() {
             base.Start();
             DynamicUIManager.CreateModal<MatchModeModal>();
-            DynamicUIManager.ActiveModal.OnAccepted += () =>
-                Instance.SetState(StateName.RobotPositioning);
+            DynamicUIManager.ActiveModal.OnAccepted += () => Instance.SetState(StateName.RobotPositioning);
         }
 
         public override void Update() {}

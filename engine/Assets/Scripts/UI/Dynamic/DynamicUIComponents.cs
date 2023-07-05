@@ -65,8 +65,9 @@ namespace Synthesis.UI.Dynamic {
 
         public Action OnAccepted;
 
-        protected PanelDynamic(Vector2 mainContentSize, float leftContentPadding = 20f, float rightContentPadding = 20f) {
-            _mainContentSize = mainContentSize;
+        protected PanelDynamic(
+            Vector2 mainContentSize, float leftContentPadding = 20f, float rightContentPadding = 20f) {
+            _mainContentSize    = mainContentSize;
             _leftContentPadding = leftContentPadding;
         }
 
