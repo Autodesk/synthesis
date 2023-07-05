@@ -201,6 +201,10 @@ public class MatchStateMachine {
                     DynamicUIManager.CloseActiveModal();
                     Instance.SetState(StateName.FieldConfig);
                 };
+                DynamicUIManager.ActiveModal.OnCancelled += () => {
+                    DynamicUIManager.CloseActiveModal();
+                    MatchStateMachine.Instance.SetState(StateName.FieldConfig);
+                };
             };
         }
 
