@@ -109,7 +109,7 @@ namespace Modes.MatchMode {
 
                 if (Scoring.targetTime <= 0 && _stateMachine.CurrentState.StateName is >=
                                                    MatchStateMachine.StateName.Auto and <=
-                                                   MatchStateMachine.StateName.Teleop)
+                                                   MatchStateMachine.StateName.Endgame)
                     _stateMachine.AdvanceState();
         }
 
