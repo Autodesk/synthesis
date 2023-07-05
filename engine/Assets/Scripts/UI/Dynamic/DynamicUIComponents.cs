@@ -158,6 +158,7 @@ namespace Synthesis.UI.Dynamic {
         protected Content MainContent => _mainContent;
 
         public Action OnAccepted;
+        public Action OnCancelled;
 
         protected ModalDynamic(Vector2 mainContentSize) {
             _mainContentSize = mainContentSize;
@@ -191,6 +192,10 @@ namespace Synthesis.UI.Dynamic {
             });
             _cancelButton.Image.SetColor(ColorManager.SYNTHESIS_CANCEL);
             _cancelButton.Label.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT));
+            _cancelButton.AddOnClickedEvent(b => {
+                if (OnCancelled != null)
+                    OnCancelled.Invoke();
+            });
             _acceptButton = new Button(null!, footer.Find("Accept").gameObject, null);
             _acceptButton.AddOnClickedEvent(b => {
                 if (OnAccepted != null)
