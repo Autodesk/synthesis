@@ -251,6 +251,7 @@ public class MatchStateMachine {
                 }
                 i++;
             });
+            MatchMode.MatchResultsTracker.ResetAllTrackedData();
 
             // TODO: reset the match results tracker
             // TODO: reset the scoreboard and timer
@@ -271,6 +272,7 @@ public class MatchStateMachine {
             RobotSimObject.RemoveAllRobots();
             FieldSimObject.DeleteField();
             MatchMode.ResetMatchConfiguration();
+            MatchMode.MatchResultsTracker.ResetAllTrackedData();
 
             // TODO: reset the match results tracker
             // TODO: reset the scoreboard and timer
