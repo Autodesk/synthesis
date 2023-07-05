@@ -63,10 +63,11 @@ namespace Synthesis.UI.Dynamic {
             }
         }
 
-        protected PanelDynamic(
-            Vector2 mainContentSize, float leftContentPadding = 20f, float rightContentPadding = 20f) {
-            _mainContentSize     = mainContentSize;
-            _leftContentPadding  = leftContentPadding;
+        public Action OnAccepted;
+
+        protected PanelDynamic(Vector2 mainContentSize, float leftContentPadding = 20f, float rightContentPadding = 20f) {
+            _mainContentSize = mainContentSize;
+            _leftContentPadding = leftContentPadding;
             _rightContentPadding = rightContentPadding;
         }
 
@@ -95,6 +96,10 @@ namespace Synthesis.UI.Dynamic {
             _cancelButton.Image.SetColor(ColorManager.SYNTHESIS_CANCEL);
             _cancelButton.Label.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT));
             _acceptButton = new Button(null!, footer.Find("Accept").gameObject, null);
+            _acceptButton.AddOnClickedEvent(b => {
+                if (OnAccepted != null)
+                    OnAccepted.Invoke();
+            });
             _acceptButton.Image.SetColor(ColorManager.SYNTHESIS_ACCEPT);
             _acceptButton.Label.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT));
 
@@ -152,6 +157,8 @@ namespace Synthesis.UI.Dynamic {
         private Content _mainContent;
         protected Content MainContent => _mainContent;
 
+        public Action OnAccepted;
+
         protected ModalDynamic(Vector2 mainContentSize) {
             _mainContentSize = mainContentSize;
         }
@@ -185,6 +192,10 @@ namespace Synthesis.UI.Dynamic {
             _cancelButton.Image.SetColor(ColorManager.SYNTHESIS_CANCEL);
             _cancelButton.Label.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT));
             _acceptButton = new Button(null!, footer.Find("Accept").gameObject, null);
+            _acceptButton.AddOnClickedEvent(b => {
+                if (OnAccepted != null)
+                    OnAccepted.Invoke();
+            });
             _acceptButton.Image.SetColor(ColorManager.SYNTHESIS_ACCEPT);
             _acceptButton.Label.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT));
 

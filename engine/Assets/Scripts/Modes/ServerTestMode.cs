@@ -1,11 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Synthesis.UI.Dynamic;
-using UnityEngine;
-using UnityEngine.Rendering.UI;
 using SynthesisAPI.Aether.Lobby;
-using System.Text;
 
 #nullable enable
 

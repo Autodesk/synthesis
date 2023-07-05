@@ -70,12 +70,16 @@ namespace Synthesis.UI.Dynamic {
 
             float padding = 700;
             panel.SetBottomStretch<Content>(padding, padding, 0);
-
-            AcceptButton.StepIntoLabel(label => label.SetText("Accept")).AddOnClickedEvent(b => {
-                DynamicUIManager.ClosePanel<SpawnLocationPanel>();
-                MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.Auto);
-            });
-            CancelButton.StepIntoLabel(label => label.SetText("Revert")).AddOnClickedEvent(b => {});
+            
+            AcceptButton
+                    .StepIntoLabel(label => label.SetText("Accept"))
+                    .AddOnClickedEvent(b => {
+                        DynamicUIManager.ClosePanel<SpawnLocationPanel>();
+                        MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.FieldConfig);
+                    });
+            CancelButton
+                .StepIntoLabel(label => label.SetText("Revert"))
+                .AddOnClickedEvent(b => { });
             CreateRobotHighlights();
             CreateButtons();
             SelectButton(0);
