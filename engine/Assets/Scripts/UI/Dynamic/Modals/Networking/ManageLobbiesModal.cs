@@ -1,13 +1,8 @@
+#nullable enable
+
 using System;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
-using System.Threading.Tasks;
-using Synthesis.UI;
-using System.Collections.Generic;
-using SynthesisServer.Proto;
-
-#nullable enable
-
 public class ManageLobbiesModal : ModalDynamic {
     public const float CHECK_INFO_DELAY = 1.5f;
     private const float MODAL_WIDTH     = 1200f;

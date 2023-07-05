@@ -1,14 +1,10 @@
-using System.Collections;
+#nullable enable
+
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Synthesis.UI.Dynamic;
-using UnityEngine;
-using UnityEngine.Rendering.UI;
-using SynthesisAPI.Aether.Lobby;
-using System.Text;
 using Synthesis.Runtime;
-
-#nullable enable
+using Synthesis.UI.Dynamic;
+using SynthesisAPI.Aether.Lobby;
 
 public class ServerTestMode : IMode {
     private LobbyServer? _server;
