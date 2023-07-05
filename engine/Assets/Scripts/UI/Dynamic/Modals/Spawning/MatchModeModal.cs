@@ -40,7 +40,6 @@ public class MatchModeModal : ModalDynamic {
         Description.SetText("Configure Match Mode");
 
         AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
-            OnAccepted.Invoke();
             if (_fieldIndex != -1) {
                 DynamicUIManager.CreateModal<LoadingScreenModal>();
                 MonoBehaviour _mb = GameObject.FindObjectOfType<MonoBehaviour>();

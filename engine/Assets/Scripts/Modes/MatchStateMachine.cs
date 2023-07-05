@@ -34,11 +34,6 @@ public class MatchStateMachine {
             return;
         }
 
-        if (newState == _currentState) {
-            Debug.LogError($"New state is the same as the current state ({stateName})");
-            return;
-        }
-
         _currentState.End();
         _currentState = newState;
         _currentState.Start();
@@ -188,6 +183,10 @@ public class MatchStateMachine {
                     DynamicUIManager.CloseActiveModal();
                     DynamicUIManager.CreatePanel<ScoreboardPanel>(true, true);
                     MatchStateMachine.Instance.SetState(StateName.Auto);
+                };
+                DynamicUIManager.ActiveModal.OnCancelled += () => {
+                    DynamicUIManager.CloseActiveModal();
+                    MatchStateMachine.Instance.SetState(StateName.FieldConfig);
                 };
             };
         }
