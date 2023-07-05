@@ -53,19 +53,11 @@ public class PracticeMode : IMode {
         // GameObject container = new GameObject();
         // mira.GenerateDefinitionObjects(container, false);
         
-        InputManager.AssignValueInput(TOGGLE_ESCAPE_MENU_INPUT, TryGetSavedInput(TOGGLE_ESCAPE_MENU_INPUT, new Digital("Escape", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
+        InputManager.AssignValueInput(
+            TOGGLE_ESCAPE_MENU_INPUT, TryGetSavedInput(TOGGLE_ESCAPE_MENU_INPUT, 
+                                        new Digital("Escape", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
 
         ToPracticeMode();
-        MainHUD.AddItemToDrawer("Scoring Zones", b =>
-        {
-            if (FieldSimObject.CurrentField == null)
-            {
-                Logger.Log("No field loaded!", LogLevel.Info);
-            } else {
-                if (!DynamicUIManager.PanelExists<ScoringZonesPanel>())
-                    DynamicUIManager.CreatePanel<ScoringZonesPanel>();
-            }
-        });
 
         EventBus.NewTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
     }
@@ -327,6 +319,16 @@ public class PracticeMode : IMode {
         MainHUD.AddItemToDrawer("Spawn", b => DynamicUIManager.CreateModal<SpawningModal>(), icon: SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
         MainHUD.AddItemToDrawer("Multibot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>());
         MainHUD.AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("DriverStationView"));
+        MainHUD.AddItemToDrawer("Scoring Zones", b =>
+        {
+            if (FieldSimObject.CurrentField == null)
+            {
+                Logger.Log("No field loaded!", LogLevel.Info);
+            } else {
+                if (!DynamicUIManager.PanelExists<ScoringZonesPanel>())
+                    DynamicUIManager.CreatePanel<ScoringZonesPanel>();
+            }
+        });
         MainHUD.AddItemToDrawer("Camera View", b => DynamicUIManager.CreateModal<ChangeViewModal>(), icon: SynthesisAssetCollection.GetSpriteByName("CameraIcon"));
         MainHUD.AddItemToDrawer("Download Asset", b => DynamicUIManager.CreateModal<DownloadAssetModal>(), icon: SynthesisAssetCollection.GetSpriteByName("DownloadIcon"));
         MainHUD.AddItemToDrawer(

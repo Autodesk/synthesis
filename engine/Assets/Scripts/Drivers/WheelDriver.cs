@@ -134,7 +134,7 @@ namespace Synthesis {
         /// <param name="motor">Motor settings for the wheel</param>
         public WheelDriver(string name, string[] inputs, string[] outputs, SimObject simObject,
             JointInstance jointInstance, CustomWheel customWheel, Vector3 anchor, Vector3 axis, float radius,
-            Mirabuf.Motor.Motor? motor = null)
+            string motorRef = "")
             : base(name, inputs, outputs, simObject) {
             _jointInstance = jointInstance;
             _customWheel   = customWheel;
@@ -215,10 +215,14 @@ namespace Synthesis {
         private void VelocityControl() {
             if (!_useMotor)
                 return;
-
+            
+            var val = (float)(State.CurrentSignals.ContainsKey(_inputs[0])
+                                  ? State.CurrentSignals[_inputs[0]].Value.NumberValue
+                                  : 0.0f);
+            
             _targetRotationalSpeed = val * _motor.targetVelocity;
 
-            var delta = _targetRotationalSpeed - _customWheel.RotationSpeed;
+            var delta         = _targetRotationalSpeed - _customWheel.RotationSpeed;
             var possibleDelta = (_motor.force * MIRABUF_TO_UNITY_FORCE * Time.deltaTime) / _customWheel.Inertia;
             if (Mathf.Abs(delta) > possibleDelta)
                 delta = possibleDelta * Mathf.Sign(delta);

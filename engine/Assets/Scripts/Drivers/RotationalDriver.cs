@@ -111,7 +111,7 @@ namespace Synthesis {
         public bool UseMotor { get => _useMotor; }
 
         public RotationalDriver(string name, string[] inputs, string[] outputs, SimObject simObject, HingeJoint jointA,
-            HingeJoint jointB, bool isWheel, Mirabuf.Motor.Motor? motor = null)
+            HingeJoint jointB, bool isWheel, string motorRef = "")
             : base(name, inputs, outputs, simObject) {
             _jointA = jointA;
             _jointB = jointB;
@@ -220,15 +220,11 @@ namespace Synthesis {
 
                 float output = error * 0.1f;
 
-                _jointA.motor = new JointMotor {
-                    force = MIRABUF_TO_UNITY_FORCE * Motor.force * (inertiaA / (inertiaA + inertiaB)),
-                    freeSpin = Motor.freeSpin,
-                    targetVelocity = Mathf.Rad2Deg * (Motor.targetVelocity) * output
+                _jointA.motor = new JointMotor { force = MIRABUF_TO_UNITY_FORCE * Motor.force * (inertiaA / (inertiaA + inertiaB)),
+                    freeSpin = Motor.freeSpin, targetVelocity = Mathf.Rad2Deg * (Motor.targetVelocity) * output
                 };
-                _jointB.motor = new JointMotor {
-                    force = MIRABUF_TO_UNITY_FORCE * Motor.force * (inertiaB / (inertiaA + inertiaB)),
-                    freeSpin = Motor.freeSpin,
-                    targetVelocity = Mathf.Rad2Deg * (-Motor.targetVelocity) * output
+                _jointB.motor = new JointMotor { force = MIRABUF_TO_UNITY_FORCE * Motor.force * (inertiaB / (inertiaA + inertiaB)),
+                    freeSpin = Motor.freeSpin, targetVelocity = Mathf.Rad2Deg * (-Motor.targetVelocity) * output
                 };
             }
         }
@@ -249,15 +245,11 @@ namespace Synthesis {
                 // _jointB.connectedBody.AddTorque(_jointA.axis.normalized * angAccelB * Mathf.Rad2Deg,
                 // ForceMode.Acceleration); Debug.Log($"{angAccelB} to {_jointB.connectedBody.name}");
 
-                _jointA.motor = new JointMotor {
-                    force = MIRABUF_TO_UNITY_FORCE * Motor.force * (inertiaA / (inertiaA + inertiaB)),
-                    freeSpin = Motor.freeSpin,
-                    targetVelocity = Mathf.Rad2Deg * (Motor.targetVelocity) * val
+                _jointA.motor = new JointMotor { force = MIRABUF_TO_UNITY_FORCE * Motor.force * (inertiaA / (inertiaA + inertiaB)),
+                    freeSpin = Motor.freeSpin, targetVelocity = Mathf.Rad2Deg * (Motor.targetVelocity) * val
                 };
-                _jointB.motor = new JointMotor {
-                    force = MIRABUF_TO_UNITY_FORCE * Motor.force * (inertiaB / (inertiaA + inertiaB)),
-                    freeSpin = Motor.freeSpin,
-                    targetVelocity = Mathf.Rad2Deg * (-Motor.targetVelocity) * val
+                _jointB.motor = new JointMotor { force = MIRABUF_TO_UNITY_FORCE * Motor.force * (inertiaB / (inertiaA + inertiaB)),
+                    freeSpin = Motor.freeSpin, targetVelocity = Mathf.Rad2Deg * (-Motor.targetVelocity) * val
                 };
             }
         }

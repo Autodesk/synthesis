@@ -223,7 +223,7 @@ namespace Synthesis.Import {
                                         $"{instance.SignalReference}_absolute" },
                                     simObject, instance, customWheel, wheelA.anchor, axisWut, float.NaN,
                                     assembly.Data.Joints.MotorDefinitions.ContainsKey(definition.MotorReference)
-                                        ? assembly.Data.Joints.MotorDefinitions[definition.MotorReference]
+                                        ? definition.MotorReference
                                         : null);
                             SimulationManager.AddDriver(simObject.Name, driver);
                         }
@@ -285,7 +285,7 @@ namespace Synthesis.Import {
                                     $"{instance.SignalReference}_absolute" },
                                 simObject, revoluteA, revoluteB, instance.IsWheel(assembly),
                                 assembly.Data.Joints.MotorDefinitions.ContainsKey(definition.MotorReference)
-                                    ? assembly.Data.Joints.MotorDefinitions[definition.MotorReference]
+                                    ? definition.MotorReference
                                     : null);
                             SimulationManager.AddDriver(simObject.Name, driver);
                         }
