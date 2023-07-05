@@ -155,27 +155,27 @@ namespace Synthesis.UI.Dynamic {
 
         private Button? _middleButton;
 
-        protected Button MiddleButton
-        {
-            get
-            {
-                if (_middleButton == null)
-                {
-                    GameObject buttonPrefab = SynthesisAssetCollection.GetUIPrefab("dynamic-modal-base").transform
-                        .Find("Footer").Find("Accept").gameObject;
-                    RectTransform buttonTransform = GameObject.Instantiate(buttonPrefab, Footer).GetComponent<RectTransform>();
-            
+        protected Button MiddleButton {
+            get {
+                if (_middleButton == null) {
+                    GameObject buttonPrefab = SynthesisAssetCollection.GetUIPrefab("dynamic-modal-base")
+                                                  .transform.Find("Footer")
+                                                  .Find("Accept")
+                                                  .gameObject;
+                    RectTransform buttonTransform =
+                        GameObject.Instantiate(buttonPrefab, Footer).GetComponent<RectTransform>();
+
                     buttonTransform.anchorMin = new Vector2(0.5f, 0f);
                     buttonTransform.anchorMax = new Vector2(0.5f, 0f);
-                    buttonTransform.pivot = new Vector2(1f, 0f);
+                    buttonTransform.pivot     = new Vector2(1f, 0f);
 
-                    buttonTransform.localPosition = new Vector3(buttonTransform.rect.width/2f,
-                        AcceptButton.RootGameObject.transform.localPosition.y, 0);
+                    buttonTransform.localPosition = new Vector3(
+                        buttonTransform.rect.width / 2f, AcceptButton.RootGameObject.transform.localPosition.y, 0);
 
                     Button middleButton = new Button(null!, buttonTransform.gameObject, null);
                     middleButton.Image.SetColor(ColorManager.SYNTHESIS_ACCEPT);
                     middleButton.Label?.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT));
-                    
+
                     _middleButton = middleButton;
                     return middleButton;
                 }
@@ -207,7 +207,7 @@ namespace Synthesis.UI.Dynamic {
             _description = new Label(null, header.Find("Description").gameObject, null);
             _description.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_WHITE));
 
-            _footer = _unityObject.transform.Find("Footer");
+            _footer       = _unityObject.transform.Find("Footer");
             var footerRt  = _footer.GetComponent<RectTransform>();
             _cancelButton = new Button(null!, _footer.Find("Cancel").gameObject, null);
             _cancelButton.AddOnClickedEvent(b => {

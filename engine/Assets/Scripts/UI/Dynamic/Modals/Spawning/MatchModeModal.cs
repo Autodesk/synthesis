@@ -83,19 +83,19 @@ public class MatchModeModal : ModalDynamic {
 
     public IEnumerator LoadMatch() {
         yield return new WaitForSeconds(0.05f);
-        
-            if (FieldSimObject.CurrentField != null)
-                FieldSimObject.DeleteField();
 
-            FieldSimObject.SpawnField(_fieldFiles[_fieldIndex], false);
+        if (FieldSimObject.CurrentField != null)
+            FieldSimObject.DeleteField();
 
-            DynamicUIManager.CloseActiveModal();
+        FieldSimObject.SpawnField(_fieldFiles[_fieldIndex], false);
+
+        DynamicUIManager.CloseActiveModal();
         DynamicUIManager.CreatePanel<SpawnLocationPanel>();
     }
 
     public override void Update() {}
 
-    public override void Delete() { }
+    public override void Delete() {}
 
     public static string ParsePath(string p, char c) {
         string[] a = p.Split(c);

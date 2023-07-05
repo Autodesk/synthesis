@@ -652,15 +652,11 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     /// Removes all spawned robots
-    public static void RemoveAllRobots()
-    {
+    public static void RemoveAllRobots() {
         string[] robots = new string[_spawnedRobots.Keys.Count];
         _spawnedRobots.Keys.CopyTo(robots, 0);
-        
-        robots.ForEach(x =>
-        {
-            RemoveRobot(x);
-        });
+
+        robots.ForEach(x => { RemoveRobot(x); });
     }
 
     private Dictionary<Rigidbody, (bool isKine, Vector3 vel, Vector3 angVel)> _preFreezeStates =

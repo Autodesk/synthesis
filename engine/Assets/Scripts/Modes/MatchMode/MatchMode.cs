@@ -12,7 +12,7 @@ namespace Modes.MatchMode {
         public static MatchResultsTracker MatchResultsTracker;
 
         /// Integers to represent which robots the user selected in the MatchModeModal
-        public static int[] SelectedRobots  = new int[6];
+        public static int[] SelectedRobots = new int[6];
 
         /// Whether or not the robot should snap to a grid in positioning mode
         public static bool[] RoundSpawnLocation = new bool[6];
@@ -116,8 +116,7 @@ namespace Modes.MatchMode {
         }
 
         /// Resets the currently selected robots and field
-        public static void ResetMatchConfiguration()
-        {
+        public static void ResetMatchConfiguration() {
             Robots = new List<RobotSimObject>();
             Array.Fill(SelectedRobots, -1);
         }
