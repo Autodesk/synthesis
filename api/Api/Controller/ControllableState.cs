@@ -21,6 +21,8 @@ namespace SynthesisAPI.Controller {
 			get => _modifiedSignals ?? (_modifiedSignals = new Dictionary<string, bool>());
 		}
 
+		public bool HasUpdates => ModifiedSignals.Count > 0;
+
 		public ControllableState(Signals signals) {
 			signals.SignalMap.ForEach(x => {
 				SignalMap.Add(

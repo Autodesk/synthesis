@@ -35,6 +35,7 @@ namespace SynthesisAPI.Aether.Lobby {
             private readonly Atomic<bool> _isAlive = new Atomic<bool>(true);
 
             private readonly ReaderWriterLockSlim _clientsLock;
+            private readonly ReaderWriterLockSlim _remoteDataLock;
             
             private readonly TcpListener _listener;
             private readonly Dictionary<ulong, LobbyClientHandler> _clients;
@@ -54,6 +55,7 @@ namespace SynthesisAPI.Aether.Lobby {
 
             public Inner() {
                 _clientsLock = new ReaderWriterLockSlim();
+                _remoteDataLock = new ReaderWriterLockSlim();
 
                 _clients = new Dictionary<ulong, LobbyClientHandler>();
                 _clientThreads = new LinkedList<Thread>();
@@ -79,7 +81,11 @@ namespace SynthesisAPI.Aether.Lobby {
                             _clientsLock.EnterWriteLock();
                             var clientResult = client.GetResult();
                             _clients.Add(clientResult.Guid, clientResult);
+
+                            _remoteDataLock.EnterWriteLock();
                             _remoteData.Add(clientResult.Guid, new RemoteData(clientResult.Guid));
+                            _remoteDataLock.ExitWriteLock();
+
                             var clientThread = new Thread(() => ClientListener(client));
                             clientThread.Start();
                             _clientThreads.AddLast(clientThread);
@@ -120,6 +126,9 @@ namespace SynthesisAPI.Aether.Lobby {
                         case LobbyMessage.MessageTypeOneofCase.ToUpdateControllableState:
                             OnControllableStateUpdate(msg.ToUpdateControllableState, handler);
                             break;
+                        case LobbyMessage.MessageTypeOneofCase.ToUpdateTransformData:
+                            OnTransformDataUpdate(msg.ToUpdateTransformData, handler);
+                            break;
                         case LobbyMessage.MessageTypeOneofCase.ToDataDump:
                         case LobbyMessage.MessageTypeOneofCase.ToClientHeartbeat:
 							handler.UpdateHeartbeat();
@@ -144,7 +153,11 @@ namespace SynthesisAPI.Aether.Lobby {
             }
 
             private void OnControllableStateUpdate(LobbyMessage.Types.ToUpdateControllableState updateRequest, LobbyClientHandler handler) {
+
+                _remoteDataLock.EnterReadLock();
                 var data = _remoteData[updateRequest.Guid];
+                _remoteDataLock.ExitReadLock();
+
                 data.EnterWriteLock();
 
                 updateRequest.Data.ForEach(x => {
@@ -154,7 +167,49 @@ namespace SynthesisAPI.Aether.Lobby {
                 data.ExitWriteLock();
 
                 var response = new LobbyMessage.Types.FromSimulationTransformData();
+                
+                _remoteDataLock.EnterReadLock();
+                _remoteData.ForEach(kvp => {
+                    kvp.Value.EnterReadLock();
+                    response.TransformData.Add(kvp.Value.Transforms);
+                    kvp.Value.ExitReadLock();
+                });
+                _remoteDataLock.ExitReadLock();
+
                 handler.WriteMessage(new LobbyMessage { FromSimulationTransformData = response });
+            }
+
+            private void OnTransformDataUpdate(LobbyMessage.Types.ToUpdateTransformData updateRequest, LobbyClientHandler handler) {
+                _remoteDataLock.EnterReadLock();
+
+                updateRequest.TransformData.ForEach(x => {
+                    var data = _remoteData[x.Guid];
+                    data.EnterWriteLock();
+
+                    x.Transforms.ForEach(kvp => {
+                        data.Transforms.Transforms[kvp.Key] = kvp.Value;
+                    });
+
+                    data.ExitWriteLock();
+                });
+
+                var response = new LobbyMessage.Types.FromControllableStates();
+
+                _remoteData.ForEach(kvp => {
+                    kvp.Value.EnterWriteLock();
+                    if (kvp.Value.State.HasUpdates) {
+                        SignalUpdates updates = new SignalUpdates {
+                            Guid = kvp.Key
+                        };
+                        updates.UpdatedSignals.AddRange(kvp.Value.State.CompileChanges());
+                        response.AllUpdates.Add(updates);
+                    }
+                    kvp.Value.ExitWriteLock();
+                });
+
+                _remoteDataLock.ExitReadLock();
+
+                handler.WriteMessage(new LobbyMessage { FromControllableStates = response });
             }
 
             public ControllableState? GetControllableState(ulong guid) {

@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "v1/controller.proto";
+
 message LobbyClientInformation {
     uint64 guid = 1;
     string name = 2;
@@ -18,4 +20,9 @@ message ServerTransformData {
 message ServerTransforms {
     uint64 guid = 1;
     map<string, ServerTransformData> transforms = 2;
+}
+
+message SignalUpdates {
+    uint64 guid = 1;
+    repeated SynthesisAPI.Controller.SignalData updated_signals = 2;
 }

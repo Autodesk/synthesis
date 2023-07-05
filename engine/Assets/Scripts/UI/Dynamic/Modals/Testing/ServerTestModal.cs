@@ -66,6 +66,24 @@ namespace Synthesis.UI.Dynamic {
                 };
                 _mode.Clients[0]?.UpdateControllableState(signals);
             });
+            
+            right.CreateButton(text: "Send Transform").SetHeight<Button>(30f).SetTopStretch<Button>(anchoredY: 45f * 4f).AddOnClickedEvent(b => {
+                _lastSignalValue += 1;
+                ServerTransforms transformData = new ServerTransforms();
+                transformData.Guid = _mode.Clients[1]?.Guid ?? 0;
+                transformData.Transforms.Add("test", new ServerTransformData());
+                _mode.Clients[1]?.UpdateTransforms(new List<ServerTransforms> { transformData }).ContinueWith((x, o) => {
+                    if (x.Result.isError)
+                        Logger.Log("Error");
+
+                    var msg = x.Result.GetResult();
+                    msg?.FromControllableStates.AllUpdates.ForEach(
+                        y => y.UpdatedSignals.ForEach(
+                            z => Logger.Log($"[{z.SignalGuid}] {z.Value}")
+                            )
+                        );
+                }, null);
+            });
 
             _self = this;
         }
@@ -86,9 +104,6 @@ namespace Synthesis.UI.Dynamic {
             string s     = "";
             clients.ForEach(x => s += $"{x}\n");
             _statusLabel.SetText(s == string.Empty ? "Empty..." : s);
-
-            var state = _mode.Server?.GetControllableState(_mode.Clients[0]?.Guid ?? ulong.MaxValue);
-            state?.SignalMap.ForEach(x => Logger.Log($"[{x.Key}] -> '{x.Value.Value}'"));
         }
     }
 }

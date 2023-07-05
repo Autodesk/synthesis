@@ -34,6 +34,9 @@ namespace SynthesisAPI.Aether.Lobby {
         public Task<Result<LobbyMessage?, Exception>> UpdateControllableState(List<SignalData> updates)
             => _instance?.UpdateControllableState(updates) ?? Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("No instance")));
 
+        public Task<Result<LobbyMessage?, Exception>> UpdateTransforms(List<ServerTransforms> transforms)
+            => _instance?.UpdateTransforms(transforms) ?? Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("No instance")));
+
         private class Inner : IDisposable {
 
             private Atomic<bool> _isAlive = new Atomic<bool>(true);
@@ -168,6 +171,37 @@ namespace SynthesisAPI.Aether.Lobby {
 
                     return new Result<LobbyMessage?, Exception>(msg);
                     
+                });
+                _requestQueue.Enqueue(task);
+                return task;
+            }
+
+            public Task<Result<LobbyMessage?, Exception>> UpdateTransforms(List<ServerTransforms> transforms) {
+                if (!_isAlive.Value)
+                    return Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("Client no longer alive")));
+
+                var request = new LobbyMessage.Types.ToUpdateTransformData();
+                request.TransformData.AddRange(transforms);
+
+                var task = new Task<Result<LobbyMessage?, Exception>>(() => {
+
+                    var response = HandleResponseBoilerplate(new LobbyMessage { ToUpdateTransformData = request });
+                    if (response.isError) {
+                        return response;
+                    }
+
+                    var msg = response.GetResult()!;
+                    switch (msg.MessageTypeCase) {
+                        case LobbyMessage.MessageTypeOneofCase.FromControllableStates:
+                            // TODO: Update signal data
+                            Logger.Log("Received controllable state response");
+                            break;
+                        default:
+                            return new Result<LobbyMessage?, Exception>(new Exception("Invalid message"));
+                    }
+
+                    return new Result<LobbyMessage?, Exception>(msg);
+
                 });
                 _requestQueue.Enqueue(task);
                 return task;
