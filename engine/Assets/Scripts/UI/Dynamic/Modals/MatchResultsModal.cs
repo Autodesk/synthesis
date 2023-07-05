@@ -44,10 +44,12 @@ namespace UI.Dynamic.Modals {
             CancelButton
                 .AddOnClickedEvent(x => {
                     SimulationRunner.InSim = false;
-                    DynamicUIManager.CloseAllPanels(true);
                     ModeManager.CurrentMode = null;
-                    SceneManager.LoadScene("GridMenuScene", LoadSceneMode.Single);
+
+                    DynamicUIManager.CloseAllPanels(true);
                     DynamicUIManager.CloseActiveModal();
+                    
+                    SceneManager.LoadScene("GridMenuScene", LoadSceneMode.Single);
                 })
                 .StepIntoLabel(l => l.SetText("Exit"));
             
@@ -57,7 +59,7 @@ namespace UI.Dynamic.Modals {
                     DynamicUIManager.CloseActiveModal();
                     MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.Reconfigure);
                 })
-                .StepIntoLabel(l => l.SetText("Reconfigure"));
+                .StepIntoLabel(l => l.SetText("Configure"));
             
             AcceptButton
                 .AddOnClickedEvent(x => {
