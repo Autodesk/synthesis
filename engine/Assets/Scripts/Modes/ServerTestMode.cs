@@ -35,7 +35,7 @@ public class ServerTestMode : IMode {
         _clients![i].Dispose();
     }
 
-    public void Update() { }
+    public void Update() {}
 
     public void End() {
         _server?.Dispose();

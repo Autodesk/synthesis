@@ -1,5 +1,4 @@
-public interface IMode
-{
+public interface IMode {
     public void Start();
     public void Update();
     public void End();

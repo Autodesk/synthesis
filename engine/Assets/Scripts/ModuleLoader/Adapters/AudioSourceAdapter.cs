@@ -5,17 +5,14 @@ using UnityEngine;
 
 using AudioSource = SynthesisAPI.EnvironmentManager.Components.AudioSource;
 
-namespace Engine.ModuleLoader.Adapters
-{
-    class AudioSourceAdapter : MonoBehaviour, IApiAdapter<AudioSource>
-    {
+namespace Engine.ModuleLoader.Adapters {
+    class AudioSourceAdapter : MonoBehaviour, IApiAdapter<AudioSource> {
         internal AudioSource instance;
         internal UnityEngine.AudioSource unitySource;
 
         private AudioClipAsset currentClip = null;
 
-        public void SetInstance(AudioSource source)
-        {
+        public void SetInstance(AudioSource source) {
             instance = source;
 
             unitySource = gameObject.AddComponent<UnityEngine.AudioSource>();
@@ -28,10 +25,8 @@ namespace Engine.ModuleLoader.Adapters
             unitySource.time = 0;
         }
 
-        public object Getter(string n)
-        {
-            switch (n.ToLower())
-            {
+        public object Getter(string n) {
+            switch (n.ToLower()) {
                 case "isplaying":
                     return unitySource.isPlaying;
                 case "clip":
@@ -43,22 +38,20 @@ namespace Engine.ModuleLoader.Adapters
             }
         }
 
-        public void Setter(string n, object o)
-        {
-            switch (n.ToLower())
-            {
+        public void Setter(string n, object o) {
+            switch (n.ToLower()) {
                 case "isplaying":
-                    if ((bool)o && !unitySource.isPlaying)
+                    if ((bool) o && !unitySource.isPlaying)
                         unitySource.Play();
-                    else if (!(bool)o && unitySource.isPlaying)
+                    else if (!(bool) o && unitySource.isPlaying)
                         unitySource.Stop();
                     break;
                 case "clip":
-                    currentClip = (AudioClipAsset)o;
+                    currentClip      = (AudioClipAsset) o;
                     unitySource.clip = currentClip.GetClip();
                     break;
                 case "volume":
-                    unitySource.volume = (float)o;
+                    unitySource.volume = (float) o;
                     break;
                 default:
                     throw new Exception();

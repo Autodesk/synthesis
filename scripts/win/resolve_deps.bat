@@ -5,6 +5,7 @@ if %ERRORLEVEL% neq 0 (
     echo "Because this script edits the system PATH, it must be run as administrator."
     echo "Please elevate this script's privileges and try again."
     pause
+    exit /b
 )
 
 set "protobufVersion=23.3"

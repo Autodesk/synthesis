@@ -22,7 +22,7 @@ namespace Synthesis.UI.Panels {
     //         Title.text = title;
     //         _inputKey = inputKey;
     //         _panel = panel;
-    //         
+    //
     //         UpdateUI(inputValue, inputMod);
     //
     //         Button.onClick.AddListener(() =>

@@ -1,10 +1,8 @@
-namespace Synthesis.Configuration
-{
+namespace Synthesis.Configuration {
     /// <summary>
     /// Used for specifying an X, Y, Z, YZ, XZ, or XY arrow type.
     /// </summary>
-    public enum ArrowType
-    {
+    public enum ArrowType {
         None,
         P,
         X,
@@ -16,6 +14,5 @@ namespace Synthesis.Configuration
         RX,
         RY,
         RZ
-        
     }
 }

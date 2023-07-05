@@ -3,10 +3,10 @@ using Synthesis.Runtime;
 using Synthesis.UI.Dynamic;
 using TMPro;
 using UnityEngine;
-public class ScoreboardPanel : PanelDynamic {
 
+public class ScoreboardPanel : PanelDynamic {
     private const float VERTICAL_PADDING = 10f;
-    private static readonly float WIDTH = 200f;
+    private static readonly float WIDTH  = 200f;
     private static float HEIGHT;
 
     private readonly bool _showTimer;
@@ -22,11 +22,10 @@ public class ScoreboardPanel : PanelDynamic {
 
     public ScoreboardPanel(bool showTimer = true) : base(new Vector2(WIDTH, showTimer ? 150 : 100)) {
         _showTimer = showTimer;
-        HEIGHT = showTimer ? 150f : 100f;
+        HEIGHT     = showTimer ? 150f : 100f;
     }
 
     public override bool Create() {
-
         CancelButton.RootGameObject.SetActive(false);
         AcceptButton.RootGameObject.SetActive(false);
         Title.RootGameObject.SetActive(false);
@@ -45,19 +44,19 @@ public class ScoreboardPanel : PanelDynamic {
             topContent.SetAnchoredPosition<Content>(new Vector2(0, -topHeight / 2));
             bottomContent.SetAnchoredPosition<Content>(new Vector2(0, -topHeight / 2));
             time = topContent.CreateLabel(topHeight)
-                .SetStretch<Label>()
-                .ApplyTemplate(VerticalLayout)
-                .SetAnchors<Label>(new Vector2(0, 0.5f), new Vector2(1, 0.5f))
-                .SetAnchoredPosition<Label>(new Vector2(0, topHeight / 2))
-                .SetText(Scoring.targetTime.ToString())
-                .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
-                .SetFontSize(40);
+                       .SetStretch<Label>()
+                       .ApplyTemplate(VerticalLayout)
+                       .SetAnchors<Label>(new Vector2(0, 0.5f), new Vector2(1, 0.5f))
+                       .SetAnchoredPosition<Label>(new Vector2(0, topHeight / 2))
+                       .SetText(Scoring.targetTime.ToString())
+                       .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
+                       .SetFontSize(40);
         } else {
             bottomContent = MainContent;
         }
 
-        float leftRightPadding = 8;
-        float leftWidth = (bottomContent.Size.x - leftRightPadding) / 2;
+        float leftRightPadding              = 8;
+        float leftWidth                     = (bottomContent.Size.x - leftRightPadding) / 2;
         (var leftContent, var rightContent) = bottomContent.SplitLeftRight(leftWidth, leftRightPadding);
         leftContent.SetBackgroundColor<Content>(Color.red);
         rightContent.SetBackgroundColor<Content>(Color.blue);
@@ -74,13 +73,13 @@ public class ScoreboardPanel : PanelDynamic {
             .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
             .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
         redScore = leftContent.CreateLabel()
-            .ApplyTemplate(VerticalLayout)
-            .SetText("0")
-            .SetFontSize(scoreSize)
-            .SetAnchors<Label>(new Vector2(0, 1), new Vector2(1, 1))
-            .SetAnchoredPosition<Label>(new Vector2(0, -bottomHeight / 2))
-            .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
-            .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
+                       .ApplyTemplate(VerticalLayout)
+                       .SetText("0")
+                       .SetFontSize(scoreSize)
+                       .SetAnchors<Label>(new Vector2(0, 1), new Vector2(1, 1))
+                       .SetAnchoredPosition<Label>(new Vector2(0, -bottomHeight / 2))
+                       .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
+                       .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
         rightContent.CreateLabel()
             .ApplyTemplate(VerticalLayout)
             .SetAnchors<Label>(new Vector2(0, 1), new Vector2(1, 1))
@@ -89,18 +88,22 @@ public class ScoreboardPanel : PanelDynamic {
             .SetFontSize(titleSize)
             .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
             .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
-        blueScore = rightContent.CreateLabel().ApplyTemplate(VerticalLayout).SetText("0")
-            .SetFontSize(scoreSize)
-            .SetAnchors<Label>(new Vector2(0, 1), new Vector2(1, 1))
-            .SetAnchoredPosition<Label>(new Vector2(0, -bottomHeight / 2))
-            .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
-            .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
+        blueScore = rightContent.CreateLabel()
+                        .ApplyTemplate(VerticalLayout)
+                        .SetText("0")
+                        .SetFontSize(scoreSize)
+                        .SetAnchors<Label>(new Vector2(0, 1), new Vector2(1, 1))
+                        .SetAnchoredPosition<Label>(new Vector2(0, -bottomHeight / 2))
+                        .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
+                        .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
 
         return true;
     }
 
     public override void Update() {
-        if (SimulationRunner.HasContext(SimulationRunner.GIZMO_SIM_CONTEXT) || SimulationRunner.HasContext(SimulationRunner.PAUSED_SIM_CONTEXT)) return;
+        if (SimulationRunner.HasContext(SimulationRunner.GIZMO_SIM_CONTEXT) ||
+            SimulationRunner.HasContext(SimulationRunner.PAUSED_SIM_CONTEXT))
+            return;
 
         if (_showTimer) {
             Scoring.targetTime -= Time.deltaTime;
@@ -116,5 +119,5 @@ public class ScoreboardPanel : PanelDynamic {
         blueScore.SetText(Scoring.blueScore.ToString());
     }
 
-    public override void Delete() { }
+    public override void Delete() {}
 }

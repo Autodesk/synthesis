@@ -1,0 +1,38 @@
+name: Format Validation (Clang)
+
+on:
+  workflow_dispatch: {}
+  push: 
+    branches: [ master, dev ]
+  pull_request:
+    branches: [ master, dev ]
+
+jobs:
+  runFormatValidationScript:
+    name: Run Clang Format Validation Script
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get Clang Format
+      run: |
+        sudo apt-get update
+        sudo apt-get install --no-install-recommends -y
+        sudo apt-get install clang-format-15
+        sudo mv /usr/bin/clang-format-15 /usr/bin/clang-format
+    - name: Checkout Code
+      uses: actions/checkout@v2
+    - name: Python Setup
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+    - name: Run Script
+      run: python3 scripts/format/format_validation.py
+      id: format-validation
+      continue-on-error: true
+    - name: Check Success
+      run: |
+        if [ ${{ steps.format-validation.outcome }} == "success" ]; then
+          echo "Format Validation Passed"
+        else
+          echo "Format Validation Failed"
+          exit 1
+        fi

@@ -8,13 +8,10 @@ using SynthesisAPI.Simulation;
 using UnityEngine;
 
 public class WSSimBehavior : SimBehaviour {
-
     private RioTranslationLayer _translation;
     public RioTranslationLayer Translation {
         get => _translation;
-        set {
-            _translation = value;
-        }
+        set { _translation = value; }
     }
 
     public WSSimBehavior(string simObjectId, RioTranslationLayer translation) : base(simObjectId) {
@@ -24,7 +21,6 @@ public class WSSimBehavior : SimBehaviour {
     }
 
     public override void Update() {
-
         // if (!WebSocketManager.RioState.GetData<DriverStationData>("").Enabled)
         //     return; // TODO: This should zero out the signals because they aren't "pulled" towards a center point
 

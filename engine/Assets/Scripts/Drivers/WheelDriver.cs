@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Google.Protobuf.WellKnownTypes;
@@ -22,30 +22,30 @@ namespace Synthesis {
         public Vector3 Anchor {
             get => _customWheel.Rb.transform.localToWorldMatrix.MultiplyPoint3x4(_localAnchor);
             set {
-                _localAnchor = _customWheel.Rb.transform.worldToLocalMatrix.MultiplyPoint3x4(value);
+                _localAnchor             = _customWheel.Rb.transform.worldToLocalMatrix.MultiplyPoint3x4(value);
                 _customWheel.LocalAnchor = _localAnchor;
             }
         }
         public Vector3 LocalAnchor {
             get => _localAnchor;
             set {
-                _localAnchor = value;
+                _localAnchor             = value;
                 _customWheel.LocalAnchor = _localAnchor;
             }
         }
-        
+
         private Vector3 _localAxis = Vector3.right;
         public Vector3 Axis {
             get => _customWheel.Rb.transform.localToWorldMatrix.MultiplyVector(_localAxis);
             set {
-                _localAxis = _customWheel.Rb.transform.worldToLocalMatrix.MultiplyVector(value);
+                _localAxis             = _customWheel.Rb.transform.worldToLocalMatrix.MultiplyVector(value);
                 _customWheel.LocalAxis = _localAxis;
             }
         }
         public Vector3 LocalAxis {
             get => _localAxis;
             set {
-                _localAxis = value;
+                _localAxis             = value;
                 _customWheel.LocalAxis = _localAxis;
             }
         }
@@ -54,7 +54,7 @@ namespace Synthesis {
         public float Radius {
             get => _radius;
             set {
-                _radius = value;
+                _radius             = value;
                 _customWheel.Radius = _radius;
             }
         }
@@ -65,14 +65,13 @@ namespace Synthesis {
         }
 
         public enum RotationalControlMode {
-            Position, Velocity
+            Position,
+            Velocity
         }
 
         public double MainInput {
             get => State.CurrentSignals[_inputs[0]].Value.NumberValue;
-            set {
-                State.CurrentSignals[_inputs[0]].Value = Value.ForNumber(value);
-            }
+            set { State.CurrentSignals[_inputs[0]].Value = Value.ForNumber(value); }
         }
 
         public bool HasContacts => _customWheel.HasContacts;
@@ -114,9 +113,7 @@ namespace Synthesis {
         private bool _useMotor = true;
 
         // Is this actually used?
-        public bool UseMotor {
-            get => _useMotor;
-        }
+        public bool UseMotor { get => _useMotor; }
 
         private float _targetRotationalSpeed = 0f;
 
@@ -134,14 +131,14 @@ namespace Synthesis {
         /// <param name="anchor">Anchor of the Rotational Joint</param>
         /// <param name="axis">Axis of the Rotational Joint</param>
         /// <param name="radius">Radius of the wheel. Automatically calculated if set to NaN</param>
-        /// <param name="motorRef">Motor reference for the wheel</param>
-        public WheelDriver(string name, string[] inputs, string[] outputs, SimObject simObject, JointInstance jointInstance,
-            CustomWheel customWheel, Vector3 anchor, Vector3 axis, float radius, string motorRef = "")
+        /// <param name="motor">Motor settings for the wheel</param>
+        public WheelDriver(string name, string[] inputs, string[] outputs, SimObject simObject,
+            JointInstance jointInstance, CustomWheel customWheel, Vector3 anchor, Vector3 axis, float radius,
+            Mirabuf.Motor.Motor? motor = null)
             : base(name, inputs, outputs, simObject) {
-
             _jointInstance = jointInstance;
-            _customWheel = customWheel;
-            
+            _customWheel   = customWheel;
+
             Anchor = _customWheel.Rb.transform.localToWorldMatrix.MultiplyPoint3x4(anchor);
             Axis = _customWheel.Rb.transform.localToWorldMatrix.MultiplyVector(axis);
 
@@ -159,28 +156,20 @@ namespace Synthesis {
                 _motor = motor!.SimpleMotor.UnityMotor;
             } else {
                 // var m = SimulationPreferences.GetRobotJointMotor((_simObject as RobotSimObject).MiraGUID, name);
-                Motor = new JointMotor() { // Default Motor. Slow but powerful enough. Also uses Motor to save it
-                    force = 2000,
-                    freeSpin = false,
+                Motor = new JointMotor() {
+                    // Default Motor. Slow but powerful enough. Also uses Motor to save it
+                    force          = 2000,
+                    freeSpin       = false,
                     targetVelocity = 500,
                 };
             }
 
-            State.CurrentSignals[_inputs[1]] = new UpdateSignal() {
-                DeviceType = "Mode",
-                Io = UpdateIOType.Input,
-                Value = Google.Protobuf.WellKnownTypes.Value.ForString("Velocity")
-            };
-            State.CurrentSignals[_outputs[0]] = new UpdateSignal() {
-                DeviceType = "PWM",
-                Io = UpdateIOType.Output,
-                Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(0)
-            };
-            State.CurrentSignals[_outputs[1]] = new UpdateSignal() {
-                DeviceType = "Range",
-                Io = UpdateIOType.Output,
-                Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(0)
-            };
+            State.CurrentSignals[_inputs[1]]  = new UpdateSignal() { DeviceType = "Mode", Io = UpdateIOType.Input,
+                 Value = Google.Protobuf.WellKnownTypes.Value.ForString("Velocity") };
+            State.CurrentSignals[_outputs[0]] = new UpdateSignal() { DeviceType = "PWM", Io = UpdateIOType.Output,
+                Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(0) };
+            State.CurrentSignals[_outputs[1]] = new UpdateSignal() { DeviceType = "Range", Io = UpdateIOType.Output,
+                Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(0) };
 
             // Debug.Log($"Speed: {Motor.targetVelocity}\nForce: {Motor.force}");
         }
@@ -195,8 +184,8 @@ namespace Synthesis {
 
         private float _jointAngle = 0.0f;
         private float _lastUpdate = float.NaN;
-        public override void Update() {
 
+        public override void Update() {
             switch (ControlMode) {
                 case RotationalControlMode.Velocity:
                     VelocityControl();
@@ -204,10 +193,12 @@ namespace Synthesis {
             }
 
             _lastUpdate = Time.realtimeSinceStartup;
-            
+
             // I think these work?
-            State.CurrentSignals[_outputs[0]].Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(_jointAngle / (Mathf.PI * 2f));
-            State.CurrentSignals[_outputs[1]].Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(PositiveMod(_jointAngle, Mathf.PI));
+            State.CurrentSignals[_outputs[0]].Value =
+                Google.Protobuf.WellKnownTypes.Value.ForNumber(_jointAngle / (Mathf.PI * 2f));
+            State.CurrentSignals[_outputs[1]].Value =
+                Google.Protobuf.WellKnownTypes.Value.ForNumber(PositiveMod(_jointAngle, Mathf.PI));
         }
 
         public float PositiveMod(float val, float mod) {
@@ -216,19 +207,14 @@ namespace Synthesis {
                 res += mod;
             return res;
         }
-        
+
         public void WheelsPhysicsUpdate(float mod) {
             _customWheel.CalculateAndApplyFriction(mod);
         }
 
         private void VelocityControl() {
-
             if (!_useMotor)
                 return;
-            
-            var val = (float)(State.CurrentSignals.ContainsKey(_inputs[0])
-                ? State.CurrentSignals[_inputs[0]].Value.NumberValue
-                : 0.0f);
 
             _targetRotationalSpeed = val * _motor.targetVelocity;
 
@@ -251,32 +237,29 @@ namespace Synthesis {
             }
         }
 
-        #region Rotational Inertia stuff that isn't used
+#region Rotational Inertia stuff that isn't used
 
         public static float GetInertiaAroundParallelAxis(Rigidbody rb, Vector3 localAnchor, Vector3 localAxis) {
-            var comInertia = GetInertiaFromAxisVector(rb, localAxis);
+            var comInertia       = GetInertiaFromAxisVector(rb, localAxis);
             var pointMassInertia = rb.mass * Mathf.Pow(Vector3.Distance(rb.centerOfMass, localAnchor), 2f);
             return comInertia + pointMassInertia;
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="rb"></param>
         /// <param name="axis">Use local axis</param>
         /// <returns></returns>
         public static float GetInertiaFromAxisVector(Rigidbody rb, Vector3 localAxis) {
-            var sph = CartesianToSphericalCoordinate(localAxis);
+            var sph     = CartesianToSphericalCoordinate(localAxis);
             var inertia = rb.inertiaTensorRotation * rb.inertiaTensor;
             return EllipsoidRadiusFromSphericalCoordinate(sph, inertia);
         }
 
         public static float EllipsoidRadiusFromSphericalCoordinate(Vector3 sph, Vector3 ellipsoidRadi) {
-            var cartEllip = new Vector3(
-                ellipsoidRadi.x * Mathf.Sin(sph.y) * Mathf.Cos(sph.z),
-                ellipsoidRadi.y * Mathf.Cos(sph.y),
-                ellipsoidRadi.z * Mathf.Sin(sph.y) * Mathf.Sin(sph.z)
-            );
+            var cartEllip = new Vector3(ellipsoidRadi.x * Mathf.Sin(sph.y) * Mathf.Cos(sph.z),
+                ellipsoidRadi.y * Mathf.Cos(sph.y), ellipsoidRadi.z * Mathf.Sin(sph.y) * Mathf.Sin(sph.z));
             return cartEllip.magnitude;
         }
 
@@ -304,19 +287,15 @@ namespace Synthesis {
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="cart"></param>
         /// <returns>X is radius, Y is theta, Z is phi</returns>
         public static Vector3 CartesianToSphericalCoordinate(Vector3 cart) {
             cart = cart.normalized;
-            return new Vector3(
-                cart.magnitude,
-                Mathf.Acos(cart.y / 1),
-                Mathf.Asin(cart.z / 1)
-            );
+            return new Vector3(cart.magnitude, Mathf.Acos(cart.y / 1), Mathf.Asin(cart.z / 1));
         }
 
-        #endregion
+#endregion
     }
 }
