@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
+using System.Threading;
 using UnityEngine;
 using Xilium.CefGlue;
 
@@ -8,7 +11,7 @@ public class OffScreenCEFClient : CefClient {
     private readonly OffScreenCEFRenderHandler _renderHandler;
     private readonly OffScreenCEFLoadHandler _loadHandler;
 
-    private readonly ReadWriteLockerSlim _browserLock;
+    private static ReaderWriterLockSlim _browserLock;
 
     private static byte[] _browserTextureBytes;
 
@@ -16,9 +19,9 @@ public class OffScreenCEFClient : CefClient {
 
     public OffScreenCEFClient(int width, int height) {
         _renderHandler = new OffScreenCEFRenderHandler(width, height);
-        _loadHandler = new OffScreenCEFLoadHandler();
+        _loadHandler   = new OffScreenCEFLoadHandler();
 
-        _browserLock = new ReadWriteLockerSlim();
+        _browserLock = new ReaderWriterLockSlim();
 
         if (_browserTextureBytes == null) {
             _browserTextureBytes = new byte[width * height * 4];
@@ -55,24 +58,8 @@ public class OffScreenCEFClient : CefClient {
         return _loadHandler;
     }
 
-    protected override bool GetScreenInfo(CefBrowser browser, CefScreenInfo screenInfo) {
-        return false; // TODO?
-    }
-
-    protected override void OnCursorChange(CefBrowser browser, IntPtr cursorHandle, CefCursorType type, CefCursorInfo customCursorInfo) {
-        // TODO
-    }
-
-    protected override void OnPopupSize(CefBrowser browser, CefRect rect) {
-        // TODO
-    }
-
-    protected override void OnScrollOffsetChanged(CefBrowser browser, double x, double y) {
-        // TODO
-    }
-
     internal class OffScreenCEFLoadHandler : CefLoadHandler {
-        protected override void OnLoadStart(CefBrowser browser, CefFrame frame) {
+        protected override void OnLoadStart(CefBrowser browser, CefFrame frame, CefTransitionType transitionType) {
             if (browser != null) {
                 _browserHost = browser.GetHost();
             }
@@ -84,7 +71,7 @@ public class OffScreenCEFClient : CefClient {
         private readonly int _height;
 
         public OffScreenCEFRenderHandler(int width, int height) {
-            _width = width;
+            _width  = width;
             _height = height;
         }
 
@@ -93,20 +80,22 @@ public class OffScreenCEFClient : CefClient {
         }
 
         protected override bool GetViewRect(CefBrowser browser, ref CefRectangle rect) {
-            rect.X = 0;
-            rect.Y = 0;
-            rect.Width = _width;
+            rect.X      = 0;
+            rect.Y      = 0;
+            rect.Width  = _width;
             rect.Height = _height;
             return true;
         }
 
-        protected override bool GetScreenPoint(CefBrowser browser, int viewX, int viewY, ref int screenX, ref int screenY) {
+        protected override bool GetScreenPoint(
+            CefBrowser browser, int viewX, int viewY, ref int screenX, ref int screenY) {
             screenX = viewX;
             screenY = viewY;
             return true;
         }
 
-        protected override void OnPaint(CefBrowser browser, CefPaintElementType type, CefRectangle[] dirtyRects, IntPtr buffer, int width, int height) {
+        protected override void OnPaint(CefBrowser browser, CefPaintElementType type, CefRectangle[] dirtyRects,
+            IntPtr buffer, int width, int height) {
             if (browser == null) {
                 return;
             }
@@ -118,5 +107,29 @@ public class OffScreenCEFClient : CefClient {
                 _browserLock.ExitWriteLock();
             }
         }
+
+        protected override bool GetScreenInfo(CefBrowser browser, CefScreenInfo screenInfo) {
+            return false; // TODO?
+        }
+
+        protected override void OnCursorChange(
+            CefBrowser browser, IntPtr cursorHandle, CefCursorType type, CefCursorInfo customCursorInfo) {
+            // TODO?
+        }
+
+        protected override void OnPopupSize(CefBrowser browser, CefRectangle rect) {
+            // TODO?
+        }
+
+        protected override void OnScrollOffsetChanged(CefBrowser browser, double x, double y) {
+            // TODO?
+        }
+
+        protected override void OnImeCompositionRangeChanged(
+            CefBrowser browser, CefRange selectedRange, CefRectangle[] characterBounds) {
+            // TODO?
+        }
     }
 }
+
+public class OffScreenCEFApp : CefApp {}

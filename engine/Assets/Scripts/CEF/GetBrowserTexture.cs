@@ -7,7 +7,7 @@ public class GetBrowserTexture : MonoBehaviour {
     private Material _material;
 
     private void Start() {
-        _material = GetComponent<Renderer>().material;
+        _material             = GetComponent<Renderer>().material;
         _material.mainTexture = Browser.BrowserTexture;
     }
 }
