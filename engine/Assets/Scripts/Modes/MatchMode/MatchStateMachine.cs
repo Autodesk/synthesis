@@ -54,6 +54,7 @@ public class MatchStateMachine {
         _matchStates.Add(StateName.Auto, new Auto());
         _matchStates.Add(StateName.Transition, new Transition());
         _matchStates.Add(StateName.Teleop, new Teleop());
+        _matchStates.Add(StateName.Endgame, new Endgame());
         _matchStates.Add(StateName.MatchResults, new MatchResults());
 
         _currentState = _matchStates[StateName.None];
@@ -257,11 +258,19 @@ public class MatchStateMachine {
             base.Start();
         }
 
-        public override void Update() {}
+        public override void Update() {
+            if (Scoring.targetTime <= 30) Instance.AdvanceState();
+        }
 
         public override void End() {}
 
         public Teleop() : base(StateName.Teleop) {}
+    }
+
+    public class Endgame : MatchState {
+        public override void Update() {}
+        
+        public Endgame() : base(StateName.Endgame) {}
     }
 
     /// A state when a modal is displayed after a match showing info about the match
@@ -290,6 +299,7 @@ public class MatchStateMachine {
         Auto,
         Transition,
         Teleop,
+        Endgame,
         MatchResults
     }
 }
