@@ -1,5 +1,6 @@
 using System;
 using Modes.MatchMode;
+using Synthesis.Runtime;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
@@ -39,24 +40,32 @@ namespace UI.Dynamic.Modals {
             Title.SetText("Match Results");
             Description.SetText("Statistics about the match");
 
-            AcceptButton
+            
+            CancelButton
                 .AddOnClickedEvent(x => {
-                    
+                    SimulationRunner.InSim = false;
+                    DynamicUIManager.CloseAllPanels(true);
+                    ModeManager.CurrentMode = null;
+                    SceneManager.LoadScene("GridMenuScene", LoadSceneMode.Single);
+                    DynamicUIManager.CloseActiveModal();
                 })
-                .StepIntoLabel(l => l.SetText("3"));
+                .StepIntoLabel(l => l.SetText("Exit"));
             
             MiddleButton
                 .AddOnClickedEvent(x =>
                 {
-
+                    DynamicUIManager.CloseActiveModal();
+                    MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.Reconfigure);
                 })
-                .StepIntoLabel(l => l.SetText("2"));
-
-            CancelButton
+                .StepIntoLabel(l => l.SetText("Reconfigure"));
+            
+            AcceptButton
                 .AddOnClickedEvent(x => {
-                    
+                    DynamicUIManager.CloseActiveModal();
+                    MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.Restart);
                 })
-                .StepIntoLabel(l => l.SetText("1"));
+                .StepIntoLabel(l => l.SetText("Restart"));
+            
 
             CreateScrollMenu();
         }

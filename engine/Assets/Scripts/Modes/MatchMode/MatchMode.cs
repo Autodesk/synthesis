@@ -11,7 +11,7 @@ namespace Modes.MatchMode {
     public class MatchMode : IMode {
         public static MatchResultsTracker MatchResultsTracker;
 
-        public static int CurrentFieldIndex = -1;
+        /// Integers to represent which robots the user selected in the MatchModeModal
         public static int[] SelectedRobots  = new int[6];
 
         /// Whether or not the robot should snap to a grid in positioning mode
@@ -113,6 +113,13 @@ namespace Modes.MatchMode {
                     Robots.Add(null);
                 i++;
             });
+        }
+
+        /// Resets the currently selected robots and field
+        public static void ResetMatchConfiguration()
+        {
+            Robots = new List<RobotSimObject>();
+            Array.Fill(SelectedRobots, -1);
         }
 
         public static string ParsePath(string p, char c) {
