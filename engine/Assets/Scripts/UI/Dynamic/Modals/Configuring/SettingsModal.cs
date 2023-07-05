@@ -98,11 +98,12 @@ namespace Synthesis.UI.Dynamic {
                 .ApplyTemplate(Label.BigLabelTemplate)
                 .ApplyTemplate(VerticalLayout)
                 .SetText("Preferences");
-            var reportAnalyticsToggle = MainContent.CreateToggle()
+            // TODO: update analytics
+            /*var reportAnalyticsToggle = MainContent.CreateToggle()
                                             .ApplyTemplate(VerticalLayout)
                                             .AddOnStateChangedEvent((t, s) => _useAnalytics = s)
                                             .SetState(Get<bool>(AnalyticsManager.USE_ANALYTICS_PREF))
-                                            .TitleLabel.SetText("Report Analytics");
+                                            .TitleLabel.SetText("Report Analytics");*/
             var measurementsToggle = MainContent.CreateToggle()
                                          .ApplyTemplate(VerticalLayout)
                                          .AddOnStateChangedEvent((t, s) => _useMetric = s)
@@ -131,15 +132,18 @@ namespace Synthesis.UI.Dynamic {
             Set(CameraController.ZOOM_SENSITIVITY_PREF, _zoomSensitivity);
             Set(CameraController.YAW_SENSITIVITY_PREF, _yawSensitivity);
             Set(CameraController.PITCH_SENSITIVITY_PREF, _pitchSensitivity);
-            Set(AnalyticsManager.USE_ANALYTICS_PREF, _useAnalytics);
+            // TODO: update analytics
+            //Set(AnalyticsManager.USE_ANALYTICS_PREF, _useAnalytics);
             Set(MEASUREMENTS, _useMetric);
             Set(RENDER_SCORE_ZONES, _renderScoreZones);
 
             Save();
 
             var update = new AnalyticsEvent(category: "Settings", action: "Saved", label: $"Saved Settings");
-            AnalyticsManager.LogEvent(update);
-            AnalyticsManager.PostData();
+            
+            // TODO: update analytics
+            /*AnalyticsManager.LogEvent(update);
+            AnalyticsManager.PostData();*/
         }
 
         public static void LoadSettings() {
@@ -148,7 +152,8 @@ namespace Synthesis.UI.Dynamic {
             _zoomSensitivity      = Get<float>(CameraController.ZOOM_SENSITIVITY_PREF);
             _yawSensitivity       = Get<float>(CameraController.YAW_SENSITIVITY_PREF);
             _pitchSensitivity     = Get<float>(CameraController.PITCH_SENSITIVITY_PREF);
-            _useAnalytics         = Get<bool>(AnalyticsManager.USE_ANALYTICS_PREF);
+            // TODO: update analytics
+            //_useAnalytics         = Get<bool>(AnalyticsManager.USE_ANALYTICS_PREF);
             _useMetric            = Get<bool>(MEASUREMENTS);
         }
 
@@ -159,8 +164,9 @@ namespace Synthesis.UI.Dynamic {
             RepopulatePanel();
 
             var update = new AnalyticsEvent(category: "Settings", action: "Reset", label: $"Reset Settings");
-            AnalyticsManager.LogEvent(update);
-            AnalyticsManager.PostData();
+            // TODO: update analytics
+            /*AnalyticsManager.LogEvent(update);
+            AnalyticsManager.PostData();*/
         }
 
         private void RepopulatePanel() {
@@ -194,8 +200,8 @@ namespace Synthesis.UI.Dynamic {
             QualitySettings.SetQualityLevel(Get<int>(QUALITY_SETTINGS), true);
             Debug.Log(GraphicsSettings.currentRenderPipeline.name);
 
-            // Analytics
-            AnalyticsManager.UseAnalytics = Get<bool>(AnalyticsManager.USE_ANALYTICS_PREF);
+            // TODO: update analytics
+            //AnalyticsManager.UseAnalytics = Get<bool>(AnalyticsManager.USE_ANALYTICS_PREF);
 
             // imperial or metric
             //  useImperial = Get<bool>(MEASUREMENTS);

@@ -74,6 +74,7 @@ public class SynthesisAssetCollection : MonoBehaviour {
     public static TMPro.TMP_FontAsset GetFont(string name) => Instance.Fonts.First(x => x.name == name);
 
     public void OnDestroy() {
-        AnalyticsManager.LogEvent(new AnalyticsEvent(category: "app", action: $"close", label: ""));
+        // TODO: update analytics
+        //AnalyticsManager.LogEvent(new AnalyticsEvent(category: "app", action: $"close", label: ""));
     }
 }

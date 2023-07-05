@@ -14,9 +14,10 @@ public class AddItem : MonoBehaviour {
     private bool _isRobot;
 
     private void ItemAnalytics(string item) {
-        var update = new AnalyticsEvent(category: $"{item}", action: "Loaded", label: $"{item} Loaded");
+        // TODO: update analytics
+        /*var update = new AnalyticsEvent(category: $"{item}", action: "Loaded", label: $"{item} Loaded");
         AnalyticsManager.LogEvent(update);
-        AnalyticsManager.PostData();
+        AnalyticsManager.PostData();*/
     }
 
     public void AddModel(bool reverseSideMotors) {

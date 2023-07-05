@@ -26,9 +26,11 @@ public class AutoUpdater : MonoBehaviour {
         // game = GameObject.Find("UpdatePrompt");
 
         // Analytics For Client Startup
-        var init = new AnalyticsEvent(category: "Startup", action: "Launched", label: $"Version {LocalVersion} BETA");
+        
+        // TODO: update analytics
+        /*var init = new AnalyticsEvent(category: "Startup", action: "Launched", label: $"Version {LocalVersion} BETA");
         AnalyticsManager.LogEvent(init);
-        AnalyticsManager.PostData();
+        AnalyticsManager.PostData();*/
 
         if (CheckConnection()) {
             WebClient client                                        = new WebClient();

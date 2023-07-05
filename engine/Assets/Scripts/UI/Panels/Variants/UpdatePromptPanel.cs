@@ -19,19 +19,22 @@ namespace Synthesis.UI.Panels {
 
                 Process.Start(UpdaterLink);
 
-                var update =
+                // TODO: update analytics
+                /*var update =
                     new AnalyticsEvent(category: "Startup", action: "Update Prompted", label: $"Update Agreed");
-                AnalyticsManager.LogEvent(update);
+                AnalyticsManager.LogEvent(update);*/
             }
 
             if (updateAgreed == false) {
                 Debug.Log("Update Declined");
-                var update =
+                // TODO: update analytics
+                /*var update =
                     new AnalyticsEvent(category: "Startup", action: "Update Prompted", label: $"Update Declined");
-                AnalyticsManager.LogEvent(update);
+                AnalyticsManager.LogEvent(update);*/
             }
 
-            AnalyticsManager.PostData();
+            // TODO: update analytics
+            //AnalyticsManager.PostData();
 
             if (Application.isEditor)
                 Debug.Log("Would exit, but it's editor mode");

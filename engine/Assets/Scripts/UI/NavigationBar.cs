@@ -68,9 +68,10 @@ namespace Synthesis.UI.Bars {
             if (Application.isEditor)
                 Debug.Log("Would exit, but it's editor mode");
             else {
-                var update = new AnalyticsEvent(category: "Exit", action: "Closed", label: $"Closed Synthesis");
+                // TODO: update analytics
+                /*var update = new AnalyticsEvent(category: "Exit", action: "Closed", label: $"Closed Synthesis");
                 AnalyticsManager.LogEvent(update);
-                AnalyticsManager.PostData();
+                AnalyticsManager.PostData();*/
 
                 DynamicUIManager.CreateModal<ExitSynthesisModal>();
                 // Application.Quit();
@@ -85,9 +86,10 @@ namespace Synthesis.UI.Bars {
         }
 
         public void PanelAnalytics(string prefabName, string status) {
-            var panel = new AnalyticsEvent(category: "Panel", action: status, label: prefabName);
+            // TODO: update analytics
+            /*var panel = new AnalyticsEvent(category: "Panel", action: status, label: prefabName);
             AnalyticsManager.LogEvent(panel);
-            AnalyticsManager.PostData();
+            AnalyticsManager.PostData();*/
         }
 
         public void OpenPanel(GameObject prefab) {

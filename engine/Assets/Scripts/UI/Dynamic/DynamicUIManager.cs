@@ -82,8 +82,9 @@ namespace Synthesis.UI.Dynamic {
             SynthesisAssetCollection.BlurVolumeStatic.weight = 1f;
             PhysicsManager.IsFrozen                          = true;
             MainHUD.Enabled                                  = false;
-            AnalyticsManager.LogEvent(new AnalyticsEvent(category: "ui", action: $"{typeof(T).Name}", label: "create"));
-            AnalyticsManager.PostData();
+            // TODO: update analytics
+            /*AnalyticsManager.LogEvent(new AnalyticsEvent(category: "ui", action: $"{typeof(T).Name}", label: "create"));
+            AnalyticsManager.PostData();*/
             return true;
         }
 
@@ -118,8 +119,9 @@ namespace Synthesis.UI.Dynamic {
             if (PanelExists(typeof(T)))
                 EventBus.Push(new PanelCreatedEvent(panel, persistent));
 
-            AnalyticsManager.LogEvent(new AnalyticsEvent(category: "ui", action: $"{typeof(T).Name}", label: "create"));
-            AnalyticsManager.PostData();
+            // TODO: update analytics
+            /*AnalyticsManager.LogEvent(new AnalyticsEvent(category: "ui", action: $"{typeof(T).Name}", label: "create"));
+            AnalyticsManager.PostData();*/
             return true;
         }
 
@@ -130,9 +132,10 @@ namespace Synthesis.UI.Dynamic {
 
             EventBus.Push(new ModalClosedEvent(ActiveModal));
 
-            AnalyticsManager.LogEvent(
+            // TODO: update analytics
+            /*AnalyticsManager.LogEvent(
                 new AnalyticsEvent(category: "ui", action: $"{ActiveModal.GetType().Name}", label: "create"));
-            AnalyticsManager.PostData();
+            AnalyticsManager.PostData();*/
 
             ActiveModal.Delete();
             ActiveModal.Delete_Internal();
@@ -168,8 +171,9 @@ namespace Synthesis.UI.Dynamic {
             var panel = _persistentPanels[t].Item1;
             EventBus.Push(new PanelClosedEvent(panel));
 
-            AnalyticsManager.LogEvent(new AnalyticsEvent(category: "ui", action: $"{t.Name}", label: "create"));
-            AnalyticsManager.PostData();
+            // TODO: update analytics
+            /*AnalyticsManager.LogEvent(new AnalyticsEvent(category: "ui", action: $"{t.Name}", label: "create"));
+            AnalyticsManager.PostData();*/
 
             panel.Delete();
             panel.Delete_Internal();
