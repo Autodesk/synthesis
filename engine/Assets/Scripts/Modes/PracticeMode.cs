@@ -337,7 +337,6 @@ public class PracticeMode : IMode
         MainHUD.AddItemToDrawer("Ejector", b => DynamicUIManager.CreatePanel<ConfigureShotTrajectoryPanel>());
         MainHUD.AddItemToDrawer("Motors", b => {
             DynamicUIManager.CreateModal<ConfigMotorModal>();
-            RobotSimObject.GetCurrentlyPossessedRobot().DrivetrainConfig(30, 30, 600, 600);
         });
         MainHUD.AddItemToDrawer("RoboRIO Conf.",b => DynamicUIManager.CreateModal<RioConfigurationModal>(true),icon: SynthesisAssetCollection.GetSpriteByName("rio-config-icon"));
         MainHUD.AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>());
@@ -354,6 +353,9 @@ public class PracticeMode : IMode
 
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
             MainHUD.AddItemToDrawer("Configure", b => ToConfigMode());
+        MainHUD.AddItemToDrawer("Motors", b => {
+            DynamicUIManager.CreateModal<ConfigMotorModal>();
+        });
         MainHUD.AddItemToDrawer("Spawn", b => DynamicUIManager.CreateModal<SpawningModal>(), icon: SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
         MainHUD.AddItemToDrawer("Multibot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>());
         MainHUD.AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("DriverStationView"));
