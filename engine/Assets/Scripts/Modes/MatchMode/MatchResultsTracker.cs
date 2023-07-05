@@ -12,12 +12,8 @@ public class MatchResultsTracker {
         MatchResultEntries.Add(typeof(RedPoints), new RedPoints());
     }
 
-    public void ResetAllTrackedData()
-    {
-        MatchResultEntries.Values.ForEach(x =>
-        {
-            x.Reset();
-        });
+    public void ResetAllTrackedData() {
+        MatchResultEntries.Values.ForEach(x => { x.Reset(); });
     }
 
     /// The base interface for any tracked match statistics. Implement this to track a new statistic
@@ -38,8 +34,7 @@ public class MatchResultsTracker {
             return "Blue Points";
         }
 
-        public void Reset()
-        {
+        public void Reset() {
             Points = 0;
         }
     }
@@ -55,9 +50,8 @@ public class MatchResultsTracker {
         public string GetName() {
             return "Red Points";
         }
-        
-        public void Reset()
-        {
+
+        public void Reset() {
             Points = 0;
         }
     }
