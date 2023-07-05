@@ -191,7 +191,6 @@ namespace Modes.MatchMode {
                         MatchStateMachine.Instance.SetState(StateName.FieldConfig);
                     };
                 };
-
             }
 
             public override void Update() {}
