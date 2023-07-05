@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Synthesis.UI.Dynamic;
+using SynthesisAPI.EventBus;
 using UnityEngine;
 using static MatchResultsTracker;
 using Logger = SynthesisAPI.Utilities.Logger;
@@ -50,6 +51,26 @@ namespace Modes.MatchMode {
             ConfigureMainHUD();
         }
 
+        private void HandleScoreEvent(IEvent e) {
+            if (e.GetType() != typeof(OnScoreUpdateEvent))
+                return;
+            OnScoreUpdateEvent scoreUpdateEvent = e as OnScoreUpdateEvent;
+            if (scoreUpdateEvent == null)
+                return;
+
+            ScoringZone zone = scoreUpdateEvent.Zone;
+            int points       = zone.Points * (scoreUpdateEvent.IncreaseScore ? 1 : -1);
+
+            switch (zone.Alliance) {
+                case Alliance.Blue:
+                    Scoring.blueScore += points;
+                    break;
+                case Alliance.Red:
+                    Scoring.redScore += points;
+                    break;
+            }
+        }
+
         /// Creates a MatchResultsTracker and event listeners to update it
         public void SetupMatchResultTracking() {
             MatchResultsTracker = new MatchResultsTracker();
@@ -85,6 +106,11 @@ namespace Modes.MatchMode {
         public void Update() {
             if (_stateMachine != null)
                 _stateMachine.Update();
+
+                if (Scoring.targetTime <= 0 && _stateMachine.CurrentState.StateName is >=
+                                                   MatchStateMachine.StateName.Auto and <=
+                                                   MatchStateMachine.StateName.Teleop)
+                    _stateMachine.AdvanceState();
         }
 
         public void End() {}

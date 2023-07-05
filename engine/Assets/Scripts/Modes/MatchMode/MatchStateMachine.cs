@@ -127,8 +127,7 @@ namespace Modes.MatchMode {
             public override void Start() {
                 base.Start();
                 DynamicUIManager.CreateModal<MatchModeModal>();
-                DynamicUIManager.ActiveModal.OnAccepted += () =>
-                    Instance.SetState(StateName.RobotPositioning);
+                DynamicUIManager.ActiveModal.OnAccepted += () => Instance.SetState(StateName.RobotPositioning);
             }
 
             public override void Update() {}
@@ -151,6 +150,7 @@ namespace Modes.MatchMode {
                 if (Camera.main != null) {
                     Camera.main.GetComponent<CameraController>().CameraMode = CameraController.CameraModes["Freecam"];
                 }
+
                 // state passes to next in SpawnLocationPanel accept button
             }
 
@@ -185,10 +185,6 @@ namespace Modes.MatchMode {
                     DynamicUIManager.ActiveModal.OnCancelled += () => {
                         DynamicUIManager.CloseActiveModal();
                         Instance.SetState(StateName.FieldConfig);
-                    };
-                    DynamicUIManager.ActiveModal.OnCancelled += () => {
-                        DynamicUIManager.CloseActiveModal();
-                        MatchStateMachine.Instance.SetState(StateName.FieldConfig);
                     };
                 };
             }
