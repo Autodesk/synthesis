@@ -12,9 +12,14 @@ public class MatchResultsTracker {
         MatchResultEntries.Add(typeof(RedPoints), new RedPoints());
     }
 
+    public void ResetAllTrackedData() {
+        MatchResultEntries.Values.ForEach(x => { x.Reset(); });
+    }
+
     /// The base interface for any tracked match statistics. Implement this to track a new statistic
     public interface ITrackedData {
         public string GetName();
+        public void Reset();
     }
 
     /// The number of points scored by the blue team
@@ -28,6 +33,10 @@ public class MatchResultsTracker {
         public string GetName() {
             return "Blue Points";
         }
+
+        public void Reset() {
+            Points = 0;
+        }
     }
 
     /// The number of points scored by the red team
@@ -40,6 +49,10 @@ public class MatchResultsTracker {
 
         public string GetName() {
             return "Red Points";
+        }
+
+        public void Reset() {
+            Points = 0;
         }
     }
 }

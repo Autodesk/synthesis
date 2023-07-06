@@ -1,5 +1,6 @@
 using System;
 using Modes.MatchMode;
+using Synthesis.Runtime;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
@@ -39,17 +40,36 @@ namespace UI.Dynamic.Modals {
             Title.SetText("Match Results");
             Description.SetText("Statistics about the match");
 
-            AcceptButton
+            CancelButton
                 .AddOnClickedEvent(x => {
-                    MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.None);
-                    DynamicUIManager.CreateModal<ExitSynthesisModal>();
+                    SimulationRunner.InSim  = false;
+                    ModeManager.CurrentMode = null;
+
+                    DynamicUIManager.CloseAllPanels(true);
+                    DynamicUIManager.CloseActiveModal();
+
+                    SceneManager.LoadScene("GridMenuScene", LoadSceneMode.Single);
                 })
                 .StepIntoLabel(l => l.SetText("Exit"));
 
-            CancelButton.RootGameObject.SetActive(false);
+            MiddleButton
+                .AddOnClickedEvent(x => {
+                    DynamicUIManager.CloseActiveModal();
+                    MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.Reconfigure);
+                })
+                .StepIntoLabel(l => l.SetText("Configure"));
+
+            AcceptButton
+                .AddOnClickedEvent(x => {
+                    DynamicUIManager.CloseActiveModal();
+                    MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.Restart);
+                })
+                .StepIntoLabel(l => l.SetText("Restart"));
 
             CreateScrollMenu();
         }
+
+        private RectTransform _middleButtonObject;
 
         /// Creates the main scroll menu and adds all of the match result entries
         public void CreateScrollMenu() {
