@@ -1,13 +1,15 @@
+﻿using System.Collections;
 using UnityEngine;
-using System.Collections;
 
-public class GetBrowserTexture : MonoBehaviour {
-    public CEFOffScreenBrowser Browser;
+namespace Synthesis.CEF {
+    public class GetBrowserTexture : MonoBehaviour {
+        public OffScreenCEFBrowser Browser;
 
-    private Material _material;
+        private Material _material;
 
-    private void Start() {
-        _material             = GetComponent<Renderer>().material;
-        _material.mainTexture = Browser.BrowserTexture;
+        private void Start() {
+            _material = GetComponent<MeshRenderer>().material;
+            _material.SetTexture("_MainTex", Browser.BrowserTexture);
+        }
     }
-}
+} // namespace Synthesis.CEF
