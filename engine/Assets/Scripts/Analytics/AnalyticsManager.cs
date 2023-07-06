@@ -43,7 +43,7 @@ namespace Analytics
             await UnityServices.InitializeAsync();
             
             #if DEBUG_ANALYTICS
-                Debug.Log("<color=#A2D9FF> Unity services initialized</color>");
+                AnalyticsDebug("Unity services initialized");
             #endif
 
             //TODO: check if the user gives consent to collect information
@@ -57,17 +57,17 @@ namespace Analytics
         {
             if (!_useAnalytics)
                 return;
-            
+
             if (UnityServices.State != ServicesInitializationState.Initialized)
             {
-                Debug.LogError("Unity services not yet initialized. Call UnityServices.InitializeAsync() before starting data collection.");
+                Debug.LogError("<color=#A2D9FF>ANALYTICS:</color> Unity services not yet initialized. Call UnityServices.InitializeAsync() before starting data collection");
                 return;
             }
 
             AnalyticsService.Instance.StartDataCollection();
             
             #if DEBUG_ANALYTICS
-                Debug.Log("<color=#A2D9FF>Analytics data collected started</color>");
+                AnalyticsDebug("Data collection started");
             #endif
         }
 
@@ -76,14 +76,14 @@ namespace Analytics
         {
             if (UnityServices.State != ServicesInitializationState.Initialized)
             {
-                Debug.LogError("Unity services not yet initialized. Call UnityServices.InitializeAsync() before starting data collection.");
+                Debug.LogError("<color=#A2D9FF>ANALYTICS:</color> Unity services not yet initialized. Call UnityServices.InitializeAsync() before starting data collection");
                 return;
             }
             
             AnalyticsService.Instance.StopDataCollection();
             
             #if DEBUG_ANALYTICS
-                Debug.Log("<color=#A2D9FF>Analytics data collected stopped</color>");
+            AnalyticsDebug("Data collection stopped");
             #endif
         }
 
@@ -108,7 +108,15 @@ namespace Analytics
             else AnalyticsService.Instance.CustomData(name.ToString(), parameterDictionary);
 
             #if DEBUG_ANALYTICS
-                Debug.Log($"<color=#A2D9FF>Logged custom event: \"{name}\"{((parameterDictionary != null) ? $" with parameters: {string.Join(", ", parameterDictionary)}" : "")} </color>");
+                AnalyticsDebug($"Logged custom event \"{name}\"{((parameterDictionary != null) ? $" with parameters: {string.Join(", ", parameterDictionary)}" : "")}");
+            #endif
+        }
+
+        /// <summary>Debug.Log with a template if DEBUG_ANALYTICS is #defined</summary>
+        private static void AnalyticsDebug(string message)
+        {
+            #if DEBUG_ANALYTICS
+                Debug.Log($"<color=#A2D9FF>ANALYTICS: </color>{message}");
             #endif
         }
     }
@@ -126,6 +134,12 @@ namespace Analytics
         ExitedToMenu,
         ApplicationQuit,
         SettingsSaved,
-        SettingsReset
+        SettingsReset,
+        RobotSpawned,
+        FieldSpawned,
+        MatchStarted,
+        MatchEnded,
+        DrivetrainSwitched,
+        ScoringZoneUpdated
     }
 }

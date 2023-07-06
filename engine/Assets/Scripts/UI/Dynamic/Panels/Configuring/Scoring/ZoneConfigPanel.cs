@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Analytics;
 using Synthesis.Gizmo;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
@@ -94,13 +95,16 @@ public class ZoneConfigPanel : PanelDynamic {
             if (_isNewZone)
                 FieldSimObject.CurrentField.ScoringZones.Add(_zone);
 
-            if (!DynamicUIManager.PanelExists<ScoringZonesPanel>())
+                if (!DynamicUIManager.PanelExists<ScoringZonesPanel>())
                 DynamicUIManager.CreatePanel<ScoringZonesPanel>();
 
             if (DynamicUIManager.PanelExists<ScoringZonesPanel>())
                 _callback.Invoke(_zone, _isNewZone);
 
             DynamicUIManager.ClosePanel<ZoneConfigPanel>();
+            
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.ScoringZoneUpdated,
+                ("Color", _data.Alliance), ("NumPoints", _data.Points));
         });
 
         CancelButton.AddOnClickedEvent(b => {

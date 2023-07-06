@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Analytics;
 using Modes.MatchMode;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
@@ -175,8 +176,9 @@ public class MatchStateMachine {
     public class Auto : MatchState {
         public override void Start() {
             base.Start();
-
             // TODO: start auto timer on scoreboard
+            
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.MatchStarted, ("NumRobots", RobotSimObject.SpawnedRobots.Count));
         }
 
         public override void Update() {
@@ -196,7 +198,6 @@ public class MatchStateMachine {
     public class Teleop : MatchState {
         public override void Start() {
             base.Start();
-
             // TODO: start teleop timer on scoreboard
         }
 
@@ -217,6 +218,12 @@ public class MatchStateMachine {
             base.Start();
 
             DynamicUIManager.CreateModal<MatchResultsModal>();
+            
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.MatchEnded, 
+                ("BluePoints", 
+                    MatchMode.MatchResultsTracker.MatchResultEntries[typeof(MatchResultsTracker.BluePoints)]),
+                ("RedPoints", 
+                    MatchMode.MatchResultsTracker.MatchResultEntries[typeof(MatchResultsTracker.RedPoints)]));
         }
 
         public override void Update() {}

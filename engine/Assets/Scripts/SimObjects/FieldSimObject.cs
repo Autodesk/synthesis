@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Analytics;
+using MathNet.Numerics;
 using Mirabuf;
 using Synthesis.Gizmo;
 using Synthesis.Import;
@@ -147,6 +149,7 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
             GizmoManager.SpawnGizmo(RobotSimObject.GetCurrentlyPossessedRobot());
             // TODO: Move robot to default spawn location for field
         }
+        AnalyticsManager.LogCustomEvent(AnalyticsEvent.FieldSpawned, ("FieldName", mira.MainObject.name));
     }
 
     public static void SpawnField(MirabufLive miraAssem, bool spawnRobotGizmo = true) {
