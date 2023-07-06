@@ -34,7 +34,9 @@ namespace Synthesis.CEF {
                 Debug.LogError(e);
             }
 
-            string url          = "http://www.google.com/";
+            Debug.Log(Application.dataPath + "/Scripts/CEF/HTML/index.html"); // TODO: remove
+
+            string url          = Application.dataPath + "/Scripts/CEF/HTML/index.html";
             _client             = new OffScreenCEFClient(_width, _height);
             var browserSettings = new CefBrowserSettings();
             var windowSettings  = CefWindowInfo.Create();
