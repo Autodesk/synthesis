@@ -20,13 +20,12 @@ namespace Synthesis.UI.Dynamic {
                     if (isOnMainMenu) {
                         Application.Quit();
                         AnalyticsManager.LogCustomEvent(AnalyticsEvent.ApplicationQuit);
-                    }
-                    else {
+                    } else {
                         SimulationRunner.InSim = false;
                         DynamicUIManager.CloseAllPanels(true);
                         ModeManager.CurrentMode = null;
                         SceneManager.LoadScene("GridMenuScene", LoadSceneMode.Single);
-                        
+
                         AnalyticsManager.LogCustomEvent(AnalyticsEvent.ExitedToMenu);
                     }
                 })

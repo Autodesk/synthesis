@@ -638,7 +638,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             GizmoManager.SpawnGizmo(simObject);
         // GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, mira.MainObject.transform,
         // mira.MainObject.transform.position);
-        
+
         AnalyticsManager.LogCustomEvent(AnalyticsEvent.RobotSpawned, ("RobotName", mira.MainObject.name));
     }
 

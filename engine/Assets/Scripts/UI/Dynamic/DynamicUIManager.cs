@@ -83,7 +83,7 @@ namespace Synthesis.UI.Dynamic {
             SynthesisAssetCollection.BlurVolumeStatic.weight = 1f;
             PhysicsManager.IsFrozen                          = true;
             MainHUD.Enabled                                  = false;
-            
+
             AnalyticsManager.LogCustomEvent(AnalyticsEvent.ModalCreated, ("UIType", typeof(T).Name));
 
             return true;
@@ -121,7 +121,7 @@ namespace Synthesis.UI.Dynamic {
                 EventBus.Push(new PanelCreatedEvent(panel, persistent));
 
             AnalyticsManager.LogCustomEvent(AnalyticsEvent.PanelCreated, ("UIType", typeof(T).Name));
-            
+
             return true;
         }
 
@@ -129,11 +129,11 @@ namespace Synthesis.UI.Dynamic {
             if (ActiveModal == null) {
                 return false;
             }
-            
+
             AnalyticsManager.LogCustomEvent(AnalyticsEvent.ActiveModalClosed, ("UIType", ActiveModal.GetType().Name));
 
             EventBus.Push(new ModalClosedEvent(ActiveModal));
-            
+
             ActiveModal.Delete();
             ActiveModal.Delete_Internal();
             ActiveModal = null;
@@ -143,7 +143,7 @@ namespace Synthesis.UI.Dynamic {
             MainHUD.Enabled                                  = true;
 
             ShowAllPanels();
-            
+
             return true;
         }
 
@@ -172,7 +172,7 @@ namespace Synthesis.UI.Dynamic {
 
             // ActivePanel = null;
             _persistentPanels.Remove(t);
-  
+
             AnalyticsManager.LogCustomEvent(AnalyticsEvent.PanelClosed, ("UIType", t.Name));
 
             return true;

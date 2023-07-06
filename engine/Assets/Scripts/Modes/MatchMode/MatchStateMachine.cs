@@ -177,8 +177,9 @@ public class MatchStateMachine {
         public override void Start() {
             base.Start();
             // TODO: start auto timer on scoreboard
-            
-            AnalyticsManager.LogCustomEvent(AnalyticsEvent.MatchStarted, ("NumRobots", RobotSimObject.SpawnedRobots.Count));
+
+            AnalyticsManager.LogCustomEvent(
+                AnalyticsEvent.MatchStarted, ("NumRobots", RobotSimObject.SpawnedRobots.Count));
         }
 
         public override void Update() {
@@ -218,12 +219,12 @@ public class MatchStateMachine {
             base.Start();
 
             DynamicUIManager.CreateModal<MatchResultsModal>();
-            
-            AnalyticsManager.LogCustomEvent(AnalyticsEvent.MatchEnded, 
-                ("BluePoints", MatchMode.MatchResultsTracker.MatchResultEntries[
-                        typeof(MatchResultsTracker.BluePoints)].ToString()),
-                ("RedPoints", MatchMode.MatchResultsTracker.MatchResultEntries[
-                        typeof(MatchResultsTracker.RedPoints)].ToString()));
+
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.MatchEnded,
+                ("BluePoints", MatchMode.MatchResultsTracker.MatchResultEntries[typeof(MatchResultsTracker.BluePoints)]
+                                   .ToString()),
+                ("RedPoints", MatchMode.MatchResultsTracker.MatchResultEntries[typeof(MatchResultsTracker.RedPoints)]
+                                  .ToString()));
         }
 
         public override void Update() {}

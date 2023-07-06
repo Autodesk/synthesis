@@ -102,10 +102,9 @@ public class ZoneConfigPanel : PanelDynamic {
                 _callback.Invoke(_zone, _isNewZone);
 
             DynamicUIManager.ClosePanel<ZoneConfigPanel>();
-            
-            AnalyticsManager.LogCustomEvent(AnalyticsEvent.ScoringZoneUpdated,
-                ("AllianceColor", _data.Alliance), ("ScoringZonePoints", _data.Points),
-                ("ScoringZoneName", _data.Name));
+
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.ScoringZoneUpdated, ("AllianceColor", _data.Alliance),
+                ("ScoringZonePoints", _data.Points), ("ScoringZoneName", _data.Name));
         });
 
         CancelButton.AddOnClickedEvent(b => {

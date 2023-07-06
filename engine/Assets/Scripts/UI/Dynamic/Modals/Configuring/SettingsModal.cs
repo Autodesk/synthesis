@@ -156,7 +156,7 @@ namespace Synthesis.UI.Dynamic {
             SaveSettings();
             ApplySettings();
             RepopulatePanel();
-            
+
             AnalyticsManager.LogCustomEvent(AnalyticsEvent.SettingsReset);
         }
 

@@ -23,7 +23,6 @@ namespace Synthesis.UI.Panels {
 
             if (updateAgreed == false) {
                 Debug.Log("Update Declined");
-    
             }
 
             if (Application.isEditor)
