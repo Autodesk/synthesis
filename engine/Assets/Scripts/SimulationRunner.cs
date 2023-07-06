@@ -86,6 +86,8 @@ namespace Synthesis.Runtime {
             if (ColorManager.HasColor("tree")) {
                 GameObject.Instantiate(Resources.Load("Misc/Tree"));
             }
+            
+            ModeManager.CurrentMode.Start();
 
             SettingsModal.LoadSettings();
             SettingsModal.ApplySettings();

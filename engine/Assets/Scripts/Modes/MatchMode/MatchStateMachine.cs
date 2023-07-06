@@ -56,6 +56,8 @@ namespace Modes.MatchMode {
             _matchStates.Add(StateName.Teleop, new Teleop());
             _matchStates.Add(StateName.Endgame, new Endgame());
             _matchStates.Add(StateName.MatchResults, new MatchResults());
+
+            _currentState = _matchStates[StateName.None];
         }
 
         public void Update() {

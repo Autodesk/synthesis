@@ -2123,41 +2123,9 @@ PrefabInstance:
       value: AssetCollection
       objectReference: {fileID: 0}
     - target: {fileID: 507563843828576301, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
-      propertyPath: AudioClips.Array.size
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 507563843828576301, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
       propertyPath: AudioSources.Array.size
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 507563843828576301, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
-      propertyPath: AudioClips.Array.data[0]
-      value: 
-      objectReference: {fileID: 8300000, guid: f8c455af88b41493aa2703c06896ec77, type: 3}
-    - target: {fileID: 507563843828576301, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
-      propertyPath: AudioClips.Array.data[1]
-      value: 
-      objectReference: {fileID: 8300000, guid: 94a6f17a26477451298b826e2faa1741, type: 3}
-    - target: {fileID: 507563843828576301, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
-      propertyPath: AudioClips.Array.data[2]
-      value: 
-      objectReference: {fileID: 8300000, guid: bfeee82c53e28490c8dcd94919a1cdaa, type: 3}
-    - target: {fileID: 507563843828576301, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
-      propertyPath: AudioClips.Array.data[3]
-      value: 
-      objectReference: {fileID: 8300000, guid: 3cf517ee6879c4a32a7dbda509657173, type: 3}
-    - target: {fileID: 507563843828576301, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
-      propertyPath: AudioClips.Array.data[4]
-      value: 
-      objectReference: {fileID: 8300000, guid: f1522c3a6dd514aee8db29bfa71b36a5, type: 3}
-    - target: {fileID: 507563843828576301, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
-      propertyPath: DynamicUIPrefabs.Array.size
-      value: 14
-      objectReference: {fileID: 0}
-    - target: {fileID: 507563843828576301, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
-      propertyPath: DynamicUIPrefabs.Array.data[13]
-      value: 
-      objectReference: {fileID: 1527420503741984729, guid: 279a5651df55344728b4d03a9746439e, type: 3}
     - target: {fileID: 507563843828576302, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
       propertyPath: m_RootOrder
       value: 8
