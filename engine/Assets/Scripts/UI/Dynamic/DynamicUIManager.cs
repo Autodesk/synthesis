@@ -12,6 +12,7 @@ using SynthesisAPI.EventBus;
 using Synthesis.Gizmo;
 using Synthesis.Runtime;
 using System.Linq;
+using Analytics;
 
 namespace Synthesis.UI.Dynamic {
     public static class DynamicUIManager {
@@ -82,9 +83,9 @@ namespace Synthesis.UI.Dynamic {
             SynthesisAssetCollection.BlurVolumeStatic.weight = 1f;
             PhysicsManager.IsFrozen                          = true;
             MainHUD.Enabled                                  = false;
-            // TODO: update analytics
-            /*AnalyticsManager.LogEvent(new AnalyticsEvent(category: "ui", action: $"{typeof(T).Name}", label: "create"));
-            AnalyticsManager.PostData();*/
+            
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.ModalCreated, ("modalName", typeof(T).Name));
+
             return true;
         }
 
@@ -119,9 +120,8 @@ namespace Synthesis.UI.Dynamic {
             if (PanelExists(typeof(T)))
                 EventBus.Push(new PanelCreatedEvent(panel, persistent));
 
-            // TODO: update analytics
-            /*AnalyticsManager.LogEvent(new AnalyticsEvent(category: "ui", action: $"{typeof(T).Name}", label: "create"));
-            AnalyticsManager.PostData();*/
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.PanelCreated, ("panelName", typeof(T).Name));
+            
             return true;
         }
 
@@ -129,17 +129,13 @@ namespace Synthesis.UI.Dynamic {
             if (ActiveModal == null) {
                 return false;
             }
+            
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.ActiveModalClosed, ("modalName", ActiveModal.GetType().Name));
 
             EventBus.Push(new ModalClosedEvent(ActiveModal));
-
-            // TODO: update analytics
-            /*AnalyticsManager.LogEvent(
-                new AnalyticsEvent(category: "ui", action: $"{ActiveModal.GetType().Name}", label: "create"));
-            AnalyticsManager.PostData();*/
-
+            
             ActiveModal.Delete();
             ActiveModal.Delete_Internal();
-
             ActiveModal = null;
 
             SynthesisAssetCollection.BlurVolumeStatic.weight = 0f;
@@ -147,7 +143,7 @@ namespace Synthesis.UI.Dynamic {
             MainHUD.Enabled                                  = true;
 
             ShowAllPanels();
-
+            
             return true;
         }
 
@@ -171,15 +167,14 @@ namespace Synthesis.UI.Dynamic {
             var panel = _persistentPanels[t].Item1;
             EventBus.Push(new PanelClosedEvent(panel));
 
-            // TODO: update analytics
-            /*AnalyticsManager.LogEvent(new AnalyticsEvent(category: "ui", action: $"{t.Name}", label: "create"));
-            AnalyticsManager.PostData();*/
-
             panel.Delete();
             panel.Delete_Internal();
 
             // ActivePanel = null;
             _persistentPanels.Remove(t);
+  
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.PanelClosed, ("panelType", t.Name));
+
             return true;
         }
 

@@ -1,6 +1,9 @@
 #define DEBUG_ANALYTICS
 
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Synthesis.PreferenceManager;
 using Unity.Services.Analytics;
 using Unity.Services.Core;
 using UnityEngine;
@@ -10,27 +13,51 @@ namespace Analytics
     // TODO: after testing, disable when in editor
     
     /// <summary>
-    /// Contains all analytics logic and handles sending custom events. 
+    /// Handles unity analytics initialization and sending custom events.
+    /// View analytics on the <a href = "https://dashboard.unity3d.com/">Unity Dashboard</a>
     /// </summary>
     public class AnalyticsManager : MonoBehaviour
     {
-        public const bool debug = false;
+        public const string USE_ANALYTICS_PREF = "analytics/use_analytics";
+
+        private static bool _useAnalytics;
 
         private async void Start()
         {
+            _useAnalytics = PreferenceManager.GetPreference<bool>(USE_ANALYTICS_PREF);
+            
+            SynthesisAPI.EventBus.EventBus.NewTypeListener<PostPreferenceSaveEvent>(e => {
+                bool useAnalytics = PreferenceManager.GetPreference<bool>(USE_ANALYTICS_PREF);
+                
+                if (useAnalytics == _useAnalytics)
+                    return;
+                
+                _useAnalytics = useAnalytics;
+                
+                if (useAnalytics)
+                    StartDataCollection();
+                else
+                    StopDataCollection();
+            });
+            
             await UnityServices.InitializeAsync();
-
-            //TODO: check if the user gives consent to collect information
-            StartDataCollection();
             
             #if DEBUG_ANALYTICS
                 Debug.Log("<color=#A2D9FF> Unity services initialized</color>");
             #endif
+
+            //TODO: check if the user gives consent to collect information
+            
+            if (PreferenceManager.GetPreference<bool>(USE_ANALYTICS_PREF))
+                StartDataCollection();
         }
 
         /// <summary>Tells unity analytics to start collecting data</summary>
         public static void StartDataCollection()
         {
+            if (!_useAnalytics)
+                return;
+            
             if (UnityServices.State != ServicesInitializationState.Initialized)
             {
                 Debug.LogError("Unity services not yet initialized. Call UnityServices.InitializeAsync() before starting data collection.");
@@ -47,6 +74,12 @@ namespace Analytics
         /// <summary>Tells unity analytics to stop collecting data</summary>
         public static void StopDataCollection()
         {
+            if (UnityServices.State != ServicesInitializationState.Initialized)
+            {
+                Debug.LogError("Unity services not yet initialized. Call UnityServices.InitializeAsync() before starting data collection.");
+                return;
+            }
+            
             AnalyticsService.Instance.StopDataCollection();
             
             #if DEBUG_ANALYTICS
@@ -57,30 +90,42 @@ namespace Analytics
         /// <summary>Records a custom event</summary>
         /// <param name="name">The name of the event</param>
         /// <param name="parameters">The parameters sent with the event</param>
-        public static void LogCustomEvent(AnalyticsEvent name, Dictionary<string, object> parameters = null)
+        public static async void LogCustomEvent(AnalyticsEvent name, params (string name, object data)[] parameters)
         {
-            if (UnityServices.State != ServicesInitializationState.Initialized)
-            {
-                Debug.LogError("Unity services not yet initialized. Call UnityServices.InitializeAsync() before logging custom events.");
+            if (!_useAnalytics)
                 return;
-            }
             
-            if (parameters == null)
+            Dictionary<string, object> parameterDictionary = null;
+            if (parameters.Length > 0)
+                parameterDictionary = parameters.ToDictionary(x => x.name, x => x.data);
+            
+            // Wait until unity services are initialized 
+            while (UnityServices.State != ServicesInitializationState.Initialized)
+                await Task.Delay(1000);
+
+            if (parameterDictionary == null)
                 AnalyticsService.Instance.CustomData(name.ToString());
-            else AnalyticsService.Instance.CustomData(name.ToString(), parameters);
+            else AnalyticsService.Instance.CustomData(name.ToString(), parameterDictionary);
 
             #if DEBUG_ANALYTICS
-                Debug.Log($"<color=#A2D9FF>Logged custom event: \"{name}\"{((parameters != null) ? $" with parameters: {string.Join(", ", parameters)}" : "")} </color>");
+                Debug.Log($"<color=#A2D9FF>Logged custom event: \"{name}\"{((parameterDictionary != null) ? $" with parameters: {string.Join(", ", parameterDictionary)}" : "")} </color>");
             #endif
         }
     }
 
     /// <summary>
-    /// A specific custom event. <b>Make sure to add new events to the event manager on the <a href = "https://dashboard.unity3d.com/">Unity Dashboard</a></b>
+    /// A specific custom event. <b>Make sure to add new events to the event manager on the
+    /// <a href = "https://dashboard.unity3d.com/">Unity Dashboard</a></b>
     /// </summary>
     public enum AnalyticsEvent
     {
-        CreateModal,
-        CreatePanel
+        ModalCreated,
+        PanelCreated,
+        ActiveModalClosed,
+        PanelClosed,
+        ExitedToMenu,
+        ApplicationQuit,
+        SettingsSaved,
+        SettingsReset
     }
 }

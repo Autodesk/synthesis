@@ -72,9 +72,4 @@ public class SynthesisAssetCollection : MonoBehaviour {
 
     public static GameObject GetUIPrefab(string name)      => Instance.DynamicUIPrefabs.First(x => x.name == name);
     public static TMPro.TMP_FontAsset GetFont(string name) => Instance.Fonts.First(x => x.name == name);
-
-    public void OnDestroy() {
-        // TODO: update analytics
-        //AnalyticsManager.LogEvent(new AnalyticsEvent(category: "app", action: $"close", label: ""));
-    }
 }

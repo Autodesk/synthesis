@@ -25,13 +25,6 @@ public class AutoUpdater : MonoBehaviour {
         // Debug.Log($"Version {LocalVersion}");
         // game = GameObject.Find("UpdatePrompt");
 
-        // Analytics For Client Startup
-        
-        // TODO: update analytics
-        /*var init = new AnalyticsEvent(category: "Startup", action: "Launched", label: $"Version {LocalVersion} BETA");
-        AnalyticsManager.LogEvent(init);
-        AnalyticsManager.PostData();*/
-
         if (CheckConnection()) {
             WebClient client                                        = new WebClient();
             ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
