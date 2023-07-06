@@ -9,6 +9,10 @@ namespace Synthesis.CEF {
 
         private void Start() {
             _material = GetComponent<MeshRenderer>().material;
+			
+			// Map the material so it's facing the correct way. 
+			_material.mainTextureScale = new Vector2(1.0f, -1.0f);
+			_material.mainTextureOffset = new Vector2(0.0f, 1.0f);
             _material.SetTexture("_MainTex", Browser.BrowserTexture);
         }
     }
