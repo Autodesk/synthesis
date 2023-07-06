@@ -154,7 +154,11 @@ namespace Modes.MatchMode {
                 MatchMode.SpawnAllRobots();
 
                 if (Camera.main != null) {
-                    Camera.main.GetComponent<CameraController>().CameraMode = CameraController.CameraModes["Freecam"];
+                    FreeCameraMode camMode = CameraController.CameraModes["Freecam"] as FreeCameraMode;
+                    Camera.main.GetComponent<CameraController>().CameraMode = camMode;
+                    var location = new Vector3(0, 6, -8);
+                    camMode.SetTransform(location,
+                        Quaternion.LookRotation(-location.normalized, Vector3.Cross(-location.normalized, Vector3.right)));
                 }
 
                 // state passes to next in SpawnLocationPanel accept button
