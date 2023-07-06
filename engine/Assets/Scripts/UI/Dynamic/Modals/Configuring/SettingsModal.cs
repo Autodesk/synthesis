@@ -139,9 +139,9 @@ namespace Synthesis.UI.Dynamic {
 
             Save();
 
-            var update = new AnalyticsEvent(category: "Settings", action: "Saved", label: $"Saved Settings");
-            
             // TODO: update analytics
+
+            //var update = new AnalyticsEvent(category: "Settings", action: "Saved", label: $"Saved Settings");
             /*AnalyticsManager.LogEvent(update);
             AnalyticsManager.PostData();*/
         }
@@ -163,9 +163,9 @@ namespace Synthesis.UI.Dynamic {
             ApplySettings();
             RepopulatePanel();
 
-            var update = new AnalyticsEvent(category: "Settings", action: "Reset", label: $"Reset Settings");
             // TODO: update analytics
-            /*AnalyticsManager.LogEvent(update);
+            /*var update = new AnalyticsEvent(category: "Settings", action: "Reset", label: $"Reset Settings");
+            AnalyticsManager.LogEvent(update);
             AnalyticsManager.PostData();*/
         }
 
