@@ -41,6 +41,7 @@ namespace Synthesis.UI.Dynamic {
 
         private readonly Button[] buttons             = new Button[6];
         private readonly Transform[] _robotHighlights = new Transform[6];
+        private readonly Vector3[] _robotOffsets      = new Vector3[6];
 
         private readonly Func<Button, Button> DisabledTemplate = b =>
             b.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_BLACK_ACCENT))
@@ -123,6 +124,9 @@ namespace Synthesis.UI.Dynamic {
                 RobotSimObject simObject = MatchMode.Robots[i];
                 if (simObject != null) {
                     obj.transform.localScale = MatchMode.Robots[i].RobotBounds.size;
+                    _robotOffsets[i] =
+                        simObject.RobotNode.transform.localToWorldMatrix.MultiplyPoint(simObject.RobotBounds.center) +
+                        Vector3.down * 0.496f;
                 }
 
                 _robotHighlights[i] = obj.transform;

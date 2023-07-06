@@ -84,10 +84,12 @@ public class MatchModeModal : ModalDynamic {
     public IEnumerator LoadMatch() {
         yield return new WaitForSeconds(0.05f);
 
-        if (FieldSimObject.CurrentField != null)
-            FieldSimObject.DeleteField();
-
-        FieldSimObject.SpawnField(_fieldFiles[_fieldIndex], false);
+        if (MatchMode.CurrentFieldIndex != _fieldIndex) {
+            if (FieldSimObject.CurrentField != null)
+                FieldSimObject.DeleteField();
+            FieldSimObject.SpawnField(_fieldFiles[_fieldIndex], false);
+            MatchMode.CurrentFieldIndex = _fieldIndex;
+        }
 
         DynamicUIManager.CloseActiveModal();
         DynamicUIManager.CreatePanel<SpawnLocationPanel>();

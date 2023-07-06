@@ -38,6 +38,7 @@ namespace Synthesis.Runtime {
         public static event Action OnSimKill;
 
         public static event Action OnUpdate;
+        public static event Action OnGameObjectDestroyed;
 
         private static bool _inSim = false;
         public static bool InSim {
@@ -135,6 +136,8 @@ namespace Synthesis.Runtime {
 
         void OnDestroy() {
             Synthesis.PreferenceManager.PreferenceManager.Save();
+            if (OnGameObjectDestroyed != null)
+                OnGameObjectDestroyed();
         }
 
         /// <summary>

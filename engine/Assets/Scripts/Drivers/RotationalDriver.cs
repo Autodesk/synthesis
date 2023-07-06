@@ -41,13 +41,20 @@ namespace Synthesis {
         }
 
         public double MainInput {
-            get => State.CurrentSignals[_inputs[0]].Value.NumberValue;
-            set { State.CurrentSignals[_inputs[0]].Value = Value.ForNumber(value); }
+            get {
+                var val = State.GetValue(_inputs[0]);
+                return val == null ? 0.0 : val.NumberValue;
+            }
+            set => State.SetValue(_inputs[0], Value.ForNumber(value));
         }
 
         public RotationalControlMode ControlMode {
             get {
-                switch (State.CurrentSignals[_inputs[1]].Value.StringValue) {
+                var val = State.GetValue(_inputs[1]);
+                if (val == null)
+                    throw new Exception($"No value with guid '{_inputs[1]}'");
+
+                switch (val.StringValue) {
                     case "Velocity":
                         return RotationalControlMode.Velocity;
                     case "Position":
@@ -59,10 +66,10 @@ namespace Synthesis {
             set {
                 switch (value) {
                     case RotationalControlMode.Position:
-                        State.CurrentSignals[_inputs[1]].Value = Value.ForString("Position");
+                        State.SetValue(_inputs[1], Value.ForString("Position"));
                         break;
                     case RotationalControlMode.Velocity:
-                        State.CurrentSignals[_inputs[1]].Value = Value.ForString("Velocity");
+                        State.SetValue(_inputs[1], Value.ForString("Velocity"));
                         break;
                     default:
                         throw new Exception("Unrecognized Rotational Control Mode");
@@ -70,7 +77,7 @@ namespace Synthesis {
             }
         }
 
-        public string Name => State.CurrentSignalLayout.SignalMap[_inputs[0]].Info.Name;
+        public new string Name => State.SignalMap[_inputs[0]].Name;
 
         private JointMotor _motor;
         public JointMotor Motor {
@@ -126,12 +133,9 @@ namespace Synthesis {
 
             _isWheel = isWheel;
 
-            State.CurrentSignals[_inputs[1]]  = new UpdateSignal() { DeviceType = "Mode", Io = UpdateIOType.Input,
-                 Value = Google.Protobuf.WellKnownTypes.Value.ForString("Velocity") };
-            State.CurrentSignals[_outputs[0]] = new UpdateSignal() { DeviceType = "PWM", Io = UpdateIOType.Output,
-                Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(0) };
-            State.CurrentSignals[_outputs[1]] = new UpdateSignal() { DeviceType = "Range", Io = UpdateIOType.Output,
-                Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(0) };
+            State.SetValue(_inputs[1], Value.ForString("Velocity"));
+            State.SetValue(_outputs[0], Value.ForNumber(0));
+            State.SetValue(_outputs[1], Value.ForNumber(1));
 
             // Debug.Log($"Speed: {_motor.targetVelocity}\nForce: {_motor.force}");
         }
@@ -172,8 +176,8 @@ namespace Synthesis {
 
             // Angle loops around so this works for now
             _jointAngle += (_jointA.velocity * Time.deltaTime) / 360f;
-            State.CurrentSignals[_outputs[0]].Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(_jointAngle);
-            State.CurrentSignals[_outputs[1]].Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(_jointA.angle);
+            State.SetValue(_outputs[0], Value.ForNumber(_jointAngle));
+            State.SetValue(_outputs[1], Value.ForNumber(_jointA.angle));
 
             // var updateSignal = new UpdateSignals();
             // var key = _outputs[0];
@@ -187,9 +191,7 @@ namespace Synthesis {
 
         private void PositionControl() {
             if (_jointA.useMotor) {
-                var targetPosition = (float) (State.CurrentSignals.ContainsKey(_inputs[0])
-                                                  ? State.CurrentSignals[_inputs[0]].Value.NumberValue
-                                                  : 0.0f);
+                var targetPosition = MainInput;
 
                 // Debug.Log($"D: {_inputs[0]}");
                 // Debug.Log($"Target: {targetPosition}");
@@ -225,9 +227,7 @@ namespace Synthesis {
 
         private void VelocityControl() {
             if (_jointA.useMotor) {
-                var val = (float) (State.CurrentSignals.ContainsKey(_inputs[0])
-                                       ? State.CurrentSignals[_inputs[0]].Value.NumberValue
-                                       : 0.0f);
+                var val = (float) MainInput;
 
                 var inertiaA = GetInertiaAroundParallelAxis(_jointA.connectedBody, _jointB.anchor, _jointB.axis);
                 // var angAccelA = (Motor.force * val) / inertiaA;

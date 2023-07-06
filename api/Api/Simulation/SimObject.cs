@@ -1,5 +1,6 @@
-﻿using SynthesisAPI.Utilities;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using SynthesisAPI.Controller;
+using Mirabuf.Signal;
 
 namespace SynthesisAPI.Simulation {
     public class SimObject {
@@ -21,9 +22,13 @@ namespace SynthesisAPI.Simulation {
             }
         }
 
+        public SimObject(string name, Signals signalLayout) {
+            _name = name;
+            _state = new ControllableState(signalLayout);
+        }
+
         // This was Init. No idea why but it might need to be
-        public SimObject(string name, ControllableState state)
-        {
+        public SimObject(string name, ControllableState state) {
             _name = name;
             _state = state;
         }
