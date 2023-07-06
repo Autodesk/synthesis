@@ -8,6 +8,10 @@ using UnityEngine;
 namespace Analytics
 {
     // TODO: after testing, disable when in editor
+    
+    /// <summary>
+    /// Contains all analytics logic and handles sending custom events. 
+    /// </summary>
     public class AnalyticsManager : MonoBehaviour
     {
         public const bool debug = false;
@@ -17,7 +21,7 @@ namespace Analytics
             await UnityServices.InitializeAsync();
 
             //TODO: check if the user gives consent to collect information
-            StartCollectingData();
+            StartDataCollection();
             
             #if DEBUG_ANALYTICS
                 Debug.Log("<color=#A2D9FF> Unity services initialized</color>");
@@ -25,11 +29,11 @@ namespace Analytics
         }
 
         /// <summary>Tells unity analytics to start collecting data</summary>
-        public static void StartCollectingData()
+        public static void StartDataCollection()
         {
             if (UnityServices.State != ServicesInitializationState.Initialized)
             {
-                Debug.LogError("Unity services not yet initialized. Make sure it is before this function is called.");
+                Debug.LogError("Unity services not yet initialized. Call UnityServices.InitializeAsync() before starting data collection.");
                 return;
             }
 
@@ -41,14 +45,8 @@ namespace Analytics
         }
 
         /// <summary>Tells unity analytics to stop collecting data</summary>
-        public static void StopCollectingData()
+        public static void StopDataCollection()
         {
-            if (UnityServices.State != ServicesInitializationState.Initialized)
-            {
-                Debug.LogError("Unity services not yet initialized. Make sure it is before this function is called.");
-                return;
-            }
-            
             AnalyticsService.Instance.StopDataCollection();
             
             #if DEBUG_ANALYTICS
@@ -61,12 +59,18 @@ namespace Analytics
         /// <param name="parameters">The parameters sent with the event</param>
         public static void LogCustomEvent(string name, Dictionary<string, object> parameters = null)
         {
+            if (UnityServices.State != ServicesInitializationState.Initialized)
+            {
+                Debug.LogError("Unity services not yet initialized. Call UnityServices.InitializeAsync() before logging custom events.");
+                return;
+            }
+            
             if (parameters == null)
                 AnalyticsService.Instance.CustomData(name);
             else AnalyticsService.Instance.CustomData(name, parameters);
 
             #if DEBUG_ANALYTICS
-                Debug.Log($"<color=#A2D9FF>Logged custom event \"{name}\"{((parameters != null) ? $" with parameters {string.Join(", ", parameters)}" : "")} </color>");
+                Debug.Log($"<color=#A2D9FF>Logged custom event: \"{name}\"{((parameters != null) ? $" with parameters: {string.Join(", ", parameters)}" : "")} </color>");
             #endif
         }
     }
