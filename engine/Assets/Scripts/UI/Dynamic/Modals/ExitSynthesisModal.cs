@@ -19,7 +19,6 @@ namespace Synthesis.UI.Dynamic {
                 .AddOnClickedEvent(x => {
                     if (isOnMainMenu) {
                         Application.Quit();
-                        AnalyticsManager.LogCustomEvent(AnalyticsEvent.ApplicationQuit);
                     } else {
                         SimulationRunner.InSim = false;
                         DynamicUIManager.CloseAllPanels(true);

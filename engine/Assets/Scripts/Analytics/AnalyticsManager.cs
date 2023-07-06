@@ -133,7 +133,6 @@ namespace Analytics {
         ActiveModalClosed,
         PanelClosed,
         ExitedToMenu,
-        ApplicationQuit,
         SettingsSaved,
         SettingsReset,
         RobotSpawned,
