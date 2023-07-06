@@ -18,14 +18,12 @@ namespace Synthesis {
         private string _forwardDisplayName = " Forward";
         private string _reverseDisplayName = " Reverse";
 
-        private string _sliderSignal;
+        private LinearDriver _driver;
 
-        public GeneralSliderBehaviour(string simObjectId, string sliderSignal) : base(simObjectId) {
-            _sliderSignal = sliderSignal;
+        public GeneralSliderBehaviour(string simObjectId, LinearDriver driver) : base(simObjectId) {
+            _driver = driver;
 
-            var name = SimulationManager.SimulationObjects[SimObjectId]
-                           .State.CurrentSignalLayout.SignalMap[_sliderSignal]
-                           .Info.Name;
+            var name            = driver.Name;
             _forwardDisplayName = name + _forwardDisplayName;
             _reverseDisplayName = name + _reverseDisplayName;
 
@@ -67,8 +65,7 @@ namespace Synthesis {
             var rev   = InputManager.MappedValueInputs[_reverseInputKey];
             float val = Mathf.Abs(forw.Value) - Mathf.Abs(rev.Value);
 
-            SimulationManager.SimulationObjects[SimObjectId].State.CurrentSignals[_sliderSignal].Value =
-                Value.ForNumber(val);
+            _driver.MainInput = val;
         }
     }
 }

@@ -8,6 +8,7 @@ using Synthesis.Physics;
 using Synthesis.PreferenceManager;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
+using SynthesisAPI.Controller;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
 using UnityEngine;
