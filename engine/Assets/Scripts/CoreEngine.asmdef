@@ -28,7 +28,6 @@
         "Ionic.Zip.dll",
         "Xilium.CefGlue.dll",
         "chrome_elf.dll",
-        "d3dcompiler_43.dll",
         "d3dcompiler_47.dll",
         "libcef.dll",
         "libEGL.dll",
