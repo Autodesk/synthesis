@@ -68,7 +68,8 @@ namespace SynthesisAPI.Aether.Lobby {
             }
 
             ~Inner() {
-                Dispose();
+                if (_isAlive)
+                    Dispose();
             }
 
             private void AcceptTcpClient(IAsyncResult result) {
@@ -93,10 +94,11 @@ namespace SynthesisAPI.Aether.Lobby {
                         }
 
                     }
-                } catch (Exception e)
-                {
-                    UnityEngine.Debug.Log(e.StackTrace);
+                } catch (ObjectDisposedException) {
+                } catch (Exception e) {
+                    Logger.Log($"Failed to accept new client: {e.Message}");
                 }
+
 
                 if (_isAlive)
                     _listener.BeginAcceptTcpClient(AcceptTcpClient, null);
@@ -229,8 +231,8 @@ namespace SynthesisAPI.Aether.Lobby {
 
                 _isAlive.Value = false;
                 _listener.Stop();
-                _clients.ForEach(x => x.Value.Dispose());
                 _clientThreads.ForEach(x => x.Join());
+                _clients.ForEach(x => x.Value.Dispose());
 
                 Logger.Log("Server Disposed");
             }

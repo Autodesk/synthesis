@@ -227,9 +227,9 @@ namespace SynthesisAPI.Aether.Lobby {
 
             public void Dispose() {
                 _isAlive.Value = false;
-                _handler.Dispose();
                 _heartbeatThread.Join();
                 _requestSenderThread.Join();
+                _handler.Dispose();
 			}
 
 		}
