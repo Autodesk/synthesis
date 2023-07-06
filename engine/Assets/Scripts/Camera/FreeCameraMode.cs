@@ -26,8 +26,6 @@ public class FreeCameraMode : ICameraMode {
 
     private bool isActive = false;
 
-    private CameraController _controller;
-
     public void Start<T>(CameraController cam, T? previousCam)
         where T : ICameraMode {
         // only assign inputs once
@@ -57,8 +55,6 @@ public class FreeCameraMode : ICameraMode {
                 ActualYaw                                = driverStationCam.ActualYaw;
             }
         }
-
-        _controller = cam;
     }
 
     public void Update(CameraController cam) {
@@ -134,14 +130,6 @@ public class FreeCameraMode : ICameraMode {
 
     public void LateUpdate(CameraController cam) {
         cam.GroundRenderer.material.SetVector("_GridFocusPoint", cam.transform.position);
-    }
-
-    public void SetTransform(Vector3 position, Quaternion rotation) {
-        _controller.transform.position = position;
-        _controller.transform.rotation = rotation;
-        var euler                      = rotation.eulerAngles;
-        TargetPitch = ActualPitch = euler.x;
-        TargetYaw = ActualYaw = euler.y;
     }
 
     public void SetActive(bool active) {

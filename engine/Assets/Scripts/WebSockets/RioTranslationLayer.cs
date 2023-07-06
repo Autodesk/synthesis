@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using SynthesisAPI.RoboRIO;
 using Google.Protobuf.WellKnownTypes;
-using SynthesisAPI.Simulation;
+using SynthesisAPI.Utilities;
 
 using Type = System.Type;
 

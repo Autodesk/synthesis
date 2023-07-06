@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Mirabuf.Signal;
-using SynthesisAPI.Utilities;
 
-namespace SynthesisAPI.Simulation
+namespace SynthesisAPI.Utilities
 {
     /*
      * ControllableState stores a Signals object from mirabuf called CurrentSignalLayout.
