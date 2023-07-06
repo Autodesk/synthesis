@@ -57,7 +57,7 @@ namespace Analytics
         /// <summary>Records a custom event</summary>
         /// <param name="name">The name of the event</param>
         /// <param name="parameters">The parameters sent with the event</param>
-        public static void LogCustomEvent(string name, Dictionary<string, object> parameters = null)
+        public static void LogCustomEvent(AnalyticsEvent name, Dictionary<string, object> parameters = null)
         {
             if (UnityServices.State != ServicesInitializationState.Initialized)
             {
@@ -66,12 +66,21 @@ namespace Analytics
             }
             
             if (parameters == null)
-                AnalyticsService.Instance.CustomData(name);
-            else AnalyticsService.Instance.CustomData(name, parameters);
+                AnalyticsService.Instance.CustomData(name.ToString());
+            else AnalyticsService.Instance.CustomData(name.ToString(), parameters);
 
             #if DEBUG_ANALYTICS
                 Debug.Log($"<color=#A2D9FF>Logged custom event: \"{name}\"{((parameters != null) ? $" with parameters: {string.Join(", ", parameters)}" : "")} </color>");
             #endif
         }
+    }
+
+    /// <summary>
+    /// A specific custom event. <b>Make sure to add new events to the event manager on the <a href = "https://dashboard.unity3d.com/">Unity Dashboard</a></b>
+    /// </summary>
+    public enum AnalyticsEvent
+    {
+        CreateModal,
+        CreatePanel
     }
 }
