@@ -229,12 +229,14 @@ namespace Modes.MatchMode {
         /// </summary>
         public class Transition : MatchState {
             private float _timer;
+            private string _possessed;
 
             public override void Start() {
                 base.Start();
-                Scoring.targetTime = 135;
-                RobotSimObject.SpawnedRobots.ForEach(r => r.BehavioursEnabled = false);
-                _timer = 3;
+                _possessed                             = RobotSimObject.CurrentlyPossessedRobot;
+                RobotSimObject.CurrentlyPossessedRobot = string.Empty;
+                Scoring.targetTime                     = 135;
+                _timer                                 = 3;
             }
 
             public override void Update() {
@@ -245,7 +247,7 @@ namespace Modes.MatchMode {
             }
 
             public override void End() {
-                RobotSimObject.SpawnedRobots.ForEach(r => r.BehavioursEnabled = true);
+                RobotSimObject.CurrentlyPossessedRobot = _possessed;
             }
 
             public Transition() : base(StateName.Transition) {}
