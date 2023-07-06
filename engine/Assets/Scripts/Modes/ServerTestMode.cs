@@ -12,9 +12,11 @@ using Synthesis.Runtime;
 
 public class ServerTestMode : IMode {
     private LobbyServer? _server;
+    // clang-format off
     public LobbyServer? Server               => _server;
-    private readonly LobbyClient?[] _clients  = new LobbyClient?[2];
+    private readonly LobbyClient?[] _clients = new LobbyClient?[2];
     public LobbyClient?[] Clients            => _clients;
+    // clang-format on
 
     public IReadOnlyCollection<string> ClientInformation => _server?.Clients ?? new List<string>();
 
