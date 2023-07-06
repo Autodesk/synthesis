@@ -1,4 +1,4 @@
-#define DEBUG_ANALYTICS
+//#define DEBUG_ANALYTICS // Uncomment this line to print analytic debug information
 
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,8 @@ namespace Analytics
     
     /// <summary>
     /// Handles unity analytics initialization and sending custom events.
-    /// View analytics on the <a href = "https://dashboard.unity3d.com/">Unity Dashboard</a>
+    /// View analytics on the <a href = "https://dashboard.unity3d.com/">Unity Dashboard.</a>
+    /// Events will be be sent if the application is running in the editor
     /// </summary>
     public class AnalyticsManager : MonoBehaviour
     {
@@ -39,8 +40,9 @@ namespace Analytics
                 else
                     StopDataCollection();
             });
-            
-            await UnityServices.InitializeAsync();
+
+            if (!Application.isEditor)
+                await UnityServices.InitializeAsync();
             
             #if DEBUG_ANALYTICS
                 AnalyticsDebug("Unity services initialized");
@@ -48,7 +50,7 @@ namespace Analytics
 
             //TODO: check if the user gives consent to collect information
             
-            if (PreferenceManager.GetPreference<bool>(USE_ANALYTICS_PREF))
+            if (PreferenceManager.GetPreference<bool>(USE_ANALYTICS_PREF) && !Application.isEditor)
                 StartDataCollection();
         }
 
@@ -64,7 +66,8 @@ namespace Analytics
                 return;
             }
 
-            AnalyticsService.Instance.StartDataCollection();
+            if (!Application.isEditor)
+                AnalyticsService.Instance.StartDataCollection();
             
             #if DEBUG_ANALYTICS
                 AnalyticsDebug("Data collection started");
@@ -80,7 +83,8 @@ namespace Analytics
                 return;
             }
             
-            AnalyticsService.Instance.StopDataCollection();
+            if (!Application.isEditor)
+                AnalyticsService.Instance.StopDataCollection();
             
             #if DEBUG_ANALYTICS
             AnalyticsDebug("Data collection stopped");
@@ -102,14 +106,17 @@ namespace Analytics
             // Wait until unity services are initialized 
             while (UnityServices.State != ServicesInitializationState.Initialized)
                 await Task.Delay(1000);
-
-            if (parameterDictionary == null)
-                AnalyticsService.Instance.CustomData(name.ToString());
-            else AnalyticsService.Instance.CustomData(name.ToString(), parameterDictionary);
-
+            
             #if DEBUG_ANALYTICS
                 AnalyticsDebug($"Logged custom event \"{name}\"{((parameterDictionary != null) ? $" with parameters: {string.Join(", ", parameterDictionary)}" : "")}");
             #endif
+
+            if (Application.isEditor)
+                return;
+            
+            if (parameterDictionary == null)
+                AnalyticsService.Instance.CustomData(name.ToString());
+            else AnalyticsService.Instance.CustomData(name.ToString(), parameterDictionary);
         }
 
         /// <summary>Debug.Log with a template if DEBUG_ANALYTICS is #defined</summary>
