@@ -70,6 +70,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     private ICameraMode previousMode;
 
     private IEnumerable<WheelDriver>? _wheelDrivers;
+    public (RotationalDriver azimuth, WheelDriver driver)[] modules;
 
     public string MiraGUID => MiraLive.MiraAssembly.Info.GUID;
 
@@ -554,7 +555,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         // Sets wheels rotating forward
         GetLeftRightWheels();
 
-        (RotationalDriver azimuth, WheelDriver driver)[] modules;
 
         try {
             List<RotationalDriver> potentialAzimuthDrivers =

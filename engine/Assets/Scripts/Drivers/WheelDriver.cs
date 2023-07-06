@@ -223,7 +223,7 @@ namespace Synthesis {
             _targetRotationalSpeed = val * _motor.targetVelocity;
 
             var delta         = _targetRotationalSpeed - _customWheel.RotationSpeed;
-            var possibleDelta = (_motor.force * MIRABUF_TO_UNITY_FORCE * Time.deltaTime) / _customWheel.Inertia;
+            var possibleDelta = (_motor.force * Time.deltaTime) / _customWheel.Inertia;
             if (Mathf.Abs(delta) > possibleDelta)
                 delta = possibleDelta * Mathf.Sign(delta);
 

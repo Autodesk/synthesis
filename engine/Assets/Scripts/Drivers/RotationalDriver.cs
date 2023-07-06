@@ -110,6 +110,8 @@ namespace Synthesis {
         // Is this actually used?
         public bool UseMotor { get => _useMotor; }
 
+        public readonly string MotorRef;
+
         public RotationalDriver(string name, string[] inputs, string[] outputs, SimObject simObject, HingeJoint jointA,
             HingeJoint jointB, bool isWheel, string motorRef = "")
             : base(name, inputs, outputs, simObject) {
@@ -127,6 +129,8 @@ namespace Synthesis {
                     targetVelocity = 500,
                 };
             }
+
+            MotorRef = motorRef;
 
             _isWheel = isWheel;
 
