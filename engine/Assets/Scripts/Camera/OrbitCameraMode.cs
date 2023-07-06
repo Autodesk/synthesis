@@ -10,10 +10,10 @@ public class OrbitCameraMode : ICameraMode {
     // [SerializeField] public Transform FollowTransform;
     public static Func<Vector3> FocusPoint = () => Vector3.zero;
 
-    public float TargetZoom { get; private set; }  = 8.0f;
+    public float TargetZoom { get; private set; }  = 15.0f;
     public float TargetPitch { get; private set; } = 10.0f;
     public float TargetYaw { get; private set; }   = 135.0f;
-    public float ActualZoom { get; private set; }  = 4.0f;
+    public float ActualZoom { get; private set; }  = 5.0f;
     public float ActualPitch { get; private set; } = 0.0f;
 
     public float ActualYaw { get; private set; } = 0.0f;
