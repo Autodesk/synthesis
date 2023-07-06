@@ -95,7 +95,7 @@ public class ZoneConfigPanel : PanelDynamic {
             if (_isNewZone)
                 FieldSimObject.CurrentField.ScoringZones.Add(_zone);
 
-                if (!DynamicUIManager.PanelExists<ScoringZonesPanel>())
+            if (!DynamicUIManager.PanelExists<ScoringZonesPanel>())
                 DynamicUIManager.CreatePanel<ScoringZonesPanel>();
 
             if (DynamicUIManager.PanelExists<ScoringZonesPanel>())
@@ -104,7 +104,8 @@ public class ZoneConfigPanel : PanelDynamic {
             DynamicUIManager.ClosePanel<ZoneConfigPanel>();
             
             AnalyticsManager.LogCustomEvent(AnalyticsEvent.ScoringZoneUpdated,
-                ("Color", _data.Alliance), ("NumPoints", _data.Points));
+                ("AllianceColor", _data.Alliance), ("ScoringZonePoints", _data.Points),
+                ("ScoringZoneName", _data.Name));
         });
 
         CancelButton.AddOnClickedEvent(b => {
