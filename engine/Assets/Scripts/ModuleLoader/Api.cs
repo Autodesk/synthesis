@@ -105,7 +105,7 @@ namespace Engine.ModuleLoader {
 
         private class LoggerImpl : SynthesisAPI.Utilities.ILogger {
             private bool debugLogsEnabled = true;
-            private bool _isEnabled = true;
+            private bool _isEnabled       = true;
 
             public void Log(object o, LogLevel logLevel = LogLevel.Info, string memberName = "", string filePath = "",
                 int lineNumber = 0) {
@@ -138,11 +138,12 @@ namespace Engine.ModuleLoader {
             public void SetEnableDebugLogs(bool enable) {
                 debugLogsEnabled = enable;
             }
+
             public void SetEnabled(bool enabled) {
                 _isEnabled = enabled;
             }
-            public bool IsEnabled()
-                => _isEnabled;
+
+            public bool IsEnabled() => _isEnabled;
         }
 
         private void RerouteConsoleOutput() {

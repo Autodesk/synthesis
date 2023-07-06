@@ -67,15 +67,15 @@ namespace Synthesis {
             Velocity
         }
 
-		public double MainInput {
-			get {
-				var val = State.GetValue(_inputs[0]);
-				return val == null ? 0.0 : val.NumberValue;
-			}
-			set => State.SetValue(_inputs[0], Value.ForNumber(value));
-		}
+        public double MainInput {
+            get {
+                var val = State.GetValue(_inputs[0]);
+                return val == null ? 0.0 : val.NumberValue;
+            }
+            set => State.SetValue(_inputs[0], Value.ForNumber(value));
+        }
 
-		public bool HasContacts => _customWheel.HasContacts;
+        public bool HasContacts => _customWheel.HasContacts;
 
         private JointMotor _motor;
         public JointMotor Motor {
@@ -134,11 +134,11 @@ namespace Synthesis {
                 };
             }
 
-			State.SetValue(_outputs[0], Value.ForNumber(0));
-			State.SetValue(_outputs[1], Value.ForNumber(1));
+            State.SetValue(_outputs[0], Value.ForNumber(0));
+            State.SetValue(_outputs[1], Value.ForNumber(1));
 
-			// Debug.Log($"Speed: {_motor.targetVelocity}\nForce: {_motor.force}");
-		}
+            // Debug.Log($"Speed: {_motor.targetVelocity}\nForce: {_motor.force}");
+        }
 
         void EnableMotor() {
             _useMotor = true;
@@ -152,9 +152,9 @@ namespace Synthesis {
         private float _lastUpdate = float.NaN;
 
         public override void Update() {
-			VelocityControl();
+            VelocityControl();
 
-			_lastUpdate = Time.realtimeSinceStartup;
+            _lastUpdate = Time.realtimeSinceStartup;
 
             // I think these work?
             State.SetValue(_outputs[0], Value.ForNumber(_jointAngle / (Mathf.PI * 2f)));
@@ -176,7 +176,7 @@ namespace Synthesis {
             if (!_useMotor)
                 return;
 
-            var val = (float)MainInput;
+            var val = (float) MainInput;
 
             _targetRotationalSpeed = val * Mathf.Deg2Rad * _motor.targetVelocity;
 

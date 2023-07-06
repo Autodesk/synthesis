@@ -54,7 +54,7 @@ namespace Synthesis {
                 if (val == null)
                     throw new Exception($"No value with guid '{_inputs[1]}'");
 
-				switch (val.StringValue) {
+                switch (val.StringValue) {
                     case "Velocity":
                         return RotationalControlMode.Velocity;
                     case "Position":
@@ -68,10 +68,10 @@ namespace Synthesis {
                     case RotationalControlMode.Position:
                         State.SetValue(_inputs[1], Value.ForString("Position"));
                         break;
-					case RotationalControlMode.Velocity:
+                    case RotationalControlMode.Velocity:
                         State.SetValue(_inputs[1], Value.ForString("Velocity"));
                         break;
-					default:
+                    default:
                         throw new Exception("Unrecognized Rotational Control Mode");
                 }
             }
@@ -227,7 +227,7 @@ namespace Synthesis {
 
         private void VelocityControl() {
             if (_jointA.useMotor) {
-                var val = (float)MainInput;
+                var val = (float) MainInput;
 
                 var inertiaA = GetInertiaAroundParallelAxis(_jointA.connectedBody, _jointB.anchor, _jointB.axis);
                 // var angAccelA = (Motor.force * val) / inertiaA;

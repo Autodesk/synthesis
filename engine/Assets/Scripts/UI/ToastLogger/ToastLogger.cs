@@ -79,10 +79,11 @@ namespace Engine {
         public void SetEnableDebugLogs(bool enable) {
             debugLogsEnabled = enable;
         }
+
         public void SetEnabled(bool enabled) {
             _isEnabled = enabled;
         }
-        public bool IsEnabled()
-            => _isEnabled;
+
+        public bool IsEnabled() => _isEnabled;
     }
 }

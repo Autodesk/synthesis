@@ -101,13 +101,12 @@ namespace Synthesis.Import {
                 gamepieces.Add(gpSim);
             });
 
-            #endregion
+#endregion
 
-            #region Joints
+#region Joints
 
-            var state = assembly.Data.Signals == null ?
-                new ControllableState() :
-                new ControllableState(assembly.Data.Signals);
+            var state =
+                assembly.Data.Signals == null ? new ControllableState() : new ControllableState(assembly.Data.Signals);
 
             SimObject simObject;
             if (assembly.Dynamic) {

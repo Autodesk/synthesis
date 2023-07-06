@@ -7,10 +7,9 @@ using Google.Protobuf.WellKnownTypes;
 
 namespace Synthesis {
     public class LinearDriver : Driver {
+        public string Signal => _inputs[0];
 
-		public string Signal => _inputs[0];
-
-		public ConfigurableJoint JointA { get; private set; }
+        public ConfigurableJoint JointA { get; private set; }
         public ConfigurableJoint JointB { get; private set; }
         private float _maxSpeed;
         public float MaxSpeed {
@@ -36,17 +35,17 @@ namespace Synthesis {
         public float Velocity => _velocity;
         public (float Upper, float Lower) Limits { get; private set; }
 
-		public double MainInput {
-			get {
-				var val = State.GetValue(_inputs[0]);
-				return val == null ? 0.0 : val.NumberValue;
-			}
-			set => State.SetValue(_inputs[0], Value.ForNumber(value));
-		}
+        public double MainInput {
+            get {
+                var val = State.GetValue(_inputs[0]);
+                return val == null ? 0.0 : val.NumberValue;
+            }
+            set => State.SetValue(_inputs[0], Value.ForNumber(value));
+        }
 
-		public new string Name => State.SignalMap[_inputs[0]].Name;
+        public new string Name => State.SignalMap[_inputs[0]].Name;
 
-		public LinearDriver(string name, string[] inputs, string[] outputs, SimObject simObject,
+        public LinearDriver(string name, string[] inputs, string[] outputs, SimObject simObject,
             ConfigurableJoint jointA, ConfigurableJoint jointB, float maxSpeed, (float, float) limits)
             : base(name, inputs, outputs, simObject) {
             // Takeover joint configuration and make it more suited to control rather than passive
@@ -66,7 +65,7 @@ namespace Synthesis {
         public override void Update() {
             // TODO: Velocity?
 
-            float value = (float)MainInput;
+            float value = (float) MainInput;
 
             _velocity = value * MaxSpeed;
             Position += Time.deltaTime * _velocity;

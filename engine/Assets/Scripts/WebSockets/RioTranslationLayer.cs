@@ -42,9 +42,8 @@ namespace Synthesis.WS.Translation {
             }
 
             public void Update(ControllableState signalState) {
-
                 var signalVal = signalState.GetValue($"{_signal}_encoder");
-                int val = (int)(signalVal == null ? 0 : signalVal.NumberValue);
+                int val       = (int) (signalVal == null ? 0 : signalVal.NumberValue);
 
                 // TODO: Update riostate
                 if (_rioDevice.Length == 0 && !AquireRioDevice(WebSocketManager.RioState))

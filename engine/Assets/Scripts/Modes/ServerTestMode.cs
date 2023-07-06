@@ -12,9 +12,9 @@ using Synthesis.Runtime;
 
 public class ServerTestMode : IMode {
     private LobbyServer? _server;
-    public LobbyServer? Server => _server;
-    private readonly LobbyClient?[] _clients = new LobbyClient?[2];
-    public LobbyClient?[] Clients => _clients;
+    public LobbyServer? Server               => _server;
+    private readonly LobbyClient?[] _clients  = new LobbyClient?[2];
+    public LobbyClient?[] Clients            => _clients;
 
     public IReadOnlyCollection<string> ClientInformation => _server?.Clients ?? new List<string>();
 
@@ -45,8 +45,8 @@ public class ServerTestMode : IMode {
 
     public void End() {
         Engine.ModuleLoader.Api.ToastLogger.SetEnabled(false);
-		KillClients();
-		_server?.Dispose();
+        KillClients();
+        _server?.Dispose();
         _server = null;
         Engine.ModuleLoader.Api.ToastLogger.SetEnabled(true);
     }
