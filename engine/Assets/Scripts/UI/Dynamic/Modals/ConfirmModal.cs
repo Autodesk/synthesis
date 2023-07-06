@@ -2,7 +2,7 @@ using Synthesis.UI.Dynamic;
 using UnityEngine;
 
 public class ConfirmModal : ModalDynamic {
-    private const float _width  = 300f;
+    private const float _width = 300f;
     private const float _height = 0f;
 
     private string _message;

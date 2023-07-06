@@ -41,11 +41,14 @@ namespace Modes.MatchMode {
         private MatchStateMachine _stateMachine;
 
         public void Start() {
-            _stateMachine = MatchStateMachine.Instance;
-            _stateMachine.SetState(MatchStateMachine.StateName.MatchConfig);
+            DynamicUIManager.CreateModal<MatchModeModal>();
+            EventBus.NewTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
 
             Array.Fill(SelectedRobots, -1);
             Array.Fill(RawSpawnLocations, (Vector3.zero, Quaternion.identity));
+
+            _stateMachine = MatchStateMachine.Instance;
+            _stateMachine.SetState(MatchStateMachine.StateName.MatchConfig);
 
             SetupMatchResultTracking();
             ConfigureMainHUD();
@@ -104,13 +107,14 @@ namespace Modes.MatchMode {
         }
 
         public void Update() {
-            if (_stateMachine != null)
+            if (_stateMachine != null) {
                 _stateMachine.Update();
 
                 if (Scoring.targetTime <= 0 && _stateMachine.CurrentState.StateName is >=
                                                    MatchStateMachine.StateName.Auto and <=
                                                    MatchStateMachine.StateName.Endgame)
                     _stateMachine.AdvanceState();
+            }
         }
 
         public void End() {}

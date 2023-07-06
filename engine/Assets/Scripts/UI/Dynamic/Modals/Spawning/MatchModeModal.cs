@@ -40,20 +40,15 @@ public class MatchModeModal : ModalDynamic {
         Title.SetText("Match Mode");
         Description.SetText("Configure Match Mode");
 
-        AcceptButton
-            .StepIntoLabel(label => label.SetText("Load"))
-            .AddOnClickedEvent(b =>
-            {
-                if (_fieldIndex != -1)
-                {
-                    DynamicUIManager.CreateModal<LoadingScreenModal>(); 
-                    MonoBehaviour _mb = GameObject.FindObjectOfType<MonoBehaviour>();
-                    if (_mb != null)
-                    {
-                        _mb.StartCoroutine(LoadMatch());
-                    }
+        AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
+            if (_fieldIndex != -1) {
+                DynamicUIManager.CreateModal<LoadingScreenModal>();
+                MonoBehaviour _mb = GameObject.FindObjectOfType<MonoBehaviour>();
+                if (_mb != null) {
+                    _mb.StartCoroutine(LoadMatch());
                 }
-            });
+            }
+        });
         CancelButton.AddOnClickedEvent(b => { // need to add in isMatchModalOpen integration
             DynamicUIManager.CloseActiveModal();
         });

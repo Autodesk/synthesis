@@ -2,6 +2,7 @@ using System;
 using Modes.MatchMode;
 using Synthesis.Runtime;
 using Synthesis.UI.Dynamic;
+using SynthesisAPI.EventBus;
 using TMPro;
 using UnityEngine;
 

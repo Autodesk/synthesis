@@ -74,7 +74,10 @@ namespace Modes.MatchMode {
             public OnStateStarted(MatchState state, StateName stateName) {
                 this.state     = state;
                 this.stateName = stateName;
+
             }
+
+            // state passes to next in SpawnLocationPanel accept button
         }
 
         /// Called whenever a match state is ended
@@ -121,6 +124,7 @@ namespace Modes.MatchMode {
 
             public None() : base(StateName.None) {}
         }
+
 
         /// When the user is choosing which robots to spawn in and other match settings
         public class MatchConfig : MatchState {
@@ -196,6 +200,7 @@ namespace Modes.MatchMode {
             }
 
             public FieldConfig() : base(StateName.FieldConfig) {}
+
         }
 
         /// <summary>
