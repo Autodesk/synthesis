@@ -221,10 +221,10 @@ public class MatchStateMachine {
             DynamicUIManager.CreateModal<MatchResultsModal>();
 
             AnalyticsManager.LogCustomEvent(AnalyticsEvent.MatchEnded,
-                ("BluePoints", MatchMode.MatchResultsTracker.MatchResultEntries[typeof(MatchResultsTracker.BluePoints)]
-                                   .ToString()),
-                ("RedPoints", MatchMode.MatchResultsTracker.MatchResultEntries[typeof(MatchResultsTracker.RedPoints)]
-                                  .ToString()));
+                ("BluePoints", int.Parse(MatchMode.MatchResultsTracker.MatchResultEntries[typeof(MatchResultsTracker.BluePoints)]
+                    .ToString())),
+                ("RedPoints", int.Parse(MatchMode.MatchResultsTracker.MatchResultEntries[typeof(MatchResultsTracker.RedPoints)]
+                    .ToString())));
         }
 
         public override void Update() {}
