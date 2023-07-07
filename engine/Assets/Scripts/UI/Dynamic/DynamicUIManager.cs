@@ -13,6 +13,7 @@ using Synthesis.Gizmo;
 using Synthesis.Runtime;
 using System.Linq;
 using Analytics;
+using Utilities.ColorManager;
 
 namespace Synthesis.UI.Dynamic {
     public static class DynamicUIManager {
@@ -44,16 +45,16 @@ namespace Synthesis.UI.Dynamic {
                             .SetBottomStretch<Slider>(leftPadding: 100f, rightPadding: 100f, anchoredY: 50)
                             .SetSlideDirection(UnityEngine.UI.Slider.Direction.LeftToRight)
                             .StepIntoBackgroundImage(
-                                i => i.SetColor(OldColorManager.TryGetColor(OldColorManager.SYNTHESIS_ORANGE)))
-                            .StepIntoFillImage(i => i.SetColor(OldColorManager.TryGetColor(OldColorManager.SYNTHESIS_BLACK)))
+                                i => i.SetColor(ColorManager.SynthesisColor.SynthesisOrange))
+                            .StepIntoFillImage(i => i.SetColor(ColorManager.SynthesisColor.SynthesisBlack))
                             .StepIntoTitleLabel(
                                 l => l.SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Bottom)
                                          .SetFontSize(20)
-                                         .SetColor(OldColorManager.TryGetColor(OldColorManager.SYNTHESIS_BLACK)))
+                                         .SetColor(ColorManager.SynthesisColor.SynthesisBlack))
                             .StepIntoValueLabel(
                                 l => l.SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Bottom)
                                          .SetFontSize(20)
-                                         .SetColor(OldColorManager.TryGetColor(OldColorManager.SYNTHESIS_BLACK)));
+                                         .SetColor(ColorManager.SynthesisColor.SynthesisBlack));
                 SimulationRunner.OnSimKill += () => { _replaySlider = null; };
                 return _replaySlider;
             }

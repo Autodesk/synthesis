@@ -76,16 +76,7 @@ namespace Synthesis.Runtime {
             OnUpdate += ModeManager.Update;
 
             WebSocketManager.RioState.OnUnrecognizedMessage += s => Debug.Log(s);
-
-            // Screen.fullScreenMode = FullScreenMode.MaximizedWindow;
-
-            // TestColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
-            // RotationalDriver.TestSphericalCoordinate();
-
-            if (OldColorManager.HasColor("tree")) {
-                GameObject.Instantiate(Resources.Load("Misc/Tree"));
-            }
-
+            
             SettingsModal.LoadSettings();
             SettingsModal.ApplySettings();
         }

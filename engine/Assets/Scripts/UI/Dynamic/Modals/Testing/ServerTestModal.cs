@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
+using Utilities.ColorManager;
 
 namespace Synthesis.UI.Dynamic {
 
@@ -22,8 +23,9 @@ namespace Synthesis.UI.Dynamic {
 
         public override void Create() {
             (var left, var right) = MainContent.SplitLeftRight(leftWidth: (MAIN_CONTENT_WIDTH - 20f) / 2, 20f);
+            
             left.EnsureImage().StepIntoImage(
-                i => i.SetColor(OldColorManager.TryGetColor(OldColorManager.SYNTHESIS_BLACK_ACCENT)));
+                i => i.SetColor(ColorManager.SynthesisColor.SynthesisBlackAccent));
 
             _statusLabel = left.CreateLabel(30)
                                .SetStretch<Label>(15f, 15f, 15f, 15f)

@@ -7,7 +7,7 @@ using Synthesis.UI;
 using Synthesis.WS;
 using SynthesisAPI.RoboRIO;
 using SynthesisAPI.Utilities;
-
+using Utilities.ColorManager;
 using Logger = SynthesisAPI.Utilities.Logger;
 
 public class DriverStationPanel : PanelDynamic {
@@ -72,11 +72,11 @@ public class DriverStationPanel : PanelDynamic {
 
     private void SetModeButton(bool isEnabled) {
         if (isEnabled) {
-            _modeButton.StepIntoImage(i => i.SetColor(OldColorManager.SYNTHESIS_BLACK_ACCENT))
-                .StepIntoLabel(l => l.SetColor(OldColorManager.SYNTHESIS_ORANGE).SetText("Enabled"));
+            _modeButton.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.SynthesisBlackAccent))
+                .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.SynthesisOrange).SetText("Enabled"));
         } else {
-            _modeButton.StepIntoImage(i => i.SetColor(OldColorManager.SYNTHESIS_ORANGE))
-                .StepIntoLabel(l => l.SetColor(OldColorManager.SYNTHESIS_BLACK).SetText("Disabled"));
+            _modeButton.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.SynthesisOrange))
+                .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.SynthesisBlack).SetText("Disabled"));
         }
     }
 

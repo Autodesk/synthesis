@@ -6,6 +6,7 @@ using Synthesis.UI.Dynamic;
 using SynthesisAPI.Utilities;
 using TMPro;
 using UnityEngine;
+using Utilities.ColorManager;
 using Logger = SynthesisAPI.Utilities.Logger;
 
 #nullable enable
@@ -28,8 +29,9 @@ namespace Synthesis.UI.Dynamic {
 
             Title.SetText("Robot Selection");
             Description.SetText("Choose which robot you wish to play as");
+            
             ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("PlusIcon"))
-                .SetColor(OldColorManager.SYNTHESIS_WHITE);
+                .SetColor(ColorManager.SynthesisColor.SynthesisWhite);
 
             AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
                 if (_selectedIndex != -1) {

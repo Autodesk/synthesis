@@ -5,6 +5,7 @@ using Synthesis.PreferenceManager;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
+using Utilities.ColorManager;
 
 public class BetaWarningPanel : PanelDynamic {
     private const string DISPLAY_WARNING_PREF = "beta/warning";
@@ -24,11 +25,14 @@ public class BetaWarningPanel : PanelDynamic {
             return false;
 
         Title.SetText("Warning");
+        
         AcceptButton.AddOnClickedEvent(b => DynamicUIManager.ClosePanel<BetaWarningPanel>())
             .StepIntoLabel(l => l.SetText("Okidoki"));
+        
         CancelButton.RootGameObject.SetActive(false);
-        PanelImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"));
-        PanelImage.SetColor(OldColorManager.SYNTHESIS_WHITE);
+        
+        PanelImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"))
+            .SetColor(ColorManager.SynthesisColor.SynthesisWhite);
 
         MainContent.CreateLabel(40)
             .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Center)

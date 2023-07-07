@@ -112,7 +112,7 @@ namespace Utilities.ColorManager {
             });
         }
 
-        private static Color GetColor(SynthesisColor colorName)
+        public static Color GetColor(SynthesisColor colorName)
         {
             if (_loadedColors.TryGetValue(colorName, out Color32 color))
                 return color;
@@ -120,7 +120,7 @@ namespace Utilities.ColorManager {
             return UNASSIGNED_COLOR;
         }
 
-        public static void AssignColor(SynthesisColor colorName, Action<Color> applyColor)
+        /*public static void AssignColor(SynthesisColor colorName, Action<Color> applyColor)
         {
             applyColor.Invoke(GetColor(colorName));
             
@@ -128,7 +128,7 @@ namespace Utilities.ColorManager {
             {
                 applyColor.Invoke(GetColor(colorName));
             });
-        }
+        }*/
 
         public enum SynthesisColor
         {

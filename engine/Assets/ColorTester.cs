@@ -8,10 +8,11 @@ public class ColorTester : MonoBehaviour
 {
     void Start()
     {
-        ColorManager.AssignColor(ColorManager.SynthesisColor.SynthesisOrange, (c) =>
+        /*ColorManager.AssignColor(ColorManager.SynthesisColor.SynthesisOrange, (c) =>
         {
             Debug.Log($"Color assigned to {c}");
-        });
+        });*/
+        ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisHighlightSelect);
         //var col = ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisOrange);
         //Debug.Log(col);
     }

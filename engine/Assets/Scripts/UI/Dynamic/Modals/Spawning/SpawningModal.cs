@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
+using Utilities.ColorManager;
 
 public class SpawningModal : ModalDynamic {
     public SpawningModal() : base(new Vector2(400, 65)) {}
@@ -17,8 +18,9 @@ public class SpawningModal : ModalDynamic {
     public override void Create() {
         Title.SetText("Spawning");
         Description.SetText("What do you want to spawn?");
+        
         ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("PlusIcon"))
-            .SetColor(OldColorManager.SYNTHESIS_WHITE);
+            .SetColor(ColorManager.SynthesisColor.SynthesisWhite);
 
         var spacing           = 15f;
         (var left, var right) = MainContent.SplitLeftRight((MainContent.Size.x / 2f) - (spacing / 2f), spacing);

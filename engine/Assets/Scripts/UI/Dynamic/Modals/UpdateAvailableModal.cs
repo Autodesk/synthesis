@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
+using Utilities.ColorManager;
 
 namespace Synthesis.UI.Dynamic {
     public class UpdateAvailableModal : ModalDynamic {
@@ -23,7 +24,8 @@ namespace Synthesis.UI.Dynamic {
                 .SetPivot<Button>(new Vector2(0.0f, 0.0f))
                 .SetWidth<Button>(125);
             ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"));
-            ModalImage.SetColor(OldColorManager.SYNTHESIS_WHITE);
+
+            ModalImage.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisWhite));
 
             MainContent.CreateLabel(40)
                 .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Center)

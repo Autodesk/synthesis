@@ -27,6 +27,7 @@ using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.EventBus;
 using Synthesis.WS.Translation;
+using Utilities.ColorManager;
 using static Synthesis.WS.Translation.RioTranslationLayer;
 using Logger = SynthesisAPI.Utilities.Logger;
 
@@ -225,7 +226,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
         _allRigidbodies.ForEach(x => {
             var rc     = x.gameObject.AddComponent<HighlightComponent>();
-            rc.Color   = OldColorManager.TryGetColor(OldColorManager.SYNTHESIS_HIGHLIGHT_HOVER);
+            rc.Color   = ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisHighlightHover); 
             rc.enabled = false;
         });
     }

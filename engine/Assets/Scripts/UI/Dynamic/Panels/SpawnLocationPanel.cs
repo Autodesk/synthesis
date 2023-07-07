@@ -4,7 +4,7 @@ using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using UnityEngine;
 using UnityEngine.EventSystems;
-
+using Utilities.ColorManager;
 using Input  = UnityEngine.Input;
 using Object = UnityEngine.Object;
 
@@ -44,8 +44,8 @@ namespace Synthesis.UI.Dynamic {
         private readonly Vector3[] _robotOffsets      = new Vector3[6];
 
         private readonly Func<Button, Button> DisabledTemplate = b =>
-            b.StepIntoImage(i => i.SetColor(OldColorManager.SYNTHESIS_BLACK_ACCENT))
-                .StepIntoLabel(l => l.SetColor(OldColorManager.SYNTHESIS_WHITE));
+            b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.SynthesisBlackAccent))
+                .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.SynthesisWhite));
 
         public readonly Func<UIComponent, UIComponent> VerticalLayout = (u) => {
             var offset = (-u.Parent!.RectOfChildren(u).yMin) + VERTICAL_PADDING;
@@ -158,7 +158,7 @@ namespace Synthesis.UI.Dynamic {
         /// </summary>
         /// <param name="index">the selected buttons index</param>
         private void SelectButton(int index) {
-            buttons[_selectedButton].Image.Color = OldColorManager.TryGetColor(OldColorManager.SYNTHESIS_BLACK_ACCENT);
+            buttons[_selectedButton].Image.Color = ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisBlackAccent);
             _selectedButton                      = index;
 
             buttons[index].Image.Color = (index < 3) ? redButtonColor : blueButtonColor;

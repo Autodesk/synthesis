@@ -1,3 +1,4 @@
+/*
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -83,3 +84,4 @@ namespace Synthesis.UI {
         public static bool HasColor(string color) => _colors.ContainsKey(color);
     }
 }
+*/
