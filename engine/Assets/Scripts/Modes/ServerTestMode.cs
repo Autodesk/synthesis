@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Synthesis.Runtime;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.Aether.Lobby;
+using UnityEngine;
 
 public class ServerTestMode : IMode {
     private LobbyServer? _server;
@@ -17,6 +18,8 @@ public class ServerTestMode : IMode {
     public IReadOnlyCollection<string> ClientInformation => _server?.Clients ?? new List<string>();
 
     public void Start() {
+        MainHUD.AddItemToDrawer("Multibot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>());
+        
         _server = new LobbyServer();
 
         for (int i = 0; i < _clients.Length; i++) {
@@ -24,7 +27,16 @@ public class ServerTestMode : IMode {
             Task.Factory.StartNew(() => _clients[j] = new LobbyClient("127.0.0.1", $"Client {j}"));
         }
 
-        DynamicUIManager.CreateModal<ServerTestModal>();
+        // DynamicUIManager.CreateModal<ServerTestModal>();
+        // TODO remove and allow user to choose robot
+        string dozer = "Dozer_v9.mira";
+        string tmm   = "Team 2471 (2018)_v5.mira";
+        RobotSimObject.SpawnRobot(AddRobotModal.ParsePath("$appdata/Autodesk/Synthesis/Mira/" + tmm, '/'), new Vector3(-2, 1, 0), Quaternion.Euler(0, 0, 0), false);
+        RobotSimObject.GetCurrentlyPossessedRobot().BehavioursEnabled = false;
+        string clientBotName = RobotSimObject.CurrentlyPossessedRobot;
+        RobotSimObject.SpawnRobot(AddRobotModal.ParsePath("$appdata/Autodesk/Synthesis/Mira/" + tmm, '/'), new Vector3(2, 1, 0), Quaternion.Euler(0, 0, 0), false);
+        RobotSimObject.GetCurrentlyPossessedRobot().DriversEnabled = false;
+        string ghostBotName = RobotSimObject.CurrentlyPossessedRobot;
 
         SimulationRunner.OnGameObjectDestroyed += End;
     }

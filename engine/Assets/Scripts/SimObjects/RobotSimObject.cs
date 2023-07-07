@@ -357,6 +357,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         if (_wheelDrivers == null)
             return;
 
+        if (!DriversEnabled) return;
+
         int wheelsInContact = _wheelDrivers.Count(x => x.HasContacts);
         float mod           = wheelsInContact <= 4 ? 1f : Mathf.Pow(0.7f, wheelsInContact - 4);
         _wheelDrivers.ForEach(x => x.WheelsPhysicsUpdate(mod));
