@@ -14,7 +14,7 @@ namespace Utilities.ColorManager {
                                               Path.AltDirectorySeparatorChar + "Autodesk" +
                                               Path.AltDirectorySeparatorChar + "Synthesis";
 
-        private static readonly (SynthesisColor, Color)[] _defaultColors =
+        private static readonly (SynthesisColor name, Color color)[] _defaultColors =
         {
             (SynthesisColor.SynthesisOrange, new Color32(250, 162, 27, 255)),
             (SynthesisColor.SynthesisOrangeAccent, new Color32(204, 124, 0, 255)),
@@ -36,12 +36,16 @@ namespace Utilities.ColorManager {
 
         static ColorManager()
         {
+            Debug.Log("Color manager static");
             LoadTheme("test_theme");
+            LoadDefaultColors();
+            SaveTheme("test_theme");
         }
 
         private static void LoadTheme(string themeName)
         {
             string themePath = PATH + Path.AltDirectorySeparatorChar + themeName + ".json";
+            Debug.Log($"Loading theme: {themePath}");
             
             var dir = Path.GetFullPath(themePath).Replace(Path.GetFileName(themePath), "");
             if (!Directory.Exists(dir)) {
@@ -56,6 +60,35 @@ namespace Utilities.ColorManager {
             jsonColors.ForEach(x => { 
                 _loadedColors.Add(Enum.Parse<SynthesisColor>(x.Key), x.Value.ColorToHex()); 
             });
+        }
+        
+        private static void SaveTheme(string themeName) {
+            string themePath = PATH + Path.AltDirectorySeparatorChar + themeName + ".json";
+            Debug.Log($"Saving theme: {themePath}");
+
+            
+            var jsonColors = new Dictionary<string, string>();
+            
+            _loadedColors.ForEach(x => {
+                jsonColors.Add(x.Key.ToString(), ((Color)x.Value).ToHex());
+            });
+            
+            File.WriteAllText(themePath, JsonConvert.SerializeObject(jsonColors));
+        }
+
+        private static void LoadDefaultColors()
+        {
+            _defaultColors.ForEach(c => {
+                _loadedColors.TryAdd(c.name, c.color);
+            });
+        }
+
+        public static Color GetColor(SynthesisColor colorName)
+        {
+            if (_loadedColors.TryGetValue(colorName, out Color32 color))
+                return color;
+
+            return UNASSIGNED_COLOR;
         }
 
         public enum SynthesisColor
