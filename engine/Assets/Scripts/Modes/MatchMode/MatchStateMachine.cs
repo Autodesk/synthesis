@@ -41,7 +41,7 @@ namespace Modes.MatchMode {
 
         public void AdvanceState() {
             StateName currentStateName = _currentState.StateName;
-            var       nextStateName    = currentStateName + 1;
+            var nextStateName          = currentStateName + 1;
             SetState(nextStateName);
         }
 
@@ -76,7 +76,6 @@ namespace Modes.MatchMode {
             public OnStateStarted(MatchState state, StateName stateName) {
                 this.state     = state;
                 this.stateName = stateName;
-
             }
 
             // state passes to next in SpawnLocationPanel accept button
@@ -127,7 +126,6 @@ namespace Modes.MatchMode {
             public None() : base(StateName.None) {}
         }
 
-
         /// When the user is choosing which robots to spawn in and other match settings
         public class MatchConfig : MatchState {
             public override void Start() {
@@ -156,9 +154,9 @@ namespace Modes.MatchMode {
                 if (Camera.main != null) {
                     FreeCameraMode camMode = CameraController.CameraModes["Freecam"] as FreeCameraMode;
                     Camera.main.GetComponent<CameraController>().CameraMode = camMode;
-                    var location = new Vector3(0, 6, -8);
-                    camMode.SetTransform(location,
-                        Quaternion.LookRotation(-location.normalized, Vector3.Cross(-location.normalized, Vector3.right)));
+                    var location                                            = new Vector3(0, 6, -8);
+                    camMode.SetTransform(location, Quaternion.LookRotation(-location.normalized,
+                                                       Vector3.Cross(-location.normalized, Vector3.right)));
                 }
 
                 // state passes to next in SpawnLocationPanel accept button
@@ -184,7 +182,7 @@ namespace Modes.MatchMode {
             public override void Start() {
                 base.Start();
                 DynamicUIManager.CreatePanel<ScoringZonesPanel>(true);
-                var panel = DynamicUIManager.GetPanel<ScoringZonesPanel>();
+                var panel               = DynamicUIManager.GetPanel<ScoringZonesPanel>();
                 panel.OnAccepted += () => {
                     DynamicUIManager.CreateModal<ConfirmModal>("Start Match?");
                     DynamicUIManager.ActiveModal.OnAccepted += () => {
@@ -206,7 +204,6 @@ namespace Modes.MatchMode {
             }
 
             public FieldConfig() : base(StateName.FieldConfig) {}
-
         }
 
         /// <summary>
@@ -266,7 +263,8 @@ namespace Modes.MatchMode {
             }
 
             public override void Update() {
-                if (Scoring.targetTime <= 30) Instance.AdvanceState();
+                if (Scoring.targetTime <= 30)
+                    Instance.AdvanceState();
             }
 
             public override void End() {}

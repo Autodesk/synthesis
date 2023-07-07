@@ -99,10 +99,10 @@ namespace Synthesis {
                 wheel.MainInput = rightSpeed * speedMult;
             }
         }
-        
+
         protected override void OnDisable() {
-                    _leftWheels.ForEach(w => w.MainInput = 0);
-                    _rightWheels.ForEach(w => w.MainInput = 0);
-                }
+            _leftWheels.ForEach(w => w.MainInput = 0);
+            _rightWheels.ForEach(w => w.MainInput = 0);
+        }
     }
 }

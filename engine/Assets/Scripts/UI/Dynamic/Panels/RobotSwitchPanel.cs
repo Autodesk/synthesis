@@ -19,7 +19,7 @@ public class RobotSwitchPanel : PanelDynamic {
     private ScrollView _scrollView;
     private Button _addButton;
     private Button _removeButton;
-    
+
     private bool _isMatchMode;
 
     public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
@@ -63,7 +63,7 @@ public class RobotSwitchPanel : PanelDynamic {
                 if (RobotSimObject.SpawnedRobots.Count < RobotSimObject.MAX_ROBOTS)
                     _addButton.ApplyTemplate<Button>(EnableButton);
             });
-            
+
             if (RobotSimObject.CurrentlyPossessedRobot == string.Empty)
                 _removeButton.ApplyTemplate(DisableButton);
 

@@ -67,7 +67,7 @@ namespace Synthesis {
 
             _driver.MainInput = val;
         }
-        
+
         protected override void OnDisable() {
             _driver.MainInput = 0f;
         }

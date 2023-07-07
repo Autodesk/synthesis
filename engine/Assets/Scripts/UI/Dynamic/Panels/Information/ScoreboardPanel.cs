@@ -109,8 +109,8 @@ public class ScoreboardPanel : PanelDynamic {
 
         if (_showTimer) {
             // state advances in MatchMode update
-            if (MatchStateMachine.Instance.CurrentState.StateName is >= MatchStateMachine.StateName.Auto and
-                <= MatchStateMachine.StateName.Endgame and not MatchStateMachine.StateName.Transition) {
+            if (MatchStateMachine.Instance.CurrentState.StateName is >= MatchStateMachine.StateName.Auto and <=
+                MatchStateMachine.StateName.Endgame and not MatchStateMachine.StateName.Transition) {
                 Scoring.targetTime -= Time.deltaTime;
                 time.SetText(Mathf.RoundToInt(Scoring.targetTime).ToString());
             }
