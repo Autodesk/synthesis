@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
+using Synthesis.PreferenceManager;
 using Synthesis.Util;
 using SynthesisAPI.EventBus;
 using UnityEngine;
@@ -9,6 +11,8 @@ using UnityEngine;
 namespace Utilities.ColorManager {
     public static class ColorManager
     {
+        public const string SELECTED_THEME_PREF = "color/selected_theme";
+        
         private static readonly Color32 UNASSIGNED_COLOR = new Color32(200, 255, 0, 255);
         
         private static readonly string PATH = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
@@ -38,11 +42,22 @@ namespace Utilities.ColorManager {
         private const string DEFAULT_THEME = "default";
         private static string _selectedTheme;
 
+        public static string[] AvailableThemes
+        {
+            get
+            {
+                var themes = Directory.GetFiles(PATH).Select(x => Path.GetFileNameWithoutExtension(x)).ToList();
+                themes.Insert(0, "default");
+                return themes.ToArray();
+            }
+        }
+
         public static string SelectedTheme
         {
             get => _selectedTheme;
             set
             {
+                Debug.Log($"Set Theme To {value}");
                 if (value == _selectedTheme)
                     return;
 
@@ -61,7 +76,11 @@ namespace Utilities.ColorManager {
 
         static ColorManager()
         {
-            Debug.Log("Color manager static");
+            EventBus.NewTypeListener<PostPreferenceSaveEvent>(e => {
+                string selectedTheme = PreferenceManager.GetPreference<string>(SELECTED_THEME_PREF);
+                SelectedTheme = selectedTheme;
+            });
+            
             LoadTheme(DEFAULT_THEME);
             LoadDefaultColors();
             SaveTheme(DEFAULT_THEME);
@@ -84,7 +103,7 @@ namespace Utilities.ColorManager {
 
             var jsonColors = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(themePath));
 
-            jsonColors.ForEach(x => { 
+            jsonColors?.ForEach(x => { 
                 _loadedColors.Add(Enum.Parse<SynthesisColor>(x.Key), x.Value.ColorToHex()); 
             });
         }
@@ -129,6 +148,19 @@ namespace Utilities.ColorManager {
                 applyColor.Invoke(GetColor(colorName));
             });
         }*/
+
+        public static int ThemeNameToIndex(string themeName)
+        {
+            int i = 0;
+            foreach (string theme in AvailableThemes)
+            {
+                if (theme.Equals(themeName))
+                    return i;
+                i++;
+            }
+            
+            return -1;
+        }
 
         public enum SynthesisColor
         {

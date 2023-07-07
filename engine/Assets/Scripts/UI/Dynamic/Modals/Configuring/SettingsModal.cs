@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Linq;
 using Analytics;
 using UnityEngine.Rendering;
+using Utilities.ColorManager;
 
 namespace Synthesis.UI.Dynamic {
     public class SettingsModal : ModalDynamic {
@@ -22,6 +23,7 @@ namespace Synthesis.UI.Dynamic {
 
         private static int _screenModeIndex;
         private static int _qualitySettingsIndex;
+        private static int _selectedThemeIndex;
         private static float _zoomSensitivity;
         private static float _yawSensitivity;
         private static float _pitchSensitivity;
@@ -61,16 +63,24 @@ namespace Synthesis.UI.Dynamic {
                     .ApplyTemplate(VerticalLayout)
                     .StepIntoLabel(l => l.SetText("Screen Mode"))
                     .StepIntoDropdown(d => d.SetOptions(_screenModeList)
-                                               .AddOnValueChangedEvent((d, i, o) => { _screenModeIndex = i; })
-                                               .SetValue(Get<int>(SCREEN_MODE)));
+                        .AddOnValueChangedEvent((d, i, o) => { _screenModeIndex = i; })
+                        .SetValue(Get<int>(SCREEN_MODE)));
 
             var qualitySettingsDropdown =
                 MainContent.CreateLabeledDropdown()
                     .ApplyTemplate(VerticalLayout)
                     .StepIntoLabel(l => l.SetText("Quality Settings"))
                     .StepIntoDropdown(d => d.SetOptions(_qualitySettingsList)
-                                               .AddOnValueChangedEvent((d, i, o) => _qualitySettingsIndex = i)
-                                               .SetValue(Get<int>(QUALITY_SETTINGS)));
+                        .AddOnValueChangedEvent((d, i, o) => _qualitySettingsIndex = i)
+                        .SetValue(Get<int>(QUALITY_SETTINGS)));
+            
+            var themeDropdown =
+                MainContent.CreateLabeledDropdown()
+                    .ApplyTemplate(VerticalLayout)
+                    .StepIntoLabel(l => l.SetText("Color Theme"))
+                    .StepIntoDropdown(d => d.SetOptions(ColorManager.AvailableThemes)
+                        .AddOnValueChangedEvent((d, i, o) => _selectedThemeIndex = i)
+                        .SetValue(ColorManager.ThemeNameToIndex(Get<string>(ColorManager.SELECTED_THEME_PREF))));
 
             MainContent.CreateLabel()
                 .ApplyTemplate(Label.BigLabelTemplate)
@@ -129,6 +139,8 @@ namespace Synthesis.UI.Dynamic {
         public static void SaveSettings() {
             Set(SCREEN_MODE, _screenModeIndex);
             Set(QUALITY_SETTINGS, _qualitySettingsIndex);
+            Debug.Log($"Set {_selectedThemeIndex} as {ColorManager.AvailableThemes[_selectedThemeIndex]}");
+            Set(ColorManager.SELECTED_THEME_PREF, ColorManager.AvailableThemes[_selectedThemeIndex]);
             Set(CameraController.ZOOM_SENSITIVITY_PREF, _zoomSensitivity);
             Set(CameraController.YAW_SENSITIVITY_PREF, _yawSensitivity);
             Set(CameraController.PITCH_SENSITIVITY_PREF, _pitchSensitivity);
@@ -144,6 +156,7 @@ namespace Synthesis.UI.Dynamic {
         public static void LoadSettings() {
             _screenModeIndex      = Get<int>(SCREEN_MODE);
             _qualitySettingsIndex = Get<int>(QUALITY_SETTINGS);
+            _selectedThemeIndex   = ColorManager.ThemeNameToIndex(Get<string>(ColorManager.SELECTED_THEME_PREF));
             _zoomSensitivity      = Get<float>(CameraController.ZOOM_SENSITIVITY_PREF);
             _yawSensitivity       = Get<float>(CameraController.YAW_SENSITIVITY_PREF);
             _pitchSensitivity     = Get<float>(CameraController.PITCH_SENSITIVITY_PREF);
@@ -189,7 +202,6 @@ namespace Synthesis.UI.Dynamic {
 
             // Quality Settings
             QualitySettings.SetQualityLevel(Get<int>(QUALITY_SETTINGS), true);
-            Debug.Log(GraphicsSettings.currentRenderPipeline.name);
 
             // Camera
             CameraController.ZoomSensitivity =
@@ -201,6 +213,7 @@ namespace Synthesis.UI.Dynamic {
         public static void SetDefaultPreferences() {
             _screenModeIndex      = 0;
             _qualitySettingsIndex = 3;
+            _selectedThemeIndex   = 0;
             _zoomSensitivity      = 5f;
             _yawSensitivity       = 10f;
             _pitchSensitivity     = 3f;
