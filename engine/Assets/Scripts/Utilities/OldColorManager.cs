@@ -8,7 +8,7 @@ using UnityEngine;
 using Synthesis.Util;
 
 namespace Synthesis.UI {
-    public static class ColorManager {
+    public static class OldColorManager {
         public const string SYNTHESIS_BLACK                = "synthesis-black";
         public const string SYNTHESIS_BLACK_ACCENT         = "synthesis-black-accent";
         public const string SYNTHESIS_ORANGE               = "synthesis-orange";
@@ -40,7 +40,7 @@ namespace Synthesis.UI {
             (SYNTHESIS_HIGHLIGHT_HOVER, new Color32(89, 255, 133, 255)),
             (SYNTHESIS_HIGHLIGHT_SELECT, new Color32(255, 89, 133, 255)) };
 
-        static ColorManager() {
+        static OldColorManager() {
             // File.Delete(path);
             Load();
 

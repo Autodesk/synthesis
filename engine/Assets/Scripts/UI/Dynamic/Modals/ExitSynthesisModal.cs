@@ -31,7 +31,7 @@ namespace Synthesis.UI.Dynamic {
                 .StepIntoLabel(l => l.SetText("Exit"));
 
             ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"));
-            ModalImage.SetColor(ColorManager.SYNTHESIS_WHITE);
+            ModalImage.SetColor(OldColorManager.SYNTHESIS_WHITE);
 
             MainContent.CreateLabel(40)
                 .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Center)

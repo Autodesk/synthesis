@@ -82,7 +82,7 @@ namespace Synthesis.Runtime {
             // TestColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
             // RotationalDriver.TestSphericalCoordinate();
 
-            if (ColorManager.HasColor("tree")) {
+            if (OldColorManager.HasColor("tree")) {
                 GameObject.Instantiate(Resources.Load("Misc/Tree"));
             }
 

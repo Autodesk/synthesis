@@ -54,7 +54,7 @@ public class RioConfigurationModal : ModalDynamic {
         Title.SetWidth<Label>(300);
         Description.SetText("Configuring RoboRIO for Synthesis simulation");
         ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-        ModalImage.SetColor(ColorManager.SYNTHESIS_WHITE);
+        ModalImage.SetColor(OldColorManager.SYNTHESIS_WHITE);
 
         _scrollView = MainContent.CreateScrollView();
         _scrollView.SetStretch<ScrollView>();
@@ -91,29 +91,29 @@ public class RioConfigurationModal : ModalDynamic {
 
     public void CreateItem(string text, string buttonText, Action onButton, Action onDelete) {
         var content = _scrollView.Content.CreateSubContent(new Vector2(_scrollView.Content.Size.x, 80));
-        content.EnsureImage().StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_ORANGE));
+        content.EnsureImage().StepIntoImage(i => i.SetColor(OldColorManager.SYNTHESIS_ORANGE));
         content.SetTopStretch<Content>(anchoredY: -_scrollView.Content.RectOfChildren(content).yMin);
         content.CreateLabel()
             .SetStretch<Label>(leftPadding: 20, topPadding: 20, bottomPadding: 20)
             .SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Middle)
             .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Left)
             .SetText(text)
-            .SetColor(ColorManager.SYNTHESIS_BLACK);
+            .SetColor(OldColorManager.SYNTHESIS_BLACK);
         var confButton = content.CreateButton(buttonText);
-        confButton.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_BLACK));
+        confButton.StepIntoImage(i => i.SetColor(OldColorManager.SYNTHESIS_BLACK));
         confButton.SetPivot<Button>(new Vector2(1, 0.5f))
             .SetRightStretch<Button>(20, 20, 15)
             .SetWidth<Button>(110)
             .SetHeight<Button>(-30);
-        confButton.StepIntoLabel(l => l.SetColor(ColorManager.SYNTHESIS_WHITE));
+        confButton.StepIntoLabel(l => l.SetColor(OldColorManager.SYNTHESIS_WHITE));
         confButton.AddOnClickedEvent(b => onButton());
         var deleteButton = content.CreateButton("Remove");
-        deleteButton.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_BLACK));
+        deleteButton.StepIntoImage(i => i.SetColor(OldColorManager.SYNTHESIS_BLACK));
         deleteButton.SetPivot<Button>(new Vector2(1, 0.5f))
             .SetRightStretch<Button>(20, 20, 140)
             .SetWidth<Button>(110)
             .SetHeight<Button>(-30);
-        deleteButton.StepIntoLabel(l => l.SetColor(ColorManager.SYNTHESIS_WHITE));
+        deleteButton.StepIntoLabel(l => l.SetColor(OldColorManager.SYNTHESIS_WHITE));
         deleteButton.AddOnClickedEvent(b => onDelete());
     }
 
@@ -125,7 +125,7 @@ public class RioConfigurationModal : ModalDynamic {
         content.SetWidth<Content>(1000);
         // (Content left, Content right) = content.SplitLeftRight((1000f / 2f) - (20f / 2f), 20f);
         var deviceButton = content.CreateButton("Create Device");
-        deviceButton.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_ORANGE));
+        deviceButton.StepIntoImage(i => i.SetColor(OldColorManager.SYNTHESIS_ORANGE));
         deviceButton.SetStretch<Button>(leftPadding: 300, rightPadding: 300, topPadding: 20, bottomPadding: 20);
         deviceButton.AddOnClickedEvent(b => { DynamicUIManager.CreateModal<RCCreateDeviceModal>(); });
     }

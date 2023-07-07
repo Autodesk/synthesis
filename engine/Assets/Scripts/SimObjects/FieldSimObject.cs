@@ -108,7 +108,7 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
 
         FieldObject.transform.GetComponentsInChildren<Rigidbody>().ForEach(x => {
             var rc     = x.gameObject.AddComponent<HighlightComponent>();
-            rc.Color   = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_HOVER);
+            rc.Color   = OldColorManager.TryGetColor(OldColorManager.SYNTHESIS_HIGHLIGHT_HOVER);
             rc.enabled = false;
         });
     }

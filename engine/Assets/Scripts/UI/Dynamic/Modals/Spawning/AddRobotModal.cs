@@ -29,7 +29,7 @@ namespace Synthesis.UI.Dynamic {
             Title.SetText("Robot Selection");
             Description.SetText("Choose which robot you wish to play as");
             ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("PlusIcon"))
-                .SetColor(ColorManager.SYNTHESIS_WHITE);
+                .SetColor(OldColorManager.SYNTHESIS_WHITE);
 
             AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
                 if (_selectedIndex != -1) {

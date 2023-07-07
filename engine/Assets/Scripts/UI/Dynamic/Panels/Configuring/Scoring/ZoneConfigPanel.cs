@@ -65,7 +65,7 @@ public class ZoneConfigPanel : PanelDynamic {
                 _initialParent               = parent.name;
                 _initialData.Parent          = parent;
                 HighlightComponent highlight = parent.GetComponent<Rigidbody>().GetComponent<HighlightComponent>();
-                highlight.Color              = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_SELECT);
+                highlight.Color              = OldColorManager.TryGetColor(OldColorManager.SYNTHESIS_HIGHLIGHT_SELECT);
                 highlight.enabled            = true;
             }
             _initialData.DestroyGamepiece = zone.DestroyGamepiece;
@@ -302,7 +302,7 @@ public class ZoneConfigPanel : PanelDynamic {
     private void SetSelectUIState(bool isUserSelecting) {
         if (isUserSelecting) {
             _zoneParentButton.StepIntoLabel(l => l.SetText("Selecting..."));
-            _zoneParentButton.StepIntoButton(b => b.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_BLACK_ACCENT))
+            _zoneParentButton.StepIntoButton(b => b.StepIntoImage(i => i.SetColor(OldColorManager.SYNTHESIS_BLACK_ACCENT))
                                                       .StepIntoLabel(l => l.SetText("...")));
         } else {
             if (_selectedNode is null)
@@ -310,7 +310,7 @@ public class ZoneConfigPanel : PanelDynamic {
             _zoneParentButton.StepIntoLabel(
                 l => l.SetText(_selectedNode is not null ? _selectedNode.name : "Parent Object"));
             _zoneParentButton.StepIntoButton(
-                b => b.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_ORANGE))
+                b => b.StepIntoImage(i => i.SetColor(OldColorManager.SYNTHESIS_ORANGE))
                          .StepIntoLabel(l => l.SetText(_selectedNode is not null ? "Remove" : "Click to select...")));
         }
     }
@@ -331,7 +331,7 @@ public class ZoneConfigPanel : PanelDynamic {
                 _hoveringNode = hitInfo.rigidbody.GetComponent<HighlightComponent>();
                 if (_selectedNode is null || hitInfo.rigidbody.name != _selectedNode.name) {
                     _hoveringNode.enabled = true;
-                    _hoveringNode.Color   = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_HOVER);
+                    _hoveringNode.Color   = OldColorManager.TryGetColor(OldColorManager.SYNTHESIS_HIGHLIGHT_HOVER);
                 }
 
                 if (Input.GetKeyDown(KeyCode.Mouse0)) {
@@ -341,7 +341,7 @@ public class ZoneConfigPanel : PanelDynamic {
 
                     _selectedNode         = _hoveringNode;
                     _selectedNode.enabled = true;
-                    _selectedNode.Color   = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_SELECT);
+                    _selectedNode.Color   = OldColorManager.TryGetColor(OldColorManager.SYNTHESIS_HIGHLIGHT_SELECT);
                     _data.Parent          = _selectedNode.gameObject.transform;
                     _hoveringNode         = null;
 

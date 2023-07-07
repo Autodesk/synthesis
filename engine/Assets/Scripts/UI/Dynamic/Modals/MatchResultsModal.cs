@@ -15,7 +15,7 @@ namespace UI.Dynamic.Modals {
         private const float HORIZONTAL_PADDING       = 16f;
         private const float SCROLLBAR_WIDTH          = 10f;
         private const float ROW_HEIGHT               = 64f;
-        private static readonly Color ENTRY_BG_COLOR = ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK);
+        private static readonly Color ENTRY_BG_COLOR = OldColorManager.TryGetColor(OldColorManager.SYNTHESIS_BLACK);
 
         private float _scrollViewWidth;
         private float _entryWidth;

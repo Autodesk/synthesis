@@ -20,7 +20,7 @@ public class ConfiguringModal : ModalDynamic {
         Title.SetText("Configuring");
         Description.SetText("What do you want to change?");
         ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-        ModalImage.SetColor(ColorManager.SYNTHESIS_WHITE);
+        ModalImage.SetColor(OldColorManager.SYNTHESIS_WHITE);
 
         var gpmLabel   = MainContent.CreateLabel(height: 30f).SetTopStretch<Label>().SetText("Gamepiece Manipulation");
         var subContent = MainContent.CreateSubContent(new Vector2(MainContent.Size.x, 50))

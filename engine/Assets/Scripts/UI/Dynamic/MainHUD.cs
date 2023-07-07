@@ -73,13 +73,13 @@ public static class MainHUD {
     public static void Setup() {
         _drawerItems.Clear();
         _tabDrawerContent = new Content(null, GameObject.Find("MainHUD").transform.Find("TabDrawer").gameObject, null);
-        _tabDrawerContent.Image!.SetColor(ColorManager.SYNTHESIS_BLACK);
+        _tabDrawerContent.Image!.SetColor(OldColorManager.SYNTHESIS_BLACK);
         _expandDrawerButton = new Button(
             _tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("ExpandButton").gameObject, null);
-        _expandDrawerButton.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_BLACK));
+        _expandDrawerButton.StepIntoImage(i => i.SetColor(OldColorManager.SYNTHESIS_BLACK));
         _expandDrawerButton.AddOnClickedEvent(b => MainHUD.Collapsed = !MainHUD.Collapsed);
         var expandIcon = new Image(null, _expandDrawerButton.RootGameObject.transform.Find("Icon").gameObject);
-        expandIcon.SetColor(ColorManager.SYNTHESIS_ICON);
+        expandIcon.SetColor(OldColorManager.SYNTHESIS_ICON);
 
         // Setup default HUD
         // MOVED TO PRACTICE MODE
@@ -117,7 +117,7 @@ public static class MainHUD {
         var drawerButtonObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("hud-drawer-item-base"),
             _tabDrawerContent.RootGameObject.transform.Find("ItemContainer"));
         var drawerButton    = new Button(_tabDrawerContent, drawerButtonObj, null);
-        drawerButton.Label!.SetText(title).SetColor(ColorManager.SYNTHESIS_WHITE);
+        drawerButton.Label!.SetText(title).SetColor(OldColorManager.SYNTHESIS_WHITE);
         drawerButton.Image.SetColor(new Color(1, 1, 1, 0));
         drawerButton.AddOnClickedEvent(onClick);
         var drawerIcon = new Image(_tabDrawerContent, drawerButtonObj.transform.Find("ItemIcon").gameObject);
@@ -126,13 +126,13 @@ public static class MainHUD {
             if (color.HasValue) {
                 drawerIcon.SetColor(color.Value);
             } else {
-                drawerIcon.SetColor(ColorManager.SYNTHESIS_ORANGE);
+                drawerIcon.SetColor(OldColorManager.SYNTHESIS_ORANGE);
             }
         } else {
             if (color.HasValue) {
                 drawerIcon.SetColor(color.Value);
             } else {
-                drawerIcon.SetColor(ColorManager.SYNTHESIS_ORANGE);
+                drawerIcon.SetColor(OldColorManager.SYNTHESIS_ORANGE);
             }
         }
         if (index < 0 || index > _drawerItems.Count) {

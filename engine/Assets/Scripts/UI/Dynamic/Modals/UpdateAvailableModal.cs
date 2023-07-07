@@ -23,7 +23,7 @@ namespace Synthesis.UI.Dynamic {
                 .SetPivot<Button>(new Vector2(0.0f, 0.0f))
                 .SetWidth<Button>(125);
             ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"));
-            ModalImage.SetColor(ColorManager.SYNTHESIS_WHITE);
+            ModalImage.SetColor(OldColorManager.SYNTHESIS_WHITE);
 
             MainContent.CreateLabel(40)
                 .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Center)

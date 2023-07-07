@@ -28,7 +28,7 @@ public class BetaWarningPanel : PanelDynamic {
             .StepIntoLabel(l => l.SetText("Okidoki"));
         CancelButton.RootGameObject.SetActive(false);
         PanelImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"));
-        PanelImage.SetColor(ColorManager.SYNTHESIS_WHITE);
+        PanelImage.SetColor(OldColorManager.SYNTHESIS_WHITE);
 
         MainContent.CreateLabel(40)
             .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Center)
