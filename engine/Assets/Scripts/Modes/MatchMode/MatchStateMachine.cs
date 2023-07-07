@@ -182,7 +182,9 @@ namespace Modes.MatchMode {
             public override void Start() {
                 base.Start();
                 DynamicUIManager.CreatePanel<ScoringZonesPanel>(true);
-                var panel               = DynamicUIManager.GetPanel<ScoringZonesPanel>();
+                // clang-format off
+                var panel = DynamicUIManager.GetPanel<ScoringZonesPanel>();
+                // clang-format on
                 panel.OnAccepted += () => {
                     DynamicUIManager.CreateModal<ConfirmModal>("Start Match?");
                     DynamicUIManager.ActiveModal.OnAccepted += () => {
