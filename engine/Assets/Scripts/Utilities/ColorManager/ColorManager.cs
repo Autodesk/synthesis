@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using Synthesis.Util;
+using SynthesisAPI.EventBus;
 using UnityEngine;
 
 namespace Utilities.ColorManager {
@@ -12,9 +13,10 @@ namespace Utilities.ColorManager {
         
         private static readonly string PATH = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
                                               Path.AltDirectorySeparatorChar + "Autodesk" +
-                                              Path.AltDirectorySeparatorChar + "Synthesis";
+                                              Path.AltDirectorySeparatorChar + "Synthesis" +
+                                              Path.AltDirectorySeparatorChar + "Themes";
 
-        private static readonly (SynthesisColor name, Color color)[] _defaultColors =
+        private static readonly (SynthesisColor name, Color32 color)[] _defaultColors =
         {
             (SynthesisColor.SynthesisOrange, new Color32(250, 162, 27, 255)),
             (SynthesisColor.SynthesisOrangeAccent, new Color32(204, 124, 0, 255)),
@@ -33,17 +35,42 @@ namespace Utilities.ColorManager {
 
         private static Dictionary<SynthesisColor, Color32> _loadedColors = new();
 
+        private const string DEFAULT_THEME = "default";
+        private static string _selectedTheme;
+
+        public static string SelectedTheme
+        {
+            get => _selectedTheme;
+            set
+            {
+                if (value == _selectedTheme)
+                    return;
+
+                _selectedTheme = value;
+
+                _loadedColors = new();
+                LoadTheme(_selectedTheme);
+                LoadDefaultColors();
+                SaveTheme(_selectedTheme);
+                
+                EventBus.Push(new OnThemeChanged());
+            }
+        }
+        
+        public class OnThemeChanged : IEvent { }
 
         static ColorManager()
         {
             Debug.Log("Color manager static");
-            LoadTheme("test_theme");
+            LoadTheme(DEFAULT_THEME);
             LoadDefaultColors();
-            SaveTheme("test_theme");
+            SaveTheme(DEFAULT_THEME);
         }
 
         private static void LoadTheme(string themeName)
         {
+            if (themeName == "default") return;
+            
             string themePath = PATH + Path.AltDirectorySeparatorChar + themeName + ".json";
             Debug.Log($"Loading theme: {themePath}");
             
@@ -55,7 +82,7 @@ namespace Utilities.ColorManager {
                 return;
             }
 
-            var jsonColors = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(PATH));
+            var jsonColors = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(themePath));
 
             jsonColors.ForEach(x => { 
                 _loadedColors.Add(Enum.Parse<SynthesisColor>(x.Key), x.Value.ColorToHex()); 
@@ -63,6 +90,8 @@ namespace Utilities.ColorManager {
         }
         
         private static void SaveTheme(string themeName) {
+            if (themeName == "default") return;
+            
             string themePath = PATH + Path.AltDirectorySeparatorChar + themeName + ".json";
             Debug.Log($"Saving theme: {themePath}");
 
@@ -83,12 +112,22 @@ namespace Utilities.ColorManager {
             });
         }
 
-        public static Color GetColor(SynthesisColor colorName)
+        private static Color GetColor(SynthesisColor colorName)
         {
             if (_loadedColors.TryGetValue(colorName, out Color32 color))
                 return color;
 
             return UNASSIGNED_COLOR;
+        }
+
+        public static void AssignColor(SynthesisColor colorName, Action<Color> applyColor)
+        {
+            applyColor.Invoke(GetColor(colorName));
+            
+            EventBus.NewTypeListener<OnThemeChanged>(x =>
+            {
+                applyColor.Invoke(GetColor(colorName));
+            });
         }
 
         public enum SynthesisColor
