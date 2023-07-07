@@ -1,6 +1,8 @@
 using System;
+using Modes.MatchMode;
 using Synthesis.Runtime;
 using Synthesis.UI.Dynamic;
+using SynthesisAPI.EventBus;
 using TMPro;
 using UnityEngine;
 
@@ -106,12 +108,11 @@ public class ScoreboardPanel : PanelDynamic {
             return;
 
         if (_showTimer) {
-            Scoring.targetTime -= Time.deltaTime;
-            time.SetText(Mathf.RoundToInt(Scoring.targetTime).ToString());
-
-            if (Scoring.targetTime <= 0) {
-                Scoring.matchEnd = true;
-                return;
+            // state advances in MatchMode update
+            if (MatchStateMachine.Instance.CurrentState.StateName is >= MatchStateMachine.StateName.Auto and <=
+                MatchStateMachine.StateName.Endgame and not MatchStateMachine.StateName.Transition) {
+                Scoring.targetTime -= Time.deltaTime;
+                time.SetText(Mathf.RoundToInt(Scoring.targetTime).ToString());
             }
         }
 

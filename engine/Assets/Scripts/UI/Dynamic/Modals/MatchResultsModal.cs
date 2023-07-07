@@ -1,5 +1,6 @@
 using System;
 using Modes.MatchMode;
+using Synthesis.Runtime;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
@@ -42,7 +43,10 @@ namespace UI.Dynamic.Modals {
             AcceptButton
                 .AddOnClickedEvent(x => {
                     MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.None);
-                    DynamicUIManager.CreateModal<ExitSynthesisModal>();
+                    SimulationRunner.InSim = false;
+                    DynamicUIManager.CloseAllPanels(true);
+                    ModeManager.CurrentMode = null;
+                    SceneManager.LoadScene("GridMenuScene", LoadSceneMode.Single);
                 })
                 .StepIntoLabel(l => l.SetText("Exit"));
 
