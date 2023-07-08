@@ -8,8 +8,6 @@ using Synthesis.UI.Dynamic;
 using UnityEngine;
 
 public class MatchModeModal : ModalDynamic {
-    public Action OnAccepted;
-
     private int _fieldIndex            = -1;
     private List<String> _robotOptions = new List<string>();
     private string[] _fieldFiles;
@@ -43,7 +41,6 @@ public class MatchModeModal : ModalDynamic {
         Description.SetText("Configure Match Mode");
 
         AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
-            OnAccepted.Invoke();
             if (_fieldIndex != -1) {
                 DynamicUIManager.CreateModal<LoadingScreenModal>();
                 MonoBehaviour _mb = GameObject.FindObjectOfType<MonoBehaviour>();
@@ -92,7 +89,7 @@ public class MatchModeModal : ModalDynamic {
         }
 
         DynamicUIManager.CloseActiveModal();
-        DynamicUIManager.CreatePanel<SpawnLocationPanel>();
+        DynamicUIManager.CreatePanel<SpawnLocationPanel>(true);
     }
 
     public override void Update() {}

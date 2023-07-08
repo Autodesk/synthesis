@@ -19,6 +19,9 @@ namespace SynthesisAPI.Simulation {
             get => _behavioursEnabled;
             set {
                 _behavioursEnabled = value;
+                SimulationManager.Behaviours[_name].ForEach(b => {
+                    b.Enabled = _behavioursEnabled;
+                });
             }
         }
 

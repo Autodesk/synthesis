@@ -22,6 +22,8 @@ public class SynthesisAssetCollection : MonoBehaviour {
     public GameObject ReplaySlider;
     [SerializeField]
     public GameObject GizmoPrefab;
+    [SerializeField]
+    public List<AudioClip> AudioClips;
 
     private static Volume _blurVolumeStatic = null;
     public static Volume BlurVolumeStatic {
@@ -72,6 +74,8 @@ public class SynthesisAssetCollection : MonoBehaviour {
 
     public static GameObject GetUIPrefab(string name)      => Instance.DynamicUIPrefabs.First(x => x.name == name);
     public static TMPro.TMP_FontAsset GetFont(string name) => Instance.Fonts.First(x => x.name == name);
+
+    public static AudioClip GetAudioClip(string name) => Instance.AudioClips.First(x => x.name == name);
 
     public void OnDestroy() {
         AnalyticsManager.LogEvent(new AnalyticsEvent(category: "app", action: $"close", label: ""));

@@ -89,6 +89,9 @@ namespace Synthesis.Runtime {
                 GameObject.Instantiate(Resources.Load("Misc/Tree"));
             }
 
+            if (ModeManager.CurrentMode is not null)
+                ModeManager.CurrentMode.Start();
+
             SettingsModal.LoadSettings();
             SettingsModal.ApplySettings();
         }
