@@ -11,6 +11,10 @@ using DigitalRuby.Tween;
 using SynthesisAPI.EventBus;
 using UnityEngine.SceneManagement;
 using Synthesis.Runtime;
+using Synthesis.Physics;
+using SynthesisAPI.Utilities;
+using Synthesis.Gizmo;
+using Modes.MatchMode;
 
 #nullable enable
 
@@ -99,7 +103,7 @@ public static class MainHUD {
                 if (robotEvent.NewBot == string.Empty) {
                     RemoveItemFromDrawer("Configure");
                 } else if (robotEvent.OldBot == string.Empty) {
-                    MainHUD.AddItemToDrawer("Configure", b => PracticeMode.ToConfigMode(),
+                    MainHUD.AddItemToDrawer("Configure", b => SetUpConfig(),
                         index: 0, icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
                 }
             });
@@ -167,5 +171,84 @@ public static class MainHUD {
             _drawerItems[i].button.SetTopStretch<Button>(anchoredY: i * 55);
         }
         _tabDrawerContent.SetHeight<Content>((_drawerItems.Count * 55) + 70);
+    }
+
+    public static void SetUpPractice() {
+        foreach (string name in MainHUD.DrawerTitles)
+                MainHUD.RemoveItemFromDrawer(name);
+
+        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+            MainHUD.AddItemToDrawer("Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("rio-config-icon"));
+        MainHUD.AddItemToDrawer("Spawn", b => DynamicUIManager.CreateModal<SpawningModal>(), icon: SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
+        MainHUD.AddItemToDrawer("Multibot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>());
+        MainHUD.AddItemToDrawer("Scoring Zones", b =>
+        {
+            if (FieldSimObject.CurrentField == null)
+            {
+                SynthesisAPI.Utilities.Logger.Log("No field loaded!", LogLevel.Info);
+            } else {
+                if (!DynamicUIManager.PanelExists<ScoringZonesPanel>())
+                    DynamicUIManager.CreatePanel<ScoringZonesPanel>();
+            }
+        });
+        MainHUD.AddItemToDrawer("Camera View", b => DynamicUIManager.CreateModal<ChangeViewModal>(), icon: SynthesisAssetCollection.GetSpriteByName("CameraIcon"));
+        MainHUD.AddItemToDrawer("Download Asset", b => DynamicUIManager.CreateModal<DownloadAssetModal>(), icon: SynthesisAssetCollection.GetSpriteByName("DownloadIcon"));
+        MainHUD.AddItemToDrawer(
+            "DriverStation",
+            b => DynamicUIManager.CreatePanel<BetaWarningPanel>(false, (Action)(() => DynamicUIManager.CreatePanel<DriverStationPanel>(true))),
+            icon: SynthesisAssetCollection.GetSpriteByName("driverstation-icon")
+        );
+        MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("settings"));
+
+        PhysicsManager.IsFrozen = false;
+    }
+
+    public static void SetUpConfig() {
+        foreach (string name in MainHUD.DrawerTitles)
+            MainHUD.RemoveItemFromDrawer(name);
+
+        if (ModeManager.CurrentMode.GetType() == typeof(PracticeMode)) {
+            MainHUD.AddItemToDrawer("Practice", b => SetUpPractice());
+        } else if (ModeManager.CurrentMode.GetType() == typeof(MatchMode)) {
+            MainHUD.AddItemToDrawer("Match", b => SetUpMatch());
+        }
+
+        MainHUD.AddItemToDrawer("Pickup", b => DynamicUIManager.CreatePanel<ConfigureGamepiecePickupPanel>());
+        MainHUD.AddItemToDrawer("Ejector", b => DynamicUIManager.CreatePanel<ConfigureShotTrajectoryPanel>());
+        MainHUD.AddItemToDrawer("Motors", b => {
+            DynamicUIManager.CreateModal<ConfigMotorModal>();
+        });
+        MainHUD.AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("DriverStationView"));
+        MainHUD.AddItemToDrawer("RoboRIO Conf.",b => DynamicUIManager.CreateModal<RioConfigurationModal>(true),icon: SynthesisAssetCollection.GetSpriteByName("rio-config-icon"));
+        MainHUD.AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>());
+        MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("settings"));
+        MainHUD.AddItemToDrawer("Move", b => GizmoManager.SpawnGizmo(RobotSimObject.GetCurrentlyPossessedRobot()));
+
+        PhysicsManager.IsFrozen = true;
+    }
+
+    public static void SetUpMatch() {
+        foreach (string name in MainHUD.DrawerTitles)
+            MainHUD.RemoveItemFromDrawer(name);
+
+        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+            MainHUD.AddItemToDrawer("Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("rio-config-icon"));
+        MainHUD.AddItemToDrawer("Multibot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>());
+        MainHUD.AddItemToDrawer("Camera View", b => DynamicUIManager.CreateModal<ChangeViewModal>(),
+            icon: SynthesisAssetCollection.GetSpriteByName("CameraIcon"));
+        MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(),
+            icon: SynthesisAssetCollection.GetSpriteByName("settings"));
+        MainHUD.AddItemToDrawer("DriverStation",
+            b => DynamicUIManager.CreatePanel<BetaWarningPanel>(
+                false, (Action) (() => DynamicUIManager.CreatePanel<DriverStationPanel>(true))),
+            icon: SynthesisAssetCollection.GetSpriteByName("driverstation-icon"));
+        MainHUD.AddItemToDrawer("Scoring Zones", b => {
+            if (FieldSimObject.CurrentField == null) {
+                SynthesisAPI.Utilities.Logger.Log("No field loaded!", LogLevel.Info);
+            } else {
+                if (!DynamicUIManager.PanelExists<ScoringZonesPanel>())
+                    DynamicUIManager.CreatePanel<ScoringZonesPanel>();
+            }
+        });
     }
 }

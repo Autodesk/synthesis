@@ -231,7 +231,7 @@ namespace Synthesis.UI.Dynamic {
                 if (OnCancelled != null)
                     OnCancelled.Invoke();
             });
-            _acceptButton = new Button(null!, footer.Find("Accept").gameObject, null);
+            _acceptButton = new Button(null!, _footer.Find("Accept").gameObject, null);
             _acceptButton.AddOnClickedEvent(b => {
                 if (OnAccepted != null)
                     OnAccepted.Invoke();
