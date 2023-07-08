@@ -183,16 +183,10 @@ namespace Synthesis {
         private void VelocityControl() {
             if (!_useMotor)
                 return;
-            
-            var val = (float)(State.CurrentSignals.ContainsKey(_inputs[0])
-                                  ? State.CurrentSignals[_inputs[0]].Value.NumberValue
-                                  : 0.0f);
-            
-            _targetRotationalSpeed = val * _motor.targetVelocity;
 
             var val = (float) MainInput;
 
-            _targetRotationalSpeed = val * Mathf.Deg2Rad * _motor.targetVelocity;
+            _targetRotationalSpeed = val * _motor.targetVelocity;
 
             var delta         = _targetRotationalSpeed - _customWheel.RotationSpeed;
             var possibleDelta = (_motor.force * Time.deltaTime) / _customWheel.Inertia;

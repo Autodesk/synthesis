@@ -144,6 +144,9 @@ namespace Synthesis.UI.Dynamic {
         protected Image ModalImage => _modalImage;
         private Image _modalBackground;
         protected Image ModalBackground => _modalBackground;
+        
+        private Transform _footer;
+        protected Transform Footer => _footer;
         private Label _title;
         protected Label Title => _title;
         private Label _description;
@@ -152,6 +155,37 @@ namespace Synthesis.UI.Dynamic {
         private Content _mainContent;
         protected Content MainContent => _mainContent;
 
+        private Button? _middleButton;
+
+        protected Button MiddleButton {
+            get {
+                if (_middleButton == null) {
+                    GameObject buttonPrefab = SynthesisAssetCollection.GetUIPrefab("dynamic-modal-base")
+                                                  .transform.Find("Footer")
+                                                  .Find("Accept")
+                                                  .gameObject;
+                    RectTransform buttonTransform =
+                        GameObject.Instantiate(buttonPrefab, Footer).GetComponent<RectTransform>();
+
+                    buttonTransform.anchorMin = new Vector2(0.5f, 0f);
+                    buttonTransform.anchorMax = new Vector2(0.5f, 0f);
+                    buttonTransform.pivot     = new Vector2(1f, 0f);
+
+                    buttonTransform.localPosition = new Vector3(
+                        buttonTransform.rect.width / 2f, AcceptButton.RootGameObject.transform.localPosition.y, 0);
+
+                    Button middleButton = new Button(null!, buttonTransform.gameObject, null);
+                    middleButton.Image.SetColor(ColorManager.SYNTHESIS_ACCEPT);
+                    middleButton.Label?.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT));
+
+                    _middleButton = middleButton;
+                    return middleButton;
+                }
+
+                return _middleButton;
+            }
+        }
+        
         protected ModalDynamic(Vector2 mainContentSize) {
             _mainContentSize = mainContentSize;
         }
@@ -175,16 +209,16 @@ namespace Synthesis.UI.Dynamic {
             _description = new Label(null, header.Find("Description").gameObject, null);
             _description.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_WHITE));
 
-            var footer    = _unityObject.transform.Find("Footer");
-            var footerRt  = footer.GetComponent<RectTransform>();
-            _cancelButton = new Button(null!, footer.Find("Cancel").gameObject, null);
+            _footer    = _unityObject.transform.Find("Footer");
+            var footerRt  = _footer.GetComponent<RectTransform>();
+            _cancelButton = new Button(null!, _footer.Find("Cancel").gameObject, null);
             _cancelButton.AddOnClickedEvent(b => {
                 if (!DynamicUIManager.CloseActiveModal())
                     Logger.Log("Failed to Close Modal", LogLevel.Error);
             });
             _cancelButton.Image.SetColor(ColorManager.SYNTHESIS_CANCEL);
             _cancelButton.Label.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT));
-            _acceptButton = new Button(null!, footer.Find("Accept").gameObject, null);
+            _acceptButton = new Button(null!, _footer.Find("Accept").gameObject, null);
             _acceptButton.Image.SetColor(ColorManager.SYNTHESIS_ACCEPT);
             _acceptButton.Label.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT));
 
