@@ -150,7 +150,7 @@ namespace Synthesis.UI.Dynamic {
         protected Image ModalImage => _modalImage;
         private Image _modalBackground;
         protected Image ModalBackground => _modalBackground;
-        
+
         private Transform _footer;
         protected Transform Footer => _footer;
         private Label _title;
@@ -194,7 +194,7 @@ namespace Synthesis.UI.Dynamic {
                 return _middleButton;
             }
         }
-        
+
         protected ModalDynamic(Vector2 mainContentSize) {
             _mainContentSize = mainContentSize;
         }
@@ -218,7 +218,7 @@ namespace Synthesis.UI.Dynamic {
             _description = new Label(null, header.Find("Description").gameObject, null);
             _description.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_WHITE));
 
-            _footer    = _unityObject.transform.Find("Footer");
+            _footer       = _unityObject.transform.Find("Footer");
             var footerRt  = _footer.GetComponent<RectTransform>();
             _cancelButton = new Button(null!, _footer.Find("Cancel").gameObject, null);
             _cancelButton.AddOnClickedEvent(b => {

@@ -52,10 +52,10 @@ public class PracticeMode : IMode {
         //
         // GameObject container = new GameObject();
         // mira.GenerateDefinitionObjects(container, false);
-        
+
         InputManager.AssignValueInput(
-            TOGGLE_ESCAPE_MENU_INPUT, TryGetSavedInput(TOGGLE_ESCAPE_MENU_INPUT, 
-                                        new Digital("Escape", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
+            TOGGLE_ESCAPE_MENU_INPUT, TryGetSavedInput(TOGGLE_ESCAPE_MENU_INPUT,
+                                          new Digital("Escape", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
 
         MainHUD.SetUpPractice();
 
@@ -286,5 +286,4 @@ public class PracticeMode : IMode {
                 Material = meshRenderer.material;
         }
     }
-
 }

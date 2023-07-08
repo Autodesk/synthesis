@@ -553,7 +553,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         // Sets wheels rotating forward
         GetLeftRightWheels();
 
-
         try {
             List<RotationalDriver> potentialAzimuthDrivers =
                 SimulationManager.Drivers[base._name]
@@ -791,32 +790,21 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     public void DrivetrainConfig(float leftTargetVel, float rightTargetVel, float leftForce, float rightForce) {
         foreach (WheelDriver driver in GetLeftRightWheels()!.Value.leftWheels) {
+            driver.Motor = new JointMotor() { force = leftForce, freeSpin = false, targetVelocity = leftTargetVel };
 
-            driver.Motor = new JointMotor() {
-                force =  leftForce,
-                freeSpin = false,
-                targetVelocity = leftTargetVel
+            MiraLive.MiraAssembly.Data.Joints.MotorDefinitions[driver.MotorRef] = new Mirabuf.Motor.Motor {
+                SimpleMotor = new Mirabuf.Motor.SimpleMotor {MaxVelocity = leftTargetVel, StallTorque = leftForce}
             };
-
-            MiraLive.MiraAssembly.Data.Joints.MotorDefinitions[driver.MotorRef] = new Mirabuf.Motor.Motor{ SimpleMotor = new Mirabuf.Motor.SimpleMotor{
-                MaxVelocity = leftTargetVel,
-                StallTorque = leftForce
-            }};
-            
         }
 
         foreach (WheelDriver driver in GetLeftRightWheels()!.Value.rightWheels) {
+            driver.Motor = new JointMotor() { force = rightForce, freeSpin = false, targetVelocity = rightTargetVel };
 
-            driver.Motor = new JointMotor() {
-                force =  rightForce,
-                freeSpin = false,
-                targetVelocity = rightTargetVel
+            (driver._SimObject as RobotSimObject)!.MiraLive.MiraAssembly.Data.Joints.MotorDefinitions[driver.MotorRef] =
+                new Mirabuf.Motor.Motor {
+                    SimpleMotor =
+                        new Mirabuf.Motor.SimpleMotor {MaxVelocity = rightTargetVel, StallTorque = rightForce}
             };
-
-            (driver._SimObject as RobotSimObject)!.MiraLive.MiraAssembly.Data.Joints.MotorDefinitions[driver.MotorRef] = new Mirabuf.Motor.Motor{ SimpleMotor = new Mirabuf.Motor.SimpleMotor{
-                MaxVelocity = rightTargetVel,
-                StallTorque = rightForce
-            }};
         }
     }
 }

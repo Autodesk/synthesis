@@ -118,17 +118,18 @@ namespace Synthesis {
             _customWheel   = customWheel;
 
             Anchor = _customWheel.Rb.transform.localToWorldMatrix.MultiplyPoint3x4(anchor);
-            Axis = _customWheel.Rb.transform.localToWorldMatrix.MultiplyVector(axis);
+            Axis   = _customWheel.Rb.transform.localToWorldMatrix.MultiplyVector(axis);
 
             MotorRef = motorRef;
-            
+
             if (float.IsNaN(radius)) {
                 Radius = _customWheel.Rb.transform.GetBounds().extents.y;
             } else {
                 Radius = radius;
             }
 
-            (simObject as RobotSimObject)!.MiraLive.MiraAssembly.Data.Joints.MotorDefinitions.TryGetValue(motorRef, out var motor);
+            (simObject as RobotSimObject)!.MiraLive.MiraAssembly.Data.Joints.MotorDefinitions.TryGetValue(
+                motorRef, out var motor);
 
             if (motor != null && motor.MotorTypeCase == Mirabuf.Motor.Motor.MotorTypeOneofCase.SimpleMotor) {
                 _motor = motor!.SimpleMotor.UnityMotor;

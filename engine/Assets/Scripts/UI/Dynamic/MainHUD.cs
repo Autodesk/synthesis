@@ -103,8 +103,8 @@ public static class MainHUD {
                 if (robotEvent.NewBot == string.Empty) {
                     RemoveItemFromDrawer("Configure");
                 } else if (robotEvent.OldBot == string.Empty) {
-                    MainHUD.AddItemToDrawer("Configure", b => SetUpConfig(),
-                        index: 0, icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+                    MainHUD.AddItemToDrawer("Configure", b => SetUpConfig(), index: 0,
+                        icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
                 }
             });
             _hasNewRobotListener = true;
@@ -175,30 +175,32 @@ public static class MainHUD {
 
     public static void SetUpPractice() {
         foreach (string name in MainHUD.DrawerTitles)
-                MainHUD.RemoveItemFromDrawer(name);
+            MainHUD.RemoveItemFromDrawer(name);
 
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-            MainHUD.AddItemToDrawer("Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-        MainHUD.AddItemToDrawer("Spawn", b => DynamicUIManager.CreateModal<SpawningModal>(), icon: SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
+            MainHUD.AddItemToDrawer(
+                "Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+        MainHUD.AddItemToDrawer("Spawn", b => DynamicUIManager.CreateModal<SpawningModal>(),
+            icon: SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
         MainHUD.AddItemToDrawer("Multibot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>());
-        MainHUD.AddItemToDrawer("Scoring Zones", b =>
-        {
-            if (FieldSimObject.CurrentField == null)
-            {
+        MainHUD.AddItemToDrawer("Scoring Zones", b => {
+            if (FieldSimObject.CurrentField == null) {
                 SynthesisAPI.Utilities.Logger.Log("No field loaded!", LogLevel.Info);
             } else {
                 if (!DynamicUIManager.PanelExists<ScoringZonesPanel>())
                     DynamicUIManager.CreatePanel<ScoringZonesPanel>();
             }
         });
-        MainHUD.AddItemToDrawer("Camera View", b => DynamicUIManager.CreateModal<ChangeViewModal>(), icon: SynthesisAssetCollection.GetSpriteByName("CameraIcon"));
-        MainHUD.AddItemToDrawer("Download Asset", b => DynamicUIManager.CreateModal<DownloadAssetModal>(), icon: SynthesisAssetCollection.GetSpriteByName("DownloadIcon"));
-        MainHUD.AddItemToDrawer(
-            "DriverStation",
-            b => DynamicUIManager.CreatePanel<BetaWarningPanel>(false, (Action)(() => DynamicUIManager.CreatePanel<DriverStationPanel>(true))),
-            icon: SynthesisAssetCollection.GetSpriteByName("driverstation-icon")
-        );
-        MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("settings"));
+        MainHUD.AddItemToDrawer("Camera View", b => DynamicUIManager.CreateModal<ChangeViewModal>(),
+            icon: SynthesisAssetCollection.GetSpriteByName("CameraIcon"));
+        MainHUD.AddItemToDrawer("Download Asset", b => DynamicUIManager.CreateModal<DownloadAssetModal>(),
+            icon: SynthesisAssetCollection.GetSpriteByName("DownloadIcon"));
+        MainHUD.AddItemToDrawer("DriverStation",
+            b => DynamicUIManager.CreatePanel<BetaWarningPanel>(
+                false, (Action) (() => DynamicUIManager.CreatePanel<DriverStationPanel>(true))),
+            icon: SynthesisAssetCollection.GetSpriteByName("driverstation-icon"));
+        MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(),
+            icon: SynthesisAssetCollection.GetSpriteByName("settings"));
 
         PhysicsManager.IsFrozen = false;
     }
@@ -215,13 +217,14 @@ public static class MainHUD {
 
         MainHUD.AddItemToDrawer("Pickup", b => DynamicUIManager.CreatePanel<ConfigureGamepiecePickupPanel>());
         MainHUD.AddItemToDrawer("Ejector", b => DynamicUIManager.CreatePanel<ConfigureShotTrajectoryPanel>());
-        MainHUD.AddItemToDrawer("Motors", b => {
-            DynamicUIManager.CreateModal<ConfigMotorModal>();
-        });
-        MainHUD.AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("DriverStationView"));
-        MainHUD.AddItemToDrawer("RoboRIO Conf.",b => DynamicUIManager.CreateModal<RioConfigurationModal>(true),icon: SynthesisAssetCollection.GetSpriteByName("rio-config-icon"));
+        MainHUD.AddItemToDrawer("Motors", b => { DynamicUIManager.CreateModal<ConfigMotorModal>(); });
+        MainHUD.AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(),
+            icon: SynthesisAssetCollection.GetSpriteByName("DriverStationView"));
+        MainHUD.AddItemToDrawer("RoboRIO Conf.", b => DynamicUIManager.CreateModal<RioConfigurationModal>(true),
+            icon: SynthesisAssetCollection.GetSpriteByName("rio-config-icon"));
         MainHUD.AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>());
-        MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(), icon: SynthesisAssetCollection.GetSpriteByName("settings"));
+        MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(),
+            icon: SynthesisAssetCollection.GetSpriteByName("settings"));
         MainHUD.AddItemToDrawer("Move", b => GizmoManager.SpawnGizmo(RobotSimObject.GetCurrentlyPossessedRobot()));
 
         PhysicsManager.IsFrozen = true;
@@ -232,7 +235,8 @@ public static class MainHUD {
             MainHUD.RemoveItemFromDrawer(name);
 
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-            MainHUD.AddItemToDrawer("Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+            MainHUD.AddItemToDrawer(
+                "Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
         MainHUD.AddItemToDrawer("Multibot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>());
         MainHUD.AddItemToDrawer("Camera View", b => DynamicUIManager.CreateModal<ChangeViewModal>(),
             icon: SynthesisAssetCollection.GetSpriteByName("CameraIcon"));

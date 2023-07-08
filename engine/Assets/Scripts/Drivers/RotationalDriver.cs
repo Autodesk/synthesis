@@ -11,7 +11,6 @@ using UnityEngine;
 
 namespace Synthesis {
     public class RotationalDriver : Driver {
-
         private const float MIRABUF_TO_UNITY_FORCE = 40f;
 
         // clang-format off
@@ -124,7 +123,8 @@ namespace Synthesis {
             : base(name, inputs, outputs, simObject) {
             _jointA = jointA;
             _jointB = jointB;
-            (simObject as RobotSimObject)!.MiraLive.MiraAssembly.Data.Joints.MotorDefinitions.TryGetValue(motorRef, out var motor);
+            (simObject as RobotSimObject)!.MiraLive.MiraAssembly.Data.Joints.MotorDefinitions.TryGetValue(
+                motorRef, out var motor);
             if (motor != null && motor.MotorTypeCase == Mirabuf.Motor.Motor.MotorTypeOneofCase.SimpleMotor) {
                 _motor = motor!.SimpleMotor.UnityMotor;
             } else {
@@ -226,12 +226,12 @@ namespace Synthesis {
 
                 float output = error * 0.1f;
 
-                _jointA.motor = new JointMotor { force = MIRABUF_TO_UNITY_FORCE * Motor.force * (inertiaA / (inertiaA + inertiaB)),
-                    freeSpin = Motor.freeSpin, targetVelocity = Mathf.Rad2Deg * (Motor.targetVelocity) * output
-                };
-                _jointB.motor = new JointMotor { force = MIRABUF_TO_UNITY_FORCE * Motor.force * (inertiaB / (inertiaA + inertiaB)),
-                    freeSpin = Motor.freeSpin, targetVelocity = Mathf.Rad2Deg * (-Motor.targetVelocity) * output
-                };
+                _jointA.motor =
+                    new JointMotor { force = MIRABUF_TO_UNITY_FORCE * Motor.force * (inertiaA / (inertiaA + inertiaB)),
+                        freeSpin = Motor.freeSpin, targetVelocity = Mathf.Rad2Deg * (Motor.targetVelocity) * output };
+                _jointB.motor =
+                    new JointMotor { force = MIRABUF_TO_UNITY_FORCE * Motor.force * (inertiaB / (inertiaA + inertiaB)),
+                        freeSpin = Motor.freeSpin, targetVelocity = Mathf.Rad2Deg * (-Motor.targetVelocity) * output };
             }
         }
 
@@ -249,12 +249,12 @@ namespace Synthesis {
                 // _jointB.connectedBody.AddTorque(_jointA.axis.normalized * angAccelB * Mathf.Rad2Deg,
                 // ForceMode.Acceleration); Debug.Log($"{angAccelB} to {_jointB.connectedBody.name}");
 
-                _jointA.motor = new JointMotor { force = MIRABUF_TO_UNITY_FORCE * Motor.force * (inertiaA / (inertiaA + inertiaB)),
-                    freeSpin = Motor.freeSpin, targetVelocity = Mathf.Rad2Deg * (Motor.targetVelocity) * val
-                };
-                _jointB.motor = new JointMotor { force = MIRABUF_TO_UNITY_FORCE * Motor.force * (inertiaB / (inertiaA + inertiaB)),
-                    freeSpin = Motor.freeSpin, targetVelocity = Mathf.Rad2Deg * (-Motor.targetVelocity) * val
-                };
+                _jointA.motor =
+                    new JointMotor { force = MIRABUF_TO_UNITY_FORCE * Motor.force * (inertiaA / (inertiaA + inertiaB)),
+                        freeSpin = Motor.freeSpin, targetVelocity = Mathf.Rad2Deg * (Motor.targetVelocity) * val };
+                _jointB.motor =
+                    new JointMotor { force = MIRABUF_TO_UNITY_FORCE * Motor.force * (inertiaB / (inertiaA + inertiaB)),
+                        freeSpin = Motor.freeSpin, targetVelocity = Mathf.Rad2Deg * (-Motor.targetVelocity) * val };
             }
         }
 
