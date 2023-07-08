@@ -178,7 +178,7 @@ public static class MainHUD {
                 MainHUD.RemoveItemFromDrawer(name);
 
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-            MainHUD.AddItemToDrawer("Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("rio-config-icon"));
+            MainHUD.AddItemToDrawer("Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
         MainHUD.AddItemToDrawer("Spawn", b => DynamicUIManager.CreateModal<SpawningModal>(), icon: SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
         MainHUD.AddItemToDrawer("Multibot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>());
         MainHUD.AddItemToDrawer("Scoring Zones", b =>
@@ -232,7 +232,7 @@ public static class MainHUD {
             MainHUD.RemoveItemFromDrawer(name);
 
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-            MainHUD.AddItemToDrawer("Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("rio-config-icon"));
+            MainHUD.AddItemToDrawer("Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
         MainHUD.AddItemToDrawer("Multibot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>());
         MainHUD.AddItemToDrawer("Camera View", b => DynamicUIManager.CreateModal<ChangeViewModal>(),
             icon: SynthesisAssetCollection.GetSpriteByName("CameraIcon"));
