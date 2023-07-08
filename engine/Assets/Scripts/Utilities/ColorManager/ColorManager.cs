@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,6 +8,7 @@ using Synthesis.PreferenceManager;
 using Synthesis.Util;
 using SynthesisAPI.EventBus;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Utilities.ColorManager {
     public static class ColorManager
@@ -38,9 +40,14 @@ namespace Utilities.ColorManager {
         };
 
         private static Dictionary<SynthesisColor, Color32> _loadedColors = new();
+        
+        public static Dictionary<SynthesisColor, Color32> LoadedColors
+        {
+            get => _loadedColors;
+        }
 
         private const string DEFAULT_THEME = "default";
-        private static string _selectedTheme;
+        private static string _selectedTheme = DEFAULT_THEME;
 
         public static string[] AvailableThemes
         {
@@ -80,10 +87,13 @@ namespace Utilities.ColorManager {
                 string selectedTheme = PreferenceManager.GetPreference<string>(SELECTED_THEME_PREF);
                 SelectedTheme = selectedTheme;
             });
+            _selectedTheme = PreferenceManager.GetPreference<string>(SELECTED_THEME_PREF);
             
-            LoadTheme(DEFAULT_THEME);
+            //Debug.Log(_selectedTheme);
+            
+            LoadTheme(_selectedTheme);
             LoadDefaultColors();
-            SaveTheme(DEFAULT_THEME);
+            SaveTheme(_selectedTheme);
         }
 
         private static void LoadTheme(string themeName)
@@ -131,14 +141,26 @@ namespace Utilities.ColorManager {
             });
         }
 
+        public static void ModifyLoadedTheme(List<(SynthesisColor name, Color32 color)> changes)
+        {
+            if (_selectedTheme == null)
+                return;
+            
+            changes.ForEach(c =>
+                _loadedColors[c.name] = c.color);
+            
+            SaveTheme(_selectedTheme);
+        }
+
         public static Color GetColor(SynthesisColor colorName)
         {
+            //return new Color(Random.Range(0, 1f), Random.Range(0, 1f), Random.Range(0, 1f), 1);
             if (_loadedColors.TryGetValue(colorName, out Color32 color))
                 return color;
 
             return UNASSIGNED_COLOR;
         }
-
+        
         /*public static void AssignColor(SynthesisColor colorName, Action<Color> applyColor)
         {
             applyColor.Invoke(GetColor(colorName));
@@ -179,4 +201,5 @@ namespace Utilities.ColorManager {
             SynthesisHighlightSelect
         }
     }
+    //{"SynthesisOrange":"#672d2d","SynthesisOrangeAccent":"#3d492b","SynthesisBlack":"#47193b","SynthesisBlackAccent":"#4b1223","SynthesisWhite":"#122423","SynthesisWhiteAccent":"#284f8b","SynthesisAccept":"#a25e00","SynthesisCancel":"#00ff20","SynthesisOrangeContrastText":"#ff0000","SynthesisIcon":"#9e2c5b","SynthesisIconAlt":"#000000ff","SynthesisHighlightHover":"#59ff85ff","SynthesisHighlightSelect":"#ff5985ff"}
 }

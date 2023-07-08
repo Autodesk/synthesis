@@ -7,6 +7,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Linq;
 using Analytics;
+using UI.Dynamic.Modals.Configuring;
 using UnityEngine.Rendering;
 using Utilities.ColorManager;
 
@@ -31,7 +32,7 @@ namespace Synthesis.UI.Dynamic {
         private static bool _useMetric;
         private static bool _renderScoreZones;
 
-        public SettingsModal() : base(new Vector2(500, 500)) {}
+        public SettingsModal() : base(new Vector2(500, 700)) {}
 
         public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
             var offset = (-u.Parent!.RectOfChildren(u).yMin) + 7.5f;
@@ -81,6 +82,16 @@ namespace Synthesis.UI.Dynamic {
                     .StepIntoDropdown(d => d.SetOptions(ColorManager.AvailableThemes)
                         .AddOnValueChangedEvent((d, i, o) => _selectedThemeIndex = i)
                         .SetValue(ColorManager.ThemeNameToIndex(Get<string>(ColorManager.SELECTED_THEME_PREF))));
+
+            var editThemeButton =
+                MainContent.CreateButton("Theme Editor")
+                    .ApplyTemplate<Button>(VerticalLayout)
+                    .AddOnClickedEvent(b =>
+                    {
+                        SaveSettings();
+                        ApplySettings();
+                        DynamicUIManager.CreateModal<EditThemeModal>();
+                    });
 
             MainContent.CreateLabel()
                 .ApplyTemplate(Label.BigLabelTemplate)

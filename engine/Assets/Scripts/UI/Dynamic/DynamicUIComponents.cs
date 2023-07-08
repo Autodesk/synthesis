@@ -940,7 +940,7 @@ namespace Synthesis.UI.Dynamic {
         private Image _backgroundImage;
         public Image BackgroundImage => _backgroundImage;
         private TMP_InputField _tmpInput;
-        public TMP_InputField.ContentType ContentType => _tmpInput.contentType;
+        public TMP_InputField InputText => _tmpInput;
         public string Value                           => _tmpInput.text;
 
         public InputField(UIComponent? parent, GameObject unityObject) : base(parent, unityObject) {
@@ -984,6 +984,13 @@ namespace Synthesis.UI.Dynamic {
 
         public InputField SetCharacterLimit(int length) {
             _tmpInput.characterLimit = length;
+            return this;
+        }
+
+        public InputField SetValueTextColor(Color color)
+        {
+            Debug.Log(color);
+            RootGameObject.transform.Find("InputField/Text Area/Text").GetComponent<TextMeshProUGUI>().color = color;
             return this;
         }
     }

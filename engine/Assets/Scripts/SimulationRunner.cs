@@ -51,6 +51,11 @@ namespace Synthesis.Runtime {
 
         private bool _setupSceneSwitchEvent = false;
 
+        private void Awake()
+        {
+            Synthesis.PreferenceManager.PreferenceManager.Load();
+        }
+
         void Start() {
             InSim = true;
 
@@ -66,7 +71,6 @@ namespace Synthesis.Runtime {
             }
 
             SetContext(RUNNING_SIM_CONTEXT);
-            Synthesis.PreferenceManager.PreferenceManager.Load();
             MainHUD.Setup();
             ModeManager.Start();
             RobotSimObject.Setup();
