@@ -147,7 +147,7 @@ namespace Synthesis {
                 _rotationalLimits = _jointA.limits;
             }
 
-            UseFakeMotion = true;
+            UseFakeMotion = jointA.useLimits;
 
             if (motor != null && motor.MotorTypeCase == Mirabuf.Motor.Motor.MotorTypeOneofCase.SimpleMotor) {
                 _motor = motor!.SimpleMotor.UnityMotor;
@@ -299,7 +299,7 @@ namespace Synthesis {
                             min = _fakedTheta
                         };
 
-                        Debug.Log($"Theta: {_fakedTheta}");
+                        // Debug.Log($"Theta: {_fakedTheta}");
                     }
                     
                 } else {

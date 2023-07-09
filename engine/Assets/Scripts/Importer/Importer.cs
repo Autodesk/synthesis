@@ -32,6 +32,8 @@ using JointMotor          = UnityEngine.JointMotor;
 using UPhysicalMaterial   = UnityEngine.PhysicMaterial;
 using SynthesisAPI.Controller;
 
+#nullable enable
+
 namespace Synthesis.Import {
     /// <summary>
     /// The Importer class connected functions with string parameters to import an Entity/Model into the Engine
@@ -256,11 +258,17 @@ namespace Synthesis.Import {
                         revoluteA.useMotor           = true;
                         // TODO: Implement and test limits
                         var limits = definition.Rotational.RotationalFreedom.Limits;
-                        var currentPosition = definition.Rotational.RotationalFreedom.Value;
                         if (limits != null && limits.Lower != limits.Upper) {
+                            var currentPosition = definition.Rotational.RotationalFreedom.Value;
+                            while (currentPosition < -Mathf.PI) currentPosition += 2 * Mathf.PI;
+                            while (currentPosition > Mathf.PI) currentPosition -= 2 * Mathf.PI;
+                            var min = -(limits.Upper - currentPosition);
+                            while (min > 0) min -= 2 * Mathf.PI;
+                            var max = -(limits.Lower - currentPosition);
+                            while (max < 0) max += 2 * Mathf.PI;
                             revoluteA.useLimits = true;
-                            revoluteA.limits    = new JointLimits() { min = -(limits.Upper - currentPosition) * Mathf.Rad2Deg,
-                                   max                                    = -(limits.Lower - currentPosition) * Mathf.Rad2Deg };
+                            revoluteA.limits    = new JointLimits() { min = min * Mathf.Rad2Deg, max = max * Mathf.Rad2Deg };
+                            revoluteA.extendedLimits = true;
                         }
                         // revoluteA.useLimits = true;
                         // revoluteA.limits = new JointLimits { min = -15, max = 15 };
@@ -341,12 +349,14 @@ namespace Synthesis.Import {
                     sliderB.connectedMassScale = sliderB.connectedBody.mass / rbB.mass;
 
                     if (instance.HasSignal()) {
+                        assembly.Data.Joints.MotorDefinitions.TryGetValue(definition.MotorReference, out var motor);
+                        var currentPosition = definition.Prismatic.PrismaticFreedom.Value;
                         var slideDriver =
                             new LinearDriver(assembly.Data.Signals.SignalMap[instance.SignalReference].Info.GUID,
                                 new string[] { instance.SignalReference }, Array.Empty<string>(), simObject, sliderA,
-                                sliderB, 0.1f,
-                                (definition.Prismatic.PrismaticFreedom.Limits.Upper * 0.01f,
-                                    definition.Prismatic.PrismaticFreedom.Limits.Lower * 0.01f));
+                                sliderB, (motor?.SimpleMotor.MaxVelocity ?? 30f) / 100f,
+                                ((definition.Prismatic.PrismaticFreedom.Limits.Upper - currentPosition) * 0.01f,
+                                    (definition.Prismatic.PrismaticFreedom.Limits.Lower - currentPosition) * 0.01f));
                         SimulationManager.AddDriver(simObject.Name, slideDriver);
                     }
 
