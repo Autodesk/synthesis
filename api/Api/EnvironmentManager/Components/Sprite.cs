@@ -1,14 +1,15 @@
 ﻿using SynthesisAPI.AssetManager;
-using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Utilities;
 using System.Drawing;
+
+#nullable enable
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
 	// [BuiltIn]
 	public class Sprite : Component
 	{
-		internal UnityEngine.Sprite _sprite;
+		internal UnityEngine.Sprite? _sprite;
 		internal bool _flipX = false;
 		internal bool _flipY = false;
 		internal Color _color = Color.FromArgb(255, 255, 255, 255);
@@ -67,8 +68,8 @@ namespace SynthesisAPI.EnvironmentManager.Components
 		}
 
 		public Bounds Bounds { get; internal set; } = new Bounds();
-		public int Width => _sprite.texture.width;
-		public int Height => _sprite.texture.height;
+		public int Width => _sprite != null ? 0 : _sprite!.texture.width;
+		public int Height => _sprite != null ? 0 : _sprite!.texture.height;
 
 		public bool Changed { get; private set; } = true;
 		internal void ProcessedChanges() => Changed = false;

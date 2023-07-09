@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Xml;
+
+#nullable enable
 
 /// <summary>
 /// Utility class defined in the main scope
@@ -11,7 +12,7 @@ using System.Xml;
 [assembly: InternalsVisibleTo(assemblyName: "TranslatorTest")]
 
 internal static class TranslatorUtil {
-    public static XmlNode Find(this XmlNodeList nodes, Predicate<XmlNode> condition) {
+    public static XmlNode? Find(this XmlNodeList nodes, Predicate<XmlNode> condition) {
         var enumerator = nodes.GetEnumerator();
         enumerator.Reset();
         while (enumerator.MoveNext()) {

@@ -21,14 +21,15 @@ using UnityEngine.Rendering;
 
 namespace Synthesis.Runtime {
     public class SimulationRunner : MonoBehaviour {
-
+        // clang-format off
         private static uint _simulationContext = 0x00000001;
+        // clang-format on
         public static uint SimulationContext => _simulationContext;
 
         public const uint RUNNING_SIM_CONTEXT = 0x00000001;
-        public const uint PAUSED_SIM_CONTEXT =  0x00000002;
-        public const uint REPLAY_SIM_CONTEXT =  0x00000004;
-        public const uint GIZMO_SIM_CONTEXT =   0x00000008;
+        public const uint PAUSED_SIM_CONTEXT  = 0x00000002;
+        public const uint REPLAY_SIM_CONTEXT  = 0x00000004;
+        public const uint GIZMO_SIM_CONTEXT   = 0x00000008;
 
         /// <summary>
         /// Called when going to the main menu.
@@ -37,7 +38,8 @@ namespace Synthesis.Runtime {
         public static event Action OnSimKill;
 
         public static event Action OnUpdate;
-        
+        public static event Action OnGameObjectDestroyed;
+
         private static bool _inSim = false;
         public static bool InSim {
             get => _inSim;
@@ -51,13 +53,11 @@ namespace Synthesis.Runtime {
         private bool _setupSceneSwitchEvent = false;
 
         void Start() {
-
             InSim = true;
 
             if (!_setupSceneSwitchEvent) {
                 SceneManager.sceneUnloaded += (Scene s) => {
                     if (s.name == "MainScene") {
-                        
                     }
                     // SimulationManager.SimulationObjects.ForEach(x => {
                     //     SimulationManager.RemoveSimObject(x.Value);
@@ -74,6 +74,7 @@ namespace Synthesis.Runtime {
             WebSocketManager.Init();
 
             OnUpdate += DynamicUIManager.Update;
+            OnUpdate += ModeManager.Update;
 
             WebSocketManager.RioState.OnUnrecognizedMessage += s => Debug.Log(s);
 
@@ -85,6 +86,9 @@ namespace Synthesis.Runtime {
             if (ColorManager.HasColor("tree")) {
                 GameObject.Instantiate(Resources.Load("Misc/Tree"));
             }
+
+            if (ModeManager.CurrentMode is not null)
+                ModeManager.CurrentMode.Start();
 
             SettingsModal.LoadSettings();
             SettingsModal.ApplySettings();
@@ -101,7 +105,6 @@ namespace Synthesis.Runtime {
         void Update() {
             InputManager.UpdateInputs(_simulationContext);
             SimulationManager.Update();
-            ModeManager.Update();
 
             // Debug.Log($"WHAT: {Time.realtimeSinceStartup}");
 
@@ -136,6 +139,8 @@ namespace Synthesis.Runtime {
 
         void OnDestroy() {
             Synthesis.PreferenceManager.PreferenceManager.Save();
+            if (OnGameObjectDestroyed != null)
+                OnGameObjectDestroyed();
         }
 
         /// <summary>
@@ -145,6 +150,7 @@ namespace Synthesis.Runtime {
         public static void SetContext(uint c) {
             _simulationContext = c;
         }
+
         /// <summary>
         /// Add an additional context to the current contexts
         /// </summary>
@@ -152,6 +158,7 @@ namespace Synthesis.Runtime {
         public static void AddContext(uint c) {
             _simulationContext |= c;
         }
+
         /// <summary>
         /// Remove a context from the current context
         /// </summary>
@@ -160,21 +167,25 @@ namespace Synthesis.Runtime {
             if (HasContext(c))
                 _simulationContext ^= c;
         }
+
         /// <summary>
         /// Check if a context exists within the current context
         /// </summary>
         /// <param name="c">Mask for context</param>
         /// <returns></returns>
-        public static bool HasContext(uint c)
-            => (_simulationContext & c) != 0;
+        public static bool HasContext(uint c) => (_simulationContext & c) != 0;
 
         /// <summary>
         /// Teardown sim for recycle
         /// </summary>
         public static void SimKill() {
+            ModeManager.Teardown();
+
             FieldSimObject.DeleteField();
-            if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-                SimulationManager.RemoveSimObject(RobotSimObject.GetCurrentlyPossessedRobot());
+            List<string> robotIDs = new List<string>(RobotSimObject.SpawnedRobots.Count);
+            RobotSimObject.SpawnedRobots.ForEach(x => robotIDs.Add(x.Name));
+            robotIDs.ForEach(x => RobotSimObject.RemoveRobot(x));
+            OrbitCameraMode.FocusPoint = () => Vector3.zero;
 
             if (OnSimKill != null)
                 OnSimKill();

@@ -6,7 +6,6 @@ using UnityEngine.Rendering;
 using System.Linq;
 
 public class SynthesisAssetCollection : MonoBehaviour {
-
     public static SynthesisAssetCollection Instance;
 
     [SerializeField]
@@ -23,6 +22,8 @@ public class SynthesisAssetCollection : MonoBehaviour {
     public GameObject ReplaySlider;
     [SerializeField]
     public GameObject GizmoPrefab;
+    [SerializeField]
+    public List<AudioClip> AudioClips;
 
     private static Volume _blurVolumeStatic = null;
     public static Volume BlurVolumeStatic {
@@ -34,7 +35,7 @@ public class SynthesisAssetCollection : MonoBehaviour {
         }
     }
     public static GameObject ReplaySliderStatic => Instance.ReplaySlider;
-    public static GameObject GizmoPrefabStatic => Instance.GizmoPrefab;
+    public static GameObject GizmoPrefabStatic  => Instance.GizmoPrefab;
 
 #nullable enable
     private GameObject? _defaultFloor = null;
@@ -67,20 +68,16 @@ public class SynthesisAssetCollection : MonoBehaviour {
         Screen.SetResolution(res.width, res.height, FullScreenMode.MaximizedWindow);*/
     }
 
-    public static Sprite GetSpriteByName(string name)
-        => Instance.SpriteAssets.First(x => x.name == name);
+    public static Sprite GetSpriteByName(string name) => Instance.SpriteAssets.First(x => x.name == name);
 
-    public static GameObject GetPanelByName(string name)
-        => Instance.PanelPrefabs.First(x => x.name == name);
+    public static GameObject GetPanelByName(string name) => Instance.PanelPrefabs.First(x => x.name == name);
 
-    public static GameObject GetUIPrefab(string name)
-        => Instance.DynamicUIPrefabs.First(x => x.name == name);
-    public static TMPro.TMP_FontAsset GetFont(string name)
-        => Instance.Fonts.First(x => x.name == name);
+    public static GameObject GetUIPrefab(string name)      => Instance.DynamicUIPrefabs.First(x => x.name == name);
+    public static TMPro.TMP_FontAsset GetFont(string name) => Instance.Fonts.First(x => x.name == name);
 
+    public static AudioClip GetAudioClip(string name) => Instance.AudioClips.First(x => x.name == name);
 
-    public void OnDestroy()
-    {
-        AnalyticsManager.LogEvent(new AnalyticsEvent(category: "app", action: $"close", label:""));
+    public void OnDestroy() {
+        AnalyticsManager.LogEvent(new AnalyticsEvent(category: "app", action: $"close", label: ""));
     }
 }

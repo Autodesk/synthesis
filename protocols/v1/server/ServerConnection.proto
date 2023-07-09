@@ -1,0 +1,136 @@
+syntax = "proto3";
+package SynthesisServer.Proto;
+
+import "v1/server/Networking.proto";
+
+// make sure to do before an action because something else could have happened like your lobby could have been deleted
+message ServerInfoRequest {}
+
+message Client {
+	string id = 1;
+	string name = 2;
+}
+
+message Lobby {
+	string lobby_name = 1;
+	map<string, Client> clients = 2;
+}
+
+message ServerInfoResponse {
+	repeated Lobby lobbies = 1;
+	string current_lobby = 2;
+	string current_name = 3;
+	GenericResponse generic_response = 4;
+}
+
+message CreateLobbyRequest {
+	//string client_id = 1;
+	string lobby_name = 1;
+}
+
+message CreateLobbyResponse {
+	//string client_id = 1;
+	string lobby_name = 1;
+	GenericResponse generic_response = 2;
+}
+
+
+message DeleteLobbyRequest {
+	//string client_id = 1;
+	string lobby_name = 1;
+}
+
+message DeleteLobbyResponse {
+	//string client_id = 1;
+	string lobby_name = 1;
+	GenericResponse generic_response = 2;
+}
+
+
+message JoinLobbyRequest {
+	//string client_id = 1;
+	string lobby_name = 1;
+}
+
+message JoinLobbyResponse {
+	//string client_id = 1;
+	string lobby_name = 1;
+	GenericResponse generic_response = 2;
+}
+
+
+message LeaveLobbyRequest {
+	//string client_id = 1;
+	string lobby_name = 1;
+}
+
+message LeaveLobbyResponse {
+	//string client_id = 1;
+	string lobby_name = 1;
+	GenericResponse generic_response = 2;
+}
+
+
+message StartLobbyRequest {
+	//string client_id = 1;
+	string lobby_name = 1;
+}
+
+message StartLobbyResponse {
+	//string client_id = 1;
+	string lobby_name = 1;
+	GenericResponse generic_response = 2;
+}
+
+
+message SwapRequest {
+	//string client_id = 1;
+	string lobby_name = 1;
+
+	int32 first_postion = 2;
+	int32 second_postion = 3;
+}
+
+message SwapResponse {
+	//string client_id = 1;
+	string lobby_name = 1;
+
+	int32 first_postion = 2;
+	int32 second_postion = 3;
+	GenericResponse generic_response = 4;
+}
+
+message ChangeNameRequest {
+	string name = 1;
+}
+
+message ChangeNameResponse {
+	string name = 1;
+	GenericResponse generic_response = 2;
+}
+
+
+/*
+1. When lobby is started the server will send a MatchStart message over TCP with the open UDP port number
+2. Clients in that lobby will then begin broadcasting the MatchStartResponse to the server on the specified UDP port
+3. Upon recieving the match response the server will record the IPEndPoint of the UDP Connection
+4. After receiving a response from each client the server will send a connection data message over UDP
+*/
+
+message MatchStart {
+	int32 udp_port = 1;
+}
+
+// sent by the client over udp
+message MatchStartResponse {}
+
+message ConnectionDataHost {
+	map<string, IPEndpoint> clients = 1; // includes the host as the index corresponds with lobby position
+}
+
+message ConnectionDataClient {
+	string host_id = 1;
+	IPEndpoint host_ep = 2;
+}
+
+message MatchStartFailure {}

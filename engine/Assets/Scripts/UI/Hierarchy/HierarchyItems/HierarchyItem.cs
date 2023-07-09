@@ -9,18 +9,14 @@ using TMPro;
 
 #nullable enable
 
-namespace Synthesis.UI.Hierarchy.HierarchyItems
-{
-    public class HierarchyItem : InteractableObject
-    {
+namespace Synthesis.UI.Hierarchy.HierarchyItems {
+    public class HierarchyItem : InteractableObject {
         public delegate void OnClickEvent();
         public event OnClickEvent? OnItemClicked;
 
-        #region Properties
+#region Properties
 
-        public bool IsInherited {
-            get => this.GetType() != typeof(HierarchyItem);
-        }
+        public bool IsInherited { get => this.GetType() != typeof(HierarchyItem); }
 
         public int Index {
             get {
@@ -57,9 +53,9 @@ namespace Synthesis.UI.Hierarchy.HierarchyItems
         public string Title {
             get => title;
             set {
-                title = value;
-                TitleText.text = title;
-                gameObject.name = title;
+                title               = value;
+                TitleText.text      = title;
+                gameObject.name     = title;
                 base.ContextMenuUID = title;
             }
         }
@@ -72,18 +68,16 @@ namespace Synthesis.UI.Hierarchy.HierarchyItems
             }
         }
 
-        private Image? imageComponent = null;
-        private readonly Color NormalColor = SynthesisUtil.ColorFromHex(0xf3f3f3ff);
+        private Image? imageComponent           = null;
+        private readonly Color NormalColor      = SynthesisUtil.ColorFromHex(0xf3f3f3ff);
         private readonly Color InteractionColor = SynthesisUtil.ColorFromHex(0xe8cc2aff);
 
-        #endregion
+#endregion
 
         // Use this for initialization
         protected void Awake() {
             var button = GetComponent<Button>();
-            button.onClick.AddListener(() => {
-                OnItemClicked?.Invoke();
-            });
+            button.onClick.AddListener(() => { OnItemClicked?.Invoke(); });
         }
 
         protected override sealed void OnInteraction(bool isInteractedWith) {
@@ -96,7 +90,7 @@ namespace Synthesis.UI.Hierarchy.HierarchyItems
                 imageComponent.color = NormalColor;
         }
 
-        #region Hierarchy
+#region Hierarchy
 
         public virtual void Init(string title, HierarchyFolderItem? parent) {
             Title = title;
@@ -120,20 +114,20 @@ namespace Synthesis.UI.Hierarchy.HierarchyItems
                 // Debug.Log($"{Title} removed {num} times");
                 parent = parent.Parent!;
             }
-            Parent = null;
-            Visible = false;
+            Parent            = null;
+            Visible           = false;
             Hierarchy.Changes = true;
         }
 
-        #endregion
+#endregion
 
-        #region ContextMenu
+#region ContextMenu
 
         [ContextMenuOption("Remove", "CloseIcon")]
         public void RemoveContextMenu() {
             Remove();
         }
 
-        #endregion
+#endregion
     }
 }

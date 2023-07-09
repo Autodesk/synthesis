@@ -7,12 +7,11 @@ using Debug = UnityEngine.Debug;
 
 namespace Synthesis.UI {
     public class MenuManager : MonoBehaviour {
-        
         private void Start() {
             SettingsModal.LoadSettings();
             SettingsModal.ApplySettings();
         }
-        
+
         public void ButtonPrint(string s) {
             Debug.Log("Button Pressed: " + s);
             DynamicUIManager.CreateModal<TestModal>();
@@ -27,17 +26,13 @@ namespace Synthesis.UI {
         }
 
         public void Feedback() {
-            Process.Start(new ProcessStartInfo() {
-                FileName = "https://github.com/Autodesk/synthesis/issues/new/choose",
-                UseShellExecute = true
-            });
+            Process.Start(new ProcessStartInfo() { FileName = "https://github.com/Autodesk/synthesis/issues/new/choose",
+                UseShellExecute                             = true });
         }
 
         public void Help() {
-            Process.Start(new ProcessStartInfo() {
-                FileName = "https://www.discord.gg/hHcF9AVgZA",
-                UseShellExecute = true
-            });
+            Process.Start(
+                new ProcessStartInfo() { FileName = "https://www.discord.gg/hHcF9AVgZA", UseShellExecute = true });
         }
     }
 }

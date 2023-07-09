@@ -7,7 +7,6 @@ using Synthesis.UI.Dynamic;
 using UnityEngine;
 
 public class BetaWarningPanel : PanelDynamic {
-
     private const string DISPLAY_WARNING_PREF = "beta/warning";
 
     private Action _onOk;
@@ -17,16 +16,16 @@ public class BetaWarningPanel : PanelDynamic {
     }
 
     public override bool Create() {
-
         if (!PreferenceManager.ContainsPreference(DISPLAY_WARNING_PREF))
             PreferenceManager.SetPreference<bool>(DISPLAY_WARNING_PREF, true);
-            PreferenceManager.Save();
+        PreferenceManager.Save();
 
         if (!PreferenceManager.GetPreference<bool>(DISPLAY_WARNING_PREF))
             return false;
 
         Title.SetText("Warning");
-        AcceptButton.AddOnClickedEvent(b => DynamicUIManager.ClosePanel<BetaWarningPanel>()).StepIntoLabel(l => l.SetText("Okidoki"));
+        AcceptButton.AddOnClickedEvent(b => DynamicUIManager.ClosePanel<BetaWarningPanel>())
+            .StepIntoLabel(l => l.SetText("Okidoki"));
         CancelButton.RootGameObject.SetActive(false);
         PanelImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"));
         PanelImage.SetColor(ColorManager.SYNTHESIS_WHITE);
@@ -38,11 +37,12 @@ public class BetaWarningPanel : PanelDynamic {
             .SetText("This feature you are about to use is in beta and is not unlikely to do funky things.")
             .SetFont(SynthesisAssetCollection.GetFont("Roboto-Regular SDF"))
             .SetFontSize(20);
-        
+
         return true;
     }
 
-    public override void Update() { }
+    public override void Update() {}
+
     public override void Delete() {
         PreferenceManager.SetPreference<bool>(DISPLAY_WARNING_PREF, false);
         PreferenceManager.Save();

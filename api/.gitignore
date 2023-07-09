@@ -1,4 +1,7 @@
 */bin
 */obj
 
+.vscode/
+api.sln.DotSettings.user
+
 Api/Proto

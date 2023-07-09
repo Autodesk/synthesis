@@ -11,23 +11,22 @@ using UnityEngine;
 
 namespace Synthesis {
     public class RotationalDriver : Driver {
-
+        // clang-format off
         private bool _isWheel = false;
+        // clang-format on
         public bool IsWheel => _isWheel;
 
         public string Signal => _inputs[0];
 
         private SimBehaviour? _reservee;
         public SimBehaviour? Reservee => _reservee;
-        public bool IsReserved => _reservee != null;
-        
+        public bool IsReserved        => _reservee != null;
+
         /// <summary>
         /// Global Coordinate Anchor Point for Joint
         /// </summary>
-        public Vector3 Anchor {
-            get => _jointA.transform.localToWorldMatrix.MultiplyPoint3x4(_jointA.anchor);
-        }
-        
+        public Vector3 Anchor { get => _jointA.transform.localToWorldMatrix.MultiplyPoint3x4(_jointA.anchor); }
+
         /// <summary>
         /// Global Coordinate Axis for Joint
         /// </summary>
@@ -37,19 +36,25 @@ namespace Synthesis {
         }
 
         public enum RotationalControlMode {
-            Position, Velocity
+            Position,
+            Velocity
         }
 
         public double MainInput {
-            get => State.CurrentSignals[_inputs[0]].Value.NumberValue;
-            set {
-                State.CurrentSignals[_inputs[0]].Value = Value.ForNumber(value);
+            get {
+                var val = State.GetValue(_inputs[0]);
+                return val == null ? 0.0 : val.NumberValue;
             }
+            set => State.SetValue(_inputs[0], Value.ForNumber(value));
         }
 
         public RotationalControlMode ControlMode {
             get {
-                switch (State.CurrentSignals[_inputs[1]].Value.StringValue) {
+                var val = State.GetValue(_inputs[1]);
+                if (val == null)
+                    throw new Exception($"No value with guid '{_inputs[1]}'");
+
+                switch (val.StringValue) {
                     case "Velocity":
                         return RotationalControlMode.Velocity;
                     case "Position":
@@ -61,10 +66,10 @@ namespace Synthesis {
             set {
                 switch (value) {
                     case RotationalControlMode.Position:
-                        State.CurrentSignals[_inputs[1]].Value = Value.ForString("Position");
+                        State.SetValue(_inputs[1], Value.ForString("Position"));
                         break;
                     case RotationalControlMode.Velocity:
-                        State.CurrentSignals[_inputs[1]].Value = Value.ForString("Velocity");
+                        State.SetValue(_inputs[1], Value.ForString("Velocity"));
                         break;
                     default:
                         throw new Exception("Unrecognized Rotational Control Mode");
@@ -72,7 +77,7 @@ namespace Synthesis {
             }
         }
 
-        public new string Name => State.CurrentSignalLayout!.SignalMap[_inputs[0]].Info.Name;
+        public new string Name => State.SignalMap[_inputs[0]].Name;
 
         private JointMotor _motor;
         public JointMotor Motor {
@@ -130,12 +135,10 @@ namespace Synthesis {
         private bool _useMotor = true;
 
         // Is this actually used?
-        public bool UseMotor {
-            get => _useMotor;
-        }
+        public bool UseMotor { get => _useMotor; }
 
-        public RotationalDriver(string name, string[] inputs, string[] outputs, SimObject simObject,
-            HingeJoint jointA, HingeJoint jointB, bool isWheel, Mirabuf.Motor.Motor? motor = null)
+        public RotationalDriver(string name, string[] inputs, string[] outputs, SimObject simObject, HingeJoint jointA,
+            HingeJoint jointB, bool isWheel, Mirabuf.Motor.Motor? motor = null)
             : base(name, inputs, outputs, simObject) {
             _jointA = jointA;
             _jointB = jointB;
@@ -150,50 +153,37 @@ namespace Synthesis {
                 _motor = motor!.SimpleMotor.UnityMotor;
             } else {
                 // var m = SimulationPreferences.GetRobotJointMotor((_simObject as RobotSimObject).MiraGUID, name);
-                Motor = new JointMotor() { // Default Motor. Slow but powerful enough. Also uses Motor to save it
-                    force = 2000,
-                    freeSpin = false,
+                Motor = new JointMotor() {
+                    // Default Motor. Slow but powerful enough. Also uses Motor to save it
+                    force          = 2000,
+                    freeSpin       = false,
                     targetVelocity = 500,
                 };
             }
 
             _isWheel = isWheel;
 
-            State.CurrentSignals[_inputs[1]] = new UpdateSignal() {
-                DeviceType = "Mode",
-                Io = UpdateIOType.Input,
-                Value = Google.Protobuf.WellKnownTypes.Value.ForString("Velocity")
-            };
-            State.CurrentSignals[_outputs[0]] = new UpdateSignal() {
-                DeviceType = "PWM",
-                Io = UpdateIOType.Output,
-                Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(0)
-            };
-            State.CurrentSignals[_outputs[1]] = new UpdateSignal() {
-                DeviceType = "Range",
-                Io = UpdateIOType.Output,
-                Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(0)
-            };
+            State.SetValue(_inputs[1], Value.ForString("Velocity"));
+            State.SetValue(_outputs[0], Value.ForNumber(0));
+            State.SetValue(_outputs[1], Value.ForNumber(1));
 
             // Debug.Log($"Speed: {_motor.targetVelocity}\nForce: {_motor.force}");
         }
 
-        void EnableMotor()
-        {
-            _useMotor = true;
+        void EnableMotor() {
+            _useMotor        = true;
             _jointA.useMotor = true;
         }
 
-        void DisableMotor()
-        {
-            _useMotor = false;
+        void DisableMotor() {
+            _useMotor        = false;
             _jointA.useMotor = false;
         }
 
         public bool Reserve(SimBehaviour? behaviour) {
             if (behaviour == null || _reservee != null)
                 return false;
-            
+
             _reservee = behaviour;
             return true;
         }
@@ -223,8 +213,8 @@ namespace Synthesis {
 
             // Angle loops around so this works for now
             _jointAngle += (_jointA.velocity * Time.deltaTime) / 360f;
-            State.CurrentSignals[_outputs[0]].Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(_jointAngle);
-            State.CurrentSignals[_outputs[1]].Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(_jointA.angle);
+            State.SetValue(_outputs[0], Value.ForNumber(_jointAngle));
+            State.SetValue(_outputs[1], Value.ForNumber(_jointA.angle));
 
             // var updateSignal = new UpdateSignals();
             // var key = _outputs[0];
@@ -238,95 +228,75 @@ namespace Synthesis {
 
         private void PositionControl() {
             if (_jointA.useMotor) {
-
-                var targetPosition = (float)(State.CurrentSignals.ContainsKey(_inputs[0])
-                    ? State.CurrentSignals[_inputs[0]].Value.NumberValue
-                    : 0.0f);
+                var targetPosition = MainInput;
 
                 // Debug.Log($"D: {_inputs[0]}");
                 // Debug.Log($"Target: {targetPosition}");
 
                 var inertiaA = GetInertiaAroundParallelAxis(_jointA.connectedBody, _jointB.anchor, _jointB.axis);
                 // var angAccelA = (Motor.force * val) / inertiaA;
-                // _jointA.connectedBody.AddTorque(_jointB.axis.normalized * angAccelA * Mathf.Rad2Deg, ForceMode.Acceleration);
-                // Debug.Log($"{angAccelA} to {_jointA.connectedBody.name}");
+                // _jointA.connectedBody.AddTorque(_jointB.axis.normalized * angAccelA * Mathf.Rad2Deg,
+                // ForceMode.Acceleration); Debug.Log($"{angAccelA} to {_jointA.connectedBody.name}");
 
                 var inertiaB = GetInertiaAroundParallelAxis(_jointB.connectedBody, _jointA.anchor, _jointA.axis);
                 // var angAccelB = (-Motor.force * val) / inertiaB;
-                // _jointB.connectedBody.AddTorque(_jointA.axis.normalized * angAccelB * Mathf.Rad2Deg, ForceMode.Acceleration);
-                // Debug.Log($"{angAccelB} to {_jointB.connectedBody.name}");
+                // _jointB.connectedBody.AddTorque(_jointA.axis.normalized * angAccelB * Mathf.Rad2Deg,
+                // ForceMode.Acceleration); Debug.Log($"{angAccelB} to {_jointB.connectedBody.name}");
 
-                float error = (float)(targetPosition - _jointA.angle);
-                while (error < -180) { error += 360; }
-                while (error > 180) { error -= 360; }
+                float error = (float) (targetPosition - _jointA.angle);
+                while (error < -180) {
+                    error += 360;
+                }
+                while (error > 180) {
+                    error -= 360;
+                }
 
                 // Debug.Log($"Error: {error}");
 
                 float output = error * 0.1f;
 
-                _jointA.motor = new JointMotor {
-                    force = Motor.force * (inertiaA / (inertiaA + inertiaB)),
-                    freeSpin = Motor.freeSpin,
-                    targetVelocity = (Motor.targetVelocity) * output
-                };
-                _jointB.motor = new JointMotor {
-                    force = Motor.force * (inertiaB / (inertiaA + inertiaB)),
-                    freeSpin = Motor.freeSpin,
-                    targetVelocity = (-Motor.targetVelocity) * output
-                };
+                _jointA.motor = new JointMotor { force = Motor.force * (inertiaA / (inertiaA + inertiaB)),
+                    freeSpin = Motor.freeSpin, targetVelocity = (Motor.targetVelocity) * output };
+                _jointB.motor = new JointMotor { force = Motor.force * (inertiaB / (inertiaA + inertiaB)),
+                    freeSpin = Motor.freeSpin, targetVelocity = (-Motor.targetVelocity) * output };
             }
         }
 
         private void VelocityControl(float deltaT) {
             if (_jointA.useMotor) {
-
-                var val = (float)(State.CurrentSignals.ContainsKey(_inputs[0])
-                    ? State.CurrentSignals[_inputs[0]].Value.NumberValue
-                    : 0.0f);
+                var val = (float) MainInput;
 
                 var inertiaA = GetInertiaAroundParallelAxis(_jointA.connectedBody, _jointB.anchor, _jointB.axis);
                 // var angAccelA = (Motor.force * val) / inertiaA;
-                // _jointA.connectedBody.AddTorque(_jointB.axis.normalized * angAccelA * Mathf.Rad2Deg, ForceMode.Acceleration);
-                // Debug.Log($"{angAccelA} to {_jointA.connectedBody.name}");
+                // _jointA.connectedBody.AddTorque(_jointB.axis.normalized * angAccelA * Mathf.Rad2Deg,
+                // ForceMode.Acceleration); Debug.Log($"{angAccelA} to {_jointA.connectedBody.name}");
 
                 var inertiaB = GetInertiaAroundParallelAxis(_jointB.connectedBody, _jointA.anchor, _jointA.axis);
                 // var angAccelB = (-Motor.force * val) / inertiaB;
-                // _jointB.connectedBody.AddTorque(_jointA.axis.normalized * angAccelB * Mathf.Rad2Deg, ForceMode.Acceleration);
-                // Debug.Log($"{angAccelB} to {_jointB.connectedBody.name}");
+                // _jointB.connectedBody.AddTorque(_jointA.axis.normalized * angAccelB * Mathf.Rad2Deg,
+                // ForceMode.Acceleration); Debug.Log($"{angAccelB} to {_jointB.connectedBody.name}");
 
                 if (_useFakeMotion) {
 
-                    float alpha = (val * Motor.force / inertiaA);
+                    float alpha = val * Motor.targetVelocity;
 
-                    if (Mathf.Abs(alpha) > 0.01) {
-                        Debug.Log("MOVE");
-                    }
-
-                    float fOmega = alpha * deltaT + _fakedOmega;
-
-                    // If max omega is exceeded, limit
-                    if (fOmega > Motor.targetVelocity * Mathf.Deg2Rad) {
-                        float accelTime = ((Motor.targetVelocity * Mathf.Deg2Rad) - _fakedOmega) / alpha;
-                        _fakedOmega = alpha * accelTime;
-                        _fakedTheta = alpha * accelTime * accelTime + _fakedOmega * accelTime + _fakedTheta + _fakedOmega * (deltaT - accelTime);
-                    } else {
-                        _fakedTheta = alpha * deltaT * deltaT + _fakedOmega * deltaT + _fakedTheta;
-                        _fakedOmega = fOmega;
-                    }
+                    _fakedTheta += alpha * deltaT;
 
                     if (_rotationalLimits.HasValue) {
-                        if (_fakedTheta > _rotationalLimits.Value.max * Mathf.Deg2Rad) {
-                            _fakedTheta = _rotationalLimits.Value.max * Mathf.Deg2Rad;
-                        } else if (_fakedTheta < _rotationalLimits.Value.min * Mathf.Deg2Rad) {
-                            _fakedTheta = _rotationalLimits.Value.min * Mathf.Deg2Rad;
+                        if (_fakedTheta > _rotationalLimits.Value.max) {
+                            _fakedTheta = _rotationalLimits.Value.max;
+                        } else if (_fakedTheta < _rotationalLimits.Value.min) {
+                            _fakedTheta = _rotationalLimits.Value.min;
                         }
 
-                        _jointA.limits = new JointLimits {
+                        _fakedTheta = Mathf.Clamp(_fakedTheta, -180, 179);
+
+						_jointA.limits = new JointLimits {
                             bounceMinVelocity = _rotationalLimits.Value.bounceMinVelocity,
                             bounciness = _rotationalLimits.Value.bounciness,
                             contactDistance = _rotationalLimits.Value.contactDistance,
-                            max = _fakedTheta * Mathf.Rad2Deg + 1,
-                            min = _fakedTheta * Mathf.Rad2Deg
+                            max = _fakedTheta + 1,
+                            min = _fakedTheta
                         };
 
                         Debug.Log($"Theta: {_fakedTheta}");
@@ -356,32 +326,29 @@ namespace Synthesis {
             _jointB.axis = _jointB.transform.worldToLocalMatrix.MultiplyVector(newAxis).normalized;
         }
 
-        #region Rotational Inertia stuff that isn't used
+#region Rotational Inertia stuff that isn't used
 
         public float GetInertiaAroundParallelAxis(Rigidbody rb, Vector3 localAnchor, Vector3 localAxis) {
-            var comInertia = GetInertiaFromAxisVector(rb, localAxis);
+            var comInertia       = GetInertiaFromAxisVector(rb, localAxis);
             var pointMassInertia = rb.mass * Mathf.Pow(Vector3.Distance(rb.centerOfMass, localAnchor), 2f);
             return comInertia + pointMassInertia;
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="rb"></param>
         /// <param name="axis">Use local axis</param>
         /// <returns></returns>
         public float GetInertiaFromAxisVector(Rigidbody rb, Vector3 localAxis) {
-            var sph = CartesianToSphericalCoordinate(localAxis);
+            var sph     = CartesianToSphericalCoordinate(localAxis);
             var inertia = rb.inertiaTensorRotation * rb.inertiaTensor;
             return EllipsoidRadiusFromSphericalCoordinate(sph, inertia);
         }
 
         public static float EllipsoidRadiusFromSphericalCoordinate(Vector3 sph, Vector3 ellipsoidRadi) {
-            var cartEllip = new Vector3(
-                ellipsoidRadi.x * Mathf.Sin(sph.y) * Mathf.Cos(sph.z),
-                ellipsoidRadi.y * Mathf.Cos(sph.y),
-                ellipsoidRadi.z * Mathf.Sin(sph.y) * Mathf.Sin(sph.z)
-            );
+            var cartEllip = new Vector3(ellipsoidRadi.x * Mathf.Sin(sph.y) * Mathf.Cos(sph.z),
+                ellipsoidRadi.y * Mathf.Cos(sph.y), ellipsoidRadi.z * Mathf.Sin(sph.y) * Mathf.Sin(sph.z));
             return cartEllip.magnitude;
         }
 
@@ -409,19 +376,15 @@ namespace Synthesis {
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="cart"></param>
         /// <returns>X is radius, Y is theta, Z is phi</returns>
         public static Vector3 CartesianToSphericalCoordinate(Vector3 cart) {
             cart = cart.normalized;
-            return new Vector3(
-                cart.magnitude,
-                Mathf.Acos(cart.y / 1),
-                Mathf.Asin(cart.z / 1)
-            );
+            return new Vector3(cart.magnitude, Mathf.Acos(cart.y / 1), Mathf.Asin(cart.z / 1));
         }
 
-        #endregion
+#endregion
     }
 }

@@ -2,13 +2,11 @@
 using System.IO;
 using UnityEngine;
 
-namespace Synthesis.FileSystem
-{
-    public static class FileSystem
-    {
-        public static string Root = Application.persistentDataPath;
-        public static string Robots = Path.Combine(Root, "Models");
-        public static string Fields = Path.Combine(Root, "Fields");
+namespace Synthesis.FileSystem {
+    public static class FileSystem {
+        public static string Root        = Application.persistentDataPath;
+        public static string Robots      = Path.Combine(Root, "Models");
+        public static string Fields      = Path.Combine(Root, "Fields");
         public static string Preferences = Path.Combine(Root, "Preferences");
 
         /// <summary>
@@ -16,8 +14,7 @@ namespace Synthesis.FileSystem
         /// Note: Root does not have write access but folders in Root do
         /// </summary>
         [RuntimeInitializeOnLoadMethod]
-        public static void Init()
-        {
+        public static void Init() {
             if (!Directory.Exists(Robots))
                 Directory.CreateDirectory(Robots);
             if (!Directory.Exists(Fields))
