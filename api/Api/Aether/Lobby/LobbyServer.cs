@@ -61,9 +61,9 @@ namespace SynthesisAPI.Aether.Lobby {
             private List<DataRobot> _availableRobots;
             public IReadOnlyCollection<DataRobot> AvailableRobots {
                 get {
-                    _clientsLock.EnterReadLock();
+                    _robotDataLock.EnterReadLock();
                     var robots = new List<DataRobot>(_availableRobots);
-                    _clientsLock.ExitReadLock();
+                    _robotDataLock.ExitReadLock();
                     return robots.AsReadOnly();
                 }
             }
