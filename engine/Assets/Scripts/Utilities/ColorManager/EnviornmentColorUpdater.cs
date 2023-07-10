@@ -15,7 +15,6 @@ namespace Utilities.ColorManager
         private static readonly int TOP_COLOR = Shader.PropertyToID("_TopColor");
         private static readonly int GRID_COLOR = Shader.PropertyToID("_GridColor");
 
-        // Start is called before the first frame update
         void Start()
         {
             _skyboxMaterial = _skybox.GetComponent<MeshRenderer>().material;
@@ -36,8 +35,6 @@ namespace Utilities.ColorManager
             var floorColor = ColorManager.GetColor(ColorManager.SynthesisColor.FloorGrid);
             floorColor.a = 0.48f;
             _floorMaterial.SetColor(GRID_COLOR, floorColor);
-            
-            
         }
     }
 }

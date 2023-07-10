@@ -49,7 +49,7 @@ namespace Utilities.ColorManager {
             get => _loadedColors;
         }
 
-        private const string DEFAULT_THEME = "default";
+        private const string DEFAULT_THEME = "Default";
         private static string _selectedTheme = DEFAULT_THEME;
 
         public static string[] AvailableThemes
@@ -57,7 +57,7 @@ namespace Utilities.ColorManager {
             get
             {
                 var themes = Directory.GetFiles(PATH).Select(x => Path.GetFileNameWithoutExtension(x)).ToList();
-                themes.Insert(0, "default");
+                themes.Insert(0, "Default");
                 return themes.ToArray();
             }
         }
@@ -99,7 +99,7 @@ namespace Utilities.ColorManager {
 
         private static void LoadTheme(string themeName)
         {
-            if (themeName == "default") return;
+            if (themeName == "Default") return;
             
             string themePath = PATH + Path.AltDirectorySeparatorChar + themeName + ".json";
             Debug.Log($"Loading theme: {themePath}");
@@ -120,7 +120,7 @@ namespace Utilities.ColorManager {
         }
         
         private static void SaveTheme(string themeName) {
-            if (themeName == "default") return;
+            if (themeName == "Default") return;
             
             string themePath = PATH + Path.AltDirectorySeparatorChar + themeName + ".json";
             Debug.Log($"Saving theme: {themePath}");

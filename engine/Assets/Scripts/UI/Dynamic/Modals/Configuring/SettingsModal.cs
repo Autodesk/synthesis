@@ -32,6 +32,8 @@ namespace Synthesis.UI.Dynamic {
         private static bool _useMetric;
         private static bool _renderScoreZones;
 
+        private Button _editThemeButton;
+
         public SettingsModal() : base(new Vector2(500, 700)) {}
 
         public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
@@ -74,16 +76,20 @@ namespace Synthesis.UI.Dynamic {
                     .StepIntoDropdown(d => d.SetOptions(_qualitySettingsList)
                         .AddOnValueChangedEvent((d, i, o) => _qualitySettingsIndex = i)
                         .SetValue(Get<int>(QUALITY_SETTINGS)));
-            
+
             var themeDropdown =
                 MainContent.CreateLabeledDropdown()
                     .ApplyTemplate(VerticalLayout)
                     .StepIntoLabel(l => l.SetText("Color Theme"))
                     .StepIntoDropdown(d => d.SetOptions(ColorManager.AvailableThemes)
-                        .AddOnValueChangedEvent((d, i, o) => _selectedThemeIndex = i)
+                        .AddOnValueChangedEvent((d, i, o) =>
+                        {
+                            _selectedThemeIndex = i;
+                            UpdateEditThemeButton();
+                        })
                         .SetValue(ColorManager.ThemeNameToIndex(Get<string>(ColorManager.SELECTED_THEME_PREF))));
-
-            var editThemeButton =
+            
+            _editThemeButton =
                 MainContent.CreateButton("Theme Editor")
                     .ApplyTemplate<Button>(VerticalLayout)
                     .AddOnClickedEvent(b =>
@@ -92,6 +98,7 @@ namespace Synthesis.UI.Dynamic {
                         ApplySettings();
                         DynamicUIManager.CreateModal<EditThemeModal>();
                     });
+            UpdateEditThemeButton();
 
             MainContent.CreateLabel()
                 .ApplyTemplate(Label.BigLabelTemplate)
@@ -137,9 +144,31 @@ namespace Synthesis.UI.Dynamic {
                                              .TitleLabel.SetText("Render Score Zones");
         }
 
-        public override void Update() {}
+        public override void Update()
+        {
+            
+        }
 
         public override void Delete() {}
+
+        public void UpdateEditThemeButton()
+        {
+            if (_editThemeButton == null)
+                return;
+            
+            if (_selectedThemeIndex == 0)
+            {
+                _editThemeButton.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.SynthesisBlackAccent))
+                    .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.SynthesisOrangeContrastText))
+                    .DisableEvents<Button>();
+            }
+            else
+            {
+                _editThemeButton.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.SynthesisOrange))
+                    .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.SynthesisOrangeContrastText))
+                    .EnableEvents<Button>();
+            }
+        }
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetActiveWindow();
