@@ -21,7 +21,7 @@ public class SpawningModal : ModalDynamic {
         Description.SetText("What do you want to spawn?");
         
         ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("PlusIcon"))
-            .SetColor(ColorManager.SynthesisColor.SynthesisWhite);
+            .SetColor(ColorManager.SynthesisColor.PanelText);
 
         var spacing           = 15f;
         (var left, var right) = MainContent.SplitLeftRight((MainContent.Size.x / 2f) - (spacing / 2f), spacing);

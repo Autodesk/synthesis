@@ -28,13 +28,13 @@ public class RobotSwitchPanel : PanelDynamic {
     };
 
     public Func<Button, Button> EnableButton = b =>
-        b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.SynthesisOrange))
-            .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.SynthesisOrangeContrastText))
+        b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElement))
+            .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
             .EnableEvents<Button>();
 
     public Func<Button, Button> DisableButton = b =>
-        b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.SynthesisBlackAccent))
-            .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.SynthesisOrangeContrastText))
+        b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary))
+            .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
             .DisableEvents<Button>();
 
     public RobotSwitchPanel() : base(new Vector2(PANEL_WIDTH, 400)) {}
@@ -81,7 +81,7 @@ public class RobotSwitchPanel : PanelDynamic {
                          .SetSize<Toggle>(new Vector2(PANEL_WIDTH, 50f))
                          .ApplyTemplate(VerticalLayout)
                          .StepIntoLabel(l => l.SetFontSize(16f))
-                         .SetDisabledColor(ColorManager.SynthesisColor.SynthesisBlack);
+                         .SetDisabledColor(ColorManager.SynthesisColor.Background);
         toggle.AddOnStateChangedEvent((t, s) => { UpdateState(robot, t, s); });
     }
 

@@ -160,16 +160,16 @@ public static class MainHUD {
 
     public static void AssignColors()
     {
-        _tabDrawerContent.Image!.SetColor(ColorManager.SynthesisColor.SynthesisBlack);
+        _tabDrawerContent.Image!.SetColor(ColorManager.SynthesisColor.Background);
         
-        _expandDrawerButton.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.SynthesisBlack));
+        _expandDrawerButton.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.Background));
         _expandIcon.SetColor(ColorManager.SynthesisColor.SynthesisIcon);
 
         _drawerItems.ForEach(x =>
         {
-            x.button.Label!.SetColor(ColorManager.SynthesisColor.SynthesisWhite);
-            x.button.Image.SetColor(ColorManager.SynthesisColor.SynthesisBlack);
-            x.image.SetColor(ColorManager.SynthesisColor.SynthesisOrange);
+            x.button.Label!.SetColor(ColorManager.SynthesisColor.PanelText);
+            x.button.Image.SetColor(ColorManager.SynthesisColor.Background);
+            x.image.SetColor(ColorManager.SynthesisColor.InteractiveElement);
         });
     }
 }

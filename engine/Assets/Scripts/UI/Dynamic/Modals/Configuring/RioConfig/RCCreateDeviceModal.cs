@@ -29,7 +29,7 @@ public class RCCreateDeviceModal : ModalDynamic {
         Description.SetText("Create a Motor Controller, Encoder, Etc.");
         
         ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-        ModalImage.SetColor(ColorManager.SynthesisColor.SynthesisWhite);
+        ModalImage.SetColor(ColorManager.SynthesisColor.PanelText);
 
         AcceptButton
             .AddOnClickedEvent(b => {
@@ -93,7 +93,7 @@ public class RCConfigPwmGroupModal : ModalDynamic {
         Description.SetText("Create a Motor Controller, Encoder, Etc.");
         
         ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-        ModalImage.SetColor(ColorManager.SynthesisColor.SynthesisWhite);
+        ModalImage.SetColor(ColorManager.SynthesisColor.PanelText);
 
         AcceptButton
             .AddOnClickedEvent(b => {
@@ -135,8 +135,8 @@ public class RCConfigPwmGroupModal : ModalDynamic {
 
             var toggle = container.CreateToggle(false, $"{i}");
             toggle.SetStretch<Toggle>()
-                .SetEnabledColor(ColorManager.SynthesisColor.SynthesisOrange)
-                .SetDisabledColor(ColorManager.SynthesisColor.SynthesisBlack);
+                .SetEnabledColor(ColorManager.SynthesisColor.InteractiveElement)
+                .SetDisabledColor(ColorManager.SynthesisColor.Background);
 
             _portToggles.Add($"{i}", toggle);
         }
@@ -166,8 +166,8 @@ public class RCConfigPwmGroupModal : ModalDynamic {
 
                 var toggle = container.CreateToggle(false, $"{j.Info.Name} ({j.SignalReference})");
                 toggle.SetStretch<Toggle>()
-                    .SetEnabledColor(ColorManager.SynthesisColor.SynthesisOrange)
-                    .SetDisabledColor(ColorManager.SynthesisColor.SynthesisBlack);
+                    .SetEnabledColor(ColorManager.SynthesisColor.InteractiveElement)
+                    .SetDisabledColor(ColorManager.SynthesisColor.Background);
 
                 toggle.AddOnStateChangedEvent((t, s) => UpdateAcceptButton());
 
@@ -232,7 +232,7 @@ public class RCConfigEncoderModal : ModalDynamic {
         Description.SetText("Create a Motor Controller, Encoder, Etc.");
         
         ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-        ModalImage.SetColor(ColorManager.SynthesisColor.SynthesisWhite);
+        ModalImage.SetColor(ColorManager.SynthesisColor.PanelText);
 
         AcceptButton
             .AddOnClickedEvent(b => {

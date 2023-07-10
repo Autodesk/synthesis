@@ -162,7 +162,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor
 
                 var (colorImage, name) = colorContent.SplitLeftRight(ROW_HEIGHT, HORIZONTAL_PADDING);
                 
-                colorContent.SetBackgroundColor<Content>(ColorManager.SynthesisColor.SynthesisBlackAccent);
+                colorContent.SetBackgroundColor<Content>(ColorManager.SynthesisColor.BackgroundSecondary);
 
                 colorImage.SetBackgroundColor<Content>(c.Value);
 
@@ -186,15 +186,15 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor
             if (_selectedColor != null)
             {
                 var prevSelected = _colors[_selectedColor.Value];
-                prevSelected.background.SetBackgroundColor<Image>(ColorManager.SynthesisColor.SynthesisBlackAccent);
-                prevSelected.label.SetColor(ColorManager.SynthesisColor.SynthesisWhite);
+                prevSelected.background.SetBackgroundColor<Image>(ColorManager.SynthesisColor.BackgroundSecondary);
+                prevSelected.label.SetColor(ColorManager.SynthesisColor.PanelText);
             }
 
             _selectedColor = colorName;
             
             var newSelected = _colors[_selectedColor.Value];
-            newSelected.background.SetBackgroundColor<Image>(ColorManager.SynthesisColor.SynthesisOrange);
-            newSelected.label.SetColor(ColorManager.SynthesisColor.SynthesisOrangeContrastText);
+            newSelected.background.SetBackgroundColor<Image>(ColorManager.SynthesisColor.InteractiveElement);
+            newSelected.label.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
             
             // Regex.Replace formats color's name with spaces (ColorName -> Color Name)
             _colorPickerLabel.SetText(Regex.Replace(colorName.ToString(), "(\\B[A-Z])", " $1"));

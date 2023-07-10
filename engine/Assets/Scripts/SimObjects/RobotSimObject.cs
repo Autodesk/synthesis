@@ -226,7 +226,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
         _allRigidbodies.ForEach(x => {
             var rc     = x.gameObject.AddComponent<HighlightComponent>();
-            rc.Color   = ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisHighlightHover); 
+            rc.Color   = ColorManager.GetColor(ColorManager.SynthesisColor.HighlightHover); 
             rc.enabled = false;
         });
     }

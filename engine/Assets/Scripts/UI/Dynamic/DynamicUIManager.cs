@@ -45,16 +45,16 @@ namespace Synthesis.UI.Dynamic {
                             .SetBottomStretch<Slider>(leftPadding: 100f, rightPadding: 100f, anchoredY: 50)
                             .SetSlideDirection(UnityEngine.UI.Slider.Direction.LeftToRight)
                             .StepIntoBackgroundImage(
-                                i => i.SetColor(ColorManager.SynthesisColor.SynthesisOrange))
-                            .StepIntoFillImage(i => i.SetColor(ColorManager.SynthesisColor.SynthesisBlack))
+                                i => i.SetColor(ColorManager.SynthesisColor.InteractiveElement))
+                            .StepIntoFillImage(i => i.SetColor(ColorManager.SynthesisColor.Background))
                             .StepIntoTitleLabel(
                                 l => l.SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Bottom)
                                          .SetFontSize(20)
-                                         .SetColor(ColorManager.SynthesisColor.SynthesisBlack))
+                                         .SetColor(ColorManager.SynthesisColor.Background))
                             .StepIntoValueLabel(
                                 l => l.SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Bottom)
                                          .SetFontSize(20)
-                                         .SetColor(ColorManager.SynthesisColor.SynthesisBlack));
+                                         .SetColor(ColorManager.SynthesisColor.Background));
                 SimulationRunner.OnSimKill += () => { _replaySlider = null; };
                 return _replaySlider;
             }

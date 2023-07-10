@@ -19,9 +19,9 @@ public class TopBar : MonoBehaviour {
 
     private void AssignColors()
     {
-        GetComponent<Image>().color = ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisBlack);
+        GetComponent<Image>().color = ColorManager.GetColor(ColorManager.SynthesisColor.Background);
         transform.Find("ExitButton").GetComponent<Image>().color = 
-            ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisWhite);
+            ColorManager.GetColor(ColorManager.SynthesisColor.PanelText);
         transform.Find("VersionNumber").GetComponent<TextMeshProUGUI>().color =
             ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisIcon);
     }

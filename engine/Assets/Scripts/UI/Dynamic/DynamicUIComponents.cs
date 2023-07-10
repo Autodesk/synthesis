@@ -80,7 +80,7 @@ namespace Synthesis.UI.Dynamic {
             // _panelImage.SetColor(new Color(1, 1, 1, 0));
 
             _panelBackground = new Image(null, unityObject);
-            _panelBackground.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisBlack));
+            _panelBackground.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.Background));
             _panelBackground.SetCornerRadius(15);
 
             _title = new Label(null, header.Find("Title").gameObject, null);
@@ -92,11 +92,11 @@ namespace Synthesis.UI.Dynamic {
                 if (!DynamicUIManager.ClosePanel(this.GetType()))
                     Logger.Log("Failed to Close Panel", LogLevel.Error);
             });
-            _cancelButton.Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisCancel));
-            _cancelButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisOrangeContrastText));
+            _cancelButton.Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.CancelButton));
+            _cancelButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElementText));
             _acceptButton = new Button(null!, footer.Find("Accept").gameObject, null);
-            _acceptButton.Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisAccept));
-            _acceptButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisOrangeContrastText));
+            _acceptButton.Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptButton));
+            _acceptButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElementText));
 
             // Create Inital Content Component
             var hiddenContentT        = _unityObject.transform.Find("Content");
@@ -166,14 +166,14 @@ namespace Synthesis.UI.Dynamic {
             // _modalImage.SetColor(new Color(1, 1, 1, 0));
 
             _modalBackground = new Image(null, unityObject);
-            _modalBackground.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisBlack));
+            _modalBackground.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.Background));
             _modalBackground.SetCornerRadius(20);
 
             _title = new Label(null, header.Find("Title").gameObject, null);
-            _title.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisWhite));
+            _title.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.PanelText));
 
             _description = new Label(null, header.Find("Description").gameObject, null);
-            _description.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisWhite));
+            _description.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.PanelText));
 
             var footer    = _unityObject.transform.Find("Footer");
             var footerRt  = footer.GetComponent<RectTransform>();
@@ -182,11 +182,11 @@ namespace Synthesis.UI.Dynamic {
                 if (!DynamicUIManager.CloseActiveModal())
                     Logger.Log("Failed to Close Modal", LogLevel.Error);
             });
-            _cancelButton.Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisCancel));
-            _cancelButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisOrangeContrastText));
+            _cancelButton.Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.CancelButton));
+            _cancelButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElementText));
             _acceptButton = new Button(null!, footer.Find("Accept").gameObject, null);
-            _acceptButton.Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisAccept));
-            _acceptButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisOrangeContrastText));
+            _acceptButton.Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptButton));
+            _acceptButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElementText));
 
             // Create Inital Content Component
             var hiddenContentT        = _unityObject.transform.Find("Content");
@@ -629,7 +629,7 @@ namespace Synthesis.UI.Dynamic {
             _content = new Content(this, unityObject.transform.Find("Viewport").Find("Content").gameObject, null);
 
             _backgroundImage = new Image(this, unityObject);
-            _backgroundImage.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisBlackAccent));
+            _backgroundImage.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.BackgroundSecondary));
         }
 
         public ScrollView StepIntoContent(Action<Content> mod) {
@@ -665,7 +665,7 @@ namespace Synthesis.UI.Dynamic {
                 size = RootRectTransform.sizeDelta;
             }
 
-            SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisWhite));
+            SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.PanelText));
         }
 
         public Label SetText(string text) {
@@ -774,8 +774,8 @@ namespace Synthesis.UI.Dynamic {
             _disabledImage = new Image(this, _unityToggle.transform.Find("Background").gameObject);
             _enabledImage  = new Image(this, _unityToggle.transform.Find("Background").Find("Checkmark").gameObject);
 
-            DisabledColor = ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisBlackAccent);
-            EnabledColor  = ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisOrange);
+            DisabledColor = ColorManager.GetColor(ColorManager.SynthesisColor.BackgroundSecondary);
+            EnabledColor  = ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElement);
         }
 
         public Toggle SetState(bool state, bool notify = true) {
@@ -851,13 +851,13 @@ namespace Synthesis.UI.Dynamic {
             });
 
             _backgroundImage = new Image(this, _unitySlider.transform.Find("Background").gameObject);
-            _backgroundImage.SetColor(ColorManager.SynthesisColor.SynthesisBlackAccent);
+            _backgroundImage.SetColor(ColorManager.SynthesisColor.BackgroundSecondary);
 
             _fillImage = new Image(this, _unitySlider.transform.Find("Fill Area").Find("Fill").gameObject);
-            _fillImage.SetColor(ColorManager.SynthesisColor.SynthesisOrange);
+            _fillImage.SetColor(ColorManager.SynthesisColor.InteractiveElement);
 
             _handleImage = new Image(this, _unitySlider.transform.Find("Handle Slide Area").Find("Handle").gameObject);
-            _handleImage.SetColor(ColorManager.SynthesisColor.SynthesisOrangeAccent);
+            _handleImage.SetColor(ColorManager.SynthesisColor.InteractiveSecondary);
 
             if (unitSuffix != null)
                 _unitSuffix = unitSuffix;
@@ -954,7 +954,7 @@ namespace Synthesis.UI.Dynamic {
             });
 
             _backgroundImage = new Image(this, ifObj.gameObject);
-            _backgroundImage.SetColor(ColorManager.SynthesisColor.SynthesisBlackAccent);
+            _backgroundImage.SetColor(ColorManager.SynthesisColor.BackgroundSecondary);
         }
 
         public InputField StepIntoHint(Action<Label> mod) {
@@ -1044,7 +1044,7 @@ namespace Synthesis.UI.Dynamic {
             var labelTransform = unityObject.transform.Find("Text (TMP)");
             if (labelTransform != null) {
                 _label = new Label(this, labelTransform.gameObject, null);
-                _label.SetColor(ColorManager.SynthesisColor.SynthesisOrangeContrastText);
+                _label.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
             }
 
             _unityButton = unityObject.GetComponent<UButton>();
@@ -1055,7 +1055,7 @@ namespace Synthesis.UI.Dynamic {
             });
 
             _image = new Image(this, unityObject);
-            _image.SetColor(ColorManager.SynthesisColor.SynthesisOrange);
+            _image.SetColor(ColorManager.SynthesisColor.InteractiveElement);
         }
 
         public Button StepIntoLabel(Action<Label> mod) {
@@ -1123,24 +1123,24 @@ namespace Synthesis.UI.Dynamic {
             eventHandler.OnPointerClickedEvent += e => { ShowOnTop(); };
 
             _headerImage = new Image(this, unityObject.transform.Find("Header").gameObject);
-            _headerImage.SetColor(ColorManager.SynthesisColor.SynthesisOrange);
+            _headerImage.SetColor(ColorManager.SynthesisColor.InteractiveElement);
 
             _headerLabel = new Label(this, unityObject.transform.Find("Header").Find("Label").gameObject, null);
-            _headerLabel.SetColor(ColorManager.SynthesisColor.SynthesisOrangeContrastText);
+            _headerLabel.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
 
             var itemObj = unityObject.transform.Find("Template").Find("Viewport").Find("Content").Find("Item");
 
             _itemBackgroundImage = new Image(this, itemObj.Find("Item Background").gameObject);
-            _itemBackgroundImage.SetColor(ColorManager.SynthesisColor.SynthesisOrange);
+            _itemBackgroundImage.SetColor(ColorManager.SynthesisColor.InteractiveElement);
 
             _itemCheckmarkImage = new Image(this, itemObj.Find("Item Checkmark").gameObject);
-            _itemCheckmarkImage.SetColor(ColorManager.SynthesisColor.SynthesisBlack);
+            _itemCheckmarkImage.SetColor(ColorManager.SynthesisColor.Background);
 
             _itemLabel = new Label(this, itemObj.Find("Item Label").gameObject, null);
-            _itemLabel.SetColor(ColorManager.SynthesisColor.SynthesisOrangeContrastText);
+            _itemLabel.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
 
             _viewportImage = new Image(this, unityObject.transform.Find("Template").Find("Viewport").gameObject);
-            _viewportImage.SetColor(ColorManager.SynthesisColor.SynthesisOrange);
+            _viewportImage.SetColor(ColorManager.SynthesisColor.InteractiveElement);
 
             // TODO: Get some more control over the individual items in the dropdown
             // _viewport.StepIntoImage(i => i.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT)));
@@ -1251,10 +1251,10 @@ namespace Synthesis.UI.Dynamic {
             _unityScrollbar = unityObject.GetComponent<UScrollbar>();
 
             _backgroundImage = new Image(this, unityObject);
-            _backgroundImage.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisWhiteAccent));
+            _backgroundImage.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.Scrollbar));
 
             _handleImage = new Image(this, unityObject.transform.Find("Sliding Area").Find("Handle").gameObject);
-            _handleImage.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisWhite));
+            _handleImage.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.PanelText));
         }
     }
 
@@ -1305,7 +1305,7 @@ namespace Synthesis.UI.Dynamic {
                                    .AddOnClickedEvent(b => Value -= Value > Int32.MinValue ? 1 : 0);
 
             _backgroundImage = new Image(this, ifObj.gameObject);
-            _backgroundImage.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisBlackAccent));
+            _backgroundImage.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.BackgroundSecondary));
         }
 
         public NumberInputField StepIntoHint(Action<Label> mod) {

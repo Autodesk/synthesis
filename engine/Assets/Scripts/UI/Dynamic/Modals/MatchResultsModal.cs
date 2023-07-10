@@ -70,12 +70,12 @@ namespace UI.Dynamic.Modals {
                 (Content left, Content right) = entryContent.ApplyTemplate(ListVerticalLayout)
                                                     .SplitLeftRight(_entryWidth * (2 / 3f), HORIZONTAL_PADDING);
 
-                left.SetBackgroundColor<Content>(ColorManager.SynthesisColor.SynthesisBlack)
+                left.SetBackgroundColor<Content>(ColorManager.SynthesisColor.Background)
                     .CreateLabel()
                     .SetAnchoredPosition<Label>(new Vector2(HORIZONTAL_PADDING, 0))
                     .SetText(entry.GetName());
                 
-                right.SetBackgroundColor<Content>(ColorManager.SynthesisColor.SynthesisBlack)
+                right.SetBackgroundColor<Content>(ColorManager.SynthesisColor.Background)
                     .CreateLabel()
                     .SetAnchoredPosition<Label>(new Vector2(HORIZONTAL_PADDING, 0))
                     .SetText(entry.ToString());

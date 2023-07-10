@@ -72,7 +72,7 @@ public class ZoneConfigPanel : PanelDynamic
                 _initialData.Parent = parent;
                 HighlightComponent highlight = parent.GetComponent<Rigidbody>().GetComponent<HighlightComponent>();
 
-                highlight.Color = ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisHighlightSelect);
+                highlight.Color = ColorManager.GetColor(ColorManager.SynthesisColor.HighlightSelect);
                 highlight.enabled = true;
             }
 
@@ -347,7 +347,7 @@ public class ZoneConfigPanel : PanelDynamic
         {
             _zoneParentButton.StepIntoLabel(l => l.SetText("Selecting..."));
             _zoneParentButton.StepIntoButton(b => b.StepIntoImage(i => i.SetColor(
-                    ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisBlackAccent)))
+                    ColorManager.GetColor(ColorManager.SynthesisColor.BackgroundSecondary)))
                 .StepIntoLabel(l => l.SetText("...")));
         }
         else
@@ -359,7 +359,7 @@ public class ZoneConfigPanel : PanelDynamic
             
             _zoneParentButton.StepIntoButton(
                 b => b.StepIntoImage(i => i.SetColor(
-                        ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisOrange)))
+                        ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElement)))
                     .StepIntoLabel(l => l.SetText(_selectedNode is not null ? "Remove" : "Click to select...")));
         }
     }
@@ -386,7 +386,7 @@ public class ZoneConfigPanel : PanelDynamic
                 if (_selectedNode is null || hitInfo.rigidbody.name != _selectedNode.name)
                 {
                     _hoveringNode.enabled = true;
-                    _hoveringNode.Color = ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisHighlightHover);
+                    _hoveringNode.Color = ColorManager.GetColor(ColorManager.SynthesisColor.HighlightHover);
                 }
 
                 if (Input.GetKeyDown(KeyCode.Mouse0))
@@ -398,7 +398,7 @@ public class ZoneConfigPanel : PanelDynamic
 
                     _selectedNode = _hoveringNode;
                     _selectedNode.enabled = true;
-                    _selectedNode.Color = ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisHighlightSelect);
+                    _selectedNode.Color = ColorManager.GetColor(ColorManager.SynthesisColor.HighlightSelect);
 
                     _data.Parent = _selectedNode.gameObject.transform;
                     _hoveringNode = null;
