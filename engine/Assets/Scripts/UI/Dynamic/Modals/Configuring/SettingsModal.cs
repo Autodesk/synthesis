@@ -1,16 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-using Synthesis.UI.Dynamic;
 using UnityEngine;
-using TMPro;
 using System;
 using System.Runtime.InteropServices;
-using System.Linq;
 using Analytics;
-using UI.Dynamic.Modals.Configuring;
 using UI.Dynamic.Modals.Configuring.ThemeEditor;
-using UnityEngine.Rendering;
-using Utilities.ColorManager;
 
 namespace Synthesis.UI.Dynamic {
     public class SettingsModal : ModalDynamic {
@@ -23,7 +15,7 @@ namespace Synthesis.UI.Dynamic {
         private static string[] _screenModeList      = { "Fullscreen", "Windowed" };
         private static string[] _qualitySettingsList = { "Low", "Medium", "High", "Ultra" };
 
-        private const float PANEL_WIDTH = 500;
+        private const float PANEL_WIDTH  = 500;
         private const float PANEL_HEIGHT = 700;
 
         private static int _screenModeIndex;
@@ -34,7 +26,7 @@ namespace Synthesis.UI.Dynamic {
         private static bool _useAnalytics;
         private static bool _useMetric;
         private static bool _renderScoreZones;
-        
+
         public SettingsModal() : base(new Vector2(PANEL_WIDTH, PANEL_HEIGHT)) {}
 
         public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
@@ -67,26 +59,23 @@ namespace Synthesis.UI.Dynamic {
                     .ApplyTemplate(VerticalLayout)
                     .StepIntoLabel(l => l.SetText("Screen Mode"))
                     .StepIntoDropdown(d => d.SetOptions(_screenModeList)
-                        .AddOnValueChangedEvent((d, i, o) => { _screenModeIndex = i; })
-                        .SetValue(Get<int>(SCREEN_MODE)));
+                                               .AddOnValueChangedEvent((d, i, o) => { _screenModeIndex = i; })
+                                               .SetValue(Get<int>(SCREEN_MODE)));
 
             var qualitySettingsDropdown =
                 MainContent.CreateLabeledDropdown()
                     .ApplyTemplate(VerticalLayout)
                     .StepIntoLabel(l => l.SetText("Quality Settings"))
                     .StepIntoDropdown(d => d.SetOptions(_qualitySettingsList)
-                        .AddOnValueChangedEvent((d, i, o) => _qualitySettingsIndex = i)
-                        .SetValue(Get<int>(QUALITY_SETTINGS)));
+                                               .AddOnValueChangedEvent((d, i, o) => _qualitySettingsIndex = i)
+                                               .SetValue(Get<int>(QUALITY_SETTINGS)));
 
             var editThemeButton =
-                MainContent.CreateButton("Theme Editor")
-                    .ApplyTemplate<Button>(VerticalLayout)
-                    .AddOnClickedEvent(b =>
-                    {
-                        SaveSettings();
-                        ApplySettings();
-                        DynamicUIManager.CreateModal<EditThemeModal>();
-                    });
+                MainContent.CreateButton("Theme Editor").ApplyTemplate<Button>(VerticalLayout).AddOnClickedEvent(b => {
+                    SaveSettings();
+                    ApplySettings();
+                    DynamicUIManager.CreateModal<EditThemeModal>();
+                });
 
             MainContent.CreateLabel()
                 .ApplyTemplate(Label.BigLabelTemplate)
@@ -132,10 +121,7 @@ namespace Synthesis.UI.Dynamic {
                                              .TitleLabel.SetText("Render Score Zones");
         }
 
-        public override void Update()
-        {
-            
-        }
+        public override void Update() {}
 
         public override void Delete() {}
 

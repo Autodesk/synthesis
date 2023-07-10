@@ -126,9 +126,9 @@ namespace Synthesis.UI.Dynamic {
                              .StepIntoLabel(l => l.SetText("...")));
             } else {
                 _selectNodeButton.StepIntoLabel(l => l.SetText(_resultingData.NodeName));
-                _selectNodeButton.StepIntoButton(b => b.StepIntoImage(i => 
-                        i.SetColor(ColorManager.SynthesisColor.InteractiveElement))
-                    .StepIntoLabel(l => l.SetText("Select")));
+                _selectNodeButton.StepIntoButton(
+                    b => b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElement))
+                             .StepIntoLabel(l => l.SetText("Select")));
             }
         }
 

@@ -12,10 +12,10 @@ namespace UI.Dynamic.Modals {
         private const float MODAL_WIDTH  = 500f;
         private const float MODAL_HEIGHT = 600f;
 
-        private const float VERTICAL_PADDING         = 16f;
-        private const float HORIZONTAL_PADDING       = 16f;
-        private const float SCROLLBAR_WIDTH          = 10f;
-        private const float ROW_HEIGHT               = 64f;
+        private const float VERTICAL_PADDING   = 16f;
+        private const float HORIZONTAL_PADDING = 16f;
+        private const float SCROLLBAR_WIDTH    = 10f;
+        private const float ROW_HEIGHT         = 64f;
 
         private float _scrollViewWidth;
         private float _entryWidth;
@@ -74,7 +74,7 @@ namespace UI.Dynamic.Modals {
                     .CreateLabel()
                     .SetAnchoredPosition<Label>(new Vector2(HORIZONTAL_PADDING, 0))
                     .SetText(entry.GetName());
-                
+
                 right.SetBackgroundColor<Content>(ColorManager.SynthesisColor.Background)
                     .CreateLabel()
                     .SetAnchoredPosition<Label>(new Vector2(HORIZONTAL_PADDING, 0))

@@ -6,10 +6,9 @@ using Utilities.ColorManager;
 using Image = UnityEngine.UI.Image;
 
 public class TopBar : MonoBehaviour {
-    public void Start()
-    {
+    public void Start() {
         AssignColors();
-        
+
         EventBus.NewTypeListener<ColorManager.OnThemeChanged>(x => { AssignColors(); });
     }
 
@@ -17,10 +16,9 @@ public class TopBar : MonoBehaviour {
         DynamicUIManager.CreateModal<ExitSynthesisModal>();
     }
 
-    private void AssignColors()
-    {
+    private void AssignColors() {
         GetComponent<Image>().color = ColorManager.GetColor(ColorManager.SynthesisColor.Background);
-        transform.Find("ExitButton").GetComponent<Image>().color = 
+        transform.Find("ExitButton").GetComponent<Image>().color =
             ColorManager.GetColor(ColorManager.SynthesisColor.MainText);
         transform.Find("VersionNumber").GetComponent<TextMeshProUGUI>().color =
             ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisIcon);

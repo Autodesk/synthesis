@@ -19,7 +19,7 @@ public class SpawningModal : ModalDynamic {
     public override void Create() {
         Title.SetText("Spawning");
         Description.SetText("What do you want to spawn?");
-        
+
         ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("PlusIcon"))
             .SetColor(ColorManager.SynthesisColor.MainText);
 

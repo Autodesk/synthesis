@@ -25,12 +25,12 @@ public class BetaWarningPanel : PanelDynamic {
             return false;
 
         Title.SetText("Warning");
-        
+
         AcceptButton.AddOnClickedEvent(b => DynamicUIManager.ClosePanel<BetaWarningPanel>())
             .StepIntoLabel(l => l.SetText("Okidoki"));
-        
+
         CancelButton.RootGameObject.SetActive(false);
-        
+
         PanelImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"))
             .SetColor(ColorManager.SynthesisColor.MainText);
 

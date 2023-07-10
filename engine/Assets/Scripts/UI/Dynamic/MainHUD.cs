@@ -77,7 +77,7 @@ public static class MainHUD {
         _tabDrawerContent = new Content(null, GameObject.Find("MainHUD").transform.Find("TabDrawer").gameObject, null);
         _expandDrawerButton = new Button(
             _tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("ExpandButton").gameObject, null);
-        
+
         _expandDrawerButton.AddOnClickedEvent(b => MainHUD.Collapsed = !MainHUD.Collapsed);
         _expandIcon = new Image(null, _expandDrawerButton.RootGameObject.transform.Find("Icon").gameObject);
 
@@ -107,9 +107,9 @@ public static class MainHUD {
         _isSetup = true;
 
         SceneManager.activeSceneChanged += (Scene a, Scene b) => { _isSetup = false; };
-        
+
         AssignColors();
-        
+
         EventBus.NewTypeListener<ColorManager.OnThemeChanged>(x => { AssignColors(); });
     }
 
@@ -158,15 +158,13 @@ public static class MainHUD {
         _tabDrawerContent.SetHeight<Content>((_drawerItems.Count * 55) + 70);
     }
 
-    public static void AssignColors()
-    {
+    public static void AssignColors() {
         _tabDrawerContent.Image!.SetColor(ColorManager.SynthesisColor.Background);
-        
+
         _expandDrawerButton.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.Background));
         _expandIcon.SetColor(ColorManager.SynthesisColor.SynthesisIcon);
 
-        _drawerItems.ForEach(x =>
-        {
+        _drawerItems.ForEach(x => {
             x.button.Label!.SetColor(ColorManager.SynthesisColor.MainText);
             x.button.Image.SetColor(ColorManager.SynthesisColor.Background);
             x.image.SetColor(ColorManager.SynthesisColor.InteractiveElement);

@@ -54,7 +54,7 @@ public class RioConfigurationModal : ModalDynamic {
         Title.SetText("RoboRIO Configuration");
         Title.SetWidth<Label>(300);
         Description.SetText("Configuring RoboRIO for Synthesis simulation");
-        
+
         ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
         ModalImage.SetColor(ColorManager.SynthesisColor.MainText);
 
@@ -93,15 +93,16 @@ public class RioConfigurationModal : ModalDynamic {
 
     public void CreateItem(string text, string buttonText, Action onButton, Action onDelete) {
         var content = _scrollView.Content.CreateSubContent(new Vector2(_scrollView.Content.Size.x, 80))
-            .EnsureImage().StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElement));
-        
+                          .EnsureImage()
+                          .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElement));
+
         content.SetTopStretch<Content>(anchoredY: -_scrollView.Content.RectOfChildren(content).yMin);
         var label = content.CreateLabel()
-            .SetStretch<Label>(leftPadding: 20, topPadding: 20, bottomPadding: 20)
-            .SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Middle)
-            .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Left)
-            .SetText(text)
-            .SetColor(ColorManager.SynthesisColor.Background);
+                        .SetStretch<Label>(leftPadding: 20, topPadding: 20, bottomPadding: 20)
+                        .SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Middle)
+                        .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Left)
+                        .SetText(text)
+                        .SetColor(ColorManager.SynthesisColor.Background);
 
         var confButton = content.CreateButton(buttonText);
 

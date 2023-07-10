@@ -33,7 +33,7 @@ namespace Synthesis.UI.Dynamic {
 
             ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"))
                 .SetColor(ColorManager.SynthesisColor.MainText);
-            
+
             MainContent.CreateLabel(40)
                 .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Center)
                 .SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Middle)

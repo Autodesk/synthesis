@@ -51,8 +51,7 @@ namespace Synthesis.Runtime {
 
         private bool _setupSceneSwitchEvent = false;
 
-        private void Awake()
-        {
+        private void Awake() {
             Synthesis.PreferenceManager.PreferenceManager.Load();
         }
 
@@ -80,7 +79,7 @@ namespace Synthesis.Runtime {
             OnUpdate += ModeManager.Update;
 
             WebSocketManager.RioState.OnUnrecognizedMessage += s => Debug.Log(s);
-            
+
             SettingsModal.LoadSettings();
             SettingsModal.ApplySettings();
         }

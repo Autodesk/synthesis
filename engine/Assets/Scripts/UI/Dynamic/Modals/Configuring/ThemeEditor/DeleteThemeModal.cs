@@ -2,24 +2,20 @@ using Synthesis.UI.Dynamic;
 using UnityEngine;
 using Utilities.ColorManager;
 
-namespace UI.Dynamic.Modals.Configuring.ThemeEditor
-{
-    public class DeleteThemeModal : ModalDynamic
-    {
-        private const float MODAL_WIDTH = 500;
+namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
+    public class DeleteThemeModal : ModalDynamic {
+        private const float MODAL_WIDTH  = 500;
         private const float MODAL_HEIGHT = 0;
-        
-        public DeleteThemeModal()
-            : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) { }
+
+        public DeleteThemeModal() : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) {}
 
         private string _newThemeName = null;
 
         public override void Create() {
-            Title.SetText($"Delete Theme {ColorManager.SelectedTheme}?");
+            Title.SetText($"Delete {ColorManager.SelectedTheme}?");
             Description.RootGameObject.SetActive(false);
 
-            AcceptButton.AddOnClickedEvent(x =>
-            {
+            AcceptButton.AddOnClickedEvent(x => {
                 ColorManager.DeleteSelectedTheme();
                 DynamicUIManager.CreateModal<EditThemeModal>();
             });
@@ -27,8 +23,8 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor
             CancelButton.AddOnClickedEvent(x => { DynamicUIManager.CreateModal<EditThemeModal>(); });
         }
 
-        public override void Update() { }
+        public override void Update() {}
 
-        public override void Delete() { }
+        public override void Delete() {}
     }
 }

@@ -23,9 +23,8 @@ namespace Synthesis.UI.Dynamic {
 
         public override void Create() {
             (var left, var right) = MainContent.SplitLeftRight(leftWidth: (MAIN_CONTENT_WIDTH - 20f) / 2, 20f);
-            
-            left.EnsureImage().StepIntoImage(
-                i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary));
+
+            left.EnsureImage().StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary));
 
             _statusLabel = left.CreateLabel(30)
                                .SetStretch<Label>(15f, 15f, 15f, 15f)

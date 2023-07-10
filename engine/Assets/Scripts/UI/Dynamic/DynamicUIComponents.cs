@@ -414,10 +414,9 @@ namespace Synthesis.UI.Dynamic {
             RootRectTransform.anchorMax = new Vector2(1, 0.5f);
             return (this as T)!;
         }
-        
+
         public T SetBackgroundColor<T>(ColorManager.SynthesisColor c)
-            where T : UIComponent
-        {
+            where T : UIComponent {
             return SetBackgroundColor<T>(ColorManager.GetColor(c));
         }
 
@@ -941,7 +940,7 @@ namespace Synthesis.UI.Dynamic {
         public Image BackgroundImage => _backgroundImage;
         private TMP_InputField _tmpInput;
         public TMP_InputField InputText => _tmpInput;
-        public string Value                           => _tmpInput.text;
+        public string Value             => _tmpInput.text;
 
         public InputField(UIComponent? parent, GameObject unityObject) : base(parent, unityObject) {
             var ifObj = unityObject.transform.Find("InputField");
@@ -987,8 +986,7 @@ namespace Synthesis.UI.Dynamic {
             return this;
         }
 
-        public InputField SetValueTextColor(Color color)
-        {
+        public InputField SetValueTextColor(Color color) {
             Debug.Log(color);
             RootGameObject.transform.Find("InputField/Text Area/Text").GetComponent<TextMeshProUGUI>().color = color;
             return this;

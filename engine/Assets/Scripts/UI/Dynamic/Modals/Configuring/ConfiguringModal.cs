@@ -20,7 +20,7 @@ public class ConfiguringModal : ModalDynamic {
     public override void Create() {
         Title.SetText("Configuring");
         Description.SetText("What do you want to change?");
-        
+
         ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
         ModalImage.SetColor(ColorManager.SynthesisColor.MainText);
 
