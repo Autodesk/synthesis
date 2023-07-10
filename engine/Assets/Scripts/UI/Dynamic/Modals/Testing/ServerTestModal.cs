@@ -1,10 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using Google.Protobuf.WellKnownTypes;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.Controller;
-using UnityEngine;
 using SynthesisAPI.Utilities;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 using Logger = SynthesisAPI.Utilities.Logger;
 

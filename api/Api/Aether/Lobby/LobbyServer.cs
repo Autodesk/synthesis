@@ -1,17 +1,10 @@
-﻿using System;
+﻿using SynthesisAPI.Controller;
+using SynthesisAPI.Utilities;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using Google.Protobuf;
-using System.Xml.Linq;
-
-using Org.BouncyCastle.Math.EC.Rfc7748;
-using Org.BouncyCastle.Tls;
-using SynthesisAPI.Controller;
-using SynthesisAPI.Utilities;
-using SynthesisServer.Proto;
 
 #nullable enable
 
