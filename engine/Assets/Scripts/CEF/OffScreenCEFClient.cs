@@ -31,7 +31,7 @@ namespace Synthesis.CEF {
             Debug.Log("OffScreenCEFClient created"); // TODO: remove
         }
 
-        public void UpdateTexture(Texture2D texture) {
+        public void UpdateTexture(ref Texture2D texture) {
             if (_browserHost == null) {
                 return;
             }

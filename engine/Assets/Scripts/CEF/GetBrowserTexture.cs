@@ -7,7 +7,7 @@ namespace Synthesis.CEF {
 
         private Material _material;
 
-        private void Start() {
+        private void Update() {
             _material = GetComponent<MeshRenderer>().material;
 
             // Map the material so it's facing the correct way.

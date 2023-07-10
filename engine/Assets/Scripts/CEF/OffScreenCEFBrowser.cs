@@ -34,12 +34,19 @@ namespace Synthesis.CEF {
                 Debug.LogError(e);
             }
 
-            string url          = Application.dataPath + "/../../cef/public/index.html";
+            string url          = Application.dataPath + "/../../cef/index.html";
             _client             = new OffScreenCEFClient(_width, _height);
-            var browserSettings = new CefBrowserSettings();
-            var windowSettings  = CefWindowInfo.Create();
+            var browserSettings = new CefBrowserSettings {
+                JavaScript = CefState.Enabled,
+            };
+
+            // browserSettings.emoteDebuggingPort = 8080;
+            var windowSettings = CefWindowInfo.Create();
             windowSettings.SetAsWindowless(IntPtr.Zero, false);
             CefBrowserHost.CreateBrowser(windowSettings, _client, browserSettings, url);
+            // CefBrowserHost.GetBrowser().GetMainFrame().ExecuteJavaScript(
+            //     "document.appendChild(document.createElement('h1')).innerText = 'Hello, world!'",
+            //     url, 0);
 
             StartCoroutine("RunCEFMessageLoop");
             DontDestroyOnLoad(gameObject);
@@ -54,7 +61,7 @@ namespace Synthesis.CEF {
         private IEnumerator RunCEFMessageLoop() {
             while (!_quit) {
                 CefRuntime.DoMessageLoopWork();
-                _client.UpdateTexture(BrowserTexture);
+                _client.UpdateTexture(ref BrowserTexture);
                 yield return new WaitForEndOfFrame();
             }
         }
