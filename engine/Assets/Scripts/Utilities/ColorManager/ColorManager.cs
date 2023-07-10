@@ -98,7 +98,7 @@ namespace Utilities.ColorManager {
 
         private static void LoadTheme(string themeName)
         {
-            if (themeName == "Default") return;
+            if (themeName is "Default" or "") return;
             
             string themePath = PATH + Path.AltDirectorySeparatorChar + themeName + ".json";
             
@@ -118,7 +118,7 @@ namespace Utilities.ColorManager {
         }
         
         private static void SaveTheme(string themeName) {
-            if (themeName == "Default") return;
+            if (themeName is "Default" or "") return;
             
             string themePath = PATH + Path.AltDirectorySeparatorChar + themeName + ".json";
 
