@@ -1,6 +1,5 @@
 using Synthesis.Runtime;
 using Synthesis.UI.Dynamic;
-using Synthesis.UI.Dynamic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -13,6 +12,8 @@ public class ModeManager {
                 _currentMode.End();
             _currentMode = value;
 
+            // this is always called in GridMenuScene so _currentMode is never started here
+            // it is now started in SimulationRunner::Start
             if (SceneManager.GetActiveScene().name == "MainScene" && _currentMode != null)
                 _currentMode.Start();
         }
@@ -21,8 +22,7 @@ public class ModeManager {
     public static void Start() {
         if (CurrentMode == null) {
             DynamicUIManager.CreateModal<ChooseModeModal>();
-        } else
-            CurrentMode.Start();
+        }
     }
 
     public static void Update() {

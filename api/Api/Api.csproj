@@ -57,6 +57,7 @@ For support contact frc@autodesk.com</PackageReleaseNotes>
 
     <ItemGroup>
       <None Remove="Gen\Mirabuf\" />
+      <None Remove="Controller\" />
     </ItemGroup>
     <ItemGroup>
       <None Include="..\..\installer\Linux\synthesis.png">
@@ -73,5 +74,6 @@ For support contact frc@autodesk.com</PackageReleaseNotes>
 
     <ItemGroup>
       <Folder Include="Gen\Mirabuf\" />
+      <Folder Include="Controller\" />
     </ItemGroup>
 </Project>
