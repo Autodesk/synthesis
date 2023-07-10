@@ -108,22 +108,6 @@ namespace Synthesis.Runtime {
             InputManager.UpdateInputs(_simulationContext);
             SimulationManager.Update();
 
-            if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
-                List<SignalData> changedSignals = new List<SignalData>();
-                foreach (var driver in SimulationManager.Drivers[RobotSimObject.CurrentlyPossessedRobot]) {
-                    foreach (var signal in driver.State.CompileChanges())
-                        changedSignals.Add(signal);
-                }
-
-                if (changedSignals.Count(s => s.Io == UpdateIOType.Output) > 0) {
-                    if (ModeManager.CurrentMode.GetType() == typeof(ServerTestMode)) {
-                        ServerTestMode serverTestMode = (ServerTestMode) ModeManager.CurrentMode;
-                        if (serverTestMode.Clients.Length > 0 && serverTestMode.Clients[0] is not null)
-                            serverTestMode.Clients[0].UpdateControllableState(changedSignals);
-                    }
-                }
-            }
-
             // Debug.Log($"WHAT: {Time.realtimeSinceStartup}");
 
             if (OnUpdate != null)

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Google.Protobuf.WellKnownTypes;
 using Mirabuf;
 using Mirabuf.Joint;
@@ -27,6 +28,7 @@ using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.EventBus;
 using Synthesis.WS.Translation;
+using SynthesisAPI.Aether.Lobby;
 using static Synthesis.WS.Translation.RioTranslationLayer;
 using SynthesisAPI.Controller;
 
@@ -71,6 +73,12 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     private CameraController cam;
     private OrbitCameraMode orbit;
     private ICameraMode previousMode;
+
+    private LobbyClient? _client;
+    public LobbyClient? Client {
+        get => _client;
+        set => _client = value;
+    }
 
     private IEnumerable<WheelDriver>? _wheelDrivers;
 
@@ -230,6 +238,10 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             rc.Color   = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_HOVER);
             rc.enabled = false;
         });
+
+        if (ModeManager.CurrentMode.GetType() == typeof(ServerTestMode)) {
+            Task.Factory.StartNew(() => Client = new LobbyClient("127.0.0.1", Name));
+        }
     }
 
     public static void Setup() {
@@ -281,6 +293,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     public override void Destroy() {
+        Client.Dispose();
+        Client = null;
         ClearGamepieces();
         PhysicsManager.Unregister(this);
         if (CurrentlyPossessedRobot.Equals(this._name)) {
@@ -357,7 +371,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         if (_wheelDrivers == null)
             return;
 
-        if (!DriversEnabled) return;
+        if (!DriversEnabled || !BehavioursEnabled) return;
 
         int wheelsInContact = _wheelDrivers.Count(x => x.HasContacts);
         float mod           = wheelsInContact <= 4 ? 1f : Mathf.Pow(0.7f, wheelsInContact - 4);
