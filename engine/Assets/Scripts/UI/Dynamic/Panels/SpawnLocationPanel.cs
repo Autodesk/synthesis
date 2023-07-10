@@ -73,9 +73,9 @@ namespace Synthesis.UI.Dynamic {
 
             AcceptButton.StepIntoLabel(label => label.SetText("Accept")).AddOnClickedEvent(b => {
                 DynamicUIManager.ClosePanel<SpawnLocationPanel>();
-                MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.Auto);
+                MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.FieldConfig);
             });
-            CancelButton.StepIntoLabel(label => label.SetText("Revert")).AddOnClickedEvent(b => {});
+            CancelButton.RootGameObject.SetActive(false);
             CreateRobotHighlights();
             CreateButtons();
             SelectButton(0);
