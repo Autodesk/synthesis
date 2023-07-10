@@ -32,7 +32,7 @@ public class BetaWarningPanel : PanelDynamic {
         CancelButton.RootGameObject.SetActive(false);
         
         PanelImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"))
-            .SetColor(ColorManager.SynthesisColor.PanelText);
+            .SetColor(ColorManager.SynthesisColor.MainText);
 
         MainContent.CreateLabel(40)
             .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Center)

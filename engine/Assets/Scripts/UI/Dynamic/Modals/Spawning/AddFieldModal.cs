@@ -31,7 +31,7 @@ namespace Synthesis.UI.Dynamic {
             Description.SetText("Choose which field you wish to use");
 
             ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("PlusIcon"))
-                .SetColor(ColorManager.SynthesisColor.PanelText);
+                .SetColor(ColorManager.SynthesisColor.MainText);
 
             AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
                 if (_selectedIndex != -1) {

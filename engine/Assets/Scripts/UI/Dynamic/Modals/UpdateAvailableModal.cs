@@ -25,7 +25,7 @@ namespace Synthesis.UI.Dynamic {
                 .SetWidth<Button>(125);
             ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"));
 
-            ModalImage.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.PanelText));
+            ModalImage.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.MainText));
 
             MainContent.CreateLabel(40)
                 .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Center)

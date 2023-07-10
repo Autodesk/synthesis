@@ -45,7 +45,7 @@ namespace Synthesis.UI.Dynamic {
 
         private readonly Func<Button, Button> DisabledTemplate = b =>
             b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary))
-                .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.PanelText));
+                .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText));
 
         public readonly Func<UIComponent, UIComponent> VerticalLayout = (u) => {
             var offset = (-u.Parent!.RectOfChildren(u).yMin) + VERTICAL_PADDING;

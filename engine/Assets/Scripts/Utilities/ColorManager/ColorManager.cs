@@ -27,7 +27,7 @@ namespace Utilities.ColorManager {
             (SynthesisColor.InteractiveSecondary, new Color32(204, 124, 0, 255)),
             (SynthesisColor.Background, new Color32(33, 37, 41, 255)),
             (SynthesisColor.BackgroundSecondary, new Color32(52, 58, 64, 255)),
-            (SynthesisColor.PanelText, new Color32(248, 249, 250, 255)),
+            (SynthesisColor.MainText, new Color32(248, 249, 250, 255)),
             (SynthesisColor.Scrollbar, new Color32(213, 216, 223, 255)),
             (SynthesisColor.AcceptButton, new Color32(34, 139, 230, 255)),
             (SynthesisColor.CancelButton, new Color32(250, 82, 82, 255)),
@@ -110,8 +110,10 @@ namespace Utilities.ColorManager {
 
             var jsonColors = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(themePath));
 
-            jsonColors?.ForEach(x => { 
-                _loadedColors.Add(Enum.Parse<SynthesisColor>(x.Key), x.Value.ColorToHex()); 
+            jsonColors?.ForEach(x =>
+            {
+                if (Enum.TryParse<SynthesisColor>(x.Key, out var colorName))
+                    _loadedColors.Add(colorName, x.Value.ColorToHex()); 
             });
         }
         
@@ -191,7 +193,7 @@ namespace Utilities.ColorManager {
             InteractiveSecondary,
             Background,
             BackgroundSecondary,
-            PanelText,
+            MainText,
             Scrollbar,
             AcceptButton,
             CancelButton,

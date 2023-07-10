@@ -170,10 +170,10 @@ namespace Synthesis.UI.Dynamic {
             _modalBackground.SetCornerRadius(20);
 
             _title = new Label(null, header.Find("Title").gameObject, null);
-            _title.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.PanelText));
+            _title.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.MainText));
 
             _description = new Label(null, header.Find("Description").gameObject, null);
-            _description.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.PanelText));
+            _description.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.MainText));
 
             var footer    = _unityObject.transform.Find("Footer");
             var footerRt  = footer.GetComponent<RectTransform>();
@@ -665,7 +665,7 @@ namespace Synthesis.UI.Dynamic {
                 size = RootRectTransform.sizeDelta;
             }
 
-            SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.PanelText));
+            SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.MainText));
         }
 
         public Label SetText(string text) {
@@ -1254,7 +1254,7 @@ namespace Synthesis.UI.Dynamic {
             _backgroundImage.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.Scrollbar));
 
             _handleImage = new Image(this, unityObject.transform.Find("Sliding Area").Find("Handle").gameObject);
-            _handleImage.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.PanelText));
+            _handleImage.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.MainText));
         }
     }
 

@@ -187,7 +187,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor
             {
                 var prevSelected = _colors[_selectedColor.Value];
                 prevSelected.background.SetBackgroundColor<Image>(ColorManager.SynthesisColor.BackgroundSecondary);
-                prevSelected.label.SetColor(ColorManager.SynthesisColor.PanelText);
+                prevSelected.label.SetColor(ColorManager.SynthesisColor.MainText);
             }
 
             _selectedColor = colorName;

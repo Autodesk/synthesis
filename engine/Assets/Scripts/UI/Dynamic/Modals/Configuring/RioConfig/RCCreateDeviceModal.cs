@@ -29,7 +29,7 @@ public class RCCreateDeviceModal : ModalDynamic {
         Description.SetText("Create a Motor Controller, Encoder, Etc.");
         
         ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-        ModalImage.SetColor(ColorManager.SynthesisColor.PanelText);
+        ModalImage.SetColor(ColorManager.SynthesisColor.MainText);
 
         AcceptButton
             .AddOnClickedEvent(b => {
@@ -93,7 +93,7 @@ public class RCConfigPwmGroupModal : ModalDynamic {
         Description.SetText("Create a Motor Controller, Encoder, Etc.");
         
         ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-        ModalImage.SetColor(ColorManager.SynthesisColor.PanelText);
+        ModalImage.SetColor(ColorManager.SynthesisColor.MainText);
 
         AcceptButton
             .AddOnClickedEvent(b => {
@@ -232,7 +232,7 @@ public class RCConfigEncoderModal : ModalDynamic {
         Description.SetText("Create a Motor Controller, Encoder, Etc.");
         
         ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-        ModalImage.SetColor(ColorManager.SynthesisColor.PanelText);
+        ModalImage.SetColor(ColorManager.SynthesisColor.MainText);
 
         AcceptButton
             .AddOnClickedEvent(b => {

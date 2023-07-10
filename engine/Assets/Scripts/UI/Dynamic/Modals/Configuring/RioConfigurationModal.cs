@@ -56,7 +56,7 @@ public class RioConfigurationModal : ModalDynamic {
         Description.SetText("Configuring RoboRIO for Synthesis simulation");
         
         ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-        ModalImage.SetColor(ColorManager.SynthesisColor.PanelText);
+        ModalImage.SetColor(ColorManager.SynthesisColor.MainText);
 
         _scrollView = MainContent.CreateScrollView();
         _scrollView.SetStretch<ScrollView>();
@@ -110,7 +110,7 @@ public class RioConfigurationModal : ModalDynamic {
             .SetWidth<Button>(110)
             .SetHeight<Button>(-30)
             .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.Background))
-            .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.PanelText))
+            .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText))
             .AddOnClickedEvent(b => onButton());
 
         content.CreateButton("Remove")
@@ -119,7 +119,7 @@ public class RioConfigurationModal : ModalDynamic {
             .SetRightStretch<Button>(20, 20, 140)
             .SetWidth<Button>(110)
             .SetHeight<Button>(-30)
-            .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.PanelText))
+            .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText))
             .AddOnClickedEvent(b => onDelete());
     }
 
