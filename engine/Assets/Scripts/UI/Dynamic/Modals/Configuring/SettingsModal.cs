@@ -27,16 +27,13 @@ namespace Synthesis.UI.Dynamic {
 
         private static int _screenModeIndex;
         private static int _qualitySettingsIndex;
-        private static int _selectedThemeIndex;
         private static float _zoomSensitivity;
         private static float _yawSensitivity;
         private static float _pitchSensitivity;
         private static bool _useAnalytics;
         private static bool _useMetric;
         private static bool _renderScoreZones;
-
-        private Button _editThemeButton;
-
+        
         public SettingsModal() : base(new Vector2(PANEL_WIDTH, PANEL_HEIGHT)) {}
 
         public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
@@ -80,19 +77,7 @@ namespace Synthesis.UI.Dynamic {
                         .AddOnValueChangedEvent((d, i, o) => _qualitySettingsIndex = i)
                         .SetValue(Get<int>(QUALITY_SETTINGS)));
 
-            var themeDropdown =
-                MainContent.CreateLabeledDropdown()
-                    .ApplyTemplate(VerticalLayout)
-                    .StepIntoLabel(l => l.SetText("Color Theme"))
-                    .StepIntoDropdown(d => d.SetOptions(ColorManager.AvailableThemes)
-                        .AddOnValueChangedEvent((d, i, o) =>
-                        {
-                            _selectedThemeIndex = i;
-                            UpdateEditThemeButton();
-                        })
-                        .SetValue(ColorManager.ThemeNameToIndex(Get<string>(ColorManager.SELECTED_THEME_PREF))));
-
-            _editThemeButton =
+            var editThemeButton =
                 MainContent.CreateButton("Theme Editor")
                     .ApplyTemplate<Button>(VerticalLayout)
                     .AddOnClickedEvent(b =>
@@ -101,11 +86,6 @@ namespace Synthesis.UI.Dynamic {
                         ApplySettings();
                         DynamicUIManager.CreateModal<EditThemeModal>();
                     });
-            UpdateEditThemeButton();
-
-            var NewThemeButton = MainContent.CreateButton("New Theme")
-                .ApplyTemplate<Button>(VerticalLayout)
-                .AddOnClickedEvent(b => { DynamicUIManager.CreateModal<NewThemeModal>(); });
 
             MainContent.CreateLabel()
                 .ApplyTemplate(Label.BigLabelTemplate)
@@ -158,25 +138,6 @@ namespace Synthesis.UI.Dynamic {
 
         public override void Delete() {}
 
-        public void UpdateEditThemeButton()
-        {
-            if (_editThemeButton == null)
-                return;
-            
-            if (_selectedThemeIndex == 0)
-            {
-                _editThemeButton.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.SynthesisBlackAccent))
-                    .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.SynthesisOrangeContrastText))
-                    .DisableEvents<Button>();
-            }
-            else
-            {
-                _editThemeButton.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.SynthesisOrange))
-                    .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.SynthesisOrangeContrastText))
-                    .EnableEvents<Button>();
-            }
-        }
-
         [DllImport("user32.dll")]
         private static extern IntPtr GetActiveWindow();
 
@@ -186,7 +147,6 @@ namespace Synthesis.UI.Dynamic {
         public static void SaveSettings() {
             Set(SCREEN_MODE, _screenModeIndex);
             Set(QUALITY_SETTINGS, _qualitySettingsIndex);
-            Set(ColorManager.SELECTED_THEME_PREF, ColorManager.AvailableThemes[_selectedThemeIndex]);
             Set(CameraController.ZOOM_SENSITIVITY_PREF, _zoomSensitivity);
             Set(CameraController.YAW_SENSITIVITY_PREF, _yawSensitivity);
             Set(CameraController.PITCH_SENSITIVITY_PREF, _pitchSensitivity);
@@ -202,7 +162,6 @@ namespace Synthesis.UI.Dynamic {
         public static void LoadSettings() {
             _screenModeIndex      = Get<int>(SCREEN_MODE);
             _qualitySettingsIndex = Get<int>(QUALITY_SETTINGS);
-            _selectedThemeIndex   = ColorManager.ThemeNameToIndex(Get<string>(ColorManager.SELECTED_THEME_PREF));
             _zoomSensitivity      = Get<float>(CameraController.ZOOM_SENSITIVITY_PREF);
             _yawSensitivity       = Get<float>(CameraController.YAW_SENSITIVITY_PREF);
             _pitchSensitivity     = Get<float>(CameraController.PITCH_SENSITIVITY_PREF);
@@ -259,7 +218,6 @@ namespace Synthesis.UI.Dynamic {
         public static void SetDefaultPreferences() {
             _screenModeIndex      = 0;
             _qualitySettingsIndex = 3;
-            _selectedThemeIndex   = 0;
             _zoomSensitivity      = 5f;
             _yawSensitivity       = 10f;
             _pitchSensitivity     = 3f;

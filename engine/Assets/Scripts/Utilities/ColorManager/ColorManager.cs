@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,8 +6,8 @@ using Newtonsoft.Json;
 using Synthesis.PreferenceManager;
 using Synthesis.Util;
 using SynthesisAPI.EventBus;
+using UI.Dynamic.Modals.Configuring;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Utilities.ColorManager {
     public static class ColorManager
@@ -85,7 +84,7 @@ namespace Utilities.ColorManager {
 
         static ColorManager()
         {
-            EventBus.NewTypeListener<PostPreferenceSaveEvent>(e => {
+            EventBus.NewTypeListener<EditThemeModal.SelectedThemeChanged>(e => {
                 string selectedTheme = PreferenceManager.GetPreference<string>(SELECTED_THEME_PREF);
                 SelectedTheme = selectedTheme;
             });
@@ -131,6 +130,15 @@ namespace Utilities.ColorManager {
             File.WriteAllText(themePath, JsonConvert.SerializeObject(jsonColors));
         }
 
+        private static void DeleteTheme(string themeName)
+        {
+            if (themeName is "Default" or "") return;
+            
+            string themePath = PATH + Path.AltDirectorySeparatorChar + themeName + ".json";
+            
+            File.Delete(themePath);
+        }
+
         private static void LoadDefaultColors()
         {
             _defaultColors.ForEach(c => {
@@ -138,7 +146,7 @@ namespace Utilities.ColorManager {
             });
         }
 
-        public static void ModifyLoadedTheme(List<(SynthesisColor name, Color32 color)> changes)
+        public static void ModifySelectedTheme(List<(SynthesisColor name, Color32 color)> changes)
         {
             if (_selectedTheme == null)
                 return;
@@ -149,6 +157,12 @@ namespace Utilities.ColorManager {
             SaveTheme(_selectedTheme);
             
             EventBus.Push(new OnThemeChanged());
+        }
+
+        public static void DeleteSelectedTheme()
+        {
+            DeleteTheme(_selectedTheme);
+            SelectedTheme = "Default";
         }
 
         public static Color GetColor(SynthesisColor colorName)

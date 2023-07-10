@@ -26,7 +26,7 @@ namespace UI.Dynamic.Modals.Configuring
                 {
                     _newThemeName = value;
                 })
-                .SetTopStretch<Dropdown>();;
+                .SetTopStretch<Dropdown>();
 
             AcceptButton.AddOnClickedEvent(x =>
             {
@@ -35,6 +35,8 @@ namespace UI.Dynamic.Modals.Configuring
                 
                 DynamicUIManager.CreateModal<EditThemeModal>();
             });
+
+            CancelButton.AddOnClickedEvent(x => { DynamicUIManager.CreateModal<EditThemeModal>(); });
         }
 
         public override void Update() { }
