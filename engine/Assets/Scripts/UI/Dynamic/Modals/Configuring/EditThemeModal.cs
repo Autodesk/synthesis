@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
-using NUnit.Framework;
 using Synthesis.UI.Dynamic;
 using Synthesis.Util;
 using UnityEngine;
@@ -71,12 +69,7 @@ namespace UI.Dynamic.Modals.Configuring
             ColorManager.LoadedColors.ForEach(c =>
             {
                 var column = i % 3;
-                // A color that stands out from the background
-                /*Color textColor = new Color((255-c.Value.r)/255f, (255-c.Value.g)/255f, (255-c.Value.b)/255f, 1);
-                textColor *= 1 - Mathf.Max(textColor.r, Mathf.Max(textColor.g, textColor.b)) + 0.5f;
-                textColor.a = 1;*/
 
-                int colorIndex = i;
                 var button = columns[column*2].CreateSubContent(new Vector2(ROW_HEIGHT, ROW_HEIGHT))
                     .ApplyTemplate(VerticalLayout)
                     .CreateButton()

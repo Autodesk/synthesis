@@ -1,13 +1,15 @@
 using SynthesisAPI.EventBus;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Utilities.ColorManager
 {
     public class EnviornmentColorUpdater : MonoBehaviour
     {
-        [SerializeField] private Material _skyboxMaterial;
-        [SerializeField] private Material _floorMaterial;
+        private Material _skyboxMaterial;
+        private Material _floorMaterial;
+
+        [SerializeField] private GameObject _skybox;
+        [SerializeField] private GameObject _floor;
         
         private static readonly int BOTTOM_COLOR = Shader.PropertyToID("_BottomColor");
         private static readonly int TOP_COLOR = Shader.PropertyToID("_TopColor");
@@ -16,6 +18,9 @@ namespace Utilities.ColorManager
         // Start is called before the first frame update
         void Start()
         {
+            _skyboxMaterial = _skybox.GetComponent<MeshRenderer>().material;
+            _floorMaterial = _floor.GetComponent<MeshRenderer>().material;
+
             AssignColors();
         
             EventBus.NewTypeListener<ColorManager.OnThemeChanged>(x => { AssignColors(); });
@@ -31,6 +36,8 @@ namespace Utilities.ColorManager
             var floorColor = ColorManager.GetColor(ColorManager.SynthesisColor.FloorGrid);
             floorColor.a = 0.48f;
             _floorMaterial.SetColor(GRID_COLOR, floorColor);
+            
+            
         }
     }
 }

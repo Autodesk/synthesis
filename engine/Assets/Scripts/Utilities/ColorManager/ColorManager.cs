@@ -15,7 +15,7 @@ namespace Utilities.ColorManager {
     {
         public const string SELECTED_THEME_PREF = "color/selected_theme";
         
-        private static readonly Color32 UNASSIGNED_COLOR = new Color32(200, 255, 0, 255);
+        private static readonly Color32 UNASSIGNED_COLOR = new(200, 255, 0, 255);
         
         private static readonly string PATH = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
                                               Path.AltDirectorySeparatorChar + "Autodesk" +
@@ -65,7 +65,7 @@ namespace Utilities.ColorManager {
         public static string SelectedTheme
         {
             get => _selectedTheme;
-            set
+            private set
             {
                 Debug.Log($"Set Theme To {value}");
                 if (value == _selectedTheme)
@@ -91,8 +91,6 @@ namespace Utilities.ColorManager {
                 SelectedTheme = selectedTheme;
             });
             _selectedTheme = PreferenceManager.GetPreference<string>(SELECTED_THEME_PREF);
-            
-            //Debug.Log(_selectedTheme);
             
             LoadTheme(_selectedTheme);
             LoadDefaultColors();
@@ -159,7 +157,6 @@ namespace Utilities.ColorManager {
 
         public static Color GetColor(SynthesisColor colorName)
         {
-            //return new Color(Random.Range(0, 1f), Random.Range(0, 1f), Random.Range(0, 1f), 1);
             if (_loadedColors.TryGetValue(colorName, out Color32 color))
                 return color;
 
@@ -199,5 +196,4 @@ namespace Utilities.ColorManager {
             FloorGrid
         }
     }
-    //{"SynthesisOrange":"#672d2d","SynthesisOrangeAccent":"#3d492b","SynthesisBlack":"#47193b","SynthesisBlackAccent":"#4b1223","SynthesisWhite":"#122423","SynthesisWhiteAccent":"#284f8b","SynthesisAccept":"#a25e00","SynthesisCancel":"#00ff20","SynthesisOrangeContrastText":"#ff0000","SynthesisIcon":"#9e2c5b","SynthesisIconAlt":"#000000ff","SynthesisHighlightHover":"#59ff85ff","SynthesisHighlightSelect":"#ff5985ff"}
 }
