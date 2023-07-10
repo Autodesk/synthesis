@@ -23,9 +23,8 @@ namespace SynthesisAPI.Aether.Lobby {
 
         private Inner? _instance;
 
-
         public IReadOnlyCollection<string> Clients => _instance?.Clients ?? new List<string>(1).AsReadOnly();
-        public IReadOnlyCollection<DataRobot> AvailableRobots => _instance.AvailableRobots;
+        public IReadOnlyCollection<DataRobot> AvailableRobots => _instance?.AvailableRobots ?? new List<DataRobot>(1).AsReadOnly();
 
         public LobbyServer() {
             _instance = new Inner();
@@ -58,6 +57,7 @@ namespace SynthesisAPI.Aether.Lobby {
                 }
             }
 
+            private readonly ReaderWriterLockSlim _robotDataLock;
             private List<DataRobot> _availableRobots;
             public IReadOnlyCollection<DataRobot> AvailableRobots {
                 get {
@@ -71,9 +71,11 @@ namespace SynthesisAPI.Aether.Lobby {
             public Inner() {
                 _clientsLock = new ReaderWriterLockSlim();
                 _remoteDataLock = new ReaderWriterLockSlim();
+                _robotDataLock = new ReaderWriterLockSlim();
 
                 _clients = new Dictionary<ulong, LobbyClientHandler>();
                 _clientThreads = new LinkedList<Thread>();
+                _availableRobots = new List<DataRobot>();
 
                 _remoteData = new Dictionary<ulong, RemoteData>();
                 
@@ -140,8 +142,8 @@ namespace SynthesisAPI.Aether.Lobby {
                         case LobbyMessage.MessageTypeOneofCase.ToGetLobbyInformation:
                             OnGetLobbyInformation(msg.ToGetLobbyInformation, handler);
                             break;
-                        case LobbyMessage.MessageTypeOneofCase.DataRobot:
-                            AcceptRobotData(msg.DataRobot);
+                        case LobbyMessage.MessageTypeOneofCase.ToDataRobot:
+                            AcceptRobotData(msg.ToDataRobot, handler);
                             break;
                         case LobbyMessage.MessageTypeOneofCase.ToUpdateControllableState:
                             OnControllableStateUpdate(msg.ToUpdateControllableState, handler);
@@ -173,10 +175,18 @@ namespace SynthesisAPI.Aether.Lobby {
                 handler.WriteMessage(new LobbyMessage { FromGetLobbyInformation = response });
             }
 
-            private void AcceptRobotData(DataRobot robot) {
-                _clientsLock.EnterWriteLock();
-                _availableRobots.Add(robot);
-                _clientsLock.ExitWriteLock();
+            private void AcceptRobotData(LobbyMessage.Types.ToDataRobot robot, LobbyClientHandler handler) {
+                _robotDataLock.EnterWriteLock();
+                _availableRobots.Add(new DataRobot(robot.DataRobot));
+                _robotDataLock.ExitWriteLock();
+
+                var response = new LobbyMessage.Types.FromDataRobot();
+
+                _robotDataLock.EnterReadLock();
+                _availableRobots.ForEach(x => response.AllAvailableRobots.Add(x));
+                _robotDataLock.ExitReadLock();
+
+                handler.WriteMessage(new LobbyMessage { FromDataRobot = response });
             }
 
             private void OnControllableStateUpdate(LobbyMessage.Types.ToUpdateControllableState updateRequest, LobbyClientHandler handler) {

@@ -13,18 +13,12 @@ message LobbyInformation {
     uint64 lobby_host = 3;
 }
 
-// Data for exchanging robots
-message DataMeta {
+message DataRobot {
     string name = 1;
     string description = 2;
     // TODO: Possible PNG thumbnail?
     uint64 guid = 3;
-    uint64 owner = 4;
-}
-
-message DataRobot {
-    DataMeta meta = 1;
-    bytes data = 2;
+    bytes data = 4;
 }
 
 message ServerTransformData {
