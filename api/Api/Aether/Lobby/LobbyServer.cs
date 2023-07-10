@@ -152,7 +152,6 @@ namespace SynthesisAPI.Aether.Lobby {
                             OnTransformDataUpdate(msg.ToUpdateTransformData, handler);
                             break;
                         case LobbyMessage.MessageTypeOneofCase.ToDataDump:
-                            break;
                         case LobbyMessage.MessageTypeOneofCase.ToClientHeartbeat:
 							handler.UpdateHeartbeat();
                             break;
