@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Linq;
 using Analytics;
 using UI.Dynamic.Modals.Configuring;
+using UI.Dynamic.Modals.Configuring.ThemeEditor;
 using UnityEngine.Rendering;
 using Utilities.ColorManager;
 

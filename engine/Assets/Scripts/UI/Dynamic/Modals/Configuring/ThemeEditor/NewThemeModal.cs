@@ -1,5 +1,6 @@
 using Synthesis.PreferenceManager;
 using Synthesis.UI.Dynamic;
+using UI.Dynamic.Modals.Configuring.ThemeEditor;
 using UnityEngine;
 using Utilities.ColorManager;
 

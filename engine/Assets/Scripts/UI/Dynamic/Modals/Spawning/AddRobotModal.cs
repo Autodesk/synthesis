@@ -1,17 +1,14 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.Utilities;
-using TMPro;
 using UnityEngine;
 using Utilities.ColorManager;
 using Logger = SynthesisAPI.Utilities.Logger;
 
 #nullable enable
 
-namespace Synthesis.UI.Dynamic {
+namespace UI.Dynamic.Modals.Spawning {
     public class AddRobotModal : ModalDynamic {
         private string _root;
         private int _selectedIndex = -1;

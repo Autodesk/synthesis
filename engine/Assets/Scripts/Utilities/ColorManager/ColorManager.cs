@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using Synthesis.PreferenceManager;
 using Synthesis.Util;
 using SynthesisAPI.EventBus;
-using UI.Dynamic.Modals.Configuring;
+using UI.Dynamic.Modals.Configuring.ThemeEditor;
 using UnityEngine;
 
 namespace Utilities.ColorManager {

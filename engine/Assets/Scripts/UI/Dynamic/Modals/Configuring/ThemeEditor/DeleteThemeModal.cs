@@ -1,9 +1,8 @@
-using Synthesis.PreferenceManager;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
 using Utilities.ColorManager;
 
-namespace UI.Dynamic.Modals.Configuring
+namespace UI.Dynamic.Modals.Configuring.ThemeEditor
 {
     public class DeleteThemeModal : ModalDynamic
     {

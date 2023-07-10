@@ -7,6 +7,7 @@ using Synthesis.UI.Dynamic;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
+using UI.Dynamic.Modals.Spawning;
 using UnityEngine;
 using Utilities.ColorManager;
 using Logger = SynthesisAPI.Utilities.Logger;
