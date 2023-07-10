@@ -65,9 +65,8 @@ namespace Utilities.ColorManager {
         public static string SelectedTheme
         {
             get => _selectedTheme;
-            private set
+            set
             {
-                Debug.Log($"Set Theme To {value}");
                 if (value == _selectedTheme)
                     return;
 
@@ -102,7 +101,6 @@ namespace Utilities.ColorManager {
             if (themeName == "Default") return;
             
             string themePath = PATH + Path.AltDirectorySeparatorChar + themeName + ".json";
-            Debug.Log($"Loading theme: {themePath}");
             
             var dir = Path.GetFullPath(themePath).Replace(Path.GetFileName(themePath), "");
             if (!Directory.Exists(dir)) {
@@ -123,9 +121,7 @@ namespace Utilities.ColorManager {
             if (themeName == "Default") return;
             
             string themePath = PATH + Path.AltDirectorySeparatorChar + themeName + ".json";
-            Debug.Log($"Saving theme: {themePath}");
 
-            
             var jsonColors = new Dictionary<string, string>();
             
             _loadedColors.ForEach(x => {

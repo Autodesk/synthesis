@@ -22,6 +22,9 @@ namespace Synthesis.UI.Dynamic {
         private static string[] _screenModeList      = { "Fullscreen", "Windowed" };
         private static string[] _qualitySettingsList = { "Low", "Medium", "High", "Ultra" };
 
+        private const float PANEL_WIDTH = 500;
+        private const float PANEL_HEIGHT = 700;
+
         private static int _screenModeIndex;
         private static int _qualitySettingsIndex;
         private static int _selectedThemeIndex;
@@ -34,7 +37,7 @@ namespace Synthesis.UI.Dynamic {
 
         private Button _editThemeButton;
 
-        public SettingsModal() : base(new Vector2(500, 700)) {}
+        public SettingsModal() : base(new Vector2(PANEL_WIDTH, PANEL_HEIGHT)) {}
 
         public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
             var offset = (-u.Parent!.RectOfChildren(u).yMin) + 7.5f;
@@ -88,7 +91,7 @@ namespace Synthesis.UI.Dynamic {
                             UpdateEditThemeButton();
                         })
                         .SetValue(ColorManager.ThemeNameToIndex(Get<string>(ColorManager.SELECTED_THEME_PREF))));
-            
+
             _editThemeButton =
                 MainContent.CreateButton("Theme Editor")
                     .ApplyTemplate<Button>(VerticalLayout)
@@ -99,6 +102,10 @@ namespace Synthesis.UI.Dynamic {
                         DynamicUIManager.CreateModal<EditThemeModal>();
                     });
             UpdateEditThemeButton();
+
+            var NewThemeButton = MainContent.CreateButton("New Theme")
+                .ApplyTemplate<Button>(VerticalLayout)
+                .AddOnClickedEvent(b => { DynamicUIManager.CreateModal<NewThemeModal>(); });
 
             MainContent.CreateLabel()
                 .ApplyTemplate(Label.BigLabelTemplate)
@@ -179,7 +186,6 @@ namespace Synthesis.UI.Dynamic {
         public static void SaveSettings() {
             Set(SCREEN_MODE, _screenModeIndex);
             Set(QUALITY_SETTINGS, _qualitySettingsIndex);
-            Debug.Log($"Set {_selectedThemeIndex} as {ColorManager.AvailableThemes[_selectedThemeIndex]}");
             Set(ColorManager.SELECTED_THEME_PREF, ColorManager.AvailableThemes[_selectedThemeIndex]);
             Set(CameraController.ZOOM_SENSITIVITY_PREF, _zoomSensitivity);
             Set(CameraController.YAW_SENSITIVITY_PREF, _yawSensitivity);

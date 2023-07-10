@@ -10,13 +10,13 @@ namespace UI.Dynamic.Modals.Configuring
 {
     public class EditThemeModal : ModalDynamic
     {
-        public const float WIDTH = 1350;
-        public const float HEIGHT = 500;
-        public const float ROW_HEIGHT = 60;
-        public const float HORIZONTAL_PADDING = 15;
+        private const float MODAL_WIDTH = 1350;
+        private const float MODAL_HEIGHT = 500;
+        private const float ROW_HEIGHT = 60;
+        private const float HORIZONTAL_PADDING = 15;
         
         public EditThemeModal()
-            : base(new Vector2(WIDTH, HEIGHT)) {}
+            : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) {}
 
         public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
             var offset = (-u.Parent!.RectOfChildren(u).yMin) + 7.5f;
@@ -34,7 +34,7 @@ namespace UI.Dynamic.Modals.Configuring
             Description.SetText($"Customize Theme {ColorManager.SelectedTheme}");
             
             var (left, right) = MainContent.SplitLeftRight(
-                WIDTH - 500 - (HORIZONTAL_PADDING / 2), HORIZONTAL_PADDING);
+                MODAL_WIDTH - 500 - (HORIZONTAL_PADDING / 2), HORIZONTAL_PADDING);
 
             CreateInputFields(left);
             CreateColorPicker(right);
