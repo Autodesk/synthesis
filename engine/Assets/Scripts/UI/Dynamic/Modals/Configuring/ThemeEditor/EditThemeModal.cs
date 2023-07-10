@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Synthesis.PreferenceManager;
 using Synthesis.UI.Dynamic;
-using Synthesis.Util;
 using SynthesisAPI.EventBus;
 using UnityEngine;
 using Utilities.ColorManager;
@@ -50,11 +49,11 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor
             Description.SetText("Select and Customize Themes");
 
             AcceptButton
-                .StepIntoLabel(l => l.SetText("Exit"))
+                .StepIntoLabel(l => l.SetText("Save"))
                 .AddOnClickedEvent(x =>
                 {
-                    DynamicUIManager.CloseActiveModal();
                     SaveThemeChanges();
+                    DynamicUIManager.CloseActiveModal();
                 });
             
             CancelButton.RootGameObject.SetActive(false);
@@ -101,7 +100,10 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor
                 .ApplyTemplate(VerticalLayout)
                 .SetOptions(ColorManager.AvailableThemes)
                 .SetValue(_selectedThemeIndex)
-                .AddOnValueChangedEvent((dropdown, index, data) => { SelectTheme(index); });
+                .AddOnValueChangedEvent((dropdown, index, data) => { 
+                    SelectTheme(index);
+                    DynamicUIManager.CreateModal<EditThemeModal>();
+                });
 
             var (addContent, deleteContent) = content
                 .CreateSubContent(new Vector2(content.Size.x, 50))
