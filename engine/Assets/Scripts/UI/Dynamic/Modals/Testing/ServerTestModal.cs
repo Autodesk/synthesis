@@ -93,18 +93,15 @@ namespace Synthesis.UI.Dynamic {
                 .SetHeight<Button>(30f)
                 .SetTopStretch<Button>(anchoredY: 45f * 5f)
                 .AddOnClickedEvent(b => {
-                    var robotData = new DataRobot();
+                    var robotData  = new DataRobot();
                     robotData.Guid = _mode.Clients[1]?.Guid ?? 0;
-                    _mode.Clients[1]
-                        ?.UploadRobotData(robotData)
-                        .ContinueWith((x, o) => {
-                            if (x.Result.isError)
-                                Logger.Log("Error");
+                    _mode.Clients[1]?.UploadRobotData(robotData).ContinueWith((x, o) => {
+                        if (x.Result.isError)
+                            Logger.Log("Error");
 
-                            var msg = x.Result.GetResult();
-                            msg?.FromDataRobot.AllAvailableRobots.ForEach(
-                                x => Logger.Log($"[{x.Guid}] {x.Name}"));
-                        }, null);
+                        var msg = x.Result.GetResult();
+                        msg?.FromDataRobot.AllAvailableRobots.ForEach(x => Logger.Log($"[{x.Guid}] {x.Name}"));
+                    }, null);
                 });
 
             _self = this;
