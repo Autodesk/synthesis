@@ -1,17 +1,13 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using NUnit.Framework;
-using UnityEngine;
-using SynthesisAPI.Utilities;
-
-using Logger = SynthesisAPI.Utilities.Logger;
-using Synthesis.Replay;
-using Synthesis.Physics;
-using SynthesisAPI.EventBus;
-using Synthesis.Gizmo;
-using Synthesis.Runtime;
 using System.Linq;
+using Synthesis.Gizmo;
+using Synthesis.Physics;
+using Synthesis.Replay;
+using Synthesis.Runtime;
+using SynthesisAPI.EventBus;
+using TMPro;
+using UnityEngine;
 
 namespace Synthesis.UI.Dynamic {
     public static class DynamicUIManager {
@@ -65,6 +61,21 @@ namespace Synthesis.UI.Dynamic {
             if (ActiveModal != null)
                 CloseActiveModal();
 
+            return CreateModal_Internal<T>(args);
+        }
+
+        public static bool CreateModalWithoutOverwrite<T>(params object[] args)
+            where T : ModalDynamic {
+            if (_persistentPanels.Count > 0)
+                return false;
+            if (ActiveModal != null)
+                return false;
+
+            return CreateModal_Internal<T>(args);
+        }
+
+        private static bool CreateModal_Internal<T>(params object[] args)
+            where T : ModalDynamic {
             var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("dynamic-modal-base"),
                 GameObject.Find("UI").transform.Find("ScreenSpace").Find("ModalContainer"));
 
@@ -169,18 +180,31 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public static bool PanelExists<T>()
-            where T : PanelDynamic => PanelExists(typeof(T));
+            where T : PanelDynamic {
+            return PanelExists(typeof(T));
+        }
 
-  public static bool PanelExists(Type t) => _persistentPanels.ContainsKey(t);
+        public static bool PanelExists(Type t) {
+            return _persistentPanels.ContainsKey(t);
+        }
 
-  public static void HideAllPanels() {
+        public static T GetPanel<T>()
+            where T : PanelDynamic {
+            if (!PanelExists<T>())
+                return null;
+            return (T) _persistentPanels[typeof(T)].Item1;
+        }
+
+        public static void HideAllPanels() {
             _persistentPanels.ForEach(kvp => HidePanel(kvp.Value.Item1.GetType()));
         }
 
         public static void HidePanel<T>()
-            where T : PanelDynamic => HidePanel(typeof(T));
+            where T : PanelDynamic {
+            HidePanel(typeof(T));
+        }
 
-  public static bool HidePanel(Type t) {
+        public static bool HidePanel(Type t) {
             if (!PanelExists(t))
                 return false;
 

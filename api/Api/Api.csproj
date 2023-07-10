@@ -28,7 +28,10 @@ For support contact frc@autodesk.com</PackageReleaseNotes>
         <NeutralLanguage>en-US</NeutralLanguage>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <Nullable>disable</Nullable>
+        <WarningsAsErrors>false</WarningsAsErrors>
     </PropertyGroup>
+
 
     <ItemGroup>
 
@@ -36,6 +39,7 @@ For support contact frc@autodesk.com</PackageReleaseNotes>
       <PackageReference Include="MathNet.Numerics" Version="4.15.0" />
       <PackageReference Include="MathNet.Spatial" Version="0.6.0" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+      <PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
       <PackageReference Include="protobuf-net" Version="3.0.101" />
       <PackageReference Include="protobuf-net.BuildTools" Version="3.0.101">
         <PrivateAssets>all</PrivateAssets>
@@ -53,6 +57,7 @@ For support contact frc@autodesk.com</PackageReleaseNotes>
 
     <ItemGroup>
       <None Remove="Gen\Mirabuf\" />
+      <None Remove="Controller\" />
     </ItemGroup>
     <ItemGroup>
       <None Include="..\..\installer\Linux\synthesis.png">
@@ -69,5 +74,6 @@ For support contact frc@autodesk.com</PackageReleaseNotes>
 
     <ItemGroup>
       <Folder Include="Gen\Mirabuf\" />
+      <Folder Include="Controller\" />
     </ItemGroup>
 </Project>

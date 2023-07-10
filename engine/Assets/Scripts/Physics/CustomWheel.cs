@@ -1,7 +1,4 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using Synthesis;
 using UnityEngine;
 using Synthesis.Util;
@@ -29,20 +26,18 @@ public class CustomWheel : MonoBehaviour {
     private Vector3 Anchor => Rb.transform.localToWorldMatrix.MultiplyPoint3x4(LocalAnchor);
 
     // Friction Constants
-    public float SlidingStaticFriction  = 1.3f;
-    public float SlidingKineticFriction = 0.95f;
-
+    private const float SlidingStaticFriction  = 1.3f;
+    private const float SlidingKineticFriction = 0.95f;
     // Wheel States
     public float RotationSpeed = 0f;    // radians/second
     public float Radius        = 0.05f; // meters
 
     private float _startTime;
 
-    public bool HasContacts => _pairings.Count > 0;
+    public bool HasContacts => _collisionDataThisFrame.numCollisions > 0;
 
     public float Inertia => SynthesisUtil.GetInertiaFromAxisVector(Rb, LocalAxis);
 
-    // Debugging Information
     private Vector3 _lastImpulseTotal;
 
     public void OnDrawGizmos() {
@@ -63,48 +58,48 @@ public class CustomWheel : MonoBehaviour {
     /// Calculates friction forces for the wheel and applies them. Should be run every FixedUpdate
     /// </summary>
     /// <param name="mod">Modifier to account for janky Unity joints</param>
-    public void GetFrictionForces(float mod) {
-        if (_pairings.Count > 0) {
-            CalculateFriction();
+    public void CalculateAndApplyFriction(float mod) {
+        if (!HasContacts)
+            return;
 
-            _lastImpulseTotal = (_staticImpulseVecAccum + _rollingImpulseVecAccum);
+        _lastImpulseTotal = CalculateNetFriction();
 
-            Rb.velocity += _lastImpulseTotal * mod; // / Rb.mass;
-
-            _staticImpulseVecAccum  = new Vector3();
-            _rollingImpulseVecAccum = new Vector3();
-        }
+        Rb.velocity += _lastImpulseTotal * mod; // / Rb.mass;
     }
-
-    // Tbh these variables are relics but I don't want to mess with anything
-    private Vector3 _staticImpulseVecAccum  = new Vector3();
-    private Vector3 _rollingImpulseVecAccum = new Vector3();
 
     public void OnCollisionStay(Collision collision) {
-        // _collisionCalls++;
-        _pairings.Add((collision.impulse, collision.relativeVelocity));
+        Vector3 impulse = collision.impulse;
+
+        // If impulse vector is suspected of being backwards (happens with mean machine), calculate it manually
+        if (impulse.normalized.y < 0.01) {
+            impulse = Vector3.zero;
+            collision.contacts.ForEach(contact => {
+                impulse += (Rb.worldCenterOfMass - contact.point).normalized * contact.impulse.magnitude;
+            });
+        }
+
+        _collisionDataThisFrame.impulse += impulse;
+        _collisionDataThisFrame.velocity += collision.relativeVelocity;
+        _collisionDataThisFrame.numCollisions++;
     }
 
-    private List<(Vector3 impulse, Vector3 velocity)> _pairings = new List<(Vector3, Vector3)>();
+    private (Vector3 impulse, Vector3 velocity, int numCollisions) _collisionDataThisFrame;
 
     /// <summary>
     /// Compiles contacts and calculates friction forces
     /// </summary>
-    public void CalculateFriction() {
-        Vector3 impulse  = Vector3.zero;
-        Vector3 velocity = Vector3.zero;
-        _pairings.ForEach(x => {
-            impulse += x.impulse;
-            velocity += x.velocity;
-        });
-        velocity /= _pairings.Count; // The velocities are different and I don't know why
+    /// <returns>The net friction force acting on the wheel from collisions this frame</returns>
+    private Vector3 CalculateNetFriction() {
+        Vector3 netImpulse  = _collisionDataThisFrame.impulse;
+        Vector3 netVelocity = _collisionDataThisFrame.velocity;
 
-        impulse = ClampMag(impulse, 0, ImpulseMax);
+        netVelocity /= _collisionDataThisFrame.numCollisions; // The velocities are different and I don't know why
 
-        CalculateSlidingFriction(impulse, velocity);
-        CalculateRollingFriction(impulse, velocity);
+        netImpulse = ClampMag(netImpulse, 0, ImpulseMax);
 
-        _pairings.Clear();
+        _collisionDataThisFrame = new(Vector3.zero, Vector3.zero, 0);
+
+        return CalculateSlidingFriction(netImpulse, netVelocity) + CalculateRollingFriction(netImpulse, netVelocity);
     }
 
     /// <summary>
@@ -112,7 +107,8 @@ public class CustomWheel : MonoBehaviour {
     /// </summary>
     /// <param name="impulse">Impulse of the collision data</param>
     /// <param name="velocity">Relative velocity of the object to the contacted object</param>
-    public void CalculateSlidingFriction(Vector3 impulse, Vector3 velocity) {
+    /// <returns>A vector for sliding friction between the wheel and the ground</returns>
+    private Vector3 CalculateSlidingFriction(Vector3 impulse, Vector3 velocity) {
         var dirVelocity   = Vector3.Dot(Axis, velocity);
         var dirMomentum   = dirVelocity * Rb.mass;
         var staticImpulse = SlidingStaticFriction * impulse.magnitude;
@@ -120,10 +116,10 @@ public class CustomWheel : MonoBehaviour {
         if (UseKineticFriction && dirMomentum > staticImpulse) {
             var dynamicImpulse =
                 ClampMag((SlidingKineticFriction * impulse.magnitude * Axis) / Rb.mass, 0f, dirVelocity);
-            _staticImpulseVecAccum += dynamicImpulse;
+            return dynamicImpulse;
         } else {
             var staticImpulseVec = dirVelocity * Axis;
-            _staticImpulseVecAccum += staticImpulseVec;
+            return staticImpulseVec;
         }
     }
 
@@ -132,7 +128,8 @@ public class CustomWheel : MonoBehaviour {
     /// </summary>
     /// <param name="impulse">Impulse of the collision data</param>
     /// <param name="velocity">Relative velocity of the object to the contacted object</param>
-    public void CalculateRollingFriction(Vector3 impulse, Vector3 velocity) {
+    /// <returns>A vector for rolling friction between the wheel and the ground</returns>
+    private Vector3 CalculateRollingFriction(Vector3 impulse, Vector3 velocity) {
         var direction             = Vector3.Cross(impulse.normalized, Axis).normalized;
         var wheelSurfaceVelocity  = Vector3.Cross(impulse.normalized * Radius, Axis * RotationSpeed);
         var groundSurfaceVelocity = Vector3.Dot(direction, wheelSurfaceVelocity) + Vector3.Dot(-direction, velocity);
@@ -148,7 +145,7 @@ public class CustomWheel : MonoBehaviour {
             frictionImpulse = groundSurfaceVelocity * -direction;
         }
 
-        _rollingImpulseVecAccum += frictionImpulse;
+        return frictionImpulse;
     }
 
     /// <summary>
@@ -158,7 +155,7 @@ public class CustomWheel : MonoBehaviour {
     /// <param name="min">Minimum magnitude</param>
     /// <param name="max">Maximum magnitude</param>
     /// <returns>Clamped Vector</returns>
-    public Vector3 ClampMag(Vector3 v, float min, float max) {
+    public static Vector3 ClampMag(Vector3 v, float min, float max) {
         if (v.magnitude > max)
             return v.normalized * max;
         if (v.magnitude < min)
@@ -171,5 +168,5 @@ public class CustomWheel : MonoBehaviour {
     /// </summary>
     /// <param name="v">Vector to print</param>
     /// <returns>Stringified vector</returns>
-    public string Str(Vector3 v) => $"({v.x},{v.y},{v.z})";
+    public static string Str(Vector3 v) => $"({v.x},{v.y},{v.z})";
 }

@@ -15,7 +15,6 @@ class PDMessage:
         appearanceCount: int,
         progressDialog: adsk.core.ProgressDialog,
     ):
-
         self.assemblyName = assemblyName
         self.componentCount = componentCount
         self.occurrenceCount = occurrenceCount

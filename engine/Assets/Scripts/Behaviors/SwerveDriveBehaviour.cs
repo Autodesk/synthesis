@@ -179,5 +179,9 @@ namespace Synthesis {
                 _moduleDrivers[i].azimuth.Unreserve();
             }
         }
+
+        protected override void OnDisable() {
+            _moduleDrivers.ForEach(x => x.drive.MainInput = x.azimuth.MainInput = 0f);
+        }
     }
 }

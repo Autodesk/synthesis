@@ -1,94 +1,124 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using System;
+using Modes.MatchMode;
+using Synthesis.Runtime;
+using Synthesis.UI.Dynamic;
 using SynthesisAPI.EventBus;
 using TMPro;
-using System;
-using Synthesis.Gizmo;
-using Synthesis.Runtime;
+using UnityEngine;
 
-namespace Synthesis.UI.Dynamic {
-    public class ScoreboardPanel : PanelDynamic {
-        private static float width  = 200f;
-        private static float height = 80f;
+public class ScoreboardPanel : PanelDynamic {
+    private const float VERTICAL_PADDING = 10f;
+    private static readonly float WIDTH  = 200f;
+    private static float HEIGHT;
 
-        public ScoreboardPanel() : base(new Vector2(width, height)) {}
+    private readonly bool _showTimer;
 
-        private Label time, redScore, blueScore;
+    private Label time, redScore, blueScore;
+    private Content topContent, bottomContent;
 
-        private const float VERTICAL_PADDING = 10f;
+    public Func<UIComponent, UIComponent> VerticalLayout = u => {
+        float offset = -u.Parent!.RectOfChildren(u).yMin + VERTICAL_PADDING;
+        u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 0f); // used to be 15f
+        return u;
+    };
 
-        public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
-            var offset = (-u.Parent!.RectOfChildren(u).yMin) + VERTICAL_PADDING;
-            u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 0f); // used to be 15f
-            return u;
-        };
+    public ScoreboardPanel(bool showTimer = true) : base(new Vector2(WIDTH, showTimer ? 150 : 100)) {
+        _showTimer = showTimer;
+        HEIGHT     = showTimer ? 150f : 100f;
+    }
 
-        public override bool Create() {
-            CancelButton.RootGameObject.SetActive(false);
-            AcceptButton.RootGameObject.SetActive(false);
-            Title.RootGameObject.SetActive(false);
-            PanelImage.RootGameObject.SetActive(false);
+    public override bool Create() {
+        CancelButton.RootGameObject.SetActive(false);
+        AcceptButton.RootGameObject.SetActive(false);
+        Title.RootGameObject.SetActive(false);
+        PanelImage.RootGameObject.SetActive(false);
 
-            Content panel = new Content(null, UnityObject, null);
-            panel.SetBottomStretch<Content>(Screen.width / 2 - width / 2 - 40f, Screen.width / 2 - width / 2 - 40f, 0);
+        var panel = new Content(null, UnityObject, null);
+        panel.SetBottomStretch<Content>(Screen.width / 2 - WIDTH / 2, Screen.width / 2 - WIDTH / 2);
 
-            time = MainContent.CreateLabel(15f)
+        float bottomHeight = HEIGHT;
+
+        if (_showTimer) {
+            float topHeight = 50f;
+            bottomHeight -= topHeight;
+            (topContent, bottomContent) = MainContent.SplitTopBottom(topHeight, 0f);
+
+            topContent.SetAnchoredPosition<Content>(new Vector2(0, -topHeight / 2));
+            bottomContent.SetAnchoredPosition<Content>(new Vector2(0, -topHeight / 2));
+            time = topContent.CreateLabel(topHeight)
+                       .SetStretch<Label>()
                        .ApplyTemplate(VerticalLayout)
-                       .SetTopStretch(leftPadding: 0f, anchoredY: -30f)
-                       .SetText(targetTime.ToString())
+                       .SetAnchors<Label>(new Vector2(0, 0.5f), new Vector2(1, 0.5f))
+                       .SetAnchoredPosition<Label>(new Vector2(0, topHeight / 2))
+                       .SetText(Scoring.targetTime.ToString())
                        .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
                        .SetFontSize(40);
-
-            float leftRightPadding                      = 8;
-            float leftWidth                             = (MainContent.Size.x - leftRightPadding) / 2;
-            (Content leftContent, Content rightContent) = MainContent.SplitLeftRight(leftWidth, leftRightPadding);
-
-            leftContent.CreateLabel(50f)
-                .ApplyTemplate(VerticalLayout)
-                .SetTopStretch(leftPadding: 0f, anchoredY: 10f)
-                .SetText("RED")
-                .SetFontSize(30)
-                .SetHorizontalAlignment(HorizontalAlignmentOptions.Center);
-            redScore = leftContent.CreateLabel(50f)
-                           .ApplyTemplate(VerticalLayout)
-                           .SetTopStretch(leftPadding: 10f, anchoredY: 60f)
-                           .SetText("0")
-                           .SetFontSize(50)
-                           .SetHorizontalAlignment(HorizontalAlignmentOptions.Center);
-            rightContent.CreateLabel(50f)
-                .ApplyTemplate(VerticalLayout)
-                .SetTopStretch(leftPadding: 0f, anchoredY: 10f)
-                .SetText("BLUE")
-                .SetFontSize(30)
-                .SetHorizontalAlignment(HorizontalAlignmentOptions.Center);
-            blueScore = rightContent.CreateLabel(50f)
-                            .ApplyTemplate(VerticalLayout)
-                            .SetTopStretch(leftPadding: 0f, anchoredY: 60f)
-                            .SetText("0")
-                            .SetFontSize(50)
-                            .SetHorizontalAlignment(HorizontalAlignmentOptions.Center);
-
-            return false;
+        } else {
+            bottomContent = MainContent;
         }
 
-        float targetTime = 135;
-        bool matchEnd    = false;
+        float leftRightPadding              = 8;
+        float leftWidth                     = (bottomContent.Size.x - leftRightPadding) / 2;
+        (var leftContent, var rightContent) = bottomContent.SplitLeftRight(leftWidth, leftRightPadding);
+        leftContent.SetBackgroundColor<Content>(Color.red);
+        rightContent.SetBackgroundColor<Content>(Color.blue);
 
-        public override void Update() {
-            if ((SimulationRunner.HasContext(SimulationRunner.GIZMO_SIM_CONTEXT) ||
-                    SimulationRunner.HasContext(SimulationRunner.PAUSED_SIM_CONTEXT)) &&
-                targetTime >= 0) {
-                targetTime -= Time.deltaTime;
-                time.SetText(Mathf.RoundToInt(targetTime).ToString());
-                redScore.SetText(Scoring.redScore.ToString());
-                blueScore.SetText(Scoring.blueScore.ToString());
-            } else if (!matchEnd) {
-                // end match
-                matchEnd = true;
+        const float titleSize = 20;
+        const float scoreSize = 50;
+
+        leftContent.CreateLabel()
+            .ApplyTemplate(VerticalLayout)
+            .SetAnchors<Label>(new Vector2(0, 1), new Vector2(1, 1))
+            .SetAnchoredPosition<Label>(new Vector2(0, -10))
+            .SetText("RED")
+            .SetFontSize(titleSize)
+            .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
+            .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
+        redScore = leftContent.CreateLabel()
+                       .ApplyTemplate(VerticalLayout)
+                       .SetText("0")
+                       .SetFontSize(scoreSize)
+                       .SetAnchors<Label>(new Vector2(0, 1), new Vector2(1, 1))
+                       .SetAnchoredPosition<Label>(new Vector2(0, -bottomHeight / 2))
+                       .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
+                       .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
+        rightContent.CreateLabel()
+            .ApplyTemplate(VerticalLayout)
+            .SetAnchors<Label>(new Vector2(0, 1), new Vector2(1, 1))
+            .SetAnchoredPosition<Label>(new Vector2(0, -10))
+            .SetText("BLUE")
+            .SetFontSize(titleSize)
+            .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
+            .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
+        blueScore = rightContent.CreateLabel()
+                        .ApplyTemplate(VerticalLayout)
+                        .SetText("0")
+                        .SetFontSize(scoreSize)
+                        .SetAnchors<Label>(new Vector2(0, 1), new Vector2(1, 1))
+                        .SetAnchoredPosition<Label>(new Vector2(0, -bottomHeight / 2))
+                        .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
+                        .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
+
+        return true;
+    }
+
+    public override void Update() {
+        if (SimulationRunner.HasContext(SimulationRunner.GIZMO_SIM_CONTEXT) ||
+            SimulationRunner.HasContext(SimulationRunner.PAUSED_SIM_CONTEXT))
+            return;
+
+        if (_showTimer) {
+            // state advances in MatchMode update
+            if (MatchStateMachine.Instance.CurrentState.StateName is >= MatchStateMachine.StateName.Auto and <=
+                MatchStateMachine.StateName.Endgame and not MatchStateMachine.StateName.Transition) {
+                Scoring.targetTime -= Time.deltaTime;
+                time.SetText(Mathf.RoundToInt(Scoring.targetTime).ToString());
             }
         }
 
-        public override void Delete() {}
+        redScore.SetText(Scoring.redScore.ToString());
+        blueScore.SetText(Scoring.blueScore.ToString());
     }
+
+    public override void Delete() {}
 }

@@ -38,6 +38,7 @@ namespace Synthesis.Runtime {
         public static event Action OnSimKill;
 
         public static event Action OnUpdate;
+        public static event Action OnGameObjectDestroyed;
 
         private static bool _inSim = false;
         public static bool InSim {
@@ -60,12 +61,16 @@ namespace Synthesis.Runtime {
             WebSocketManager.Init();
 
             OnUpdate += DynamicUIManager.Update;
+            OnUpdate += ModeManager.Update;
 
             WebSocketManager.RioState.OnUnrecognizedMessage += s => Debug.Log(s);
 
             if (ColorManager.HasColor("tree")) {
                 GameObject.Instantiate(Resources.Load("Misc/Tree"));
             }
+
+            if (ModeManager.CurrentMode is not null)
+                ModeManager.CurrentMode.Start();
 
             SettingsModal.LoadSettings();
             SettingsModal.ApplySettings();
@@ -82,7 +87,6 @@ namespace Synthesis.Runtime {
         void Update() {
             InputManager.UpdateInputs(_simulationContext);
             SimulationManager.Update();
-            ModeManager.Update();
 
             if (OnUpdate != null)
                 OnUpdate();
@@ -95,6 +99,8 @@ namespace Synthesis.Runtime {
 
         void OnDestroy() {
             Synthesis.PreferenceManager.PreferenceManager.Save();
+            if (OnGameObjectDestroyed != null)
+                OnGameObjectDestroyed();
         }
 
         /// <summary>
@@ -133,9 +139,13 @@ namespace Synthesis.Runtime {
         /// Teardown sim for recycle
         /// </summary>
         public static void SimKill() {
+            ModeManager.Teardown();
+
             FieldSimObject.DeleteField();
-            if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-                SimulationManager.RemoveSimObject(RobotSimObject.GetCurrentlyPossessedRobot());
+            List<string> robotIDs = new List<string>(RobotSimObject.SpawnedRobots.Count);
+            RobotSimObject.SpawnedRobots.ForEach(x => robotIDs.Add(x.Name));
+            robotIDs.ForEach(x => RobotSimObject.RemoveRobot(x));
+            OrbitCameraMode.FocusPoint = () => Vector3.zero;
 
             if (OnSimKill != null)
                 OnSimKill();

@@ -9,20 +9,27 @@ using UnityEngine.EventSystems;
 public class OrbitCameraMode : ICameraMode {
     public static Func<Vector3> FocusPoint = () => Vector3.zero;
 
-    public float TargetZoom { get; private set; }  = 15.0f;
+    public float TargetZoom { get; private set; }  = 8.0f;
     public float TargetPitch { get; private set; } = 10.0f;
     public float TargetYaw { get; private set; }   = 135.0f;
-    public float ActualZoom { get; private set; }  = 5.0f;
+    public float ActualZoom { get; private set; }  = 4.0f;
     public float ActualPitch { get; private set; } = 0.0f;
-    public float ActualYaw { get; private set; }   = 0.0f;
-    private bool _useOrbit                         = false;
+
+    public float ActualYaw { get; private set; } = 0.0f;
+    private bool _useOrbit                       = false;
 
     public void Start<T>(CameraController cam, T? previousCam)
         where T : ICameraMode {
-        if (previousCam != null && previousCam.GetType() == typeof(FreeCameraMode)) {
-            FreeCameraMode freeCam = (previousCam as FreeCameraMode)!;
-            ActualPitch            = freeCam.ActualPitch;
-            ActualYaw              = freeCam.ActualYaw;
+        if (previousCam != null) {
+            if (previousCam.GetType() == typeof(FreeCameraMode)) {
+                FreeCameraMode freeCam = (previousCam as FreeCameraMode)!;
+                ActualPitch            = freeCam.ActualPitch;
+                ActualYaw              = freeCam.ActualYaw;
+            } else if (previousCam.GetType() == typeof(DriverStationCameraMode)) {
+                DriverStationCameraMode driverCam = (previousCam as DriverStationCameraMode)!;
+                ActualPitch                       = driverCam.ActualPitch;
+                ActualYaw                         = driverCam.ActualYaw;
+            }
         }
     }
 
@@ -74,7 +81,7 @@ public class OrbitCameraMode : ICameraMode {
         // Construct orientation of the camera
         Vector3 focus = FocusPoint == null ? Vector3.zero : FocusPoint();
 
-        cam.GroundRenderer.material.SetVector("FOCUS_POINT", focus);
+        cam.GroundRenderer.material.SetVector("_GridFocusPoint", focus);
 
         var t           = cam.transform;
         t.localPosition = focus;

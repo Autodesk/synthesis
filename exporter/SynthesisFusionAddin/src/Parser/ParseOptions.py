@@ -15,6 +15,7 @@ import adsk.core, adsk.fusion
 from ..general_imports import A_EP
 from .SynthesisParser.Parser import Parser
 
+
 # Contains enums for parents of joints that have special cases
 class JointParentType:  # validate for unique key and value
     ROOT = 0  # grounded root object

@@ -47,7 +47,7 @@ namespace Synthesis.WS {
         /// <typeparam name="T">Data requested</typeparam>
         public static T GetData<T>(string device)
             where T : HardwareTypeData {
-            RioState.GetData<T>(device);
+            return RioState.GetData<T>(device);
         }
 
         /// <summary>

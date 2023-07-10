@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ShootableGamepiece : MonoBehaviour {
@@ -33,18 +31,6 @@ public class ShootableGamepiece : MonoBehaviour {
 
         if (collider.transform.CompareTag("robot") && RobotSimObject.GetCurrentlyPossessedRobot().PickingUpGamepieces) {
             RobotSimObject.GetCurrentlyPossessedRobot().CollectGamepiece(SimObject);
-        }
-    }
-
-    private void OnTriggerEnter(Collider collider) {
-        // TEMPORARY SCORING
-        if (collider.transform.CompareTag("blue zone") && !scored) {
-            scored = true;
-            Scoring.blueScore += value;
-        }
-        if (collider.transform.CompareTag("red zone") && !scored) {
-            scored = true;
-            Scoring.redScore += value;
         }
     }
 

@@ -47,6 +47,8 @@ namespace Synthesis.Import {
             DuplicateParts = 2
         }
 
+        ;
+
         private MirabufFileState _state = MirabufFileState.Valid;
 
         private Task<RigidbodyDefinitions> _findDefinitions = null;
@@ -108,7 +110,8 @@ namespace Synthesis.Import {
             Dictionary<string, GameObject> groupObjects = new Dictionary<string, GameObject>();
 
             int dynamicLayer = 0;
-            if (physics) {
+
+            if (physics && !MiraAssembly.Dynamic) {
                 if (dynamicLayers.Count == 0)
                     throw new Exception("No more dynamic layers");
                 dynamicLayer = dynamicLayers.Dequeue();
@@ -151,12 +154,13 @@ namespace Synthesis.Import {
                         x => x.gameObject.layer = dynamicLayer);
                 }
 
-                if (!MiraAssembly.Dynamic && !isGamepiece) {
-                    groupObject.transform.GetComponentsInChildren<UnityEngine.Transform>().ForEach(
-                        x => x.gameObject.layer = FIELD_LAYER);
-                } else if (MiraAssembly.Dynamic && physics) {
-                    groupObject.transform.GetComponentsInChildren<UnityEngine.Transform>().ForEach(
-                        x => x.gameObject.layer = dynamicLayer);
+                if (physics) {
+                    // Combine all physical data for grouping
+                    var rb = groupObject.AddComponent<Rigidbody>();
+                    if (isStatic)
+                        rb.isKinematic = true;
+                    rb.mass         = (float) group.CollectivePhysicalProperties.Mass;
+                    rb.centerOfMass = group.CollectivePhysicalProperties.Com; // I actually don't need to flip this
                 }
 
                 groupObjects.Add(group.GUID, groupObject);

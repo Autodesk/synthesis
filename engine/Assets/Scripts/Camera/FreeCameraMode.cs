@@ -26,6 +26,8 @@ public class FreeCameraMode : ICameraMode {
 
     private bool isActive = false;
 
+    private CameraController _controller;
+
     public void Start<T>(CameraController cam, T? previousCam)
         where T : ICameraMode {
         // only assign inputs once
@@ -36,13 +38,23 @@ public class FreeCameraMode : ICameraMode {
             InputManager.AssignDigitalInput(RIGHT_KEY, new Digital("D"));
         }
 
-        if (previousCam != null && previousCam.GetType() == typeof(OrbitCameraMode)) {
-            OrbitCameraMode orbitCam = (previousCam as OrbitCameraMode)!;
-            TargetPitch              = orbitCam.TargetPitch;
-            TargetYaw                = orbitCam.TargetYaw;
-            ActualPitch              = orbitCam.ActualPitch;
-            ActualYaw                = orbitCam.ActualYaw;
+        if (previousCam != null) {
+            if (previousCam.GetType() == typeof(OrbitCameraMode)) {
+                OrbitCameraMode orbitCam = (previousCam as OrbitCameraMode)!;
+                TargetPitch              = orbitCam.TargetPitch;
+                TargetYaw                = orbitCam.TargetYaw;
+                ActualPitch              = orbitCam.ActualPitch;
+                ActualYaw                = orbitCam.ActualYaw;
+            } else if (previousCam.GetType() == typeof(DriverStationCameraMode)) {
+                DriverStationCameraMode driverStationCam = (previousCam as DriverStationCameraMode)!;
+                TargetPitch                              = driverStationCam.TargetPitch;
+                TargetYaw                                = driverStationCam.TargetYaw;
+                ActualPitch                              = driverStationCam.ActualPitch;
+                ActualYaw                                = driverStationCam.ActualYaw;
+            }
         }
+
+        _controller = cam;
     }
 
     public void Update(CameraController cam) {
@@ -91,18 +103,26 @@ public class FreeCameraMode : ICameraMode {
 
             right = t.right * (InputManager.MappedDigitalInputs[RIGHT_KEY][0].Value -
                                   InputManager.MappedDigitalInputs[LEFT_KEY][0].Value);
+
+            t.Translate(Time.deltaTime * speed * (forward + right), Space.World);
+
+            // we don't want the user to be able to move the camera under the map or so high they can't see the field
+            t.position = new Vector3(t.position.x, Mathf.Clamp(t.position.y, 0, 100), t.position.z);
+
+            t.localRotation = Quaternion.Euler(ActualPitch, ActualYaw, 0.0f);
         }
-
-        t.Translate(Time.deltaTime * speed * (forward + right), Space.World);
-
-        // we don't want the user to be able to move the camera under the map or so high they can't see the field
-        t.position = new Vector3(t.position.x, Mathf.Clamp(t.position.y, 0, 100), t.position.z);
-
-        t.localRotation = Quaternion.Euler(ActualPitch, ActualYaw, 0.0f);
     }
 
     public void LateUpdate(CameraController cam) {
-        cam.GroundRenderer.material.SetVector("FOCUS_POINT", cam.transform.position);
+        cam.GroundRenderer.material.SetVector("_GridFocusPoint", cam.transform.position);
+    }
+
+    public void SetTransform(Vector3 position, Quaternion rotation) {
+        _controller.transform.position = position;
+        _controller.transform.rotation = rotation;
+        var euler                      = rotation.eulerAngles;
+        TargetPitch = ActualPitch = euler.x;
+        TargetYaw = ActualYaw = euler.y;
     }
 
     public void SetActive(bool active) {

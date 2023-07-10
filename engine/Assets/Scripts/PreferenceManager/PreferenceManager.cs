@@ -44,6 +44,7 @@ namespace Synthesis.PreferenceManager {
                 File.WriteAllText(FilePath, JsonConvert.SerializeObject(_data));
             }
             UnsavedChanges = false;
+            EventBus.Push(new PostPreferenceSaveEvent());
         }
 
         public static void SetPreferenceObject(string key, object value) {
@@ -75,6 +76,8 @@ namespace Synthesis.PreferenceManager {
     }
 
     public class PrePreferenceSaveEvent : IEvent {}
+
+    public class PostPreferenceSaveEvent : IEvent {}
 
     internal struct PreferenceData {
         public string CoherenceId;
