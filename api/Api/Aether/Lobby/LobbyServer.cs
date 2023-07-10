@@ -99,7 +99,7 @@ namespace SynthesisAPI.Aether.Lobby {
             }
 
             private void ClientListener(LobbyClientHandler handler) {
-                while (_isAlive!) {
+                while (_isAlive) {
                     var msgTask = handler.ReadMessage();
                     var finishedBeforeTimeout = msgTask.Wait(CLIENT_LISTEN_TIMEOUT_MS);
                     if (!finishedBeforeTimeout || msgTask.Result == null) {
