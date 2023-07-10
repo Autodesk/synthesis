@@ -100,7 +100,6 @@ namespace UI.Dynamic.Modals.Configuring
                     .SetCharacterLimit(7)
                     .SetValue(((Color)c.Value).ToHex());
                 
-                Debug.Log($"{c.Key} {c.Value}");
                 _colors.Add(c.Key, (c.Value, button, inputField));
                 
                 i++;
@@ -137,7 +136,6 @@ namespace UI.Dynamic.Modals.Configuring
             _selectedColor = colorName;
             
             var colorInfo = _colors[colorName];
-            Debug.Log(colorInfo.color);
 
             _colorPickerLabel.SetText(Regex.Replace(colorName.ToString(), "(\\B[A-Z])", " $1"));
 

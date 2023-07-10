@@ -36,7 +36,10 @@ namespace Utilities.ColorManager {
             (SynthesisColor.SynthesisIcon, new Color32(255, 255, 255, 255)),
             (SynthesisColor.SynthesisIconAlt, new Color32(0, 0, 0, 255)),
             (SynthesisColor.SynthesisHighlightHover, new Color32(89, 255, 133, 255)),
-            (SynthesisColor.SynthesisHighlightSelect, new Color32(255, 89, 133, 255))
+            (SynthesisColor.SynthesisHighlightSelect, new Color32(255, 89, 133, 255)),
+            (SynthesisColor.SkyboxTop, new Color32(255, 255, 255, 255)),
+            (SynthesisColor.SkyboxBottom, new Color32(255, 255, 255, 255)),
+            (SynthesisColor.FloorGrid, new Color32(0, 0, 0, 255))
         };
 
         private static Dictionary<SynthesisColor, Color32> _loadedColors = new();
@@ -150,6 +153,8 @@ namespace Utilities.ColorManager {
                 _loadedColors[c.name] = c.color);
             
             SaveTheme(_selectedTheme);
+            
+            EventBus.Push(new OnThemeChanged());
         }
 
         public static Color GetColor(SynthesisColor colorName)
@@ -160,16 +165,6 @@ namespace Utilities.ColorManager {
 
             return UNASSIGNED_COLOR;
         }
-        
-        /*public static void AssignColor(SynthesisColor colorName, Action<Color> applyColor)
-        {
-            applyColor.Invoke(GetColor(colorName));
-            
-            EventBus.NewTypeListener<OnThemeChanged>(x =>
-            {
-                applyColor.Invoke(GetColor(colorName));
-            });
-        }*/
 
         public static int ThemeNameToIndex(string themeName)
         {
@@ -198,7 +193,10 @@ namespace Utilities.ColorManager {
             SynthesisIcon,
             SynthesisIconAlt,
             SynthesisHighlightHover,
-            SynthesisHighlightSelect
+            SynthesisHighlightSelect,
+            SkyboxTop,
+            SkyboxBottom,
+            FloorGrid
         }
     }
     //{"SynthesisOrange":"#672d2d","SynthesisOrangeAccent":"#3d492b","SynthesisBlack":"#47193b","SynthesisBlackAccent":"#4b1223","SynthesisWhite":"#122423","SynthesisWhiteAccent":"#284f8b","SynthesisAccept":"#a25e00","SynthesisCancel":"#00ff20","SynthesisOrangeContrastText":"#ff0000","SynthesisIcon":"#9e2c5b","SynthesisIconAlt":"#000000ff","SynthesisHighlightHover":"#59ff85ff","SynthesisHighlightSelect":"#ff5985ff"}

@@ -68,19 +68,18 @@ public static class MainHUD {
 
     private static Content _tabDrawerContent;
     private static Button _expandDrawerButton;
+    private static Image _expandIcon;
 
     private static List<(Button button, Image image)> _drawerItems = new List<(Button button, Image image)>();
 
     public static void Setup() {
         _drawerItems.Clear();
         _tabDrawerContent = new Content(null, GameObject.Find("MainHUD").transform.Find("TabDrawer").gameObject, null);
-        _tabDrawerContent.Image!.SetColor(ColorManager.SynthesisColor.SynthesisBlack);
         _expandDrawerButton = new Button(
             _tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("ExpandButton").gameObject, null);
-        _expandDrawerButton.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.SynthesisBlack));
+        
         _expandDrawerButton.AddOnClickedEvent(b => MainHUD.Collapsed = !MainHUD.Collapsed);
-        var expandIcon = new Image(null, _expandDrawerButton.RootGameObject.transform.Find("Icon").gameObject);
-        expandIcon.SetColor(ColorManager.SynthesisColor.SynthesisIcon);
+        _expandIcon = new Image(null, _expandDrawerButton.RootGameObject.transform.Find("Icon").gameObject);
 
         // Setup default HUD
         // MOVED TO PRACTICE MODE
@@ -108,6 +107,10 @@ public static class MainHUD {
         _isSetup = true;
 
         SceneManager.activeSceneChanged += (Scene a, Scene b) => { _isSetup = false; };
+        
+        AssignColors();
+        
+        EventBus.NewTypeListener<ColorManager.OnThemeChanged>(x => { AssignColors(); });
     }
 
     public static void AddItemToDrawer(
@@ -118,24 +121,12 @@ public static class MainHUD {
         var drawerButtonObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("hud-drawer-item-base"),
             _tabDrawerContent.RootGameObject.transform.Find("ItemContainer"));
         var drawerButton    = new Button(_tabDrawerContent, drawerButtonObj, null);
-        drawerButton.Label!.SetText(title).SetColor(ColorManager.SynthesisColor.SynthesisWhite);
-        drawerButton.Image.SetColor(new Color(1, 1, 1, 0));
+        drawerButton.Label!.SetText(title);
         drawerButton.AddOnClickedEvent(onClick);
         var drawerIcon = new Image(_tabDrawerContent, drawerButtonObj.transform.Find("ItemIcon").gameObject);
-        if (icon != null) {
+        if (icon != null)
             drawerIcon.SetSprite(icon);
-            if (color.HasValue) {
-                drawerIcon.SetColor(color.Value);
-            } else {
-                drawerIcon.SetColor(ColorManager.SynthesisColor.SynthesisOrange);
-            }
-        } else {
-            if (color.HasValue) {
-                drawerIcon.SetColor(color.Value);
-            } else {
-                drawerIcon.SetColor(ColorManager.SynthesisColor.SynthesisOrange);
-            }
-        }
+
         if (index < 0 || index > _drawerItems.Count) {
             _drawerItems.Add((drawerButton, drawerIcon));
         } else {
@@ -143,6 +134,7 @@ public static class MainHUD {
         }
 
         UpdateDrawerSizing();
+        AssignColors();
     }
 
     public static void RemoveItemFromDrawer(string title) {
@@ -164,5 +156,20 @@ public static class MainHUD {
             _drawerItems[i].button.SetTopStretch<Button>(anchoredY: i * 55);
         }
         _tabDrawerContent.SetHeight<Content>((_drawerItems.Count * 55) + 70);
+    }
+
+    public static void AssignColors()
+    {
+        _tabDrawerContent.Image!.SetColor(ColorManager.SynthesisColor.SynthesisBlack);
+        
+        _expandDrawerButton.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.SynthesisBlack));
+        _expandIcon.SetColor(ColorManager.SynthesisColor.SynthesisIcon);
+
+        _drawerItems.ForEach(x =>
+        {
+            x.button.Label!.SetColor(ColorManager.SynthesisColor.SynthesisWhite);
+            x.button.Image.SetColor(ColorManager.SynthesisColor.SynthesisBlack);
+            x.image.SetColor(ColorManager.SynthesisColor.SynthesisOrange);
+        });
     }
 }
