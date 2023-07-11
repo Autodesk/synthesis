@@ -244,6 +244,6 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
         /// <summary>Sets the selected theme preference</summary>
         private void SetThemePref() => PreferenceManager.SetPreference(
-            ColorManager.SELECTED_THEME_PREF, ColorManager.AvailableThemes[_selectedThemeIndex]);
+            ColorManager.SELECTED_THEME_PREF, ColorManager.ThemeIndexToName(_selectedThemeIndex));
     }
 }

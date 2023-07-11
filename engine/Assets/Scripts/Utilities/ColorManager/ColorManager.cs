@@ -12,6 +12,7 @@ using UnityEngine;
 namespace Utilities.ColorManager {
     public static class ColorManager {
         public const string SELECTED_THEME_PREF = "color/selected_theme";
+        public const string DEFAULT_THEME = "Default";
 
         public class OnThemeChanged : IEvent {}
 
@@ -23,9 +24,7 @@ namespace Utilities.ColorManager {
 
         private static Dictionary<SynthesisColor, Color32> _loadedColors  = new();
         public static Dictionary<SynthesisColor, Color32> LoadedColors   => _loadedColors;
-
-        private const string DEFAULT_THEME = "Default";
-
+        
         private static string _selectedTheme;
         public static string SelectedTheme {
             get => _selectedTheme;
@@ -60,6 +59,12 @@ namespace Utilities.ColorManager {
                 SelectedTheme        = selectedTheme;
             });
             _selectedTheme = PreferenceManager.GetPreference<string>(SELECTED_THEME_PREF);
+            Debug.Log(_selectedTheme);
+            if (_selectedTheme is "" or null)
+            {
+                PreferenceManager.SetPreference(SELECTED_THEME_PREF, DEFAULT_THEME);
+                _selectedTheme = DEFAULT_THEME;
+            }
 
             LoadTheme(_selectedTheme);
             LoadDefaultColors();
@@ -75,6 +80,9 @@ namespace Utilities.ColorManager {
         /// <summary>Loads a theme from the synthesis appdata folder. Will create a theme if it does not exist</summary>
         /// <param name="themeName">The theme to load</param>
         private static void LoadTheme(string themeName) {
+            if (themeName is DEFAULT_THEME or "")
+                return;
+            
             string themePath = THEMES_FOLDER_PATH + Path.AltDirectorySeparatorChar + themeName + ".json";
 
             var dir = Path.GetFullPath(themePath).Replace(Path.GetFileName(themePath), "");
@@ -84,9 +92,6 @@ namespace Utilities.ColorManager {
             } else if (!File.Exists(themePath)) {
                 return;
             }
-
-            if (themeName is DEFAULT_THEME or "")
-                return;
 
             var jsonColors = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(themePath));
 
@@ -163,6 +168,16 @@ namespace Utilities.ColorManager {
             }
 
             return -1;
+        }
+
+        /// <summary>The theme name at that index, or default if it does not exist</summary>
+        /// <param name="index">A theme index</param>
+        /// <returns>The name of the given theme</returns>
+        public static string ThemeIndexToName(int index)
+        {
+            if (index >= AvailableThemes.Length || index == -1)
+                return DEFAULT_THEME;
+            else return AvailableThemes[index];
         }
 
         /// <summary>Each value represents a different color that can differ across themes</summary>
