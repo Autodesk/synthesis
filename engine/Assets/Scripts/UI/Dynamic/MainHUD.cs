@@ -69,6 +69,8 @@ public static class MainHUD {
 
     private static bool _hasNewRobotListener = false; // In the Unity editor, working with statics can be really weird
 
+    public static bool isConfig = false;
+
     private static Content _tabDrawerContent;
     private static Button _expandDrawerButton;
 
@@ -174,12 +176,6 @@ public static class MainHUD {
     }
 
     public static void SetUpPractice() {
-        foreach (string name in MainHUD.DrawerTitles)
-            MainHUD.RemoveItemFromDrawer(name);
-
-        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-            MainHUD.AddItemToDrawer(
-                "Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
         MainHUD.AddItemToDrawer("Spawn", b => DynamicUIManager.CreateModal<SpawningModal>(),
             icon: SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
         MainHUD.AddItemToDrawer("Multibot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>());
@@ -206,17 +202,34 @@ public static class MainHUD {
     }
 
     public static void SetUpConfig() {
+        isConfig = true;
+
         foreach (string name in MainHUD.DrawerTitles)
             MainHUD.RemoveItemFromDrawer(name);
 
         if (ModeManager.CurrentMode.GetType() == typeof(PracticeMode)) {
-            MainHUD.AddItemToDrawer("Practice", b => SetUpPractice());
+            MainHUD.AddItemToDrawer("Practice", b => {
+                LeaveConfig();
+                SetUpPractice();
+            });
         } else if (ModeManager.CurrentMode.GetType() == typeof(MatchMode)) {
-            MainHUD.AddItemToDrawer("Match", b => SetUpMatch());
+            MainHUD.AddItemToDrawer("Match", b => {
+                LeaveConfig();
+                SetUpMatch();
+            });
         }
 
-        MainHUD.AddItemToDrawer("Pickup", b => DynamicUIManager.CreatePanel<ConfigureGamepiecePickupPanel>());
-        MainHUD.AddItemToDrawer("Ejector", b => DynamicUIManager.CreatePanel<ConfigureShotTrajectoryPanel>());
+        MainHUD.AddItemToDrawer("Pickup", b => {
+            if (DynamicUIManager.PanelExists<ConfigureShotTrajectoryPanel>())
+                DynamicUIManager.ClosePanel<ConfigureShotTrajectoryPanel>();
+            DynamicUIManager.CreatePanel<ConfigureGamepiecePickupPanel>();
+        });
+        MainHUD.AddItemToDrawer("Ejector", b => {
+            if (DynamicUIManager.PanelExists<ConfigureGamepiecePickupPanel>())
+                DynamicUIManager.ClosePanel<ConfigureGamepiecePickupPanel>();
+            DynamicUIManager.CreatePanel<ConfigureShotTrajectoryPanel>();
+    }   );
+
         MainHUD.AddItemToDrawer("Motors", b => { DynamicUIManager.CreateModal<ConfigMotorModal>(); });
         MainHUD.AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(),
             icon: SynthesisAssetCollection.GetSpriteByName("DriverStationView"));
@@ -230,13 +243,20 @@ public static class MainHUD {
         PhysicsManager.IsFrozen = true;
     }
 
-    public static void SetUpMatch() {
+    public static void LeaveConfig() {
+        DynamicUIManager.CloseAllPanels();
+
         foreach (string name in MainHUD.DrawerTitles)
             MainHUD.RemoveItemFromDrawer(name);
 
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
             MainHUD.AddItemToDrawer(
                 "Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+
+        isConfig = false;
+    }
+
+    public static void SetUpMatch() {
         MainHUD.AddItemToDrawer("Multibot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>());
         MainHUD.AddItemToDrawer("Camera View", b => DynamicUIManager.CreateModal<ChangeViewModal>(),
             icon: SynthesisAssetCollection.GetSpriteByName("CameraIcon"));
@@ -254,5 +274,8 @@ public static class MainHUD {
                     DynamicUIManager.CreatePanel<ScoringZonesPanel>();
             }
         });
+
+        if (!(MatchStateMachine.Instance.CurrentState.StateName is MatchStateMachine.StateName.RobotPositioning))
+            PhysicsManager.IsFrozen = false;
     }
 }

@@ -85,20 +85,22 @@ namespace Synthesis.UI.Dynamic {
         private DigitalState prevInput = DigitalState.None;
 
         public override void Update() {
-            var currentInput                              = InputManager.MappedDigitalInputs[SNAP_MODE_KEY][0].State;
-            MatchMode.RoundSpawnLocation[_selectedButton] = currentInput == DigitalState.Held;
+            if (!MainHUD.isConfig) {
+                var currentInput                              = InputManager.MappedDigitalInputs[SNAP_MODE_KEY][0].State;
+                MatchMode.RoundSpawnLocation[_selectedButton] = currentInput == DigitalState.Held;
 
-            // True the frame the input is pressed or released
-            if (prevInput != currentInput) {
-                MatchMode.RawSpawnLocations[_selectedButton] =
-                    RoundSpawnLocation(MatchMode.RawSpawnLocations[_selectedButton]);
+                // True the frame the input is pressed or released
+                if (prevInput != currentInput) {
+                    MatchMode.RawSpawnLocations[_selectedButton] =
+                        RoundSpawnLocation(MatchMode.RawSpawnLocations[_selectedButton]);
+                }
+
+                prevInput = currentInput;
+
+                FindSpawnPosition();
+                RotateRobot();
+                MoveRobots();
             }
-
-            prevInput = currentInput;
-
-            FindSpawnPosition();
-            RotateRobot();
-            MoveRobots();
         }
 
         public override void Delete() {
