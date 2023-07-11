@@ -649,6 +649,11 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         return SimulationManager.RemoveSimObject(robot);
     }
 
+    public static void RemoveAllRobots() {
+        foreach (RobotSimObject robot in RobotSimObject.SpawnedRobots) RemoveRobot(robot.Name);
+    }
+
+
     private Dictionary<Rigidbody, (bool isKine, Vector3 vel, Vector3 angVel)> _preFreezeStates =
         new Dictionary<Rigidbody, (bool isKine, Vector3 vel, Vector3 angVel)>();
     // clang-format off
