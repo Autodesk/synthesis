@@ -9,8 +9,6 @@ using Unity.Services.Core;
 using UnityEngine;
 
 namespace Analytics {
-    // TODO: after testing, disable when in editor
-
     /// <summary>
     /// Handles unity analytics initialization and sending custom events.
     /// View analytics on the <a href = "https://dashboard.unity3d.com/">Unity Dashboard.</a>
