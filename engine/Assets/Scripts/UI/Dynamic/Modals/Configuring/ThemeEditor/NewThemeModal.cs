@@ -17,7 +17,8 @@ namespace UI.Dynamic.Modals.Configuring {
             Title.SetText("New Theme");
             Description.SetText("Create a Custom Theme");
 
-            AcceptButton.AddOnClickedEvent(x => {
+            AcceptButton
+                .AddOnClickedEvent(x => {
                     PreferenceManager.SetPreference(ColorManager.SELECTED_THEME_PREF, _newThemeName);
                     ColorManager.SelectedTheme = _newThemeName;
                     DynamicUIManager.CreateModal<EditThemeModal>();
@@ -26,21 +27,23 @@ namespace UI.Dynamic.Modals.Configuring {
                 .SetBackgroundColor<Button>(ColorManager.SynthesisColor.BackgroundSecondary);
 
             CancelButton.AddOnClickedEvent(x => { DynamicUIManager.CreateModal<EditThemeModal>(); });
-            
+
             var inputField = MainContent.CreateInputField()
-                .StepIntoHint(h => h.SetText("Theme Name"))
-                .AddOnValueChangedEvent((fieldRef, value) =>
-                {
-                    if (value is "Default" or "")
-                        AcceptButton.DisableEvents<Button>().SetBackgroundColor<Button>(ColorManager.SynthesisColor.BackgroundSecondary);
-                    else AcceptButton.EnableEvents<Button>().SetBackgroundColor<Button>(ColorManager.SynthesisColor.AcceptButton);
-                        _newThemeName = value;
-                })
-                .SetTopStretch<Dropdown>();
+                                 .StepIntoHint(h => h.SetText("Theme Name"))
+                                 .AddOnValueChangedEvent((fieldRef, value) => {
+                                     if (value is "Default" or "")
+                                         AcceptButton.DisableEvents<Button>().SetBackgroundColor<Button>(
+                                             ColorManager.SynthesisColor.BackgroundSecondary);
+                                     else
+                                         AcceptButton.EnableEvents<Button>().SetBackgroundColor<Button>(
+                                             ColorManager.SynthesisColor.AcceptButton);
+                                     _newThemeName = value;
+                                 })
+                                 .SetTopStretch<Dropdown>();
         }
 
-        public override void Update() { }
+        public override void Update() {}
 
-        public override void Delete() { }
+        public override void Delete() {}
     }
 }
