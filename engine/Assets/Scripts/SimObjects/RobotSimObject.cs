@@ -656,7 +656,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         robots.ForEach(x => { RemoveRobot(x); });
     }
 
-
     private Dictionary<Rigidbody, (bool isKine, Vector3 vel, Vector3 angVel)> _preFreezeStates =
         new Dictionary<Rigidbody, (bool isKine, Vector3 vel, Vector3 angVel)>();
     // clang-format off

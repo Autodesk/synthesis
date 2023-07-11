@@ -295,60 +295,60 @@ namespace Modes.MatchMode {
             public MatchResults() : base(StateName.MatchResults) {}
         }
 
-    /// Restarts the match with the same configuration
-    public class Restart : MatchState {
-        public override void Start() {
-            base.Start();
+        /// Restarts the match with the same configuration
+        public class Restart : MatchState {
+            public override void Start() {
+                base.Start();
 
-            // Reset robots to their selected spawn position
-            int i = 0;
-            MatchMode.Robots.ForEach(x => {
-                if (x != null) {
-                    (Vector3 position, Quaternion rotation) location = MatchMode.GetSpawnLocation(i);
+                // Reset robots to their selected spawn position
+                int i = 0;
+                MatchMode.Robots.ForEach(x => {
+                    if (x != null) {
+                        (Vector3 position, Quaternion rotation) location = MatchMode.GetSpawnLocation(i);
 
-                    Transform robot = x.RobotNode.transform;
+                        Transform robot = x.RobotNode.transform;
 
-                    robot.position = Vector3.zero;
-                    robot.rotation = Quaternion.identity;
+                        robot.position = Vector3.zero;
+                        robot.rotation = Quaternion.identity;
 
-                    robot.rotation = location.rotation * Quaternion.Inverse(x.GroundedNode.transform.rotation);
-                    robot.position = location.position -
-                                     x.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(x.GroundedBounds.center);
-                }
-                i++;
-            });
+                        robot.rotation = location.rotation * Quaternion.Inverse(x.GroundedNode.transform.rotation);
+                        robot.position = location.position - x.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(
+                                                                 x.GroundedBounds.center);
+                    }
+                    i++;
+                });
 
-            // TODO: reset the match results tracker
-            // TODO: reset the scoreboard and timer
-            // TODO: add a modal or panel to start the match so it doesn't instantly start
-            Instance.SetState(StateName.Auto);
+                // TODO: reset the match results tracker
+                // TODO: reset the scoreboard and timer
+                // TODO: add a modal or panel to start the match so it doesn't instantly start
+                Instance.SetState(StateName.Auto);
+            }
+
+            public override void Update() {}
+
+            public override void End() {}
+
+            public Restart() : base(StateName.Restart) {}
         }
 
-        public override void Update() {}
+        /// Resets the match and sends he user back to the MatchConfig modal
+        public class Reconfigure : MatchState {
+            public override void Start() {
+                RobotSimObject.RemoveAllRobots();
+                FieldSimObject.DeleteField();
+                MatchMode.ResetMatchConfiguration();
 
-        public override void End() {}
+                // TODO: reset the match results tracker
+                // TODO: reset the scoreboard and timer
+                Instance.SetState(StateName.MatchConfig);
+            }
 
-        public Restart() : base(StateName.Restart) {}
-    }
+            public override void Update() {}
 
-    /// Resets the match and sends he user back to the MatchConfig modal
-    public class Reconfigure : MatchState {
-        public override void Start() {
-            RobotSimObject.RemoveAllRobots();
-            FieldSimObject.DeleteField();
-            MatchMode.ResetMatchConfiguration();
+            public override void End() {}
 
-            // TODO: reset the match results tracker
-            // TODO: reset the scoreboard and timer
-            Instance.SetState(StateName.MatchConfig);
+            public Reconfigure() : base(StateName.Reconfigure) {}
         }
-
-        public override void Update() {}
-
-        public override void End() {}
-
-        public Reconfigure() : base(StateName.Reconfigure) {}
-    }
 
 #endregion
 
