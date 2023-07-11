@@ -29,21 +29,18 @@ namespace Synthesis.UI.Dynamic {
             (var left, var right) = MainContent.SplitLeftRight(leftWidth: (MAIN_CONTENT_WIDTH - 20.0f) / 2.0f, 20.0f);
             left.EnsureImage().StepIntoImage(
                 i => i.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT)));
-            
+
             _statusLabel = left.CreateLabel(30)
-                .SetStretch<Label>(15.0f, 15.0f, 15.0f, 15.0f)
-                .SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Top)
-                .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Left);
+                               .SetStretch<Label>(15.0f, 15.0f, 15.0f, 15.0f)
+                               .SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Top)
+                               .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Left);
 
             _statusLabel.SetText("Waiting for server...");
 
-            right.CreateButton(text: "Kill")
-                .SetHeight<Button>(30.0f)
-                .SetTopStretch<Button>()
-                .AddOnClickedEvent(b => { 
-                    _mode.KillServer();
-                    _statusLabel.SetText("Server killed.");
-                });
+            right.CreateButton(text: "Kill").SetHeight<Button>(30.0f).SetTopStretch<Button>().AddOnClickedEvent(b => {
+                _mode.KillServer();
+                _statusLabel.SetText("Server killed.");
+            });
         }
 
         public override void Update() {

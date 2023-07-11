@@ -10,7 +10,7 @@ public class EmptyServerTestMode : IMode {
     private LobbyServer? _server;
 
     public IReadOnlyCollection<string> ClientInformation => _server?.Clients ?? new List<string>();
-    public bool IsServerAlive => _server != null;
+    public bool IsServerAlive                            => _server != null;
 
     public void Start() {
         _server = new LobbyServer();
@@ -39,6 +39,8 @@ public class EmptyServerTestMode : IMode {
     }
 
     public void Update() {}
+
     public void OpenMenu() {}
+
     public void CloseMenu() {}
 }

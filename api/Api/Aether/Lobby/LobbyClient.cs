@@ -20,7 +20,8 @@ namespace SynthesisAPI.Aether.Lobby {
 
         public ulong? Guid => _instance?.Handler.Guid;
         public string Name => _instance?.Handler.Name ?? "--unknown--";
-        
+        public bool IsAlive => _instance != null;
+
         public LobbyClient(string ip, string name) {
             _instance = new Inner(ip, name);
         }
