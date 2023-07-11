@@ -161,14 +161,12 @@ namespace SynthesisAPI.Aether.Lobby {
                     }
 
                     var msg = response.GetResult()!;
-                    switch (msg.MessageTypeCase) {
-                        case LobbyMessage.MessageTypeOneofCase.FromDataRobot:
-                            // TODO: Accept needed robot data from server.
-                            Logger.Log("Received robot data response");
-                            break;
-                        default:
-                            return new Result<LobbyMessage?, Exception>(new Exception("Invalid message"));
+                    if (msg.MessageTypeCase != LobbyMessage.MessageTypeOneofCase.FromDataRobot) {
+                        return new Result<LobbyMessage?, Exception>(new Exception("Invalid message"));
                     }
+
+                    Logger.Log("Received robot data response");
+                    // TODO: Accept needed robot data from server.
 
                     return new Result<LobbyMessage?, Exception>(msg);
                 });

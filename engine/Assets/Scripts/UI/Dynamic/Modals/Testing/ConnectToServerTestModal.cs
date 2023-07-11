@@ -1,11 +1,12 @@
+using Google.Protobuf;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.Controller;
 using SynthesisAPI.Utilities;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.IO;
 using System.Linq;
+using UnityEngine;
 
 using Logger = SynthesisAPI.Utilities.Logger;
 
@@ -68,6 +69,16 @@ namespace Synthesis.UI.Dynamic {
 
                     string robotPath = _robotFiles[_selectedRobotIndex];
                     _statusLabel.SetText("Robot selected...");
+                    var robot = new DataRobot { Name = Path.GetFileNameWithoutExtension(robotPath),
+                        Data                         = ByteString.CopyFrom(File.ReadAllBytes(robotPath)) };
+
+                    _mode.UploadRobotData(robot).ContinueWith(t => {
+                        if (t.IsFaulted) {
+                            Logger.Log("Failed to upload robot data", LogLevel.Error);
+                        } else {
+                            Logger.Log("Robot data uploaded", LogLevel.Info);
+                        }
+                    });
                 });
         }
 
