@@ -6,6 +6,7 @@ using UnityEngine;
 using Synthesis.Physics;
 using SynthesisAPI.EventBus;
 using UI.Dynamic.Modals;
+using UnityEngine.Rendering;
 using Random = UnityEngine.Random;
 
 public class MatchStateMachine {
@@ -53,6 +54,8 @@ public class MatchStateMachine {
         _matchStates.Add(StateName.Auto, new Auto());
         _matchStates.Add(StateName.Teleop, new Teleop());
         _matchStates.Add(StateName.MatchResults, new MatchResults());
+        _matchStates.Add(StateName.Restart, new Restart());
+        _matchStates.Add(StateName.Reconfigure, new Reconfigure());
 
         _currentState = _matchStates[StateName.None];
     }
@@ -125,16 +128,16 @@ public class MatchStateMachine {
     public class MatchConfig : MatchState {
         public override void Start() {
             base.Start();
+
             DynamicUIManager.CreateModal<MatchModeModal>();
+
             ((MatchModeModal) DynamicUIManager.ActiveModal).OnAccepted += () =>
                 MatchStateMachine.Instance.SetState(StateName.RobotPositioning);
         }
 
         public override void Update() {}
 
-        public override void End() {
-            base.End();
-        }
+        public override void End() {}
 
         public MatchConfig() : base(StateName.MatchConfig) {}
     }
@@ -203,7 +206,7 @@ public class MatchStateMachine {
         public override void Update() {
             // TEMP END CONDITION FOR STATE MACHINE TESTING
             if (Input.GetKeyDown(KeyCode.RightArrow))
-                MatchStateMachine.Instance.SetState(StateName.MatchResults);
+                Instance.SetState(StateName.MatchResults);
         }
 
         public override void End() {}
@@ -226,6 +229,61 @@ public class MatchStateMachine {
         public MatchResults() : base(StateName.MatchResults) {}
     }
 
+    /// Restarts the match with the same configuration
+    public class Restart : MatchState {
+        public override void Start() {
+            base.Start();
+
+            // Reset robots to their selected spawn position
+            int i = 0;
+            MatchMode.Robots.ForEach(x => {
+                if (x != null) {
+                    (Vector3 position, Quaternion rotation) location = MatchMode.GetSpawnLocation(i);
+
+                    Transform robot = x.RobotNode.transform;
+
+                    robot.position = Vector3.zero;
+                    robot.rotation = Quaternion.identity;
+
+                    robot.rotation = location.rotation * Quaternion.Inverse(x.GroundedNode.transform.rotation);
+                    robot.position = location.position -
+                                     x.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(x.GroundedBounds.center);
+                }
+                i++;
+            });
+
+            // TODO: reset the match results tracker
+            // TODO: reset the scoreboard and timer
+            // TODO: add a modal or panel to start the match so it doesn't instantly start
+            Instance.SetState(StateName.Auto);
+        }
+
+        public override void Update() {}
+
+        public override void End() {}
+
+        public Restart() : base(StateName.Restart) {}
+    }
+
+    /// Resets the match and sends he user back to the MatchConfig modal
+    public class Reconfigure : MatchState {
+        public override void Start() {
+            RobotSimObject.RemoveAllRobots();
+            FieldSimObject.DeleteField();
+            MatchMode.ResetMatchConfiguration();
+
+            // TODO: reset the match results tracker
+            // TODO: reset the scoreboard and timer
+            Instance.SetState(StateName.MatchConfig);
+        }
+
+        public override void Update() {}
+
+        public override void End() {}
+
+        public Reconfigure() : base(StateName.Reconfigure) {}
+    }
+
 #endregion
 
     /// Represents a specific MatchState
@@ -235,6 +293,8 @@ public class MatchStateMachine {
         RobotPositioning,
         Auto,
         Teleop,
-        MatchResults
+        MatchResults,
+        Restart,
+        Reconfigure
     }
 }
