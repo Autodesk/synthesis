@@ -19,7 +19,9 @@ using Vector3   = UnityEngine.Vector3;
 
 public class FieldSimObject : SimObject, IPhysicsOverridable {
     public static FieldSimObject CurrentField { get; private set; }
-    public List<ScoringZone> ScoringZones = new();
+    
+    private readonly List<ScoringZone> _scoringZones;
+    public IReadOnlyCollection<ScoringZone> ScoringZones => _scoringZones.AsReadOnly();
 
     public MirabufLive MiraLive { get; private set; }
     public GameObject GroundedNode { get; private set; }
@@ -81,7 +83,7 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         FieldObject                = groundedNode.transform.parent.gameObject;
         FieldBounds                = groundedNode.transform.GetBounds();
         Gamepieces                 = gamepieces;
-        ScoringZones               = new List<ScoringZone>();
+        _scoringZones              = new List<ScoringZone>();
 
         PhysicsManager.Register(this);
 
@@ -118,6 +120,22 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         // FieldObject.transform.rotation = _initialRotation;
     }
 
+    public bool RemoveScoringZone(ScoringZone zone) {
+        var res = _scoringZones.Remove(zone);
+        if (res)
+            UpdateSavedScoringZones();
+        return res;
+    }
+
+    public void AddScoringZone(ScoringZone zone) {
+        _scoringZones.Add(zone);
+        UpdateSavedScoringZones();
+    }
+
+    public void UpdateSavedScoringZones() {
+        
+    }
+
     public static bool DeleteField() {
         if (CurrentField == null)
             return false;
@@ -127,7 +145,7 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
             RobotSimObject.GetCurrentlyPossessedRobot().ClearGamepieces();
 
-        CurrentField.ScoringZones.Clear();
+        CurrentField._scoringZones.Clear();
         CurrentField.Gamepieces.ForEach(x => x.DeleteGamepiece());
         CurrentField.Gamepieces.Clear();
         GameObject.Destroy(CurrentField.FieldObject);

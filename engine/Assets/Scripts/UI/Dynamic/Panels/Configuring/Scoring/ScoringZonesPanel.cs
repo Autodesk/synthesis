@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using Newtonsoft.Json;
 using Synthesis.Gizmo;
 using Synthesis.Physics;
 using Synthesis.UI.Dynamic;
@@ -12,13 +13,13 @@ using UnityEngine;
 public record ScoringZoneData() {
     public string Name { get; set; }           = "";
     public Alliance Alliance { get; set; }     = Alliance.Blue;
-    public Transform Parent { get; set; }      = null;
+    public string Parent { get; set; }         = "grounded";
     public int Points { get; set; }            = 0;
     public bool DestroyGamepiece { get; set; } = false;
     public bool PersistentPoints { get; set; } = true;
-    public float XScale { get; set; }          = 1.0f;
-    public float YScale { get; set; }          = 1.0f;
-    public float ZScale { get; set; }          = 1.0f;
+    public Vector3 Position { get; set; }      = Vector3.zero;
+    public Quaternion Rotation { get; set; }   = Quaternion.identity;
+    public Vector3 LocalScale { get; set; }    = Vector3.one;
 }
 
 public class ScoringZonesPanel : PanelDynamic {
@@ -137,7 +138,7 @@ public class ScoringZonesPanel : PanelDynamic {
         deleteButtonContent.CreateButton()
             .StepIntoLabel(l => l.SetText("Delete"))
             .AddOnClickedEvent(b => {
-                FieldSimObject.CurrentField.ScoringZones.Remove(zone);
+                FieldSimObject.CurrentField.RemoveScoringZone(zone);
                 GameObject.Destroy(zone.GameObject);
                 AddZoneEntries();
             })

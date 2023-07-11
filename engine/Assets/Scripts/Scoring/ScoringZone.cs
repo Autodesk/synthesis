@@ -11,19 +11,36 @@ public enum Alliance {
 }
 
 public class ScoringZone : IPhysicsOverridable {
-    public string Name;
 
-    private Alliance _alliance;
-    public Alliance Alliance {
-        get => _alliance;
+    private ScoringZoneData _zoneData;
+    public ScoringZoneData ZoneData {
+        get => _zoneData;
         set {
-            _alliance                    = value;
+            _zoneData                       = value;
+            GameObject.name                 = _zoneData.Name;
+            GameObject.tag                  = _zoneData.Alliance == Alliance.Red ? "red zone" : "blue zone";
+            GameObject.transform.parent     = FieldSimObject.CurrentField.FieldObject.transform.Find(_zoneData.Parent);
+            Alliance                        = _zoneData.Alliance;
+            GameObject.transform.position   = _zoneData.Position;
+            GameObject.transform.rotation   = _zoneData.Rotation;
+            GameObject.transform.localScale = _zoneData.LocalScale;
+            FieldSimObject.CurrentField.UpdateSavedScoringZones();
+        }
+    }
+    
+    public string Name => _zoneData.Name;
+
+    public Alliance Alliance {
+        get => _zoneData.Alliance;
+        set {
+            _zoneData.Alliance           = value;
             _meshRenderer.material.color = value == Alliance.Red ? Color.red : Color.blue;
         }
     }
-    public int Points;
-    public bool DestroyGamepiece;
-    public bool PersistentPoints;
+
+    public int Points => _zoneData.Points;
+    public bool DestroyGamepiece => _zoneData.DestroyGamepiece;
+    public bool PersistentPoints => _zoneData.PersistentPoints;
     public GameObject GameObject;
     private Collider _collider;
     private MeshRenderer _meshRenderer;
@@ -32,10 +49,14 @@ public class ScoringZone : IPhysicsOverridable {
 
     public ScoringZone(GameObject gameObject, string name, Alliance alliance, int points, bool destroyGamepiece,
         bool persistentPoints) {
-        this.Name             = name;
-        this.GameObject       = gameObject;
-        this.GameObject.layer = 2; // ignore raycast layer
-        this.PersistentPoints = persistentPoints;
+        _zoneData = new() {
+            Name = name,
+            PersistentPoints = persistentPoints,
+            DestroyGamepiece = destroyGamepiece,
+            Points = points
+        };
+        GameObject            = gameObject;
+        GameObject.layer      = 2; // ignore raycast layer
 
         // configure gameobject to have box collider as trigger
         GameObject.name = name;
@@ -49,10 +70,19 @@ public class ScoringZone : IPhysicsOverridable {
 
         _collider.isTrigger = true;
 
-        Alliance         = alliance;
-        Points           = points;
-        DestroyGamepiece = destroyGamepiece;
+        PhysicsManager.Register(this);
+    }
 
+    public ScoringZone(ScoringZoneData data) {
+        GameObject       = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        GameObject.layer = 2; // ignore raycast layer
+        ScoringZoneListener listener = GameObject.AddComponent<ScoringZoneListener>();
+        listener.ScoringZone         = this;
+        _collider                    = GameObject.GetComponent<Collider>();
+        _meshRenderer                = GameObject.GetComponent<MeshRenderer>();
+        _collider.isTrigger = true;
+        ZoneData = data;
+        
         PhysicsManager.Register(this);
     }
 

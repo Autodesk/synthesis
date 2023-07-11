@@ -25,27 +25,27 @@ public class ChooseModeModal : ModalDynamic {
             .StepIntoLabel(l => l.SetText("Practice Mode"))
             .ApplyTemplate(VerticalLayout)
             .AddOnClickedEvent(b => {
+                ModeManager.CurrentMode = new PracticeMode();
                 if (SceneManager.GetActiveScene().name != "MainScene")
                     SceneManager.LoadScene("MainScene");
-                ModeManager.CurrentMode = new PracticeMode();
             });
 
         MainContent.CreateButton()
             .StepIntoLabel(l => l.SetText("Match Mode"))
             .ApplyTemplate(VerticalLayout)
             .AddOnClickedEvent(b => {
+                ModeManager.CurrentMode = new MatchMode();
                 if (SceneManager.GetActiveScene().name != "MainScene")
                     SceneManager.LoadScene("MainScene");
-                ModeManager.CurrentMode = new MatchMode();
             });
 
         MainContent.CreateButton()
             .StepIntoLabel(l => l.SetText("Server Test Mode"))
             .ApplyTemplate(VerticalLayout)
             .AddOnClickedEvent(b => {
+                ModeManager.CurrentMode = new ServerTestMode();
                 if (SceneManager.GetActiveScene().name != "MainScene")
                     SceneManager.LoadScene("MainScene");
-                ModeManager.CurrentMode = new ServerTestMode();
             });
     }
 

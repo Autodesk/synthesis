@@ -40,6 +40,7 @@ namespace Synthesis.Import {
 #endregion
 
         private string _path;
+        public string MiraPath => _path;
         public Assembly MiraAssembly;
 
         public enum MirabufFileState {
@@ -67,6 +68,9 @@ namespace Synthesis.Import {
 
             _findDefinitions = Task<RigidbodyDefinitions>.Factory.StartNew(() => FindRigidbodyDefinitions(this));
         }
+
+        public static MirabufLive OpenMirabufFile(string path)
+            => MirabufCache.Get(path);
 
 #region File Management
 

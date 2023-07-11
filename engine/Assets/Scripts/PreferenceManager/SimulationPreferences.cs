@@ -283,6 +283,21 @@ namespace Synthesis.PreferenceManager {
     }
 
     [JsonObject(MemberSerialization.OptIn)]
+    public class FieldData {
+        [JsonConstructor]
+        public FieldData() {
+            AssemblyGuid = string.Empty;
+        }
+        
+        public FieldData(string guid) {
+            AssemblyGuid = guid;
+        }
+        
+        [JsonProperty]
+        public string AssemblyGuid;
+    }
+
+    [JsonObject(MemberSerialization.OptIn)]
     public class InputData {
         [JsonProperty]
         public Type Type;
