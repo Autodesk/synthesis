@@ -22,7 +22,18 @@ namespace SynthesisAPI.Aether.Lobby {
 
         public ulong? Guid => _instance?.Handler.Guid;
         public string Name => _instance?.Handler.Name ?? "--unknown--";
-        
+
+        public List<ServerTransforms> TransformData {
+            get {
+                if (_instance is null) return new List<ServerTransforms>();
+                
+                _instance._transformDataLock.EnterReadLock();
+                var result = new List<ServerTransforms>(_instance._transformData.Values);
+                _instance._transformDataLock.ExitReadLock();
+                return result;
+            }
+        }
+
         public LobbyClient(string ip, string name) {
             _instance = new Inner(ip, name);
         }
@@ -45,8 +56,8 @@ namespace SynthesisAPI.Aether.Lobby {
             private readonly LobbyClientHandler _handler;
             public LobbyClientHandler Handler => _handler;
 
-            private ReaderWriterLockSlim _transformDataLock;
-            private Dictionary<ulong, ServerTransforms> _transformData;
+            public ReaderWriterLockSlim _transformDataLock;
+            public Dictionary<ulong, ServerTransforms> _transformData;
 
             private ConcurrentQueue<Task<Result<LobbyMessage?, Exception>>> _requestQueue;
 
@@ -162,8 +173,10 @@ namespace SynthesisAPI.Aether.Lobby {
                     var msg = response.GetResult()!;
                     switch (msg.MessageTypeCase) {
                         case LobbyMessage.MessageTypeOneofCase.FromSimulationTransformData:
-                            // TODO: Update transform data
-                            Logger.Log("Received transform response");
+                            _transformDataLock.EnterWriteLock();
+                            msg.FromSimulationTransformData.TransformData.ForEach(d => _transformData[d.Guid] = d);
+                            _transformDataLock.ExitWriteLock();
+                            // Logger.Log("Received transform response");
                             break;
                         default:
                             return new Result<LobbyMessage?, Exception>(new Exception("Invalid message"));
@@ -194,7 +207,7 @@ namespace SynthesisAPI.Aether.Lobby {
                     switch (msg.MessageTypeCase) {
                         case LobbyMessage.MessageTypeOneofCase.FromControllableStates:
                             // TODO: Update signal data
-                            Logger.Log("Received controllable state response");
+                            // Logger.Log("Received controllable state response");
                             break;
                         default:
                             return new Result<LobbyMessage?, Exception>(new Exception("Invalid message"));

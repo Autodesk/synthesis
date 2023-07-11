@@ -31,7 +31,7 @@ using Synthesis.WS.Translation;
 using SynthesisAPI.Aether.Lobby;
 using static Synthesis.WS.Translation.RioTranslationLayer;
 using SynthesisAPI.Controller;
-
+using UnityEngine.Assertions.Must;
 using Logger = SynthesisAPI.Utilities.Logger;
 
 #nullable enable
@@ -128,6 +128,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     private Dictionary<string, (UnityEngine.Joint a, UnityEngine.Joint b)> _jointMap;
     private List<Rigidbody> _allRigidbodies;
     public IReadOnlyCollection<Rigidbody> AllRigidbodies => _allRigidbodies.AsReadOnly();
+    private Dictionary<string, GameObject> _nodes = new Dictionary<string, GameObject>();
 
     // SHOOTING/PICKUP
     private GameObject _intakeTrigger;
@@ -206,6 +207,10 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
         _allRigidbodies = new List<Rigidbody>(RobotNode.transform.GetComponentsInChildren<Rigidbody>());
         PhysicsManager.Register(this);
+
+        foreach (Transform child in RobotNode.transform) {
+            _nodes.Add(child.name, child.gameObject);
+        }
 
         // tags every mesh collider component in the robot with a tag of robot
         RobotNode.tag = "robot";
@@ -371,7 +376,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         if (_wheelDrivers == null)
             return;
 
-        if (!DriversEnabled || !BehavioursEnabled) return;
+        // if (!DriversEnabled) return;
 
         int wheelsInContact = _wheelDrivers.Count(x => x.HasContacts);
         float mod           = wheelsInContact <= 4 ? 1f : Mathf.Pow(0.7f, wheelsInContact - 4);
@@ -715,6 +720,56 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         return new TransformData { Position =
                                        GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center),
             Rotation = GroundedNode.transform.rotation };
+    }
+
+    public void UpdateMultiplayer() {
+        if (Client is not null) {
+            List<SignalData> changedSignals = new List<SignalData>();
+            foreach (var driver in SimulationManager.Drivers[Name]) {
+                List<SignalData> changes = driver.State.CompileChanges().Where(s => s.Name != string.Empty).ToList();
+                foreach (var signal in changes)
+                    changedSignals.Add(signal);
+            }
+
+            Client.UpdateControllableState(changedSignals);/*.ContinueWith((x, o) => {
+                var msg = x.Result.GetResult();
+                msg?.FromSimulationTransformData.TransformData.ForEach(transform => {
+                    // if (transform.Guid == _client?.Guid) {
+                    foreach (var td in transform.Transforms) {
+                        var SpatialMatrix = td.Value.MatrixData;
+                        Matrix4x4 matrix = new Matrix4x4(
+                            new Vector4(SpatialMatrix[0], SpatialMatrix[4], SpatialMatrix[8], SpatialMatrix[12]),
+                            new Vector4(SpatialMatrix[1], SpatialMatrix[5], SpatialMatrix[9], SpatialMatrix[13]),
+                            new Vector4(SpatialMatrix[2], SpatialMatrix[6], SpatialMatrix[10], SpatialMatrix[14]),
+                            new Vector4(SpatialMatrix[3], SpatialMatrix[7], SpatialMatrix[11], SpatialMatrix[15])
+                            );
+                        Transform nodeTransform = GameObject.Find($"{RobotNode.name}/{td.Key}").transform;
+                        nodeTransform.position   = matrix.GetPosition();
+                        nodeTransform.rotation   = matrix.rotation;
+                        nodeTransform.localScale = matrix.lossyScale;
+                    }
+                    // }
+                });
+            }, null);*/
+
+            if (Client.Guid == 1) {
+                foreach (var transform in Client.TransformData) {
+                    if (transform.Guid != 0) continue;
+                    foreach (var td in transform.Transforms) {
+                        var SpatialMatrix = td.Value.MatrixData;
+                        Matrix4x4 matrix = new Matrix4x4(
+                            new Vector4(SpatialMatrix[0], SpatialMatrix[4], SpatialMatrix[8], SpatialMatrix[12]),
+                            new Vector4(SpatialMatrix[1], SpatialMatrix[5], SpatialMatrix[9], SpatialMatrix[13]),
+                            new Vector4(SpatialMatrix[2], SpatialMatrix[6], SpatialMatrix[10], SpatialMatrix[14]),
+                            new Vector4(SpatialMatrix[3], SpatialMatrix[7], SpatialMatrix[11], SpatialMatrix[15]));
+                        Transform nodeTransform = _nodes[td.Key].transform;
+                        nodeTransform.position   = matrix.GetPosition() + new Vector3(2,0,0);
+                        nodeTransform.rotation   = matrix.rotation;
+                        // nodeTransform.localScale = matrix.lossyScale;
+                    }
+                }
+            }
+        }
     }
 
     public void Update(TransformData data) {

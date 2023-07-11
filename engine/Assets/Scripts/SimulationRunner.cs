@@ -77,6 +77,7 @@ namespace Synthesis.Runtime {
 
             OnUpdate += DynamicUIManager.Update;
             OnUpdate += ModeManager.Update;
+            OnUpdate += () => RobotSimObject.SpawnedRobots.ForEach(r => r.UpdateMultiplayer());
 
             WebSocketManager.RioState.OnUnrecognizedMessage += s => Debug.Log(s);
 

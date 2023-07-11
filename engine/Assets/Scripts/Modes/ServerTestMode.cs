@@ -32,14 +32,15 @@ public class ServerTestMode : IMode {
         // TODO remove and allow user to choose robot
         string dozer = "Dozer_v9.mira";
         string tmm   = "Team 2471 (2018)_v5.mira";
-        RobotSimObject.SpawnRobot(AddRobotModal.ParsePath("$appdata/Autodesk/Synthesis/Mira/" + tmm, '/'), new Vector3(-2, 1, 0), Quaternion.Euler(0, 0, 0), false);
+        RobotSimObject.SpawnRobot(AddRobotModal.ParsePath("$appdata/Autodesk/Synthesis/Mira/" + dozer, '/'), new Vector3(-2, 1, 0), Quaternion.Euler(0, 0, 0), false);
         _host                   = RobotSimObject.GetCurrentlyPossessedRobot();
         _host.RobotNode.name    = "host";
-        _host.BehavioursEnabled = false;
-        RobotSimObject.SpawnRobot(AddRobotModal.ParsePath("$appdata/Autodesk/Synthesis/Mira/" + tmm, '/'), new Vector3(2, 1, 0), Quaternion.Euler(0, 0, 0), false);
+        // _host.BehavioursEnabled = false;
+        RobotSimObject.SpawnRobot(AddRobotModal.ParsePath("$appdata/Autodesk/Synthesis/Mira/" + dozer, '/'), new Vector3(2, 1, 0), Quaternion.Euler(0, 0, 0), false);
         _ghost                = RobotSimObject.GetCurrentlyPossessedRobot();
         _ghost.RobotNode.name = "ghost";
-        _ghost.DriversEnabled = false;
+        // _ghost.RobotNode.GetComponentsInChildren<Collider>().ForEach(c => c.enabled = false);
+        // _ghost.DriversEnabled = false;
 
         SimulationRunner.OnGameObjectDestroyed += End;
     }
@@ -100,6 +101,7 @@ public class ServerTestMode : IMode {
                 var msg = x.Result.GetResult();
                 msg?.FromControllableStates.AllUpdates.ForEach(update => {
                     // TODO handle guid
+                    // TODO figure out where signals are created
                     update.UpdatedSignals.ForEach(signal => {
                         SimulationManager.Drivers[_host.Name].ForEach(driver => {
                             driver.State.SignalMap.Values.Where(sd => sd.Name == signal.Name).ToList()[0].Value = signal.Value;
@@ -107,38 +109,6 @@ public class ServerTestMode : IMode {
                     });
                 });
             }, null);
-        }
-        
-        foreach (RobotSimObject robot in new RobotSimObject[]{_host, _ghost}) {
-            if (robot.Client is not null) {
-                List<SignalData> changedSignals = new List<SignalData>();
-                foreach (var driver in SimulationManager.Drivers[robot.Name]) {
-                    List<SignalData> changes = driver.State.CompileChanges();
-                    foreach (var signal in changes)
-                        changedSignals.Add(signal);
-                }
-
-                robot.Client.UpdateControllableState(changedSignals).ContinueWith((x, o) => {
-                    var msg = x.Result.GetResult();
-                    msg?.FromSimulationTransformData.TransformData.ForEach(transform => {
-                        // if (transform.Guid == _client?.Guid) {
-                        foreach (var td in transform.Transforms) {
-                            var SpatialMatrix = td.Value.MatrixData;
-                            Matrix4x4 matrix = new Matrix4x4(
-                                new Vector4(SpatialMatrix[0], SpatialMatrix[4], SpatialMatrix[8], SpatialMatrix[12]),
-                                new Vector4(SpatialMatrix[1], SpatialMatrix[5], SpatialMatrix[9], SpatialMatrix[13]),
-                                new Vector4(SpatialMatrix[2], SpatialMatrix[6], SpatialMatrix[10], SpatialMatrix[14]),
-                                new Vector4(SpatialMatrix[3], SpatialMatrix[7], SpatialMatrix[11], SpatialMatrix[15])
-                                );
-                            Transform nodeTransform = robot.RobotNode.transform.Find(td.Key);
-                            nodeTransform.position   = matrix.GetPosition();
-                            nodeTransform.rotation   = matrix.rotation;
-                            nodeTransform.localScale = matrix.lossyScale;
-                        }
-                        // }
-                    });
-                }, null);
-            }
         }
     }
 
