@@ -40,7 +40,7 @@ public class ServerTestMode : IMode {
         _ghost                = RobotSimObject.GetCurrentlyPossessedRobot();
         _ghost.RobotNode.name = "ghost";
         // _ghost.RobotNode.GetComponentsInChildren<Collider>().ForEach(c => c.enabled = false);
-        // _ghost.DriversEnabled = false;
+        _ghost.DriversEnabled = false;
 
         SimulationRunner.OnGameObjectDestroyed += End;
     }
