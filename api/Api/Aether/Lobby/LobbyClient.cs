@@ -22,6 +22,8 @@ namespace SynthesisAPI.Aether.Lobby {
         public string Name => _instance?.Handler.Name ?? "--unknown--";
         public bool IsAlive => _instance != null;
 
+        public List<DataRobot> RobotsFromServer => _instance?.RobotsFromServer ?? new List<DataRobot>();
+
         public LobbyClient(string ip, string name) {
             _instance = new Inner(ip, name);
         }
@@ -55,6 +57,8 @@ namespace SynthesisAPI.Aether.Lobby {
             private readonly Thread _heartbeatThread;
             private readonly Thread _requestSenderThread;
 
+            public List<DataRobot> RobotsFromServer { get; private set; }
+
             public Inner(string ip, string name) {
                 IP = ip;
 
@@ -77,6 +81,8 @@ namespace SynthesisAPI.Aether.Lobby {
 
                 _requestSenderThread = new Thread(RequestQueueProcessor);
                 _requestSenderThread.Start();
+
+                RobotsFromServer = new List<DataRobot>();
             }
 
             ~Inner() {
@@ -166,7 +172,7 @@ namespace SynthesisAPI.Aether.Lobby {
                     }
 
                     Logger.Log("Received robot data response");
-                    // TODO: Accept needed robot data from server.
+                    RobotsFromServer = new List<DataRobot>(msg.FromDataRobot.AllAvailableRobots);
 
                     return new Result<LobbyMessage?, Exception>(msg);
                 });

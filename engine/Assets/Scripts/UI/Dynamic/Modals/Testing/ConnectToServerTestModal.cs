@@ -82,7 +82,15 @@ namespace Synthesis.UI.Dynamic {
                 });
         }
 
-        public override void Update() {}
+        public override void Update() {
+            var robots = _mode.Robots;
+
+            if (robots.Count > 0) {
+                string status = "";
+                robots.ForEach((x => status += $"{x.Name}\n"));
+                _statusLabel.SetText(status);
+            }
+        }
 
         public override void Delete() {}
 

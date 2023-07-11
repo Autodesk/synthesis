@@ -16,7 +16,8 @@ using System.Threading.Tasks;
 public class ConnectToServerTestMode : IMode {
     private LobbyClient? _client;
 
-    public bool IsClientAlive => _client == null ? false : _client.IsAlive;
+    public bool IsClientAlive     => _client == null ? false : _client.IsAlive;
+    public List<DataRobot> Robots => _client?.RobotsFromServer ?? new List<DataRobot>();
 
     public Task<Result<LobbyMessage?, Exception>> UploadRobotData(DataRobot robot) {
         if (_client == null) {
