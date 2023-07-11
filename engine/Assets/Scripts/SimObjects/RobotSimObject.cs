@@ -650,7 +650,10 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     public static void RemoveAllRobots() {
-        foreach (RobotSimObject robot in RobotSimObject.SpawnedRobots) RemoveRobot(robot.Name);
+        string[] robots = new string[_spawnedRobots.Keys.Count];
+        _spawnedRobots.Keys.CopyTo(robots, 0);
+
+        robots.ForEach(x => { RemoveRobot(x); });
     }
 
 
