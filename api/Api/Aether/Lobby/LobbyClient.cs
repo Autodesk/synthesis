@@ -9,6 +9,8 @@ using SynthesisAPI.Controller;
 using SynthesisAPI.Utilities;
 using SynthesisServer.Proto;
 using System.Collections.Concurrent;
+using System.IO;
+using System.Text;
 
 #nullable enable
 
@@ -256,7 +258,7 @@ namespace SynthesisAPI.Aether.Lobby {
     
     internal class LobbyClientHandler : IDisposable {
 
-        private const int READ_TIMEOUT_MS = 1000;
+        private const int READ_TIMEOUT_MS = 10000;
         private const int READ_BUFFER_SIZE = 2048;
 
         private readonly LobbyClientInformation _clientInformation;
@@ -291,17 +293,17 @@ namespace SynthesisAPI.Aether.Lobby {
             return Task<Result<LobbyMessage, ServerReadException>>.Factory.StartNew(() => {
                 Result<LobbyMessage, ServerReadException>? result = null;
                 bool isLocked = false;
-				try {
+                try {
 
-                    DateTime startedRead = DateTime.UtcNow;
-                    while (!stream.DataAvailable && (DateTime.UtcNow - startedRead).TotalMilliseconds < READ_TIMEOUT_MS) {
-                        Thread.Sleep(50);
-                    }
+                    // DateTime startedRead = DateTime.UtcNow;
+                    // while (!stream.DataAvailable && (DateTime.UtcNow - startedRead).TotalMilliseconds < READ_TIMEOUT_MS) {
+                    //     Thread.Sleep(50);
+                    // }
 
-                    if (!stream.DataAvailable) {
-                        result = new Result<LobbyMessage, ServerReadException>(new NoDataException());
-                        throw result.GetError();
-                    }
+                    // if (!stream.DataAvailable) {
+                    //     result = new Result<LobbyMessage, ServerReadException>(new NoDataException());
+                    //     throw result.GetError();
+                    // }
 
                     mutex?.WaitOne();
                     isLocked = true;
@@ -313,20 +315,20 @@ namespace SynthesisAPI.Aether.Lobby {
                     var msgBuf = new byte[msgSize];
                     stream.Read(msgBuf, 0, msgSize);
                     LobbyMessage msg = LobbyMessage.Parser.ParseFrom(msgBuf);
-
-                    mutex?.ReleaseMutex();
-
+                    
                     result = new Result<LobbyMessage, ServerReadException>(msg);
 
+                } catch (IOException e) {
+                    throw new NoDataException();
                 } catch (Exception e) {
                     if (result == null) {
-                        if (isLocked) {
-                            mutex?.ReleaseMutex();
-                        }
-
                         result = new Result<LobbyMessage, ServerReadException>(
                             new ServerReadException($"Read failure:\n{e.Message}\n{e.StackTrace}")
-                        );
+                            );
+                    }
+                } finally {
+                    if (isLocked) {
+                        mutex?.ReleaseMutex();
                     }
                 }
 

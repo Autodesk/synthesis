@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 using System.Xml.Linq;
 using Org.BouncyCastle.Math.EC.Rfc7748;
@@ -42,6 +44,17 @@ namespace SynthesisAPI.Aether.Lobby {
             private readonly LinkedList<Thread> _clientThreads;
 
             private readonly Dictionary<ulong, RemoteData> _remoteData;
+            
+            public static FileStream LogFile { get; } = File.Create(@"../server_api.log");
+            public static UTF8Encoding encoding { get; } = new UTF8Encoding(true);
+            public static long CurrentTime {
+                get => DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+            }
+    
+            public static void Log(string message) {
+                // var b = encoding.GetBytes($"[{CurrentTime}] [API] {message}\n");
+                // LogFile.Write(b, 0, b.Length);
+            }
 
             public IReadOnlyCollection<string> Clients {
                 get {
@@ -106,34 +119,51 @@ namespace SynthesisAPI.Aether.Lobby {
 
             private void ClientListener(LobbyClientHandler handler) {
                 while (_isAlive) {
+                    Log("Reading message");
                     var msgTask = handler.ReadMessage();
+                    Log("Done reading message");
                     var finishedBeforeTimeout = msgTask.Wait(CLIENT_LISTEN_TIMEOUT_MS);
+                    Log("Done waiting for message");
                     if (!finishedBeforeTimeout || msgTask.Result == null) {
+                        Log("Message not received");
                         continue;
                     }
+                    Log("Message received");
 
                     var msgRes = msgTask.Result;
                     if (msgRes.isError) {
+                        Log("Message result is error");
                         if (!(msgRes.GetError() is LobbyClientHandler.ReadTimeoutException) && !(msgRes.GetError() is LobbyClientHandler.NoDataException)) {
                             Logger.Log($"Failed to Read: [{msgRes.GetError().GetType().Name}] {msgRes.GetError().Message}\n\n{msgRes.GetError().StackTrace}");
                         }
                         continue;
                     }
+                    Log("Message result is not error");
 
+                    Log("Getting message result");
                     var msg = msgRes.GetResult();
+                    Log("Done getting message result");
                     switch (msg.MessageTypeCase) {
                         case LobbyMessage.MessageTypeOneofCase.ToGetLobbyInformation:
+                            Log("Getting lobby information");
                             OnGetLobbyInformation(msg.ToGetLobbyInformation, handler);
+                            Log("Done getting lobby information");
                             break;
                         case LobbyMessage.MessageTypeOneofCase.ToUpdateControllableState:
+                            Log("Getting controllable state update");
                             OnControllableStateUpdate(msg.ToUpdateControllableState, handler);
+                            Log("Done getting controllable state update");
                             break;
                         case LobbyMessage.MessageTypeOneofCase.ToUpdateTransformData:
+                            Log("Getting transform data update");
                             OnTransformDataUpdate(msg.ToUpdateTransformData, handler);
+                            Log("Done getting transform data update");
                             break;
                         case LobbyMessage.MessageTypeOneofCase.ToDataDump:
                         case LobbyMessage.MessageTypeOneofCase.ToClientHeartbeat:
+                            Log("Updating heartbeat");
 							handler.UpdateHeartbeat();
+                            Log("Done updating heartbeat");
                             break;
                         default:
                             break;

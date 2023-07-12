@@ -724,20 +724,35 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     public void UpdateMultiplayer() {
         if (Client is not null) {
-            List<SignalData> changedSignals = new List<SignalData>();
-            foreach (var driver in SimulationManager.Drivers[Name]) {
-                List<SignalData> changes = driver.State.CompileChanges().Where(s => s.Name != string.Empty).ToList();
-                foreach (var signal in changes)
-                    changedSignals.Add(signal);
+            if (RobotNode.name != "host") {
+                List<SignalData> changedSignals = new List<SignalData>();
+                ServerTestMode.Log("Compiling state changes");
+                foreach (var driver in SimulationManager.Drivers[Name]) {
+                    List<SignalData> changes = driver.State.CompileChanges().Where(s => s.Name != string.Empty).ToList();
+                    foreach (var signal in changes)
+                        changedSignals.Add(signal);
+                }
+                ServerTestMode.Log("Done compiling state changes");
+            
+                ServerTestMode.Log("Updating controllable state");
+                
+                Client.UpdateControllableState(changedSignals).ContinueWith((x, o) => {
+                    if (x.IsCompletedSuccessfully) {
+                        ServerTestMode.Log("Successfully updated controllable state");
+                    } else {
+                        ServerTestMode.Log("Failed to update controllable state");
+                    }
+                }, false);
             }
-
-            Client.UpdateControllableState(changedSignals);
+            ServerTestMode.Log("Done updating controllable state");
 
             // TODO compare guids once networking between computers
             // right now only does it if ghost because ghost is acting as client
-            if (RobotNode.name == "ghost") {
+            if (RobotNode.name != "host") {
+                ServerTestMode.Log("Setting transform data");
                 foreach (var transform in Client.TransformData) {
-                    if (transform.Guid != 0) continue;
+                    if (transform.Guid == Client.Guid) continue;
+                    ServerTestMode.Log("Setting transforms");
                     foreach (var td in transform.Transforms) {
                         var SpatialMatrix = td.Value.MatrixData;
                         Matrix4x4 matrix = new Matrix4x4(
@@ -746,10 +761,12 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                             new Vector4(SpatialMatrix[2], SpatialMatrix[6], SpatialMatrix[10], SpatialMatrix[14]),
                             new Vector4(SpatialMatrix[3], SpatialMatrix[7], SpatialMatrix[11], SpatialMatrix[15]));
                         Transform nodeTransform = _nodes[td.Key].transform;
-                        nodeTransform.position   = matrix.GetPosition() + new Vector3(2,0,0);
+                        nodeTransform.position   = matrix.GetPosition();
                         nodeTransform.rotation   = matrix.rotation;
                     }
+                    ServerTestMode.Log("Done setting transforms");
                 }
+                ServerTestMode.Log("Done setting transform data");
             }
         }
     }
