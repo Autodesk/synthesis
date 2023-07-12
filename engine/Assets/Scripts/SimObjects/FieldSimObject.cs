@@ -83,7 +83,9 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         FieldObject                = groundedNode.transform.parent.gameObject;
         FieldBounds                = groundedNode.transform.GetBounds();
         Gamepieces                 = gamepieces;
-        _scoringZones              = new List<ScoringZone>();
+        SimulationPreferences.LoadFieldFromMira(MiraLive);
+
+        _scoringZones = new List<ScoringZone>();
 
         PhysicsManager.Register(this);
 
@@ -133,7 +135,27 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
     }
 
     public void UpdateSavedScoringZones() {
-        
+        SimulationPreferences.SetFieldScoringZones(MiraLive.MiraAssembly.Info.GUID, _scoringZones.Select(x => x.ZoneData).ToList());
+        PreferenceManager.Save();
+    }
+
+    public void InitializeScoreZones() {
+        _scoringZones.Clear();
+        var scoringZones = SimulationPreferences.GetFieldScoringZones(MiraLive.MiraAssembly.Info.GUID);
+        if (scoringZones != null) {
+            scoringZones.ForEach(x => {
+                var zone = new ScoringZone(
+                    GameObject.CreatePrimitive(PrimitiveType.Cube),
+                    "temp scoring zone",
+                    Alliance.Blue,
+                    0,
+                    false,
+                    true
+                    );
+                zone.ZoneData = x;
+                _scoringZones.Add(zone);
+            });
+        }
     }
 
     public static bool DeleteField() {
@@ -161,6 +183,8 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         var mira = Importer.MirabufAssemblyImport(filePath);
         mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
         mira.MainObject.tag = "field";
+        
+        FieldSimObject.CurrentField.InitializeScoreZones();
 
         if (spawnRobotGizmo && RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
             GizmoManager.SpawnGizmo(RobotSimObject.GetCurrentlyPossessedRobot());

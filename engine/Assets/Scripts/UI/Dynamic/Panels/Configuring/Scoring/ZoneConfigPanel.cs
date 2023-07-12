@@ -75,7 +75,7 @@ public class ZoneConfigPanel : PanelDynamic {
             _initialData.PersistentPoints = zone.PersistentPoints;
             _initialData.Points           = zone.Points;
             var scale                     = zone.GameObject.transform.localScale;
-            _initialData.LocalScale       = scale;
+            _initialData.LocalScale       = (scale.x, scale.y, scale.z);
             _initialPosition              = zone.GameObject.transform.position;
             _initialRotation              = zone.GameObject.transform.rotation;
             _data                         = _initialData;
@@ -90,8 +90,11 @@ public class ZoneConfigPanel : PanelDynamic {
             // call one last time to update data
             // don't want to update data and call callback on every character typed for name
             _data.Name            = _zoneNameInput.Value;
-            _data.Position        = _zone.GameObject.transform.position;
-            _data.Rotation        = _zone.GameObject.transform.rotation;
+            var parentTransform   = FieldSimObject.CurrentField.FieldObject.transform.Find(_data.Parent);
+            var localPosition = parentTransform.worldToLocalMatrix.MultiplyPoint3x4(_zone.GameObject.transform.position);
+            var localRotation = Quaternion.Inverse(parentTransform.rotation) * _zone.GameObject.transform.rotation;
+            _data.LocalPosition = (localPosition.x, localPosition.y, localPosition.z);
+            _data.LocalRotation = (localRotation.x, localRotation.y, localRotation.z, localRotation.w);
             _zone.ZoneData        = _data;
 
             if (_isNewZone)
@@ -164,7 +167,7 @@ public class ZoneConfigPanel : PanelDynamic {
                                 currentValue: _initialData.LocalScale.x)
                             .ApplyTemplate(VerticalLayout)
                             .AddOnValueChangedEvent((s, v) => {
-                                _data.LocalScale = new Vector3(v, _data.LocalScale.y, _data.LocalScale.z);
+                                _data.LocalScale = (v, _data.LocalScale.y, _data.LocalScale.z);
                                 DataUpdated();
                             });
 
@@ -173,7 +176,7 @@ public class ZoneConfigPanel : PanelDynamic {
                                 currentValue: _initialData.LocalScale.y)
                             .ApplyTemplate(VerticalLayout)
                             .AddOnValueChangedEvent((s, v) => {
-                                _data.LocalScale = new Vector3(_data.LocalScale.x, v, _data.LocalScale.z);
+                                _data.LocalScale = (_data.LocalScale.x, v, _data.LocalScale.z);
                                 DataUpdated();
                             });
 
@@ -182,7 +185,7 @@ public class ZoneConfigPanel : PanelDynamic {
                                 currentValue: _initialData.LocalScale.z)
                             .ApplyTemplate(VerticalLayout)
                             .AddOnValueChangedEvent((s, v) => {
-                                _data.LocalScale = new Vector3(_data.LocalScale.x, _data.LocalScale.y, v);
+                                _data.LocalScale = (_data.LocalScale.x, _data.LocalScale.y, v);
                                 DataUpdated();
                             });
 
@@ -242,7 +245,7 @@ public class ZoneConfigPanel : PanelDynamic {
         _deleteGamepieceToggle.SetState(_zone.DestroyGamepiece, notify: false);
 
         var localScale = zone.GameObject.transform.localScale;
-        _data.LocalScale     = localScale;
+        _data.LocalScale     = (localScale.x, localScale.y, localScale.z);
         _xScaleSlider.SetValue(_data.LocalScale.x);
         _yScaleSlider.SetValue(_data.LocalScale.y);
         _zScaleSlider.SetValue(_data.LocalScale.z);
@@ -253,8 +256,11 @@ public class ZoneConfigPanel : PanelDynamic {
         data.Alliance   = _data.Alliance;
         data.Points     = _data.Points;
         data.LocalScale = _data.LocalScale;
-        data.Position   = _zone.GameObject.transform.position;
-        data.Rotation   = _zone.GameObject.transform.rotation;
+        var parentTransform   = FieldSimObject.CurrentField.FieldObject.transform.Find(_data.Parent);
+        var localPosition = parentTransform.worldToLocalMatrix.MultiplyPoint3x4(_zone.GameObject.transform.position);
+        var localRotation = Quaternion.Inverse(parentTransform.rotation) * _zone.GameObject.transform.rotation;
+        data.LocalPosition = (localPosition.x, localPosition.y, localPosition.z);
+        data.LocalRotation = (localRotation.x, localRotation.y, localRotation.z, localRotation.w);
         _zone.ZoneData  = data;
     }
 
@@ -366,5 +372,6 @@ public class ZoneConfigPanel : PanelDynamic {
         if (!_pressedButtonToClose)
             DoCancel();
         GizmoManager.ExitGizmo();
+        FieldSimObject.CurrentField.UpdateSavedScoringZones();
     }
 }

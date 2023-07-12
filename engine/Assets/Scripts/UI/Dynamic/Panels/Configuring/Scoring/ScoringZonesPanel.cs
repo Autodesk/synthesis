@@ -17,9 +17,9 @@ public record ScoringZoneData() {
     public int Points { get; set; }            = 0;
     public bool DestroyGamepiece { get; set; } = false;
     public bool PersistentPoints { get; set; } = true;
-    public Vector3 Position { get; set; }      = Vector3.zero;
-    public Quaternion Rotation { get; set; }   = Quaternion.identity;
-    public Vector3 LocalScale { get; set; }    = Vector3.one;
+    public (float x, float y, float z) LocalPosition { get; set; }      = (0, 0, 0);
+    public (float x, float y, float z, float w) LocalRotation { get; set; }   = (0, 0, 0, 1);
+    public (float x, float y, float z) LocalScale { get; set; }    = (1, 1, 1);
 }
 
 public class ScoringZonesPanel : PanelDynamic {

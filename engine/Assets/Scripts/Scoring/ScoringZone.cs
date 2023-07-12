@@ -16,15 +16,14 @@ public class ScoringZone : IPhysicsOverridable {
     public ScoringZoneData ZoneData {
         get => _zoneData;
         set {
-            _zoneData                       = value;
-            GameObject.name                 = _zoneData.Name;
-            GameObject.tag                  = _zoneData.Alliance == Alliance.Red ? "red zone" : "blue zone";
-            GameObject.transform.parent     = FieldSimObject.CurrentField.FieldObject.transform.Find(_zoneData.Parent);
-            Alliance                        = _zoneData.Alliance;
-            GameObject.transform.position   = _zoneData.Position;
-            GameObject.transform.rotation   = _zoneData.Rotation;
-            GameObject.transform.localScale = _zoneData.LocalScale;
-            FieldSimObject.CurrentField.UpdateSavedScoringZones();
+            _zoneData                          = value;
+            GameObject.name                    = _zoneData.Name;
+            GameObject.tag                     = _zoneData.Alliance == Alliance.Red ? "red zone" : "blue zone";
+            GameObject.transform.parent        = FieldSimObject.CurrentField.FieldObject.transform.Find(_zoneData.Parent);
+            Alliance                           = _zoneData.Alliance;
+            GameObject.transform.localPosition = new Vector3(_zoneData.LocalPosition.x, _zoneData.LocalPosition.y, _zoneData.LocalPosition.z);
+            GameObject.transform.localRotation = new Quaternion(_zoneData.LocalRotation.x, _zoneData.LocalRotation.y, _zoneData.LocalRotation.z, _zoneData.LocalRotation.w);
+            GameObject.transform.localScale    = new Vector3(_zoneData.LocalScale.x, _zoneData.LocalScale.y, _zoneData.LocalScale.z);
         }
     }
     
