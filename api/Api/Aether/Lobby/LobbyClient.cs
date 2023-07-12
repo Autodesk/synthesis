@@ -281,7 +281,7 @@ namespace SynthesisAPI.Aether.Lobby {
     
     internal class LobbyClientHandler : IDisposable {
 
-        private const int READ_TIMEOUT_MS = 1000;
+        private const int READ_TIMEOUT_MS = 10000;
         private const int READ_BUFFER_SIZE = 2048;
 
         private readonly LobbyClientInformation _clientInformation;
@@ -309,8 +309,8 @@ namespace SynthesisAPI.Aether.Lobby {
         public Task<Result<LobbyMessage, ServerReadException>> ReadMessage()
             => ReadMessage(_stream, _streamLock);
 
-        public Result<bool, Exception> WriteMessage(LobbyMessage message)
-            => WriteMessage(message, _stream, _streamLock);
+        public Result<bool, Exception> WriteMessage(LobbyMessage message, bool debug = false)
+            => WriteMessage(message, _stream, _streamLock, debug);
 
         private static Task<Result<LobbyMessage, ServerReadException>> ReadMessage(NetworkStream stream, Mutex? mutex = null) {
             return Task<Result<LobbyMessage, ServerReadException>>.Factory.StartNew(() => {
@@ -336,7 +336,16 @@ namespace SynthesisAPI.Aether.Lobby {
                     int msgSize = BitConverter.ToInt32(intBuf, 0);
 
                     var msgBuf = new byte[msgSize];
-                    stream.Read(msgBuf, 0, msgSize);
+                    int bytesRead = 0;
+                    var startRead = DateTime.UtcNow;
+                    while (bytesRead != msgSize && (DateTime.UtcNow - startRead).TotalMilliseconds < READ_TIMEOUT_MS) {
+                        bytesRead += stream.Read(msgBuf, bytesRead, msgSize - bytesRead);
+                        Logger.Log($"{bytesRead} / {msgSize}");
+                        Thread.Sleep(10);
+                    }
+                    if (bytesRead != msgSize) {
+                        Logger.Log($"Mismatch of read bytes. Expected '{msgSize}', read '{bytesRead}'");
+                    }
                     LobbyMessage msg = LobbyMessage.Parser.ParseFrom(msgBuf);
 
                     mutex?.ReleaseMutex();
@@ -361,13 +370,28 @@ namespace SynthesisAPI.Aether.Lobby {
 
         private const bool TRUE = true;
         
-        private static Result<bool, Exception> WriteMessage(LobbyMessage message, NetworkStream stream, Mutex? mutex = null) {
+        private static Result<bool, Exception> WriteMessage(LobbyMessage message, NetworkStream stream, Mutex? mutex = null, bool debug = false) {
             try {
                 int size = message.CalculateSize();
+                if (debug) {
+                    Logger.Log($"WRITE DEBUG: Message size '{size}' bytes");
+                }
                 mutex?.WaitOne();
+                if (debug) {
+                    Logger.Log("Mutex Secured");
+                }
                 stream.Write(BitConverter.GetBytes(size), 0, 4); 
+                if (debug) {
+                    Logger.Log("Size Written");
+                }
                 message.WriteTo(stream);
+                if (debug) {
+                    Logger.Log("Message Written");
+                }
                 stream.Flush();
+                if (debug) {
+                    Logger.Log("Stream Flushed");
+                }
                 mutex?.ReleaseMutex();
                 return new Result<bool, Exception>(TRUE);
             } catch (Exception e) {

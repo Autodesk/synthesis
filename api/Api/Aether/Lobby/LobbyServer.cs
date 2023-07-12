@@ -1,10 +1,12 @@
 ﻿using SynthesisAPI.Controller;
 using SynthesisAPI.Utilities;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Security.Cryptography;
 
 #nullable enable
 
@@ -119,6 +121,7 @@ namespace SynthesisAPI.Aether.Lobby {
                     var msgTask = handler.ReadMessage();
                     var finishedBeforeTimeout = msgTask.Wait(CLIENT_LISTEN_TIMEOUT_MS);
                     if (!finishedBeforeTimeout || msgTask.Result == null) {
+                        Logger.Log("Read Time Out");
                         continue;
                     }
 
@@ -136,6 +139,7 @@ namespace SynthesisAPI.Aether.Lobby {
                             OnGetLobbyInformation(msg.ToGetLobbyInformation, handler);
                             break;
                         case LobbyMessage.MessageTypeOneofCase.ToDataRobot:
+                            Logger.Log("Received Robot Upload");
                             AcceptRobotData(msg.ToDataRobot, handler);
                             break;
                         case LobbyMessage.MessageTypeOneofCase.ToUpdateControllableState:
@@ -168,17 +172,29 @@ namespace SynthesisAPI.Aether.Lobby {
             }
 
             private void AcceptRobotData(LobbyMessage.Types.ToDataRobot robot, LobbyClientHandler handler) {
+                Logger.Log("Entering Robot Data Write Lock");
                 _robotDataLock.EnterWriteLock();
+                Logger.Log($"Adding {System.Math.Round(robot.DataRobot.Data.Length / 1000000f, 2)} MB of data");
+                SHA256 sha = SHA256.Create();
+                var checksum = Convert.ToBase64String(sha.ComputeHash(robot.DataRobot.Data.ToByteArray()));
+                Logger.Log($"Robot Check Sum: {checksum}");
                 _availableRobots.Add(new DataRobot(robot.DataRobot));
                 _robotDataLock.ExitWriteLock();
+                Logger.Log("Robot Data added");
 
+                Logger.Log("Constructing Response");
                 var response = new LobbyMessage.Types.FromDataRobot();
 
                 _robotDataLock.EnterReadLock();
-                _availableRobots.ForEach(x => response.AllAvailableRobots.Add(x));
+                response.AllAvailableRobots.AddRange(_availableRobots.Select(x => new DataRobot { Name = x.Name, Description = x.Description, Guid = x.Guid }));
                 _robotDataLock.ExitReadLock();
 
-                handler.WriteMessage(new LobbyMessage { FromDataRobot = response });
+                var respResult = handler.WriteMessage(new LobbyMessage { FromDataRobot = response }, debug: true);
+                if (respResult.isError) {
+                    Logger.Log($"Response write encountered error: {respResult.GetError().Message}");
+                } else {
+                    Logger.Log("Sent Response successfully!!!");
+                }
             }
 
             private void OnControllableStateUpdate(LobbyMessage.Types.ToUpdateControllableState updateRequest, LobbyClientHandler handler) {
