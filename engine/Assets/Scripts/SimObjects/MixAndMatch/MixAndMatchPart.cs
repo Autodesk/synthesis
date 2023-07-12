@@ -27,7 +27,7 @@ namespace SimObjects.MixAndMatch
                 Directory.CreateDirectory(root);
             var files = Directory.GetFiles(root).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
             
-            var partObject = MixAndMatchSimObject.CreatePartMesh(files[1]);
+            var partObject = MixAndMatchSimObject.CreatePartMesh(files[2]);
 
             _unityObject = partObject;
         }

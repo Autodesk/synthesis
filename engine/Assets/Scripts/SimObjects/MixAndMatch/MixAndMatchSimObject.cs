@@ -139,8 +139,11 @@ public class MixAndMatchSimObject : SimObject, IPhysicsOverridable, IGizmo {
         
         GameObject assemblyObject = new GameObject(assembly.Info.Name);
         assemblyObject.transform.SetParent(GameObject.Find("Game").transform);
-        
+
         miraLive.GenerateDefinitionObjects(assemblyObject, false);
+        
+        assemblyObject.transform.position = position;
+        assemblyObject.transform.rotation = rotation;
         
         return assemblyObject;
     }
