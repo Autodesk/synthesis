@@ -4,8 +4,10 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class ModeManager {
+    // clang-format off
     private static bool _modeHasStarted  = false;
-    public static bool ModeHasStarted   => _modeHasStarted;
+    public static bool ModeHasStarted => _modeHasStarted;
+    // clang-format on
 
     private static IMode _currentMode;
     public static IMode CurrentMode {

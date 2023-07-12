@@ -117,11 +117,13 @@ namespace Synthesis.PreferenceManager {
             public void PreSaveDump(IEvent _) {
                 // PreferenceManager.SetPreference(ALL_ROBOT_DATA_KEY, _allRobotData);
                 if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
-                    var live                                = RobotSimObject.GetCurrentlyPossessedRobot().MiraLive;
+                    // clang-format off
+                    var live = RobotSimObject.GetCurrentlyPossessedRobot().MiraLive;
                     live.MiraAssembly.Data.Parts.UserData ??= new Mirabuf.UserData();
                     live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY] =
                         JsonConvert.SerializeObject(_allRobotData[live.MiraAssembly.Info.GUID]);
                     live.Save();
+                    // clang-format on
                 }
 
                 if (FieldSimObject.CurrentField != null) {
