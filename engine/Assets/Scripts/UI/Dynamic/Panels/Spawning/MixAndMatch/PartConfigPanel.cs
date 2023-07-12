@@ -158,7 +158,7 @@ namespace UI.Dynamic.Panels.Spawning
             if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButton(1)) {
                 // Raycast out from camera to see where the mouse is pointing
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                if (UnityEngine.Physics.Raycast(ray, out var hit, 100, _snapPointLayerMask))
+                if (Physics.Raycast(ray, out var hit, 100, _snapPointLayerMask))
                 {
                     _part.Transform.position = hit.transform.position;
 
@@ -166,6 +166,8 @@ namespace UI.Dynamic.Panels.Spawning
                     _part.Transform.Rotate(-_part.SnapPoints[0].transform.localRotation.eulerAngles);
                     //Debug.Log($"Rotation: {-hit.transform.forward} and {Quaternion.LookRotation(-hit.transform.forward, Vector3.up)}");
                     _part.Transform.Translate(-_part.SnapPoints[0].transform.localPosition);
+
+                    _part.ConnectedPoint = hit.transform;
                 }
             }
         }

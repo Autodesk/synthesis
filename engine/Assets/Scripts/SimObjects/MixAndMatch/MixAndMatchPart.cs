@@ -11,7 +11,10 @@ namespace SimObjects.MixAndMatch
     {
         public string Name;
         public Transform Transform => _unityObject.transform;
+        public GameObject UnityObject => _unityObject;
+        
         public List<GameObject> SnapPoints = new();
+        public Transform ConnectedPoint;
 
         private GameObject _unityObject;
         
@@ -24,10 +27,9 @@ namespace SimObjects.MixAndMatch
                 Directory.CreateDirectory(root);
             var files = Directory.GetFiles(root).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
             
-            RobotSimObject.SpawnRobot(files[1], false);
-            //RobotSimObject.GetCurrentlyPossessedRobot().Freeze();
+            var simObject = MixAndMatchSimObject.SpawnPart(files[1]);
 
-            _unityObject = RobotSimObject.GetCurrentlyPossessedRobot().RobotNode;
+            _unityObject = simObject.RobotNode;
         }
 
         public static string ParsePath(string p, char c) {

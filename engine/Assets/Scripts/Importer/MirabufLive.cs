@@ -40,6 +40,7 @@ namespace Synthesis.Import {
 #endregion
 
         private string _path;
+        
         public Assembly MiraAssembly;
 
         public enum MirabufFileState {
@@ -63,6 +64,7 @@ namespace Synthesis.Import {
 
         public MirabufLive(string path) {
             _path = path;
+            
             Load();
 
             _findDefinitions = Task<RigidbodyDefinitions>.Factory.StartNew(() => FindRigidbodyDefinitions(this));
@@ -110,7 +112,6 @@ namespace Synthesis.Import {
             Dictionary<string, GameObject> groupObjects = new Dictionary<string, GameObject>();
 
             int dynamicLayer = 0;
-
             if (physics && !MiraAssembly.Dynamic) {
                 if (dynamicLayers.Count == 0)
                     throw new Exception("No more dynamic layers");

@@ -6,10 +6,8 @@ using Synthesis.Physics;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
 
-namespace UI.Dynamic.Panels.Spawning
-{
-    public class MixAndMatchPanel : PanelDynamic
-    {
+namespace UI.Dynamic.Panels.Spawning {
+    public class MixAndMatchPanel : PanelDynamic {
         private const float MODAL_WIDTH = 500f;
         private const float MODAL_HEIGHT = 600f;
 
@@ -23,16 +21,14 @@ namespace UI.Dynamic.Panels.Spawning
         private float _entryWidth;
 
         private ScrollView _partsScrollView;
-        
-        private readonly Func<UIComponent, UIComponent> VerticalLayout = (u) =>
-        {
+
+        private readonly Func<UIComponent, UIComponent> VerticalLayout = (u) => {
             var offset = (-u.Parent!.RectOfChildren(u).yMin) + VERTICAL_PADDING;
             u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 0, rightPadding: 0);
             return u;
         };
 
-        private readonly Func<UIComponent, UIComponent> ListVerticalLayout = (u) =>
-        {
+        private readonly Func<UIComponent, UIComponent> ListVerticalLayout = (u) => {
             var offset = (-u.Parent!.RectOfChildren(u).yMin) + VERTICAL_PADDING;
             u.SetTopStretch<UIComponent>(
                 anchoredY: offset, leftPadding: HORIZONTAL_PADDING, rightPadding: HORIZONTAL_PADDING);
@@ -43,10 +39,9 @@ namespace UI.Dynamic.Panels.Spawning
 
         public List<MixAndMatchPart> _parts = new();
 
-        public override bool Create()
-        {
+        public override bool Create() {
             PhysicsManager.IsFrozen = true;
-            
+
             Title.SetText("Mix & Match");
 
             AcceptButton.StepIntoLabel(l => l.SetText("Close"))
@@ -64,8 +59,7 @@ namespace UI.Dynamic.Panels.Spawning
                 .SetTopStretch<Button>()
                 .StepIntoLabel(l => l.SetText("Add Part"))
                 .AddOnClickedEvent(
-                    _ =>
-                    {
+                    _ => {
                         if (_parts.Count > 0)
                             _parts.Add(_parts[0].Duplicate());
                         else _parts.Add(new MixAndMatchPart());
@@ -74,23 +68,19 @@ namespace UI.Dynamic.Panels.Spawning
                 .ApplyTemplate(VerticalLayout);
 
             AddPartEntries();
-            
+
             return true;
         }
 
-        private void AddPartEntries()
-        {
+        private void AddPartEntries() {
             _partsScrollView.Content.DeleteAllChildren();
-            foreach (var part in _parts)
-            {
+            foreach (var part in _parts) {
                 AddPartEntry(part, true);
             }
         }
 
-        private void AddPartEntry(MixAndMatchPart part, bool isNew)
-        {
-            if (!isNew)
-            {
+        private void AddPartEntry(MixAndMatchPart part, bool isNew) {
+            if (!isNew) {
                 AddPartEntries();
                 return;
             }
@@ -120,36 +110,52 @@ namespace UI.Dynamic.Panels.Spawning
                 buttonsContent.SplitLeftRight(BUTTON_WIDTH, HORIZONTAL_PADDING);
             editButtonContent.CreateButton()
                 .StepIntoLabel(l => l.SetText("Edit"))
-                .AddOnClickedEvent(b =>
-                {
-                    DynamicUIManager.CreatePanel<PartConfigPanel>(persistent: false,part);
-                })
+                .AddOnClickedEvent(b => { DynamicUIManager.CreatePanel<PartConfigPanel>(persistent: false, part); })
                 .ApplyTemplate(VerticalLayout)
                 .SetSize<Button>(new Vector2(BUTTON_WIDTH, ROW_HEIGHT))
                 .SetStretch<Button>();
             deleteButtonContent.CreateButton()
                 .StepIntoLabel(l => l.SetText("Delete"))
-                .AddOnClickedEvent(b =>
-                { })
+                .AddOnClickedEvent(b => { })
                 .ApplyTemplate(VerticalLayout)
                 .SetSize<Button>(new Vector2(BUTTON_WIDTH, ROW_HEIGHT))
                 .SetStretch<Button>();
         }
 
-        public override void Update()
-        {
-            _parts.ForEach(p =>
-            {
-                p.SnapPoints.ForEach(sp =>
-                {
-                    Debug.DrawRay(sp.transform.position, sp.transform.forward, Color.blue);
-                });
+        public override void Update() {
+            _parts.ForEach(p => {
+                p.SnapPoints.ForEach(sp => { Debug.DrawRay(sp.transform.position, sp.transform.forward, Color.blue); });
             });
         }
 
-        public override void Delete()
-        {
+        public override void Delete() {
+            // TODO: Give each gameobject a unique name
+            Transform parent = new GameObject("mix_and_match_robot_n").transform;
+            parent.SetParent(GameObject.Find("Game").transform);
 
+            //Transform grounded = new GameObject("grounded").transform;
+            //grounded.gameObject.AddComponent<Rigidbody>();
+            //grounded.parent = parent;
+
+            _parts.ForEach(p => {
+                p.Transform.SetParent(parent);
+
+                if (p.ConnectedPoint == null)
+                    return;
+
+                Vector3 jointPosition = p.ConnectedPoint.position;
+
+                FixedJoint thisJoint = p.Transform.Find("grounded").gameObject.AddComponent<FixedJoint>();
+                FixedJoint otherJoint = p.ConnectedPoint.parent.transform.Find("grounded").gameObject.AddComponent<FixedJoint>();
+
+                thisJoint.anchor = jointPosition;
+                otherJoint.anchor = jointPosition;
+
+                thisJoint.connectedBody = otherJoint.GetComponent<Rigidbody>();
+                otherJoint.connectedBody = thisJoint.GetComponent<Rigidbody>();
+            });
+
+            PhysicsManager.IsFrozen = false;
         }
     }
 }

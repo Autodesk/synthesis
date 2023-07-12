@@ -21,32 +21,6 @@ using SynthesisAPI.Controller;
 #nullable enable
 
 public class MixAndMatchSimObject : SimObject, IPhysicsOverridable, IGizmo {
-    private static string _currentlyPossessedRobot = string.Empty;
-    public static string CurrentlyPossessedRobot {
-        get => _currentlyPossessedRobot;
-        set {
-            if (value != _currentlyPossessedRobot) {
-                var old = _currentlyPossessedRobot;
-                if (_currentlyPossessedRobot != string.Empty)
-                    GetCurrentlyPossessedRobot().Unpossess();
-                _currentlyPossessedRobot = value;
-                if (_currentlyPossessedRobot != string.Empty)
-                    GetCurrentlyPossessedRobot().Possess();
-
-                EventBus.Push(new PossessionChangeEvent { NewBot = value, OldBot = old });
-            }
-        }
-    }
-    public static MixAndMatchSimObject GetCurrentlyPossessedRobot() => (_currentlyPossessedRobot == string.Empty
-                                                                    ? null
-                                                                    : _spawnedRobots[_currentlyPossessedRobot])!;
-
-    private static Dictionary<string, MixAndMatchSimObject> _spawnedRobots = new(); // Open
-    public static Dictionary<string, MixAndMatchSimObject>.ValueCollection SpawnedRobots => _spawnedRobots.Values;
-
-    public static int ControllableJointCounter = 0;
-
-    private CameraController cam;
     private OrbitCameraMode orbit;
     private ICameraMode previousMode;
 
@@ -101,12 +75,6 @@ public class MixAndMatchSimObject : SimObject, IPhysicsOverridable, IGizmo {
     public MixAndMatchSimObject(string name, ControllableState state, MirabufLive miraLive, GameObject groundedNode,
         Dictionary<string, (Joint a, Joint b)> jointMap)
         : base(name, state) {
-        if (_spawnedRobots.ContainsKey(name)) {
-            throw new Exception("Robot with that name already loaded");
-        }
-        _spawnedRobots.Add(name, this);
-        EventBus.Push(new RobotSpawnEvent { Bot = name });
-
         MiraLive       = miraLive;
         GroundedNode   = groundedNode;
         _jointMap      = jointMap;
@@ -126,10 +94,7 @@ public class MixAndMatchSimObject : SimObject, IPhysicsOverridable, IGizmo {
         _simulationTranslationLayer =
             SimulationPreferences.GetRobotSimTranslationLayer(MiraLive.MiraAssembly.Info.GUID) ??
             new RioTranslationLayer();
-        // _simulationTranslationLayer = new RioTranslationLayer();
-
-        cam = Camera.main.GetComponent<CameraController>();
-
+        
         _allRigidbodies.ForEach(x => {
             var rc     = x.gameObject.AddComponent<HighlightComponent>();
             rc.Color   = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_HOVER);
@@ -137,27 +102,8 @@ public class MixAndMatchSimObject : SimObject, IPhysicsOverridable, IGizmo {
         });
     }
 
-    private void Possess() {
-        CurrentlyPossessedRobot    = this.Name;
-        BehavioursEnabled          = true;
-        OrbitCameraMode.FocusPoint = () =>
-            GroundedNode != null && GroundedBounds != null
-                ? GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center)
-                : Vector3.zero;
-    }
-
-    private void Unpossess() {
-        GizmoManager.ExitGizmo();
-        BehavioursEnabled          = false;
-        Vector3 currentPoint       = OrbitCameraMode.FocusPoint();
-        OrbitCameraMode.FocusPoint = () => currentPoint;
-    }
-
     public override void Destroy() {
         PhysicsManager.Unregister(this);
-        if (CurrentlyPossessedRobot.Equals(this._name)) {
-            CurrentlyPossessedRobot = string.Empty;
-        }
         MonoBehaviour.Destroy(GroundedNode.transform.parent.gameObject);
     }
 
@@ -182,30 +128,25 @@ public class MixAndMatchSimObject : SimObject, IPhysicsOverridable, IGizmo {
         return new Bounds(((max + min) / 2f) - top.position, max - min);
     }
 
-    public static void SpawnMixAndMatch(params string[] files)
+    public static MixAndMatchSimObject SpawnPart(string filePath)
     {
-        List<(string filePath, Vector3 position, Quaternion rotation, bool spawnGizmo)> parts = new();
-        files.ForEach(f =>
-        {
-            parts.Add((f, Vector3.zero, Quaternion.identity, true));
-        });
-
-        SpawnMixAndMatch(parts.ToArray());
+        return SpawnPart(filePath, Vector3.up/2f, Quaternion.identity);
     }
-    
-    public static void SpawnMixAndMatch((string filePath, Vector3 position, Quaternion rotation, bool spawnGizmo)[] parts) {
-        parts.ForEach(p =>
-        {
-            var mira = Importer.MirabufAssemblyImport(p.filePath);
-            SimObject simObject = mira.Sim;
-            
-            Debug.Log(simObject.GetType());
-            
-            mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
 
-            mira.MainObject.transform.position = p.position;
-            mira.MainObject.transform.rotation = p.rotation;
-        });
+    public static MixAndMatchSimObject SpawnPart(string filePath, Vector3 position, Quaternion rotation)
+    {
+        var mira = Importer.MirabufAssemblyImport(filePath, true);
+        MixAndMatchSimObject? simObject = mira.Sim as MixAndMatchSimObject;
+        if (simObject == null)
+        {
+            Debug.Log("simObject is null");
+        }
+
+        mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
+        mira.MainObject.transform.position = position;
+        mira.MainObject.transform.rotation = rotation;
+
+        return simObject;
     }
 
     private Dictionary<Rigidbody, (bool isKine, Vector3 vel, Vector3 angVel)> _preFreezeStates = new();
@@ -254,28 +195,6 @@ public class MixAndMatchSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     public void Update(TransformData data) {
-        // GroundedNode.transform.rotation = data.Rotation;
-
-        /*
-        GroundedNode.transform.position -=
-        GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center); GroundedNode.transform.rotation
-        = Quaternion.identity;
-
-        Matrix4x4 transformation = Matrix4x4.identity;
-
-        // transformation =
-        Matrix4x4.TRS(-GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center),
-        Quaternion.identity, Vector3.one) * transformation; transformation = Matrix4x4.TRS(Vector3.zero, data.Rotation,
-        Vector3.one) * transformation;
-        // transformation *= Matrix4x4.TRS(data.Position, Quaternion.identity, Vector3.one);
-
-        // Apply Gizmo
-        GroundedNode.transform.rotation = transformation.rotation;
-        GroundedNode.transform.position -=
-        GroundedNode.transform.localToWorldMatrix.MultiplyPoint(GroundedBounds.center); GroundedNode.transform.position
-        += transformation.GetPosition(mod: false);
-        */
-
         RobotNode.transform.rotation = Quaternion.identity;
         RobotNode.transform.position = Vector3.zero;
 
@@ -326,18 +245,5 @@ public class MixAndMatchSimObject : SimObject, IPhysicsOverridable, IGizmo {
         public float EjectionSpeed;
         public float[] RelativePosition;
         public float[] RelativeRotation;
-    }
-
-    public class PossessionChangeEvent : IEvent {
-        public string NewBot;
-        public string OldBot;
-    }
-
-    public class RobotSpawnEvent : IEvent {
-        public string Bot;
-    }
-
-    public class RobotRemoveEvent : IEvent {
-        public string Bot;
     }
 }
