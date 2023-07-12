@@ -287,8 +287,9 @@ namespace SynthesisAPI.Aether.Lobby {
             _owningClient = owningClient;
             _lock = new ReaderWriterLockSlim();
 
-            State = new ControllableState();
-            Transforms = new ServerTransforms();
+            State           = new ControllableState();
+            Transforms      = new ServerTransforms();
+            Transforms.Guid = owningClient;
         }
 
         public void EnterReadLock() => _lock.EnterReadLock();

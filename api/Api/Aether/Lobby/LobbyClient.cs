@@ -25,17 +25,6 @@ namespace SynthesisAPI.Aether.Lobby {
         public ulong? Guid => _instance?.Handler.Guid;
         public string Name => _instance?.Handler.Name ?? "--unknown--";
 
-        public List<ServerTransforms> TransformData {
-            get {
-                if (_instance is null) return new List<ServerTransforms>();
-                
-                _instance._transformDataLock.EnterReadLock();
-                var result = new List<ServerTransforms>(_instance._transformData.Values);
-                _instance._transformDataLock.ExitReadLock();
-                return result;
-            }
-        }
-
         public LobbyClient(string ip, string name) {
             _instance = new Inner(ip, name);
         }
@@ -175,9 +164,6 @@ namespace SynthesisAPI.Aether.Lobby {
                     var msg = response.GetResult()!;
                     switch (msg.MessageTypeCase) {
                         case LobbyMessage.MessageTypeOneofCase.FromSimulationTransformData:
-                            _transformDataLock.EnterWriteLock();
-                            msg.FromSimulationTransformData.TransformData.ForEach(d => _transformData[d.Guid] = d);
-                            _transformDataLock.ExitWriteLock();
                             // Logger.Log("Received transform response");
                             break;
                         default:

@@ -68,6 +68,12 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     private static Dictionary<string, RobotSimObject> _spawnedRobots = new Dictionary<string, RobotSimObject>(); // Open
     public static Dictionary<string, RobotSimObject>.ValueCollection SpawnedRobots => _spawnedRobots.Values;
 
+    private static Dictionary<ulong, ServerTransforms> _serverTransforms = new Dictionary<ulong, ServerTransforms>();
+    public static Dictionary<ulong, ServerTransforms> ServerTransforms {
+        get => _serverTransforms;
+        set => _serverTransforms = value;
+    }
+
     public static int ControllableJointCounter = 0;
 
     private CameraController cam;
@@ -737,11 +743,12 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                 ServerTestMode.Log("Updating controllable state");
                 
                 Client.UpdateControllableState(changedSignals).ContinueWith((x, o) => {
-                    if (x.IsCompletedSuccessfully) {
-                        ServerTestMode.Log("Successfully updated controllable state");
-                    } else {
-                        ServerTestMode.Log("Failed to update controllable state");
-                    }
+                    if (!x.IsCompletedSuccessfully) return;
+                    var msg = x.Result.GetResult();
+                    msg?.FromSimulationTransformData.TransformData.ForEach(t => {
+                        if (t.Transforms.Count != 0)
+                            ServerTransforms[t.Guid] = t.Clone();
+                    });
                 }, false);
             }
             ServerTestMode.Log("Done updating controllable state");
@@ -750,23 +757,27 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             // right now only does it if ghost because ghost is acting as client
             if (RobotNode.name != "host") {
                 ServerTestMode.Log("Setting transform data");
-                foreach (var transform in Client.TransformData) {
-                    if (transform.Guid == Client.Guid) continue;
-                    ServerTestMode.Log("Setting transforms");
-                    foreach (var td in transform.Transforms) {
-                        var SpatialMatrix = td.Value.MatrixData;
-                        Matrix4x4 matrix = new Matrix4x4(
-                            new Vector4(SpatialMatrix[0], SpatialMatrix[4], SpatialMatrix[8], SpatialMatrix[12]),
-                            new Vector4(SpatialMatrix[1], SpatialMatrix[5], SpatialMatrix[9], SpatialMatrix[13]),
-                            new Vector4(SpatialMatrix[2], SpatialMatrix[6], SpatialMatrix[10], SpatialMatrix[14]),
-                            new Vector4(SpatialMatrix[3], SpatialMatrix[7], SpatialMatrix[11], SpatialMatrix[15]));
-                        Transform nodeTransform = _nodes[td.Key].transform;
-                        nodeTransform.position   = matrix.GetPosition();
-                        nodeTransform.rotation   = matrix.rotation;
+
+                if (Client.Guid.HasValue && ServerTransforms.TryGetValue(Client.Guid.Value, out var transform)) {
+                    if (transform != null) {
+                        ServerTestMode.Log("Setting transforms");
+
+                        foreach (var td in transform.Transforms) {
+                            var SpatialMatrix = td.Value.MatrixData;
+                            Matrix4x4 matrix = new Matrix4x4(
+                                new Vector4(SpatialMatrix[0], SpatialMatrix[4], SpatialMatrix[8], SpatialMatrix[12]),
+                                new Vector4(SpatialMatrix[1], SpatialMatrix[5], SpatialMatrix[9], SpatialMatrix[13]),
+                                new Vector4(SpatialMatrix[2], SpatialMatrix[6], SpatialMatrix[10], SpatialMatrix[14]),
+                                new Vector4(SpatialMatrix[3], SpatialMatrix[7], SpatialMatrix[11], SpatialMatrix[15]));
+                            Transform nodeTransform = _nodes[td.Key].transform;
+                            nodeTransform.position = matrix.GetPosition();
+                            nodeTransform.rotation = matrix.rotation;
+                        }
+
+                        ServerTestMode.Log("Done setting transforms");
+                        ServerTestMode.Log("Done setting transform data");
                     }
-                    ServerTestMode.Log("Done setting transforms");
                 }
-                ServerTestMode.Log("Done setting transform data");
             }
         }
     }
