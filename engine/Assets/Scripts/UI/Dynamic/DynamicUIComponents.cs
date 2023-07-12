@@ -709,6 +709,12 @@ namespace Synthesis.UI.Dynamic {
             return this;
         }
 
+        public Label SetWrapping(bool wrappingEnabled)
+        {
+            _unityText.enableWordWrapping = wrappingEnabled;
+            return this;
+        }
+
         public Label SetTopStretch(float leftPadding = 0f, float rightPadding = 0f,
             float anchoredY = 0f)     => base.SetTopStretch<Label>(leftPadding, rightPadding, anchoredY);
         public Label SetBottomStretch(float leftPadding = 0f, float rightPadding = 0f,

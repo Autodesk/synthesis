@@ -38,7 +38,8 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
         private Slider _gSlider;
         private Slider _bSlider;
 
-        private Button _deleteThemeButton;
+        private Button _deleteButton;
+        private Button _deleteAllButton;
 
         public EditThemeModal() : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) {}
 
@@ -51,8 +52,6 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
                 DynamicUIManager.CloseActiveModal();
             });
 
-            CancelButton.RootGameObject.SetActive(false);
-
             var (left, right) = MainContent.SplitLeftRight(500 - (HORIZONTAL_PADDING / 2), HORIZONTAL_PADDING);
 
             CreateThemeSelection(left);
@@ -61,6 +60,8 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             CreateColorSelection(right);
 
             SelectTheme(_selectedThemeIndex);
+            
+            UpdateDeleteButtons();
         }
 
         public override void Update() {
@@ -92,35 +93,57 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
                                    .SetOptions(ColorManager.AvailableThemes)
                                    .SetValue(_selectedThemeIndex);
 
-            var (addContent, deleteContent) = content.CreateSubContent(new Vector2(content.Size.x, 50))
+            var (addContent, right) = content.CreateSubContent(new Vector2(content.Size.x, 50))
                                                   .ApplyTemplate(VerticalLayout)
-                                                  .SplitLeftRight((content.Size.x - padding) / 2f, padding);
+                                                  .SplitLeftRight((content.Size.x - padding) / 3f, padding);
+            
+            var (deleteContent, deleteAllContent) = right.SplitLeftRight((content.Size.x - padding) / 3f, padding);
 
             var addThemeButton = addContent.CreateButton()
                                      .ApplyTemplate(VerticalLayout)
                                      .StepIntoLabel(l => l.SetText("Create Theme"))
                                      .AddOnClickedEvent(b => { DynamicUIManager.CreateModal<NewThemeModal>(); });
+            
+            _deleteButton = deleteContent.CreateButton()
+                .ApplyTemplate(VerticalLayout)
+                .StepIntoLabel(l => l.SetText("Delete Selected"))
+                .SetBackgroundColor<Button>(ColorManager.SynthesisColor.InteractiveElement)
+                .AddOnClickedEvent(b => {
+                    if (_selectedThemeIndex != 0)
+                        DynamicUIManager.CreateModal<DeleteThemeModal>();
+                });
 
-            _deleteThemeButton = deleteContent.CreateButton()
-                                     .ApplyTemplate(VerticalLayout)
-                                     .StepIntoLabel(l => l.SetText("Delete Theme"))
-                                     .AddOnClickedEvent(b => {
-                                         if (_selectedThemeIndex != 0)
-                                             DynamicUIManager.CreateModal<DeleteThemeModal>();
-                                     });
-
-            void UpdateDeleteThemeButton() {
-                if (_selectedThemeIndex == 0)
-                    _deleteThemeButton.DisableEvents<Button>();
-                _deleteThemeButton.EnableEvents<Button>();
-            }
-            UpdateDeleteThemeButton();
-
+            _deleteAllButton = deleteAllContent.CreateButton()
+                .ApplyTemplate(VerticalLayout)
+                .StepIntoLabel(l => l.SetText("Delete All"))
+                .SetBackgroundColor<Button>(ColorManager.SynthesisColor.CancelButton)
+                .AddOnClickedEvent(b =>
+                {
+                    DynamicUIManager.CreateModal<DeleteAllThemesModal>();
+                });
+            
             themeChooser.AddOnValueChangedEvent((dropdown, index, data) => {
                 SelectTheme(index);
                 DynamicUIManager.CreateModal<EditThemeModal>();
-                UpdateDeleteThemeButton();
+                UpdateDeleteButtons();
             });
+        }
+        
+        private void UpdateDeleteButtons()
+        {
+            if (_selectedThemeIndex < 1)
+                _deleteButton.DisableEvents<Button>().SetBackgroundColor<Button>(
+                    ColorManager.SynthesisColor.BackgroundSecondary);
+            else
+                _deleteButton.EnableEvents<Button>().SetBackgroundColor<Button>(
+                    ColorManager.SynthesisColor.InteractiveElement);
+                
+            if (_availableThemes.Length == 1)
+                _deleteAllButton.DisableEvents<Button>().SetBackgroundColor<Button>(
+                    ColorManager.SynthesisColor.BackgroundSecondary);
+            else
+                _deleteAllButton.EnableEvents<Button>().SetBackgroundColor<Button>(
+                    ColorManager.SynthesisColor.CancelButton);
         }
 
         /// <summary>Creates the color sliders at the bottom left of the modal</summary>
@@ -190,7 +213,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
                 prevSelected.label.SetColor(ColorManager.SynthesisColor.MainText);
             }
 
-            if (colorName == null || _selectedThemeIndex == 0) {
+            if (colorName == null || _selectedThemeIndex < 1) {
                 _colorPickerLabel.SetText("Cannot Edit Default Theme");
                 return;
             }

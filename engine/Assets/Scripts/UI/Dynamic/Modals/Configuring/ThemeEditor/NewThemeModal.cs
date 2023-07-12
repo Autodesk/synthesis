@@ -39,7 +39,8 @@ namespace UI.Dynamic.Modals.Configuring {
                                              ColorManager.SynthesisColor.AcceptButton);
                                      _newThemeName = value;
                                  })
-                                 .SetTopStretch<Dropdown>();
+                                 .SetCharacterLimit(20)
+                                 .SetTopStretch<InputField>();
         }
 
         public override void Update() {}

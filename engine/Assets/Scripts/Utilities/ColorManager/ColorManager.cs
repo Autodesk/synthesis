@@ -124,6 +124,17 @@ namespace Utilities.ColorManager {
 
             File.Delete(themePath);
         }
+        
+        /// <summary>Permanently deletes the selected theme unless it is Default</summary>
+        public static void DeleteSelectedTheme() {
+            DeleteTheme(_selectedTheme);
+            SelectedTheme = DEFAULT_THEME;
+        }
+
+        public static void DeleteAllThemes()
+        {
+            AvailableThemes.ForEach(DeleteTheme);
+        }
 
         /// <summary>Modifies the colors of the selected theme</summary>
         /// <param name="changes">A list of new colors. Does not have to contain every color</param>
@@ -136,12 +147,6 @@ namespace Utilities.ColorManager {
             SaveTheme(_selectedTheme);
 
             EventBus.Push(new OnThemeChanged());
-        }
-
-        /// <summary>Permanently deletes the selected theme unless it is Default</summary>
-        public static void DeleteSelectedTheme() {
-            DeleteTheme(_selectedTheme);
-            SelectedTheme = DEFAULT_THEME;
         }
 
         /// <summary>Returns a color, or <see cref="UNASSIGNED_COLOR">UNASSIGNED_COLOR</see> if it is not
