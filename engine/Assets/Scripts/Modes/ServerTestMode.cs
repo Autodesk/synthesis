@@ -101,8 +101,8 @@ public class ServerTestMode : IMode {
                 var msg = x.Result.GetResult();
                 msg?.FromControllableStates.AllUpdates.ForEach(update => {
                     // TODO handle guid
-                    // TODO figure out where signals are created
                     update.UpdatedSignals.ForEach(signal => {
+                        // TODO choose robot based on client guid rather than hardcoding host
                         SimulationManager.Drivers[_host.Name].ForEach(driver => {
                             driver.State.SignalMap.Values.Where(sd => sd.Name == signal.Name).ToList()[0].Value = signal.Value;
                         });

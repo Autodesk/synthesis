@@ -731,28 +731,11 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                     changedSignals.Add(signal);
             }
 
-            Client.UpdateControllableState(changedSignals);/*.ContinueWith((x, o) => {
-                var msg = x.Result.GetResult();
-                msg?.FromSimulationTransformData.TransformData.ForEach(transform => {
-                    // if (transform.Guid == _client?.Guid) {
-                    foreach (var td in transform.Transforms) {
-                        var SpatialMatrix = td.Value.MatrixData;
-                        Matrix4x4 matrix = new Matrix4x4(
-                            new Vector4(SpatialMatrix[0], SpatialMatrix[4], SpatialMatrix[8], SpatialMatrix[12]),
-                            new Vector4(SpatialMatrix[1], SpatialMatrix[5], SpatialMatrix[9], SpatialMatrix[13]),
-                            new Vector4(SpatialMatrix[2], SpatialMatrix[6], SpatialMatrix[10], SpatialMatrix[14]),
-                            new Vector4(SpatialMatrix[3], SpatialMatrix[7], SpatialMatrix[11], SpatialMatrix[15])
-                            );
-                        Transform nodeTransform = GameObject.Find($"{RobotNode.name}/{td.Key}").transform;
-                        nodeTransform.position   = matrix.GetPosition();
-                        nodeTransform.rotation   = matrix.rotation;
-                        nodeTransform.localScale = matrix.lossyScale;
-                    }
-                    // }
-                });
-            }, null);*/
+            Client.UpdateControllableState(changedSignals);
 
-            if (Client.Guid == 1) {
+            // TODO compare guids once networking between computers
+            // right now only does it if ghost because ghost is acting as client
+            if (RobotNode.name == "ghost") {
                 foreach (var transform in Client.TransformData) {
                     if (transform.Guid != 0) continue;
                     foreach (var td in transform.Transforms) {
@@ -765,7 +748,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                         Transform nodeTransform = _nodes[td.Key].transform;
                         nodeTransform.position   = matrix.GetPosition() + new Vector3(2,0,0);
                         nodeTransform.rotation   = matrix.rotation;
-                        // nodeTransform.localScale = matrix.lossyScale;
                     }
                 }
             }
