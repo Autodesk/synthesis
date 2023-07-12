@@ -309,8 +309,8 @@ namespace SynthesisAPI.Aether.Lobby {
         public Task<Result<LobbyMessage, ServerReadException>> ReadMessage()
             => ReadMessage(_stream, _streamLock);
 
-        public Result<bool, Exception> WriteMessage(LobbyMessage message, bool debug = false)
-            => WriteMessage(message, _stream, _streamLock, debug);
+        public Result<bool, Exception> WriteMessage(LobbyMessage message)
+            => WriteMessage(message, _stream, _streamLock);
 
         private static Task<Result<LobbyMessage, ServerReadException>> ReadMessage(NetworkStream stream, Mutex? mutex = null) {
             return Task<Result<LobbyMessage, ServerReadException>>.Factory.StartNew(() => {
@@ -340,9 +340,9 @@ namespace SynthesisAPI.Aether.Lobby {
                     var startRead = DateTime.UtcNow;
                     while (bytesRead != msgSize && (DateTime.UtcNow - startRead).TotalMilliseconds < READ_TIMEOUT_MS) {
                         bytesRead += stream.Read(msgBuf, bytesRead, msgSize - bytesRead);
-                        Logger.Log($"{bytesRead} / {msgSize}");
                         Thread.Sleep(10);
                     }
+
                     if (bytesRead != msgSize) {
                         Logger.Log($"Mismatch of read bytes. Expected '{msgSize}', read '{bytesRead}'");
                     }
@@ -370,32 +370,19 @@ namespace SynthesisAPI.Aether.Lobby {
 
         private const bool TRUE = true;
         
-        private static Result<bool, Exception> WriteMessage(LobbyMessage message, NetworkStream stream, Mutex? mutex = null, bool debug = false) {
+        private static Result<bool, Exception> WriteMessage(LobbyMessage message, NetworkStream stream, Mutex? mutex = null) {
             try {
                 int size = message.CalculateSize();
-                if (debug) {
-                    Logger.Log($"WRITE DEBUG: Message size '{size}' bytes");
-                }
                 mutex?.WaitOne();
-                if (debug) {
-                    Logger.Log("Mutex Secured");
-                }
                 stream.Write(BitConverter.GetBytes(size), 0, 4); 
-                if (debug) {
-                    Logger.Log("Size Written");
-                }
                 message.WriteTo(stream);
-                if (debug) {
-                    Logger.Log("Message Written");
-                }
                 stream.Flush();
-                if (debug) {
-                    Logger.Log("Stream Flushed");
-                }
-                mutex?.ReleaseMutex();
+
                 return new Result<bool, Exception>(TRUE);
             } catch (Exception e) {
                 return new Result<bool, Exception>(e);
+            } finally {
+                mutex?.ReleaseMutex();
             }
         }
 

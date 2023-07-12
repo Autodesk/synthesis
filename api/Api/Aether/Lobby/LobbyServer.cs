@@ -44,10 +44,15 @@ namespace SynthesisAPI.Aether.Lobby {
 
             public IReadOnlyCollection<string> Clients {
                 get {
+                    List<string> clientsInfo;
                     _clientsLock.EnterReadLock();
-                    var clientsInfo = new List<string>(_clients.Count);
-                    _clients.Values.ForEach(x => clientsInfo.Add(x.ToString()));
-                    _clientsLock.ExitReadLock();
+                    try {
+                        clientsInfo = new List<string>(_clients.Count);
+                        _clients.Values.ForEach(x => clientsInfo.Add(x.ToString()));
+                    } finally {
+                        _clientsLock.ExitReadLock();
+                    }
+
                     return clientsInfo.AsReadOnly();
                 }
             }
@@ -56,9 +61,14 @@ namespace SynthesisAPI.Aether.Lobby {
             private List<DataRobot> _availableRobots;
             public IReadOnlyCollection<DataRobot> AvailableRobots {
                 get {
+                    List<DataRobot> robots;
                     _robotDataLock.EnterReadLock();
-                    var robots = new List<DataRobot>(_availableRobots);
-                    _robotDataLock.ExitReadLock();
+                    try {
+                        robots = new List<DataRobot>(_availableRobots);
+                    } finally {
+                        _robotDataLock.ExitReadLock();
+                    }
+
                     return robots.AsReadOnly();
                 }
             }
@@ -102,15 +112,15 @@ namespace SynthesisAPI.Aether.Lobby {
                             var clientThread = new Thread(() => ClientListener(client));
                             clientThread.Start();
                             _clientThreads.AddLast(clientThread);
-                            _clientsLock.ExitWriteLock();
                         }
 
                     }
                 } catch (ObjectDisposedException) {
                 } catch (Exception e) {
                     Logger.Log($"Failed to accept new client: {e.Message}");
+                } finally {
+                    _clientsLock.ExitWriteLock();
                 }
-
 
                 if (_isAlive)
                     _listener.BeginAcceptTcpClient(AcceptTcpClient, null);
@@ -159,100 +169,111 @@ namespace SynthesisAPI.Aether.Lobby {
             }
 
             private void OnGetLobbyInformation(LobbyMessage.Types.ToGetLobbyInformation _, LobbyClientHandler handler) {
+                LobbyMessage.Types.FromGetLobbyInformation response;
                 _clientsLock.EnterReadLock();
 
-                LobbyMessage.Types.FromGetLobbyInformation response = new LobbyMessage.Types.FromGetLobbyInformation {
-                    LobbyInformation = new LobbyInformation()
-                };
-                _clients.Values.ForEach(x => response.LobbyInformation.Clients.Add(x.ClientInformation));
-                
-                _clientsLock.ExitReadLock();
+                try {
+                    response = new LobbyMessage.Types.FromGetLobbyInformation {
+                        LobbyInformation = new LobbyInformation()
+                    };
+                    _clients.Values.ForEach(x => response.LobbyInformation.Clients.Add(x.ClientInformation));
+                } finally {
+                    _clientsLock.ExitReadLock();
+                }
                 
                 handler.WriteMessage(new LobbyMessage { FromGetLobbyInformation = response });
             }
 
             private void AcceptRobotData(LobbyMessage.Types.ToDataRobot robot, LobbyClientHandler handler) {
-                Logger.Log("Entering Robot Data Write Lock");
                 _robotDataLock.EnterWriteLock();
-                Logger.Log($"Adding {System.Math.Round(robot.DataRobot.Data.Length / 1000000f, 2)} MB of data");
-                SHA256 sha = SHA256.Create();
-                var checksum = Convert.ToBase64String(sha.ComputeHash(robot.DataRobot.Data.ToByteArray()));
-                Logger.Log($"Robot Check Sum: {checksum}");
-                _availableRobots.Add(new DataRobot(robot.DataRobot));
-                _robotDataLock.ExitWriteLock();
-                Logger.Log("Robot Data added");
+                try {
+                    SHA256 sha = SHA256.Create();
+                    var checksum = Convert.ToBase64String(sha.ComputeHash(robot.DataRobot.Data.ToByteArray()));
+                    _availableRobots.Add(new DataRobot(robot.DataRobot));
+                } finally {
+                    _robotDataLock.ExitWriteLock();
+                }
 
-                Logger.Log("Constructing Response");
                 var response = new LobbyMessage.Types.FromDataRobot();
 
                 _robotDataLock.EnterReadLock();
-                response.AllAvailableRobots.AddRange(_availableRobots.Select(x => new DataRobot { Name = x.Name, Description = x.Description, Guid = x.Guid }));
-                _robotDataLock.ExitReadLock();
+                try {
+                    response.AllAvailableRobots.AddRange(_availableRobots.Select(x => new DataRobot { Name = x.Name, Description = x.Description, Guid = x.Guid }));
+                } finally {
+                    _robotDataLock.ExitReadLock();
+                }
 
-                var respResult = handler.WriteMessage(new LobbyMessage { FromDataRobot = response }, debug: true);
+                var respResult = handler.WriteMessage(new LobbyMessage { FromDataRobot = response });
                 if (respResult.isError) {
                     Logger.Log($"Response write encountered error: {respResult.GetError().Message}");
-                } else {
-                    Logger.Log("Sent Response successfully!!!");
                 }
             }
 
             private void OnControllableStateUpdate(LobbyMessage.Types.ToUpdateControllableState updateRequest, LobbyClientHandler handler) {
+                RemoteData data;
 
                 _remoteDataLock.EnterReadLock();
-                var data = _remoteData[updateRequest.Guid];
-                _remoteDataLock.ExitReadLock();
+                try {
+                    data = _remoteData[updateRequest.Guid];
+                } finally {
+                    _remoteDataLock.ExitReadLock();
+                }
 
                 data.EnterWriteLock();
-
-                updateRequest.Data.ForEach(x => {
-                    data.State.SetValue(x.SignalGuid, x.Value);
-                });
-
-                data.ExitWriteLock();
+                try {
+                    updateRequest.Data.ForEach(x => {
+                        data.State.SetValue(x.SignalGuid, x.Value);
+                    });
+                } finally {
+                    data.ExitWriteLock();
+                }
 
                 var response = new LobbyMessage.Types.FromSimulationTransformData();
                 
                 _remoteDataLock.EnterReadLock();
-                _remoteData.ForEach(kvp => {
-                    kvp.Value.EnterReadLock();
-                    response.TransformData.Add(kvp.Value.Transforms);
-                    kvp.Value.ExitReadLock();
-                });
-                _remoteDataLock.ExitReadLock();
+                try {
+                    _remoteData.ForEach(kvp => {
+                        kvp.Value.EnterReadLock();
+                        response.TransformData.Add(kvp.Value.Transforms);
+                        kvp.Value.ExitReadLock();
+                    });
+                } finally {
+                    _remoteDataLock.ExitReadLock();
+                }
 
                 handler.WriteMessage(new LobbyMessage { FromSimulationTransformData = response });
             }
 
             private void OnTransformDataUpdate(LobbyMessage.Types.ToUpdateTransformData updateRequest, LobbyClientHandler handler) {
+                var response = new LobbyMessage.Types.FromControllableStates();
                 _remoteDataLock.EnterReadLock();
+                try {
+                    updateRequest.TransformData.ForEach(x => {
+                        var data = _remoteData[x.Guid];
+                        data.EnterWriteLock();
 
-                updateRequest.TransformData.ForEach(x => {
-                    var data = _remoteData[x.Guid];
-                    data.EnterWriteLock();
+                        x.Transforms.ForEach(kvp => {
+                            data.Transforms.Transforms[kvp.Key] = kvp.Value;
+                        });
 
-                    x.Transforms.ForEach(kvp => {
-                        data.Transforms.Transforms[kvp.Key] = kvp.Value;
+                        data.ExitWriteLock();
                     });
 
-                    data.ExitWriteLock();
-                });
 
-                var response = new LobbyMessage.Types.FromControllableStates();
-
-                _remoteData.ForEach(kvp => {
-                    kvp.Value.EnterWriteLock();
-                    if (kvp.Value.State.HasUpdates) {
-                        SignalUpdates updates = new SignalUpdates {
-                            Guid = kvp.Key
-                        };
-                        updates.UpdatedSignals.AddRange(kvp.Value.State.CompileChanges());
-                        response.AllUpdates.Add(updates);
-                    }
-                    kvp.Value.ExitWriteLock();
-                });
-
-                _remoteDataLock.ExitReadLock();
+                    _remoteData.ForEach(kvp => {
+                        kvp.Value.EnterWriteLock();
+                        if (kvp.Value.State.HasUpdates) {
+                            SignalUpdates updates = new SignalUpdates {
+                                Guid = kvp.Key
+                            };
+                            updates.UpdatedSignals.AddRange(kvp.Value.State.CompileChanges());
+                            response.AllUpdates.Add(updates);
+                        }
+                        kvp.Value.ExitWriteLock();
+                    });
+                } finally {
+                    _remoteDataLock.ExitReadLock();
+                }
 
                 handler.WriteMessage(new LobbyMessage { FromControllableStates = response });
             }
@@ -262,9 +283,14 @@ namespace SynthesisAPI.Aether.Lobby {
                     return null;
 
                 var data = _remoteData[guid];
+                ControllableState state;
                 data.EnterReadLock();
-                var state = new ControllableState(data.State);
-                data.ExitReadLock();
+                try {
+                    state = new ControllableState(data.State);
+                } finally {
+                    data.ExitReadLock();
+                }
+
                 return state;
             }
 
