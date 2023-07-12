@@ -75,6 +75,7 @@ namespace Synthesis.Import {
         private void Load() {
             byte[] buff = File.ReadAllBytes(_path);
 
+            // Check if data is compressed, and if so decompress it
             if (buff[0] == 0x1f && buff[1] == 0x8b) {
                 int originalLength = BitConverter.ToInt32(buff, buff.Length - 4);
 
@@ -202,10 +203,10 @@ namespace Synthesis.Import {
                 var filter        = bodyObject.AddComponent<MeshFilter>();
                 var renderer      = bodyObject.AddComponent<MeshRenderer>();
                 filter.sharedMesh = body.TriangleMesh.UnityMesh;
-                renderer.material = assemblyData.Materials.Appearances.ContainsKey(instance.Appearance)
-                                        ? assemblyData.Materials.Appearances[instance.Appearance].UnityMaterial
-                                    : assemblyData.Materials.Appearances.ContainsKey(body.AppearanceOverride)
-                                        ? assemblyData.Materials.Appearances[body.AppearanceOverride].UnityMaterial
+                renderer.material = assemblyData.Materials.Appearances.TryGetValue(instance.Appearance, out var appearance)
+                                        ? appearance.UnityMaterial
+                                    : assemblyData.Materials.Appearances.TryGetValue(body.AppearanceOverride, out var materialsAppearance)
+                                        ? materialsAppearance.UnityMaterial
                                         : Appearance.DefaultAppearance.UnityMaterial; // Setup the override
                 // renderer.material = assemblyData.Materials.Appearances.ContainsKey(instance.Appearance)
                 // 	? assemblyData.Materials.Appearances[instance.Appearance].UnityMaterial

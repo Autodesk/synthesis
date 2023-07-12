@@ -137,7 +137,7 @@ namespace UI.Dynamic.Panels.Spawning {
             //grounded.gameObject.AddComponent<Rigidbody>();
             //grounded.parent = parent;
 
-            _parts.ForEach(p => {
+            /*_parts.ForEach(p => {
                 p.Transform.SetParent(parent);
 
                 if (p.ConnectedPoint == null)
@@ -155,7 +155,7 @@ namespace UI.Dynamic.Panels.Spawning {
                 otherJoint.connectedBody = thisJoint.GetComponent<Rigidbody>();
             });
 
-            PhysicsManager.IsFrozen = false;
+            PhysicsManager.IsFrozen = false;*/
         }
     }
 }

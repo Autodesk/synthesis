@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Mirabuf;
 using Newtonsoft.Json;
 using Synthesis;
 using Synthesis.Import;
@@ -128,9 +129,25 @@ public class MixAndMatchSimObject : SimObject, IPhysicsOverridable, IGizmo {
         return new Bounds(((max + min) / 2f) - top.position, max - min);
     }
 
-    public static MixAndMatchSimObject SpawnPart(string filePath)
+    public static GameObject CreatePartMesh(string filePath) {
+        return CreatePartMesh(filePath, Vector3.up, Quaternion.identity);
+    }
+
+    public static GameObject CreatePartMesh(string filePath, Vector3 position, Quaternion rotation) {
+        MirabufLive miraLive = new MirabufLive(filePath);
+        Assembly assembly = miraLive.MiraAssembly;
+        
+        GameObject assemblyObject = new GameObject(assembly.Info.Name);
+        assemblyObject.transform.SetParent(GameObject.Find("Game").transform);
+        
+        miraLive.GenerateDefinitionObjects(assemblyObject, false);
+        
+        return assemblyObject;
+    }
+
+    /*public static MixAndMatchSimObject SpawnPart(string filePath)
     {
-        return SpawnPart(filePath, Vector3.up/2f, Quaternion.identity);
+        return SpawnPart(filePath, Vector3.up, Quaternion.identity);
     }
 
     public static MixAndMatchSimObject SpawnPart(string filePath, Vector3 position, Quaternion rotation)
@@ -147,7 +164,7 @@ public class MixAndMatchSimObject : SimObject, IPhysicsOverridable, IGizmo {
         mira.MainObject.transform.rotation = rotation;
 
         return simObject;
-    }
+    }*/
 
     private Dictionary<Rigidbody, (bool isKine, Vector3 vel, Vector3 angVel)> _preFreezeStates = new();
     
