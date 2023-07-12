@@ -16,9 +16,7 @@ public class ConfigMotorModal : ModalDynamic {
 
     private static RobotSimObject _robot;
     private bool _robotISSwerve;
-    private ConfigMotor[] _otherMotors;
-    private ConfigMotor[] _driveMotors;
-    private ConfigMotor[] _turnMotors;
+    private ConfigMotor[] _motors;
     private WheelDriver[] _driveDrivers;
     private RotationalDriver[] _turnDrivers;
 
@@ -32,66 +30,60 @@ public class ConfigMotorModal : ModalDynamic {
 
     public override void Create() {
         _robot         = RobotSimObject.GetCurrentlyPossessedRobot();
-        int motorCount = 0;
         _robotISSwerve = _robot.ConfiguredDrivetrainType.Equals(RobotSimObject.DrivetrainType.SWERVE);
+        _motors        = new ConfigMotor[SimulationManager.Drivers[_robot.Name].Count];
+
+        // set up drivetrain arrays
+        var driveMotorCount = 0;
+        if (_robotISSwerve) {
+            driveMotorCount = _robot.modules.Length;
+        } else {
+            driveMotorCount = _robot.GetLeftRightWheels()!.Value.leftWheels.Count +
+                             _robot.GetLeftRightWheels()!.Value.rightWheels.Count;
+        }
 
         var i = 0;
-        // set up drivetrain arrays
         if (_robotISSwerve) {
-            _driveMotors  = new ConfigMotor[_robot.modules.Length];
-            _driveDrivers = new WheelDriver[_robot.modules.Length];
-            for (i = 0; i < _robot.modules.Length; i++) {
-                _driveMotors[i]        = new ConfigMotor();
-                _driveMotors[i].driver = _robot.modules[i].driver;
-                _driveDrivers[i]       = _robot.modules[i].driver;
+            _driveDrivers = new WheelDriver[driveMotorCount];
+            for (i = 0; i < driveMotorCount; i++) {
+                _motors[i]        = new ConfigMotor(MotorType.Drive);
+                _motors[i].driver = _robot.modules[i].driver;
+                _driveDrivers[i]  = _robot.modules[i].driver;
             }
 
-            _turnMotors  = new ConfigMotor[_robot.modules.Length];
-            _turnDrivers = new RotationalDriver[_robot.modules.Length];
-            for (i = 0; i < _robot.modules.Length; i++) {
-                _turnMotors[i]        = new ConfigMotor();
-                _turnMotors[i].driver = _robot.modules[i].azimuth;
-                _turnDrivers[i]       = _robot.modules[i].azimuth;
+            _turnDrivers = new RotationalDriver[driveMotorCount];
+            for (i = 0; i < driveMotorCount; i++) {
+                _motors[i + driveMotorCount]        = new ConfigMotor(MotorType.Turn);
+                _motors[i + driveMotorCount].driver = _robot.modules[i].azimuth;
+                _turnDrivers[i]            = _robot.modules[i].azimuth;
             }
-
-            motorCount -= _turnMotors.Length;
         } else {
-            int wheelCount = _robot.GetLeftRightWheels()!.Value.leftWheels.Count +
-                             _robot.GetLeftRightWheels()!.Value.rightWheels.Count;
-            _driveMotors  = new ConfigMotor[wheelCount];
-            _driveDrivers = new WheelDriver[wheelCount];
+            _driveDrivers = new WheelDriver[driveMotorCount];
             _robot.GetLeftRightWheels()!.Value.leftWheels.ForEach(x => {
-                _driveMotors[i]        = new ConfigMotor();
-                _driveMotors[i].driver = x;
-                _driveDrivers[i]       = x;
+                _motors[i]        = new ConfigMotor(MotorType.Drive);
+                _motors[i].driver = x;
+                _driveDrivers[i]  = x;
                 i++;
             });
             _robot.GetLeftRightWheels()!.Value.rightWheels.ForEach(x => {
-                _driveMotors[i]        = new ConfigMotor();
-                _driveMotors[i].driver = x;
-                _driveDrivers[i]       = x;
+                _motors[i]        = new ConfigMotor(MotorType.Drive);
+                _motors[i].driver = x;
+                _driveDrivers[i]  = x;
                 i++;
             });
         }
 
-        // grab original target velocity for drivetrain
-        motorCount += SimulationManager.Drivers[_robot.Name].Count - _driveMotors.Length;
-        _driveMotors[0].origVel = (_driveMotors[0].driver as WheelDriver).Motor.targetVelocity;
+        // set up other motors array
         if (_robotISSwerve) {
-            _turnMotors[0].origVel = (_turnMotors[0].driver as RotationalDriver).Motor.targetVelocity;
+            i = driveMotorCount * 2;
+        } else {
+            i = driveMotorCount;
         }
 
-        Driver[] drivers = new Driver[SimulationManager.Drivers[_robot.Name].Count];
-        i                = 0;
-        SimulationManager.Drivers[_robot.Name].ForEach(x => { drivers[i] = x; });
-
-        // set up other motors array
-        _otherMotors = new ConfigMotor[motorCount];
-        i            = 0;
         SimulationManager.Drivers[_robot.Name].ForEach(x => {
             if (Array.IndexOf(_driveDrivers, x) == -1 && (!_robotISSwerve || Array.IndexOf(_turnDrivers, x) == -1)) {
-                _otherMotors[i]        = new ConfigMotor();
-                _otherMotors[i].driver = x;
+                _motors[i]        = new ConfigMotor(MotorType.Other);
+                _motors[i].driver = x;
                 i++;
             }
         });
@@ -105,13 +97,7 @@ public class ConfigMotorModal : ModalDynamic {
             DynamicUIManager.CloseActiveModal();
 
             // Save to Mira
-            if (_driveMotors[0].velChanged) {
-                _driveMotors.ForEach(x => { SaveToMira(x.driver as WheelDriver); });
-            }
-            if (_robotISSwerve && _turnMotors[0].velChanged) {
-                _turnMotors.ForEach(x => { SaveToMira(x.driver as RotationalDriver); });
-            }
-            _otherMotors.ForEach(x => {
+            _motors.ForEach(x => {
                 if (x.velChanged) {
                     if (x.driver is WheelDriver) {
                         SaveToMira(x.driver as WheelDriver);
@@ -129,13 +115,7 @@ public class ConfigMotorModal : ModalDynamic {
 
         CancelButton.AddOnClickedEvent(b => {
             // change the target velocities back
-            if (_driveMotors[0].velChanged) {
-                ChangeDriveVelocity(_driveMotors[0].origVel);
-            }
-            if (_robotISSwerve && _turnMotors[0].velChanged) {
-                ChangeTurnVelocity(_turnMotors[0].origVel);
-            }
-            _otherMotors.ForEach(x => {
+            _motors.ForEach(x => {
                 if (x.velChanged) {
                     x.setTargetVelocity(x.origVel);
                 }
@@ -158,26 +138,28 @@ public class ConfigMotorModal : ModalDynamic {
 
         _scrollViewWidth = _scrollView.Parent!.RectOfChildren().width - SCROLL_WIDTH;
 
-        CreateEntry("Drive", (_driveMotors[0].driver as WheelDriver).Motor.targetVelocity, x => ChangeDriveVelocity(x));
+        CreateEntry("Drive", (_motors[0].driver as WheelDriver).Motor.targetVelocity, x => ChangeDriveVelocity(x));
         if (_robotISSwerve) {
             CreateEntry(
-                "Turn", (_turnMotors[0].driver as RotationalDriver).Motor.targetVelocity, x => ChangeTurnVelocity(x));
+                "Turn", (_motors[driveMotorCount].driver as RotationalDriver).Motor.targetVelocity, x => ChangeTurnVelocity(x));
         }
 
-        // original target velocities and entry in scrollview for each other motor
-        for (i = 0; i < _otherMotors.Length; i++) {
-            var driver = _otherMotors[i].driver;
+        // original target velocities for each motor and entry in scrollview for other motors
+        for (i = 0; i < _motors.Length; i++) {
+            var driver = _motors[i].driver;
             switch (driver) {
                 case (RotationalDriver):
-                    _otherMotors[i].origVel = (driver as RotationalDriver).Motor.targetVelocity;
+                    _motors[i].origVel = (driver as RotationalDriver).Motor.targetVelocity;
                     break;
                 case (WheelDriver):
-                    _otherMotors[i].origVel = (driver as WheelDriver).Motor.targetVelocity;
+                    _motors[i].origVel = (driver as WheelDriver).Motor.targetVelocity;
                     break;
             }
 
-            int j = i;
-            CreateEntry(i.ToString(), _otherMotors[j].origVel, x => _otherMotors[j].setTargetVelocity(x));
+            if (_motors[i].motorType == MotorType.Other) {
+                int j = i;
+                CreateEntry(i.ToString(), _motors[j].origVel, x => _motors[j].setTargetVelocity(x));
+            }
         }
     }
 
@@ -198,24 +180,29 @@ public class ConfigMotorModal : ModalDynamic {
     }
 
     private void ChangeDriveVelocity(float vel) {
-        foreach (ConfigMotor motor in _driveMotors) {
-            motor.setTargetVelocity(vel);
+        foreach (ConfigMotor motor in _motors) {
+            if (motor.motorType == MotorType.Drive)
+                motor.setTargetVelocity(vel);
         }
     }
 
     private void ChangeTurnVelocity(float vel) {
-        foreach (ConfigMotor motor in _turnMotors) {
-            motor.setTargetVelocity(vel);
+        foreach (ConfigMotor motor in _motors) {
+            if (motor.motorType == MotorType.Turn)
+                motor.setTargetVelocity(vel);
         }
     }
 
-    public class ConfigMotor {
+    private class ConfigMotor {
         public Driver driver { get; set; }
         public float origVel { get; set; }
         private float _force { get; set; }
         public bool velChanged { get; set; } = false;
+        public MotorType motorType { get; set; }
 
-        public ConfigMotor() {}
+        public ConfigMotor(MotorType t) {
+            motorType = t;
+        }
 
         public void setTargetVelocity(float v) {
             if (driver is RotationalDriver) {
@@ -229,6 +216,12 @@ public class ConfigMotorModal : ModalDynamic {
             }
             velChanged = true;
         }
+    }
+
+    private enum MotorType {
+        Drive,
+        Turn,
+        Other
     }
 
     private void SaveToMira(WheelDriver driver) {

@@ -201,6 +201,29 @@ public static class MainHUD {
         PhysicsManager.IsFrozen = false;
     }
 
+    public static void SetUpMatch() {
+        MainHUD.AddItemToDrawer("Multibot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>());
+        MainHUD.AddItemToDrawer("Camera View", b => DynamicUIManager.CreateModal<ChangeViewModal>(),
+            icon: SynthesisAssetCollection.GetSpriteByName("CameraIcon"));
+        MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(),
+            icon: SynthesisAssetCollection.GetSpriteByName("settings"));
+        MainHUD.AddItemToDrawer("DriverStation",
+            b => DynamicUIManager.CreatePanel<BetaWarningPanel>(
+                false, (Action) (() => DynamicUIManager.CreatePanel<DriverStationPanel>(true))),
+            icon: SynthesisAssetCollection.GetSpriteByName("driverstation-icon"));
+        MainHUD.AddItemToDrawer("Scoring Zones", b => {
+            if (FieldSimObject.CurrentField == null) {
+                SynthesisAPI.Utilities.Logger.Log("No field loaded!", LogLevel.Info);
+            } else {
+                if (!DynamicUIManager.PanelExists<ScoringZonesPanel>())
+                    DynamicUIManager.CreatePanel<ScoringZonesPanel>();
+            }
+        });
+
+        if (!(MatchStateMachine.Instance.CurrentState.StateName is MatchStateMachine.StateName.RobotPositioning))
+            PhysicsManager.IsFrozen = false;
+    }
+
     public static void SetUpConfig() {
         isConfig = true;
 
@@ -228,7 +251,7 @@ public static class MainHUD {
             if (DynamicUIManager.PanelExists<ConfigureGamepiecePickupPanel>())
                 DynamicUIManager.ClosePanel<ConfigureGamepiecePickupPanel>();
             DynamicUIManager.CreatePanel<ConfigureShotTrajectoryPanel>();
-    }   );
+        }  );
 
         MainHUD.AddItemToDrawer("Motors", b => { DynamicUIManager.CreateModal<ConfigMotorModal>(); });
         MainHUD.AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(),
@@ -254,28 +277,5 @@ public static class MainHUD {
                 "Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
 
         isConfig = false;
-    }
-
-    public static void SetUpMatch() {
-        MainHUD.AddItemToDrawer("Multibot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>());
-        MainHUD.AddItemToDrawer("Camera View", b => DynamicUIManager.CreateModal<ChangeViewModal>(),
-            icon: SynthesisAssetCollection.GetSpriteByName("CameraIcon"));
-        MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(),
-            icon: SynthesisAssetCollection.GetSpriteByName("settings"));
-        MainHUD.AddItemToDrawer("DriverStation",
-            b => DynamicUIManager.CreatePanel<BetaWarningPanel>(
-                false, (Action) (() => DynamicUIManager.CreatePanel<DriverStationPanel>(true))),
-            icon: SynthesisAssetCollection.GetSpriteByName("driverstation-icon"));
-        MainHUD.AddItemToDrawer("Scoring Zones", b => {
-            if (FieldSimObject.CurrentField == null) {
-                SynthesisAPI.Utilities.Logger.Log("No field loaded!", LogLevel.Info);
-            } else {
-                if (!DynamicUIManager.PanelExists<ScoringZonesPanel>())
-                    DynamicUIManager.CreatePanel<ScoringZonesPanel>();
-            }
-        });
-
-        if (!(MatchStateMachine.Instance.CurrentState.StateName is MatchStateMachine.StateName.RobotPositioning))
-            PhysicsManager.IsFrozen = false;
     }
 }
