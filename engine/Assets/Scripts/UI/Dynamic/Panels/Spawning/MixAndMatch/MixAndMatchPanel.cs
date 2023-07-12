@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using SimObjects.MixAndMatch;
 using Synthesis.Gizmo;
+using Synthesis.Physics;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
 
@@ -38,14 +39,14 @@ namespace UI.Dynamic.Panels.Spawning
             return u;
         };
 
-        public MixAndMatchPanel() : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT))
-        {
-        }
+        public MixAndMatchPanel() : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) { }
 
         public List<MixAndMatchPart> _parts = new();
 
         public override bool Create()
         {
+            PhysicsManager.IsFrozen = true;
+            
             Title.SetText("Mix & Match");
 
             AcceptButton.StepIntoLabel(l => l.SetText("Close"))
@@ -65,7 +66,9 @@ namespace UI.Dynamic.Panels.Spawning
                 .AddOnClickedEvent(
                     _ =>
                     {
-                        _parts.Add(new MixAndMatchPart());
+                        if (_parts.Count > 0)
+                            _parts.Add(_parts[0].Duplicate());
+                        else _parts.Add(new MixAndMatchPart());
                         AddPartEntries();
                     })
                 .ApplyTemplate(VerticalLayout);

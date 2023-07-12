@@ -84,6 +84,8 @@ namespace UI.Dynamic.Panels.Spawning
                         point.transform.localScale = Vector3.one * .5f;
                         point.transform.SetParent(_part.Transform);
                         point.layer = LayerMask.NameToLayer("SnapPoint");
+                        point.GetComponent<Collider>().enabled = false;
+                        
                         _part.SnapPoints.Add(point);
                         AddAllPoints();
                     })
@@ -158,12 +160,11 @@ namespace UI.Dynamic.Panels.Spawning
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (UnityEngine.Physics.Raycast(ray, out var hit, 100, _snapPointLayerMask))
                 {
-                    Debug.Log(hit.transform.worldToLocalMatrix.MultiplyVector(-hit.transform.forward) + " " + hit.transform.forward);
                     _part.Transform.position = hit.transform.position;
 
-                    _part.Transform.rotation = Quaternion.LookRotation(-hit.transform.forward /*- _part.Transform.forward*/);
-                    _part.Transform.Rotate(/*Vector3.Scale(*/
-                        -_part.SnapPoints[0].transform.localRotation.eulerAngles/*, new Vector3(1, -1, 1)*/);
+                    _part.Transform.rotation = Quaternion.LookRotation(-hit.transform.forward, Vector3.up);
+                    _part.Transform.Rotate(-_part.SnapPoints[0].transform.localRotation.eulerAngles);
+                    //Debug.Log($"Rotation: {-hit.transform.forward} and {Quaternion.LookRotation(-hit.transform.forward, Vector3.up)}");
                     _part.Transform.Translate(-_part.SnapPoints[0].transform.localPosition);
                 }
             }
