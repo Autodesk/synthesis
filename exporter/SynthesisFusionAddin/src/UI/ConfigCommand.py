@@ -1208,14 +1208,19 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                     )
             else:
                 from os.path import expanduser
+
                 home = expanduser("~")
                 if isRobot:
                     savepath = (
-                        home + "/.config/Autodesk/Synthesis/Mira/" + processedFileName + ".mira"
+                        home
+                        + "/.config/Autodesk/Synthesis/Mira/"
+                        + processedFileName
+                        + ".mira"
                     )
                 else:
                     savepath = (
-                        home + "/.config/Autodesk/Synthesis/Mira/Fields"
+                        home
+                        + "/.config/Autodesk/Synthesis/Mira/Fields"
                         + processedFileName
                         + ".mira"
                     )

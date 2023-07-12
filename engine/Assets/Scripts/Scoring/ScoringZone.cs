@@ -45,8 +45,8 @@ public class ScoringZone : IPhysicsOverridable {
         ScoringZoneListener listener = GameObject.AddComponent<ScoringZoneListener>();
         listener.ScoringZone         = this;
 
-        _collider                    = GameObject.GetComponent<Collider>();
-        _meshRenderer                = GameObject.GetComponent<MeshRenderer>();
+        _collider     = GameObject.GetComponent<Collider>();
+        _meshRenderer = GameObject.GetComponent<MeshRenderer>();
 
         _collider.isTrigger = true;
 
@@ -58,11 +58,9 @@ public class ScoringZone : IPhysicsOverridable {
     }
 
     private void UpdateColor() {
-        Color color =
-            _alliance == Alliance.Red ?
-                ColorManager.TryGetColor(ColorManager.SYNTHESIS_RED_ALLIANCE) :
-                ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLUE_ALLIANCE);
-        color.a = 0.8f;
+        Color color  = _alliance == Alliance.Red ? ColorManager.TryGetColor(ColorManager.SYNTHESIS_RED_ALLIANCE)
+                                                 : ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLUE_ALLIANCE);
+        color.a      = 0.8f;
         Material mat = new Material(Appearance.DefaultTransparentShader);
         mat.SetColor(Appearance.TRANSPARENT_COLOR, color);
         mat.SetFloat(Appearance.TRANSPARENT_SMOOTHNESS, 0);

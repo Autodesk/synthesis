@@ -11,6 +11,7 @@ from proto.proto_out import material_pb2
 
 OPACITY_RAMPING_CONSTANT = 14.0
 
+
 def _MapAllPhysicalMaterials(
     physicalMaterials: list,
     materials: material_pb2.Materials,
@@ -216,8 +217,10 @@ def getMaterialAppearance(
         elif matModelType == 3:
             baseColor = properties.itemById("transparent_color").value
             transparent_distance = properties.itemById("transparent_distance").value
-            
-            opac = (255.0 * transparent_distance) / (transparent_distance + OPACITY_RAMPING_CONSTANT)
+
+            opac = (255.0 * transparent_distance) / (
+                transparent_distance + OPACITY_RAMPING_CONSTANT
+            )
             if opac > 255:
                 opac = 255
             elif opac < 0:

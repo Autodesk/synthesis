@@ -42,8 +42,7 @@ namespace Synthesis.UI {
             (SYNTHESIS_HIGHLIGHT_HOVER, new Color32(89, 255, 133, 255)),
             (SYNTHESIS_HIGHLIGHT_SELECT, new Color32(255, 89, 133, 255)),
             (SYNTHESIS_RED_ALLIANCE, new Color32(240, 62, 62, 255)),
-            (SYNTHESIS_BLUE_ALLIANCE, new Color32(62, 80, 240, 255))
-        };
+            (SYNTHESIS_BLUE_ALLIANCE, new Color32(62, 80, 240, 255)) };
 
         static ColorManager() {
             // File.Delete(path);
