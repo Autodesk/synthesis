@@ -176,6 +176,9 @@ public static class MainHUD {
     }
 
     public static void SetUpPractice() {
+        foreach (string name in MainHUD.DrawerTitles)
+            MainHUD.RemoveItemFromDrawer(name);
+
         MainHUD.AddItemToDrawer("Spawn", b => DynamicUIManager.CreateModal<SpawningModal>(),
             icon: SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
         MainHUD.AddItemToDrawer("Multibot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>());
@@ -202,6 +205,9 @@ public static class MainHUD {
     }
 
     public static void SetUpMatch() {
+        foreach (string name in MainHUD.DrawerTitles)
+            MainHUD.RemoveItemFromDrawer(name);
+
         MainHUD.AddItemToDrawer("Multibot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>());
         MainHUD.AddItemToDrawer("Camera View", b => DynamicUIManager.CreateModal<ChangeViewModal>(),
             icon: SynthesisAssetCollection.GetSpriteByName("CameraIcon"));
@@ -268,9 +274,6 @@ public static class MainHUD {
 
     public static void LeaveConfig() {
         DynamicUIManager.CloseAllPanels();
-
-        foreach (string name in MainHUD.DrawerTitles)
-            MainHUD.RemoveItemFromDrawer(name);
 
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
             MainHUD.AddItemToDrawer(
