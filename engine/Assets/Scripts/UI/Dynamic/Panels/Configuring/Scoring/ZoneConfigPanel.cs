@@ -89,13 +89,14 @@ public class ZoneConfigPanel : PanelDynamic {
             _pressedButtonToClose = true;
             // call one last time to update data
             // don't want to update data and call callback on every character typed for name
-            _data.Name            = _zoneNameInput.Value;
-            var parentTransform   = FieldSimObject.CurrentField.FieldObject.transform.Find(_data.Parent);
-            var localPosition = parentTransform.worldToLocalMatrix.MultiplyPoint3x4(_zone.GameObject.transform.position);
-            var localRotation = Quaternion.Inverse(parentTransform.rotation) * _zone.GameObject.transform.rotation;
+            _data.Name          = _zoneNameInput.Value;
+            var parentTransform = FieldSimObject.CurrentField.FieldObject.transform.Find(_data.Parent);
+            var localPosition =
+                parentTransform.worldToLocalMatrix.MultiplyPoint3x4(_zone.GameObject.transform.position);
+            var localRotation   = Quaternion.Inverse(parentTransform.rotation) * _zone.GameObject.transform.rotation;
             _data.LocalPosition = (localPosition.x, localPosition.y, localPosition.z);
             _data.LocalRotation = (localRotation.x, localRotation.y, localRotation.z, localRotation.w);
-            _zone.ZoneData        = _data;
+            _zone.ZoneData      = _data;
 
             if (_isNewZone)
                 FieldSimObject.CurrentField.AddScoringZone(_zone);
@@ -212,7 +213,7 @@ public class ZoneConfigPanel : PanelDynamic {
         if (_isNewZone)
             GameObject.Destroy(_zone.GameObject);
         else {
-            _zone.ZoneData = _initialData;
+            _zone.ZoneData                      = _initialData;
             _zone.GameObject.transform.position = _initialPosition;
             _zone.GameObject.transform.rotation = _initialRotation;
             if (_initialParent is null || _initialParent == "")
@@ -244,24 +245,24 @@ public class ZoneConfigPanel : PanelDynamic {
         _data.DestroyGamepiece = zone.DestroyGamepiece;
         _deleteGamepieceToggle.SetState(_zone.DestroyGamepiece, notify: false);
 
-        var localScale = zone.GameObject.transform.localScale;
-        _data.LocalScale     = (localScale.x, localScale.y, localScale.z);
+        var localScale   = zone.GameObject.transform.localScale;
+        _data.LocalScale = (localScale.x, localScale.y, localScale.z);
         _xScaleSlider.SetValue(_data.LocalScale.x);
         _yScaleSlider.SetValue(_data.LocalScale.y);
         _zScaleSlider.SetValue(_data.LocalScale.z);
     }
 
     private void DataUpdated() {
-        var data        = _zone.ZoneData;
-        data.Alliance   = _data.Alliance;
-        data.Points     = _data.Points;
-        data.LocalScale = _data.LocalScale;
-        var parentTransform   = FieldSimObject.CurrentField.FieldObject.transform.Find(_data.Parent);
-        var localPosition = parentTransform.worldToLocalMatrix.MultiplyPoint3x4(_zone.GameObject.transform.position);
-        var localRotation = Quaternion.Inverse(parentTransform.rotation) * _zone.GameObject.transform.rotation;
-        data.LocalPosition = (localPosition.x, localPosition.y, localPosition.z);
-        data.LocalRotation = (localRotation.x, localRotation.y, localRotation.z, localRotation.w);
-        _zone.ZoneData  = data;
+        var data            = _zone.ZoneData;
+        data.Alliance       = _data.Alliance;
+        data.Points         = _data.Points;
+        data.LocalScale     = _data.LocalScale;
+        var parentTransform = FieldSimObject.CurrentField.FieldObject.transform.Find(_data.Parent);
+        var localPosition   = parentTransform.worldToLocalMatrix.MultiplyPoint3x4(_zone.GameObject.transform.position);
+        var localRotation   = Quaternion.Inverse(parentTransform.rotation) * _zone.GameObject.transform.rotation;
+        data.LocalPosition  = (localPosition.x, localPosition.y, localPosition.z);
+        data.LocalRotation  = (localRotation.x, localRotation.y, localRotation.z, localRotation.w);
+        _zone.ZoneData      = data;
     }
 
     public void SetCallback(Action<ScoringZone, bool> callback) {
@@ -270,7 +271,7 @@ public class ZoneConfigPanel : PanelDynamic {
 
     public void SelectParentButton(Button b) {
         if (!_selectingNode) {
-            if (_selectedNode/* || _data.Parent != string.Empty*/) {
+            if (_selectedNode /* || _data.Parent != string.Empty*/) {
                 if (_selectedNode)
                     _selectedNode.enabled = false;
                 _selectedNode = null;
@@ -366,8 +367,9 @@ public class ZoneConfigPanel : PanelDynamic {
         }
         if (_data.Parent is not null) {
             HighlightComponent highlight = FieldSimObject.CurrentField.FieldObject.transform.Find(_data.Parent)
-                .GetComponent<Rigidbody>().GetComponent<HighlightComponent>();
-            highlight.enabled            = false;
+                                               .GetComponent<Rigidbody>()
+                                               .GetComponent<HighlightComponent>();
+            highlight.enabled = false;
         }
         if (!_pressedButtonToClose)
             DoCancel();

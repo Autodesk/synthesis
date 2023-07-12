@@ -69,8 +69,7 @@ namespace Synthesis.Import {
             _findDefinitions = Task<RigidbodyDefinitions>.Factory.StartNew(() => FindRigidbodyDefinitions(this));
         }
 
-        public static MirabufLive OpenMirabufFile(string path)
-            => MirabufCache.Get(path);
+        public static MirabufLive OpenMirabufFile(string path) => MirabufCache.Get(path);
 
 #region File Management
 

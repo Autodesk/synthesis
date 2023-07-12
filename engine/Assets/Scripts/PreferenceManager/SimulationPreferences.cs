@@ -78,12 +78,12 @@ namespace Synthesis.PreferenceManager {
         public static void SetRobotDrivetrainType(string robot,
             RobotSimObject.DrivetrainType drivetrainType) => Instance.SetRobotDrivetrainType(robot, drivetrainType);
 
-        public static IReadOnlyCollection<ScoringZoneData>? GetFieldScoringZones(string field)
-            => Instance.GetFieldScoringZones(field);
+        public static IReadOnlyCollection<ScoringZoneData>? GetFieldScoringZones(
+            string field) => Instance.GetFieldScoringZones(field);
 
-        public static void SetFieldScoringZones(string field, List<ScoringZoneData> zones)
-            => Instance.SetFieldScoringZones(field, zones);
-        
+        public static void SetFieldScoringZones(
+            string field, List<ScoringZoneData> zones) => Instance.SetFieldScoringZones(field, zones);
+
         private class Inner {
             public const string USER_DATA_KEY = "saved-data";
 
@@ -117,7 +117,7 @@ namespace Synthesis.PreferenceManager {
             public void PreSaveDump(IEvent _) {
                 // PreferenceManager.SetPreference(ALL_ROBOT_DATA_KEY, _allRobotData);
                 if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
-                    var live = RobotSimObject.GetCurrentlyPossessedRobot().MiraLive;
+                    var live                                = RobotSimObject.GetCurrentlyPossessedRobot().MiraLive;
                     live.MiraAssembly.Data.Parts.UserData ??= new Mirabuf.UserData();
                     live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY] =
                         JsonConvert.SerializeObject(_allRobotData[live.MiraAssembly.Info.GUID]);
@@ -125,7 +125,7 @@ namespace Synthesis.PreferenceManager {
                 }
 
                 if (FieldSimObject.CurrentField != null) {
-                    var live = FieldSimObject.CurrentField.MiraLive;
+                    var live                                = FieldSimObject.CurrentField.MiraLive;
                     live.MiraAssembly.Data.Parts.UserData ??= new Mirabuf.UserData();
                     live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY] =
                         JsonConvert.SerializeObject(_allFieldData[live.MiraAssembly.Info.GUID]);
@@ -148,7 +148,7 @@ namespace Synthesis.PreferenceManager {
                         live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY])!;
                 }
             }
-            
+
 #region Robot Data
 
 #region Getters
@@ -222,9 +222,9 @@ namespace Synthesis.PreferenceManager {
                     return RobotSimObject.DrivetrainType.ARCADE;
                 return _allRobotData[robot].DrivetrainType ?? RobotSimObject.DrivetrainType.ARCADE;
             }
-            
+
 #endregion
-            
+
 #region Setters
 
             public void SetRobotInput(string robot, string inputKey, Analog inputValue) {
@@ -276,7 +276,7 @@ namespace Synthesis.PreferenceManager {
             }
 
 #endregion
-            
+
 #endregion
 
 #region Field Data
@@ -286,7 +286,7 @@ namespace Synthesis.PreferenceManager {
             public IReadOnlyCollection<ScoringZoneData>? GetFieldScoringZones(string field) {
                 if (!_allFieldData.ContainsKey(field))
                     return null;
-                
+
                 return _allFieldData[field].ScoringZones.AsReadOnly();
             }
 
@@ -305,7 +305,6 @@ namespace Synthesis.PreferenceManager {
 #endregion
 
 #endregion
-
         }
 
         private static Inner _instance;
@@ -336,14 +335,22 @@ namespace Synthesis.PreferenceManager {
             JointSpeeds  = new Dictionary<string, float>();
         }
 
-        [JsonProperty] public string AssemblyGuid;
-        [JsonProperty] public Dictionary<string, InputData> InputData;
-        [JsonProperty] public Dictionary<string, JointMotor> JointMotors;
-        [JsonProperty] public Dictionary<string, float> JointSpeeds;
-        [JsonProperty] public ITD? IntakeTrigger;
-        [JsonProperty] public STD? TrajectoryPointer;
-        [JsonProperty] public RioTranslationLayer? SimTranslationLayer;
-        [JsonProperty] public RobotSimObject.DrivetrainType? DrivetrainType;
+        [JsonProperty]
+        public string AssemblyGuid;
+        [JsonProperty]
+        public Dictionary<string, InputData> InputData;
+        [JsonProperty]
+        public Dictionary<string, JointMotor> JointMotors;
+        [JsonProperty]
+        public Dictionary<string, float> JointSpeeds;
+        [JsonProperty]
+        public ITD? IntakeTrigger;
+        [JsonProperty]
+        public STD? TrajectoryPointer;
+        [JsonProperty]
+        public RioTranslationLayer? SimTranslationLayer;
+        [JsonProperty]
+        public RobotSimObject.DrivetrainType? DrivetrainType;
     }
 
     [JsonObject(MemberSerialization.OptIn)]
@@ -353,20 +360,24 @@ namespace Synthesis.PreferenceManager {
             AssemblyGuid = string.Empty;
             ScoringZones = new List<ScoringZoneData>();
         }
-        
+
         public FieldData(string guid) {
             AssemblyGuid = guid;
             ScoringZones = new List<ScoringZoneData>();
         }
-        
-        [JsonProperty] public string AssemblyGuid;
-        [JsonProperty] public List<ScoringZoneData> ScoringZones;
+
+        [JsonProperty]
+        public string AssemblyGuid;
+        [JsonProperty]
+        public List<ScoringZoneData> ScoringZones;
     }
 
     [JsonObject(MemberSerialization.OptIn)]
     public class InputData {
-        [JsonProperty] public Type Type;
-        [JsonProperty] public string Data;
+        [JsonProperty]
+        public Type Type;
+        [JsonProperty]
+        public string Data;
 
         [JsonConstructor]
         public InputData() {}

@@ -19,7 +19,7 @@ using Vector3   = UnityEngine.Vector3;
 
 public class FieldSimObject : SimObject, IPhysicsOverridable {
     public static FieldSimObject CurrentField { get; private set; }
-    
+
     private readonly List<ScoringZone> _scoringZones;
     public IReadOnlyCollection<ScoringZone> ScoringZones => _scoringZones.AsReadOnly();
 
@@ -135,7 +135,8 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
     }
 
     public void UpdateSavedScoringZones() {
-        SimulationPreferences.SetFieldScoringZones(MiraLive.MiraAssembly.Info.GUID, _scoringZones.Select(x => x.ZoneData).ToList());
+        SimulationPreferences.SetFieldScoringZones(
+            MiraLive.MiraAssembly.Info.GUID, _scoringZones.Select(x => x.ZoneData).ToList());
         PreferenceManager.Save();
     }
 
@@ -145,13 +146,7 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         if (scoringZones != null) {
             scoringZones.ForEach(x => {
                 var zone = new ScoringZone(
-                    GameObject.CreatePrimitive(PrimitiveType.Cube),
-                    "temp scoring zone",
-                    Alliance.Blue,
-                    0,
-                    false,
-                    true
-                    );
+                    GameObject.CreatePrimitive(PrimitiveType.Cube), "temp scoring zone", Alliance.Blue, 0, false, true);
                 zone.ZoneData = x;
                 _scoringZones.Add(zone);
             });
@@ -183,7 +178,7 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         var mira = Importer.MirabufAssemblyImport(filePath);
         mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
         mira.MainObject.tag = "field";
-        
+
         FieldSimObject.CurrentField.InitializeScoreZones();
 
         if (spawnRobotGizmo && RobotSimObject.CurrentlyPossessedRobot != string.Empty) {

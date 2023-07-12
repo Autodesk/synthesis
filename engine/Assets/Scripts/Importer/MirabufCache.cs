@@ -7,13 +7,13 @@ namespace Synthesis.Import {
         private const short MAX_CACHE_SIZE = 4;
 
         private static LinkedList<MirabufLive> _cache = new();
-        
+
         public static MirabufLive Get(string path) {
             LinkedListNode<MirabufLive>? cursor = _cache.First;
             while (cursor != null && !cursor.Value.MiraPath.Equals(path)) {
                 cursor = cursor.Next;
             }
-            
+
             if (cursor?.Value.MiraPath.Equals(path) ?? false) {
                 _cache.Remove(cursor);
                 _cache.AddFirst(cursor);

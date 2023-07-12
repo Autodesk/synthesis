@@ -11,15 +11,15 @@ using TMPro;
 using UnityEngine;
 
 public record ScoringZoneData() {
-    public string Name { get; set; }           = "";
-    public Alliance Alliance { get; set; }     = Alliance.Blue;
-    public string Parent { get; set; }         = "grounded";
-    public int Points { get; set; }            = 0;
-    public bool DestroyGamepiece { get; set; } = false;
-    public bool PersistentPoints { get; set; } = true;
-    public (float x, float y, float z) LocalPosition { get; set; }      = (0, 0, 0);
-    public (float x, float y, float z, float w) LocalRotation { get; set; }   = (0, 0, 0, 1);
-    public (float x, float y, float z) LocalScale { get; set; }    = (1, 1, 1);
+    public string Name { get; set; }                                        = "";
+    public Alliance Alliance { get; set; }                                  = Alliance.Blue;
+    public string Parent { get; set; }                                      = "grounded";
+    public int Points { get; set; }                                         = 0;
+    public bool DestroyGamepiece { get; set; }                              = false;
+    public bool PersistentPoints { get; set; }                              = true;
+    public (float x, float y, float z) LocalPosition { get; set; }          = (0, 0, 0);
+    public (float x, float y, float z, float w) LocalRotation { get; set; } = (0, 0, 0, 1);
+    public (float x, float y, float z) LocalScale { get; set; }             = (1, 1, 1);
 }
 
 public class ScoringZonesPanel : PanelDynamic {

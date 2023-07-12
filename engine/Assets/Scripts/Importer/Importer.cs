@@ -48,7 +48,8 @@ namespace Synthesis.Import {
         /// <param name="miraLive">Path to mirabuf file</param>
         /// <returns>A tuple of the main gameobject that contains the imported assembly, a reference to the live file,
         /// and the simobject controlling the assembly</returns>
-        public static (GameObject MainObject, MirabufLive MiraAssembly, SimObject Sim) MirabufAssemblyImport(string path) {
+        public static (GameObject MainObject, MirabufLive MiraAssembly, SimObject Sim)
+            MirabufAssemblyImport(string path) {
             return MirabufAssemblyImport(MirabufLive.OpenMirabufFile(path));
         }
 

@@ -11,22 +11,24 @@ public enum Alliance {
 }
 
 public class ScoringZone : IPhysicsOverridable {
-
     private ScoringZoneData _zoneData;
     public ScoringZoneData ZoneData {
         get => _zoneData;
         set {
-            _zoneData                          = value;
-            GameObject.name                    = _zoneData.Name;
-            GameObject.tag                     = _zoneData.Alliance == Alliance.Red ? "red zone" : "blue zone";
-            GameObject.transform.parent        = FieldSimObject.CurrentField.FieldObject.transform.Find(_zoneData.Parent);
-            Alliance                           = _zoneData.Alliance;
-            GameObject.transform.localPosition = new Vector3(_zoneData.LocalPosition.x, _zoneData.LocalPosition.y, _zoneData.LocalPosition.z);
-            GameObject.transform.localRotation = new Quaternion(_zoneData.LocalRotation.x, _zoneData.LocalRotation.y, _zoneData.LocalRotation.z, _zoneData.LocalRotation.w);
-            GameObject.transform.localScale    = new Vector3(_zoneData.LocalScale.x, _zoneData.LocalScale.y, _zoneData.LocalScale.z);
+            _zoneData                   = value;
+            GameObject.name             = _zoneData.Name;
+            GameObject.tag              = _zoneData.Alliance == Alliance.Red ? "red zone" : "blue zone";
+            GameObject.transform.parent = FieldSimObject.CurrentField.FieldObject.transform.Find(_zoneData.Parent);
+            Alliance                    = _zoneData.Alliance;
+            GameObject.transform.localPosition =
+                new Vector3(_zoneData.LocalPosition.x, _zoneData.LocalPosition.y, _zoneData.LocalPosition.z);
+            GameObject.transform.localRotation = new Quaternion(_zoneData.LocalRotation.x, _zoneData.LocalRotation.y,
+                _zoneData.LocalRotation.z, _zoneData.LocalRotation.w);
+            GameObject.transform.localScale =
+                new Vector3(_zoneData.LocalScale.x, _zoneData.LocalScale.y, _zoneData.LocalScale.z);
         }
     }
-    
+
     public string Name => _zoneData.Name;
 
     public Alliance Alliance {
@@ -37,7 +39,7 @@ public class ScoringZone : IPhysicsOverridable {
         }
     }
 
-    public int Points => _zoneData.Points;
+    public int Points            => _zoneData.Points;
     public bool DestroyGamepiece => _zoneData.DestroyGamepiece;
     public bool PersistentPoints => _zoneData.PersistentPoints;
     public GameObject GameObject;
@@ -48,14 +50,10 @@ public class ScoringZone : IPhysicsOverridable {
 
     public ScoringZone(GameObject gameObject, string name, Alliance alliance, int points, bool destroyGamepiece,
         bool persistentPoints) {
-        _zoneData = new() {
-            Name = name,
-            PersistentPoints = persistentPoints,
-            DestroyGamepiece = destroyGamepiece,
-            Points = points
-        };
-        GameObject            = gameObject;
-        GameObject.layer      = 2; // ignore raycast layer
+        _zoneData  = new() { Name = name, PersistentPoints = persistentPoints, DestroyGamepiece = destroyGamepiece,
+             Points = points };
+        GameObject = gameObject;
+        GameObject.layer = 2; // ignore raycast layer
 
         // configure gameobject to have box collider as trigger
         GameObject.name = name;
@@ -73,15 +71,15 @@ public class ScoringZone : IPhysicsOverridable {
     }
 
     public ScoringZone(ScoringZoneData data) {
-        GameObject       = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        GameObject.layer = 2; // ignore raycast layer
+        GameObject                   = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        GameObject.layer             = 2; // ignore raycast layer
         ScoringZoneListener listener = GameObject.AddComponent<ScoringZoneListener>();
         listener.ScoringZone         = this;
         _collider                    = GameObject.GetComponent<Collider>();
         _meshRenderer                = GameObject.GetComponent<MeshRenderer>();
-        _collider.isTrigger = true;
-        ZoneData = data;
-        
+        _collider.isTrigger          = true;
+        ZoneData                     = data;
+
         PhysicsManager.Register(this);
     }
 
