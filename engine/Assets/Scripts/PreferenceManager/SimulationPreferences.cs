@@ -127,11 +127,13 @@ namespace Synthesis.PreferenceManager {
                 }
 
                 if (FieldSimObject.CurrentField != null) {
-                    var live                                = FieldSimObject.CurrentField.MiraLive;
+                    // clang-format off
+                    var live = FieldSimObject.CurrentField.MiraLive;
                     live.MiraAssembly.Data.Parts.UserData ??= new Mirabuf.UserData();
                     live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY] =
                         JsonConvert.SerializeObject(_allFieldData[live.MiraAssembly.Info.GUID]);
                     live.Save();
+                    // clang-format on
                 }
             }
 
