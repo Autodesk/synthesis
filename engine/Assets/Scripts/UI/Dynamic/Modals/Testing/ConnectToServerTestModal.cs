@@ -59,7 +59,7 @@ namespace Synthesis.UI.Dynamic {
                 .AddOnValueChangedEvent((d, i, data) => _selectedRobotIndex = i)
                 .SetTopStretch<Dropdown>();
 
-            right.CreateButton(text: "Select Robot")
+            right.CreateButton(text: "Send Robot Data")
                 .SetHeight<Button>(30.0f)
                 .SetTopStretch<Button>(anchoredY: 45.0f)
                 .AddOnClickedEvent(b => {
@@ -68,7 +68,7 @@ namespace Synthesis.UI.Dynamic {
                     }
 
                     string robotPath = _robotFiles[_selectedRobotIndex];
-                    _statusLabel.SetText("Robot selected...");
+                    _statusLabel.SetText("Robot data sent...");
                     var robot = new DataRobot { Name = Path.GetFileNameWithoutExtension(robotPath),
                         Data                         = ByteString.CopyFrom(File.ReadAllBytes(robotPath)) };
 
@@ -80,6 +80,11 @@ namespace Synthesis.UI.Dynamic {
                         }
                     });
                 });
+
+            right.CreateButton(text: "Request Robot Data")
+                .SetHeight<Button>(30.0f)
+                .SetTopStretch<Button>(anchoredY: 90.0f)
+                .AddOnClickedEvent(b => { _mode.RequestServerRobotData(); });
         }
 
         public override void Update() {

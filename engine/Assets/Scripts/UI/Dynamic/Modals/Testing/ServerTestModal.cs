@@ -100,7 +100,7 @@ namespace Synthesis.UI.Dynamic {
                             Logger.Log("Error");
 
                         var msg = x.Result.GetResult();
-                        msg?.FromDataRobot.AllAvailableRobots.ForEach(x => Logger.Log($"[{x.Guid}] {x.Name}"));
+                        Logger.Log($"Received Response: {msg?.FromDataRobot.Guid}");
                     }, null);
                 });
 

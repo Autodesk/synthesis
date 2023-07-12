@@ -35,6 +35,9 @@ namespace SynthesisAPI.Aether.Lobby {
         public Task<Result<LobbyMessage?, Exception>> UploadRobotData(DataRobot robot) 
             => _instance?.UploadRobotData(robot) ?? Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("No instance")));
 
+        public Task<Result<LobbyMessage?, Exception>> RequestServerRobotData()
+            => _instance?.RequestServerRobotData() ?? Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("No instance")));
+
         public Task<Result<LobbyMessage?, Exception>> UpdateControllableState(List<SignalData> updates)
             => _instance?.UpdateControllableState(updates) ?? Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("No instance")));
 
@@ -171,9 +174,33 @@ namespace SynthesisAPI.Aether.Lobby {
                         return new Result<LobbyMessage?, Exception>(new Exception("Invalid message"));
                     }
 
-                    Logger.Log("Received robot data response");
-                    RobotsFromServer = new List<DataRobot>(msg.FromDataRobot.AllAvailableRobots);
+                    return new Result<LobbyMessage?, Exception>(msg);
+                });
 
+                _requestQueue.Enqueue(task);
+                return task;
+            }
+
+            public Task<Result<LobbyMessage?, Exception>> RequestServerRobotData() {
+                if (!_isAlive.Value)
+                    return Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("Client no longer alive")));
+
+                var request = new LobbyMessage.Types.ToRequestDataRobots {
+                    Guid = _handler.Guid
+                };
+
+                var task = new Task<Result<LobbyMessage?, Exception>>(() => {
+                    var response = HandleResponseBoilerplate(new LobbyMessage { ToRequestDataRobots = request });
+                    if (response.isError) {
+                        return response;
+                    }
+
+                    var msg = response.GetResult()!;
+                    if (msg.MessageTypeCase != LobbyMessage.MessageTypeOneofCase.FromRequestDataRobots) {
+                        return new Result<LobbyMessage?, Exception>(new Exception("Invalid message"));
+                    }
+
+                    RobotsFromServer = new List<DataRobot>(msg.FromRequestDataRobots.AllAvailableRobots);
                     return new Result<LobbyMessage?, Exception>(msg);
                 });
 

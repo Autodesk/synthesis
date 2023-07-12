@@ -149,8 +149,10 @@ namespace SynthesisAPI.Aether.Lobby {
                             OnGetLobbyInformation(msg.ToGetLobbyInformation, handler);
                             break;
                         case LobbyMessage.MessageTypeOneofCase.ToDataRobot:
-                            Logger.Log("Received Robot Upload");
                             AcceptRobotData(msg.ToDataRobot, handler);
+                            break;
+                        case LobbyMessage.MessageTypeOneofCase.ToRequestDataRobots:
+                            OnRequestDataRobots(msg.ToRequestDataRobots, handler);
                             break;
                         case LobbyMessage.MessageTypeOneofCase.ToUpdateControllableState:
                             OnControllableStateUpdate(msg.ToUpdateControllableState, handler);
@@ -163,6 +165,7 @@ namespace SynthesisAPI.Aether.Lobby {
 							handler.UpdateHeartbeat();
                             break;
                         default:
+                            Logger.Log($"Received unknown message type: {msg.MessageTypeCase}");
                             break;
                     }
                 }
@@ -194,19 +197,23 @@ namespace SynthesisAPI.Aether.Lobby {
                     _robotDataLock.ExitWriteLock();
                 }
 
-                var response = new LobbyMessage.Types.FromDataRobot();
+                var response = new LobbyMessage.Types.FromDataRobot {
+                    Guid = handler.Guid
+                };
 
+                handler.WriteMessage(new LobbyMessage { FromDataRobot = response });
+            }
+
+            private void OnRequestDataRobots(LobbyMessage.Types.ToRequestDataRobots request, LobbyClientHandler handler) {
+                var response = new LobbyMessage.Types.FromRequestDataRobots();
                 _robotDataLock.EnterReadLock();
                 try {
-                    response.AllAvailableRobots.AddRange(_availableRobots.Select(x => new DataRobot { Name = x.Name, Description = x.Description, Guid = x.Guid }));
+                    response.AllAvailableRobots.AddRange(_availableRobots);
                 } finally {
                     _robotDataLock.ExitReadLock();
                 }
 
-                var respResult = handler.WriteMessage(new LobbyMessage { FromDataRobot = response });
-                if (respResult.isError) {
-                    Logger.Log($"Response write encountered error: {respResult.GetError().Message}");
-                }
+                handler.WriteMessage(new LobbyMessage { FromRequestDataRobots = response });
             }
 
             private void OnControllableStateUpdate(LobbyMessage.Types.ToUpdateControllableState updateRequest, LobbyClientHandler handler) {

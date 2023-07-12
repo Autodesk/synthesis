@@ -27,6 +27,20 @@ public class ConnectToServerTestMode : IMode {
         }
     }
 
+    public void RequestServerRobotData() {
+        if (_client == null) {
+            return;
+        }
+
+        _client.RequestServerRobotData().ContinueWith(t => {
+            if (t.IsFaulted) {
+                Logger.Log("Failed to request robot data from server", LogLevel.Error);
+            } else {
+                Logger.Log("Requested robot data from server", LogLevel.Info);
+            }
+        });
+    }
+
     public void Start() {
         Task.Factory.StartNew(() => _client = new LobbyClient("127.0.0.1", "Test Client")).ContinueWith(t => {
             if (t.IsFaulted) {

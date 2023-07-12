@@ -14,6 +14,7 @@ message LobbyMessage {
         ToUpdateControllableState to_update_controllable_state = 8;
         ToUpdateTransformData to_update_transform_data = 10;
         ToDataRobot to_data_robot = 12;
+        ToRequestDataRobots to_request_data_robots = 14;
 
         FromRegisterClient from_register_client = 5;
         FromGetLobbyInformation from_get_lobby_information = 6;
@@ -21,6 +22,7 @@ message LobbyMessage {
         FromSimulationTransformData from_simulation_transform_data = 9;
         FromControllableStates from_controllable_states = 11;
         FromDataRobot from_data_robot = 13;
+        FromRequestDataRobots from_request_data_robots = 15;
     }
 
     /////////////////////
@@ -58,6 +60,10 @@ message LobbyMessage {
         DataRobot data_robot = 2;
     }
 
+    message ToRequestDataRobots {
+        uint64 guid = 1;
+    }
+
     /////////////////////
     // From The Server
     /////////////////////
@@ -83,6 +89,10 @@ message LobbyMessage {
     }
 
     message FromDataRobot {
+        uint64 guid = 1;
+    }
+
+    message FromRequestDataRobots {
         repeated DataRobot all_available_robots = 1;
     }
 }
