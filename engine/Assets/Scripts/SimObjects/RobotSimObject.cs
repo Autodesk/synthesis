@@ -29,7 +29,7 @@ using SynthesisAPI.EventBus;
 using Synthesis.WS.Translation;
 using static Synthesis.WS.Translation.RioTranslationLayer;
 using SynthesisAPI.Controller;
-
+using UnityEngine.UIElements;
 using Logger = SynthesisAPI.Utilities.Logger;
 
 #nullable enable
@@ -594,7 +594,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     public static void SpawnRobot(string filePath) {
         SpawnRobot(filePath, new Vector3(0f, 0.5f, 0f), Quaternion.identity, true);
     }
-
+    
     public static void SpawnRobot(string filePath, bool spawnGizmo) {
         SpawnRobot(filePath, new Vector3(0f, 0.5f, 0f), Quaternion.identity, spawnGizmo);
     }
