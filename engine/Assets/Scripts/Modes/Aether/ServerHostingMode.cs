@@ -4,19 +4,18 @@ using Synthesis.Runtime;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.Aether.Lobby;
 
-#nullable enable
+public class ServerHostingMode : IMode {
+    private LobbyServer _server;
 
-public class EmptyServerTestMode : IMode {
-    private LobbyServer? _server;
+    public IReadOnlyCollection<string> ClientInformation =>
+        _server.Clients == null ? new List<string>() : _server.Clients;
 
-    public IReadOnlyCollection<string> ClientInformation => _server?.Clients ?? new List<string>();
-    public bool IsServerAlive                            => _server != null;
+    public bool IsServerAlive => _server != null;
 
     public void Start() {
         _server = new LobbyServer();
 
-        DynamicUIManager.CreateModal<EmptyServerTestModal>();
-
+        DynamicUIManager.CreateModal<ServerHostingModal>();
         SimulationRunner.OnGameObjectDestroyed += End;
     }
 
