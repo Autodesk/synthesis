@@ -221,9 +221,11 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public static bool ShowPanel<T>()
-            where T : PanelDynamic => ShowPanel(typeof(T));
+            where T : PanelDynamic {
+            return ShowPanel(typeof(T));
+        }
 
-  public static bool ShowPanel(Type t) {
+        public static bool ShowPanel(Type t) {
             if (!PanelExists(t))
                 return false;
 
@@ -242,11 +244,16 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public static T ApplyTemplate<T>(this T component, Func<T, T> template)
-            where T : UIComponent => template(component); public static T ApplyTemplate<T>(this T component,
-  Func<UIComponent, UIComponent> template)
-            where T : UIComponent => template(component) as T;
+            where T : UIComponent {
+            return template(component);
+        }
 
-  public static Rect GetOffsetRect(this RectTransform trans) {
+        public static T ApplyTemplate<T>(this T component, Func<UIComponent, UIComponent> template)
+            where T : UIComponent {
+            return template(component) as T;
+        }
+
+        public static Rect GetOffsetRect(this RectTransform trans) {
             var min =
                 new Vector2(trans.anchoredPosition.x + trans.rect.xMin, trans.anchoredPosition.y + trans.rect.yMin);
             var max =

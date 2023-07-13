@@ -300,9 +300,11 @@ namespace Engine.ModuleLoader {
             }
 
             public TUnityType InstantiateFocusable<TUnityType>()
-                where TUnityType : Focusable => (TUnityType) Activator.CreateInstance(typeof(TUnityType));
+                where TUnityType : Focusable {
+                return (TUnityType) Activator.CreateInstance(typeof(TUnityType));
+            }
 
-  public VisualElement GetRootVisualElement() {
+            public VisualElement GetRootVisualElement() {
                 // TODO: Re-evaluate this
                 return null; // PanelRenderer.visualTree;
             }
