@@ -20,9 +20,9 @@ using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
 using UnityEngine;
-using Bounds = UnityEngine.Bounds;
-using Logger = SynthesisAPI.Utilities.Logger;
-using MVector3  = Mirabuf.Vector3;
+using Bounds   = UnityEngine.Bounds;
+using Logger   = SynthesisAPI.Utilities.Logger;
+using MVector3 = Mirabuf.Vector3;
 
 #nullable enable
 
@@ -260,8 +260,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             GetCurrentlyPossessedRobot().PickingUpGamepieces = pickup;
             bool shootGamepiece = InputManager.MappedValueInputs[OUTTAKE_GAMEPIECES].Value == 1.0F;
 
-            if (shootGamepiece && GetCurrentlyPossessedRobot().LastShotTime + TIME_BETWEEN_SHOTS <
-                                      Time.realtimeSinceStartup) {
+            if (shootGamepiece &&
+                GetCurrentlyPossessedRobot().LastShotTime + TIME_BETWEEN_SHOTS < Time.realtimeSinceStartup) {
                 GetCurrentlyPossessedRobot().LastShotTime = Time.realtimeSinceStartup;
                 GetCurrentlyPossessedRobot().ShootGamepiece();
             }
