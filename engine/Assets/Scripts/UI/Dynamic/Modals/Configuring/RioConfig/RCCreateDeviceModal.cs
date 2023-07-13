@@ -151,10 +151,10 @@ public class RCConfigPwmGroupModal : ModalDynamic {
         _signalSelection.SetStretch<Content>(topPadding: 30f);
         _signalToggles = new Dictionary<string, Toggle>();
         RobotSimObject.GetCurrentlyPossessedRobot()
-            .MiraLive.MiraAssembly.Data.Joints.JointInstances.Values
+            .MiraLiveFiles[0].MiraAssembly.Data.Joints.JointInstances.Values
             .Where(x => !x.Info.Name.Equals("grounded") &&
                         RobotSimObject.GetCurrentlyPossessedRobot()
-                                .MiraLive.MiraAssembly.Data.Joints.JointDefinitions[x.JointReference]
+                                .MiraLiveFiles[0].MiraAssembly.Data.Joints.JointDefinitions[x.JointReference]
                                 .JointMotionType == Mirabuf.Joint.JointMotion.Revolute)
             .ForEach(j => {
                 var container = _signalSelection.Content.CreateSubContent(new Vector2(600, 40));
@@ -255,7 +255,7 @@ public class RCConfigEncoderModal : ModalDynamic {
         _signals = new List<(string name, string guid)>();
         _signals.AddRange(
             RobotSimObject.GetCurrentlyPossessedRobot()
-                .MiraLive.MiraAssembly.Data.Joints.JointInstances.Values
+                .MiraLiveFiles[0].MiraAssembly.Data.Joints.JointInstances.Values
                 .Select<Mirabuf.Joint.JointInstance, (string name, string guid)>(x => (x.Info.Name, x.SignalReference))
                 .Where(
                     x => RobotSimObject.GetCurrentlyPossessedRobot().State.SignalMap.ContainsKey($"{x.guid}_encoder"))

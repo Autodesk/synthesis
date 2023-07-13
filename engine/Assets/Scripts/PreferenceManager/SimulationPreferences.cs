@@ -100,7 +100,7 @@ namespace Synthesis.PreferenceManager {
             public void PreSaveDump(IEvent _) {
                 // PreferenceManager.SetPreference(ALL_ROBOT_DATA_KEY, _allRobotData);
                 if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
-                    var live = RobotSimObject.GetCurrentlyPossessedRobot().MiraLive;
+                    var live = RobotSimObject.GetCurrentlyPossessedRobot().MiraLiveFiles[0];
                     if (live.MiraAssembly.Data.Parts.UserData == null)
                         live.MiraAssembly.Data.Parts.UserData = new Mirabuf.UserData();
                     live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY] =

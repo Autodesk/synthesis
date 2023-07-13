@@ -32,8 +32,10 @@ namespace Synthesis.UI.Dynamic {
                 .SetColor(ColorManager.SYNTHESIS_WHITE);
 
             AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
+                RobotSimObject.SpawnRobot(_files[0], _files[1]);
+            
                 if (_selectedIndex != -1) {
-                    RobotSimObject.SpawnRobot(_files[_selectedIndex]);
+                    //RobotSimObject.SpawnRobot(_files[_selectedIndex]);
                     // ItemAnalytics("Robot");
                     DynamicUIManager.CloseActiveModal();
                 }

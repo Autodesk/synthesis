@@ -137,25 +137,15 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         // SynthesisAssetCollection.DefaultFloor.SetActive(true);
     }
 
-    public static void SpawnField(string filePath, bool spawnRobotGizmo = true) {
-        DeleteField();
-
-        var mira = Importer.MirabufAssemblyImport(filePath);
-        mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
-        mira.MainObject.tag = "field";
-
-        if (spawnRobotGizmo && RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
-            GizmoManager.SpawnGizmo(RobotSimObject.GetCurrentlyPossessedRobot());
-            // TODO: Move robot to default spawn location for field
-        }
-    }
+    public static void SpawnField(string filePath, bool spawnRobotGizmo = true) => 
+        SpawnField(new MirabufLive(filePath));
 
     public static void SpawnField(MirabufLive miraAssem, bool spawnRobotGizmo = true) {
         DeleteField();
 
-        var mira = Importer.MirabufAssemblyImport(miraAssem);
-        mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
-        mira.MainObject.tag = "field";
+        var mira = Importer.MirabufAssemblyImport(new[] { miraAssem });
+        mira.mainObject.transform.SetParent(GameObject.Find("Game").transform);
+        mira.mainObject.tag = "field";
 
         if (spawnRobotGizmo && RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
             GizmoManager.SpawnGizmo(RobotSimObject.GetCurrentlyPossessedRobot());

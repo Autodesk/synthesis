@@ -40,7 +40,7 @@ namespace Synthesis.Import {
     public static class Importer {
         private static ulong _robotTally = 0; // Just a number to add to the name of the sim object spawned
 
-#region Mirabuf Importer
+/*#region Old Mirabuf Importer
 
         /// <summary>
         /// Import a mirabuf assembly
@@ -49,8 +49,8 @@ namespace Synthesis.Import {
         /// <returns>A tuple of the main gameobject that contains the imported assembly, a reference to the live file,
         /// and the simobject controlling the assembly</returns>
         public static (GameObject MainObject, MirabufLive MiraAssembly, SimObject Sim)
-            MirabufAssemblyImport(string path, bool asPart = false) {
-            return MirabufAssemblyImport(new MirabufLive(path), asPart);
+            MirabufAssemblyImportOld(string path, bool asPart = false) {
+            return MirabufAssemblyImportOld(new MirabufLive(path), asPart);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Synthesis.Import {
         /// <returns>A tuple of the main gameobject that contains the imported assembly, a reference to the live file,
         /// and the simobject controlling the assembly</returns>
         public static (GameObject MainObject, MirabufLive miraLive, SimObject Sim)
-            MirabufAssemblyImport(MirabufLive miraLive, bool asPart = false) {
+            MirabufAssemblyImportOld(MirabufLive miraLive, bool asPart = false) {
             // Uncommenting this will delete all bodies so the JSON file isn't huge
             // DebugAssembly(miraLive.MiraAssembly);
             // return null;
@@ -170,6 +170,119 @@ namespace Synthesis.Import {
             return (assemblyObject, miraLive, simObject);
         }
 
+#endregion*/
+
+#region New Mirabuf Importer
+
+        public static (GameObject mainObject, MirabufLive[] miraLiveFiles, SimObject sim)
+            MirabufAssemblyImport(string[] filePaths, bool asPart = false) {
+
+            MirabufLive[] miraLiveFiles = filePaths.Select(path => new MirabufLive(path)).ToArray();
+            
+            return MirabufAssemblyImport(miraLiveFiles, asPart);
+        }
+        
+        public static (GameObject mainObject, MirabufLive[] miraLiveFiles, SimObject sim)
+            MirabufAssemblyImport(MirabufLive[] miraLiveFiles, bool asPart = false) {
+
+            Assembly[] assemblies = miraLiveFiles.Select(m => m.MiraAssembly).ToArray();
+
+            /*if (assembly.Info.Version < MirabufLive.OLDEST_MIRA_EXPORTER_VERSION) {
+                Logger.Log(
+                    $"Out-of-date Assembly\nCurrent Version: {MirabufLive.CURRENT_MIRA_EXPORTER_VERSION}\nVersion of Assembly: {assembly.Info.Version}",
+                    LogLevel.Warning);
+            }
+            else if (assembly.Info.Version > MirabufLive.CURRENT_MIRA_EXPORTER_VERSION) {
+                Logger.Log(
+                    $"Hey Dev, the assembly you're importing is using a higher version than the current set version. Please update the CURRENT_MIRA_EXPORTER_VERSION constant",
+                    LogLevel.Debug);
+            }*/
+
+            UnityEngine.Physics.sleepThreshold = 0;
+
+            GameObject assemblyObject = new GameObject(assemblies[0].Info.Name);
+            var jointToJointMap = new Dictionary<string, (UnityEngine.Joint a, UnityEngine.Joint b)>();
+            float totalMass = 0;
+
+#region Rigid Definitions
+
+            var gamepieces = new List<GamepieceSimObject>();
+            var rigidDefinitions = miraLiveFiles.Select(m => m.Definitions).ToArray();
+
+            var groupObjects = miraLiveFiles.Select(m => m.GenerateDefinitionObjects(assemblyObject)).ToArray();
+
+            groupObjects.ForEachIndex((i, x) => x.Where(x => miraLiveFiles[i].Definitions.Definitions[x.Key].IsGamepiece).ForEach(x => {
+                var gpSim = new GamepieceSimObject(miraLiveFiles[i].Definitions.Definitions[x.Key].Name, x.Value);
+                try {
+                    SimulationManager.RegisterSimObject(gpSim);
+                }
+                catch (Exception e) {
+                    // TODO: Fix
+                    throw e;
+                }
+
+                gamepieces.Add(gpSim);
+            }));
+
+#endregion
+
+#region Joints
+
+            var state =
+                assemblies[0].Data.Signals == null ? new ControllableState() : new ControllableState(assemblies[0].Data.Signals);
+
+            SimObject simObject;
+            if (assemblies[0].Dynamic) {
+                // List<string> foundRobots = new List<string>();
+                // foreach (var kvp in SimulationManager.SimulationObjects) {
+                // 	if (kvp.Value is RobotSimObject)
+                // 		foundRobots.Add(kvp.Key);
+                // }
+                // foundRobots.ForEach(x => SimulationManager.RemoveSimObject(x));
+
+                string name = $"{assemblies[0].Info.Name}_{_robotTally}";
+                _robotTally++;
+
+                if (!asPart) {
+                    simObject = new RobotSimObject(name, state, miraLiveFiles, groupObjects[0]["grounded"]);
+                }
+                else {
+                    simObject = new MixAndMatchSimObject(name, state, miraLiveFiles[0], groupObjects[0]["grounded"]);
+                }
+            }
+            else {
+                simObject =
+                    new FieldSimObject(assemblies[0].Info.Name, state, miraLiveFiles[0], groupObjects[0]["grounded"], gamepieces);
+            }
+
+            try {
+                SimulationManager.RegisterSimObject(simObject);
+            }
+            catch {
+                // TODO: Fix
+                Logger.Log($"Field with assembly {assemblies[0].Info.Name} already exists.");
+                UnityEngine.Object.Destroy(assemblyObject);
+            }
+            assemblies.ForEachIndex((i, assembly) => assembly.Data.Joints.JointInstances.ForEach(jointKvp => {
+                if (jointKvp.Key != "grounded") {
+
+                    // Logger.Log($"Joint Instance: {jointKvp.Key}", LogLevel.Debug);
+                    // Logger.Log($"Parent: {jointKvp.Value.ParentPart}", LogLevel.Debug);
+                    var aKey = rigidDefinitions[i].PartToDefinitionMap[jointKvp.Value.ParentPart];
+                    var a = groupObjects[i][aKey];
+                    // Logger.Log($"Child: {jointKvp.Value.ChildPart}", LogLevel.Debug);
+                    var bKey = rigidDefinitions[i].PartToDefinitionMap[jointKvp.Value.ChildPart];
+                    var b = groupObjects[i][bKey];
+
+                    MakeJoint(a, b, jointKvp.Value, totalMass, assemblies[i], simObject, jointToJointMap);
+                }
+            }));
+
+#endregion
+            
+            return (assemblyObject, miraLiveFiles, simObject);
+        }
+
 #endregion
 
 #region Assistant Functions
@@ -234,7 +347,8 @@ namespace Synthesis.Import {
                             SimulationManager.AddDriver(simObject.Name, driver);
                         }
 
-                        jointMap.Add(instance.Info.GUID, (wheelA, wheelB));
+                        /*Debug.Log($"Joint map added {instance.Info.GUID}");
+                        jointMap.Add(instance.Info.GUID, (wheelA, wheelB));*/
 
                     }
                     else {
@@ -301,8 +415,8 @@ namespace Synthesis.Import {
                                     : null);
                             SimulationManager.AddDriver(simObject.Name, driver);
                         }
-
-                        jointMap.Add(instance.Info.GUID, (revoluteA, revoluteB));
+                        
+                        //jointMap.Add(instance.Info.GUID, (revoluteA, revoluteB));
                     }
 
                     break;

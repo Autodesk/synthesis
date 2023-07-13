@@ -44,7 +44,7 @@ namespace Synthesis {
 
         public Analog TryLoadInput(string key, Analog defaultInput) =>
             SimulationPreferences.GetRobotInput(
-                (SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject).MiraLive.MiraAssembly.Info.GUID,
+                (SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject).MiraLiveFiles[0].MiraAssembly.Info.GUID,
                 key) ??
             defaultInput;
 

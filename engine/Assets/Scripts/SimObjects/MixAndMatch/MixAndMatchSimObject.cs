@@ -66,19 +66,16 @@ public class MixAndMatchSimObject : SimObject, IPhysicsOverridable, IGizmo {
         }
     }
     
-    private Dictionary<string, (UnityEngine.Joint a, UnityEngine.Joint b)> _jointMap;
     private List<Rigidbody> _allRigidbodies;
     public IReadOnlyCollection<Rigidbody> AllRigidbodies => _allRigidbodies.AsReadOnly();
 
     private Queue<GamepieceSimObject> _gamepiecesInPossession = new Queue<GamepieceSimObject>();
     public bool PickingUpGamepieces { get; private set; }
 
-    public MixAndMatchSimObject(string name, ControllableState state, MirabufLive miraLive, GameObject groundedNode,
-        Dictionary<string, (Joint a, Joint b)> jointMap)
+    public MixAndMatchSimObject(string name, ControllableState state, MirabufLive miraLive, GameObject groundedNode)
         : base(name, state) {
         MiraLive       = miraLive;
         GroundedNode   = groundedNode;
-        _jointMap      = jointMap;
         RobotNode      = groundedNode.transform.parent.gameObject;
         RobotBounds    = GetBounds(RobotNode.transform);
         GroundedBounds = GetBounds(GroundedNode.transform);
