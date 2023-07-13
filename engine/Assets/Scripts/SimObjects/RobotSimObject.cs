@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Analytics;
 using Google.Protobuf.WellKnownTypes;
 using Mirabuf;
 using Mirabuf.Joint;
@@ -590,6 +591,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
         if (spawnGizmo)
             GizmoManager.SpawnGizmo(simObject);
+        AnalyticsManager.LogCustomEvent(AnalyticsEvent.RobotSpawned, ("RobotName", mira.MainObject.name));
     }
 
     public static bool RemoveRobot(string robot) {
@@ -602,6 +604,13 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             CurrentlyPossessedRobot = string.Empty;
         _spawnedRobots.Remove(robot);
         return SimulationManager.RemoveSimObject(robot);
+    }
+
+    public static void RemoveAllRobots() {
+        string[] robots = new string[_spawnedRobots.Keys.Count];
+        _spawnedRobots.Keys.CopyTo(robots, 0);
+
+        robots.ForEach(x => { RemoveRobot(x); });
     }
 
     private Dictionary<Rigidbody, (bool isKine, Vector3 vel, Vector3 angVel)> _preFreezeStates =

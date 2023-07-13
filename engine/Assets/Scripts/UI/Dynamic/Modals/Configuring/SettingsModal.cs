@@ -6,6 +6,7 @@ using TMPro;
 using System;
 using System.Runtime.InteropServices;
 using System.Linq;
+using Analytics;
 using UnityEngine.Rendering;
 
 namespace Synthesis.UI.Dynamic {
@@ -137,9 +138,7 @@ namespace Synthesis.UI.Dynamic {
 
             Save();
 
-            var update = new AnalyticsEvent(category: "Settings", action: "Saved", label: $"Saved Settings");
-            AnalyticsManager.LogEvent(update);
-            AnalyticsManager.PostData();
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.SettingsSaved);
         }
 
         public static void LoadSettings() {
@@ -158,9 +157,7 @@ namespace Synthesis.UI.Dynamic {
             ApplySettings();
             RepopulatePanel();
 
-            var update = new AnalyticsEvent(category: "Settings", action: "Reset", label: $"Reset Settings");
-            AnalyticsManager.LogEvent(update);
-            AnalyticsManager.PostData();
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.SettingsReset);
         }
 
         private void RepopulatePanel() {
@@ -193,9 +190,6 @@ namespace Synthesis.UI.Dynamic {
             // Quality Settings
             QualitySettings.SetQualityLevel(Get<int>(QUALITY_SETTINGS), true);
             Debug.Log(GraphicsSettings.currentRenderPipeline.name);
-
-            // Analytics
-            AnalyticsManager.UseAnalytics = Get<bool>(AnalyticsManager.USE_ANALYTICS_PREF);
 
             // Camera
             CameraController.ZoomSensitivity =

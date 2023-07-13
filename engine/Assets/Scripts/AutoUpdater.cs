@@ -17,13 +17,7 @@ public class AutoUpdater : MonoBehaviour {
 
     public const string LocalVersion = "5.1.0.0"; // must be a version value
 
-    // Start is called before the first frame update
     private void Start() {
-        // Analytics For Client Startup
-        var init = new AnalyticsEvent(category: "Startup", action: "Launched", label: $"Version {LocalVersion} BETA");
-        AnalyticsManager.LogEvent(init);
-        AnalyticsManager.PostData();
-
         if (CheckConnection()) {
             WebClient client                                        = new WebClient();
             ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
