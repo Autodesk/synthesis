@@ -27,16 +27,16 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
         private string[] _availableThemes = ColorManager.AvailableThemes;
 
-        private Dictionary<ColorManager.SynthesisColor, (Color32 color, Content image, Content background, Label label)>
+        private Dictionary<ColorManager.SynthesisColor, (Color color, Content image, Content background, Label label)>
             _colors = new();
 
         private ColorManager.SynthesisColor? _selectedColor = null;
         private int _selectedThemeIndex;
 
         private Label _colorPickerLabel;
-        private Slider _rSlider;
-        private Slider _gSlider;
-        private Slider _bSlider;
+        private Slider _hSlider;
+        private Slider _sSlider;
+        private Slider _vSlider;
 
         private Button _deleteButton;
         private Button _deleteAllButton;
@@ -68,13 +68,17 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             if (_selectedColor == null)
                 return;
 
-            Color32 colorInput = new Color32((byte) _rSlider.Value, (byte) _gSlider.Value, (byte) _bSlider.Value, 255);
+            Color colorInput = Color.HSVToRGB(_hSlider.Value/360f, _sSlider.Value/100f, _vSlider.Value/100f);
 
             var valueTuple = _colors[_selectedColor.Value];
             valueTuple.image.SetBackgroundColor<Button>(colorInput);
             valueTuple.color = colorInput;
 
             _colors[_selectedColor.Value] = (colorInput, valueTuple.image, valueTuple.background, valueTuple.label);
+
+            _hSlider.SetValue((int)_hSlider.Value);
+            _sSlider.SetValue((int)_sSlider.Value);
+            _vSlider.SetValue((int)_vSlider.Value);
         }
 
         public override void Delete() {}
@@ -154,18 +158,18 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             _colorPickerLabel =
                 content.CreateLabel().ApplyTemplate(VerticalLayout).SetText("Select a Color to Customize");
 
-            _rSlider = content.CreateSlider()
+            _hSlider = content.CreateSlider()
                            .ApplyTemplate(VerticalLayout)
-                           .StepIntoTitleLabel(l => l.SetText("Red"))
-                           .SetRange(0, 255);
-            _gSlider = content.CreateSlider()
+                           .StepIntoTitleLabel(l => l.SetText("Hue"))
+                           .SetRange(0, 360);
+            _sSlider = content.CreateSlider()
                            .ApplyTemplate(VerticalLayout)
-                           .StepIntoTitleLabel(l => l.SetText("Green"))
-                           .SetRange(0, 255);
-            _bSlider = content.CreateSlider()
+                           .StepIntoTitleLabel(l => l.SetText("Saturation"))
+                           .SetRange(0, 100);
+            _vSlider = content.CreateSlider()
                            .ApplyTemplate(VerticalLayout)
-                           .StepIntoTitleLabel(l => l.SetText("Blue"))
-                           .SetRange(0, 255);
+                           .StepIntoTitleLabel(l => l.SetText("Value"))
+                           .SetRange(0, 100);
         }
 
         /// <summary>Creates the color selection grid on the right of the modal</summary>
@@ -227,10 +231,12 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             // Regex.Replace formats color's name with spaces (ColorName -> Color Name)
             _colorPickerLabel.SetText(Regex.Replace(colorName.ToString(), "(\\B[A-Z])", " $1"));
 
-            var colorInfo = _colors[colorName.Value];
-            _rSlider.SetValue(colorInfo.color.r);
-            _gSlider.SetValue(colorInfo.color.g);
-            _bSlider.SetValue(colorInfo.color.b);
+            var rgbColor = _colors[colorName.Value].color;
+            Color.RGBToHSV(rgbColor, out float h, out float s, out float v);
+            
+            _hSlider.SetValue((int)(h*360));
+            _sSlider.SetValue((int)(s*100));
+            _vSlider.SetValue((int)(v*100));
         }
 
         /// <summary>Selects a theme by index to use and/or edit</summary>
@@ -256,7 +262,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
         /// <summary>Saves all changes to the currently selected theme</summary>
         private void SaveThemeChanges() {
-            List<(ColorManager.SynthesisColor name, Color32 color)> colors = new();
+            List<(ColorManager.SynthesisColor name, Color color)> colors = new();
             _colors.ForEach(c => { colors.Add((c.Key, c.Value.color)); });
             ColorManager.ModifySelectedTheme(colors);
         }

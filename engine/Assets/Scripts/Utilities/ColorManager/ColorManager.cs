@@ -16,7 +16,7 @@ namespace Utilities.ColorManager {
 
         public class OnThemeChanged : IEvent {}
 
-        private static readonly Color32 UNASSIGNED_COLOR = new(200, 255, 0, 255);
+        private static readonly Color UNASSIGNED_COLOR = new(200, 255, 0, 255);
 
         private static string THEMES_FOLDER_PATH {
             get {
@@ -32,8 +32,8 @@ namespace Utilities.ColorManager {
         }
 
 
-        private static Dictionary<SynthesisColor, Color32> _loadedColors  = new();
-        public static Dictionary<SynthesisColor, Color32> LoadedColors   => _loadedColors;
+        private static Dictionary<SynthesisColor, Color> _loadedColors  = new();
+        public static Dictionary<SynthesisColor, Color> LoadedColors   => _loadedColors;
 
         private static string _selectedTheme;
         public static string SelectedTheme {
@@ -144,11 +144,12 @@ namespace Utilities.ColorManager {
         public static void DeleteAllThemes()
         {
             AvailableThemes.ForEach(DeleteTheme);
+            SelectedTheme = DEFAULT_THEME;
         }
 
         /// <summary>Modifies the colors of the selected theme</summary>
         /// <param name="changes">A list of new colors. Does not have to contain every color</param>
-        public static void ModifySelectedTheme(List<(SynthesisColor name, Color32 color)> changes) {
+        public static void ModifySelectedTheme(List<(SynthesisColor name, Color color)> changes) {
             if (_selectedTheme == null)
                 return;
 
@@ -163,7 +164,7 @@ namespace Utilities.ColorManager {
         /// found</summary> <param name="colorName">The name of the color to get</param> <returns>The corresponding
         /// color of the current theme</returns>
         public static Color GetColor(SynthesisColor colorName) {
-            if (_loadedColors.TryGetValue(colorName, out Color32 color))
+            if (_loadedColors.TryGetValue(colorName, out Color color))
                 return color;
 
             return UNASSIGNED_COLOR;
