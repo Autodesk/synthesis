@@ -112,7 +112,7 @@ namespace Synthesis.Runtime {
             // Debug.Log($"WHAT: {Time.realtimeSinceStartup}");
 
             if (OnUpdate != null)
-                    OnUpdate();
+                OnUpdate();
 
             // var socket = WebSocketManager.RioState.GetData<PWMData>("PWM", "0");
             // if (socket.GetData() == null) {

@@ -134,7 +134,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     private Dictionary<string, (UnityEngine.Joint a, UnityEngine.Joint b)> _jointMap;
     private List<Rigidbody> _allRigidbodies;
     public IReadOnlyCollection<Rigidbody> AllRigidbodies => _allRigidbodies.AsReadOnly();
-    private Dictionary<string, GameObject> _nodes = new Dictionary<string, GameObject>();
+    private Dictionary<string, GameObject> _nodes        = new Dictionary<string, GameObject>();
 
     // SHOOTING/PICKUP
     private GameObject _intakeTrigger;
@@ -733,13 +733,15 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             if (RobotNode.name != "host") {
                 List<SignalData> changedSignals = new List<SignalData>();
                 foreach (var driver in SimulationManager.Drivers[Name]) {
-                    List<SignalData> changes = driver.State.CompileChanges().Where(s => s.Name != string.Empty).ToList();
+                    List<SignalData> changes =
+                        driver.State.CompileChanges().Where(s => s.Name != string.Empty).ToList();
                     foreach (var signal in changes)
                         changedSignals.Add(signal);
                 }
-                
+
                 Client.UpdateControllableState(changedSignals).ContinueWith((x, o) => {
-                    if (!x.IsCompletedSuccessfully) return;
+                    if (!x.IsCompletedSuccessfully)
+                        return;
                     var msg = x.Result.GetResult();
                     msg?.FromSimulationTransformData.TransformData.ForEach(t => {
                         if (t.Transforms.Count != 0)
@@ -754,10 +756,10 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                 if (Client.Guid.HasValue && ServerTransforms.TryGetValue(Client.Guid.Value, out var transform)) {
                     if (transform != null) {
                         foreach (var td in transform.Transforms) {
-                            Matrix4x4 matrix = (Matrix4x4)td.Value;
+                            Matrix4x4 matrix        = (Matrix4x4) td.Value;
                             Transform nodeTransform = _nodes[td.Key].transform;
-                            nodeTransform.position = matrix.GetPosition();
-                            nodeTransform.rotation = matrix.rotation;
+                            nodeTransform.position  = matrix.GetPosition();
+                            nodeTransform.rotation  = matrix.rotation;
                         }
                     }
                 }
