@@ -224,7 +224,6 @@ namespace Synthesis.Import {
                                         ? definition.MotorReference
                                         : null);
                             SimulationManager.AddDriver(simObject.Name, driver);
-                            Debug.Log($"motor vel: {driver.Motor.targetVelocity}");
                         }
 
                         jointMap.Add(instance.Info.GUID, (wheelA, wheelB));

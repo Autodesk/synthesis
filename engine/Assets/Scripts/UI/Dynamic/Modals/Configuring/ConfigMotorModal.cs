@@ -93,7 +93,6 @@ public class ConfigMotorModal : ModalDynamic {
         Description.SetText("Change motor settings");
 
         AcceptButton.StepIntoLabel(b => { b.SetText("Save"); }).AddOnClickedEvent(b => {
-            Debug.Log("Saving");
             DynamicUIManager.CloseActiveModal();
 
             // Save to Mira
@@ -108,15 +107,6 @@ public class ConfigMotorModal : ModalDynamic {
             });
 
             _robot.MiraLive.Save();
-
-            _motors.ForEach(x => {
-                if (x.driver is WheelDriver) {
-                    Debug.Log($"{x.id} vel {(x.driver as WheelDriver).Motor.targetVelocity}");
-                } else if (x.driver is RotationalDriver) {
-                    Debug.Log($"{x.id} vel {(x.driver as RotationalDriver).Motor.targetVelocity}");
-                }
-            });
-            Debug.Log($"robot 0 vel {_robot.GetLeftRightWheels().Value.leftWheels[0].Motor.targetVelocity}");
         });
 
         MiddleButton.SetWidth<Button>(132)
@@ -218,7 +208,6 @@ public class ConfigMotorModal : ModalDynamic {
         }
 
         public void setTargetVelocity(float v) {
-            Debug.Log($"setting {id} from {origVel} to target {v}");
             if (driver is RotationalDriver) {
                 _force = (driver as RotationalDriver).Motor.force;
                 (driver as RotationalDriver).Motor =
@@ -229,7 +218,6 @@ public class ConfigMotorModal : ModalDynamic {
                     new JointMotor() { force = _force, freeSpin = false, targetVelocity = v };
             }
             velChanged = true;
-            Debug.Log($"finished setting {id} target");
         }
     }
 
