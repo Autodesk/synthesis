@@ -220,7 +220,6 @@ namespace SynthesisAPI.Aether.Lobby {
                 request.Data.Add(updates);
 
                 var task = new Task<Result<LobbyMessage?, Exception>>(() => {
-
                     var response = HandleResponseBoilerplate(new LobbyMessage { ToUpdateControllableState = request });
                     if (response.isError) {
                         return response;
@@ -250,7 +249,6 @@ namespace SynthesisAPI.Aether.Lobby {
                 request.TransformData.AddRange(transforms);
 
                 var task = new Task<Result<LobbyMessage?, Exception>>(() => {
-
                     var response = HandleResponseBoilerplate(new LobbyMessage { ToUpdateTransformData = request });
                     if (response.isError) {
                         return response;
@@ -368,7 +366,6 @@ namespace SynthesisAPI.Aether.Lobby {
                     var startRead = DateTime.UtcNow;
                     while (bytesRead != msgSize && (DateTime.UtcNow - startRead).TotalMilliseconds < READ_TIMEOUT_MS) {
                         bytesRead += stream.Read(msgBuf, bytesRead, msgSize - bytesRead);
-                        Thread.Sleep(10);
                     }
 
                     if (bytesRead != msgSize) {
