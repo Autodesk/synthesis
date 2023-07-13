@@ -754,12 +754,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                 if (Client.Guid.HasValue && ServerTransforms.TryGetValue(Client.Guid.Value, out var transform)) {
                     if (transform != null) {
                         foreach (var td in transform.Transforms) {
-                            var SpatialMatrix = td.Value.MatrixData;
-                            Matrix4x4 matrix = new Matrix4x4(
-                                new Vector4(SpatialMatrix[0], SpatialMatrix[4], SpatialMatrix[8], SpatialMatrix[12]),
-                                new Vector4(SpatialMatrix[1], SpatialMatrix[5], SpatialMatrix[9], SpatialMatrix[13]),
-                                new Vector4(SpatialMatrix[2], SpatialMatrix[6], SpatialMatrix[10], SpatialMatrix[14]),
-                                new Vector4(SpatialMatrix[3], SpatialMatrix[7], SpatialMatrix[11], SpatialMatrix[15]));
+                            Matrix4x4 matrix = (Matrix4x4)td.Value;
                             Transform nodeTransform = _nodes[td.Key].transform;
                             nodeTransform.position = matrix.GetPosition();
                             nodeTransform.rotation = matrix.rotation;

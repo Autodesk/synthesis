@@ -304,7 +304,7 @@ namespace SynthesisAPI.Aether.Lobby {
                     
                     result = new Result<LobbyMessage, ServerReadException>(msg);
 
-                } catch (IOException e) {
+                } catch (IOException) {
                     throw new NoDataException();
                 } catch (Exception e) {
                     if (result == null) {
