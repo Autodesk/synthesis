@@ -101,9 +101,15 @@ namespace Synthesis {
             (_leftSpeed, _rightSpeed) = SolveSpeed(_xSpeed, _zRot, _squareInputs);
             foreach (var wheel in _leftWheels) {
                 wheel.MainInput = _leftSpeed * speedMult;
+                /*
+                wheel.MainInput = 1;
+            */
             }
             foreach (var wheel in _rightWheels) {
                 wheel.MainInput = _rightSpeed * speedMult;
+                /*
+                wheel.MainInput = 1;
+            */
             }
         }
 

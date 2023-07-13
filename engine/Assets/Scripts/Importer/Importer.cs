@@ -31,6 +31,7 @@ using MPhysicalProperties = Mirabuf.PhysicalProperties;
 using JointMotor          = UnityEngine.JointMotor;
 using UPhysicalMaterial   = UnityEngine.PhysicMaterial;
 using SynthesisAPI.Controller;
+using Random = System.Random;
 
 namespace Synthesis.Import {
     /// <summary>
@@ -263,18 +264,15 @@ namespace Synthesis.Import {
                 Logger.Log($"Field with assembly {assemblies[0].Info.Name} already exists.");
                 UnityEngine.Object.Destroy(assemblyObject);
             }
-            assemblies.ForEachIndex((i, assembly) => assembly.Data.Joints.JointInstances.ForEach(jointKvp => {
+            assemblies.ForEachIndex((partIndex, assembly) => assembly.Data.Joints.JointInstances.ForEach(jointKvp => {
                 if (jointKvp.Key != "grounded") {
+                    var aKey = rigidDefinitions[partIndex].PartToDefinitionMap[jointKvp.Value.ParentPart];
+                    var a = groupObjects[partIndex][aKey];
+                    
+                    var bKey = rigidDefinitions[partIndex].PartToDefinitionMap[jointKvp.Value.ChildPart];
+                    var b = groupObjects[partIndex][bKey];
 
-                    // Logger.Log($"Joint Instance: {jointKvp.Key}", LogLevel.Debug);
-                    // Logger.Log($"Parent: {jointKvp.Value.ParentPart}", LogLevel.Debug);
-                    var aKey = rigidDefinitions[i].PartToDefinitionMap[jointKvp.Value.ParentPart];
-                    var a = groupObjects[i][aKey];
-                    // Logger.Log($"Child: {jointKvp.Value.ChildPart}", LogLevel.Debug);
-                    var bKey = rigidDefinitions[i].PartToDefinitionMap[jointKvp.Value.ChildPart];
-                    var b = groupObjects[i][bKey];
-
-                    MakeJoint(a, b, jointKvp.Value, totalMass, assemblies[i], simObject, jointToJointMap);
+                    MakeJoint(a, b, jointKvp.Value, totalMass, assemblies[partIndex], simObject, jointToJointMap, partIndex);
                 }
             }));
 
@@ -289,7 +287,7 @@ namespace Synthesis.Import {
 
         public static void MakeJoint(GameObject a, GameObject b, JointInstance instance, float totalMass,
             Assembly assembly, SimObject simObject,
-            Dictionary<string, (UnityEngine.Joint a, UnityEngine.Joint b)> jointMap) {
+            Dictionary<string, (UnityEngine.Joint a, UnityEngine.Joint b)> jointMap, int partIndex) {
             // Logger.Log($"Obj A: {a.name}, Obj B: {b.name}");
             // Stuff I'm gonna use for all joints
             var definition = assembly.Data.Joints.JointDefinitions[instance.JointReference];
@@ -334,11 +332,11 @@ namespace Synthesis.Import {
 
                         if (instance.HasSignal()) {
                             var driver =
-                                new WheelDriver(assembly.Data.Signals.SignalMap[instance.SignalReference].Info.GUID,
-                                    new string[] { instance.SignalReference, $"{instance.SignalReference}_mode" },
+                                new WheelDriver(assembly.Data.Signals.SignalMap[instance.SignalReference].Info.GUID + partIndex,
+                                    new string[] { instance.SignalReference + partIndex, $"{instance.SignalReference}_mode" + partIndex },
                                     new string[] {
-                                        $"{instance.SignalReference}_encoder",
-                                        $"{instance.SignalReference}_absolute"
+                                        $"{instance.SignalReference}_encoder" + partIndex,
+                                        $"{instance.SignalReference}_absolute" + partIndex
                                     },
                                     simObject, instance, customWheel, wheelA.anchor, axisWut, float.NaN,
                                     assembly.Data.Joints.MotorDefinitions.ContainsKey(definition.MotorReference)

@@ -356,6 +356,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
         int wheelsInContact = _wheelDrivers.Count(x => x.HasContacts);
         float mod           = wheelsInContact <= 4 ? 1f : Mathf.Pow(0.7f, wheelsInContact - 4);
+        
         _wheelDrivers.ForEach(x => x.WheelsPhysicsUpdate(mod));
     }
 
@@ -382,13 +383,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     private (List<WheelDriver> leftWheels, List<WheelDriver> rightWheels)? GetLeftRightWheels() {
         if (!_tankTrackWheels.HasValue) {
-            // var wheelsInstances = MiraLive.MiraAssembly.Data.Joints.JointInstances.Where(instance =>
-            //     instance.Value.Info.Name != "grounded"
-            //     && MiraLive.MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].UserData != null
-            //     && MiraLive.MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference].UserData.Data
-            //         .TryGetValue("wheel", out var isWheel)
-            //     && isWheel == "true").ToList();
-
             var wheels = SimulationManager.Drivers[base.Name].OfType<WheelDriver>();
 
             var leftWheels  = new List<WheelDriver>();

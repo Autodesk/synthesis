@@ -43,8 +43,8 @@ public class CustomWheel : MonoBehaviour {
         Gizmos.color = Color.red;
         Gizmos.DrawSphere(Anchor, 0.05f);
 
-        Gizmos.color = Color.green;
-        Gizmos.DrawLine(Anchor, Anchor + Axis);
+        /*Gizmos.color = Color.green;
+        Gizmos.DrawLine(Anchor, Anchor + Axis);*/
 
         Gizmos.color = Color.cyan;
         Gizmos.DrawLine(Anchor, Anchor + _lastImpulseTotal);
