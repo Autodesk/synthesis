@@ -120,15 +120,14 @@ namespace Synthesis {
             set {
                 if (value != _useFakeMotion) {
                     _useFakeMotion = value;
-                    if (_useFakeMotion) {
-                        // DisableMotor();
-                    } else {
-                        if (_rotationalLimits.HasValue) {
-                            _jointA.limits = _rotationalLimits.Value;
-                        }
-                        EnableMotor();
-                    }
-                }
+					if (_useFakeMotion) {
+						return;
+					}
+					if (_rotationalLimits.HasValue) {
+						_jointA.limits = _rotationalLimits.Value;
+					}
+					EnableMotor();
+				}
             }
         }
 
@@ -148,8 +147,9 @@ namespace Synthesis {
             }
 
             UseFakeMotion = jointA.useLimits;
+			EnableMotor();
 
-            if (motor != null && motor.MotorTypeCase == Mirabuf.Motor.Motor.MotorTypeOneofCase.SimpleMotor) {
+			if (motor != null && motor.MotorTypeCase == Mirabuf.Motor.Motor.MotorTypeOneofCase.SimpleMotor) {
                 _motor = motor!.SimpleMotor.UnityMotor;
             } else {
                 // var m = SimulationPreferences.GetRobotJointMotor((_simObject as RobotSimObject).MiraGUID, name);
@@ -298,8 +298,6 @@ namespace Synthesis {
                             max = _fakedTheta + 1,
                             min = _fakedTheta
                         };
-
-                        // Debug.Log($"Theta: {_fakedTheta}");
                     }
                     
                 } else {

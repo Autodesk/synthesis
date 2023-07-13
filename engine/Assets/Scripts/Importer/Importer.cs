@@ -167,9 +167,11 @@ namespace Synthesis.Import {
             return (assemblyObject, miraLive, simObject);
         }
 
-#endregion
+        #endregion
 
-#region Assistant Functions
+        #region Assistant Functions
+
+        private readonly static float TWO_PI = 2f * Mathf.PI;
 
         public static void MakeJoint(GameObject a, GameObject b, JointInstance instance, float totalMass,
             Assembly assembly, SimObject simObject,
@@ -260,13 +262,13 @@ namespace Synthesis.Import {
                         var limits = definition.Rotational.RotationalFreedom.Limits;
                         if (limits != null && limits.Lower != limits.Upper) {
                             var currentPosition = definition.Rotational.RotationalFreedom.Value;
-                            while (currentPosition < -Mathf.PI) currentPosition += 2 * Mathf.PI;
-                            while (currentPosition > Mathf.PI) currentPosition -= 2 * Mathf.PI;
-                            var min = -(limits.Upper - currentPosition);
-                            while (min > 0) min -= 2 * Mathf.PI;
-                            var max = -(limits.Lower - currentPosition);
-                            while (max < 0) max += 2 * Mathf.PI;
-                            revoluteA.useLimits = true;
+							currentPosition = (currentPosition % (TWO_PI))
+                                - ((int)(currentPosition % (TWO_PI) / Mathf.PI) * (TWO_PI));
+							var min = -(limits.Upper - currentPosition);
+							min = (min % (TWO_PI) - TWO_PI) % (TWO_PI);
+							var max = -(limits.Lower - currentPosition);
+							max = (max % (TWO_PI) + TWO_PI) % (TWO_PI);
+							revoluteA.useLimits = true;
                             revoluteA.limits    = new JointLimits() { min = min * Mathf.Rad2Deg, max = max * Mathf.Rad2Deg };
                             revoluteA.extendedLimits = true;
                         }
