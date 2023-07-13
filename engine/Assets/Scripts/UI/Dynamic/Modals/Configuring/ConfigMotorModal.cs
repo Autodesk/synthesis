@@ -46,27 +46,27 @@ public class ConfigMotorModal : ModalDynamic {
         if (_robotISSwerve) {
             _driveDrivers = new WheelDriver[driveMotorCount];
             for (i = 0; i < driveMotorCount; i++) {
-                _motors[i]        = new ConfigMotor(MotorType.Drive);
+                _motors[i]        = new ConfigMotor(MotorType.Drive, i);
                 _motors[i].driver = _robot.modules[i].driver;
                 _driveDrivers[i]  = _robot.modules[i].driver;
             }
 
             _turnDrivers = new RotationalDriver[driveMotorCount];
             for (i = 0; i < driveMotorCount; i++) {
-                _motors[i + driveMotorCount]        = new ConfigMotor(MotorType.Turn);
+                _motors[i + driveMotorCount]        = new ConfigMotor(MotorType.Turn, i + driveMotorCount);
                 _motors[i + driveMotorCount].driver = _robot.modules[i].azimuth;
                 _turnDrivers[i]            = _robot.modules[i].azimuth;
             }
         } else {
             _driveDrivers = new WheelDriver[driveMotorCount];
             _robot.GetLeftRightWheels()!.Value.leftWheels.ForEach(x => {
-                _motors[i]        = new ConfigMotor(MotorType.Drive);
+                _motors[i]        = new ConfigMotor(MotorType.Drive, i);
                 _motors[i].driver = x;
                 _driveDrivers[i]  = x;
                 i++;
             });
             _robot.GetLeftRightWheels()!.Value.rightWheels.ForEach(x => {
-                _motors[i]        = new ConfigMotor(MotorType.Drive);
+                _motors[i]        = new ConfigMotor(MotorType.Drive, i);
                 _motors[i].driver = x;
                 _driveDrivers[i]  = x;
                 i++;
@@ -82,7 +82,7 @@ public class ConfigMotorModal : ModalDynamic {
 
         SimulationManager.Drivers[_robot.Name].ForEach(x => {
             if (Array.IndexOf(_driveDrivers, x) == -1 && (!_robotISSwerve || Array.IndexOf(_turnDrivers, x) == -1)) {
-                _motors[i]        = new ConfigMotor(MotorType.Other);
+                _motors[i]        = new ConfigMotor(MotorType.Other, i);
                 _motors[i].driver = x;
                 i++;
             }
@@ -93,7 +93,7 @@ public class ConfigMotorModal : ModalDynamic {
         Description.SetText("Change motor settings");
 
         AcceptButton.StepIntoLabel(b => { b.SetText("Save"); }).AddOnClickedEvent(b => {
-            RobotSimObject.GetCurrentlyPossessedRobot().MiraLive.Save();
+            Debug.Log("Saving");
             DynamicUIManager.CloseActiveModal();
 
             // Save to Mira
@@ -106,6 +106,17 @@ public class ConfigMotorModal : ModalDynamic {
                     }
                 }
             });
+
+            _robot.MiraLive.Save();
+
+            _motors.ForEach(x => {
+                if (x.driver is WheelDriver) {
+                    Debug.Log($"{x.id} vel {(x.driver as WheelDriver).Motor.targetVelocity}");
+                } else if (x.driver is RotationalDriver) {
+                    Debug.Log($"{x.id} vel {(x.driver as RotationalDriver).Motor.targetVelocity}");
+                }
+            });
+            Debug.Log($"robot 0 vel {_robot.GetLeftRightWheels().Value.leftWheels[0].Motor.targetVelocity}");
         });
 
         MiddleButton.SetWidth<Button>(132)
@@ -194,17 +205,20 @@ public class ConfigMotorModal : ModalDynamic {
     }
 
     private class ConfigMotor {
+        public int id;
         public Driver driver { get; set; }
         public float origVel { get; set; }
         private float _force { get; set; }
         public bool velChanged { get; set; } = false;
         public MotorType motorType { get; set; }
 
-        public ConfigMotor(MotorType t) {
+        public ConfigMotor(MotorType t, int i) {
             motorType = t;
+            id = i;        
         }
 
         public void setTargetVelocity(float v) {
+            Debug.Log($"setting {id} from {origVel} to target {v}");
             if (driver is RotationalDriver) {
                 _force = (driver as RotationalDriver).Motor.force;
                 (driver as RotationalDriver).Motor =
@@ -215,6 +229,7 @@ public class ConfigMotorModal : ModalDynamic {
                     new JointMotor() { force = _force, freeSpin = false, targetVelocity = v };
             }
             velChanged = true;
+            Debug.Log($"finished setting {id} target");
         }
     }
 
