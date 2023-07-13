@@ -363,8 +363,7 @@ namespace SynthesisAPI.Aether.Lobby {
 
                     var msgBuf = new byte[msgSize];
                     int bytesRead = 0;
-                    var startRead = DateTime.UtcNow;
-                    while (bytesRead != msgSize && (DateTime.UtcNow - startRead).TotalMilliseconds < READ_TIMEOUT_MS) {
+                    while (bytesRead < msgSize) {
                         bytesRead += stream.Read(msgBuf, bytesRead, msgSize - bytesRead);
                     }
 
