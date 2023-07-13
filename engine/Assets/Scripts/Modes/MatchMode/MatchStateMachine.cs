@@ -1,3 +1,9 @@
+﻿using System;
+using System.Collections.Generic;
+using Analytics;
+using Modes.MatchMode;
+using Synthesis.UI.Dynamic;
+using UnityEngine;
 ﻿using System.Collections.Generic;
 using Synthesis.Physics;
 using Synthesis.UI.Dynamic;
@@ -56,6 +62,8 @@ namespace Modes.MatchMode {
             _matchStates.Add(StateName.Teleop, new Teleop());
             _matchStates.Add(StateName.Endgame, new Endgame());
             _matchStates.Add(StateName.MatchResults, new MatchResults());
+            _matchStates.Add(StateName.Restart, new Restart());
+            _matchStates.Add(StateName.Reconfigure, new Reconfigure());
 
             _currentState = _matchStates[StateName.None];
         }
@@ -182,9 +190,8 @@ namespace Modes.MatchMode {
             public override void Start() {
                 base.Start();
                 DynamicUIManager.CreatePanel<ScoringZonesPanel>(true);
-                // clang-format off
                 var panel = DynamicUIManager.GetPanel<ScoringZonesPanel>();
-                // clang-format on
+
                 panel.OnAccepted += () => {
                     DynamicUIManager.CreateModal<ConfirmModal>("Start Match?");
                     DynamicUIManager.ActiveModal.OnAccepted += () => {
@@ -208,14 +215,16 @@ namespace Modes.MatchMode {
             public FieldConfig() : base(StateName.FieldConfig) {}
         }
 
-        /// <summary>
         /// The autonomous state at the beginning of a match
-        /// </summary>
         public class Auto : MatchState {
             public override void Start() {
                 base.Start();
+
                 Scoring.targetTime = 15;
                 DynamicUIManager.CreatePanel<ScoreboardPanel>(true, true);
+
+                AnalyticsManager.LogCustomEvent(
+                    AnalyticsEvent.MatchStarted, ("NumRobots", RobotSimObject.SpawnedRobots.Count));
             }
 
             public override void Update() {}
@@ -286,6 +295,14 @@ namespace Modes.MatchMode {
                 base.Start();
 
                 DynamicUIManager.CreateModal<MatchResultsModal>();
+
+                AnalyticsManager.LogCustomEvent(AnalyticsEvent.MatchEnded,
+                    ("BluePoints", int.Parse(MatchMode.MatchResultsTracker
+                                                 .MatchResultEntries[typeof(MatchResultsTracker.BluePoints)]
+                                                 .ToString())),
+                    ("RedPoints", int.Parse(MatchMode.MatchResultsTracker
+                                                .MatchResultEntries[typeof(MatchResultsTracker.RedPoints)]
+                                                .ToString())));
             }
 
             public override void Update() {}
@@ -293,6 +310,61 @@ namespace Modes.MatchMode {
             public override void End() {}
 
             public MatchResults() : base(StateName.MatchResults) {}
+        }
+
+        /// Restarts the match with the same configuration
+        public class Restart : MatchState {
+            public override void Start() {
+                base.Start();
+
+                // Reset robots to their selected spawn position
+                int i = 0;
+                MatchMode.Robots.ForEach(x => {
+                    if (x != null) {
+                        (Vector3 position, Quaternion rotation) location = MatchMode.GetSpawnLocation(i);
+
+                        Transform robot = x.RobotNode.transform;
+
+                        robot.position = Vector3.zero;
+                        robot.rotation = Quaternion.identity;
+
+                        robot.rotation = location.rotation * Quaternion.Inverse(x.GroundedNode.transform.rotation);
+                        robot.position = location.position - x.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(
+                                                                 x.GroundedBounds.center);
+                    }
+                    i++;
+                });
+
+                // TODO: reset the match results tracker
+                // TODO: reset the scoreboard and timer
+                // TODO: add a modal or panel to start the match so it doesn't instantly start
+                Instance.SetState(StateName.Auto);
+            }
+
+            public override void Update() {}
+
+            public override void End() {}
+
+            public Restart() : base(StateName.Restart) {}
+        }
+
+        /// Resets the match and sends he user back to the MatchConfig modal
+        public class Reconfigure : MatchState {
+            public override void Start() {
+                RobotSimObject.RemoveAllRobots();
+                FieldSimObject.DeleteField();
+                MatchMode.ResetMatchConfiguration();
+
+                // TODO: reset the match results tracker
+                // TODO: reset the scoreboard and timer
+                Instance.SetState(StateName.MatchConfig);
+            }
+
+            public override void Update() {}
+
+            public override void End() {}
+
+            public Reconfigure() : base(StateName.Reconfigure) {}
         }
 
 #endregion
@@ -307,7 +379,9 @@ namespace Modes.MatchMode {
             Transition,
             Teleop,
             Endgame,
-            MatchResults
+            MatchResults,
+            Restart,
+            Reconfigure
         }
     }
 }

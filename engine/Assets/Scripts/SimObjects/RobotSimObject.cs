@@ -1,38 +1,28 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Google.Protobuf.WellKnownTypes;
-using Mirabuf;
-using Mirabuf.Joint;
-using Modes.MatchMode;
+using Analytics;
 using Newtonsoft.Json;
 using Synthesis;
-using Synthesis.Import;
-using Synthesis.Util;
-using Synthesis.Physics;
-using SynthesisAPI.Simulation;
-using SynthesisAPI.Utilities;
-using UnityEngine;
-using Bounds    = UnityEngine.Bounds;
-using Joint     = UnityEngine.Joint;
-using MVector3  = Mirabuf.Vector3;
-using Transform = UnityEngine.Transform;
-using Vector3   = UnityEngine.Vector3;
 using Synthesis.Gizmo;
+using Synthesis.Import;
+using Synthesis.Physics;
 using Synthesis.PreferenceManager;
 using Synthesis.Runtime;
 using Synthesis.UI;
-using SynthesisAPI.InputManager.Inputs;
-using SynthesisAPI.InputManager;
-using SynthesisAPI.EventBus;
 using Synthesis.WS.Translation;
 using SynthesisAPI.Aether.Lobby;
-using static Synthesis.WS.Translation.RioTranslationLayer;
 using SynthesisAPI.Controller;
-using UnityEngine.Assertions.Must;
+using SynthesisAPI.EventBus;
+using SynthesisAPI.InputManager;
+using SynthesisAPI.InputManager.Inputs;
+using SynthesisAPI.Simulation;
+using SynthesisAPI.Utilities;
+using UnityEngine;
+using Bounds = UnityEngine.Bounds;
 using Logger = SynthesisAPI.Utilities.Logger;
+using MVector3  = Mirabuf.Vector3;
 
 #nullable enable
 
@@ -131,7 +121,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     private (List<WheelDriver> leftWheels, List<WheelDriver> rightWheels)? _tankTrackWheels = null;
 
-    private Dictionary<string, (UnityEngine.Joint a, UnityEngine.Joint b)> _jointMap;
+    private Dictionary<string, (Joint a, Joint b)> _jointMap;
     private List<Rigidbody> _allRigidbodies;
     public IReadOnlyCollection<Rigidbody> AllRigidbodies => _allRigidbodies.AsReadOnly();
     private Dictionary<string, GameObject> _nodes        = new Dictionary<string, GameObject>();
@@ -176,7 +166,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     private DrivetrainType? _drivetrainType;
     public DrivetrainType ConfiguredDrivetrainType {
-        get => _drivetrainType ?? RobotSimObject.DrivetrainType.ARCADE;
+        get => _drivetrainType ?? DrivetrainType.ARCADE;
         set {
             _drivetrainType = value;
             SimulationPreferences.SetRobotDrivetrainType(MiraLive.MiraAssembly.Info.GUID, value);
@@ -262,18 +252,18 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             TryGetSavedInput(OUTTAKE_GAMEPIECES, new Digital("Q", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
 
         SimulationRunner.OnUpdate += () => {
-            if (RobotSimObject.CurrentlyPossessedRobot == string.Empty) {
+            if (CurrentlyPossessedRobot == string.Empty) {
                 return;
             }
 
             bool pickup = InputManager.MappedValueInputs[INTAKE_GAMEPIECES].Value == 1.0F;
-            RobotSimObject.GetCurrentlyPossessedRobot().PickingUpGamepieces = pickup;
+            GetCurrentlyPossessedRobot().PickingUpGamepieces = pickup;
             bool shootGamepiece = InputManager.MappedValueInputs[OUTTAKE_GAMEPIECES].Value == 1.0F;
 
-            if (shootGamepiece && RobotSimObject.GetCurrentlyPossessedRobot().LastShotTime + TIME_BETWEEN_SHOTS <
+            if (shootGamepiece && GetCurrentlyPossessedRobot().LastShotTime + TIME_BETWEEN_SHOTS <
                                       Time.realtimeSinceStartup) {
-                RobotSimObject.GetCurrentlyPossessedRobot().LastShotTime = Time.realtimeSinceStartup;
-                RobotSimObject.GetCurrentlyPossessedRobot().ShootGamepiece();
+                GetCurrentlyPossessedRobot().LastShotTime = Time.realtimeSinceStartup;
+                GetCurrentlyPossessedRobot().ShootGamepiece();
             }
         };
     }
@@ -662,6 +652,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             GizmoManager.SpawnGizmo(simObject);
         // GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, mira.MainObject.transform,
         // mira.MainObject.transform.position);
+
+        AnalyticsManager.LogCustomEvent(AnalyticsEvent.RobotSpawned, ("RobotName", mira.MainObject.name));
     }
 
     public static bool RemoveRobot(string robot) {
@@ -674,6 +666,13 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             CurrentlyPossessedRobot = string.Empty;
         _spawnedRobots.Remove(robot);
         return SimulationManager.RemoveSimObject(robot);
+    }
+
+    public static void RemoveAllRobots() {
+        string[] robots = new string[_spawnedRobots.Keys.Count];
+        _spawnedRobots.Keys.CopyTo(robots, 0);
+
+        robots.ForEach(x => { RemoveRobot(x); });
     }
 
     private Dictionary<Rigidbody, (bool isKine, Vector3 vel, Vector3 angVel)> _preFreezeStates =
