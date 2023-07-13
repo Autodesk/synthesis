@@ -120,14 +120,14 @@ namespace Synthesis {
             set {
                 if (value != _useFakeMotion) {
                     _useFakeMotion = value;
-					if (_useFakeMotion) {
-						return;
-					}
-					if (_rotationalLimits.HasValue) {
-						_jointA.limits = _rotationalLimits.Value;
-					}
-					EnableMotor();
-				}
+                    if (_useFakeMotion) {
+                        return;
+                    }
+                    if (_rotationalLimits.HasValue) {
+                        _jointA.limits = _rotationalLimits.Value;
+                    }
+                    EnableMotor();
+                }
             }
         }
 
@@ -147,9 +147,9 @@ namespace Synthesis {
             }
 
             UseFakeMotion = jointA.useLimits;
-			EnableMotor();
+            EnableMotor();
 
-			if (motor != null && motor.MotorTypeCase == Mirabuf.Motor.Motor.MotorTypeOneofCase.SimpleMotor) {
+            if (motor != null && motor.MotorTypeCase == Mirabuf.Motor.Motor.MotorTypeOneofCase.SimpleMotor) {
                 _motor = motor!.SimpleMotor.UnityMotor;
             } else {
                 // var m = SimulationPreferences.GetRobotJointMotor((_simObject as RobotSimObject).MiraGUID, name);
@@ -194,8 +194,8 @@ namespace Synthesis {
 
         private float _jointAngle = 0.0f;
         private float _lastUpdate = float.NaN;
-        public override void Update() {
 
+        public override void Update() {
             float deltaT = 0f;
             if (!float.IsNaN(_lastUpdate)) {
                 deltaT = Time.realtimeSinceStartup - _lastUpdate;
@@ -277,7 +277,6 @@ namespace Synthesis {
                 // ForceMode.Acceleration); Debug.Log($"{angAccelB} to {_jointB.connectedBody.name}");
 
                 if (_useFakeMotion) {
-
                     float alpha = val * Motor.targetVelocity;
 
                     _fakedTheta += alpha * deltaT;
@@ -291,26 +290,18 @@ namespace Synthesis {
 
                         _fakedTheta = Mathf.Clamp(_fakedTheta, -180, 179);
 
-						_jointA.limits = new JointLimits {
-                            bounceMinVelocity = _rotationalLimits.Value.bounceMinVelocity,
-                            bounciness = _rotationalLimits.Value.bounciness,
-                            contactDistance = _rotationalLimits.Value.contactDistance,
-                            max = _fakedTheta + 1,
-                            min = _fakedTheta
-                        };
+                        _jointA.limits =
+                            new JointLimits { bounceMinVelocity = _rotationalLimits.Value.bounceMinVelocity,
+                                bounciness                      = _rotationalLimits.Value.bounciness,
+                                contactDistance = _rotationalLimits.Value.contactDistance, max = _fakedTheta + 1,
+                                min = _fakedTheta };
                     }
-                    
+
                 } else {
-                    _jointA.motor = new JointMotor {
-                        force = Motor.force * (inertiaA / (inertiaA + inertiaB)),
-                        freeSpin = Motor.freeSpin,
-                        targetVelocity = (Motor.targetVelocity) * val
-                    };
-                    _jointB.motor = new JointMotor {
-                        force = Motor.force * (inertiaB / (inertiaA + inertiaB)),
-                        freeSpin = Motor.freeSpin,
-                        targetVelocity = (-Motor.targetVelocity) * val
-                    };
+                    _jointA.motor = new JointMotor { force = Motor.force * (inertiaA / (inertiaA + inertiaB)),
+                        freeSpin = Motor.freeSpin, targetVelocity = (Motor.targetVelocity) * val };
+                    _jointB.motor = new JointMotor { force = Motor.force * (inertiaB / (inertiaA + inertiaB)),
+                        freeSpin = Motor.freeSpin, targetVelocity = (-Motor.targetVelocity) * val };
                 }
             }
         }

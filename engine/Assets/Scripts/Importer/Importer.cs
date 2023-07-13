@@ -167,9 +167,9 @@ namespace Synthesis.Import {
             return (assemblyObject, miraLive, simObject);
         }
 
-        #endregion
+#endregion
 
-        #region Assistant Functions
+#region Assistant Functions
 
         private readonly static float TWO_PI = 2f * Mathf.PI;
 
@@ -262,14 +262,15 @@ namespace Synthesis.Import {
                         var limits = definition.Rotational.RotationalFreedom.Limits;
                         if (limits != null && limits.Lower != limits.Upper) {
                             var currentPosition = definition.Rotational.RotationalFreedom.Value;
-							currentPosition = (currentPosition % (TWO_PI))
-                                - ((int)(currentPosition % (TWO_PI) / Mathf.PI) * (TWO_PI));
-							var min = -(limits.Upper - currentPosition);
-							min = (min % (TWO_PI) - TWO_PI) % (TWO_PI);
-							var max = -(limits.Lower - currentPosition);
-							max = (max % (TWO_PI) + TWO_PI) % (TWO_PI);
-							revoluteA.useLimits = true;
-                            revoluteA.limits    = new JointLimits() { min = min * Mathf.Rad2Deg, max = max * Mathf.Rad2Deg };
+                            currentPosition     = (currentPosition % (TWO_PI)) -
+                                              ((int) (currentPosition % (TWO_PI) / Mathf.PI) * (TWO_PI));
+                            var min             = -(limits.Upper - currentPosition);
+                            min                 = (min % (TWO_PI) -TWO_PI) % (TWO_PI);
+                            var max             = -(limits.Lower - currentPosition);
+                            max                 = (max % (TWO_PI) + TWO_PI) % (TWO_PI);
+                            revoluteA.useLimits = true;
+                            revoluteA.limits =
+                                new JointLimits() { min = min * Mathf.Rad2Deg, max = max * Mathf.Rad2Deg };
                             revoluteA.extendedLimits = true;
                         }
                         // revoluteA.useLimits = true;
