@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Analytics;
 using Google.Protobuf.WellKnownTypes;
 using Mirabuf;
 using Mirabuf.Joint;
@@ -635,6 +636,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             GizmoManager.SpawnGizmo(simObject);
         // GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, mira.MainObject.transform,
         // mira.MainObject.transform.position);
+
+        AnalyticsManager.LogCustomEvent(AnalyticsEvent.RobotSpawned, ("RobotName", mira.MainObject.name));
     }
 
     public static bool RemoveRobot(string robot) {

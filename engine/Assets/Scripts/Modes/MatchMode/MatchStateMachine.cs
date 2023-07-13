@@ -1,3 +1,9 @@
+﻿using System;
+using System.Collections.Generic;
+using Analytics;
+using Modes.MatchMode;
+using Synthesis.UI.Dynamic;
+using UnityEngine;
 ﻿using System.Collections.Generic;
 using Synthesis.Physics;
 using Synthesis.UI.Dynamic;
@@ -209,14 +215,16 @@ namespace Modes.MatchMode {
             public FieldConfig() : base(StateName.FieldConfig) {}
         }
 
-        /// <summary>
         /// The autonomous state at the beginning of a match
-        /// </summary>
         public class Auto : MatchState {
             public override void Start() {
                 base.Start();
+
                 Scoring.targetTime = 15;
                 DynamicUIManager.CreatePanel<ScoreboardPanel>(true, true);
+
+                AnalyticsManager.LogCustomEvent(
+                    AnalyticsEvent.MatchStarted, ("NumRobots", RobotSimObject.SpawnedRobots.Count));
             }
 
             public override void Update() {}
@@ -287,6 +295,14 @@ namespace Modes.MatchMode {
                 base.Start();
 
                 DynamicUIManager.CreateModal<MatchResultsModal>();
+
+                AnalyticsManager.LogCustomEvent(AnalyticsEvent.MatchEnded,
+                    ("BluePoints", int.Parse(MatchMode.MatchResultsTracker
+                                                 .MatchResultEntries[typeof(MatchResultsTracker.BluePoints)]
+                                                 .ToString())),
+                    ("RedPoints", int.Parse(MatchMode.MatchResultsTracker
+                                                .MatchResultEntries[typeof(MatchResultsTracker.RedPoints)]
+                                                .ToString())));
             }
 
             public override void Update() {}
