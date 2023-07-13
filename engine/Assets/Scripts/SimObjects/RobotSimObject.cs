@@ -304,7 +304,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     public override void Destroy() {
-        Client.Dispose();
+        Client?.Dispose();
         Client = null;
         ClearGamepieces();
         PhysicsManager.Unregister(this);

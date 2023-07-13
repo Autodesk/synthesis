@@ -47,8 +47,8 @@ namespace SynthesisAPI.Aether.Lobby {
             private readonly LobbyClientHandler _handler;
             public LobbyClientHandler Handler => _handler;
 
-            public ReaderWriterLockSlim _transformDataLock;
-            public Dictionary<ulong, ServerTransforms> _transformData;
+            public ReaderWriterLockSlim TransformDataLock;
+            public Dictionary<ulong, ServerTransforms> TransformData;
 
             private ConcurrentQueue<Task<Result<LobbyMessage?, Exception>>> _requestQueue;
 
@@ -58,8 +58,8 @@ namespace SynthesisAPI.Aether.Lobby {
             public Inner(string ip, string name) {
                 IP = ip;
 
-                _transformData = new Dictionary<ulong, ServerTransforms>();
-                _transformDataLock = new ReaderWriterLockSlim();
+                TransformData = new Dictionary<ulong, ServerTransforms>();
+                TransformDataLock = new ReaderWriterLockSlim();
 
                 _requestQueue = new ConcurrentQueue<Task<Result<LobbyMessage?, Exception>>>();
 
