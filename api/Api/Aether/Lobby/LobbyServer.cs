@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using SynthesisAPI.Controller;
+using SynthesisAPI.Utilities;
+using System;
 using System.Linq;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using System.Xml.Linq;
-using Org.BouncyCastle.Math.EC.Rfc7748;
-using Org.BouncyCastle.Tls;
-using SynthesisAPI.Controller;
-using SynthesisAPI.Utilities;
+using System.Security.Cryptography;
 
 #nullable enable
 
@@ -21,6 +19,7 @@ namespace SynthesisAPI.Aether.Lobby {
         private Inner? _instance;
 
         public IReadOnlyCollection<string> Clients => _instance?.Clients ?? new List<string>(1).AsReadOnly();
+        public IReadOnlyCollection<DataRobot> AvailableRobots => _instance?.AvailableRobots ?? new List<DataRobot>(1).AsReadOnly();
 
         public LobbyServer() {
             _instance = new Inner();
@@ -45,20 +44,43 @@ namespace SynthesisAPI.Aether.Lobby {
 
             public IReadOnlyCollection<string> Clients {
                 get {
+                    List<string> clientsInfo;
                     _clientsLock.EnterReadLock();
-                    var clientsInfo = new List<string>(_clients.Count);
-                    _clients.Values.ForEach(x => clientsInfo.Add(x.ToString()));
-                    _clientsLock.ExitReadLock();
+                    try {
+                        clientsInfo = new List<string>(_clients.Count);
+                        _clients.Values.ForEach(x => clientsInfo.Add(x.ToString()));
+                    } finally {
+                        _clientsLock.ExitReadLock();
+                    }
+
                     return clientsInfo.AsReadOnly();
+                }
+            }
+
+            private readonly ReaderWriterLockSlim _robotDataLock;
+            private List<DataRobot> _availableRobots;
+            public IReadOnlyCollection<DataRobot> AvailableRobots {
+                get {
+                    List<DataRobot> robots;
+                    _robotDataLock.EnterReadLock();
+                    try {
+                        robots = new List<DataRobot>(_availableRobots);
+                    } finally {
+                        _robotDataLock.ExitReadLock();
+                    }
+
+                    return robots.AsReadOnly();
                 }
             }
 
             public Inner() {
                 _clientsLock = new ReaderWriterLockSlim();
                 _remoteDataLock = new ReaderWriterLockSlim();
+                _robotDataLock = new ReaderWriterLockSlim();
 
                 _clients = new Dictionary<ulong, LobbyClientHandler>();
                 _clientThreads = new LinkedList<Thread>();
+                _availableRobots = new List<DataRobot>();
 
                 _remoteData = new Dictionary<ulong, RemoteData>();
                 
@@ -90,15 +112,15 @@ namespace SynthesisAPI.Aether.Lobby {
                             var clientThread = new Thread(() => ClientListener(client));
                             clientThread.Start();
                             _clientThreads.AddLast(clientThread);
-                            _clientsLock.ExitWriteLock();
                         }
 
                     }
                 } catch (ObjectDisposedException) {
                 } catch (Exception e) {
                     Logger.Log($"Failed to accept new client: {e.Message}");
+                } finally {
+                    _clientsLock.ExitWriteLock();
                 }
-
 
                 if (_isAlive)
                     _listener.BeginAcceptTcpClient(AcceptTcpClient, null);
@@ -109,6 +131,7 @@ namespace SynthesisAPI.Aether.Lobby {
                     var msgTask = handler.ReadMessage();
                     var finishedBeforeTimeout = msgTask.Wait(CLIENT_LISTEN_TIMEOUT_MS);
                     if (!finishedBeforeTimeout || msgTask.Result == null) {
+                        Logger.Log("Read Time Out");
                         continue;
                     }
 
@@ -125,6 +148,12 @@ namespace SynthesisAPI.Aether.Lobby {
                         case LobbyMessage.MessageTypeOneofCase.ToGetLobbyInformation:
                             OnGetLobbyInformation(msg.ToGetLobbyInformation, handler);
                             break;
+                        case LobbyMessage.MessageTypeOneofCase.ToDataRobot:
+                            AcceptRobotData(msg.ToDataRobot, handler);
+                            break;
+                        case LobbyMessage.MessageTypeOneofCase.ToRequestDataRobots:
+                            OnRequestDataRobots(msg.ToRequestDataRobots, handler);
+                            break;
                         case LobbyMessage.MessageTypeOneofCase.ToUpdateControllableState:
                             OnControllableStateUpdate(msg.ToUpdateControllableState, handler);
                             break;
@@ -136,80 +165,122 @@ namespace SynthesisAPI.Aether.Lobby {
 							handler.UpdateHeartbeat();
                             break;
                         default:
+                            Logger.Log($"Received unknown message type: {msg.MessageTypeCase}");
                             break;
                     }
                 }
             }
 
             private void OnGetLobbyInformation(LobbyMessage.Types.ToGetLobbyInformation _, LobbyClientHandler handler) {
+                LobbyMessage.Types.FromGetLobbyInformation response;
                 _clientsLock.EnterReadLock();
 
-                LobbyMessage.Types.FromGetLobbyInformation response = new LobbyMessage.Types.FromGetLobbyInformation {
-                    LobbyInformation = new LobbyInformation()
-                };
-                _clients.Values.ForEach(x => response.LobbyInformation.Clients.Add(x.ClientInformation));
-                
-                _clientsLock.ExitReadLock();
+                try {
+                    response = new LobbyMessage.Types.FromGetLobbyInformation {
+                        LobbyInformation = new LobbyInformation()
+                    };
+                    _clients.Values.ForEach(x => response.LobbyInformation.Clients.Add(x.ClientInformation));
+                } finally {
+                    _clientsLock.ExitReadLock();
+                }
                 
                 handler.WriteMessage(new LobbyMessage { FromGetLobbyInformation = response });
             }
 
+            private void AcceptRobotData(LobbyMessage.Types.ToDataRobot robot, LobbyClientHandler handler) {
+                _robotDataLock.EnterWriteLock();
+                try {
+                    SHA256 sha = SHA256.Create();
+                    var checksum = Convert.ToBase64String(sha.ComputeHash(robot.DataRobot.Data.ToByteArray()));
+                    _availableRobots.Add(new DataRobot(robot.DataRobot));
+                } finally {
+                    _robotDataLock.ExitWriteLock();
+                }
+
+                var response = new LobbyMessage.Types.FromDataRobot {
+                    Guid = handler.Guid
+                };
+
+                handler.WriteMessage(new LobbyMessage { FromDataRobot = response });
+            }
+
+            private void OnRequestDataRobots(LobbyMessage.Types.ToRequestDataRobots request, LobbyClientHandler handler) {
+                var response = new LobbyMessage.Types.FromRequestDataRobots();
+                _robotDataLock.EnterReadLock();
+                try {
+                    response.AllAvailableRobots.AddRange(_availableRobots);
+                } finally {
+                    _robotDataLock.ExitReadLock();
+                }
+
+                handler.WriteMessage(new LobbyMessage { FromRequestDataRobots = response });
+            }
+
             private void OnControllableStateUpdate(LobbyMessage.Types.ToUpdateControllableState updateRequest, LobbyClientHandler handler) {
+                RemoteData data;
 
                 _remoteDataLock.EnterReadLock();
-                var data = _remoteData[updateRequest.Guid];
-                _remoteDataLock.ExitReadLock();
+                try {
+                    data = _remoteData[updateRequest.Guid];
+                } finally {
+                    _remoteDataLock.ExitReadLock();
+                }
 
                 data.EnterWriteLock();
-
-                updateRequest.Data.ForEach(x => {
-                    data.State.SetValue(x.SignalGuid, x.Value);
-                });
-
-                data.ExitWriteLock();
+                try {
+                    updateRequest.Data.ForEach(x => {
+                        data.State.SetValue(x.SignalGuid, x.Value);
+                    });
+                } finally {
+                    data.ExitWriteLock();
+                }
 
                 var response = new LobbyMessage.Types.FromSimulationTransformData();
                 
                 _remoteDataLock.EnterReadLock();
-                _remoteData.ForEach(kvp => {
-                    kvp.Value.EnterReadLock();
-                    response.TransformData.Add(kvp.Value.Transforms);
-                    kvp.Value.ExitReadLock();
-                });
-                _remoteDataLock.ExitReadLock();
+                try {
+                    _remoteData.ForEach(kvp => {
+                        kvp.Value.EnterReadLock();
+                        response.TransformData.Add(kvp.Value.Transforms);
+                        kvp.Value.ExitReadLock();
+                    });
+                } finally {
+                    _remoteDataLock.ExitReadLock();
+                }
 
                 handler.WriteMessage(new LobbyMessage { FromSimulationTransformData = response });
             }
 
             private void OnTransformDataUpdate(LobbyMessage.Types.ToUpdateTransformData updateRequest, LobbyClientHandler handler) {
+                var response = new LobbyMessage.Types.FromControllableStates();
                 _remoteDataLock.EnterReadLock();
+                try {
+                    updateRequest.TransformData.ForEach(x => {
+                        var data = _remoteData[x.Guid];
+                        data.EnterWriteLock();
 
-                updateRequest.TransformData.ForEach(x => {
-                    var data = _remoteData[x.Guid];
-                    data.EnterWriteLock();
+                        x.Transforms.ForEach(kvp => {
+                            data.Transforms.Transforms[kvp.Key] = kvp.Value;
+                        });
 
-                    x.Transforms.ForEach(kvp => {
-                        data.Transforms.Transforms[kvp.Key] = kvp.Value;
+                        data.ExitWriteLock();
                     });
 
-                    data.ExitWriteLock();
-                });
 
-                var response = new LobbyMessage.Types.FromControllableStates();
-
-                _remoteData.ForEach(kvp => {
-                    kvp.Value.EnterWriteLock();
-                    if (kvp.Value.State.HasUpdates) {
-                        SignalUpdates updates = new SignalUpdates {
-                            Guid = kvp.Key
-                        };
-                        updates.UpdatedSignals.AddRange(kvp.Value.State.CompileChanges());
-                        response.AllUpdates.Add(updates);
-                    }
-                    kvp.Value.ExitWriteLock();
-                });
-
-                _remoteDataLock.ExitReadLock();
+                    _remoteData.ForEach(kvp => {
+                        kvp.Value.EnterWriteLock();
+                        if (kvp.Value.State.HasUpdates) {
+                            SignalUpdates updates = new SignalUpdates {
+                                Guid = kvp.Key
+                            };
+                            updates.UpdatedSignals.AddRange(kvp.Value.State.CompileChanges());
+                            response.AllUpdates.Add(updates);
+                        }
+                        kvp.Value.ExitWriteLock();
+                    });
+                } finally {
+                    _remoteDataLock.ExitReadLock();
+                }
 
                 handler.WriteMessage(new LobbyMessage { FromControllableStates = response });
             }
@@ -219,9 +290,14 @@ namespace SynthesisAPI.Aether.Lobby {
                     return null;
 
                 var data = _remoteData[guid];
+                ControllableState state;
                 data.EnterReadLock();
-                var state = new ControllableState(data.State);
-                data.ExitReadLock();
+                try {
+                    state = new ControllableState(data.State);
+                } finally {
+                    data.ExitReadLock();
+                }
+
                 return state;
             }
 

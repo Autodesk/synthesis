@@ -1,10 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using Google.Protobuf.WellKnownTypes;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.Controller;
-using UnityEngine;
 using SynthesisAPI.Utilities;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 using Logger = SynthesisAPI.Utilities.Logger;
 
@@ -87,6 +87,21 @@ namespace Synthesis.UI.Dynamic {
                             msg?.FromControllableStates.AllUpdates.ForEach(
                                 y => y.UpdatedSignals.ForEach(z => Logger.Log($"[{z.SignalGuid}] {z.Value}")));
                         }, null);
+                });
+
+            right.CreateButton(text: "Send robot data")
+                .SetHeight<Button>(30f)
+                .SetTopStretch<Button>(anchoredY: 45f * 5f)
+                .AddOnClickedEvent(b => {
+                    var robotData  = new DataRobot();
+                    robotData.Guid = _mode.Clients[1]?.Guid ?? 0;
+                    _mode.Clients[1]?.UploadRobotData(robotData).ContinueWith((x, o) => {
+                        if (x.Result.isError)
+                            Logger.Log("Error");
+
+                        var msg = x.Result.GetResult();
+                        Logger.Log($"Received Response: {msg?.FromDataRobot.Guid}");
+                    }, null);
                 });
 
             _self = this;
