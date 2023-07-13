@@ -12,6 +12,8 @@ public class ModeManager {
                 _currentMode.End();
             _currentMode = value;
 
+            // this is always called in GridMenuScene so _currentMode is never started here
+            // it is now started in SimulationRunner::Start
             if (SceneManager.GetActiveScene().name == "MainScene" && _currentMode != null)
                 _currentMode.Start();
         }

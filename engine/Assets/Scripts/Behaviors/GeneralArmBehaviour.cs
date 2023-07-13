@@ -79,5 +79,9 @@ namespace Synthesis {
             _armDriver.MainInput = 0f;
             _armDriver.Unreserve();
         }
+
+        protected override void OnDisable() {
+            _armDriver.MainInput = 0f;
+        }
     }
 }

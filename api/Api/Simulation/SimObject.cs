@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using SynthesisAPI.Controller;
+using Mirabuf.Signal;
 
 namespace SynthesisAPI.Simulation {
     public class SimObject {
@@ -17,12 +19,19 @@ namespace SynthesisAPI.Simulation {
             get => _behavioursEnabled;
             set {
                 _behavioursEnabled = value;
+                SimulationManager.Behaviours[_name].ForEach(b => {
+                    b.Enabled = _behavioursEnabled;
+                });
             }
         }
 
+        public SimObject(string name, Signals signalLayout) {
+            _name = name;
+            _state = new ControllableState(signalLayout);
+        }
+
         // This was Init. No idea why but it might need to be
-        public SimObject(string name, ControllableState state)
-        {
+        public SimObject(string name, ControllableState state) {
             _name = name;
             _state = state;
         }

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Modes.MatchMode;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.EventBus;
@@ -21,6 +22,8 @@ public class RobotSwitchPanel : PanelDynamic {
     private Button _addButton;
     private Button _removeButton;
 
+    private bool _isMatchMode;
+
     public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
         var offset = (-u.Parent!.RectOfChildren(u).yMin);
         u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 15f, rightPadding: 15f); // used to be 15f
@@ -37,7 +40,9 @@ public class RobotSwitchPanel : PanelDynamic {
             .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
             .DisableEvents<Button>();
 
-    public RobotSwitchPanel() : base(new Vector2(PANEL_WIDTH, 400)) {}
+    public RobotSwitchPanel() : base(new Vector2(PANEL_WIDTH, 400)) {
+        _isMatchMode = ModeManager.CurrentMode.GetType() == typeof(MatchMode);
+    }
 
     // Update is called once per frame
     public override bool Create() {
@@ -51,22 +56,24 @@ public class RobotSwitchPanel : PanelDynamic {
                                             .SetBottomStretch<Content>()
                                             .SplitLeftRight((PANEL_WIDTH - 10f) / 2f, 10f);
 
-        _addButton = left.CreateButton("Add").SetStretch<Button>().AddOnClickedEvent(
-            b => { DynamicUIManager.CreateModal<AddRobotModal>(); });
-        _removeButton = right.CreateButton("Remove").SetStretch<Button>().AddOnClickedEvent(b => {
-            RobotSimObject.RemoveRobot(RobotSimObject.CurrentlyPossessedRobot);
-            PopulateScrollView();
-            if (RobotSimObject.SpawnedRobots.Count < RobotSimObject.MAX_ROBOTS)
-                _addButton.ApplyTemplate<Button>(EnableButton);
-        });
+        if (!_isMatchMode) {
+            _addButton = left.CreateButton("Add").SetStretch<Button>().AddOnClickedEvent(
+                b => { DynamicUIManager.CreateModal<AddRobotModal>(); });
+            _removeButton = right.CreateButton("Remove").SetStretch<Button>().AddOnClickedEvent(b => {
+                RobotSimObject.RemoveRobot(RobotSimObject.CurrentlyPossessedRobot);
+                PopulateScrollView();
+                if (RobotSimObject.SpawnedRobots.Count < RobotSimObject.MAX_ROBOTS)
+                    _addButton.ApplyTemplate<Button>(EnableButton);
+            });
+
+            if (RobotSimObject.CurrentlyPossessedRobot == string.Empty)
+                _removeButton.ApplyTemplate(DisableButton);
+
+            if (RobotSimObject.SpawnedRobots.Count >= RobotSimObject.MAX_ROBOTS)
+                _addButton.ApplyTemplate(DisableButton);
+        }
 
         PopulateScrollView();
-
-        if (RobotSimObject.CurrentlyPossessedRobot == string.Empty)
-            _removeButton.ApplyTemplate(DisableButton);
-
-        if (RobotSimObject.SpawnedRobots.Count >= RobotSimObject.MAX_ROBOTS)
-            _addButton.ApplyTemplate(DisableButton);
 
         EventBus.NewTypeListener<RobotSimObject.PossessionChangeEvent>(PossessedRobotChanged);
         EventBus.NewTypeListener<RobotSimObject.RobotSpawnEvent>(RobotSpawned);
@@ -113,10 +120,12 @@ public class RobotSwitchPanel : PanelDynamic {
         if (possChangeEvent == null)
             return;
 
-        if (possChangeEvent.NewBot == string.Empty)
-            _removeButton.ApplyTemplate(DisableButton);
-        else
-            _removeButton.ApplyTemplate(EnableButton);
+        if (!_isMatchMode) {
+            if (possChangeEvent.NewBot == string.Empty)
+                _removeButton.ApplyTemplate(DisableButton);
+            else
+                _removeButton.ApplyTemplate(EnableButton);
+        }
     }
 
     private void RobotSpawned(IEvent e) {
@@ -125,6 +134,14 @@ public class RobotSwitchPanel : PanelDynamic {
             return;
 
         PopulateScrollView();
+
+        if (!_isMatchMode) {
+            if (RobotSimObject.CurrentlyPossessedRobot == string.Empty)
+                _removeButton.ApplyTemplate(DisableButton);
+
+            if (RobotSimObject.SpawnedRobots.Count >= RobotSimObject.MAX_ROBOTS)
+                _addButton.ApplyTemplate(DisableButton);
+        }
     }
 
     private void RobotRemoved(IEvent e) {
@@ -133,6 +150,14 @@ public class RobotSwitchPanel : PanelDynamic {
             return;
 
         PopulateScrollView();
+
+        if (!_isMatchMode) {
+            if (RobotSimObject.CurrentlyPossessedRobot == string.Empty)
+                _removeButton.ApplyTemplate(DisableButton);
+
+            if (RobotSimObject.SpawnedRobots.Count >= RobotSimObject.MAX_ROBOTS)
+                _addButton.ApplyTemplate(DisableButton);
+        }
     }
 
     public override void Update() {}

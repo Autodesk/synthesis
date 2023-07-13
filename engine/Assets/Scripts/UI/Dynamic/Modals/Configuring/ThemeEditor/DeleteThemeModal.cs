@@ -12,7 +12,8 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
         private string _newThemeName = null;
 
         public override void Create() {
-            Title.SetText($"Delete {ColorManager.SelectedTheme}?").SetWrapping(false);;
+            Title.SetText($"Delete {ColorManager.SelectedTheme}?").SetWrapping(false);
+            ;
             Description.RootGameObject.SetActive(false);
 
             AcceptButton.AddOnClickedEvent(x => {

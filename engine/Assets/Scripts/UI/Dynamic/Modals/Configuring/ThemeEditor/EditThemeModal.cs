@@ -58,9 +58,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
                 DynamicUIManager.CloseActiveModal();
             });
 
-            MiddleButton.AddOnClickedEvent(x => {
-                PreviewColors();
-            }).StepIntoLabel(l => l.SetText("Preview"));
+            MiddleButton.AddOnClickedEvent(x => { PreviewColors(); }).StepIntoLabel(l => l.SetText("Preview"));
 
             var (left, right) = MainContent.SplitLeftRight(500 - (HORIZONTAL_PADDING / 2), HORIZONTAL_PADDING);
 
@@ -70,7 +68,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             CreateColorSelection(right);
 
             SelectTheme(_selectedThemeIndex, false);
-            
+
             UpdateDeleteButtons();
         }
 
@@ -78,7 +76,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             if (_selectedColor == null)
                 return;
 
-            Color colorInput = Color.HSVToRGB(_hSlider.Value/360f, _sSlider.Value/100f, _vSlider.Value/100f);
+            Color colorInput = Color.HSVToRGB(_hSlider.Value / 360f, _sSlider.Value / 100f, _vSlider.Value / 100f);
 
             var valueTuple = _colors[_selectedColor.Value];
             valueTuple.image.SetBackgroundColor<Button>(colorInput);
@@ -86,12 +84,12 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
             _colors[_selectedColor.Value] = (colorInput, valueTuple.image, valueTuple.background, valueTuple.label);
 
-            _hSlider.SetValue((int)_hSlider.Value);
-            _sSlider.SetValue((int)_sSlider.Value);
-            _vSlider.SetValue((int)_vSlider.Value);
+            _hSlider.SetValue((int) _hSlider.Value);
+            _sSlider.SetValue((int) _sSlider.Value);
+            _vSlider.SetValue((int) _vSlider.Value);
         }
 
-        public override void Delete() { }
+        public override void Delete() {}
 
         /// <summary>Creates the region on the top left to select, add, or delete a theme</summary>
         /// <param name="content">The region to create the theme selection UI</param>
@@ -108,51 +106,47 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
                                    .SetValue(_selectedThemeIndex);
 
             var (addContent, right) = content.CreateSubContent(new Vector2(content.Size.x, 50))
-                                                  .ApplyTemplate(VerticalLayout)
-                                                  .SplitLeftRight((content.Size.x - padding) / 3f, padding);
-            
+                                          .ApplyTemplate(VerticalLayout)
+                                          .SplitLeftRight((content.Size.x - padding) / 3f, padding);
+
             var (deleteContent, deleteAllContent) = right.SplitLeftRight((content.Size.x - padding) / 3f, padding);
 
             var addThemeButton = addContent.CreateButton()
                                      .ApplyTemplate(VerticalLayout)
                                      .StepIntoLabel(l => l.SetText("Create Theme"))
                                      .AddOnClickedEvent(b => { DynamicUIManager.CreateModal<NewThemeModal>(); });
-            
+
             _deleteButton = deleteContent.CreateButton()
-                .ApplyTemplate(VerticalLayout)
-                .StepIntoLabel(l => l.SetText("Delete Selected"))
-                .SetBackgroundColor<Button>(ColorManager.SynthesisColor.InteractiveElement)
-                .AddOnClickedEvent(b => {
-                    if (_selectedThemeIndex != 0)
-                        DynamicUIManager.CreateModal<DeleteThemeModal>();
-                });
+                                .ApplyTemplate(VerticalLayout)
+                                .StepIntoLabel(l => l.SetText("Delete Selected"))
+                                .SetBackgroundColor<Button>(ColorManager.SynthesisColor.InteractiveElement)
+                                .AddOnClickedEvent(b => {
+                                    if (_selectedThemeIndex != 0)
+                                        DynamicUIManager.CreateModal<DeleteThemeModal>();
+                                });
 
             _deleteAllButton = deleteAllContent.CreateButton()
-                .ApplyTemplate(VerticalLayout)
-                .StepIntoLabel(l => l.SetText("Delete All"))
-                .SetBackgroundColor<Button>(ColorManager.SynthesisColor.CancelButton)
-                .AddOnClickedEvent(b =>
-                {
-                    DynamicUIManager.CreateModal<DeleteAllThemesModal>();
-                });
-            
+                                   .ApplyTemplate(VerticalLayout)
+                                   .StepIntoLabel(l => l.SetText("Delete All"))
+                                   .SetBackgroundColor<Button>(ColorManager.SynthesisColor.CancelButton)
+                                   .AddOnClickedEvent(b => { DynamicUIManager.CreateModal<DeleteAllThemesModal>(); });
+
             themeChooser.AddOnValueChangedEvent((dropdown, index, data) => {
                 SelectTheme(index);
                 DynamicUIManager.CreateModal<EditThemeModal>();
                 UpdateDeleteButtons();
             });
         }
-        
+
         /// <summary>Updates the color of the delete buttons and if they can be pressed</summary>
-        private void UpdateDeleteButtons()
-        {
+        private void UpdateDeleteButtons() {
             if (_selectedThemeIndex < 1)
                 _deleteButton.DisableEvents<Button>().SetBackgroundColor<Button>(
                     ColorManager.SynthesisColor.BackgroundSecondary);
             else
                 _deleteButton.EnableEvents<Button>().SetBackgroundColor<Button>(
                     ColorManager.SynthesisColor.InteractiveElement);
-                
+
             if (_availableThemes.Length == 1)
                 _deleteAllButton.DisableEvents<Button>().SetBackgroundColor<Button>(
                     ColorManager.SynthesisColor.BackgroundSecondary);
@@ -244,10 +238,10 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
             var rgbColor = _colors[colorName.Value].color;
             Color.RGBToHSV(rgbColor, out float h, out float s, out float v);
-            
-            _hSlider.SetValue((int)(h*360));
-            _sSlider.SetValue((int)(s*100));
-            _vSlider.SetValue((int)(v*100));
+
+            _hSlider.SetValue((int) (h * 360));
+            _sSlider.SetValue((int) (s * 100));
+            _vSlider.SetValue((int) (v * 100));
         }
 
         /// <summary>Selects a theme by index to use and/or edit</summary>

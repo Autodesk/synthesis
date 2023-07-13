@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Synthesis.UI.Dynamic;
+using SynthesisAPI.EventBus;
+using SynthesisAPI.Utilities;
 using UnityEngine;
 using static MatchResultsTracker;
 using Logger = SynthesisAPI.Utilities.Logger;
@@ -11,8 +13,8 @@ namespace Modes.MatchMode {
     public class MatchMode : IMode {
         public static MatchResultsTracker MatchResultsTracker;
 
-        public static int CurrentFieldIndex = -1;
-        public static int[] SelectedRobots  = new int[6];
+        /// Integers to represent which robots the user selected in the MatchModeModal
+        public static int[] SelectedRobots = new int[6];
 
         /// Whether or not the robot should snap to a grid in positioning mode
         public static bool[] RoundSpawnLocation = new bool[6];
@@ -40,14 +42,37 @@ namespace Modes.MatchMode {
         private MatchStateMachine _stateMachine;
 
         public void Start() {
-            _stateMachine = MatchStateMachine.Instance;
-            _stateMachine.SetState(MatchStateMachine.StateName.MatchConfig);
+            DynamicUIManager.CreateModal<MatchModeModal>();
+            EventBus.NewTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
 
             Array.Fill(SelectedRobots, -1);
             Array.Fill(RawSpawnLocations, (Vector3.zero, Quaternion.identity));
 
+            _stateMachine = MatchStateMachine.Instance;
+            _stateMachine.SetState(MatchStateMachine.StateName.MatchConfig);
+
             SetupMatchResultTracking();
             ConfigureMainHUD();
+        }
+
+        private void HandleScoreEvent(IEvent e) {
+            if (e.GetType() != typeof(OnScoreUpdateEvent))
+                return;
+            OnScoreUpdateEvent scoreUpdateEvent = e as OnScoreUpdateEvent;
+            if (scoreUpdateEvent == null)
+                return;
+
+            ScoringZone zone = scoreUpdateEvent.Zone;
+            int points       = zone.Points * (scoreUpdateEvent.IncreaseScore ? 1 : -1);
+
+            switch (zone.Alliance) {
+                case Alliance.Blue:
+                    Scoring.blueScore += points;
+                    break;
+                case Alliance.Red:
+                    Scoring.redScore += points;
+                    break;
+            }
         }
 
         /// Creates a MatchResultsTracker and event listeners to update it
@@ -73,18 +98,47 @@ namespace Modes.MatchMode {
 
         /// Adds buttons to the main hud (panel on left side)
         public void ConfigureMainHUD() {
+            if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+                MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>(),
+                    icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+
+            MainHUD.AddItemToDrawer("Multibot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>());
+
+            MainHUD.AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(),
+                icon: SynthesisAssetCollection.GetSpriteByName("DriverStationView"));
+            MainHUD.AddItemToDrawer("Camera View", b => DynamicUIManager.CreateModal<ChangeViewModal>(),
+                icon: SynthesisAssetCollection.GetSpriteByName("CameraIcon"));
+
+            MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(),
+                icon: SynthesisAssetCollection.GetSpriteByName("settings"));
+            MainHUD.AddItemToDrawer("RoboRIO Conf.", b => DynamicUIManager.CreateModal<RioConfigurationModal>(true),
+                icon: SynthesisAssetCollection.GetSpriteByName("rio-config-icon"));
+
+            MainHUD.AddItemToDrawer("DriverStation",
+                b => DynamicUIManager.CreatePanel<BetaWarningPanel>(
+                    false, (Action) (() => DynamicUIManager.CreatePanel<DriverStationPanel>(true))),
+                icon: SynthesisAssetCollection.GetSpriteByName("driverstation-icon"));
+
+            MainHUD.AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>());
             MainHUD.AddItemToDrawer("Scoring Zones", b => {
                 if (FieldSimObject.CurrentField == null) {
-                    Logger.Log("No field loaded!");
+                    Logger.Log("No field loaded!", LogLevel.Info);
                 } else {
-                    DynamicUIManager.CreatePanel<ScoringZonesPanel>();
+                    if (!DynamicUIManager.PanelExists<ScoringZonesPanel>())
+                        DynamicUIManager.CreatePanel<ScoringZonesPanel>();
                 }
             });
         }
 
         public void Update() {
-            if (_stateMachine != null)
+            if (_stateMachine != null) {
                 _stateMachine.Update();
+
+                if (Scoring.targetTime <= 0 && _stateMachine.CurrentState.StateName is >=
+                                                   MatchStateMachine.StateName.Auto and <=
+                                                   MatchStateMachine.StateName.Endgame)
+                    _stateMachine.AdvanceState();
+            }
         }
 
         public void End() {}
@@ -113,6 +167,12 @@ namespace Modes.MatchMode {
                     Robots.Add(null);
                 i++;
             });
+        }
+
+        /// Resets the currently selected robots and field
+        public static void ResetMatchConfiguration() {
+            Robots = new List<RobotSimObject>();
+            Array.Fill(SelectedRobots, -1);
         }
 
         public static string ParsePath(string p, char c) {

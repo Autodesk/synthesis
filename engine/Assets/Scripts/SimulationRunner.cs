@@ -38,6 +38,7 @@ namespace Synthesis.Runtime {
         public static event Action OnSimKill;
 
         public static event Action OnUpdate;
+        public static event Action OnGameObjectDestroyed;
 
         private static bool _inSim = false;
         public static bool InSim {
@@ -79,6 +80,9 @@ namespace Synthesis.Runtime {
             OnUpdate += ModeManager.Update;
 
             WebSocketManager.RioState.OnUnrecognizedMessage += s => Debug.Log(s);
+
+            if (ModeManager.CurrentMode is not null)
+                ModeManager.CurrentMode.Start();
 
             SettingsModal.LoadSettings();
             SettingsModal.ApplySettings();
@@ -129,6 +133,8 @@ namespace Synthesis.Runtime {
 
         void OnDestroy() {
             Synthesis.PreferenceManager.PreferenceManager.Save();
+            if (OnGameObjectDestroyed != null)
+                OnGameObjectDestroyed();
         }
 
         /// <summary>

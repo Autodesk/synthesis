@@ -12,7 +12,7 @@ public class ChooseModeModal : ModalDynamic {
         return u;
     };
 
-    public ChooseModeModal() : base(new Vector2(300, 170)) {}
+    public ChooseModeModal() : base(new Vector2(300, 400)) {}
 
     public override void Create() {
         Title.SetText("Choose Mode");
@@ -46,6 +46,24 @@ public class ChooseModeModal : ModalDynamic {
                 if (SceneManager.GetActiveScene().name != "MainScene")
                     SceneManager.LoadScene("MainScene");
                 ModeManager.CurrentMode = new ServerTestMode();
+            });
+
+        MainContent.CreateButton()
+            .StepIntoLabel(l => l.SetText("Host a Multiplayer Server"))
+            .ApplyTemplate(VerticalLayout)
+            .AddOnClickedEvent(b => {
+                if (SceneManager.GetActiveScene().name != "MainScene")
+                    SceneManager.LoadScene("MainScene");
+                ModeManager.CurrentMode = new ServerHostingMode();
+            });
+
+        MainContent.CreateButton()
+            .StepIntoLabel(l => l.SetText("Connect to a Multiplayer Server"))
+            .ApplyTemplate(VerticalLayout)
+            .AddOnClickedEvent(b => {
+                if (SceneManager.GetActiveScene().name != "MainScene")
+                    SceneManager.LoadScene("MainScene");
+                ModeManager.CurrentMode = new ConnectToMultiplayerMode();
             });
     }
 

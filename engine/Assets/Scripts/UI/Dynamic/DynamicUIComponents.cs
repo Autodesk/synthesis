@@ -63,6 +63,8 @@ namespace Synthesis.UI.Dynamic {
             }
         }
 
+        public Action OnAccepted;
+
         protected PanelDynamic(
             Vector2 mainContentSize, float leftContentPadding = 20f, float rightContentPadding = 20f) {
             _mainContentSize     = mainContentSize;
@@ -97,6 +99,10 @@ namespace Synthesis.UI.Dynamic {
             _acceptButton = new Button(null!, footer.Find("Accept").gameObject, null);
             _acceptButton.Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptButton));
             _acceptButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElementText));
+            _acceptButton.AddOnClickedEvent(b => {
+                if (OnAccepted != null)
+                    OnAccepted.Invoke();
+            });
 
             // Create Inital Content Component
             var hiddenContentT        = _unityObject.transform.Find("Content");
@@ -154,19 +160,22 @@ namespace Synthesis.UI.Dynamic {
         protected Content MainContent => _mainContent;
         private Button? _middleButton;
 
+        public Action OnAccepted;
+        public Action OnCancelled;
+
         protected Button MiddleButton {
             get {
                 if (_middleButton == null) {
                     GameObject buttonPrefab = SynthesisAssetCollection.GetUIPrefab("dynamic-modal-base")
-                        .transform.Find("Footer")
-                        .Find("Accept")
-                        .gameObject;
+                                                  .transform.Find("Footer")
+                                                  .Find("Accept")
+                                                  .gameObject;
                     RectTransform buttonTransform =
                         GameObject.Instantiate(buttonPrefab, Footer).GetComponent<RectTransform>();
 
                     buttonTransform.anchorMin = new Vector2(0.5f, 0f);
                     buttonTransform.anchorMax = new Vector2(0.5f, 0f);
-                    buttonTransform.pivot = new Vector2(1f, 0f);
+                    buttonTransform.pivot     = new Vector2(1f, 0f);
 
                     buttonTransform.localPosition = new Vector3(
                         buttonTransform.rect.width / 2f, AcceptButton.RootGameObject.transform.localPosition.y, 0);
@@ -206,7 +215,8 @@ namespace Synthesis.UI.Dynamic {
             _description = new Label(null, header.Find("Description").gameObject, null);
             _description.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.MainText));
 
-            _footer    = _unityObject.transform.Find("Footer");
+            _footer = _unityObject.transform.Find("Footer");
+
             var footerRt  = _footer.GetComponent<RectTransform>();
             _cancelButton = new Button(null!, _footer.Find("Cancel").gameObject, null);
             _cancelButton.AddOnClickedEvent(b => {
@@ -218,6 +228,15 @@ namespace Synthesis.UI.Dynamic {
             _acceptButton = new Button(null!, _footer.Find("Accept").gameObject, null);
             _acceptButton.Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptButton));
             _acceptButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElementText));
+
+            _cancelButton.AddOnClickedEvent(b => {
+                if (OnCancelled != null)
+                    OnCancelled.Invoke();
+            });
+            _acceptButton.AddOnClickedEvent(b => {
+                if (OnAccepted != null)
+                    OnAccepted.Invoke();
+            });
 
             // Create Inital Content Component
             var hiddenContentT        = _unityObject.transform.Find("Content");
@@ -740,8 +759,7 @@ namespace Synthesis.UI.Dynamic {
             return this;
         }
 
-        public Label SetWrapping(bool wrappingEnabled)
-        {
+        public Label SetWrapping(bool wrappingEnabled) {
             _unityText.enableWordWrapping = wrappingEnabled;
             return this;
         }

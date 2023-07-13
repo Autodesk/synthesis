@@ -6,6 +6,7 @@ using Analytics;
 using Google.Protobuf.WellKnownTypes;
 using Mirabuf;
 using Mirabuf.Joint;
+using Modes.MatchMode;
 using Newtonsoft.Json;
 using Synthesis;
 using Synthesis.Import;
@@ -29,6 +30,8 @@ using SynthesisAPI.EventBus;
 using Synthesis.WS.Translation;
 using Utilities.ColorManager;
 using static Synthesis.WS.Translation.RioTranslationLayer;
+using SynthesisAPI.Controller;
+
 using Logger = SynthesisAPI.Utilities.Logger;
 
 #nullable enable
@@ -521,16 +524,11 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     public void ConfigureSliderBehaviours() {
-        var sliderInstances =
-            MiraLive.MiraAssembly.Data.Joints.JointInstances
-                .Where(instance => instance.Value.Info.Name != "grounded" &&
-                                   MiraLive.MiraAssembly.Data.Joints.JointDefinitions[instance.Value.JointReference]
-                                           .JointMotionType == JointMotion.Slider &&
-                                   instance.Value.HasSignal())
-                .ToList();
-        sliderInstances.ForEach(x => {
-            var sliderBehaviour = new GeneralSliderBehaviour(this.Name, x.Value.SignalReference);
-            SimulationManager.AddBehaviour(this.Name, sliderBehaviour);
+        SimulationManager.Drivers[this.Name].ForEach(x => {
+            if (x is LinearDriver) {
+                var behaviour = new GeneralSliderBehaviour(this.Name, x as LinearDriver);
+                SimulationManager.AddBehaviour(this.Name, behaviour);
+            }
         });
     }
 
@@ -653,6 +651,13 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             CurrentlyPossessedRobot = string.Empty;
         _spawnedRobots.Remove(robot);
         return SimulationManager.RemoveSimObject(robot);
+    }
+
+    public static void RemoveAllRobots() {
+        string[] robots = new string[_spawnedRobots.Keys.Count];
+        _spawnedRobots.Keys.CopyTo(robots, 0);
+
+        robots.ForEach(x => { RemoveRobot(x); });
     }
 
     private Dictionary<Rigidbody, (bool isKine, Vector3 vel, Vector3 angVel)> _preFreezeStates =

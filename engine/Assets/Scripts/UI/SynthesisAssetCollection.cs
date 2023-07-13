@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using System.Linq;
+using Analytics;
 
 public class SynthesisAssetCollection : MonoBehaviour {
     public static SynthesisAssetCollection Instance;
@@ -22,6 +23,8 @@ public class SynthesisAssetCollection : MonoBehaviour {
     public GameObject ReplaySlider;
     [SerializeField]
     public GameObject GizmoPrefab;
+    [SerializeField]
+    public List<AudioClip> AudioClips;
 
     private static Volume _blurVolumeStatic = null;
     public static Volume BlurVolumeStatic {
@@ -70,6 +73,9 @@ public class SynthesisAssetCollection : MonoBehaviour {
 
     public static GameObject GetPanelByName(string name) => Instance.PanelPrefabs.First(x => x.name == name);
 
-    public static GameObject GetUIPrefab(string name)      => Instance.DynamicUIPrefabs.First(x => x.name == name);
+    public static GameObject GetUIPrefab(string name) => Instance.DynamicUIPrefabs.First(x => x.name == name);
+
     public static TMPro.TMP_FontAsset GetFont(string name) => Instance.Fonts.First(x => x.name == name);
+
+    public static AudioClip GetAudioClip(string name) => Instance.AudioClips.First(x => x.name == name);
 }

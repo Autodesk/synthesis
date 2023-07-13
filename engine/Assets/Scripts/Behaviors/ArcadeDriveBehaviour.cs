@@ -107,6 +107,11 @@ namespace Synthesis {
             }
         }
 
+        protected override void OnDisable() {
+            _leftWheels.ForEach(w => w.MainInput = 0);
+            _rightWheels.ForEach(w => w.MainInput = 0);
+        }
+
         // Implementation derived from
         // https://github.com/wpilibsuite/allwpilib/blob/362066a9b77f38a2862e306b8119e753b199d4ae/wpilibc/src/main/native/cpp/drive/DifferentialDrive.cpp
         protected static (float lSpeed, float rSpeed) SolveSpeed(float xSpeed, float zRot, bool squareInputs) {
