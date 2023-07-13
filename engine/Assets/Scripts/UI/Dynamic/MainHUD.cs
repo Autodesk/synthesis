@@ -179,6 +179,10 @@ public static class MainHUD {
         foreach (string name in MainHUD.DrawerTitles)
             MainHUD.RemoveItemFromDrawer(name);
 
+        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+            MainHUD.AddItemToDrawer(
+                "Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+        
         MainHUD.AddItemToDrawer("Spawn", b => DynamicUIManager.CreateModal<SpawningModal>(),
             icon: SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
         MainHUD.AddItemToDrawer("Multibot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>());
@@ -207,6 +211,10 @@ public static class MainHUD {
     public static void SetUpMatch() {
         foreach (string name in MainHUD.DrawerTitles)
             MainHUD.RemoveItemFromDrawer(name);
+
+        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+            MainHUD.AddItemToDrawer(
+                "Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
 
         MainHUD.AddItemToDrawer("Multibot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>());
         MainHUD.AddItemToDrawer("Camera View", b => DynamicUIManager.CreateModal<ChangeViewModal>(),
@@ -238,12 +246,14 @@ public static class MainHUD {
 
         if (ModeManager.CurrentMode.GetType() == typeof(PracticeMode)) {
             MainHUD.AddItemToDrawer("Practice", b => {
-                LeaveConfig();
+                DynamicUIManager.CloseAllPanels();
+                isConfig = false;
                 SetUpPractice();
             });
         } else if (ModeManager.CurrentMode.GetType() == typeof(MatchMode)) {
             MainHUD.AddItemToDrawer("Match", b => {
-                LeaveConfig();
+                DynamicUIManager.CloseAllPanels();
+                isConfig = false;
                 SetUpMatch();
             });
         }
@@ -270,15 +280,5 @@ public static class MainHUD {
         MainHUD.AddItemToDrawer("Move", b => GizmoManager.SpawnGizmo(RobotSimObject.GetCurrentlyPossessedRobot()));
 
         PhysicsManager.IsFrozen = true;
-    }
-
-    public static void LeaveConfig() {
-        DynamicUIManager.CloseAllPanels();
-
-        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-            MainHUD.AddItemToDrawer(
-                "Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-
-        isConfig = false;
     }
 }

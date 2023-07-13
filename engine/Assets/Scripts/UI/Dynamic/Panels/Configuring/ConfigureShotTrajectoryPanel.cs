@@ -1,6 +1,7 @@
 using System;
 using Synthesis.Gizmo;
 using UnityEngine;
+using Synthesis.PreferenceManager;
 
 using STD = RobotSimObject.ShotTrajectoryData;
 
@@ -15,6 +16,7 @@ namespace Synthesis.UI.Dynamic {
         private GameObject _arrowObject;
 
         private bool _exiting = false;
+        private bool _gizmoExiting = false;
         private bool _save    = false;
 
         private STD _resultingData;
@@ -29,8 +31,6 @@ namespace Synthesis.UI.Dynamic {
         };
 
         public override bool Create() {
-            Title.SetText("Configure Shooting");
-
             if (RobotSimObject.CurrentlyPossessedRobot == string.Empty) {
                 return false;
             }
@@ -53,12 +53,22 @@ namespace Synthesis.UI.Dynamic {
                 _selectedNode.Color   = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_SELECT);
             }
 
+            Title.SetText("Configure Shooting");
+            
             AcceptButton
                 .AddOnClickedEvent(b => {
+                    SimulationPreferences.SetRobotTrajectoryData(robot.MiraLive.MiraAssembly.Info.GUID, _resultingData);
+                    robot.MiraLive.Save();
                     _save = true;
                     DynamicUIManager.ClosePanel<ConfigureShotTrajectoryPanel>();
                 })
                 .StepIntoLabel(l => l.SetText("Save"));
+
+            MiddleButton.StepIntoLabel(l => l.SetText("Session"))
+                .AddOnClickedEvent(b => {
+                    _save = true;
+                    DynamicUIManager.ClosePanel<ConfigureShotTrajectoryPanel>();
+                });
 
             _arrowObject                      = GameObject.CreatePrimitive(PrimitiveType.Cube);
             _arrowObject.transform.localScale = new Vector3(0.15f, 0.15f, 1f);
@@ -78,14 +88,17 @@ namespace Synthesis.UI.Dynamic {
                     _arrowObject.transform.position += _arrowObject.transform.forward * 0.5f;
                 },
                 t => {
+                    _gizmoExiting = true;
                     var node = robot.RobotNode.transform.Find(_resultingData.NodeName);
                     _resultingData.RelativePosition =
                         node.transform.worldToLocalMatrix.MultiplyPoint(t.Position).ToArray();
                     _resultingData.RelativeRotation =
                         (node.transform.worldToLocalMatrix * Matrix4x4.TRS(Vector3.zero, t.Rotation, Vector3.one))
                             .rotation.ToArray();
-                    if (!_exiting)
+                    if (!_exiting) {
+                        _save = true;
                         DynamicUIManager.ClosePanel<ConfigureShotTrajectoryPanel>();
+                    }
                 });
 
             _selectNodeButton =
@@ -134,7 +147,8 @@ namespace Synthesis.UI.Dynamic {
         public override void Delete() {
             // Handle panel
             _exiting = true;
-            GizmoManager.ExitGizmo();
+            if (!_gizmoExiting)
+                GizmoManager.ExitGizmo();
 
             // Save data
             if (_save) {

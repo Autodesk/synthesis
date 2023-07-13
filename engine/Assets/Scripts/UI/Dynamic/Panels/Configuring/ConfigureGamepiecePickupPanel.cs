@@ -1,5 +1,6 @@
 using System;
 using Synthesis.Gizmo;
+using Synthesis.PreferenceManager;
 using UnityEngine;
 
 using ITD = RobotSimObject.IntakeTriggerData;
@@ -17,6 +18,7 @@ namespace Synthesis.UI.Dynamic {
         private ITD _resultingData;
 
         private bool _exiting = false;
+        private bool _gizmoExiting = false;
         private bool _save    = false;
 
         private HighlightComponent _hoveringNode = null;
@@ -29,8 +31,6 @@ namespace Synthesis.UI.Dynamic {
         };
 
         public override bool Create() {
-            Title.SetText("Configure Pickup");
-
             if (RobotSimObject.CurrentlyPossessedRobot == string.Empty) {
                 return false;
             }
@@ -44,7 +44,7 @@ namespace Synthesis.UI.Dynamic {
                     RelativePosition = robot.GroundedBounds.center.ToArray(), TriggerSize = 0.5f, StorageCapacity = 1 };
             }
 
-            var selectedRb = RobotSimObject.GetCurrentlyPossessedRobot().AllRigidbodies.Find(
+            var selectedRb = robot.AllRigidbodies.Find(
                 x => x.name.Equals(_resultingData.NodeName));
             if (selectedRb) {
                 _selectedNode         = selectedRb.GetComponent<HighlightComponent>();
@@ -55,12 +55,22 @@ namespace Synthesis.UI.Dynamic {
             // TODO: Limit to one for now before we add UI for it
             _resultingData.StorageCapacity = 1;
 
+            Title.SetText("Configure Pickup");
+
             AcceptButton
                 .AddOnClickedEvent(b => {
+                    SimulationPreferences.SetRobotIntakeTriggerData(robot.MiraLive.MiraAssembly.Info.GUID, _resultingData);
+                    robot.MiraLive.Save();
                     _save = true;
                     DynamicUIManager.ClosePanel<ConfigureGamepiecePickupPanel>();
                 })
                 .StepIntoLabel(l => l.SetText("Save"));
+
+            MiddleButton.StepIntoLabel(l => l.SetText("Session"))
+                .AddOnClickedEvent(b => {
+                    _save = true;
+                    DynamicUIManager.ClosePanel<ConfigureGamepiecePickupPanel>();
+                });
 
             _zoneObject       = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             var renderer      = _zoneObject.GetComponent<Renderer>();
@@ -73,12 +83,15 @@ namespace Synthesis.UI.Dynamic {
                 node.transform.localToWorldMatrix.MultiplyPoint(_resultingData.RelativePosition.ToVector3());
 
             GizmoManager.SpawnGizmo(_zoneObject.transform, t => _zoneObject.transform.position = t.Position, t => {
+                _gizmoExiting = true;
                 _resultingData.RelativePosition = robot.RobotNode.transform
                                                       .Find(_resultingData.NodeName) // Get Node
                                                       .transform.worldToLocalMatrix.MultiplyPoint(t.Position)
                                                       .ToArray(); // Transform point to local space
-                if (!_exiting)
+                if (!_exiting) {
+                    _save = true;
                     DynamicUIManager.ClosePanel<ConfigureGamepiecePickupPanel>();
+                }
             });
 
             _selectNodeButton =
@@ -132,7 +145,8 @@ namespace Synthesis.UI.Dynamic {
         public override void Delete() {
             // Handle Panel
             _exiting = true;
-            GizmoManager.ExitGizmo();
+            if (!_gizmoExiting)
+                GizmoManager.ExitGizmo();
 
             // Save Data
             if (_save) {
