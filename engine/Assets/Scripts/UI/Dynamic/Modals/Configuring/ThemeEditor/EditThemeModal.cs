@@ -50,7 +50,17 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             AcceptButton.StepIntoLabel(l => l.SetText("Save")).AddOnClickedEvent(x => {
                 SaveThemeChanges();
                 DynamicUIManager.CloseActiveModal();
+                ColorManager.SetTempPreviewColors(null);
             });
+
+            CancelButton.AddOnClickedEvent(x => {
+                ColorManager.SetTempPreviewColors(null);
+                DynamicUIManager.CloseActiveModal();
+            });
+
+            MiddleButton.AddOnClickedEvent(x => {
+                PreviewColors();
+            }).StepIntoLabel(l => l.SetText("Preview"));
 
             var (left, right) = MainContent.SplitLeftRight(500 - (HORIZONTAL_PADDING / 2), HORIZONTAL_PADDING);
 
@@ -59,7 +69,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
             CreateColorSelection(right);
 
-            SelectTheme(_selectedThemeIndex);
+            SelectTheme(_selectedThemeIndex, false);
             
             UpdateDeleteButtons();
         }
@@ -81,7 +91,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             _vSlider.SetValue((int)_vSlider.Value);
         }
 
-        public override void Delete() {}
+        public override void Delete() { }
 
         /// <summary>Creates the region on the top left to select, add, or delete a theme</summary>
         /// <param name="content">The region to create the theme selection UI</param>
@@ -133,6 +143,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             });
         }
         
+        /// <summary>Updates the color of the delete buttons and if they can be pressed</summary>
         private void UpdateDeleteButtons()
         {
             if (_selectedThemeIndex < 1)
@@ -183,7 +194,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             Content[] columns = { left, center, right };
 
             int i = 0;
-            ColorManager.LoadedColors.ForEach(c => {
+            ColorManager.ActiveColors.ForEach(c => {
                 var colorContent =
                     columns[i % 3].CreateSubContent(new Vector2(left.Size.x, ROW_HEIGHT)).ApplyTemplate(VerticalLayout);
 
@@ -241,18 +252,22 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
         /// <summary>Selects a theme by index to use and/or edit</summary>
         /// <param name="index">The theme index to select</param>
-        private void SelectTheme(int index) {
+        private void SelectTheme(int index, bool saveChanges = true) {
             if (index == 0)
                 SelectColor(null);
 
-            SaveThemeChanges();
+            if (saveChanges) {
+                ColorManager.SetTempPreviewColors(null);
+                SaveThemeChanges();
+            }
+
             _selectedThemeIndex = index;
 
             SetThemePref();
 
             EventBus.Push(new SelectedThemeChanged());
 
-            ColorManager.LoadedColors.ForEach(c => {
+            ColorManager.ActiveColors.ForEach(c => {
                 var valueTuple   = _colors[c.Key];
                 valueTuple.color = c.Value;
                 valueTuple.image.SetBackgroundColor<Button>(c.Value);
@@ -274,5 +289,13 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
         /// <summary>Sets the selected theme preference</summary>
         private void SetThemePref() => PreferenceManager.SetPreference(
             ColorManager.SELECTED_THEME_PREF, ColorManager.ThemeIndexToName(_selectedThemeIndex));
+
+        /// <summary>Update all colors of this modal to preview selected colors</summary>
+        private void PreviewColors() {
+            Dictionary<ColorManager.SynthesisColor, Color> colors = new();
+            _colors.ForEach(c => { colors.Add(c.Key, c.Value.color); });
+            ColorManager.SetTempPreviewColors(colors);
+            DynamicUIManager.CreateModal<EditThemeModal>();
+        }
     }
 }

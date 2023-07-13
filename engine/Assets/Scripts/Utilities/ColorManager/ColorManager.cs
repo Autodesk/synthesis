@@ -32,8 +32,10 @@ namespace Utilities.ColorManager {
         }
 
 
+        private static Dictionary<SynthesisColor, Color> _tempPreviewColors = null;
         private static Dictionary<SynthesisColor, Color> _loadedColors  = new();
         public static Dictionary<SynthesisColor, Color> LoadedColors   => _loadedColors;
+        public static Dictionary<SynthesisColor, Color> ActiveColors => _tempPreviewColors ?? LoadedColors;
 
         private static string _selectedTheme;
         public static string SelectedTheme {
@@ -90,7 +92,7 @@ namespace Utilities.ColorManager {
         private static void LoadTheme(string themeName) {
             if (themeName is DEFAULT_THEME or "")
                 return;
-
+            
             string themePath = THEMES_FOLDER_PATH + Path.AltDirectorySeparatorChar + themeName + ".json";
 
             var dir = Path.GetFullPath(themePath).Replace(Path.GetFileName(themePath), "");
@@ -150,6 +152,8 @@ namespace Utilities.ColorManager {
         /// <summary>Modifies the colors of the selected theme</summary>
         /// <param name="changes">A list of new colors. Does not have to contain every color</param>
         public static void ModifySelectedTheme(List<(SynthesisColor name, Color color)> changes) {
+            SetTempPreviewColors(null);
+            
             if (_selectedTheme == null)
                 return;
 
@@ -164,10 +168,23 @@ namespace Utilities.ColorManager {
         /// found</summary> <param name="colorName">The name of the color to get</param> <returns>The corresponding
         /// color of the current theme</returns>
         public static Color GetColor(SynthesisColor colorName) {
-            if (_loadedColors.TryGetValue(colorName, out Color color))
-                return color;
+            if (_tempPreviewColors != null) {
+                if (_tempPreviewColors.TryGetValue(colorName, out Color color))
+                    return color;
+            }
+            else {
+                if (_loadedColors.TryGetValue(colorName, out Color color))
+                    return color;
+            }
 
             return UNASSIGNED_COLOR;
+        }
+
+        /// <summary>Temporarily preview colors without saving them. Call with null to switch back to loaded colors</summary>
+        /// <param name="colors">The colors to preview. If null, color manager will switch back to loaded colors</param>
+        public static void SetTempPreviewColors(Dictionary<SynthesisColor, Color> colors) {
+            _tempPreviewColors = colors;
+            EventBus.Push(new OnThemeChanged());
         }
 
         /// <summary>Finds the index of a theme</summary>
