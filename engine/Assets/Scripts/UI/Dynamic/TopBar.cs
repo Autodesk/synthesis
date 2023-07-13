@@ -21,6 +21,6 @@ public class TopBar : MonoBehaviour {
         transform.Find("ExitButton").GetComponent<Image>().color =
             ColorManager.GetColor(ColorManager.SynthesisColor.MainText);
         transform.Find("VersionNumber").GetComponent<TextMeshProUGUI>().color =
-            ColorManager.GetColor(ColorManager.SynthesisColor.SynthesisIcon);
+            ColorManager.GetColor(ColorManager.SynthesisColor.MainText);
     }
 }

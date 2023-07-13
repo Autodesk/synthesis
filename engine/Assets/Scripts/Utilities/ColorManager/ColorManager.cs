@@ -18,9 +18,19 @@ namespace Utilities.ColorManager {
 
         private static readonly Color32 UNASSIGNED_COLOR = new(200, 255, 0, 255);
 
-        private static readonly string THEMES_FOLDER_PATH =
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.AltDirectorySeparatorChar +
-            "Autodesk" + Path.AltDirectorySeparatorChar + "Synthesis" + Path.AltDirectorySeparatorChar + "Themes";
+        private static string THEMES_FOLDER_PATH {
+            get {
+                string dir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                             Path.AltDirectorySeparatorChar + "Autodesk" + Path.AltDirectorySeparatorChar +
+                             "Synthesis" + Path.AltDirectorySeparatorChar + "Themes";
+
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+
+                return dir;
+            }
+        }
+
 
         private static Dictionary<SynthesisColor, Color32> _loadedColors  = new();
         public static Dictionary<SynthesisColor, Color32> LoadedColors   => _loadedColors;
@@ -194,7 +204,7 @@ namespace Utilities.ColorManager {
             AcceptButton,
             CancelButton,
             InteractiveElementText,
-            SynthesisIcon,
+            Icon,
             HighlightHover,
             HighlightSelect,
             SkyboxTop,

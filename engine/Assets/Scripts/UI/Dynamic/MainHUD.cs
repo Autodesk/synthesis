@@ -162,7 +162,7 @@ public static class MainHUD {
         _tabDrawerContent.Image!.SetColor(ColorManager.SynthesisColor.Background);
 
         _expandDrawerButton.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.Background));
-        _expandIcon.SetColor(ColorManager.SynthesisColor.SynthesisIcon);
+        _expandIcon.SetColor(ColorManager.SynthesisColor.Icon);
 
         _drawerItems.ForEach(x => {
             x.button.Label!.SetColor(ColorManager.SynthesisColor.MainText);

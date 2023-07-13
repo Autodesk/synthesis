@@ -28,9 +28,7 @@ namespace Utilities.ColorManager {
             _skyboxMaterial.SetColor(TOP_COLOR, ColorManager.GetColor(ColorManager.SynthesisColor.SkyboxTop));
             _skyboxMaterial.SetColor(BOTTOM_COLOR, ColorManager.GetColor(ColorManager.SynthesisColor.SkyboxBottom));
 
-            var floorColor = ColorManager.GetColor(ColorManager.SynthesisColor.FloorGrid);
-            floorColor.a   = 0.48f;
-            _floorMaterial.SetColor(GRID_COLOR, floorColor);
+            _floorMaterial.SetColor(GRID_COLOR, ColorManager.GetColor(ColorManager.SynthesisColor.FloorGrid));
         }
     }
 }

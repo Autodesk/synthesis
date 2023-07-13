@@ -13,12 +13,12 @@ namespace Utilities.ColorManager {
             (ColorManager.SynthesisColor.AcceptButton, new Color32(34, 139, 230, 255)),
             (ColorManager.SynthesisColor.CancelButton, new Color32(250, 82, 82, 255)),
             (ColorManager.SynthesisColor.InteractiveElementText, new Color32(0, 0, 0, 255)),
-            (ColorManager.SynthesisColor.SynthesisIcon, new Color32(255, 255, 255, 255)),
+            (ColorManager.SynthesisColor.Icon, new Color32(255, 255, 255, 255)),
             (ColorManager.SynthesisColor.HighlightHover, new Color32(89, 255, 133, 255)),
             (ColorManager.SynthesisColor.HighlightSelect, new Color32(255, 89, 133, 255)),
             (ColorManager.SynthesisColor.SkyboxTop, new Color32(255, 255, 255, 255)),
             (ColorManager.SynthesisColor.SkyboxBottom, new Color32(255, 255, 255, 255)),
-            (ColorManager.SynthesisColor.FloorGrid, new Color32(0, 0, 0, 255))
+            (ColorManager.SynthesisColor.FloorGrid, new Color32(93, 93, 93, 255))
         };
     }
 }
