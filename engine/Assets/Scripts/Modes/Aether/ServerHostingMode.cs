@@ -1,8 +1,8 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Synthesis.Runtime;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.Aether.Lobby;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public class ServerHostingMode : IMode {
     private LobbyServer _server;

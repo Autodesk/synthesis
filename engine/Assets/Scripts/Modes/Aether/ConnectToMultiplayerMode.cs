@@ -1,20 +1,14 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Google.Protobuf;
 using Synthesis.Runtime;
 using Synthesis.UI.Dynamic;
-using SynthesisAPI.Controller;
-using SynthesisAPI.Utilities;
 using SynthesisAPI.Aether.Lobby;
-using System.IO;
-using System.Linq;
-using Google.Protobuf;
-
-using Google.Protobuf;
 using SynthesisAPI.Controller;
 using SynthesisAPI.Utilities;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
