@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Sockets;
-using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
-using Google.Protobuf;
+﻿using Google.Protobuf;
 using SynthesisAPI.Controller;
 using SynthesisAPI.Utilities;
-using SynthesisServer.Proto;
+using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Text;
+using System.Collections.Generic;
+using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
 
 #nullable enable
 
@@ -24,6 +22,9 @@ namespace SynthesisAPI.Aether.Lobby {
 
         public ulong? Guid => _instance?.Handler.Guid;
         public string Name => _instance?.Handler.Name ?? "--unknown--";
+        public bool IsAlive => _instance != null;
+
+        public List<DataRobot> RobotsFromServer => _instance?.RobotsFromServer ?? new List<DataRobot>();
 
         public LobbyClient(string ip, string name) {
             _instance = new Inner(ip, name);
@@ -32,6 +33,12 @@ namespace SynthesisAPI.Aether.Lobby {
         public Task<LobbyMessage.Types.FromGetLobbyInformation?>? GetLobbyInformation() {
             return _instance?.GetLobbyInformation();
         }
+
+        public Task<Result<LobbyMessage?, Exception>> UploadRobotData(DataRobot robot) 
+            => _instance?.UploadRobotData(robot) ?? Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("No instance")));
+
+        public Task<Result<LobbyMessage?, Exception>> RequestServerRobotData()
+            => _instance?.RequestServerRobotData() ?? Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("No instance")));
 
         public Task<Result<LobbyMessage?, Exception>> UpdateControllableState(List<SignalData> updates)
             => _instance?.UpdateControllableState(updates) ?? Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("No instance")));
@@ -55,6 +62,8 @@ namespace SynthesisAPI.Aether.Lobby {
             private readonly Thread _heartbeatThread;
             private readonly Thread _requestSenderThread;
 
+            public List<DataRobot> RobotsFromServer { get; private set; }
+
             public Inner(string ip, string name) {
                 IP = ip;
 
@@ -77,6 +86,8 @@ namespace SynthesisAPI.Aether.Lobby {
 
                 _requestSenderThread = new Thread(RequestQueueProcessor);
                 _requestSenderThread.Start();
+
+                RobotsFromServer = new List<DataRobot>();
             }
 
             ~Inner() {
@@ -143,6 +154,60 @@ namespace SynthesisAPI.Aether.Lobby {
                         Thread.Sleep(100);
                     }
                 }
+            }
+
+            public Task<Result<LobbyMessage?, Exception>> UploadRobotData(DataRobot robot) {
+                if (!_isAlive.Value)
+                    return Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("Client no longer alive")));
+
+                var request = new LobbyMessage.Types.ToDataRobot {
+                    Guid = _handler.Guid,
+                    DataRobot = robot
+                };
+
+                var task = new Task<Result<LobbyMessage?, Exception>>(() => {
+                    var response = HandleResponseBoilerplate(new LobbyMessage { ToDataRobot = request });
+                    if (response.isError) {
+                        return response;
+                    }
+
+                    var msg = response.GetResult()!;
+                    if (msg.MessageTypeCase != LobbyMessage.MessageTypeOneofCase.FromDataRobot) {
+                        return new Result<LobbyMessage?, Exception>(new Exception("Invalid message"));
+                    }
+
+                    return new Result<LobbyMessage?, Exception>(msg);
+                });
+
+                _requestQueue.Enqueue(task);
+                return task;
+            }
+
+            public Task<Result<LobbyMessage?, Exception>> RequestServerRobotData() {
+                if (!_isAlive.Value)
+                    return Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("Client no longer alive")));
+
+                var request = new LobbyMessage.Types.ToRequestDataRobots {
+                    Guid = _handler.Guid
+                };
+
+                var task = new Task<Result<LobbyMessage?, Exception>>(() => {
+                    var response = HandleResponseBoilerplate(new LobbyMessage { ToRequestDataRobots = request });
+                    if (response.isError) {
+                        return response;
+                    }
+
+                    var msg = response.GetResult()!;
+                    if (msg.MessageTypeCase != LobbyMessage.MessageTypeOneofCase.FromRequestDataRobots) {
+                        return new Result<LobbyMessage?, Exception>(new Exception("Invalid message"));
+                    }
+
+                    RobotsFromServer = new List<DataRobot>(msg.FromRequestDataRobots.AllAvailableRobots);
+                    return new Result<LobbyMessage?, Exception>(msg);
+                });
+
+                _requestQueue.Enqueue(task);
+                return task;
             }
 
             public Task<Result<LobbyMessage?, Exception>> UpdateControllableState(List<SignalData> updates) {
@@ -299,7 +364,16 @@ namespace SynthesisAPI.Aether.Lobby {
                     int msgSize = BitConverter.ToInt32(intBuf, 0);
 
                     var msgBuf = new byte[msgSize];
-                    stream.Read(msgBuf, 0, msgSize);
+                    int bytesRead = 0;
+                    var startRead = DateTime.UtcNow;
+                    while (bytesRead != msgSize && (DateTime.UtcNow - startRead).TotalMilliseconds < READ_TIMEOUT_MS) {
+                        bytesRead += stream.Read(msgBuf, bytesRead, msgSize - bytesRead);
+                        Thread.Sleep(10);
+                    }
+
+                    if (bytesRead != msgSize) {
+                        Logger.Log($"Mismatch of read bytes. Expected '{msgSize}', read '{bytesRead}'");
+                    }
                     LobbyMessage msg = LobbyMessage.Parser.ParseFrom(msgBuf);
                     
                     result = new Result<LobbyMessage, ServerReadException>(msg);
@@ -331,10 +405,12 @@ namespace SynthesisAPI.Aether.Lobby {
                 stream.Write(BitConverter.GetBytes(size), 0, 4); 
                 message.WriteTo(stream);
                 stream.Flush();
-                mutex?.ReleaseMutex();
+
                 return new Result<bool, Exception>(TRUE);
             } catch (Exception e) {
                 return new Result<bool, Exception>(e);
+            } finally {
+                mutex?.ReleaseMutex();
             }
         }
 
