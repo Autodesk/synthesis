@@ -31,10 +31,10 @@ namespace Utilities.ColorManager {
             }
         }
 
-        private static Dictionary<SynthesisColor, Color> _tempPreviewColors  = null;
-        private static Dictionary<SynthesisColor, Color> _loadedColors       = new();
-        public static Dictionary<SynthesisColor, Color> LoadedColors        => _loadedColors;
-        public static Dictionary<SynthesisColor, Color> ActiveColors        => _tempPreviewColors ?? LoadedColors;
+        private static Dictionary<SynthesisColor, Color> _tempPreviewColors;
+        private static Dictionary<SynthesisColor, Color> _loadedColors  = new();
+        public static Dictionary<SynthesisColor, Color> LoadedColors   => _loadedColors;
+        public static Dictionary<SynthesisColor, Color> ActiveColors   => _tempPreviewColors ?? LoadedColors;
 
         private static string _selectedTheme;
         public static string SelectedTheme {
