@@ -15,6 +15,11 @@ namespace SynthesisAPI.AssetManager
         public AudioClipAsset(string name, Permissions perm, string sourcePath)
         {
             Init(name, perm, sourcePath);
+
+            // create empty clip
+            _clip = AudioClip.Create("EmptyClip", 44100, 1, 44100, false);
+            float[] data = new float[44100];
+            _clip.SetData(data, 0);
         }
 
         public override IEntry Load(byte[] data)

@@ -115,7 +115,7 @@ namespace SynthesisAPI.EventBus
                 if (Instance.TypeSubscribers[type].GetInvocationList().Contains(callback))
                 {
                     // ReSharper disable once DelegateSubtraction
-                    TypeSubscribers[type] -= callback;
+                    TypeSubscribers![type!] -= callback!;
                     return true;
                 }
                 return false;
@@ -196,8 +196,15 @@ namespace SynthesisAPI.EventBus
                 TagSubscribers = new Dictionary<string, EventCallback>();
             }
 
-            private static Inner _inst;
-            public static Inner InnerInstance => _inst ??= new Inner();
+            private static Inner _inst = new Inner();
+            public static Inner InnerInstance {
+                get {
+                    if (_inst == null) {
+                        _inst = new Inner();
+                    }
+                    return _inst;
+                }
+            }
         }
 
         private static Dictionary<string, EventCallback> TypeSubscribers => Instance.TypeSubscribers;
@@ -205,5 +212,4 @@ namespace SynthesisAPI.EventBus
 
         private static Inner Instance => Inner.InnerInstance;
     }
-
 }
