@@ -298,7 +298,6 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             PreferenceManager.SetPreference(
                 ColorManager.SELECTED_THEME_PREF, ColorManager.ThemeIndexToName(_selectedThemeIndex));
             Debug.Log($"Set theme pref to {_selectedThemeIndex}");
-
         }
 
         /// <summary>Update all colors of this modal to preview selected colors</summary>
