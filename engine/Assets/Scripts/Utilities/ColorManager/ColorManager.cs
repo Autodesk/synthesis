@@ -18,11 +18,12 @@ namespace Utilities.ColorManager {
 
         private static readonly Color UNASSIGNED_COLOR = new(200, 255, 0, 255);
 
+        public static readonly char altSep = Path.AltDirectorySeparatorChar;
+
         private static string THEMES_FOLDER_PATH {
             get {
                 string dir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                             Path.AltDirectorySeparatorChar + "Autodesk" + Path.AltDirectorySeparatorChar +
-                             "Synthesis" + Path.AltDirectorySeparatorChar + "Themes";
+                             altSep + "Autodesk" + altSep + "Synthesis" + altSep + "Themes";
 
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
@@ -93,7 +94,7 @@ namespace Utilities.ColorManager {
             if (themeName is DEFAULT_THEME or "")
                 return;
 
-            string themePath = THEMES_FOLDER_PATH + Path.AltDirectorySeparatorChar + themeName + ".json";
+            string themePath = THEMES_FOLDER_PATH + altSep + themeName + ".json";
 
             var dir = Path.GetFullPath(themePath).Replace(Path.GetFileName(themePath), "");
             if (!Directory.Exists(dir)) {
@@ -117,7 +118,7 @@ namespace Utilities.ColorManager {
             if (themeName is DEFAULT_THEME or "")
                 return;
 
-            string themePath = THEMES_FOLDER_PATH + Path.AltDirectorySeparatorChar + themeName + ".json";
+            string themePath = THEMES_FOLDER_PATH + altSep + themeName + ".json";
 
             var jsonColors = new Dictionary<string, string>();
 
@@ -132,7 +133,7 @@ namespace Utilities.ColorManager {
             if (themeName is DEFAULT_THEME or "")
                 return;
 
-            string themePath = THEMES_FOLDER_PATH + Path.AltDirectorySeparatorChar + themeName + ".json";
+            string themePath = THEMES_FOLDER_PATH + altSep + themeName + ".json";
 
             File.Delete(themePath);
         }
