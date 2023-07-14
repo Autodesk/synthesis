@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using Newtonsoft.Json;
 using Synthesis.Gizmo;
 using Synthesis.Physics;
 using Synthesis.UI.Dynamic;
@@ -10,15 +11,15 @@ using TMPro;
 using UnityEngine;
 
 public record ScoringZoneData() {
-    public string Name { get; set; }           = "";
-    public Alliance Alliance { get; set; }     = Alliance.Blue;
-    public Transform Parent { get; set; }      = null;
-    public int Points { get; set; }            = 0;
-    public bool DestroyGamepiece { get; set; } = false;
-    public bool PersistentPoints { get; set; } = true;
-    public float XScale { get; set; }          = 1.0f;
-    public float YScale { get; set; }          = 1.0f;
-    public float ZScale { get; set; }          = 1.0f;
+    public string Name { get; set; }                                        = "";
+    public Alliance Alliance { get; set; }                                  = Alliance.Blue;
+    public string Parent { get; set; }                                      = "grounded";
+    public int Points { get; set; }                                         = 0;
+    public bool DestroyGamepiece { get; set; }                              = false;
+    public bool PersistentPoints { get; set; }                              = true;
+    public (float x, float y, float z) LocalPosition { get; set; }          = (0, 0, 0);
+    public (float x, float y, float z, float w) LocalRotation { get; set; } = (0, 0, 0, 1);
+    public (float x, float y, float z) LocalScale { get; set; }             = (1, 1, 1);
 }
 
 public class ScoringZonesPanel : PanelDynamic {
@@ -35,9 +36,6 @@ public class ScoringZonesPanel : PanelDynamic {
     private float _entryWidth;
 
     private ScrollView _zonesScrollView;
-    private Button _addZoneButton;
-
-    private bool _initiallyVisible = true;
 
     private readonly Func<UIComponent, UIComponent> VerticalLayout = (u) => {
         var offset = (-u.Parent!.RectOfChildren(u).yMin) + VERTICAL_PADDING;
@@ -68,20 +66,16 @@ public class ScoringZonesPanel : PanelDynamic {
         _scrollViewWidth = _zonesScrollView.Parent!.RectOfChildren().width - SCROLLBAR_WIDTH;
         _entryWidth      = _scrollViewWidth - HORIZONTAL_PADDING * 2;
 
-        _addZoneButton = MainContent.CreateButton()
-                             .SetTopStretch<Button>()
-                             .StepIntoLabel(l => l.SetText("Add Zone"))
-                             .AddOnClickedEvent(
-                                 _ => { OpenScoringZoneGizmo(); })
-                             .ApplyTemplate(VerticalLayout);
+        MainContent.CreateButton()
+            .SetTopStretch<Button>()
+            .StepIntoLabel(l => l.SetText("Add Zone"))
+            .AddOnClickedEvent(
+                _ => { OpenScoringZoneGizmo(); })
+            .ApplyTemplate(VerticalLayout);
 
         AddZoneEntries();
 
-        _initiallyVisible = PreferenceManager.GetPreference<bool>(SettingsModal.RENDER_SCORE_ZONES);
-
-        if (!_initiallyVisible)
-            FieldSimObject.CurrentField.ScoringZones.ForEach(
-                z => z.GameObject.GetComponent<MeshRenderer>().enabled = true);
+        FieldSimObject.CurrentField.ScoringZones.ForEach(x => x.VisibilityCounter++);
 
         // so that timer doesn't count while configuring
         // will remove later once score zones can be configured before match start, per Luca's match mode state machine
@@ -137,7 +131,7 @@ public class ScoringZonesPanel : PanelDynamic {
         deleteButtonContent.CreateButton()
             .StepIntoLabel(l => l.SetText("Delete"))
             .AddOnClickedEvent(b => {
-                FieldSimObject.CurrentField.ScoringZones.Remove(zone);
+                FieldSimObject.CurrentField.RemoveScoringZone(zone);
                 GameObject.Destroy(zone.GameObject);
                 AddZoneEntries();
             })
@@ -155,9 +149,7 @@ public class ScoringZonesPanel : PanelDynamic {
     public override void Update() {}
 
     public override void Delete() {
-        if (!_initiallyVisible)
-            FieldSimObject.CurrentField.ScoringZones.ForEach(
-                z => z.GameObject.GetComponent<MeshRenderer>().enabled = _initiallyVisible);
+        FieldSimObject.CurrentField.ScoringZones.ForEach(x => x.VisibilityCounter--);
         PhysicsManager.IsFrozen = false;
     }
 }

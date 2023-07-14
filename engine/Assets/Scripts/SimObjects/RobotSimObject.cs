@@ -196,7 +196,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         RobotBounds    = GetBounds(RobotNode.transform);
         GroundedBounds = GetBounds(GroundedNode.transform);
         DebugJointAxes.DebugBounds.Add((GroundedBounds, () => GroundedNode.transform.localToWorldMatrix));
-        SimulationPreferences.LoadFromMirabufLive(MiraLive);
+        SimulationPreferences.LoadRobotFromMira(MiraLive);
 
         // Resets whatever Hunter corrupted
         // SimulationPreferences.SetRobotDrivetrainType(MiraLive.MiraAssembly.Info.GUID, DrivetrainType.ARCADE);

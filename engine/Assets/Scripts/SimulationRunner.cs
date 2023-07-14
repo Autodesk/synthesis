@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Synthesis.Import;
 using System.Linq;
 using Synthesis.PreferenceManager;
 using Synthesis.UI.Dynamic;
@@ -138,6 +139,7 @@ namespace Synthesis.Runtime {
             MainHUD.Delete();
 
             Synthesis.PreferenceManager.PreferenceManager.Save();
+            MirabufCache.Clear();
             if (OnGameObjectDestroyed != null)
                 OnGameObjectDestroyed();
         }

@@ -52,7 +52,7 @@ namespace Synthesis.Import {
         /// and the simobject controlling the assembly</returns>
         public static (GameObject MainObject, MirabufLive MiraAssembly, SimObject Sim)
             MirabufAssemblyImport(string path) {
-            return MirabufAssemblyImport(new MirabufLive(path));
+            return MirabufAssemblyImport(MirabufLive.OpenMirabufFile(path));
         }
 
         /// <summary>
