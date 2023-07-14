@@ -195,6 +195,7 @@ public class ZoneConfigPanel : PanelDynamic {
         if (_zone is null) {
             obj   = GameObject.CreatePrimitive(PrimitiveType.Cube);
             _zone = new ScoringZone(obj, "temp scoring zone", Alliance.Blue, 0, false, true);
+            _zone.VisibilityCounter++;
         } else {
             obj = _zone.GameObject;
             UseZone(_zone);
