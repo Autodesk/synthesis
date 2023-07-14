@@ -348,7 +348,7 @@ public class ZoneConfigPanel : PanelDynamic {
                     _selectedNode.enabled = true;
                     _selectedNode.Color   = ColorManager.GetColor(ColorManager.SynthesisColor.HighlightSelect);
 
-                    _data.Parent  = _selectedNode.gameObject.transform;
+                    _data.Parent  = _selectedNode.gameObject.transform.name;
                     _hoveringNode = null;
 
                     _selectingNode = false;
