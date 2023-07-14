@@ -277,7 +277,7 @@ public class ZoneConfigPanel : PanelDynamic {
                     _selectedNode.enabled = false;
                 _selectedNode = null;
                 _hoveringNode = null;
-                _data.Parent  = null;
+                _data.Parent  = "grounded";
             } else {
                 // I don't like this; do we just want all field rigidbodies to detect collisions?
                 if (_initialFieldCollisions.Count == 0)
@@ -303,7 +303,7 @@ public class ZoneConfigPanel : PanelDynamic {
                                                       .StepIntoLabel(l => l.SetText("...")));
         } else {
             if (_selectedNode is null)
-                _data.Parent = null;
+                _data.Parent = "grounded";
             _zoneParentButton.StepIntoLabel(
                 l => l.SetText(_selectedNode is not null ? _selectedNode.name : "Parent Object"));
             _zoneParentButton.StepIntoButton(
@@ -366,7 +366,7 @@ public class ZoneConfigPanel : PanelDynamic {
         if (_selectedNode is not null) {
             _selectedNode.enabled = false;
         }
-        if (_data.Parent is not null) {
+        if (_data.Parent is not null && _data.Parent != "grounded") {
             HighlightComponent highlight = FieldSimObject.CurrentField.FieldObject.transform.Find(_data.Parent)
                                                .GetComponent<Rigidbody>()
                                                .GetComponent<HighlightComponent>();
