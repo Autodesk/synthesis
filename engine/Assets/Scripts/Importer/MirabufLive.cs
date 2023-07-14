@@ -40,6 +40,7 @@ namespace Synthesis.Import {
 #endregion
 
         private string _path;
+        public string MiraPath => _path;
         public Assembly MiraAssembly;
 
         public enum MirabufFileState {
@@ -67,6 +68,8 @@ namespace Synthesis.Import {
 
             _findDefinitions = Task<RigidbodyDefinitions>.Factory.StartNew(() => FindRigidbodyDefinitions(this));
         }
+
+        public static MirabufLive OpenMirabufFile(string path) => MirabufCache.Get(path);
 
 #region File Management
 
@@ -111,7 +114,7 @@ namespace Synthesis.Import {
 
             int dynamicLayer = 0;
 
-            if (physics && !MiraAssembly.Dynamic) {
+            if (physics && MiraAssembly.Dynamic) {
                 if (dynamicLayers.Count == 0)
                     throw new Exception("No more dynamic layers");
                 dynamicLayer = dynamicLayers.Dequeue();
@@ -161,6 +164,7 @@ namespace Synthesis.Import {
                         rb.isKinematic = true;
                     rb.mass         = (float) group.CollectivePhysicalProperties.Mass;
                     rb.centerOfMass = group.CollectivePhysicalProperties.Com; // I actually don't need to flip this
+                    rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
                 }
 
                 groupObjects.Add(group.GUID, groupObject);

@@ -30,7 +30,13 @@ namespace Synthesis.WS {
 
             RioState = new RoboRIOState();
 
-            _server = new WebSocketServer("127.0.0.1", 3300);
+            try {
+                _server = new WebSocketServer("127.0.0.1", 3300);
+            } catch (Exception e) {
+                Debug.Log("WebSocketServer failed to start: " + e.Message);
+                return;
+            }
+
             _server.AddOnMessageListener(OnMessage);
 
             _initialized = true;
