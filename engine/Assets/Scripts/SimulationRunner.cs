@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Synthesis.Import;
+using System.Linq;
 using Synthesis.PreferenceManager;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.InputManager;
@@ -16,6 +18,7 @@ using Synthesis.Physics;
 using SynthesisAPI.EventBus;
 using Synthesis.Replay;
 using Synthesis.WS;
+using SynthesisAPI.Controller;
 using SynthesisAPI.RoboRIO;
 using UnityEngine.Rendering;
 
@@ -52,6 +55,10 @@ namespace Synthesis.Runtime {
 
         private bool _setupSceneSwitchEvent = false;
 
+        private void Awake() {
+            Synthesis.PreferenceManager.PreferenceManager.Load();
+        }
+
         void Start() {
             InSim = true;
 
@@ -67,7 +74,6 @@ namespace Synthesis.Runtime {
             }
 
             SetContext(RUNNING_SIM_CONTEXT);
-            Synthesis.PreferenceManager.PreferenceManager.Load();
             MainHUD.Setup();
             if (ModeManager.CurrentMode == null)
                 ModeManager.CurrentMode = new PracticeMode();
@@ -77,17 +83,9 @@ namespace Synthesis.Runtime {
 
             OnUpdate += DynamicUIManager.Update;
             OnUpdate += ModeManager.Update;
+            OnUpdate += () => RobotSimObject.SpawnedRobots.ForEach(r => r.UpdateMultiplayer());
 
             WebSocketManager.RioState.OnUnrecognizedMessage += s => Debug.Log(s);
-
-            // Screen.fullScreenMode = FullScreenMode.MaximizedWindow;
-
-            // TestColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
-            // RotationalDriver.TestSphericalCoordinate();
-
-            if (ColorManager.HasColor("tree")) {
-                GameObject.Instantiate(Resources.Load("Misc/Tree"));
-            }
 
             if (ModeManager.CurrentMode is not null)
                 ModeManager.CurrentMode.Start();
@@ -140,7 +138,10 @@ namespace Synthesis.Runtime {
         }
 
         void OnDestroy() {
+            MainHUD.Delete();
+
             Synthesis.PreferenceManager.PreferenceManager.Save();
+            MirabufCache.Clear();
             if (OnGameObjectDestroyed != null)
                 OnGameObjectDestroyed();
         }

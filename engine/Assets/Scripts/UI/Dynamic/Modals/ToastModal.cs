@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using SynthesisAPI.Utilities;
 using TMPro;
 using System.IO;
+using UI.Dynamic.Modals.Spawning;
 
 public class ToastModal : ModalDynamic {
     public ToastModal() : base(new Vector2(500, 500)) {}

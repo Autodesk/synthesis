@@ -32,6 +32,8 @@ using JointMotor          = UnityEngine.JointMotor;
 using UPhysicalMaterial   = UnityEngine.PhysicMaterial;
 using SynthesisAPI.Controller;
 
+#nullable enable
+
 namespace Synthesis.Import {
     /// <summary>
     /// The Importer class connected functions with string parameters to import an Entity/Model into the Engine
@@ -50,7 +52,7 @@ namespace Synthesis.Import {
         /// and the simobject controlling the assembly</returns>
         public static (GameObject MainObject, MirabufLive MiraAssembly, SimObject Sim)
             MirabufAssemblyImport(string path) {
-            return MirabufAssemblyImport(new MirabufLive(path));
+            return MirabufAssemblyImport(MirabufLive.OpenMirabufFile(path));
         }
 
         /// <summary>
@@ -169,6 +171,8 @@ namespace Synthesis.Import {
 
 #region Assistant Functions
 
+        private readonly static float TWO_PI = 2f * Mathf.PI;
+
         public static void MakeJoint(GameObject a, GameObject b, JointInstance instance, float totalMass,
             Assembly assembly, SimObject simObject,
             Dictionary<string, (UnityEngine.Joint a, UnityEngine.Joint b)> jointMap) {
@@ -257,9 +261,17 @@ namespace Synthesis.Import {
                         // TODO: Implement and test limits
                         var limits = definition.Rotational.RotationalFreedom.Limits;
                         if (limits != null && limits.Lower != limits.Upper) {
+                            var currentPosition = definition.Rotational.RotationalFreedom.Value;
+                            currentPosition     = (currentPosition % (TWO_PI)) -
+                                              ((int) (currentPosition % (TWO_PI) / Mathf.PI) * (TWO_PI));
+                            var min             = -(limits.Upper - currentPosition);
+                            min                 = (min % (TWO_PI) -TWO_PI) % (TWO_PI);
+                            var max             = -(limits.Lower - currentPosition);
+                            max                 = (max % (TWO_PI) + TWO_PI) % (TWO_PI);
                             revoluteA.useLimits = true;
-                            revoluteA.limits    = new JointLimits() { min = -limits.Upper * Mathf.Rad2Deg,
-                                   max                                    = -limits.Lower * Mathf.Rad2Deg };
+                            revoluteA.limits =
+                                new JointLimits() { min = min * Mathf.Rad2Deg, max = max * Mathf.Rad2Deg };
+                            revoluteA.extendedLimits = true;
                         }
                         // revoluteA.useLimits = true;
                         // revoluteA.limits = new JointLimits { min = -15, max = 15 };
@@ -340,12 +352,14 @@ namespace Synthesis.Import {
                     sliderB.connectedMassScale = sliderB.connectedBody.mass / rbB.mass;
 
                     if (instance.HasSignal()) {
+                        assembly.Data.Joints.MotorDefinitions.TryGetValue(definition.MotorReference, out var motor);
+                        var currentPosition = definition.Prismatic.PrismaticFreedom.Value;
                         var slideDriver =
                             new LinearDriver(assembly.Data.Signals.SignalMap[instance.SignalReference].Info.GUID,
                                 new string[] { instance.SignalReference }, Array.Empty<string>(), simObject, sliderA,
-                                sliderB, 0.1f,
-                                (definition.Prismatic.PrismaticFreedom.Limits.Upper * 0.01f,
-                                    definition.Prismatic.PrismaticFreedom.Limits.Lower * 0.01f));
+                                sliderB, (motor?.SimpleMotor.MaxVelocity ?? 30f) / 100f,
+                                ((definition.Prismatic.PrismaticFreedom.Limits.Upper - currentPosition) * 0.01f,
+                                    (definition.Prismatic.PrismaticFreedom.Limits.Lower - currentPosition) * 0.01f));
                         SimulationManager.AddDriver(simObject.Name, slideDriver);
                     }
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Analytics;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
 using SynthesisAPI.Utilities;
@@ -26,6 +27,8 @@ public class ChangeDrivetrainModal : ModalDynamic {
         AcceptButton.AddOnClickedEvent(b => {
             MainHUD.ConfigRobot.ConfiguredDrivetrainType = _selectedType;
             DynamicUIManager.CloseActiveModal();
+
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.DrivetrainSwitched, ("DrivetrainType", _selectedType.Name));
         });
 
         _selectedType = MainHUD.ConfigRobot.ConfiguredDrivetrainType;

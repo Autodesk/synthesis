@@ -8,7 +8,9 @@ using Synthesis.UI.Dynamic;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
+using UI.Dynamic.Modals.Spawning;
 using UnityEngine;
+using Utilities.ColorManager;
 using Logger = SynthesisAPI.Utilities.Logger;
 
 #nullable enable
@@ -29,13 +31,13 @@ public class RobotSwitchPanel : PanelDynamic {
     };
 
     public Func<Button, Button> EnableButton = b =>
-        b.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_ORANGE))
-            .StepIntoLabel(l => l.SetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT))
+        b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElement))
+            .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
             .EnableEvents<Button>();
 
     public Func<Button, Button> DisableButton = b =>
-        b.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_BLACK_ACCENT))
-            .StepIntoLabel(l => l.SetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT))
+        b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary))
+            .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
             .DisableEvents<Button>();
 
     public RobotSwitchPanel() : base(new Vector2(PANEL_WIDTH, 400)) {
@@ -86,7 +88,7 @@ public class RobotSwitchPanel : PanelDynamic {
                          .SetSize<Toggle>(new Vector2(PANEL_WIDTH, 50f))
                          .ApplyTemplate(VerticalLayout)
                          .StepIntoLabel(l => l.SetFontSize(16f))
-                         .SetDisabledColor(ColorManager.SYNTHESIS_BLACK);
+                         .SetDisabledColor(ColorManager.SynthesisColor.Background);
         toggle.AddOnStateChangedEvent((t, s) => { UpdateState(robot, t, s); });
     }
 

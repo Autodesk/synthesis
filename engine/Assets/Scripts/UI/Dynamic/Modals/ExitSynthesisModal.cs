@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using Analytics;
 using Synthesis.Runtime;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Utilities.ColorManager;
 
 namespace Synthesis.UI.Dynamic {
     public class ExitSynthesisModal : ModalDynamic {
@@ -16,19 +18,21 @@ namespace Synthesis.UI.Dynamic {
 
             AcceptButton
                 .AddOnClickedEvent(x => {
-                    if (isOnMainMenu)
+                    if (isOnMainMenu) {
                         Application.Quit();
-                    else {
+                    } else {
                         SimulationRunner.InSim = false;
                         DynamicUIManager.CloseAllPanels(true);
                         ModeManager.CurrentMode = null;
                         SceneManager.LoadScene("GridMenuScene", LoadSceneMode.Single);
+
+                        AnalyticsManager.LogCustomEvent(AnalyticsEvent.ExitedToMenu);
                     }
                 })
                 .StepIntoLabel(l => l.SetText("Exit"));
 
-            ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"));
-            ModalImage.SetColor(ColorManager.SYNTHESIS_WHITE);
+            ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"))
+                .SetColor(ColorManager.SynthesisColor.MainText);
 
             MainContent.CreateLabel(40)
                 .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Center)
