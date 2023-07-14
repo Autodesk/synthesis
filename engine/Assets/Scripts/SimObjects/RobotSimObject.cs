@@ -483,11 +483,13 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     public void ConfigureDefaultBehaviours() {
         if (_wheelDrivers == null) {
             _wheelDrivers = SimulationManager.Drivers[base.Name].OfType<WheelDriver>();
-            _wheelDrivers.ForEach(x => x.ImpulseMax = (GroundedNode.GetComponent<Rigidbody>().mass *
-                                                          Physics.gravity.magnitude * (1f / 120f)) /
-                                                      _wheelDrivers.Count());
-            float radius = _wheelDrivers.Average(x => x.Radius);
-            _wheelDrivers.ForEach(x => x.Radius = radius);
+            if (_wheelDrivers.Any()) {
+                _wheelDrivers.ForEach(x => x.ImpulseMax = (GroundedNode.GetComponent<Rigidbody>().mass *
+                                                              Physics.gravity.magnitude * (1f / 120f)) /
+                                                          _wheelDrivers.Count());
+                float radius = _wheelDrivers.Average(x => x.Radius);
+                _wheelDrivers.ForEach(x => x.Radius = radius);
+            }
         }
 
         // See WheelPhysicsBehaviour description for an explanation.

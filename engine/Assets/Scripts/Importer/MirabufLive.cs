@@ -111,7 +111,7 @@ namespace Synthesis.Import {
 
             int dynamicLayer = 0;
 
-            if (physics && !MiraAssembly.Dynamic) {
+            if (physics && MiraAssembly.Dynamic) {
                 if (dynamicLayers.Count == 0)
                     throw new Exception("No more dynamic layers");
                 dynamicLayer = dynamicLayers.Dequeue();
@@ -161,6 +161,7 @@ namespace Synthesis.Import {
                         rb.isKinematic = true;
                     rb.mass         = (float) group.CollectivePhysicalProperties.Mass;
                     rb.centerOfMass = group.CollectivePhysicalProperties.Com; // I actually don't need to flip this
+                    rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
                 }
 
                 // TODO: Do this in importer
