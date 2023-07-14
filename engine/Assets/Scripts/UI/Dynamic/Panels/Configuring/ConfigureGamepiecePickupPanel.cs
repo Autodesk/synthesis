@@ -2,7 +2,7 @@ using System;
 using Synthesis.Gizmo;
 using Synthesis.PreferenceManager;
 using UnityEngine;
-
+using Synthesis.Configuration;
 using ITD = RobotSimObject.IntakeTriggerData;
 
 namespace Synthesis.UI.Dynamic {
@@ -83,6 +83,11 @@ namespace Synthesis.UI.Dynamic {
             _zoneObject.transform.position =
                 node.transform.localToWorldMatrix.MultiplyPoint(_resultingData.RelativePosition.ToVector3());
 
+            OrbitCameraMode.FocusPoint = () =>
+                _robot.GroundedNode != null && _robot.GroundedBounds != null
+                    ? _robot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(_robot.GroundedBounds.center)
+                    : Vector3.zero;
+                    
             GizmoManager.SpawnGizmo(_zoneObject.transform, t => _zoneObject.transform.position = t.Position, t => {
                 _gizmoExiting = true;
                 _resultingData.RelativePosition = _robot.RobotNode.transform
@@ -160,11 +165,6 @@ namespace Synthesis.UI.Dynamic {
             if (_selectedNode != null) {
                 _selectedNode.enabled = false;
             }
-
-            // OrbitCameraMode.FocusPoint = () =>
-            // _robot.GroundedNode != null && _robot.GroundedBounds != null
-            //     ? _robot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(_robot.GroundedBounds.center)
-            //     : Vector3.zero;
             
             // Cleanup
             GameObject.Destroy(_zoneObject);

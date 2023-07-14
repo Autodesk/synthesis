@@ -81,6 +81,11 @@ namespace Synthesis.UI.Dynamic {
             _arrowObject.transform.position =
                 node.transform.localToWorldMatrix.MultiplyPoint(_resultingData.RelativePosition.ToVector3());
 
+            OrbitCameraMode.FocusPoint = () =>
+                _robot.GroundedNode != null && _robot.GroundedBounds != null
+                    ? _robot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(_robot.GroundedBounds.center)
+                    : Vector3.zero;
+                    
             GizmoManager.SpawnGizmo(_arrowObject.transform,
                 t => {
                     _arrowObject.transform.rotation = t.Rotation;
@@ -162,10 +167,10 @@ namespace Synthesis.UI.Dynamic {
                 _selectedNode.enabled = false;
             }
 
-            // OrbitCameraMode.FocusPoint = () =>
-            // _robot.GroundedNode != null && _robot.GroundedBounds != null
-            //     ? _robot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(_robot.GroundedBounds.center)
-            //     : Vector3.zero;
+            OrbitCameraMode.FocusPoint = () =>
+            _robot.GroundedNode != null && _robot.GroundedBounds != null
+                ? _robot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(_robot.GroundedBounds.center)
+                : Vector3.zero;
 
             // Cleanup
             GameObject.Destroy(_arrowObject);

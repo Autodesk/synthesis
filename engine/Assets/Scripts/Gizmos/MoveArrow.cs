@@ -45,6 +45,8 @@ namespace Synthesis.Configuration {
         private Transform arrowY;
         private Transform arrowZ;
 
+        private RobotSimObject robot;
+
         // To use: move gizmo as a child of the object you want to move in game
         // Press R to reset rotation
         // Press CTRL to snap to nearest configured multiple when moving
@@ -91,7 +93,16 @@ namespace Synthesis.Configuration {
         private void Awake() {
             cam                      = Camera.main.GetComponent<CameraController>();
             originalLowerPitch       = cam.PitchLowerLimit;
-            originalCameraFocusPoint = (Func<Vector3>) OrbitCameraMode.FocusPoint.Clone();
+            robot = RobotSimObject.GetCurrentlyPossessedRobot();
+
+            if ((Func<Vector3>) OrbitCameraMode.FocusPoint == null)  {
+                originalCameraFocusPoint = () =>
+                    robot.GroundedNode != null && robot.GroundedBounds != null ? 
+                    robot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(robot.GroundedBounds.center)
+                    : Vector3.zero;
+            } else {
+                originalCameraFocusPoint = (Func<Vector3>) OrbitCameraMode.FocusPoint.Clone();
+            }
             previousMode             = cam.CameraMode;
             previousCameraPosition   = cam.transform.position;
             previousCameraRotation   = cam.transform.rotation;
@@ -130,7 +141,15 @@ namespace Synthesis.Configuration {
             cam.CameraMode             = previousMode;
             cam.transform.position     = previousCameraPosition;
             cam.transform.rotation     = previousCameraRotation;
-            OrbitCameraMode.FocusPoint = originalCameraFocusPoint;
+
+        if (originalCameraFocusPoint == null)  {
+                OrbitCameraMode.FocusPoint = () =>
+                    robot.GroundedNode != null && robot.GroundedBounds != null ? 
+                    robot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(robot.GroundedBounds.center)
+                    : Vector3.zero;
+            } else {
+                OrbitCameraMode.FocusPoint = originalCameraFocusPoint;
+            }
 
             // test if cam.cameraMode is of type OrbitCameraMode
             if (cam.CameraMode is OrbitCameraMode) {

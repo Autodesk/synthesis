@@ -279,11 +279,11 @@ public static class MainHUD {
             icon: SynthesisAssetCollection.GetSpriteByName("settings"));
         MainHUD.AddItemToDrawer("Move", b => {
             var robot = RobotSimObject.GetCurrentlyPossessedRobot();
+            OrbitCameraMode.FocusPoint = () =>
+            robot.GroundedNode != null && robot.GroundedBounds != null
+                ? robot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(robot.GroundedBounds.center)
+                : Vector3.zero;
             GizmoManager.SpawnGizmo(robot);
-            // OrbitCameraMode.FocusPoint = () =>
-            // robot.GroundedNode != null && robot.GroundedBounds != null
-            //     ? robot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(robot.GroundedBounds.center)
-            //     : Vector3.zero;
         });
 
         PhysicsManager.IsFrozen = true;
