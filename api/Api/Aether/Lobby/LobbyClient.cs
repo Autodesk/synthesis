@@ -3,6 +3,8 @@ using SynthesisAPI.Controller;
 using SynthesisAPI.Utilities;
 using System;
 using System.Collections.Concurrent;
+using System.IO;
+using System.Text;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
@@ -52,8 +54,8 @@ namespace SynthesisAPI.Aether.Lobby {
             private readonly LobbyClientHandler _handler;
             public LobbyClientHandler Handler => _handler;
 
-            private ReaderWriterLockSlim _transformDataLock;
-            private Dictionary<ulong, ServerTransforms> _transformData;
+            public ReaderWriterLockSlim TransformDataLock;
+            public Dictionary<ulong, ServerTransforms> TransformData;
 
             private ConcurrentQueue<Task<Result<LobbyMessage?, Exception>>> _requestQueue;
 
@@ -65,8 +67,8 @@ namespace SynthesisAPI.Aether.Lobby {
             public Inner(string ip, string name) {
                 IP = ip;
 
-                _transformData = new Dictionary<ulong, ServerTransforms>();
-                _transformDataLock = new ReaderWriterLockSlim();
+                TransformData = new Dictionary<ulong, ServerTransforms>();
+                TransformDataLock = new ReaderWriterLockSlim();
 
                 _requestQueue = new ConcurrentQueue<Task<Result<LobbyMessage?, Exception>>>();
 
@@ -218,7 +220,6 @@ namespace SynthesisAPI.Aether.Lobby {
                 request.Data.Add(updates);
 
                 var task = new Task<Result<LobbyMessage?, Exception>>(() => {
-
                     var response = HandleResponseBoilerplate(new LobbyMessage { ToUpdateControllableState = request });
                     if (response.isError) {
                         return response;
@@ -227,8 +228,7 @@ namespace SynthesisAPI.Aether.Lobby {
                     var msg = response.GetResult()!;
                     switch (msg.MessageTypeCase) {
                         case LobbyMessage.MessageTypeOneofCase.FromSimulationTransformData:
-                            // TODO: Update transform data
-                            Logger.Log("Received transform response");
+                            // Logger.Log("Received transform response");
                             break;
                         default:
                             return new Result<LobbyMessage?, Exception>(new Exception("Invalid message"));
@@ -249,7 +249,6 @@ namespace SynthesisAPI.Aether.Lobby {
                 request.TransformData.AddRange(transforms);
 
                 var task = new Task<Result<LobbyMessage?, Exception>>(() => {
-
                     var response = HandleResponseBoilerplate(new LobbyMessage { ToUpdateTransformData = request });
                     if (response.isError) {
                         return response;
@@ -259,7 +258,7 @@ namespace SynthesisAPI.Aether.Lobby {
                     switch (msg.MessageTypeCase) {
                         case LobbyMessage.MessageTypeOneofCase.FromControllableStates:
                             // TODO: Update signal data
-                            Logger.Log("Received controllable state response");
+                            // Logger.Log("Received controllable state response");
                             break;
                         default:
                             return new Result<LobbyMessage?, Exception>(new Exception("Invalid message"));
@@ -343,17 +342,17 @@ namespace SynthesisAPI.Aether.Lobby {
             return Task<Result<LobbyMessage, ServerReadException>>.Factory.StartNew(() => {
                 Result<LobbyMessage, ServerReadException>? result = null;
                 bool isLocked = false;
-				try {
+                try {
 
-                    DateTime startedRead = DateTime.UtcNow;
-                    while (!stream.DataAvailable && (DateTime.UtcNow - startedRead).TotalMilliseconds < READ_TIMEOUT_MS) {
-                        Thread.Sleep(50);
-                    }
+                    // DateTime startedRead = DateTime.UtcNow;
+                    // while (!stream.DataAvailable && (DateTime.UtcNow - startedRead).TotalMilliseconds < READ_TIMEOUT_MS) {
+                    //     Thread.Sleep(50);
+                    // }
 
-                    if (!stream.DataAvailable) {
-                        result = new Result<LobbyMessage, ServerReadException>(new NoDataException());
-                        throw result.GetError();
-                    }
+                    // if (!stream.DataAvailable) {
+                    //     result = new Result<LobbyMessage, ServerReadException>(new NoDataException());
+                    //     throw result.GetError();
+                    // }
 
                     mutex?.WaitOne();
                     isLocked = true;
@@ -364,30 +363,28 @@ namespace SynthesisAPI.Aether.Lobby {
 
                     var msgBuf = new byte[msgSize];
                     int bytesRead = 0;
-                    var startRead = DateTime.UtcNow;
-                    while (bytesRead != msgSize && (DateTime.UtcNow - startRead).TotalMilliseconds < READ_TIMEOUT_MS) {
+                    while (bytesRead < msgSize) {
                         bytesRead += stream.Read(msgBuf, bytesRead, msgSize - bytesRead);
-                        Thread.Sleep(10);
                     }
 
                     if (bytesRead != msgSize) {
                         Logger.Log($"Mismatch of read bytes. Expected '{msgSize}', read '{bytesRead}'");
                     }
                     LobbyMessage msg = LobbyMessage.Parser.ParseFrom(msgBuf);
-
-                    mutex?.ReleaseMutex();
-
+                    
                     result = new Result<LobbyMessage, ServerReadException>(msg);
 
+                } catch (IOException) {
+                    throw new NoDataException();
                 } catch (Exception e) {
                     if (result == null) {
-                        if (isLocked) {
-                            mutex?.ReleaseMutex();
-                        }
-
                         result = new Result<LobbyMessage, ServerReadException>(
                             new ServerReadException($"Read failure:\n{e.Message}\n{e.StackTrace}")
-                        );
+                            );
+                    }
+                } finally {
+                    if (isLocked) {
+                        mutex?.ReleaseMutex();
                     }
                 }
 
