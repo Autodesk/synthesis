@@ -78,11 +78,7 @@ public class ScoringZonesPanel : PanelDynamic {
 
         AddZoneEntries();
 
-        _initiallyVisible = PreferenceManager.GetPreference<bool>(SettingsModal.RENDER_SCORE_ZONES);
-
-        if (!_initiallyVisible)
-            FieldSimObject.CurrentField.ScoringZones.ForEach(
-                z => z.GameObject.GetComponent<MeshRenderer>().enabled = true);
+        FieldSimObject.CurrentField.ScoringZones.ForEach(x => x.VisibilityCounter++);
 
         // so that timer doesn't count while configuring
         // will remove later once score zones can be configured before match start, per Luca's match mode state machine
@@ -156,9 +152,7 @@ public class ScoringZonesPanel : PanelDynamic {
     public override void Update() {}
 
     public override void Delete() {
-        if (!_initiallyVisible)
-            FieldSimObject.CurrentField.ScoringZones.ForEach(
-                z => z.GameObject.GetComponent<MeshRenderer>().enabled = _initiallyVisible);
+        FieldSimObject.CurrentField.ScoringZones.ForEach(x => x.VisibilityCounter--);
         PhysicsManager.IsFrozen = false;
     }
 }

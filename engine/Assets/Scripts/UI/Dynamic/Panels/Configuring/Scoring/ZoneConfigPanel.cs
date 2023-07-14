@@ -63,13 +63,14 @@ public class ZoneConfigPanel : PanelDynamic {
             _isNewZone            = false;
             _initialData.Name     = zone.Name;
             _initialData.Alliance = zone.Alliance;
-            var parent            = zone.GameObject.transform.parent;
+            var parent            = zone.GameObject.transform.parent.name == "grounded" ? null : zone.GameObject.transform.parent;
             if (parent is not null) {
                 _initialParent               = parent.name;
                 _initialData.Parent          = parent.name;
                 HighlightComponent highlight = parent.GetComponent<Rigidbody>().GetComponent<HighlightComponent>();
                 highlight.Color              = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_SELECT);
                 highlight.enabled            = true;
+                _selectedNode = highlight;
             }
             _initialData.DestroyGamepiece = zone.DestroyGamepiece;
             _initialData.PersistentPoints = zone.PersistentPoints;
@@ -90,7 +91,8 @@ public class ZoneConfigPanel : PanelDynamic {
             // call one last time to update data
             // don't want to update data and call callback on every character typed for name
             _data.Name          = _zoneNameInput.Value;
-            var parentTransform = FieldSimObject.CurrentField.FieldObject.transform.Find(_data.Parent);
+            var parentTransform = FieldSimObject.CurrentField.FieldObject.transform.Find(_data.Parent ?? "grounded")
+                ?? FieldSimObject.CurrentField.FieldObject.transform.Find("grounded");
             var localPosition =
                 parentTransform.worldToLocalMatrix.MultiplyPoint3x4(_zone.GameObject.transform.position);
             var localRotation   = Quaternion.Inverse(parentTransform.rotation) * _zone.GameObject.transform.rotation;
@@ -271,7 +273,7 @@ public class ZoneConfigPanel : PanelDynamic {
 
     public void SelectParentButton(Button b) {
         if (!_selectingNode) {
-            if (_selectedNode /* || _data.Parent != string.Empty*/) {
+            if (_selectedNode || _data.Parent != "grounded") {
                 if (_selectedNode)
                     _selectedNode.enabled = false;
                 _selectedNode = null;

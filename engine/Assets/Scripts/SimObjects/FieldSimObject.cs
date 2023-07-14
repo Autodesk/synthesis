@@ -105,7 +105,7 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
 
         SynthesisAPI.EventBus.EventBus.NewTypeListener<PostPreferenceSaveEvent>(e => {
             bool visible = PreferenceManager.GetPreference<bool>(SettingsModal.RENDER_SCORE_ZONES);
-            ScoringZones.ForEach(zone => zone.SetVisibility(visible));
+            ScoringZones.ForEach(zone => zone.VisibilityCounter = zone.VisibilityCounter);
         });
         // Shooting.ConfigureGamepieces();
 
@@ -142,12 +142,14 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
 
     public void InitializeScoreZones() {
         _scoringZones.Clear();
-        var scoringZones = SimulationPreferences.GetFieldScoringZones(MiraLive.MiraAssembly.Info.GUID);
+	    bool visible = PreferenceManager.GetPreference<bool>(SettingsModal.RENDER_SCORE_ZONES);
+		var scoringZones = SimulationPreferences.GetFieldScoringZones(MiraLive.MiraAssembly.Info.GUID);
         if (scoringZones != null) {
             scoringZones.ForEach(x => {
                 var zone = new ScoringZone(
                     GameObject.CreatePrimitive(PrimitiveType.Cube), "temp scoring zone", Alliance.Blue, 0, false, true);
                 zone.ZoneData = x;
+                zone.VisibilityCounter = zone.VisibilityCounter;
                 _scoringZones.Add(zone);
             });
         }

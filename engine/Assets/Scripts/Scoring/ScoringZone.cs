@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Security.Policy;
 using Synthesis.Physics;
+using Synthesis.PreferenceManager;
 using Synthesis.Runtime;
+using Synthesis.UI.Dynamic;
 using SynthesisAPI.EventBus;
 using UnityEngine;
 
@@ -18,7 +20,8 @@ public class ScoringZone : IPhysicsOverridable {
             _zoneData                   = value;
             GameObject.name             = _zoneData.Name;
             GameObject.tag              = _zoneData.Alliance == Alliance.Red ? "red zone" : "blue zone";
-            GameObject.transform.parent = FieldSimObject.CurrentField.FieldObject.transform.Find(_zoneData.Parent);
+            GameObject.transform.parent = FieldSimObject.CurrentField.FieldObject.transform.Find(_zoneData.Parent ?? "grounded")
+                ?? FieldSimObject.CurrentField.FieldObject.transform.Find("grounded");
             Alliance                    = _zoneData.Alliance;
             GameObject.transform.localPosition =
                 new Vector3(_zoneData.LocalPosition.x, _zoneData.LocalPosition.y, _zoneData.LocalPosition.z);
@@ -36,6 +39,22 @@ public class ScoringZone : IPhysicsOverridable {
         set {
             _zoneData.Alliance           = value;
             _meshRenderer.material.color = value == Alliance.Red ? Color.red : Color.blue;
+        }
+    }
+
+    private int _visibilityCounter = 0;
+    public int VisibilityCounter {
+        get => _visibilityCounter;
+        set {
+            _visibilityCounter = value;
+            if (_visibilityCounter < 0)
+                throw new System.Exception("Not allowed to be negative");
+
+            if (_visibilityCounter == 0) {
+                SetVisibility(PreferenceManager.GetPreference<bool>(SettingsModal.RENDER_SCORE_ZONES));
+            } else {
+                SetVisibility(true);
+            }
         }
     }
 
@@ -83,7 +102,8 @@ public class ScoringZone : IPhysicsOverridable {
         PhysicsManager.Register(this);
     }
 
-    public void SetVisibility(bool visible) {
+    private void SetVisibility(bool visible) {
+        Debug.Log($"Visibility set to {visible}");
         _meshRenderer.enabled = visible;
     }
 
