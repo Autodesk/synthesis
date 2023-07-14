@@ -104,7 +104,9 @@ public class ScoringZone : IPhysicsOverridable {
     }
 
     private void SetVisibility(bool visible) {
-        _meshRenderer.enabled = visible;
+        if (!_meshRenderer) {
+            _meshRenderer.enabled = visible;
+        }
     }
 
     public bool isFrozen() => _isFrozen;
