@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Synthesis.Import;
 using System.Linq;
 using Synthesis.PreferenceManager;
 using Synthesis.UI.Dynamic;
@@ -90,9 +91,6 @@ namespace Synthesis.Runtime {
                 GameObject.Instantiate(Resources.Load("Misc/Tree"));
             }
 
-            if (ModeManager.CurrentMode is not null)
-                ModeManager.CurrentMode.Start();
-
             SettingsModal.LoadSettings();
             SettingsModal.ApplySettings();
         }
@@ -142,6 +140,7 @@ namespace Synthesis.Runtime {
 
         void OnDestroy() {
             Synthesis.PreferenceManager.PreferenceManager.Save();
+            MirabufCache.Clear();
             if (OnGameObjectDestroyed != null)
                 OnGameObjectDestroyed();
         }
