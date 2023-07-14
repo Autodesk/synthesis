@@ -246,9 +246,11 @@ namespace Synthesis {
             if (_jointA.useMotor) {
                 var val = (float) MainInput;
 
-                var inertiaA = GetInertiaAroundParallelAxis(_jointA.connectedBody, _jointB.anchor, _jointB.axis);
+                var inertiaA =
+                    SynthesisUtil.GetInertiaAroundParallelAxis(_jointA.connectedBody, _jointB.anchor, _jointB.axis);
 
-                var inertiaB = GetInertiaAroundParallelAxis(_jointB.connectedBody, _jointA.anchor, _jointA.axis);
+                var inertiaB =
+                    SynthesisUtil.GetInertiaAroundParallelAxis(_jointB.connectedBody, _jointA.anchor, _jointA.axis);
 
                 if (_useFakeMotion) {
                     float alpha = val * Motor.targetVelocity;
@@ -287,12 +289,6 @@ namespace Synthesis {
         public void SetAxis(Vector3 newAxis) {
             _jointA.axis = _jointA.transform.worldToLocalMatrix.MultiplyVector(newAxis).normalized;
             _jointB.axis = _jointB.transform.worldToLocalMatrix.MultiplyVector(newAxis).normalized;
-        }
-
-        public float GetInertiaAroundParallelAxis(Rigidbody rb, Vector3 localAnchor, Vector3 localAxis) {
-            var comInertia       = GetInertiaFromAxisVector(rb, localAxis);
-            var pointMassInertia = rb.mass * Mathf.Pow(Vector3.Distance(rb.centerOfMass, localAnchor), 2f);
-            return comInertia + pointMassInertia;
         }
     }
 }
