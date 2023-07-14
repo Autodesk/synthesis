@@ -18,12 +18,12 @@ namespace Utilities.ColorManager {
 
         private static readonly Color UNASSIGNED_COLOR = new(200, 255, 0, 255);
 
-        public static readonly char altSep = Path.AltDirectorySeparatorChar;
+        private static readonly char altSep = Path.AltDirectorySeparatorChar;
 
         private static string THEMES_FOLDER_PATH {
             get {
-                string dir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                             altSep + "Autodesk" + altSep + "Synthesis" + altSep + "Themes";
+                string dir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + altSep +
+                             "Autodesk" + altSep + "Synthesis" + altSep + "Themes";
 
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
