@@ -85,8 +85,8 @@ namespace Synthesis.UI.Dynamic {
                         buttonTransform.rect.width / 2f, AcceptButton.RootGameObject.transform.localPosition.y, 0);
 
                     Button middleButton = new Button(null!, buttonTransform.gameObject, null);
-                    middleButton.Image.SetColor(ColorManager.SYNTHESIS_ACCEPT);
-                    middleButton.Label?.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT));
+                    middleButton.Image.SetColor(ColorManager.SynthesisColor.AcceptButton);
+                    middleButton.Label?.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
 
                     _middleButton = middleButton;
                     return middleButton;
@@ -130,7 +130,7 @@ namespace Synthesis.UI.Dynamic {
             });
             _cancelButton.Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.CancelButton));
             _cancelButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElementText));
-            _acceptButton = new Button(null!, footer.Find("Accept").gameObject, null);
+            _acceptButton = new Button(null!, _footer.Find("Accept").gameObject, null);
             _acceptButton.Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptButton));
             _acceptButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElementText));
             _acceptButton.AddOnClickedEvent(b => {
@@ -197,9 +197,7 @@ namespace Synthesis.UI.Dynamic {
 
         public Action OnAccepted;
         public Action OnCancelled;
-
-        private Button? _middleButton;
-
+        
         protected Button MiddleButton {
             get {
                 if (_middleButton == null) {
