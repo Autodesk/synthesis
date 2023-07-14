@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using Analytics;
 using Synthesis.Gizmo;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
-using SynthesisAPI.EventBus;
-using SynthesisAPI.Utilities;
 using UnityEngine;
 
 using Logger = SynthesisAPI.Utilities.Logger;
@@ -42,8 +40,6 @@ public class ZoneConfigPanel : PanelDynamic {
 
     private bool _selectingNode;
 
-    private GameObject _zoneObject;
-
     private HighlightComponent _hoveringNode = null;
     private HighlightComponent _selectedNode = null;
 
@@ -63,14 +59,14 @@ public class ZoneConfigPanel : PanelDynamic {
             _isNewZone            = false;
             _initialData.Name     = zone.Name;
             _initialData.Alliance = zone.Alliance;
-            var parent            = zone.GameObject.transform.parent.name == "grounded" ? null : zone.GameObject.transform.parent;
+            var parent = zone.GameObject.transform.parent.name == "grounded" ? null : zone.GameObject.transform.parent;
             if (parent is not null) {
                 _initialParent               = parent.name;
                 _initialData.Parent          = parent.name;
                 HighlightComponent highlight = parent.GetComponent<Rigidbody>().GetComponent<HighlightComponent>();
                 highlight.Color              = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_SELECT);
                 highlight.enabled            = true;
-                _selectedNode = highlight;
+                _selectedNode                = highlight;
             }
             _initialData.DestroyGamepiece = zone.DestroyGamepiece;
             _initialData.PersistentPoints = zone.PersistentPoints;
@@ -91,8 +87,8 @@ public class ZoneConfigPanel : PanelDynamic {
             // call one last time to update data
             // don't want to update data and call callback on every character typed for name
             _data.Name          = _zoneNameInput.Value;
-            var parentTransform = FieldSimObject.CurrentField.FieldObject.transform.Find(_data.Parent ?? "grounded")
-                ?? FieldSimObject.CurrentField.FieldObject.transform.Find("grounded");
+            var parentTransform = FieldSimObject.CurrentField.FieldObject.transform.Find(_data.Parent ?? "grounded") ??
+                                  FieldSimObject.CurrentField.FieldObject.transform.Find("grounded");
             var localPosition =
                 parentTransform.worldToLocalMatrix.MultiplyPoint3x4(_zone.GameObject.transform.position);
             var localRotation   = Quaternion.Inverse(parentTransform.rotation) * _zone.GameObject.transform.rotation;
@@ -110,6 +106,9 @@ public class ZoneConfigPanel : PanelDynamic {
                 _callback.Invoke(_zone, _isNewZone);
 
             DynamicUIManager.ClosePanel<ZoneConfigPanel>();
+
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.ScoringZoneUpdated, ("AllianceColor", _data.Alliance),
+                ("ScoringZonePoints", _data.Points), ("ScoringZoneName", _data.Name));
         });
 
         CancelButton.AddOnClickedEvent(b => {

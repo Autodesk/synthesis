@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Analytics;
+using MathNet.Numerics;
 using Mirabuf;
 using Synthesis.Gizmo;
 using Synthesis.Import;
@@ -142,13 +144,13 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
 
     public void InitializeScoreZones() {
         _scoringZones.Clear();
-	    bool visible = PreferenceManager.GetPreference<bool>(SettingsModal.RENDER_SCORE_ZONES);
-		var scoringZones = SimulationPreferences.GetFieldScoringZones(MiraLive.MiraAssembly.Info.GUID);
+        bool visible     = PreferenceManager.GetPreference<bool>(SettingsModal.RENDER_SCORE_ZONES);
+        var scoringZones = SimulationPreferences.GetFieldScoringZones(MiraLive.MiraAssembly.Info.GUID);
         if (scoringZones != null) {
             scoringZones.ForEach(x => {
                 var zone = new ScoringZone(
                     GameObject.CreatePrimitive(PrimitiveType.Cube), "temp scoring zone", Alliance.Blue, 0, false, true);
-                zone.ZoneData = x;
+                zone.ZoneData          = x;
                 zone.VisibilityCounter = zone.VisibilityCounter;
                 _scoringZones.Add(zone);
             });
@@ -187,6 +189,7 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
             GizmoManager.SpawnGizmo(RobotSimObject.GetCurrentlyPossessedRobot());
             // TODO: Move robot to default spawn location for field
         }
+        AnalyticsManager.LogCustomEvent(AnalyticsEvent.FieldSpawned, ("FieldName", mira.MainObject.name));
     }
 
     public static void SpawnField(MirabufLive miraAssem, bool spawnRobotGizmo = true) {

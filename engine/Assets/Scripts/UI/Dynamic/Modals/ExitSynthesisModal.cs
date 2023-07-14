@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Analytics;
 using Synthesis.Runtime;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -16,13 +17,15 @@ namespace Synthesis.UI.Dynamic {
 
             AcceptButton
                 .AddOnClickedEvent(x => {
-                    if (isOnMainMenu)
+                    if (isOnMainMenu) {
                         Application.Quit();
-                    else {
+                    } else {
                         SimulationRunner.InSim = false;
                         DynamicUIManager.CloseAllPanels(true);
                         ModeManager.CurrentMode = null;
                         SceneManager.LoadScene("GridMenuScene", LoadSceneMode.Single);
+
+                        AnalyticsManager.LogCustomEvent(AnalyticsEvent.ExitedToMenu);
                     }
                 })
                 .StepIntoLabel(l => l.SetText("Exit"));

@@ -17,12 +17,13 @@ public class ScoringZone : IPhysicsOverridable {
     public ScoringZoneData ZoneData {
         get => _zoneData;
         set {
-            _zoneData                   = value;
-            GameObject.name             = _zoneData.Name;
-            GameObject.tag              = _zoneData.Alliance == Alliance.Red ? "red zone" : "blue zone";
-            GameObject.transform.parent = FieldSimObject.CurrentField.FieldObject.transform.Find(_zoneData.Parent ?? "grounded")
-                ?? FieldSimObject.CurrentField.FieldObject.transform.Find("grounded");
-            Alliance                    = _zoneData.Alliance;
+            _zoneData       = value;
+            GameObject.name = _zoneData.Name;
+            GameObject.tag  = _zoneData.Alliance == Alliance.Red ? "red zone" : "blue zone";
+            GameObject.transform.parent =
+                FieldSimObject.CurrentField.FieldObject.transform.Find(_zoneData.Parent ?? "grounded") ??
+                FieldSimObject.CurrentField.FieldObject.transform.Find("grounded");
+            Alliance = _zoneData.Alliance;
             GameObject.transform.localPosition =
                 new Vector3(_zoneData.LocalPosition.x, _zoneData.LocalPosition.y, _zoneData.LocalPosition.z);
             GameObject.transform.localRotation = new Quaternion(_zoneData.LocalRotation.x, _zoneData.LocalRotation.y,
@@ -103,7 +104,6 @@ public class ScoringZone : IPhysicsOverridable {
     }
 
     private void SetVisibility(bool visible) {
-        Debug.Log($"Visibility set to {visible}");
         _meshRenderer.enabled = visible;
     }
 

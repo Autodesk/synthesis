@@ -36,9 +36,6 @@ public class ScoringZonesPanel : PanelDynamic {
     private float _entryWidth;
 
     private ScrollView _zonesScrollView;
-    private Button _addZoneButton;
-
-    private bool _initiallyVisible = true;
 
     private readonly Func<UIComponent, UIComponent> VerticalLayout = (u) => {
         var offset = (-u.Parent!.RectOfChildren(u).yMin) + VERTICAL_PADDING;
@@ -69,12 +66,12 @@ public class ScoringZonesPanel : PanelDynamic {
         _scrollViewWidth = _zonesScrollView.Parent!.RectOfChildren().width - SCROLLBAR_WIDTH;
         _entryWidth      = _scrollViewWidth - HORIZONTAL_PADDING * 2;
 
-        _addZoneButton = MainContent.CreateButton()
-                             .SetTopStretch<Button>()
-                             .StepIntoLabel(l => l.SetText("Add Zone"))
-                             .AddOnClickedEvent(
-                                 _ => { OpenScoringZoneGizmo(); })
-                             .ApplyTemplate(VerticalLayout);
+        MainContent.CreateButton()
+            .SetTopStretch<Button>()
+            .StepIntoLabel(l => l.SetText("Add Zone"))
+            .AddOnClickedEvent(
+                _ => { OpenScoringZoneGizmo(); })
+            .ApplyTemplate(VerticalLayout);
 
         AddZoneEntries();
 

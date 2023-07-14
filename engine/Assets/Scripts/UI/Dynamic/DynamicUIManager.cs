@@ -5,8 +5,8 @@ using Synthesis.Gizmo;
 using Synthesis.Physics;
 using Synthesis.Replay;
 using Synthesis.Runtime;
+using Analytics;
 using SynthesisAPI.EventBus;
-using TMPro;
 using UnityEngine;
 
 namespace Synthesis.UI.Dynamic {
@@ -91,8 +91,9 @@ namespace Synthesis.UI.Dynamic {
             SynthesisAssetCollection.BlurVolumeStatic.weight = 1f;
             PhysicsManager.IsFrozen                          = true;
             MainHUD.Enabled                                  = false;
-            AnalyticsManager.LogEvent(new AnalyticsEvent(category: "ui", action: $"{typeof(T).Name}", label: "create"));
-            AnalyticsManager.PostData();
+
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.ModalCreated, ("UIType", typeof(T).Name));
+
             return true;
         }
 
@@ -127,8 +128,8 @@ namespace Synthesis.UI.Dynamic {
             if (PanelExists(typeof(T)))
                 EventBus.Push(new PanelCreatedEvent(panel, persistent));
 
-            AnalyticsManager.LogEvent(new AnalyticsEvent(category: "ui", action: $"{typeof(T).Name}", label: "create"));
-            AnalyticsManager.PostData();
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.PanelCreated, ("UIType", typeof(T).Name));
+
             return true;
         }
 
@@ -137,15 +138,12 @@ namespace Synthesis.UI.Dynamic {
                 return false;
             }
 
-            EventBus.Push(new ModalClosedEvent(ActiveModal));
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.ActiveModalClosed, ("UIType", ActiveModal.GetType().Name));
 
-            AnalyticsManager.LogEvent(
-                new AnalyticsEvent(category: "ui", action: $"{ActiveModal.GetType().Name}", label: "create"));
-            AnalyticsManager.PostData();
+            EventBus.Push(new ModalClosedEvent(ActiveModal));
 
             ActiveModal.Delete();
             ActiveModal.Delete_Internal();
-
             ActiveModal = null;
 
             SynthesisAssetCollection.BlurVolumeStatic.weight = 0f;
@@ -177,14 +175,14 @@ namespace Synthesis.UI.Dynamic {
             var panel = _persistentPanels[t].Item1;
             EventBus.Push(new PanelClosedEvent(panel));
 
-            AnalyticsManager.LogEvent(new AnalyticsEvent(category: "ui", action: $"{t.Name}", label: "create"));
-            AnalyticsManager.PostData();
-
             panel.Delete();
             panel.Delete_Internal();
 
             // ActivePanel = null;
             _persistentPanels.Remove(t);
+
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.PanelClosed, ("UIType", t.Name));
+
             return true;
         }
 

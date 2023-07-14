@@ -68,12 +68,7 @@ namespace Synthesis.UI.Bars {
             if (Application.isEditor)
                 Debug.Log("Would exit, but it's editor mode");
             else {
-                var update = new AnalyticsEvent(category: "Exit", action: "Closed", label: $"Closed Synthesis");
-                AnalyticsManager.LogEvent(update);
-                AnalyticsManager.PostData();
-
                 DynamicUIManager.CreateModal<ExitSynthesisModal>();
-                // Application.Quit();
             }
         }
 
@@ -82,12 +77,6 @@ namespace Synthesis.UI.Bars {
             if (Input.GetKeyDown(KeyCode.Escape)) {
                 navBarPrefab.CloseAllPanels();
             }
-        }
-
-        public void PanelAnalytics(string prefabName, string status) {
-            var panel = new AnalyticsEvent(category: "Panel", action: status, label: prefabName);
-            AnalyticsManager.LogEvent(panel);
-            AnalyticsManager.PostData();
         }
 
         public void OpenPanel(GameObject prefab) {
@@ -102,7 +91,6 @@ namespace Synthesis.UI.Bars {
 
                 // Analytics Stuff
                 lastOpenedPanel = prefab.name; // this will need to be an array for movable panels
-                PanelAnalytics(prefab.name, "Opened");
             }
         }
 
@@ -110,8 +98,6 @@ namespace Synthesis.UI.Bars {
             LayoutManager.ClosePanel();
             if (_currentPanelButton != null)
                 changePanelButton(artifaktRegular, 1f);
-
-            PanelAnalytics(lastOpenedPanel, "Closed");
         }
 
         private void changePanelButton(TMP_FontAsset f, float opacity) {
