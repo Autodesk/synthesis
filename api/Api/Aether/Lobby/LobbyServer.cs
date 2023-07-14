@@ -1,12 +1,11 @@
-﻿using SynthesisAPI.Controller;
+using SynthesisAPI.Controller;
 using SynthesisAPI.Utilities;
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 using System.Security.Cryptography;
+using System.Threading;
 
 #nullable enable
 
@@ -84,7 +83,7 @@ namespace SynthesisAPI.Aether.Lobby {
 
                 _remoteData = new Dictionary<ulong, RemoteData>();
                 
-                _listener = new TcpListener(IPAddress.Parse("127.0.0.1"), TCP_PORT);
+                _listener = new TcpListener(IPAddress.Any, TCP_PORT);
                 _listener.Start();
                 _listener.BeginAcceptTcpClient(AcceptTcpClient, null);
             }
@@ -230,6 +229,7 @@ namespace SynthesisAPI.Aether.Lobby {
                 try {
                     updateRequest.Data.ForEach(x => {
                         data.State.SetValue(x.SignalGuid, x.Value);
+                        data.State.SignalMap[x.SignalGuid].Name = x.Name;
                     });
                 } finally {
                     data.ExitWriteLock();
@@ -333,8 +333,9 @@ namespace SynthesisAPI.Aether.Lobby {
             _owningClient = owningClient;
             _lock = new ReaderWriterLockSlim();
 
-            State = new ControllableState();
-            Transforms = new ServerTransforms();
+            State           = new ControllableState();
+            Transforms      = new ServerTransforms();
+            Transforms.Guid = owningClient;
         }
 
         public void EnterReadLock() => _lock.EnterReadLock();

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Synthesis.PreferenceManager;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.InputManager;
@@ -16,6 +17,7 @@ using Synthesis.Physics;
 using SynthesisAPI.EventBus;
 using Synthesis.Replay;
 using Synthesis.WS;
+using SynthesisAPI.Controller;
 using SynthesisAPI.RoboRIO;
 using UnityEngine.Rendering;
 
@@ -75,6 +77,7 @@ namespace Synthesis.Runtime {
 
             OnUpdate += DynamicUIManager.Update;
             OnUpdate += ModeManager.Update;
+            OnUpdate += () => RobotSimObject.SpawnedRobots.ForEach(r => r.UpdateMultiplayer());
 
             WebSocketManager.RioState.OnUnrecognizedMessage += s => Debug.Log(s);
 
