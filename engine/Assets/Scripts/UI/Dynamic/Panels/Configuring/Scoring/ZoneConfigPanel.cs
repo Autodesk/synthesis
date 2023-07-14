@@ -68,7 +68,6 @@ public class ZoneConfigPanel : PanelDynamic {
 
                 highlight.Color   = ColorManager.GetColor(ColorManager.SynthesisColor.HighlightSelect);
                 highlight.enabled = true;
-
             }
 
             _initialData.DestroyGamepiece = zone.DestroyGamepiece;
