@@ -121,15 +121,23 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
                                 .StepIntoLabel(l => l.SetText("Delete Selected"))
                                 .SetBackgroundColor<Button>(ColorManager.SynthesisColor.InteractiveElement)
                                 .AddOnClickedEvent(b => {
-                                    if (_selectedThemeIndex != 0)
+                                    if (_selectedThemeIndex != 0) {
+                                        SaveThemeChanges();
                                         DynamicUIManager.CreateModal<DeleteThemeModal>();
+                                    }
                                 });
 
             _deleteAllButton = deleteAllContent.CreateButton()
                                    .ApplyTemplate(VerticalLayout)
                                    .StepIntoLabel(l => l.SetText("Delete All"))
                                    .SetBackgroundColor<Button>(ColorManager.SynthesisColor.CancelButton)
-                                   .AddOnClickedEvent(b => { DynamicUIManager.CreateModal<DeleteAllThemesModal>(); });
+                                   .AddOnClickedEvent(b => {
+                                       if (_selectedThemeIndex != 0) {
+                                           SaveThemeChanges();
+                                       }
+
+                                       DynamicUIManager.CreateModal<DeleteAllThemesModal>();
+                                   });
 
             themeChooser.AddOnValueChangedEvent((dropdown, index, data) => {
                 SelectTheme(index);
@@ -216,6 +224,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
         /// <summary>Selects a color to change with the RGB slider</summary>
         /// <param name="colorName">The color to select</param>
         private void SelectColor(ColorManager.SynthesisColor? colorName) {
+            Debug.Log("Color selected");
             if (_selectedColor != null) {
                 var prevSelected = _colors[_selectedColor.Value];
                 prevSelected.background.SetBackgroundColor<Image>(ColorManager.SynthesisColor.BackgroundSecondary);
@@ -274,15 +283,23 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             List<(ColorManager.SynthesisColor name, Color color)> colors = new();
             _colors.ForEach(c => { colors.Add((c.Key, c.Value.color)); });
             ColorManager.ModifySelectedTheme(colors);
+            Debug.Log($"Saved theme changes to {_selectedThemeIndex}");
         }
 
         /// <summary>Gets the selected theme preference</summary>
-        private void GetThemePref() => _selectedThemeIndex = ColorManager.ThemeNameToIndex(
-            PreferenceManager.GetPreference<string>(ColorManager.SELECTED_THEME_PREF));
+        private void GetThemePref() {
+            _selectedThemeIndex = ColorManager.ThemeNameToIndex(
+                PreferenceManager.GetPreference<string>(ColorManager.SELECTED_THEME_PREF));
+            Debug.Log($"Get theme pref of {_selectedThemeIndex}");
+        }
 
         /// <summary>Sets the selected theme preference</summary>
-        private void SetThemePref() => PreferenceManager.SetPreference(
-            ColorManager.SELECTED_THEME_PREF, ColorManager.ThemeIndexToName(_selectedThemeIndex));
+        private void SetThemePref() {
+            PreferenceManager.SetPreference(
+                ColorManager.SELECTED_THEME_PREF, ColorManager.ThemeIndexToName(_selectedThemeIndex));
+            Debug.Log($"Set theme pref to {_selectedThemeIndex}");
+
+        }
 
         /// <summary>Update all colors of this modal to preview selected colors</summary>
         private void PreviewColors() {

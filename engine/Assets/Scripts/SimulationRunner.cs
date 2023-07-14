@@ -132,6 +132,8 @@ namespace Synthesis.Runtime {
         }
 
         void OnDestroy() {
+            MainHUD.Delete();
+            
             Synthesis.PreferenceManager.PreferenceManager.Save();
             if (OnGameObjectDestroyed != null)
                 OnGameObjectDestroyed();

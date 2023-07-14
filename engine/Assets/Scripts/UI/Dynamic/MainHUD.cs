@@ -108,9 +108,9 @@ public static class MainHUD {
 
         SceneManager.activeSceneChanged += (Scene a, Scene b) => { _isSetup = false; };
 
-        AssignColors();
+        AssignColors(null);
 
-        EventBus.NewTypeListener<ColorManager.OnThemeChanged>(x => { AssignColors(); });
+        EventBus.NewTypeListener<ColorManager.OnThemeChanged>(AssignColors);
     }
 
     public static void AddItemToDrawer(
@@ -134,7 +134,7 @@ public static class MainHUD {
         }
 
         UpdateDrawerSizing();
-        AssignColors();
+        AssignColors(null);
     }
 
     public static void RemoveItemFromDrawer(string title) {
@@ -158,7 +158,11 @@ public static class MainHUD {
         _tabDrawerContent.SetHeight<Content>((_drawerItems.Count * 55) + 70);
     }
 
-    public static void AssignColors() {
+    public static void Delete() {
+        EventBus.RemoveTypeListener<ColorManager.OnThemeChanged>(AssignColors);
+    }
+
+    public static void AssignColors(IEvent e) {
         _tabDrawerContent.Image!.SetColor(ColorManager.SynthesisColor.Background);
 
         _expandDrawerButton.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.Background));
