@@ -1,13 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-using Synthesis.UI.Dynamic;
 using UnityEngine;
-using TMPro;
 using System;
 using System.Runtime.InteropServices;
-using System.Linq;
 using Analytics;
-using UnityEngine.Rendering;
+using UI.Dynamic.Modals.Configuring.ThemeEditor;
 
 namespace Synthesis.UI.Dynamic {
     public class SettingsModal : ModalDynamic {
@@ -20,6 +15,9 @@ namespace Synthesis.UI.Dynamic {
         private static string[] _screenModeList      = { "Fullscreen", "Windowed" };
         private static string[] _qualitySettingsList = { "Low", "Medium", "High", "Ultra" };
 
+        private const float PANEL_WIDTH  = 500;
+        private const float PANEL_HEIGHT = 700;
+
         private static int _screenModeIndex;
         private static int _qualitySettingsIndex;
         private static float _zoomSensitivity;
@@ -29,7 +27,7 @@ namespace Synthesis.UI.Dynamic {
         private static bool _useMetric;
         private static bool _renderScoreZones;
 
-        public SettingsModal() : base(new Vector2(500, 500)) {}
+        public SettingsModal() : base(new Vector2(PANEL_WIDTH, PANEL_HEIGHT)) {}
 
         public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
             var offset = (-u.Parent!.RectOfChildren(u).yMin) + 7.5f;
@@ -71,6 +69,13 @@ namespace Synthesis.UI.Dynamic {
                     .StepIntoDropdown(d => d.SetOptions(_qualitySettingsList)
                                                .AddOnValueChangedEvent((d, i, o) => _qualitySettingsIndex = i)
                                                .SetValue(Get<int>(QUALITY_SETTINGS)));
+
+            var editThemeButton =
+                MainContent.CreateButton("Theme Editor").ApplyTemplate<Button>(VerticalLayout).AddOnClickedEvent(b => {
+                    SaveSettings();
+                    ApplySettings();
+                    DynamicUIManager.CreateModal<EditThemeModal>();
+                });
 
             MainContent.CreateLabel()
                 .ApplyTemplate(Label.BigLabelTemplate)
@@ -189,7 +194,6 @@ namespace Synthesis.UI.Dynamic {
 
             // Quality Settings
             QualitySettings.SetQualityLevel(Get<int>(QUALITY_SETTINGS), true);
-            Debug.Log(GraphicsSettings.currentRenderPipeline.name);
 
             // Camera
             CameraController.ZoomSensitivity =

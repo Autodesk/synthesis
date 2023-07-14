@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Analytics;
-using Modes.MatchMode;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
-﻿using System.Collections.Generic;
 using Synthesis.Physics;
-using Synthesis.UI.Dynamic;
 using SynthesisAPI.EventBus;
 using UI.Dynamic.Modals;
-using UnityEngine;
 
 namespace Modes.MatchMode {
     public class MatchStateMachine {
@@ -307,7 +302,15 @@ namespace Modes.MatchMode {
 
             public override void Update() {}
 
-            public override void End() {}
+            public override void End() {
+                AnalyticsManager.LogCustomEvent(AnalyticsEvent.MatchEnded,
+                    ("BluePoints", int.Parse(MatchMode.MatchResultsTracker
+                                                 .MatchResultEntries[typeof(MatchResultsTracker.BluePoints)]
+                                                 .ToString())),
+                    ("RedPoints", int.Parse(MatchMode.MatchResultsTracker
+                                                .MatchResultEntries[typeof(MatchResultsTracker.RedPoints)]
+                                                .ToString())));
+            }
 
             public MatchResults() : base(StateName.MatchResults) {}
         }

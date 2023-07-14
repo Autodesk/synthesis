@@ -5,6 +5,7 @@ using Synthesis.UI;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Utilities.ColorManager;
 using static MatchResultsTracker;
 
 namespace UI.Dynamic.Modals {
@@ -12,11 +13,10 @@ namespace UI.Dynamic.Modals {
         private const float MODAL_WIDTH  = 500f;
         private const float MODAL_HEIGHT = 600f;
 
-        private const float VERTICAL_PADDING         = 16f;
-        private const float HORIZONTAL_PADDING       = 16f;
-        private const float SCROLLBAR_WIDTH          = 10f;
-        private const float ROW_HEIGHT               = 64f;
-        private static readonly Color ENTRY_BG_COLOR = ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK);
+        private const float VERTICAL_PADDING   = 16f;
+        private const float HORIZONTAL_PADDING = 16f;
+        private const float SCROLLBAR_WIDTH    = 10f;
+        private const float ROW_HEIGHT         = 64f;
 
         private float _scrollViewWidth;
         private float _entryWidth;
@@ -90,11 +90,12 @@ namespace UI.Dynamic.Modals {
                 (Content left, Content right) = entryContent.ApplyTemplate(ListVerticalLayout)
                                                     .SplitLeftRight(_entryWidth * (2 / 3f), HORIZONTAL_PADDING);
 
-                left.SetBackgroundColor<Content>(ENTRY_BG_COLOR)
+                left.SetBackgroundColor<Content>(ColorManager.SynthesisColor.Background)
                     .CreateLabel()
                     .SetAnchoredPosition<Label>(new Vector2(HORIZONTAL_PADDING, 0))
                     .SetText(entry.GetName());
-                right.SetBackgroundColor<Content>(ENTRY_BG_COLOR)
+
+                right.SetBackgroundColor<Content>(ColorManager.SynthesisColor.Background)
                     .CreateLabel()
                     .SetAnchoredPosition<Label>(new Vector2(HORIZONTAL_PADDING, 0))
                     .SetText(entry.ToString());

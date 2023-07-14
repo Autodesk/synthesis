@@ -7,7 +7,7 @@ using System.Collections;
 using System.IO;
 using System.Linq;
 using UnityEngine;
-
+using Utilities.ColorManager;
 using Logger                = SynthesisAPI.Utilities.Logger;
 using ClientConnectionState = ConnectToMultiplayerMode.ClientConnectionState;
 using ClientActionState     = ConnectToMultiplayerMode.ClientActionState;
@@ -40,8 +40,7 @@ namespace Synthesis.UI.Dynamic {
             CancelButton.Label.SetText("Disconnect");
 
             (var left, var right) = MainContent.SplitLeftRight(leftWidth: (MAIN_CONTENT_WIDTH - 20.0f) / 2.0f, 20.0f);
-            left.EnsureImage().StepIntoImage(
-                i => i.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT)));
+            left.EnsureImage().StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary));
 
             _clientConnectionStatus = left.CreateLabel(30)
                                           .SetTopStretch<Label>(anchoredY: 30.0f)

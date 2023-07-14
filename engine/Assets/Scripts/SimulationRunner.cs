@@ -55,6 +55,10 @@ namespace Synthesis.Runtime {
 
         private bool _setupSceneSwitchEvent = false;
 
+        private void Awake() {
+            Synthesis.PreferenceManager.PreferenceManager.Load();
+        }
+
         void Start() {
             InSim = true;
 
@@ -70,7 +74,6 @@ namespace Synthesis.Runtime {
             }
 
             SetContext(RUNNING_SIM_CONTEXT);
-            Synthesis.PreferenceManager.PreferenceManager.Load();
             MainHUD.Setup();
             ModeManager.Start();
             RobotSimObject.Setup();
@@ -82,14 +85,8 @@ namespace Synthesis.Runtime {
 
             WebSocketManager.RioState.OnUnrecognizedMessage += s => Debug.Log(s);
 
-            // Screen.fullScreenMode = FullScreenMode.MaximizedWindow;
-
-            // TestColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
-            // RotationalDriver.TestSphericalCoordinate();
-
-            if (ColorManager.HasColor("tree")) {
-                GameObject.Instantiate(Resources.Load("Misc/Tree"));
-            }
+            if (ModeManager.CurrentMode is not null)
+                ModeManager.CurrentMode.Start();
 
             SettingsModal.LoadSettings();
             SettingsModal.ApplySettings();
@@ -139,6 +136,8 @@ namespace Synthesis.Runtime {
         }
 
         void OnDestroy() {
+            MainHUD.Delete();
+
             Synthesis.PreferenceManager.PreferenceManager.Save();
             MirabufCache.Clear();
             if (OnGameObjectDestroyed != null)

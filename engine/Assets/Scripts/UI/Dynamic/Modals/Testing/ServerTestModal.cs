@@ -5,6 +5,7 @@ using SynthesisAPI.Utilities;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Utilities.ColorManager;
 
 using Logger = SynthesisAPI.Utilities.Logger;
 
@@ -33,8 +34,8 @@ namespace Synthesis.UI.Dynamic {
             _mode = (ModeManager.CurrentMode as ServerTestMode)!;
 
             (var left, var right) = MainContent.SplitLeftRight(leftWidth: (MAIN_CONTENT_WIDTH - 20f) / 2, 20f);
-            left.EnsureImage().StepIntoImage(
-                i => i.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT)));
+
+            left.EnsureImage().StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary));
 
             _statusLabel = left.CreateLabel(30)
                                .SetStretch<Label>(15f, 15f, 15f, 15f)
