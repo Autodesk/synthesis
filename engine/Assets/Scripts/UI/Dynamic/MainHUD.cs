@@ -71,6 +71,8 @@ public static class MainHUD {
 
     public static bool isConfig = false;
 
+    public static RobotSimObject ConfigRobot = RobotSimObject.GetCurrentlyPossessedRobot();
+
     private static Content _tabDrawerContent;
     private static Button _expandDrawerButton;
 
@@ -241,22 +243,18 @@ public static class MainHUD {
     public static void SetUpConfig() {
         isConfig = true;
 
+        if (ModeManager.CurrentMode.GetType() == typeof(MatchMode) && DynamicUIManager.PanelExists<SpawnLocationPanel>()) {
+            ConfigRobot = MatchMode.Robots[DynamicUIManager.GetPanel<SpawnLocationPanel>().SelectedButton];
+        } else {
+            ConfigRobot = RobotSimObject.GetCurrentlyPossessedRobot();
+        }
+
         foreach (string name in MainHUD.DrawerTitles)
             MainHUD.RemoveItemFromDrawer(name);
 
-        if (ModeManager.CurrentMode.GetType() == typeof(PracticeMode)) {
-            MainHUD.AddItemToDrawer("Practice", b => {
-                DynamicUIManager.CloseAllPanels();
-                isConfig = false;
-                SetUpPractice();
-            });
-        } else if (ModeManager.CurrentMode.GetType() == typeof(MatchMode)) {
-            MainHUD.AddItemToDrawer("Match", b => {
-                DynamicUIManager.CloseAllPanels();
-                isConfig = false;
-                SetUpMatch();
-            });
-        }
+        MainHUD.AddItemToDrawer("Back", b => {
+            LeaveConfig();
+        });
 
         MainHUD.AddItemToDrawer("Pickup", b => {
             if (DynamicUIManager.PanelExists<ConfigureShotTrajectoryPanel>())
@@ -277,15 +275,25 @@ public static class MainHUD {
         MainHUD.AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>());
         MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(),
             icon: SynthesisAssetCollection.GetSpriteByName("settings"));
-        MainHUD.AddItemToDrawer("Move", b => {
-            var robot = RobotSimObject.GetCurrentlyPossessedRobot();
+        MainHUD.AddItemToDrawer("Move", b => {;
             OrbitCameraMode.FocusPoint = () =>
-            robot.GroundedNode != null && robot.GroundedBounds != null
-                ? robot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(robot.GroundedBounds.center)
+            ConfigRobot.GroundedNode != null && ConfigRobot.GroundedBounds != null
+                ? ConfigRobot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(ConfigRobot.GroundedBounds.center)
                 : Vector3.zero;
-            GizmoManager.SpawnGizmo(robot);
+            GizmoManager.SpawnGizmo(ConfigRobot);
         });
 
         PhysicsManager.IsFrozen = true;
+    }
+
+    public static void LeaveConfig() {
+        DynamicUIManager.CloseAllPanels();
+        isConfig = false;
+        if (ModeManager.CurrentMode.GetType() == typeof(PracticeMode)) {
+            SetUpPractice();
+        } else if (ModeManager.CurrentMode.GetType() == typeof(MatchMode)) {
+            SetUpMatch();
+        }
+
     }
 }

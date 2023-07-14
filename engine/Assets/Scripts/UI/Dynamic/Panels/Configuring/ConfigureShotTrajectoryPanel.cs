@@ -35,7 +35,7 @@ namespace Synthesis.UI.Dynamic {
                 return false;
             }
 
-            _robot        = RobotSimObject.GetCurrentlyPossessedRobot();
+            _robot        = MainHUD.ConfigRobot;
             var existingData = _robot.TrajectoryData;
             if (existingData.HasValue) {
                 _resultingData = existingData.Value;

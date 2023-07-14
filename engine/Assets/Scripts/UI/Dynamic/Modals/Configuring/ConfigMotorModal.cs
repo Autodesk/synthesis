@@ -29,7 +29,7 @@ public class ConfigMotorModal : ModalDynamic {
     };
 
     public override void Create() {
-        _robot         = RobotSimObject.GetCurrentlyPossessedRobot();
+        _robot         = MainHUD.ConfigRobot;
         _robotISSwerve = _robot.ConfiguredDrivetrainType.Equals(RobotSimObject.DrivetrainType.SWERVE);
         _motors        = new ConfigMotor[SimulationManager.Drivers[_robot.Name].Count];
 

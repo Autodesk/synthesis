@@ -2,7 +2,6 @@ using System;
 using Synthesis.Gizmo;
 using Synthesis.PreferenceManager;
 using UnityEngine;
-using Synthesis.Configuration;
 using ITD = RobotSimObject.IntakeTriggerData;
 
 namespace Synthesis.UI.Dynamic {
@@ -36,7 +35,7 @@ namespace Synthesis.UI.Dynamic {
                 return false;
             }
 
-            _robot        = RobotSimObject.GetCurrentlyPossessedRobot();
+            _robot = MainHUD.ConfigRobot;
             var existingData = _robot.IntakeData;
             if (existingData.HasValue) {
                 _resultingData = existingData.Value;
