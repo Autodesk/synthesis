@@ -1,7 +1,7 @@
 using System;
 using Synthesis.Gizmo;
 using UnityEngine;
-
+using Utilities.ColorManager;
 using STD = RobotSimObject.ShotTrajectoryData;
 
 namespace Synthesis.UI.Dynamic {
@@ -50,7 +50,7 @@ namespace Synthesis.UI.Dynamic {
             if (selectedRb) {
                 _selectedNode         = selectedRb.GetComponent<HighlightComponent>();
                 _selectedNode.enabled = true;
-                _selectedNode.Color   = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_SELECT);
+                _selectedNode.Color   = ColorManager.GetColor(ColorManager.SynthesisColor.HighlightSelect);
             }
 
             AcceptButton
@@ -117,12 +117,13 @@ namespace Synthesis.UI.Dynamic {
             if (isUserSelecting) {
                 _selectNodeButton.StepIntoLabel(l => l.SetText("Selecting..."));
                 _selectNodeButton.StepIntoButton(
-                    b => b.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_BLACK_ACCENT))
+                    b => b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary))
                              .StepIntoLabel(l => l.SetText("...")));
             } else {
                 _selectNodeButton.StepIntoLabel(l => l.SetText(_resultingData.NodeName));
-                _selectNodeButton.StepIntoButton(b => b.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_ORANGE))
-                                                          .StepIntoLabel(l => l.SetText("Select")));
+                _selectNodeButton.StepIntoButton(
+                    b => b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElement))
+                             .StepIntoLabel(l => l.SetText("Select")));
             }
         }
 
@@ -167,7 +168,7 @@ namespace Synthesis.UI.Dynamic {
                     _hoveringNode = hitInfo.rigidbody.GetComponent<HighlightComponent>();
                     if (hitInfo.rigidbody.name != _selectedNode.name) {
                         _hoveringNode.enabled = true;
-                        _hoveringNode.Color   = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_HOVER);
+                        _hoveringNode.Color   = ColorManager.GetColor(ColorManager.SynthesisColor.HighlightHover);
                     }
 
                     if (Input.GetKeyDown(KeyCode.Mouse0)) {
@@ -177,7 +178,7 @@ namespace Synthesis.UI.Dynamic {
 
                         _selectedNode         = _hoveringNode;
                         _selectedNode.enabled = true;
-                        _selectedNode.Color   = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_SELECT);
+                        _selectedNode.Color   = ColorManager.GetColor(ColorManager.SynthesisColor.HighlightSelect);
                         _hoveringNode         = null;
 
                         _resultingData.NodeName = hitInfo.rigidbody.name;

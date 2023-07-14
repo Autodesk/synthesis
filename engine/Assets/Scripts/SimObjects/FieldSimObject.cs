@@ -14,7 +14,7 @@ using SynthesisAPI.Controller;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
 using UnityEngine;
-
+using Utilities.ColorManager;
 using Bounds    = UnityEngine.Bounds;
 using Transform = Mirabuf.Transform;
 using Vector3   = UnityEngine.Vector3;
@@ -111,7 +111,7 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
 
         FieldObject.transform.GetComponentsInChildren<Rigidbody>().ForEach(x => {
             var rc     = x.gameObject.AddComponent<HighlightComponent>();
-            rc.Color   = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_HOVER);
+            rc.Color   = ColorManager.GetColor(ColorManager.SynthesisColor.HighlightSelect);
             rc.enabled = false;
         });
     }

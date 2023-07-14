@@ -2,6 +2,7 @@ using System.Linq;
 using Synthesis.Gizmo;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.Simulation;
+using UI.Dynamic.Modals.Spawning;
 
 namespace Synthesis.UI.Tabs {
     public class HomeTab : Tab {

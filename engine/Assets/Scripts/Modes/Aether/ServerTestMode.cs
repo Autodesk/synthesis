@@ -12,6 +12,7 @@ using Synthesis.UI.Dynamic;
 using SynthesisAPI.Aether.Lobby;
 using SynthesisAPI.Controller;
 using SynthesisAPI.Simulation;
+using UI.Dynamic.Modals.Spawning;
 using UnityEngine;
 
 public class ServerTestMode : IMode {

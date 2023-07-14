@@ -1,7 +1,5 @@
-<<<<<<< HEAD:engine/Assets/Scripts/Analytics/OldAnalyticsManager.cs.meta
-=======
 fileFormatVersion: 2
-guid: 08ec81fd2ecd646acb9782dbea08985b
+guid: cdc330eef963bbd46a675f0fd8483144
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
@@ -11,4 +9,3 @@ MonoImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
->>>>>>> dev:engine/Assets/Scripts/Modes/Aether/ServerHostingMode.cs.meta

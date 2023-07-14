@@ -6,6 +6,7 @@ using Synthesis.Physics;
 using Synthesis.Replay;
 using Synthesis.Runtime;
 using Analytics;
+using Utilities.ColorManager;
 using SynthesisAPI.EventBus;
 using UnityEngine;
 
@@ -37,17 +38,14 @@ namespace Synthesis.UI.Dynamic {
                                 maxValue: 0f, currentValue: 0f)
                             .SetBottomStretch<Slider>(leftPadding: 100f, rightPadding: 100f, anchoredY: 50)
                             .SetSlideDirection(UnityEngine.UI.Slider.Direction.LeftToRight)
-                            .StepIntoBackgroundImage(
-                                i => i.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE)))
-                            .StepIntoFillImage(i => i.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK)))
-                            .StepIntoTitleLabel(
-                                l => l.SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Bottom)
-                                         .SetFontSize(20)
-                                         .SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK)))
-                            .StepIntoValueLabel(
-                                l => l.SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Bottom)
-                                         .SetFontSize(20)
-                                         .SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK)));
+                            .StepIntoBackgroundImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElement))
+                            .StepIntoFillImage(i => i.SetColor(ColorManager.SynthesisColor.Background))
+                            .StepIntoTitleLabel(l => l.SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Bottom)
+                                                         .SetFontSize(20)
+                                                         .SetColor(ColorManager.SynthesisColor.Background))
+                            .StepIntoValueLabel(l => l.SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Bottom)
+                                                         .SetFontSize(20)
+                                                         .SetColor(ColorManager.SynthesisColor.Background));
                 SimulationRunner.OnSimKill += () => { _replaySlider = null; };
                 return _replaySlider;
             }

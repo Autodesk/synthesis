@@ -288,5 +288,11 @@ namespace Synthesis {
             _jointA.axis = _jointA.transform.worldToLocalMatrix.MultiplyVector(newAxis).normalized;
             _jointB.axis = _jointB.transform.worldToLocalMatrix.MultiplyVector(newAxis).normalized;
         }
+
+        public float GetInertiaAroundParallelAxis(Rigidbody rb, Vector3 localAnchor, Vector3 localAxis) {
+            var comInertia       = GetInertiaFromAxisVector(rb, localAxis);
+            var pointMassInertia = rb.mass * Mathf.Pow(Vector3.Distance(rb.centerOfMass, localAnchor), 2f);
+            return comInertia + pointMassInertia;
+        }
     }
 }

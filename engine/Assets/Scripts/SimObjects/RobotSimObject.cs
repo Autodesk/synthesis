@@ -20,6 +20,7 @@ using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
 using UnityEngine;
+using Utilities.ColorManager;
 using Bounds   = UnityEngine.Bounds;
 using Logger   = SynthesisAPI.Utilities.Logger;
 using MVector3 = Mirabuf.Vector3;
@@ -124,7 +125,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     private Dictionary<string, (Joint a, Joint b)> _jointMap;
     private List<Rigidbody> _allRigidbodies;
     public IReadOnlyCollection<Rigidbody> AllRigidbodies => _allRigidbodies.AsReadOnly();
-    private Dictionary<string, GameObject> _nodes        = new Dictionary<string, GameObject>();
+
+    private Dictionary<string, GameObject> _nodes = new();
 
     // SHOOTING/PICKUP
     private GameObject _intakeTrigger;
@@ -231,7 +233,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
         _allRigidbodies.ForEach(x => {
             var rc     = x.gameObject.AddComponent<HighlightComponent>();
-            rc.Color   = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_HOVER);
+            rc.Color   = ColorManager.GetColor(ColorManager.SynthesisColor.HighlightHover);
             rc.enabled = false;
         });
 
