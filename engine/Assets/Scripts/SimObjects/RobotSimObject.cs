@@ -125,7 +125,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     private Dictionary<string, (Joint a, Joint b)> _jointMap;
     private List<Rigidbody> _allRigidbodies;
     public IReadOnlyCollection<Rigidbody> AllRigidbodies => _allRigidbodies.AsReadOnly();
-    private Dictionary<string, GameObject> _nodes         = new Dictionary<string, GameObject>();
+
+    private Dictionary<string, GameObject> _nodes = new();
 
     // SHOOTING/PICKUP
     private GameObject _intakeTrigger;
