@@ -40,8 +40,8 @@ public class ScoringZone : IPhysicsOverridable {
         get => _zoneData.Alliance;
         set {
             _zoneData.Alliance = value;
-			UpdateColor();
-		}
+            UpdateColor();
+        }
     }
 
     public string Name => _zoneData.Name;
@@ -106,8 +106,8 @@ public class ScoringZone : IPhysicsOverridable {
     }
 
     private void UpdateColor() {
-        Color color  = _zoneData.Alliance == Alliance.Red ? Color.HSVToRGB(1f, 0.83f, 0.93f)
-                                                 : Color.HSVToRGB(0.66f, 0.83f, 0.93f);
+        Color color =
+            _zoneData.Alliance == Alliance.Red ? Color.HSVToRGB(1f, 0.83f, 0.93f) : Color.HSVToRGB(0.66f, 0.83f, 0.93f);
         color.a      = 0.8f;
         Material mat = new Material(Appearance.DefaultTransparentShader);
         mat.SetColor(Appearance.TRANSPARENT_COLOR, color);
