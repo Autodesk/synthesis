@@ -9,6 +9,8 @@ from ...general_imports import INTERNAL_ID
 from .PDMessage import PDMessage
 from proto.proto_out import material_pb2
 
+OPACITY_RAMPING_CONSTANT = 14.0
+
 
 def _MapAllPhysicalMaterials(
     physicalMaterials: list,
@@ -69,15 +71,28 @@ def getPhysicalMaterialData(fusion_material, proto_material, options):
         """
         Thermal Properties
         """
-        thermalProperties.thermal_conductivity = materialProperties.itemById(
-            "thermal_Thermal_conductivity"
-        ).value
-        thermalProperties.specific_heat = materialProperties.itemById(
-            "structural_Specific_heat"
-        ).value
-        thermalProperties.thermal_expansion_coefficient = materialProperties.itemById(
-            "structural_Thermal_expansion_coefficient"
-        ).value
+
+        """ # These are causing temporary failures when trying to find value. Better to not throw this many exceptions.
+        if materialProperties.itemById(
+                "thermal_Thermal_conductivity"
+            ) is not None:
+            thermalProperties.thermal_conductivity = materialProperties.itemById(
+                "thermal_Thermal_conductivity"
+            ).value
+        if materialProperties.itemById(
+                "structural_Specific_heat"
+            ) is not None:
+            thermalProperties.specific_heat = materialProperties.itemById(
+                "structural_Specific_heat"
+            ).value
+        
+        if materialProperties.itemById(
+                "structural_Thermal_expansion_coefficient"
+            ) is not None:
+            thermalProperties.thermal_expansion_coefficient = materialProperties.itemById(
+                "structural_Thermal_expansion_coefficient"
+            ).value
+        """
 
         """
         Mechanical Properties
@@ -107,9 +122,11 @@ def getPhysicalMaterialData(fusion_material, proto_material, options):
         strengthProperties.tensile_strength = materialProperties.itemById(
             "structural_Minimum_tensile_strength"
         ).value
+        """
         strengthProperties.thermal_treatment = materialProperties.itemById(
             "structural_Thermally_treated"
         ).value
+        """
 
     except:
         logging.getLogger(
@@ -197,6 +214,18 @@ def getMaterialAppearance(
             baseColor = properties.itemById("metal_f0").value
         elif matModelType == 2:
             baseColor = properties.itemById("layered_diffuse").value
+        elif matModelType == 3:
+            baseColor = properties.itemById("transparent_color").value
+            transparent_distance = properties.itemById("transparent_distance").value
+
+            opac = (255.0 * transparent_distance) / (
+                transparent_distance + OPACITY_RAMPING_CONSTANT
+            )
+            if opac > 255:
+                opac = 255
+            elif opac < 0:
+                opac = 0
+            baseColor.opacity = int(round(opac))
 
         if baseColor:
             color.R = baseColor.red

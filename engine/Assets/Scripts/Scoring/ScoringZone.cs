@@ -1,11 +1,14 @@
 using System.Collections.Generic;
 using System.Security.Policy;
+using Mirabuf.Material;
 using Synthesis.Physics;
 using Synthesis.PreferenceManager;
 using Synthesis.Runtime;
+using Synthesis.UI;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.EventBus;
 using UnityEngine;
+using Utilities.ColorManager;
 
 public enum Alliance {
     Red,
@@ -33,15 +36,15 @@ public class ScoringZone : IPhysicsOverridable {
         }
     }
 
-    public string Name => _zoneData.Name;
-
     public Alliance Alliance {
         get => _zoneData.Alliance;
         set {
-            _zoneData.Alliance           = value;
-            _meshRenderer.material.color = value == Alliance.Red ? Color.red : Color.blue;
+            _zoneData.Alliance = value;
+            UpdateColor();
         }
     }
+
+    public string Name => _zoneData.Name;
 
     private int _visibilityCounter = 0;
     public int VisibilityCounter {
@@ -81,9 +84,8 @@ public class ScoringZone : IPhysicsOverridable {
         ScoringZoneListener listener = GameObject.AddComponent<ScoringZoneListener>();
         listener.ScoringZone         = this;
 
-        _collider                    = GameObject.GetComponent<Collider>();
-        _meshRenderer                = GameObject.GetComponent<MeshRenderer>();
-        _meshRenderer.material.color = alliance == Alliance.Red ? Color.red : Color.blue;
+        _collider     = GameObject.GetComponent<Collider>();
+        _meshRenderer = GameObject.GetComponent<MeshRenderer>();
 
         _collider.isTrigger = true;
 
@@ -101,6 +103,16 @@ public class ScoringZone : IPhysicsOverridable {
         ZoneData                     = data;
 
         PhysicsManager.Register(this);
+    }
+
+    private void UpdateColor() {
+        Color color =
+            _zoneData.Alliance == Alliance.Red ? Color.HSVToRGB(1f, 0.83f, 0.93f) : Color.HSVToRGB(0.66f, 0.83f, 0.93f);
+        color.a      = 0.8f;
+        Material mat = new Material(Appearance.DefaultTransparentShader);
+        mat.SetColor(Appearance.TRANSPARENT_COLOR, color);
+        mat.SetFloat(Appearance.TRANSPARENT_SMOOTHNESS, 0);
+        _meshRenderer.material = mat;
     }
 
     private void SetVisibility(bool visible) {
