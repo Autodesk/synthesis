@@ -19,13 +19,6 @@ namespace Synthesis.UI.Hierarchy.HierarchyItems {
                 collapsed = value;
                 SetChildrenVisible(!collapsed);
                 Hierarchy.Changes = true;
-
-                // TODO: Replace with sprite indication
-                // if (collapsed) {
-                //     image.color = new Color(0.3f, 0.3f, 0.3f, 1f);
-                // } else {
-                //     image.color = new Color(0.9529f, 0.9529f, 0.9529f, 1f);
-                // }
             }
         }
         // clang-format off
@@ -52,12 +45,11 @@ namespace Synthesis.UI.Hierarchy.HierarchyItems {
             item.Parent = this;
             for (int i = 0; i <= parsedIndex && i < Items.Count; i++) {
                 if (!Items[i].owned) {
-                    // i--;
                     parsedIndex++;
                 }
             }
         }
-        // Debug.Log($"[{Title}]Inserting at {parsedIndex}");
+
         Items.Insert(parsedIndex, (isOwned, item));
         if (Parent != null) {
             Parent.Insert(parsedIndex + LocalIndex + 1, item, false);
@@ -80,7 +72,6 @@ namespace Synthesis.UI.Hierarchy.HierarchyItems {
             HierarchyFolderItem folder = (HierarchyFolderItem) item;
             for (int i = 0; i < folder.Items.Count; i++) {
                 Insert(i + folder.LocalIndex + 1, folder.Items[i].item, false);
-                // Debug.Log("Inserting");
             }
         }
     }

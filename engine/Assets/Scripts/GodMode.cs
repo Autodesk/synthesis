@@ -73,8 +73,6 @@ public class GodMode : MonoBehaviour {
                         grabJoint           = grabbedObject.AddComponent<ConfigurableJoint>();
                         grabJoint.connectedBody = _pointerBody;
                         grabJoint.anchor        = localCoords;
-                        // grabJoint.autoConfigureConnectedAnchor = false;
-                        // grabJoint.connectedAnchor = localCoords;
                         grabJoint.xMotion = grabJoint.yMotion = grabJoint.zMotion = ConfigurableJointMotion.Locked;
                     }
                 }

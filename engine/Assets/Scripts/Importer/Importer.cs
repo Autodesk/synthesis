@@ -63,10 +63,6 @@ namespace Synthesis.Import {
         /// and the simobject controlling the assembly</returns>
         public static (GameObject MainObject, MirabufLive miraLive, SimObject Sim)
             MirabufAssemblyImport(MirabufLive miraLive) {
-            // Uncommenting this will delete all bodies so the JSON file isn't huge
-            // DebugAssembly(miraLive.MiraAssembly);
-            // return null;
-
             Assembly assembly = miraLive.MiraAssembly;
 
             if (assembly.Info.Version < MirabufLive.OLDEST_MIRA_EXPORTER_VERSION) {
@@ -97,7 +93,6 @@ namespace Synthesis.Import {
                 try {
                     SimulationManager.RegisterSimObject(gpSim);
                 } catch (Exception e) {
-                    // TODO: Fix
                     throw e;
                 }
                 gamepieces.Add(gpSim);
@@ -112,13 +107,6 @@ namespace Synthesis.Import {
 
             SimObject simObject;
             if (assembly.Dynamic) {
-                // List<string> foundRobots = new List<string>();
-                // foreach (var kvp in SimulationManager.SimulationObjects) {
-                // 	if (kvp.Value is RobotSimObject)
-                // 		foundRobots.Add(kvp.Key);
-                // }
-                // foundRobots.ForEach(x => SimulationManager.RemoveSimObject(x));
-
                 string name = $"{assembly.Info.Name}_{_robotTally}";
                 _robotTally++;
 
@@ -146,11 +134,8 @@ namespace Synthesis.Import {
                 if (jointKvp.Key == "grounded")
                     continue;
 
-                // Logger.Log($"Joint Instance: {jointKvp.Key}", LogLevel.Debug);
-                // Logger.Log($"Parent: {jointKvp.Value.ParentPart}", LogLevel.Debug);
                 var aKey = rigidDefinitions.PartToDefinitionMap[jointKvp.Value.ParentPart];
                 var a    = groupObjects[aKey];
-                // Logger.Log($"Child: {jointKvp.Value.ChildPart}", LogLevel.Debug);
                 var bKey = rigidDefinitions.PartToDefinitionMap[jointKvp.Value.ChildPart];
                 var b    = groupObjects[bKey];
 
@@ -158,11 +143,6 @@ namespace Synthesis.Import {
             }
 
 #endregion
-
-            // if (assembly.Dynamic) {
-            // 	(simObject as RobotSimObject).ConfigureDefaultBehaviours();
-            // 	// (simObject as RobotSimObject).ConfigureTestSimulationBehaviours();
-            // }
 
             return (assemblyObject, miraLive, simObject);
         }
@@ -176,7 +156,6 @@ namespace Synthesis.Import {
         public static void MakeJoint(GameObject a, GameObject b, JointInstance instance, float totalMass,
             Assembly assembly, SimObject simObject,
             Dictionary<string, (UnityEngine.Joint a, UnityEngine.Joint b)> jointMap) {
-            // Logger.Log($"Obj A: {a.name}, Obj B: {b.name}");
             // Stuff I'm gonna use for all joints
             var definition = assembly.Data.Joints.JointDefinitions[instance.JointReference];
             var rbA        = a.GetComponent<Rigidbody>();
@@ -273,8 +252,6 @@ namespace Synthesis.Import {
                                 new JointLimits() { min = min * Mathf.Rad2Deg, max = max * Mathf.Rad2Deg };
                             revoluteA.extendedLimits = true;
                         }
-                        // revoluteA.useLimits = true;
-                        // revoluteA.limits = new JointLimits { min = -15, max = 15 };
 
                         var revoluteB = b.AddComponent<HingeJoint>();
 
@@ -370,13 +347,11 @@ namespace Synthesis.Import {
                     rigidA.axis          = UVector3.forward;
                     rigidA.connectedBody = rbB;
                     rigidA.connectedMassScale = rigidA.connectedBody.mass / rbA.mass;
-                    // rigidA.massScale = Mathf.Pow(totalMass / rbA.mass, 1); // Not sure if this works
-                    var rigidB           = b.AddComponent<FixedJoint>();
+                    var rigidB                = b.AddComponent<FixedJoint>();
                     rigidB.anchor        = (definition.Origin ?? new Vector3()) + (instance.Offset ?? new Vector3());
                     rigidB.axis          = UVector3.forward;
                     rigidB.connectedBody = rbA;
                     rigidB.connectedMassScale = rigidB.connectedBody.mass / rbB.mass;
-                    // rigidB.connectedMassScale = Mathf.Pow(totalMass / rbA.mass, 1);
                     break;
             }
         }
@@ -392,90 +367,9 @@ namespace Synthesis.Import {
                 to.GetPosition() - from.GetPosition(), to.rotation * Quaternion.Inverse(from.rotation), UVector3.one);
         }
 
-        // clang-format off
-        // public static void MakePartDefinition(GameObject container, PartDefinition definition, PartInstance instance,
-        // 	AssemblyData assemblyData, bool addToColliderIgnore = true, bool isConvex = true)
-        // {
-        // 	PhysicMaterial physMat = new PhysicMaterial
-        // 	{
-        // 		dynamicFriction = 0.6f, // definition.PhysicalData.,
-        // 		staticFriction = 0.6f // definition.PhysicalData.Friction
-        // 	};
-        // 	foreach (var body in definition.Bodies)
-        // 	{
-        // 		var bodyObject = new GameObject(body.Info.Name);
-        // 		var filter = bodyObject.AddComponent<MeshFilter>();
-        // 		var renderer = bodyObject.AddComponent<MeshRenderer>();
-        // 		filter.sharedMesh = body.TriangleMesh.UnityMesh;
-        // 		renderer.material = assemblyData.Materials.Appearances.ContainsKey(instance.Appearance)
-        // 			? assemblyData.Materials.Appearances[instance.Appearance].UnityMaterial
-        // 			: assemblyData.Materials.Appearances.ContainsKey(body.AppearanceOverride)
-        // 				? assemblyData.Materials.Appearances[body.AppearanceOverride].UnityMaterial
-        // 				: Appearance.DefaultAppearance.UnityMaterial; // Setup the override
-        // 		// renderer.material = assemblyData.Materials.Appearances.ContainsKey(instance.Appearance)
-        // 		// 	? assemblyData.Materials.Appearances[instance.Appearance].UnityMaterial
-        // 		// 	: Appearance.DefaultAppearance.UnityMaterial;
-        // 		if (!instance.SkipCollider) {
-        // 			MeshCollider collider = null;
-        // 			try {
-        // 				collider = bodyObject.AddComponent<MeshCollider>();
-        // 				if (isConvex) {
-        // 					collider.convex = true;
-        // 					collider.sharedMesh = body.TriangleMesh.ColliderMesh; // Again, not sure if this
-        // actually works 				} else { 					collider.convex = false; 					collider.sharedMesh = body.TriangleMesh.UnityMesh;
-        // 				}
-        // 			} catch (Exception e) {
-        // 				if (collider != null) {
-        // 					GameObject.Destroy(collider);
-        // 					collider = null;
-        // 				}
-        // 			}
-        //
-        // 			if (collider != null)
-        // 				collider.material = physMat;
-        // 				// if (addToColliderIgnore)
-        // 				// 	_collidersToIgnore.Add(collider);
-        // 		}
-        // 		bodyObject.transform.parent = container.transform;
-        // 		// Ensure all transformations are zeroed after assigning parent
-        // 		bodyObject.transform.localPosition = UVector3.zero;
-        // 		bodyObject.transform.localRotation = Quaternion.identity;
-        // 		bodyObject.transform.localScale = UVector3.one;
-        // 		// bodyObject.transform.ApplyMatrix(body.);
-        // 	}
-        // }
-
-        // private static MPhysicalProperties CombinePhysicalProperties(List<(UnityEngine.Transform trans,
-        // MPhysicalProperties prop)> props) { 	var total = 0.0f; 	var com = new UVector3(); 	props.ForEach(x => total +=
-        // (float)x.prop.Mass); 	props.ForEach(x => com += (x.trans.localToWorldMatrix.MultiplyPoint(x.prop.Com)) *
-        // (float)x.prop.Mass); 	com /= total; 	return new MPhysicalProperties { Mass = total, Com = com };
-        // }
-        // clang-format on
-
 #endregion
 
 #region Debug Functions
-
-        public static void DebugAssembly(Assembly assembly) {
-            Assembly debugAssembly;
-            // debugAssembly.MergeFrom(assembly);
-            MemoryStream ms = new MemoryStream(new byte[assembly.CalculateSize()]);
-            ms.Seek(0, SeekOrigin.Begin);
-            assembly.WriteTo(ms); // TODO: Causing issues all of a sudden [May 5th, 2023]
-            ms.Seek(0, SeekOrigin.Begin);
-            debugAssembly = Assembly.Parser.ParseFrom(ms);
-
-            // Remove mesh data
-            // debugAssembly.Data.Parts.PartDefinitions.ForEach((x, y) => { y.Bodies.Clear(); });
-            debugAssembly.Data.Parts.PartDefinitions.Select(kvp => kvp.Value.Bodies).ForEach(x => x.ForEach(y => {
-                y.TriangleMesh = new TriangleMesh();
-            }));
-
-            var jFormatter = new JsonFormatter(JsonFormatter.Settings.Default);
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
-                                  $"{Path.AltDirectorySeparatorChar}{debugAssembly.Info.Name}.json",
-                jFormatter.Format(debugAssembly));
-        }
 
         public static void DebugGraph(GraphContainer graph) {
             graph.Nodes.ForEach(x => DebugNode(x, 0));
@@ -509,8 +403,6 @@ namespace Synthesis.Import {
         /// </summary>
         public struct SourceType {
             public static readonly SourceType MIRABUF_ASSEMBLY = new SourceType("mirabuf_assembly", "mira");
-            // public static readonly SourceType PROTOBUF_FIELD = new SourceType("proto_field", ProtoField.FILE_ENDING);
-
             public string FileEnding { get; private set; }
             public string Indentifier { get; private set; }
 

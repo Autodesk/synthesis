@@ -88,11 +88,6 @@ namespace Synthesis.UI.Panels.Variant {
 
         public void RequestDirectory() {
             Logger.Log("Todo", LogLevel.Debug);
-
-            // if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.MacOSX || SystemInfo.operatingSystemFamily
-            // == OperatingSystemFamily.Windows) {
-
-            // }
         }
 
         private void ShowDirectory(string filePath) {
@@ -107,12 +102,6 @@ namespace Synthesis.UI.Panels.Variant {
                         .Init(path.Substring(_root.Length + Path.DirectorySeparatorChar.ToString().Length),
                             ParsePath(path, '\\'));
                 }
-                // foreach (string path in Directory.GetDirectories(filePath))//LEGACY FORMAT
-                // {
-                //     Instantiate(addItem, list.transform).GetComponent<AddItem>().Init(path.Substring(_root.Length +
-                //     Path.DirectorySeparatorChar.ToString().Length),
-                //         ParsePath(path, '\\'));
-                // }
             }
         }
 
@@ -131,7 +120,6 @@ namespace Synthesis.UI.Panels.Variant {
                 if (i != a.Length - 1)
                     b += Path.AltDirectorySeparatorChar;
             }
-            // Debug.Log(b);
             return b;
         }
     }

@@ -59,19 +59,8 @@ namespace Synthesis.Runtime {
             Synthesis.PreferenceManager.PreferenceManager.Load();
         }
 
-        void Start() {
+        private void Start() {
             InSim = true;
-
-            if (!_setupSceneSwitchEvent) {
-                SceneManager.sceneUnloaded += (Scene s) => {
-                    if (s.name == "MainScene") {
-                    }
-                    // SimulationManager.SimulationObjects.ForEach(x => {
-                    //     SimulationManager.RemoveSimObject(x.Value);
-                    // });
-                };
-                _setupSceneSwitchEvent = true;
-            }
 
             SetContext(RUNNING_SIM_CONTEXT);
             MainHUD.Setup();
@@ -104,30 +93,8 @@ namespace Synthesis.Runtime {
             InputManager.UpdateInputs(_simulationContext);
             SimulationManager.Update();
 
-            // Debug.Log($"WHAT: {Time.realtimeSinceStartup}");
-
             if (OnUpdate != null)
                 OnUpdate();
-
-            // var socket = WebSocketManager.RioState.GetData<PWMData>("PWM", "0");
-            // if (socket.GetData() == null) {
-            //     Debug.Log("Data null");
-            // }
-            // Debug.Log($"{socket.Init}:{socket.Speed}:{socket.Position}");
-
-            // var aiData = WebSocketManager.RioState.GetData<AIData>("AI", "3");
-            // if (aiData.Init) {
-            //     WebSocketManager.UpdateData<AIData>("AI", "3", d => {
-            //         d.Voltage = 2.3;
-            //     });
-            // }
-
-            // if (Input.GetKeyDown(KeyCode.K)) {
-            //     if (!SimulationManager.RemoveSimObject(RobotSimObject.CurrentlyPossessedRobot))
-            //         Logger.Log("Failed", LogLevel.Debug);
-            //     else
-            //         Logger.Log("Succeeded", LogLevel.Debug);
-            // }
         }
 
         private void FixedUpdate() {

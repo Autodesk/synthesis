@@ -47,22 +47,11 @@ namespace Synthesis.UI.Dynamic {
                                           .SetTopStretch<Dropdown>();
 
             _selectedIndex = _files.Length > 0 ? 0 : -1;
-
-            // MainContent.CreateLabeledButton().SetTopStretch<LabeledButton>(anchoredY: 50).StepIntoLabel(l =>
-            // l.SetText("Test"));
         }
 
         public override void Update() {}
 
         public override void Delete() {}
-
-        // private string[] GetFiles(string filePath) {
-        //     string[] fullPaths = Directory.GetFiles(filePath);
-        //     // exclude .DS_Store and other files; someone else can change or remove this
-        //     fullPaths = Array.FindAll(fullPaths, path => path.EndsWith(".mira"));
-        //     return Array.ConvertAll(fullPaths, path => path.Substring(_root.Length +
-        //     Path.DirectorySeparatorChar.ToString().Length));
-        // }
 
         private string ParsePath(string p, char c) {
             string[] a = p.Split(c);
@@ -79,7 +68,6 @@ namespace Synthesis.UI.Dynamic {
                 if (i != a.Length - 1)
                     b += Path.AltDirectorySeparatorChar;
             }
-            // Debug.Log(b);
             return b;
         }
     }
