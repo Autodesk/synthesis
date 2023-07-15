@@ -41,13 +41,20 @@ namespace Synthesis {
         }
 
         public double MainInput {
-            get => State.CurrentSignals[_inputs[0]].Value.NumberValue;
-            set { State.CurrentSignals[_inputs[0]].Value = Value.ForNumber(value); }
+            get {
+                var val = State.GetValue(_inputs[0]);
+                return val == null ? 0.0 : val.NumberValue;
+            }
+            set => State.SetValue(_inputs[0], Value.ForNumber(value));
         }
 
         public RotationalControlMode ControlMode {
             get {
-                switch (State.CurrentSignals[_inputs[1]].Value.StringValue) {
+                var val = State.GetValue(_inputs[1]);
+                if (val == null)
+                    throw new Exception($"No value with guid '{_inputs[1]}'");
+
+                switch (val.StringValue) {
                     case "Velocity":
                         return RotationalControlMode.Velocity;
                     case "Position":
@@ -59,10 +66,10 @@ namespace Synthesis {
             set {
                 switch (value) {
                     case RotationalControlMode.Position:
-                        State.CurrentSignals[_inputs[1]].Value = Value.ForString("Position");
+                        State.SetValue(_inputs[1], Value.ForString("Position"));
                         break;
                     case RotationalControlMode.Velocity:
-                        State.CurrentSignals[_inputs[1]].Value = Value.ForString("Velocity");
+                        State.SetValue(_inputs[1], Value.ForString("Velocity"));
                         break;
                     default:
                         throw new Exception("Unrecognized Rotational Control Mode");
@@ -70,14 +77,14 @@ namespace Synthesis {
             }
         }
 
-        public string Name => State.CurrentSignalLayout.SignalMap[_inputs[0]].Info.Name;
+        public new string Name => State.SignalMap[_inputs[0]].Name;
 
         private JointMotor _motor;
         public JointMotor Motor {
             get => _motor;
             set {
                 _motor = value;
-                SimulationPreferences.SetRobotJointMotor((_simObject as RobotSimObject).MiraGUID, Name, _motor);
+                SimulationPreferences.SetRobotJointMotor((_simObject as RobotSimObject)!.MiraGUID, Name, _motor);
             }
         }
         private HingeJoint _jointA;
@@ -85,7 +92,7 @@ namespace Synthesis {
         private HingeJoint _jointB;
         public HingeJoint JointB => _jointB;
 
-        private Rigidbody _rbA = null;
+        private Rigidbody? _rbA;
         public Rigidbody RbA {
             get {
                 if (_rbA == null)
@@ -93,12 +100,34 @@ namespace Synthesis {
                 return _rbA;
             }
         }
-        private Rigidbody _rbB = null;
+        private Rigidbody? _rbB;
         public Rigidbody RbB {
             get {
                 if (_rbB == null)
                     _rbB = _jointB.GetComponent<Rigidbody>();
                 return _rbB;
+            }
+        }
+
+        private float _fakedTheta = 0f;
+        private float _fakedOmega = 0f;
+
+        private JointLimits? _rotationalLimits;
+
+        private bool _useFakeMotion = false;
+        public bool UseFakeMotion {
+            get => _useFakeMotion;
+            set {
+                if (value != _useFakeMotion) {
+                    _useFakeMotion = value;
+                    if (_useFakeMotion) {
+                        return;
+                    }
+                    if (_rotationalLimits.HasValue) {
+                        _jointA.limits = _rotationalLimits.Value;
+                    }
+                    EnableMotor();
+                }
             }
         }
 
@@ -112,6 +141,14 @@ namespace Synthesis {
             : base(name, inputs, outputs, simObject) {
             _jointA = jointA;
             _jointB = jointB;
+
+            if (_jointA.useLimits) {
+                _rotationalLimits = _jointA.limits;
+            }
+
+            UseFakeMotion = jointA.useLimits;
+            EnableMotor();
+
             if (motor != null && motor.MotorTypeCase == Mirabuf.Motor.Motor.MotorTypeOneofCase.SimpleMotor) {
                 _motor = motor!.SimpleMotor.UnityMotor;
             } else {
@@ -126,12 +163,9 @@ namespace Synthesis {
 
             _isWheel = isWheel;
 
-            State.CurrentSignals[_inputs[1]]  = new UpdateSignal() { DeviceType = "Mode", Io = UpdateIOType.Input,
-                 Value = Google.Protobuf.WellKnownTypes.Value.ForString("Velocity") };
-            State.CurrentSignals[_outputs[0]] = new UpdateSignal() { DeviceType = "PWM", Io = UpdateIOType.Output,
-                Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(0) };
-            State.CurrentSignals[_outputs[1]] = new UpdateSignal() { DeviceType = "Range", Io = UpdateIOType.Output,
-                Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(0) };
+            State.SetValue(_inputs[1], Value.ForString("Velocity"));
+            State.SetValue(_outputs[0], Value.ForNumber(0));
+            State.SetValue(_outputs[1], Value.ForNumber(1));
 
             // Debug.Log($"Speed: {_motor.targetVelocity}\nForce: {_motor.force}");
         }
@@ -159,21 +193,28 @@ namespace Synthesis {
         }
 
         private float _jointAngle = 0.0f;
+        private float _lastUpdate = float.NaN;
 
         public override void Update() {
+            float deltaT = 0f;
+            if (!float.IsNaN(_lastUpdate)) {
+                deltaT = Time.realtimeSinceStartup - _lastUpdate;
+            }
+            _lastUpdate = Time.realtimeSinceStartup;
+
             switch (ControlMode) {
                 case RotationalControlMode.Position:
                     PositionControl();
                     break;
                 case RotationalControlMode.Velocity:
-                    VelocityControl();
+                    VelocityControl(deltaT);
                     break;
             }
 
             // Angle loops around so this works for now
             _jointAngle += (_jointA.velocity * Time.deltaTime) / 360f;
-            State.CurrentSignals[_outputs[0]].Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(_jointAngle);
-            State.CurrentSignals[_outputs[1]].Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(_jointA.angle);
+            State.SetValue(_outputs[0], Value.ForNumber(_jointAngle));
+            State.SetValue(_outputs[1], Value.ForNumber(_jointA.angle));
 
             // var updateSignal = new UpdateSignals();
             // var key = _outputs[0];
@@ -187,9 +228,7 @@ namespace Synthesis {
 
         private void PositionControl() {
             if (_jointA.useMotor) {
-                var targetPosition = (float) (State.CurrentSignals.ContainsKey(_inputs[0])
-                                                  ? State.CurrentSignals[_inputs[0]].Value.NumberValue
-                                                  : 0.0f);
+                var targetPosition = MainInput;
 
                 // Debug.Log($"D: {_inputs[0]}");
                 // Debug.Log($"Target: {targetPosition}");
@@ -223,11 +262,9 @@ namespace Synthesis {
             }
         }
 
-        private void VelocityControl() {
+        private void VelocityControl(float deltaT) {
             if (_jointA.useMotor) {
-                var val = (float) (State.CurrentSignals.ContainsKey(_inputs[0])
-                                       ? State.CurrentSignals[_inputs[0]].Value.NumberValue
-                                       : 0.0f);
+                var val = (float) MainInput;
 
                 var inertiaA = GetInertiaAroundParallelAxis(_jointA.connectedBody, _jointB.anchor, _jointB.axis);
                 // var angAccelA = (Motor.force * val) / inertiaA;
@@ -239,10 +276,33 @@ namespace Synthesis {
                 // _jointB.connectedBody.AddTorque(_jointA.axis.normalized * angAccelB * Mathf.Rad2Deg,
                 // ForceMode.Acceleration); Debug.Log($"{angAccelB} to {_jointB.connectedBody.name}");
 
-                _jointA.motor = new JointMotor { force = Motor.force * (inertiaA / (inertiaA + inertiaB)),
-                    freeSpin = Motor.freeSpin, targetVelocity = (Motor.targetVelocity) * val };
-                _jointB.motor = new JointMotor { force = Motor.force * (inertiaB / (inertiaA + inertiaB)),
-                    freeSpin = Motor.freeSpin, targetVelocity = (-Motor.targetVelocity) * val };
+                if (_useFakeMotion) {
+                    float alpha = val * Motor.targetVelocity;
+
+                    _fakedTheta += alpha * deltaT;
+
+                    if (_rotationalLimits.HasValue) {
+                        if (_fakedTheta > _rotationalLimits.Value.max) {
+                            _fakedTheta = _rotationalLimits.Value.max;
+                        } else if (_fakedTheta < _rotationalLimits.Value.min) {
+                            _fakedTheta = _rotationalLimits.Value.min;
+                        }
+
+                        _fakedTheta = Mathf.Clamp(_fakedTheta, -180, 179);
+
+                        _jointA.limits =
+                            new JointLimits { bounceMinVelocity = _rotationalLimits.Value.bounceMinVelocity,
+                                bounciness                      = _rotationalLimits.Value.bounciness,
+                                contactDistance = _rotationalLimits.Value.contactDistance, max = _fakedTheta + 1,
+                                min = _fakedTheta };
+                    }
+
+                } else {
+                    _jointA.motor = new JointMotor { force = Motor.force * (inertiaA / (inertiaA + inertiaB)),
+                        freeSpin = Motor.freeSpin, targetVelocity = (Motor.targetVelocity) * val };
+                    _jointB.motor = new JointMotor { force = Motor.force * (inertiaB / (inertiaA + inertiaB)),
+                        freeSpin = Motor.freeSpin, targetVelocity = (-Motor.targetVelocity) * val };
+                }
             }
         }
 

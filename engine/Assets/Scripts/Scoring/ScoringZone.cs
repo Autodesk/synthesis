@@ -2,10 +2,13 @@ using System.Collections.Generic;
 using System.Security.Policy;
 using Mirabuf.Material;
 using Synthesis.Physics;
+using Synthesis.PreferenceManager;
 using Synthesis.Runtime;
 using Synthesis.UI;
+using Synthesis.UI.Dynamic;
 using SynthesisAPI.EventBus;
 using UnityEngine;
+using Utilities.ColorManager;
 
 public enum Alliance {
     Red,
@@ -13,19 +16,55 @@ public enum Alliance {
 }
 
 public class ScoringZone : IPhysicsOverridable {
-    public string Name;
-
-    private Alliance _alliance;
-    public Alliance Alliance {
-        get => _alliance;
+    private ScoringZoneData _zoneData;
+    public ScoringZoneData ZoneData {
+        get => _zoneData;
         set {
-            _alliance = value;
-            UpdateColor();
+            _zoneData       = value;
+            GameObject.name = _zoneData.Name;
+            GameObject.tag  = _zoneData.Alliance == Alliance.Red ? "red zone" : "blue zone";
+            GameObject.transform.parent =
+                FieldSimObject.CurrentField.FieldObject.transform.Find(_zoneData.Parent ?? "grounded") ??
+                FieldSimObject.CurrentField.FieldObject.transform.Find("grounded");
+            Alliance = _zoneData.Alliance;
+            GameObject.transform.localPosition =
+                new Vector3(_zoneData.LocalPosition.x, _zoneData.LocalPosition.y, _zoneData.LocalPosition.z);
+            GameObject.transform.localRotation = new Quaternion(_zoneData.LocalRotation.x, _zoneData.LocalRotation.y,
+                _zoneData.LocalRotation.z, _zoneData.LocalRotation.w);
+            GameObject.transform.localScale =
+                new Vector3(_zoneData.LocalScale.x, _zoneData.LocalScale.y, _zoneData.LocalScale.z);
         }
     }
-    public int Points;
-    public bool DestroyGamepiece;
-    public bool PersistentPoints;
+
+    public Alliance Alliance {
+        get => _zoneData.Alliance;
+        set {
+            _zoneData.Alliance = value;
+			UpdateColor();
+		}
+    }
+
+    public string Name => _zoneData.Name;
+
+    private int _visibilityCounter = 0;
+    public int VisibilityCounter {
+        get => _visibilityCounter;
+        set {
+            _visibilityCounter = value;
+            if (_visibilityCounter < 0)
+                throw new System.Exception("Not allowed to be negative");
+
+            if (_visibilityCounter == 0) {
+                SetVisibility(PreferenceManager.GetPreference<bool>(SettingsModal.RENDER_SCORE_ZONES));
+            } else {
+                SetVisibility(true);
+            }
+        }
+    }
+
+    public int Points            => _zoneData.Points;
+    public bool DestroyGamepiece => _zoneData.DestroyGamepiece;
+    public bool PersistentPoints => _zoneData.PersistentPoints;
     public GameObject GameObject;
     private Collider _collider;
     private MeshRenderer _meshRenderer;
@@ -34,10 +73,10 @@ public class ScoringZone : IPhysicsOverridable {
 
     public ScoringZone(GameObject gameObject, string name, Alliance alliance, int points, bool destroyGamepiece,
         bool persistentPoints) {
-        this.Name             = name;
-        this.GameObject       = gameObject;
-        this.GameObject.layer = 2; // ignore raycast layer
-        this.PersistentPoints = persistentPoints;
+        _zoneData  = new() { Name = name, PersistentPoints = persistentPoints, DestroyGamepiece = destroyGamepiece,
+             Points = points };
+        GameObject = gameObject;
+        GameObject.layer = 2; // ignore raycast layer
 
         // configure gameobject to have box collider as trigger
         GameObject.name = name;
@@ -50,16 +89,25 @@ public class ScoringZone : IPhysicsOverridable {
 
         _collider.isTrigger = true;
 
-        Alliance         = alliance;
-        Points           = points;
-        DestroyGamepiece = destroyGamepiece;
+        PhysicsManager.Register(this);
+    }
+
+    public ScoringZone(ScoringZoneData data) {
+        GameObject                   = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        GameObject.layer             = 2; // ignore raycast layer
+        ScoringZoneListener listener = GameObject.AddComponent<ScoringZoneListener>();
+        listener.ScoringZone         = this;
+        _collider                    = GameObject.GetComponent<Collider>();
+        _meshRenderer                = GameObject.GetComponent<MeshRenderer>();
+        _collider.isTrigger          = true;
+        ZoneData                     = data;
 
         PhysicsManager.Register(this);
     }
 
     private void UpdateColor() {
-        Color color  = _alliance == Alliance.Red ? ColorManager.TryGetColor(ColorManager.SYNTHESIS_RED_ALLIANCE)
-                                                 : ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLUE_ALLIANCE);
+        Color color  = _zoneData.Alliance == Alliance.Red ? Color.HSVToRGB(1f, 0.83f, 0.93f)
+                                                 : Color.HSVToRGB(0.66f, 0.83f, 0.93f);
         color.a      = 0.8f;
         Material mat = new Material(Appearance.DefaultTransparentShader);
         mat.SetColor(Appearance.TRANSPARENT_COLOR, color);
@@ -67,8 +115,10 @@ public class ScoringZone : IPhysicsOverridable {
         _meshRenderer.material = mat;
     }
 
-    public void SetVisibility(bool visible) {
-        _meshRenderer.enabled = visible;
+    private void SetVisibility(bool visible) {
+        if (_meshRenderer) {
+            _meshRenderer.enabled = visible;
+        }
     }
 
     public bool isFrozen() => _isFrozen;

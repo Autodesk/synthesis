@@ -36,6 +36,7 @@ namespace Engine {
             }
         }
 
+        private bool _isEnabled              = true;
         private bool debugLogsEnabled        = true;
         private static bool currentlyLogging = false;
 
@@ -55,7 +56,7 @@ namespace Engine {
 
         public void Log(object o, LogLevel logLevel = LogLevel.Info, [CallerMemberName] string memberName = "",
             [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
-            if (!currentlyLogging && ModuleLoader.Api.IsMainThread) {
+            if (!currentlyLogging && ModuleLoader.Api.IsMainThread && !(scrollTransform == null)) {
                 currentlyLogging = true;
                 if (logLevel != LogLevel.Debug || debugLogsEnabled) {
                     var type = new StackTrace().GetFrame(2).GetMethod().DeclaringType;
@@ -78,5 +79,11 @@ namespace Engine {
         public void SetEnableDebugLogs(bool enable) {
             debugLogsEnabled = enable;
         }
+
+        public void SetEnabled(bool enabled) {
+            _isEnabled = enabled;
+        }
+
+        public bool IsEnabled() => _isEnabled;
     }
 }

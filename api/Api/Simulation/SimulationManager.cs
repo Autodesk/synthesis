@@ -28,7 +28,10 @@ namespace SynthesisAPI.Simulation {
         public static Dictionary<string, LinkedList<SimBehaviour>> Behaviours = new Dictionary<string, LinkedList<SimBehaviour>>();
 
         public static void Update() {
-            Drivers.ForEach(x => x.Value.ForEach(y => y.Update()));
+            Drivers.ForEach(x => {
+                if (_simObjects[x.Key].DriversEnabled)
+                    x.Value.Where(y => y.Enabled).ForEach(y => y.Update());
+            });
             if (OnDriverUpdate != null)
                 OnDriverUpdate();
             Behaviours.ForEach(x => {
@@ -41,7 +44,10 @@ namespace SynthesisAPI.Simulation {
         }
 
         public static void FixedUpdate() {
-            Drivers.ForEach(x => x.Value.ForEach(y => y.FixedUpdate()));
+            Drivers.ForEach(x => {
+                if (_simObjects[x.Key].DriversEnabled)
+                    x.Value.Where(y => y.Enabled).ForEach(y => y.FixedUpdate());
+            });
             if (OnDriverFixedUpdate != null)
                 OnDriverFixedUpdate();
             Behaviours.ForEach(x => {

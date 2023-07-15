@@ -68,36 +68,14 @@ namespace Synthesis {
         }
 
         public double MainInput {
-            get => State.CurrentSignals[_inputs[0]].Value.NumberValue;
-            set { State.CurrentSignals[_inputs[0]].Value = Value.ForNumber(value); }
+            get {
+                var val = State.GetValue(_inputs[0]);
+                return val == null ? 0.0 : val.NumberValue;
+            }
+            set => State.SetValue(_inputs[0], Value.ForNumber(value));
         }
 
         public bool HasContacts => _customWheel.HasContacts;
-
-        public RotationalControlMode ControlMode {
-            get {
-                switch (State.CurrentSignals[_inputs[1]].Value.StringValue) {
-                    case "Velocity":
-                        return RotationalControlMode.Velocity;
-                    case "Position":
-                        return RotationalControlMode.Position;
-                    default:
-                        throw new Exception("No valid control mode");
-                }
-            }
-            set {
-                switch (value) {
-                    case RotationalControlMode.Position:
-                        State.CurrentSignals[_inputs[1]].Value = Value.ForString("Position");
-                        break;
-                    case RotationalControlMode.Velocity:
-                        State.CurrentSignals[_inputs[1]].Value = Value.ForString("Velocity");
-                        break;
-                    default:
-                        throw new Exception("Unrecognized Rotational Control Mode");
-                }
-            }
-        }
 
         private JointMotor _motor;
         public JointMotor Motor {
@@ -156,12 +134,8 @@ namespace Synthesis {
                 };
             }
 
-            State.CurrentSignals[_inputs[1]]  = new UpdateSignal() { DeviceType = "Mode", Io = UpdateIOType.Input,
-                 Value = Google.Protobuf.WellKnownTypes.Value.ForString("Velocity") };
-            State.CurrentSignals[_outputs[0]] = new UpdateSignal() { DeviceType = "PWM", Io = UpdateIOType.Output,
-                Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(0) };
-            State.CurrentSignals[_outputs[1]] = new UpdateSignal() { DeviceType = "Range", Io = UpdateIOType.Output,
-                Value = Google.Protobuf.WellKnownTypes.Value.ForNumber(0) };
+            State.SetValue(_outputs[0], Value.ForNumber(0));
+            State.SetValue(_outputs[1], Value.ForNumber(1));
 
             // Debug.Log($"Speed: {_motor.targetVelocity}\nForce: {_motor.force}");
         }
@@ -178,19 +152,13 @@ namespace Synthesis {
         private float _lastUpdate = float.NaN;
 
         public override void Update() {
-            switch (ControlMode) {
-                case RotationalControlMode.Velocity:
-                    VelocityControl();
-                    break;
-            }
+            VelocityControl();
 
             _lastUpdate = Time.realtimeSinceStartup;
 
             // I think these work?
-            State.CurrentSignals[_outputs[0]].Value =
-                Google.Protobuf.WellKnownTypes.Value.ForNumber(_jointAngle / (Mathf.PI * 2f));
-            State.CurrentSignals[_outputs[1]].Value =
-                Google.Protobuf.WellKnownTypes.Value.ForNumber(PositiveMod(_jointAngle, Mathf.PI));
+            State.SetValue(_outputs[0], Value.ForNumber(_jointAngle / (Mathf.PI * 2f)));
+            State.SetValue(_outputs[1], Value.ForNumber(PositiveMod(_jointAngle, Mathf.PI)));
         }
 
         public float PositiveMod(float val, float mod) {
@@ -208,9 +176,7 @@ namespace Synthesis {
             if (!_useMotor)
                 return;
 
-            var val = (float) (State.CurrentSignals.ContainsKey(_inputs[0])
-                                   ? State.CurrentSignals[_inputs[0]].Value.NumberValue
-                                   : 0.0f);
+            var val = (float) MainInput;
 
             _targetRotationalSpeed = val * Mathf.Deg2Rad * _motor.targetVelocity;
 
