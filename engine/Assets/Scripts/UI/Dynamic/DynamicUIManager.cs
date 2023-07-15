@@ -39,7 +39,7 @@ namespace Synthesis.UI.Dynamic {
                                 maxValue: 0f, currentValue: 0f)
                             .SetBottomStretch<Slider>(leftPadding: 100f, rightPadding: 100f, anchoredY: 50)
                             .SetSlideDirection(UnityEngine.UI.Slider.Direction.LeftToRight)
-                            .StepIntoBackgroundImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElement))
+                            .StepIntoBackgroundImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementSolid))
                             .StepIntoFillImage(i => i.SetColor(ColorManager.SynthesisColor.Background))
                             .StepIntoTitleLabel(l => l.SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Bottom)
                                                          .SetFontSize(20)

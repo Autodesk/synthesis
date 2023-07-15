@@ -6,6 +6,7 @@ using SynthesisAPI.Utilities;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UI;
 using UnityEngine.EventSystems;
 using Utilities.ColorManager;
 using UButton     = UnityEngine.UI.Button;
@@ -472,9 +473,13 @@ namespace Synthesis.UI.Dynamic {
 
         public T SetBackgroundColor<T>(Color color)
             where T : UIComponent {
-            UnityEngine.UI.Image image = RootGameObject.GetComponent<UnityEngine.UI.Image>();
-            if (image)
-                image.color = color;
+            GradientImageUpdater image = RootGameObject.GetComponent<GradientImageUpdater>();
+            if (image) {
+                image.LeftColor = color;
+                image.RightColor = color;
+                RootGameObject.GetComponent<UImage>().color = Color.white;
+            }
+
             return (this as T)!;
         }
     }
@@ -829,7 +834,7 @@ namespace Synthesis.UI.Dynamic {
             _enabledImage  = new Image(this, _unityToggle.transform.Find("Background").Find("Checkmark").gameObject);
 
             DisabledColor = ColorManager.GetColor(ColorManager.SynthesisColor.BackgroundSecondary);
-            EnabledColor  = ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElement);
+            EnabledColor  = ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElementSolid);
         }
 
         public Toggle SetState(bool state, bool notify = true) {
@@ -908,7 +913,8 @@ namespace Synthesis.UI.Dynamic {
             _backgroundImage.SetColor(ColorManager.SynthesisColor.BackgroundSecondary);
 
             _fillImage = new Image(this, _unitySlider.transform.Find("Fill Area").Find("Fill").gameObject);
-            _fillImage.SetColor(ColorManager.SynthesisColor.InteractiveElement);
+            _fillImage.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                ColorManager.SynthesisColor.InteractiveElementRight);
 
             _handleImage = new Image(this, _unitySlider.transform.Find("Handle Slide Area").Find("Handle").gameObject);
             _handleImage.SetColor(ColorManager.SynthesisColor.InteractiveSecondary);
@@ -1108,7 +1114,8 @@ namespace Synthesis.UI.Dynamic {
             });
 
             _image = new Image(this, unityObject);
-            _image.SetColor(ColorManager.SynthesisColor.InteractiveElement);
+            _image.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                ColorManager.SynthesisColor.InteractiveElementRight);
         }
 
         public Button StepIntoLabel(Action<Label> mod) {
@@ -1176,15 +1183,17 @@ namespace Synthesis.UI.Dynamic {
             eventHandler.OnPointerClickedEvent += e => { ShowOnTop(); };
 
             _headerImage = new Image(this, unityObject.transform.Find("Header").gameObject);
-            _headerImage.SetColor(ColorManager.SynthesisColor.InteractiveElement);
+            _headerImage.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                ColorManager.SynthesisColor.InteractiveElementRight);
 
             _headerLabel = new Label(this, unityObject.transform.Find("Header").Find("Label").gameObject, null);
             _headerLabel.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
 
-            var itemObj = unityObject.transform.Find("Template").Find("Viewport").Find("Content").Find("Item");
+            var itemObj = unityObject.transform.Find("Template").Find("Viewport").Find("Mask").Find("Content").Find("Item");
 
             _itemBackgroundImage = new Image(this, itemObj.Find("Item Background").gameObject);
-            _itemBackgroundImage.SetColor(ColorManager.SynthesisColor.InteractiveElement);
+            _itemBackgroundImage.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                ColorManager.SynthesisColor.InteractiveElementRight);
 
             _itemCheckmarkImage = new Image(this, itemObj.Find("Item Checkmark").gameObject);
             _itemCheckmarkImage.SetColor(ColorManager.SynthesisColor.Background);
@@ -1193,7 +1202,8 @@ namespace Synthesis.UI.Dynamic {
             _itemLabel.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
 
             _viewportImage = new Image(this, unityObject.transform.Find("Template").Find("Viewport").gameObject);
-            _viewportImage.SetColor(ColorManager.SynthesisColor.InteractiveElement);
+            _viewportImage.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                ColorManager.SynthesisColor.InteractiveElementRight);
 
             // TODO: Get some more control over the individual items in the dropdown
             // _viewport.StepIntoImage(i => i.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT)));
@@ -1257,6 +1267,69 @@ namespace Synthesis.UI.Dynamic {
 
     public class Image : UIComponent {
         private UImage _unityImage;
+        private GradientImageUpdater? _gradientUpdater;
+
+        private bool _hasCustomSprite = false;
+        public Sprite Sprite {
+            get => _unityImage.sprite;
+            set { _unityImage.sprite = value; }
+        }
+        public Color Color {
+            get => _unityImage.color;
+            set { _unityImage.color = value; }
+        }
+
+        public Image(UIComponent? parent, GameObject unityObject) : base(parent, unityObject) {
+            _unityImage = unityObject.GetComponent<UImage>();
+            if (unityObject.TryGetComponent<GradientImageUpdater>(out var gradientUpdater)) {
+                _gradientUpdater = gradientUpdater;
+            }
+            else {
+                _gradientUpdater = unityObject.AddComponent<GradientImageUpdater>();
+            }
+        }
+
+        public Image SetSprite(Sprite s) {
+            _hasCustomSprite = true;
+            Sprite = s;
+            if (_gradientUpdater != null)
+                GameObject.Destroy(_gradientUpdater);
+            return this;
+        }
+
+        public Image SetColor(ColorManager.SynthesisColor c) => SetColor(ColorManager.GetColor(c));
+
+        public Image SetColor(Color c) => SetColor(c, c);
+
+        public Image SetColor(ColorManager.SynthesisColor left, ColorManager.SynthesisColor right) =>
+            SetColor(ColorManager.GetColor(left), ColorManager.GetColor(right));
+
+        public Image SetColor(Color left, Color right) {
+            if (_hasCustomSprite) {
+                _unityImage.color = left;
+                return this;
+            }
+
+            _gradientUpdater!.LeftColor = left;
+            _gradientUpdater.RightColor = right;
+            _gradientUpdater.Refresh();
+
+            return this;
+        }
+
+        public Image SetCornerRadius(float r) {
+            _unityImage.pixelsPerUnitMultiplier = 250f / r;
+            return this;
+        }
+
+        public Image SetMultiplier(float m) {
+            _unityImage.pixelsPerUnitMultiplier = m;
+            return this;
+        }
+    }
+    
+    /*public class GradientImage : Image {
+        private UImage _unityImage;
         public Sprite Sprite {
             get => _unityImage.sprite;
             set { _unityImage.sprite = value; }
@@ -1291,7 +1364,7 @@ namespace Synthesis.UI.Dynamic {
             _unityImage.pixelsPerUnitMultiplier = m;
             return this;
         }
-    }
+    }*/
 
     public class Scrollbar : UIComponent {
         public UScrollbar _unityScrollbar;

@@ -119,7 +119,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             _deleteButton = deleteContent.CreateButton()
                                 .ApplyTemplate(VerticalLayout)
                                 .StepIntoLabel(l => l.SetText("Delete Selected"))
-                                .SetBackgroundColor<Button>(ColorManager.SynthesisColor.InteractiveElement)
+                                .SetBackgroundColor<Button>(ColorManager.SynthesisColor.InteractiveElementSolid)
                                 .AddOnClickedEvent(b => {
                                     if (_selectedThemeIndex != 0) {
                                         SaveThemeChanges();
@@ -153,7 +153,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
                     ColorManager.SynthesisColor.BackgroundSecondary);
             else
                 _deleteButton.EnableEvents<Button>().SetBackgroundColor<Button>(
-                    ColorManager.SynthesisColor.InteractiveElement);
+                    ColorManager.SynthesisColor.InteractiveElementSolid);
 
             if (_availableThemes.Length == 1)
                 _deleteAllButton.DisableEvents<Button>().SetBackgroundColor<Button>(
@@ -239,7 +239,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             _selectedColor = colorName;
 
             var newSelected = _colors[_selectedColor.Value];
-            newSelected.background.SetBackgroundColor<Image>(ColorManager.SynthesisColor.InteractiveElement);
+            newSelected.background.SetBackgroundColor<Image>(ColorManager.SynthesisColor.InteractiveElementSolid);
             newSelected.label.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
 
             // Regex.Replace formats color's name with spaces (ColorName -> Color Name)
