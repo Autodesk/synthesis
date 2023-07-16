@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using SynthesisAPI.RoboRIO;
 using Google.Protobuf.WellKnownTypes;
-using SynthesisAPI.Utilities;
+using SynthesisAPI.Simulation;
 
 using Type = System.Type;
+using SynthesisAPI.Controller;
 
 namespace Synthesis.WS.Translation {
     public class RioTranslationLayer {
@@ -41,7 +42,9 @@ namespace Synthesis.WS.Translation {
             }
 
             public void Update(ControllableState signalState) {
-                int val = (int) (_mod * signalState.CurrentSignals[$"{_signal}_encoder"].Value.NumberValue);
+                var signalVal = signalState.GetValue($"{_signal}_encoder");
+                int val       = (int) (signalVal == null ? 0 : signalVal.NumberValue);
+
                 // TODO: Update riostate
                 if (_rioDevice.Length == 0 && !AquireRioDevice(WebSocketManager.RioState))
                     return;
@@ -95,53 +98,14 @@ namespace Synthesis.WS.Translation {
 
             public void Update(RoboRIOState rioState, ControllableState signalState) {
                 if (!WebSocketManager.RioState.GetData<DriverStationData>("").Enabled) {
-                    _signals.ForEach(x => signalState.CurrentSignals[x].Value = Value.ForNumber(0));
+                    _signals.ForEach(x => signalState.SetValue(x, Value.ForNumber(0)));
                 } else {
                     float avg = 0f;
                     _ports.ForEach(x => { avg += (float) rioState.GetData<PWMData>(x).Speed; });
                     avg /= _ports.Count;
-                    _signals.ForEach(x => { signalState.CurrentSignals[x].Value = Value.ForNumber(avg); });
+                    _signals.ForEach(x => { signalState.SetValue(x, Value.ForNumber(avg)); });
                 }
             }
         }
-
-        // public class Grouping {
-        //     public List<IRioPointer> RioPointers = new List<IRioPointer>();
-        //     public List<string> Signals = new List<string>();
-
-        //     public float GetValue(RoboRIOState state) {
-        //         float sum = 0f;
-        //         RioPointers.Select(x => x.Get(state)).ForEach(x => sum += x);
-        //         return sum / RioPointers.Count;
-        //     }
-        // }
-
-        // public interface ISensor {
-        //     object GetData(ControllableState state);
-        // }
-
-        // /// <summary>
-        // /// Quadrature Encoder sensor that reads data from a provided
-        // /// signal.
-        // /// </summary>
-        // public class QuadratureEncoderSensor : ISensor {
-
-        //     private string _signal;
-        //     private int _conversionFactor;
-
-        //     /// <summary>
-        //     /// Constructs a quadrature encoder sensor for rio sim.
-        //     /// </summary>
-        //     /// <param name="signal">Signal compatible with supplying quadrature encoder data</param>
-        //     /// <param name="conversionFactor">Factor that is multiplied by the encoder value</param>
-        //     public QuadratureEncoderSensor(string signal, int conversionFactor) {
-        //         _signal = signal;
-        //         _conversionFactor = conversionFactor;
-        //     }
-
-        //     public object GetData(ControllableState state) {
-        //         return state.CurrentSignals[_signal].Value.NumberValue * _conversionFactor;
-        //     }
-        // }
     }
 }

@@ -1,9 +1,10 @@
 using System;
+using Modes.MatchMode;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using UnityEngine;
 using UnityEngine.EventSystems;
-
+using Utilities.ColorManager;
 using Input  = UnityEngine.Input;
 using Object = UnityEngine.Object;
 
@@ -40,11 +41,10 @@ namespace Synthesis.UI.Dynamic {
 
         private readonly Button[] buttons             = new Button[6];
         private readonly Transform[] _robotHighlights = new Transform[6];
-        private readonly Vector3[] _robotOffsets      = new Vector3[6];
 
         private readonly Func<Button, Button> DisabledTemplate = b =>
-            b.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_BLACK_ACCENT))
-                .StepIntoLabel(l => l.SetColor(ColorManager.SYNTHESIS_WHITE));
+            b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary))
+                .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText));
 
         public readonly Func<UIComponent, UIComponent> VerticalLayout = (u) => {
             var offset = (-u.Parent!.RectOfChildren(u).yMin) + VERTICAL_PADDING;
@@ -72,9 +72,10 @@ namespace Synthesis.UI.Dynamic {
 
             AcceptButton.StepIntoLabel(label => label.SetText("Accept")).AddOnClickedEvent(b => {
                 DynamicUIManager.ClosePanel<SpawnLocationPanel>();
-                MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.Auto);
+                MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.FieldConfig);
             });
-            CancelButton.StepIntoLabel(label => label.SetText("Revert")).AddOnClickedEvent(b => {});
+
+            CancelButton.RootGameObject.SetActive(false);
             CreateRobotHighlights();
             CreateButtons();
             SelectButton(0);
@@ -123,9 +124,6 @@ namespace Synthesis.UI.Dynamic {
                 RobotSimObject simObject = MatchMode.Robots[i];
                 if (simObject != null) {
                     obj.transform.localScale = MatchMode.Robots[i].RobotBounds.size;
-                    _robotOffsets[i] =
-                        simObject.RobotNode.transform.localToWorldMatrix.MultiplyPoint(simObject.RobotBounds.center) +
-                        Vector3.down * 0.496f;
                 }
 
                 _robotHighlights[i] = obj.transform;
@@ -157,8 +155,9 @@ namespace Synthesis.UI.Dynamic {
         /// </summary>
         /// <param name="index">the selected buttons index</param>
         private void SelectButton(int index) {
-            buttons[_selectedButton].Image.Color = ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT);
-            _selectedButton                      = index;
+            buttons[_selectedButton].Image.Color =
+                ColorManager.GetColor(ColorManager.SynthesisColor.BackgroundSecondary);
+            _selectedButton = index;
 
             buttons[index].Image.Color = (index < 3) ? redButtonColor : blueButtonColor;
         }

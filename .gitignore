@@ -2,6 +2,7 @@
 .vscode/
 .DS_Store
 **/*/.idea/
+/build/
 .gradle/
 
 # Binary

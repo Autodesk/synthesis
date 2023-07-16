@@ -1,17 +1,14 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using NUnit.Framework;
-using UnityEngine;
-using SynthesisAPI.Utilities;
-
-using Logger = SynthesisAPI.Utilities.Logger;
-using Synthesis.Replay;
-using Synthesis.Physics;
-using SynthesisAPI.EventBus;
-using Synthesis.Gizmo;
-using Synthesis.Runtime;
 using System.Linq;
+using Synthesis.Gizmo;
+using Synthesis.Physics;
+using Synthesis.Replay;
+using Synthesis.Runtime;
+using Analytics;
+using Utilities.ColorManager;
+using SynthesisAPI.EventBus;
+using UnityEngine;
 
 namespace Synthesis.UI.Dynamic {
     public static class DynamicUIManager {
@@ -19,9 +16,8 @@ namespace Synthesis.UI.Dynamic {
 
         private static Dictionary<Type, (PanelDynamic, bool)> _persistentPanels =
             new Dictionary<Type, (PanelDynamic, bool)>();
-        public static bool AnyPanels => _persistentPanels.Count > 0;
-        // public static PanelDynamic ActivePanel { get; private set; }
-        public static Content _screenSpaceContent = null;
+        public static bool AnyPanels              => _persistentPanels.Count > 0;
+        public static Content _screenSpaceContent  = null;
         public static Content ScreenSpaceContent {
             get {
                 if (_screenSpaceContent == null) {
@@ -42,22 +38,18 @@ namespace Synthesis.UI.Dynamic {
                                 maxValue: 0f, currentValue: 0f)
                             .SetBottomStretch<Slider>(leftPadding: 100f, rightPadding: 100f, anchoredY: 50)
                             .SetSlideDirection(UnityEngine.UI.Slider.Direction.LeftToRight)
-                            .StepIntoBackgroundImage(
-                                i => i.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE)))
-                            .StepIntoFillImage(i => i.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK)))
-                            .StepIntoTitleLabel(
-                                l => l.SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Bottom)
-                                         .SetFontSize(20)
-                                         .SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK)))
-                            .StepIntoValueLabel(
-                                l => l.SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Bottom)
-                                         .SetFontSize(20)
-                                         .SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK)));
+                            .StepIntoBackgroundImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElement))
+                            .StepIntoFillImage(i => i.SetColor(ColorManager.SynthesisColor.Background))
+                            .StepIntoTitleLabel(l => l.SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Bottom)
+                                                         .SetFontSize(20)
+                                                         .SetColor(ColorManager.SynthesisColor.Background))
+                            .StepIntoValueLabel(l => l.SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Bottom)
+                                                         .SetFontSize(20)
+                                                         .SetColor(ColorManager.SynthesisColor.Background));
                 SimulationRunner.OnSimKill += () => { _replaySlider = null; };
                 return _replaySlider;
             }
         }
-        // public static GameObject ActiveModalGameObject;
 
         public static bool CreateModal<T>(params object[] args)
             where T : ModalDynamic {
@@ -67,10 +59,23 @@ namespace Synthesis.UI.Dynamic {
             if (ActiveModal != null)
                 CloseActiveModal();
 
+            return CreateModal_Internal<T>(args);
+        }
+
+        public static bool CreateModalWithoutOverwrite<T>(params object[] args)
+            where T : ModalDynamic {
+            if (_persistentPanels.Count > 0)
+                return false;
+            if (ActiveModal != null)
+                return false;
+
+            return CreateModal_Internal<T>(args);
+        }
+
+        private static bool CreateModal_Internal<T>(params object[] args)
+            where T : ModalDynamic {
             var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("dynamic-modal-base"),
                 GameObject.Find("UI").transform.Find("ScreenSpace").Find("ModalContainer"));
-
-            // var c = ColorManager.GetColor("SAMPLE");
 
             ModalDynamic modal = (ModalDynamic) Activator.CreateInstance(typeof(T), args);
             modal.Create_Internal(unityObject);
@@ -82,8 +87,9 @@ namespace Synthesis.UI.Dynamic {
             SynthesisAssetCollection.BlurVolumeStatic.weight = 1f;
             PhysicsManager.IsFrozen                          = true;
             MainHUD.Enabled                                  = false;
-            AnalyticsManager.LogEvent(new AnalyticsEvent(category: "ui", action: $"{typeof(T).Name}", label: "create"));
-            AnalyticsManager.PostData();
+
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.ModalCreated, ("UIType", typeof(T).Name));
+
             return true;
         }
 
@@ -96,16 +102,10 @@ namespace Synthesis.UI.Dynamic {
             if (_persistentPanels.ContainsKey(typeof(T)))
                 ClosePanel(typeof(T));
 
-            // if (ActivePanel != null)
-            //     CloseActivePanel();
-
             var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("dynamic-panel-base"),
                 GameObject.Find("UI").transform.Find("ScreenSpace").Find("PanelContainer"));
 
-            // var c = ColorManager.GetColor("SAMPLE");
-
-            PanelDynamic panel = (PanelDynamic) Activator.CreateInstance(typeof(T), args);
-            // ActivePanel = panel;
+            PanelDynamic panel           = (PanelDynamic) Activator.CreateInstance(typeof(T), args);
             _persistentPanels[typeof(T)] = (panel, persistent);
             panel.Create_Internal(unityObject);
             bool success = panel.Create();
@@ -118,8 +118,8 @@ namespace Synthesis.UI.Dynamic {
             if (PanelExists(typeof(T)))
                 EventBus.Push(new PanelCreatedEvent(panel, persistent));
 
-            AnalyticsManager.LogEvent(new AnalyticsEvent(category: "ui", action: $"{typeof(T).Name}", label: "create"));
-            AnalyticsManager.PostData();
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.PanelCreated, ("UIType", typeof(T).Name));
+
             return true;
         }
 
@@ -128,15 +128,12 @@ namespace Synthesis.UI.Dynamic {
                 return false;
             }
 
-            EventBus.Push(new ModalClosedEvent(ActiveModal));
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.ActiveModalClosed, ("UIType", ActiveModal.GetType().Name));
 
-            AnalyticsManager.LogEvent(
-                new AnalyticsEvent(category: "ui", action: $"{ActiveModal.GetType().Name}", label: "create"));
-            AnalyticsManager.PostData();
+            EventBus.Push(new ModalClosedEvent(ActiveModal));
 
             ActiveModal.Delete();
             ActiveModal.Delete_Internal();
-
             ActiveModal = null;
 
             SynthesisAssetCollection.BlurVolumeStatic.weight = 0f;
@@ -168,14 +165,13 @@ namespace Synthesis.UI.Dynamic {
             var panel = _persistentPanels[t].Item1;
             EventBus.Push(new PanelClosedEvent(panel));
 
-            AnalyticsManager.LogEvent(new AnalyticsEvent(category: "ui", action: $"{t.Name}", label: "create"));
-            AnalyticsManager.PostData();
-
             panel.Delete();
             panel.Delete_Internal();
 
-            // ActivePanel = null;
             _persistentPanels.Remove(t);
+
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.PanelClosed, ("UIType", t.Name));
+
             return true;
         }
 
@@ -221,9 +217,11 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public static bool ShowPanel<T>()
-            where T : PanelDynamic => ShowPanel(typeof(T));
+            where T : PanelDynamic {
+            return ShowPanel(typeof(T));
+        }
 
-  public static bool ShowPanel(Type t) {
+        public static bool ShowPanel(Type t) {
             if (!PanelExists(t))
                 return false;
 
@@ -242,11 +240,16 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public static T ApplyTemplate<T>(this T component, Func<T, T> template)
-            where T : UIComponent => template(component); public static T ApplyTemplate<T>(this T component,
-  Func<UIComponent, UIComponent> template)
-            where T : UIComponent => template(component) as T;
+            where T : UIComponent {
+            return template(component);
+        }
 
-  public static Rect GetOffsetRect(this RectTransform trans) {
+        public static T ApplyTemplate<T>(this T component, Func<UIComponent, UIComponent> template)
+            where T : UIComponent {
+            return template(component) as T;
+        }
+
+        public static Rect GetOffsetRect(this RectTransform trans) {
             var min =
                 new Vector2(trans.anchoredPosition.x + trans.rect.xMin, trans.anchoredPosition.y + trans.rect.yMin);
             var max =

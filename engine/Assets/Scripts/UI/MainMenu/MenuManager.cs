@@ -22,7 +22,7 @@ namespace Synthesis.UI {
         }
 
         public void Singleplayer() {
-            DynamicUIManager.CreateModal<ChooseModeModal>();
+            SceneManager.LoadScene("MainScene");
         }
 
         public void Feedback() {

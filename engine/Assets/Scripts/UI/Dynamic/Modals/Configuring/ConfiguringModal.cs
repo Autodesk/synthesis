@@ -5,6 +5,7 @@ using Synthesis.Gizmo;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
+using Utilities.ColorManager;
 
 public class ConfiguringModal : ModalDynamic {
     public ConfiguringModal()
@@ -19,8 +20,9 @@ public class ConfiguringModal : ModalDynamic {
     public override void Create() {
         Title.SetText("Configuring");
         Description.SetText("What do you want to change?");
+
         ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-        ModalImage.SetColor(ColorManager.SYNTHESIS_WHITE);
+        ModalImage.SetColor(ColorManager.SynthesisColor.MainText);
 
         var gpmLabel   = MainContent.CreateLabel(height: 30f).SetTopStretch<Label>().SetText("Gamepiece Manipulation");
         var subContent = MainContent.CreateSubContent(new Vector2(MainContent.Size.x, 50))
@@ -53,10 +55,6 @@ public class ConfiguringModal : ModalDynamic {
                 DynamicUIManager.CloseActiveModal();
                 GizmoManager.SpawnGizmo(RobotSimObject.GetCurrentlyPossessedRobot());
                          });
-            // var field = right.CreateButton("Field")
-            //     .ApplyTemplate<Button>(VerticalLayout)
-            //     .AddOnClickedEvent(b => DynamicUIManager.CreateModal<AddFieldModal>())
-            //     .StepIntoLabel(l => l.SetText("Fields"));
         }
     }
 

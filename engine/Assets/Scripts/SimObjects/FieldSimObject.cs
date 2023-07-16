@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Analytics;
+using MathNet.Numerics;
 using Mirabuf;
 using Synthesis.Gizmo;
 using Synthesis.Import;
@@ -8,17 +10,20 @@ using Synthesis.Physics;
 using Synthesis.PreferenceManager;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
+using SynthesisAPI.Controller;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
 using UnityEngine;
-
+using Utilities.ColorManager;
 using Bounds    = UnityEngine.Bounds;
 using Transform = Mirabuf.Transform;
 using Vector3   = UnityEngine.Vector3;
 
 public class FieldSimObject : SimObject, IPhysicsOverridable {
     public static FieldSimObject CurrentField { get; private set; }
-    public List<ScoringZone> ScoringZones = new();
+
+    private readonly List<ScoringZone> _scoringZones;
+    public IReadOnlyCollection<ScoringZone> ScoringZones => _scoringZones.AsReadOnly();
 
     public MirabufLive MiraLive { get; private set; }
     public GameObject GroundedNode { get; private set; }
@@ -80,15 +85,15 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         FieldObject                = groundedNode.transform.parent.gameObject;
         FieldBounds                = groundedNode.transform.GetBounds();
         Gamepieces                 = gamepieces;
-        ScoringZones               = new List<ScoringZone>();
+        SimulationPreferences.LoadFieldFromMira(MiraLive);
+
+        _scoringZones = new List<ScoringZone>();
 
         PhysicsManager.Register(this);
 
         // Level the field
-        var position = FieldObject.transform.position;
-        position.y -= FieldBounds.center.y - FieldBounds.extents.y;
-        FieldObject.transform.position = position;
-        // Debug.Log($"{FieldObject.transform.position.y}");
+        FieldObject.transform.position =
+            new Vector3(-FieldBounds.center.x, FieldBounds.extents.y - FieldBounds.center.y, -FieldBounds.center.z);
 
         _initialPosition = FieldObject.transform.position;
 
@@ -101,40 +106,67 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
 
         SynthesisAPI.EventBus.EventBus.NewTypeListener<PostPreferenceSaveEvent>(e => {
             bool visible = PreferenceManager.GetPreference<bool>(SettingsModal.RENDER_SCORE_ZONES);
-            ScoringZones.ForEach(zone => zone.SetVisibility(visible));
+            ScoringZones.ForEach(zone => zone.VisibilityCounter = zone.VisibilityCounter);
         });
-        // Shooting.ConfigureGamepieces();
 
         FieldObject.transform.GetComponentsInChildren<Rigidbody>().ForEach(x => {
             var rc     = x.gameObject.AddComponent<HighlightComponent>();
-            rc.Color   = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_HOVER);
+            rc.Color   = ColorManager.GetColor(ColorManager.SynthesisColor.HighlightSelect);
             rc.enabled = false;
         });
     }
 
     public void ResetField() {
         SpawnField(MiraLive);
-        // FieldObject.transform.position = _initialPosition;
-        // FieldObject.transform.rotation = _initialRotation;
+    }
+
+    public bool RemoveScoringZone(ScoringZone zone) {
+        var res = _scoringZones.Remove(zone);
+        if (res)
+            UpdateSavedScoringZones();
+        return res;
+    }
+
+    public void AddScoringZone(ScoringZone zone) {
+        _scoringZones.Add(zone);
+        UpdateSavedScoringZones();
+    }
+
+    public void UpdateSavedScoringZones() {
+        SimulationPreferences.SetFieldScoringZones(
+            MiraLive.MiraAssembly.Info.GUID, _scoringZones.Select(x => x.ZoneData).ToList());
+        PreferenceManager.Save();
+    }
+
+    public void InitializeScoreZones() {
+        _scoringZones.Clear();
+        bool visible     = PreferenceManager.GetPreference<bool>(SettingsModal.RENDER_SCORE_ZONES);
+        var scoringZones = SimulationPreferences.GetFieldScoringZones(MiraLive.MiraAssembly.Info.GUID);
+        if (scoringZones != null) {
+            scoringZones.ForEach(x => {
+                var zone = new ScoringZone(
+                    GameObject.CreatePrimitive(PrimitiveType.Cube), "temp scoring zone", Alliance.Blue, 0, false, true);
+                zone.ZoneData          = x;
+                zone.VisibilityCounter = zone.VisibilityCounter;
+                _scoringZones.Add(zone);
+            });
+        }
     }
 
     public static bool DeleteField() {
         if (CurrentField == null)
             return false;
 
-        // Debug.Log($"GP count: {CurrentField.Gamepieces.Count}");
-
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
             RobotSimObject.GetCurrentlyPossessedRobot().ClearGamepieces();
 
-        CurrentField.ScoringZones.Clear();
+        CurrentField._scoringZones.Clear();
         CurrentField.Gamepieces.ForEach(x => x.DeleteGamepiece());
         CurrentField.Gamepieces.Clear();
         GameObject.Destroy(CurrentField.FieldObject);
         SimulationManager.RemoveSimObject(CurrentField);
         CurrentField = null;
         return true;
-        // SynthesisAssetCollection.DefaultFloor.SetActive(true);
     }
 
     public static void SpawnField(string filePath, bool spawnRobotGizmo = true) {
@@ -144,10 +176,13 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
         mira.MainObject.tag = "field";
 
+        FieldSimObject.CurrentField.InitializeScoreZones();
+
         if (spawnRobotGizmo && RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
             GizmoManager.SpawnGizmo(RobotSimObject.GetCurrentlyPossessedRobot());
             // TODO: Move robot to default spawn location for field
         }
+        AnalyticsManager.LogCustomEvent(AnalyticsEvent.FieldSpawned, ("FieldName", mira.MainObject.name));
     }
 
     public static void SpawnField(MirabufLive miraAssem, bool spawnRobotGizmo = true) {

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using System.Linq;
+using Analytics;
 
 public class SynthesisAssetCollection : MonoBehaviour {
     public static SynthesisAssetCollection Instance;
@@ -22,6 +23,8 @@ public class SynthesisAssetCollection : MonoBehaviour {
     public GameObject ReplaySlider;
     [SerializeField]
     public GameObject GizmoPrefab;
+    [SerializeField]
+    public List<AudioClip> AudioClips;
 
     private static Volume _blurVolumeStatic = null;
     public static Volume BlurVolumeStatic {
@@ -54,26 +57,15 @@ public class SynthesisAssetCollection : MonoBehaviour {
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
-
-        /*
-        Screen.fullScreenMode = FullScreenMode.MaximizedWindow;
-        var biggestWidth = 0;
-        for (int i = 1; i < Screen.resolutions.Length; i++) {
-            if (Screen.resolutions[i].width > Screen.resolutions[biggestWidth].width)
-                biggestWidth = i;
-        }
-        var res = Screen.resolutions[biggestWidth];
-        Screen.SetResolution(res.width, res.height, FullScreenMode.MaximizedWindow);*/
     }
 
     public static Sprite GetSpriteByName(string name) => Instance.SpriteAssets.First(x => x.name == name);
 
     public static GameObject GetPanelByName(string name) => Instance.PanelPrefabs.First(x => x.name == name);
 
-    public static GameObject GetUIPrefab(string name)      => Instance.DynamicUIPrefabs.First(x => x.name == name);
+    public static GameObject GetUIPrefab(string name) => Instance.DynamicUIPrefabs.First(x => x.name == name);
+
     public static TMPro.TMP_FontAsset GetFont(string name) => Instance.Fonts.First(x => x.name == name);
 
-    public void OnDestroy() {
-        AnalyticsManager.LogEvent(new AnalyticsEvent(category: "app", action: $"close", label: ""));
-    }
+    public static AudioClip GetAudioClip(string name) => Instance.AudioClips.First(x => x.name == name);
 }

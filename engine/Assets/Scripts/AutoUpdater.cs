@@ -15,21 +15,9 @@ public class AutoUpdater : MonoBehaviour {
     public static bool UpdateAvailable { get; private set; } = false;
     public static string UpdaterLink { get; private set; }
 
-    // public static string updater;
     public const string LocalVersion = "5.1.0.0"; // must be a version value
 
-    // Start is called before the first frame update
-    void Start() {
-        // var versionText = GameObject.Find("VersionNumber").GetComponent<Text>();
-        // versionText.text = "Version " + LocalVersion;
-        // Debug.Log($"Version {LocalVersion}");
-        // game = GameObject.Find("UpdatePrompt");
-
-        // Analytics For Client Startup
-        var init = new AnalyticsEvent(category: "Startup", action: "Launched", label: $"Version {LocalVersion} BETA");
-        AnalyticsManager.LogEvent(init);
-        AnalyticsManager.PostData();
-
+    private void Start() {
         if (CheckConnection()) {
             WebClient client                                        = new WebClient();
             ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;

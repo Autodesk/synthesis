@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Asn1;
 using Synthesis.Import;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager.Inputs;
@@ -20,13 +21,15 @@ namespace Synthesis.PreferenceManager {
     // Funky inner setup so I can control the lifetime of the instance
     public static class SimulationPreferences {
         public const string ALL_ROBOT_DATA_KEY = "all_robot_data";
+        public const string ALL_FIELD_DATA_KEY = "all_field_data";
 
         // Why, again?
         public static void DestroyInstance() {
             _instance = null;
         }
 
-        public static void LoadFromMirabufLive(MirabufLive live) => Instance.LoadFromMirabufLive(live);
+        public static void LoadRobotFromMira(MirabufLive live) => Instance.LoadRobotFromMira(live);
+        public static void LoadFieldFromMira(MirabufLive live) => Instance.LoadFieldFromMira(live);
 
         public static Analog GetRobotInput(string robot, string input) => Instance.GetRobotInput(robot, input);
 
@@ -75,10 +78,17 @@ namespace Synthesis.PreferenceManager {
         public static void SetRobotDrivetrainType(string robot,
             RobotSimObject.DrivetrainType drivetrainType) => Instance.SetRobotDrivetrainType(robot, drivetrainType);
 
+        public static IReadOnlyCollection<ScoringZoneData>? GetFieldScoringZones(
+            string field) => Instance.GetFieldScoringZones(field);
+
+        public static void SetFieldScoringZones(
+            string field, List<ScoringZoneData> zones) => Instance.SetFieldScoringZones(field, zones);
+
         private class Inner {
             public const string USER_DATA_KEY = "saved-data";
 
-            private Dictionary<string, RobotData> _allRobotData = new Dictionary<string, RobotData>();
+            private readonly Dictionary<string, RobotData> _allRobotData;
+            private readonly Dictionary<string, FieldData> _allFieldData;
 
             public Inner() {
                 EventBus.NewTypeListener<PrePreferenceSaveEvent>(PreSaveDump);
@@ -92,6 +102,13 @@ namespace Synthesis.PreferenceManager {
                     _allRobotData = new Dictionary<string, RobotData>();
                     PreferenceManager.SetPreference(ALL_ROBOT_DATA_KEY, _allRobotData);
                 }
+
+                if (PreferenceManager.ContainsPreference(ALL_FIELD_DATA_KEY)) {
+                    _allFieldData = PreferenceManager.GetPreference<Dictionary<string, FieldData>>(ALL_FIELD_DATA_KEY);
+                } else {
+                    _allFieldData = new Dictionary<string, FieldData>();
+                    PreferenceManager.SetPreference(ALL_FIELD_DATA_KEY, _allFieldData);
+                }
             }
 
             /// <summary>
@@ -100,22 +117,45 @@ namespace Synthesis.PreferenceManager {
             public void PreSaveDump(IEvent _) {
                 // PreferenceManager.SetPreference(ALL_ROBOT_DATA_KEY, _allRobotData);
                 if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
+                    // clang-format off
                     var live = RobotSimObject.GetCurrentlyPossessedRobot().MiraLive;
-                    if (live.MiraAssembly.Data.Parts.UserData == null)
-                        live.MiraAssembly.Data.Parts.UserData = new Mirabuf.UserData();
+                    live.MiraAssembly.Data.Parts.UserData ??= new Mirabuf.UserData();
                     live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY] =
                         JsonConvert.SerializeObject(_allRobotData[live.MiraAssembly.Info.GUID]);
                     live.Save();
+                    // clang-format on
+                }
+
+                if (FieldSimObject.CurrentField != null) {
+                    // clang-format off
+                    var live = FieldSimObject.CurrentField.MiraLive;
+                    live.MiraAssembly.Data.Parts.UserData ??= new Mirabuf.UserData();
+                    live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY] =
+                        JsonConvert.SerializeObject(_allFieldData[live.MiraAssembly.Info.GUID]);
+                    live.Save();
+                    // clang-format on
                 }
             }
 
-            public void LoadFromMirabufLive(MirabufLive live) {
+            public void LoadRobotFromMira(MirabufLive live) {
                 if (live.MiraAssembly.Data.Parts.UserData != null &&
                     live.MiraAssembly.Data.Parts.UserData.Data.ContainsKey(USER_DATA_KEY)) {
                     _allRobotData[live.MiraAssembly.Info.GUID] = JsonConvert.DeserializeObject<RobotData>(
                         live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY])!;
                 }
             }
+
+            public void LoadFieldFromMira(MirabufLive live) {
+                if (live.MiraAssembly.Data.Parts.UserData != null &&
+                    live.MiraAssembly.Data.Parts.UserData.Data.ContainsKey(USER_DATA_KEY)) {
+                    _allFieldData[live.MiraAssembly.Info.GUID] = JsonConvert.DeserializeObject<FieldData>(
+                        live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY])!;
+                }
+            }
+
+#region Robot Data
+
+#region Getters
 
             public Analog GetRobotInput(string robot, string input) {
                 if (!_allRobotData.ContainsKey(robot))
@@ -187,12 +227,15 @@ namespace Synthesis.PreferenceManager {
                 return _allRobotData[robot].DrivetrainType ?? RobotSimObject.DrivetrainType.ARCADE;
             }
 
+#endregion
+
+#region Setters
+
             public void SetRobotInput(string robot, string inputKey, Analog inputValue) {
                 if (!_allRobotData.ContainsKey(robot))
                     _allRobotData[robot] = new RobotData(robot);
                 var rData                 = _allRobotData[robot];
                 rData.InputData[inputKey] = new InputData(inputValue);
-                // _allRobotData[robot] = rData; // I changed it to a class so Im not sure if this is needed
             }
 
             public void SetRobotJointMotor(string robot, string motorKey, JointMotor m) {
@@ -200,7 +243,6 @@ namespace Synthesis.PreferenceManager {
                     _allRobotData[robot] = new RobotData(robot);
                 var rData                   = _allRobotData[robot];
                 rData.JointMotors[motorKey] = m;
-                // _allRobotData[robot] = rData;
             }
 
             public void SetRobotJointSpeed(string robot, string speedKey, float speed) {
@@ -208,7 +250,6 @@ namespace Synthesis.PreferenceManager {
                     _allRobotData[robot] = new RobotData(robot);
                 var rData                   = _allRobotData[robot];
                 rData.JointSpeeds[speedKey] = speed;
-                // _allRobotData[robot] = rData;
             }
 
             public void SetRobotIntakeTriggerData(string robot, ITD? data) {
@@ -234,6 +275,37 @@ namespace Synthesis.PreferenceManager {
                     _allRobotData[robot] = new RobotData(robot);
                 _allRobotData[robot].DrivetrainType = drivetrainType;
             }
+
+#endregion
+
+#endregion
+
+#region Field Data
+
+#region Getters
+
+            public IReadOnlyCollection<ScoringZoneData>? GetFieldScoringZones(string field) {
+                if (!_allFieldData.ContainsKey(field))
+                    return null;
+
+                return _allFieldData[field].ScoringZones.AsReadOnly();
+            }
+
+#endregion
+
+#region Setters
+
+            public void SetFieldScoringZones(string field, List<ScoringZoneData> zones) {
+                _allFieldData.TryGetValue(field, out var data);
+                data ??= new FieldData(field);
+                data.ScoringZones.Clear();
+                data.ScoringZones.AddRange(zones);
+                _allFieldData[field] = data;
+            }
+
+#endregion
+
+#endregion
         }
 
         private static Inner _instance;
@@ -283,6 +355,25 @@ namespace Synthesis.PreferenceManager {
     }
 
     [JsonObject(MemberSerialization.OptIn)]
+    public class FieldData {
+        [JsonConstructor]
+        public FieldData() {
+            AssemblyGuid = string.Empty;
+            ScoringZones = new List<ScoringZoneData>();
+        }
+
+        public FieldData(string guid) {
+            AssemblyGuid = guid;
+            ScoringZones = new List<ScoringZoneData>();
+        }
+
+        [JsonProperty]
+        public string AssemblyGuid;
+        [JsonProperty]
+        public List<ScoringZoneData> ScoringZones;
+    }
+
+    [JsonObject(MemberSerialization.OptIn)]
     public class InputData {
         [JsonProperty]
         public Type Type;
@@ -311,33 +402,4 @@ namespace Synthesis.PreferenceManager {
         public Analog GetInput() => (Analog) DeserializeMethod.MakeGenericMethod(this.Type).Invoke(
             null, new string[] { Data });
     }
-
-    // [JsonObject(MemberSerialization.OptIn)]
-    // public class JsonFriendlyData<T> {
-    //     [JsonProperty]
-    //     public Type Type;
-    //     [JsonProperty]
-    //     public string Data;
-
-    //     [JsonConstructor]
-    //     public JsonFriendlyData() { }
-
-    //     public JsonFriendlyData(T input) {
-    //         this.Type = input.GetType();
-    //         Data = JsonConvert.SerializeObject(input);
-    //     }
-
-    //     private static MethodInfo _deserializeMethod;
-    //     private static MethodInfo DeserializeMethod {
-    //         get {
-    //             if (_deserializeMethod == null)
-    //                 _deserializeMethod = typeof(JsonConvert).GetMethods().First(y => y.IsGenericMethod &&
-    //                 y.Name.Equals("DeserializeObject"));
-    //             return _deserializeMethod;
-    //         }
-    //     }
-
-    //     public T GetData()
-    //         => (T)DeserializeMethod.MakeGenericMethod(this.Type).Invoke(null, new string[] { Data });
-    // }
 }

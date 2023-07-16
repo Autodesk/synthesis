@@ -162,7 +162,6 @@ namespace Synthesis {
                 }
             }
 
-            // (float angle, float speed)[] output = new (float angle, float speed)[velocities.Length];
             for (int i = 0; i < velocities.Length; i++) {
                 float speed                         = velocities[i].magnitude;
                 var yComponent                      = Vector3.Dot(robotTransform.forward, velocities[i]);
@@ -179,6 +178,10 @@ namespace Synthesis {
                 _moduleDrivers[i].azimuth.MainInput   = 0f;
                 _moduleDrivers[i].azimuth.Unreserve();
             }
+        }
+
+        protected override void OnDisable() {
+            _moduleDrivers.ForEach(x => x.drive.MainInput = x.azimuth.MainInput = 0f);
         }
     }
 }

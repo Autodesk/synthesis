@@ -162,6 +162,10 @@ class Parser:
             self.pdMessage.currentMessage = "Compressing File..."
             self.pdMessage.update()
 
+            # check if entire path exists and create if not since gzip doesn't do that.
+            path = pathlib.Path(self.parseOptions.fileLocation).parent
+            path.mkdir(parents=True, exist_ok=True)
+
             if self.parseOptions.compress:
                 self.logger.debug("Compressing file")
                 with gzip.open(self.parseOptions.fileLocation, "wb", 9) as f:
