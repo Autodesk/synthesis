@@ -4,8 +4,8 @@ using UnityEngine.UI;
 namespace UI {
     [RequireComponent(typeof(Image))]
     public class GradientImageUpdater : MonoBehaviour {
-        private static readonly int Props = Shader.PropertyToID("_WidthHeightRadius");
-        private static readonly int LeftColorProp = Shader.PropertyToID("_LeftColor");
+        private static readonly int Props          = Shader.PropertyToID("_WidthHeightRadius");
+        private static readonly int LeftColorProp  = Shader.PropertyToID("_LeftColor");
         private static readonly int RightColorProp = Shader.PropertyToID("_RightColor");
 
         public float Radius = 8;
@@ -35,8 +35,8 @@ namespace UI {
         public void Refresh() {
             GetMaterial();
 
-            var rect = ((RectTransform)transform).rect;
-            
+            var rect = ((RectTransform) transform).rect;
+
             _material.SetVector(Props, new Vector4(rect.width, rect.height, Radius * 2, 0));
             _material.SetColor(LeftColorProp, LeftColor);
             _material.SetColor(RightColorProp, RightColor);

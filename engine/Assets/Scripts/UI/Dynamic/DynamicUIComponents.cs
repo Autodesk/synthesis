@@ -474,17 +474,15 @@ namespace Synthesis.UI.Dynamic {
         public T SetBackgroundColor<T>(Color color)
             where T : UIComponent {
             GradientImageUpdater gradientImage = RootGameObject.GetComponent<GradientImageUpdater>();
-            UnityEngine.UI.Image image = RootGameObject.GetComponent<UnityEngine.UI.Image>();
-            
+            UnityEngine.UI.Image image         = RootGameObject.GetComponent<UnityEngine.UI.Image>();
+
             if (gradientImage) {
-                gradientImage.LeftColor = color;
+                gradientImage.LeftColor  = color;
                 gradientImage.RightColor = color;
-                
+
                 if (image)
                     RootGameObject.GetComponent<UImage>().color = Color.white;
-            }
-            else {
-                
+            } else {
                 if (image)
                     image.color = color;
             }
@@ -1198,7 +1196,8 @@ namespace Synthesis.UI.Dynamic {
             _headerLabel = new Label(this, unityObject.transform.Find("Header").Find("Label").gameObject, null);
             _headerLabel.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
 
-            var itemObj = unityObject.transform.Find("Template").Find("Viewport").Find("Mask").Find("Content").Find("Item");
+            var itemObj =
+                unityObject.transform.Find("Template").Find("Viewport").Find("Mask").Find("Content").Find("Item");
 
             _itemBackgroundImage = new Image(this, itemObj.Find("Item Background").gameObject);
             _itemBackgroundImage.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
@@ -1296,18 +1295,17 @@ namespace Synthesis.UI.Dynamic {
             }
 
             _hasCustomSprite = false;
-            
+
             if (unityObject.TryGetComponent<GradientImageUpdater>(out var gradientUpdater)) {
                 _gradientUpdater = gradientUpdater;
-            }
-            else {
+            } else {
                 _gradientUpdater = unityObject.AddComponent<GradientImageUpdater>();
             }
         }
 
         public Image SetSprite(Sprite s) {
             _hasCustomSprite = true;
-            Sprite = s;
+            Sprite           = s;
             if (_gradientUpdater != null)
                 GameObject.Destroy(_gradientUpdater);
             return this;
@@ -1317,8 +1315,8 @@ namespace Synthesis.UI.Dynamic {
 
         public Image SetColor(Color c) => SetColor(c, Color.black);
 
-        public Image SetColor(ColorManager.SynthesisColor left, ColorManager.SynthesisColor right) =>
-            SetColor(ColorManager.GetColor(left), ColorManager.GetColor(right));
+        public Image SetColor(ColorManager.SynthesisColor left, ColorManager.SynthesisColor right) => SetColor(
+            ColorManager.GetColor(left), ColorManager.GetColor(right));
 
         public Image SetColor(Color left, Color right) {
             if (_hasCustomSprite) {
@@ -1326,7 +1324,7 @@ namespace Synthesis.UI.Dynamic {
                 return this;
             }
 
-            _gradientUpdater.LeftColor = left;
+            _gradientUpdater.LeftColor  = left;
             _gradientUpdater.RightColor = right;
             _gradientUpdater.Refresh();
 
@@ -1336,14 +1334,15 @@ namespace Synthesis.UI.Dynamic {
         public Image SetCornerRadius(float r) {
             if (_hasCustomSprite)
                 _unityImage.pixelsPerUnitMultiplier = 250f / r;
-            else _gradientUpdater.Radius = r;
+            else
+                _gradientUpdater.Radius = r;
             return this;
         }
 
         public Image SetMultiplier(float m) {
             if (_hasCustomSprite)
                 _unityImage.pixelsPerUnitMultiplier = m;
-            
+
             return this;
         }
     }

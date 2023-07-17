@@ -213,7 +213,8 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
                                  .AddOnClickedEvent(x => { SelectColor(c.Key); })
                                  .SetStretch<Button>()
                                  .SetAnchoredPosition<Button>(Vector3.zero)
-                                 .RootGameObject.GetComponent<UnityEngine.UI.Image>().color = Color.clear;
+                                 .RootGameObject.GetComponent<UnityEngine.UI.Image>()
+                                 .color = Color.clear;
 
                 _colors.Add(c.Key, (c.Value, colorImage, colorContent, label));
 
