@@ -211,9 +211,9 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
                 var button = colorContent.CreateButton()
                                  .StepIntoLabel(l => l.RootGameObject.SetActive(false))
                                  .AddOnClickedEvent(x => { SelectColor(c.Key); })
-                                 .SetBackgroundColor<Button>(Color.clear)
                                  .SetStretch<Button>()
-                                 .SetAnchoredPosition<Button>(Vector3.zero);
+                                 .SetAnchoredPosition<Button>(Vector3.zero)
+                                 .RootGameObject.GetComponent<UnityEngine.UI.Image>().color = Color.clear;
 
                 _colors.Add(c.Key, (c.Value, colorImage, colorContent, label));
 
