@@ -110,11 +110,6 @@ namespace Synthesis.UI.Dynamic {
                                              .SetWidth<Button>(125))
                     .ApplyTemplate<LabeledButton>(VerticalLayout);
             SetSelectUIState(false);
-            // _moveTriggerButton = MainContent.CreateLabeledButton()
-            //     .SetHeight<LabeledButton>(30)
-            //     .StepIntoLabel(l => l.SetText("Move pickup zone"))
-            //     .StepIntoButton(b => b.StepIntoLabel(l => l.SetText("Move")))
-            //     .ApplyTemplate<LabeledButton>(VerticalLayout);
             _zoneSizeSlider = MainContent.CreateSlider(label: "Zone Size", minValue: 0.1f, maxValue: 1f)
                                   .ApplyTemplate<Slider>(VerticalLayout)
                                   .AddOnValueChangedEvent((s, v) => {
@@ -185,9 +180,7 @@ namespace Synthesis.UI.Dynamic {
                 bool hit = UnityEngine.Physics.Raycast(ray, out hitInfo);
                 if (hit && hitInfo.rigidbody != null &&
                     hitInfo.rigidbody.transform.parent ==
-                        _robot.RobotNode.transform) {
-                    // Debug.Log($"Selecting Node: {hitInfo.rigidbody.name}");
-
+                        RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform) {
                     if (_hoveringNode != null &&
                         (_selectedNode == null ? true : !_selectedNode.name.Equals(_hoveringNode.name))) {
                         _hoveringNode.enabled = false;

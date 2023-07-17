@@ -74,6 +74,7 @@ namespace Synthesis.UI.Dynamic {
                 DynamicUIManager.ClosePanel<SpawnLocationPanel>();
                 MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.FieldConfig);
             });
+
             CancelButton.RootGameObject.SetActive(false);
             CreateRobotHighlights();
             CreateButtons();

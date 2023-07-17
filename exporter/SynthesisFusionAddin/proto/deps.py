@@ -118,7 +118,7 @@ try:
 except ImportError or ModuleNotFoundError:
     # Version 1 with built in Pip - cannot check if it works on OSX right now.
     # Works with fusion debug builds
-    installCross(["protobuf==3.19.4"])
+    installCross(["protobuf==4.23.3"])
     from .proto_out import joint_pb2, assembly_pb2, types_pb2, material_pb2
 
     # Version 2 with no shell and fetched pip

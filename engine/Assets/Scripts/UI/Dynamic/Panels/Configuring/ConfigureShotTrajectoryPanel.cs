@@ -117,11 +117,6 @@ namespace Synthesis.UI.Dynamic {
                                              .SetWidth<Button>(125))
                     .ApplyTemplate<LabeledButton>(VerticalLayout);
             SetSelectUIState(false);
-            // _moveTriggerButton = MainContent.CreateLabeledButton()
-            //     .SetHeight<LabeledButton>(30)
-            //     .StepIntoLabel(l => l.SetText("Move pickup zone"))
-            //     .StepIntoButton(b => b.StepIntoLabel(l => l.SetText("Move")))
-            //     .ApplyTemplate<LabeledButton>(VerticalLayout);
             _exitSpeedSlider = MainContent.CreateSlider(label: "Speed", minValue: 0f, maxValue: 10f)
                                    .ApplyTemplate<Slider>(VerticalLayout)
                                    .AddOnValueChangedEvent((s, v) => {

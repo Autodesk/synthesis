@@ -48,22 +48,4 @@ public static class LayoutManager {
         tab.Create();
         return true;
     }
-
-    // private static GameObject _currentTab = null;
-    // public static GameObject CurrentTab
-    // {
-    //     get => _currentTab;
-    // }
-
-    // public static bool OpenTab(GameObject t, bool forceClose = true)
-    // {
-    //     if (_currentTab != null)
-    //         if (forceClose)
-    //             Object.Destroy(_currentTab);
-    //         else
-    //             return false;
-
-    //     _currentTab = Object.Instantiate(t, GameObject.Find("Tabs").transform);//set transform
-    //     return true;
-    // }
 }

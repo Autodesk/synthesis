@@ -33,7 +33,6 @@ namespace UI.Dynamic.Modals.Spawning {
             AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
                 if (_selectedIndex != -1) {
                     RobotSimObject.SpawnRobot(_files[_selectedIndex]);
-                    // ItemAnalytics("Robot");
                     DynamicUIManager.CloseActiveModal();
                 }
             });
@@ -44,9 +43,6 @@ namespace UI.Dynamic.Modals.Spawning {
                                           .SetTopStretch<Dropdown>();
 
             _selectedIndex = _files.Length > 0 ? 0 : -1;
-
-            // MainContent.CreateLabeledButton().SetTopStretch<LabeledButton>(anchoredY: 50).StepIntoLabel(l =>
-            // l.SetText("Test"));
         }
 
         public override void Update() {
@@ -57,14 +53,6 @@ namespace UI.Dynamic.Modals.Spawning {
         }
 
         public override void Delete() {}
-
-        // private string[] GetFiles(string filePath) {
-        //     string[] fullPaths = Directory.GetFiles(filePath);
-        //     // exclude .DS_Store and other files; someone else can change or remove this
-        //     fullPaths = Array.FindAll(fullPaths, path => path.EndsWith(".mira"));
-        //     return Array.ConvertAll(fullPaths, path => path.Substring(_root.Length +
-        //     Path.DirectorySeparatorChar.ToString().Length));
-        // }
 
         public static string ParsePath(string p, char c) {
             string[] a = p.Split(c);
@@ -81,7 +69,6 @@ namespace UI.Dynamic.Modals.Spawning {
                 if (i != a.Length - 1)
                     b += System.IO.Path.AltDirectorySeparatorChar;
             }
-            // Debug.Log(b);
             return b;
         }
     }

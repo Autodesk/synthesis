@@ -12,37 +12,29 @@ public class DebugJointAxes : MonoBehaviour {
 
     public void OnDrawGizmos() {
         if (Application.isPlaying) {
-            SynthesisAPI.Simulation.SimulationManager.Drivers.Select(x => x.Value)
-                .ForEach(a => a /*.Where(c => c.Name == "e94f72e4-2d00-48a6-bf88-4d3eb98f9d22")*/.ForEach(y => {
-                    if (y is Synthesis.RotationalDriver) {
-                        var ArmDriver = y as Synthesis.RotationalDriver;
+            SynthesisAPI.Simulation.SimulationManager.Drivers.Select(x => x.Value).ForEach(a => a.ForEach(y => {
+                if (y is Synthesis.RotationalDriver) {
+                    var ArmDriver = y as Synthesis.RotationalDriver;
 
-                        var anchorA = ArmDriver.JointA.anchor;
-                        var axisA   = ArmDriver.JointA.axis;
-                        var anchorB = ArmDriver.JointB.anchor;
-                        var axisB   = ArmDriver.JointB.axis;
+                    var anchorA = ArmDriver.JointA.anchor;
+                    var axisA   = ArmDriver.JointA.axis;
+                    var anchorB = ArmDriver.JointB.anchor;
+                    var axisB   = ArmDriver.JointB.axis;
 
-                        Vector3 globalAnchorA =
-                            ArmDriver.JointA.gameObject.transform.localToWorldMatrix.MultiplyPoint(anchorA);
-                        Vector3 globalAxisA =
-                            ArmDriver.JointA.gameObject.transform.localToWorldMatrix.MultiplyVector(axisA);
-                        Vector3 globalAnchorB =
-                            ArmDriver.JointB.gameObject.transform.localToWorldMatrix.MultiplyPoint(anchorB);
-                        Vector3 globalAxisB =
-                            ArmDriver.JointB.gameObject.transform.localToWorldMatrix.MultiplyVector(axisB);
+                    Vector3 globalAnchorA =
+                        ArmDriver.JointA.gameObject.transform.localToWorldMatrix.MultiplyPoint(anchorA);
+                    Vector3 globalAxisA =
+                        ArmDriver.JointA.gameObject.transform.localToWorldMatrix.MultiplyVector(axisA);
+                    Vector3 globalAnchorB =
+                        ArmDriver.JointB.gameObject.transform.localToWorldMatrix.MultiplyPoint(anchorB);
+                    Vector3 globalAxisB =
+                        ArmDriver.JointB.gameObject.transform.localToWorldMatrix.MultiplyVector(axisB);
 
-                        Gizmos.color = Color.green;
-                        Gizmos.DrawSphere(globalAnchorA, 0.01f);
-                        Gizmos.DrawLine(globalAnchorA, globalAnchorA + (globalAxisA.normalized * 0.2f));
-                        // Gizmos.color = Color.magenta;
-                        // Gizmos.DrawSphere(globalAnchorB, 0.01f);
-                        // Gizmos.DrawLine(globalAnchorB, globalAnchorB + (globalAxisB.normalized * 0.2f));
-
-                        // Gizmos.color = Color.white;
-                        // Gizmos.DrawSphere(ArmDriver.JointA.gameObject.transform.position, 0.05f);
-                        // Gizmos.DrawSphere(ArmDriver.JointB.gameObject.transform.position, 0.05f);
-                    }
-                }));
+                    Gizmos.color = Color.green;
+                    Gizmos.DrawSphere(globalAnchorA, 0.01f);
+                    Gizmos.DrawLine(globalAnchorA, globalAnchorA + (globalAxisA.normalized * 0.2f));
+                }
+            }));
             DebugPoints.RemoveAll(x => {
                 try {
                     Gizmos.color = Color.white;

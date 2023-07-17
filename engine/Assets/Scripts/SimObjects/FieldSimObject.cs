@@ -94,7 +94,6 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         // Level the field
         FieldObject.transform.position =
             new Vector3(-FieldBounds.center.x, FieldBounds.extents.y - FieldBounds.center.y, -FieldBounds.center.z);
-        // Debug.Log($"{FieldObject.transform.position.y}");
 
         _initialPosition = FieldObject.transform.position;
 
@@ -109,7 +108,6 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
             bool visible = PreferenceManager.GetPreference<bool>(SettingsModal.RENDER_SCORE_ZONES);
             ScoringZones.ForEach(zone => zone.VisibilityCounter = zone.VisibilityCounter);
         });
-        // Shooting.ConfigureGamepieces();
 
         FieldObject.transform.GetComponentsInChildren<Rigidbody>().ForEach(x => {
             var rc     = x.gameObject.AddComponent<HighlightComponent>();
@@ -120,8 +118,6 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
 
     public void ResetField() {
         SpawnField(MiraLive);
-        // FieldObject.transform.position = _initialPosition;
-        // FieldObject.transform.rotation = _initialRotation;
     }
 
     public bool RemoveScoringZone(ScoringZone zone) {
@@ -161,8 +157,6 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         if (CurrentField == null)
             return false;
 
-        // Debug.Log($"GP count: {CurrentField.Gamepieces.Count}");
-
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
             RobotSimObject.GetCurrentlyPossessedRobot().ClearGamepieces();
 
@@ -173,7 +167,6 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         SimulationManager.RemoveSimObject(CurrentField);
         CurrentField = null;
         return true;
-        // SynthesisAssetCollection.DefaultFloor.SetActive(true);
     }
 
     public static void SpawnField(string filePath, bool spawnRobotGizmo = true) {

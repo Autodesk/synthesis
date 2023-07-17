@@ -7,7 +7,6 @@ using UnityEngine.EventSystems;
 #nullable enable
 
 public class OrbitCameraMode : ICameraMode {
-    // [SerializeField] public Transform FollowTransform;
     public static Func<Vector3> FocusPoint = () => Vector3.zero;
 
     public float TargetZoom { get; private set; }  = 8.0f;
@@ -56,16 +55,6 @@ public class OrbitCameraMode : ICameraMode {
 
         if (enableOrbit && !isGodMode) {
             z = CameraController.ZoomSensitivity * -Input.mouseScrollDelta.y;
-
-            // UNCOMMENT OUT TO ENABLE CURSOR-LOCKING WHEN ORBITING
-            /*
-            if (Input.GetKeyDown(KeyCode.Mouse0)) {
-                Cursor.visible = false;
-                Cursor.lockState = CursorLockMode.Locked;
-            } else if (Input.GetKeyUp(KeyCode.Mouse0)) {
-                Cursor.visible = true;
-                Cursor.lockState = CursorLockMode.None;
-            }*/
         }
 
         if (!Input.GetKey(KeyCode.Mouse0) || isGodMode) {

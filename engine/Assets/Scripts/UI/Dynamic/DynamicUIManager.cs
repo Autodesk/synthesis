@@ -16,9 +16,8 @@ namespace Synthesis.UI.Dynamic {
 
         private static Dictionary<Type, (PanelDynamic, bool)> _persistentPanels =
             new Dictionary<Type, (PanelDynamic, bool)>();
-        public static bool AnyPanels => _persistentPanels.Count > 0;
-        // public static PanelDynamic ActivePanel { get; private set; }
-        public static Content _screenSpaceContent = null;
+        public static bool AnyPanels              => _persistentPanels.Count > 0;
+        public static Content _screenSpaceContent  = null;
         public static Content ScreenSpaceContent {
             get {
                 if (_screenSpaceContent == null) {
@@ -51,7 +50,6 @@ namespace Synthesis.UI.Dynamic {
                 return _replaySlider;
             }
         }
-        // public static GameObject ActiveModalGameObject;
 
         public static bool CreateModal<T>(params object[] args)
             where T : ModalDynamic {
@@ -104,16 +102,10 @@ namespace Synthesis.UI.Dynamic {
             if (_persistentPanels.ContainsKey(typeof(T)))
                 ClosePanel(typeof(T));
 
-            // if (ActivePanel != null)
-            //     CloseActivePanel();
-
             var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("dynamic-panel-base"),
                 GameObject.Find("UI").transform.Find("ScreenSpace").Find("PanelContainer"));
 
-            // var c = ColorManager.GetColor("SAMPLE");
-
-            PanelDynamic panel = (PanelDynamic) Activator.CreateInstance(typeof(T), args);
-            // ActivePanel = panel;
+            PanelDynamic panel           = (PanelDynamic) Activator.CreateInstance(typeof(T), args);
             _persistentPanels[typeof(T)] = (panel, persistent);
             panel.Create_Internal(unityObject);
             bool success = panel.Create();
@@ -176,7 +168,6 @@ namespace Synthesis.UI.Dynamic {
             panel.Delete();
             panel.Delete_Internal();
 
-            // ActivePanel = null;
             _persistentPanels.Remove(t);
 
             AnalyticsManager.LogCustomEvent(AnalyticsEvent.PanelClosed, ("UIType", t.Name));
@@ -226,9 +217,11 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public static bool ShowPanel<T>()
-            where T : PanelDynamic => ShowPanel(typeof(T));
+            where T : PanelDynamic {
+            return ShowPanel(typeof(T));
+        }
 
-  public static bool ShowPanel(Type t) {
+        public static bool ShowPanel(Type t) {
             if (!PanelExists(t))
                 return false;
 
@@ -247,11 +240,16 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public static T ApplyTemplate<T>(this T component, Func<T, T> template)
-            where T : UIComponent => template(component); public static T ApplyTemplate<T>(this T component,
-  Func<UIComponent, UIComponent> template)
-            where T : UIComponent => template(component) as T;
+            where T : UIComponent {
+            return template(component);
+        }
 
-  public static Rect GetOffsetRect(this RectTransform trans) {
+        public static T ApplyTemplate<T>(this T component, Func<UIComponent, UIComponent> template)
+            where T : UIComponent {
+            return template(component) as T;
+        }
+
+        public static Rect GetOffsetRect(this RectTransform trans) {
             var min =
                 new Vector2(trans.anchoredPosition.x + trans.rect.xMin, trans.anchoredPosition.y + trans.rect.yMin);
             var max =

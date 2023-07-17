@@ -269,11 +269,7 @@ namespace Engine.ModuleLoader {
             stream.Close();
             var assembly = Assembly.Load(memStream.ToArray());
 
-            // Logger.Log(assembly.FullName);
-
             loadedAssemblies.Add((assembly, owningModule));
-
-            // return true;
 
             // Set up module
             Type[] types;
