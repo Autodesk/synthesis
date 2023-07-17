@@ -196,11 +196,11 @@ public class ConfigMotorModal : ModalDynamic {
 
     private class ConfigMotor {
         public int id;
-        public Driver driver { get; set; }
-        public float origVel { get; set; }
-        private float _force { get; set; }
-        public bool velChanged { get; set; } = false;
-        public MotorType motorType { get; set; }
+        public Driver driver;
+        public float origVel;
+        private float _force;
+        public bool velChanged = false;
+        public MotorType motorType;
 
         public ConfigMotor(MotorType t, int i) {
             motorType = t;

@@ -4,9 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Synthesis.UI.Dynamic;
 
-using UButton = UnityEngine.UI.Button;
-using System.Linq;
-using Synthesis.UI;
 using DigitalRuby.Tween;
 using SynthesisAPI.EventBus;
 using UnityEngine.SceneManagement;
@@ -71,6 +68,7 @@ public static class MainHUD {
     private static bool _hasNewRobotListener = false; // In the Unity editor, working with statics can be really weird
 
     public static bool isConfig = false;
+    public static bool isMatchFreeCam = false;
 
     public static RobotSimObject ConfigRobot = RobotSimObject.GetCurrentlyPossessedRobot();
 
@@ -246,7 +244,14 @@ public static class MainHUD {
             }
         });
 
-        if (!(MatchStateMachine.Instance.CurrentState.StateName is MatchStateMachine.StateName.RobotPositioning))
+        if ((MatchStateMachine.Instance.CurrentState.StateName is MatchStateMachine.StateName.RobotPositioning) && Camera.main != null) {
+                    FreeCameraMode camMode = CameraController.CameraModes["Freecam"] as FreeCameraMode;
+                    Camera.main.GetComponent<CameraController>().CameraMode = camMode;
+                    var location                                            = new Vector3(0, 6, -8);
+                    camMode.SetTransform(location, Quaternion.LookRotation(-location.normalized,
+                                                       Vector3.Cross(-location.normalized, Vector3.right)));
+        }
+        if (PhysicsManager.IsFrozen && !(MatchStateMachine.Instance.CurrentState.StateName is MatchStateMachine.StateName.RobotPositioning))
             PhysicsManager.IsFrozen = false;
     }
 
@@ -285,19 +290,28 @@ public static class MainHUD {
         MainHUD.AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>());
         MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(),
             icon: SynthesisAssetCollection.GetSpriteByName("settings"));
-        MainHUD.AddItemToDrawer("Move", b => {;
-            OrbitCameraMode.FocusPoint = () =>
-            ConfigRobot.GroundedNode != null && ConfigRobot.GroundedBounds != null
-                ? ConfigRobot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(ConfigRobot.GroundedBounds.center)
-                : Vector3.zero;
-            GizmoManager.SpawnGizmo(ConfigRobot);
-        });
+        
+        if (ModeManager.CurrentMode.GetType() == typeof(PracticeMode))
+            MainHUD.AddItemToDrawer("Move", b => {
+                if (!isMatchFreeCam)
+                    OrbitCameraMode.FocusPoint = () =>
+                        ConfigRobot.GroundedNode != null && ConfigRobot.GroundedBounds != null
+                            ? ConfigRobot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(ConfigRobot.GroundedBounds.center)
+                            : Vector3.zero;
+                GizmoManager.SpawnGizmo(ConfigRobot);
+            });
 
+        if (MatchStateMachine.Instance.CurrentState.StateName is MatchStateMachine.StateName.RobotPositioning) {
+            isMatchFreeCam = Camera.main.GetComponent<CameraController>().CameraMode == CameraController.CameraModes["Freecam"];
+        } else {
+            isMatchFreeCam = false;
+        }
         PhysicsManager.IsFrozen = true;
     }
 
     public static void LeaveConfig() {
         DynamicUIManager.CloseAllPanels();
+        GizmoManager.ExitGizmo();
         isConfig = false;
         if (ModeManager.CurrentMode.GetType() == typeof(PracticeMode)) {
             SetUpPractice();
