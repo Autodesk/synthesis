@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Synthesis.UI;
-using Synthesis.UI.Dynamic;
 using UnityEngine;
 
 namespace SimObjects.MixAndMatch

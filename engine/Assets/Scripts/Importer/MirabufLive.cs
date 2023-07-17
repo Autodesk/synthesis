@@ -259,7 +259,7 @@ namespace Synthesis.Import {
         private static RigidbodyDefinitions FindRigidbodyDefinitions(MirabufLive live) {
             Assembly assembly = live.MiraAssembly;
 
-#if DEBUG_MIRABUF
+/*#if DEBUG_MIRABUF
             MemoryStream ms = new MemoryStream();
             ms.Seek(0, SeekOrigin.Begin);
             assembly.WriteTo(ms);
@@ -280,7 +280,7 @@ namespace Synthesis.Import {
             }
             if (!allUnique)
                 Logger.Log("Not all unique", LogLevel.Warning);
-#endif
+#endif*/
 
             var defs    = new Dictionary<string, RigidbodyDefinition>();
             var partMap = new Dictionary<string, string>();

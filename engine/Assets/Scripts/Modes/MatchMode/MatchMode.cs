@@ -156,7 +156,8 @@ namespace Modes.MatchMode {
                 Directory.GetFiles(robotsFolder).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
 
             int i = 0;
-            SelectedRobots.ForEach(x => {
+            // TODO: Fix match mode spawning
+            /*SelectedRobots.ForEach(x => {
                 if (x != -1) {
                     Vector3 position              = new Vector3(2 * i - 6, -2.5f, 0);
                     RawSpawnLocations[i].position = position;
@@ -166,7 +167,7 @@ namespace Modes.MatchMode {
                 } else
                     Robots.Add(null);
                 i++;
-            });
+            });*/
         }
 
         public static string ParsePath(string p, char c) {

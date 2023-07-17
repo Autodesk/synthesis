@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SimObjects.MixAndMatch;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.Utilities;
 using TMPro;
@@ -32,13 +33,28 @@ namespace Synthesis.UI.Dynamic {
                 .SetColor(ColorManager.SYNTHESIS_WHITE);
 
             AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
-                RobotSimObject.SpawnRobot(_files[0], _files[1]);
+
+                var connectionA = new[] { new MixAndMatchConnectionPoint(
+                    Vector3.forward*0.5f, Vector2.zero) };
+                var connectionB = new[] { new MixAndMatchConnectionPoint(
+                    Vector3.back*0.5f, Vector2.zero) };
+                
+                var parts = new[] {
+                    new MixAndMatchPartData(Vector3.zero, Quaternion.Euler(0, 90, 0), connectionA, 0),
+                    new MixAndMatchPartData(Vector3.forward, Quaternion.identity, connectionB, 1)
+                };
+
+                parts[0].ConnectedPoint = connectionB[0];
+                
+                var trfData = new MixAndMatchTransformData(parts);
+                
+                RobotSimObject.SpawnRobot(trfData, _files[1], _files[1]);
             
-                if (_selectedIndex != -1) {
-                    //RobotSimObject.SpawnRobot(_files[_selectedIndex]);
-                    // ItemAnalytics("Robot");
+                /*if (_selectedIndex != -1) {
+                    RobotSimObject.SpawnRobot(_files[_selectedIndex]);
+                    //ItemAnalytics("Robot");
                     DynamicUIManager.CloseActiveModal();
-                }
+                }*/
             });
 
             var chooseRobotDropdown = MainContent.CreateDropdown()
