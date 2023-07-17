@@ -1200,9 +1200,6 @@ namespace Synthesis.UI.Dynamic {
 
             _viewportImage.SetColor(ColorManager.SynthesisColor.InteractiveElementRight,
                 ColorManager.SynthesisColor.InteractiveElementLeft);
-
-            // TODO: Get some more control over the individual items in the dropdown
-            // _viewport.StepIntoImage(i => i.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT)));
         }
 
         public Dropdown SetOptions(string[] options) {

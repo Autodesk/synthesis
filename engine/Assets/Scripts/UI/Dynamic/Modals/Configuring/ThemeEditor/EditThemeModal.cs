@@ -284,21 +284,18 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             List<(ColorManager.SynthesisColor name, Color color)> colors = new();
             _colors.ForEach(c => { colors.Add((c.Key, c.Value.color)); });
             ColorManager.ModifySelectedTheme(colors);
-            Debug.Log($"Saved theme changes to {_selectedThemeIndex}");
         }
 
         /// <summary>Gets the selected theme preference</summary>
         private void GetThemePref() {
             _selectedThemeIndex = ColorManager.ThemeNameToIndex(
                 PreferenceManager.GetPreference<string>(ColorManager.SELECTED_THEME_PREF));
-            Debug.Log($"Get theme pref of {_selectedThemeIndex}");
         }
 
         /// <summary>Sets the selected theme preference</summary>
         private void SetThemePref() {
             PreferenceManager.SetPreference(
                 ColorManager.SELECTED_THEME_PREF, ColorManager.ThemeIndexToName(_selectedThemeIndex));
-            Debug.Log($"Set theme pref to {_selectedThemeIndex}");
         }
 
         /// <summary>Update all colors of this modal to preview selected colors</summary>

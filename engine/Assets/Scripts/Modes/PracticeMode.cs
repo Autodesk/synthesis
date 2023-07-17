@@ -139,17 +139,17 @@ public class PracticeMode : IMode {
             _showingScoreboard = true;
             DynamicUIManager.CreatePanel<ScoreboardPanel>(true, false);
         }
-        // TODO: Fix this error
-        /*bool openEscapeMenu = InputManager.MappedValueInputs[TOGGLE_ESCAPE_MENU_INPUT].Value == 1.0F;
+
+        bool openEscapeMenu = InputManager.MappedValueInputs[TOGGLE_ESCAPE_MENU_INPUT].Value == 1.0F;
         if (openEscapeMenu && !_lastEscapeValue) {
             if (_escapeMenuOpen) {
                 CloseMenu();
             } else {
                 OpenMenu();
             }
-        }*/
+        }
 
-        //_lastEscapeValue = openEscapeMenu;
+        _lastEscapeValue = openEscapeMenu;
     }
 
     public void OpenMenu() {

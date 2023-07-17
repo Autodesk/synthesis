@@ -1,4 +1,4 @@
-// SDF Function for rectangle
+// SDF Function for rectangle (source: https://github.com/FFaUniHan/Unity_UI_Rounded_Corners)
 float rectangle(float2 samplePosition, float2 halfSize){
     // X component represents signed distance to closest vertical edge of rectangle
     // Same for Y but for closest horizontal edge

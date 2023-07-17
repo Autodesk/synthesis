@@ -16,7 +16,7 @@ namespace UI {
 
         private void GetMaterial() {
             if (_material == null)
-                _material = _material = new Material(Shader.Find("UI/RoundedCorners/RoundedCorners"));
+                _material = _material = new Material(Shader.Find("ImageGradient/ImageGradient"));
         }
 
         void Start() {
