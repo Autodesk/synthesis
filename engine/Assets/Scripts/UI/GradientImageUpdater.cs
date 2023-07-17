@@ -19,7 +19,7 @@ namespace UI {
                 _material = _material = new Material(Shader.Find("ImageGradient/ImageGradient"));
         }
 
-        void Start() {
+        private void Start() {
             GetMaterial();
             Refresh();
 
