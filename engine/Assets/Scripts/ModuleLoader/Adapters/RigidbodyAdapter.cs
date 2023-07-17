@@ -87,18 +87,9 @@ namespace Engine.ModuleLoader.Adapters {
         }
 
         public void Update() {
-            // instance.useGravity = unityRigidbody.useGravity;
-            // instance.isKinematic = unityRigidbody.isKinematic;
-            instance.mass     = unityRigidbody.mass;
-            instance.velocity = unityRigidbody.velocity.Map();
-            // instance.drag = unityRigidbody.drag;
+            instance.mass            = unityRigidbody.mass;
+            instance.velocity        = unityRigidbody.velocity.Map();
             instance.angularVelocity = unityRigidbody.angularVelocity.Map();
-            // instance.angularDrag = unityRigidbody.angularDrag;
-            // instance.maxAngularVelocity = unityRigidbody.maxAngularVelocity;
-            // instance.maxDepenetrationVelocity = unityRigidbody.maxDepenetrationVelocity;
-            // instance.collisionDetectionMode =
-            // unityRigidbody.collisionDetectionMode.Convert<CollisionDetectionMode>(); instance.constraints =
-            // unityRigidbody.constraints.Convert<RigidbodyConstraints>();
 
             if (instance.AdditionalForces.Count > 0) {
                 foreach (var force in instance.AdditionalForces) {

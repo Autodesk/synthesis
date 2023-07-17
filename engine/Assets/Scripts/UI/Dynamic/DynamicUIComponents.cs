@@ -77,11 +77,9 @@ namespace Synthesis.UI.Dynamic {
             _unityObject = unityObject;
 
             // Grab Customizable Modal Components
-            var header   = _unityObject.transform.Find("Header");
-            var headerRt = header.GetComponent<RectTransform>();
-            _panelImage  = new Image(null, header.Find("Image").gameObject);
-            // _panelImage.SetColor(new Color(1, 1, 1, 0));
-
+            var header       = _unityObject.transform.Find("Header");
+            var headerRt     = header.GetComponent<RectTransform>();
+            _panelImage      = new Image(null, header.Find("Image").gameObject);
             _panelBackground = new Image(null, unityObject);
             _panelBackground.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.Background));
             _panelBackground.SetCornerRadius(15);
@@ -201,11 +199,9 @@ namespace Synthesis.UI.Dynamic {
             _unityObject = unityObject;
 
             // Grab Customizable Modal Components
-            var header   = _unityObject.transform.Find("Header");
-            var headerRt = header.GetComponent<RectTransform>();
-            _modalImage  = new Image(null, header.Find("Image").gameObject);
-            // _modalImage.SetColor(new Color(1, 1, 1, 0));
-
+            var header       = _unityObject.transform.Find("Header");
+            var headerRt     = header.GetComponent<RectTransform>();
+            _modalImage      = new Image(null, header.Find("Image").gameObject);
             _modalBackground = new Image(null, unityObject);
             _modalBackground.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.Background));
             _modalBackground.SetCornerRadius(20);
@@ -269,11 +265,6 @@ namespace Synthesis.UI.Dynamic {
     }
 
     public abstract class UIComponent {
-        // public static readonly Func<UIComponent, UIComponent> VerticalLayoutTemplate = (UIComponent component) => {
-        //     return component.SetTopStretch<UIComponent>(anchoredY: component.Parent!.HeightOfChildren -
-        //     component.Size.y);
-        // };
-
         public float HeightOfChildren {
             get {
                 float sum = 0f;
@@ -527,8 +518,7 @@ namespace Synthesis.UI.Dynamic {
             leftRt.anchorMax        = new Vector2(0f, 0.5f);
             leftRt.anchorMin        = new Vector2(0f, 0.5f);
             leftRt.anchoredPosition = new Vector2(leftWidth / 2f, 0f);
-            // leftRt.sizeDelta = new Vector2(leftWidth, leftRt.sizeDelta.y);
-            var leftContent = new Content(this, leftContentObject, new Vector2(leftWidth, Size.y));
+            var leftContent         = new Content(this, leftContentObject, new Vector2(leftWidth, Size.y));
 
             var rightContentObject = GameObject.Instantiate(
                 SynthesisAssetCollection.GetUIPrefab("content-base"), base.RootGameObject.transform);
@@ -537,8 +527,7 @@ namespace Synthesis.UI.Dynamic {
             rightRt.anchorMin        = new Vector2(1f, 0.5f);
             float rightWidth         = (Size.x - leftWidth) - padding;
             rightRt.anchoredPosition = new Vector2(-rightWidth / 2f, 0f);
-            // rightRt.sizeDelta = new Vector2(rightWidth, rightRt.sizeDelta.y);
-            var rightContent = new Content(this, rightContentObject, new Vector2(rightWidth, Size.y));
+            var rightContent         = new Content(this, rightContentObject, new Vector2(rightWidth, Size.y));
 
             base.Children.Add(leftContent);
             base.Children.Add(rightContent);
@@ -1100,8 +1089,6 @@ namespace Synthesis.UI.Dynamic {
         private Image _image;
         public Image Image => _image;
 
-        // public UButton UnityButton => _unityButton;
-
         public Button(UIComponent? parent, GameObject unityObject, Vector2? size) : base(parent, unityObject) {
             if (size != null) {
                 Size = size.Value;
@@ -1210,6 +1197,7 @@ namespace Synthesis.UI.Dynamic {
             _itemLabel.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
 
             _viewportImage = new Image(this, unityObject.transform.Find("Template").Find("Viewport").gameObject);
+
             _viewportImage.SetColor(ColorManager.SynthesisColor.InteractiveElementRight,
                 ColorManager.SynthesisColor.InteractiveElementLeft);
 

@@ -6,7 +6,8 @@ using System.Linq;
 using Mirabuf;
 using Mirabuf.Joint;
 
-using Color = UnityEngine.Color;
+using Color    = UnityEngine.Color;
+using UVector3 = UnityEngine.Vector3;
 
 namespace Synthesis.Util {
     public static class SynthesisUtil {
@@ -96,6 +97,44 @@ namespace Synthesis.Util {
                 default:
                     return byte.Parse(hex.ToString());
             }
+        }
+
+        public static float GetInertiaAroundParallelAxis(Rigidbody rb, UVector3 localAnchor, UVector3 localAxis) {
+            var comInertia       = GetInertiaFromAxisVector(rb, localAxis);
+            var pointMassInertia = rb.mass * Mathf.Pow(UVector3.Distance(rb.centerOfMass, localAnchor), 2f);
+            return comInertia + pointMassInertia;
+        }
+
+        /// <summary>
+        /// Gets the inertia of a rigidbody around a given axis
+        /// </summary>
+        /// <param name="rb"></param>
+        /// <param name="axis">Use local axis</param>
+        /// <returns></returns>
+        public static float GetInertiaFromAxisVector(Rigidbody rb, UVector3 localAxis) {
+            var sph     = CartesianToSphericalCoordinate(localAxis);
+            var inertia = rb.inertiaTensorRotation * rb.inertiaTensor;
+            return EllipsoidRadiusFromSphericalCoordinate(sph, inertia);
+        }
+
+        public static float EllipsoidRadiusFromSphericalCoordinate(UVector3 sph, UVector3 ellipsoidRadi) {
+            var cartEllip = new UVector3(ellipsoidRadi.x * Mathf.Sin(sph.y) * Mathf.Cos(sph.z),
+                ellipsoidRadi.y * Mathf.Cos(sph.y), ellipsoidRadi.z * Mathf.Sin(sph.y) * Mathf.Sin(sph.z));
+            return cartEllip.magnitude;
+        }
+
+        public static void PrintSphericalCoordinate(UVector3 a) {
+            Debug.Log($"Radius: {a.x}\nTheta: {a.y}\nPhi: {a.z}");
+        }
+
+        /// <summary>
+        /// Converts a cartesian coordinate to a spherical coordinate
+        /// </summary>
+        /// <param name="cart"></param>
+        /// <returns>X is radius, Y is theta, Z is phi</returns>
+        public static UVector3 CartesianToSphericalCoordinate(UVector3 cart) {
+            cart = cart.normalized;
+            return new UVector3(cart.magnitude, Mathf.Acos(cart.y / 1), Mathf.Asin(cart.z / 1));
         }
     }
 }

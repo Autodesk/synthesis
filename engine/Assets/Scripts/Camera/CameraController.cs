@@ -73,9 +73,6 @@ public class CameraController : MonoBehaviour {
     }
 
     public void Update() {
-        // if (FollowTransform != null && transform.parent != FollowTransform)
-        //     transform.parent = FollowTransform;
-
         if (CameraMode != null)
             CameraMode.Update(this);
     }

@@ -55,10 +55,6 @@ public class ConfiguringModal : ModalDynamic {
                 DynamicUIManager.CloseActiveModal();
                 GizmoManager.SpawnGizmo(RobotSimObject.GetCurrentlyPossessedRobot());
                          });
-            // var field = right.CreateButton("Field")
-            //     .ApplyTemplate<Button>(VerticalLayout)
-            //     .AddOnClickedEvent(b => DynamicUIManager.CreateModal<AddFieldModal>())
-            //     .StepIntoLabel(l => l.SetText("Fields"));
         }
     }
 
