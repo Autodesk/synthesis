@@ -483,6 +483,7 @@ namespace Synthesis.UI.Dynamic {
 
                 if (image)
                     RootGameObject.GetComponent<UImage>().color = Color.white;
+                gradientImage.Refresh();
             } else {
                 if (image)
                     image.color = left;
