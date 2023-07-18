@@ -101,44 +101,44 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             var selectThemeLabel = content.CreateLabel().ApplyTemplate(VerticalLayout).SetText("Select a Theme");
 
             var themeChooser = content.CreateDropdown()
-                .ApplyTemplate(VerticalLayout)
-                .SetOptions(ColorManager.AvailableThemes)
-                .SetValue(_selectedThemeIndex);
+                                   .ApplyTemplate(VerticalLayout)
+                                   .SetOptions(ColorManager.AvailableThemes)
+                                   .SetValue(_selectedThemeIndex);
 
             var (addContent, right) = content.CreateSubContent(new Vector2(content.Size.x, 50))
-                .ApplyTemplate(VerticalLayout)
-                .SplitLeftRight((content.Size.x - padding) / 3f, padding);
+                                          .ApplyTemplate(VerticalLayout)
+                                          .SplitLeftRight((content.Size.x - padding) / 3f, padding);
 
             var (deleteContent, deleteAllContent) = right.SplitLeftRight((content.Size.x - padding) / 3f, padding);
 
             var addThemeButton = addContent.CreateButton()
-                .ApplyTemplate(VerticalLayout)
-                .StepIntoLabel(l => l.SetText("Create Theme"))
-                .AddOnClickedEvent(b => { DynamicUIManager.CreateModal<NewThemeModal>(); });
+                                     .ApplyTemplate(VerticalLayout)
+                                     .StepIntoLabel(l => l.SetText("Create Theme"))
+                                     .AddOnClickedEvent(b => { DynamicUIManager.CreateModal<NewThemeModal>(); });
 
             _deleteButton = deleteContent.CreateButton()
-                .ApplyTemplate(VerticalLayout)
-                .StepIntoLabel(l => l.SetText("Delete Selected"))
-                .SetBackgroundColor<Button>(ColorManager.SynthesisColor.InteractiveElementLeft,
-                    ColorManager.SynthesisColor.InteractiveElementRight)
-                .AddOnClickedEvent(b => {
-                    if (_selectedThemeIndex != 0) {
-                        SaveThemeChanges();
-                        DynamicUIManager.CreateModal<DeleteThemeModal>();
-                    }
-                });
+                                .ApplyTemplate(VerticalLayout)
+                                .StepIntoLabel(l => l.SetText("Delete Selected"))
+                                .SetBackgroundColor<Button>(ColorManager.SynthesisColor.InteractiveElementLeft,
+                                    ColorManager.SynthesisColor.InteractiveElementRight)
+                                .AddOnClickedEvent(b => {
+                                    if (_selectedThemeIndex != 0) {
+                                        SaveThemeChanges();
+                                        DynamicUIManager.CreateModal<DeleteThemeModal>();
+                                    }
+                                });
 
             _deleteAllButton = deleteAllContent.CreateButton()
-                .ApplyTemplate(VerticalLayout)
-                .StepIntoLabel(l => l.SetText("Delete All"))
-                .SetBackgroundColor<Button>(ColorManager.SynthesisColor.CancelButton)
-                .AddOnClickedEvent(b => {
-                    if (_selectedThemeIndex != 0) {
-                        SaveThemeChanges();
-                    }
+                                   .ApplyTemplate(VerticalLayout)
+                                   .StepIntoLabel(l => l.SetText("Delete All"))
+                                   .SetBackgroundColor<Button>(ColorManager.SynthesisColor.CancelButton)
+                                   .AddOnClickedEvent(b => {
+                                       if (_selectedThemeIndex != 0) {
+                                           SaveThemeChanges();
+                                       }
 
-                    DynamicUIManager.CreateModal<DeleteAllThemesModal>();
-                });
+                                       DynamicUIManager.CreateModal<DeleteAllThemesModal>();
+                                   });
 
             themeChooser.AddOnValueChangedEvent((dropdown, index, data) => {
                 SelectTheme(index);
@@ -154,7 +154,8 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
                     ColorManager.SynthesisColor.BackgroundSecondary);
             else
                 _deleteButton.EnableEvents<Button>().SetBackgroundColor<Button>(
-                    ColorManager.SynthesisColor.InteractiveElementLeft, ColorManager.SynthesisColor.InteractiveElementRight);
+                    ColorManager.SynthesisColor.InteractiveElementLeft,
+                    ColorManager.SynthesisColor.InteractiveElementRight);
 
             if (_availableThemes.Length == 1)
                 _deleteAllButton.DisableEvents<Button>().SetBackgroundColor<Button>(

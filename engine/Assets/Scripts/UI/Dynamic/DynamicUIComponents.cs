@@ -461,7 +461,7 @@ namespace Synthesis.UI.Dynamic {
             where T : UIComponent {
             return SetBackgroundColor<T>(ColorManager.GetColor(c));
         }
-        
+
         public T SetBackgroundColor<T>(ColorManager.SynthesisColor left, ColorManager.SynthesisColor right)
             where T : UIComponent {
             return SetBackgroundColor<T>(ColorManager.GetColor(left), ColorManager.GetColor(right));
@@ -471,7 +471,7 @@ namespace Synthesis.UI.Dynamic {
             where T : UIComponent {
             return SetBackgroundColor<T>(color, color);
         }
-        
+
         public T SetBackgroundColor<T>(Color left, Color right)
             where T : UIComponent {
             GradientImageUpdater gradientImage = RootGameObject.GetComponent<GradientImageUpdater>();
