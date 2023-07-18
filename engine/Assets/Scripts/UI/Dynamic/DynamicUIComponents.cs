@@ -461,21 +461,31 @@ namespace Synthesis.UI.Dynamic {
             where T : UIComponent {
             return SetBackgroundColor<T>(ColorManager.GetColor(c));
         }
+        
+        public T SetBackgroundColor<T>(ColorManager.SynthesisColor left, ColorManager.SynthesisColor right)
+            where T : UIComponent {
+            return SetBackgroundColor<T>(ColorManager.GetColor(left), ColorManager.GetColor(right));
+        }
 
         public T SetBackgroundColor<T>(Color color)
+            where T : UIComponent {
+            return SetBackgroundColor<T>(color, color);
+        }
+        
+        public T SetBackgroundColor<T>(Color left, Color right)
             where T : UIComponent {
             GradientImageUpdater gradientImage = RootGameObject.GetComponent<GradientImageUpdater>();
             UnityEngine.UI.Image image         = RootGameObject.GetComponent<UnityEngine.UI.Image>();
 
             if (gradientImage) {
-                gradientImage.LeftColor  = color;
-                gradientImage.RightColor = color;
+                gradientImage.LeftColor  = left;
+                gradientImage.RightColor = right;
 
                 if (image)
                     RootGameObject.GetComponent<UImage>().color = Color.white;
             } else {
                 if (image)
-                    image.color = color;
+                    image.color = left;
             }
 
             return (this as T)!;
@@ -1298,7 +1308,7 @@ namespace Synthesis.UI.Dynamic {
 
         public Image SetColor(ColorManager.SynthesisColor c) => SetColor(ColorManager.GetColor(c));
 
-        public Image SetColor(Color c) => SetColor(c, Color.black);
+        public Image SetColor(Color c) => SetColor(c, c);
 
         public Image SetColor(ColorManager.SynthesisColor left, ColorManager.SynthesisColor right) => SetColor(
             ColorManager.GetColor(left), ColorManager.GetColor(right));
