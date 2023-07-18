@@ -67,19 +67,42 @@ public static class MainHUD {
     private static bool _hasNewRobotListener = false; // In the Unity editor, working with statics can be really weird
 
     private static Content _tabDrawerContent;
-    private static Button _expandDrawerButton;
-    private static Image _expandIcon;
+    private static Image _logoImage;
+    private static Content _itemContainer;
+    private static Content _topItemContainer;
+    private static Content _bottomItemContainer;
+    private static Button _spawnButton;
+    private static Button _homeButton;
 
-    private static List<(Button button, Image image)> _drawerItems = new List<(Button button, Image image)>();
+    private static List<(Button button, Image image)> _topDrawerItems = new List<(Button button, Image image)>();
+    private static List<(Button button, Image image)> _bottomDrawerItems = new List<(Button button, Image image)>();
+    
+    public enum DrawerPosition {
+        Top,
+        Bottom
+    }
 
     public static void Setup() {
-        _drawerItems.Clear();
-        _tabDrawerContent = new Content(null, GameObject.Find("MainHUD").transform.Find("TabDrawer").gameObject, null);
-        _expandDrawerButton = new Button(
-            _tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("ExpandButton").gameObject, null);
+        _topDrawerItems.Clear();
+        _bottomDrawerItems.Clear();
+        _tabDrawerContent    = new Content(null, GameObject.Find("MainHUD").transform.Find("TabDrawer").gameObject, null);
+        _logoImage           = new Image(_tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("Logo").gameObject);
+        _itemContainer       = new Content(_tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("ItemContainer").gameObject, null);
+        _topItemContainer    = new Content(_itemContainer, _itemContainer.RootGameObject.transform.Find("TopItemContainer").gameObject, null);
+        _bottomItemContainer = new Content(_itemContainer, _itemContainer.RootGameObject.transform.Find("BottomItemContainer").gameObject, null);
+        _spawnButton         = new Button(_tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("SpawnButton").gameObject, null);
+        _homeButton          = new Button(_tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("HomeButton").gameObject, null);
 
-        _expandDrawerButton.AddOnClickedEvent(b => MainHUD.Collapsed = !MainHUD.Collapsed);
-        _expandIcon = new Image(null, _expandDrawerButton.RootGameObject.transform.Find("Icon").gameObject);
+        // _logoImage.SetTopStretch<Image>(anchoredY: 70);
+
+        _spawnButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.Background).StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText));
+        _homeButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.Background).StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText));
+
+        _spawnButton.OnClicked += (b) => {
+            DynamicUIManager.CreateModal<SpawningModal>();
+        };
+
+        _homeButton.OnClicked += (b) => {};
 
         // Setup default HUD
         // MOVED TO PRACTICE MODE
@@ -112,11 +135,16 @@ public static class MainHUD {
 
     public static void AddItemToDrawer(
         string title, Action<Button> onClick, int index = -1, Sprite? icon = null, Color? color = null) {
+        AddItemToDrawer(title, onClick, DrawerPosition.Top, index, icon, color);
+    }
+
+    public static void AddItemToDrawer(
+        string title, Action<Button> onClick, DrawerPosition drawerPosition, int index = -1, Sprite? icon = null, Color? color = null) {
         if (!SimulationRunner.InSim)
             return;
 
         var drawerButtonObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("hud-drawer-item-base"),
-            _tabDrawerContent.RootGameObject.transform.Find("ItemContainer"));
+            (drawerPosition == DrawerPosition.Top ? _topItemContainer : _bottomItemContainer).RootGameObject.transform);
         var drawerButton    = new Button(_tabDrawerContent, drawerButtonObj, null);
         drawerButton.Label!.SetText(title);
         drawerButton.AddOnClickedEvent(onClick);
@@ -124,10 +152,22 @@ public static class MainHUD {
         if (icon != null)
             drawerIcon.SetSprite(icon);
 
-        if (index < 0 || index > _drawerItems.Count) {
-            _drawerItems.Add((drawerButton, drawerIcon));
-        } else {
-            _drawerItems.Insert(index, (drawerButton, drawerIcon));
+        switch (drawerPosition) {
+            case DrawerPosition.Bottom:
+                if (index < 0 || index > _bottomDrawerItems.Count) {
+                    _bottomDrawerItems.Add((drawerButton, drawerIcon));
+                } else {
+                    _bottomDrawerItems.Insert(index, (drawerButton, drawerIcon));
+                }
+                break;
+            default:
+            case DrawerPosition.Top:
+                if (index < 0 || index > _topDrawerItems.Count) {
+                    _topDrawerItems.Add((drawerButton, drawerIcon));
+                } else {
+                    _topDrawerItems.Insert(index, (drawerButton, drawerIcon));
+                }
+                break;
         }
 
         UpdateDrawerSizing();
@@ -138,21 +178,35 @@ public static class MainHUD {
         if (!SimulationRunner.InSim)
             return;
 
-        var index = _drawerItems.FindIndex(0, _drawerItems.Count, x => x.button.Label.Text == title);
+        var index = _topDrawerItems.FindIndex(0, _topDrawerItems.Count, x => x.button.Label.Text == title);
         if (index == -1)
             return;
 
-        GameObject.Destroy(_drawerItems[index].button.RootGameObject);
-        _drawerItems.RemoveAt(index);
+        GameObject.Destroy(_topDrawerItems[index].button.RootGameObject);
+        _topDrawerItems.RemoveAt(index);
 
         UpdateDrawerSizing();
     }
 
     public static void UpdateDrawerSizing() {
-        for (int i = 0; i < _drawerItems.Count; i++) {
-            _drawerItems[i].button.SetTopStretch<Button>(anchoredY: i * 55);
+        int TOP_OFFSET = 0;
+        
+        for (int i = 0; i < _topDrawerItems.Count; i++) {
+            _topDrawerItems[i].button.SetTopStretch<Button>(anchoredY: 15 + i * 55);
         }
-        _tabDrawerContent.SetHeight<Content>((_drawerItems.Count * 55) + 70);
+        for (int i = 0; i < _bottomDrawerItems.Count; i++) {
+            _bottomDrawerItems[i].button.SetTopStretch<Button>(anchoredY: 15 + i * 55);
+        }
+        _itemContainer.SetTopStretch<Content>(anchoredY: 140, leftPadding: 15, rightPadding: 15);
+        int topItemsHeight    = 15 + _topDrawerItems.Count * 55;
+        int bottomItemsHeight = 15 + _bottomDrawerItems.Count * 55;
+        _topItemContainer.SetHeight<Content>(topItemsHeight);
+        _topItemContainer.SetTopStretch<Content>(anchoredY: 0);
+        _bottomItemContainer.SetHeight<Content>(bottomItemsHeight);
+        _bottomItemContainer.SetTopStretch<Content>(anchoredY: topItemsHeight + 15);
+        int itemsHeight = topItemsHeight + 15 + bottomItemsHeight;
+        _itemContainer.SetHeight<Content>(itemsHeight);
+        _tabDrawerContent.SetHeight<Content>(70 + 5 + 50 + 15 + itemsHeight + 15 + 50 + 15);
     }
 
     public static void Delete() {
@@ -160,12 +214,17 @@ public static class MainHUD {
     }
 
     public static void AssignColors(IEvent e) {
-        _tabDrawerContent.Image!.SetColor(ColorManager.SynthesisColor.Background);
+        _tabDrawerContent.Image!.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft, ColorManager.SynthesisColor.InteractiveElementRight);
 
-        _expandDrawerButton.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.Background));
-        _expandIcon.SetColor(ColorManager.SynthesisColor.Icon);
+        _topItemContainer.SetBackgroundColor<Content>(ColorManager.SynthesisColor.Background);
+        _bottomItemContainer.SetBackgroundColor<Content>(ColorManager.SynthesisColor.Background);
 
-        _drawerItems.ForEach(x => {
+        _topDrawerItems.ForEach(x => {
+            x.button.Label!.SetColor(ColorManager.SynthesisColor.MainText);
+            x.button.Image.SetColor(ColorManager.SynthesisColor.Background);
+            x.image.SetColor(ColorManager.SynthesisColor.InteractiveElementSolid);
+        });
+        _bottomDrawerItems.ForEach(x => {
             x.button.Label!.SetColor(ColorManager.SynthesisColor.MainText);
             x.button.Image.SetColor(ColorManager.SynthesisColor.Background);
             x.image.SetColor(ColorManager.SynthesisColor.InteractiveElementSolid);

@@ -56,32 +56,35 @@ public class PracticeMode : IMode {
 
     /// Adds buttons to the main hud (panel on left side)
     public void ConfigureMainHUD() {
-        MainHUD.AddItemToDrawer("Spawn", b => DynamicUIManager.CreateModal<SpawningModal>(),
-            icon: SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
-        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-            MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>(),
-                icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-
-        MainHUD.AddItemToDrawer("Multibot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>());
-
-        MainHUD.AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(),
-            icon: SynthesisAssetCollection.GetSpriteByName("DriverStationView"));
-        MainHUD.AddItemToDrawer("Camera View", b => DynamicUIManager.CreateModal<ChangeViewModal>(),
-            icon: SynthesisAssetCollection.GetSpriteByName("CameraIcon"));
-        MainHUD.AddItemToDrawer("Download Asset", b => DynamicUIManager.CreateModal<DownloadAssetModal>(),
-            icon: SynthesisAssetCollection.GetSpriteByName("DownloadIcon"));
-
         MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(),
+            drawerPosition: MainHUD.DrawerPosition.Top,
             icon: SynthesisAssetCollection.GetSpriteByName("settings"));
-        MainHUD.AddItemToDrawer("RoboRIO Conf.", b => DynamicUIManager.CreateModal<RioConfigurationModal>(true),
+        MainHUD.AddItemToDrawer("View", b => DynamicUIManager.CreateModal<ChangeViewModal>(),
+            drawerPosition: MainHUD.DrawerPosition.Top,
+            icon: SynthesisAssetCollection.GetSpriteByName("CameraIcon"));
+        MainHUD.AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(),
+            drawerPosition: MainHUD.DrawerPosition.Top,
+            icon: SynthesisAssetCollection.GetSpriteByName("DriverStationView"));
+        MainHUD.AddItemToDrawer("MultiBot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>(), 
+            drawerPosition: MainHUD.DrawerPosition.Top);
+        
+        MainHUD.AddItemToDrawer("Download Asset", b => DynamicUIManager.CreateModal<DownloadAssetModal>(),
+            drawerPosition: MainHUD.DrawerPosition.Bottom,
+            icon: SynthesisAssetCollection.GetSpriteByName("DownloadIcon"));
+        MainHUD.AddItemToDrawer("RoboRIO", b => DynamicUIManager.CreateModal<RioConfigurationModal>(true),
+            drawerPosition: MainHUD.DrawerPosition.Bottom,
             icon: SynthesisAssetCollection.GetSpriteByName("rio-config-icon"));
-
         MainHUD.AddItemToDrawer("DriverStation",
             b => DynamicUIManager.CreatePanel<BetaWarningPanel>(
                 false, (Action) (() => DynamicUIManager.CreatePanel<DriverStationPanel>(true))),
+            drawerPosition: MainHUD.DrawerPosition.Bottom,
             icon: SynthesisAssetCollection.GetSpriteByName("driverstation-icon"));
-
-        MainHUD.AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>());
+        MainHUD.AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>(), 
+            drawerPosition: MainHUD.DrawerPosition.Bottom);
+        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+            MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>(),
+                drawerPosition: MainHUD.DrawerPosition.Bottom,
+                icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
         MainHUD.AddItemToDrawer("Scoring Zones", b => {
             if (FieldSimObject.CurrentField == null) {
                 Logger.Log("No field loaded!", LogLevel.Info);
@@ -89,7 +92,7 @@ public class PracticeMode : IMode {
                 if (!DynamicUIManager.PanelExists<ScoringZonesPanel>())
                     DynamicUIManager.CreatePanel<ScoringZonesPanel>();
             }
-        });
+        }, drawerPosition: MainHUD.DrawerPosition.Bottom);
 
         EventBus.NewTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
     }
