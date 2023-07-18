@@ -6,6 +6,7 @@ using SynthesisAPI.Utilities;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UI;
 using UnityEngine.EventSystems;
 using Utilities.ColorManager;
 using UButton     = UnityEngine.UI.Button;
@@ -496,11 +497,43 @@ namespace Synthesis.UI.Dynamic {
             return SetBackgroundColor<T>(ColorManager.GetColor(c));
         }
 
+        public T SetBackgroundColor<T>(ColorManager.SynthesisColor start, ColorManager.SynthesisColor end)
+            where T : UIComponent {
+            return SetBackgroundColor<T>(ColorManager.GetColor(start), ColorManager.GetColor(end));
+        }
+
         public T SetBackgroundColor<T>(Color color)
             where T : UIComponent {
-            UnityEngine.UI.Image image = RootGameObject.GetComponent<UnityEngine.UI.Image>();
-            if (image)
-                image.color = color;
+            return SetBackgroundColor<T>(color, color);
+        }
+
+        public T SetBackgroundColor<T>(Color start, Color end)
+            where T : UIComponent {
+            GradientImageUpdater gradientImage = RootGameObject.GetComponent<GradientImageUpdater>();
+            UnityEngine.UI.Image image         = RootGameObject.GetComponent<UnityEngine.UI.Image>();
+
+            if (gradientImage) {
+                gradientImage.StartColor = start;
+                gradientImage.EndColor   = end;
+
+                if (image)
+                    RootGameObject.GetComponent<UImage>().color = Color.white;
+                gradientImage.Refresh();
+            } else {
+                if (image)
+                    image.color = start;
+            }
+
+            return (this as T)!;
+        }
+
+        public T SetHorizontalGradient<T>(bool horizontal)
+            where T : UIComponent {
+            GradientImageUpdater gradientImage = RootGameObject.GetComponent<GradientImageUpdater>();
+            if (gradientImage) {
+                gradientImage.Horizontal = horizontal;
+            }
+
             return (this as T)!;
         }
     }
@@ -853,7 +886,7 @@ namespace Synthesis.UI.Dynamic {
             _enabledImage  = new Image(this, _unityToggle.transform.Find("Background").Find("Checkmark").gameObject);
 
             DisabledColor = ColorManager.GetColor(ColorManager.SynthesisColor.BackgroundSecondary);
-            EnabledColor  = ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElement);
+            EnabledColor  = ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElementSolid);
         }
 
         public Toggle SetState(bool state, bool notify = true) {
@@ -932,7 +965,8 @@ namespace Synthesis.UI.Dynamic {
             _backgroundImage.SetColor(ColorManager.SynthesisColor.BackgroundSecondary);
 
             _fillImage = new Image(this, _unitySlider.transform.Find("Fill Area").Find("Fill").gameObject);
-            _fillImage.SetColor(ColorManager.SynthesisColor.InteractiveElement);
+            _fillImage.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                ColorManager.SynthesisColor.InteractiveElementRight);
 
             _handleImage = new Image(this, _unitySlider.transform.Find("Handle Slide Area").Find("Handle").gameObject);
             _handleImage.SetColor(ColorManager.SynthesisColor.InteractiveSecondary);
@@ -1130,7 +1164,8 @@ namespace Synthesis.UI.Dynamic {
             });
 
             _image = new Image(this, unityObject);
-            _image.SetColor(ColorManager.SynthesisColor.InteractiveElement);
+            _image.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                ColorManager.SynthesisColor.InteractiveElementRight);
         }
 
         public Button StepIntoLabel(Action<Label> mod) {
@@ -1198,15 +1233,18 @@ namespace Synthesis.UI.Dynamic {
             eventHandler.OnPointerClickedEvent += e => { ShowOnTop(); };
 
             _headerImage = new Image(this, unityObject.transform.Find("Header").gameObject);
-            _headerImage.SetColor(ColorManager.SynthesisColor.InteractiveElement);
+            _headerImage.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                ColorManager.SynthesisColor.InteractiveElementRight);
 
             _headerLabel = new Label(this, unityObject.transform.Find("Header").Find("Label").gameObject, null);
             _headerLabel.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
 
-            var itemObj = unityObject.transform.Find("Template").Find("Viewport").Find("Content").Find("Item");
+            var itemObj =
+                unityObject.transform.Find("Template").Find("Viewport").Find("Mask").Find("Content").Find("Item");
 
             _itemBackgroundImage = new Image(this, itemObj.Find("Item Background").gameObject);
-            _itemBackgroundImage.SetColor(ColorManager.SynthesisColor.InteractiveElement);
+            _itemBackgroundImage.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                ColorManager.SynthesisColor.InteractiveElementRight);
 
             _itemCheckmarkImage = new Image(this, itemObj.Find("Item Checkmark").gameObject);
             _itemCheckmarkImage.SetColor(ColorManager.SynthesisColor.Background);
@@ -1215,7 +1253,9 @@ namespace Synthesis.UI.Dynamic {
             _itemLabel.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
 
             _viewportImage = new Image(this, unityObject.transform.Find("Template").Find("Viewport").gameObject);
-            _viewportImage.SetColor(ColorManager.SynthesisColor.InteractiveElement);
+
+            _viewportImage.SetColor(ColorManager.SynthesisColor.InteractiveElementRight,
+                ColorManager.SynthesisColor.InteractiveElementLeft);
         }
 
         public Dropdown SetOptions(string[] options) {
@@ -1276,6 +1316,9 @@ namespace Synthesis.UI.Dynamic {
 
     public class Image : UIComponent {
         private UImage _unityImage;
+        private GradientImageUpdater _gradientUpdater;
+
+        private bool _hasCustomSprite = true;
         public Sprite Sprite {
             get => _unityImage.sprite;
             set { _unityImage.sprite = value; }
@@ -1287,27 +1330,60 @@ namespace Synthesis.UI.Dynamic {
 
         public Image(UIComponent? parent, GameObject unityObject) : base(parent, unityObject) {
             _unityImage = unityObject.GetComponent<UImage>();
+
+            if (_unityImage.sprite != null) {
+                return;
+            }
+
+            _hasCustomSprite = false;
+
+            if (unityObject.TryGetComponent<GradientImageUpdater>(out var gradientUpdater)) {
+                _gradientUpdater = gradientUpdater;
+            } else {
+                _gradientUpdater = unityObject.AddComponent<GradientImageUpdater>();
+            }
         }
 
         public Image SetSprite(Sprite s) {
-            Sprite = s;
+            _hasCustomSprite = true;
+            Sprite           = s;
+            if (_gradientUpdater != null)
+                GameObject.Destroy(_gradientUpdater);
             return this;
         }
 
         public Image SetColor(ColorManager.SynthesisColor c) => SetColor(ColorManager.GetColor(c));
 
-        public Image SetColor(Color c) {
-            _unityImage.color = c;
+        public Image SetColor(Color c) => SetColor(c, c);
+
+        public Image SetColor(ColorManager.SynthesisColor start, ColorManager.SynthesisColor end) => SetColor(
+            ColorManager.GetColor(start), ColorManager.GetColor(end));
+
+        public Image SetColor(Color start, Color end) {
+            if (_hasCustomSprite) {
+                _unityImage.color = start;
+                return this;
+            }
+
+            _gradientUpdater.StartColor = start;
+            _gradientUpdater.EndColor   = end;
+            _gradientUpdater.Refresh();
+
             return this;
         }
 
         public Image SetCornerRadius(float r) {
-            _unityImage.pixelsPerUnitMultiplier = 250f / r;
+            if (_hasCustomSprite)
+                _unityImage.pixelsPerUnitMultiplier = 250f / r;
+            else
+                _gradientUpdater.Radius = r;
             return this;
         }
 
         public Image SetMultiplier(float m) {
-            _unityImage.pixelsPerUnitMultiplier = m;
+            if (_hasCustomSprite)
+                _unityImage.pixelsPerUnitMultiplier = m;
+
             return this;
         }
     }

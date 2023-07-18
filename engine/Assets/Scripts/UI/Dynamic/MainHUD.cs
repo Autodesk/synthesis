@@ -178,7 +178,7 @@ public static class MainHUD {
         _drawerItems.ForEach(x => {
             x.button.Label!.SetColor(ColorManager.SynthesisColor.MainText);
             x.button.Image.SetColor(ColorManager.SynthesisColor.Background);
-            x.image.SetColor(ColorManager.SynthesisColor.InteractiveElement);
+            x.image.SetColor(ColorManager.SynthesisColor.InteractiveElementSolid);
         });
     }
 

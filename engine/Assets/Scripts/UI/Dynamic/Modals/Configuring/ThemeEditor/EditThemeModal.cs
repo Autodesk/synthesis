@@ -119,7 +119,8 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             _deleteButton = deleteContent.CreateButton()
                                 .ApplyTemplate(VerticalLayout)
                                 .StepIntoLabel(l => l.SetText("Delete Selected"))
-                                .SetBackgroundColor<Button>(ColorManager.SynthesisColor.InteractiveElement)
+                                .SetBackgroundColor<Button>(ColorManager.SynthesisColor.InteractiveElementLeft,
+                                    ColorManager.SynthesisColor.InteractiveElementRight)
                                 .AddOnClickedEvent(b => {
                                     if (_selectedThemeIndex != 0) {
                                         SaveThemeChanges();
@@ -153,7 +154,8 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
                     ColorManager.SynthesisColor.BackgroundSecondary);
             else
                 _deleteButton.EnableEvents<Button>().SetBackgroundColor<Button>(
-                    ColorManager.SynthesisColor.InteractiveElement);
+                    ColorManager.SynthesisColor.InteractiveElementLeft,
+                    ColorManager.SynthesisColor.InteractiveElementRight);
 
             if (_availableThemes.Length == 1)
                 _deleteAllButton.DisableEvents<Button>().SetBackgroundColor<Button>(
@@ -211,9 +213,10 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
                 var button = colorContent.CreateButton()
                                  .StepIntoLabel(l => l.RootGameObject.SetActive(false))
                                  .AddOnClickedEvent(x => { SelectColor(c.Key); })
-                                 .SetBackgroundColor<Button>(Color.clear)
                                  .SetStretch<Button>()
-                                 .SetAnchoredPosition<Button>(Vector3.zero);
+                                 .SetAnchoredPosition<Button>(Vector3.zero)
+                                 .RootGameObject.GetComponent<UnityEngine.UI.Image>()
+                                 .color = Color.clear;
 
                 _colors.Add(c.Key, (c.Value, colorImage, colorContent, label));
 
@@ -224,7 +227,6 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
         /// <summary>Selects a color to change with the RGB slider</summary>
         /// <param name="colorName">The color to select</param>
         private void SelectColor(ColorManager.SynthesisColor? colorName) {
-            Debug.Log("Color selected");
             if (_selectedColor != null) {
                 var prevSelected = _colors[_selectedColor.Value];
                 prevSelected.background.SetBackgroundColor<Image>(ColorManager.SynthesisColor.BackgroundSecondary);
@@ -239,7 +241,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             _selectedColor = colorName;
 
             var newSelected = _colors[_selectedColor.Value];
-            newSelected.background.SetBackgroundColor<Image>(ColorManager.SynthesisColor.InteractiveElement);
+            newSelected.background.SetBackgroundColor<Image>(ColorManager.SynthesisColor.InteractiveElementSolid);
             newSelected.label.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
 
             // Regex.Replace formats color's name with spaces (ColorName -> Color Name)
@@ -283,21 +285,18 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             List<(ColorManager.SynthesisColor name, Color color)> colors = new();
             _colors.ForEach(c => { colors.Add((c.Key, c.Value.color)); });
             ColorManager.ModifySelectedTheme(colors);
-            Debug.Log($"Saved theme changes to {_selectedThemeIndex}");
         }
 
         /// <summary>Gets the selected theme preference</summary>
         private void GetThemePref() {
             _selectedThemeIndex = ColorManager.ThemeNameToIndex(
                 PreferenceManager.GetPreference<string>(ColorManager.SELECTED_THEME_PREF));
-            Debug.Log($"Get theme pref of {_selectedThemeIndex}");
         }
 
         /// <summary>Sets the selected theme preference</summary>
         private void SetThemePref() {
             PreferenceManager.SetPreference(
                 ColorManager.SELECTED_THEME_PREF, ColorManager.ThemeIndexToName(_selectedThemeIndex));
-            Debug.Log($"Set theme pref to {_selectedThemeIndex}");
         }
 
         /// <summary>Update all colors of this modal to preview selected colors</summary>

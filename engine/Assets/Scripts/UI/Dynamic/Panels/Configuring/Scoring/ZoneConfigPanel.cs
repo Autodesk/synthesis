@@ -134,6 +134,7 @@ public class ZoneConfigPanel : PanelDynamic {
                                   })
                                   .SetBackgroundColor<Button>(Color.blue)
                                   .ApplyTemplate(VerticalLayout);
+        ConfigureAllianceButton();
 
         _zoneParentButton =
             MainContent.CreateLabeledButton()
@@ -314,7 +315,7 @@ public class ZoneConfigPanel : PanelDynamic {
 
             _zoneParentButton.StepIntoButton(
                 b => b.StepIntoImage(
-                          i => i.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElement)))
+                          i => i.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElementSolid)))
                          .StepIntoLabel(l => l.SetText(_selectedNode is not null ? "Remove" : "Click to select...")));
         }
     }
