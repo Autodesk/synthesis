@@ -156,15 +156,30 @@ namespace Synthesis.Import {
                     
             var bKey = rigidDefinitions[1].PartToDefinitionMap[assemblies[1].Data.Joints.JointInstances["grounded"].ParentPart];
             var b = groupObjects[1][bKey];*/
+
+            /*var aKey = rigidDefinitions[0].PartToDefinitionMap[assemblies[0].Data.Joints.JointInstances["grounded"].ParentPart];
+            var a = groupObjects[0][aKey];
+                    
+            var bKey = rigidDefinitions[1].PartToDefinitionMap[assemblies[1].Data.Joints.JointInstances["grounded"].ParentPart];
+            var b = groupObjects[1][bKey];*/
             
             assemblyObjects.ForEachIndex((partIndex, gameObject) => {
                 var transform = gameObject.transform;
 
                 var partTrfData = mixAndMatchTransformData.Parts[partIndex];
                 transform.localPosition = partTrfData.LocalPosition;
-                transform.localRotation = partTrfData.LocalRotation;
+                transform.rotation = partTrfData.LocalRotation;
             });
             
+            mixAndMatchTransformData.Parts.ForEachIndex((partIndex, part) => {
+                if (part.ConnectedPoint != null) {
+                    var thisObject = groupObjects[partIndex]["grounded"];
+                    var connectedObject = groupObjects[part.ConnectedPoint.ParentPart.PartIndex]["grounded"];
+                    ConnectMixAndMatchParts(thisObject, connectedObject, 
+                        new Vector3(), new Vector3());
+                }
+                else Debug.Log($"Part connection was null");
+            });
             /*GameObject pointA = new GameObject("Connection Point");
             pointA.transform.SetParent(assemblyObjects[0].transform);
             
@@ -172,8 +187,8 @@ namespace Synthesis.Import {
             pointB.transform.SetParent(assemblyObjects[1].transform);*/
             
             //ConnectMixAndMatchParts(pointA, pointB, new Vector3(), UVector3.up);
-            ConnectMixAndMatchParts(groupObjects[0]["grounded"], groupObjects[1]["grounded"], 
-                new Vector3(), new Vector3());
+            /*ConnectMixAndMatchParts(groupObjects[0]["grounded"], groupObjects[1]["grounded"], 
+                new Vector3(), new Vector3());*/
 
 #endregion
             return (rootGameObject, miraLiveFiles, simObject);

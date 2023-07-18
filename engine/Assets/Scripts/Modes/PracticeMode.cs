@@ -10,6 +10,7 @@ using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Utilities;
 using UI.Dynamic.Panels.Spawning;
+using UI.Dynamic.Panels.Spawning.MixAndMatch;
 using UnityEngine;
 using UnityEngine.XR;
 using Logger = SynthesisAPI.Utilities.Logger;

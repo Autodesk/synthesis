@@ -1,16 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Modes.MatchMode;
 using SimObjects.MixAndMatch;
 using Synthesis.Gizmo;
-using Synthesis.Physics;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace UI.Dynamic.Panels.Spawning
+namespace UI.Dynamic.Panels.Spawning.MixAndMatch
 {
     public class PartConfigPanel : PanelDynamic
     {
@@ -22,6 +17,8 @@ namespace UI.Dynamic.Panels.Spawning
         private const float SCROLLBAR_WIDTH = 10f;
         private const float BUTTON_WIDTH = 64f;
         private const float ROW_HEIGHT = 64f;
+        
+        private static readonly int _snapPointLayerMask = 1 << LayerMask.NameToLayer("ConnectionPoint");
 
         private float _scrollViewWidth;
         private float _entryWidth;
@@ -49,8 +46,6 @@ namespace UI.Dynamic.Panels.Spawning
         {
             _part = part;
         }
-        
-        private static readonly int _snapPointLayerMask = 1 << LayerMask.NameToLayer("SnapPoint");
         
         public override bool Create()
         {
@@ -83,7 +78,7 @@ namespace UI.Dynamic.Panels.Spawning
                         point.GetComponent<Collider>().isTrigger = true;
                         point.transform.localScale = Vector3.one * .5f;
                         point.transform.SetParent(_part.Transform);
-                        point.layer = LayerMask.NameToLayer("SnapPoint");
+                        point.layer = LayerMask.NameToLayer("ConnectionPoint");
                         point.GetComponent<Collider>().enabled = false;
                         
                         _part.SnapPoints.Add(point);

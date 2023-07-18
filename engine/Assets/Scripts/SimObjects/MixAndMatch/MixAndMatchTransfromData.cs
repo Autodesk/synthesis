@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using NUnit.Framework.Constraints;
 using UnityEngine;
 
 namespace SimObjects.MixAndMatch {
@@ -8,6 +6,10 @@ namespace SimObjects.MixAndMatch {
 
         public MixAndMatchTransformData(MixAndMatchPartData[] parts) {
             Parts = parts;
+            
+            parts.ForEachIndex((i, p) => {
+                p.PartIndex = i;
+            });
         }
     }
 
@@ -21,14 +23,12 @@ namespace SimObjects.MixAndMatch {
         
         // TODO: figure out how to handle part rotations
         // TODO: store which mesh this corresponds to without just using the index
-        public int MirabufFileIndex;
+        public int PartIndex;
 
-        public MixAndMatchPartData(Vector3 localPosition, Quaternion localRotation, MixAndMatchConnectionPoint[] connectionPoints, 
-                int mirabufFileIndex, MixAndMatchConnectionPoint connectedPoint = null) {
+        public MixAndMatchPartData(Vector3 localPosition, Quaternion localRotation, MixAndMatchConnectionPoint[] connectionPoints, MixAndMatchConnectionPoint connectedPoint = null) {
             LocalPosition = localPosition;
             ConnectionPoints = connectionPoints;
             ConnectedPoint = connectedPoint;
-            MirabufFileIndex = mirabufFileIndex;
             LocalRotation = localRotation;
 
             connectionPoints.ForEach(point => point.ParentPart = this);

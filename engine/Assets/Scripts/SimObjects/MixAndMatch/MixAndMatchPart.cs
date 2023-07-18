@@ -12,6 +12,8 @@ namespace SimObjects.MixAndMatch
         public GameObject UnityObject => _unityObject;
         
         public List<GameObject> SnapPoints = new();
+
+        public MixAndMatchPart ConnectedPart;
         public Transform ConnectedPoint;
 
         private GameObject _unityObject;
@@ -25,7 +27,7 @@ namespace SimObjects.MixAndMatch
                 Directory.CreateDirectory(root);
             var files = Directory.GetFiles(root).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
             
-            var partObject = MixAndMatchSimObject.CreatePartMesh(files[2]);
+            var partObject = MixAndMatchSimObject.CreatePartMesh(files[1]);
 
             _unityObject = partObject;
         }
@@ -43,7 +45,7 @@ namespace SimObjects.MixAndMatch
                         break;
                 }
                 if (i != a.Length - 1)
-                    b += System.IO.Path.AltDirectorySeparatorChar;
+                    b += Path.AltDirectorySeparatorChar;
             }
             // Debug.Log(b);
             return b;
@@ -59,7 +61,7 @@ namespace SimObjects.MixAndMatch
                 point.GetComponent<Collider>().isTrigger = true;
                 point.transform.localScale = Vector3.one * .5f;
                 point.transform.SetParent(part.Transform);
-                point.layer = LayerMask.NameToLayer("SnapPoint");
+                point.layer = LayerMask.NameToLayer("ConnectionPoint");
                 point.transform.localPosition = p.transform.localPosition;
                 point.transform.localRotation = p.transform.localRotation;
                 part.SnapPoints.Add(point);

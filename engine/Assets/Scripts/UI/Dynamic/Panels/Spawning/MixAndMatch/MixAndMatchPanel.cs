@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using SimObjects.MixAndMatch;
-using Synthesis.Gizmo;
 using Synthesis.Physics;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
 
-namespace UI.Dynamic.Panels.Spawning {
+namespace UI.Dynamic.Panels.Spawning.MixAndMatch {
     public class MixAndMatchPanel : PanelDynamic {
         private const float MODAL_WIDTH = 500f;
         private const float MODAL_HEIGHT = 600f;
@@ -129,10 +128,23 @@ namespace UI.Dynamic.Panels.Spawning {
         }
 
         public override void Delete() {
-            // TODO: Give each gameobject a unique name
-            Transform parent = new GameObject("mix_and_match_robot_n").transform;
-            parent.SetParent(GameObject.Find("Game").transform);
+            var partData = new List<MixAndMatchPartData>();
+            _parts.ForEach(part => {
+                partData.Add(new MixAndMatchPartData(part.Transform.position, part.Transform.rotation, null));
+            });
+            
+            _parts.ForEach(part => {
+                if (part. != null) {
+                    
+                }
+            });
 
+            var trfData = new MixAndMatchTransformData(partData.ToArray());
+            
+            
+            _parts.ForEach(p => {
+                GameObject.Destroy(p.UnityObject);
+            });
             //Transform grounded = new GameObject("grounded").transform;
             //grounded.gameObject.AddComponent<Rigidbody>();
             //grounded.parent = parent;

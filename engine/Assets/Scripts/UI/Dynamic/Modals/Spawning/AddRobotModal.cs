@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SimObjects.MixAndMatch;
-using Synthesis.UI.Dynamic;
 using SynthesisAPI.Utilities;
-using TMPro;
 using UnityEngine;
 using Logger = SynthesisAPI.Utilities.Logger;
 
@@ -35,13 +31,13 @@ namespace Synthesis.UI.Dynamic {
             AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
 
                 var connectionA = new[] { new MixAndMatchConnectionPoint(
-                    Vector3.forward*0.5f, Vector2.zero) };
+                    Vector3.zero, Vector2.zero) };
                 var connectionB = new[] { new MixAndMatchConnectionPoint(
-                    Vector3.back*0.5f, Vector2.zero) };
+                    Vector3.zero, Vector2.zero) };
                 
                 var parts = new[] {
-                    new MixAndMatchPartData(Vector3.zero, Quaternion.Euler(0, 90, 0), connectionA, 0),
-                    new MixAndMatchPartData(Vector3.forward, Quaternion.identity, connectionB, 1)
+                    new MixAndMatchPartData(Vector3.zero, Quaternion.identity, connectionA),
+                    new MixAndMatchPartData(new Vector3(0, 0.73f, -1.211f), Quaternion.Euler(180, 0, 0), connectionB)
                 };
 
                 parts[0].ConnectedPoint = connectionB[0];
