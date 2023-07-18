@@ -140,7 +140,8 @@ public class PracticeMode : IMode {
             DynamicUIManager.CreatePanel<ScoreboardPanel>(true, false);
         }
 
-        bool openEscapeMenu = InputManager.MappedValueInputs[TOGGLE_ESCAPE_MENU_INPUT].Value == 1.0F;
+        // TODO: This randomly broke again for no apparent reason
+        /*bool openEscapeMenu = InputManager.MappedValueInputs[TOGGLE_ESCAPE_MENU_INPUT].Value == 1.0F;
         if (openEscapeMenu && !_lastEscapeValue) {
             if (_escapeMenuOpen) {
                 CloseMenu();
@@ -149,7 +150,7 @@ public class PracticeMode : IMode {
             }
         }
 
-        _lastEscapeValue = openEscapeMenu;
+        _lastEscapeValue = openEscapeMenu;*/
     }
 
     public void OpenMenu() {

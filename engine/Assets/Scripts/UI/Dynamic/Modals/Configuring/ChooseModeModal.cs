@@ -49,7 +49,7 @@ public class ChooseModeModal : ModalDynamic {
             });
 
         MainContent.CreateButton()
-            .StepIntoLabel(l => l.SetText("Host a Multiplayer Server"))
+            .StepIntoLabel(l => l.SetText("Host a Server"))
             .ApplyTemplate(VerticalLayout)
             .AddOnClickedEvent(b => {
                 if (SceneManager.GetActiveScene().name != "MainScene")
@@ -58,7 +58,7 @@ public class ChooseModeModal : ModalDynamic {
             });
 
         MainContent.CreateButton()
-            .StepIntoLabel(l => l.SetText("Connect to a Multiplayer Server"))
+            .StepIntoLabel(l => l.SetText("Connect to a Server"))
             .ApplyTemplate(VerticalLayout)
             .AddOnClickedEvent(b => {
                 if (SceneManager.GetActiveScene().name != "MainScene")

@@ -67,7 +67,7 @@ namespace Synthesis.UI.Dynamic {
         public Action OnAccepted;
 
         protected PanelDynamic(
-            Vector2 mainContentSize, float leftContentPadding = 20f, float rightContentPadding = 20f) {
+            Vector2 mainContentSize, float leftContentPadding = 50f, float rightContentPadding = 50f) {
             _mainContentSize     = mainContentSize;
             _leftContentPadding  = leftContentPadding;
             _rightContentPadding = rightContentPadding;
@@ -94,10 +94,10 @@ namespace Synthesis.UI.Dynamic {
                     Logger.Log("Failed to Close Panel", LogLevel.Error);
             });
             _cancelButton.Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.CancelButton));
-            _cancelButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElementText));
+            _cancelButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptCancelButtonText));
             _acceptButton = new Button(null!, footer.Find("Accept").gameObject, null);
             _acceptButton.Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptButton));
-            _acceptButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElementText));
+            _acceptButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptCancelButtonText));
             _acceptButton.AddOnClickedEvent(b => {
                 if (OnAccepted != null)
                     OnAccepted.Invoke();
@@ -135,7 +135,7 @@ namespace Synthesis.UI.Dynamic {
     }
 
     public abstract class ModalDynamic {
-        public const float MAIN_CONTENT_HORZ_PADDING = 20f;
+        public const float MAIN_CONTENT_HORZ_PADDING = 50f;
 
         private Vector2 _mainContentSize; // Shouldn't really be used after init is called
         private GameObject _unityObject;
@@ -181,7 +181,7 @@ namespace Synthesis.UI.Dynamic {
 
                     Button middleButton = new Button(null!, buttonTransform.gameObject, null);
                     middleButton.Image.SetColor(ColorManager.SynthesisColor.AcceptButton);
-                    middleButton.Label?.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
+                    middleButton.Label?.SetColor(ColorManager.SynthesisColor.AcceptCancelButtonText);
 
                     _middleButton = middleButton;
                     return middleButton;
@@ -221,10 +221,10 @@ namespace Synthesis.UI.Dynamic {
                     Logger.Log("Failed to Close Modal", LogLevel.Error);
             });
             _cancelButton.Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.CancelButton));
-            _cancelButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElementText));
+            _cancelButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptCancelButtonText));
             _acceptButton = new Button(null!, _footer.Find("Accept").gameObject, null);
             _acceptButton.Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptButton));
-            _acceptButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElementText));
+            _acceptButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptCancelButtonText));
 
             _cancelButton.AddOnClickedEvent(b => {
                 if (OnCancelled != null)
@@ -1131,6 +1131,11 @@ namespace Synthesis.UI.Dynamic {
             _image = new Image(this, unityObject);
             _image.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
                 ColorManager.SynthesisColor.InteractiveElementRight);
+
+            var gradientUpdater = _image.RootGameObject.GetComponent<GradientImageUpdater>();
+            
+            if (gradientUpdater)
+                _image.SetCornerRadius(6);
         }
 
         public Button StepIntoLabel(Action<Label> mod) {
@@ -1206,13 +1211,11 @@ namespace Synthesis.UI.Dynamic {
 
             var itemObj =
                 unityObject.transform.Find("Template").Find("Viewport").Find("Mask").Find("Content").Find("Item");
-
-            _itemBackgroundImage = new Image(this, itemObj.Find("Item Background").gameObject);
-            _itemBackgroundImage.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
-                ColorManager.SynthesisColor.InteractiveElementRight);
-
+            
             _itemCheckmarkImage = new Image(this, itemObj.Find("Item Checkmark").gameObject);
-            _itemCheckmarkImage.SetColor(ColorManager.SynthesisColor.Background);
+
+            Color bgColor = ColorManager.GetColor(ColorManager.SynthesisColor.Background);
+            _itemCheckmarkImage.SetColor(new Color(bgColor.r, bgColor.g, bgColor.b, 0.21f));
 
             _itemLabel = new Label(this, itemObj.Find("Item Label").gameObject, null);
             _itemLabel.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
@@ -1221,6 +1224,7 @@ namespace Synthesis.UI.Dynamic {
 
             _viewportImage.SetColor(ColorManager.SynthesisColor.InteractiveElementRight,
                 ColorManager.SynthesisColor.InteractiveElementLeft);
+            _viewportImage.SetCornerRadius(15);
         }
 
         public Dropdown SetOptions(string[] options) {

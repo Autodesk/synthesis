@@ -74,15 +74,13 @@ public static class MainHUD {
 
     public static void Setup() {
         _drawerItems.Clear();
+        
         _tabDrawerContent = new Content(null, GameObject.Find("MainHUD").transform.Find("TabDrawer").gameObject, null);
         _expandDrawerButton = new Button(
             _tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("ExpandButton").gameObject, null);
 
         _expandDrawerButton.AddOnClickedEvent(b => MainHUD.Collapsed = !MainHUD.Collapsed);
         _expandIcon = new Image(null, _expandDrawerButton.RootGameObject.transform.Find("Icon").gameObject);
-
-        // Setup default HUD
-        // MOVED TO PRACTICE MODE
 
         if (!_hasNewRobotListener) {
             EventBus.NewTypeListener<RobotSimObject.PossessionChangeEvent>(e => {

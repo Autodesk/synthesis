@@ -229,7 +229,8 @@ namespace Utilities.ColorManager {
             HighlightSelect,
             SkyboxTop,
             SkyboxBottom,
-            FloorGrid
+            FloorGrid,
+            AcceptCancelButtonText
         }
     }
 }
