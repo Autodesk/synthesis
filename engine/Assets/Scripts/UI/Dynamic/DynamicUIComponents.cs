@@ -462,9 +462,9 @@ namespace Synthesis.UI.Dynamic {
             return SetBackgroundColor<T>(ColorManager.GetColor(c));
         }
 
-        public T SetBackgroundColor<T>(ColorManager.SynthesisColor left, ColorManager.SynthesisColor right)
+        public T SetBackgroundColor<T>(ColorManager.SynthesisColor start, ColorManager.SynthesisColor end)
             where T : UIComponent {
-            return SetBackgroundColor<T>(ColorManager.GetColor(left), ColorManager.GetColor(right));
+            return SetBackgroundColor<T>(ColorManager.GetColor(start), ColorManager.GetColor(end));
         }
 
         public T SetBackgroundColor<T>(Color color)
@@ -472,21 +472,21 @@ namespace Synthesis.UI.Dynamic {
             return SetBackgroundColor<T>(color, color);
         }
 
-        public T SetBackgroundColor<T>(Color left, Color right)
+        public T SetBackgroundColor<T>(Color start, Color end)
             where T : UIComponent {
             GradientImageUpdater gradientImage = RootGameObject.GetComponent<GradientImageUpdater>();
             UnityEngine.UI.Image image         = RootGameObject.GetComponent<UnityEngine.UI.Image>();
 
             if (gradientImage) {
-                gradientImage.LeftColor  = left;
-                gradientImage.RightColor = right;
+                gradientImage.StartColor  = start;
+                gradientImage.EndColor = end;
 
                 if (image)
                     RootGameObject.GetComponent<UImage>().color = Color.white;
                 gradientImage.Refresh();
             } else {
                 if (image)
-                    image.color = left;
+                    image.color = start;
             }
 
             return (this as T)!;
@@ -1321,17 +1321,17 @@ namespace Synthesis.UI.Dynamic {
 
         public Image SetColor(Color c) => SetColor(c, c);
 
-        public Image SetColor(ColorManager.SynthesisColor left, ColorManager.SynthesisColor right) => SetColor(
-            ColorManager.GetColor(left), ColorManager.GetColor(right));
+        public Image SetColor(ColorManager.SynthesisColor start, ColorManager.SynthesisColor end) => SetColor(
+            ColorManager.GetColor(start), ColorManager.GetColor(end));
 
-        public Image SetColor(Color left, Color right) {
+        public Image SetColor(Color start, Color end) {
             if (_hasCustomSprite) {
-                _unityImage.color = left;
+                _unityImage.color = start;
                 return this;
             }
 
-            _gradientUpdater.LeftColor  = left;
-            _gradientUpdater.RightColor = right;
+            _gradientUpdater.StartColor  = start;
+            _gradientUpdater.EndColor = end;
             _gradientUpdater.Refresh();
 
             return this;

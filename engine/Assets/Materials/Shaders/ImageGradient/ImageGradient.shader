@@ -48,8 +48,8 @@ Shader "ImageGradient/ImageGradient" {
             #pragma fragment frag
 
             float4 _WidthHeightRadius;
-            float4 _LeftColor;
-            float4 _RightColor;
+            float4 _StartColor;
+            float4 _EndColor;
             float4 _ClipRect;
             int _Horizontal;
 
@@ -61,7 +61,7 @@ Shader "ImageGradient/ImageGradient" {
                 
                 float alpha = CalcAlpha(i.uv, _WidthHeightRadius.xy, _WidthHeightRadius.z);
                 
-                float4 col = lerp(_LeftColor, _RightColor, _Horizontal > 0 ? i.uv.x : 1 - i.uv.y);
+                float4 col = lerp(_StartColor, _EndColor, _Horizontal > 0 ? i.uv.x : 1 - i.uv.y);
                 //return float4(col.x, col.y, col.z, alpha*maskAlpha);
                 return float4(col.x, col.y, col.z, alpha*maskAlpha);
             }
