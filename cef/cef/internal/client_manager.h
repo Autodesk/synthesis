@@ -7,6 +7,8 @@
 
 #include <list>
 
+namespace synthesis {
+
 class ClientManager {
 private:
     using BrowserList = std::list<CefRefPtr<CefBrowser>>;
@@ -31,5 +33,7 @@ private:
 
     BrowserList browser_list;
 };
+
+} // namespace synthesis
 
 #endif // SYNTHESIS_CEF_CLIENT_MANAGER_H_

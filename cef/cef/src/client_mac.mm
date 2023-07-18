@@ -4,6 +4,8 @@
 
 #include <include/cef_browser.h>
 
+namespace synthesis {
+
 void PlatformTitleChange(CefRefPtr<CefBrowser> browser, const CefString& title) {
     NSView* view = (NSView*)browser->GetHost()->GetWindowHandle();
     NSWindow* window = [view window];
@@ -11,3 +13,5 @@ void PlatformTitleChange(CefRefPtr<CefBrowser> browser, const CefString& title) 
     NSString* str = [NSString stringWithUTF8String:titleStr.c_str()];
     [window setTitle:str];
 }
+
+} // namespace synthesis

@@ -3,9 +3,10 @@
 #include <include/cef_app.h>
 #include <include/wrapper/cef_helpers.h>
 
+namespace synthesis {
 namespace {
     ClientManager* manager = nullptr;
-}
+} // namespace
 
 ClientManager::ClientManager() : is_closing(false) {
     manager = this;
@@ -67,3 +68,5 @@ bool ClientManager::IsClosing() const {
     DCHECK(thread_checker.CalledOnValidThread());
     return is_closing;
 }
+
+} // namespace synthesis

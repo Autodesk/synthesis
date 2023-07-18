@@ -1,9 +1,11 @@
 set(SOURCES
+    ${CMAKE_CURRENT_LIST_DIR}/src/browser_app.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/client_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/client.cpp
 )
 
 set(HEADERS
+    ${CMAKE_CURRENT_LIST_DIR}/internal/browser_app.h
     ${CMAKE_CURRENT_LIST_DIR}/internal/client_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/internal/client.h
 )

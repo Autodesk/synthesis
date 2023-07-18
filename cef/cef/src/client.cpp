@@ -9,6 +9,8 @@
 
 #include "internal/client_manager.h"
 
+namespace synthesis {
+
 Client::Client() {}
 
 void Client::OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString& title) {
@@ -50,3 +52,5 @@ void Client::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
 }
 
 // TODO: DumpRequestContents
+
+} // namespace synthesis

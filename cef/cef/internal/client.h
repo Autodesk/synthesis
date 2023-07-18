@@ -4,6 +4,8 @@
 
 #include <include/cef_client.h>
 
+namespace synthesis {
+
 class Client: public CefClient, public CefDisplayHandler, public CefLifeSpanHandler {
 public:
     Client();
@@ -35,5 +37,7 @@ private:
 void PlatformTitleChange(CefRefPtr<CefBrowser> browser, const CefString& title);
 
 // std::string DumpRequestContents(CefRefPtr<CefRequest> request);
+
+} // namespace synthesis
 
 #endif // SYNTHESIS_CEF_CLIENT_H_
