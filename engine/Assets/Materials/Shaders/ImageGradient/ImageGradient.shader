@@ -51,6 +51,7 @@ Shader "ImageGradient/ImageGradient" {
             float4 _LeftColor;
             float4 _RightColor;
             float4 _ClipRect;
+            int _Horizontal;
 
             sampler2D _MainTex;
             fixed4 _TextureSampleAdd;
@@ -60,7 +61,7 @@ Shader "ImageGradient/ImageGradient" {
                 
                 float alpha = CalcAlpha(i.uv, _WidthHeightRadius.xy, _WidthHeightRadius.z);
                 
-                float4 col = lerp(_LeftColor, _RightColor, i.uv.x);
+                float4 col = lerp(_LeftColor, _RightColor, _Horizontal > 0 ? i.uv.x : 1 - i.uv.y);
                 //return float4(col.x, col.y, col.z, alpha*maskAlpha);
                 return float4(col.x, col.y, col.z, alpha*maskAlpha);
             }

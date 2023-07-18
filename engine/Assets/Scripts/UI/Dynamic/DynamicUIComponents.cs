@@ -490,6 +490,16 @@ namespace Synthesis.UI.Dynamic {
 
             return (this as T)!;
         }
+
+        public T SetHorizontalGradient<T>(bool horizontal)
+            where T : UIComponent {
+            GradientImageUpdater gradientImage = RootGameObject.GetComponent<GradientImageUpdater>();
+            if (gradientImage) {
+                gradientImage.Horizontal = horizontal;
+            }
+
+            return (this as T)!;
+        }
     }
 
 #endregion

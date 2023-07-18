@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,10 +8,12 @@ namespace UI {
         private static readonly int Props          = Shader.PropertyToID("_WidthHeightRadius");
         private static readonly int LeftColorProp  = Shader.PropertyToID("_LeftColor");
         private static readonly int RightColorProp = Shader.PropertyToID("_RightColor");
+        private static readonly int HorizontalProp = Shader.PropertyToID("_Horizontal");
 
         public float Radius = 8;
         public Color LeftColor;
         public Color RightColor;
+        public bool Horizontal = true;
 
         private Material _material;
 
@@ -40,6 +43,7 @@ namespace UI {
             _material.SetVector(Props, new Vector4(rect.width, rect.height, Radius * 2, 0));
             _material.SetColor(LeftColorProp, LeftColor);
             _material.SetColor(RightColorProp, RightColor);
+            _material.SetInt(HorizontalProp, Horizontal ? 1 : 0);
         }
     }
 }
