@@ -7,7 +7,7 @@ using Utilities.ColorManager;
 namespace UI.Dynamic.Modals.Configuring {
     public class NewThemeModal : ModalDynamic {
         private const float MODAL_WIDTH  = 300;
-        private const float MODAL_HEIGHT = 50;
+        private const float MODAL_HEIGHT = 55;
 
         public NewThemeModal() : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) {}
 

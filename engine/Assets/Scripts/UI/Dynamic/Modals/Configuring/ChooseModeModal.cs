@@ -12,7 +12,7 @@ public class ChooseModeModal : ModalDynamic {
         return u;
     };
 
-    public ChooseModeModal() : base(new Vector2(300, 400)) {}
+    public ChooseModeModal() : base(new Vector2(300, 300)) {}
 
     public override void Create() {
         Title.SetText("Choose Mode");

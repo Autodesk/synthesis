@@ -16,7 +16,7 @@ namespace UI.Dynamic.Modals.Spawning {
 
         public string Folder = "Mira";
 
-        public AddRobotModal() : base(new Vector2(400, 40)) {}
+        public AddRobotModal() : base(new Vector2(400, 55)) {}
 
         public override void Create() {
             _root = ParsePath(Path.Combine("$appdata/Autodesk/Synthesis", Folder), '/');

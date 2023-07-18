@@ -19,7 +19,7 @@ namespace Synthesis.UI.Dynamic {
 
         public string Folder = "Mira/Fields";
 
-        public AddFieldModal() : base(new Vector2(400, 40)) {}
+        public AddFieldModal() : base(new Vector2(400, 55)) {}
 
         public override void Create() {
             _root = ParsePath(Path.Combine("$appdata/Autodesk/Synthesis", Folder), '/');

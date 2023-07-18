@@ -11,7 +11,7 @@ namespace UI {
         private static readonly int EndColorProp   = Shader.PropertyToID("_EndColor");
         private static readonly int HorizontalProp = Shader.PropertyToID("_Horizontal");
 
-        public float Radius = 8;
+        public float Radius = 30;
         public Color StartColor;
         public Color EndColor;
         public bool Horizontal = true;

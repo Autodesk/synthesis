@@ -9,7 +9,7 @@ namespace Utilities.ColorManager {
             (ColorManager.SynthesisColor.InteractiveElementRight, new Color32(218, 102, 89, 255)),
             (ColorManager.SynthesisColor.InteractiveSecondary, new Color32(204, 124, 0, 255)),
             (ColorManager.SynthesisColor.Background, new Color32(0, 0, 0, 255)),
-            (ColorManager.SynthesisColor.BackgroundSecondary, new Color32(53, 58, 64, 255)),
+            (ColorManager.SynthesisColor.BackgroundSecondary, new Color32(52, 58, 64, 255)),
             (ColorManager.SynthesisColor.MainText, new Color32(255, 255, 255, 255)),
             (ColorManager.SynthesisColor.Scrollbar, new Color32(213, 216, 223, 255)),
             (ColorManager.SynthesisColor.AcceptButton, new Color32(71, 138, 226, 255)),

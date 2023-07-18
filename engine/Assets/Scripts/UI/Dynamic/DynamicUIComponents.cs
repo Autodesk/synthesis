@@ -82,7 +82,7 @@ namespace Synthesis.UI.Dynamic {
             _panelImage      = new Image(null, header.Find("Image").gameObject);
             _panelBackground = new Image(null, unityObject);
             _panelBackground.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.Background));
-            _panelBackground.SetCornerRadius(15);
+            _panelBackground.SetCornerRadius(7);
 
             _title = new Label(null, header.Find("Title").gameObject, null);
 
@@ -204,7 +204,7 @@ namespace Synthesis.UI.Dynamic {
             _modalImage      = new Image(null, header.Find("Image").gameObject);
             _modalBackground = new Image(null, unityObject);
             _modalBackground.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.Background));
-            _modalBackground.SetCornerRadius(20);
+            _modalBackground.SetCornerRadius(35);
 
             _title = new Label(null, header.Find("Title").gameObject, null);
             _title.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.MainText));
@@ -253,6 +253,8 @@ namespace Synthesis.UI.Dynamic {
             modalRt.sizeDelta     = new Vector2(_mainContentSize.x + (MAIN_CONTENT_HORZ_PADDING * 2),
                     hiddenRt.sizeDelta.y + headerRt.sizeDelta.y + footerRt.sizeDelta.y);
             _mainContent          = new Content(null!, actualContentObj, _mainContentSize);
+            
+            _description.RootGameObject.SetActive(false);
         }
 
         public abstract void Create();
@@ -932,6 +934,7 @@ namespace Synthesis.UI.Dynamic {
             _fillImage = new Image(this, _unitySlider.transform.Find("Fill Area").Find("Fill").gameObject);
             _fillImage.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
                 ColorManager.SynthesisColor.InteractiveElementRight);
+            _fillImage.SetCornerRadius(10);
 
             _handleImage = new Image(this, _unitySlider.transform.Find("Handle Slide Area").Find("Handle").gameObject);
             _handleImage.SetColor(ColorManager.SynthesisColor.InteractiveSecondary);
@@ -1205,6 +1208,7 @@ namespace Synthesis.UI.Dynamic {
             _headerImage = new Image(this, unityObject.transform.Find("Header").gameObject);
             _headerImage.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
                 ColorManager.SynthesisColor.InteractiveElementRight);
+            _headerImage.SetCornerRadius(8);
 
             _headerLabel = new Label(this, unityObject.transform.Find("Header").Find("Label").gameObject, null);
             _headerLabel.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
@@ -1268,7 +1272,7 @@ namespace Synthesis.UI.Dynamic {
         public Label Label => _label;
 
         public LabeledDropdown(UIComponent? parent, GameObject unityObject) : base(parent, unityObject) {
-            _dropdown = new Dropdown(this, unityObject.transform.Find("Dropdown").gameObject, null);
+            _dropdown = new Dropdown(this, unityObject.transform.Find("dropdown-base").gameObject, null);
             _label    = new Label(this, unityObject.transform.Find("Label").gameObject, null);
         }
 
