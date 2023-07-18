@@ -122,7 +122,7 @@ public class ConfigMotorModal : ModalDynamic {
         (Content nameLabelContent, Content velLabelContent) =
             MainContent.CreateSubContent(new Vector2(MODAL_WIDTH - SCROLL_WIDTH, 20f))
                 .SetTopStretch<Content>(PADDING, PADDING, 0)
-                .SplitLeftRight(NAME_WIDTH, PADDING);
+                .SplitLeftRight(NAME_WIDTH + PADDING, PADDING);
 
         nameLabelContent.CreateLabel().SetText("Motor");
         velLabelContent.CreateLabel().SetText("Target Velocity");
@@ -158,7 +158,9 @@ public class ConfigMotorModal : ModalDynamic {
 
             if (_motors[i].motorType == MotorType.Other) {
                 int j = i;
-                CreateEntry(GetName(_motors[i].driver), _motors[j].origVel, x => _motors[j].setTargetVelocity(x));
+                var u = "RPM";
+                if (_motors[i].driver is LinearDriver) u = "M/S";
+                CreateEntry(GetName(_motors[i].driver), _motors[j].origVel, x => _motors[j].setTargetVelocity(x), u);
             }
         }
     }
@@ -167,7 +169,7 @@ public class ConfigMotorModal : ModalDynamic {
 
     public override void Delete() {}
 
-    private void CreateEntry(string name, float currVel, Action<float> onClick) {
+    private void CreateEntry(string name, float currVel, Action<float> onClick, string units = "RPM") {
         (Content nameContent, Content velContent) =
             _scrollView.Content.CreateSubContent(new Vector2(_scrollViewWidth, 40f))
                 .SetTopStretch<Content>(0, 0, 0)
@@ -176,7 +178,7 @@ public class ConfigMotorModal : ModalDynamic {
         nameContent.CreateLabel().SetText(name).SetTopStretch(0, PADDING, PADDING + _scrollView.HeightOfChildren);
         float max = 150;
         if (currVel < 5) max = 50f;
-        velContent.CreateSlider("", minValue: 0f, maxValue: max, currentValue: currVel)
+        velContent.CreateSlider(units, minValue: 0f, maxValue: max, currentValue: currVel)
             .SetTopStretch<Slider>(PADDING, PADDING, _scrollView.HeightOfChildren)
             .AddOnValueChangedEvent((s, v) => { onClick(v); });
     }
