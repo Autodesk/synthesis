@@ -7,6 +7,7 @@ using Google.Protobuf.WellKnownTypes;
 
 namespace Synthesis {
     public class LinearDriver : Driver {
+        public const float LINEAR_TO_MOTOR_VELOCITY = 100f;
         public string Signal => _inputs[0];
 
         public ConfigurableJoint JointA { get; private set; }
@@ -33,6 +34,15 @@ namespace Synthesis {
         private float _velocity = 0f;
         // clang-format on
         public float Velocity => _velocity;
+        //Note: only used to save between sessions
+        private JointMotor _motor;
+        public JointMotor Motor {
+            get => _motor;
+            set {
+                _motor = value;
+                SimulationPreferences.SetRobotJointMotor((_simObject as RobotSimObject)!.MiraGUID, Name, _motor);
+            }
+        }
         public (float Upper, float Lower) Limits { get; private set; }
 
         public double MainInput {
@@ -44,9 +54,11 @@ namespace Synthesis {
         }
 
         public new string Name => State.SignalMap[_inputs[0]].Name;
+        
+        public readonly string MotorRef;
 
         public LinearDriver(string name, string[] inputs, string[] outputs, SimObject simObject,
-            ConfigurableJoint jointA, ConfigurableJoint jointB, float maxSpeed, (float, float) limits)
+            ConfigurableJoint jointA, ConfigurableJoint jointB, float maxSpeed, (float, float) limits, string motorRef = "")
             : base(name, inputs, outputs, simObject) {
             // Takeover joint configuration and make it more suited to control rather than passive
             var l              = jointA.linearLimit;
@@ -58,6 +70,20 @@ namespace Synthesis {
             MaxSpeed = maxSpeed;
             Position = 0f;
             Limits   = limits;
+            MotorRef = motorRef;
+
+            (simObject as RobotSimObject)!.MiraLive.MiraAssembly.Data.Joints.MotorDefinitions.TryGetValue(
+                motorRef, out var motor);
+            
+            if (motor != null && motor.MotorTypeCase == Mirabuf.Motor.Motor.MotorTypeOneofCase.SimpleMotor) {
+                _motor = motor!.SimpleMotor.UnityMotor;
+            } else {
+                Motor = new JointMotor() {
+                    force          = 2000,
+                    freeSpin       = false,
+                    targetVelocity = 100,
+                };
+            }
 
             _velocity = MaxSpeed;
         }

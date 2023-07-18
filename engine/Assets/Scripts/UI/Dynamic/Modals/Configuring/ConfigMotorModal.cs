@@ -46,27 +46,27 @@ public class ConfigMotorModal : ModalDynamic {
         if (_robotISSwerve) {
             _driveDrivers = new WheelDriver[driveMotorCount];
             for (i = 0; i < driveMotorCount; i++) {
-                _motors[i]        = new ConfigMotor(MotorType.Drive, i);
+                _motors[i]        = new ConfigMotor(MotorType.Drive);
                 _motors[i].driver = _robot.modules[i].driver;
                 _driveDrivers[i]  = _robot.modules[i].driver;
             }
 
             _turnDrivers = new RotationalDriver[driveMotorCount];
             for (i = 0; i < driveMotorCount; i++) {
-                _motors[i + driveMotorCount]        = new ConfigMotor(MotorType.Turn, i + driveMotorCount);
+                _motors[i + driveMotorCount]        = new ConfigMotor(MotorType.Turn);
                 _motors[i + driveMotorCount].driver = _robot.modules[i].azimuth;
                 _turnDrivers[i]            = _robot.modules[i].azimuth;
             }
         } else {
             _driveDrivers = new WheelDriver[driveMotorCount];
             _robot.GetLeftRightWheels()!.Value.leftWheels.ForEach(x => {
-                _motors[i]        = new ConfigMotor(MotorType.Drive, i);
+                _motors[i]        = new ConfigMotor(MotorType.Drive);
                 _motors[i].driver = x;
                 _driveDrivers[i]  = x;
                 i++;
             });
             _robot.GetLeftRightWheels()!.Value.rightWheels.ForEach(x => {
-                _motors[i]        = new ConfigMotor(MotorType.Drive, i);
+                _motors[i]        = new ConfigMotor(MotorType.Drive);
                 _motors[i].driver = x;
                 _driveDrivers[i]  = x;
                 i++;
@@ -82,7 +82,7 @@ public class ConfigMotorModal : ModalDynamic {
 
         SimulationManager.Drivers[_robot.Name].ForEach(x => {
             if (Array.IndexOf(_driveDrivers, x) == -1 && (!_robotISSwerve || Array.IndexOf(_turnDrivers, x) == -1)) {
-                _motors[i]        = new ConfigMotor(MotorType.Other, i);
+                _motors[i]        = new ConfigMotor(MotorType.Other);
                 _motors[i].driver = x;
                 i++;
             }
@@ -98,11 +98,7 @@ public class ConfigMotorModal : ModalDynamic {
             // Save to Mira
             _motors.ForEach(x => {
                 if (x.velChanged) {
-                    if (x.driver is WheelDriver) {
-                        SaveToMira(x.driver as WheelDriver);
-                    } else if (x.driver is RotationalDriver) {
-                        SaveToMira(x.driver as RotationalDriver);
-                    }
+                    SaveToMira(x.driver);
                 }
             });
 
@@ -155,6 +151,9 @@ public class ConfigMotorModal : ModalDynamic {
                 case (WheelDriver):
                     _motors[i].origVel = (driver as WheelDriver).Motor.targetVelocity;
                     break;
+                case (LinearDriver):
+                    _motors[i].origVel = (driver as LinearDriver).MaxSpeed;
+                    break;
             }
 
             if (_motors[i].motorType == MotorType.Other) {
@@ -175,7 +174,9 @@ public class ConfigMotorModal : ModalDynamic {
                 .ApplyTemplate<Content>(VerticalLayout)
                 .SplitLeftRight(NAME_WIDTH, PADDING);
         nameContent.CreateLabel().SetText(name).SetTopStretch(0, PADDING, PADDING + _scrollView.HeightOfChildren);
-        velContent.CreateSlider("", minValue: 0f, maxValue: 150f, currentValue: currVel)
+        float max = 150;
+        if (currVel < 5) max = 50f;
+        velContent.CreateSlider("", minValue: 0f, maxValue: max, currentValue: currVel)
             .SetTopStretch<Slider>(PADDING, PADDING, _scrollView.HeightOfChildren)
             .AddOnValueChangedEvent((s, v) => { onClick(v); });
     }
@@ -195,27 +196,34 @@ public class ConfigMotorModal : ModalDynamic {
     }
 
     private class ConfigMotor {
-        public int id;
         public Driver driver;
         public float origVel;
         private float _force;
         public bool velChanged = false;
         public MotorType motorType;
 
-        public ConfigMotor(MotorType t, int i) {
-            motorType = t;
-            id = i;        
+        public ConfigMotor(MotorType t) {
+            motorType = t;     
         }
 
         public void setTargetVelocity(float v) {
-            if (driver is RotationalDriver) {
-                _force = (driver as RotationalDriver).Motor.force;
-                (driver as RotationalDriver).Motor =
-                    new JointMotor() { force = _force, freeSpin = false, targetVelocity = v };
-            } else if (driver is WheelDriver) {
-                _force = (driver as WheelDriver).Motor.force;
-                (driver as WheelDriver).Motor =
-                    new JointMotor() { force = _force, freeSpin = false, targetVelocity = v };
+            switch (driver) {
+                case (RotationalDriver):
+                    _force = (driver as WheelDriver).Motor.force;
+                    (driver as WheelDriver).Motor =
+                        new JointMotor() { force = _force, freeSpin = false, targetVelocity = v };
+                    break;
+                case (WheelDriver):
+                    _force = (driver as WheelDriver).Motor.force;
+                    (driver as WheelDriver).Motor =
+                        new JointMotor() { force = _force, freeSpin = false, targetVelocity = v };
+                    break;
+                case (LinearDriver):
+                    (driver as LinearDriver).MaxSpeed = v;
+                    _force = (driver as LinearDriver).Motor.force;
+                    (driver as LinearDriver).Motor =
+                        new JointMotor() { force = _force, freeSpin = false, targetVelocity = v * LinearDriver.LINEAR_TO_MOTOR_VELOCITY };
+                    break;
             }
             velChanged = true;
         }
@@ -227,14 +235,7 @@ public class ConfigMotorModal : ModalDynamic {
         Other
     }
 
-    private void SaveToMira(WheelDriver driver) {
-        _robot.MiraLive.MiraAssembly.Data.Joints.MotorDefinitions[driver.MotorRef] = new Mirabuf.Motor.Motor {
-            SimpleMotor = new Mirabuf.Motor.SimpleMotor {MaxVelocity = driver.Motor.targetVelocity,
-                                                         StallTorque                                           = driver.Motor.force}
-        };
-    }
-
-    private void SaveToMira(RotationalDriver driver) {
+    private void SaveToMira(dynamic driver) {
         _robot.MiraLive.MiraAssembly.Data.Joints.MotorDefinitions[driver.MotorRef] = new Mirabuf.Motor.Motor {
             SimpleMotor = new Mirabuf.Motor.SimpleMotor {MaxVelocity = driver.Motor.targetVelocity,
                                                          StallTorque                                           = driver.Motor.force}
