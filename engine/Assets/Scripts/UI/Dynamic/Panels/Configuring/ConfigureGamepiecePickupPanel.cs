@@ -180,7 +180,7 @@ namespace Synthesis.UI.Dynamic {
                 bool hit = UnityEngine.Physics.Raycast(ray, out hitInfo);
                 if (hit && hitInfo.rigidbody != null &&
                     hitInfo.rigidbody.transform.parent ==
-                        RobotSimObject.GetCurrentlyPossessedRobot().RobotNode.transform) {
+                        _robot.RobotNode.transform) {
                     if (_hoveringNode != null &&
                         (_selectedNode == null ? true : !_selectedNode.name.Equals(_hoveringNode.name))) {
                         _hoveringNode.enabled = false;

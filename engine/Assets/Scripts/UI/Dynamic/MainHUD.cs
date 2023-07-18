@@ -248,8 +248,6 @@ public static class MainHUD {
                     camMode.SetTransform(location, Quaternion.LookRotation(-location.normalized,
                                                        Vector3.Cross(-location.normalized, Vector3.right)));
         }
-        if (PhysicsManager.IsFrozen && !(MatchStateMachine.Instance.CurrentState.StateName is MatchStateMachine.StateName.RobotPositioning))
-            PhysicsManager.IsFrozen = false;
     }
 
     public static void SetUpConfig() {
@@ -302,8 +300,8 @@ public static class MainHUD {
             isMatchFreeCam = Camera.main.GetComponent<CameraController>().CameraMode == CameraController.CameraModes["Freecam"];
         } else {
             isMatchFreeCam = false;
+            PhysicsManager.IsFrozen = true;
         }
-        PhysicsManager.IsFrozen = true;
     }
 
     public static void LeaveConfig() {
@@ -314,6 +312,8 @@ public static class MainHUD {
             SetUpPractice();
         } else if (ModeManager.CurrentMode.GetType() == typeof(MatchMode)) {
             SetUpMatch();
+            if (PhysicsManager.IsFrozen && !(MatchStateMachine.Instance.CurrentState.StateName is MatchStateMachine.StateName.RobotPositioning))
+                PhysicsManager.IsFrozen = false;
         }
 
     }
