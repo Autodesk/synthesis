@@ -6,9 +6,9 @@ using Synthesis;
 
 public class ConfigMotorModal : ModalDynamic {
     const float MODAL_HEIGHT = 500f;
-    const float MODAL_WIDTH  = 600f;
+    const float MODAL_WIDTH  = 800f;
     const float PADDING      = 16f;
-    const float NAME_WIDTH   = 180f;
+    const float NAME_WIDTH   = 260f;
     const float SCROLL_WIDTH = 10f;
 
     private ScrollView _scrollView;
@@ -158,7 +158,7 @@ public class ConfigMotorModal : ModalDynamic {
 
             if (_motors[i].motorType == MotorType.Other) {
                 int j = i;
-                CreateEntry(i.ToString(), _motors[j].origVel, x => _motors[j].setTargetVelocity(x));
+                CreateEntry(GetName(_motors[i].driver), _motors[j].origVel, x => _motors[j].setTargetVelocity(x));
             }
         }
     }
@@ -233,6 +233,10 @@ public class ConfigMotorModal : ModalDynamic {
         Drive,
         Turn,
         Other
+    }
+
+    private string GetName(dynamic driver) {
+        return driver.Name;
     }
 
     private void SaveToMira(dynamic driver) {
