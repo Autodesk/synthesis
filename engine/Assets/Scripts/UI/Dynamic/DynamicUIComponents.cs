@@ -478,8 +478,8 @@ namespace Synthesis.UI.Dynamic {
             UnityEngine.UI.Image image         = RootGameObject.GetComponent<UnityEngine.UI.Image>();
 
             if (gradientImage) {
-                gradientImage.StartColor  = start;
-                gradientImage.EndColor = end;
+                gradientImage.StartColor = start;
+                gradientImage.EndColor   = end;
 
                 if (image)
                     RootGameObject.GetComponent<UImage>().color = Color.white;
@@ -1330,8 +1330,8 @@ namespace Synthesis.UI.Dynamic {
                 return this;
             }
 
-            _gradientUpdater.StartColor  = start;
-            _gradientUpdater.EndColor = end;
+            _gradientUpdater.StartColor = start;
+            _gradientUpdater.EndColor   = end;
             _gradientUpdater.Refresh();
 
             return this;

@@ -7,8 +7,8 @@ namespace UI {
     [RequireComponent(typeof(Image))]
     public class GradientImageUpdater : MonoBehaviour {
         private static readonly int Props          = Shader.PropertyToID("_WidthHeightRadius");
-        private static readonly int StartColorProp  = Shader.PropertyToID("_StartColor");
-        private static readonly int EndColorProp = Shader.PropertyToID("_EndColor");
+        private static readonly int StartColorProp = Shader.PropertyToID("_StartColor");
+        private static readonly int EndColorProp   = Shader.PropertyToID("_EndColor");
         private static readonly int HorizontalProp = Shader.PropertyToID("_Horizontal");
 
         public float Radius = 8;
