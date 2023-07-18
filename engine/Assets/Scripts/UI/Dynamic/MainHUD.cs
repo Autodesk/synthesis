@@ -102,7 +102,9 @@ public static class MainHUD {
             DynamicUIManager.CreateModal<SpawningModal>();
         };
 
-        _homeButton.OnClicked += (b) => {};
+        _homeButton.OnClicked += (b) => {
+            DynamicUIManager.CreateModal<ExitSynthesisModal>();
+        };
 
         // Setup default HUD
         // MOVED TO PRACTICE MODE
@@ -146,7 +148,7 @@ public static class MainHUD {
         var drawerButtonObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("hud-drawer-item-base"),
             (drawerPosition == DrawerPosition.Top ? _topItemContainer : _bottomItemContainer).RootGameObject.transform);
         var drawerButton    = new Button(_tabDrawerContent, drawerButtonObj, null);
-        drawerButton.Label!.SetText(title);
+        drawerButton.Label!.SetText(title).SetFontSize(16);
         drawerButton.AddOnClickedEvent(onClick);
         var drawerIcon = new Image(_tabDrawerContent, drawerButtonObj.transform.Find("ItemIcon").gameObject);
         if (icon != null)
@@ -189,24 +191,28 @@ public static class MainHUD {
     }
 
     public static void UpdateDrawerSizing() {
-        int TOP_OFFSET = 0;
+        int LOGO_BOTTOM_Y       = 50;
+        int LOGO_BUTTON_SPACING = 5;
+        int BUTTON_HEIGHT       = 50;
+        int SPACING    = 15;
+        int ITEM_HEIGHT         = 40;
         
         for (int i = 0; i < _topDrawerItems.Count; i++) {
-            _topDrawerItems[i].button.SetTopStretch<Button>(anchoredY: 15 + i * 55);
+            _topDrawerItems[i].button.SetTopStretch<Button>(anchoredY: SPACING + i * (ITEM_HEIGHT + SPACING));
         }
         for (int i = 0; i < _bottomDrawerItems.Count; i++) {
-            _bottomDrawerItems[i].button.SetTopStretch<Button>(anchoredY: 15 + i * 55);
+            _bottomDrawerItems[i].button.SetTopStretch<Button>(anchoredY: SPACING + i * (ITEM_HEIGHT + SPACING));
         }
-        _itemContainer.SetTopStretch<Content>(anchoredY: 140, leftPadding: 15, rightPadding: 15);
-        int topItemsHeight    = 15 + _topDrawerItems.Count * 55;
-        int bottomItemsHeight = 15 + _bottomDrawerItems.Count * 55;
+        _itemContainer.SetTopStretch<Content>(anchoredY: LOGO_BOTTOM_Y + LOGO_BUTTON_SPACING + BUTTON_HEIGHT + SPACING, leftPadding: SPACING, rightPadding: SPACING);
+        int topItemsHeight    = SPACING + _topDrawerItems.Count * (ITEM_HEIGHT + SPACING);
+        int bottomItemsHeight = SPACING + _bottomDrawerItems.Count * (ITEM_HEIGHT + SPACING);
         _topItemContainer.SetHeight<Content>(topItemsHeight);
         _topItemContainer.SetTopStretch<Content>(anchoredY: 0);
         _bottomItemContainer.SetHeight<Content>(bottomItemsHeight);
-        _bottomItemContainer.SetTopStretch<Content>(anchoredY: topItemsHeight + 15);
-        int itemsHeight = topItemsHeight + 15 + bottomItemsHeight;
+        _bottomItemContainer.SetTopStretch<Content>(anchoredY: topItemsHeight + SPACING);
+        int itemsHeight = topItemsHeight + SPACING + bottomItemsHeight;
         _itemContainer.SetHeight<Content>(itemsHeight);
-        _tabDrawerContent.SetHeight<Content>(70 + 5 + 50 + 15 + itemsHeight + 15 + 50 + 15);
+        _tabDrawerContent.SetHeight<Content>(LOGO_BOTTOM_Y + LOGO_BUTTON_SPACING + BUTTON_HEIGHT + SPACING + itemsHeight + SPACING + BUTTON_HEIGHT + SPACING);
     }
 
     public static void Delete() {
