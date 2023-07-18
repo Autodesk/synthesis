@@ -505,7 +505,8 @@ namespace Synthesis.UI.Dynamic {
             var leftRt              = leftContentObject.GetComponent<RectTransform>();
             leftRt.anchorMax        = new Vector2(0f, 0.5f);
             leftRt.anchorMin        = new Vector2(0f, 0.5f);
-            leftRt.anchoredPosition = new Vector2(leftWidth / 2f, 0f);
+            leftRt.pivot            = new Vector2(0f, 0.5f);
+            leftRt.anchoredPosition = new Vector2(0f, 0f);
             var leftContent         = new Content(this, leftContentObject, new Vector2(leftWidth, Size.y));
 
             var rightContentObject = GameObject.Instantiate(
@@ -514,7 +515,8 @@ namespace Synthesis.UI.Dynamic {
             rightRt.anchorMax        = new Vector2(1f, 0.5f);
             rightRt.anchorMin        = new Vector2(1f, 0.5f);
             float rightWidth         = (Size.x - leftWidth) - padding;
-            rightRt.anchoredPosition = new Vector2(-rightWidth / 2f, 0f);
+            rightRt.pivot = new Vector2(1f, 0.5f);
+            rightRt.anchoredPosition = new Vector2(0f, 0f);
             var rightContent         = new Content(this, rightContentObject, new Vector2(rightWidth, Size.y));
 
             base.Children.Add(leftContent);
@@ -529,15 +531,17 @@ namespace Synthesis.UI.Dynamic {
             var topRt              = topContentObject.GetComponent<RectTransform>();
             topRt.anchorMax        = new Vector2(0.5f, 1f);
             topRt.anchorMin        = new Vector2(0.5f, 1f);
+            topRt.pivot            = new Vector2(0.5f, 1f);
             topRt.anchoredPosition = new Vector2(0f, 0);
             var topContent         = new Content(this, topContentObject, new Vector2(Size.x, topHeight));
 
             var bottomContentObject = GameObject.Instantiate(
                 SynthesisAssetCollection.GetUIPrefab("content-base"), base.RootGameObject.transform);
             var bottomRt              = bottomContentObject.GetComponent<RectTransform>();
-            bottomRt.anchorMax        = new Vector2(0.5f, 0.5f);
-            bottomRt.anchorMin        = new Vector2(0.5f, 0.5f);
+            bottomRt.anchorMax        = new Vector2(0.5f, 0f);
+            bottomRt.anchorMin        = new Vector2(0.5f, 0f);
             float bottomHeight        = (Size.y - topHeight) - padding;
+            bottomRt.pivot            = new Vector2(0.5f, 0f);
             bottomRt.anchoredPosition = new Vector2(0f, 0);
             // rightRt.sizeDelta = new Vector2(rightWidth, rightRt.sizeDelta.y);
             var bottomContent = new Content(this, bottomContentObject, new Vector2(Size.x, bottomHeight));
@@ -681,6 +685,7 @@ namespace Synthesis.UI.Dynamic {
 
         public string Text          => _unityText.text;
         public FontStyles FontStyle => _unityText.fontStyle;
+        public bool IsFontSizeAutomatic => _unityText.enableAutoSizing;
 
         public static readonly Func<Label, Label> VerticalLayoutTemplate = (Label label) => {
             return label.SetTopStretch(anchoredY: label.Parent!.HeightOfChildren - label.Size.y + 15f);
@@ -706,6 +711,11 @@ namespace Synthesis.UI.Dynamic {
             SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.MainText));
         }
 
+        public Label SetAutomaticFontSize(bool a) {
+            _unityText.enableAutoSizing = a;
+            return this;
+        }
+
         public Label SetText(string text) {
             _unityText.text = text;
             return this;
@@ -713,6 +723,12 @@ namespace Synthesis.UI.Dynamic {
 
         public Label SetFontSize(float fontSize) {
             _unityText.fontSize = fontSize;
+            return this;
+        }
+
+        public Label SetFontMinMaxSize(float min, float max) {
+            _unityText.fontSizeMin = min;
+            _unityText.fontSizeMax = max;
             return this;
         }
 
@@ -1379,7 +1395,7 @@ namespace Synthesis.UI.Dynamic {
 
 #endregion
 
-    public class UIEventHandler : MonoBehaviour, IPointerClickHandler {
+public class UIEventHandler : MonoBehaviour, IPointerClickHandler {
         public event Action<PointerEventData> OnPointerClickedEvent;
 
         public void OnPointerClick(PointerEventData pointerEventData) {

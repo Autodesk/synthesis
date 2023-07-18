@@ -1,83 +1,46 @@
-﻿using SynthesisAPI.Modules;
+﻿using System;
 using SynthesisAPI.Utilities;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
+using Synthesis.UI.Dynamic;
+using Synthesis.Util;
 using ILogger = SynthesisAPI.Utilities.ILogger;
-using UnityEngine;
+using Debug = UnityEngine.Debug;
+
+#nullable enable
 
 namespace Engine {
     /// <summary>
     /// Logs to the toast feed
     /// </summary>
     public class ToastLogger : ILogger {
-        /// <summary>
-        /// Represents a single toast notification
-        /// </summary>
-        private struct Toast {
-            /// <summary>
-            /// Raw text from Log call
-            /// </summary>
-            public readonly string RawText;
-            /// <summary>
-            /// Formatted text
-            /// </summary>
-            public readonly LogLevel LogLevel;
-            /// <summary>
-            /// Tooltip on hover
-            /// </summary>
-            public readonly string Tooltip;
 
-            public Toast(string content, LogLevel logLevel, string tooltip) {
-                RawText  = content;
-                LogLevel = logLevel;
-                Tooltip  = tooltip;
-            }
-        }
-
-        private bool _isEnabled              = true;
-        private bool debugLogsEnabled        = true;
-        private static bool currentlyLogging = false;
-
-        private static List<Toast> toastList = new List<Toast>();
-        private static int currentToastID    = 0;
-
-        private static GameObject toastObject;
-        private static Transform scrollTransform;
-        private static ToastManager toastManager;
-
-        private static void SendToast(Toast toast) {
-            toastList.Add(toast);
-            currentToastID++;
-            var initiatedToast = GameObject.Instantiate(toastObject, scrollTransform);
-            initiatedToast.GetComponentInChildren<ToastConfig>().Init(toast.RawText, toast.LogLevel, toastManager);
-        }
+        private bool _isEnabled               = true;
+        private bool _debugLogsEnabled        = true;
+        private static bool _currentlyLogging;
 
         public void Log(object o, LogLevel logLevel = LogLevel.Info, [CallerMemberName] string memberName = "",
             [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
-            if (!currentlyLogging && ModuleLoader.Api.IsMainThread && !(scrollTransform == null)) {
-                currentlyLogging = true;
-                if (logLevel != LogLevel.Debug || debugLogsEnabled) {
-                    var type = new StackTrace().GetFrame(2).GetMethod().DeclaringType;
-                    var tooltip =
-                        $"{ModuleManager.GetDeclaringModule(type)}\\{filePath.Split('\\').Last()}:{lineNumber}";
-                    var msg = new Toast(o.ToString(), logLevel, tooltip);
-                    SendToast(msg);
+            if (!_currentlyLogging && ModuleLoader.Api.IsMainThread) {
+                _currentlyLogging = true;
+                if (logLevel != LogLevel.Debug || _debugLogsEnabled) {
+                    Action<ToastHandler>? optionCallback = null;
+                    if (logLevel == LogLevel.Error) {
+                        optionCallback = th => {
+                            DynamicUIManager.CreateModal<ToastModal>(o.ToString(), logLevel);
+                            if (th.LinkedNode != null) {
+                                Toaster.RemoveToast(th.LinkedNode);
+                            }
+                        };
+                        Debug.Log("Making Optional Callback");
+                    }
+                    Toaster.MakeToast(o.ToString(), level: logLevel, optionalCallback: optionCallback);
                 }
-                currentlyLogging = false;
-                toastManager.onAddToast();
+                _currentlyLogging = false;
             }
         }
 
-        public void SetUpToastObject(GameObject o, Transform t, ToastManager m) {
-            toastObject     = o;
-            scrollTransform = t;
-            toastManager    = m;
-        }
-
         public void SetEnableDebugLogs(bool enable) {
-            debugLogsEnabled = enable;
+            _debugLogsEnabled = enable;
         }
 
         public void SetEnabled(bool enabled) {

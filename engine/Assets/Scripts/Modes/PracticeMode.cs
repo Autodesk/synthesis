@@ -12,6 +12,7 @@ using SynthesisAPI.Utilities;
 using UnityEngine;
 using UnityEngine.XR;
 using Logger = SynthesisAPI.Utilities.Logger;
+using Random = System.Random;
 
 public class PracticeMode : IMode {
     public static Vector3 GamepieceSpawnpoint = new Vector3(0, 10, 0);
@@ -90,6 +91,27 @@ public class PracticeMode : IMode {
                     DynamicUIManager.CreatePanel<ScoringZonesPanel>();
             }
         });
+        
+#if UNITY_EDITOR
+        MainHUD.AddItemToDrawer("Toast Test", b => {
+            var rand = new Random();
+            var val = rand.Next(4);
+            switch (val) {
+                case 0:
+                    Logger.Log("Hello there, this is info", LogLevel.Info);
+                    break;
+                case 1:
+                    Logger.Log("Warning, beware", LogLevel.Warning);
+                    break;
+                case 2:
+                    Logger.Log("Ah crap, something went wrong", LogLevel.Error);
+                    break;
+                case 3:
+                    Logger.Log("Some little debug statement", LogLevel.Debug);
+                    break;
+            }
+        });
+#endif
 
         EventBus.NewTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
     }
