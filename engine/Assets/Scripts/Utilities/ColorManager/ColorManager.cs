@@ -213,7 +213,9 @@ namespace Utilities.ColorManager {
 
         /// <summary>Each value represents a different color that can differ across themes</summary>
         public enum SynthesisColor {
-            InteractiveElement,
+            InteractiveElementSolid,
+            InteractiveElementLeft,
+            InteractiveElementRight,
             InteractiveSecondary,
             Background,
             BackgroundSecondary,
