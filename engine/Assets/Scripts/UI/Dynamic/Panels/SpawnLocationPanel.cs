@@ -155,11 +155,11 @@ namespace Synthesis.UI.Dynamic {
         /// </summary>
         /// <param name="index">the selected buttons index</param>
         private void SelectButton(int index) {
-            buttons[_selectedButton].Image.Color =
-                ColorManager.GetColor(ColorManager.SynthesisColor.BackgroundSecondary);
+            buttons[_selectedButton].Image.SetColor(
+                ColorManager.GetColor(ColorManager.SynthesisColor.BackgroundSecondary));
             _selectedButton = index;
 
-            buttons[index].Image.Color = (index < 3) ? redButtonColor : blueButtonColor;
+            buttons[index].Image.SetColor((index < 3) ? redButtonColor : blueButtonColor);
         }
 
         /// <summary>

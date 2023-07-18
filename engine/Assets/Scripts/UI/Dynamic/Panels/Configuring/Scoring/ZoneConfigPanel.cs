@@ -134,6 +134,7 @@ public class ZoneConfigPanel : PanelDynamic {
                                   })
                                   .SetBackgroundColor<Button>(Color.blue)
                                   .ApplyTemplate(VerticalLayout);
+        ConfigureAllianceButton();
 
         _zoneParentButton =
             MainContent.CreateLabeledButton()
