@@ -3,13 +3,16 @@
 #include <include/cef_app.h>
 #include <include/wrapper/cef_helpers.h>
 
+#include <memory>
+
 namespace synthesis {
 namespace {
-    ClientManager* manager = nullptr;
+    // ClientManager* manager = nullptr;
+    std::shared_ptr<ClientManager> manager = nullptr;
 } // namespace
 
 ClientManager::ClientManager() : is_closing(false) {
-    manager = this;
+    manager = std::make_shared<ClientManager>();
 }
 
 ClientManager::~ClientManager() {
@@ -18,7 +21,7 @@ ClientManager::~ClientManager() {
     manager = nullptr;
 }
 
-ClientManager* ClientManager::GetInstance() /* static */ {
+std::shared_ptr<ClientManager> ClientManager::GetInstance() /* static */ {
     CEF_REQUIRE_UI_THREAD();
     DCHECK(manager);
     return manager;

@@ -6,6 +6,7 @@
 #include <include/cef_browser.h>
 
 #include <list>
+#include <memory>
 
 namespace synthesis {
 
@@ -17,7 +18,7 @@ public:
     ClientManager();
     ~ClientManager();
 
-    static ClientManager* GetInstance();
+    static std::shared_ptr<ClientManager> GetInstance();
 
     void OnAfterCreated(CefRefPtr<CefBrowser> browser);
     void DoClose(CefRefPtr<CefBrowser> browser);

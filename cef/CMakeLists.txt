@@ -6,6 +6,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+if(CMAKE_BUILD_TYPE STREQUAL "")
+    message(STATUS "No build type specified, defaulting to Debug")
+    set(CMAKE_BUILD_TYPE "Debug")
+endif()
+
+if(GEN_NINJA OR GEN_MAKEFILES)
+    set(TARGET_OUT_DIR "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
+else()
+    set(TARGET_OUT_DIR "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+endif()
+
 set(CEF_VERSION "106.0.26+ge105400+chromium-106.0.5249.91")
 
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
@@ -71,15 +82,29 @@ endfunction()
 
 DownloadCEF("${CEF_PLATFORM}" "${CEF_VERSION}" "${CMAKE_SOURCE_DIR}/cef_binaries")
 
+# set(CEF_BINARY_DIR "${CEF_ROOT}")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CEF_ROOT}/cmake")
 find_package(CEF REQUIRED)
 
 include_directories(${CEF_INCLUDE_PATH})
 
 add_subdirectory(${CEF_LIBCEF_DLL_WRAPPER_PATH} libcef_dll_wrapper)
+
+# TODO: Needed?
+# add_subdirectory(${CEF_ROOT}/tests/cefclient)
+# add_subdirectory(${CEF_ROOT}/tests/cefsimple)
+# add_subdirectory(${CEF_ROOT}/tests/gtest)
+# add_subdirectory(${CEF_ROOT}/tests/ceftests)
+
 add_subdirectory(cef)
 
-if(BUILD_TESTING)
-    enable_testing()
-    add_subdirectory(tests)
-endif()
+# if(USE_SANDBOX)
+#     message(FATAL_ERROR "Sandbox")
+# else()
+#     message(FATAL_ERROR "No sandbox")
+# endif()
+
+# if(BUILD_TESTING)
+#     enable_testing()
+#     add_subdirectory(tests)
+# endif()

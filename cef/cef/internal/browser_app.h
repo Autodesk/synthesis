@@ -7,7 +7,7 @@
 
 namespace synthesis {
 
-void CreateBrowser(CefRefPtr<CefClient> client, const CefString& url, const CefBrowserSettings& settings);
+// void CreateBrowser(CefRefPtr<CefClient> client, const CefString& url, const CefBrowserSettings& settings);
 
 CefRefPtr<CefApp> CreateBrowserProcessApp();
 
