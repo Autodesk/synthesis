@@ -16,9 +16,9 @@ namespace Synthesis.UI.Dynamic {
 
         private GameObject _arrowObject;
 
-        private bool _exiting = false;
+        private bool _exiting      = false;
         private bool _gizmoExiting = false;
-        private bool _save    = false;
+        private bool _save         = false;
 
         private STD _resultingData;
 
@@ -36,7 +36,7 @@ namespace Synthesis.UI.Dynamic {
                 return false;
             }
 
-            _robot        = MainHUD.ConfigRobot;
+            _robot           = MainHUD.ConfigRobot;
             var existingData = _robot.TrajectoryData;
             if (existingData.HasValue) {
                 _resultingData = existingData.Value;
@@ -46,8 +46,7 @@ namespace Synthesis.UI.Dynamic {
                         RelativeRotation = Quaternion.identity.ToArray(), EjectionSpeed = 2f };
             }
 
-            var selectedRb = _robot.AllRigidbodies.Find(
-                x => x.name.Equals(_resultingData.NodeName));
+            var selectedRb = _robot.AllRigidbodies.Find(x => x.name.Equals(_resultingData.NodeName));
             if (selectedRb) {
                 _selectedNode         = selectedRb.GetComponent<HighlightComponent>();
                 _selectedNode.enabled = true;
@@ -55,21 +54,21 @@ namespace Synthesis.UI.Dynamic {
             }
 
             Title.SetText("Configure Shooting");
-            
+
             AcceptButton
                 .AddOnClickedEvent(b => {
-                    SimulationPreferences.SetRobotTrajectoryData(_robot.MiraLive.MiraAssembly.Info.GUID, _resultingData);
+                    SimulationPreferences.SetRobotTrajectoryData(
+                        _robot.MiraLive.MiraAssembly.Info.GUID, _resultingData);
                     PreferenceManager.PreferenceManager.Save();
                     _save = true;
                     DynamicUIManager.ClosePanel<ConfigureShotTrajectoryPanel>();
                 })
                 .StepIntoLabel(l => l.SetText("Save"));
 
-            MiddleButton.StepIntoLabel(l => l.SetText("Session"))
-                .AddOnClickedEvent(b => {
-                    _save = true;
-                    DynamicUIManager.ClosePanel<ConfigureShotTrajectoryPanel>();
-                });
+            MiddleButton.StepIntoLabel(l => l.SetText("Session")).AddOnClickedEvent(b => {
+                _save = true;
+                DynamicUIManager.ClosePanel<ConfigureShotTrajectoryPanel>();
+            });
 
             _arrowObject                      = GameObject.CreatePrimitive(PrimitiveType.Cube);
             _arrowObject.transform.localScale = new Vector3(0.15f, 0.15f, 1f);
@@ -87,7 +86,7 @@ namespace Synthesis.UI.Dynamic {
                     _robot.GroundedNode != null && _robot.GroundedBounds != null
                         ? _robot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(_robot.GroundedBounds.center)
                         : Vector3.zero;
-                    
+
             GizmoManager.SpawnGizmo(_arrowObject.transform,
                 t => {
                     _arrowObject.transform.rotation = t.Rotation;
@@ -96,7 +95,7 @@ namespace Synthesis.UI.Dynamic {
                 },
                 t => {
                     _gizmoExiting = true;
-                    var node = _robot.RobotNode.transform.Find(_resultingData.NodeName);
+                    var node      = _robot.RobotNode.transform.Find(_resultingData.NodeName);
                     _resultingData.RelativePosition =
                         node.transform.worldToLocalMatrix.MultiplyPoint(t.Position).ToArray();
                     _resultingData.RelativeRotation =
@@ -167,9 +166,9 @@ namespace Synthesis.UI.Dynamic {
 
             if (!MainHUD.isMatchFreeCam)
                 OrbitCameraMode.FocusPoint = () =>
-                _robot.GroundedNode != null && _robot.GroundedBounds != null
-                    ? _robot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(_robot.GroundedBounds.center)
-                    : Vector3.zero;
+                    _robot.GroundedNode != null && _robot.GroundedBounds != null
+                        ? _robot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(_robot.GroundedBounds.center)
+                        : Vector3.zero;
 
             // Cleanup
             GameObject.Destroy(_arrowObject);
@@ -178,15 +177,13 @@ namespace Synthesis.UI.Dynamic {
         public override void Update() {
             if (_selectingNode) {
                 // Enable Collision Detection for the Robot
-                _robot.RobotNode.GetComponentsInChildren<Rigidbody>().ForEach(
-                    x => x.detectCollisions = true);
+                _robot.RobotNode.GetComponentsInChildren<Rigidbody>().ForEach(x => x.detectCollisions = true);
 
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 RaycastHit hitInfo;
                 bool hit = UnityEngine.Physics.Raycast(ray, out hitInfo);
                 if (hit && hitInfo.rigidbody != null &&
-                    hitInfo.rigidbody.transform.parent ==
-                        _robot.RobotNode.transform) {
+                    hitInfo.rigidbody.transform.parent == _robot.RobotNode.transform) {
                     Debug.Log($"Selecting Node: {hitInfo.rigidbody.name}");
 
                     if (_hoveringNode != null) {
@@ -221,8 +218,7 @@ namespace Synthesis.UI.Dynamic {
                 }
 
                 // Disable Collision Detection for the Robot
-                _robot.RobotNode.GetComponentsInChildren<Rigidbody>().ForEach(
-                    x => x.detectCollisions = true);
+                _robot.RobotNode.GetComponentsInChildren<Rigidbody>().ForEach(x => x.detectCollisions = true);
             }
         }
     }

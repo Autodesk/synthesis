@@ -119,8 +119,8 @@ namespace Synthesis.UI.Dynamic {
 
             _title = new Label(null, header.Find("Title").gameObject, null);
 
-            _footer    = _unityObject.transform.Find("Footer");
-            var footerRt  = _footer.GetComponent<RectTransform>();
+            _footer      = _unityObject.transform.Find("Footer");
+            var footerRt = _footer.GetComponent<RectTransform>();
 
             _cancelButton = new Button(null!, _footer.Find("Cancel").gameObject, null);
             _cancelButton.AddOnClickedEvent(b => {
@@ -196,7 +196,7 @@ namespace Synthesis.UI.Dynamic {
 
         public Action OnAccepted;
         public Action OnCancelled;
-        
+
         protected Button MiddleButton {
             get {
                 if (_middleButton == null) {

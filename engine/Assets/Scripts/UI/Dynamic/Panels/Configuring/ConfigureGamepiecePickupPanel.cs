@@ -17,9 +17,9 @@ namespace Synthesis.UI.Dynamic {
         private GameObject _zoneObject;
         private ITD _resultingData;
 
-        private bool _exiting = false;
+        private bool _exiting      = false;
         private bool _gizmoExiting = false;
-        private bool _save    = false;
+        private bool _save         = false;
 
         private HighlightComponent _hoveringNode = null;
         private HighlightComponent _selectedNode = null;
@@ -36,17 +36,17 @@ namespace Synthesis.UI.Dynamic {
                 return false;
             }
 
-            _robot = MainHUD.ConfigRobot;
+            _robot           = MainHUD.ConfigRobot;
             var existingData = _robot.IntakeData;
             if (existingData.HasValue) {
                 _resultingData = existingData.Value;
             } else {
-                _resultingData = new ITD { NodeName = "grounded",
-                    RelativePosition = _robot.GroundedBounds.center.ToArray(), TriggerSize = 0.5f, StorageCapacity = 1 };
+                _resultingData =
+                    new ITD { NodeName = "grounded", RelativePosition = _robot.GroundedBounds.center.ToArray(),
+                        TriggerSize = 0.5f, StorageCapacity = 1 };
             }
 
-            var selectedRb = _robot.AllRigidbodies.Find(
-                x => x.name.Equals(_resultingData.NodeName));
+            var selectedRb = _robot.AllRigidbodies.Find(x => x.name.Equals(_resultingData.NodeName));
             if (selectedRb) {
                 _selectedNode         = selectedRb.GetComponent<HighlightComponent>();
                 _selectedNode.enabled = true;
@@ -60,18 +60,18 @@ namespace Synthesis.UI.Dynamic {
 
             AcceptButton
                 .AddOnClickedEvent(b => {
-                    SimulationPreferences.SetRobotIntakeTriggerData(_robot.MiraLive.MiraAssembly.Info.GUID, _resultingData);
+                    SimulationPreferences.SetRobotIntakeTriggerData(
+                        _robot.MiraLive.MiraAssembly.Info.GUID, _resultingData);
                     PreferenceManager.PreferenceManager.Save();
                     _save = true;
                     DynamicUIManager.ClosePanel<ConfigureGamepiecePickupPanel>();
                 })
                 .StepIntoLabel(l => l.SetText("Save"));
 
-            MiddleButton.StepIntoLabel(l => l.SetText("Session"))
-                .AddOnClickedEvent(b => {
-                    _save = true;
-                    DynamicUIManager.ClosePanel<ConfigureGamepiecePickupPanel>();
-                });
+            MiddleButton.StepIntoLabel(l => l.SetText("Session")).AddOnClickedEvent(b => {
+                _save = true;
+                DynamicUIManager.ClosePanel<ConfigureGamepiecePickupPanel>();
+            });
 
             _zoneObject       = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             var renderer      = _zoneObject.GetComponent<Renderer>();
@@ -88,9 +88,9 @@ namespace Synthesis.UI.Dynamic {
                     _robot.GroundedNode != null && _robot.GroundedBounds != null
                         ? _robot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(_robot.GroundedBounds.center)
                         : Vector3.zero;
-                    
+
             GizmoManager.SpawnGizmo(_zoneObject.transform, t => _zoneObject.transform.position = t.Position, t => {
-                _gizmoExiting = true;
+                _gizmoExiting                   = true;
                 _resultingData.RelativePosition = _robot.RobotNode.transform
                                                       .Find(_resultingData.NodeName) // Get Node
                                                       .transform.worldToLocalMatrix.MultiplyPoint(t.Position)
@@ -164,7 +164,7 @@ namespace Synthesis.UI.Dynamic {
             if (_selectedNode != null) {
                 _selectedNode.enabled = false;
             }
-            
+
             // Cleanup
             GameObject.Destroy(_zoneObject);
         }
@@ -172,15 +172,13 @@ namespace Synthesis.UI.Dynamic {
         public override void Update() {
             if (_selectingNode) {
                 // Enable Collision Detection for the Robot
-                _robot.RobotNode.GetComponentsInChildren<Rigidbody>().ForEach(
-                    x => x.detectCollisions = true);
+                _robot.RobotNode.GetComponentsInChildren<Rigidbody>().ForEach(x => x.detectCollisions = true);
 
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 RaycastHit hitInfo;
                 bool hit = UnityEngine.Physics.Raycast(ray, out hitInfo);
                 if (hit && hitInfo.rigidbody != null &&
-                    hitInfo.rigidbody.transform.parent ==
-                        _robot.RobotNode.transform) {
+                    hitInfo.rigidbody.transform.parent == _robot.RobotNode.transform) {
                     if (_hoveringNode != null &&
                         (_selectedNode == null ? true : !_selectedNode.name.Equals(_hoveringNode.name))) {
                         _hoveringNode.enabled = false;
@@ -214,8 +212,7 @@ namespace Synthesis.UI.Dynamic {
                 }
 
                 // Disable Collision Detection for the Robot
-                _robot.RobotNode.GetComponentsInChildren<Rigidbody>().ForEach(
-                    x => x.detectCollisions = true);
+                _robot.RobotNode.GetComponentsInChildren<Rigidbody>().ForEach(x => x.detectCollisions = true);
             }
         }
     }

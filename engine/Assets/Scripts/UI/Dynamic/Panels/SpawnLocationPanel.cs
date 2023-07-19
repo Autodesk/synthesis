@@ -86,7 +86,7 @@ namespace Synthesis.UI.Dynamic {
 
         public override void Update() {
             if (!MainHUD.isConfig) {
-                var currentInput                              = InputManager.MappedDigitalInputs[SNAP_MODE_KEY][0].State;
+                var currentInput                             = InputManager.MappedDigitalInputs[SNAP_MODE_KEY][0].State;
                 MatchMode.RoundSpawnLocation[SelectedButton] = currentInput == DigitalState.Held;
 
                 // True the frame the input is pressed or released

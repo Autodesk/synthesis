@@ -8,8 +8,8 @@ using Synthesis.Physics;
 
 namespace Synthesis {
     public class LinearDriver : Driver {
-        public const float LINEAR_TO_MOTOR_VELOCITY = 100f;
-        public string Signal => _inputs[0];
+        public const float LINEAR_TO_MOTOR_VELOCITY  = 100f;
+        public string Signal                        => _inputs[0];
 
         public ConfigurableJoint JointA { get; private set; }
         public ConfigurableJoint JointB { get; private set; }
@@ -35,7 +35,7 @@ namespace Synthesis {
         private float _velocity = 0f;
         // clang-format on
         public float Velocity => _velocity;
-        //Note: only used to save between sessions
+        // Note: only used to save between sessions
         private JointMotor _motor;
         public JointMotor Motor {
             get => _motor;
@@ -48,7 +48,8 @@ namespace Synthesis {
 
         public double MainInput {
             get {
-                if (PhysicsManager.IsFrozen) return 0f;
+                if (PhysicsManager.IsFrozen)
+                    return 0f;
                 var val = State.GetValue(_inputs[0]);
                 return val == null ? 0.0 : val.NumberValue;
             }
@@ -56,11 +57,12 @@ namespace Synthesis {
         }
 
         public new string Name => State.SignalMap[_inputs[0]].Name;
-        
+
         public readonly string MotorRef;
 
         public LinearDriver(string name, string[] inputs, string[] outputs, SimObject simObject,
-            ConfigurableJoint jointA, ConfigurableJoint jointB, float maxSpeed, (float, float) limits, string motorRef = "")
+            ConfigurableJoint jointA, ConfigurableJoint jointB, float maxSpeed, (float, float) limits,
+            string motorRef = "")
             : base(name, inputs, outputs, simObject) {
             // Takeover joint configuration and make it more suited to control rather than passive
             var l              = jointA.linearLimit;
@@ -76,7 +78,7 @@ namespace Synthesis {
 
             (simObject as RobotSimObject)!.MiraLive.MiraAssembly.Data.Joints.MotorDefinitions.TryGetValue(
                 motorRef, out var motor);
-            
+
             if (motor != null && motor.MotorTypeCase == Mirabuf.Motor.Motor.MotorTypeOneofCase.SimpleMotor) {
                 _motor = motor!.SimpleMotor.UnityMotor;
             } else {

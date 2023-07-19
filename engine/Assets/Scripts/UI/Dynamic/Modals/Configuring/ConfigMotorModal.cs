@@ -39,7 +39,7 @@ public class ConfigMotorModal : ModalDynamic {
             driveMotorCount = _robot.modules.Length;
         } else {
             driveMotorCount = _robot.GetLeftRightWheels()!.Value.leftWheels.Count +
-                             _robot.GetLeftRightWheels()!.Value.rightWheels.Count;
+                              _robot.GetLeftRightWheels()!.Value.rightWheels.Count;
         }
 
         var i = 0;
@@ -55,7 +55,7 @@ public class ConfigMotorModal : ModalDynamic {
             for (i = 0; i < driveMotorCount; i++) {
                 _motors[i + driveMotorCount]        = new ConfigMotor(MotorType.Turn);
                 _motors[i + driveMotorCount].driver = _robot.modules[i].azimuth;
-                _turnDrivers[i]            = _robot.modules[i].azimuth;
+                _turnDrivers[i]                     = _robot.modules[i].azimuth;
             }
         } else {
             _driveDrivers = new WheelDriver[driveMotorCount];
@@ -137,8 +137,8 @@ public class ConfigMotorModal : ModalDynamic {
 
         CreateEntry("Drive", (_motors[0].driver as WheelDriver).Motor.targetVelocity, x => ChangeDriveVelocity(x));
         if (_robotISSwerve) {
-            CreateEntry(
-                "Turn", (_motors[driveMotorCount].driver as RotationalDriver).Motor.targetVelocity, x => ChangeTurnVelocity(x));
+            CreateEntry("Turn", (_motors[driveMotorCount].driver as RotationalDriver).Motor.targetVelocity,
+                x => ChangeTurnVelocity(x));
         }
 
         // original target velocities for each motor and entry in scrollview for other motors
@@ -159,7 +159,8 @@ public class ConfigMotorModal : ModalDynamic {
             if (_motors[i].motorType == MotorType.Other) {
                 int j = i;
                 var u = "RPM";
-                if (_motors[i].driver is LinearDriver) u = "M/S";
+                if (_motors[i].driver is LinearDriver)
+                    u = "M/S";
                 CreateEntry(GetName(_motors[i].driver), _motors[j].origVel, x => _motors[j].setTargetVelocity(x), u);
             }
         }
@@ -177,7 +178,8 @@ public class ConfigMotorModal : ModalDynamic {
                 .SplitLeftRight(NAME_WIDTH, PADDING);
         nameContent.CreateLabel().SetText(name).SetTopStretch(0, PADDING, PADDING + _scrollView.HeightOfChildren);
         float max = 150;
-        if (currVel < 5) max = 50f;
+        if (currVel < 5)
+            max = 50f;
         velContent.CreateSlider(units, minValue: 0f, maxValue: max, currentValue: currVel)
             .SetTopStretch<Slider>(PADDING, PADDING, _scrollView.HeightOfChildren)
             .AddOnValueChangedEvent((s, v) => { onClick(v); });
@@ -205,7 +207,7 @@ public class ConfigMotorModal : ModalDynamic {
         public MotorType motorType;
 
         public ConfigMotor(MotorType t) {
-            motorType = t;     
+            motorType = t;
         }
 
         public void setTargetVelocity(float v) {
@@ -222,9 +224,9 @@ public class ConfigMotorModal : ModalDynamic {
                     break;
                 case (LinearDriver):
                     (driver as LinearDriver).MaxSpeed = v;
-                    _force = (driver as LinearDriver).Motor.force;
-                    (driver as LinearDriver).Motor =
-                        new JointMotor() { force = _force, freeSpin = false, targetVelocity = v * LinearDriver.LINEAR_TO_MOTOR_VELOCITY };
+                    _force                            = (driver as LinearDriver).Motor.force;
+                    (driver as LinearDriver).Motor    = new JointMotor() { force = _force, freeSpin = false,
+                           targetVelocity = v * LinearDriver.LINEAR_TO_MOTOR_VELOCITY };
                     break;
             }
             velChanged = true;

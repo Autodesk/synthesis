@@ -46,7 +46,8 @@ namespace Synthesis {
 
         public double MainInput {
             get {
-                if (PhysicsManager.IsFrozen) return 0f;
+                if (PhysicsManager.IsFrozen)
+                    return 0f;
                 var val = State.GetValue(_inputs[0]);
                 return val == null ? 0.0 : val.NumberValue;
             }
@@ -143,9 +144,7 @@ namespace Synthesis {
 
         public readonly string MotorRef;
 
-        private float _convertedMotorTargetVel {
-            get => Motor.targetVelocity * Mathf.Rad2Deg;
-        }
+        private float _convertedMotorTargetVel { get => Motor.targetVelocity * Mathf.Rad2Deg; }
 
         public RotationalDriver(string name, string[] inputs, string[] outputs, SimObject simObject, HingeJoint jointA,
             HingeJoint jointB, bool isWheel, string motorRef = "")

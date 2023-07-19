@@ -91,22 +91,22 @@ namespace Synthesis.Configuration {
         }
 
         private void Awake() {
-            cam                      = Camera.main.GetComponent<CameraController>();
-            originalLowerPitch       = cam.PitchLowerLimit;
-            robot = RobotSimObject.GetCurrentlyPossessedRobot();
+            cam                = Camera.main.GetComponent<CameraController>();
+            originalLowerPitch = cam.PitchLowerLimit;
+            robot              = RobotSimObject.GetCurrentlyPossessedRobot();
 
-            if ((Func<Vector3>) OrbitCameraMode.FocusPoint == null)  {
+            if ((Func<Vector3>) OrbitCameraMode.FocusPoint == null) {
                 originalCameraFocusPoint = () =>
-                    robot.GroundedNode != null && robot.GroundedBounds != null ? 
-                    robot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(robot.GroundedBounds.center)
-                    : Vector3.zero;
+                    robot.GroundedNode != null && robot.GroundedBounds != null
+                        ? robot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(robot.GroundedBounds.center)
+                        : Vector3.zero;
             } else {
                 originalCameraFocusPoint = (Func<Vector3>) OrbitCameraMode.FocusPoint.Clone();
             }
-            previousMode             = cam.CameraMode;
-            previousCameraPosition   = cam.transform.position;
-            previousCameraRotation   = cam.transform.rotation;
-            cam.CameraMode           = CameraController.CameraModes["Orbit"];
+            previousMode           = cam.CameraMode;
+            previousCameraPosition = cam.transform.position;
+            previousCameraRotation = cam.transform.rotation;
+            cam.CameraMode         = CameraController.CameraModes["Orbit"];
 
             // makes a list of the rigidbodies in the hierarchy and their state
             HierarchyRigidbodiesToDictionary();
@@ -138,15 +138,15 @@ namespace Synthesis.Configuration {
         }
 
         private void RestoreCameraMode() {
-            cam.CameraMode             = previousMode;
-            cam.transform.position     = previousCameraPosition;
-            cam.transform.rotation     = previousCameraRotation;
+            cam.CameraMode         = previousMode;
+            cam.transform.position = previousCameraPosition;
+            cam.transform.rotation = previousCameraRotation;
 
-        if (originalCameraFocusPoint == null)  {
+            if (originalCameraFocusPoint == null) {
                 OrbitCameraMode.FocusPoint = () =>
-                    robot.GroundedNode != null && robot.GroundedBounds != null ? 
-                    robot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(robot.GroundedBounds.center)
-                    : Vector3.zero;
+                    robot.GroundedNode != null && robot.GroundedBounds != null
+                        ? robot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(robot.GroundedBounds.center)
+                        : Vector3.zero;
             } else {
                 OrbitCameraMode.FocusPoint = originalCameraFocusPoint;
             }
