@@ -57,30 +57,25 @@ public class PracticeMode : IMode {
     /// Adds buttons to the main hud (panel on left side)
     public void ConfigureMainHUD() {
         MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(),
-            drawerPosition: MainHUD.DrawerPosition.Top,
-            icon: SynthesisAssetCollection.GetSpriteByName("settings"));
+            drawerPosition: MainHUD.DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("settings"));
         MainHUD.AddItemToDrawer("View", b => DynamicUIManager.CreateModal<ChangeViewModal>(),
-            drawerPosition: MainHUD.DrawerPosition.Top,
-            icon: SynthesisAssetCollection.GetSpriteByName("search"));
+            drawerPosition: MainHUD.DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("search"));
         MainHUD.AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(),
             drawerPosition: MainHUD.DrawerPosition.Top,
             icon: SynthesisAssetCollection.GetSpriteByName("xbox_controller"));
-        MainHUD.AddItemToDrawer("MultiBot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>(), 
-            drawerPosition: MainHUD.DrawerPosition.Top,
-            icon: SynthesisAssetCollection.GetSpriteByName("multibot"));
-        
+        MainHUD.AddItemToDrawer("MultiBot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>(),
+            drawerPosition: MainHUD.DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("multibot"));
+
         MainHUD.AddItemToDrawer("Download Asset", b => DynamicUIManager.CreateModal<DownloadAssetModal>(),
-            drawerPosition: MainHUD.DrawerPosition.Bottom,
-            icon: SynthesisAssetCollection.GetSpriteByName("download"));
+            drawerPosition: MainHUD.DrawerPosition.Bottom, icon: SynthesisAssetCollection.GetSpriteByName("download"));
         MainHUD.AddItemToDrawer("RoboRIO", b => DynamicUIManager.CreateModal<RioConfigurationModal>(true),
-            drawerPosition: MainHUD.DrawerPosition.Bottom,
-            icon: SynthesisAssetCollection.GetSpriteByName("roborio"));
+            drawerPosition: MainHUD.DrawerPosition.Bottom, icon: SynthesisAssetCollection.GetSpriteByName("roborio"));
         MainHUD.AddItemToDrawer("DriverStation",
             b => DynamicUIManager.CreatePanel<BetaWarningPanel>(
                 false, (Action) (() => DynamicUIManager.CreatePanel<DriverStationPanel>(true))),
             drawerPosition: MainHUD.DrawerPosition.Bottom,
             icon: SynthesisAssetCollection.GetSpriteByName("driverstation"));
-        MainHUD.AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>(), 
+        MainHUD.AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>(),
             drawerPosition: MainHUD.DrawerPosition.Bottom,
             icon: SynthesisAssetCollection.GetSpriteByName("drivetrain"));
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
