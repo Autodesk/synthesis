@@ -30,7 +30,7 @@ namespace Synthesis.UI.Dynamic {
             Title.SetText("Field Selection");
             Description.SetText("Choose which field you wish to use");
 
-            ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("PlusIcon"))
+            ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("plus"))
                 .SetColor(ColorManager.SynthesisColor.MainText);
 
             AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {

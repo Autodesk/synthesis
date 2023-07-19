@@ -2264,10 +2264,6 @@ PrefabInstance:
       propertyPath: AudioSources.Array.size
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 507563843828576301, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
-      propertyPath: DynamicUIPrefabs.Array.data[12]
-      value: 
-      objectReference: {fileID: 3258935418866615420, guid: e4351ecfac0fa6b4da13c1992b4dfd58, type: 3}
     - target: {fileID: 507563843828576302, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
       propertyPath: m_RootOrder
       value: 8
@@ -2506,6 +2502,26 @@ PrefabInstance:
     - target: {fileID: 3747646977971318140, guid: b3985e37a9d73f74ea11a43c72f5a391, type: 3}
       propertyPath: m_Name
       value: MainHUD
+      objectReference: {fileID: 0}
+    - target: {fileID: 4164244437370533063, guid: b3985e37a9d73f74ea11a43c72f5a391, type: 3}
+      propertyPath: m_Pivot.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4164244437370533063, guid: b3985e37a9d73f74ea11a43c72f5a391, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4164244437370533063, guid: b3985e37a9d73f74ea11a43c72f5a391, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4164244437370533063, guid: b3985e37a9d73f74ea11a43c72f5a391, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 220
+      objectReference: {fileID: 0}
+    - target: {fileID: 4164244437370533063, guid: b3985e37a9d73f74ea11a43c72f5a391, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -55
       objectReference: {fileID: 0}
     - target: {fileID: 4765128746605780550, guid: b3985e37a9d73f74ea11a43c72f5a391, type: 3}
       propertyPath: m_AnchorMax.y

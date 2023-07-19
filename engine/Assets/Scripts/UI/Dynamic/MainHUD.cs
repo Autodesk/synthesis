@@ -154,6 +154,8 @@ public static class MainHUD {
         if (icon != null)
             drawerIcon.SetSprite(icon);
 
+        drawerIcon.RootGameObject.transform.localScale = new Vector3(0.75F, 0.75F, 1F);
+        
         switch (drawerPosition) {
             case DrawerPosition.Bottom:
                 if (index < 0 || index > _bottomDrawerItems.Count) {
@@ -193,15 +195,18 @@ public static class MainHUD {
     public static void UpdateDrawerSizing() {
         int LOGO_BOTTOM_Y       = 50;
         int LOGO_BUTTON_SPACING = 5;
-        int BUTTON_HEIGHT       = 50;
-        int SPACING    = 15;
+        int BUTTON_HEIGHT       = 60;
+        int SPACING             = 15;
         int ITEM_HEIGHT         = 40;
+        int BOTTOM_PADDING      = 40;
         
         for (int i = 0; i < _topDrawerItems.Count; i++) {
-            _topDrawerItems[i].button.SetTopStretch<Button>(anchoredY: SPACING + i * (ITEM_HEIGHT + SPACING));
+            _topDrawerItems[i].button.SetTopStretch<Button>(anchoredY: SPACING + i * (ITEM_HEIGHT + SPACING))
+                .StepIntoLabel(l => l.SetStretch<Label>(leftPadding: 55));
         }
         for (int i = 0; i < _bottomDrawerItems.Count; i++) {
-            _bottomDrawerItems[i].button.SetTopStretch<Button>(anchoredY: SPACING + i * (ITEM_HEIGHT + SPACING));
+            _bottomDrawerItems[i].button.SetTopStretch<Button>(anchoredY: SPACING + i * (ITEM_HEIGHT + SPACING))
+                .StepIntoLabel(l => l.SetStretch<Label>(leftPadding: 55));
         }
         _itemContainer.SetTopStretch<Content>(anchoredY: LOGO_BOTTOM_Y + LOGO_BUTTON_SPACING + BUTTON_HEIGHT + SPACING, leftPadding: SPACING, rightPadding: SPACING);
         int topItemsHeight    = SPACING + _topDrawerItems.Count * (ITEM_HEIGHT + SPACING);
@@ -212,7 +217,7 @@ public static class MainHUD {
         _bottomItemContainer.SetTopStretch<Content>(anchoredY: topItemsHeight + SPACING);
         int itemsHeight = topItemsHeight + SPACING + bottomItemsHeight;
         _itemContainer.SetHeight<Content>(itemsHeight);
-        _tabDrawerContent.SetHeight<Content>(LOGO_BOTTOM_Y + LOGO_BUTTON_SPACING + BUTTON_HEIGHT + SPACING + itemsHeight + SPACING + BUTTON_HEIGHT + SPACING);
+        _tabDrawerContent.SetHeight<Content>(LOGO_BOTTOM_Y + LOGO_BUTTON_SPACING + BUTTON_HEIGHT + SPACING + itemsHeight + SPACING + BUTTON_HEIGHT + BOTTOM_PADDING);
     }
 
     public static void Delete() {
@@ -222,18 +227,21 @@ public static class MainHUD {
     public static void AssignColors(IEvent e) {
         _tabDrawerContent.Image!.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft, ColorManager.SynthesisColor.InteractiveElementRight);
 
+        _spawnButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.Background);
+        _homeButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.Background);
+
         _topItemContainer.SetBackgroundColor<Content>(ColorManager.SynthesisColor.Background);
         _bottomItemContainer.SetBackgroundColor<Content>(ColorManager.SynthesisColor.Background);
 
         _topDrawerItems.ForEach(x => {
             x.button.Label!.SetColor(ColorManager.SynthesisColor.MainText);
             x.button.Image.SetColor(ColorManager.SynthesisColor.Background);
-            x.image.SetColor(ColorManager.SynthesisColor.InteractiveElementSolid);
+            x.image.SetColor(ColorManager.SynthesisColor.MainText);
         });
         _bottomDrawerItems.ForEach(x => {
             x.button.Label!.SetColor(ColorManager.SynthesisColor.MainText);
             x.button.Image.SetColor(ColorManager.SynthesisColor.Background);
-            x.image.SetColor(ColorManager.SynthesisColor.InteractiveElementSolid);
+            x.image.SetColor(ColorManager.SynthesisColor.MainText);
         });
     }
 }
