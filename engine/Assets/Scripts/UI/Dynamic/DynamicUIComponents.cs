@@ -89,7 +89,7 @@ namespace Synthesis.UI.Dynamic {
             
             _panelBackground = new Image(null, unityObject);
             _panelBackground.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.Background));
-            _panelBackground.SetCornerRadius(35);
+            _panelBackground.SetCornerRadius(20);
 
             _title = new Label(null, header.Find("Title").gameObject, null);
 
@@ -728,7 +728,7 @@ namespace Synthesis.UI.Dynamic {
 
             _backgroundImage = new Image(this, unityObject);
             _backgroundImage.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.BackgroundSecondary))
-                .SetCornerRadius(20);
+                .SetCornerRadius(12);
         }
 
         public ScrollView StepIntoContent(Action<Content> mod) {
@@ -958,9 +958,6 @@ namespace Synthesis.UI.Dynamic {
             _fillImage.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
                 ColorManager.SynthesisColor.InteractiveElementRight);
             _fillImage.SetCornerRadius(10);
-
-            _handleImage = new Image(this, _unitySlider.transform.Find("Handle Slide Area").Find("Handle").gameObject);
-            _handleImage.SetColor(ColorManager.SynthesisColor.InteractiveSecondary);
 
             if (unitSuffix != null)
                 _unitSuffix = unitSuffix;

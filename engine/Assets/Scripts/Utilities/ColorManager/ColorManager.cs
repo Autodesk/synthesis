@@ -216,7 +216,6 @@ namespace Utilities.ColorManager {
             InteractiveElementSolid,
             InteractiveElementLeft,
             InteractiveElementRight,
-            InteractiveSecondary,
             Background,
             BackgroundSecondary,
             InteractiveBackground,

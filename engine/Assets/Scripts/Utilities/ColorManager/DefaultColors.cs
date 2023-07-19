@@ -7,7 +7,6 @@ namespace Utilities.ColorManager {
             (ColorManager.SynthesisColor.InteractiveElementSolid, new Color32(250, 162, 27, 255)),
             (ColorManager.SynthesisColor.InteractiveElementLeft, new Color32(224, 130, 65, 255)),
             (ColorManager.SynthesisColor.InteractiveElementRight, new Color32(218, 102, 89, 255)),
-            (ColorManager.SynthesisColor.InteractiveSecondary, new Color32(204, 124, 0, 255)),
             (ColorManager.SynthesisColor.Background, new Color32(0, 0, 0, 255)),
             (ColorManager.SynthesisColor.BackgroundSecondary, new Color32(30, 30, 30, 255)),
             (ColorManager.SynthesisColor.InteractiveBackground, new Color32(52, 58, 64, 255)),
