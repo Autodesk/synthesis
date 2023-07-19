@@ -211,8 +211,8 @@ public class ConfigMotorModal : ModalDynamic {
         public void setTargetVelocity(float v) {
             switch (driver) {
                 case (RotationalDriver):
-                    _force = (driver as WheelDriver).Motor.force;
-                    (driver as WheelDriver).Motor =
+                    _force = (driver as RotationalDriver).Motor.force;
+                    (driver as RotationalDriver).Motor =
                         new JointMotor() { force = _force, freeSpin = false, targetVelocity = v };
                     break;
                 case (WheelDriver):
