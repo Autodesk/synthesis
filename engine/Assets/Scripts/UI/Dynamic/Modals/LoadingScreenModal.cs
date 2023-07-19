@@ -15,7 +15,7 @@ public class LoadingScreenModal : ModalDynamic {
         Title.RootGameObject.SetActive(false);
         AcceptButton.RootGameObject.SetActive(false);
         CancelButton.RootGameObject.SetActive(false);
-        ModalImage.RootGameObject.SetActive(false);
+        ModalIcon.RootGameObject.SetActive(false);
     }
 
     public override void Update() {}

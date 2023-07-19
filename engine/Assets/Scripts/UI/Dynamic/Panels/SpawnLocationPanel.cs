@@ -63,7 +63,7 @@ namespace Synthesis.UI.Dynamic {
                     SNAP_MODE_KEY, (Digital) new Digital("LeftShift").WithModifier((int) ModKey.LeftShift));
 
             Title.SetText("Set Spawn Locations").SetFontSize(25f);
-            PanelImage.RootGameObject.SetActive(false);
+            PanelIcon.RootGameObject.SetActive(false);
 
             Content panel = new Content(null, UnityObject, null);
 

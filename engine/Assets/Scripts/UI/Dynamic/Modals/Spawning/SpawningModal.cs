@@ -19,7 +19,7 @@ public class SpawningModal : ModalDynamic {
     public override void Create() {
         Title.SetText("Spawning");
 
-        ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("PlusIcon"))
+        ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("PlusIcon"))
             .SetColor(ColorManager.SynthesisColor.MainText);
         
         AcceptButton.RootGameObject.SetActive(false);

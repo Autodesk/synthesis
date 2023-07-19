@@ -16,7 +16,7 @@ using Logger = SynthesisAPI.Utilities.Logger;
 #nullable enable
 
 public class RobotSwitchPanel : PanelDynamic {
-    private const float PANEL_WIDTH = 400f;
+    private const float PANEL_WIDTH = 300f;
 
     private ScrollView _scrollView;
     private Button _addButton;
@@ -53,7 +53,7 @@ public class RobotSwitchPanel : PanelDynamic {
         AcceptButton.AddOnClickedEvent(b => DynamicUIManager.ClosePanel<RobotSwitchPanel>());
         _scrollView = MainContent.CreateScrollView().SetStretch<ScrollView>(bottomPadding: 60f);
 
-        (Content left, Content right) = MainContent.CreateSubContent(new Vector2(400, 50))
+        (Content left, Content right) = MainContent.CreateSubContent(new Vector2(PANEL_WIDTH, 50))
                                             .SetBottomStretch<Content>()
                                             .SplitLeftRight((PANEL_WIDTH - 10f) / 2f, 10f);
 

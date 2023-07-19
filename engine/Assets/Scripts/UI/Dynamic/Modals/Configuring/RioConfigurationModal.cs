@@ -54,8 +54,8 @@ public class RioConfigurationModal : ModalDynamic {
         Title.SetText("RoboRIO Configuration");
         Title.SetWidth<Label>(300);
 
-        ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-        ModalImage.SetColor(ColorManager.SynthesisColor.MainText);
+        ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+        ModalIcon.SetColor(ColorManager.SynthesisColor.MainText);
 
         _scrollView = MainContent.CreateScrollView();
         _scrollView.SetStretch<ScrollView>();

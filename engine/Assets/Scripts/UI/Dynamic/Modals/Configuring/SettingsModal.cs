@@ -31,7 +31,7 @@ namespace Synthesis.UI.Dynamic {
 
         public override void Create() {
             Title.SetText("Settings");
-            ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("settings"));
+            ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("settings"));
 
             AcceptButton.StepIntoLabel(b => { b.SetText("Save"); }).AddOnClickedEvent(b => {
                 SaveSettings();

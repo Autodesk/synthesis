@@ -14,7 +14,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
         public override void Create() {
             Title.SetText($"Delete {ColorManager.SelectedTheme}?").SetWrapping(false);
             
-            ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"));
+            ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"));
 
             AcceptButton.AddOnClickedEvent(x => {
                 ColorManager.DeleteSelectedTheme();

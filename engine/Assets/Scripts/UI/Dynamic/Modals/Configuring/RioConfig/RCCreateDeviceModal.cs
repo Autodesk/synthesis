@@ -27,8 +27,8 @@ public class RCCreateDeviceModal : ModalDynamic {
         Title.SetText("Create Device");
         Title.SetWidth<Label>(400);
 
-        ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-        ModalImage.SetColor(ColorManager.SynthesisColor.MainText);
+        ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+        ModalIcon.SetColor(ColorManager.SynthesisColor.MainText);
 
         AcceptButton
             .AddOnClickedEvent(b => {
@@ -86,8 +86,8 @@ public class RCConfigPwmGroupModal : ModalDynamic {
         Title.SetWidth<Label>(400);
         Description.SetText("Create a Motor Controller, Encoder, Etc.");
 
-        ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-        ModalImage.SetColor(ColorManager.SynthesisColor.MainText);
+        ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+        ModalIcon.SetColor(ColorManager.SynthesisColor.MainText);
 
         AcceptButton
             .AddOnClickedEvent(b => {
@@ -221,8 +221,8 @@ public class RCConfigEncoderModal : ModalDynamic {
         Title.SetWidth<Label>(400);
         Description.SetText("Create a Motor Controller, Encoder, Etc.");
 
-        ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-        ModalImage.SetColor(ColorManager.SynthesisColor.MainText);
+        ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+        ModalIcon.SetColor(ColorManager.SynthesisColor.MainText);
 
         AcceptButton
             .AddOnClickedEvent(b => {

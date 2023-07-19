@@ -24,7 +24,7 @@ public class ChangeDrivetrainModal : ModalDynamic {
 
         Title.SetText("Change Drivetrain");
         
-        ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+        ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
         
         AcceptButton.AddOnClickedEvent(b => {
             RobotSimObject.GetCurrentlyPossessedRobot().ConfiguredDrivetrainType = _selectedType;

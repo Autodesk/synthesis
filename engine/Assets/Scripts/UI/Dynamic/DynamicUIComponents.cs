@@ -40,8 +40,8 @@ namespace Synthesis.UI.Dynamic {
         protected Button CancelButton => _cancelButton;
         private Button _acceptButton;
         protected Button AcceptButton => _acceptButton;
-        private Image _panelImage;
-        protected Image PanelImage => _panelImage;
+        private Image _panelIcon;
+        protected Image PanelIcon => _panelIcon;
         private Image _panelBackground;
         protected Image PanelBackground => _panelBackground;
         private Label _title;
@@ -82,7 +82,11 @@ namespace Synthesis.UI.Dynamic {
             // Grab Customizable Modal Components
             var header       = _unityObject.transform.Find("Header");
             var headerRt     = header.GetComponent<RectTransform>();
-            _panelImage      = new Image(null, header.Find("Image").gameObject);
+            
+            _panelIcon      = new Image(null, header.Find("Image").gameObject);
+            _panelIcon.SetColor(ColorManager.SynthesisColor.MainText);
+            _panelIcon.RootGameObject.SetActive(false);
+            
             _panelBackground = new Image(null, unityObject);
             _panelBackground.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.Background));
             _panelBackground.SetCornerRadius(35);
@@ -148,8 +152,8 @@ namespace Synthesis.UI.Dynamic {
         protected Button CancelButton => _cancelButton;
         private Button _acceptButton;
         protected Button AcceptButton => _acceptButton;
-        private Image _modalImage;
-        protected Image ModalImage => _modalImage;
+        private Image _modalIcon;
+        protected Image ModalIcon => _modalIcon;
         private Image _modalBackground;
         protected Image ModalBackground => _modalBackground;
         private Label _title;
@@ -204,8 +208,8 @@ namespace Synthesis.UI.Dynamic {
             // Grab Customizable Modal Components
             var header       = _unityObject.transform.Find("Header");
             var headerRt     = header.GetComponent<RectTransform>();
-            _modalImage      = new Image(null, header.Find("Image").gameObject);
-            _modalImage.SetColor(ColorManager.SynthesisColor.MainText);
+            _modalIcon      = new Image(null, header.Find("Image").gameObject);
+            _modalIcon.SetColor(ColorManager.SynthesisColor.MainText);
             
             _modalBackground = new Image(null, unityObject);
             _modalBackground.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.Background));
