@@ -149,6 +149,7 @@ public static class MainHUD {
 
         SceneManager.activeSceneChanged += (Scene a, Scene b) => { _isSetup = false; };
 
+        UpdateDrawerSizing();
         AssignColors(null);
 
         EventBus.NewTypeListener<ColorManager.OnThemeChanged>(AssignColors);
@@ -239,16 +240,21 @@ public static class MainHUD {
         }
         _itemContainer.SetTopStretch<Content>(anchoredY: LOGO_BOTTOM_Y + LOGO_BUTTON_SPACING + BUTTON_HEIGHT + SPACING,
             leftPadding: SPACING, rightPadding: SPACING);
-        int topItemsHeight    = SPACING + _topDrawerItems.Count * (ITEM_HEIGHT + SPACING);
-        int bottomItemsHeight = SPACING + _bottomDrawerItems.Count * (ITEM_HEIGHT + SPACING);
+        // all the zero checks handle layout when no tray items have been added
+        int topItemsHeight = _topDrawerItems.Count == 0 ? 0 : SPACING + _topDrawerItems.Count * (ITEM_HEIGHT + SPACING);
+        int bottomItemsHeight =
+            _bottomDrawerItems.Count == 0 ? 0 : SPACING + _bottomDrawerItems.Count * (ITEM_HEIGHT + SPACING);
         _topItemContainer.SetHeight<Content>(topItemsHeight);
         _topItemContainer.SetTopStretch<Content>(anchoredY: 0);
         _bottomItemContainer.SetHeight<Content>(bottomItemsHeight);
-        _bottomItemContainer.SetTopStretch<Content>(anchoredY: topItemsHeight + SPACING);
-        int itemsHeight = topItemsHeight + SPACING + bottomItemsHeight;
+        _bottomItemContainer.SetTopStretch<Content>(anchoredY: topItemsHeight > 0 ? topItemsHeight + SPACING : 0);
+        int itemsHeight =
+            topItemsHeight == 0 && bottomItemsHeight == 0 ? 0 : topItemsHeight + SPACING + bottomItemsHeight;
         _itemContainer.SetHeight<Content>(itemsHeight);
-        _tabDrawerContent.SetHeight<Content>(LOGO_BOTTOM_Y + LOGO_BUTTON_SPACING + BUTTON_HEIGHT + SPACING +
-                                             itemsHeight + SPACING + BUTTON_HEIGHT + BOTTOM_PADDING);
+        int itemsHeightWithSpacing =
+            itemsHeight == 0 ? SPACING : SPACING + itemsHeight + (bottomItemsHeight == 0 ? 0 : SPACING);
+        _tabDrawerContent.SetHeight<Content>(LOGO_BOTTOM_Y + LOGO_BUTTON_SPACING + BUTTON_HEIGHT +
+                                             itemsHeightWithSpacing + BUTTON_HEIGHT + BOTTOM_PADDING);
     }
 
     public static void Delete() {
