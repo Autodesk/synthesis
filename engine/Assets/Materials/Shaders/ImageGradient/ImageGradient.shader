@@ -50,19 +50,26 @@ Shader "ImageGradient/ImageGradient" {
             float4 _WidthHeightRadius;
             float4 _StartColor;
             float4 _EndColor;
+            float4 _TintColor;
             float4 _ClipRect;
+            float _Offset;
             int _Horizontal;
 
             sampler2D _MainTex;
             fixed4 _TextureSampleAdd;
 
             fixed4 frag (v2f i) : SV_Target {
+                
                 float maskAlpha = UnityGet2DClipping(i.worldPosition.xy, _ClipRect);
                 
                 float alpha = CalcAlpha(i.uv, _WidthHeightRadius.xy, _WidthHeightRadius.z);
+
+                float gradientPos = (_Horizontal > 0 ? i.uv.x : 1 - i.uv.y) + _Offset;
+                if (gradientPos > 1)
+                    gradientPos = 2 - gradientPos;
                 
-                float4 col = lerp(_StartColor, _EndColor, _Horizontal > 0 ? i.uv.x : 1 - i.uv.y);
-                //return float4(col.x, col.y, col.z, alpha*maskAlpha);
+                float4 col = lerp(_StartColor, _EndColor, gradientPos) * _TintColor;
+
                 return float4(col.x, col.y, col.z, alpha*maskAlpha);
             }
             

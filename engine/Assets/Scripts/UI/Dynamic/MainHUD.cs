@@ -118,7 +118,7 @@ public static class MainHUD {
         var drawerButton    = new Button(_tabDrawerContent, drawerButtonObj, null);
         drawerButton.Label!.SetText(title);
         drawerButton.AddOnClickedEvent(onClick);
-        var drawerIcon = new Image(_tabDrawerContent, drawerButtonObj.transform.Find("ItemIcon").gameObject);
+        var drawerIcon = new Image(_tabDrawerContent, drawerButtonObj.transform.Find("Button").Find("ItemIcon").gameObject);
         if (icon != null)
             drawerIcon.SetSprite(icon);
 

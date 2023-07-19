@@ -1138,21 +1138,21 @@ namespace Synthesis.UI.Dynamic {
                 Size = size.Value;
             }
 
-            var labelTransform = unityObject.transform.Find("Text (TMP)");
+            var labelTransform = unityObject.transform.Find("Button").Find("Text (TMP)");
             if (labelTransform != null) {
                 _label = new Label(this, labelTransform.gameObject, null);
                 _label.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
             }
 
-            _unityButton = unityObject.GetComponent<UButton>();
+            _unityButton = unityObject.transform.Find("Button").GetComponent<UButton>();
             _unityButton.onClick.AddListener(() => {
                 if (_eventsActive && OnClicked != null) {
                     OnClicked(this);
                 }
             });
 
-            _image = new Image(this, unityObject);
-            _image.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+            _image = new Image(this, unityObject.transform.Find("Button").gameObject).SetColor(
+                ColorManager.SynthesisColor.InteractiveElementLeft,
                 ColorManager.SynthesisColor.InteractiveElementRight);
 
             var gradientUpdater = _image.RootGameObject.GetComponent<GradientImageUpdater>();
