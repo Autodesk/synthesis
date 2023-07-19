@@ -11,7 +11,10 @@ using DigitalRuby.Tween;
 using SynthesisAPI.EventBus;
 using UnityEngine.SceneManagement;
 using Synthesis.Runtime;
+using UnityEngine.UI;
 using Utilities.ColorManager;
+using Button = Synthesis.UI.Dynamic.Button;
+using Image  = Synthesis.UI.Dynamic.Image;
 
 #nullable enable
 
@@ -106,8 +109,10 @@ public static class MainHUD {
             .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText));
 
         _spawnButton.OnClicked += (b) => { DynamicUIManager.CreateModal<SpawningModal>(); };
+        _spawnButton.SetTransition(Selectable.Transition.ColorTint).SetInteractableColors();
 
         _homeButton.OnClicked += (b) => { DynamicUIManager.CreateModal<ExitSynthesisModal>(); };
+        _homeButton.SetTransition(Selectable.Transition.ColorTint).SetInteractableColors();
 
         // Setup default HUD
         // MOVED TO PRACTICE MODE
@@ -150,14 +155,18 @@ public static class MainHUD {
 
         var drawerButtonObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("hud-drawer-item-base"),
             (drawerPosition == DrawerPosition.Top ? _topItemContainer : _bottomItemContainer).RootGameObject.transform);
-        var drawerButton    = new Button(_tabDrawerContent, drawerButtonObj, null);
+        drawerButtonObj.GetComponent<UnityEngine.UI.Image>().pixelsPerUnitMultiplier = 20;
+
+        var drawerButton = new Button(_tabDrawerContent, drawerButtonObj, null);
         drawerButton.Label!.SetText(title).SetFontSize(16);
         drawerButton.AddOnClickedEvent(onClick);
+        drawerButton.SetTransition(Selectable.Transition.ColorTint).SetInteractableColors();
+
         var drawerIcon = new Image(_tabDrawerContent, drawerButtonObj.transform.Find("ItemIcon").gameObject);
         if (icon != null)
             drawerIcon.SetSprite(icon);
 
-        drawerIcon.RootGameObject.transform.localScale = new Vector3(0.75F, 0.75F, 1F);
+        drawerIcon.RootGameObject.transform.localScale = new Vector3(0.65F, 0.65F, 1F);
 
         switch (drawerPosition) {
             case DrawerPosition.Bottom:
@@ -205,12 +214,16 @@ public static class MainHUD {
 
         for (int i = 0; i < _topDrawerItems.Count; i++) {
             _topDrawerItems[i]
-                .button.SetTopStretch<Button>(anchoredY: SPACING + i * (ITEM_HEIGHT + SPACING))
+                .button
+                .SetTopStretch<Button>(
+                    anchoredY: SPACING + i * (ITEM_HEIGHT + SPACING), leftPadding: SPACING, rightPadding: SPACING)
                 .StepIntoLabel(l => l.SetStretch<Label>(leftPadding: 55));
         }
         for (int i = 0; i < _bottomDrawerItems.Count; i++) {
             _bottomDrawerItems[i]
-                .button.SetTopStretch<Button>(anchoredY: SPACING + i * (ITEM_HEIGHT + SPACING))
+                .button
+                .SetTopStretch<Button>(
+                    anchoredY: SPACING + i * (ITEM_HEIGHT + SPACING), leftPadding: SPACING, rightPadding: SPACING)
                 .StepIntoLabel(l => l.SetStretch<Label>(leftPadding: 55));
         }
         _itemContainer.SetTopStretch<Content>(anchoredY: LOGO_BOTTOM_Y + LOGO_BUTTON_SPACING + BUTTON_HEIGHT + SPACING,

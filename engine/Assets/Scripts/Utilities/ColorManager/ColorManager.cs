@@ -219,6 +219,8 @@ namespace Utilities.ColorManager {
             InteractiveSecondary,
             Background,
             BackgroundSecondary,
+            InteractiveHover,
+            InteractiveSelect,
             MainText,
             Scrollbar,
             AcceptButton,
