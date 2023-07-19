@@ -1,20 +1,16 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using Synthesis.UI.Dynamic;
-
-using UButton = UnityEngine.UI.Button;
-using System.Linq;
-using Synthesis.UI;
 using DigitalRuby.Tween;
-using SynthesisAPI.EventBus;
-using UnityEngine.SceneManagement;
 using Synthesis.Runtime;
+using Synthesis.UI.Dynamic;
+using SynthesisAPI.EventBus;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Utilities.ColorManager;
-using Button = Synthesis.UI.Dynamic.Button;
-using Image  = Synthesis.UI.Dynamic.Image;
+using Button  = Synthesis.UI.Dynamic.Button;
+using Image   = Synthesis.UI.Dynamic.Image;
+using UButton = UnityEngine.UI.Button;
 
 #nullable enable
 
@@ -22,8 +18,13 @@ public static class MainHUD {
     private const string COLLAPSE_TWEEN = "collapse";
     private const string EXPAND_TWEEN   = "expand";
 
-    private static Action<ITween<float>> collapseTweenProgress =
-        v => { _tabDrawerContent?.SetWidth<Content>(v.CurrentValue); };
+    private static Action<ITween<float>> collapseTweenProgress = v => {
+        _tabDrawerContent?.SetAnchoredPosition<Content>(
+            new Vector2(v.CurrentValue, _tabDrawerContent.RootRectTransform.anchoredPosition.y));
+    };
+
+    private const int TAB_DRAWER_WIDTH = 250;
+    private const int TAB_DRAWER_X     = 20;
 
     private static bool _isSetup = false;
     private static bool _enabled = true;
@@ -56,12 +57,14 @@ public static class MainHUD {
                 _collapsed = value;
                 if (_collapsed) {
                     TweenFactory.RemoveTweenKey(EXPAND_TWEEN, TweenStopBehavior.DoNotModify);
-                    _tabDrawerContent.RootGameObject.Tween(COLLAPSE_TWEEN, _tabDrawerContent.Size.x, 20 + 15 + 40 + 15,
-                        0.2f, TweenScaleFunctions.CubicEaseOut, collapseTweenProgress);
+                    _tabDrawerContent.RootGameObject.Tween(COLLAPSE_TWEEN,
+                        _tabDrawerContent.RootRectTransform.anchoredPosition.x, -TAB_DRAWER_WIDTH - TAB_DRAWER_X, 0.2f,
+                        TweenScaleFunctions.CubicEaseOut, collapseTweenProgress);
                 } else {
                     TweenFactory.RemoveTweenKey(COLLAPSE_TWEEN, TweenStopBehavior.DoNotModify);
-                    _tabDrawerContent.RootGameObject.Tween(EXPAND_TWEEN, _tabDrawerContent.Size.x, 20 + 15 + 200 + 15,
-                        0.2f, TweenScaleFunctions.CubicEaseOut, collapseTweenProgress);
+                    _tabDrawerContent.RootGameObject.Tween(EXPAND_TWEEN,
+                        _tabDrawerContent.RootRectTransform.anchoredPosition.x, TAB_DRAWER_X, 0.2f,
+                        TweenScaleFunctions.CubicEaseOut, collapseTweenProgress);
                 }
             }
         }
@@ -69,6 +72,7 @@ public static class MainHUD {
 
     private static bool _hasNewRobotListener = false; // In the Unity editor, working with statics can be really weird
 
+    private static Button _accordionButton;
     private static Content _tabDrawerContent;
     private static Image _logoImage;
     private static Content _itemContainer;
@@ -88,6 +92,7 @@ public static class MainHUD {
     public static void Setup() {
         _topDrawerItems.Clear();
         _bottomDrawerItems.Clear();
+        _accordionButton  = new Button(null, GameObject.Find("MainHUD").transform.Find("Accordion").gameObject, null);
         _tabDrawerContent = new Content(null, GameObject.Find("MainHUD").transform.Find("TabDrawer").gameObject, null);
         _logoImage = new Image(_tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("Logo").gameObject);
         _itemContainer = new Content(
@@ -101,12 +106,18 @@ public static class MainHUD {
         _homeButton = new Button(
             _tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("HomeButton").gameObject, null);
 
-        // _logoImage.SetTopStretch<Image>(anchoredY: 70);
-
         _spawnButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.Background)
             .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText));
         _homeButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.Background)
             .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText));
+
+        _accordionButton.Image.SetSprite(
+            SynthesisAssetCollection.GetSpriteByName(Collapsed ? "accordion" : "CloseIcon"));
+        _accordionButton.OnClicked += (b) => {
+            Collapsed = !Collapsed;
+            _accordionButton.Image.SetSprite(
+                SynthesisAssetCollection.GetSpriteByName(Collapsed ? "accordion" : "CloseIcon"));
+        };
 
         _spawnButton.OnClicked += (b) => { DynamicUIManager.CreateModal<SpawningModal>(); };
         _spawnButton.SetTransition(Selectable.Transition.ColorTint).SetInteractableColors();
@@ -127,8 +138,8 @@ public static class MainHUD {
                 if (robotEvent.NewBot == string.Empty) {
                     RemoveItemFromDrawer("Configure");
                 } else if (robotEvent.OldBot == string.Empty) {
-                    MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>(),
-                        index: 1, icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+                    AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>(), index: 1,
+                        icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
                 }
             });
             _hasNewRobotListener = true;
