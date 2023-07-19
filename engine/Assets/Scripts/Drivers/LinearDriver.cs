@@ -4,6 +4,7 @@ using UnityEngine;
 using SynthesisAPI.Simulation;
 using Synthesis.PreferenceManager;
 using Google.Protobuf.WellKnownTypes;
+using Synthesis.Physics;
 
 namespace Synthesis {
     public class LinearDriver : Driver {
@@ -47,6 +48,7 @@ namespace Synthesis {
 
         public double MainInput {
             get {
+                if (PhysicsManager.IsFrozen) return 0f;
                 var val = State.GetValue(_inputs[0]);
                 return val == null ? 0.0 : val.NumberValue;
             }

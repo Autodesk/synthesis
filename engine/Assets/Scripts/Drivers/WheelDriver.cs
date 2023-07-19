@@ -7,6 +7,7 @@ using Synthesis.PreferenceManager;
 using SynthesisAPI.Simulation;
 using UnityEngine;
 using Synthesis.Util;
+using Synthesis.Physics;
 
 #nullable enable
 
@@ -72,6 +73,7 @@ namespace Synthesis {
 
         public double MainInput {
             get {
+                if (PhysicsManager.IsFrozen) return 0f;
                 var val = State.GetValue(_inputs[0]);
                 return val == null ? 0.0 : val.NumberValue;
             }

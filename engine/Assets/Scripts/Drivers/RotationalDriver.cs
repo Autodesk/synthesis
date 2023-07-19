@@ -7,6 +7,7 @@ using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
 using UnityEngine;
 using Synthesis.Util;
+using Synthesis.Physics;
 
 #nullable enable
 
@@ -45,6 +46,7 @@ namespace Synthesis {
 
         public double MainInput {
             get {
+                if (PhysicsManager.IsFrozen) return 0f;
                 var val = State.GetValue(_inputs[0]);
                 return val == null ? 0.0 : val.NumberValue;
             }
@@ -140,6 +142,10 @@ namespace Synthesis {
         public bool UseMotor { get => _useMotor; }
 
         public readonly string MotorRef;
+
+        private float _convertedMotorTargetVel {
+            get => Motor.targetVelocity * Mathf.Rad2Deg;
+        }
 
         public RotationalDriver(string name, string[] inputs, string[] outputs, SimObject simObject, HingeJoint jointA,
             HingeJoint jointB, bool isWheel, string motorRef = "")
@@ -245,10 +251,10 @@ namespace Synthesis {
 
                 _jointA.motor =
                     new JointMotor { force = MIRABUF_TO_UNITY_FORCE * Motor.force * (inertiaA / (inertiaA + inertiaB)),
-                        freeSpin = Motor.freeSpin, targetVelocity = Mathf.Rad2Deg * (Motor.targetVelocity) * output };
+                        freeSpin = Motor.freeSpin, targetVelocity = _convertedMotorTargetVel * output };
                 _jointB.motor =
                     new JointMotor { force = MIRABUF_TO_UNITY_FORCE * Motor.force * (inertiaB / (inertiaA + inertiaB)),
-                        freeSpin = Motor.freeSpin, targetVelocity = Mathf.Rad2Deg * (-Motor.targetVelocity) * output };
+                        freeSpin = Motor.freeSpin, targetVelocity = -_convertedMotorTargetVel * output };
             }
         }
 
@@ -263,7 +269,7 @@ namespace Synthesis {
                     SynthesisUtil.GetInertiaAroundParallelAxis(_jointB.connectedBody, _jointA.anchor, _jointA.axis);
 
                 if (_useFakeMotion) {
-                    float alpha = val * Motor.targetVelocity;
+                    float alpha = val * _convertedMotorTargetVel;
 
                     _fakedTheta += alpha * deltaT;
 
@@ -285,9 +291,9 @@ namespace Synthesis {
 
                 } else {
                     _jointA.motor = new JointMotor { force = Motor.force * (inertiaA / (inertiaA + inertiaB)),
-                        freeSpin = Motor.freeSpin, targetVelocity = (Motor.targetVelocity) * val };
+                        freeSpin = Motor.freeSpin, targetVelocity = _convertedMotorTargetVel * val };
                     _jointB.motor = new JointMotor { force = Motor.force * (inertiaB / (inertiaA + inertiaB)),
-                        freeSpin = Motor.freeSpin, targetVelocity = (-Motor.targetVelocity) * val };
+                        freeSpin = Motor.freeSpin, targetVelocity = -_convertedMotorTargetVel * val };
                 }
             }
         }
