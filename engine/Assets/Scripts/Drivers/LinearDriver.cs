@@ -8,8 +8,9 @@ using Synthesis.Physics;
 
 namespace Synthesis {
     public class LinearDriver : Driver {
-        public const float LINEAR_TO_MOTOR_VELOCITY  = 100f;
-        public string Signal                        => _inputs[0];
+        public const float LINEAR_TO_MOTOR_VELOCITY = 100f;
+
+        public string Signal => _inputs[0];
 
         public ConfigurableJoint JointA { get; private set; }
         public ConfigurableJoint JointB { get; private set; }
