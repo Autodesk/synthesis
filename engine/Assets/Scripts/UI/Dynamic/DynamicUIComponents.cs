@@ -842,12 +842,12 @@ namespace Synthesis.UI.Dynamic {
                 _disabledImage.SetColor(_disabledColor);
             }
         }
-        private Color _enabledColor;
-        public Color EnabledColor {
+        private (ColorManager.SynthesisColor left,ColorManager.SynthesisColor right) _enabledColor;
+        public (ColorManager.SynthesisColor left,ColorManager.SynthesisColor right) EnabledColor {
             get => _enabledColor;
             set {
                 _enabledColor = value;
-                _enabledImage.SetColor(_enabledColor);
+                _enabledImage.SetColor(_enabledColor.left, _enabledColor.right);
             }
         }
 
@@ -870,9 +870,11 @@ namespace Synthesis.UI.Dynamic {
 
             _disabledImage = new Image(this, _unityToggle.transform.Find("Background").gameObject);
             _enabledImage  = new Image(this, _unityToggle.transform.Find("Background").Find("Checkmark").gameObject);
-
+            _enabledImage.SetCornerRadius(10);
+            
             DisabledColor = ColorManager.GetColor(ColorManager.SynthesisColor.BackgroundSecondary);
-            EnabledColor  = ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElementSolid);
+            EnabledColor  = (ColorManager.SynthesisColor.InteractiveElementLeft,
+                ColorManager.SynthesisColor.InteractiveElementRight);
         }
 
         public Toggle SetState(bool state, bool notify = true) {
@@ -888,13 +890,8 @@ namespace Synthesis.UI.Dynamic {
             return this;
         }
 
-        public Toggle SetEnabledColor(Color c) {
-            EnabledColor = c;
-            return this;
-        }
-
-        public Toggle SetEnabledColor(ColorManager.SynthesisColor s) {
-            EnabledColor = ColorManager.GetColor(s);
+        public Toggle SetEnabledColor(ColorManager.SynthesisColor left, ColorManager.SynthesisColor right) {
+            EnabledColor = (left, right);
             return this;
         }
 

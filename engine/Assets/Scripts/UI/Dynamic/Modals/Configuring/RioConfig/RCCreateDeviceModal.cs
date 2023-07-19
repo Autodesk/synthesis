@@ -128,9 +128,7 @@ public class RCConfigPwmGroupModal : ModalDynamic {
                 leftPadding: 10, rightPadding: 10, anchoredY: -_portSelection.Content.RectOfChildren(container).yMin);
 
             var toggle = container.CreateToggle(false, $"{i}");
-            toggle.SetStretch<Toggle>()
-                .SetEnabledColor(ColorManager.SynthesisColor.InteractiveElementSolid)
-                .SetDisabledColor(ColorManager.SynthesisColor.Background);
+            toggle.SetStretch<Toggle>();
 
             _portToggles.Add($"{i}", toggle);
         }
@@ -159,9 +157,7 @@ public class RCConfigPwmGroupModal : ModalDynamic {
                     anchoredY: -_signalSelection.Content.RectOfChildren(container).yMin);
 
                 var toggle = container.CreateToggle(false, $"{j.Info.Name} ({j.SignalReference})");
-                toggle.SetStretch<Toggle>()
-                    .SetEnabledColor(ColorManager.SynthesisColor.InteractiveElementSolid)
-                    .SetDisabledColor(ColorManager.SynthesisColor.Background);
+                toggle.SetStretch<Toggle>();
 
                 toggle.AddOnStateChangedEvent((t, s) => UpdateAcceptButton());
 
