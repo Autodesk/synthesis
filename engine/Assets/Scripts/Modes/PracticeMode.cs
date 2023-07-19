@@ -91,7 +91,7 @@ public class PracticeMode : IMode {
             }
         });
 
-        EventBus.NewTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
+//        EventBus.NewTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
     }
 
     private void HandleScoreEvent(IEvent e) {
