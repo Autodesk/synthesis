@@ -38,7 +38,6 @@ namespace UI.Dynamic.Modals {
 
         public override void Create() {
             Title.SetText("Match Results");
-            Description.SetText("Statistics about the match");
 
             CancelButton
                 .AddOnClickedEvent(x => {

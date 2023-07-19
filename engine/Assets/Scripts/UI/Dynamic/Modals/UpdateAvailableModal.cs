@@ -11,7 +11,6 @@ namespace Synthesis.UI.Dynamic {
 
         public override void Create() {
             Title.SetText("Exit Synthesis");
-            Description.SetText("");
             AcceptButton
                 .AddOnClickedEvent(x => {
                     Process.Start(

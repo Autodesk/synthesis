@@ -45,7 +45,6 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
         public override void Create() {
             Title.SetText("Theme Editor");
-            Description.SetText("Select and Customize Themes");
 
             AcceptButton.StepIntoLabel(l => l.SetText("Save")).AddOnClickedEvent(x => {
                 SaveThemeChanges();
@@ -241,7 +240,8 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             _selectedColor = colorName;
 
             var newSelected = _colors[_selectedColor.Value];
-            newSelected.background.SetBackgroundColor<Image>(ColorManager.SynthesisColor.InteractiveElementSolid);
+            newSelected.background.SetBackgroundColor<Image>(ColorManager.SynthesisColor.InteractiveElementLeft,
+                ColorManager.SynthesisColor.InteractiveElementRight);
             newSelected.label.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
 
             // Regex.Replace formats color's name with spaces (ColorName -> Color Name)

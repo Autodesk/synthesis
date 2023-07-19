@@ -26,6 +26,8 @@ namespace Synthesis.UI.Dynamic {
 #region Abstracts
 
     public abstract class PanelDynamic {
+        public const float MAIN_CONTENT_HORZ_PADDING = 25f;
+        
         private float _leftContentPadding, _rightContentPadding;
         public float LeftContentPadding  => _leftContentPadding;
         public float RightContentPadding => _rightContentPadding;
@@ -67,7 +69,8 @@ namespace Synthesis.UI.Dynamic {
         public Action OnAccepted;
 
         protected PanelDynamic(
-            Vector2 mainContentSize, float leftContentPadding = 50f, float rightContentPadding = 50f) {
+            Vector2 mainContentSize, float leftContentPadding = MAIN_CONTENT_HORZ_PADDING, 
+                float rightContentPadding = MAIN_CONTENT_HORZ_PADDING) {
             _mainContentSize     = mainContentSize;
             _leftContentPadding  = leftContentPadding;
             _rightContentPadding = rightContentPadding;
@@ -82,7 +85,7 @@ namespace Synthesis.UI.Dynamic {
             _panelImage      = new Image(null, header.Find("Image").gameObject);
             _panelBackground = new Image(null, unityObject);
             _panelBackground.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.Background));
-            _panelBackground.SetCornerRadius(7);
+            _panelBackground.SetCornerRadius(35);
 
             _title = new Label(null, header.Find("Title").gameObject, null);
 
@@ -94,10 +97,10 @@ namespace Synthesis.UI.Dynamic {
                     Logger.Log("Failed to Close Panel", LogLevel.Error);
             });
             _cancelButton.Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.CancelButton));
-            _cancelButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptCancelButtonText));
+            _cancelButton.Label!.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptCancelButtonText));
             _acceptButton = new Button(null!, footer.Find("Accept").gameObject, null);
             _acceptButton.Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptButton));
-            _acceptButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptCancelButtonText));
+            _acceptButton.Label!.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptCancelButtonText));
             _acceptButton.AddOnClickedEvent(b => {
                 if (OnAccepted != null)
                     OnAccepted.Invoke();
@@ -135,7 +138,7 @@ namespace Synthesis.UI.Dynamic {
     }
 
     public abstract class ModalDynamic {
-        public const float MAIN_CONTENT_HORZ_PADDING = 50f;
+        public const float MAIN_CONTENT_HORZ_PADDING = 75f;
 
         private Vector2 _mainContentSize; // Shouldn't really be used after init is called
         private GameObject _unityObject;
@@ -253,8 +256,6 @@ namespace Synthesis.UI.Dynamic {
             modalRt.sizeDelta     = new Vector2(_mainContentSize.x + (MAIN_CONTENT_HORZ_PADDING * 2),
                     hiddenRt.sizeDelta.y + headerRt.sizeDelta.y + footerRt.sizeDelta.y);
             _mainContent          = new Content(null!, actualContentObj, _mainContentSize);
-            
-            _description.RootGameObject.SetActive(false);
         }
 
         public abstract void Create();
@@ -267,6 +268,24 @@ namespace Synthesis.UI.Dynamic {
     }
 
     public abstract class UIComponent {
+        public static Func<UIComponent, UIComponent> VerticalLayout = (u) => {
+            var offset = (-u.Parent!.RectOfChildren(u).yMin) + 7.5f;
+            u.SetTopStretch<UIComponent>(anchoredY: offset);
+            return u;
+        };
+        
+        public static Func<UIComponent, UIComponent> VerticalLayoutNoSpacing = (u) => {
+            var offset = (-u.Parent!.RectOfChildren(u).yMin);
+            u.SetTopStretch<UIComponent>(anchoredY: offset);
+            return u;
+        };
+        
+        public static Func<UIComponent, UIComponent> VerticalLayoutBigSpacing = (u) => {
+            var offset = (-u.Parent!.RectOfChildren(u).yMin + 15f);
+            u.SetTopStretch<UIComponent>(anchoredY: offset);
+            return u;
+        };
+        
         public float HeightOfChildren {
             get {
                 float sum = 0f;
@@ -723,7 +742,7 @@ namespace Synthesis.UI.Dynamic {
         public static readonly Func<Label, Label> BigLabelTemplate = (Label label) => {
             return label.SetHeight<Label>(30)
                 .SetFontSize(24)
-                .ApplyTemplate(Label.VerticalLayoutTemplate)
+                .ApplyTemplate(VerticalLayoutTemplate)
                 .SetHorizontalAlignment(HorizontalAlignmentOptions.Left)
                 .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
         };

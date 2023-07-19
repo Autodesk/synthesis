@@ -23,7 +23,6 @@ public class ChangeDrivetrainModal : ModalDynamic {
         }
 
         Title.SetText("Change Drivetrain");
-        Description.SetText("Select the drivetrain you want to use");
         AcceptButton.AddOnClickedEvent(b => {
             RobotSimObject.GetCurrentlyPossessedRobot().ConfiguredDrivetrainType = _selectedType;
             DynamicUIManager.CloseActiveModal();

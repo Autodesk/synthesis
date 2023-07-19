@@ -18,8 +18,6 @@ public class ToastModal : ModalDynamic {
         Title.SetStretch<Content>();
         Title.SetText("    " + toastLevel.ToString() + " Message: ").SetFontSize(30);
         AcceptButton.AddOnClickedEvent(b => { WriteToFile(); }).Label.SetText("Write File");
-        Description.RootGameObject.SetActive(false);
-        ModalImage.RootGameObject.SetActive(false);
         CancelButton.Label.SetText("Close");
 
         var sv      = MainContent.CreateScrollView().SetStretch<ScrollView>();

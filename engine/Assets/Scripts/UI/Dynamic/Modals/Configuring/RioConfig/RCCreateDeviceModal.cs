@@ -26,7 +26,6 @@ public class RCCreateDeviceModal : ModalDynamic {
     public override void Create() {
         Title.SetText("Create Device");
         Title.SetWidth<Label>(400);
-        Description.SetText("Create a Motor Controller, Encoder, Etc.");
 
         ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
         ModalImage.SetColor(ColorManager.SynthesisColor.MainText);

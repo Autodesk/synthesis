@@ -304,10 +304,11 @@ public class ZoneConfigPanel : PanelDynamic {
     private void SetSelectUIState(bool isUserSelecting) {
         if (isUserSelecting) {
             _zoneParentButton.StepIntoLabel(l => l.SetText("Selecting..."));
-            _zoneParentButton.StepIntoButton(b => b.StepIntoImage(i => i.SetColor(ColorManager.GetColor(
-                                                                      ColorManager.SynthesisColor.BackgroundSecondary)))
-                                                      .StepIntoLabel(l => l.SetText("...")));
-        } else {
+            _zoneParentButton.StepIntoButton(b => b.StepIntoImage(i => i.SetColor(
+                    ColorManager.SynthesisColor.BackgroundSecondary))
+                .StepIntoLabel(l => l.SetText("...")));
+        }
+        else {
             if (_selectedNode is null)
                 _data.Parent = "grounded";
             _zoneParentButton.StepIntoLabel(
@@ -315,8 +316,9 @@ public class ZoneConfigPanel : PanelDynamic {
 
             _zoneParentButton.StepIntoButton(
                 b => b.StepIntoImage(
-                          i => i.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElementSolid)))
-                         .StepIntoLabel(l => l.SetText(_selectedNode is not null ? "Remove" : "Click to select...")));
+                        i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                            ColorManager.SynthesisColor.InteractiveElementRight))
+                    .StepIntoLabel(l => l.SetText(_selectedNode is not null ? "Remove" : "Click to select...")));
         }
     }
 

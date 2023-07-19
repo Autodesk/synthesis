@@ -8,7 +8,7 @@ public class ScrollViewTestModal : ModalDynamic {
 
     public override void Create() {
         Title.SetText("Testing Scrollview");
-        Description.SetText("Does it work?");
+
         var sv = MainContent.CreateScrollView().SetStretch<ScrollView>();
         CreateItem(sv, Color.red);
         CreateItem(sv, Color.black);

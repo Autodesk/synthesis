@@ -16,7 +16,6 @@ public class ChooseModeModal : ModalDynamic {
 
     public override void Create() {
         Title.SetText("Choose Mode");
-        Description.SetText("Choose a mode to play in.");
 
         AcceptButton.RootGameObject.SetActive(false);
         CancelButton.Label.SetText("Close");

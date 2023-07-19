@@ -24,18 +24,19 @@ public class RobotSwitchPanel : PanelDynamic {
 
     private bool _isMatchMode;
 
-    public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
+    private Func<UIComponent, UIComponent> VerticalLayout = (u) => {
         var offset = (-u.Parent!.RectOfChildren(u).yMin);
-        u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 15f, rightPadding: 15f); // used to be 15f
+        u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 15f, rightPadding: 15f);
         return u;
     };
 
-    public Func<Button, Button> EnableButton = b =>
-        b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementSolid))
+    private Func<Button, Button> EnableButton = b =>
+        b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                ColorManager.SynthesisColor.InteractiveElementRight))
             .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
             .EnableEvents<Button>();
 
-    public Func<Button, Button> DisableButton = b =>
+    private Func<Button, Button> DisableButton = b =>
         b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary))
             .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
             .DisableEvents<Button>();

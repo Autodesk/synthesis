@@ -14,7 +14,6 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
         public override void Create() {
             Title.SetText($"Delete All Themes?").SetWrapping(false);
-            Description.SetText("Warning! All themes will be permanently deleted.");
 
             AcceptButton.AddOnClickedEvent(x => {
                 ColorManager.DeleteAllThemes();

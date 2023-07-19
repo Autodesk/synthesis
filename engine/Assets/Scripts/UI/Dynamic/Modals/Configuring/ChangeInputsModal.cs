@@ -158,7 +158,6 @@ public class ChangeInputsModal : ModalDynamic {
 
     public override void Create() {
         Title.SetText("Keybinds");
-        Description.SetText("Configure keybinds for your robot.");
 
         // no cancel button because keybinds are saved automatically when set
         AcceptButton.AddOnClickedEvent(b => DynamicUIManager.CloseActiveModal()).StepIntoLabel(l => l.SetText("Close"));

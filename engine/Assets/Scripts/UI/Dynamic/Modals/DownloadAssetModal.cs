@@ -50,7 +50,6 @@ namespace Synthesis.UI.Dynamic {
             Task.Run(GetAvailableAssets);
 
             Title.SetText("Download Assets");
-            Description.SetText("Download robots and fields from the Synthesis Asset Library.");
 
             AcceptButton.StepIntoLabel(l => l.SetText("Close"))
                 .AddOnClickedEvent(b => DynamicUIManager.CloseActiveModal());

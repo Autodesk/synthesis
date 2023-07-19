@@ -73,9 +73,10 @@ public class DriverStationPanel : PanelDynamic {
     private void SetModeButton(bool isEnabled) {
         if (isEnabled) {
             _modeButton.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary))
-                .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementSolid).SetText("Enabled"));
+                .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText).SetText("Enabled"));
         } else {
-            _modeButton.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementSolid))
+            _modeButton.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                    ColorManager.SynthesisColor.InteractiveElementRight))
                 .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.Background).SetText("Disabled"));
         }
     }

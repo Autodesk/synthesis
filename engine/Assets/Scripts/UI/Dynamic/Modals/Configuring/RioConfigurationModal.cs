@@ -53,7 +53,6 @@ public class RioConfigurationModal : ModalDynamic {
     public override void Create() {
         Title.SetText("RoboRIO Configuration");
         Title.SetWidth<Label>(300);
-        Description.SetText("Configuring RoboRIO for Synthesis simulation");
 
         ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
         ModalImage.SetColor(ColorManager.SynthesisColor.MainText);

@@ -25,7 +25,6 @@ namespace UI.Dynamic.Modals.Spawning {
             _files = Directory.GetFiles(_root).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
 
             Title.SetText("Robot Selection");
-            Description.SetText("Choose which robot you wish to play as");
 
             ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("PlusIcon"))
                 .SetColor(ColorManager.SynthesisColor.MainText);

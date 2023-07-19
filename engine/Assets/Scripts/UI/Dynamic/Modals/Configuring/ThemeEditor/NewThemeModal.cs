@@ -15,7 +15,6 @@ namespace UI.Dynamic.Modals.Configuring {
 
         public override void Create() {
             Title.SetText("New Theme");
-            Description.SetText("Create a Custom Theme");
 
             AcceptButton
                 .AddOnClickedEvent(x => {

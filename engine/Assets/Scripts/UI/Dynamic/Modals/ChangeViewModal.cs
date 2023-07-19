@@ -10,7 +10,6 @@ namespace Synthesis.UI.Dynamic {
 
         public override void Create() {
             Title.SetText("Change View");
-            Description.SetText("Change the current camera view");
 
             CameraController controller = Camera.main.GetComponent<CameraController>();
 

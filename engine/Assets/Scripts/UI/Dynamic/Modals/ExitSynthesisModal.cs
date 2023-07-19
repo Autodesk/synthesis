@@ -14,7 +14,6 @@ namespace Synthesis.UI.Dynamic {
             bool isOnMainMenu = SceneManager.GetActiveScene().name != "MainScene";
 
             Title.SetText("Exit Synthesis");
-            Description.SetText("");
 
             AcceptButton
                 .AddOnClickedEvent(x => {

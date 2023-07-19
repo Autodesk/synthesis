@@ -37,8 +37,7 @@ public class MatchModeModal : ModalDynamic {
 
         _fieldFiles = Directory.GetFiles(fieldsFolder).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
 
-        Title.SetText("Match Mode");
-        Description.SetText("Configure Match Mode");
+        Title.SetText("Match Mode Configuration");
 
         AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
             if (_fieldIndex != -1) {
