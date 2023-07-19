@@ -90,8 +90,6 @@ public class PracticeMode : IMode {
                     DynamicUIManager.CreatePanel<ScoringZonesPanel>();
             }
         });
-
-//        EventBus.NewTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
     }
 
     private void HandleScoreEvent(IEvent e) {
