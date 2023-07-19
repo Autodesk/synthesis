@@ -10,6 +10,8 @@ namespace Synthesis.UI.Dynamic {
 
         public override void Create() {
             Title.SetText("Change View");
+            
+            ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("CameraIcon"));
 
             CameraController controller = Camera.main.GetComponent<CameraController>();
 

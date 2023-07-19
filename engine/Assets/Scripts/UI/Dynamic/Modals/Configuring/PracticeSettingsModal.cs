@@ -27,6 +27,8 @@ public class PracticeSettingsModal : ModalDynamic {
         AcceptButton.RootGameObject.SetActive(false);
         CancelButton.StepIntoLabel(l => l.SetText("Close")).AddOnClickedEvent(b => { ModeManager.ModalClosed(); });
 
+        ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("settings"));
+
         var gamepieceLabel = MainContent.CreateLabel()
                                  .SetText("Gamepiece Spawning")
                                  .ApplyTemplate(Label.BigLabelTemplate)

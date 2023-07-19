@@ -305,7 +305,7 @@ public class ZoneConfigPanel : PanelDynamic {
         if (isUserSelecting) {
             _zoneParentButton.StepIntoLabel(l => l.SetText("Selecting..."));
             _zoneParentButton.StepIntoButton(b => b.StepIntoImage(i => i.SetColor(
-                    ColorManager.SynthesisColor.BackgroundSecondary))
+                    ColorManager.SynthesisColor.InteractiveBackground))
                 .StepIntoLabel(l => l.SetText("...")));
         }
         else {

@@ -25,6 +25,7 @@ public class BetaWarningPanel : PanelDynamic {
             return false;
 
         Title.SetText("Warning");
+        Title.SetText("Match Mode Configuration");
 
         AcceptButton.AddOnClickedEvent(b => DynamicUIManager.ClosePanel<BetaWarningPanel>())
             .StepIntoLabel(l => l.SetText("Okidoki"));

@@ -43,7 +43,7 @@ namespace Synthesis.UI.Dynamic {
         private readonly Transform[] _robotHighlights = new Transform[6];
 
         private readonly Func<Button, Button> DisabledTemplate = b =>
-            b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary))
+            b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground))
                 .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText));
 
         public readonly Func<UIComponent, UIComponent> VerticalLayout = (u) => {
@@ -156,7 +156,7 @@ namespace Synthesis.UI.Dynamic {
         /// <param name="index">the selected buttons index</param>
         private void SelectButton(int index) {
             buttons[_selectedButton].Image.SetColor(
-                ColorManager.GetColor(ColorManager.SynthesisColor.BackgroundSecondary));
+                ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveBackground));
             _selectedButton = index;
 
             buttons[index].Image.SetColor((index < 3) ? redButtonColor : blueButtonColor);

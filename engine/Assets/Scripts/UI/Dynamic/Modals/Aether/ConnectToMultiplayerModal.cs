@@ -40,7 +40,7 @@ namespace Synthesis.UI.Dynamic {
             CancelButton.Label.SetText("Disconnect");
 
             (var left, var right) = MainContent.SplitLeftRight(leftWidth: (MAIN_CONTENT_WIDTH - 20.0f) / 2.0f, 20.0f);
-            left.EnsureImage().StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary));
+            left.EnsureImage().StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground));
 
             _clientConnectionStatus = left.CreateLabel(30)
                                           .SetTopStretch<Label>(anchoredY: 30.0f)

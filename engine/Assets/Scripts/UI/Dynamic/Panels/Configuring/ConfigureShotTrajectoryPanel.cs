@@ -117,7 +117,7 @@ namespace Synthesis.UI.Dynamic {
             if (isUserSelecting) {
                 _selectNodeButton.StepIntoLabel(l => l.SetText("Selecting..."));
                 _selectNodeButton.StepIntoButton(
-                    b => b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary))
+                    b => b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground))
                              .StepIntoLabel(l => l.SetText("...")));
             } else {
                 _selectNodeButton.StepIntoLabel(l => l.SetText(_resultingData.NodeName));

@@ -11,19 +11,20 @@ public class MatchModeModal : ModalDynamic {
     private int _fieldIndex            = -1;
     private List<String> _robotOptions = new List<string>();
     private string[] _fieldFiles;
-
-    private int _allianceColor = 0;
-    private int _spawnPosition = 0;
-
+    
     public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
         var offset = (-u.Parent!.RectOfChildren(u).yMin) + 15f;
         u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 15f);
         return u;
     };
 
-    public MatchModeModal() : base(new Vector2(500, 800)) {}
+    public MatchModeModal() : base(new Vector2(500, 600)) {}
 
     public override void Create() {
+        Title.SetText("Field and Robot Selection");
+        
+        ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+
         var robotsFolder = ParsePath("$appdata/Autodesk/Synthesis/Mira", '/');
         if (!Directory.Exists(robotsFolder))
             Directory.CreateDirectory(robotsFolder);
@@ -37,8 +38,6 @@ public class MatchModeModal : ModalDynamic {
 
         _fieldFiles = Directory.GetFiles(fieldsFolder).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
 
-        Title.SetText("Match Mode Configuration");
-
         AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
             if (_fieldIndex != -1) {
                 DynamicUIManager.CreateModal<LoadingScreenModal>();
@@ -47,9 +46,6 @@ public class MatchModeModal : ModalDynamic {
                     _mb.StartCoroutine(LoadMatch());
                 }
             }
-        });
-        CancelButton.AddOnClickedEvent(b => { // need to add in isMatchModalOpen integration
-            DynamicUIManager.CloseActiveModal();
         });
 
         for (int robot = 0; robot < 6; robot++) {

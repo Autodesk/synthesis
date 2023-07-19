@@ -205,6 +205,8 @@ namespace Synthesis.UI.Dynamic {
             var header       = _unityObject.transform.Find("Header");
             var headerRt     = header.GetComponent<RectTransform>();
             _modalImage      = new Image(null, header.Find("Image").gameObject);
+            _modalImage.SetColor(ColorManager.SynthesisColor.MainText);
+            
             _modalBackground = new Image(null, unityObject);
             _modalBackground.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.Background));
             _modalBackground.SetCornerRadius(35);
@@ -721,7 +723,8 @@ namespace Synthesis.UI.Dynamic {
             _content = new Content(this, unityObject.transform.Find("Viewport").Find("Content").gameObject, null);
 
             _backgroundImage = new Image(this, unityObject);
-            _backgroundImage.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.BackgroundSecondary));
+            _backgroundImage.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.BackgroundSecondary))
+                .SetCornerRadius(20);
         }
 
         public ScrollView StepIntoContent(Action<Content> mod) {
@@ -872,7 +875,7 @@ namespace Synthesis.UI.Dynamic {
             _enabledImage  = new Image(this, _unityToggle.transform.Find("Background").Find("Checkmark").gameObject);
             _enabledImage.SetCornerRadius(10);
             
-            DisabledColor = ColorManager.GetColor(ColorManager.SynthesisColor.BackgroundSecondary);
+            DisabledColor = ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveBackground);
             EnabledColor  = (ColorManager.SynthesisColor.InteractiveElementLeft,
                 ColorManager.SynthesisColor.InteractiveElementRight);
         }
@@ -945,7 +948,7 @@ namespace Synthesis.UI.Dynamic {
             });
 
             _backgroundImage = new Image(this, _unitySlider.transform.Find("Background").gameObject);
-            _backgroundImage.SetColor(ColorManager.SynthesisColor.BackgroundSecondary);
+            _backgroundImage.SetColor(ColorManager.SynthesisColor.InteractiveBackground);
 
             _fillImage = new Image(this, _unitySlider.transform.Find("Fill Area").Find("Fill").gameObject);
             _fillImage.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
@@ -1050,7 +1053,7 @@ namespace Synthesis.UI.Dynamic {
             });
 
             _backgroundImage = new Image(this, ifObj.gameObject);
-            _backgroundImage.SetColor(ColorManager.SynthesisColor.BackgroundSecondary);
+            _backgroundImage.SetColor(ColorManager.SynthesisColor.InteractiveBackground);
         }
 
         public InputField StepIntoHint(Action<Label> mod) {
@@ -1334,6 +1337,15 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public Image SetSprite(Sprite s) {
+            if (s == null) {
+                if (!_gradientUpdater)
+                    _gradientUpdater = _unityImage.gameObject.AddComponent<GradientImageUpdater>();
+                
+                _hasCustomSprite = false;
+                _unityImage.sprite = null;
+                return this;
+            }
+            
             _hasCustomSprite = true;
             Sprite           = s;
             if (_gradientUpdater != null)
@@ -1442,7 +1454,7 @@ namespace Synthesis.UI.Dynamic {
                                    .AddOnClickedEvent(b => Value -= Value > Int32.MinValue ? 1 : 0);
 
             _backgroundImage = new Image(this, ifObj.gameObject);
-            _backgroundImage.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.BackgroundSecondary));
+            _backgroundImage.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveBackground));
         }
 
         public NumberInputField StepIntoHint(Action<Label> mod) {

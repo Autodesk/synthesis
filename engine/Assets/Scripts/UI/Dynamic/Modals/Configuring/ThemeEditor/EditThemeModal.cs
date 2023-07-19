@@ -13,7 +13,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
     /// </summary>
     public class EditThemeModal : ModalDynamic {
         private const float MODAL_WIDTH        = 1350;
-        private const float MODAL_HEIGHT       = 500;
+        private const float MODAL_HEIGHT       = 430;
         private const float ROW_HEIGHT         = 60;
         private const float HORIZONTAL_PADDING = 15;
 
@@ -45,7 +45,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
         public override void Create() {
             Title.SetText("Theme Editor");
-
+            
             AcceptButton.StepIntoLabel(l => l.SetText("Save")).AddOnClickedEvent(x => {
                 SaveThemeChanges();
                 DynamicUIManager.CloseActiveModal();
@@ -112,12 +112,12 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
             var addThemeButton = addContent.CreateButton()
                                      .ApplyTemplate(VerticalLayout)
-                                     .StepIntoLabel(l => l.SetText("Create Theme"))
+                                     .StepIntoLabel(l => l.SetText("New"))
                                      .AddOnClickedEvent(b => { DynamicUIManager.CreateModal<NewThemeModal>(); });
 
             _deleteButton = deleteContent.CreateButton()
                                 .ApplyTemplate(VerticalLayout)
-                                .StepIntoLabel(l => l.SetText("Delete Selected"))
+                                .StepIntoLabel(l => l.SetText("Delete"))
                                 .SetBackgroundColor<Button>(ColorManager.SynthesisColor.InteractiveElementLeft,
                                     ColorManager.SynthesisColor.InteractiveElementRight)
                                 .AddOnClickedEvent(b => {
@@ -150,7 +150,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
         private void UpdateDeleteButtons() {
             if (_selectedThemeIndex < 1)
                 _deleteButton.DisableEvents<Button>().SetBackgroundColor<Button>(
-                    ColorManager.SynthesisColor.BackgroundSecondary);
+                    ColorManager.SynthesisColor.InteractiveBackground);
             else
                 _deleteButton.EnableEvents<Button>().SetBackgroundColor<Button>(
                     ColorManager.SynthesisColor.InteractiveElementLeft,
@@ -158,7 +158,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
             if (_availableThemes.Length == 1)
                 _deleteAllButton.DisableEvents<Button>().SetBackgroundColor<Button>(
-                    ColorManager.SynthesisColor.BackgroundSecondary);
+                    ColorManager.SynthesisColor.InteractiveBackground);
             else
                 _deleteAllButton.EnableEvents<Button>().SetBackgroundColor<Button>(
                     ColorManager.SynthesisColor.CancelButton);
@@ -203,7 +203,9 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
                 var (colorImage, name) = colorContent.SplitLeftRight(ROW_HEIGHT, HORIZONTAL_PADDING);
 
-                colorContent.SetBackgroundColor<Content>(ColorManager.SynthesisColor.BackgroundSecondary);
+                colorContent.StepIntoImage(i => i.SetSprite(null!).SetCornerRadius(10))
+                    .SetBackgroundColor<Content>(ColorManager.SynthesisColor.BackgroundSecondary);
+                
                 colorImage.SetBackgroundColor<Content>(c.Value);
 
                 // Regex.Replace formats color's name with spaces (ColorName -> Color Name)

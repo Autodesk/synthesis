@@ -2265,9 +2265,21 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 507563843828576301, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
+      propertyPath: SpriteAssets.Array.size
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 507563843828576301, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
       propertyPath: DynamicUIPrefabs.Array.size
       value: 14
       objectReference: {fileID: 0}
+    - target: {fileID: 507563843828576301, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
+      propertyPath: SpriteAssets.Array.data[16]
+      value: 
+      objectReference: {fileID: 21300000, guid: 6e7118b86480acb43b9ef6e547556599, type: 3}
+    - target: {fileID: 507563843828576301, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
+      propertyPath: SpriteAssets.Array.data[17]
+      value: 
+      objectReference: {fileID: 21300000, guid: 3dc6ee5b9d6c27649bff694ef4f50041, type: 3}
     - target: {fileID: 507563843828576301, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
       propertyPath: DynamicUIPrefabs.Array.data[0]
       value: 

@@ -26,8 +26,7 @@ namespace UI.Dynamic.Modals.Spawning {
 
             Title.SetText("Robot Selection");
 
-            ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("PlusIcon"))
-                .SetColor(ColorManager.SynthesisColor.MainText);
+            ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
 
             AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
                 if (_selectedIndex != -1) {
