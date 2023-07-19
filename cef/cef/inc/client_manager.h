@@ -6,9 +6,9 @@
 #include <include/cef_browser.h>
 
 #include <list>
-#include <memory>
 
 namespace synthesis {
+namespace shared {
 
 class ClientManager {
 private:
@@ -18,23 +18,24 @@ public:
     ClientManager();
     ~ClientManager();
 
-    static std::shared_ptr<ClientManager> GetInstance();
+    static ClientManager* GetInstance();
 
     void OnAfterCreated(CefRefPtr<CefBrowser> browser);
     void DoClose(CefRefPtr<CefBrowser> browser);
     void OnBeforeClose(CefRefPtr<CefBrowser> browser);
 
-    void CloseAllBrowsers(bool force_close);
+    void CloseAllBrowsers(bool forceClose);
 
     bool IsClosing() const;
 
 private:
-    base::ThreadChecker thread_checker;
-    bool is_closing;
+    base::ThreadChecker threadChecker;
+    bool isClosing;
 
-    BrowserList browser_list;
+    BrowserList browserList;
 };
 
+} // namespace shared
 } // namespace synthesis
 
 #endif // SYNTHESIS_CEF_CLIENT_MANAGER_H_

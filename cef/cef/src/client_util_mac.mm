@@ -1,10 +1,11 @@
-#include "internal/client.h"
+#include "client_util.h"
 
 #import <Cocoa/Cocoa.h>
 
 #include <include/cef_browser.h>
 
 namespace synthesis {
+namespace shared {
 
 void PlatformTitleChange(CefRefPtr<CefBrowser> browser, const CefString& title) {
     NSView* view = (NSView*)browser->GetHost()->GetWindowHandle();
@@ -14,4 +15,5 @@ void PlatformTitleChange(CefRefPtr<CefBrowser> browser, const CefString& title) 
     [window setTitle:str];
 }
 
+} // namespace shared
 } // namespace synthesis

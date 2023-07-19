@@ -90,21 +90,9 @@ include_directories(${CEF_INCLUDE_PATH})
 
 add_subdirectory(${CEF_LIBCEF_DLL_WRAPPER_PATH} libcef_dll_wrapper)
 
-# TODO: Needed?
-# add_subdirectory(${CEF_ROOT}/tests/cefclient)
-# add_subdirectory(${CEF_ROOT}/tests/cefsimple)
-# add_subdirectory(${CEF_ROOT}/tests/gtest)
-# add_subdirectory(${CEF_ROOT}/tests/ceftests)
-
 add_subdirectory(cef)
 
-# if(USE_SANDBOX)
-#     message(FATAL_ERROR "Sandbox")
-# else()
-#     message(FATAL_ERROR "No sandbox")
-# endif()
-
-# if(BUILD_TESTING)
-#     enable_testing()
-#     add_subdirectory(tests)
-# endif()
+if(BUILD_TESTING)
+    enable_testing()
+    add_subdirectory(tests)
+endif()

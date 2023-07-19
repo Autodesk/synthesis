@@ -1,4 +1,4 @@
-#include "include/run_browser.h"
+#include "shared_main.h"
 
 #import <Cocoa/Cocoa.h>
 
@@ -6,14 +6,8 @@
 #include <include/wrapper/cef_helpers.h>
 #include <include/wrapper/cef_library_loader.h>
 
-#include <memory>
-
-#include "internal/core.h"
-#include "internal/client_manager.h"
-#include "internal/browser_app.h"
-
-// namespace synthesis {
-// namespace {
+#include "app_factory.h"
+#include "client_manager.h"
 
 @interface SharedAppDelegate : NSObject <NSApplicationDelegate>
 - (void)createApplication:(id)object;
@@ -55,11 +49,11 @@
 }
 
 - (void)tryToTerminateApplication:(NSApplication*)app {
-    // auto manager = synthesis::ClientManager::GetInstance();
+    auto manager = synthesis::shared::ClientManager::GetInstance();
 
-    // if (manager && !manager->IsClosing()) {
-    //     manager->CloseAllBrowsers(false);
-    // }
+    if (manager && !manager->IsClosing()) {
+        manager->CloseAllBrowsers(false);
+    }
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication*)sender {
@@ -67,13 +61,10 @@
 }
 @end
 
-// } // namespace
-// } // namespace synthesis
-
 #include <iostream>
 using namespace std;
 
-SYNTHESIS_EXPORT void StartBrowserClient() {
+int main(int argc, char* argv[]) {
 
     cout << "StartBrowserClient()" << endl;
 
@@ -82,20 +73,18 @@ SYNTHESIS_EXPORT void StartBrowserClient() {
     cout << "CefScopedLibraryLoader" << endl;
 
     if (!library_loader.LoadInMain()) {
-        return;
+        return 1;
     }
 
     NSAutoreleasePool* autopool = [[NSAutoreleasePool alloc] init];
 
     cout << "NSAutoreleasePool" << endl;
 
-    int argc = 0;
-    char* argv[] = {};
     CefMainArgs main_args(argc, argv);
 
     cout << "CefMainArgs" << endl;
 
-    CefRefPtr<CefApp> app = synthesis::CreateBrowserProcessApp();
+    CefRefPtr<CefApp> app = synthesis::shared::CreateBrowserProcessApp();
 
     cout << "CefRefPtr<CefApp>" << endl;
 
@@ -103,7 +92,7 @@ SYNTHESIS_EXPORT void StartBrowserClient() {
 
     cout << "[sharedApplication sharedApplication]" << endl;
 
-    // synthesis::ClientManager manager;
+    synthesis::shared::ClientManager manager;
 
     cout << "synthesis::ClientManager" << endl;
 
@@ -132,4 +121,6 @@ SYNTHESIS_EXPORT void StartBrowserClient() {
     [autopool release]; 
 
     cout << "DONE!" << endl;
+
+    return 0;
 }

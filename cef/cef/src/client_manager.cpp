@@ -1,4 +1,4 @@
-#include "internal/client_manager.h"
+#include "client_manager.h"
 
 #include <include/cef_app.h>
 #include <include/wrapper/cef_helpers.h>
@@ -6,70 +6,73 @@
 #include <memory>
 
 namespace synthesis {
+namespace shared {
 namespace {
-    // ClientManager* manager = nullptr;
-    std::shared_ptr<ClientManager> manager = nullptr;
+
+    ClientManager* manager = nullptr;
+
 } // namespace
 
-ClientManager::ClientManager() : is_closing(false) {
-    manager = std::make_shared<ClientManager>();
+ClientManager::ClientManager() : isClosing(false) {
+    manager = this;
 }
 
 ClientManager::~ClientManager() {
-    DCHECK(thread_checker.CalledOnValidThread());
-    DCHECK(browser_list.empty());
+    DCHECK(threadChecker.CalledOnValidThread());
+    DCHECK(browserList.empty());
     manager = nullptr;
 }
 
-std::shared_ptr<ClientManager> ClientManager::GetInstance() /* static */ {
+ClientManager* ClientManager::GetInstance() /* static */ {
     CEF_REQUIRE_UI_THREAD();
     DCHECK(manager);
     return manager;
 }
 
 void ClientManager::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
-    DCHECK(thread_checker.CalledOnValidThread());
-    browser_list.push_back(browser);
+    DCHECK(threadChecker.CalledOnValidThread());
+    browserList.push_back(browser);
 }
 
 void ClientManager::DoClose(CefRefPtr<CefBrowser> browser) {
-    DCHECK(thread_checker.CalledOnValidThread());
+    DCHECK(threadChecker.CalledOnValidThread());
 
-    if (browser_list.size() == 1) {
+    if (browserList.size() == 1) {
         CefQuitMessageLoop();
     }
 }
 
 void ClientManager::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
-    DCHECK(thread_checker.CalledOnValidThread());
+    DCHECK(threadChecker.CalledOnValidThread());
 
-    for (auto bit = browser_list.begin(); bit != browser_list.end(); ++bit) {
+    for (auto bit = browserList.begin(); bit != browserList.end(); ++bit) {
         if ((*bit)->IsSame(browser)) {
-            browser_list.erase(bit);
+            browserList.erase(bit);
             break;
         }
     }
 
-    if (browser_list.empty()) {
+    if (browserList.empty()) {
         CefQuitMessageLoop();
     }
 }
 
 void ClientManager::CloseAllBrowsers(bool force) {
-    DCHECK(thread_checker.CalledOnValidThread());
+    DCHECK(threadChecker.CalledOnValidThread());
 
-    if (browser_list.empty()) {
+    if (browserList.empty()) {
         return;
     }
 
-    for (auto it = browser_list.begin(); it != browser_list.end(); ++it) {
+    for (auto it = browserList.begin(); it != browserList.end(); ++it) {
         (*it)->GetHost()->CloseBrowser(force);
     }
 }
 
 bool ClientManager::IsClosing() const {
-    DCHECK(thread_checker.CalledOnValidThread());
-    return is_closing;
+    DCHECK(threadChecker.CalledOnValidThread());
+    return isClosing;
 }
 
+} // namespace shared
 } // namespace synthesis
