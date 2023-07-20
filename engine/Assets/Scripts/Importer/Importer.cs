@@ -14,6 +14,7 @@ using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
 using UnityEngine;
 using System.IO.Compression;
+using JetBrains.Annotations;
 using SimObjects.MixAndMatch;
 using Synthesis;
 using Unity.Profiling;
@@ -162,24 +163,26 @@ namespace Synthesis.Import {
                     
             var bKey = rigidDefinitions[1].PartToDefinitionMap[assemblies[1].Data.Joints.JointInstances["grounded"].ParentPart];
             var b = groupObjects[1][bKey];*/
-            
-            assemblyObjects.ForEachIndex((partIndex, gameObject) => {
-                var transform = gameObject.transform;
 
-                var partTrfData = mixAndMatchTransformData.Parts[partIndex];
-                transform.localPosition = partTrfData.LocalPosition;
-                transform.rotation = partTrfData.LocalRotation;
-            });
-            
-            mixAndMatchTransformData.Parts.ForEachIndex((partIndex, part) => {
-                if (part.ConnectedPoint != null) {
-                    var thisObject = groupObjects[partIndex]["grounded"];
-                    var connectedObject = groupObjects[part.ConnectedPoint.ParentPart.PartIndex]["grounded"];
-                    ConnectMixAndMatchParts(thisObject, connectedObject, 
-                        new Vector3(), new Vector3());
-                }
-                else Debug.Log($"Part connection was null");
-            });
+            if (mixAndMatchTransformData != null) {
+                assemblyObjects.ForEachIndex((partIndex, gameObject) => {
+                    var transform = gameObject.transform;
+
+                    var partTrfData = mixAndMatchTransformData.Parts[partIndex];
+                    transform.localPosition = partTrfData.LocalPosition;
+                    transform.rotation = partTrfData.LocalRotation;
+                });
+
+                mixAndMatchTransformData.Parts.ForEachIndex((partIndex, part) => {
+                    if (part.ConnectedPart != null) {
+                        var thisObject = groupObjects[partIndex]["grounded"];
+                        var connectedObject = groupObjects[part.ConnectedPart.PartIndex]["grounded"];
+                        ConnectMixAndMatchParts(thisObject, connectedObject,
+                            new Vector3(), new Vector3());
+                    }
+                    else Debug.Log($"Part connection was null");
+                });
+            }
             /*GameObject pointA = new GameObject("Connection Point");
             pointA.transform.SetParent(assemblyObjects[0].transform);
             
@@ -405,7 +408,6 @@ namespace Synthesis.Import {
         }
 
         public static void ConnectMixAndMatchParts(GameObject a, GameObject b, Vector3 origin, Vector3 offset) {
-            
             var rbA = a.GetComponent<Rigidbody>();
             var rbB = b.GetComponent<Rigidbody>();
             

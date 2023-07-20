@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using SimObjects.MixAndMatch;
 using Synthesis.Physics;
 using Synthesis.UI.Dynamic;
@@ -8,15 +10,21 @@ using UnityEngine;
 namespace UI.Dynamic.Panels.Spawning.MixAndMatch {
     public class MixAndMatchPanel : PanelDynamic {
         private const float MODAL_WIDTH = 500f;
+
         private const float MODAL_HEIGHT = 600f;
 
         private const float VERTICAL_PADDING = 16f;
+
         private const float HORIZONTAL_PADDING = 16f;
+
         private const float SCROLLBAR_WIDTH = 10f;
+
         private const float BUTTON_WIDTH = 64f;
+
         private const float ROW_HEIGHT = 64f;
 
         private float _scrollViewWidth;
+
         private float _entryWidth;
 
         private ScrollView _partsScrollView;
@@ -36,7 +44,7 @@ namespace UI.Dynamic.Panels.Spawning.MixAndMatch {
 
         public MixAndMatchPanel() : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) { }
 
-        public List<MixAndMatchPart> _parts = new();
+        public List<PartEditorPart> _parts = new();
 
         public override bool Create() {
             PhysicsManager.IsFrozen = true;
@@ -61,7 +69,7 @@ namespace UI.Dynamic.Panels.Spawning.MixAndMatch {
                     _ => {
                         if (_parts.Count > 0)
                             _parts.Add(_parts[0].Duplicate());
-                        else _parts.Add(new MixAndMatchPart());
+                        else _parts.Add(new PartEditorPart());
                         AddPartEntries();
                     })
                 .ApplyTemplate(VerticalLayout);
@@ -78,7 +86,7 @@ namespace UI.Dynamic.Panels.Spawning.MixAndMatch {
             }
         }
 
-        private void AddPartEntry(MixAndMatchPart part, bool isNew) {
+        private void AddPartEntry(PartEditorPart partEditorPart, bool isNew) {
             if (!isNew) {
                 AddPartEntries();
                 return;
@@ -94,7 +102,7 @@ namespace UI.Dynamic.Panels.Spawning.MixAndMatch {
                 rightContent.SplitLeftRight(_entryWidth - (HORIZONTAL_PADDING + BUTTON_WIDTH) * 3, HORIZONTAL_PADDING);
             (Content topContent, Content bottomContent) = labelsContent.SplitTopBottom(ROW_HEIGHT / 2, 0);
             topContent.CreateLabel()
-                .SetText(part.Name)
+                .SetText(partEditorPart.Name)
                 .ApplyTemplate(VerticalLayout)
                 .SetAnchorLeft<Label>()
                 .SetAnchoredPosition<Label>(new Vector2(0, -ROW_HEIGHT / 8));
@@ -109,7 +117,9 @@ namespace UI.Dynamic.Panels.Spawning.MixAndMatch {
                 buttonsContent.SplitLeftRight(BUTTON_WIDTH, HORIZONTAL_PADDING);
             editButtonContent.CreateButton()
                 .StepIntoLabel(l => l.SetText("Edit"))
-                .AddOnClickedEvent(b => { DynamicUIManager.CreatePanel<PartConfigPanel>(persistent: false, part); })
+                .AddOnClickedEvent(b => {
+                    DynamicUIManager.CreatePanel<PartConfigPanel>(persistent: false, partEditorPart);
+                })
                 .ApplyTemplate(VerticalLayout)
                 .SetSize<Button>(new Vector2(BUTTON_WIDTH, ROW_HEIGHT))
                 .SetStretch<Button>();
@@ -123,28 +133,47 @@ namespace UI.Dynamic.Panels.Spawning.MixAndMatch {
 
         public override void Update() {
             _parts.ForEach(p => {
-                p.SnapPoints.ForEach(sp => { Debug.DrawRay(sp.transform.position, sp.transform.forward, Color.blue); });
+                p.ConnectionPoints.ForEach(point => {
+                    if (point != null)
+                        Debug.DrawRay(point.transform.position, point.transform.forward, Color.blue);
+                });
             });
         }
 
         public override void Delete() {
             var partData = new List<MixAndMatchPartData>();
-            _parts.ForEach(part => {
-                partData.Add(new MixAndMatchPartData(part.Transform.position, part.Transform.rotation, null));
+
+            _parts.ForEachIndex((i, part) => {
+                partData.Add(part.ToPartData());
+                part.Index = i;
             });
-            
-            _parts.ForEach(part => {
-                if (part. != null) {
-                    
+ 
+            _parts.ForEachIndex((i, part) => {
+                if (part.ConnectedPartEditorPart != null) {
+                    partData[i].ConnectedPart = partData[part.ConnectedPartEditorPart.Index];
                 }
             });
-
+            
             var trfData = new MixAndMatchTransformData(partData.ToArray());
-            
-            
-            _parts.ForEach(p => {
-                GameObject.Destroy(p.UnityObject);
-            });
+
+            _parts.ForEach(p => { GameObject.Destroy(p.UnityObject); });
+
+            string Folder = "Mira";
+
+            var root =
+                AddRobotModal
+                    .ParsePath(
+                        Path
+                            .Combine(
+                                "$appdata/Autodesk/Synthesis",
+                                Folder),
+                        '/');
+            if (!Directory.Exists(root))
+                Directory.CreateDirectory(root);
+            var files = Directory.GetFiles(root).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
+
+            var robotsToSpawn = Enumerable.Range(0, _parts.Count).Select(i => files[1]).ToArray();
+            RobotSimObject.SpawnRobot(trfData, robotsToSpawn);
             //Transform grounded = new GameObject("grounded").transform;
             //grounded.gameObject.AddComponent<Rigidbody>();
             //grounded.parent = parent;
@@ -166,8 +195,8 @@ namespace UI.Dynamic.Panels.Spawning.MixAndMatch {
                 thisJoint.connectedBody = otherJoint.GetComponent<Rigidbody>();
                 otherJoint.connectedBody = thisJoint.GetComponent<Rigidbody>();
             });
-
-            PhysicsManager.IsFrozen = false;*/
+*/
+            PhysicsManager.IsFrozen = false;
         }
     }
 }

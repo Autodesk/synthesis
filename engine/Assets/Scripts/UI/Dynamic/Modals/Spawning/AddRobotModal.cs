@@ -30,6 +30,7 @@ namespace Synthesis.UI.Dynamic {
 
             AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
 
+                /*
                 var connectionA = new[] { new MixAndMatchConnectionPoint(
                     Vector3.zero, Vector2.zero) };
                 var connectionB = new[] { new MixAndMatchConnectionPoint(
@@ -40,28 +41,26 @@ namespace Synthesis.UI.Dynamic {
                     new MixAndMatchPartData(new Vector3(0, 0.73f, -1.211f), Quaternion.Euler(180, 0, 0), connectionB)
                 };
 
-                parts[0].ConnectedPoint = connectionB[0];
+                parts[0].ConnectedPart = parts[1];
                 
                 var trfData = new MixAndMatchTransformData(parts);
+                */
                 
-                RobotSimObject.SpawnRobot(trfData, _files[1], _files[1]);
-            
-                /*if (_selectedIndex != -1) {
-                    RobotSimObject.SpawnRobot(_files[_selectedIndex]);
+                if (_selectedIndex != -1) {
+                    RobotSimObject.SpawnRobot(null, _files[_selectedIndex]);
                     //ItemAnalytics("Robot");
                     DynamicUIManager.CloseActiveModal();
-                }*/
+                }
             });
-
             var chooseRobotDropdown = MainContent.CreateDropdown()
                                           .SetOptions(_files.Select(x => Path.GetFileName(x)).ToArray())
                                           .AddOnValueChangedEvent((d, i, data) => _selectedIndex = i)
                                           .SetTopStretch<Dropdown>();
 
             _selectedIndex = _files.Length > 0 ? 0 : -1;
-
             // MainContent.CreateLabeledButton().SetTopStretch<LabeledButton>(anchoredY: 50).StepIntoLabel(l =>
             // l.SetText("Test"));
+
         }
 
         public override void Update() {

@@ -597,7 +597,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     
     public static void SpawnRobot(MixAndMatchTransformData mixAndMatchTransformData, Vector3 position, Quaternion rotation, bool spawnGizmo, params string[] filePaths) {
         var mira = Importer.MirabufAssemblyImport(filePaths, mixAndMatchTransformData);
-        RobotSimObject simObject = mira.sim as RobotSimObject;
+        RobotSimObject simObject = (mira.sim as RobotSimObject)!;
         mira.mainObject.transform.SetParent(GameObject.Find("Game").transform);
         simObject.ConfigureDefaultBehaviours();
 

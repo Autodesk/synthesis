@@ -1,4 +1,5 @@
 using System;
+using Org.BouncyCastle.Asn1.Esf;
 using SimObjects.MixAndMatch;
 using Synthesis.Gizmo;
 using Synthesis.UI.Dynamic;
@@ -25,7 +26,7 @@ namespace UI.Dynamic.Panels.Spawning.MixAndMatch
 
         private ScrollView _snapPointScrollView;
 
-        private MixAndMatchPart _part;
+        private PartEditorPart _partEditorPart;
         
         private readonly Func<UIComponent, UIComponent> VerticalLayout = (u) =>
         {
@@ -42,16 +43,16 @@ namespace UI.Dynamic.Panels.Spawning.MixAndMatch
             return u;
         };
 
-        public PartConfigPanel(MixAndMatchPart part) : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT))
+        public PartConfigPanel(PartEditorPart partEditorPart) : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT))
         {
-            _part = part;
+            _partEditorPart = partEditorPart;
         }
         
         public override bool Create()
         {
             Title.SetText("Part Config");
             
-            _part.SnapPoints.ForEach(x => x.GetComponent<Collider>().enabled = false);
+            _partEditorPart.ConnectionPoints.ForEach(x => x.GetComponent<Collider>().enabled = false);
 
             AcceptButton.StepIntoLabel(l => l.SetText("Close"))
                 .AddOnClickedEvent(b =>
@@ -74,14 +75,7 @@ namespace UI.Dynamic.Panels.Spawning.MixAndMatch
                 .AddOnClickedEvent(
                     _ =>
                     {
-                        GameObject point = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                        point.GetComponent<Collider>().isTrigger = true;
-                        point.transform.localScale = Vector3.one * .5f;
-                        point.transform.SetParent(_part.Transform);
-                        point.layer = LayerMask.NameToLayer("ConnectionPoint");
-                        point.GetComponent<Collider>().enabled = false;
-                        
-                        _part.SnapPoints.Add(point);
+                        _partEditorPart.AddConnectionPoint();
                         AddAllPoints();
                     })
                 .ApplyTemplate(VerticalLayout);
@@ -94,7 +88,7 @@ namespace UI.Dynamic.Panels.Spawning.MixAndMatch
         private void AddAllPoints()
         {
             _snapPointScrollView.Content.DeleteAllChildren();
-            foreach (var point in _part.SnapPoints)
+            foreach (var point in _partEditorPart.ConnectionPoints)
             {
                 AddPoint(point);
             }
@@ -155,21 +149,21 @@ namespace UI.Dynamic.Panels.Spawning.MixAndMatch
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(ray, out var hit, 100, _snapPointLayerMask))
                 {
-                    _part.Transform.position = hit.transform.position;
+                    _partEditorPart.Transform.position = hit.transform.position;
 
-                    _part.Transform.rotation = Quaternion.LookRotation(-hit.transform.forward, Vector3.up);
-                    _part.Transform.Rotate(-_part.SnapPoints[0].transform.localRotation.eulerAngles);
+                    _partEditorPart.Transform.rotation = Quaternion.LookRotation(-hit.transform.forward, Vector3.up);
+                    _partEditorPart.Transform.Rotate(-_partEditorPart.ConnectionPoints[0].transform.localRotation.eulerAngles);
                     //Debug.Log($"Rotation: {-hit.transform.forward} and {Quaternion.LookRotation(-hit.transform.forward, Vector3.up)}");
-                    _part.Transform.Translate(-_part.SnapPoints[0].transform.localPosition);
+                    _partEditorPart.Transform.Translate(-_partEditorPart.ConnectionPoints[0].transform.localPosition);
 
-                    _part.ConnectedPoint = hit.transform;
+                    _partEditorPart.ConnectedPartEditorPart = hit.transform.GetComponent<ConnectionPointReference>().part;
                 }
             }
         }
 
         public override void Delete()
         {
-            _part.SnapPoints.ForEach(x => x.GetComponent<Collider>().enabled = true);
+            _partEditorPart.ConnectionPoints.ForEach(x => x.GetComponent<Collider>().enabled = true);
         }
     }
 }
