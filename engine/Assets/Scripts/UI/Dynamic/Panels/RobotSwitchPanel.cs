@@ -31,7 +31,7 @@ public class RobotSwitchPanel : PanelDynamic {
     };
 
     public Func<Button, Button> EnableButton = b =>
-        b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElement))
+        b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementSolid))
             .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
             .EnableEvents<Button>();
 

@@ -94,7 +94,7 @@ public class RioConfigurationModal : ModalDynamic {
     public void CreateItem(string text, string buttonText, Action onButton, Action onDelete) {
         var content = _scrollView.Content.CreateSubContent(new Vector2(_scrollView.Content.Size.x, 80))
                           .EnsureImage()
-                          .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElement));
+                          .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementSolid));
 
         content.SetTopStretch<Content>(anchoredY: -_scrollView.Content.RectOfChildren(content).yMin);
         var label = content.CreateLabel()
@@ -132,7 +132,7 @@ public class RioConfigurationModal : ModalDynamic {
         content.SetWidth<Content>(1000);
 
         content.CreateButton("Create Device")
-            .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElement))
+            .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementSolid))
             .SetStretch<Button>(leftPadding: 300, rightPadding: 300, topPadding: 20, bottomPadding: 20)
             .AddOnClickedEvent(b => { DynamicUIManager.CreateModal<RCCreateDeviceModal>(); });
     }

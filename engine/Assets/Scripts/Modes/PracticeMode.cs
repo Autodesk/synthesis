@@ -161,6 +161,7 @@ public class PracticeMode : IMode {
             _showingScoreboard = true;
             DynamicUIManager.CreatePanel<ScoreboardPanel>(true, false);
         }
+
         bool openEscapeMenu = InputManager.MappedValueInputs[TOGGLE_ESCAPE_MENU_INPUT].Value == 1.0F;
         if (openEscapeMenu && !_lastEscapeValue) {
             if (_escapeMenuOpen) {
@@ -185,6 +186,9 @@ public class PracticeMode : IMode {
 
     public void End() {
         InputManager._mappedValueInputs.Remove(TOGGLE_ESCAPE_MENU_INPUT);
+        Scoring.redScore  = 0;
+        Scoring.blueScore = 0;
+        EventBus.RemoveTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
     }
 
     public static void ConfigureGamepieceSpawnpoint() {
