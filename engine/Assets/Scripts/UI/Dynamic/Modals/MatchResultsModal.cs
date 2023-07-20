@@ -71,11 +71,11 @@ namespace UI.Dynamic.Modals {
         private RectTransform _middleButtonObject;
 
         /// Creates the main scroll menu and adds all of the match result entries
-        public void CreateScrollMenu() {
+        private void CreateScrollMenu() {
             var scrollView = MainContent.CreateScrollView()
                                  .SetRightStretch<ScrollView>()
                                  .ApplyTemplate(VerticalLayout)
-                                 .SetHeight<ScrollView>(MODAL_HEIGHT - VERTICAL_PADDING * 2 - 50);
+                                 .SetHeight<ScrollView>(MODAL_HEIGHT - 16);
 
             MatchMode.MatchResultsTracker.MatchResultEntries.ForEach(x => {
                 var entry = x.Value;

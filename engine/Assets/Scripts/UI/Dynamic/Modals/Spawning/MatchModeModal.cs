@@ -11,14 +11,8 @@ public class MatchModeModal : ModalDynamic {
     private int _fieldIndex            = -1;
     private List<String> _robotOptions = new List<string>();
     private string[] _fieldFiles;
-    
-    public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
-        var offset = (-u.Parent!.RectOfChildren(u).yMin) + 15f;
-        u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 15f);
-        return u;
-    };
 
-    public MatchModeModal() : base(new Vector2(500, 600)) {}
+    public MatchModeModal() : base(new Vector2(400, 475)) {}
 
     public override void Create() {
         Title.SetText("Field and Robot Selection");
@@ -52,23 +46,23 @@ public class MatchModeModal : ModalDynamic {
             int robotIndex = robot;
             if (robotIndex % 3 == 0)
                 MainContent.CreateLabel()
-                    .ApplyTemplate(VerticalLayout)
-                    .SetText($"Select {(robotIndex == 0 ? "Red" : "Blue")} Robots");
+                    .ApplyTemplate(UIComponent.VerticalLayoutBigSpacing)
+                    .SetText($"{(robotIndex == 0 ? "Red" : "Blue")} Robots");
 
             MainContent.CreateDropdown()
                 .SetOptions(_robotOptions.Select(x => Path.GetFileName(x)).ToArray())
                 .AddOnValueChangedEvent((d, i, data) => MatchMode.SelectedRobots[robotIndex] =
                                             i - 1 // Subtract 1 to account for "None" option
                     )
-                .ApplyTemplate(VerticalLayout)
+                .ApplyTemplate(UIComponent.VerticalLayout)
                 .SetValue(0);
         }
 
-        MainContent.CreateLabel().ApplyTemplate(VerticalLayout).SetText("Select Field");
+        MainContent.CreateLabel().ApplyTemplate(UIComponent.VerticalLayoutBigSpacing).SetText("Field");
         var chooseFieldDropdown = MainContent.CreateDropdown()
                                       .SetOptions(_fieldFiles.Select(x => Path.GetFileName(x)).ToArray())
                                       .AddOnValueChangedEvent((d, i, data) => _fieldIndex = i)
-                                      .ApplyTemplate(VerticalLayout);
+                                      .ApplyTemplate(UIComponent.VerticalLayout);
 
         _fieldIndex = _fieldFiles.Length > 0 ? 0 : -1;
     }

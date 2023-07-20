@@ -132,7 +132,8 @@ public class ZoneConfigPanel : PanelDynamic {
                                       ConfigureAllianceButton();
                                       DataUpdated();
                                   })
-                                  .SetBackgroundColor<Button>(Color.blue)
+                                  .StepIntoImage(i => i.SetColor((_data.Alliance == Alliance.Blue)
+                                      ? Color.blue : Color.red))
                                   .ApplyTemplate(VerticalLayout);
         ConfigureAllianceButton();
 
@@ -231,12 +232,18 @@ public class ZoneConfigPanel : PanelDynamic {
     private void ConfigureAllianceButton() {
         if (_data.Alliance == Alliance.Blue) {
             _zoneAllianceButton.StepIntoLabel(l => l.SetText("Blue Alliance")).SetBackgroundColor<Button>(Color.blue);
-        } else {
+        }
+        else {
             _zoneAllianceButton.StepIntoLabel(l => l.SetText("Red Alliance")).SetBackgroundColor<Button>(Color.red);
         }
+
+        _zoneAllianceButton.StepIntoLabel(l => l.SetText((_data.Alliance == Alliance.Blue)
+                ? "Blue Alliance" : "Red Alliance"))
+            .StepIntoImage(i => i.SetColor((_data.Alliance == Alliance.Blue)
+                ? Color.blue : Color.red));
     }
 
-    public void UseZone(ScoringZone zone) {
+    private void UseZone(ScoringZone zone) {
         _zone      = zone;
         _data.Name = _zone.Name;
         _zoneNameInput.SetValue(_zone.Name);
@@ -274,7 +281,7 @@ public class ZoneConfigPanel : PanelDynamic {
         _callback = callback;
     }
 
-    public void SelectParentButton(Button b) {
+    private void SelectParentButton(Button b) {
         if (!_selectingNode) {
             if (_selectedNode || _data.Parent != "grounded") {
                 if (_selectedNode)

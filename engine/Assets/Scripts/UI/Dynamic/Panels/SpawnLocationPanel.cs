@@ -13,7 +13,7 @@ namespace Synthesis.UI.Dynamic {
         private const string SNAP_MODE_KEY = "ROBOT_PLACEMENT_SNAPPING";
 
         private const float WIDTH            = 400f;
-        private const float HEIGHT           = 150f;
+        private const float HEIGHT           = 130f;
         private const float VERTICAL_PADDING = 15f;
 
         private const float ROBOT_MOVE_SPEED  = 7f;

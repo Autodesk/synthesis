@@ -10,9 +10,9 @@ using Utilities.ColorManager;
 #nullable enable
 
 public class RCCreateDeviceModal : ModalDynamic {
-    public RCCreateDeviceModal() : base(new Vector2(400, 120)) {}
+    public RCCreateDeviceModal() : base(new Vector2(400, 55)) {}
 
-    private LabeledDropdown _typeDropdown;
+    private Dropdown _typeDropdown;
 
     public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
         var offset = (-u.Parent!.RectOfChildren(u).yMin) + 7.5f;
@@ -32,7 +32,7 @@ public class RCCreateDeviceModal : ModalDynamic {
 
         AcceptButton
             .AddOnClickedEvent(b => {
-                switch (_typeDropdown.Dropdown.SelectedOption.text) {
+                switch (_typeDropdown.SelectedOption.text) {
                     case RioConfigurationModal.PWM:
                         DynamicUIManager.CreateModal<RCConfigPwmGroupModal>();
                         break;
@@ -46,9 +46,9 @@ public class RCCreateDeviceModal : ModalDynamic {
             .StepIntoLabel(l => l.SetText("Next"));
         CancelButton.AddOnClickedEvent(b => { DynamicUIManager.CreateModal<RioConfigurationModal>(); });
 
-        _typeDropdown = MainContent.CreateLabeledDropdown().StepIntoLabel(l => l.SetText("Type"));
-        _typeDropdown.StepIntoDropdown(d => d.SetOptions(EntryTypes));
-        _typeDropdown.SetTopStretch<LabeledDropdown>();
+        _typeDropdown = MainContent.CreateDropdown()
+            .SetOptions(EntryTypes)
+            .SetTopStretch<Dropdown>();
     }
 
     public override void Delete() {}

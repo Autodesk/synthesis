@@ -100,7 +100,7 @@ public class ScoringZonesPanel : PanelDynamic {
             _zonesScrollView.Content.CreateSubContent(new Vector2(_entryWidth, ROW_HEIGHT))
                 .ApplyTemplate(ListVerticalLayout)
                 .SplitLeftRight(BUTTON_WIDTH, HORIZONTAL_PADDING);
-        leftContent.SetBackgroundColor<Content>(zone.Alliance == Alliance.Red ? Color.red : Color.blue);
+        leftContent.StepIntoImage(i => i.SetColor((zone.Alliance == Alliance.Red) ? Color.red : Color.blue));
 
         (Content labelsContent, Content buttonsContent) =
             rightContent.SplitLeftRight(_entryWidth - (HORIZONTAL_PADDING + BUTTON_WIDTH) * 3, HORIZONTAL_PADDING);
