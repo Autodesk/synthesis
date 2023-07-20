@@ -118,8 +118,8 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             _deleteButton = deleteContent.CreateButton()
                                 .ApplyTemplate(VerticalLayout)
                                 .StepIntoLabel(l => l.SetText("Delete"))
-                                .SetBackgroundColor<Button>(ColorManager.SynthesisColor.InteractiveElementLeft,
-                                    ColorManager.SynthesisColor.InteractiveElementRight)
+                                .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                                    ColorManager.SynthesisColor.InteractiveElementRight))
                                 .AddOnClickedEvent(b => {
                                     if (_selectedThemeIndex != 0) {
                                         SaveThemeChanges();
@@ -130,7 +130,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             _deleteAllButton = deleteAllContent.CreateButton()
                                    .ApplyTemplate(VerticalLayout)
                                    .StepIntoLabel(l => l.SetText("Delete All"))
-                                   .SetBackgroundColor<Button>(ColorManager.SynthesisColor.CancelButton)
+                                   .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.CancelButton))
                                    .AddOnClickedEvent(b => {
                                        if (_selectedThemeIndex != 0) {
                                            SaveThemeChanges();
@@ -149,19 +149,19 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
         /// <summary>Updates the color of the delete buttons and if they can be pressed</summary>
         private void UpdateDeleteButtons() {
             if (_selectedThemeIndex < 1)
-                _deleteButton.DisableEvents<Button>().SetBackgroundColor<Button>(
-                    ColorManager.SynthesisColor.InteractiveBackground);
+                _deleteButton.DisableEvents<Button>().StepIntoImage(i => i.SetColor(
+                    ColorManager.SynthesisColor.InteractiveBackground));
             else
-                _deleteButton.EnableEvents<Button>().SetBackgroundColor<Button>(
+                _deleteButton.EnableEvents<Button>().StepIntoImage(i => i.SetColor(
                     ColorManager.SynthesisColor.InteractiveElementLeft,
-                    ColorManager.SynthesisColor.InteractiveElementRight);
+                    ColorManager.SynthesisColor.InteractiveElementRight));
 
             if (_availableThemes.Length == 1)
-                _deleteAllButton.DisableEvents<Button>().SetBackgroundColor<Button>(
-                    ColorManager.SynthesisColor.InteractiveBackground);
+                _deleteAllButton.DisableEvents<Button>().StepIntoImage(i => i.SetColor(
+                    ColorManager.SynthesisColor.InteractiveBackground));
             else
-                _deleteAllButton.EnableEvents<Button>().SetBackgroundColor<Button>(
-                    ColorManager.SynthesisColor.CancelButton);
+                _deleteAllButton.EnableEvents<Button>().StepIntoImage(i => i.SetColor(
+                    ColorManager.SynthesisColor.CancelButton));
         }
 
         /// <summary>Creates the color sliders at the bottom left of the modal</summary>
@@ -212,12 +212,11 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
                 var label = name.CreateLabel().SetText(Regex.Replace(c.Key.ToString(), "(\\B[A-Z])", " $1"));
 
                 var button = colorContent.CreateButton()
-                                 .StepIntoLabel(l => l.RootGameObject.SetActive(false))
-                                 .AddOnClickedEvent(x => { SelectColor(c.Key); })
-                                 .SetStretch<Button>()
-                                 .SetAnchoredPosition<Button>(Vector3.zero)
-                                 .RootGameObject.GetComponent<UnityEngine.UI.Image>()
-                                 .color = Color.clear;
+                    .StepIntoLabel(l => l.RootGameObject.SetActive(false))
+                    .AddOnClickedEvent(x => { SelectColor(c.Key); })
+                    .SetStretch<Button>()
+                    .SetAnchoredPosition<Button>(Vector3.zero)
+                    .StepIntoImage(i => i.SetColor(Color.clear));
 
                 _colors.Add(c.Key, (c.Value, colorImage, colorContent, label));
 

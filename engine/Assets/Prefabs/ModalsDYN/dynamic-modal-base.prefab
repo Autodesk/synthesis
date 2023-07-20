@@ -287,8 +287,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 20, y: -26.3}
-  m_SizeDelta: {x: 30, y: 30}
+  m_AnchoredPosition: {x: 23, y: -28.3}
+  m_SizeDelta: {x: 34, y: 34}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &8560781038164039791
 CanvasRenderer:
@@ -363,7 +363,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 76, y: -41.5}
+  m_AnchoredPosition: {x: 76, y: -46.799988}
   m_SizeDelta: {x: 448.99, y: 40.12}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &8560781038302729930
@@ -576,7 +576,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 80.1746}
+  m_SizeDelta: {x: 0, y: 82.5432}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1001 &2829097605415187628
 PrefabInstance:

@@ -44,6 +44,11 @@ namespace UI {
             Refresh();
         }
 
+        private void Update() {
+            if (gameObject.name == "Viewport")
+                Debug.Log(GetComponent<Image>().material.name);
+        }
+
         private void OnRectTransformDimensionsChange() {
             if (enabled && _material != null) {
                 Refresh();

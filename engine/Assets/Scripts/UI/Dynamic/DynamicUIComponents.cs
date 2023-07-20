@@ -142,7 +142,7 @@ namespace Synthesis.UI.Dynamic {
     }
 
     public abstract class ModalDynamic {
-        public const float MAIN_CONTENT_HORZ_PADDING = 75f;
+        public const float MAIN_CONTENT_HORZ_PADDING = 35f;
 
         private Vector2 _mainContentSize; // Shouldn't really be used after init is called
         private GameObject _unityObject;
@@ -1321,6 +1321,8 @@ namespace Synthesis.UI.Dynamic {
             set { _unityImage.color = value; }
         }
 
+        public UImage UnityImage => _unityImage;
+
         public Image(UIComponent? parent, GameObject unityObject) : base(parent, unityObject) {
             _unityImage = unityObject.GetComponent<UImage>();
 
@@ -1363,6 +1365,13 @@ namespace Synthesis.UI.Dynamic {
 
         public Image SetColor(Color start, Color end) {
             if (_hasCustomSprite) {
+                _unityImage.color = start;
+                return this;
+            }
+
+            if (start == Color.clear) {
+                _gradientUpdater.enabled = false;
+                _unityImage.material = null;
                 _unityImage.color = start;
                 return this;
             }
