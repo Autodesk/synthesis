@@ -11,7 +11,7 @@ using UnityEngine;
 public class ChangeInputsModal : ModalDynamic {
     public ChangeInputsModal() : base(new Vector2(1200, CONTENT_HEIGHT + 30)) {}
 
-    private static bool RobotLoaded { get => !RobotSimObject.CurrentlyPossessedRobot.Equals(string.Empty); }
+    private static bool RobotLoaded => MainHUD.ConfigRobot != null;
 
     private const float VERTICAL_PADDING = 10f;
     private const float TITLE_INDENT     = 10f;
@@ -46,31 +46,30 @@ public class ChangeInputsModal : ModalDynamic {
             inputScrollView.RootGameObject.GetComponent<UnityEngine.UI.Image>().color = Color.clear;
 
             SimObject robot = MainHUD.ConfigRobot;
-            if (robot == null)
-                return;
+            if (robot != null) {
+                foreach (var inputKey in robot.GetAllReservedInputs()) {
+                    var val = InputManager.MappedValueInputs[inputKey.key];
 
-            foreach (var inputKey in robot.GetAllReservedInputs()) {
-                var val = InputManager.MappedValueInputs[inputKey.key];
+                    var item = inputScrollView.Content.CreateLabeledButton()
+                                   .SetHeight<LabeledButton>(ENTRY_HEIGHT)
+                                   .StepIntoLabel(l => l.SetText(inputKey.displayName))
+                                   .StepIntoButton(b => {
+                                       b.SetRightStretch<Button>(anchoredX: ENTRY_RIGHT_PADDING).SetWidth<Button>(200);
+                                       UpdateAnalogInputButton(b, val, val is Digital);
+                                       b.AddOnClickedEvent(
+                                           _ => {
+                                               // handle changing input keybind here
+                                               b.StepIntoLabel(l => l.SetText("Press anything"));
+                                               _currentlyReassigning = val;
+                                               _reassigningButton    = b;
+                                               _reassigningKey       = inputKey.key;
+                                           });
+                                   })
+                                   .ApplyTemplate(VerticalLayout);
+                }
 
-                var item = inputScrollView.Content.CreateLabeledButton()
-                               .SetHeight<LabeledButton>(ENTRY_HEIGHT)
-                               .StepIntoLabel(l => l.SetText(inputKey.displayName))
-                               .StepIntoButton(b => {
-                                   b.SetRightStretch<Button>(anchoredX: ENTRY_RIGHT_PADDING).SetWidth<Button>(200);
-                                   UpdateAnalogInputButton(b, val, val is Digital);
-                                   b.AddOnClickedEvent(
-                                       _ => {
-                                           // handle changing input keybind here
-                                           b.StepIntoLabel(l => l.SetText("Press anything"));
-                                           _currentlyReassigning = val;
-                                           _reassigningButton    = b;
-                                           _reassigningKey       = inputKey.key;
-                                       });
-                               })
-                               .ApplyTemplate(VerticalLayout);
+                inputScrollView.Content.SetHeight<Content>(Mathf.Abs(inputScrollView.Content.RectOfChildren().yMin));
             }
-
-            inputScrollView.Content.SetHeight<Content>(Mathf.Abs(inputScrollView.Content.RectOfChildren().yMin));
         } else {
             var noRobotLoadedLabel = leftContent.CreateLabel().SetText("No robot loaded.");
 

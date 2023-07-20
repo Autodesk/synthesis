@@ -95,7 +95,7 @@ namespace Modes.MatchMode {
                     $"{zone.Alliance.ToString()} scored {zone.Points} points! Blue: {_blueScore} Red: {_redScore}");
             });
         }
-        
+
         public void Update() {
             if (_stateMachine != null) {
                 _stateMachine.Update();

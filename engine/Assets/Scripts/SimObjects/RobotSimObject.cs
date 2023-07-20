@@ -604,6 +604,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         mira.MainObject.transform.rotation = rotation;
 
         simObject.Possess();
+        MainHUD.ConfigRobot = simObject;
 
         if (spawnGizmo)
             GizmoManager.SpawnGizmo(simObject);

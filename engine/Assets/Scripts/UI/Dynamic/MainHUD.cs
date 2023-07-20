@@ -12,10 +12,10 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Utilities.ColorManager;
-using Button = Synthesis.UI.Dynamic.Button;
-using Image = Synthesis.UI.Dynamic.Image;
-using Logger = SynthesisAPI.Utilities.Logger;
-using Object = UnityEngine.Object;
+using Button  = Synthesis.UI.Dynamic.Button;
+using Image   = Synthesis.UI.Dynamic.Image;
+using Logger  = SynthesisAPI.Utilities.Logger;
+using Object  = UnityEngine.Object;
 using UButton = UnityEngine.UI.Button;
 
 #nullable enable
@@ -82,7 +82,7 @@ public static class MainHUD {
     public static bool isConfig       = false;
     public static bool isMatchFreeCam = false;
 
-    public static RobotSimObject ConfigRobot = RobotSimObject.GetCurrentlyPossessedRobot();
+    public static RobotSimObject? ConfigRobot = RobotSimObject.GetCurrentlyPossessedRobot();
 
     private static Content _tabDrawerContent;
     private static Image _logoImage;
@@ -153,7 +153,8 @@ public static class MainHUD {
                 if (robotEvent.NewBot == string.Empty) {
                     RemoveItemFromDrawer("Configure");
                 } else if (robotEvent.OldBot == string.Empty) {
-                    AddItemToDrawer("Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+                    AddItemToDrawer(
+                        "Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
                 }
             });
             _hasNewRobotListener = true;
@@ -228,11 +229,16 @@ public static class MainHUD {
             return;
 
         var index = _topDrawerItems.FindIndex(0, _topDrawerItems.Count, x => x.button.Label.Text == title);
-        if (index == -1)
-            return;
-
-        Object.Destroy(_topDrawerItems[index].button.RootGameObject);
-        _topDrawerItems.RemoveAt(index);
+        if (index == -1) {
+            index = _bottomDrawerItems.FindIndex(0, _bottomDrawerItems.Count, x => x.button.Label.Text == title);
+            if (index == -1)
+                return;
+            Object.Destroy(_bottomDrawerItems[index].button.RootGameObject);
+            _bottomDrawerItems.RemoveAt(index);
+        } else {
+            Object.Destroy(_topDrawerItems[index].button.RootGameObject);
+            _topDrawerItems.RemoveAt(index);
+        }
 
         UpdateDrawerSizing();
     }
@@ -311,29 +317,22 @@ public static class MainHUD {
     public static void SetUpPractice() {
         foreach (string name in DrawerTitles)
             RemoveItemFromDrawer(name);
-        
+
         AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(),
             drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("settings"));
         AddItemToDrawer("View", b => DynamicUIManager.CreateModal<ChangeViewModal>(),
             drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("search"));
-        AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(),
-            drawerPosition: DrawerPosition.Top,
-            icon: SynthesisAssetCollection.GetSpriteByName("xbox_controller"));
         AddItemToDrawer("MultiBot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>(),
             drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("multibot"));
+        AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(),
+            drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("xbox_controller"));
 
         AddItemToDrawer("Download Asset", b => DynamicUIManager.CreateModal<DownloadAssetModal>(),
             drawerPosition: DrawerPosition.Bottom, icon: SynthesisAssetCollection.GetSpriteByName("download"));
-        AddItemToDrawer("RoboRIO", b => DynamicUIManager.CreateModal<RioConfigurationModal>(true),
-            drawerPosition: DrawerPosition.Bottom, icon: SynthesisAssetCollection.GetSpriteByName("roborio"));
         AddItemToDrawer("DriverStation",
             b => DynamicUIManager.CreatePanel<BetaWarningPanel>(
                 false, (Action) (() => DynamicUIManager.CreatePanel<DriverStationPanel>(true))),
-            drawerPosition: DrawerPosition.Bottom,
-            icon: SynthesisAssetCollection.GetSpriteByName("driverstation"));
-        AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>(),
-            drawerPosition: DrawerPosition.Bottom,
-            icon: SynthesisAssetCollection.GetSpriteByName("drivetrain"));
+            drawerPosition: DrawerPosition.Bottom, icon: SynthesisAssetCollection.GetSpriteByName("driverstation"));
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
             AddItemToDrawer(
                 "Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
@@ -352,28 +351,20 @@ public static class MainHUD {
     public static void SetUpMatch() {
         foreach (string name in DrawerTitles)
             RemoveItemFromDrawer(name);
-        
+
         AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(),
             drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("settings"));
         AddItemToDrawer("View", b => DynamicUIManager.CreateModal<ChangeViewModal>(),
             drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("search"));
-        AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(),
-            drawerPosition: DrawerPosition.Top,
-            icon: SynthesisAssetCollection.GetSpriteByName("xbox_controller"));
         AddItemToDrawer("MultiBot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>(),
             drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("multibot"));
+        AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(),
+            drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("xbox_controller"));
 
-        AddItemToDrawer("RoboRIO", b => DynamicUIManager.CreateModal<RioConfigurationModal>(true),
-            drawerPosition: DrawerPosition.Bottom,
-            icon: SynthesisAssetCollection.GetSpriteByName("roborio"));
         AddItemToDrawer("DriverStation",
             b => DynamicUIManager.CreatePanel<BetaWarningPanel>(
                 false, (Action) (() => DynamicUIManager.CreatePanel<DriverStationPanel>(true))),
-            drawerPosition: DrawerPosition.Bottom,
-            icon: SynthesisAssetCollection.GetSpriteByName("driverstation"));
-        AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>(),
-            drawerPosition: DrawerPosition.Bottom,
-            icon: SynthesisAssetCollection.GetSpriteByName("drivetrain"));
+            drawerPosition: DrawerPosition.Bottom, icon: SynthesisAssetCollection.GetSpriteByName("driverstation"));
         if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
             AddItemToDrawer(
                 "Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
@@ -409,27 +400,25 @@ public static class MainHUD {
         foreach (string name in DrawerTitles)
             RemoveItemFromDrawer(name);
 
-        AddItemToDrawer("Back", b => { LeaveConfig(); });
+        AddItemToDrawer("Back", b => { LeaveConfig(); }, drawerPosition: DrawerPosition.Top);
 
         AddItemToDrawer("Pickup", b => {
             if (DynamicUIManager.PanelExists<ConfigureShotTrajectoryPanel>())
                 DynamicUIManager.ClosePanel<ConfigureShotTrajectoryPanel>();
             DynamicUIManager.CreatePanel<ConfigureGamepiecePickupPanel>();
-        });
+        }, drawerPosition: DrawerPosition.Top);
         AddItemToDrawer("Ejector", b => {
             if (DynamicUIManager.PanelExists<ConfigureGamepiecePickupPanel>())
                 DynamicUIManager.ClosePanel<ConfigureGamepiecePickupPanel>();
             DynamicUIManager.CreatePanel<ConfigureShotTrajectoryPanel>();
-        });
+        }, drawerPosition: DrawerPosition.Top);
 
-        AddItemToDrawer("Motors", b => { DynamicUIManager.CreateModal<ConfigMotorModal>(); });
-        AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(),
-            icon: SynthesisAssetCollection.GetSpriteByName("DriverStationView"));
-        AddItemToDrawer("RoboRIO Conf.", b => DynamicUIManager.CreateModal<RioConfigurationModal>(true),
-            icon: SynthesisAssetCollection.GetSpriteByName("rio-config-icon"));
-        AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>());
-        AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(),
-            icon: SynthesisAssetCollection.GetSpriteByName("settings"));
+        AddItemToDrawer("RoboRIO", b => DynamicUIManager.CreateModal<RioConfigurationModal>(true),
+            drawerPosition: DrawerPosition.Bottom, icon: SynthesisAssetCollection.GetSpriteByName("roborio"));
+        AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>(),
+            drawerPosition: DrawerPosition.Bottom, icon: SynthesisAssetCollection.GetSpriteByName("drivetrain"));
+        AddItemToDrawer("Motors", b => { DynamicUIManager.CreateModal<ConfigMotorModal>(); },
+            drawerPosition: DrawerPosition.Bottom);
 
         if (ModeManager.CurrentMode.GetType() == typeof(PracticeMode))
             AddItemToDrawer("Move", b => {
@@ -440,7 +429,7 @@ public static class MainHUD {
                                   ConfigRobot.GroundedBounds.center)
                             : Vector3.zero;
                 GizmoManager.SpawnGizmo(ConfigRobot);
-            });
+            }, drawerPosition: DrawerPosition.Bottom);
 
         if (MatchStateMachine.Instance.CurrentState.StateName is MatchStateMachine.StateName.RobotPositioning) {
             isMatchFreeCam =
