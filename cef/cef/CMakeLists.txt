@@ -1,39 +1,48 @@
 # Shared static library between all operating system targets
-set(SHARED_SOURCES
+# TODO: Figure out where core.h should be included
+
+set(SHARED_COMMON_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/src/main_util.cpp
+)
+
+set(SHARED_COMMON_HEADERS
+    ${CMAKE_CURRENT_LIST_DIR}/inc/app_factory.h
+    ${CMAKE_CURRENT_LIST_DIR}/inc/main_util.h
+)
+
+set(SHARED_SOURCES
+    ${SHARED_COMMON_SOURCES}
     ${CMAKE_CURRENT_LIST_DIR}/src/client_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/client_util.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/browser_util.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/resource_util.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/renderer_app.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/other_app.cpp
 )
 
 set(SHARED_HEADERS
-    ${CMAKE_CURRENT_LIST_DIR}/inc/app_factory.h
-    ${CMAKE_CURRENT_LIST_DIR}/inc/main_util.h
+    ${SHARED_COMMON_HEADERS}
     ${CMAKE_CURRENT_LIST_DIR}/inc/client_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/inc/client_util.h
-    ${CMAKE_CURRENT_LIST_DIR}/inc/core.h
     ${CMAKE_CURRENT_LIST_DIR}/inc/browser_util.h
     ${CMAKE_CURRENT_LIST_DIR}/inc/resource_util.h
 )
 
-set(MAC_SHARED_SOURCES
+set(SHARED_SRCS_MAC
     ${CMAKE_CURRENT_LIST_DIR}/src/client_util_mac.mm
     ${CMAKE_CURRENT_LIST_DIR}/src/main_mac.mm
-    ${CMAKE_CURRENT_LIST_DIR}/src/process_helper_mac.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/resource_util_mac.mm
     ${CMAKE_CURRENT_LIST_DIR}/src/resource_util_posix.cpp
 )
 
-set(MAC_SHARED_HEADERS
-    ${CMAKE_CURRENT_LIST_DIR}/inc/process_helper_mac.h
-)
-
 if(OS_MAC)
-    set(SHARED_SOURCES ${SHARED_SOURCES} ${MAC_SHARED_SOURCES})
-    set(SHARED_HEADERS ${SHARED_HEADERS} ${MAC_SHARED_HEADERS})
+    set(SHARED_HELPER_SOURCES
+        ${SHARED_COMMON_SOURCES}
+        ${CMAKE_CURRENT_LIST_DIR}/src/process_helper_mac.cpp
+    )
+
+    set(SHARED_HELPER_HEADERS
+        ${SHARED_HELPER_HEADERS}
+        ${CMAKE_CURRENT_LIST_DIR}/inc/process_helper_mac.h
+    )
 endif()
 
 set(SHARED_TARGET "shared")
@@ -100,8 +109,9 @@ endmacro()
 
 if(OS_MAC)
     SET_SOURCE_GROUPS(${SHARED_SOURCES})
+    SET_SOURCE_GROUPS(${SHARED_HELPER_SOURCES})
 
-    add_library(${SHARED_HELPER_TARGET} STATIC ${SHARED_SOURCES} ${SHARED_HEADERS})
+    add_library(${SHARED_HELPER_TARGET} STATIC ${SHARED_HELPER_SOURCES} ${SHARED_HELPER_HEADERS})
     SET_CEF_LIBRARY_TARGET_PROPERTIES(${SHARED_HELPER_TARGET})
     add_dependencies(${SHARED_HELPER_TARGET} libcef_dll_wrapper)
     target_link_libraries(${SHARED_HELPER_TARGET} libcef_dll_wrapper ${CEF_STANDARD_LIBS})
@@ -143,6 +153,7 @@ set(SHARED_MAC_RESOURCES
 )
 
 set(SHARED_INFO_PLIST ./res/mac/Info.plist)
+set(SHARED_HELPER_INFO_PLIST ./res/mac/helper-Info.plist)
 
 # TODO: Windows
 set(SHARED_WINDOWS_RESCOURCES)
@@ -164,7 +175,7 @@ if(OS_MAC)
     set(EXECUTABLE_NAME "${CURRENT_TARGET}")
     set(PRODUCT_NAME "${CURRENT_TARGET}")
 
-    add_executable(${CURRENT_TARGET} MACOSX_BUNDLE ${MAIN_SOURCES} ${MAIN_HEADERS})
+    add_executable(${CURRENT_TARGET} MACOSX_BUNDLE ${MAIN_SOURCES} ${MAIN_HEADERS} ${SHARED_MAC_RESOURCES})
     SET_CEF_EXECUTABLE_TARGET_PROPERTIES(${CURRENT_TARGET})
     add_dependencies(${CURRENT_TARGET} ${SHARED_TARGET})
     target_link_libraries(${CURRENT_TARGET} ${SHARED_TARGET})
@@ -182,28 +193,29 @@ if(OS_MAC)
         VERBATIM
     )
 
-    foreach(suffix_list ${CEF_HELPER_APP_SUFfIXES})
+    foreach(suffix_list ${CEF_HELPER_APP_SUFFIXES})
+        message(STATUS "RUNNING FOR EACH FOR HELPER APPS")
         string(REPLACE ":" ";" suffix_list ${suffix_list})
         list(GET suffix_list 0 name_suffix)
         list(GET suffix_list 1 target_suffix)
         list(GET suffix_list 2 plist_suffix)
     
         set(helper_target "main_mac_helper${target_suffix}")
-        set(helper_output_name "minimal_mac_helper${name_suffix}")
+        set(helper_output_name "mac_helper${name_suffix}")
 
-        set(helper_info_plist "${CMAKE_CURRENT_BINARY_DIR}/helper-Info${target_suffix}.plist")
+        set(_helper_info_plist "${CMAKE_CURRENT_BINARY_DIR}/helper-Info${target_suffix}.plist")
         file(READ "${CMAKE_CURRENT_SOURCE_DIR}/${SHARED_HELPER_INFO_PLIST}" _plist_contents)
-        string(REPLACE "\${EXECUTABLE_NAME}" "${helper_output_name}" _plist_contents ${_plist_contents})
-        string(REPLACE "\${PRODUCT_NAME}" "${helper_output_name}" _plist_contents ${_plist_contents})
-        string(REPLACE "\${BUNDLE_ID_SUFFIX}" "${_plist_suffix}" _plist_contents ${_plist_contents})
-        file(WRITE ${helper_info_plist} ${_plist_contents})
+        string(REPLACE "\${EXECUTABLE_NAME}" "${_helper_output_name}" _plist_contents "${_plist_contents}")
+        string(REPLACE "\${PRODUCT_NAME}" "${_helper_output_name}" _plist_contents "${_plist_contents}")
+        string(REPLACE "\${BUNDLE_ID_SUFFIX}" "${plist_suffix}" _plist_contents "${_plist_contents}")
+        file(WRITE ${_helper_info_plist} ${_plist_contents})
 
         add_executable(${helper_target} MACOSX_BUNDLE ${MAIN_MAC_SOURCES})
         SET_CEF_EXECUTABLE_TARGET_PROPERTIES(${helper_target})
         add_dependencies(${helper_target} ${SHARED_HELPER_TARGET})
         target_link_libraries(${helper_target} ${SHARED_HELPER_TARGET})
         set_target_properties(${helper_target} PROPERTIES
-            MACOSX_BUNDLE_INFO_PLIST ${helper_info_plist}
+            MACOSX_BUNDLE_INFO_PLIST ${_helper_info_plist}
             OUTPUT_NAME ${helper_output_name}
         )
 

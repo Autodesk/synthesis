@@ -40,10 +40,10 @@ int main(int argc, char* argv[]) {
             app = CreateOtherProcessApp();
             break;
         default:
-            break; // Nothing needed for the browser process.
+            break; // Browser process is handled by main_mac.mm
     }
 
-    return 0;
+    return CefExecuteProcess(mainArgs, app, nullptr);
 }
 
 } // namespace shared
