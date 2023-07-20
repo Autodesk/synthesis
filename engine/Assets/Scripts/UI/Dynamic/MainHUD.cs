@@ -1,15 +1,21 @@
 using System;
 using System.Collections.Generic;
 using DigitalRuby.Tween;
+using Modes.MatchMode;
+using Synthesis.Gizmo;
+using Synthesis.Physics;
 using Synthesis.Runtime;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.EventBus;
+using SynthesisAPI.Utilities;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Utilities.ColorManager;
-using Button  = Synthesis.UI.Dynamic.Button;
-using Image   = Synthesis.UI.Dynamic.Image;
+using Button = Synthesis.UI.Dynamic.Button;
+using Image = Synthesis.UI.Dynamic.Image;
+using Logger = SynthesisAPI.Utilities.Logger;
+using Object = UnityEngine.Object;
 using UButton = UnityEngine.UI.Button;
 
 #nullable enable
@@ -73,6 +79,11 @@ public static class MainHUD {
     private static bool _hasNewRobotListener = false; // In the Unity editor, working with statics can be really weird
 
     private static Button _accordionButton;
+    public static bool isConfig       = false;
+    public static bool isMatchFreeCam = false;
+
+    public static RobotSimObject ConfigRobot = RobotSimObject.GetCurrentlyPossessedRobot();
+
     private static Content _tabDrawerContent;
     private static Image _logoImage;
     private static Content _itemContainer;
@@ -90,6 +101,8 @@ public static class MainHUD {
         Top,
         Bottom
     }
+
+    public static List<string> DrawerTitles = new List<string>();
 
     public static void Setup() {
         _topDrawerItems.Clear();
@@ -140,8 +153,7 @@ public static class MainHUD {
                 if (robotEvent.NewBot == string.Empty) {
                     RemoveItemFromDrawer("Configure");
                 } else if (robotEvent.OldBot == string.Empty) {
-                    AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>(), index: 1,
-                        icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+                    AddItemToDrawer("Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
                 }
             });
             _hasNewRobotListener = true;
@@ -172,7 +184,7 @@ public static class MainHUD {
         if (!SimulationRunner.InSim)
             return;
 
-        var drawerButtonObj = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("hud-drawer-item-base"),
+        var drawerButtonObj = Object.Instantiate(SynthesisAssetCollection.GetUIPrefab("hud-drawer-item-base"),
             (drawerPosition == DrawerPosition.Top ? _topItemContainer : _bottomItemContainer).RootGameObject.transform);
         drawerButtonObj.GetComponent<UnityEngine.UI.Image>().pixelsPerUnitMultiplier = 20;
 
@@ -205,6 +217,8 @@ public static class MainHUD {
                 break;
         }
 
+        DrawerTitles.Add(title);
+
         UpdateDrawerSizing();
         AssignColors(null);
     }
@@ -217,7 +231,7 @@ public static class MainHUD {
         if (index == -1)
             return;
 
-        GameObject.Destroy(_topDrawerItems[index].button.RootGameObject);
+        Object.Destroy(_topDrawerItems[index].button.RootGameObject);
         _topDrawerItems.RemoveAt(index);
 
         UpdateDrawerSizing();
@@ -292,5 +306,162 @@ public static class MainHUD {
             x.button.Image.SetColor(ColorManager.SynthesisColor.Background);
             x.image.SetColor(ColorManager.SynthesisColor.Icon);
         });
+    }
+
+    public static void SetUpPractice() {
+        foreach (string name in DrawerTitles)
+            RemoveItemFromDrawer(name);
+        
+        AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(),
+            drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("settings"));
+        AddItemToDrawer("View", b => DynamicUIManager.CreateModal<ChangeViewModal>(),
+            drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("search"));
+        AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(),
+            drawerPosition: DrawerPosition.Top,
+            icon: SynthesisAssetCollection.GetSpriteByName("xbox_controller"));
+        AddItemToDrawer("MultiBot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>(),
+            drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("multibot"));
+
+        AddItemToDrawer("Download Asset", b => DynamicUIManager.CreateModal<DownloadAssetModal>(),
+            drawerPosition: DrawerPosition.Bottom, icon: SynthesisAssetCollection.GetSpriteByName("download"));
+        AddItemToDrawer("RoboRIO", b => DynamicUIManager.CreateModal<RioConfigurationModal>(true),
+            drawerPosition: DrawerPosition.Bottom, icon: SynthesisAssetCollection.GetSpriteByName("roborio"));
+        AddItemToDrawer("DriverStation",
+            b => DynamicUIManager.CreatePanel<BetaWarningPanel>(
+                false, (Action) (() => DynamicUIManager.CreatePanel<DriverStationPanel>(true))),
+            drawerPosition: DrawerPosition.Bottom,
+            icon: SynthesisAssetCollection.GetSpriteByName("driverstation"));
+        AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>(),
+            drawerPosition: DrawerPosition.Bottom,
+            icon: SynthesisAssetCollection.GetSpriteByName("drivetrain"));
+        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+            AddItemToDrawer(
+                "Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+        AddItemToDrawer("Scoring Zones", b => {
+            if (FieldSimObject.CurrentField == null) {
+                Logger.Log("No field loaded!", LogLevel.Info);
+            } else {
+                if (!DynamicUIManager.PanelExists<ScoringZonesPanel>())
+                    DynamicUIManager.CreatePanel<ScoringZonesPanel>();
+            }
+        }, drawerPosition: DrawerPosition.Bottom);
+
+        PhysicsManager.IsFrozen = false;
+    }
+
+    public static void SetUpMatch() {
+        foreach (string name in DrawerTitles)
+            RemoveItemFromDrawer(name);
+        
+        AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(),
+            drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("settings"));
+        AddItemToDrawer("View", b => DynamicUIManager.CreateModal<ChangeViewModal>(),
+            drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("search"));
+        AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(),
+            drawerPosition: DrawerPosition.Top,
+            icon: SynthesisAssetCollection.GetSpriteByName("xbox_controller"));
+        AddItemToDrawer("MultiBot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>(),
+            drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("multibot"));
+
+        AddItemToDrawer("RoboRIO", b => DynamicUIManager.CreateModal<RioConfigurationModal>(true),
+            drawerPosition: DrawerPosition.Bottom,
+            icon: SynthesisAssetCollection.GetSpriteByName("roborio"));
+        AddItemToDrawer("DriverStation",
+            b => DynamicUIManager.CreatePanel<BetaWarningPanel>(
+                false, (Action) (() => DynamicUIManager.CreatePanel<DriverStationPanel>(true))),
+            drawerPosition: DrawerPosition.Bottom,
+            icon: SynthesisAssetCollection.GetSpriteByName("driverstation"));
+        AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>(),
+            drawerPosition: DrawerPosition.Bottom,
+            icon: SynthesisAssetCollection.GetSpriteByName("drivetrain"));
+        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
+            AddItemToDrawer(
+                "Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+        AddItemToDrawer("Scoring Zones", b => {
+            if (FieldSimObject.CurrentField == null) {
+                Logger.Log("No field loaded!", LogLevel.Info);
+            } else {
+                if (!DynamicUIManager.PanelExists<ScoringZonesPanel>())
+                    DynamicUIManager.CreatePanel<ScoringZonesPanel>();
+            }
+        }, drawerPosition: DrawerPosition.Bottom);
+
+        if ((MatchStateMachine.Instance.CurrentState.StateName is MatchStateMachine.StateName.RobotPositioning) &&
+            Camera.main != null) {
+            FreeCameraMode camMode = CameraController.CameraModes["Freecam"] as FreeCameraMode;
+            Camera.main.GetComponent<CameraController>().CameraMode = camMode;
+            var location                                            = new Vector3(0, 6, -8);
+            camMode.SetTransform(location,
+                Quaternion.LookRotation(-location.normalized, Vector3.Cross(-location.normalized, Vector3.right)));
+        }
+    }
+
+    public static void SetUpConfig() {
+        isConfig = true;
+
+        if (ModeManager.CurrentMode.GetType() == typeof(MatchMode) &&
+            DynamicUIManager.PanelExists<SpawnLocationPanel>()) {
+            ConfigRobot = MatchMode.Robots[DynamicUIManager.GetPanel<SpawnLocationPanel>().SelectedButton];
+        } else {
+            ConfigRobot = RobotSimObject.GetCurrentlyPossessedRobot();
+        }
+
+        foreach (string name in DrawerTitles)
+            RemoveItemFromDrawer(name);
+
+        AddItemToDrawer("Back", b => { LeaveConfig(); });
+
+        AddItemToDrawer("Pickup", b => {
+            if (DynamicUIManager.PanelExists<ConfigureShotTrajectoryPanel>())
+                DynamicUIManager.ClosePanel<ConfigureShotTrajectoryPanel>();
+            DynamicUIManager.CreatePanel<ConfigureGamepiecePickupPanel>();
+        });
+        AddItemToDrawer("Ejector", b => {
+            if (DynamicUIManager.PanelExists<ConfigureGamepiecePickupPanel>())
+                DynamicUIManager.ClosePanel<ConfigureGamepiecePickupPanel>();
+            DynamicUIManager.CreatePanel<ConfigureShotTrajectoryPanel>();
+        });
+
+        AddItemToDrawer("Motors", b => { DynamicUIManager.CreateModal<ConfigMotorModal>(); });
+        AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(),
+            icon: SynthesisAssetCollection.GetSpriteByName("DriverStationView"));
+        AddItemToDrawer("RoboRIO Conf.", b => DynamicUIManager.CreateModal<RioConfigurationModal>(true),
+            icon: SynthesisAssetCollection.GetSpriteByName("rio-config-icon"));
+        AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>());
+        AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(),
+            icon: SynthesisAssetCollection.GetSpriteByName("settings"));
+
+        if (ModeManager.CurrentMode.GetType() == typeof(PracticeMode))
+            AddItemToDrawer("Move", b => {
+                if (!isMatchFreeCam)
+                    OrbitCameraMode.FocusPoint = () =>
+                        ConfigRobot.GroundedNode != null && ConfigRobot.GroundedBounds != null
+                            ? ConfigRobot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(
+                                  ConfigRobot.GroundedBounds.center)
+                            : Vector3.zero;
+                GizmoManager.SpawnGizmo(ConfigRobot);
+            });
+
+        if (MatchStateMachine.Instance.CurrentState.StateName is MatchStateMachine.StateName.RobotPositioning) {
+            isMatchFreeCam =
+                Camera.main.GetComponent<CameraController>().CameraMode == CameraController.CameraModes["Freecam"];
+        } else {
+            isMatchFreeCam          = false;
+            PhysicsManager.IsFrozen = true;
+        }
+    }
+
+    public static void LeaveConfig() {
+        DynamicUIManager.CloseAllPanels();
+        GizmoManager.ExitGizmo();
+        isConfig = false;
+        if (ModeManager.CurrentMode.GetType() == typeof(PracticeMode)) {
+            SetUpPractice();
+        } else if (ModeManager.CurrentMode.GetType() == typeof(MatchMode)) {
+            SetUpMatch();
+            if (PhysicsManager.IsFrozen &&
+                !(MatchStateMachine.Instance.CurrentState.StateName is MatchStateMachine.StateName.RobotPositioning))
+                PhysicsManager.IsFrozen = false;
+        }
     }
 }

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing.Text;
+using System.Linq;
 using Synthesis.Gizmo;
 using Synthesis.Physics;
 using Synthesis.PreferenceManager;
@@ -56,40 +58,7 @@ public class PracticeMode : IMode {
 
     /// Adds buttons to the main hud (panel on left side)
     public void ConfigureMainHUD() {
-        MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(),
-            drawerPosition: MainHUD.DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("settings"));
-        MainHUD.AddItemToDrawer("View", b => DynamicUIManager.CreateModal<ChangeViewModal>(),
-            drawerPosition: MainHUD.DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("search"));
-        MainHUD.AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(),
-            drawerPosition: MainHUD.DrawerPosition.Top,
-            icon: SynthesisAssetCollection.GetSpriteByName("xbox_controller"));
-        MainHUD.AddItemToDrawer("MultiBot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>(),
-            drawerPosition: MainHUD.DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("multibot"));
-
-        MainHUD.AddItemToDrawer("Download Asset", b => DynamicUIManager.CreateModal<DownloadAssetModal>(),
-            drawerPosition: MainHUD.DrawerPosition.Bottom, icon: SynthesisAssetCollection.GetSpriteByName("download"));
-        MainHUD.AddItemToDrawer("RoboRIO", b => DynamicUIManager.CreateModal<RioConfigurationModal>(true),
-            drawerPosition: MainHUD.DrawerPosition.Bottom, icon: SynthesisAssetCollection.GetSpriteByName("roborio"));
-        MainHUD.AddItemToDrawer("DriverStation",
-            b => DynamicUIManager.CreatePanel<BetaWarningPanel>(
-                false, (Action) (() => DynamicUIManager.CreatePanel<DriverStationPanel>(true))),
-            drawerPosition: MainHUD.DrawerPosition.Bottom,
-            icon: SynthesisAssetCollection.GetSpriteByName("driverstation"));
-        MainHUD.AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>(),
-            drawerPosition: MainHUD.DrawerPosition.Bottom,
-            icon: SynthesisAssetCollection.GetSpriteByName("drivetrain"));
-        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-            MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>(),
-                drawerPosition: MainHUD.DrawerPosition.Bottom,
-                icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-        MainHUD.AddItemToDrawer("Scoring Zones", b => {
-            if (FieldSimObject.CurrentField == null) {
-                Logger.Log("No field loaded!", LogLevel.Info);
-            } else {
-                if (!DynamicUIManager.PanelExists<ScoringZonesPanel>())
-                    DynamicUIManager.CreatePanel<ScoringZonesPanel>();
-            }
-        }, drawerPosition: MainHUD.DrawerPosition.Bottom);
+        MainHUD.SetUpPractice();
 
         EventBus.NewTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
     }
@@ -164,6 +133,9 @@ public class PracticeMode : IMode {
 
     public void End() {
         InputManager._mappedValueInputs.Remove(TOGGLE_ESCAPE_MENU_INPUT);
+        Scoring.redScore  = 0;
+        Scoring.blueScore = 0;
+        EventBus.RemoveTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
     }
 
     public static void ConfigureGamepieceSpawnpoint() {

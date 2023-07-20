@@ -34,10 +34,14 @@ namespace Synthesis.UI.Dynamic {
         private GameObject _unityObject;
         protected GameObject UnityObject => _unityObject;
         // Default for Modal
+        private Transform _footer;
+        protected Transform Footer => _footer;
         private Button _cancelButton;
         protected Button CancelButton => _cancelButton;
         private Button _acceptButton;
         protected Button AcceptButton => _acceptButton;
+        private Button _middleButton;
+
         private Image _panelImage;
         protected Image PanelImage => _panelImage;
         private Image _panelBackground;
@@ -64,6 +68,35 @@ namespace Synthesis.UI.Dynamic {
             }
         }
 
+        protected Button MiddleButton {
+            get {
+                if (_middleButton == null) {
+                    GameObject buttonPrefab = SynthesisAssetCollection.GetUIPrefab("dynamic-panel-base")
+                                                  .transform.Find("Footer")
+                                                  .Find("Accept")
+                                                  .gameObject;
+                    RectTransform buttonTransform =
+                        GameObject.Instantiate(buttonPrefab, Footer).GetComponent<RectTransform>();
+
+                    buttonTransform.anchorMin = new Vector2(0.5f, 0f);
+                    buttonTransform.anchorMax = new Vector2(0.5f, 0f);
+                    buttonTransform.pivot     = new Vector2(1f, 0f);
+
+                    buttonTransform.localPosition = new Vector3(
+                        buttonTransform.rect.width / 2f, AcceptButton.RootGameObject.transform.localPosition.y, 0);
+
+                    Button middleButton = new Button(null!, buttonTransform.gameObject, null);
+                    middleButton.Image.SetColor(ColorManager.SynthesisColor.AcceptButton);
+                    middleButton.Label?.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
+
+                    _middleButton = middleButton;
+                    return middleButton;
+                }
+
+                return _middleButton;
+            }
+        }
+
         public Action OnAccepted;
 
         protected PanelDynamic(
@@ -86,16 +119,17 @@ namespace Synthesis.UI.Dynamic {
 
             _title = new Label(null, header.Find("Title").gameObject, null);
 
-            var footer    = _unityObject.transform.Find("Footer");
-            var footerRt  = footer.GetComponent<RectTransform>();
-            _cancelButton = new Button(null!, footer.Find("Cancel").gameObject, null);
+            _footer      = _unityObject.transform.Find("Footer");
+            var footerRt = _footer.GetComponent<RectTransform>();
+
+            _cancelButton = new Button(null!, _footer.Find("Cancel").gameObject, null);
             _cancelButton.AddOnClickedEvent(b => {
                 if (!DynamicUIManager.ClosePanel(this.GetType()))
                     Logger.Log("Failed to Close Panel", LogLevel.Error);
             });
             _cancelButton.Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.CancelButton));
             _cancelButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElementText));
-            _acceptButton = new Button(null!, footer.Find("Accept").gameObject, null);
+            _acceptButton = new Button(null!, _footer.Find("Accept").gameObject, null);
             _acceptButton.Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptButton));
             _acceptButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElementText));
             _acceptButton.AddOnClickedEvent(b => {
@@ -149,6 +183,7 @@ namespace Synthesis.UI.Dynamic {
         protected Image ModalImage => _modalImage;
         private Image _modalBackground;
         protected Image ModalBackground => _modalBackground;
+
         private Label _title;
         protected Label Title => _title;
         private Label _description;
