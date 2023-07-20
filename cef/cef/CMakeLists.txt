@@ -26,12 +26,16 @@ set(SHARED_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/inc/resource_util.h
 )
 
-set(SHARED_SRCS_MAC
+set(SHARED_SOURCES_MAC
     ${CMAKE_CURRENT_LIST_DIR}/src/client_util_mac.mm
     ${CMAKE_CURRENT_LIST_DIR}/src/main_mac.mm
     ${CMAKE_CURRENT_LIST_DIR}/src/resource_util_mac.mm
     ${CMAKE_CURRENT_LIST_DIR}/src/resource_util_posix.cpp
 )
+
+# Very important not to forget about this line
+# Will append the platform sources to the shared sources
+APPEND_PLATFORM_SOURCES(SHARED_SOURCES)
 
 if(OS_MAC)
     set(SHARED_HELPER_SOURCES
@@ -194,14 +198,13 @@ if(OS_MAC)
     )
 
     foreach(suffix_list ${CEF_HELPER_APP_SUFFIXES})
-        message(STATUS "RUNNING FOR EACH FOR HELPER APPS")
         string(REPLACE ":" ";" suffix_list ${suffix_list})
         list(GET suffix_list 0 name_suffix)
         list(GET suffix_list 1 target_suffix)
         list(GET suffix_list 2 plist_suffix)
     
-        set(helper_target "main_mac_helper${target_suffix}")
-        set(helper_output_name "mac_helper${name_suffix}")
+        set(helper_target "${CURRENT_TARGET_HELPER}${target_suffix}")
+        set(helper_output_name "${CURRENT_HELPER_OUTPUT_NAME}${name_suffix}")
 
         set(_helper_info_plist "${CMAKE_CURRENT_BINARY_DIR}/helper-Info${target_suffix}.plist")
         file(READ "${CMAKE_CURRENT_SOURCE_DIR}/${SHARED_HELPER_INFO_PLIST}" _plist_contents)
