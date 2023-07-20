@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using TMPro;
 using UI;
 using UnityEngine.EventSystems;
+using UnityEngine.PlayerLoop;
 using Utilities.ColorManager;
 using UButton     = UnityEngine.UI.Button;
 using UToggle     = UnityEngine.UI.Toggle;
@@ -1212,8 +1213,8 @@ namespace Synthesis.UI.Dynamic {
                 Size = size.Value;
             }
 
-            _image       = new Image(this, unityObject.transform.Find("Header").Find("Arrow").gameObject);
-            _viewport    = new Content(this, unityObject.transform.Find("Template").Find("Viewport").gameObject, null);
+            _image = new Image(this, unityObject.transform.Find("Header").Find("Arrow").gameObject);
+            _viewport = new Content(this, unityObject.transform.Find("Template").Find("Viewport").gameObject, null);
             _tmpDropdown = unityObject.transform.GetComponent<TMP_Dropdown>();
 
             _tmpDropdown.onValueChanged.AddListener(x => {
@@ -1234,12 +1235,12 @@ namespace Synthesis.UI.Dynamic {
             _headerLabel.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
 
             var itemObj =
-                unityObject.transform.Find("Template").Find("Viewport").Find("Mask").Find("Content").Find("Item");
-            
-            _itemCheckmarkImage = new Image(this, itemObj.Find("Item Checkmark").gameObject);
+                unityObject.transform.Find("Template").Find("Viewport").Find("Padding").Find("Content").Find("Item");
+
+            /*_itemCheckmarkImage = new Image(this, itemObj.Find("Item Checkmark").gameObject);
 
             Color bgColor = ColorManager.GetColor(ColorManager.SynthesisColor.Background);
-            _itemCheckmarkImage.SetColor(new Color(bgColor.r, bgColor.g, bgColor.b, 0.21f));
+            _itemCheckmarkImage.SetColor(new Color(bgColor.r, bgColor.g, bgColor.b, 0.21f));*/
 
             _itemLabel = new Label(this, itemObj.Find("Item Label").gameObject, null);
             _itemLabel.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
@@ -1249,6 +1250,19 @@ namespace Synthesis.UI.Dynamic {
             _viewportImage.SetColor(ColorManager.SynthesisColor.InteractiveElementRight,
                 ColorManager.SynthesisColor.InteractiveElementLeft);
             _viewportImage.SetCornerRadius(15);
+
+            var scrollbarBG = new Image(this, unityObject.transform.Find("Template").Find("Scrollbar").gameObject);
+            var scrollbarHandle = new Image(this,
+                unityObject.transform.Find("Template").Find("Scrollbar").Find("Sliding Area").Find("Handle")
+                    .gameObject);
+
+            scrollbarBG.SetColor(ColorManager.SynthesisColor.BackgroundSecondary);
+            scrollbarBG.SetCornerRadius(10);
+
+            //scrollbarHandle.SetColor(ColorManager.SynthesisColor.InteractiveBackground);
+            scrollbarHandle.SetColor(ColorManager.SynthesisColor.Scrollbar);
+            scrollbarHandle.SetGradientDirection(false);
+            scrollbarHandle.SetCornerRadius(6);
         }
 
         public Dropdown SetOptions(string[] options) {
@@ -1386,8 +1400,10 @@ namespace Synthesis.UI.Dynamic {
         public Image SetCornerRadius(float r) {
             if (_hasCustomSprite)
                 _unityImage.pixelsPerUnitMultiplier = 250f / r;
-            else
+            else {
                 _gradientUpdater.Radius = r;
+                _gradientUpdater.Refresh();
+            }
             return this;
         }
 
@@ -1396,6 +1412,14 @@ namespace Synthesis.UI.Dynamic {
                 _unityImage.pixelsPerUnitMultiplier = m;
 
             return this;
+        }
+
+        public void SetGradientDirection(bool horizontal) {
+            if (!_gradientUpdater)
+                return;
+
+            _gradientUpdater.Horizontal = horizontal;
+            _gradientUpdater.Refresh();
         }
     }
 

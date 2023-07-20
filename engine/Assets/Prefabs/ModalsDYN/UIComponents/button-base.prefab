@@ -286,10 +286,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31b3c652d983f034bb8982f2243731af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _hoverColor: {r: 0.8962264, g: 0.8962264, b: 0.8962264, a: 1}
-  _selectedColor: {r: 0.8207547, g: 0.8207547, b: 0.8207547, a: 1}
-  _hoverScaleMultiplier: 1.05
-  _clickedScaleMultiplier: 1.1
+  _image: {fileID: 0}
+  _defaultColor: {r: 1, g: 1, b: 1, a: 1}
+  _hoverColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+  _selectedColor: {r: 0.9411765, g: 0.9411765, b: 0.9411765, a: 1}
+  _hoverScaleMultiplier: 1.03
+  _clickedScaleMultiplier: 1.06
 --- !u!114 &646561847968102766
 MonoBehaviour:
   m_ObjectHideFlags: 0

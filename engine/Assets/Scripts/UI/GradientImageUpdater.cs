@@ -1,10 +1,6 @@
-using System;
-using System.Collections;
 using UI.EventListeners;
-using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.UI;
-using Task = System.Threading.Tasks.Task;
 
 namespace UI {
     [RequireComponent(typeof(Image))]
@@ -31,22 +27,19 @@ namespace UI {
         }
 
         private void Start() {
+            GetMaterial();
+
             var image = GetComponent<Image>();
-            image.material = _material;
             if (image.sprite != null) {
+                _material = SynthesisAssetCollection.GetDefaultSpriteMat();
                 Destroy(this);
             }
+            image.material = _material;
 
             if (TryGetComponent<ButtonEventListener>(out var listener))
                 listener.ImageUpdater = this;
             
-            GetMaterial();
             Refresh();
-        }
-
-        private void Update() {
-            if (gameObject.name == "Viewport")
-                Debug.Log(GetComponent<Image>().material.name);
         }
 
         private void OnRectTransformDimensionsChange() {

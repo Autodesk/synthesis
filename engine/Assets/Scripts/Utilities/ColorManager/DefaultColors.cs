@@ -11,7 +11,7 @@ namespace Utilities.ColorManager {
             (ColorManager.SynthesisColor.BackgroundSecondary, new Color32(30, 30, 30, 255)),
             (ColorManager.SynthesisColor.InteractiveBackground, new Color32(52, 58, 64, 255)),
             (ColorManager.SynthesisColor.MainText, new Color32(255, 255, 255, 255)),
-            (ColorManager.SynthesisColor.Scrollbar, new Color32(213, 216, 223, 255)),
+            (ColorManager.SynthesisColor.Scrollbar, new Color32(170, 170, 170, 255)),
             (ColorManager.SynthesisColor.AcceptButton, new Color32(71, 138, 226, 255)),
             (ColorManager.SynthesisColor.CancelButton, new Color32(231, 85, 81, 255)),
             (ColorManager.SynthesisColor.InteractiveElementText, new Color32(255, 255, 255, 255)),
