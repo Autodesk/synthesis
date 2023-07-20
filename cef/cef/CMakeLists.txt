@@ -177,7 +177,7 @@ if(OS_WINDOWS OR OS_LINUX)
     )
 endif()
 
-# Mac has a sepearte helper executable
+# Mac has a seperate helper executable
 set(MAIN_MAC_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/src/other_app.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/renderer_app.cpp
