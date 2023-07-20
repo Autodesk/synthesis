@@ -61,6 +61,8 @@ public static class MainHUD {
 
             if (_collapsed != value) {
                 _collapsed = value;
+                _accordionButton.Image.SetSprite(
+                    SynthesisAssetCollection.GetSpriteByName(_collapsed ? "accordion" : "CloseIcon"));
                 if (_collapsed) {
                     TweenFactory.RemoveTweenKey(EXPAND_TWEEN, TweenStopBehavior.DoNotModify);
                     _tabDrawerContent.RootGameObject.Tween(COLLAPSE_TWEEN,
@@ -128,11 +130,7 @@ public static class MainHUD {
         _homeButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.Background)
             .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText));
 
-        _accordionButton.OnClicked += (b) => {
-            Collapsed = !Collapsed;
-            _accordionButton.Image.SetSprite(
-                SynthesisAssetCollection.GetSpriteByName(Collapsed ? "accordion" : "CloseIcon"));
-        };
+        _accordionButton.OnClicked += (b) => { Collapsed = !Collapsed; };
 
         _spawnButton.OnClicked += (b) => { DynamicUIManager.CreateModal<SpawningModal>(); };
         _spawnButton.SetTransition(Selectable.Transition.ColorTint).SetInteractableColors();
@@ -165,8 +163,6 @@ public static class MainHUD {
         SceneManager.activeSceneChanged += (Scene a, Scene b) => {
             _isSetup  = false;
             Collapsed = true;
-            _accordionButton.Image.SetSprite(
-                SynthesisAssetCollection.GetSpriteByName(Collapsed ? "accordion" : "CloseIcon"));
         };
 
         UpdateDrawerSizing();
