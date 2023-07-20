@@ -7,11 +7,14 @@ using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
 using UnityEngine;
 using Synthesis.Util;
+using Synthesis.Physics;
 
 #nullable enable
 
 namespace Synthesis {
     public class RotationalDriver : Driver {
+        private const float MIRABUF_TO_UNITY_FORCE = 40f;
+
         // clang-format off
         private bool _isWheel = false;
         // clang-format on
@@ -43,6 +46,8 @@ namespace Synthesis {
 
         public double MainInput {
             get {
+                if (PhysicsManager.IsFrozen)
+                    return 0f;
                 var val = State.GetValue(_inputs[0]);
                 return val == null ? 0.0 : val.NumberValue;
             }
@@ -137,8 +142,12 @@ namespace Synthesis {
         // Is this actually used?
         public bool UseMotor { get => _useMotor; }
 
+        public readonly string MotorRef;
+
+        private float _convertedMotorTargetVel { get => Motor.targetVelocity * Mathf.Rad2Deg; }
+
         public RotationalDriver(string name, string[] inputs, string[] outputs, SimObject simObject, HingeJoint jointA,
-            HingeJoint jointB, bool isWheel, Mirabuf.Motor.Motor? motor = null)
+            HingeJoint jointB, bool isWheel, string motorRef = "")
             : base(name, inputs, outputs, simObject) {
             _jointA = jointA;
             _jointB = jointB;
@@ -150,6 +159,8 @@ namespace Synthesis {
             UseFakeMotion = jointA.useLimits;
             EnableMotor();
 
+            (simObject as RobotSimObject)!.MiraLive.MiraAssembly.Data.Joints.MotorDefinitions.TryGetValue(
+                motorRef, out var motor);
             if (motor != null && motor.MotorTypeCase == Mirabuf.Motor.Motor.MotorTypeOneofCase.SimpleMotor) {
                 _motor = motor!.SimpleMotor.UnityMotor;
             } else {
@@ -160,6 +171,8 @@ namespace Synthesis {
                     targetVelocity = 500,
                 };
             }
+
+            MotorRef = motorRef;
 
             _isWheel = isWheel;
 
@@ -235,10 +248,12 @@ namespace Synthesis {
 
                 float output = error * 0.1f;
 
-                _jointA.motor = new JointMotor { force = Motor.force * (inertiaA / (inertiaA + inertiaB)),
-                    freeSpin = Motor.freeSpin, targetVelocity = (Motor.targetVelocity) * output };
-                _jointB.motor = new JointMotor { force = Motor.force * (inertiaB / (inertiaA + inertiaB)),
-                    freeSpin = Motor.freeSpin, targetVelocity = (-Motor.targetVelocity) * output };
+                _jointA.motor =
+                    new JointMotor { force = MIRABUF_TO_UNITY_FORCE * Motor.force * (inertiaA / (inertiaA + inertiaB)),
+                        freeSpin = Motor.freeSpin, targetVelocity = _convertedMotorTargetVel * output };
+                _jointB.motor =
+                    new JointMotor { force = MIRABUF_TO_UNITY_FORCE * Motor.force * (inertiaB / (inertiaA + inertiaB)),
+                        freeSpin = Motor.freeSpin, targetVelocity = -_convertedMotorTargetVel * output };
             }
         }
 
@@ -253,7 +268,7 @@ namespace Synthesis {
                     SynthesisUtil.GetInertiaAroundParallelAxis(_jointB.connectedBody, _jointA.anchor, _jointA.axis);
 
                 if (_useFakeMotion) {
-                    float alpha = val * Motor.targetVelocity;
+                    float alpha = val * _convertedMotorTargetVel;
 
                     _fakedTheta += alpha * deltaT;
 
@@ -275,9 +290,9 @@ namespace Synthesis {
 
                 } else {
                     _jointA.motor = new JointMotor { force = Motor.force * (inertiaA / (inertiaA + inertiaB)),
-                        freeSpin = Motor.freeSpin, targetVelocity = (Motor.targetVelocity) * val };
+                        freeSpin = Motor.freeSpin, targetVelocity = _convertedMotorTargetVel * val };
                     _jointB.motor = new JointMotor { force = Motor.force * (inertiaB / (inertiaA + inertiaB)),
-                        freeSpin = Motor.freeSpin, targetVelocity = (-Motor.targetVelocity) * val };
+                        freeSpin = Motor.freeSpin, targetVelocity = -_convertedMotorTargetVel * val };
                 }
             }
         }

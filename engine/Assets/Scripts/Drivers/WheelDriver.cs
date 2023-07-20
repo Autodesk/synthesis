@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Google.Protobuf.WellKnownTypes;
@@ -7,11 +7,14 @@ using Synthesis.PreferenceManager;
 using SynthesisAPI.Simulation;
 using UnityEngine;
 using Synthesis.Util;
+using Synthesis.Physics;
 
 #nullable enable
 
 namespace Synthesis {
     public class WheelDriver : Driver {
+        private const float MIRABUF_TO_UNITY_FORCE = 40f;
+
         private CustomWheel _customWheel;
 
         private JointInstance _jointInstance;
@@ -70,6 +73,8 @@ namespace Synthesis {
 
         public double MainInput {
             get {
+                if (PhysicsManager.IsFrozen)
+                    return 0f;
                 var val = State.GetValue(_inputs[0]);
                 return val == null ? 0.0 : val.NumberValue;
             }
@@ -94,6 +99,8 @@ namespace Synthesis {
 
         private float _targetRotationalSpeed = 0f;
 
+        public readonly string MotorRef;
+
         /// <summary>
         /// Creates a WheelDriver
         /// </summary>
@@ -109,7 +116,7 @@ namespace Synthesis {
         /// <param name="motor">Motor settings for the wheel</param>
         public WheelDriver(string name, string[] inputs, string[] outputs, SimObject simObject,
             JointInstance jointInstance, CustomWheel customWheel, Vector3 anchor, Vector3 axis, float radius,
-            Mirabuf.Motor.Motor? motor = null)
+            string motorRef = "")
             : base(name, inputs, outputs, simObject) {
             _jointInstance = jointInstance;
             _customWheel   = customWheel;
@@ -117,11 +124,16 @@ namespace Synthesis {
             Anchor = _customWheel.Rb.transform.localToWorldMatrix.MultiplyPoint3x4(anchor);
             Axis   = _customWheel.Rb.transform.localToWorldMatrix.MultiplyVector(axis);
 
+            MotorRef = motorRef;
+
             if (float.IsNaN(radius)) {
                 Radius = _customWheel.Rb.transform.GetBounds().extents.y;
             } else {
                 Radius = radius;
             }
+
+            (simObject as RobotSimObject)!.MiraLive.MiraAssembly.Data.Joints.MotorDefinitions.TryGetValue(
+                motorRef, out var motor);
 
             if (motor != null && motor.MotorTypeCase == Mirabuf.Motor.Motor.MotorTypeOneofCase.SimpleMotor) {
                 _motor = motor!.SimpleMotor.UnityMotor;
@@ -176,7 +188,7 @@ namespace Synthesis {
 
             var val = (float) MainInput;
 
-            _targetRotationalSpeed = val * Mathf.Deg2Rad * _motor.targetVelocity;
+            _targetRotationalSpeed = val * _motor.targetVelocity;
 
             var delta         = _targetRotationalSpeed - _customWheel.RotationSpeed;
             var possibleDelta = (_motor.force * Time.deltaTime) / _customWheel.Inertia;

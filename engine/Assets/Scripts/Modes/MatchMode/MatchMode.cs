@@ -52,7 +52,7 @@ namespace Modes.MatchMode {
             _stateMachine.SetState(MatchStateMachine.StateName.MatchConfig);
 
             SetupMatchResultTracking();
-            ConfigureMainHUD();
+            MainHUD.SetUpMatch();
         }
 
         private void HandleScoreEvent(IEvent e) {
@@ -93,40 +93,6 @@ namespace Modes.MatchMode {
                 }
                 Debug.Log(
                     $"{zone.Alliance.ToString()} scored {zone.Points} points! Blue: {_blueScore} Red: {_redScore}");
-            });
-        }
-
-        /// Adds buttons to the main hud (panel on left side)
-        public void ConfigureMainHUD() {
-            if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-                MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>(),
-                    icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-
-            MainHUD.AddItemToDrawer("Multibot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>());
-
-            MainHUD.AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(),
-                icon: SynthesisAssetCollection.GetSpriteByName("DriverStationView"));
-            MainHUD.AddItemToDrawer("Camera View", b => DynamicUIManager.CreateModal<ChangeViewModal>(),
-                icon: SynthesisAssetCollection.GetSpriteByName("CameraIcon"));
-
-            MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(),
-                icon: SynthesisAssetCollection.GetSpriteByName("settings"));
-            MainHUD.AddItemToDrawer("RoboRIO Conf.", b => DynamicUIManager.CreateModal<RioConfigurationModal>(true),
-                icon: SynthesisAssetCollection.GetSpriteByName("rio-config-icon"));
-
-            MainHUD.AddItemToDrawer("DriverStation",
-                b => DynamicUIManager.CreatePanel<BetaWarningPanel>(
-                    false, (Action) (() => DynamicUIManager.CreatePanel<DriverStationPanel>(true))),
-                icon: SynthesisAssetCollection.GetSpriteByName("driverstation-icon"));
-
-            MainHUD.AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>());
-            MainHUD.AddItemToDrawer("Scoring Zones", b => {
-                if (FieldSimObject.CurrentField == null) {
-                    Logger.Log("No field loaded!", LogLevel.Info);
-                } else {
-                    if (!DynamicUIManager.PanelExists<ScoringZonesPanel>())
-                        DynamicUIManager.CreatePanel<ScoringZonesPanel>();
-                }
             });
         }
 
