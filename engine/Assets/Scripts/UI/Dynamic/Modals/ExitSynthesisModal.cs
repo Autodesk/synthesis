@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Analytics;
+using Modes.MatchMode;
 using Synthesis.Runtime;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -23,6 +24,7 @@ namespace Synthesis.UI.Dynamic {
                     } else {
                         SimulationRunner.InSim = false;
                         DynamicUIManager.CloseAllPanels(true);
+                        MatchMode.ResetMatchConfiguration();
                         ModeManager.CurrentMode = null;
                         SceneManager.LoadScene("GridMenuScene", LoadSceneMode.Single);
 

@@ -108,6 +108,9 @@ public static class MainHUD {
     private static Button _homeButton;
     private static Image _homeIcon;
 
+    private static Action<Button> _backCallback;
+    private static Action<Button> _spawnCallback;
+
     private static List<(Button button, Image image)> _topDrawerItems    = new List<(Button button, Image image)>();
     private static List<(Button button, Image image)> _bottomDrawerItems = new List<(Button button, Image image)>();
 
@@ -144,11 +147,13 @@ public static class MainHUD {
 
         _accordionButton.OnClicked += (b) => { Collapsed = !Collapsed; };
 
-        _spawnButton.OnClicked += (b) => { DynamicUIManager.CreateModal<SpawningModal>(); };
         _spawnButton.SetTransition(Selectable.Transition.ColorTint).SetInteractableColors();
 
         _homeButton.OnClicked += (b) => { DynamicUIManager.CreateModal<ExitSynthesisModal>(); };
         _homeButton.SetTransition(Selectable.Transition.ColorTint).SetInteractableColors();
+
+        _spawnCallback = b => { DynamicUIManager.CreateModal<SpawningModal>(); };
+        _backCallback  = b => { LeaveConfig(); };
 
         // Setup default HUD
         // MOVED TO PRACTICE MODE
@@ -280,7 +285,7 @@ public static class MainHUD {
                     anchoredY: SPACING + i * (ITEM_HEIGHT + SPACING), leftPadding: SPACING, rightPadding: SPACING)
                 .StepIntoLabel(l => l.SetStretch<Label>(leftPadding: 55));
         }
-        _itemContainer.SetTopStretch<Content>(anchoredY: LOGO_BOTTOM_Y + LOGO_BUTTON_SPACING + BUTTON_HEIGHT + SPACING,
+        _itemContainer.SetTopStretch<Content>(anchoredY: LOGO_BOTTOM_Y + LOGO_BUTTON_SPACING + (_spawnButton.RootGameObject.activeSelf ? BUTTON_HEIGHT + SPACING : 0),
             leftPadding: SPACING, rightPadding: SPACING);
         // all the zero checks handle layout when no tray items have been added
         int topItemsHeight = _topDrawerItems.Count == 0 ? 0 : SPACING + _topDrawerItems.Count * (ITEM_HEIGHT + SPACING);
@@ -295,7 +300,9 @@ public static class MainHUD {
         _itemContainer.SetHeight<Content>(itemsHeight);
         int itemsHeightWithSpacing =
             itemsHeight == 0 ? SPACING : SPACING + itemsHeight + (bottomItemsHeight == 0 ? 0 : SPACING);
-        _tabDrawerContent.SetHeight<Content>(LOGO_BOTTOM_Y + LOGO_BUTTON_SPACING + BUTTON_HEIGHT +
+        if (!_spawnButton.RootGameObject.activeSelf) itemsHeightWithSpacing -= SPACING;
+        _tabDrawerContent.SetHeight<Content>(LOGO_BOTTOM_Y + LOGO_BUTTON_SPACING + 
+                                             (_spawnButton.RootGameObject.activeSelf ? BUTTON_HEIGHT : 0) +
                                              itemsHeightWithSpacing + BUTTON_HEIGHT + BOTTOM_PADDING);
     }
 
@@ -332,6 +339,13 @@ public static class MainHUD {
     public static void SetUpPractice() {
         RemoveAllItemsFromDrawer();
 
+        _spawnButton.OnClicked -= _backCallback;
+        _spawnButton.OnClicked += _spawnCallback;
+        
+        _spawnButton.RootGameObject.SetActive(true);
+        _spawnIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("plus"));
+        _spawnButton.Label.SetText("Spawn Asset");
+        
         AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(),
             drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("settings"));
         AddItemToDrawer("View", b => DynamicUIManager.CreateModal<ChangeViewModal>(),
@@ -340,9 +354,9 @@ public static class MainHUD {
             drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("multibot"));
         AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(),
             drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("xbox_controller"));
-        // if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-        //     AddItemToDrawer(
-        //         "Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty && !DrawerTitles.Contains("Configure"))
+            AddItemToDrawer(
+                "Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
 
         AddItemToDrawer("Download Asset", b => DynamicUIManager.CreateModal<DownloadAssetModal>(),
             drawerPosition: DrawerPosition.Bottom, icon: SynthesisAssetCollection.GetSpriteByName("download"));
@@ -364,7 +378,9 @@ public static class MainHUD {
 
     public static void SetUpMatch() {
         RemoveAllItemsFromDrawer();
-
+        
+        _spawnButton.RootGameObject.SetActive(false);
+        
         AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(),
             drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("settings"));
         AddItemToDrawer("View", b => DynamicUIManager.CreateModal<ChangeViewModal>(),
@@ -373,9 +389,9 @@ public static class MainHUD {
             drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("multibot"));
         AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(),
             drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("xbox_controller"));
-        // if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-        //     AddItemToDrawer(
-        //         "Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty && !DrawerTitles.Contains("Configure"))
+            AddItemToDrawer(
+                "Configure", b => SetUpConfig(), icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
 
         AddItemToDrawer("DriverStation",
             b => DynamicUIManager.CreatePanel<BetaWarningPanel>(
@@ -403,6 +419,13 @@ public static class MainHUD {
     public static void SetUpConfig() {
         isConfig = true;
 
+        _spawnButton.OnClicked -= _spawnCallback;
+        _spawnButton.OnClicked += _backCallback;
+
+        _spawnButton.RootGameObject.SetActive(true);
+        _spawnIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"));
+        _spawnButton.Label.SetText("Back");
+
         if (ModeManager.CurrentMode.GetType() == typeof(MatchMode) &&
             DynamicUIManager.PanelExists<SpawnLocationPanel>()) {
             ConfigRobot = MatchMode.Robots[DynamicUIManager.GetPanel<SpawnLocationPanel>().SelectedButton];
@@ -411,9 +434,7 @@ public static class MainHUD {
         }
 
         RemoveAllItemsFromDrawer();
-
-        AddItemToDrawer("Back", b => { LeaveConfig(); }, drawerPosition: DrawerPosition.Top);
-
+        
         AddItemToDrawer("Pickup", b => {
             if (DynamicUIManager.PanelExists<ConfigureShotTrajectoryPanel>())
                 DynamicUIManager.ClosePanel<ConfigureShotTrajectoryPanel>();
