@@ -26,6 +26,12 @@ set(SHARED_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/inc/resource_util.h
 )
 
+set(SHARED_SOURCES_WINDOWS
+    ${CMAKE_CURRENT_LIST_DIR}/src/client_util_win.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/main_win.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/resource_util_win.cpp
+)
+
 set(SHARED_SOURCES_MAC
     ${CMAKE_CURRENT_LIST_DIR}/src/client_util_mac.mm
     ${CMAKE_CURRENT_LIST_DIR}/src/main_mac.mm
@@ -54,6 +60,11 @@ set(SHARED_TARGET "shared")
 # Mac has a different process for creating the shared helper apps
 if(OS_MAC)
     set(SHARED_HELPER_TARGET "shared_helper")
+endif()
+
+if(OS_WINDOWS OR OS_LINUX)
+    # MacOS loades the CEF framework dynamically on startup unlike windows and linux
+    ADD_LOGICAL_TARGET("libcef_lib" "${CEF_LIB_DEBUG}" "${CEF_LIB_RELEASE}")
 endif()
 
 # TODO: Check the difference between os_mac and os_macosx
@@ -109,7 +120,22 @@ macro(SET_CEF_EXECUTABLE_TARGET_PROPERTIES target)
     endif()
 endmacro()
 
-# TODO: Windows
+if(OS_WINDOWS)
+    SET_SOURCE_GROUPS(${SHARED_SOURCES})
+
+    add_library(${SHARED_TARGET} STATIC ${SHARED_SOURCES} ${SHARED_HEADERS})
+    SET_CEF_LIBRARY_TARGET_PROPERTIES(${SHARED_TARGET})
+    add_dependencies(${SHARED_TARGET} libcef_dll_wrapper)
+    target_link_libraries(${SHARED_TARGET} libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS})
+
+    if(USE_SANDBOX)
+        ADD_LOGICAL_TARGET("cef_sandbox_lib" "${CEF_SANDBOX_LIB_DEBUG}" "${CEF_SANDBOX_LIB_RELEASE}")
+        target_link_libraries(${SHARED_TARGET} cef_sandbox_lib ${CEF_SANDBOX_STANDARD_LIBS})
+    endif()
+
+    COPY_FILES("${SHARED_TARGET}" "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${SYNTHESIS_OUT_DIR}")
+    COPY_FILES("${SHARED_TARGET}" "${CEF_RESOURCE_FILES}" "${CEF_RESOURCE_DIR}" "${SYNTHESIS_OUT_DIR}")
+endif()
 
 if(OS_MAC)
     SET_SOURCE_GROUPS(${SHARED_SOURCES})
@@ -143,10 +169,26 @@ set(MAIN_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/inc/client.h
 )
 
+if(OS_WINDOWS OR OS_LINUX)
+    set(MAIN_SOURCES
+        ${MAIN_SOURCES}
+        ${CMAKE_CURRENT_LIST_DIR}/src/other_app.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/renderer_app.cpp
+    )
+endif()
+
+# Mac has a sepearte helper executable
 set(MAIN_MAC_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/src/other_app.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/renderer_app.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/browser_helper_mac.cpp
+)
+
+set(SHARED_WINDOWS_RESCOURCES
+    ${CMAKE_CURRENT_LIST_DIR}/res/win/big.ico
+    ${CMAKE_CURRENT_LIST_DIR}/res/win/resource.h
+    ${CMAKE_CURRENT_LIST_DIR}/res/win/shared.rc
+    ${CMAKE_CURRENT_LIST_DIR}/res/win/small.ico
 )
 
 set(SHARED_MAC_RESOURCES
@@ -159,16 +201,21 @@ set(SHARED_MAC_RESOURCES
 set(SHARED_INFO_PLIST ./res/mac/Info.plist)
 set(SHARED_HELPER_INFO_PLIST ./res/mac/helper-Info.plist)
 
-# TODO: Windows
-set(SHARED_WINDOWS_RESCOURCES)
-
 set(CURRENT_TARGET "synthesis_unity_cef")
 if(OS_MAC)
-    set(CURRENT_TARGET_HELPER "synthesis_unity_cef_helper")
-    set(CURRENT_HELPER_OUTPUT_NAME "synthesis cef helper")
+    set(CURRENT_TARGET_HELPER "synthesis_unity_cef_Helper")
+    set(CURRENT_HELPER_OUTPUT_NAME "synthesis unity cef Helper")
 endif()
 
-# TODO: Windows
+if(OS_WINDOWS)
+    set(MAIN_SOURCES ${MAIN_SOURCES} ${SHARED_WINDOWS_RESCOURCES})
+    SET_SOURCE_GROUPS(${MAIN_SOURCES})
+
+    add_executable(${CURRENT_TARGET} WIN32 ${MAIN_SOURCES} ${MAIN_HEADERS})
+    SET_CEF_EXECUTABLE_TARGET_PROPERTIES(${CURRENT_TARGET})
+    add_dependencies(${CURRENT_TARGET} ${SHARED_TARGET})
+    target_link_libraries(${CURRENT_TARGET} ${SHARED_TARGET})
+endif()
 
 if(OS_MAC)
     SET_SOURCE_GROUPS(${MAIN_SOURCES})
@@ -208,9 +255,9 @@ if(OS_MAC)
 
         set(_helper_info_plist "${CMAKE_CURRENT_BINARY_DIR}/helper-Info${target_suffix}.plist")
         file(READ "${CMAKE_CURRENT_SOURCE_DIR}/${SHARED_HELPER_INFO_PLIST}" _plist_contents)
-        string(REPLACE "\${EXECUTABLE_NAME}" "${_helper_output_name}" _plist_contents "${_plist_contents}")
-        string(REPLACE "\${PRODUCT_NAME}" "${_helper_output_name}" _plist_contents "${_plist_contents}")
-        string(REPLACE "\${BUNDLE_ID_SUFFIX}" "${plist_suffix}" _plist_contents "${_plist_contents}")
+        string(REPLACE "\${EXECUTABLE_NAME}" "${helper_output_name}" _plist_contents ${_plist_contents})
+        string(REPLACE "\${PRODUCT_NAME}" "${helper_output_name}" _plist_contents ${_plist_contents})
+        string(REPLACE "\${BUNDLE_ID_SUFFIX}" "${plist_suffix}" _plist_contents ${_plist_contents})
         file(WRITE ${_helper_info_plist} ${_plist_contents})
 
         add_executable(${helper_target} MACOSX_BUNDLE ${MAIN_MAC_SOURCES})
@@ -237,6 +284,11 @@ if(OS_MAC)
             VERBATIM
             )
     endforeach()
+
+    set(PREFIXES
+        "./res/mac"
+    )
+    COPY_MAC_RESOURCES("${SHARED_MAC_RESOURCES}" "${PREFIXES}" "${CURRENT_TARGET}" "${CMAKE_CURRENT_SOURCE_DIR}" "${SYNTHESIS_APP}")
 endif()
 
 # TODO: Linux
