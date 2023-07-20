@@ -64,6 +64,9 @@
 #include <iostream>
 using namespace std;
 
+namespace synthesis {
+namespace shared {
+
 int main(int argc, char* argv[]) {
 
     cout << "StartBrowserClient()" << endl;
@@ -124,3 +127,6 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
+
+} // namespace shared
+} // namespace synthesis

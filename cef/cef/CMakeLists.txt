@@ -5,6 +5,8 @@ set(SHARED_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/src/client_util.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/browser_util.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/resource_util.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/renderer_app.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/other_app.cpp
 )
 
 set(SHARED_HEADERS
@@ -59,9 +61,9 @@ endif()
 
 macro(SET_CEF_TARGET_PROPERTIES target)
     set_target_properties(${target} PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${TARGET_OUT_DIR}"
-        LIBRARY_OUTPUT_DIRECTORY "${TARGET_OUT_DIR}"
-        ARCHIVE_OUTPUT_DIRECTORY "${TARGET_OUT_DIR}"
+        RUNTIME_OUTPUT_DIRECTORY "${SYNTHESIS_OUT_DIR}"
+        LIBRARY_OUTPUT_DIRECTORY "${SYNTHESIS_OUT_DIR}"
+        ARCHIVE_OUTPUT_DIRECTORY "${SYNTHESIS_OUT_DIR}"
     )
 
     if(OS_MACOSX OR OS_WINDOWS)
@@ -88,7 +90,7 @@ macro(SET_CEF_EXECUTABLE_TARGET_PROPERTIES target)
             COMMAND "mt.exe" -nologo
                     -manifest \"${CMAKE_CURRENT_SOURCE_DIR}/${SHARED_EXE_MANIFEST}\"
                             \"${CMAKE_CURRENT_SOURCE_DIR}/${SHARED_COMPATIBILITY_MANIFEST}\"
-                    -outputresource:"${EXAMPLE_TARGET_OUT_DIR}/${target}.exe"\;\#1
+                    -outputresource:"${EXAMPLE_SYNTHESIS_OUT_DIR}/${target}.exe"\;\#1
             COMMENT "Adding manifest..."
             )
     endif()
@@ -133,12 +135,22 @@ set(MAIN_MAC_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/src/browser_helper_mac.cpp
 )
 
-# TODO: Need add resources?
+set(SHARED_MAC_RESOURCES
+    ${CMAKE_CURRENT_LIST_DIR}/res/mac/English.lproj/InfoPlist.strings
+    ${CMAKE_CURRENT_LIST_DIR}/res/mac/English.lproj/MainMenu.xib
+    ${CMAKE_CURRENT_LIST_DIR}/res/mac/Info.plist
+    ${CMAKE_CURRENT_LIST_DIR}/res/mac/shared.icns
+)
+
+set(SHARED_INFO_PLIST ./res/mac/Info.plist)
+
+# TODO: Windows
+set(SHARED_WINDOWS_RESCOURCES)
 
 set(CURRENT_TARGET "synthesis_unity_cef")
 if(OS_MAC)
     set(CURRENT_TARGET_HELPER "synthesis_unity_cef_helper")
-    set(CURRENT_HELPER_OUTPUT_NAME = "synthesis cef helper")
+    set(CURRENT_HELPER_OUTPUT_NAME "synthesis cef helper")
 endif()
 
 # TODO: Windows
@@ -147,7 +159,7 @@ if(OS_MAC)
     SET_SOURCE_GROUPS(${MAIN_SOURCES})
     SET_SOURCE_GROUPS(${MAIN_MAC_SOURCES})
 
-    set(SYNTHESIS_APP "${TARGET_OUT_DIR}/${CURRENT_TARGET}.app")
+    set(SYNTHESIS_APP "${SYNTHESIS_OUT_DIR}/${CURRENT_TARGET}.app")
 
     set(EXECUTABLE_NAME "${CURRENT_TARGET}")
     set(PRODUCT_NAME "${CURRENT_TARGET}")
@@ -156,8 +168,10 @@ if(OS_MAC)
     SET_CEF_EXECUTABLE_TARGET_PROPERTIES(${CURRENT_TARGET})
     add_dependencies(${CURRENT_TARGET} ${SHARED_TARGET})
     target_link_libraries(${CURRENT_TARGET} ${SHARED_TARGET})
-
-    # TODO: Add rescources?
+    set_target_properties(${CURRENT_TARGET} PROPERTIES
+        RESOURCE "${SHARED_MAC_RESOURCES}"
+        MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/${SHARED_INFO_PLIST}"
+    )
 
     add_custom_command(
         TARGET ${CURRENT_TARGET}
@@ -203,7 +217,7 @@ if(OS_MAC)
             TARGET ${CURRENT_TARGET}
             POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_directory
-                    "${TARGET_OUT_DIR}/${helper_output_name}.app"
+                    "${SYNTHESIS_OUT_DIR}/${helper_output_name}.app"
                     "${SYNTHESIS_APP}/Contents/Frameworks/${helper_output_name}.app"
             VERBATIM
             )
