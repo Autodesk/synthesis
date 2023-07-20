@@ -107,7 +107,11 @@ namespace Modes.MatchMode {
             }
         }
 
-        public void End() {}
+        public void End() {
+            Scoring.redScore  = 0;
+            Scoring.blueScore = 0;
+            EventBus.RemoveTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
+        }
 
         public void OpenMenu() {}
 

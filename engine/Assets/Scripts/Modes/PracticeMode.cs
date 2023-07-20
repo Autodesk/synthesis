@@ -126,6 +126,9 @@ public class PracticeMode : IMode {
 
     public void End() {
         InputManager._mappedValueInputs.Remove(TOGGLE_ESCAPE_MENU_INPUT);
+        Scoring.redScore  = 0;
+        Scoring.blueScore = 0;
+        EventBus.RemoveTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
     }
 
     public static void ConfigureGamepieceSpawnpoint() {
