@@ -620,6 +620,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         if (robot == CurrentlyPossessedRobot)
             CurrentlyPossessedRobot = string.Empty;
         _spawnedRobots.Remove(robot);
+        MainHUD.ConfigRobot = null;
         return SimulationManager.RemoveSimObject(robot);
     }
 
