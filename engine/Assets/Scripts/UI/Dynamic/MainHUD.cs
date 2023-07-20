@@ -79,7 +79,9 @@ public static class MainHUD {
     private static Content _topItemContainer;
     private static Content _bottomItemContainer;
     private static Button _spawnButton;
+    private static Image _spawnIcon;
     private static Button _homeButton;
+    private static Image _homeIcon;
 
     private static List<(Button button, Image image)> _topDrawerItems    = new List<(Button button, Image image)>();
     private static List<(Button button, Image image)> _bottomDrawerItems = new List<(Button button, Image image)>();
@@ -103,16 +105,16 @@ public static class MainHUD {
             _itemContainer, _itemContainer.RootGameObject.transform.Find("BottomItemContainer").gameObject, null);
         _spawnButton = new Button(
             _tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("SpawnButton").gameObject, null);
+        _spawnIcon  = new Image(_spawnButton, _spawnButton.RootGameObject.transform.Find("PlusIcon").gameObject);
         _homeButton = new Button(
             _tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("HomeButton").gameObject, null);
+        _homeIcon = new Image(_homeButton, _homeButton.RootGameObject.transform.Find("HomeIcon").gameObject);
 
         _spawnButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.Background)
             .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText));
         _homeButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.Background)
             .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText));
 
-        _accordionButton.Image.SetSprite(
-            SynthesisAssetCollection.GetSpriteByName(Collapsed ? "accordion" : "CloseIcon"));
         _accordionButton.OnClicked += (b) => {
             Collapsed = !Collapsed;
             _accordionButton.Image.SetSprite(
@@ -147,7 +149,12 @@ public static class MainHUD {
 
         _isSetup = true;
 
-        SceneManager.activeSceneChanged += (Scene a, Scene b) => { _isSetup = false; };
+        SceneManager.activeSceneChanged += (Scene a, Scene b) => {
+            _isSetup  = false;
+            Collapsed = true;
+            _accordionButton.Image.SetSprite(
+                SynthesisAssetCollection.GetSpriteByName(Collapsed ? "accordion" : "CloseIcon"));
+        };
 
         UpdateDrawerSizing();
         AssignColors(null);
@@ -265,8 +272,12 @@ public static class MainHUD {
         _tabDrawerContent.Image!.SetColor(
             ColorManager.SynthesisColor.InteractiveElementLeft, ColorManager.SynthesisColor.InteractiveElementRight);
 
+        _accordionButton.Image.SetColor(ColorManager.SynthesisColor.Icon);
+
         _spawnButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.Background);
+        _spawnIcon.SetColor(ColorManager.SynthesisColor.Icon);
         _homeButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.Background);
+        _homeIcon.SetColor(ColorManager.SynthesisColor.Icon);
 
         _topItemContainer.SetBackgroundColor<Content>(ColorManager.SynthesisColor.Background);
         _bottomItemContainer.SetBackgroundColor<Content>(ColorManager.SynthesisColor.Background);
@@ -274,12 +285,12 @@ public static class MainHUD {
         _topDrawerItems.ForEach(x => {
             x.button.Label!.SetColor(ColorManager.SynthesisColor.MainText);
             x.button.Image.SetColor(ColorManager.SynthesisColor.Background);
-            x.image.SetColor(ColorManager.SynthesisColor.MainText);
+            x.image.SetColor(ColorManager.SynthesisColor.Icon);
         });
         _bottomDrawerItems.ForEach(x => {
             x.button.Label!.SetColor(ColorManager.SynthesisColor.MainText);
             x.button.Image.SetColor(ColorManager.SynthesisColor.Background);
-            x.image.SetColor(ColorManager.SynthesisColor.MainText);
+            x.image.SetColor(ColorManager.SynthesisColor.Icon);
         });
     }
 }
