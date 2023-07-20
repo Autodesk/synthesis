@@ -153,7 +153,7 @@ public static class MainHUD {
         _homeButton.SetTransition(Selectable.Transition.ColorTint).SetInteractableColors();
 
         _spawnCallback = b => { DynamicUIManager.CreateModal<SpawningModal>(); };
-        _backCallback  = b => { LeaveConfig(); };
+        _backCallback = b => { LeaveConfig(); };
 
         // Setup default HUD
         // MOVED TO PRACTICE MODE
@@ -200,7 +200,7 @@ public static class MainHUD {
 
         var drawerButtonObj = Object.Instantiate(SynthesisAssetCollection.GetUIPrefab("hud-drawer-item-base"),
             (drawerPosition == DrawerPosition.Top ? _topItemContainer : _bottomItemContainer).RootGameObject.transform);
-        drawerButtonObj.GetComponent<UnityEngine.UI.Image>().pixelsPerUnitMultiplier = 20;
+        drawerButtonObj.GetComponent<UnityEngine.UI.Image>().pixelsPerUnitMultiplier = 30;
 
         var drawerButton = new Button(_tabDrawerContent, drawerButtonObj, null);
         drawerButton.Label!.SetText(title).SetFontSize(16);
@@ -210,8 +210,6 @@ public static class MainHUD {
         var drawerIcon = new Image(_tabDrawerContent, drawerButtonObj.transform.Find("ItemIcon").gameObject);
         if (icon != null)
             drawerIcon.SetSprite(icon);
-
-        drawerIcon.RootGameObject.transform.localScale = new Vector3(0.65F, 0.65F, 1F);
 
         switch (drawerPosition) {
             case DrawerPosition.Bottom:
@@ -268,29 +266,34 @@ public static class MainHUD {
         int LOGO_BUTTON_SPACING = 5;
         int BUTTON_HEIGHT       = 60;
         int SPACING             = 15;
+        int GROUP_SPACING       = 5;
         int ITEM_HEIGHT         = 40;
         int BOTTOM_PADDING      = 40;
 
         for (int i = 0; i < _topDrawerItems.Count; i++) {
             _topDrawerItems[i]
                 .button
-                .SetTopStretch<Button>(
-                    anchoredY: SPACING + i * (ITEM_HEIGHT + SPACING), leftPadding: SPACING, rightPadding: SPACING)
-                .StepIntoLabel(l => l.SetStretch<Label>(leftPadding: 55));
+                .SetTopStretch<Button>(anchoredY: GROUP_SPACING + i * (ITEM_HEIGHT + GROUP_SPACING),
+                    leftPadding: GROUP_SPACING, rightPadding: GROUP_SPACING)
+                .StepIntoLabel(l => l.SetStretch<Label>(leftPadding: 50));
         }
         for (int i = 0; i < _bottomDrawerItems.Count; i++) {
             _bottomDrawerItems[i]
                 .button
-                .SetTopStretch<Button>(
-                    anchoredY: SPACING + i * (ITEM_HEIGHT + SPACING), leftPadding: SPACING, rightPadding: SPACING)
-                .StepIntoLabel(l => l.SetStretch<Label>(leftPadding: 55));
+                .SetTopStretch<Button>(anchoredY: GROUP_SPACING + i * (ITEM_HEIGHT + GROUP_SPACING),
+                    leftPadding: GROUP_SPACING, rightPadding: GROUP_SPACING)
+                .StepIntoLabel(l => l.SetStretch<Label>(leftPadding: 50));
         }
-        _itemContainer.SetTopStretch<Content>(anchoredY: LOGO_BOTTOM_Y + LOGO_BUTTON_SPACING + (_spawnButton.RootGameObject.activeSelf ? BUTTON_HEIGHT + SPACING : 0),
+        _itemContainer.SetTopStretch<Content>(
+            anchoredY: LOGO_BOTTOM_Y + LOGO_BUTTON_SPACING +
+                (_spawnButton.RootGameObject.activeSelf ? BUTTON_HEIGHT + SPACING : 0),
             leftPadding: SPACING, rightPadding: SPACING);
         // all the zero checks handle layout when no tray items have been added
-        int topItemsHeight = _topDrawerItems.Count == 0 ? 0 : SPACING + _topDrawerItems.Count * (ITEM_HEIGHT + SPACING);
-        int bottomItemsHeight =
-            _bottomDrawerItems.Count == 0 ? 0 : SPACING + _bottomDrawerItems.Count * (ITEM_HEIGHT + SPACING);
+        int topItemsHeight =
+            _topDrawerItems.Count == 0 ? 0 : GROUP_SPACING + _topDrawerItems.Count * (ITEM_HEIGHT + GROUP_SPACING);
+        int bottomItemsHeight = _bottomDrawerItems.Count == 0
+                                    ? 0
+                                    : GROUP_SPACING + _bottomDrawerItems.Count * (ITEM_HEIGHT + GROUP_SPACING);
         _topItemContainer.SetHeight<Content>(topItemsHeight);
         _topItemContainer.SetTopStretch<Content>(anchoredY: 0);
         _bottomItemContainer.SetHeight<Content>(bottomItemsHeight);
@@ -300,8 +303,9 @@ public static class MainHUD {
         _itemContainer.SetHeight<Content>(itemsHeight);
         int itemsHeightWithSpacing =
             itemsHeight == 0 ? SPACING : SPACING + itemsHeight + (bottomItemsHeight == 0 ? 0 : SPACING);
-        if (!_spawnButton.RootGameObject.activeSelf) itemsHeightWithSpacing -= SPACING;
-        _tabDrawerContent.SetHeight<Content>(LOGO_BOTTOM_Y + LOGO_BUTTON_SPACING + 
+        if (!_spawnButton.RootGameObject.activeSelf)
+            itemsHeightWithSpacing -= SPACING;
+        _tabDrawerContent.SetHeight<Content>(LOGO_BOTTOM_Y + LOGO_BUTTON_SPACING +
                                              (_spawnButton.RootGameObject.activeSelf ? BUTTON_HEIGHT : 0) +
                                              itemsHeightWithSpacing + BUTTON_HEIGHT + BOTTOM_PADDING);
     }
@@ -316,22 +320,22 @@ public static class MainHUD {
 
         _accordionButton.Image.SetColor(ColorManager.SynthesisColor.Icon);
 
-        _spawnButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.Background);
+        _spawnButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.BackgroundHUD);
         _spawnIcon.SetColor(ColorManager.SynthesisColor.Icon);
-        _homeButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.Background);
+        _homeButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.BackgroundHUD);
         _homeIcon.SetColor(ColorManager.SynthesisColor.Icon);
 
-        _topItemContainer.SetBackgroundColor<Content>(ColorManager.SynthesisColor.Background);
-        _bottomItemContainer.SetBackgroundColor<Content>(ColorManager.SynthesisColor.Background);
+        _topItemContainer.SetBackgroundColor<Content>(ColorManager.SynthesisColor.BackgroundHUD);
+        _bottomItemContainer.SetBackgroundColor<Content>(ColorManager.SynthesisColor.BackgroundHUD);
 
         _topDrawerItems.ForEach(x => {
             x.button.Label!.SetColor(ColorManager.SynthesisColor.MainText);
-            x.button.Image.SetColor(ColorManager.SynthesisColor.Background);
+            x.button.Image.SetColor(ColorManager.SynthesisColor.BackgroundHUD);
             x.image.SetColor(ColorManager.SynthesisColor.Icon);
         });
         _bottomDrawerItems.ForEach(x => {
             x.button.Label!.SetColor(ColorManager.SynthesisColor.MainText);
-            x.button.Image.SetColor(ColorManager.SynthesisColor.Background);
+            x.button.Image.SetColor(ColorManager.SynthesisColor.BackgroundHUD);
             x.image.SetColor(ColorManager.SynthesisColor.Icon);
         });
     }
@@ -341,11 +345,11 @@ public static class MainHUD {
 
         _spawnButton.OnClicked -= _backCallback;
         _spawnButton.OnClicked += _spawnCallback;
-        
+
         _spawnButton.RootGameObject.SetActive(true);
         _spawnIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("plus"));
         _spawnButton.Label.SetText("Spawn Asset");
-        
+
         AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(),
             drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("settings"));
         AddItemToDrawer("View", b => DynamicUIManager.CreateModal<ChangeViewModal>(),
@@ -378,9 +382,9 @@ public static class MainHUD {
 
     public static void SetUpMatch() {
         RemoveAllItemsFromDrawer();
-        
+
         _spawnButton.RootGameObject.SetActive(false);
-        
+
         AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(),
             drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("settings"));
         AddItemToDrawer("View", b => DynamicUIManager.CreateModal<ChangeViewModal>(),
@@ -434,7 +438,7 @@ public static class MainHUD {
         }
 
         RemoveAllItemsFromDrawer();
-        
+
         AddItemToDrawer("Pickup", b => {
             if (DynamicUIManager.PanelExists<ConfigureShotTrajectoryPanel>())
                 DynamicUIManager.ClosePanel<ConfigureShotTrajectoryPanel>();

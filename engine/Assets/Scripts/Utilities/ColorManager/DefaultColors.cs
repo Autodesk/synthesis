@@ -10,6 +10,7 @@ namespace Utilities.ColorManager {
             (ColorManager.SynthesisColor.InteractiveSecondary, new Color32(204, 124, 0, 255)),
             (ColorManager.SynthesisColor.Background, new Color32(33, 37, 41, 255)),
             (ColorManager.SynthesisColor.BackgroundSecondary, new Color32(52, 58, 64, 255)),
+            (ColorManager.SynthesisColor.BackgroundHUD, new Color32(23, 23, 23, 255)),
             (ColorManager.SynthesisColor.InteractiveHover, new Color32(150, 150, 150, 255)),
             (ColorManager.SynthesisColor.InteractiveSelect, new Color32(100, 100, 100, 255)),
             (ColorManager.SynthesisColor.MainText, new Color32(248, 249, 250, 255)),
