@@ -68,9 +68,8 @@ Shader "ImageGradient/ImageGradient" {
                 if (gradientPos > 1)
                     gradientPos = 2 - gradientPos;
                 
-                float4 col = lerp(_StartColor, _EndColor, gradientPos) * _TintColor;
-
-                return float4(col.x, col.y, col.z, alpha*maskAlpha);
+                float4 col = lerp(_StartColor, _EndColor, _Horizontal > 0 ? i.uv.x : 1 - i.uv.y);
+                return float4(col.x, col.y, col.z, alpha * maskAlpha * col.a);
             }
             
             ENDCG

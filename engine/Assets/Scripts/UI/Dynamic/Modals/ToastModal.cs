@@ -1,24 +1,31 @@
-using System.Collections;
-using System.Collections.Generic;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
 using UnityEngine.UI;
 using SynthesisAPI.Utilities;
-using TMPro;
 using System.IO;
 using UI.Dynamic.Modals.Spawning;
+using Logger = SynthesisAPI.Utilities.Logger;
 
 public class ToastModal : ModalDynamic {
-    public ToastModal() : base(new Vector2(500, 500)) {}
+    public ToastModal(string text, LogLevel level) : base(new Vector2(500, 500)) {
+        _toastText  = text;
+        _toastLevel = level;
+    }
 
-    public static string toastText    = "";
-    public static LogLevel toastLevel = LogLevel.Info;
+    private readonly string _toastText;
+    private readonly LogLevel _toastLevel;
 
     public override void Create() {
         Title.SetStretch<Content>();
-        Title.SetText("    " + toastLevel.ToString() + " Message: ").SetFontSize(30);
-        AcceptButton.AddOnClickedEvent(b => { WriteToFile(); }).Label.SetText("Write File");
-        CancelButton.Label.SetText("Close");
+
+        Title.SetText("    " + _toastLevel + " Message: ").SetFontSize(30);
+        AcceptButton
+            .AddOnClickedEvent(
+                _ => { WriteToFile(); })
+            .Label!.SetText("Write File");
+        Description.RootGameObject.SetActive(false);
+        ModalIcon.RootGameObject.SetActive(false);
+        CancelButton.Label!.SetText("Close");
 
         var sv      = MainContent.CreateScrollView().SetStretch<ScrollView>();
         var content = sv.Content.CreateSubContent(new Vector2(sv.Content.Size.x, 0));
@@ -27,14 +34,14 @@ public class ToastModal : ModalDynamic {
             ContentSizeFitter.FitMode.PreferredSize;
 
         var label = content.CreateLabel(0);
-        label.SetText(toastText).SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Top);
+        label.SetText(_toastText).SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Top);
         label.SetFontStyle(TMPro.FontStyles.Normal);
         label.SetTopStretch<Content>();
         label.SetFont(SynthesisAssetCollection.Instance.Fonts[1]);
         label.RootGameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
         label.RootGameObject.transform.SetParent(sv.Content.RootGameObject.transform);
 
-        GameObject.Destroy(content.RootGameObject);
+        Object.Destroy(content.RootGameObject);
     }
 
     public override void Delete() {}
@@ -42,26 +49,25 @@ public class ToastModal : ModalDynamic {
     public override void Update() {}
 
     private void WriteToFile() {
-        string _root = AddRobotModal.ParsePath(Path.Combine("$appdata/Autodesk/Synthesis", "Log Messages"), '/');
+        string root = AddRobotModal.ParsePath(Path.Combine("$appdata/Autodesk/Synthesis", "Log Messages"), '/');
 
         try {
-            if (!Directory.Exists(_root)) {
-                Directory.CreateDirectory(_root);
+            if (!Directory.Exists(root)) {
+                Directory.CreateDirectory(root);
             }
 
-        } catch (IOException ex) {
-            ToastManager.Log(ex);
+        } catch (IOException) {
         }
 
         // Write some text to the test.txt file
         StreamWriter writer = new StreamWriter(
-            _root + "/message_" + System.DateTime.Now.ToString().Replace('/', '-').Replace(' ', '_').Replace(':', '-') +
+            root + "/message_" + System.DateTime.Now.ToString().Replace('/', '-').Replace(' ', '_').Replace(':', '-') +
                 ".txt",
             true);
-        writer.WriteLine(toastText);
+        writer.WriteLine(_toastText);
         writer.Close();
-        OpenFolder(_root);
-        ToastManager.Log("File written at path: " + _root);
+        OpenFolder(root);
+        Logger.Log("File written at path: " + root);
     }
 
     private void OpenFolder(string path) {

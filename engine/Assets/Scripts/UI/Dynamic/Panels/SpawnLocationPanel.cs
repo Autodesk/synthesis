@@ -52,7 +52,7 @@ namespace Synthesis.UI.Dynamic {
             return u;
         };
 
-        private int _selectedButton;
+        public int SelectedButton;
         private bool _renderBoxes = false;
 
         public SpawnLocationPanel() : base(new Vector2(WIDTH, HEIGHT)) {}
@@ -85,20 +85,22 @@ namespace Synthesis.UI.Dynamic {
         private DigitalState prevInput = DigitalState.None;
 
         public override void Update() {
-            var currentInput                              = InputManager.MappedDigitalInputs[SNAP_MODE_KEY][0].State;
-            MatchMode.RoundSpawnLocation[_selectedButton] = currentInput == DigitalState.Held;
+            if (!MainHUD.isConfig) {
+                var currentInput                             = InputManager.MappedDigitalInputs[SNAP_MODE_KEY][0].State;
+                MatchMode.RoundSpawnLocation[SelectedButton] = currentInput == DigitalState.Held;
 
-            // True the frame the input is pressed or released
-            if (prevInput != currentInput) {
-                MatchMode.RawSpawnLocations[_selectedButton] =
-                    RoundSpawnLocation(MatchMode.RawSpawnLocations[_selectedButton]);
+                // True the frame the input is pressed or released
+                if (prevInput != currentInput) {
+                    MatchMode.RawSpawnLocations[SelectedButton] =
+                        RoundSpawnLocation(MatchMode.RawSpawnLocations[SelectedButton]);
+                }
+
+                prevInput = currentInput;
+
+                FindSpawnPosition();
+                RotateRobot();
+                MoveRobots();
             }
-
-            prevInput = currentInput;
-
-            FindSpawnPosition();
-            RotateRobot();
-            MoveRobots();
         }
 
         public override void Delete() {
@@ -155,9 +157,9 @@ namespace Synthesis.UI.Dynamic {
         /// </summary>
         /// <param name="index">the selected buttons index</param>
         private void SelectButton(int index) {
-            buttons[_selectedButton].Image.SetColor(
-                ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveBackground));
-            _selectedButton = index;
+            buttons[SelectedButton].Image.SetColor(
+                ColorManager.GetColor(ColorManager.SynthesisColor.BackgroundSecondary));
+            SelectedButton = index;
 
             buttons[index].Image.SetColor((index < 3) ? redButtonColor : blueButtonColor);
         }
@@ -170,20 +172,20 @@ namespace Synthesis.UI.Dynamic {
                 // Raycast out from camera to see where the mouse is pointing
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (UnityEngine.Physics.Raycast(ray, out var hit, 100, fieldLayerMask)) {
-                    Transform selectedPosition = _robotHighlights[_selectedButton];
+                    Transform selectedPosition = _robotHighlights[SelectedButton];
 
                     Vector3 boxHalfSize = selectedPosition.localScale / 2f;
 
                     Vector3 rayOrigin =
-                        (MatchMode.RoundSpawnLocation[_selectedButton])
+                        (MatchMode.RoundSpawnLocation[SelectedButton])
                             ? RoundSpawnLocation((hit.point + Vector3.up * 20f, Quaternion.identity)).position
                             : hit.point + Vector3.up * 20f;
 
                     // Box cast down towards where the mouse is pointing to find the lowest suitable spawn position for
                     // the robot
                     if (UnityEngine.Physics.BoxCast(rayOrigin, boxHalfSize, Vector3.down, out var boxHit,
-                            MatchMode.GetSpawnLocation(_selectedButton).rotation, 30f, fieldLayerMask)) {
-                        MatchMode.RawSpawnLocations[_selectedButton].position = new Vector3(
+                            MatchMode.GetSpawnLocation(SelectedButton).rotation, 30f, fieldLayerMask)) {
+                        MatchMode.RawSpawnLocations[SelectedButton].position = new Vector3(
                             hit.point.x, boxHit.point.y + boxHalfSize.y + SPAWN_HEIGHT_FROM_GROUND, hit.point.z);
                     }
                 }
@@ -200,7 +202,7 @@ namespace Synthesis.UI.Dynamic {
             if (Mathf.Abs(scrollSpeed) < 0.005f)
                 return;
 
-            MatchMode.RawSpawnLocations[_selectedButton].rotation.eulerAngles +=
+            MatchMode.RawSpawnLocations[SelectedButton].rotation.eulerAngles +=
                 Vector3.up * (Mathf.Sign(scrollSpeed) * ROTATE_ROBOT_SPEED);
         }
 
