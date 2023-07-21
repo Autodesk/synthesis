@@ -1,4 +1,4 @@
-#include "rescource_util.h"
+#include "resource_util.h"
 
 #include <include/base/cef_logging.h>
 #include <include/wrapper/cef_byte_read_handler.h>
@@ -70,8 +70,8 @@ CefResourceManager::Provider* CreateBinaryResourceProvider(const std::string& ur
     return new BinaryResourceProvider(urlPath);
 }
 
-bool GetResourceString(const std::string& resourcepath std::string& out) {
-    int resourceId = GetResourceId(resourcepath);
+bool GetResourceString(const std::string& resourcePath, std::string& out) {
+    int resourceId = GetResourceId(resourcePath);
 
     if (resourceId == 0) {
         return false;

@@ -1,5 +1,12 @@
 cmake_minimum_required(VERSION 3.26.0)
-project(cef LANGUAGES CXX OBJCXX)
+project(cef)
+
+if(OS_MAC)
+    project(LANGUAGES CXX OBJCXX)
+else()
+    project(LANGUAGES CXX)
+endif()
+
 set(CMAKE_CONFIGURATION_TYPES Debug Release)
 
 set_property(GLOBAL PROPERTY OS_FOLDERS ON)
