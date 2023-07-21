@@ -63,7 +63,7 @@ if(OS_WINDOWS)
     SET_CEF_SOURCE_GROUPS(${SHARED_SOURCES})
     SET_CEF_SOURCE_GROUPS(${SHARED_HEADERS})
   
-    add_library(${SHARED_TARGET} STATIC ${SHARED_SOURCES} ${SHARED_HEADERS}})
+    add_library(${SHARED_TARGET} STATIC ${SHARED_SOURCES} ${SHARED_HEADERS})
     SET_CEF_LIBRARY_TARGET_PROPERTIES(${SHARED_TARGET})
     add_dependencies(${SHARED_TARGET} libcef_dll_wrapper)
     target_link_libraries(${SHARED_TARGET} libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS})
