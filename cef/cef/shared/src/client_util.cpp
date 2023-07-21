@@ -16,8 +16,16 @@ void OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString& title) {
     CEF_REQUIRE_UI_THREAD();
 
 #if defined(OS_WIN) || defined(OS_LINUX)
-    // TODO
-#endif
+    CefRefPtr<CefBrowserView> browserView = CefBrowserView::GetForBrowser(browser);
+
+    if (browserView) {
+        CefRefPtr<CefWindow> window = browserView->GetWindow();
+
+        if (window) {
+            window->SetTitle(title);
+        }
+    } else
+#endif // defined(OS_WIN) || defined(OS_LINUX)
     {
         PlatformTitleChange(browser, title);
     }
