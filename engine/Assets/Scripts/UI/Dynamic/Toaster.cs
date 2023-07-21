@@ -4,6 +4,7 @@ using Synthesis.UI.Dynamic;
 using SynthesisAPI.Utilities;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering;
 using Utilities.ColorManager;
 using Object = UnityEngine.Object;
 
@@ -15,7 +16,7 @@ namespace Synthesis.Util {
     public static class Toaster {
 
         private const int MAX_TOASTS = 20;
-        private const float TOAST_TIMEOUT = 30f;
+        private const float TOAST_TIMEOUT = 300f;
         private const int MAX_SHOWN_TOASTS = 5;
         public const float TOAST_SPACING = 15f;
 
@@ -25,6 +26,16 @@ namespace Synthesis.Util {
         public const float DROP_SHADOW_DISTANCE = 3f;
         public const float TOAST_CONTAINER_HEIGHT = TOAST_HEIGHT * (MAX_SHOWN_TOASTS + 1) + TOAST_SPACING * MAX_SHOWN_TOASTS;
         public static readonly Color DROP_SHADOW_MOD_COLOR = new Color(0.3f, 0.3f, 0.3f, 0.8f);
+        
+        public static readonly (Color32 left, Color32 right) TOAST_DEBUG_COLORS
+            = (new Color32(55, 34, 188, 255), new Color32(132, 25, 216, 255));
+        public static readonly (Color32 left, Color32 right) TOAST_INFO_COLORS
+            = (new Color32(78, 121, 228, 255), new Color32(76, 164, 192, 255));
+        public static readonly (Color32 left, Color32 right) TOAST_WARNING_COLORS
+            = (new Color32(223, 123, 30, 255), new Color32(212, 216, 25, 255));
+        public static readonly (Color32 left, Color32 right) TOAST_ERROR_COLORS
+            = (new Color32(175, 14, 33, 255), new Color32(228, 59, 59, 255));
+        
 
         private static readonly LinkedList<ToastHandler> TOASTS = new();
 
@@ -99,33 +110,38 @@ namespace Synthesis.Util {
                     Toaster.TOAST_HEIGHT + Toaster.DROP_SHADOW_DISTANCE))
                 .SetBottomStretch<Content>();
             var dropShadow = _toastMainContent.CreateSubContent(new Vector2(Toaster.TOAST_CONTAINER_WIDTH, Toaster.TOAST_HEIGHT))
-                .SetStretch<Content>(topPadding: Toaster.DROP_SHADOW_DISTANCE).EnsureImage().StepIntoImage(i => i.SetMultiplier(18));
+                .SetStretch<Content>(topPadding: Toaster.DROP_SHADOW_DISTANCE).EnsureImage();
             var content = _toastMainContent.CreateSubContent(new Vector2(Toaster.TOAST_CONTAINER_WIDTH, Toaster.TOAST_HEIGHT))
-                .SetStretch<Content>(bottomPadding: Toaster.DROP_SHADOW_DISTANCE).EnsureImage().StepIntoImage(i => i.SetMultiplier(18));
+                .SetStretch<Content>(bottomPadding: Toaster.DROP_SHADOW_DISTANCE).EnsureImage();
 
             Sprite? s = null;
+            (Color left, Color right) colors = (Color.blue, Color.red);
             switch (level) {
                 case LogLevel.Debug:
-                    content.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.ToastDebug));
-                    dropShadow.StepIntoImage(i => i.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.ToastDebug) * Toaster.DROP_SHADOW_MOD_COLOR));
+                    // content.StepIntoImage(i => i.);
+                    colors = Toaster.TOAST_DEBUG_COLORS;
                     s = SynthesisAssetCollection.GetSpriteByName("wrench-icon");
                     break;
                 case LogLevel.Warning:
-                    content.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.ToastWarning));
-                    dropShadow.StepIntoImage(i => i.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.ToastWarning) * Toaster.DROP_SHADOW_MOD_COLOR));
+                    colors = Toaster.TOAST_WARNING_COLORS;
                     s = SynthesisAssetCollection.GetSpriteByName("warning-icon-white-solid");
                     break;
                 case LogLevel.Error:
-                    content.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.ToastError));
-                    dropShadow.StepIntoImage(i => i.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.ToastError) * Toaster.DROP_SHADOW_MOD_COLOR));
+                    colors = Toaster.TOAST_ERROR_COLORS;
                     s = SynthesisAssetCollection.GetSpriteByName("error-icon-white-solid");
                     break;
                 case LogLevel.Info:
-                    content.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.ToastInfo));
-                    dropShadow.StepIntoImage(i => i.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.ToastInfo) * Toaster.DROP_SHADOW_MOD_COLOR));
+                    colors = Toaster.TOAST_INFO_COLORS;
                     s = SynthesisAssetCollection.GetSpriteByName("info-icon-white-solid");
                     break;
             }
+            
+            content.StepIntoImage(i
+                => i.SetSprite(null).SetColor(colors.left, colors.right)
+                    .SetCornerRadius(15f));
+            dropShadow.StepIntoImage(i
+                => i.SetSprite(null).SetColor(colors.left * Toaster.DROP_SHADOW_MOD_COLOR, colors.right * Toaster.DROP_SHADOW_MOD_COLOR)
+                    .SetCornerRadius(15f));
 
             title ??= Enum.GetName(typeof(LogLevel), level) ?? "extra error";
             title = title.ToUpper();

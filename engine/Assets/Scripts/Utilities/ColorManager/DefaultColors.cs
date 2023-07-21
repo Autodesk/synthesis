@@ -20,11 +20,7 @@ namespace Utilities.ColorManager {
             (ColorManager.SynthesisColor.HighlightSelect, new Color32(255, 89, 133, 255)),
             (ColorManager.SynthesisColor.SkyboxTop, new Color32(255, 255, 255, 255)),
             (ColorManager.SynthesisColor.SkyboxBottom, new Color32(255, 255, 255, 255)),
-            (ColorManager.SynthesisColor.FloorGrid, new Color32(93, 93, 93, 255)),
-            (ColorManager.SynthesisColor.ToastDebug, new Color32(161, 48, 184, 255)),
-            (ColorManager.SynthesisColor.ToastInfo, new Color32(8, 172, 220, 255)),
-            (ColorManager.SynthesisColor.ToastWarning, new Color32(255, 164, 5, 255)),
-            (ColorManager.SynthesisColor.ToastError, new Color32(255, 20, 68, 255))
+            (ColorManager.SynthesisColor.FloorGrid, new Color32(93, 93, 93, 255))
         };
     }
 }

@@ -229,11 +229,7 @@ namespace Utilities.ColorManager {
             HighlightSelect,
             SkyboxTop,
             SkyboxBottom,
-            FloorGrid,
-            ToastDebug,
-            ToastWarning,
-            ToastError,
-            ToastInfo
+            FloorGrid
         }
     }
 }

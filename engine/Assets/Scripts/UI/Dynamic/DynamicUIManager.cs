@@ -72,8 +72,8 @@ namespace Synthesis.UI.Dynamic {
                     _toastContainer = SubScreenSpaceContent.CreateSubContent(new Vector2(Toaster.TOAST_CONTAINER_WIDTH, Toaster.TOAST_CONTAINER_HEIGHT))
                         .SetAnchors<Content>(new Vector2(1, 0), new Vector2(1, 0)).SetPivot<Content>(new Vector2(1, 0))
                         .SetAnchoredPosition<Content>(Toaster.TOAST_CONTAINER_OFFSET).EnsureImage()
-                        .StepIntoImage(i => i.SetColor(new Color(0.1f, 0.1f, 0.1f, 0.1f)));
-                    _toastContainer.RootGameObject.AddComponent<Mask>().showMaskGraphic = false;
+                        .StepIntoImage(i => i.SetColor(new Color(0.1f, 0.1f, 0.1f, 0f)));
+                    _toastContainer.RootGameObject.AddComponent<RectMask2D>();
                 }
                 SimulationRunner.OnSimKill += () => { _toastContainer = null; };
                 return _toastContainer;

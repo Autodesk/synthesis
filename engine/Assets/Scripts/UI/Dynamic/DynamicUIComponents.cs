@@ -1325,11 +1325,16 @@ namespace Synthesis.UI.Dynamic {
             }
         }
 
-        public Image SetSprite(Sprite s) {
-            _hasCustomSprite = true;
-            Sprite           = s;
-            if (_gradientUpdater != null)
+        public Image SetSprite(Sprite? s) {
+            _hasCustomSprite = s != null;
+            Sprite = s;
+            if (s == null) {
+                RootGameObject.TryGetComponent<GradientImageUpdater>(out var gradientUpdater);
+                _gradientUpdater = gradientUpdater ? gradientUpdater : RootGameObject.AddComponent<GradientImageUpdater>();
+                _unityImage.color = Color.white;
+            } else {
                 GameObject.Destroy(_gradientUpdater);
+            }
             return this;
         }
 
