@@ -1,10 +1,9 @@
 cmake_minimum_required(VERSION 3.26.0)
-project(cef)
 
 if(OS_MAC)
-    project(LANGUAGES CXX OBJCXX)
+    project(cef LANGUAGES CXX OBJCXX)
 else()
-    project(LANGUAGES CXX)
+    project(cef LANGUAGES CXX)
 endif()
 
 set(CMAKE_CONFIGURATION_TYPES Debug Release)
