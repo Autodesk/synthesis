@@ -1,5 +1,5 @@
 if(OS_MAC)
-    set(SHARED_RESOURCES_SRCS
+    set(SHARED_RESOURCES_SOURCES
         ../res/mac/English.lproj/InfoPlist.strings
         ../res/mac/English.lproj/MainMenu.xib
         ../res/mac/Info.plist
@@ -9,7 +9,7 @@ if(OS_MAC)
     set(SHARED_INFO_PLIST ../res/mac/Info.plist)
     set(SHARED_HELPER_INFO_PLIST ../res/mac/helper-Info.plist)
 elseif(OS_WINDOWS)
-    set(SHARED_RESOURCES_SRCS
+    set(SHARED_RESOURCES_SOURCES
         ../res/win/big.ico
         ../res/win/resource.h
         ../res/win/shared.rc
