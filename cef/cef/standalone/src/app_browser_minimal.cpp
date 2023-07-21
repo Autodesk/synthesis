@@ -5,7 +5,7 @@
 namespace synthesis {
 namespace {
 
-const char url[] = "https://www.google.com";
+const char url[] = "http://localhost:5173";
 
 class BrowserApp : public CefApp, public CefBrowserProcessHandler {
 public:
