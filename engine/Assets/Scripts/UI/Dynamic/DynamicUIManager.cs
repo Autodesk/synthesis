@@ -30,7 +30,7 @@ namespace Synthesis.UI.Dynamic {
                 return _screenSpaceContent;
             }
         }
-        public static Content _subScreenSpaceContent  = null;
+        public static Content _subScreenSpaceContent = null;
         public static Content SubScreenSpaceContent {
             get {
                 if (_subScreenSpaceContent == null) {
@@ -64,15 +64,19 @@ namespace Synthesis.UI.Dynamic {
                 return _replaySlider;
             }
         }
-        
+
         private static Content _toastContainer = null;
         public static Content ToastContainer {
             get {
                 if (_toastContainer == null || _toastContainer.RootGameObject == null) {
-                    _toastContainer = SubScreenSpaceContent.CreateSubContent(new Vector2(Toaster.TOAST_CONTAINER_WIDTH, Toaster.TOAST_CONTAINER_HEIGHT))
-                        .SetAnchors<Content>(new Vector2(1, 0), new Vector2(1, 0)).SetPivot<Content>(new Vector2(1, 0))
-                        .SetAnchoredPosition<Content>(Toaster.TOAST_CONTAINER_OFFSET).EnsureImage()
-                        .StepIntoImage(i => i.SetColor(new Color(0.1f, 0.1f, 0.1f, 0f)));
+                    _toastContainer = SubScreenSpaceContent
+                                          .CreateSubContent(new Vector2(
+                                              Toaster.TOAST_CONTAINER_WIDTH, Toaster.TOAST_CONTAINER_HEIGHT))
+                                          .SetAnchors<Content>(new Vector2(1, 0), new Vector2(1, 0))
+                                          .SetPivot<Content>(new Vector2(1, 0))
+                                          .SetAnchoredPosition<Content>(Toaster.TOAST_CONTAINER_OFFSET)
+                                          .EnsureImage()
+                                          .StepIntoImage(i => i.SetColor(new Color(0.1f, 0.1f, 0.1f, 0f)));
                     _toastContainer.RootGameObject.AddComponent<RectMask2D>();
                 }
                 SimulationRunner.OnSimKill += () => { _toastContainer = null; };

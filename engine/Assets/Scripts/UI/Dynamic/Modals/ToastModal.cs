@@ -7,8 +7,8 @@ using UI.Dynamic.Modals.Spawning;
 using Logger = SynthesisAPI.Utilities.Logger;
 
 public class ToastModal : ModalDynamic {
-    public ToastModal(string text, LogLevel level): base(new Vector2(500, 500)) {
-        _toastText = text;
+    public ToastModal(string text, LogLevel level) : base(new Vector2(500, 500)) {
+        _toastText  = text;
         _toastLevel = level;
     }
 
@@ -18,7 +18,10 @@ public class ToastModal : ModalDynamic {
     public override void Create() {
         Title.SetStretch<Content>();
         Title.SetText("    " + _toastLevel + " Message: ").SetFontSize(30);
-        AcceptButton.AddOnClickedEvent(_ => { WriteToFile(); }).Label!.SetText("Write File");
+        AcceptButton
+            .AddOnClickedEvent(
+                _ => { WriteToFile(); })
+            .Label!.SetText("Write File");
         Description.RootGameObject.SetActive(false);
         ModalImage.RootGameObject.SetActive(false);
         CancelButton.Label!.SetText("Close");
@@ -52,7 +55,8 @@ public class ToastModal : ModalDynamic {
                 Directory.CreateDirectory(root);
             }
 
-        } catch (IOException) { }
+        } catch (IOException) {
+        }
 
         // Write some text to the test.txt file
         StreamWriter writer = new StreamWriter(

@@ -583,7 +583,7 @@ namespace Synthesis.UI.Dynamic {
             rightRt.anchorMax        = new Vector2(1f, 0.5f);
             rightRt.anchorMin        = new Vector2(1f, 0.5f);
             float rightWidth         = (Size.x - leftWidth) - padding;
-            rightRt.pivot = new Vector2(1f, 0.5f);
+            rightRt.pivot            = new Vector2(1f, 0.5f);
             rightRt.anchoredPosition = new Vector2(0f, 0f);
             var rightContent         = new Content(this, rightContentObject, new Vector2(rightWidth, Size.y));
 
@@ -751,8 +751,8 @@ namespace Synthesis.UI.Dynamic {
     public class Label : UIComponent {
         private TMP_Text _unityText;
 
-        public string Text          => _unityText.text;
-        public FontStyles FontStyle => _unityText.fontStyle;
+        public string Text              => _unityText.text;
+        public FontStyles FontStyle     => _unityText.fontStyle;
         public bool IsFontSizeAutomatic => _unityText.enableAutoSizing;
 
         public static readonly Func<Label, Label> VerticalLayoutTemplate = (Label label) => {
@@ -1362,10 +1362,11 @@ namespace Synthesis.UI.Dynamic {
 
         public Image SetSprite(Sprite? s) {
             _hasCustomSprite = s != null;
-            Sprite = s;
+            Sprite           = s;
             if (s == null) {
                 RootGameObject.TryGetComponent<GradientImageUpdater>(out var gradientUpdater);
-                _gradientUpdater = gradientUpdater ? gradientUpdater : RootGameObject.AddComponent<GradientImageUpdater>();
+                _gradientUpdater =
+                    gradientUpdater ? gradientUpdater : RootGameObject.AddComponent<GradientImageUpdater>();
                 _unityImage.color = Color.white;
             } else {
                 GameObject.Destroy(_gradientUpdater);
@@ -1511,7 +1512,7 @@ namespace Synthesis.UI.Dynamic {
 
 #endregion
 
-public class UIEventHandler : MonoBehaviour, IPointerClickHandler {
+    public class UIEventHandler : MonoBehaviour, IPointerClickHandler {
         public event Action<PointerEventData> OnPointerClickedEvent;
 
         public void OnPointerClick(PointerEventData pointerEventData) {

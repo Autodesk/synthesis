@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using Synthesis.UI.Dynamic;
 using Synthesis.Util;
 using ILogger = SynthesisAPI.Utilities.ILogger;
-using Debug = UnityEngine.Debug;
+using Debug   = UnityEngine.Debug;
 
 #nullable enable
 
@@ -13,9 +13,8 @@ namespace Engine {
     /// Logs to the toast feed
     /// </summary>
     public class ToastLogger : ILogger {
-
-        private bool _isEnabled               = true;
-        private bool _debugLogsEnabled        = true;
+        private bool _isEnabled        = true;
+        private bool _debugLogsEnabled = true;
         private static bool _currentlyLogging;
 
         public void Log(object o, LogLevel logLevel = LogLevel.Info, [CallerMemberName] string memberName = "",

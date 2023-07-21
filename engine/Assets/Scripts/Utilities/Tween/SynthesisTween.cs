@@ -5,7 +5,6 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 
 public static class SynthesisTween {
-
     private static SynthesisTweenComponent _tweenComp;
 
     private static Dictionary<string, SynthesisTweenConfig> _tweens = new Dictionary<string, SynthesisTweenConfig>();
@@ -13,29 +12,19 @@ public static class SynthesisTween {
     private static void EnsureComponent() {
         if (_tweenComp != null)
             return;
-        
+
         _tweenComp = new GameObject("TweenComp").AddComponent<SynthesisTweenComponent>();
         Object.DontDestroyOnLoad(_tweenComp.gameObject);
     }
 
-    public static void MakeTween(
-        string key, object start, object end, float duration,
-        Func<float, object, object, object> interpolateFunc, Func<float, float> scalingFunc, Action<SynthesisTweenStatus> callback) {
+    public static void MakeTween(string key, object start, object end, float duration,
+        Func<float, object, object, object> interpolateFunc, Func<float, float> scalingFunc,
+        Action<SynthesisTweenStatus> callback) {
         EnsureComponent();
-        
-        _tweens.Add(
-            key,
-            new SynthesisTweenConfig {
-                Key = key,
-                Start = start,
-                End = end,
-                Duration = duration,
-                StartTime = Time.realtimeSinceStartup,
-                Interpolation = interpolateFunc,
-                Scaling = scalingFunc,
-                Callback = callback
-            }
-            );
+
+        _tweens.Add(key, new SynthesisTweenConfig { Key = key, Start = start, End = end, Duration = duration,
+            StartTime = Time.realtimeSinceStartup, Interpolation = interpolateFunc, Scaling = scalingFunc,
+            Callback = callback });
     }
 
     public static void CancelTween(string key) {
@@ -47,9 +36,9 @@ public static class SynthesisTween {
             string[] keys = new string[_tweens.Count];
             _tweens.Keys.CopyTo(keys, 0);
             foreach (var key in keys) {
-                var config = _tweens[key];
+                var config   = _tweens[key];
                 var progress = Mathf.Clamp((Time.realtimeSinceStartup - config.StartTime) / config.Duration, 0f, 1f);
-                var val = config.Interpolation(config.Scaling(progress), config.Start, config.End);
+                var val      = config.Interpolation(config.Scaling(progress), config.Start, config.End);
                 config.Callback(new SynthesisTweenStatus(val, progress));
                 if (progress >= 1f) {
                     _tweens.Remove(key);
@@ -70,18 +59,16 @@ public static class SynthesisTween {
     }
 
     public struct SynthesisTweenStatus {
-        
-        public T CurrentValue<T>() => (T)_currentValue;
-        
+        public T CurrentValue<T>() => (T) _currentValue;
+
         private object _currentValue;
         public float CurrentProgress;
 
         public SynthesisTweenStatus(object val, float prog) {
-            _currentValue = val;
+            _currentValue   = val;
             CurrentProgress = prog;
         }
     }
-
 }
 
 public static class SynthesisTweenScaleFunctions {
