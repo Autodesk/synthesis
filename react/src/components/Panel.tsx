@@ -22,10 +22,10 @@ const Panel: React.FC<PanelProps> = ({ children, name, icon, onCancel, onAccept 
             <div className="flex justify-between mx-10 py-8">
                 <input type="button" value="Cancel"
                     onClick={onCancel}
-                    className="bg-red-500 rounded-md cursor-pointer px-4 py-1 text-black font-bold" />
+                    className="bg-red-500 rounded-md cursor-pointer px-4 py-1 text-black font-bold duration-100 hover:bg-red-600" />
                 <input type="button" value="Accept"
                     onClick={onAccept}
-                    className="bg-blue-500 rounded-md cursor-pointer px-4 py-1 text-black font-bold" />
+                    className="bg-blue-500 rounded-md cursor-pointer px-4 py-1 text-black font-bold duration-100 hover:bg-blue-600" />
             </div>
         </div>
     );
