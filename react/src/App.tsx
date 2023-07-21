@@ -9,7 +9,7 @@ function App() {
             <Panel name="Configuration" icon="https://placehold.co/128x128">
                 <Label size={LabelSize.Medium}>Manipulate Gamepiece</Label>
                 <Slider min={1} max={100} defaultValue={50} />
-                <Button value="Test" onClick={() => alert("test")} />
+                <Button value="Test" />
             </Panel>
         </>
     )

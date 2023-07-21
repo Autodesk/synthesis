@@ -9,7 +9,7 @@ type PanelProps = {
 
 const Panel: React.FC<PanelProps> = ({ children, name, icon, onCancel, onAccept }) => {
     return (
-        <div className="bg-black text-white w-1/2 m-auto border-5 rounded-2xl shadow-sm shadow-slate-800">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-black text-white w-1/2 m-auto border-5 rounded-2xl shadow-sm shadow-slate-800">
             <div className="flex items-center gap-8 h-16">
                 <span className="flex justify-center align-center ml-8">
                     <img src={icon} className="w-6" alt="Icon" />
