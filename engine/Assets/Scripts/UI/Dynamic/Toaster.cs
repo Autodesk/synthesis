@@ -140,8 +140,10 @@ namespace Synthesis.Util {
                                                   colors.right * Toaster.DROP_SHADOW_MOD_COLOR)
                                               .SetCornerRadius(15f));
 
+            // clang-format off
             title ??= Enum.GetName(typeof(LogLevel), level) ?? "extra error";
             title   = title.ToUpper();
+            // clang-format on
 
             (float left, float right, float top, float bottom) infoContentPadding = (15f, 15f, 15f, 15f);
             var infoContent =
