@@ -4,19 +4,27 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace UI.EventListeners {
-    public class ButtonEventListener : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler {
-        [SerializeField] private Image _image;
-        [SerializeField] private Color _defaultColor = Color.white;
-        [SerializeField] private Color _hoverColor = Color.grey;
-        [SerializeField] private Color _selectedColor = Color.gray;
-        [SerializeField] private float _hoverScaleMultiplier = 1.05f;
-        [SerializeField] private float _clickedScaleMultiplier = 1.1f;
-    
+    public class ButtonEventListener : MonoBehaviour,
+                                       IPointerEnterHandler,
+                                       IPointerExitHandler,
+                                       IPointerDownHandler,
+                                       IPointerUpHandler {
+        [SerializeField]
+        private Image _image;
+        [SerializeField]
+        private Color _defaultColor = Color.white;
+        [SerializeField]
+        private Color _hoverColor = Color.grey;
+        [SerializeField]
+        private Color _selectedColor = Color.gray;
+        [SerializeField]
+        private float _hoverScaleMultiplier = 1.05f;
+        [SerializeField]
+        private float _clickedScaleMultiplier = 1.1f;
+
         private GradientImageUpdater _imageUpdater;
 
-        public GradientImageUpdater ImageUpdater {
-            set => _imageUpdater = value;
-        }
+        public GradientImageUpdater ImageUpdater { set => _imageUpdater = value; }
 
         public void OnPointerEnter(PointerEventData eventData) {
             SetTintColor(_hoverColor);
@@ -26,7 +34,6 @@ namespace UI.EventListeners {
         public void OnPointerExit(PointerEventData eventData) {
             SetTintColor(_defaultColor);
             SetScaleMultiplier(1);
-
         }
 
         public void OnPointerDown(PointerEventData eventData) {
@@ -43,8 +50,7 @@ namespace UI.EventListeners {
             if (_imageUpdater) {
                 _imageUpdater.TintColor = color;
                 _imageUpdater.Refresh();
-            }
-            else if (_image) {
+            } else if (_image) {
                 _image.color = color;
             }
         }

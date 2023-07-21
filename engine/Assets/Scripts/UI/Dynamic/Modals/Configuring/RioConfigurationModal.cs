@@ -95,10 +95,10 @@ public class RioConfigurationModal : ModalDynamic {
 
         content.SetTopStretch<Content>(anchoredY: -_scrollView.Content.RectOfChildren(content).yMin);
         var label = content.CreateLabel()
-            .SetStretch<Label>(leftPadding: 20, topPadding: 20, bottomPadding: 20)
-            .SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Middle)
-            .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Left)
-            .SetText(text);
+                        .SetStretch<Label>(leftPadding: 20, topPadding: 20, bottomPadding: 20)
+                        .SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Middle)
+                        .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Left)
+                        .SetText(text);
         var confButton = content.CreateButton(buttonText);
 
         confButton.SetPivot<Button>(new Vector2(1, 0.5f))
@@ -124,7 +124,7 @@ public class RioConfigurationModal : ModalDynamic {
 
         content.CreateButton("Create Device")
             .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
-                ColorManager.SynthesisColor.InteractiveElementRight))
+                               ColorManager.SynthesisColor.InteractiveElementRight))
             .SetStretch<Button>(leftPadding: 300, rightPadding: 300, topPadding: 20, bottomPadding: 20)
             .AddOnClickedEvent(b => { DynamicUIManager.CreateModal<RCCreateDeviceModal>(); });
     }

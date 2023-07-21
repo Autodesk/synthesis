@@ -82,7 +82,7 @@ public static class MainHUD {
 
     public static void Setup() {
         _drawerItems.Clear();
-        
+
         _tabDrawerContent = new Content(null, GameObject.Find("MainHUD").transform.Find("TabDrawer").gameObject, null);
         _expandDrawerButton = new Button(
             _tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("ExpandButton").gameObject, null);
@@ -126,7 +126,8 @@ public static class MainHUD {
         var drawerButton    = new Button(_tabDrawerContent, drawerButtonObj, null);
         drawerButton.Label!.SetText(title);
         drawerButton.AddOnClickedEvent(onClick);
-        var drawerIcon = new Image(_tabDrawerContent, drawerButtonObj.transform.Find("Button").Find("ItemIcon").gameObject);
+        var drawerIcon =
+            new Image(_tabDrawerContent, drawerButtonObj.transform.Find("Button").Find("ItemIcon").gameObject);
         if (icon != null)
             drawerIcon.SetSprite(icon);
 

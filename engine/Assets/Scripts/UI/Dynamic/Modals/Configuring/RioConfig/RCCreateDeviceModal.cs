@@ -46,9 +46,7 @@ public class RCCreateDeviceModal : ModalDynamic {
             .StepIntoLabel(l => l.SetText("Next"));
         CancelButton.AddOnClickedEvent(b => { DynamicUIManager.CreateModal<RioConfigurationModal>(); });
 
-        _typeDropdown = MainContent.CreateDropdown()
-            .SetOptions(EntryTypes)
-            .SetTopStretch<Dropdown>();
+        _typeDropdown = MainContent.CreateDropdown().SetOptions(EntryTypes).SetTopStretch<Dropdown>();
     }
 
     public override void Delete() {}

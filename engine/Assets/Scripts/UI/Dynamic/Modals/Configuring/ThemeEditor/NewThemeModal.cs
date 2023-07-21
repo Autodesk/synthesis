@@ -15,7 +15,7 @@ namespace UI.Dynamic.Modals.Configuring {
 
         public override void Create() {
             Title.SetText("New Theme");
-            
+
             ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
 
             AcceptButton

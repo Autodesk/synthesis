@@ -40,7 +40,7 @@ public class ChangeDrivetrainModal : ModalDynamic {
             .SetOptions(RobotSimObject.DRIVETRAIN_TYPES.Select(x => x.Name).ToArray())
             .AddOnValueChangedEvent((d, i, o) => _selectedType = RobotSimObject.DRIVETRAIN_TYPES[i])
             .SetValue(_selectedType.Value);
-    }   
+    }
 
     public override void Update() {
         if (RobotSimObject.CurrentlyPossessedRobot == string.Empty) {

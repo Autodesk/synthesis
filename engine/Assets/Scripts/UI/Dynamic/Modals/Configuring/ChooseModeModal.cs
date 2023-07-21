@@ -16,7 +16,7 @@ public class ChooseModeModal : ModalDynamic {
 
     public override void Create() {
         Title.SetText("Choose Mode");
-        
+
         ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("settings"));
 
         AcceptButton.RootGameObject.SetActive(false);

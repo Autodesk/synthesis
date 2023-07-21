@@ -16,7 +16,7 @@ public class MatchModeModal : ModalDynamic {
 
     public override void Create() {
         Title.SetText("Field and Robot Selection");
-        
+
         ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
 
         var robotsFolder = ParsePath("$appdata/Autodesk/Synthesis/Mira", '/');
@@ -41,7 +41,7 @@ public class MatchModeModal : ModalDynamic {
                 }
             }
         });
-        
+
         CancelButton.RootGameObject.SetActive(false);
 
         for (int robot = 0; robot < 6; robot++) {

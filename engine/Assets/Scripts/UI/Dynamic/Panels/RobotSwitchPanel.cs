@@ -32,7 +32,7 @@ public class RobotSwitchPanel : PanelDynamic {
 
     private Func<Button, Button> EnableButton = b =>
         b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
-                ColorManager.SynthesisColor.InteractiveElementRight))
+                            ColorManager.SynthesisColor.InteractiveElementRight))
             .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
             .EnableEvents<Button>();
 
@@ -84,12 +84,12 @@ public class RobotSwitchPanel : PanelDynamic {
     }
 
     private void AddEntry(RobotSimObject robot) {
-        var toggle = _scrollView.Content
-                         .CreateToggle(true, RobotSimObject.CurrentlyPossessedRobot == robot.Name, robot.Name)
-                         .SetSize<Toggle>(new Vector2(PANEL_WIDTH, 50f))
-                         .ApplyTemplate(VerticalLayout)
-                         .StepIntoLabel(l => l.SetFontSize(16f))
-                         .SetDisabledColor(ColorManager.SynthesisColor.Background);
+        var toggle =
+            _scrollView.Content.CreateToggle(true, RobotSimObject.CurrentlyPossessedRobot == robot.Name, robot.Name)
+                .SetSize<Toggle>(new Vector2(PANEL_WIDTH, 50f))
+                .ApplyTemplate(VerticalLayout)
+                .StepIntoLabel(l => l.SetFontSize(16f))
+                .SetDisabledColor(ColorManager.SynthesisColor.Background);
         toggle.AddOnStateChangedEvent((t, s) => { UpdateState(robot, t, s); });
     }
 

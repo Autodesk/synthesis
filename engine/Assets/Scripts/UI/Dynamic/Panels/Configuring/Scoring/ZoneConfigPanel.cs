@@ -125,16 +125,16 @@ public class ZoneConfigPanel : PanelDynamic {
                 .StepIntoHint(h => h.SetText(_initialData.Name is not null ? _initialData.Name : "Zone Name"))
                 .SetCharacterLimit(16)
                 .ApplyTemplate(VerticalLayout);
-        _zoneAllianceButton = MainContent.CreateButton()
-                                  .StepIntoLabel(l => l.SetText("Blue Alliance"))
-                                  .AddOnClickedEvent(b => {
-                                      _data.Alliance = _data.Alliance == Alliance.Blue ? Alliance.Red : Alliance.Blue;
-                                      ConfigureAllianceButton();
-                                      DataUpdated();
-                                  })
-                                  .StepIntoImage(i => i.SetColor((_data.Alliance == Alliance.Blue)
-                                      ? Color.blue : Color.red))
-                                  .ApplyTemplate(VerticalLayout);
+        _zoneAllianceButton =
+            MainContent.CreateButton()
+                .StepIntoLabel(l => l.SetText("Blue Alliance"))
+                .AddOnClickedEvent(b => {
+                    _data.Alliance = _data.Alliance == Alliance.Blue ? Alliance.Red : Alliance.Blue;
+                    ConfigureAllianceButton();
+                    DataUpdated();
+                })
+                .StepIntoImage(i => i.SetColor((_data.Alliance == Alliance.Blue) ? Color.blue : Color.red))
+                .ApplyTemplate(VerticalLayout);
         ConfigureAllianceButton();
 
         _zoneParentButton =
@@ -232,15 +232,13 @@ public class ZoneConfigPanel : PanelDynamic {
     private void ConfigureAllianceButton() {
         if (_data.Alliance == Alliance.Blue) {
             _zoneAllianceButton.StepIntoLabel(l => l.SetText("Blue Alliance")).SetBackgroundColor<Button>(Color.blue);
-        }
-        else {
+        } else {
             _zoneAllianceButton.StepIntoLabel(l => l.SetText("Red Alliance")).SetBackgroundColor<Button>(Color.red);
         }
 
-        _zoneAllianceButton.StepIntoLabel(l => l.SetText((_data.Alliance == Alliance.Blue)
-                ? "Blue Alliance" : "Red Alliance"))
-            .StepIntoImage(i => i.SetColor((_data.Alliance == Alliance.Blue)
-                ? Color.blue : Color.red));
+        _zoneAllianceButton
+            .StepIntoLabel(l => l.SetText((_data.Alliance == Alliance.Blue) ? "Blue Alliance" : "Red Alliance"))
+            .StepIntoImage(i => i.SetColor((_data.Alliance == Alliance.Blue) ? Color.blue : Color.red));
     }
 
     private void UseZone(ScoringZone zone) {
@@ -311,21 +309,19 @@ public class ZoneConfigPanel : PanelDynamic {
     private void SetSelectUIState(bool isUserSelecting) {
         if (isUserSelecting) {
             _zoneParentButton.StepIntoLabel(l => l.SetText("Selecting..."));
-            _zoneParentButton.StepIntoButton(b => b.StepIntoImage(i => i.SetColor(
-                    ColorManager.SynthesisColor.InteractiveBackground))
-                .StepIntoLabel(l => l.SetText("...")));
-        }
-        else {
+            _zoneParentButton.StepIntoButton(
+                b => b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground))
+                         .StepIntoLabel(l => l.SetText("...")));
+        } else {
             if (_selectedNode is null)
                 _data.Parent = "grounded";
             _zoneParentButton.StepIntoLabel(
                 l => l.SetText(_selectedNode is not null ? _selectedNode.name : "Parent Object"));
 
             _zoneParentButton.StepIntoButton(
-                b => b.StepIntoImage(
-                        i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
-                            ColorManager.SynthesisColor.InteractiveElementRight))
-                    .StepIntoLabel(l => l.SetText(_selectedNode is not null ? "Remove" : "Click to select...")));
+                b => b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                                         ColorManager.SynthesisColor.InteractiveElementRight))
+                         .StepIntoLabel(l => l.SetText(_selectedNode is not null ? "Remove" : "Click to select...")));
         }
     }
 

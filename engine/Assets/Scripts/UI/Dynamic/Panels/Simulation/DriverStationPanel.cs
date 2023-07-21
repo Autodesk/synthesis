@@ -23,7 +23,7 @@ public class DriverStationPanel : PanelDynamic {
 
     public override bool Create() {
         TweenFromBottom = true;
-        
+
         if (RobotSimObject.CurrentlyPossessedRobot == string.Empty) {
             Logger.Log("Spawn a robot first", LogLevel.Info);
             return false;
@@ -78,8 +78,9 @@ public class DriverStationPanel : PanelDynamic {
             _modeButton.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground))
                 .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText).SetText("Enabled"));
         } else {
-            _modeButton.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
-                    ColorManager.SynthesisColor.InteractiveElementRight))
+            _modeButton
+                .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                                   ColorManager.SynthesisColor.InteractiveElementRight))
                 .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText).SetText("Disabled"));
         }
     }

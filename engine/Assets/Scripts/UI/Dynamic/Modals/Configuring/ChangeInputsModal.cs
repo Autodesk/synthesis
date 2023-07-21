@@ -158,7 +158,7 @@ public class ChangeInputsModal : ModalDynamic {
 
     public override void Create() {
         Title.SetText("Keybinds");
-        
+
         ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("settings"));
 
         // no cancel button because keybinds are saved automatically when set

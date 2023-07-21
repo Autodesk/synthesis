@@ -26,7 +26,7 @@ public class SynthesisAssetCollection : MonoBehaviour {
     [SerializeField]
     public List<AudioClip> AudioClips;
 
-    [SerializeField] 
+    [SerializeField]
     public Material DefaultSpriteMaterial;
 
     private static Volume _blurVolumeStatic = null;

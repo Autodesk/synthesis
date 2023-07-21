@@ -21,11 +21,11 @@ public class SpawningModal : ModalDynamic {
 
         ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("PlusIcon"))
             .SetColor(ColorManager.SynthesisColor.MainText);
-        
+
         AcceptButton.RootGameObject.SetActive(false);
 
         var spacing           = 22f;
-        (var left, var right) = MainContent.SplitLeftRight((MainContent.Size.x / 2f) - (spacing), spacing*2);
+        (var left, var right) = MainContent.SplitLeftRight((MainContent.Size.x / 2f) - (spacing), spacing * 2);
         var robot             = left.CreateButton("Robot")
                         .ApplyTemplate<Button>(VerticalLayout)
                         .AddOnClickedEvent(b => DynamicUIManager.CreateModal<AddRobotModal>())

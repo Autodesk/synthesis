@@ -16,7 +16,7 @@ namespace Synthesis.UI.Dynamic {
     public static class DynamicUIManager {
         public const float MODAL_TWEEN_DURATION = 0.15f;
         public const float PANEL_TWEEN_DURATION = 0.15f;
-        
+
         public static ModalDynamic ActiveModal { get; private set; }
 
         private static Dictionary<Type, (PanelDynamic, bool)> _persistentPanels =
@@ -125,7 +125,6 @@ namespace Synthesis.UI.Dynamic {
             MainHUD.Enabled                                  = false;
             SubScreenSpaceContent.RootGameObject.SetActive(false);
 
-            
             string tweenKey = Guid.NewGuid() + "_modalOpen";
             SynthesisTween.MakeTween(tweenKey, 0f, 1f, MODAL_TWEEN_DURATION,
                 (t, a, b) => SynthesisTweenInterpolationFunctions.FloatInterp(t, (float) a, (float) b),
@@ -162,26 +161,23 @@ namespace Synthesis.UI.Dynamic {
             if (PanelExists(typeof(T)))
                 EventBus.Push(new PanelCreatedEvent(panel, persistent));
 
-            
             string tweenKey = Guid.NewGuid() + "_panelOpen";
-            
+
             Vector3 endPosition = unityObject.transform.localPosition;
-            float tweenStart = (!panel.TweenFromBottom)
-                ? (endPosition.x+((RectTransform)unityObject.transform).sizeDelta.x)
-                : (endPosition.y-((RectTransform)unityObject.transform).sizeDelta.y);
-            
-            float tweenEnd = (!panel.TweenFromBottom)
-                ? (endPosition.x)
-                : (endPosition.y);
-            
+            float tweenStart    = (!panel.TweenFromBottom)
+                                      ? (endPosition.x + ((RectTransform) unityObject.transform).sizeDelta.x)
+                                      : (endPosition.y - ((RectTransform) unityObject.transform).sizeDelta.y);
+
+            float tweenEnd = (!panel.TweenFromBottom) ? (endPosition.x) : (endPosition.y);
+
             SynthesisTween.MakeTween(tweenKey, tweenStart, tweenEnd, PANEL_TWEEN_DURATION,
                 (t, a, b) => SynthesisTweenInterpolationFunctions.FloatInterp(t, (float) a, (float) b),
                 SynthesisTweenScaleFunctions.EaseOutCubic, TweenCallback);
 
             void TweenCallback(SynthesisTween.SynthesisTweenStatus status) {
-                Vector3 position = (!panel.TweenFromBottom) ?
-                    new Vector3(status.CurrentValue<float>(), endPosition.y, endPosition.z)
-                    : new Vector3(endPosition.x, status.CurrentValue<float>(), endPosition.z);
+                Vector3 position                    = (!panel.TweenFromBottom)
+                                                          ? new Vector3(status.CurrentValue<float>(), endPosition.y, endPosition.z)
+                                                          : new Vector3(endPosition.x, status.CurrentValue<float>(), endPosition.z);
                 unityObject.transform.localPosition = position;
             }
             AnalyticsManager.LogCustomEvent(AnalyticsEvent.PanelCreated, ("UIType", typeof(T).Name));
@@ -207,32 +203,31 @@ namespace Synthesis.UI.Dynamic {
                 }
 
                 modal.UnityObject.transform.localScale = Vector3.one * status.CurrentValue<float>();
-                 
+
                 if (status.CurrentProgress >= 1f)
                     TweenFinished();
             }
 
             void TweenFinished() {
                 SynthesisTween.CancelTween(tweenKey);
-                
+
                 EventBus.Push(new ModalClosedEvent(modal));
-                
+
                 modal.Delete();
                 modal.Delete_Internal();
-                
+
                 // Unfreeze physics no matter what because it has a counter
-                PhysicsManager.IsFrozen = false; 
+                PhysicsManager.IsFrozen = false;
 
                 if (modal == ActiveModal) {
                     ActiveModal = null;
 
                     SynthesisAssetCollection.BlurVolumeStatic.weight = 0f;
-                    MainHUD.Enabled = true;
+                    MainHUD.Enabled                                  = true;
                     SubScreenSpaceContent.RootGameObject.SetActive(true);
                 }
-                
             }
-            
+
             ShowAllPanels();
             AnalyticsManager.LogCustomEvent(AnalyticsEvent.ActiveModalClosed, ("UIType", modal.GetType().Name));
             return true;
@@ -254,24 +249,22 @@ namespace Synthesis.UI.Dynamic {
   public static bool ClosePanel(Type t, bool bypassTween = false) {
             if (!PanelExists(t))
                 return false;
-            
+
             var panel = _persistentPanels[t].Item1;
 
             if (bypassTween)
                 TweenFinished();
             else {
                 GameObject unityObject = panel.UnityObject;
-                string tweenKey = Guid.NewGuid() + "_panelClose";
-                Vector3 endPosition = unityObject.transform.localPosition;
+                string tweenKey        = Guid.NewGuid() + "_panelClose";
+                Vector3 endPosition    = unityObject.transform.localPosition;
 
                 float tweenEnd = (!panel.TweenFromBottom)
-                    ? (endPosition.x+((RectTransform)unityObject.transform).sizeDelta.x)
-                    : (endPosition.y-((RectTransform)unityObject.transform).sizeDelta.y);
-            
-                float tweenStart = (!panel.TweenFromBottom)
-                    ? (endPosition.x)
-                    : (endPosition.y);
-            
+                                     ? (endPosition.x + ((RectTransform) unityObject.transform).sizeDelta.x)
+                                     : (endPosition.y - ((RectTransform) unityObject.transform).sizeDelta.y);
+
+                float tweenStart = (!panel.TweenFromBottom) ? (endPosition.x) : (endPosition.y);
+
                 SynthesisTween.MakeTween(tweenKey, tweenStart, tweenEnd, PANEL_TWEEN_DURATION,
                     (t, a, b) => SynthesisTweenInterpolationFunctions.FloatInterp(t, (float) a, (float) b),
                     SynthesisTweenScaleFunctions.EaseOutCubic, TweenCallback);
@@ -281,10 +274,10 @@ namespace Synthesis.UI.Dynamic {
                         TweenFinished();
                         return;
                     }
-                
-                    Vector3 position = (!panel.TweenFromBottom) ?
-                        new Vector3(status.CurrentValue<float>(), endPosition.y, endPosition.z)
-                        : new Vector3(endPosition.x, status.CurrentValue<float>(), endPosition.z);
+
+                    Vector3 position                    = (!panel.TweenFromBottom)
+                                                              ? new Vector3(status.CurrentValue<float>(), endPosition.y, endPosition.z)
+                                                              : new Vector3(endPosition.x, status.CurrentValue<float>(), endPosition.z);
                     unityObject.transform.localPosition = position;
 
                     if (status.CurrentProgress >= 1f)
@@ -336,19 +329,17 @@ namespace Synthesis.UI.Dynamic {
             var panel = _persistentPanels[t].Item1;
             if (panel.Hidden)
                 return false;
-            
+
             GameObject unityObject = panel.UnityObject;
-            string tweenKey = Guid.NewGuid() + "_panelClose";
-            Vector3 endPosition = unityObject.transform.localPosition;
+            string tweenKey        = Guid.NewGuid() + "_panelClose";
+            Vector3 endPosition    = unityObject.transform.localPosition;
 
             float tweenEnd = (!panel.TweenFromBottom)
-                ? (endPosition.x+((RectTransform)unityObject.transform).sizeDelta.x)
-                : (endPosition.y-((RectTransform)unityObject.transform).sizeDelta.y);
-            
-            float tweenStart = (!panel.TweenFromBottom)
-                ? (endPosition.x)
-                : (endPosition.y);
-            
+                                 ? (endPosition.x + ((RectTransform) unityObject.transform).sizeDelta.x)
+                                 : (endPosition.y - ((RectTransform) unityObject.transform).sizeDelta.y);
+
+            float tweenStart = (!panel.TweenFromBottom) ? (endPosition.x) : (endPosition.y);
+
             SynthesisTween.MakeTween(tweenKey, tweenStart, tweenEnd, PANEL_TWEEN_DURATION,
                 (t, a, b) => SynthesisTweenInterpolationFunctions.FloatInterp(t, (float) a, (float) b),
                 SynthesisTweenScaleFunctions.EaseOutCubic, TweenCallback);
@@ -358,10 +349,10 @@ namespace Synthesis.UI.Dynamic {
                     TweenFinished();
                     return;
                 }
-                
-                Vector3 position = (!panel.TweenFromBottom) ?
-                    new Vector3(status.CurrentValue<float>(), endPosition.y, endPosition.z)
-                    : new Vector3(endPosition.x, status.CurrentValue<float>(), endPosition.z);
+
+                Vector3 position                    = (!panel.TweenFromBottom)
+                                                          ? new Vector3(status.CurrentValue<float>(), endPosition.y, endPosition.z)
+                                                          : new Vector3(endPosition.x, status.CurrentValue<float>(), endPosition.z);
                 unityObject.transform.localPosition = position;
 
                 if (status.CurrentProgress >= 1f)
@@ -391,29 +382,27 @@ namespace Synthesis.UI.Dynamic {
             var panel = _persistentPanels[t].Item1;
             if (!panel.Hidden)
                 return false;
-            
+
             string tweenKey = Guid.NewGuid() + "_panelShow";
-            
+
             panel.Hidden = false;
 
             GameObject unityObject = panel.UnityObject;
-            Vector3 endPosition = unityObject.transform.localPosition;
-            float tweenEnd = (!panel.TweenFromBottom)
-                ? (endPosition.x-((RectTransform)unityObject.transform).sizeDelta.x)
-                : (endPosition.y+((RectTransform)unityObject.transform).sizeDelta.y);
-            
-            float tweenStart = (!panel.TweenFromBottom)
-                ? (endPosition.x)
-                : (endPosition.y);
-            
+            Vector3 endPosition    = unityObject.transform.localPosition;
+            float tweenEnd         = (!panel.TweenFromBottom)
+                                         ? (endPosition.x - ((RectTransform) unityObject.transform).sizeDelta.x)
+                                         : (endPosition.y + ((RectTransform) unityObject.transform).sizeDelta.y);
+
+            float tweenStart = (!panel.TweenFromBottom) ? (endPosition.x) : (endPosition.y);
+
             SynthesisTween.MakeTween(tweenKey, tweenStart, tweenEnd, PANEL_TWEEN_DURATION,
                 (time, a, b) => SynthesisTweenInterpolationFunctions.FloatInterp(time, (float) a, (float) b),
                 SynthesisTweenScaleFunctions.EaseOutCubic, TweenCallback);
 
             void TweenCallback(SynthesisTween.SynthesisTweenStatus status) {
-                Vector3 position = (!panel.TweenFromBottom) ?
-                    new Vector3(status.CurrentValue<float>(), endPosition.y, endPosition.z)
-                    : new Vector3(endPosition.x, status.CurrentValue<float>(), endPosition.z);
+                Vector3 position                    = (!panel.TweenFromBottom)
+                                                          ? new Vector3(status.CurrentValue<float>(), endPosition.y, endPosition.z)
+                                                          : new Vector3(endPosition.x, status.CurrentValue<float>(), endPosition.z);
                 unityObject.transform.localPosition = position;
             }
 
