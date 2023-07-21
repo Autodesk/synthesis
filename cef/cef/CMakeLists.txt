@@ -8,6 +8,16 @@ if(OS_MAC)
 
     set(SHARED_INFO_PLIST ../res/mac/Info.plist)
     set(SHARED_HELPER_INFO_PLIST ../res/mac/helper-Info.plist)
+elseif(OS_WINDOWS)
+    set(SHARED_RESOURCES_SRCS
+        ../res/win/big.ico
+        ../res/win/resource.h
+        ../res/win/shared.rc
+        ../res/win/small.ico
+    )
+
+    set(SHARED_EXE_MANIFEST ../res/win/shared.exe.manifest)
+    set(SHARED_COMPATIBILITY_MANIFEST ../res/win/compatibility.manifest)
 endif()
 
 if(OS_MACOSX OR OS_WINDOWS)
