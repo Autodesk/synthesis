@@ -22,6 +22,8 @@ public class DriverStationPanel : PanelDynamic {
     public DriverStationPanel() : base(new Vector2(800, 60)) {}
 
     public override bool Create() {
+        TweenFromBottom = true;
+        
         if (RobotSimObject.CurrentlyPossessedRobot == string.Empty) {
             Logger.Log("Spawn a robot first", LogLevel.Info);
             return false;
@@ -35,7 +37,8 @@ public class DriverStationPanel : PanelDynamic {
         transform.anchoredPosition = new Vector2(0.0f, 10.0f);
 
         Title.SetText("Driver Station (Not Connected)");
-        Title.SetWidth<Label>(400);
+
+        AcceptButton.RootGameObject.SetActive(false);
 
         _modeButton = MainContent.CreateButton();
         _modeButton.SetWidth<Button>(200f).SetLeftStretch<Button>(topPadding: 0f, bottomPadding: 0f);
@@ -77,7 +80,7 @@ public class DriverStationPanel : PanelDynamic {
         } else {
             _modeButton.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
                     ColorManager.SynthesisColor.InteractiveElementRight))
-                .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.Background).SetText("Disabled"));
+                .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText).SetText("Disabled"));
         }
     }
 

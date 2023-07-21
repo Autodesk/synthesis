@@ -141,7 +141,7 @@ namespace Synthesis.UI.Dynamic {
             });
             _cancelButton.Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.CancelButton));
 
-            _cancelButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElementText));
+            _cancelButton.Label?.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptCancelButtonText));
             _acceptButton = new Button(null!, _footer.Find("Accept").gameObject, null);
 
             _acceptButton.Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptButton));

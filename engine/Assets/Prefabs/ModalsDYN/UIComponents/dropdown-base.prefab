@@ -276,7 +276,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1053871804971865466
 RectTransform:
   m_ObjectHideFlags: 0
@@ -476,8 +476,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _image: {fileID: 4236115544794145670}
   _defaultColor: {r: 1, g: 1, b: 1, a: 0}
-  _hoverColor: {r: 0, g: 0, b: 0, a: 0.078431375}
-  _selectedColor: {r: 0, g: 0, b: 0, a: 0.13725491}
+  _hoverColor: {r: 0, g: 0, b: 0, a: 0.15686275}
+  _selectedColor: {r: 0, g: 0, b: 0, a: 0.27450982}
   _hoverScaleMultiplier: 1
   _clickedScaleMultiplier: 1
 --- !u!1 &3090576790472843301
@@ -606,7 +606,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -817,8 +817,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _image: {fileID: 0}
   _defaultColor: {r: 1, g: 1, b: 1, a: 1}
-  _hoverColor: {r: 0.9528302, g: 0.9528302, b: 0.9528302, a: 1}
-  _selectedColor: {r: 0.8980392, g: 0.8980392, b: 0.8980392, a: 1}
+  _hoverColor: {r: 0.9411765, g: 0.9411765, b: 0.9411765, a: 1}
+  _selectedColor: {r: 0.8235294, g: 0.8235294, b: 0.8235294, a: 1}
   _hoverScaleMultiplier: 1.03
   _clickedScaleMultiplier: 1.06
 --- !u!1 &5161403582565997745
@@ -1130,7 +1130,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 7.000023}
+  m_AnchoredPosition: {x: 0, y: 7.000038}
   m_SizeDelta: {x: 0, y: 54.9778}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &7301609031722914249

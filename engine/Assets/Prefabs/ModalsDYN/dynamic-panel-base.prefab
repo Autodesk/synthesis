@@ -551,6 +551,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5247302447376332241, guid: 67841954fc797ca4099c4b62c87c3e0e, type: 3}
+      propertyPath: m_Transition
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5247302447376332241, guid: 67841954fc797ca4099c4b62c87c3e0e, type: 3}
       propertyPath: m_TargetGraphic
       value: 
       objectReference: {fileID: 5977127725401737703}
@@ -696,6 +700,10 @@ PrefabInstance:
     - target: {fileID: 1778740103824092176, guid: 67841954fc797ca4099c4b62c87c3e0e, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5247302447376332241, guid: 67841954fc797ca4099c4b62c87c3e0e, type: 3}
+      propertyPath: m_Transition
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5247302447376332241, guid: 67841954fc797ca4099c4b62c87c3e0e, type: 3}
       propertyPath: m_TargetGraphic

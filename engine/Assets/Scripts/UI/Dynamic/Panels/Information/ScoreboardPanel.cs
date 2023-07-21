@@ -28,6 +28,8 @@ public class ScoreboardPanel : PanelDynamic {
     }
 
     public override bool Create() {
+        TweenFromBottom = true;
+        
         CancelButton.RootGameObject.SetActive(false);
         AcceptButton.RootGameObject.SetActive(false);
         Title.RootGameObject.SetActive(false);
