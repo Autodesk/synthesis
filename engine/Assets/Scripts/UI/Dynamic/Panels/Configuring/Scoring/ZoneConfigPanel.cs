@@ -154,14 +154,14 @@ public class ZoneConfigPanel : PanelDynamic {
                                 .SetValue(_initialData.Points)
                                 .AddOnValueChangedEvent((f, n) => _data.Points = n);
 
-        _deleteGamepieceToggle = MainContent.CreateToggle(_initialData.DestroyGamepiece, "Destroy Gamepiece")
+        _deleteGamepieceToggle = MainContent.CreateToggle(false, _initialData.DestroyGamepiece, "Destroy Gamepiece")
                                      .AddOnStateChangedEvent((t, v) => {
                                          _data.DestroyGamepiece = !_data.DestroyGamepiece;
                                          t.State                = _data.DestroyGamepiece; // just in case
                                      })
                                      .ApplyTemplate(VerticalLayout);
 
-        _persistentPointsToggle = MainContent.CreateToggle(_initialData.PersistentPoints, "Persistent Points")
+        _persistentPointsToggle = MainContent.CreateToggle(false, _initialData.PersistentPoints, "Persistent Points")
                                       .AddOnStateChangedEvent((t, v) => {
                                           _data.PersistentPoints = !_data.PersistentPoints;
                                           t.State                = _data.PersistentPoints;

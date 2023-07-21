@@ -127,7 +127,7 @@ public class RCConfigPwmGroupModal : ModalDynamic {
             container.SetTopStretch<Content>(
                 leftPadding: 10, rightPadding: 10, anchoredY: -_portSelection.Content.RectOfChildren(container).yMin);
 
-            var toggle = container.CreateToggle(false, $"{i}");
+            var toggle = container.CreateToggle(false, label: $"{i}");
             toggle.SetStretch<Toggle>();
 
             _portToggles.Add($"{i}", toggle);
@@ -156,7 +156,7 @@ public class RCConfigPwmGroupModal : ModalDynamic {
                 container.SetTopStretch<Content>(leftPadding: 10, rightPadding: 10,
                     anchoredY: -_signalSelection.Content.RectOfChildren(container).yMin);
 
-                var toggle = container.CreateToggle(false, $"{j.Info.Name} ({j.SignalReference})");
+                var toggle = container.CreateToggle(false, label: $"{j.Info.Name} ({j.SignalReference})");
                 toggle.SetStretch<Toggle>();
 
                 toggle.AddOnStateChangedEvent((t, s) => UpdateAcceptButton());

@@ -13,8 +13,8 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
     /// </summary>
     public class EditThemeModal : ModalDynamic {
         private const float MODAL_WIDTH        = 1000;
-        private const float MODAL_HEIGHT       = 430;
-        private const float ROW_HEIGHT         = 60;
+        private const float MODAL_HEIGHT       = 390;
+        private const float ROW_HEIGHT         = 40;
         private const float HORIZONTAL_PADDING = 15;
 
         private Func<UIComponent, UIComponent> VerticalLayout = (u) => {
@@ -59,7 +59,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
             MiddleButton.AddOnClickedEvent(x => { PreviewColors(); }).StepIntoLabel(l => l.SetText("Preview"));
 
-            var (left, right) = MainContent.SplitLeftRight(500 - (HORIZONTAL_PADDING / 2), HORIZONTAL_PADDING);
+            var (left, right) = MainContent.SplitLeftRight(380 - (HORIZONTAL_PADDING / 2), HORIZONTAL_PADDING);
 
             CreateThemeSelection(left);
             CreateColorSliders(left);
@@ -83,9 +83,9 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
             _colors[_selectedColor.Value] = (colorInput, valueTuple.image, valueTuple.background, valueTuple.label);
 
-            _hSlider.SetValue((int) _hSlider.Value);
-            _sSlider.SetValue((int) _sSlider.Value);
-            _vSlider.SetValue((int) _vSlider.Value);
+            _hSlider.SetValue(Mathf.RoundToInt(_hSlider.Value));
+            _sSlider.SetValue(Mathf.RoundToInt(_sSlider.Value));
+            _vSlider.SetValue(Mathf.RoundToInt(_vSlider.Value));
         }
 
         public override void Delete() {}
@@ -203,13 +203,14 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
                 var (colorImage, name) = colorContent.SplitLeftRight(ROW_HEIGHT, HORIZONTAL_PADDING);
 
-                colorContent.StepIntoImage(i => i.SetSprite(null!).SetCornerRadius(10))
+                colorContent.StepIntoImage(i => i.SetSprite(null!).SetCornerRadius(8))
                     .SetBackgroundColor<Content>(ColorManager.SynthesisColor.BackgroundSecondary);
                 
-                colorImage.SetBackgroundColor<Content>(c.Value);
+                colorImage.SetBackgroundColor<Content>(c.Value).StepIntoImage(i => i.SetCornerRadius(8));
 
                 // Regex.Replace formats color's name with spaces (ColorName -> Color Name)
-                var label = name.CreateLabel().SetText(Regex.Replace(c.Key.ToString(), "(\\B[A-Z])", " $1"));
+                var label = name.CreateLabel().SetText(Regex.Replace(c.Key.ToString(), "(\\B[A-Z])", " $1"))
+                    .SetFontSize(15f);
 
                 var button = colorContent.CreateButton()
                     .StepIntoLabel(l => l.RootGameObject.SetActive(false))

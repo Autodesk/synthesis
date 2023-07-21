@@ -664,10 +664,10 @@ namespace Synthesis.UI.Dynamic {
             return label;
         }
 
-        public Toggle CreateToggle(bool isOn = false, string label = "New Toggle") {
+        public Toggle CreateToggle(bool radioSelect = false, bool isOn = false, string label = "New Toggle") {
             var toggleObj = GameObject.Instantiate(
-                SynthesisAssetCollection.GetUIPrefab("toggle-base"), base.RootGameObject.transform);
-            var toggle = new Toggle(this, toggleObj, isOn, label);
+                SynthesisAssetCollection.GetUIPrefab((radioSelect) ? "radio-select-base" : "toggle-base"), base.RootGameObject.transform);
+            var toggle = new Toggle(this, toggleObj, isOn, label, radioSelect);
             base.Children.Add(toggle);
             return toggle;
         }
@@ -923,7 +923,8 @@ namespace Synthesis.UI.Dynamic {
             set { SetState(value); }
         }
 
-        public Toggle(UIComponent? parent, GameObject unityObject, bool isOn, string text) : base(parent, unityObject) {
+        public Toggle(UIComponent? parent, GameObject unityObject, bool isOn, string text, bool radioSelect)
+                : base(parent, unityObject) {
             _titleLabel  = new Label(this, RootGameObject.transform.Find("Label").gameObject, null);
             _unityToggle = RootGameObject.transform.Find("Toggle").GetComponent<UToggle>();
             _unityToggle.onValueChanged.AddListener(x => {
@@ -936,8 +937,11 @@ namespace Synthesis.UI.Dynamic {
             _titleLabel.SetText(text);
 
             _disabledImage = new Image(this, _unityToggle.transform.Find("Background").gameObject);
+            _disabledImage.SetCornerRadius((radioSelect) ? 10 : 2);
+            
             _enabledImage  = new Image(this, _unityToggle.transform.Find("Background").Find("Checkmark").gameObject);
-            _enabledImage.SetCornerRadius(10);
+            _enabledImage.SetCornerRadius((radioSelect) ? 10 : 2);
+            
             
             DisabledColor = ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveBackground);
             EnabledColor  = (ColorManager.SynthesisColor.InteractiveElementLeft,
@@ -1017,7 +1021,7 @@ namespace Synthesis.UI.Dynamic {
             _fillImage = new Image(this, _unitySlider.transform.Find("Fill Area").Find("Fill").gameObject);
             _fillImage.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
                 ColorManager.SynthesisColor.InteractiveElementRight);
-            _fillImage.SetCornerRadius(10);
+            _fillImage.SetCornerRadius(8);
 
             if (unitSuffix != null)
                 _unitSuffix = unitSuffix;
