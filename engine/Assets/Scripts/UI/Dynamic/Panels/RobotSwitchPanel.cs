@@ -86,7 +86,7 @@ public class RobotSwitchPanel : PanelDynamic {
     private void AddEntry(RobotSimObject robot) {
         var toggle =
             _scrollView.Content.CreateToggle(true, RobotSimObject.CurrentlyPossessedRobot == robot.Name, robot.Name)
-                .SetSize<Toggle>(new Vector2(PANEL_WIDTH, 50f))
+                .SetSize<Toggle>(new Vector2(PANEL_WIDTH, 40f))
                 .ApplyTemplate(VerticalLayout)
                 .StepIntoLabel(l => l.SetFontSize(16f))
                 .SetDisabledColor(ColorManager.SynthesisColor.Background);
