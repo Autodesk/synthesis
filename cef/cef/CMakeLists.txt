@@ -1,94 +1,42 @@
-# Shared static library between all operating system targets
-# TODO: Figure out where core.h should be included
-
-set(SHARED_COMMON_SOURCES
-    ${CMAKE_CURRENT_LIST_DIR}/src/main_util.cpp
-)
-
-set(SHARED_COMMON_HEADERS
-    ${CMAKE_CURRENT_LIST_DIR}/inc/app_factory.h
-    ${CMAKE_CURRENT_LIST_DIR}/inc/main_util.h
-)
-
-set(SHARED_SOURCES
-    ${SHARED_COMMON_SOURCES}
-    ${CMAKE_CURRENT_LIST_DIR}/src/client_manager.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/client_util.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/browser_util.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/resource_util.cpp
-)
-
-set(SHARED_HEADERS
-    ${SHARED_COMMON_HEADERS}
-    ${CMAKE_CURRENT_LIST_DIR}/inc/client_manager.h
-    ${CMAKE_CURRENT_LIST_DIR}/inc/client_util.h
-    ${CMAKE_CURRENT_LIST_DIR}/inc/browser_util.h
-    ${CMAKE_CURRENT_LIST_DIR}/inc/resource_util.h
-)
-
-set(SHARED_SOURCES_WINDOWS
-    ${CMAKE_CURRENT_LIST_DIR}/src/client_util_win.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/main_win.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/resource_util_win.cpp
-)
-
-set(SHARED_SOURCES_MAC
-    ${CMAKE_CURRENT_LIST_DIR}/src/client_util_mac.mm
-    ${CMAKE_CURRENT_LIST_DIR}/src/main_mac.mm
-    ${CMAKE_CURRENT_LIST_DIR}/src/resource_util_mac.mm
-    ${CMAKE_CURRENT_LIST_DIR}/src/resource_util_posix.cpp
-)
-
-# Very important not to forget about this line
-# Will append the platform sources to the shared sources
-APPEND_PLATFORM_SOURCES(SHARED_SOURCES)
-
 if(OS_MAC)
-    set(SHARED_HELPER_SOURCES
-        ${SHARED_COMMON_SOURCES}
-        ${CMAKE_CURRENT_LIST_DIR}/src/process_helper_mac.cpp
+    set(SHARED_RESOURCES_SRCS
+        ../res/mac/English.lproj/InfoPlist.strings
+        ../res/mac/English.lproj/MainMenu.xib
+        ../res/mac/Info.plist
+        ../res/mac/shared.icns
     )
 
-    set(SHARED_HELPER_HEADERS
-        ${SHARED_HELPER_HEADERS}
-        ${CMAKE_CURRENT_LIST_DIR}/inc/process_helper_mac.h
-    )
+    set(SHARED_INFO_PLIST ../res/mac/Info.plist)
+    set(SHARED_HELPER_INFO_PLIST ../res/mac/helper-Info.plist)
 endif()
 
-set(SHARED_TARGET "shared")
-
-# Mac has a different process for creating the shared helper apps
-if(OS_MAC)
-    set(SHARED_HELPER_TARGET "shared_helper")
-endif()
-
-if(OS_WINDOWS OR OS_LINUX)
-    # MacOS loades the CEF framework dynamically on startup unlike windows and linux
-    ADD_LOGICAL_TARGET("libcef_lib" "${CEF_LIB_DEBUG}" "${CEF_LIB_RELEASE}")
-endif()
-
-# TODO: Check the difference between os_mac and os_macosx
 if(OS_MACOSX OR OS_WINDOWS)
-    macro(SET_SOURCE_GROUPS srcs)
-        foreach(file ${srcs})
-            get_filename_component(ABS_FILE "${FILE}" ABSOLUTE)
-            get_filename_component(PARENT_DIR "${ABS_FILE}" DIRECTORY)
+    set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+    macro(SET_CEF_SOURCE_GROUPS srcs)
+        foreach(FILE ${srcs}) 
+            get_filename_component(ABS_FILE ${FILE} ABSOLUTE)
+            get_filename_component(PARENT_DIR ${ABS_FILE} DIRECTORY)
 
             string(REPLACE "${CMAKE_SOURCE_DIR}/cef/" "" GROUP "${PARENT_DIR}")
-
             string(REPLACE "/" "\\" GROUP "${GROUP}")
 
-            source_group("${GROUP}" FILES "${FILE}")
+            source_group(${GROUP} FILES ${FILE})
         endforeach()
     endmacro()
 endif()
 
-macro(SET_CEF_TARGET_PROPERTIES target)
+if(GEN_NINJA OR GEN_MAKEFILES)
+    set(CEF_TARGET_OUT_DIR "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
+else()
+    set(CEF_TARGET_OUT_DIR "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+endif()
+
+macro(SET_CEF_PROPERTIES target)
     set_target_properties(${target} PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${SYNTHESIS_OUT_DIR}"
-        LIBRARY_OUTPUT_DIRECTORY "${SYNTHESIS_OUT_DIR}"
-        ARCHIVE_OUTPUT_DIRECTORY "${SYNTHESIS_OUT_DIR}"
-    )
+                        ARCHIVE_OUTPUT_DIRECTORY ${CEF_TARGET_OUT_DIR}
+                        RUNTIME_OUTPUT_DIRECTORY ${CEF_TARGET_OUT_DIR}
+                        LIBRARY_OUTPUT_DIRECTORY ${CEF_TARGET_OUT_DIR})
 
     if(OS_MACOSX OR OS_WINDOWS)
         set_property(TARGET ${target} PROPERTY FOLDER "cef")
@@ -96,14 +44,14 @@ macro(SET_CEF_TARGET_PROPERTIES target)
 endmacro()
 
 macro(SET_CEF_LIBRARY_TARGET_PROPERTIES target)
-    SET_LIBRARY_TARGET_PROPERTIES(${target})
-    SET_CEF_TARGET_PROPERTIES(${target})
+      SET_LIBRARY_TARGET_PROPERTIES(${target})
+    SET_CEF_PROPERTIES(${target})
 endmacro()
 
 macro(SET_CEF_EXECUTABLE_TARGET_PROPERTIES target)
     SET_EXECUTABLE_TARGET_PROPERTIES(${target})
-    SET_CEF_TARGET_PROPERTIES(${target})
-  
+    SET_CEF_PROPERTIES(${target})
+
     if(OS_LINUX)
         set_target_properties(${target} PROPERTIES INSTALL_RPATH "$ORIGIN")
         set_target_properties(${target} PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
@@ -112,185 +60,13 @@ macro(SET_CEF_EXECUTABLE_TARGET_PROPERTIES target)
             TARGET ${target}
             POST_BUILD
             COMMAND "mt.exe" -nologo
-                    -manifest \"${CMAKE_CURRENT_SOURCE_DIR}/${SHARED_EXE_MANIFEST}\"
-                            \"${CMAKE_CURRENT_SOURCE_DIR}/${SHARED_COMPATIBILITY_MANIFEST}\"
-                    -outputresource:"${EXAMPLE_SYNTHESIS_OUT_DIR}/${target}.exe"\;\#1
+                -manifest \"${CMAKE_CURRENT_SOURCE_DIR}/${SHARED_EXE_MANIFEST}\"
+                \"${CMAKE_CURRENT_SOURCE_DIR}/${SHARED_COMPATIBILITY_MANIFEST}\"
+                -outputresource:"${CEF_TARGET_OUT_DIR}/${target}.exe"\;\#1
             COMMENT "Adding manifest..."
-            )
-    endif()
+        )
+  endif()
 endmacro()
 
-if(OS_WINDOWS)
-    SET_SOURCE_GROUPS(${SHARED_SOURCES})
-
-    add_library(${SHARED_TARGET} STATIC ${SHARED_SOURCES} ${SHARED_HEADERS})
-    SET_CEF_LIBRARY_TARGET_PROPERTIES(${SHARED_TARGET})
-    add_dependencies(${SHARED_TARGET} libcef_dll_wrapper)
-    target_link_libraries(${SHARED_TARGET} libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS})
-
-    if(USE_SANDBOX)
-        ADD_LOGICAL_TARGET("cef_sandbox_lib" "${CEF_SANDBOX_LIB_DEBUG}" "${CEF_SANDBOX_LIB_RELEASE}")
-        target_link_libraries(${SHARED_TARGET} cef_sandbox_lib ${CEF_SANDBOX_STANDARD_LIBS})
-    endif()
-
-    COPY_FILES("${SHARED_TARGET}" "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${SYNTHESIS_OUT_DIR}")
-    COPY_FILES("${SHARED_TARGET}" "${CEF_RESOURCE_FILES}" "${CEF_RESOURCE_DIR}" "${SYNTHESIS_OUT_DIR}")
-endif()
-
-if(OS_MAC)
-    SET_SOURCE_GROUPS(${SHARED_SOURCES})
-    SET_SOURCE_GROUPS(${SHARED_HELPER_SOURCES})
-
-    add_library(${SHARED_HELPER_TARGET} STATIC ${SHARED_HELPER_SOURCES} ${SHARED_HELPER_HEADERS})
-    SET_CEF_LIBRARY_TARGET_PROPERTIES(${SHARED_HELPER_TARGET})
-    add_dependencies(${SHARED_HELPER_TARGET} libcef_dll_wrapper)
-    target_link_libraries(${SHARED_HELPER_TARGET} libcef_dll_wrapper ${CEF_STANDARD_LIBS})
-
-    if(USE_SANDBOX)
-        ADD_LOGICAL_TARGET("cef_sandbox_lib" "${CEF_SANDBOX_LIB_DEBUG}" "${CEF_SANDBOX_LIB_RELEASE}")
-        target_link_libraries(${SHARED_HELPER_TARGET} cef_sandbox_lib)
-    endif()
-
-    add_library(${SHARED_TARGET} STATIC ${SHARED_SOURCES} ${SHARED_HEADERS})
-    SET_CEF_LIBRARY_TARGET_PROPERTIES(${SHARED_TARGET})
-    add_dependencies(${SHARED_TARGET} libcef_dll_wrapper "${SHARED_HELPER_TARGET}")
-    target_link_libraries(${SHARED_TARGET} libcef_dll_wrapper "${CEF_STANDARD_LIBS}")
-endif()
-
-# TODO: Linux
-
-set(MAIN_SOURCES
-    ${CMAKE_CURRENT_LIST_DIR}/src/browser_app.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/main.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/client.cpp
-)
-
-set(MAIN_HEADERS
-    ${CMAKE_CURRENT_LIST_DIR}/inc/client.h
-)
-
-if(OS_WINDOWS OR OS_LINUX)
-    set(MAIN_SOURCES
-        ${MAIN_SOURCES}
-        ${CMAKE_CURRENT_LIST_DIR}/src/other_app.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/src/renderer_app.cpp
-    )
-endif()
-
-# Mac has a seperate helper executable
-set(MAIN_MAC_SOURCES
-    ${CMAKE_CURRENT_LIST_DIR}/src/other_app.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/renderer_app.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/browser_helper_mac.cpp
-)
-
-set(SHARED_WINDOWS_RESCOURCES
-    ${CMAKE_CURRENT_LIST_DIR}/res/win/big.ico
-    ${CMAKE_CURRENT_LIST_DIR}/res/win/resource.h
-    ${CMAKE_CURRENT_LIST_DIR}/res/win/shared.rc
-    ${CMAKE_CURRENT_LIST_DIR}/res/win/small.ico
-)
-
-set(SHARED_MAC_RESOURCES
-    ${CMAKE_CURRENT_LIST_DIR}/res/mac/English.lproj/InfoPlist.strings
-    ${CMAKE_CURRENT_LIST_DIR}/res/mac/English.lproj/MainMenu.xib
-    ${CMAKE_CURRENT_LIST_DIR}/res/mac/Info.plist
-    ${CMAKE_CURRENT_LIST_DIR}/res/mac/shared.icns
-)
-
-set(SHARED_INFO_PLIST ./res/mac/Info.plist)
-set(SHARED_HELPER_INFO_PLIST ./res/mac/helper-Info.plist)
-
-set(CURRENT_TARGET "synthesis_unity_cef")
-if(OS_MAC)
-    set(CURRENT_TARGET_HELPER "synthesis_unity_cef_Helper")
-    set(CURRENT_HELPER_OUTPUT_NAME "synthesis unity cef Helper")
-endif()
-
-if(OS_WINDOWS)
-    set(MAIN_SOURCES ${MAIN_SOURCES} ${SHARED_WINDOWS_RESCOURCES})
-    SET_SOURCE_GROUPS(${MAIN_SOURCES})
-
-    add_executable(${CURRENT_TARGET} WIN32 ${MAIN_SOURCES} ${MAIN_HEADERS})
-    SET_CEF_EXECUTABLE_TARGET_PROPERTIES(${CURRENT_TARGET})
-    add_dependencies(${CURRENT_TARGET} ${SHARED_TARGET})
-    target_link_libraries(${CURRENT_TARGET} ${SHARED_TARGET})
-endif()
-
-if(OS_MAC)
-    SET_SOURCE_GROUPS(${MAIN_SOURCES})
-    SET_SOURCE_GROUPS(${MAIN_MAC_SOURCES})
-
-    set(SYNTHESIS_APP "${SYNTHESIS_OUT_DIR}/${CURRENT_TARGET}.app")
-
-    set(EXECUTABLE_NAME "${CURRENT_TARGET}")
-    set(PRODUCT_NAME "${CURRENT_TARGET}")
-
-    add_executable(${CURRENT_TARGET} MACOSX_BUNDLE ${MAIN_SOURCES} ${MAIN_HEADERS} ${SHARED_MAC_RESOURCES})
-    SET_CEF_EXECUTABLE_TARGET_PROPERTIES(${CURRENT_TARGET})
-    add_dependencies(${CURRENT_TARGET} ${SHARED_TARGET})
-    target_link_libraries(${CURRENT_TARGET} ${SHARED_TARGET})
-    set_target_properties(${CURRENT_TARGET} PROPERTIES
-        RESOURCE "${SHARED_MAC_RESOURCES}"
-        MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/${SHARED_INFO_PLIST}"
-    )
-
-    add_custom_command(
-        TARGET ${CURRENT_TARGET}
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-                "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
-                "${SYNTHESIS_APP}/Contents/Frameworks/Chromium Embedded Framework.framework"
-        VERBATIM
-    )
-
-    foreach(suffix_list ${CEF_HELPER_APP_SUFFIXES})
-        string(REPLACE ":" ";" suffix_list ${suffix_list})
-        list(GET suffix_list 0 name_suffix)
-        list(GET suffix_list 1 target_suffix)
-        list(GET suffix_list 2 plist_suffix)
-    
-        set(helper_target "${CURRENT_TARGET_HELPER}${target_suffix}")
-        set(helper_output_name "${CURRENT_HELPER_OUTPUT_NAME}${name_suffix}")
-
-        set(_helper_info_plist "${CMAKE_CURRENT_BINARY_DIR}/helper-Info${target_suffix}.plist")
-        file(READ "${CMAKE_CURRENT_SOURCE_DIR}/${SHARED_HELPER_INFO_PLIST}" _plist_contents)
-        string(REPLACE "\${EXECUTABLE_NAME}" "${helper_output_name}" _plist_contents ${_plist_contents})
-        string(REPLACE "\${PRODUCT_NAME}" "${helper_output_name}" _plist_contents ${_plist_contents})
-        string(REPLACE "\${BUNDLE_ID_SUFFIX}" "${plist_suffix}" _plist_contents ${_plist_contents})
-        file(WRITE ${_helper_info_plist} ${_plist_contents})
-
-        add_executable(${helper_target} MACOSX_BUNDLE ${MAIN_MAC_SOURCES})
-        SET_CEF_EXECUTABLE_TARGET_PROPERTIES(${helper_target})
-        add_dependencies(${helper_target} ${SHARED_HELPER_TARGET})
-        target_link_libraries(${helper_target} ${SHARED_HELPER_TARGET})
-        set_target_properties(${helper_target} PROPERTIES
-            MACOSX_BUNDLE_INFO_PLIST ${_helper_info_plist}
-            OUTPUT_NAME ${helper_output_name}
-        )
-
-        if(USE_SANDBOX)
-            target_link_libraries(${helper_target} cef_sandbox_lib)
-        endif()
-
-        add_dependencies(${CURRENT_TARGET} ${helper_target})
-
-        add_custom_command(
-            TARGET ${CURRENT_TARGET}
-            POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
-                    "${SYNTHESIS_OUT_DIR}/${helper_output_name}.app"
-                    "${SYNTHESIS_APP}/Contents/Frameworks/${helper_output_name}.app"
-            VERBATIM
-            )
-    endforeach()
-
-    set(PREFIXES
-        "./res/mac"
-    )
-    COPY_MAC_RESOURCES("${SHARED_MAC_RESOURCES}" "${PREFIXES}" "${CURRENT_TARGET}" "${CMAKE_CURRENT_SOURCE_DIR}" "${SYNTHESIS_APP}")
-endif()
-
-# TODO: Linux
-
-include_directories(BEFORE ${CMAKE_CURRENT_LIST_DIR}/inc)
+add_subdirectory(shared)
+add_subdirectory(standalone)

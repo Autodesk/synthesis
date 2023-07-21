@@ -15,8 +15,7 @@ void OnBeforeClose(CefRefPtr<CefBrowser> browser);
 
 void PlatformTitleChange(CefRefPtr<CefBrowser> browser, const CefString& title);
 
-// TODO: Needed?
-// std::string DumpRequestContents(CefRefPtr<CefRequest> request);
+std::string DumpRequestContents(CefRefPtr<CefRequest> request);
 
 } // namespace shared
 } // namespace synthesis

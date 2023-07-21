@@ -1,17 +1,8 @@
 cmake_minimum_required(VERSION 3.26.0)
-project(synthesis_cef LANGUAGES CXX OBJCXX)
-
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+project(cef LANGUAGES CXX OBJCXX)
 set(CMAKE_CONFIGURATION_TYPES Debug Release)
 
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-if(GEN_NINJA OR GEN_MAKEFILES)
-    set(SYNTHESIS_OUT_DIR "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
-else()
-    set(SYNTHESIS_OUT_DIR "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
-endif()
+set_property(GLOBAL PROPERTY OS_FOLDERS ON)
 
 set(CEF_VERSION "106.0.26+ge105400+chromium-106.0.5249.91")
 
@@ -57,14 +48,14 @@ endif()
 function(DownloadCEF platform version download_dir)
     if(REINSTALL_CEF)
         message(STATUS "Reinstalling CEF...")
-        file(REMOVE_RECURSE "${download_dir}")
+        file(REMOVE_RECURSE ${download_dir})
     endif()
 
     set(CEF_DISTRIBUTION "cef_binary_${version}_${platform}")
     set(CEF_DOWNLOAD_DIR "${download_dir}")
     set(CEF_ROOT "${CEF_DOWNLOAD_DIR}/${CEF_DISTRIBUTION}" CACHE INTERNAL "CEF_ROOT")
   
-    if(NOT IS_DIRECTORY "${CEF_ROOT}")
+    if(NOT IS_DIRECTORY ${CEF_ROOT})
         message(STATUS "Downloading CEF binaries...")
         set(CEF_DOWNLOAD_FILENAME "${CEF_DISTRIBUTION}.tar.bz2")
         set(CEF_DOWNLOAD_PATH "${CEF_DOWNLOAD_DIR}/${CEF_DOWNLOAD_FILENAME}")
@@ -85,12 +76,10 @@ function(DownloadCEF platform version download_dir)
     endif()
 endfunction()
 
-DownloadCEF("${CEF_PLATFORM}" "${CEF_VERSION}" "${CMAKE_SOURCE_DIR}/cef_binaries")
+DownloadCEF(${CEF_PLATFORM} ${CEF_VERSION} "${CMAKE_SOURCE_DIR}/cef_binaries")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CEF_ROOT}/cmake")
 find_package(CEF REQUIRED)
-
-include_directories(${CEF_INCLUDE_PATH})
 
 add_subdirectory(${CEF_LIBCEF_DLL_WRAPPER_PATH} libcef_dll_wrapper)
 

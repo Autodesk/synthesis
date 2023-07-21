@@ -68,62 +68,30 @@ namespace synthesis {
 namespace shared {
 
 int main(int argc, char* argv[]) {
-
-    cout << "StartBrowserClient()" << endl;
-
     CefScopedLibraryLoader library_loader;
-
-    cout << "CefScopedLibraryLoader" << endl;
 
     if (!library_loader.LoadInMain()) {
         return 1;
     }
 
     NSAutoreleasePool* autopool = [[NSAutoreleasePool alloc] init];
-
-    cout << "NSAutoreleasePool" << endl;
-
     CefMainArgs main_args(argc, argv);
-
-    cout << "CefMainArgs" << endl;
-
     CefRefPtr<CefApp> app = synthesis::shared::CreateBrowserProcessApp();
 
-    cout << "CefRefPtr<CefApp>" << endl;
-
     [sharedApplication sharedApplication];
-
-    cout << "[sharedApplication sharedApplication]" << endl;
-
     synthesis::shared::ClientManager manager;
-
-    cout << "synthesis::ClientManager" << endl;
-
     CefSettings settings;
 
-    cout << "CefSettings" << endl;
-
     CefInitialize(main_args, settings, app, nullptr);
-
-    cout << "CefInitialize" << endl;
 
     NSObject* delegate = [[SharedAppDelegate alloc] init];
     [delegate performSelectorOnMainThread:@selector(createApplication:) withObject:nil waitUntilDone:NO];
 
-    cout << "[delegate performSelectorOnMainThread:@selector(createApplication:) withObject:nil waitUntilDone:NO]" << endl;
-
     CefRunMessageLoop();
-
-    cout << "CefRunMessageLoop()" << endl;
-
     CefShutdown();
-
-    cout << "CefShutdown()" << endl;
 
     [delegate release];
     [autopool release]; 
-
-    cout << "DONE!" << endl;
 
     return 0;
 }

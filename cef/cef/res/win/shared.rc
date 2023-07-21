@@ -57,12 +57,12 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "FileDescription", "CEF Example Application"
+            VALUE "FileDescription", "CEF Application"
             VALUE "FileVersion", CEF_VERSION
             VALUE "InternalName", "shared"
             VALUE "LegalCopyright", "Copyright (C) " MAKE_STRING(COPYRIGHT_YEAR) " The Chromium Embedded Framework Authors"
             VALUE "OriginalFilename", "shared.exe"
-            VALUE "ProductName", "CEF Example Application"
+            VALUE "ProductName", "CEF Application"
             VALUE "ProductVersion", CEF_VERSION
         END
     END

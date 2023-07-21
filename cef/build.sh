@@ -16,9 +16,9 @@ fi
 cd build/
 
 if [ "$1" = "test" ]; then
-    cmake -G "Unix Makefiles" -DPROJECT_ARCH="arm64" -DBUILD_TESTING=ON ../
+    cmake -G "Unix Makefiles" -DBUILD_TESTING=ON ../
     make test
 else
-    cmake -G "Unix Makefiles" -DPROJECT_ARCH="arm64" ../
+    cmake -G "Unix Makefiles" ../
     make
 fi
