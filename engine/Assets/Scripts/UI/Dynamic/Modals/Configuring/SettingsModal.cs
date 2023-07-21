@@ -64,6 +64,7 @@ namespace Synthesis.UI.Dynamic {
                                                .AddOnValueChangedEvent((d, i, o) => _qualitySettingsIndex = i)
                                                .SetValue(Get<int>(QUALITY_SETTINGS)));
 
+            //MainContent.CreateSubContent().ApplyTemplate(UI)
             var editThemeButton =
                 MainContent.CreateButton("Theme Editor").ApplyTemplate<Button>(UIComponent.VerticalLayout).AddOnClickedEvent(b => {
                     SaveSettings();

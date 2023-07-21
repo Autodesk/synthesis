@@ -28,14 +28,16 @@ namespace Synthesis.UI.Dynamic {
 
     public abstract class PanelDynamic {
         public const float MAIN_CONTENT_HORZ_PADDING = 25f;
-        
+        public bool TweenFromBottom = false;
+        public bool IsClosing = false;
+
         private float _leftContentPadding, _rightContentPadding;
         public float LeftContentPadding  => _leftContentPadding;
         public float RightContentPadding => _rightContentPadding;
 
         private Vector2 _mainContentSize; // Shouldn't really be used after init is called
         private GameObject _unityObject;
-        protected GameObject UnityObject => _unityObject;
+        public GameObject UnityObject => _unityObject;
         // Default for Modal
         private Transform _footer;
         protected Transform Footer => _footer;
@@ -186,6 +188,8 @@ namespace Synthesis.UI.Dynamic {
         private Vector2 _mainContentSize; // Shouldn't really be used after init is called
         private GameObject _unityObject;
 
+        public GameObject UnityObject => _unityObject;
+
         // Default for Modal
         private Button _cancelButton;
         protected Button CancelButton => _cancelButton;
@@ -241,10 +245,10 @@ namespace Synthesis.UI.Dynamic {
         protected ModalDynamic(Vector2 mainContentSize) {
             _mainContentSize = mainContentSize;
         }
-
+        
         public void Create_Internal(GameObject unityObject) {
             _unityObject = unityObject;
-
+            
             // Grab Customizable Modal Components
             var header       = _unityObject.transform.Find("Header");
             var headerRt     = header.GetComponent<RectTransform>();

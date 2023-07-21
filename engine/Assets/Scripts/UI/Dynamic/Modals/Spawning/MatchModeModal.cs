@@ -41,6 +41,8 @@ public class MatchModeModal : ModalDynamic {
                 }
             }
         });
+        
+        CancelButton.RootGameObject.SetActive(false);
 
         for (int robot = 0; robot < 6; robot++) {
             int robotIndex = robot;

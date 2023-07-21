@@ -12,7 +12,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
     /// A modal to select, create, remove, and edit themes
     /// </summary>
     public class EditThemeModal : ModalDynamic {
-        private const float MODAL_WIDTH        = 1350;
+        private const float MODAL_WIDTH        = 1000;
         private const float MODAL_HEIGHT       = 430;
         private const float ROW_HEIGHT         = 60;
         private const float HORIZONTAL_PADDING = 15;

@@ -58,6 +58,8 @@ namespace Synthesis.UI.Dynamic {
         public SpawnLocationPanel() : base(new Vector2(WIDTH, HEIGHT)) {}
 
         public override bool Create() {
+            TweenFromBottom = true;
+            
             if (!InputManager.MappedDigitalInputs.ContainsKey(SNAP_MODE_KEY))
                 InputManager.AssignDigitalInput(
                     SNAP_MODE_KEY, (Digital) new Digital("LeftShift").WithModifier((int) ModKey.LeftShift));
