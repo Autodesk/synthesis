@@ -8,7 +8,7 @@ using Synthesis.UI.Dynamic;
 using UnityEngine;
 
 namespace UI.Dynamic.Panels.Spawning.MixAndMatch {
-    public class MixAndMatchPanel : PanelDynamic {
+    public class BuildRobotPanel : PanelDynamic {
         private const float MODAL_WIDTH = 500f;
 
         private const float MODAL_HEIGHT = 600f;
@@ -42,7 +42,7 @@ namespace UI.Dynamic.Panels.Spawning.MixAndMatch {
             return u;
         };
 
-        public MixAndMatchPanel() : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) { }
+        public BuildRobotPanel() : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) { }
 
         public List<PartEditorPart> _parts = new();
 
@@ -52,7 +52,7 @@ namespace UI.Dynamic.Panels.Spawning.MixAndMatch {
             Title.SetText("Mix & Match");
 
             AcceptButton.StepIntoLabel(l => l.SetText("Close"))
-                .AddOnClickedEvent(b => DynamicUIManager.ClosePanel<MixAndMatchPanel>());
+                .AddOnClickedEvent(b => DynamicUIManager.ClosePanel<BuildRobotPanel>());
             CancelButton.RootGameObject.SetActive(false);
 
             _partsScrollView = MainContent.CreateScrollView()

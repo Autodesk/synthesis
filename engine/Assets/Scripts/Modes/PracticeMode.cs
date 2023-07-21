@@ -9,6 +9,7 @@ using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Utilities;
+using UI.Dynamic.Modals.MixAndMatch;
 using UI.Dynamic.Panels.Spawning;
 using UI.Dynamic.Panels.Spawning.MixAndMatch;
 using UnityEngine;
@@ -99,7 +100,7 @@ public class PracticeMode : IMode {
             }
         });
         
-        MainHUD.AddItemToDrawer("Mix & Match", b => DynamicUIManager.CreatePanel<MixAndMatchPanel>());
+        MainHUD.AddItemToDrawer("Mix & Match", b => DynamicUIManager.CreateModal<MixAndMatchModal>());
 
         EventBus.NewTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
     }

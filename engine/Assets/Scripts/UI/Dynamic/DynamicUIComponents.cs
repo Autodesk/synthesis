@@ -17,6 +17,7 @@ using UScrollView = UnityEngine.UI.ScrollRect;
 
 using Logger = SynthesisAPI.Utilities.Logger;
 using Math   = System.Math;
+using Object = UnityEngine.Object;
 
 #nullable enable
 
@@ -130,9 +131,8 @@ namespace Synthesis.UI.Dynamic {
 
         protected virtual void OnVisibilityChange() {}
 
-        public void Delete_Internal() {
-            GameObject.Destroy(_unityObject);
-        }
+        public void Delete_Internal() => Object.Destroy(_unityObject);
+        public void ClearContent() => MainContent.DeleteAllChildren();
     }
 
     public abstract class ModalDynamic {
@@ -229,9 +229,8 @@ namespace Synthesis.UI.Dynamic {
         public abstract void Update();
         public abstract void Delete();
 
-        public void Delete_Internal() {
-            GameObject.Destroy(_unityObject);
-        }
+        public void Delete_Internal() => Object.Destroy(_unityObject);
+        public void ClearContent() => MainContent.DeleteAllChildren();
     }
 
     public abstract class UIComponent {
