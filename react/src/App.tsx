@@ -1,14 +1,30 @@
 import { ModalControlProvider, useModalManager } from "./ModalContext";
-import Button from "./components/Button";
-import Modal from "./components/Modal";
+import MainHUD from "./components/MainHUD";
+import ConfigurationModal from "./modals/ConfigurationModal";
+import ControlsModal from "./modals/ControlsModal";
+import CreateDeviceModal from "./modals/CreateDeviceModal";
+import DownloadAssetsModal from "./modals/DownloadAssetsModal";
+import RoboRIOModal from "./modals/RoboRIOModal";
+import ViewModal from "./modals/ViewModal";
 
 const initialModals = [
     {
-        id: "configuration", component: (
-            <Modal name={"Configuration"} icon="https://placeholder.co/512x512">
-                <Button value={"Test"} />
-            </Modal>
-        )
+        id: "configuration", component: (<ConfigurationModal />)
+    },
+    {
+        id: "view", component: (<ViewModal />)
+    },
+    {
+        id: "controls", component: (<ControlsModal />)
+    },
+    {
+        id: "download-assets", component: (<DownloadAssetsModal />)
+    },
+    {
+        id: "roborio", component: (<RoboRIOModal />)
+    },
+    {
+        id: "create-device", component: (<CreateDeviceModal />)
     }
 ]
 
@@ -17,7 +33,7 @@ function App() {
 
     return (
         <ModalControlProvider openModal={openModal} closeModal={closeModal}>
-            <Button value={"Open Configuration"} onClick={() => openModal("configuration")} />
+            <MainHUD />
             {getActiveModalElement()}
         </ModalControlProvider>
     );
