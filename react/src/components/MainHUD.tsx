@@ -33,7 +33,7 @@ const MainHUD: React.FC<MainHUDProps> = () => {
     const { openModal, closeModal } = useModalControlContext();
 
     return (
-        <div className="fixed flex flex-col gap-2 bg-orange-500 w-min p-4 rounded-3xl ml-4 top-1/2 -translate-y-1/2">
+        <div className="fixed flex flex-col gap-2 bg-gradient-to-b from-orange-500 to-red-500 w-min p-4 rounded-3xl ml-4 top-1/2 -translate-y-1/2">
             <img src={logo} width={'80%'} />
             <MainHUDButton value={"Spawn Asset"} icon={<FaPlus />} larger={true} />
             <div className="flex flex-col gap-0 bg-black w-full rounded-3xl">
