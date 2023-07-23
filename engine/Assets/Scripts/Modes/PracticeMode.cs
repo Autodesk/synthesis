@@ -14,6 +14,7 @@ using SynthesisAPI.Utilities;
 using UnityEngine;
 using UnityEngine.XR;
 using Logger = SynthesisAPI.Utilities.Logger;
+using Random = System.Random;
 
 public class PracticeMode : IMode {
     public static Vector3 GamepieceSpawnpoint = new Vector3(0, 10, 0);
