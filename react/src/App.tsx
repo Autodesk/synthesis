@@ -38,10 +38,10 @@ const initialPanels = [
 
 function App() {
     const { activeModalId, openModal, closeModal, getActiveModalElement } = useModalManager(initialModals);
-    const { openPanel, closePanel, getActivePanelElements } = usePanelManager(initialPanels);
+    const { openPanel, closePanel, closeAllPanels, getActivePanelElements } = usePanelManager(initialPanels);
 
     return (
-        <ModalControlProvider openModal={openModal} closeModal={closeModal}>
+        <ModalControlProvider openModal={(modalId: string) => { closeAllPanels(); openModal(modalId); }} closeModal={closeModal}>
             <PanelControlProvider openPanel={openPanel} closePanel={closePanel}>
                 <MainHUD />
                 {getActivePanelElements()}
