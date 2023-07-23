@@ -4,7 +4,7 @@ using SynthesisAPI.Aether.Lobby;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-public class ServerHostingMode : IMode {
+public class HostMode : IMode {
     private LobbyServer _server;
 
     public IReadOnlyCollection<string> ClientInformation =>

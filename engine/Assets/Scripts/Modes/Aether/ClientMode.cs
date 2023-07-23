@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 using Logger = SynthesisAPI.Utilities.Logger;
 
-public class ConnectToMultiplayerMode : IMode {
+public class ClientMode : IMode {
     private const string SERVER_IP   = "127.0.0.1";
     private const string CLIENT_NAME = "Client 3.1415";
     // clang-format off

@@ -49,21 +49,21 @@ public class ChooseModeModal : ModalDynamic {
             });
 
         MainContent.CreateButton()
-            .StepIntoLabel(l => l.SetText("Host a Multiplayer Server"))
+            .StepIntoLabel(l => l.SetText("Host Multiplayer"))
             .ApplyTemplate(VerticalLayout)
             .AddOnClickedEvent(b => {
                 if (SceneManager.GetActiveScene().name != "MainScene")
                     SceneManager.LoadScene("MainScene");
-                ModeManager.CurrentMode = new ServerHostingMode();
+                ModeManager.CurrentMode = new HostMode();
             });
 
         MainContent.CreateButton()
-            .StepIntoLabel(l => l.SetText("Connect to a Multiplayer Server"))
+            .StepIntoLabel(l => l.SetText("Connect to Multiplayer"))
             .ApplyTemplate(VerticalLayout)
             .AddOnClickedEvent(b => {
                 if (SceneManager.GetActiveScene().name != "MainScene")
                     SceneManager.LoadScene("MainScene");
-                ModeManager.CurrentMode = new ConnectToMultiplayerMode();
+                ModeManager.CurrentMode = new ClientMode();
             });
     }
 

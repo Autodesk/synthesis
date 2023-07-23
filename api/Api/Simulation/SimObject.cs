@@ -47,6 +47,14 @@ namespace SynthesisAPI.Simulation {
             _state = state;
         }
 
+        public virtual void SetRemoteTransformData(ServerTransforms transformData) {
+
+        }
+
+        public virtual ServerTransforms GetRemoteTransformData() {
+            return new ServerTransforms();
+        }
+
         public virtual void Destroy() { }
 
         public List<(string key, string displayName)> GetAllReservedInputs() {

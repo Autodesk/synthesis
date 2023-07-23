@@ -19,12 +19,12 @@ namespace Synthesis.UI.Dynamic {
         private Label _statusLabel;
 
         private static ServerHostingModal _self;
-        private ServerHostingMode _mode;
+        private HostMode _mode;
 
         public ServerHostingModal() : base(new Vector2(MAIN_CONTENT_WIDTH, MAIN_CONTENT_HEIGHT)) {}
 
         public override void Create() {
-            _mode = (ModeManager.CurrentMode as ServerHostingMode)!;
+            _mode = (ModeManager.CurrentMode as HostMode)!;
 
             Title.SetText("Server Hosting");
             Description.SetText("Host a server for other players to join.");

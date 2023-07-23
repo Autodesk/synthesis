@@ -9,8 +9,8 @@ using System.Linq;
 using UnityEngine;
 using Utilities.ColorManager;
 using Logger                = SynthesisAPI.Utilities.Logger;
-using ClientConnectionState = ConnectToMultiplayerMode.ClientConnectionState;
-using ClientActionState     = ConnectToMultiplayerMode.ClientActionState;
+using ClientConnectionState = ClientMode.ClientConnectionState;
+using ClientActionState     = ClientMode.ClientActionState;
 
 namespace Synthesis.UI.Dynamic {
     public class ConnectToMultiplayerModal : ModalDynamic {
@@ -29,12 +29,12 @@ namespace Synthesis.UI.Dynamic {
         private bool _robotSelected = false;
 
         private static ConnectToMultiplayerModal _self;
-        private ConnectToMultiplayerMode _mode;
+        private ClientMode _mode;
 
         public ConnectToMultiplayerModal() : base(new Vector2(MAIN_CONTENT_WIDTH, MAIN_CONTENT_HEIGHT)) {}
 
         public override void Create() {
-            _mode = (ModeManager.CurrentMode as ConnectToMultiplayerMode)!;
+            _mode = (ModeManager.CurrentMode as ClientMode)!;
 
             AcceptButton.RootGameObject.SetActive(false);
             CancelButton.Label.SetText("Disconnect");
