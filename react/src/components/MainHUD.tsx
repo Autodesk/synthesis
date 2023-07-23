@@ -3,6 +3,7 @@ import Button from './Button';
 import { FaGear, FaPlus, FaHouse, FaMagnifyingGlass, FaXbox, FaPeopleGroup, FaDownload, FaCar } from 'react-icons/fa6';
 import { useModalControlContext } from '../ModalContext';
 import logo from '../assets/autodesk_logo.png'
+import { usePanelControlContext } from '../PanelContext';
 
 type MainHUDProps = {
 
@@ -31,6 +32,7 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
 
 const MainHUD: React.FC<MainHUDProps> = () => {
     const { openModal, closeModal } = useModalControlContext();
+    const { openPanel, closePanel } = usePanelControlContext();
 
     return (
         <div className="fixed flex flex-col gap-2 bg-gradient-to-b from-orange-500 to-red-500 w-min p-4 rounded-3xl ml-4 top-1/2 -translate-y-1/2">
@@ -40,7 +42,7 @@ const MainHUD: React.FC<MainHUDProps> = () => {
                 <MainHUDButton value={"Configuration"} icon={<FaGear />} onClick={() => openModal("configuration")} />
                 <MainHUDButton value={"View"} icon={<FaMagnifyingGlass />} onClick={() => openModal("view")} />
                 <MainHUDButton value={"Controls"} icon={<FaXbox />} onClick={() => openModal("controls")} />
-                <MainHUDButton value={"MultiBot"} icon={<FaPeopleGroup />} onClick={() => openModal("multibot")} />
+                <MainHUDButton value={"MultiBot"} icon={<FaPeopleGroup />} onClick={() => openPanel("multibot")} />
             </div>
             <div className="flex flex-col gap-0 bg-black w-full rounded-3xl">
                 <MainHUDButton value={"Download Asset"} icon={<FaDownload />} onClick={() => openModal("download-assets")} />

@@ -15,6 +15,7 @@ const Stack: React.FC<StackProps> = ({ className, children, direction, spacing, 
     const directionClassName =
         direction == StackDirection.Horizontal ? "flex-row" : "flex-col";
     if (!justify) justify = "between";
+    if (spacing == null) spacing = 10;
 
     return (
         <div className={`flex ${directionClassName} justify-${justify} gap-[${spacing}px] w-full ${className}`}>

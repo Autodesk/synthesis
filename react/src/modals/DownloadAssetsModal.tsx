@@ -22,7 +22,7 @@ const DownloadAssetsModal: React.FC = () => (
                 <LabeledButton label={"1213 Coffee (2021)"} value={"Download"} placement={LabelPlacement.Left} />
             </Stack>
         </Stack>
-    </Modal>
+    </Modal >
 )
 
 export default DownloadAssetsModal;
