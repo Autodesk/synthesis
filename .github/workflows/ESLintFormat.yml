@@ -1,0 +1,36 @@
+name: Format Validation (ESLint)
+
+on:
+  workflow_dispatch: {}
+  push: 
+    branches: [ master, dev ]
+  pull_request:
+    branches: [ master, dev ]
+
+jobs:
+  runFormatValidationScript:
+    name: Run ESLint Format Validation
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+    - name: JavaScript Setup
+      uses: actions/setup-node@v2
+      with:
+        node-version: 20
+    - name: Install Dependencies
+      run: npm install
+    - name: Format Validation
+      id: format-validation
+      run: |
+        npm run lint
+        npm run prettier
+      continue-on-error: true
+    - name: Check Success
+      run: |
+        if [ ${{ steps.format-validation.outcome }} == "success" ]; then
+          echo "Format Validation Passed"
+        else
+          echo "Format Validation Failed"
+          exit 1
+        fi
