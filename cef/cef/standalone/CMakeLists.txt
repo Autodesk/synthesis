@@ -43,7 +43,7 @@ if(OS_WINDOWS)
     SET_CEF_SOURCE_GROUPS(${CEF_SOURCES})
     SET_CEF_SOURCE_GROUPS(${CEF_HEADERS})
 
-    add_executable(${CEF_TARGET} WIN32 ${CEF_SOURCES} ${CEF_HEADERS})
+    add_executable(${CEF_TARGET} WIN32 src/standalone_win.cpp)
     SET_CEF_EXECUTABLE_TARGET_PROPERTIES(${CEF_TARGET})
     add_dependencies(${CEF_TARGET} shared)
     target_link_libraries(${CEF_TARGET} shared)
