@@ -25,6 +25,7 @@ jobs:
     - name: Format Validation
       id: format-validation
       run: |
+        cd react
         npm run lint
         npm run prettier
       continue-on-error: true
