@@ -63,7 +63,7 @@ Shader "ImageGradient/ImageGradient" {
                 
                 float4 col = lerp(_StartColor, _EndColor, _Horizontal > 0 ? i.uv.x : 1 - i.uv.y);
                 //return float4(col.x, col.y, col.z, alpha*maskAlpha);
-                return float4(col.x, col.y, col.z, alpha*maskAlpha);
+                return float4(col.x, col.y, col.z, alpha * maskAlpha * col.a);
             }
             
             ENDCG

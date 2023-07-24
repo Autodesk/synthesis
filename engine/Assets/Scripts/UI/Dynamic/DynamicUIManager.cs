@@ -6,9 +6,11 @@ using Synthesis.Physics;
 using Synthesis.Replay;
 using Synthesis.Runtime;
 using Analytics;
+using Synthesis.Util;
 using Utilities.ColorManager;
 using SynthesisAPI.EventBus;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Synthesis.UI.Dynamic {
     public static class DynamicUIManager {
@@ -26,6 +28,17 @@ namespace Synthesis.UI.Dynamic {
                     SimulationRunner.OnSimKill += () => _screenSpaceContent = null;
                 }
                 return _screenSpaceContent;
+            }
+        }
+        public static Content _subScreenSpaceContent = null;
+        public static Content SubScreenSpaceContent {
+            get {
+                if (_subScreenSpaceContent == null) {
+                    _subScreenSpaceContent =
+                        new Content(null, GameObject.Find("UI").transform.Find("SubScreenSpace").gameObject, null);
+                    SimulationRunner.OnSimKill += () => _subScreenSpaceContent = null;
+                }
+                return _subScreenSpaceContent;
             }
         }
         private static Slider _replaySlider = null;
@@ -49,6 +62,25 @@ namespace Synthesis.UI.Dynamic {
                                                          .SetColor(ColorManager.SynthesisColor.Background));
                 SimulationRunner.OnSimKill += () => { _replaySlider = null; };
                 return _replaySlider;
+            }
+        }
+
+        private static Content _toastContainer = null;
+        public static Content ToastContainer {
+            get {
+                if (_toastContainer == null || _toastContainer.RootGameObject == null) {
+                    _toastContainer = SubScreenSpaceContent
+                                          .CreateSubContent(new Vector2(
+                                              Toaster.TOAST_CONTAINER_WIDTH, Toaster.TOAST_CONTAINER_HEIGHT))
+                                          .SetAnchors<Content>(new Vector2(1, 0), new Vector2(1, 0))
+                                          .SetPivot<Content>(new Vector2(1, 0))
+                                          .SetAnchoredPosition<Content>(Toaster.TOAST_CONTAINER_OFFSET)
+                                          .EnsureImage()
+                                          .StepIntoImage(i => i.SetColor(new Color(0.1f, 0.1f, 0.1f, 0f)));
+                    _toastContainer.RootGameObject.AddComponent<RectMask2D>();
+                }
+                SimulationRunner.OnSimKill += () => { _toastContainer = null; };
+                return _toastContainer;
             }
         }
 
@@ -88,6 +120,7 @@ namespace Synthesis.UI.Dynamic {
             SynthesisAssetCollection.BlurVolumeStatic.weight = 1f;
             PhysicsManager.IsFrozen                          = true;
             MainHUD.Enabled                                  = false;
+            SubScreenSpaceContent.RootGameObject.SetActive(false);
 
             AnalyticsManager.LogCustomEvent(AnalyticsEvent.ModalCreated, ("UIType", typeof(T).Name));
 
@@ -140,6 +173,7 @@ namespace Synthesis.UI.Dynamic {
             SynthesisAssetCollection.BlurVolumeStatic.weight = 0f;
             PhysicsManager.IsFrozen                          = false;
             MainHUD.Enabled                                  = true;
+            SubScreenSpaceContent.RootGameObject.SetActive(true);
 
             ShowAllPanels();
 
