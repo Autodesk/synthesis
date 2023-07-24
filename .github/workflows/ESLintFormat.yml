@@ -19,7 +19,9 @@ jobs:
       with:
         node-version: 20
     - name: Install Dependencies
-      run: npm install
+      run: |
+        cd react
+        npm install
     - name: Format Validation
       id: format-validation
       run: |
