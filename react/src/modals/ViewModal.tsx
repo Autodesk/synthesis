@@ -1,6 +1,6 @@
-import React from 'react'
-import Modal from '../components/Modal'
-import Dropdown from '../components/Dropdown'
+import React from "react"
+import Modal from "../components/Modal"
+import Dropdown from "../components/Dropdown"
 
 const ViewModal: React.FC = () => (
     <Modal name={"Camera View"} icon="https://placeholder.co/512x512">
@@ -8,4 +8,4 @@ const ViewModal: React.FC = () => (
     </Modal>
 )
 
-export default ViewModal;
+export default ViewModal

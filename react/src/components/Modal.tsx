@@ -1,13 +1,13 @@
-import { useModal } from "@chakra-ui/react";
-import React from "react";
-import { useModalControlContext } from "../ModalContext";
+import React, { ReactNode } from "react"
+import { useModalControlContext } from "../ModalContext"
 
 type ModalProps = {
-    name: string;
-    icon: string;
-    onCancel?: () => void;
-    onAccept?: () => void;
-};
+    name: string
+    icon: string
+    onCancel?: () => void
+    onAccept?: () => void
+    children?: ReactNode
+}
 
 const Modal: React.FC<ModalProps> = ({
     children,
@@ -16,9 +16,7 @@ const Modal: React.FC<ModalProps> = ({
     onCancel,
     onAccept,
 }) => {
-    const { openModal, closeModal } = useModalControlContext();
-
-
+    const { closeModal } = useModalControlContext()
 
     return (
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-black text-white w-1/2 m-auto border-5 rounded-2xl shadow-sm shadow-slate-800">
@@ -34,8 +32,8 @@ const Modal: React.FC<ModalProps> = ({
                     type="button"
                     value="Cancel"
                     onClick={() => {
-                        closeModal();
-                        if (onCancel) onCancel();
+                        closeModal()
+                        if (onCancel) onCancel()
                     }}
                     className="bg-red-500 rounded-md cursor-pointer px-4 py-1 text-black font-bold duration-100 hover:bg-red-600"
                 />
@@ -43,14 +41,14 @@ const Modal: React.FC<ModalProps> = ({
                     type="button"
                     value="Accept"
                     onClick={() => {
-                        closeModal();
-                        if (onAccept) onAccept();
+                        closeModal()
+                        if (onAccept) onAccept()
                     }}
                     className="bg-blue-500 rounded-md cursor-pointer px-4 py-1 text-black font-bold duration-100 hover:bg-blue-600"
                 />
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default Modal;
+export default Modal

@@ -1,69 +1,103 @@
-import React, { createContext, useState, useEffect, useCallback, useContext } from 'react';
+import React, {
+    createContext,
+    useState,
+    useEffect,
+    useCallback,
+    useContext,
+    ReactNode,
+} from "react"
 
 type PanelControlContextType = {
-    openPanel: (panelId: string) => void;
-    closePanel: (panelId: string) => void;
+    openPanel: (panelId: string) => void
+    closePanel: (panelId: string) => void
+    children?: ReactNode
 }
 
 const PanelControlContext = createContext<PanelControlContextType | null>(null)
 
 export const usePanelControlContext = () => {
-    const context = useContext(PanelControlContext);
-    if (!context) throw new Error('usePanelControlContext must be used within a PanelControlProvider');
-    return context;
+    const context = useContext(PanelControlContext)
+    if (!context)
+        throw new Error(
+            "usePanelControlContext must be used within a PanelControlProvider"
+        )
+    return context
 }
 
-export const PanelControlProvider: React.FC<PanelControlContextType> = ({ children, ...methods }) => {
-    return <PanelControlContext.Provider value={methods}>{children}</PanelControlContext.Provider>
+export const PanelControlProvider: React.FC<PanelControlContextType> = ({
+    children,
+    ...methods
+}) => {
+    return (
+        <PanelControlContext.Provider value={methods}>
+            {children}
+        </PanelControlContext.Provider>
+    )
 }
 
 type PanelInstance = {
-    id: string;
-    component: React.ReactNode;
-    onOpen: () => void;
-    onClose: () => void;
+    id: string
+    component: React.ReactNode
+    onOpen: () => void
+    onClose: () => void
 }
 
 type PanelData = {
-    id: string;
-    component: React.ReactNode;
+    id: string
+    component: React.ReactNode
 }
 
 export const usePanelManager = (panels: PanelData[]) => {
-    const [panelDictionary, setPanelDictionary] = useState<{ [key: number]: PanelInstance }>({});
-    const [activePanelIds, setActivePanelIds] = useState<string[]>([]);
+    const [panelDictionary, setPanelDictionary] = useState<{
+        [key: string]: PanelInstance
+    }>({})
+    const [activePanelIds, setActivePanelIds] = useState<string[]>([])
 
-    const openPanel = useCallback((panelId: string) => {
-        if (!activePanelIds.includes(panelId))
-            setActivePanelIds([...activePanelIds, panelId]);
-    }, [activePanelIds])
+    const openPanel = useCallback(
+        (panelId: string) => {
+            if (!activePanelIds.includes(panelId))
+                setActivePanelIds([...activePanelIds, panelId])
+        },
+        [activePanelIds]
+    )
 
-    const closePanel = useCallback((panelId: string) => {
-        setActivePanelIds(activePanelIds.filter(i => i != panelId))
-    }, [activePanelIds])
+    const closePanel = useCallback(
+        (panelId: string) => {
+            setActivePanelIds(activePanelIds.filter(i => i != panelId))
+        },
+        [activePanelIds]
+    )
 
     const closeAllPanels = useCallback(() => {
-        setActivePanelIds([]);
+        setActivePanelIds([])
     }, [])
 
-    const registerPanel = useCallback((panelId: string, panel: PanelInstance) => {
-        setPanelDictionary(prevDictionary => ({ ...prevDictionary, [panelId]: panel }))
-    }, [])
+    const registerPanel = useCallback(
+        (panelId: string, panel: PanelInstance) => {
+            setPanelDictionary(prevDictionary => ({
+                ...prevDictionary,
+                [panelId]: panel,
+            }))
+        },
+        []
+    )
 
     const unregisterPanel = useCallback((panelId: string) => {
         setPanelDictionary(prevDictionary => {
-            const newDictionary = { ...prevDictionary };
-            delete newDictionary[panelId];
-            return newDictionary;
+            const newDictionary = { ...prevDictionary }
+            delete newDictionary[panelId]
+            return newDictionary
         })
     }, [])
 
     const getActivePanelElements = useCallback(() => {
         if (activePanelIds !== null && activePanelIds.length > 0) {
-            return activePanelIds.map((id: string) => {
-                const panel: PanelData = panelDictionary[id];
-                return panel ? panel.component : null
-            }).filter(p => p != null)
+            return activePanelIds
+                .map((id: string) => {
+                    const panel: PanelData = panelDictionary[id]
+                    return panel ? panel.component : null
+                })
+                .filter(p => p != null)
         }
         return []
     }, [activePanelIds, panelDictionary])
@@ -87,6 +121,6 @@ export const usePanelManager = (panels: PanelData[]) => {
         closeAllPanels,
         registerPanel,
         unregisterPanel,
-        getActivePanelElements
+        getActivePanelElements,
     }
 }

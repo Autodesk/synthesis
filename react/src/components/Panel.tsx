@@ -1,11 +1,12 @@
-import React from "react";
+import React, { ReactNode } from "react"
 
 type PanelProps = {
-    name: string;
-    icon: string;
-    onCancel?: () => void;
-    onAccept?: () => void;
-};
+    name: string
+    icon: string
+    onCancel?: () => void
+    onAccept?: () => void
+    children?: ReactNode
+}
 
 const Panel: React.FC<PanelProps> = ({
     children,
@@ -38,7 +39,7 @@ const Panel: React.FC<PanelProps> = ({
                 />
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default Panel;
+export default Panel
