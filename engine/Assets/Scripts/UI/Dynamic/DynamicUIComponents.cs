@@ -233,16 +233,19 @@ namespace Synthesis.UI.Dynamic {
         public abstract void Delete();
 
         public void Delete_Internal() => Object.Destroy(_unityObject);
-        protected void ClearContent() => MainContent.DeleteAllChildren();
 
         protected void ClearAndResizeContent(Vector2 size) {
+            ClearMainContent();
+            ResizeMainContent(size);
+        }
+        protected void ClearMainContent() => MainContent.DeleteAllChildren();
+        protected void ResizeMainContent(Vector2 size) {
             // Reposition all elements
             foreach (Transform child in MainContent.RootGameObject.transform) {
                 ((RectTransform)child.transform).anchoredPosition += (size-_mainContentSize) / 2f;
             }
             
             _mainContentSize = size;
-            //Object.Destroy(MainContent.RootGameObject);
             
             var hiddenContentT        = _unityObject.transform.Find("Content");
             var hiddenRt              = hiddenContentT.GetComponent<RectTransform>();
