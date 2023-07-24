@@ -19,7 +19,7 @@ def main():
     if sys.platform != "linux":
         print("Warning: This script was designed to be run by github action linux machines")
 
-    subprocess.call(["clang-format", "--version"])
+    subprocess.call(["clang-format-16", "--version"])
 
     files = []
     for dir in FILES_DIRS:
@@ -34,7 +34,7 @@ def main():
             previous_file_state = f.readlines()
 
         subprocess.call(
-            ["clang-format", "-i", "-style=file", file],
+            ["clang-format-16", "-i", "-style=file", file],
             bufsize=1,
             shell=False,
         )
