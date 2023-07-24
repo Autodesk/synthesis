@@ -45,7 +45,7 @@ public class ChangeInputsModal : ModalDynamic {
             // make background transparent
             inputScrollView.RootGameObject.GetComponent<UnityEngine.UI.Image>().color = Color.clear;
 
-            SimObject robot = SimulationManager.SimulationObjects[RobotSimObject.CurrentlyPossessedRobot];
+            SimObject robot = MainHUD.ConfigRobot;
             if (robot == null)
                 return;
 

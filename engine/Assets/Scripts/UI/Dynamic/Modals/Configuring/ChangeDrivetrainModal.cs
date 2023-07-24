@@ -25,13 +25,13 @@ public class ChangeDrivetrainModal : ModalDynamic {
         Title.SetText("Change Drivetrain");
         Description.SetText("Select the drivetrain you want to use");
         AcceptButton.AddOnClickedEvent(b => {
-            RobotSimObject.GetCurrentlyPossessedRobot().ConfiguredDrivetrainType = _selectedType;
+            MainHUD.ConfigRobot.ConfiguredDrivetrainType = _selectedType;
             DynamicUIManager.CloseActiveModal();
 
             AnalyticsManager.LogCustomEvent(AnalyticsEvent.DrivetrainSwitched, ("DrivetrainType", _selectedType.Name));
         });
 
-        _selectedType = RobotSimObject.GetCurrentlyPossessedRobot().ConfiguredDrivetrainType;
+        _selectedType = MainHUD.ConfigRobot.ConfiguredDrivetrainType;
 
         MainContent.CreateLabeledDropdown()
             .SetTopStretch<LabeledDropdown>()
