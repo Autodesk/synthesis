@@ -65,15 +65,17 @@ public static class MainHUD {
                     SynthesisAssetCollection.GetSpriteByName(_collapsed ? "accordion" : "CloseIcon"));
                 if (_collapsed) {
                     TweenFactory.RemoveTweenKey(EXPAND_TWEEN, TweenStopBehavior.DoNotModify);
-                    SynthesisTween.MakeTween(COLLAPSE_TWEEN,
-                        _tabDrawerContent.RootRectTransform.anchoredPosition.x, -TAB_DRAWER_WIDTH - TAB_DRAWER_X, 0.2f,
-                        (t, a, b) => SynthesisTweenInterpolationFunctions.IntInterp(t, Convert.ToSingle(a), Convert.ToSingle(b)),
+                    SynthesisTween.MakeTween(COLLAPSE_TWEEN, _tabDrawerContent.RootRectTransform.anchoredPosition.x,
+                        -TAB_DRAWER_WIDTH - TAB_DRAWER_X, 0.2f,
+                        (t, a, b) =>
+                            SynthesisTweenInterpolationFunctions.IntInterp(t, Convert.ToSingle(a), Convert.ToSingle(b)),
                         TweenScaleFunctions.CubicEaseOut, collapseTweenProgress);
                 } else {
                     TweenFactory.RemoveTweenKey(COLLAPSE_TWEEN, TweenStopBehavior.DoNotModify);
-                    SynthesisTween.MakeTween(EXPAND_TWEEN,
-                        _tabDrawerContent.RootRectTransform.anchoredPosition.x, TAB_DRAWER_X, 0.2f,
-                        (t, a, b) => SynthesisTweenInterpolationFunctions.IntInterp(t, Convert.ToSingle(a), Convert.ToSingle(b)),
+                    SynthesisTween.MakeTween(EXPAND_TWEEN, _tabDrawerContent.RootRectTransform.anchoredPosition.x,
+                        TAB_DRAWER_X, 0.2f,
+                        (t, a, b) =>
+                            SynthesisTweenInterpolationFunctions.IntInterp(t, Convert.ToSingle(a), Convert.ToSingle(b)),
                         TweenScaleFunctions.CubicEaseOut, collapseTweenProgress);
                 }
             }
@@ -155,8 +157,9 @@ public static class MainHUD {
         _homeButton.SetTransition(Selectable.Transition.ColorTint).SetInteractableColors();
 
         _spawnCallback = b => { DynamicUIManager.CreateModal<SpawningModal>(); };
-        _backCallback  = b => { LeaveConfig(); };
-        _tabDrawerContent.RootRectTransform.anchoredPosition = new Vector2(-TAB_DRAWER_WIDTH - TAB_DRAWER_X, _tabDrawerContent.RootRectTransform.anchoredPosition.y);
+        _backCallback = b => { LeaveConfig(); };
+        _tabDrawerContent.RootRectTransform.anchoredPosition =
+            new Vector2(-TAB_DRAWER_WIDTH - TAB_DRAWER_X, _tabDrawerContent.RootRectTransform.anchoredPosition.y);
 
         // Setup default HUD
         // MOVED TO PRACTICE MODE
