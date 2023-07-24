@@ -24,9 +24,9 @@ public static class MainHUD {
     private const string COLLAPSE_TWEEN = "collapse";
     private const string EXPAND_TWEEN   = "expand";
 
-    private static Action<ITween<float>> collapseTweenProgress = v => {
+    private static Action<SynthesisTween.SynthesisTweenStatus> collapseTweenProgress = s => {
         _tabDrawerContent?.SetAnchoredPosition<Content>(
-            new Vector2(v.CurrentValue, _tabDrawerContent.RootRectTransform.anchoredPosition.y));
+            new Vector2(s.CurrentValue<int>(), _tabDrawerContent.RootRectTransform.anchoredPosition.y));
     };
 
     private const int TAB_DRAWER_WIDTH = 250;
@@ -65,13 +65,15 @@ public static class MainHUD {
                     SynthesisAssetCollection.GetSpriteByName(_collapsed ? "accordion" : "CloseIcon"));
                 if (_collapsed) {
                     TweenFactory.RemoveTweenKey(EXPAND_TWEEN, TweenStopBehavior.DoNotModify);
-                    _tabDrawerContent.RootGameObject.Tween(COLLAPSE_TWEEN,
+                    SynthesisTween.MakeTween(COLLAPSE_TWEEN,
                         _tabDrawerContent.RootRectTransform.anchoredPosition.x, -TAB_DRAWER_WIDTH - TAB_DRAWER_X, 0.2f,
+                        (t, a, b) => SynthesisTweenInterpolationFunctions.IntInterp(t, Convert.ToSingle(a), Convert.ToSingle(b)),
                         TweenScaleFunctions.CubicEaseOut, collapseTweenProgress);
                 } else {
                     TweenFactory.RemoveTweenKey(COLLAPSE_TWEEN, TweenStopBehavior.DoNotModify);
-                    _tabDrawerContent.RootGameObject.Tween(EXPAND_TWEEN,
+                    SynthesisTween.MakeTween(EXPAND_TWEEN,
                         _tabDrawerContent.RootRectTransform.anchoredPosition.x, TAB_DRAWER_X, 0.2f,
+                        (t, a, b) => SynthesisTweenInterpolationFunctions.IntInterp(t, Convert.ToSingle(a), Convert.ToSingle(b)),
                         TweenScaleFunctions.CubicEaseOut, collapseTweenProgress);
                 }
             }
@@ -153,7 +155,8 @@ public static class MainHUD {
         _homeButton.SetTransition(Selectable.Transition.ColorTint).SetInteractableColors();
 
         _spawnCallback = b => { DynamicUIManager.CreateModal<SpawningModal>(); };
-        _backCallback = b => { LeaveConfig(); };
+        _backCallback  = b => { LeaveConfig(); };
+        _tabDrawerContent.RootRectTransform.anchoredPosition = new Vector2(-TAB_DRAWER_WIDTH - TAB_DRAWER_X, _tabDrawerContent.RootRectTransform.anchoredPosition.y);
 
         // Setup default HUD
         // MOVED TO PRACTICE MODE
