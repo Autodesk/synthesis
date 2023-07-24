@@ -1,14 +1,15 @@
 import React from "react"
+import { BsCodeSquare } from "react-icons/bs"
 import {
     FaCar,
-    FaDownload,
     FaGear,
     FaHouse,
     FaMagnifyingGlass,
-    FaPeopleGroup,
     FaPlus,
-    FaXbox,
 } from "react-icons/fa6"
+import { GiSteeringWheel } from "react-icons/gi"
+import { HiDownload } from "react-icons/hi"
+import { IoGameControllerOutline, IoPeople } from "react-icons/io5"
 import { useModalControlContext } from "../ModalContext"
 import { usePanelControlContext } from "../PanelContext"
 import logo from "../assets/autodesk_logo.png"
@@ -77,29 +78,29 @@ const MainHUD: React.FC = () => {
                 />
                 <MainHUDButton
                     value={"Controls"}
-                    icon={<FaXbox />}
+                    icon={<IoGameControllerOutline />}
                     onClick={() => openModal("controls")}
                 />
                 <MainHUDButton
                     value={"MultiBot"}
-                    icon={<FaPeopleGroup />}
+                    icon={<IoPeople />}
                     onClick={() => openPanel("multibot")}
                 />
             </div>
             <div className="flex flex-col gap-0 bg-black w-full rounded-3xl">
                 <MainHUDButton
                     value={"Download Asset"}
-                    icon={<FaDownload />}
+                    icon={<HiDownload />}
                     onClick={() => openModal("download-assets")}
                 />
                 <MainHUDButton
                     value={"RoboRIO"}
-                    icon={<FaGear />}
+                    icon={<BsCodeSquare />}
                     onClick={() => openModal("roborio")}
                 />
                 <MainHUDButton
                     value={"Driver Station"}
-                    icon={<FaGear />}
+                    icon={<GiSteeringWheel />}
                     onClick={() => openModal("driverstation")}
                 />
                 <MainHUDButton

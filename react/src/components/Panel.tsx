@@ -2,7 +2,7 @@ import React, { ReactNode } from "react"
 
 type PanelProps = {
     name: string
-    icon: string
+    icon: ReactNode | string
     onCancel?: () => void
     onAccept?: () => void
     children?: ReactNode
@@ -15,11 +15,17 @@ const Panel: React.FC<PanelProps> = ({
     onCancel,
     onAccept,
 }) => {
+    const iconEl: ReactNode =
+        typeof icon === "string" ? (
+            <img src={icon} className="w-6" alt="Icon" />
+        ) : (
+            icon
+        )
     return (
         <div className="absolute right-4 top-1/2 -translate-y-1/2 bg-black text-white w-1/2 m-auto border-5 rounded-2xl shadow-sm shadow-slate-800">
             <div className="flex items-center gap-8 h-16">
                 <span className="flex justify-center align-center ml-8">
-                    <img src={icon} className="w-6" alt="Icon" />
+                    {iconEl}
                 </span>
                 <h1 className="text-3xl inline-block align-middle">{name}</h1>
             </div>
