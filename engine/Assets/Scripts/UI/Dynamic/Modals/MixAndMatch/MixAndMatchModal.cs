@@ -1,14 +1,15 @@
 using System;
-using Synthesis.UI;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace UI.Dynamic.Modals.MixAndMatch {
     public class MixAndMatchModal : ModalDynamic {
         private const float SPLIT_SPACING = 15;
-        
-        public MixAndMatchModal() : base(new Vector2(400, 55)) {}
+        private const float CONTENT_WIDTH = 400;
+        private const float CHOOSE_MODE_HEIGHT = 55;
+        private const float SELECT_PART_HEIGHT = 100;
+
+        public MixAndMatchModal() : base(new Vector2(CONTENT_WIDTH, CHOOSE_MODE_HEIGHT)) {}
 
         public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
             var offset = (-u.Parent!.RectOfChildren(u).yMin) + 7.5f;
@@ -22,27 +23,29 @@ namespace UI.Dynamic.Modals.MixAndMatch {
         }
 
         private void CreateChoosePartOrRobot() {
-            Title.SetText("Mix and Match Editor");
+            Title.SetText("Mix and Match Robot Editor");
             
             AcceptButton.RootGameObject.SetActive(false);
 
-            var (left, right) = SplitLeftRight();
+            var (left, right) = MainContent.SplitLeftRight((MainContent.Size.x / 2f) - (SPLIT_SPACING / 2f), SPLIT_SPACING);
             
             var robotEditorButton = left.CreateButton("Robot Editor")
                 .ApplyTemplate<Button>(VerticalLayout)
-                .AddOnClickedEvent(b => CreateChooseRobot());
+                .AddOnClickedEvent(b => DynamicUIManager.CreateModal<MAMChooseRobotModal>());
 
             var partEditorButton = right.CreateButton("Part Editor")
                 .ApplyTemplate<Button>(VerticalLayout)
-                .AddOnClickedEvent(b => CreateChoosePart());
+                .AddOnClickedEvent(b => ClearAndResizeContent(new Vector2(CONTENT_WIDTH, 200)));
         }
 
+        /*
         private void CreateChooseRobot() {
-            Title.SetText("Choose a Robot");
+            MainContent.SetHeight<Content>(SELECT_PART_HEIGHT);
+
             ClearContent();
-            
+
             MainContent.CreateDropdown().ApplyTemplate(VerticalLayout);
-            var (left, right) = SplitLeftRight();
+            var (left, right) = MainContent.CreateSubContent(new Vector2(MainContent.Size.x, 50)).ApplyTemplate(VerticalLayout).SplitLeftRight((MainContent.Size.x / 2f) - (SPLIT_SPACING / 2f), SPLIT_SPACING);
             
             left.CreateButton("Select").ApplyTemplate(VerticalLayout);
             right.CreateButton("New").ApplyTemplate(VerticalLayout);
@@ -51,13 +54,7 @@ namespace UI.Dynamic.Modals.MixAndMatch {
         private void CreateChoosePart() {
             Title.SetText("Choose a Part");
             ClearContent();
-            
-            var (left, right) = SplitLeftRight();
-            MainContent.CreateButton("Test").ApplyTemplate(VerticalLayout);
-        }
-
-        private (Content left, Content right) SplitLeftRight() =>
-            MainContent.SplitLeftRight((MainContent.Size.x / 2f) - (SPLIT_SPACING / 2f), SPLIT_SPACING);
+        }*/
 
         public override void Delete() {}
 
