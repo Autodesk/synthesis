@@ -19,6 +19,8 @@ namespace Utilities.ColorManager {
             (ColorManager.SynthesisColor.CancelButton, new Color32(250, 82, 82, 255)),
             (ColorManager.SynthesisColor.InteractiveElementText, new Color32(0, 0, 0, 255)),
             (ColorManager.SynthesisColor.Icon, new Color32(255, 255, 255, 255)),
+            (ColorManager.SynthesisColor.MainHUDIcon, new Color32(0, 0, 0, 255)),
+            (ColorManager.SynthesisColor.MainHUDCloseIcon, new Color32(0, 0, 0, 255)),
             (ColorManager.SynthesisColor.HighlightHover, new Color32(89, 255, 133, 255)),
             (ColorManager.SynthesisColor.HighlightSelect, new Color32(255, 89, 133, 255)),
             (ColorManager.SynthesisColor.SkyboxTop, new Color32(255, 255, 255, 255)),

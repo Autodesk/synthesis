@@ -228,6 +228,8 @@ namespace Utilities.ColorManager {
             CancelButton,
             InteractiveElementText,
             Icon,
+            MainHUDIcon,
+            MainHUDCloseIcon,
             HighlightHover,
             HighlightSelect,
             SkyboxTop,

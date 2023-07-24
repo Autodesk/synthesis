@@ -44,9 +44,11 @@ public static class MainHUD {
                 _enabled = value;
                 if (_enabled) {
                     _tabDrawerContent.RootGameObject.SetActive(true);
+                    _accordionButton.RootGameObject.SetActive(true);
                 } else {
                     Collapsed = true;
                     _tabDrawerContent.RootGameObject.SetActive(false);
+                    _accordionButton.RootGameObject.SetActive(false);
                 }
             }
         }
@@ -70,6 +72,7 @@ public static class MainHUD {
                         (t, a, b) =>
                             SynthesisTweenInterpolationFunctions.IntInterp(t, Convert.ToSingle(a), Convert.ToSingle(b)),
                         TweenScaleFunctions.CubicEaseOut, collapseTweenProgress);
+                    _accordionButton.RootGameObject.SetActive(true);
                 } else {
                     TweenFactory.RemoveTweenKey(COLLAPSE_TWEEN, TweenStopBehavior.DoNotModify);
                     SynthesisTween.MakeTween(EXPAND_TWEEN, _tabDrawerContent.RootRectTransform.anchoredPosition.x,
@@ -77,6 +80,7 @@ public static class MainHUD {
                         (t, a, b) =>
                             SynthesisTweenInterpolationFunctions.IntInterp(t, Convert.ToSingle(a), Convert.ToSingle(b)),
                         TweenScaleFunctions.CubicEaseOut, collapseTweenProgress);
+                    _accordionButton.RootGameObject.SetActive(false);
                 }
             }
         }
@@ -104,6 +108,7 @@ public static class MainHUD {
 
     private static Content _tabDrawerContent;
     private static Image _logoImage;
+    private static Button _closeButton;
     private static Content _itemContainer;
     private static Content _topItemContainer;
     private static Content _bottomItemContainer;
@@ -130,7 +135,9 @@ public static class MainHUD {
         _bottomDrawerItems.Clear();
         _accordionButton  = new Button(null, GameObject.Find("MainHUD").transform.Find("Accordion").gameObject, null);
         _tabDrawerContent = new Content(null, GameObject.Find("MainHUD").transform.Find("TabDrawer").gameObject, null);
-        _logoImage = new Image(_tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("Logo").gameObject);
+        _logoImage   = new Image(_tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("Logo").gameObject);
+        _closeButton = new Button(
+            _tabDrawerContent, _tabDrawerContent.RootGameObject.transform.transform.Find("Close").gameObject, null);
         _itemContainer = new Content(
             _tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("ItemContainer").gameObject, null);
         _topItemContainer = new Content(
@@ -144,12 +151,14 @@ public static class MainHUD {
             _tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("HomeButton").gameObject, null);
         _homeIcon = new Image(_homeButton, _homeButton.RootGameObject.transform.Find("HomeIcon").gameObject);
 
+        _closeButton.OnClicked += (b) => Collapsed = true;
+
         _spawnButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.Background)
             .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText));
         _homeButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.Background)
             .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText));
 
-        _accordionButton.OnClicked += (b) => { Collapsed = !Collapsed; };
+        _accordionButton.OnClicked += (b) => { Collapsed = false; };
 
         _spawnButton.SetTransition(Selectable.Transition.ColorTint).SetInteractableColors();
 
@@ -324,7 +333,8 @@ public static class MainHUD {
         _tabDrawerContent.Image!.SetColor(
             ColorManager.SynthesisColor.InteractiveElementLeft, ColorManager.SynthesisColor.InteractiveElementRight);
 
-        _accordionButton.Image.SetColor(ColorManager.SynthesisColor.Icon);
+        _accordionButton.Image.SetColor(ColorManager.SynthesisColor.MainHUDIcon);
+        _closeButton.Image.SetColor(ColorManager.SynthesisColor.MainHUDCloseIcon);
 
         _spawnButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.BackgroundHUD);
         _spawnIcon.SetColor(ColorManager.SynthesisColor.Icon);
