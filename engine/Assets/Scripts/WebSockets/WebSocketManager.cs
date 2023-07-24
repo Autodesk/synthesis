@@ -30,7 +30,13 @@ namespace Synthesis.WS {
 
             RioState = new RoboRIOState();
 
-            _server = new WebSocketServer("127.0.0.1", 3300);
+            try {
+                _server = new WebSocketServer("127.0.0.1", 3300);
+            } catch (Exception e) {
+                Debug.Log("WebSocketServer failed to start: " + e.Message);
+                return;
+            }
+
             _server.AddOnMessageListener(OnMessage);
 
             _initialized = true;
@@ -46,13 +52,15 @@ namespace Synthesis.WS {
         /// </summary>
         /// <typeparam name="T">Data requested</typeparam>
         public static T GetData<T>(string device)
-            where T : HardwareTypeData => RioState.GetData<T>(device);
+            where T : HardwareTypeData {
+            return RioState.GetData<T>(device);
+        }
 
-  /// <summary>
-  /// Update data in the RioState and upload it to a currently connected websocket client
-  /// </summary>
-  /// <typeparam name="T">Type of data</typeparam>
-  public static void UpdateData<T>(string device, Action<T> change)
+        /// <summary>
+        /// Update data in the RioState and upload it to a currently connected websocket client
+        /// </summary>
+        /// <typeparam name="T">Type of data</typeparam>
+        public static void UpdateData<T>(string device, Action<T> change)
             where T : HardwareTypeData {
             RioState.UpdateData(device, change);
 

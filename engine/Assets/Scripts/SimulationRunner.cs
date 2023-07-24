@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Synthesis.Import;
+using System.Linq;
 using Synthesis.PreferenceManager;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.InputManager;
@@ -16,6 +18,7 @@ using Synthesis.Physics;
 using SynthesisAPI.EventBus;
 using Synthesis.Replay;
 using Synthesis.WS;
+using SynthesisAPI.Controller;
 using SynthesisAPI.RoboRIO;
 using UnityEngine.Rendering;
 
@@ -52,22 +55,14 @@ namespace Synthesis.Runtime {
 
         private bool _setupSceneSwitchEvent = false;
 
-        void Start() {
+        private void Awake() {
+            Synthesis.PreferenceManager.PreferenceManager.Load();
+        }
+
+        private void Start() {
             InSim = true;
 
-            if (!_setupSceneSwitchEvent) {
-                SceneManager.sceneUnloaded += (Scene s) => {
-                    if (s.name == "MainScene") {
-                    }
-                    // SimulationManager.SimulationObjects.ForEach(x => {
-                    //     SimulationManager.RemoveSimObject(x.Value);
-                    // });
-                };
-                _setupSceneSwitchEvent = true;
-            }
-
             SetContext(RUNNING_SIM_CONTEXT);
-            Synthesis.PreferenceManager.PreferenceManager.Load();
             MainHUD.Setup();
             ModeManager.Start();
             RobotSimObject.Setup();
@@ -75,17 +70,9 @@ namespace Synthesis.Runtime {
 
             OnUpdate += DynamicUIManager.Update;
             OnUpdate += ModeManager.Update;
+            OnUpdate += () => RobotSimObject.SpawnedRobots.ForEach(r => r.UpdateMultiplayer());
 
             WebSocketManager.RioState.OnUnrecognizedMessage += s => Debug.Log(s);
-
-            // Screen.fullScreenMode = FullScreenMode.MaximizedWindow;
-
-            // TestColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_ORANGE));
-            // RotationalDriver.TestSphericalCoordinate();
-
-            if (ColorManager.HasColor("tree")) {
-                GameObject.Instantiate(Resources.Load("Misc/Tree"));
-            }
 
             if (ModeManager.CurrentMode is not null)
                 ModeManager.CurrentMode.Start();
@@ -106,30 +93,8 @@ namespace Synthesis.Runtime {
             InputManager.UpdateInputs(_simulationContext);
             SimulationManager.Update();
 
-            // Debug.Log($"WHAT: {Time.realtimeSinceStartup}");
-
             if (OnUpdate != null)
                 OnUpdate();
-
-            // var socket = WebSocketManager.RioState.GetData<PWMData>("PWM", "0");
-            // if (socket.GetData() == null) {
-            //     Debug.Log("Data null");
-            // }
-            // Debug.Log($"{socket.Init}:{socket.Speed}:{socket.Position}");
-
-            // var aiData = WebSocketManager.RioState.GetData<AIData>("AI", "3");
-            // if (aiData.Init) {
-            //     WebSocketManager.UpdateData<AIData>("AI", "3", d => {
-            //         d.Voltage = 2.3;
-            //     });
-            // }
-
-            // if (Input.GetKeyDown(KeyCode.K)) {
-            //     if (!SimulationManager.RemoveSimObject(RobotSimObject.CurrentlyPossessedRobot))
-            //         Logger.Log("Failed", LogLevel.Debug);
-            //     else
-            //         Logger.Log("Succeeded", LogLevel.Debug);
-            // }
         }
 
         private void FixedUpdate() {
@@ -138,7 +103,10 @@ namespace Synthesis.Runtime {
         }
 
         void OnDestroy() {
+            MainHUD.Delete();
+
             Synthesis.PreferenceManager.PreferenceManager.Save();
+            MirabufCache.Clear();
             if (OnGameObjectDestroyed != null)
                 OnGameObjectDestroyed();
         }

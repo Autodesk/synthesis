@@ -1,10 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using Google.Protobuf.WellKnownTypes;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.Controller;
-using UnityEngine;
 using SynthesisAPI.Utilities;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using Utilities.ColorManager;
 
 using Logger = SynthesisAPI.Utilities.Logger;
 
@@ -33,8 +34,8 @@ namespace Synthesis.UI.Dynamic {
             _mode = (ModeManager.CurrentMode as ServerTestMode)!;
 
             (var left, var right) = MainContent.SplitLeftRight(leftWidth: (MAIN_CONTENT_WIDTH - 20f) / 2, 20f);
-            left.EnsureImage().StepIntoImage(
-                i => i.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT)));
+
+            left.EnsureImage().StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary));
 
             _statusLabel = left.CreateLabel(30)
                                .SetStretch<Label>(15f, 15f, 15f, 15f)
@@ -87,6 +88,21 @@ namespace Synthesis.UI.Dynamic {
                             msg?.FromControllableStates.AllUpdates.ForEach(
                                 y => y.UpdatedSignals.ForEach(z => Logger.Log($"[{z.SignalGuid}] {z.Value}")));
                         }, null);
+                });
+
+            right.CreateButton(text: "Send robot data")
+                .SetHeight<Button>(30f)
+                .SetTopStretch<Button>(anchoredY: 45f * 5f)
+                .AddOnClickedEvent(b => {
+                    var robotData  = new DataRobot();
+                    robotData.Guid = _mode.Clients[1]?.Guid ?? 0;
+                    _mode.Clients[1]?.UploadRobotData(robotData).ContinueWith((x, o) => {
+                        if (x.Result.isError)
+                            Logger.Log("Error");
+
+                        var msg = x.Result.GetResult();
+                        Logger.Log($"Received Response: {msg?.FromDataRobot.Guid}");
+                    }, null);
                 });
 
             _self = this;

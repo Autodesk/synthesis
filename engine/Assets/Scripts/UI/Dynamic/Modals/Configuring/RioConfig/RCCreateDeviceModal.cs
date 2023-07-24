@@ -5,6 +5,7 @@ using System.Linq;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
+using Utilities.ColorManager;
 
 #nullable enable
 
@@ -26,8 +27,9 @@ public class RCCreateDeviceModal : ModalDynamic {
         Title.SetText("Create Device");
         Title.SetWidth<Label>(400);
         Description.SetText("Create a Motor Controller, Encoder, Etc.");
+
         ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-        ModalImage.SetColor(ColorManager.SYNTHESIS_WHITE);
+        ModalImage.SetColor(ColorManager.SynthesisColor.MainText);
 
         AcceptButton
             .AddOnClickedEvent(b => {
@@ -48,11 +50,6 @@ public class RCCreateDeviceModal : ModalDynamic {
         _typeDropdown = MainContent.CreateLabeledDropdown().StepIntoLabel(l => l.SetText("Type"));
         _typeDropdown.StepIntoDropdown(d => d.SetOptions(EntryTypes));
         _typeDropdown.SetTopStretch<LabeledDropdown>();
-        // _typeDropdown.StepIntoDropdown(d => d.AddOnValueChangedEvent(UpdateIDSelection));
-
-        // _idDropdown.StepIntoDropdown(d => d.AddOnValueChangedEvent((d, i, data) => {
-        //     _selectedId = data.text;
-        // }));
     }
 
     public override void Delete() {}
@@ -89,8 +86,9 @@ public class RCConfigPwmGroupModal : ModalDynamic {
         Title.SetText("Create Device");
         Title.SetWidth<Label>(400);
         Description.SetText("Create a Motor Controller, Encoder, Etc.");
+
         ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-        ModalImage.SetColor(ColorManager.SYNTHESIS_WHITE);
+        ModalImage.SetColor(ColorManager.SynthesisColor.MainText);
 
         AcceptButton
             .AddOnClickedEvent(b => {
@@ -132,8 +130,8 @@ public class RCConfigPwmGroupModal : ModalDynamic {
 
             var toggle = container.CreateToggle(false, $"{i}");
             toggle.SetStretch<Toggle>()
-                .SetEnabledColor(ColorManager.SYNTHESIS_ORANGE)
-                .SetDisabledColor(ColorManager.SYNTHESIS_BLACK);
+                .SetEnabledColor(ColorManager.SynthesisColor.InteractiveElement)
+                .SetDisabledColor(ColorManager.SynthesisColor.Background);
 
             _portToggles.Add($"{i}", toggle);
         }
@@ -163,8 +161,9 @@ public class RCConfigPwmGroupModal : ModalDynamic {
 
                 var toggle = container.CreateToggle(false, $"{j.Info.Name} ({j.SignalReference})");
                 toggle.SetStretch<Toggle>()
-                    .SetEnabledColor(ColorManager.SYNTHESIS_ORANGE)
-                    .SetDisabledColor(ColorManager.SYNTHESIS_BLACK);
+                    .SetEnabledColor(ColorManager.SynthesisColor.InteractiveElement)
+                    .SetDisabledColor(ColorManager.SynthesisColor.Background);
+
                 toggle.AddOnStateChangedEvent((t, s) => UpdateAcceptButton());
 
                 _signalToggles.Add(j.SignalReference, toggle);
@@ -226,8 +225,9 @@ public class RCConfigEncoderModal : ModalDynamic {
         Title.SetText("Create Device");
         Title.SetWidth<Label>(400);
         Description.SetText("Create a Motor Controller, Encoder, Etc.");
+
         ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-        ModalImage.SetColor(ColorManager.SYNTHESIS_WHITE);
+        ModalImage.SetColor(ColorManager.SynthesisColor.MainText);
 
         AcceptButton
             .AddOnClickedEvent(b => {

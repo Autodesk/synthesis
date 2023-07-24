@@ -25,6 +25,17 @@ namespace SynthesisAPI.Simulation {
             }
         }
 
+        protected bool _driversEnabled = true;
+        public bool DriversEnabled {
+            get => _driversEnabled;
+            set {
+                _driversEnabled = value;
+                SimulationManager.Drivers[_name].ForEach(d => {
+                    d.Enabled = _driversEnabled;
+                });
+            }
+        }
+
         public SimObject(string name, Signals signalLayout) {
             _name = name;
             _state = new ControllableState(signalLayout);

@@ -20,8 +20,6 @@ public class ReplayRunner : MonoBehaviour {
 
     private void Start() {
         ReplayManager.IsRecording = true;
-
-        // DynamicUIManager.ReplaySlider.minValue = -ReplayManager.TimeSpan;
         DynamicUIManager.ReplaySlider.AddOnValueChangedEvent((s, val) => {
             if (PhysicsManager.IsFrozen) {
                 var frame = ReplayManager.GetFrameAtTime(val);
@@ -73,8 +71,6 @@ public class ReplayRunner : MonoBehaviour {
     private void TogglePlay(IEvent e) {
         var de = e as DigitalEvent;
         if (de.State == DigitalState.Down) {
-            // if (PhysicsManager.IsFrozen)
-            //     ReplayManager.MakeCurrentNewestFrame();
             PhysicsManager.DisableLoadFromStoredDataOnce();
             PhysicsManager.IsFrozen = !PhysicsManager.IsFrozen;
             if (PhysicsManager.IsFrozen) {

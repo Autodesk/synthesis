@@ -4,7 +4,7 @@ using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using UnityEngine;
 using UnityEngine.EventSystems;
-
+using Utilities.ColorManager;
 using Input  = UnityEngine.Input;
 using Object = UnityEngine.Object;
 
@@ -43,8 +43,8 @@ namespace Synthesis.UI.Dynamic {
         private readonly Transform[] _robotHighlights = new Transform[6];
 
         private readonly Func<Button, Button> DisabledTemplate = b =>
-            b.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_BLACK_ACCENT))
-                .StepIntoLabel(l => l.SetColor(ColorManager.SYNTHESIS_WHITE));
+            b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary))
+                .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText));
 
         public readonly Func<UIComponent, UIComponent> VerticalLayout = (u) => {
             var offset = (-u.Parent!.RectOfChildren(u).yMin) + VERTICAL_PADDING;
@@ -74,6 +74,7 @@ namespace Synthesis.UI.Dynamic {
                 DynamicUIManager.ClosePanel<SpawnLocationPanel>();
                 MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.FieldConfig);
             });
+
             CancelButton.RootGameObject.SetActive(false);
             CreateRobotHighlights();
             CreateButtons();
@@ -154,8 +155,9 @@ namespace Synthesis.UI.Dynamic {
         /// </summary>
         /// <param name="index">the selected buttons index</param>
         private void SelectButton(int index) {
-            buttons[_selectedButton].Image.Color = ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK_ACCENT);
-            _selectedButton                      = index;
+            buttons[_selectedButton].Image.Color =
+                ColorManager.GetColor(ColorManager.SynthesisColor.BackgroundSecondary);
+            _selectedButton = index;
 
             buttons[index].Image.Color = (index < 3) ? redButtonColor : blueButtonColor;
         }

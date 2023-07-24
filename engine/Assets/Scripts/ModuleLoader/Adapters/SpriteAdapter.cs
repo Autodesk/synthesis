@@ -35,10 +35,8 @@ namespace Engine.ModuleLoader.Adapters {
                 else
                     renderer.material = defaultMaterial;
 
-                renderer.flipX = instance._flipX;
-                renderer.flipY = instance._flipY;
-                // renderer.color = new Color32(instance._color.R, instance._color.G, instance._color.B,
-                // instance._color.A);
+                renderer.flipX          = instance._flipX;
+                renderer.flipY          = instance._flipY;
                 renderer.enabled        = instance._visible;
                 instance.Bounds._bounds = renderer.bounds;
                 instance.ProcessedChanges();

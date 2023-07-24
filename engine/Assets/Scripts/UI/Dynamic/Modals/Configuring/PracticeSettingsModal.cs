@@ -24,13 +24,8 @@ public class PracticeSettingsModal : ModalDynamic {
 
     public override void Create() {
         Title.SetText("Practice Settings");
-        // Description.SetText("Configuration actions for practice mode");
-
         AcceptButton.RootGameObject.SetActive(false);
-        CancelButton
-            // .SetAnchoredPosition<Button>(new Vector2(20f, CancelButton.RootRectTransform.anchoredPosition.y))
-            .StepIntoLabel(l => l.SetText("Close"))
-            .AddOnClickedEvent(b => { ModeManager.ModalClosed(); });
+        CancelButton.StepIntoLabel(l => l.SetText("Close")).AddOnClickedEvent(b => { ModeManager.ModalClosed(); });
 
         var gamepieceLabel = MainContent.CreateLabel()
                                  .SetText("Gamepiece Spawning")
@@ -38,18 +33,12 @@ public class PracticeSettingsModal : ModalDynamic {
                                  .ApplyTemplate(VerticalLayout);
 
         float leftRightPadding = 8;
-        // float leftWidth = (MainContent.Size.x - leftRightPadding) / 2;
-        // (Content leftContent, Content rightContent) = MainContent.SplitLeftRight(leftWidth, leftRightPadding);
-
-        var top = MainContent.CreateSubContent(new Vector2(MainContent.Size.x, 110f))
+        var top                = MainContent.CreateSubContent(new Vector2(MainContent.Size.x, 110f))
                       .ApplyTemplate(VerticalLayout)
                       .SetPivot<Content>(new Vector2(0.5f, 1f));
 
         (Content topleft, Content topRight) =
             top.SplitLeftRight((top.Size.x - leftRightPadding) / 2f, leftRightPadding);
-
-        // rightContent.SetTopStretch<Content>(leftWidth + leftRightPadding, 0, anchoredY: gamepieceLabel.Size.y +
-        // VERTICAL_PADDING);
 
         var spawnButton = topRight.CreateButton()
                               .StepIntoLabel(l => l.SetText("Spawn"))

@@ -4,8 +4,10 @@ using Analytics;
 using Synthesis.Gizmo;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
-using SynthesisAPI.EventBus;
 using UnityEngine;
+using Utilities.ColorManager;
+
+using Logger = SynthesisAPI.Utilities.Logger;
 
 public class ZoneConfigPanel : PanelDynamic {
     private const float MODAL_WIDTH  = 500f;
@@ -39,8 +41,6 @@ public class ZoneConfigPanel : PanelDynamic {
 
     private bool _selectingNode;
 
-    private GameObject _zoneObject;
-
     private HighlightComponent _hoveringNode = null;
     private HighlightComponent _selectedNode = null;
 
@@ -60,21 +60,21 @@ public class ZoneConfigPanel : PanelDynamic {
             _isNewZone            = false;
             _initialData.Name     = zone.Name;
             _initialData.Alliance = zone.Alliance;
-            var parent            = zone.GameObject.transform.parent;
+            var parent = zone.GameObject.transform.parent.name == "grounded" ? null : zone.GameObject.transform.parent;
             if (parent is not null) {
                 _initialParent               = parent.name;
-                _initialData.Parent          = parent;
+                _initialData.Parent          = parent.name;
                 HighlightComponent highlight = parent.GetComponent<Rigidbody>().GetComponent<HighlightComponent>();
-                highlight.Color              = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_SELECT);
-                highlight.enabled            = true;
+
+                highlight.Color   = ColorManager.GetColor(ColorManager.SynthesisColor.HighlightSelect);
+                highlight.enabled = true;
             }
+
             _initialData.DestroyGamepiece = zone.DestroyGamepiece;
             _initialData.PersistentPoints = zone.PersistentPoints;
             _initialData.Points           = zone.Points;
             var scale                     = zone.GameObject.transform.localScale;
-            _initialData.XScale           = scale.x;
-            _initialData.YScale           = scale.y;
-            _initialData.ZScale           = scale.z;
+            _initialData.LocalScale       = (scale.x, scale.y, scale.z);
             _initialPosition              = zone.GameObject.transform.position;
             _initialRotation              = zone.GameObject.transform.rotation;
             _data                         = _initialData;
@@ -88,12 +88,18 @@ public class ZoneConfigPanel : PanelDynamic {
             _pressedButtonToClose = true;
             // call one last time to update data
             // don't want to update data and call callback on every character typed for name
-            CopyDataToZone(_data, _zone);
-            _data.Name            = _zoneNameInput.Value;
-            _zone.GameObject.name = _data.Name;
+            _data.Name          = _zoneNameInput.Value;
+            var parentTransform = FieldSimObject.CurrentField.FieldObject.transform.Find(_data.Parent ?? "grounded") ??
+                                  FieldSimObject.CurrentField.FieldObject.transform.Find("grounded");
+            var localPosition =
+                parentTransform.worldToLocalMatrix.MultiplyPoint3x4(_zone.GameObject.transform.position);
+            var localRotation   = Quaternion.Inverse(parentTransform.rotation) * _zone.GameObject.transform.rotation;
+            _data.LocalPosition = (localPosition.x, localPosition.y, localPosition.z);
+            _data.LocalRotation = (localRotation.x, localRotation.y, localRotation.z, localRotation.w);
+            _zone.ZoneData      = _data;
 
             if (_isNewZone)
-                FieldSimObject.CurrentField.ScoringZones.Add(_zone);
+                FieldSimObject.CurrentField.AddScoringZone(_zone);
 
             if (!DynamicUIManager.PanelExists<ScoringZonesPanel>())
                 DynamicUIManager.CreatePanel<ScoringZonesPanel>();
@@ -162,28 +168,28 @@ public class ZoneConfigPanel : PanelDynamic {
 
         _xScaleSlider = MainContent
                             .CreateSlider(label: "X Scale", minValue: MIN_XYZ_SCALE, maxValue: MAX_XYZ_SCALE,
-                                currentValue: _initialData.XScale)
+                                currentValue: _initialData.LocalScale.x)
                             .ApplyTemplate(VerticalLayout)
                             .AddOnValueChangedEvent((s, v) => {
-                                _data.XScale = v;
+                                _data.LocalScale = (v, _data.LocalScale.y, _data.LocalScale.z);
                                 DataUpdated();
                             });
 
         _yScaleSlider = MainContent
                             .CreateSlider(label: "Y Scale", minValue: MIN_XYZ_SCALE, maxValue: MAX_XYZ_SCALE,
-                                currentValue: _initialData.YScale)
+                                currentValue: _initialData.LocalScale.y)
                             .ApplyTemplate(VerticalLayout)
                             .AddOnValueChangedEvent((s, v) => {
-                                _data.YScale = v;
+                                _data.LocalScale = (_data.LocalScale.x, v, _data.LocalScale.z);
                                 DataUpdated();
                             });
 
         _zScaleSlider = MainContent
                             .CreateSlider(label: "Z Scale", minValue: MIN_XYZ_SCALE, maxValue: MAX_XYZ_SCALE,
-                                currentValue: _initialData.ZScale)
+                                currentValue: _initialData.LocalScale.z)
                             .ApplyTemplate(VerticalLayout)
                             .AddOnValueChangedEvent((s, v) => {
-                                _data.ZScale = v;
+                                _data.LocalScale = (_data.LocalScale.x, _data.LocalScale.y, v);
                                 DataUpdated();
                             });
 
@@ -191,6 +197,7 @@ public class ZoneConfigPanel : PanelDynamic {
         if (_zone is null) {
             obj   = GameObject.CreatePrimitive(PrimitiveType.Cube);
             _zone = new ScoringZone(obj, "temp scoring zone", Alliance.Blue, 0, false, true);
+            _zone.VisibilityCounter++;
         } else {
             obj = _zone.GameObject;
             UseZone(_zone);
@@ -210,7 +217,7 @@ public class ZoneConfigPanel : PanelDynamic {
         if (_isNewZone)
             GameObject.Destroy(_zone.GameObject);
         else {
-            CopyDataToZone(_initialData, _zone);
+            _zone.ZoneData                      = _initialData;
             _zone.GameObject.transform.position = _initialPosition;
             _zone.GameObject.transform.rotation = _initialRotation;
             if (_initialParent is null || _initialParent == "")
@@ -218,18 +225,6 @@ public class ZoneConfigPanel : PanelDynamic {
             else
                 _zone.GameObject.transform.parent = GameObject.Find(_initialParent).transform;
         }
-    }
-
-    private void CopyDataToZone(ScoringZoneData data, ScoringZone zone) {
-        zone.Name                            = _zoneNameInput.Value;
-        zone.GameObject.name                 = data.Name;
-        zone.GameObject.tag                  = data.Alliance == Alliance.Red ? "red zone" : "blue zone";
-        zone.GameObject.transform.parent     = data.Parent;
-        zone.Alliance                        = data.Alliance;
-        zone.Points                          = data.Points;
-        zone.GameObject.transform.localScale = new Vector3(data.XScale, data.YScale, data.ZScale);
-        zone.DestroyGamepiece                = data.DestroyGamepiece;
-        zone.PersistentPoints                = data.PersistentPoints;
     }
 
     private void ConfigureAllianceButton() {
@@ -254,19 +249,24 @@ public class ZoneConfigPanel : PanelDynamic {
         _data.DestroyGamepiece = zone.DestroyGamepiece;
         _deleteGamepieceToggle.SetState(_zone.DestroyGamepiece, notify: false);
 
-        var localScale = zone.GameObject.transform.localScale;
-        _data.XScale   = localScale.x;
-        _xScaleSlider.SetValue(_data.XScale);
-        _data.YScale = localScale.y;
-        _yScaleSlider.SetValue(_data.YScale);
-        _data.ZScale = localScale.z;
-        _zScaleSlider.SetValue(_data.ZScale);
+        var localScale   = zone.GameObject.transform.localScale;
+        _data.LocalScale = (localScale.x, localScale.y, localScale.z);
+        _xScaleSlider.SetValue(_data.LocalScale.x);
+        _yScaleSlider.SetValue(_data.LocalScale.y);
+        _zScaleSlider.SetValue(_data.LocalScale.z);
     }
 
     private void DataUpdated() {
-        _zone.Alliance                        = _data.Alliance;
-        _zone.Points                          = _data.Points;
-        _zone.GameObject.transform.localScale = new Vector3(_data.XScale, _data.YScale, _data.ZScale);
+        var data            = _zone.ZoneData;
+        data.Alliance       = _data.Alliance;
+        data.Points         = _data.Points;
+        data.LocalScale     = _data.LocalScale;
+        var parentTransform = FieldSimObject.CurrentField.FieldObject.transform.Find(_data.Parent);
+        var localPosition   = parentTransform.worldToLocalMatrix.MultiplyPoint3x4(_zone.GameObject.transform.position);
+        var localRotation   = Quaternion.Inverse(parentTransform.rotation) * _zone.GameObject.transform.rotation;
+        data.LocalPosition  = (localPosition.x, localPosition.y, localPosition.z);
+        data.LocalRotation  = (localRotation.x, localRotation.y, localRotation.z, localRotation.w);
+        _zone.ZoneData      = data;
     }
 
     public void SetCallback(Action<ScoringZone, bool> callback) {
@@ -275,12 +275,12 @@ public class ZoneConfigPanel : PanelDynamic {
 
     public void SelectParentButton(Button b) {
         if (!_selectingNode) {
-            if (_selectedNode || _data.Parent) {
+            if (_selectedNode || _data.Parent != "grounded") {
                 if (_selectedNode)
                     _selectedNode.enabled = false;
                 _selectedNode = null;
                 _hoveringNode = null;
-                _data.Parent  = null;
+                _data.Parent  = "grounded";
             } else {
                 // I don't like this; do we just want all field rigidbodies to detect collisions?
                 if (_initialFieldCollisions.Count == 0)
@@ -296,21 +296,25 @@ public class ZoneConfigPanel : PanelDynamic {
             _initialFieldCollisions.Clear();
             _selectingNode = false;
         }
+
         SetSelectUIState(_selectingNode);
     }
 
     private void SetSelectUIState(bool isUserSelecting) {
         if (isUserSelecting) {
             _zoneParentButton.StepIntoLabel(l => l.SetText("Selecting..."));
-            _zoneParentButton.StepIntoButton(b => b.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_BLACK_ACCENT))
+            _zoneParentButton.StepIntoButton(b => b.StepIntoImage(i => i.SetColor(ColorManager.GetColor(
+                                                                      ColorManager.SynthesisColor.BackgroundSecondary)))
                                                       .StepIntoLabel(l => l.SetText("...")));
         } else {
             if (_selectedNode is null)
-                _data.Parent = null;
+                _data.Parent = "grounded";
             _zoneParentButton.StepIntoLabel(
                 l => l.SetText(_selectedNode is not null ? _selectedNode.name : "Parent Object"));
+
             _zoneParentButton.StepIntoButton(
-                b => b.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_ORANGE))
+                b => b.StepIntoImage(
+                          i => i.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElement)))
                          .StepIntoLabel(l => l.SetText(_selectedNode is not null ? "Remove" : "Click to select...")));
         }
     }
@@ -328,10 +332,11 @@ public class ZoneConfigPanel : PanelDynamic {
                     (_selectedNode is null || !_selectedNode.name.Equals(_hoveringNode.name))) {
                     _hoveringNode.enabled = false;
                 }
+
                 _hoveringNode = hitInfo.rigidbody.GetComponent<HighlightComponent>();
                 if (_selectedNode is null || hitInfo.rigidbody.name != _selectedNode.name) {
                     _hoveringNode.enabled = true;
-                    _hoveringNode.Color   = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_HOVER);
+                    _hoveringNode.Color   = ColorManager.GetColor(ColorManager.SynthesisColor.HighlightHover);
                 }
 
                 if (Input.GetKeyDown(KeyCode.Mouse0)) {
@@ -341,9 +346,10 @@ public class ZoneConfigPanel : PanelDynamic {
 
                     _selectedNode         = _hoveringNode;
                     _selectedNode.enabled = true;
-                    _selectedNode.Color   = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_SELECT);
-                    _data.Parent          = _selectedNode.gameObject.transform;
-                    _hoveringNode         = null;
+                    _selectedNode.Color   = ColorManager.GetColor(ColorManager.SynthesisColor.HighlightSelect);
+
+                    _data.Parent  = _selectedNode.gameObject.transform.name;
+                    _hoveringNode = null;
 
                     _selectingNode = false;
                     SetSelectUIState(false);
@@ -366,15 +372,21 @@ public class ZoneConfigPanel : PanelDynamic {
         if (_hoveringNode is not null) {
             _hoveringNode.enabled = false;
         }
+
         if (_selectedNode is not null) {
             _selectedNode.enabled = false;
         }
-        if (_data.Parent is not null) {
-            HighlightComponent highlight = _data.Parent.GetComponent<Rigidbody>().GetComponent<HighlightComponent>();
-            highlight.enabled            = false;
+
+        if (_data.Parent is not null && _data.Parent != "grounded") {
+            HighlightComponent highlight = FieldSimObject.CurrentField.FieldObject.transform.Find(_data.Parent)
+                                               .GetComponent<Rigidbody>()
+                                               .GetComponent<HighlightComponent>();
+            highlight.enabled = false;
         }
+
         if (!_pressedButtonToClose)
             DoCancel();
         GizmoManager.ExitGizmo();
+        FieldSimObject.CurrentField.UpdateSavedScoringZones();
     }
 }

@@ -4,6 +4,7 @@ using Analytics;
 using Synthesis.Runtime;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Utilities.ColorManager;
 
 namespace Synthesis.UI.Dynamic {
     public class ExitSynthesisModal : ModalDynamic {
@@ -30,8 +31,8 @@ namespace Synthesis.UI.Dynamic {
                 })
                 .StepIntoLabel(l => l.SetText("Exit"));
 
-            ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"));
-            ModalImage.SetColor(ColorManager.SYNTHESIS_WHITE);
+            ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"))
+                .SetColor(ColorManager.SynthesisColor.MainText);
 
             MainContent.CreateLabel(40)
                 .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Center)
