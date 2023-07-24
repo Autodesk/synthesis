@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Text;
+using System.Linq;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
@@ -24,8 +25,6 @@ namespace SynthesisAPI.Aether.Lobby {
         public string Name => _instance?.Handler.Name ?? "--unknown--";
         public bool IsAlive => _instance != null;
 
-        public List<DataRobot> RobotsFromServer => _instance?.RobotsFromServer ?? new List<DataRobot>();
-
         public LobbyClient(string ip, string name) {
             _instance = new Inner(ip, name);
         }
@@ -34,17 +33,17 @@ namespace SynthesisAPI.Aether.Lobby {
             return _instance?.GetLobbyInformation();
         }
 
-        public Task<Result<LobbyMessage?, Exception>> UploadRobotData(DataRobot robot) 
-            => _instance?.UploadRobotData(robot) ?? Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("No instance")));
-
-        public Task<Result<LobbyMessage?, Exception>> RequestServerRobotData()
-            => _instance?.RequestServerRobotData() ?? Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("No instance")));
-
         public Task<Result<LobbyMessage?, Exception>> UpdateControllableState(List<SignalData> updates)
             => _instance?.UpdateControllableState(updates) ?? Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("No instance")));
 
         public Task<Result<LobbyMessage?, Exception>> UpdateTransforms(List<ServerTransforms> transforms)
             => _instance?.UpdateTransforms(transforms) ?? Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("No instance")));
+
+        public Task<Result<LobbyMessage?, Exception>> MakeDataAvailable(SynthesisDataDescriptor description)
+            => _instance?.MakeDataAvailable(description) ?? Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("No instance")));
+
+        public Task<Result<LobbyMessage?, Exception>> GetAllAvailableData()
+            => _instance?.GetAllAvailableData() ?? Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("No instance")));
 
         private class Inner : IDisposable {
 
@@ -61,8 +60,6 @@ namespace SynthesisAPI.Aether.Lobby {
 
             private readonly Thread _heartbeatThread;
             private readonly Thread _requestSenderThread;
-
-            public List<DataRobot> RobotsFromServer { get; private set; }
 
             public Inner(string ip, string name) {
                 IP = ip;
@@ -86,8 +83,6 @@ namespace SynthesisAPI.Aether.Lobby {
 
                 _requestSenderThread = new Thread(RequestQueueProcessor);
                 _requestSenderThread.Start();
-
-                RobotsFromServer = new List<DataRobot>();
             }
 
             ~Inner() {
@@ -156,54 +151,40 @@ namespace SynthesisAPI.Aether.Lobby {
                 }
             }
 
-            public Task<Result<LobbyMessage?, Exception>> UploadRobotData(DataRobot robot) {
+            public Task<Result<LobbyMessage?, Exception>> MakeDataAvailable(SynthesisDataDescriptor description) {
                 if (!_isAlive.Value)
                     return Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("Client no longer alive")));
 
-                var request = new LobbyMessage.Types.ToDataRobot {
-                    Guid = _handler.Guid,
-                    DataRobot = robot
+                var request = new LobbyMessage.Types.ToMakeDataAvailable {
+                    Description = description
                 };
 
                 var task = new Task<Result<LobbyMessage?, Exception>>(() => {
-                    var response = HandleResponseBoilerplate(new LobbyMessage { ToDataRobot = request });
-                    if (response.isError) {
-                        return response;
-                    }
+                    var response = HandleResponseBoilerplate(
+                        new LobbyMessage { ToMakeDataAvailable = request },
+                        LobbyMessage.MessageTypeOneofCase.FromMakeDataAvailableConfirmation
+                    );
 
-                    var msg = response.GetResult()!;
-                    if (msg.MessageTypeCase != LobbyMessage.MessageTypeOneofCase.FromDataRobot) {
-                        return new Result<LobbyMessage?, Exception>(new Exception("Invalid message"));
-                    }
-
-                    return new Result<LobbyMessage?, Exception>(msg);
+                    return response;
                 });
 
                 _requestQueue.Enqueue(task);
                 return task;
             }
 
-            public Task<Result<LobbyMessage?, Exception>> RequestServerRobotData() {
+            public Task<Result<LobbyMessage?, Exception>> GetAllAvailableData() {
                 if (!_isAlive.Value)
                     return Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("Client no longer alive")));
 
-                var request = new LobbyMessage.Types.ToRequestDataRobots {
-                    Guid = _handler.Guid
-                };
+                var request = new LobbyMessage.Types.ToAllDataAvailable();
 
                 var task = new Task<Result<LobbyMessage?, Exception>>(() => {
-                    var response = HandleResponseBoilerplate(new LobbyMessage { ToRequestDataRobots = request });
-                    if (response.isError) {
-                        return response;
-                    }
+                    var response = HandleResponseBoilerplate(
+                        new LobbyMessage { ToAllDataAvailable = request },
+                        LobbyMessage.MessageTypeOneofCase.FromAllDataAvailable
+                    );
 
-                    var msg = response.GetResult()!;
-                    if (msg.MessageTypeCase != LobbyMessage.MessageTypeOneofCase.FromRequestDataRobots) {
-                        return new Result<LobbyMessage?, Exception>(new Exception("Invalid message"));
-                    }
-
-                    RobotsFromServer = new List<DataRobot>(msg.FromRequestDataRobots.AllAvailableRobots);
-                    return new Result<LobbyMessage?, Exception>(msg);
+                    return response;
                 });
 
                 _requestQueue.Enqueue(task);
@@ -220,21 +201,12 @@ namespace SynthesisAPI.Aether.Lobby {
                 request.Data.Add(updates);
 
                 var task = new Task<Result<LobbyMessage?, Exception>>(() => {
-                    var response = HandleResponseBoilerplate(new LobbyMessage { ToUpdateControllableState = request });
-                    if (response.isError) {
-                        return response;
-                    }
+                    var response = HandleResponseBoilerplate(
+                        new LobbyMessage { ToUpdateControllableState = request },
+                        LobbyMessage.MessageTypeOneofCase.FromSimulationTransformData
+                    );
 
-                    var msg = response.GetResult()!;
-                    switch (msg.MessageTypeCase) {
-                        case LobbyMessage.MessageTypeOneofCase.FromSimulationTransformData:
-                            // Logger.Log("Received transform response");
-                            break;
-                        default:
-                            return new Result<LobbyMessage?, Exception>(new Exception("Invalid message"));
-                    }
-
-                    return new Result<LobbyMessage?, Exception>(msg);
+                    return response;
                     
                 });
                 _requestQueue.Enqueue(task);
@@ -249,23 +221,12 @@ namespace SynthesisAPI.Aether.Lobby {
                 request.TransformData.AddRange(transforms);
 
                 var task = new Task<Result<LobbyMessage?, Exception>>(() => {
-                    var response = HandleResponseBoilerplate(new LobbyMessage { ToUpdateTransformData = request });
-                    if (response.isError) {
-                        return response;
-                    }
+                    var response = HandleResponseBoilerplate(
+                        new LobbyMessage { ToUpdateTransformData = request },
+                        LobbyMessage.MessageTypeOneofCase.FromControllableStates
+                    );
 
-                    var msg = response.GetResult()!;
-                    switch (msg.MessageTypeCase) {
-                        case LobbyMessage.MessageTypeOneofCase.FromControllableStates:
-                            // TODO: Update signal data
-                            // Logger.Log("Received controllable state response");
-                            break;
-                        default:
-                            return new Result<LobbyMessage?, Exception>(new Exception("Invalid message"));
-                    }
-
-                    return new Result<LobbyMessage?, Exception>(msg);
-
+                    return response;
                 });
                 _requestQueue.Enqueue(task);
                 return task;
@@ -274,7 +235,7 @@ namespace SynthesisAPI.Aether.Lobby {
             /// <summary>
             /// TODO: Rename
             /// </summary>
-            private Result<LobbyMessage?, Exception> HandleResponseBoilerplate(LobbyMessage request) {
+            private Result<LobbyMessage?, Exception> HandleResponseBoilerplate(LobbyMessage request, LobbyMessage.MessageTypeOneofCase expectedMessageType) {
                 var writeResult = _handler.WriteMessage(request);
                 if (writeResult.isError)
                     return new Result<LobbyMessage?, Exception>(writeResult.GetError());
@@ -285,6 +246,15 @@ namespace SynthesisAPI.Aether.Lobby {
                     return new Result<LobbyMessage?, Exception>(new Exception("Task Timeout"));
                 else if (readResult.Result.isError)
                     return new Result<LobbyMessage?, Exception>(readResult.Result.GetError());
+
+                var msg = readResult.Result.GetResult();
+                if (msg == null) {
+                    return new Result<LobbyMessage?, Exception>(new Exception("Invalid message"));
+                } else if (msg.MessageTypeCase != expectedMessageType) {
+                    return new Result<LobbyMessage?, Exception>(new Exception(
+                        $"Invalid message type: '{Enum.GetName(typeof(LobbyMessage.MessageTypeOneofCase), msg.MessageTypeCase)}'"
+                    ));
+                }
 
                 return new Result<LobbyMessage?, Exception>(readResult.Result.GetResult());
             }
@@ -310,8 +280,16 @@ namespace SynthesisAPI.Aether.Lobby {
         private const int READ_TIMEOUT_MS = 10000;
         private const int READ_BUFFER_SIZE = 2048;
 
+        private readonly ReaderWriterLockSlim _clientInfoLock = new ReaderWriterLockSlim();
         private readonly LobbyClientInformation _clientInformation;
-        public LobbyClientInformation ClientInformation => _clientInformation.Clone();
+        public LobbyClientInformation ClientInformation {
+            get {
+                _clientInfoLock.EnterReadLock();
+                var clone = _clientInformation.Clone();
+                _clientInfoLock.ExitReadLock();
+                return clone;
+            }
+        }
 
         public DateTime? LastHeartbeat { get; private set; } // Milliseconds
 
@@ -330,6 +308,19 @@ namespace SynthesisAPI.Aether.Lobby {
 
         public void UpdateHeartbeat() {
             LastHeartbeat = DateTime.UtcNow;
+        }
+
+        public void AddSelection(ClientSelection selection) {
+            _clientInfoLock.EnterWriteLock();
+            _clientInformation.Selections.Add(selection.SelectionId, selection);
+            _clientInfoLock.ExitWriteLock();
+        }
+
+        public bool RemoveSelection(string selectionID) {
+            _clientInfoLock.EnterWriteLock();
+            var res = _clientInformation.Selections.Remove(selectionID);
+            _clientInfoLock.ExitWriteLock();
+            return res;
         }
 
         public Task<Result<LobbyMessage, ServerReadException>> ReadMessage()

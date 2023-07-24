@@ -1,5 +1,8 @@
+﻿using Org.BouncyCastle.Crypto.Tls;
+using Org.BouncyCastle.Math.EC.Rfc7748;
 using SynthesisAPI.Controller;
 using SynthesisAPI.Utilities;
+using SynthesisServer.Proto;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -18,7 +21,8 @@ namespace SynthesisAPI.Aether.Lobby {
         private Inner? _instance;
 
         public IReadOnlyCollection<string> Clients => _instance?.Clients ?? new List<string>(1).AsReadOnly();
-        public IReadOnlyCollection<DataRobot> AvailableRobots => _instance?.AvailableRobots ?? new List<DataRobot>(1).AsReadOnly();
+        public IReadOnlyCollection<SynthesisDataDescriptor> AvailableSynthesisData
+            => _instance?.AvailableSynthesisData ?? new List<SynthesisDataDescriptor>(1).AsReadOnly();
 
         public LobbyServer() {
             _instance = new Inner();
@@ -30,6 +34,7 @@ namespace SynthesisAPI.Aether.Lobby {
         private class Inner : IDisposable {
 
             private ulong _nextGuid = 1;
+            private readonly Mutex _nextGuidLock = new Mutex();
             private readonly Atomic<bool> _isAlive = new Atomic<bool>(true);
 
             private readonly ReaderWriterLockSlim _clientsLock;
@@ -40,6 +45,8 @@ namespace SynthesisAPI.Aether.Lobby {
             private readonly LinkedList<Thread> _clientThreads;
 
             private readonly Dictionary<ulong, RemoteData> _remoteData;
+
+            private readonly SHA256 _shaHashFunction = SHA256.Create();
 
             public IReadOnlyCollection<string> Clients {
                 get {
@@ -56,30 +63,33 @@ namespace SynthesisAPI.Aether.Lobby {
                 }
             }
 
-            private readonly ReaderWriterLockSlim _robotDataLock;
-            private List<DataRobot> _availableRobots;
-            public IReadOnlyCollection<DataRobot> AvailableRobots {
+            public IReadOnlyCollection<SynthesisDataDescriptor> AvailableSynthesisData {
                 get {
-                    List<DataRobot> robots;
-                    _robotDataLock.EnterReadLock();
-                    try {
-                        robots = new List<DataRobot>(_availableRobots);
-                    } finally {
-                        _robotDataLock.ExitReadLock();
+                    _remoteDataLock.EnterReadLock();
+                    List<RemoteData> allClientData = new List<RemoteData>();
+                    _remoteData.ForEach(x => allClientData.Add(x.Value));
+                    _remoteDataLock.ExitReadLock();
+
+                    List<SynthesisDataDescriptor> availableData = new List<SynthesisDataDescriptor>();
+
+                    foreach (var data in allClientData) {
+                        data.EnterReadLock();
+
+                        data.OwnedData.ForEach(x => availableData.Add(x.Value.Description.Clone()));
+
+                        data.ExitReadLock();
                     }
 
-                    return robots.AsReadOnly();
+                    return availableData.AsReadOnly();
                 }
             }
 
             public Inner() {
                 _clientsLock = new ReaderWriterLockSlim();
                 _remoteDataLock = new ReaderWriterLockSlim();
-                _robotDataLock = new ReaderWriterLockSlim();
 
                 _clients = new Dictionary<ulong, LobbyClientHandler>();
                 _clientThreads = new LinkedList<Thread>();
-                _availableRobots = new List<DataRobot>();
 
                 _remoteData = new Dictionary<ulong, RemoteData>();
                 
@@ -93,12 +103,19 @@ namespace SynthesisAPI.Aether.Lobby {
                     Dispose();
             }
 
+            private ulong NextGuid() {
+                _nextGuidLock.WaitOne();
+                ulong guid = ++_nextGuid;
+                _nextGuidLock.ReleaseMutex();
+                return guid;
+            }
+
             private void AcceptTcpClient(IAsyncResult result) {
                 try {
                     var clientTcp = _listener.EndAcceptTcpClient(result);
 
                     if (clientTcp != null) {
-                        var client = LobbyClientHandler.InitServerSide(clientTcp, _nextGuid++);
+                        var client = LobbyClientHandler.InitServerSide(clientTcp, NextGuid());
                         if (!client.isError) {
                             _clientsLock.EnterWriteLock();
                             var clientResult = client.GetResult();
@@ -147,27 +164,161 @@ namespace SynthesisAPI.Aether.Lobby {
                         case LobbyMessage.MessageTypeOneofCase.ToGetLobbyInformation:
                             OnGetLobbyInformation(msg.ToGetLobbyInformation, handler);
                             break;
-                        case LobbyMessage.MessageTypeOneofCase.ToDataRobot:
-                            AcceptRobotData(msg.ToDataRobot, handler);
-                            break;
-                        case LobbyMessage.MessageTypeOneofCase.ToRequestDataRobots:
-                            OnRequestDataRobots(msg.ToRequestDataRobots, handler);
-                            break;
                         case LobbyMessage.MessageTypeOneofCase.ToUpdateControllableState:
                             OnControllableStateUpdate(msg.ToUpdateControllableState, handler);
                             break;
                         case LobbyMessage.MessageTypeOneofCase.ToUpdateTransformData:
                             OnTransformDataUpdate(msg.ToUpdateTransformData, handler);
                             break;
-                        case LobbyMessage.MessageTypeOneofCase.ToDataDump:
                         case LobbyMessage.MessageTypeOneofCase.ToClientHeartbeat:
 							handler.UpdateHeartbeat();
+                            break;
+                        // Data Selection
+                        case LobbyMessage.MessageTypeOneofCase.ToSelectData:
+                            OnSelectData(msg.ToSelectData, handler);
+                            break;
+                        case LobbyMessage.MessageTypeOneofCase.ToUnselectData:
+                            OnUnselectData(msg.ToUnselectData, handler);
+                            break;
+                        // Data Handling
+                        case LobbyMessage.MessageTypeOneofCase.ToMakeDataAvailable:
+                            OnMakeDataAvailable(msg.ToMakeDataAvailable, handler);
+                            break;
+                        case LobbyMessage.MessageTypeOneofCase.ToAllDataAvailable:
+                            OnAllDataAvailable(msg.ToAllDataAvailable, handler);
+                            break;
+                        case LobbyMessage.MessageTypeOneofCase.ToUploadSynthesisData:
+                            OnUploadData(msg.ToUploadSynthesisData, handler);
+                            break;
+                        case LobbyMessage.MessageTypeOneofCase.ToDownloadSynthesisData:
+                            OnDownloadData(msg.ToDownloadSynthesisData, handler);
                             break;
                         default:
                             Logger.Log($"Received unknown message type: {msg.MessageTypeCase}");
                             break;
                     }
                 }
+            }
+
+            private void OnSelectData(LobbyMessage.Types.ToSelectData selection, LobbyClientHandler handler) {
+                LobbyMessage.Types.FromSelectData response;
+
+                _remoteDataLock.EnterReadLock();
+                if (_remoteData.ContainsKey(selection.DataOwner)) {
+                    var ownerData = _remoteData[selection.DataOwner];
+                    ownerData.EnterReadLock();
+                    if (ownerData.OwnedData.ContainsKey(selection.DataGuid)) {
+                        handler.AddSelection(new ClientSelection {
+                            DataGuid = selection.DataGuid,
+                            SelectionId = NextGuid().ToString(),
+                            DataOwner = selection.DataOwner
+                        });
+                    }
+                    ownerData.ExitReadLock();
+                }
+                _remoteDataLock.ExitReadLock();
+
+                response = new LobbyMessage.Types.FromSelectData {
+                    ClientInfo = handler.ClientInformation
+                };
+                handler.WriteMessage(new LobbyMessage { FromSelectData = response });
+            }
+
+            private void OnUnselectData(LobbyMessage.Types.ToUnselectData unselection, LobbyClientHandler handler) {
+                LobbyMessage.Types.FromUnselectData response;
+
+                handler.RemoveSelection(unselection.SelectionId);
+
+                response = new LobbyMessage.Types.FromUnselectData {
+                    ClientInfo = handler.ClientInformation
+                };
+                handler.WriteMessage(new LobbyMessage { FromUnselectData = response });
+            }
+
+            private void OnMakeDataAvailable(LobbyMessage.Types.ToMakeDataAvailable makeDataAvailable, LobbyClientHandler handler) {
+                _remoteDataLock.EnterReadLock();
+                var data = _remoteData[handler.Guid];
+                _remoteDataLock.ExitReadLock(); // Before or after?
+                data.EnterWriteLock();
+                var dataGuid = NextGuid();
+                var description = makeDataAvailable.Description;
+                description.Guid = dataGuid;
+                description.Owner = handler.Guid;
+                description.DataAvailable = false;
+                data.OwnedData.Add(dataGuid, new SynthesisData { Description = description });
+                data.ExitWriteLock();
+
+                handler.WriteMessage(new LobbyMessage {
+                    FromMakeDataAvailableConfirmation = new LobbyMessage.Types.FromMakeDataAvailableConfirmation {
+                        DataGuid = dataGuid
+                    }
+                });
+            }
+
+            private void OnAllDataAvailable(LobbyMessage.Types.ToAllDataAvailable _, LobbyClientHandler handler) {
+                var response = new LobbyMessage.Types.FromAllDataAvailable();
+                response.AvailableData.AddRange(AvailableSynthesisData);
+                handler.WriteMessage(new LobbyMessage { FromAllDataAvailable = response });
+            }
+
+            private void OnUploadData(LobbyMessage.Types.ToUploadSynthesisData uploadSynthesisData, LobbyClientHandler handler) {
+
+                var data = uploadSynthesisData.Data;
+                data.Description.Owner = handler.Guid;
+
+                var checksum = "ERROR";
+
+                _remoteDataLock.EnterReadLock();
+                if (_remoteData.ContainsKey(handler.Guid)) {
+                    var ownerData = _remoteData[handler.Guid];
+                    ownerData.EnterWriteLock();
+                    ownerData.OwnedData[data.Description.Guid] = data;
+                    ownerData.OwnedData[data.Description.Guid].Description.DataAvailable = true;
+                    ownerData.ExitWriteLock();
+                    ownerData.EnterReadLock();
+                    checksum = Convert.ToBase64String(_shaHashFunction.ComputeHash(
+                        new ByteStream(
+                            data.Buffer.GetEnumerator(),
+                            data.Buffer.Length
+                        )
+                    ));
+                    ownerData.ExitReadLock();
+                }
+                _remoteDataLock.ExitReadLock();
+                
+                handler.WriteMessage(new LobbyMessage {
+                    FromUploadSynthesisDataConfirmation = new LobbyMessage.Types.FromUploadSynthesisDataConfirmation {
+                        Checksum = checksum
+                    }
+                });
+            }
+
+            private void OnDownloadData(LobbyMessage.Types.ToDownloadSynthesisData toDownloadSynthesisData, LobbyClientHandler handler) {
+                
+                var response = new LobbyMessage.Types.FromDownloadSynthesisData {
+                    DataAvailable = false
+                };
+
+                _remoteDataLock.EnterReadLock();
+                if (_remoteData.ContainsKey(toDownloadSynthesisData.DataOwner)) {
+                    var ownerData = _remoteData[handler.Guid];
+                    ownerData.EnterReadLock();
+
+                    if (
+                        ownerData.OwnedData.ContainsKey(toDownloadSynthesisData.DataGuid)
+                        && ownerData.OwnedData[toDownloadSynthesisData.DataGuid].Description.DataAvailable
+                    ) {
+                        response.DataAvailable = true;
+                        response.Data = ownerData.OwnedData[toDownloadSynthesisData.DataGuid].Clone();
+                    }
+
+                    ownerData.ExitReadLock();
+                }
+                _remoteDataLock.ExitReadLock();
+                
+                handler.WriteMessage(new LobbyMessage {
+                    FromDownloadSynthesisData = response
+                });
             }
 
             private void OnGetLobbyInformation(LobbyMessage.Types.ToGetLobbyInformation _, LobbyClientHandler handler) {
@@ -184,35 +335,6 @@ namespace SynthesisAPI.Aether.Lobby {
                 }
                 
                 handler.WriteMessage(new LobbyMessage { FromGetLobbyInformation = response });
-            }
-
-            private void AcceptRobotData(LobbyMessage.Types.ToDataRobot robot, LobbyClientHandler handler) {
-                _robotDataLock.EnterWriteLock();
-                try {
-                    SHA256 sha = SHA256.Create();
-                    var checksum = Convert.ToBase64String(sha.ComputeHash(robot.DataRobot.Data.ToByteArray()));
-                    _availableRobots.Add(new DataRobot(robot.DataRobot));
-                } finally {
-                    _robotDataLock.ExitWriteLock();
-                }
-
-                var response = new LobbyMessage.Types.FromDataRobot {
-                    Guid = handler.Guid
-                };
-
-                handler.WriteMessage(new LobbyMessage { FromDataRobot = response });
-            }
-
-            private void OnRequestDataRobots(LobbyMessage.Types.ToRequestDataRobots request, LobbyClientHandler handler) {
-                var response = new LobbyMessage.Types.FromRequestDataRobots();
-                _robotDataLock.EnterReadLock();
-                try {
-                    response.AllAvailableRobots.AddRange(_availableRobots);
-                } finally {
-                    _robotDataLock.ExitReadLock();
-                }
-
-                handler.WriteMessage(new LobbyMessage { FromRequestDataRobots = response });
             }
 
             private void OnControllableStateUpdate(LobbyMessage.Types.ToUpdateControllableState updateRequest, LobbyClientHandler handler) {
@@ -329,12 +451,15 @@ namespace SynthesisAPI.Aether.Lobby {
         public ControllableState State;
         public ServerTransforms Transforms;
 
+        public Dictionary<ulong, SynthesisData> OwnedData;
+
         public RemoteData(ulong owningClient) {
             _owningClient = owningClient;
             _lock = new ReaderWriterLockSlim();
 
             State           = new ControllableState();
             Transforms      = new ServerTransforms();
+            OwnedData       = new Dictionary<ulong, SynthesisData>();
             Transforms.Guid = owningClient;
         }
 

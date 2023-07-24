@@ -9,20 +9,29 @@ message LobbyMessage {
         ToRegisterClient to_register_client = 1;
         ToClientHeartbeat to_client_heartbeat = 2;
         ToGetLobbyInformation to_get_lobby_information = 3;
-        ToDataDump to_data_dump = 4;
+        ToUpdateControllableState to_update_controllable_state = 4;
+        ToUpdateTransformData to_update_transform_data = 5;
 
-        ToUpdateControllableState to_update_controllable_state = 8;
-        ToUpdateTransformData to_update_transform_data = 10;
-        ToDataRobot to_data_robot = 12;
-        ToRequestDataRobots to_request_data_robots = 14;
+        ToSelectData to_select_data = 6;
+        ToUnselectData to_unselect_data = 7;
 
-        FromRegisterClient from_register_client = 5;
-        FromGetLobbyInformation from_get_lobby_information = 6;
-        FromDataDumpConfirm from_data_dump_confirm = 7;
-        FromSimulationTransformData from_simulation_transform_data = 9;
-        FromControllableStates from_controllable_states = 11;
-        FromDataRobot from_data_robot = 13;
-        FromRequestDataRobots from_request_data_robots = 15;
+        ToMakeDataAvailable to_make_data_available = 8;
+        ToAllDataAvailable to_all_data_available = 9;
+        ToUploadSynthesisData to_upload_synthesis_data = 10;
+        ToDownloadSynthesisData to_download_synthesis_data = 11;
+
+        FromRegisterClient from_register_client = 12;
+        FromGetLobbyInformation from_get_lobby_information = 13;
+        FromSimulationTransformData from_simulation_transform_data = 14;
+        FromControllableStates from_controllable_states = 15;
+
+        FromSelectData from_select_data = 16;
+        FromUnselectData from_unselect_data = 17;
+
+        FromMakeDataAvailableConfirmation from_make_data_available_confirmation = 18;
+        FromAllDataAvailable from_all_data_available = 19;
+        FromUploadSynthesisDataConfirmation from_upload_synthesis_data_confirmation = 20;
+        FromDownloadSynthesisData from_download_synthesis_data = 21;
     }
 
     /////////////////////
@@ -41,11 +50,6 @@ message LobbyMessage {
         uint64 sender_guid = 1;
     }
 
-    message ToDataDump {
-        string identifier = 1;
-        bytes data = 2;
-    }
-
     message ToUpdateControllableState {
         uint64 guid = 1;
         repeated SynthesisAPI.Controller.SignalData data = 2;
@@ -55,13 +59,35 @@ message LobbyMessage {
         repeated ServerTransforms transform_data = 1;
     }
 
-    message ToDataRobot {
-        uint64 guid = 1;
-        DataRobot data_robot = 2;
+    // Data Selection
+
+    message ToSelectData {
+        uint64 client_guid = 1;
+        uint64 data_owner = 2;
+        uint64 data_guid = 3;
     }
 
-    message ToRequestDataRobots {
-        uint64 guid = 1;
+    message ToUnselectData {
+        uint64 client_guid = 1;
+        string selection_id = 2;
+    }
+
+    // Data Handling
+
+    message ToMakeDataAvailable {
+        SynthesisDataDescriptor description = 1;
+    }
+
+    message ToAllDataAvailable {
+    }
+
+    message ToUploadSynthesisData {
+        SynthesisData data = 1;
+    }
+
+    message ToDownloadSynthesisData {
+        uint64 data_guid = 1;
+        uint64 data_owner = 2;
     }
 
     /////////////////////
@@ -76,10 +102,6 @@ message LobbyMessage {
         LobbyInformation lobby_information = 1;
     }
 
-    message FromDataDumpConfirm {
-        string identifier = 1;
-    }
-
     message FromSimulationTransformData {
         repeated ServerTransforms transform_data = 1;
     }
@@ -88,11 +110,32 @@ message LobbyMessage {
         repeated SignalUpdates all_updates = 1;
     }
 
-    message FromDataRobot {
-        uint64 guid = 1;
+    // Data Selection
+
+    message FromSelectData {
+        LobbyClientInformation client_info = 1;
     }
 
-    message FromRequestDataRobots {
-        repeated DataRobot all_available_robots = 1;
+    message FromUnselectData {
+        LobbyClientInformation client_info = 1;
+    }
+
+    // Data Handling
+
+    message FromMakeDataAvailableConfirmation {
+        uint64 data_guid = 1;
+    }
+
+    message FromAllDataAvailable {
+        repeated SynthesisDataDescriptor available_data = 1;
+    }
+
+    message FromUploadSynthesisDataConfirmation {
+        string checksum = 1;
+    }
+
+    message FromDownloadSynthesisData {
+        SynthesisData data = 1;
+        bool data_available = 2;
     }
 }

@@ -5,6 +5,13 @@ import "v1/controller.proto";
 message LobbyClientInformation {
     uint64 guid = 1;
     string name = 2;
+    map<string, ClientSelection> selections = 3;
+}
+
+message ClientSelection {
+    uint64 data_guid = 1;
+    uint64 data_owner = 2;
+    string selection_id = 3;
 }
 
 message LobbyInformation {
@@ -13,12 +20,18 @@ message LobbyInformation {
     uint64 lobby_host = 3;
 }
 
-message DataRobot {
+message SynthesisDataDescriptor {
     string name = 1;
     string description = 2;
-    // TODO: Possible PNG thumbnail?
-    uint64 guid = 3;
-    bytes data = 4;
+    bytes png_data = 3;
+    uint64 guid = 4;
+    uint64 owner = 5;
+    bool data_available = 6;
+}
+
+message SynthesisData {
+    SynthesisDataDescriptor description = 1;
+    bytes buffer = 2;
 }
 
 message ServerTransformData {
