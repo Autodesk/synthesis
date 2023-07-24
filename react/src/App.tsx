@@ -49,6 +49,10 @@ function App() {
     const { openPanel, closePanel, closeAllPanels, getActivePanelElements } =
         usePanelManager(initialPanels)
 
+    if (process.env.NODE_ENV && process.env.NODE_ENV !== "development") {
+        document.body.style.background = "purple"
+    }
+
     return (
         <ModalControlProvider
             openModal={(modalId: string) => {
