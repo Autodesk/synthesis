@@ -1,4 +1,7 @@
 .vs/
-/cef_binaries/
 /build/
 /out/
+
+/cef_binaries/
+/DawnCache/
+/GPUCache/

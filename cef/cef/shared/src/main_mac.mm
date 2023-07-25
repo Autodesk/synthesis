@@ -8,6 +8,9 @@
 
 #include "app_factory.h"
 #include "client_manager.h"
+#include "core.h"
+#include "debug.h"
+#include "html_resource_handler.h"
 
 @interface SharedAppDelegate : NSObject <NSApplicationDelegate>
 - (void)createApplication:(id)object;
@@ -61,9 +64,6 @@
 }
 @end
 
-#include <iostream>
-using namespace std;
-
 namespace synthesis {
 namespace shared {
 
@@ -84,14 +84,22 @@ int main(int argc, char* argv[]) {
 
     CefInitialize(main_args, settings, app, nullptr);
 
+    // CefRefPtr<HTMLSchemeHandlerFactory> resourceHandlerFactory = new HTMLSchemeHandlerFactory();
+    // CefRegisterSchemeHandlerFactory(SYNTHESIS_HTML_SCHEME, "", resourceHandlerFactory);
+    // std::string url = std::string(SYNTHESIS_HTML_SCHEME) + "index.html";
+
     NSObject* delegate = [[SharedAppDelegate alloc] init];
     [delegate performSelectorOnMainThread:@selector(createApplication:) withObject:nil waitUntilDone:NO];
+
+    SYNTHESIS_DEBUG_LOG("Starting main loop...");
 
     CefRunMessageLoop();
     CefShutdown();
 
     [delegate release];
     [autopool release]; 
+
+    SYNTHESIS_DEBUG_LOG("Main loop ended.");
 
     return 0;
 }
