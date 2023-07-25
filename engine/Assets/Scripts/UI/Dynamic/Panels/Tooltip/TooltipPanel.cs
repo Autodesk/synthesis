@@ -17,7 +17,7 @@ namespace UI.Dynamic.Panels.Tooltip {
         private const float DESC_CHAR_WIDTH = 13;
         private const float DESC_PADDING    = 12;
 
-        private static readonly Vector2 ICON_SIZE = new(20, 20);
+        private static readonly Vector2 ICON_SIZE = new(43, 43);
 
         private static float CalcContentWidth((string key, string description)[] tooltips) {
             float maxWidth = 0;
@@ -52,6 +52,7 @@ namespace UI.Dynamic.Panels.Tooltip {
             Title.SetText("");
             var iconObj = new GameObject("Icon", typeof(RectTransform), typeof(UnityEngine.UI.Image));
             iconObj.transform.SetParent(HeaderRt);
+            iconObj.transform.localScale = Vector3.one;
 
             var iconContent =
                 new Content(null, iconObj, ICON_SIZE)
