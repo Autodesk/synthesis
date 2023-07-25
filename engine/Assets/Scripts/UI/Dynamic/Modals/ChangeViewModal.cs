@@ -1,4 +1,5 @@
 using System.Linq;
+using UI.Dynamic.Panels.Tooltip;
 using UnityEngine;
 
 namespace Synthesis.UI.Dynamic {
@@ -35,9 +36,24 @@ namespace Synthesis.UI.Dynamic {
                                    .AddOnValueChangedEvent((d, i, option) => _selectedView = option.text)
                                    .SetTopStretch<Dropdown>();
 
-            AcceptButton.AddOnClickedEvent(b => {
+            AcceptButton.AddOnClickedEvent(_ => {
                 controller.CameraMode = CameraController.CameraModes[_selectedView];
                 DynamicUIManager.CloseActiveModal();
+                
+                switch (_selectedView) {
+                    case "Orbit":
+                        TooltipManager.CreateTooltip(("LM", "Orbit Cam"), ("Scroll", "Zoom Cam"));
+                        break;
+                    case "Freecam":
+                        TooltipManager.CreateTooltip(("RM", "Rotate Cam"), ("RM + WASD", "Move Cam"), 
+                            ("Scroll", "Zoom Cam"));
+                        break;
+                    case "Overview":
+                        break;
+                    case "Driver Station":
+                        TooltipManager.CreateTooltip(("RM + WASD", "Move Cam"), ("Scroll", "Zoom Cam"));
+                        break;
+                }
             });
         }
 

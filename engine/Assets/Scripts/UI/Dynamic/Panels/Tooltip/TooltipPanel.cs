@@ -2,16 +2,17 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Synthesis.UI.Dynamic;
+using TMPro;
 using UnityEngine;
 using Utilities.ColorManager;
 
 namespace UI.Dynamic.Panels.Tooltip {
     public class TooltipPanel : PanelDynamic {
-        private const float CONTENT_WIDTH = 300f;
-        private const float TOOLTIP_HEIGHT = 50f;
+        private const float CONTENT_WIDTH = 250f;
+        private const float TOOLTIP_HEIGHT = 30f;
         private const float HOZ_SPACING = 15f;
-        private const float KEY_ICON_WIDTH = 75f;
-        private static readonly Vector2 ICON_SIZE = new(35, 35);
+        private const float KEY_ICON_WIDTH = 19f;
+        private static readonly Vector2 ICON_SIZE = new(32, 32);
 
         (string key, string description)[] _tooltips;
 
@@ -23,7 +24,7 @@ namespace UI.Dynamic.Panels.Tooltip {
         };
 
         public TooltipPanel((string key, string description)[] tooltips) : base(new Vector2(CONTENT_WIDTH,
-            TOOLTIP_HEIGHT*tooltips.Length)) {
+            TOOLTIP_HEIGHT * tooltips.Length-20)) {
             _tooltips = tooltips;
         }
 
@@ -31,9 +32,10 @@ namespace UI.Dynamic.Panels.Tooltip {
             Title.SetText("");
             var iconObj = new GameObject("Icon", typeof(RectTransform), typeof(UnityEngine.UI.Image));
             iconObj.transform.SetParent(HeaderRt);
-            
+
             var iconContent = new Content(null, iconObj, ICON_SIZE).StepIntoImage(i =>
-                i.SetSprite(SynthesisAssetCollection.GetSpriteByName("info-icon-white-solid"))).SetAnchoredPosition<Image>(Vector3.zero);
+                    i.SetSprite(SynthesisAssetCollection.GetSpriteByName("info-icon-white-solid")))
+                .SetAnchoredPosition<Image>(Vector3.zero);
 
             // Align top center
             var transform = base.UnityObject.GetComponent<RectTransform>();
@@ -44,7 +46,6 @@ namespace UI.Dynamic.Panels.Tooltip {
 
             AcceptButton.RootGameObject.SetActive(false);
             CancelButton.RootGameObject.SetActive(false);
-            
 
             CreateTooltips();
 
@@ -55,10 +56,10 @@ namespace UI.Dynamic.Panels.Tooltip {
             _tooltips.ForEach(kvp => {
                 var (keyContent, descriptionContent) = MainContent
                     .CreateSubContent(new Vector2(CONTENT_WIDTH, TOOLTIP_HEIGHT)).ApplyTemplate(VERTICAL_LAYOUT)
-                    .SplitLeftRight(KEY_ICON_WIDTH, HOZ_SPACING);
+                    .SplitLeftRight((KEY_ICON_WIDTH*kvp.key.Length)+8, HOZ_SPACING);
 
                 keyContent.SetBackgroundColor<Content>(ColorManager.SynthesisColor.BackgroundSecondary)
-                    .CreateLabel(TOOLTIP_HEIGHT).SetText(kvp.key);
+                    .CreateLabel(TOOLTIP_HEIGHT).SetText(kvp.key).SetHorizontalAlignment(HorizontalAlignmentOptions.Center);
 
                 descriptionContent.CreateLabel(TOOLTIP_HEIGHT).SetText(kvp.description);
             });
@@ -82,7 +83,6 @@ namespace UI.Dynamic.Panels.Tooltip {
 
             if (_cts != null) {
                 _cts.Token.ThrowIfCancellationRequested();
-                CloseTooltip();
             }
 
             _cts?.Cancel();
@@ -108,7 +108,7 @@ namespace UI.Dynamic.Panels.Tooltip {
                     CloseTooltip();
                     return;
                 }
-                
+
                 try {
                     await Task.Delay(100, ct);
                 }

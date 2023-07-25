@@ -130,8 +130,9 @@ namespace Synthesis.UI.Dynamic {
         // Currently only going to allow one active panel
         public static bool CreatePanel<T>(bool persistent = false, params object[] args)
             where T : PanelDynamic {
-            if (ActiveModal != null)
+            if (ActiveModal != null) {
                 return false;
+            }
 
             if (_persistentPanels.ContainsKey(typeof(T)))
                 ClosePanel(typeof(T));
