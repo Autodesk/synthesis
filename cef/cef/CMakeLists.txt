@@ -54,7 +54,7 @@ macro(SET_CEF_PROPERTIES target)
 endmacro()
 
 macro(SET_CEF_LIBRARY_TARGET_PROPERTIES target)
-      SET_LIBRARY_TARGET_PROPERTIES(${target})
+    SET_LIBRARY_TARGET_PROPERTIES(${target})
     SET_CEF_PROPERTIES(${target})
 endmacro()
 

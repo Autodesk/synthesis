@@ -12,7 +12,7 @@
 namespace synthesis {
 namespace shared {
 
-// ORigin for loading local test resources
+// Origin for loading local test resources
 extern const char testOrigin[];
 
 #if defined(OS_POSIX)
