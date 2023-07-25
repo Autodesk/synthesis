@@ -9,6 +9,8 @@ using Debug = UnityEngine.Debug;
 
 namespace Synthesis.UI {
     public class MenuManager : MonoBehaviour {
+        bool socialDropDownHover = false;
+
         private void Start() {
             SettingsModal.LoadSettings();
             SettingsModal.ApplySettings();
@@ -47,12 +49,21 @@ namespace Synthesis.UI {
         }
 
         public void HideSocials() {
+            if (socialDropDownHover) return;
             GameObject[] objects = GameObject.FindGameObjectsWithTag("socials-drop-down");
             foreach (GameObject gObject in objects) {
                 CanvasGroup cGroup = gObject.GetComponent<CanvasGroup>();
                 cGroup.alpha = 0;
                 cGroup.interactable = false;
             };
+        }
+
+        public void EnterSocialsDrop() {
+            socialDropDownHover = true;
+        }
+
+        public void ExitSocialsDrop() {
+            socialDropDownHover = false;
         }
     }
 }

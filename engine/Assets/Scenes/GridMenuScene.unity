@@ -276,7 +276,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -190, y: -35}
+  m_AnchoredPosition: {x: -189.9, y: -35}
   m_SizeDelta: {x: 1, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &50167794
@@ -1065,6 +1065,7 @@ GameObject:
   - component: {fileID: 219053213}
   - component: {fileID: 219053212}
   - component: {fileID: 219053214}
+  - component: {fileID: 219053215}
   m_Layer: 5
   m_Name: SocialsDropDown
   m_TagString: socials-drop-down
@@ -1079,7 +1080,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 219053210}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1088,12 +1089,12 @@ RectTransform:
   - {fileID: 287053341}
   - {fileID: 472237246}
   - {fileID: 269733166}
-  m_Father: {fileID: 2057707696}
+  m_Father: {fileID: 1955168843}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -470.8, y: -105}
+  m_AnchoredPosition: {x: -515.8, y: -165}
   m_SizeDelta: {x: 300, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &219053212
@@ -1146,6 +1147,51 @@ CanvasGroup:
   m_Interactable: 0
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &219053215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219053210}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 0
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 8178300923073055982}
+          m_TargetAssemblyTypeName: Synthesis.UI.MenuManager, CoreEngine
+          m_MethodName: EnterSocialsDrop
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 1
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 8178300923073055982}
+          m_TargetAssemblyTypeName: Synthesis.UI.MenuManager, CoreEngine
+          m_MethodName: ExitSocialsDrop
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &240734379
 GameObject:
   m_ObjectHideFlags: 0
@@ -2316,8 +2362,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -330, y: -45}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: -280, y: -45}
+  m_SizeDelta: {x: 250, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &574667404
 MonoBehaviour:
@@ -2431,7 +2477,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 4
+  m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -4704,18 +4750,18 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1069306282}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2057707696}
+  m_Father: {fileID: 1955168843}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -470.8, y: -107}
-  m_SizeDelta: {x: 300, y: 76}
+  m_AnchoredPosition: {x: -515.8, y: -170}
+  m_SizeDelta: {x: 300, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1069306284
 MonoBehaviour:
@@ -5974,8 +6020,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -520, y: -45}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: -470, y: -90}
+  m_SizeDelta: {x: 300, y: 140}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1523042388
 MonoBehaviour:
@@ -6087,7 +6133,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 4
+  m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -6350,8 +6396,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -700, y: -45}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: -660, y: -45}
+  m_SizeDelta: {x: 250, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1598607764
 MonoBehaviour:
@@ -6399,7 +6445,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 8178300923073055981}
         m_TargetAssemblyTypeName: SocialMediaButtons, CoreEngine
-        m_MethodName: Instagram
+        m_MethodName: Website
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -6463,7 +6509,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 4
+  m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -8513,12 +8559,10 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 431629367}
-  - {fileID: 50167793}
-  - {fileID: 574667403}
   - {fileID: 1523042387}
   - {fileID: 1598607763}
-  - {fileID: 1069306283}
-  - {fileID: 219053211}
+  - {fileID: 574667403}
+  - {fileID: 50167793}
   m_Father: {fileID: 1955168843}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -8999,6 +9043,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8178300921806933671, guid: a164eb99c8d3069438923ac0c0b61657, type: 3}
       insertIndex: -1
       addedObject: {fileID: 829931874}
+    - targetCorrespondingSourceObject: {fileID: 8178300921806933671, guid: a164eb99c8d3069438923ac0c0b61657, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1069306283}
+    - targetCorrespondingSourceObject: {fileID: 8178300921806933671, guid: a164eb99c8d3069438923ac0c0b61657, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 219053211}
     - targetCorrespondingSourceObject: {fileID: 8178300921806933671, guid: a164eb99c8d3069438923ac0c0b61657, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2057707696}
