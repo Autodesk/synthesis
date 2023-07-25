@@ -67,22 +67,22 @@ export const usePanelManager = (panels: ReactElement[]) => {
 
     const closePanel = useCallback(
         (panelId: string) => {
-            let inst = panelDictionary[panelId];
+            let inst = panelDictionary[panelId]
             if (inst) {
-                if (inst.onClose)
-                    inst.onClose()
+                if (inst.onClose) inst.onClose()
                 setActivePanelIds(activePanelIds.filter(i => i != panelId))
             } else {
-                setActivePanelIds(activePanelIds.filter(i => {
-                    inst = panelDictionary[i];
-                    if (inst.component.props.name == panelId) {
-                        if (inst.onClose)
-                            inst.onClose()
-                        return false;
-                    } else {
-                        return true;
-                    }
-                }))
+                setActivePanelIds(
+                    activePanelIds.filter(i => {
+                        inst = panelDictionary[i]
+                        if (inst.component.props.name == panelId) {
+                            if (inst.onClose) inst.onClose()
+                            return false
+                        } else {
+                            return true
+                        }
+                    })
+                )
             }
         },
         [activePanelIds, panelDictionary]
@@ -91,7 +91,7 @@ export const usePanelManager = (panels: ReactElement[]) => {
     const closeAllPanels = useCallback(() => {
         if (activePanelIds.length > 0) {
             activePanelIds.forEach(id => {
-                const inst = panelDictionary[id];
+                const inst = panelDictionary[id]
                 if (inst && inst.onClose) {
                     inst.onClose()
                 }
@@ -102,7 +102,7 @@ export const usePanelManager = (panels: ReactElement[]) => {
 
     const registerPanel = useCallback(
         (panelId: string, panel: PanelInstance) => {
-            panelDictionary[panelId] = panel;
+            panelDictionary[panelId] = panel
         },
         [panelDictionary]
     )
@@ -129,12 +129,12 @@ export const usePanelManager = (panels: ReactElement[]) => {
 
     useEffect(() => {
         panels.forEach(panelData => {
-            const id = panelData.props.panelId;
+            const id = panelData.props.panelId
             registerPanel(id, {
                 id: id,
                 component: panelData,
-                onOpen: () => { },
-                onClose: () => { },
+                onOpen: () => {},
+                onClose: () => {},
             })
         })
     }, [panels, closePanel, openPanel, registerPanel])

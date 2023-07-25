@@ -69,7 +69,7 @@ export const useModalManager = (modals: ReactElement[]) => {
 
     const closeModal = useCallback(() => {
         if (activeModalId) {
-            const inst = modalDictionary[activeModalId];
+            const inst = modalDictionary[activeModalId]
             if (inst && inst.onClose) {
                 inst.onClose()
             }
@@ -79,7 +79,7 @@ export const useModalManager = (modals: ReactElement[]) => {
 
     const registerModal = useCallback(
         (modalId: string, modal: ModalInstance) => {
-            modalDictionary[modalId] = modal;
+            modalDictionary[modalId] = modal
         },
         [modalDictionary]
     )
@@ -102,12 +102,12 @@ export const useModalManager = (modals: ReactElement[]) => {
 
     useEffect(() => {
         modals.forEach(modalComponent => {
-            const id = modalComponent.props.modalId;
+            const id = modalComponent.props.modalId
             registerModal(id, {
                 id: id,
                 component: modalComponent,
-                onOpen: () => { },
-                onClose: () => { },
+                onOpen: () => {},
+                onClose: () => {},
             })
         })
     }, [modals, closeModal, openModal, registerModal])

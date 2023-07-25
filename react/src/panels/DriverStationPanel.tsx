@@ -9,7 +9,11 @@ const DriverStationPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const [enabled, setEnabled] = useState(false)
 
     return (
-        <Panel name="Driver Station (Not Connected)" icon={<GiSteeringWheel />} panelId={panelId}>
+        <Panel
+            name="Driver Station (Not Connected)"
+            icon={<GiSteeringWheel />}
+            panelId={panelId}
+        >
             <Stack direction={StackDirection.Horizontal}>
                 <Button
                     value={enabled ? "Enabled" : "Disabled"}

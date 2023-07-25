@@ -4,7 +4,11 @@ import LabeledButton, { LabelPlacement } from "../components/LabeledButton"
 import { IoGameControllerOutline } from "react-icons/io5"
 
 const ControlsModal: React.FC<ModalPropsImpl> = ({ modalId }) => (
-    <Modal name={"Robot Controls"} icon={<IoGameControllerOutline />} modalId={modalId}>
+    <Modal
+        name={"Robot Controls"}
+        icon={<IoGameControllerOutline />}
+        modalId={modalId}
+    >
         <LabeledButton
             label={"Robot Forward"}
             value="W"
