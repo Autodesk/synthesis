@@ -3,6 +3,8 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
 
+#nullable enable
+
 namespace SynthesisAPI.AssetManager
 {
     public class AudioClipAsset : Asset

@@ -1,7 +1,9 @@
 name: API
 
 on:
-  push: {}
+  workflow_dispatch: {}
+  push:
+    branches: [ master, dev ]
   pull_request:
     branches: [ master, dev ]
 
