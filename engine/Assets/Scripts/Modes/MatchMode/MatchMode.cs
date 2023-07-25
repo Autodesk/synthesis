@@ -110,6 +110,7 @@ namespace Modes.MatchMode {
         public void End() {
             Scoring.redScore  = 0;
             Scoring.blueScore = 0;
+            Robots.Clear();
             EventBus.RemoveTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
         }
 
