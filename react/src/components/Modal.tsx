@@ -33,13 +33,13 @@ const Modal: React.FC<ModalProps> = ({
     return (
         <div
             id={name}
-            className="absolute w-min h-min left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-black text-white m-auto border-5 rounded-2xl shadow-sm shadow-slate-800"
+            className="absolute w-fit h-fit left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-black text-white m-auto border-5 rounded-2xl shadow-sm shadow-slate-800"
         >
             <div id="header" className="flex items-center gap-8 h-16">
                 <span className="flex justify-center align-center ml-8">
                     {iconEl}
                 </span>
-                <h1 className="text-3xl inline-block align-middle">{name}</h1>
+                <h1 className="text-3xl inline-block align-middle whitespace-nowrap mr-10">{name}</h1>
             </div>
             <div id="content" className="mx-16 flex flex-col gap-8">
                 {children}
