@@ -94,7 +94,7 @@ namespace Synthesis.UI.Dynamic {
 
                     Button middleButton = new Button(null!, buttonTransform.gameObject, null);
                     middleButton.Image.SetColor(ColorManager.SynthesisColor.AcceptButton);
-                    middleButton.Label?.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
+                    middleButton.Label?.SetColor(ColorManager.SynthesisColor.AcceptCancelButtonText);
 
                     _middleButton = middleButton;
                     return middleButton;

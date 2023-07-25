@@ -14,8 +14,8 @@ using UnityEngine.UI;
 
 namespace Synthesis.UI.Dynamic {
     public static class DynamicUIManager {
-        public const float MODAL_TWEEN_DURATION = 0.15f;
-        public const float PANEL_TWEEN_DURATION = 0.15f;
+        public const float MODAL_TWEEN_DURATION = 0.1f;
+        public const float PANEL_TWEEN_DURATION = 0.1f;
 
         public static ModalDynamic ActiveModal { get; private set; }
 
@@ -194,7 +194,7 @@ namespace Synthesis.UI.Dynamic {
             string tweenKey = Guid.NewGuid() + "_modalClose";
             SynthesisTween.MakeTween(tweenKey, 1f, 0f, MODAL_TWEEN_DURATION,
                 (t, a, b) => SynthesisTweenInterpolationFunctions.FloatInterp(t, (float) a, (float) b),
-                SynthesisTweenScaleFunctions.EaseOutCubic, TweenCallback);
+                SynthesisTweenScaleFunctions.EaseInCubic, TweenCallback);
 
             void TweenCallback(SynthesisTween.SynthesisTweenStatus status) {
                 if (modal.UnityObject == null) {
@@ -267,7 +267,7 @@ namespace Synthesis.UI.Dynamic {
 
                 SynthesisTween.MakeTween(tweenKey, tweenStart, tweenEnd, PANEL_TWEEN_DURATION,
                     (t, a, b) => SynthesisTweenInterpolationFunctions.FloatInterp(t, (float) a, (float) b),
-                    SynthesisTweenScaleFunctions.EaseOutCubic, TweenCallback);
+                    SynthesisTweenScaleFunctions.EaseInCubic, TweenCallback);
 
                 void TweenCallback(SynthesisTween.SynthesisTweenStatus status) {
                     if (unityObject == null) {
@@ -342,7 +342,7 @@ namespace Synthesis.UI.Dynamic {
 
             SynthesisTween.MakeTween(tweenKey, tweenStart, tweenEnd, PANEL_TWEEN_DURATION,
                 (t, a, b) => SynthesisTweenInterpolationFunctions.FloatInterp(t, (float) a, (float) b),
-                SynthesisTweenScaleFunctions.EaseOutCubic, TweenCallback);
+                SynthesisTweenScaleFunctions.EaseInCubic, TweenCallback);
 
             void TweenCallback(SynthesisTween.SynthesisTweenStatus status) {
                 if (unityObject == null) {

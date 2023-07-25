@@ -74,6 +74,7 @@ public static class SynthesisTween {
 public static class SynthesisTweenScaleFunctions {
     public static Func<float, float> EaseOutQuad = x => -(x * x) + 2 * x;
     public static Func<float, float> EaseOutCubic = x => x * x * x - 3 * x * x + 3 * x;
+    public static Func<float, float> EaseInCubic = x => x * x * x;
 }
 
 public static class SynthesisTweenInterpolationFunctions {
