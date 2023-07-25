@@ -1,8 +1,8 @@
 import React, { SyntheticEvent, useRef, useState } from "react"
 
 type CustomFormatOptions = {
-    prefix: string
-    suffix: string
+    prefix?: string
+    suffix?: string
 }
 
 type SliderProps = {
@@ -25,11 +25,11 @@ const Slider: React.FC<SliderProps> = ({
     format,
 }) => {
     const containerRef = useRef<HTMLDivElement>(null)
-    const [percent, setPercent] = useState(defaultValue)
+    const [value, setValue] = useState(defaultValue)
     const [mouseDown, setMouseDown] = useState(false)
 
     // non-inclusive top
-    max += 1
+    // max += 1
 
     if (!locale) {
         locale = "en-us"
@@ -42,20 +42,26 @@ const Slider: React.FC<SliderProps> = ({
             suffix: "",
         }
     }
+    if (!format.prefix) {
+        format.prefix = ""
+    }
+    if (!format.suffix) {
+        format.suffix = ""
+    }
 
-    const getValue = () => (max - min) * (percent / 100)
+    const getPercent = () => ((value - min) / (max - min)) * 100
 
     const onMouseMove = (e: SyntheticEvent) => {
         if (mouseDown) {
             const layerX = (e.nativeEvent as MouseEvent).offsetX
             const w = containerRef.current!.offsetWidth
-            let percent = (layerX / w) * 100
+            let percent = layerX / w
             if (step) {
                 const diff = percent % step
                 if (diff < step / 2) percent -= diff
                 else percent += step - diff
             }
-            setPercent(percent)
+            setValue(percent * (max - min) + min)
         }
     }
 
@@ -66,7 +72,7 @@ const Slider: React.FC<SliderProps> = ({
                 <p className="text-md">{label}</p>
                 <p className="text-md float-right">
                     {format.prefix +
-                        getValue().toLocaleString(locale, format) +
+                        value.toLocaleString(locale, format) +
                         format.suffix}
                 </p>
             </div>
@@ -84,12 +90,12 @@ const Slider: React.FC<SliderProps> = ({
                 ></div>
                 <div
                     id="color"
-                    style={{ width: `max(calc(${percent}%), 1rem)` }}
+                    style={{ width: `max(calc(${getPercent()}%), 1rem)` }}
                     className="absolute bg-gradient-to-r from-orange-500 to-red-600 h-full rounded-lg"
                 ></div>
                 <div
                     id="handle"
-                    style={{ width: `max(calc(${percent}%), 1rem)` }}
+                    style={{ width: `max(calc(${getPercent()}%), 1rem)` }}
                     className="hidden absolute w-4 h-4 bg-red-700 rounded-lg -translate-x-full"
                 ></div>
             </div>

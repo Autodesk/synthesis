@@ -1,6 +1,7 @@
 import { ModalControlProvider, useModalManager } from "./ModalContext"
 import { PanelControlProvider, usePanelManager } from "./PanelContext"
 import MainHUD from "./components/MainHUD"
+import SpawningModal from "./modals/SpawningModal"
 import ConfigurationModal from "./modals/ConfigurationModal"
 import ControlsModal from "./modals/ControlsModal"
 import CreateDeviceModal from "./modals/CreateDeviceModal"
@@ -8,8 +9,29 @@ import DownloadAssetsModal from "./modals/DownloadAssetsModal"
 import RoboRIOModal from "./modals/RoboRIOModal"
 import ViewModal from "./modals/ViewModal"
 import MultiBotPanel from "./panels/MultiBotPanel"
+import RobotsModal from "./modals/RobotsModal"
+import FieldsModal from "./modals/FieldsModal"
+import SettingsModal from "./modals/SettingsModal"
+import DriverStationPanel from "./panels/DriverStationPanel"
+import DrivetrainModal from "./modals/DrivetrainModal"
 
 const initialModals = [
+    {
+        id: "settings",
+        component: <SettingsModal />,
+    },
+    {
+        id: "spawning",
+        component: <SpawningModal />,
+    },
+    {
+        id: "robots",
+        component: <RobotsModal />,
+    },
+    {
+        id: "fields",
+        component: <FieldsModal />,
+    },
     {
         id: "configuration",
         component: <ConfigurationModal />,
@@ -34,12 +56,20 @@ const initialModals = [
         id: "create-device",
         component: <CreateDeviceModal />,
     },
+    {
+        id: "drivetrain",
+        component: <DrivetrainModal />,
+    },
 ]
 
 const initialPanels = [
     {
         id: "multibot",
         component: <MultiBotPanel />,
+    },
+    {
+        id: "driver-station",
+        component: <DriverStationPanel />,
     },
 ]
 

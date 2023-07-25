@@ -34,25 +34,27 @@ const Dropdown: React.FC<DropdownProps> = ({ label, options }) => {
     )
 
     return (
-        <div
-            onClick={() => setExpanded(!expanded)}
-            className="relative flex flex-col gap-2 select-none cursor-pointer bg-gradient-to-r from-red-500 to-orange-500 w-full h-full rounded-md"
-        >
+        <>
             {label && <Label size={LabelSize.Medium}>{label}</Label>}
-            <DropdownOption value={optionList[0]}>
-                {optionList[0]}
-                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col h-1/2 content-center items-center">
-                    <FaChevronUp className="h-1/2" />
-                    <FaChevronDown className="h-1/2" />
-                </div>
-            </DropdownOption>
-            {expanded &&
-                optionList.slice(1).map(o => (
-                    <DropdownOption key={o} value={o}>
-                        {o}
-                    </DropdownOption>
-                ))}
-        </div>
+            <div
+                onClick={() => setExpanded(!expanded)}
+                className="relative flex flex-col gap-2 select-none cursor-pointer bg-gradient-to-r from-red-500 to-orange-500 w-full h-full rounded-md"
+            >
+                <DropdownOption value={optionList[0]}>
+                    {optionList[0]}
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col h-1/2 content-center items-center">
+                        <FaChevronUp className="h-1/2" />
+                        <FaChevronDown className="h-1/2" />
+                    </div>
+                </DropdownOption>
+                {expanded &&
+                    optionList.slice(1).map(o => (
+                        <DropdownOption key={o} value={o}>
+                            {o}
+                        </DropdownOption>
+                    ))}
+            </div>
+        </>
     )
 }
 

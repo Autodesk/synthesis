@@ -54,23 +54,41 @@ export const usePanelManager = (panels: PanelData[]) => {
     const [activePanelIds, setActivePanelIds] = useState<string[]>([])
 
     const openPanel = useCallback(
-        (panelId: string) => {
-            if (!activePanelIds.includes(panelId))
+        (panelId: string, onOpen?: () => void, onClose?: () => void) => {
+            if (!activePanelIds.includes(panelId)) {
                 setActivePanelIds([...activePanelIds, panelId])
+                if (panelDictionary[panelId]) {
+                    if (onOpen) {
+                        panelDictionary[panelId].onOpen = onOpen
+                        onOpen()
+                    }
+                    if (onClose) panelDictionary[panelId].onClose = onClose
+                }
+            }
         },
-        [activePanelIds]
+        [activePanelIds, panelDictionary]
     )
 
     const closePanel = useCallback(
         (panelId: string) => {
-            setActivePanelIds(activePanelIds.filter(i => i != panelId))
+            if (panelDictionary[panelId]) {
+                panelDictionary[panelId].onClose()
+                setActivePanelIds(activePanelIds.filter(i => i != panelId))
+            }
         },
-        [activePanelIds]
+        [activePanelIds, panelDictionary]
     )
 
     const closeAllPanels = useCallback(() => {
+        if (activePanelIds.length > 0) {
+            activePanelIds.forEach(id => {
+                if (panelDictionary[id]) {
+                    panelDictionary[id].onClose()
+                }
+            })
+        }
         setActivePanelIds([])
-    }, [])
+    }, [activePanelIds, panelDictionary])
 
     const registerPanel = useCallback(
         (panelId: string, panel: PanelInstance) => {

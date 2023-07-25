@@ -91,12 +91,13 @@ const MainHUD: React.FC = () => {
                     value={"Spawn Asset"}
                     icon={<FaPlus />}
                     larger={true}
+                    onClick={() => openModal("spawning")}
                 />
                 <div className="flex flex-col gap-0 bg-black w-full rounded-3xl">
                     <MainHUDButton
-                        value={"Configuration"}
+                        value={"Settings"}
                         icon={<FaGear />}
-                        onClick={() => openModal("configuration")}
+                        onClick={() => openModal("settings")}
                     />
                     <MainHUDButton
                         value={"View"}
@@ -128,7 +129,7 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton
                         value={"Driver Station"}
                         icon={<GiSteeringWheel />}
-                        onClick={() => openModal("driverstation")}
+                        onClick={() => openPanel("driver-station")}
                     />
                     <MainHUDButton
                         value={"Drivetrain"}

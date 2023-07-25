@@ -25,10 +25,14 @@ const labelSizeToClassName = (size?: LabelSize) => {
 type LabelProps = {
     size?: LabelSize
     children?: ReactNode
+    className?: string
 }
 
-const Label: React.FC<LabelProps> = ({ children, size }) => (
-    <span className={`${labelSizeToClassName(size)}`}> {children}</span>
+const Label: React.FC<LabelProps> = ({ children, size, className }) => (
+    <span className={`${labelSizeToClassName(size)} ${className}`}>
+        {" "}
+        {children}
+    </span>
 )
 
 export default Label

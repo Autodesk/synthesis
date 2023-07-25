@@ -8,7 +8,11 @@ import React, {
 } from "react"
 
 type ModalControlContextType = {
-    openModal: (modalId: string) => void
+    openModal: (
+        modalId: string,
+        onOpen?: () => void,
+        onClose?: () => void
+    ) => void
     closeModal: () => void
     children?: ReactNode
 }
@@ -53,13 +57,26 @@ export const useModalManager = (modals: ModalData[]) => {
     }>({})
     const [activeModalId, setActiveModalId] = useState<string | null>(null)
 
-    const openModal = useCallback((modalId: string) => {
-        setActiveModalId(modalId)
-    }, [])
+    const openModal = useCallback(
+        (modalId: string, onOpen?: () => void, onClose?: () => void) => {
+            setActiveModalId(modalId)
+            if (modalDictionary[modalId]) {
+                if (onOpen) {
+                    modalDictionary[modalId].onOpen = onOpen
+                    onOpen()
+                }
+                if (onClose) modalDictionary[modalId].onClose = onClose
+            }
+        },
+        [modalDictionary]
+    )
 
     const closeModal = useCallback(() => {
+        if (activeModalId && modalDictionary[activeModalId]) {
+            modalDictionary[activeModalId].onClose()
+        }
         setActiveModalId(null)
-    }, [])
+    }, [activeModalId, modalDictionary])
 
     const registerModal = useCallback(
         (modalId: string, modal: ModalInstance) => {
