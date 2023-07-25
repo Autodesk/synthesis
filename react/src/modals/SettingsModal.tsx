@@ -1,6 +1,6 @@
 import React from "react"
 import { useModalControlContext } from "../ModalContext"
-import Modal from "../components/Modal"
+import Modal, { ModalPropsImpl } from "../components/Modal"
 import { FaGear } from "react-icons/fa6"
 import Label, { LabelSize } from "../components/Label"
 import Dropdown from "../components/Dropdown"
@@ -8,11 +8,11 @@ import Button from "../components/Button"
 import Slider from "../components/Slider"
 import Checkbox from "../components/Checkbox"
 
-const SettingsModal: React.FC = () => {
+const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
 
     return (
-        <Modal name="Settings" icon={<FaGear />}>
+        <Modal name="Settings" icon={<FaGear />} modalId={modalId}>
             <Label size={LabelSize.Medium}>Screen Settings</Label>
             <Dropdown
                 label="Screen Mode"

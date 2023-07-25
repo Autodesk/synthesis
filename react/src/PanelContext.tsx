@@ -5,6 +5,7 @@ import React, {
     useCallback,
     useContext,
     ReactNode,
+    ReactElement,
 } from "react"
 
 type PanelControlContextType = {
@@ -37,17 +38,12 @@ export const PanelControlProvider: React.FC<PanelControlContextType> = ({
 
 type PanelInstance = {
     id: string
-    component: React.ReactNode
-    onOpen: () => void
-    onClose: () => void
+    component: ReactElement
+    onOpen?: () => void
+    onClose?: () => void
 }
 
-type PanelData = {
-    id: string
-    component: React.ReactNode
-}
-
-export const usePanelManager = (panels: PanelData[]) => {
+export const usePanelManager = (panels: ReactElement[]) => {
     const [panelDictionary, setPanelDictionary] = useState<{
         [key: string]: PanelInstance
     }>({})
@@ -71,9 +67,22 @@ export const usePanelManager = (panels: PanelData[]) => {
 
     const closePanel = useCallback(
         (panelId: string) => {
-            if (panelDictionary[panelId]) {
-                panelDictionary[panelId].onClose()
+            let inst = panelDictionary[panelId];
+            if (inst) {
+                if (inst.onClose)
+                    inst.onClose()
                 setActivePanelIds(activePanelIds.filter(i => i != panelId))
+            } else {
+                setActivePanelIds(activePanelIds.filter(i => {
+                    inst = panelDictionary[i];
+                    if (inst.component.props.name == panelId) {
+                        if (inst.onClose)
+                            inst.onClose()
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }))
             }
         },
         [activePanelIds, panelDictionary]
@@ -82,8 +91,9 @@ export const usePanelManager = (panels: PanelData[]) => {
     const closeAllPanels = useCallback(() => {
         if (activePanelIds.length > 0) {
             activePanelIds.forEach(id => {
-                if (panelDictionary[id]) {
-                    panelDictionary[id].onClose()
+                const inst = panelDictionary[id];
+                if (inst && inst.onClose) {
+                    inst.onClose()
                 }
             })
         }
@@ -92,12 +102,9 @@ export const usePanelManager = (panels: PanelData[]) => {
 
     const registerPanel = useCallback(
         (panelId: string, panel: PanelInstance) => {
-            setPanelDictionary(prevDictionary => ({
-                ...prevDictionary,
-                [panelId]: panel,
-            }))
+            panelDictionary[panelId] = panel;
         },
-        []
+        [panelDictionary]
     )
 
     const unregisterPanel = useCallback((panelId: string) => {
@@ -112,7 +119,7 @@ export const usePanelManager = (panels: PanelData[]) => {
         if (activePanelIds !== null && activePanelIds.length > 0) {
             return activePanelIds
                 .map((id: string) => {
-                    const panel: PanelData = panelDictionary[id]
+                    const panel: PanelInstance = panelDictionary[id]
                     return panel ? panel.component : null
                 })
                 .filter(p => p != null)
@@ -122,11 +129,12 @@ export const usePanelManager = (panels: PanelData[]) => {
 
     useEffect(() => {
         panels.forEach(panelData => {
-            registerPanel(panelData.id, {
-                id: panelData.id,
-                component: panelData.component,
-                onOpen: () => openPanel(panelData.id),
-                onClose: () => closePanel(panelData.id),
+            const id = panelData.props.panelId;
+            registerPanel(id, {
+                id: id,
+                component: panelData,
+                onOpen: () => { },
+                onClose: () => { },
             })
         })
     }, [panels, closePanel, openPanel, registerPanel])

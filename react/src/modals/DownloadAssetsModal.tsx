@@ -1,12 +1,12 @@
 import React from "react"
-import Modal from "../components/Modal"
+import Modal, { ModalPropsImpl } from "../components/Modal"
 import Stack, { StackDirection } from "../components/Stack"
 import Label, { LabelSize } from "../components/Label"
 import LabeledButton, { LabelPlacement } from "../components/LabeledButton"
 import { HiDownload } from "react-icons/hi"
 
-const DownloadAssetsModal: React.FC = () => (
-    <Modal name={"Download Assets"} icon={<HiDownload />}>
+const DownloadAssetsModal: React.FC<ModalPropsImpl> = ({ modalId }) => (
+    <Modal name={"Download Assets"} icon={<HiDownload />} modalId={modalId}>
         <Stack direction={StackDirection.Horizontal} spacing={10}>
             <Stack direction={StackDirection.Vertical} spacing={10}>
                 <Label size={LabelSize.Large}>Robot Assets</Label>

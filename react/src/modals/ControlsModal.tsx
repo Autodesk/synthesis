@@ -1,10 +1,10 @@
 import React from "react"
-import Modal from "../components/Modal"
+import Modal, { ModalPropsImpl } from "../components/Modal"
 import LabeledButton, { LabelPlacement } from "../components/LabeledButton"
 import { IoGameControllerOutline } from "react-icons/io5"
 
-const ControlsModal: React.FC = () => (
-    <Modal name={"Robot Controls"} icon={<IoGameControllerOutline />}>
+const ControlsModal: React.FC<ModalPropsImpl> = ({ modalId }) => (
+    <Modal name={"Robot Controls"} icon={<IoGameControllerOutline />} modalId={modalId}>
         <LabeledButton
             label={"Robot Forward"}
             value="W"

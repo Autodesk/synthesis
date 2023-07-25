@@ -5,6 +5,7 @@ import React, {
     useCallback,
     useContext,
     ReactNode,
+    ReactElement,
 } from "react"
 
 type ModalControlContextType = {
@@ -41,17 +42,12 @@ export const ModalControlProvider: React.FC<ModalControlContextType> = ({
 
 type ModalInstance = {
     id: string
-    component: React.ReactNode
-    onOpen: () => void
-    onClose: () => void
+    component: ReactElement
+    onOpen?: () => void
+    onClose?: () => void
 }
 
-type ModalData = {
-    id: string
-    component: React.ReactNode
-}
-
-export const useModalManager = (modals: ModalData[]) => {
+export const useModalManager = (modals: ReactElement[]) => {
     const [modalDictionary, setModalDictionary] = useState<{
         [key: string]: ModalInstance
     }>({})
@@ -59,7 +55,6 @@ export const useModalManager = (modals: ModalData[]) => {
 
     const openModal = useCallback(
         (modalId: string, onOpen?: () => void, onClose?: () => void) => {
-            setActiveModalId(modalId)
             if (modalDictionary[modalId]) {
                 if (onOpen) {
                     modalDictionary[modalId].onOpen = onOpen
@@ -67,25 +62,26 @@ export const useModalManager = (modals: ModalData[]) => {
                 }
                 if (onClose) modalDictionary[modalId].onClose = onClose
             }
+            setActiveModalId(modalId)
         },
         [modalDictionary]
     )
 
     const closeModal = useCallback(() => {
-        if (activeModalId && modalDictionary[activeModalId]) {
-            modalDictionary[activeModalId].onClose()
+        if (activeModalId) {
+            const inst = modalDictionary[activeModalId];
+            if (inst && inst.onClose) {
+                inst.onClose()
+            }
         }
         setActiveModalId(null)
     }, [activeModalId, modalDictionary])
 
     const registerModal = useCallback(
         (modalId: string, modal: ModalInstance) => {
-            setModalDictionary(prevDictionary => ({
-                ...prevDictionary,
-                [modalId]: modal,
-            }))
+            modalDictionary[modalId] = modal;
         },
-        []
+        [modalDictionary]
     )
 
     const unregisterModal = useCallback((modalId: string) => {
@@ -105,12 +101,13 @@ export const useModalManager = (modals: ModalData[]) => {
     }, [activeModalId, modalDictionary])
 
     useEffect(() => {
-        modals.forEach(modalData => {
-            registerModal(modalData.id, {
-                id: modalData.id,
-                component: modalData.component,
-                onOpen: () => openModal(modalData.id),
-                onClose: closeModal,
+        modals.forEach(modalComponent => {
+            const id = modalComponent.props.modalId;
+            registerModal(id, {
+                id: id,
+                component: modalComponent,
+                onOpen: () => { },
+                onClose: () => { },
             })
         })
     }, [modals, closeModal, openModal, registerModal])

@@ -14,63 +14,27 @@ import FieldsModal from "./modals/FieldsModal"
 import SettingsModal from "./modals/SettingsModal"
 import DriverStationPanel from "./panels/DriverStationPanel"
 import DrivetrainModal from "./modals/DrivetrainModal"
+import { AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
+import { ReactElement } from "react"
 
 const initialModals = [
-    {
-        id: "settings",
-        component: <SettingsModal />,
-    },
-    {
-        id: "spawning",
-        component: <SpawningModal />,
-    },
-    {
-        id: "robots",
-        component: <RobotsModal />,
-    },
-    {
-        id: "fields",
-        component: <FieldsModal />,
-    },
-    {
-        id: "configuration",
-        component: <ConfigurationModal />,
-    },
-    {
-        id: "view",
-        component: <ViewModal />,
-    },
-    {
-        id: "controls",
-        component: <ControlsModal />,
-    },
-    {
-        id: "download-assets",
-        component: <DownloadAssetsModal />,
-    },
-    {
-        id: "roborio",
-        component: <RoboRIOModal />,
-    },
-    {
-        id: "create-device",
-        component: <CreateDeviceModal />,
-    },
-    {
-        id: "drivetrain",
-        component: <DrivetrainModal />,
-    },
+    <SettingsModal modalId="settings" />,
+    <SpawningModal modalId="spawning" />,
+    <RobotsModal modalId="robots" />,
+    <FieldsModal modalId="fields" />,
+    <ConfigurationModal modalId="configuration" />,
+    <ViewModal modalId="view" />,
+    <ControlsModal modalId="controls" />,
+    <DownloadAssetsModal modalId="download-assets" />,
+    <RoboRIOModal modalId="roborio" />,
+    <CreateDeviceModal modalId="create-device" />,
+    <DrivetrainModal modalId="drivetrain" />,
 ]
 
-const initialPanels = [
-    {
-        id: "multibot",
-        component: <MultiBotPanel />,
-    },
-    {
-        id: "driver-station",
-        component: <DriverStationPanel />,
-    },
+const initialPanels: ReactElement[] = [
+    <MultiBotPanel panelId="multibot" />,
+    <DriverStationPanel panelId="driver-station" />,
 ]
 
 function App() {
@@ -83,6 +47,39 @@ function App() {
         document.body.style.background = "purple"
     }
 
+    const panelElements = getActivePanelElements();
+
+    const motionPanelElements = panelElements.map((el, i) => (
+        <motion.div
+            initial={{ scale: 0, opacity: 0, width: "min-content", height: "min-content" }}
+            animate={{ scale: 1, opacity: 1, width: "min-content", height: "min-content" }}
+            exit={{ scale: 0, opacity: 0, width: "min-content", height: "min-content" }}
+            transition={{
+                type: "spring",
+                stiffness: 300,
+                damping: 20
+            }}
+            style={{ translateX: "-50%", translateY: "-50%" }}
+            className="absolute left-1/2 top-1/2"
+            key={"panel-" + i}>{el}</motion.div>
+    ));
+
+    const modalElement = getActiveModalElement();
+    const motionModalElement = modalElement == null ? null : (
+        <motion.div
+            initial={{ scale: 0, opacity: 0, width: "min-content", height: "min-content" }}
+            animate={{ scale: 1, opacity: 1, width: "min-content", height: "min-content" }}
+            exit={{ scale: 0, opacity: 0, width: "min-content", height: "min-content" }}
+            transition={{
+                type: "spring",
+                stiffness: 300,
+                damping: 25
+            }}
+            style={{ translateX: "-50%", translateY: "-50%" }}
+            className="absolute left-1/2 top-1/2"
+            key={"modal"}>{getActiveModalElement()}</motion.div>
+    );
+
     return (
         <ModalControlProvider
             openModal={(modalId: string) => {
@@ -91,10 +88,12 @@ function App() {
             }}
             closeModal={closeModal}
         >
-            <PanelControlProvider openPanel={openPanel} closePanel={closePanel}>
-                <MainHUD />
-                {getActivePanelElements()}
-                {getActiveModalElement()}
+            <PanelControlProvider openPanel={openPanel} closePanel={(id: string) => { closePanel(id); }}>
+                <AnimatePresence>
+                    <MainHUD />
+                    {motionPanelElements.length > 0 && motionPanelElements}
+                    {motionModalElement && motionModalElement}
+                </AnimatePresence>
             </PanelControlProvider>
         </ModalControlProvider>
     )

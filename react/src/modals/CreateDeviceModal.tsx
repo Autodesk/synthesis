@@ -1,12 +1,12 @@
 import React from "react"
-import Modal from "../components/Modal"
+import Modal, { ModalPropsImpl } from "../components/Modal"
 import Label from "../components/Label"
 import Stack, { StackDirection } from "../components/Stack"
 import Button from "../components/Button"
 import { BsCodeSquare } from "react-icons/bs"
 
-const CreateDeviceModal: React.FC = () => (
-    <Modal name="Create Device" icon={<BsCodeSquare />}>
+const CreateDeviceModal: React.FC<ModalPropsImpl> = ({ modalrd }) => (
+    <Modal name="Create Device" icon={<BsCodeSquare />} modalId={modalId}>
         <Label>Device Type</Label>
         <Stack direction={StackDirection.Horizontal}>
             <Button value="PWM" />

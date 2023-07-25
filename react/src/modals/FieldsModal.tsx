@@ -1,11 +1,11 @@
 import React from "react"
-import Modal from "../components/Modal"
+import Modal, { ModalPropsImpl } from "../components/Modal"
 import { FaPlus } from "react-icons/fa6"
 import Dropdown from "../components/Dropdown"
 
-const FieldsModal: React.FC = () => {
+const FieldsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
-        <Modal name={"Field Selection"} icon={<FaPlus />}>
+        <Modal name={"Field Selection"} icon={<FaPlus />} modalId={modalId}>
             <Dropdown
                 options={[
                     "FRC Field 2018_v12.mira",
