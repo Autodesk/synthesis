@@ -60,7 +60,7 @@ namespace Synthesis.UI.Dynamic {
 
         public override bool Create() {
             TooltipManager.CreateTooltip(("Scroll", "Rotate Robot"), ("Shift", "Hold to Snap"));
-            
+
             if (!InputManager.MappedDigitalInputs.ContainsKey(SNAP_MODE_KEY))
                 InputManager.AssignDigitalInput(
                     SNAP_MODE_KEY, (Digital) new Digital("LeftShift").WithModifier((int) ModKey.LeftShift));

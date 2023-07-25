@@ -14,7 +14,7 @@ public class CameraController : MonoBehaviour {
             }
 
             var previous = _cameraMode;
-            _cameraMode = value;
+            _cameraMode  = value;
             _cameraMode.Start(this, previous);
         }
     }

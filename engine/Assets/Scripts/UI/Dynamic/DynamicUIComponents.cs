@@ -39,7 +39,7 @@ namespace Synthesis.UI.Dynamic {
         private Button _cancelButton;
         private RectTransform _headerRt;
         protected RectTransform HeaderRt => _headerRt;
-        protected Button CancelButton => _cancelButton;
+        protected Button CancelButton    => _cancelButton;
         private Button _acceptButton;
         protected Button AcceptButton => _acceptButton;
         private Button _middleButton;
@@ -113,7 +113,7 @@ namespace Synthesis.UI.Dynamic {
 
             // Grab Customizable Modal Components
             var header       = _unityObject.transform.Find("Header");
-            _headerRt     = header.GetComponent<RectTransform>();
+            _headerRt        = header.GetComponent<RectTransform>();
             _panelImage      = new Image(null, header.Find("Image").gameObject);
             _panelBackground = new Image(null, unityObject);
             _panelBackground.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.Background));

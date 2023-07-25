@@ -56,7 +56,7 @@ namespace UI.Dynamic.Modals.Spawning {
             }
         }
 
-        public override void Delete() { }
+        public override void Delete() {}
 
         public static string ParsePath(string p, char c) {
             string[] a = p.Split(c);

@@ -79,7 +79,7 @@ public class RobotSwitchPanel : PanelDynamic {
         EventBus.NewTypeListener<RobotSimObject.PossessionChangeEvent>(PossessedRobotChanged);
         EventBus.NewTypeListener<RobotSimObject.RobotSpawnEvent>(RobotSpawned);
         EventBus.NewTypeListener<RobotSimObject.RobotRemoveEvent>(RobotRemoved);
-        
+
         return true;
     }
 

@@ -778,14 +778,15 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     public class RobotRemoveEvent : IEvent {
         public string Bot;
     }
-    
+
     public void CreateDrivetrainTooltip() {
         switch (ConfiguredDrivetrainType.Name) {
             case "Arcade":
                 TooltipManager.CreateTooltip(("WASD", "Drive"), ("E", "Intake"), ("Q", "Dispense"));
                 return;
             case "Tank":
-                TooltipManager.CreateTooltip(("WS", "Drivetrain Left"), ("IK", "Drivetrain Right"), ("E", "Intake"), ("Q", "Dispense"));
+                TooltipManager.CreateTooltip(
+                    ("WS", "Drivetrain Left"), ("IK", "Drivetrain Right"), ("E", "Intake"), ("Q", "Dispense"));
                 return;
         }
     }

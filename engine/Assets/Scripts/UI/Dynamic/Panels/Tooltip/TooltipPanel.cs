@@ -8,11 +8,31 @@ using Utilities.ColorManager;
 
 namespace UI.Dynamic.Panels.Tooltip {
     public class TooltipPanel : PanelDynamic {
-        private const float CONTENT_WIDTH = 250f;
-        private const float TOOLTIP_HEIGHT = 30f;
-        private const float HOZ_SPACING = 15f;
-        private const float KEY_ICON_WIDTH = 19f;
-        private static readonly Vector2 ICON_SIZE = new(32, 32);
+        private const float TOOLTIP_HEIGHT = 26;
+        private const float HOZ_SPACING    = 15;
+
+        private const float KEY_CHAR_WIDTH = 12;
+        private const float KEY_PADDING    = 9f;
+
+        private const float DESC_CHAR_WIDTH = 13;
+        private const float DESC_PADDING    = 12;
+
+        private static readonly Vector2 ICON_SIZE = new(20, 20);
+
+        private static float CalcContentWidth((string key, string description)[] tooltips) {
+            float maxWidth = 0;
+            tooltips.ForEach(t => {
+                float tooltipWidth = (t.key.Length * KEY_CHAR_WIDTH + KEY_PADDING) +
+                                     (t.description.Length * DESC_CHAR_WIDTH + DESC_PADDING);
+                maxWidth = Mathf.Max(tooltipWidth, maxWidth);
+            });
+
+            return maxWidth;
+        }
+
+        private static float CalcContentHeight((string key, string description)[] tooltips) {
+            return (TOOLTIP_HEIGHT + 7.5f) * tooltips.Length - 49;
+        }
 
         (string key, string description)[] _tooltips;
 
@@ -23,8 +43,8 @@ namespace UI.Dynamic.Panels.Tooltip {
             return u;
         };
 
-        public TooltipPanel((string key, string description)[] tooltips) : base(new Vector2(CONTENT_WIDTH,
-            TOOLTIP_HEIGHT * tooltips.Length-20)) {
+        public TooltipPanel((string key, string description)[] tooltips)
+            : base(new Vector2(CalcContentWidth(tooltips), CalcContentHeight(tooltips))) {
             _tooltips = tooltips;
         }
 
@@ -33,19 +53,22 @@ namespace UI.Dynamic.Panels.Tooltip {
             var iconObj = new GameObject("Icon", typeof(RectTransform), typeof(UnityEngine.UI.Image));
             iconObj.transform.SetParent(HeaderRt);
 
-            var iconContent = new Content(null, iconObj, ICON_SIZE).StepIntoImage(i =>
-                    i.SetSprite(SynthesisAssetCollection.GetSpriteByName("info-icon-white-solid")))
-                .SetAnchoredPosition<Image>(Vector3.zero);
+            var iconContent =
+                new Content(null, iconObj, ICON_SIZE)
+                    .StepIntoImage(i => i.SetSprite(SynthesisAssetCollection.GetSpriteByName("info-icon-white-solid")))
+                    .SetAnchoredPosition<Image>(Vector3.zero);
 
             // Align top center
-            var transform = base.UnityObject.GetComponent<RectTransform>();
-            transform.pivot = new Vector2(0.5f, 1f);
-            transform.anchorMax = new Vector2(0.5f, 1f);
-            transform.anchorMin = new Vector2(0.5f, 1f);
-            transform.anchoredPosition = new Vector2(0.0f, -10.0f);
+            var transform              = base.UnityObject.GetComponent<RectTransform>();
+            transform.pivot            = new Vector2(0.5f, 1f);
+            transform.anchorMax        = new Vector2(0.5f, 1f);
+            transform.anchorMin        = new Vector2(0.5f, 1f);
+            transform.anchoredPosition = new Vector2(0.0f, -38.0f);
 
             AcceptButton.RootGameObject.SetActive(false);
             CancelButton.RootGameObject.SetActive(false);
+
+            MainContent.RootRectTransform.Translate(new Vector2(0, 5));
 
             CreateTooltips();
 
@@ -53,31 +76,37 @@ namespace UI.Dynamic.Panels.Tooltip {
         }
 
         private void CreateTooltips() {
-            _tooltips.ForEach(kvp => {
-                var (keyContent, descriptionContent) = MainContent
-                    .CreateSubContent(new Vector2(CONTENT_WIDTH, TOOLTIP_HEIGHT)).ApplyTemplate(VERTICAL_LAYOUT)
-                    .SplitLeftRight((KEY_ICON_WIDTH*kvp.key.Length)+8, HOZ_SPACING);
+            Extensions.ForEach(_tooltips, kvp => {
+                var (keyContent, descriptionContent) =
+                    MainContent.CreateSubContent(new Vector2(MainContent.Size.x, TOOLTIP_HEIGHT))
+                        .ApplyTemplate(VERTICAL_LAYOUT)
+                        .SplitLeftRight((KEY_CHAR_WIDTH * kvp.key.Length) + KEY_PADDING, HOZ_SPACING);
 
-                keyContent.SetBackgroundColor<Content>(ColorManager.SynthesisColor.BackgroundSecondary)
-                    .CreateLabel(TOOLTIP_HEIGHT).SetText(kvp.key).SetHorizontalAlignment(HorizontalAlignmentOptions.Center);
+                keyContent
+                    .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary).SetCornerRadius(5))
+                    .CreateLabel(TOOLTIP_HEIGHT)
+                    .SetText(kvp.key)
+                    .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
+                    .SetFontSize(20);
 
-                descriptionContent.CreateLabel(TOOLTIP_HEIGHT).SetText(kvp.description);
+                descriptionContent.CreateLabel(TOOLTIP_HEIGHT).SetText(kvp.description).SetFontSize(20);
+                ;
             });
         }
 
-        public override void Update() { }
+        public override void Update() {}
 
-        public override void Delete() { }
+        public override void Delete() {}
     }
 
     public static class TooltipManager {
-        private const float TOOLTIP_TIMEOUT_SEC = 8;
+        private const float TOOLTIP_TIMEOUT_SEC = 7;
 
         private static TooltipPanel _currentTooltip;
         private static CancellationTokenSource _cts;
 
         /// <summary>Creates a new tooltip at the top center of the screen. Closes any active tooltip</summary>
-        public static void CreateTooltip(params (string key, string description)[] tooltips) {
+        public static void CreateTooltip(params(string key, string description)[] tooltips) {
             if (_currentTooltip != null)
                 DynamicUIManager.ClosePanel<TooltipPanel>();
 
@@ -111,8 +140,7 @@ namespace UI.Dynamic.Panels.Tooltip {
 
                 try {
                     await Task.Delay(100, ct);
-                }
-                catch {
+                } catch {
                     return;
                 }
             }
