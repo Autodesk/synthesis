@@ -65,7 +65,7 @@ namespace SimObjects.MixAndMatch
             var connectionPoints = ConnectionPoints.Select(point =>
                 (point.transform.localPosition, point.transform.forward)).ToArray();
             
-            return new MixAndMatchPartData(Transform.localPosition, Transform.rotation, connectionPoints);
+            return new MixAndMatchPartData("Test Part", Transform.localPosition, Transform.rotation, connectionPoints);
             
         }
 

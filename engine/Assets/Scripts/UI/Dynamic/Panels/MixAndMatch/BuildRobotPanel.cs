@@ -154,13 +154,13 @@ namespace UI.Dynamic.Panels.Spawning.MixAndMatch {
                 }
             });
             
-            var trfData = new MixAndMatchTransformData(partData.ToArray());
+            var trfData = new MixAndMatchRobotData(partData.ToArray());
 
             _parts.ForEach(p => { GameObject.Destroy(p.UnityObject); });
 
             string Folder = "Mira";
 
-            var root =
+            /*var root =
                 AddRobotModal
                     .ParsePath(
                         Path
@@ -173,7 +173,8 @@ namespace UI.Dynamic.Panels.Spawning.MixAndMatch {
             var files = Directory.GetFiles(root).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
 
             var robotsToSpawn = Enumerable.Range(0, _parts.Count).Select(i => files[1]).ToArray();
-            RobotSimObject.SpawnRobot(trfData, robotsToSpawn);
+            RobotSimObject.SpawnRobot(trfData, robotsToSpawn);*/
+            MixAndMatchSaveUtil.SavePart(trfData.Parts[0]);
             //Transform grounded = new GameObject("grounded").transform;
             //grounded.gameObject.AddComponent<Rigidbody>();
             //grounded.parent = parent;

@@ -32,15 +32,15 @@ namespace Synthesis.Import {
 
 
         public static (GameObject mainObject, MirabufLive[] miraLiveFiles, SimObject sim)
-            MirabufAssemblyImport(string[] filePaths, MixAndMatchTransformData mixAndMatchTransformData) {
+            MirabufAssemblyImport(string[] filePaths, MixAndMatchRobotData mixAndMatchRobotData) {
 
             MirabufLive[] miraLiveFiles = filePaths.Select(path => new MirabufLive(path)).ToArray();
 
-            return MirabufAssemblyImport(miraLiveFiles, mixAndMatchTransformData);
+            return MirabufAssemblyImport(miraLiveFiles, mixAndMatchRobotData);
         }
 
         public static (GameObject mainObject, MirabufLive[] miraLiveFiles, SimObject sim)
-            MirabufAssemblyImport(MirabufLive[] miraLiveFiles, MixAndMatchTransformData mixAndMatchTransformData) {
+            MirabufAssemblyImport(MirabufLive[] miraLiveFiles, MixAndMatchRobotData mixAndMatchRobotData) {
 
             Assembly[] assemblies = miraLiveFiles.Select(m => m.MiraAssembly).ToArray();
 
@@ -80,9 +80,9 @@ namespace Synthesis.Import {
 
             MakeAllJoints(assemblies, rigidDefinitions, groupObjects, simObject);
 
-            if (mixAndMatchTransformData != null) {
-                PositionMixAndMatchParts(mixAndMatchTransformData, assemblyObjects);
-                ConnectMixAndMatchParts(mixAndMatchTransformData, groupObjects);
+            if (mixAndMatchRobotData != null) {
+                PositionMixAndMatchParts(mixAndMatchRobotData, assemblyObjects);
+                ConnectMixAndMatchParts(mixAndMatchRobotData, groupObjects);
             }
 
             return (rootGameObject, miraLiveFiles, simObject);
@@ -344,20 +344,20 @@ namespace Synthesis.Import {
         }
 
         /// <summary>Locally positions each mix and match part</summary>
-        private static void PositionMixAndMatchParts(MixAndMatchTransformData transformData,
+        private static void PositionMixAndMatchParts(MixAndMatchRobotData robotData,
             GameObject[] assemblyObjects) {
             assemblyObjects.ForEachIndex((partIndex, gameObject) => {
                 var transform = gameObject.transform;
 
-                var partTrfData = transformData.Parts[partIndex];
+                var partTrfData = robotData.Parts[partIndex];
                 transform.localPosition = partTrfData.LocalPosition;
                 transform.localRotation = partTrfData.LocalRotation;
             });
         }
 
         /// <summary>Connects all mix and match parts together using <see cref="CreateMixAndMatchJoint">CreateMixAndMatchJoint</see></summary>
-        private static void ConnectMixAndMatchParts(MixAndMatchTransformData transformData, Dictionary<string,GameObject>[] groupObjects) {
-            transformData.Parts.ForEachIndex((partIndex, part) => {
+        private static void ConnectMixAndMatchParts(MixAndMatchRobotData robotData, Dictionary<string,GameObject>[] groupObjects) {
+            robotData.Parts.ForEachIndex((partIndex, part) => {
                 if (part.ConnectedPart != null) {
                     var thisObject = groupObjects[partIndex]["grounded"];
                     var connectedObject = groupObjects[part.ConnectedPart.PartIndex]["grounded"];

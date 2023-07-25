@@ -2,6 +2,7 @@ using System;
 using JetBrains.Annotations;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
+using UI.Dynamic.Panels.Spawning.MixAndMatch;
 using UnityEngine;
 
 namespace UI.Dynamic.Modals.MixAndMatch {
@@ -40,7 +41,10 @@ namespace UI.Dynamic.Modals.MixAndMatch {
             
             var robotEditorButton = left.CreateButton("Robot Editor")
                 .ApplyTemplate<Button>(VerticalLayout)
-                .AddOnClickedEvent(_ => CreateChooseObjectModal(true));
+                .AddOnClickedEvent(_ => {
+                    DynamicUIManager.CloseActiveModal();
+                    DynamicUIManager.CreatePanel<BuildRobotPanel>();
+                });
 
             var partEditorButton = right.CreateButton("Part Editor")
                 .ApplyTemplate<Button>(VerticalLayout)

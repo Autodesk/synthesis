@@ -587,16 +587,16 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         return true;
     }
 
-    public static void SpawnRobot(MixAndMatchTransformData mixAndMatchTransformData, params string[] filePaths) {
-        SpawnRobot(mixAndMatchTransformData, new Vector3(0f, 0f, 0f), Quaternion.identity, true, filePaths);
+    public static void SpawnRobot(MixAndMatchRobotData mixAndMatchRobotData, params string[] filePaths) {
+        SpawnRobot(mixAndMatchRobotData, new Vector3(0f, 0f, 0f), Quaternion.identity, true, filePaths);
     }
     
-    public static void SpawnRobot(MixAndMatchTransformData mixAndMatchTransformData, bool spawnGizmo, params string[] filePaths) {
-        SpawnRobot(mixAndMatchTransformData, new Vector3(0f, 0.5f, 0f), Quaternion.identity, spawnGizmo, filePaths);
+    public static void SpawnRobot(MixAndMatchRobotData mixAndMatchRobotData, bool spawnGizmo, params string[] filePaths) {
+        SpawnRobot(mixAndMatchRobotData, new Vector3(0f, 0.5f, 0f), Quaternion.identity, spawnGizmo, filePaths);
     }
     
-    public static void SpawnRobot(MixAndMatchTransformData mixAndMatchTransformData, Vector3 position, Quaternion rotation, bool spawnGizmo, params string[] filePaths) {
-        var mira = Importer.MirabufAssemblyImport(filePaths, mixAndMatchTransformData);
+    public static void SpawnRobot(MixAndMatchRobotData mixAndMatchRobotData, Vector3 position, Quaternion rotation, bool spawnGizmo, params string[] filePaths) {
+        var mira = Importer.MirabufAssemblyImport(filePaths, mixAndMatchRobotData);
         RobotSimObject simObject = (mira.sim as RobotSimObject)!;
         mira.mainObject.transform.SetParent(GameObject.Find("Game").transform);
         simObject.ConfigureDefaultBehaviours();
