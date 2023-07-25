@@ -4,22 +4,26 @@ import Label, { LabelSize } from "./Label"
 
 type CheckboxProps = {
     label: string
+    className?: string
     defaultState: boolean
     onClick?: () => void
 }
 
 const Checkbox: React.FC<CheckboxProps> = ({
     label,
+    className,
     defaultState,
     onClick,
 }) => {
     const [state, setState] = useState(defaultState)
     return (
         <Stack direction={StackDirection.Horizontal}>
-            <Label size={LabelSize.Medium}>{label}</Label>
+            <Label size={LabelSize.Medium} className={`mr-8 ${className}`}>
+                {label}
+            </Label>
             <input
                 type="checkbox"
-                checked={state}
+                defaultChecked={state}
                 onClick={e => {
                     setState((e.target as HTMLInputElement).checked)
                     if (onClick) onClick()

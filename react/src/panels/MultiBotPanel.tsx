@@ -21,6 +21,7 @@ const MultiBotPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 <Checkbox
                     label={name}
                     defaultState={i == selected}
+                    className="whitespace-nowrap"
                     onClick={() => setSelected(i)}
                 />
             ))}

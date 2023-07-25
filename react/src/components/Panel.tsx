@@ -38,7 +38,9 @@ const Panel: React.FC<PanelProps> = ({
                 <span className="flex justify-center align-center ml-8">
                     {iconEl}
                 </span>
-                <h1 className="text-3xl inline-block align-middle whitespace-nowrap mr-10">{name}</h1>
+                <h1 className="text-3xl inline-block align-middle whitespace-nowrap mr-10">
+                    {name}
+                </h1>
             </div>
             <div id="content" className="mx-16 flex flex-col gap-8">
                 {children}
