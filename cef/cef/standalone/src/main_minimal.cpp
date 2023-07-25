@@ -7,8 +7,8 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
     UNREFERENCED_PARAMETER(nCmdShow);
     return synthesis::shared::wWinMain(hInstance);
 }
-#else
+#else // ^^^ defined(OS_WIN) ^^^ / vvv !defined(OS_WIN) vvv
 int main(int argc, char* argv[]) {
     return synthesis::shared::main(argc, argv);
 }
-#endif
+#endif // !defined(OS_WIN)
