@@ -17,6 +17,7 @@ import DrivetrainModal from "./modals/DrivetrainModal"
 import { AnimatePresence } from "framer-motion"
 import { motion } from "framer-motion"
 import { ReactElement } from "react"
+import { ToastContainer, ToastProvider } from "./ToastContext"
 
 const initialModals = [
     <SettingsModal modalId="settings" />,
@@ -131,11 +132,14 @@ function App() {
                     closePanel(id)
                 }}
             >
-                <AnimatePresence>
+                <ToastProvider>
                     <MainHUD />
-                    {motionPanelElements.length > 0 && motionPanelElements}
-                    {motionModalElement && motionModalElement}
-                </AnimatePresence>
+                    <AnimatePresence>
+                        {motionPanelElements.length > 0 && motionPanelElements}
+                        {motionModalElement && motionModalElement}
+                    </AnimatePresence>
+                    <ToastContainer />
+                </ToastProvider>
             </PanelControlProvider>
         </ModalControlProvider>
     )

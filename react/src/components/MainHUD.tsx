@@ -3,7 +3,6 @@ import { BsCodeSquare } from "react-icons/bs"
 import {
     FaCar,
     FaGear,
-    FaHouse,
     FaMagnifyingGlass,
     FaPlus,
 } from "react-icons/fa6"
@@ -16,6 +15,7 @@ import { useModalControlContext } from "../ModalContext"
 import { usePanelControlContext } from "../PanelContext"
 import { motion } from "framer-motion"
 import logo from "../assets/autodesk_logo.png"
+import { ToastType, useToastContext } from "../ToastContext"
 
 type ButtonProps = {
     value: string
@@ -34,9 +34,8 @@ const MainHUDButton: React.FC<ButtonProps> = ({
     return (
         <div
             onClick={onClick}
-            className={`relative flex flex-row cursor-pointer bg-black w-full m-auto px-2 py-1 text-white rounded-md ${
-                larger ? "justify-center" : ""
-            } items-center hover:backdrop-brightness-105`}
+            className={`relative flex flex-row cursor-pointer bg-black w-full m-auto px-2 py-1 text-white rounded-md ${larger ? "justify-center" : ""
+                } items-center hover:backdrop-brightness-105`}
         >
             {larger && icon}
             {!larger && (
@@ -46,9 +45,8 @@ const MainHUDButton: React.FC<ButtonProps> = ({
             )}
             <input
                 type="button"
-                className={`px-2 ${
-                    larger ? "py-2" : "py-1 ml-6"
-                } text-white cursor-pointer`}
+                className={`px-2 ${larger ? "py-2" : "py-1 ml-6"
+                    } text-white cursor-pointer`}
                 value={value}
                 onClick={onClick}
             />
@@ -64,6 +62,7 @@ const variants = {
 const MainHUD: React.FC = () => {
     const { openModal } = useModalControlContext()
     const { openPanel } = usePanelControlContext()
+    const { addToast } = useToastContext();
     const [isOpen, setIsOpen] = useState(false)
 
     return (
@@ -136,12 +135,15 @@ const MainHUD: React.FC = () => {
                         icon={<FaCar />}
                         onClick={() => openModal("drivetrain")}
                     />
+                    <MainHUDButton
+                        value={"Toasts"}
+                        icon={<FaCar />}
+                        onClick={() => {
+                            const type: ToastType = ['info', 'warning', 'error'][Math.floor(Math.random() * 3)] as ToastType
+                            addToast(type, type, 'This is a test toast to test the toast system')
+                        }}
+                    />
                 </div>
-                <MainHUDButton
-                    value={"Home"}
-                    icon={<FaHouse />}
-                    larger={true}
-                />
             </motion.div>
         </>
     )
