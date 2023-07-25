@@ -5,21 +5,24 @@ import Label, { LabelSize } from "./Label"
 type DropdownProps = {
     children?: ReactNode
     label?: string
+    className?: string
     options: string[]
 }
 
-const Dropdown: React.FC<DropdownProps> = ({ label, options }) => {
+const Dropdown: React.FC<DropdownProps> = ({ label, className, options }) => {
     const [expanded, setExpanded] = useState(false)
     const [optionList, setOptionList] = useState(options)
 
     type DropdownOptionProps = {
         value: string
         children?: ReactNode
+        className?: string
     }
 
     const DropdownOption: React.FC<DropdownOptionProps> = ({
         children,
         value,
+        className
     }) => (
         <span
             onClick={() => {
@@ -27,7 +30,7 @@ const Dropdown: React.FC<DropdownProps> = ({ label, options }) => {
                 newOptions.unshift(value)
                 setOptionList(newOptions)
             }}
-            className="block relative duration-100 hover:backdrop-brightness-90 w-full h-full px-2 py-2"
+            className={`block relative duration-100 hover:backdrop-brightness-90 w-full h-full px-2 py-2 ${className}`}
         >
             {children}
         </span>
@@ -38,7 +41,7 @@ const Dropdown: React.FC<DropdownProps> = ({ label, options }) => {
             {label && <Label size={LabelSize.Medium}>{label}</Label>}
             <div
                 onClick={() => setExpanded(!expanded)}
-                className="relative flex flex-col gap-2 select-none cursor-pointer bg-gradient-to-r from-red-500 to-orange-500 w-full h-full rounded-md"
+                className={`relative flex flex-col gap-2 select-none cursor-pointer bg-gradient-to-r from-red-500 to-orange-500 w-full rounded-md ${className}`}
             >
                 <DropdownOption value={optionList[0]}>
                     {optionList[0]}

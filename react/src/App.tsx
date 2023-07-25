@@ -18,6 +18,8 @@ import { AnimatePresence } from "framer-motion"
 import { motion } from "framer-motion"
 import { ReactElement } from "react"
 import { ToastContainer, ToastProvider } from "./ToastContext"
+import ThemeEditorModal from "./modals/ThemeEditorModal"
+import ColorGrid from "./components/ColorGrid"
 
 const initialModals = [
     <SettingsModal modalId="settings" />,
@@ -31,6 +33,7 @@ const initialModals = [
     <RoboRIOModal modalId="roborio" />,
     <CreateDeviceModal modalId="create-device" />,
     <DrivetrainModal modalId="drivetrain" />,
+    <ThemeEditorModal modalId="theme-editor" />
 ]
 
 const initialPanels: ReactElement[] = [
