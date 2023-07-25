@@ -51,6 +51,10 @@ elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
     endif()
 endif()
 
+if(OS_WINDOWS AND GEN_NINJA)
+    set(CMAKE_CXX_FLAGS "")
+endif()
+
 function(DownloadCEF platform version download_dir)
     if(REINSTALL_CEF)
         message(STATUS "Reinstalling CEF...")
