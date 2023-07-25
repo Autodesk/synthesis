@@ -1,10 +1,11 @@
-using System.Collections.Generic;
+/*using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
 
 namespace SimObjects.MixAndMatch
 {
+// TODO: Delete this whole file
     public class PartEditorPart
     {
         public string Name;
@@ -95,4 +96,4 @@ namespace SimObjects.MixAndMatch
     public class ConnectionPointReference : MonoBehaviour {
         public PartEditorPart part;
     }
-}
+}#1#*/

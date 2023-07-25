@@ -15,8 +15,23 @@ namespace SimObjects.MixAndMatch {
         private static readonly string PART_FOLDER_PATH = MIX_AND_MATCH_FOLDER_PATH + ALT_SEP + "Parts";
         private static readonly string ROBOT_FOLDER_PATH = MIX_AND_MATCH_FOLDER_PATH + ALT_SEP + "Robots";
 
+        public static string[] PartFiles {
+            get {
+                if (!Directory.Exists(PART_FOLDER_PATH))
+                    Directory.CreateDirectory(PART_FOLDER_PATH);
+                return Directory.GetFiles(PART_FOLDER_PATH).Select(Path.GetFileNameWithoutExtension).ToArray();
+            }
+        }
+        
+        public static string[] RobotFiles {
+            get {
+                if (!Directory.Exists(ROBOT_FOLDER_PATH))
+                    Directory.CreateDirectory(ROBOT_FOLDER_PATH);
+                return Directory.GetFiles(ROBOT_FOLDER_PATH).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
+            }
+        }
 
-        public static void SavePart(MixAndMatchPartData part) {
+        public static void SavePartData(MixAndMatchPartData part) {
             if (!Directory.Exists(PART_FOLDER_PATH)) {
                 Directory.CreateDirectory(PART_FOLDER_PATH);
             }
@@ -25,18 +40,18 @@ namespace SimObjects.MixAndMatch {
             File.WriteAllText(filePath, JsonUtility.ToJson(part));
         }
 
-        public static MixAndMatchPartData LoadPart(string fileName) {
+        public static MixAndMatchPartData LoadPartData(string fileName) {
             var filePath = Path.GetFullPath(PART_FOLDER_PATH)+ALT_SEP+fileName+".json";
             
             if (!Directory.Exists(PART_FOLDER_PATH)) {
-                // TODO: Create an empty part
+                // TODO: Create a new part if it does not already exist
                 throw new Exception($"Part {fileName} not found");
             }
             
-            return JsonUtility.FromJson<MixAndMatchPartData>(File.ReadAllBytes(filePath).ToString());
+            return JsonUtility.FromJson<MixAndMatchPartData>(File.ReadAllText(filePath));
         }
         
-        public static void SaveRobot(MixAndMatchRobotData robot) {
+        public static void SaveRobotData(MixAndMatchRobotData robot) {
             if (!Directory.Exists(ROBOT_FOLDER_PATH)) {
                 Directory.CreateDirectory(ROBOT_FOLDER_PATH);
             }
@@ -45,15 +60,15 @@ namespace SimObjects.MixAndMatch {
             File.WriteAllText(filePath, JsonUtility.ToJson(robot));
         }
         
-        public static MixAndMatchRobotData LoadRobot(string fileName) {
+        public static MixAndMatchRobotData LoadRobotData(string fileName) {
             var filePath = Path.GetFullPath(ROBOT_FOLDER_PATH)+ALT_SEP+fileName+".json";
             
             if (!Directory.Exists(ROBOT_FOLDER_PATH)) {
-                // TODO: Create an empty part
+                // TODO: Create a new robot if it does not already exist
                 throw new Exception($"Robot {fileName} not found");
             }
             
-            return JsonUtility.FromJson<MixAndMatchRobotData>(File.ReadAllBytes(filePath).ToString());
+            return JsonUtility.FromJson<MixAndMatchRobotData>(File.ReadAllText(filePath));
         }
     }
 
@@ -76,7 +91,7 @@ namespace SimObjects.MixAndMatch {
         public Vector3 LocalPosition;
         public Quaternion LocalRotation;
         
-        public ConnectionPoint[] ConnectionPoints;
+        public ConnectionPointData[] ConnectionPoints;
         
         public MixAndMatchPartData ConnectedPart;
         
@@ -87,18 +102,18 @@ namespace SimObjects.MixAndMatch {
 
         public MixAndMatchPartData(string name, Vector3 localPosition, Quaternion localRotation, (Vector3 position, Vector3 normal)[] connectionPoints) {
             LocalPosition = localPosition;
-            ConnectionPoints = connectionPoints.Select(c => new ConnectionPoint(c.position, c.normal)).ToArray();
+            ConnectionPoints = connectionPoints.Select(c => new ConnectionPointData(c.position, c.normal)).ToArray();
             LocalRotation = localRotation;
             Name = name;
         }
     }
 
     [Serializable]
-    public class ConnectionPoint {
+    public class ConnectionPointData {
         public Vector3 Position;
         public Vector3 Normal;
 
-        public ConnectionPoint(Vector3 position, Vector3 normal) {
+        public ConnectionPointData(Vector3 position, Vector3 normal) {
             Position = position;
             Normal = normal;
         }

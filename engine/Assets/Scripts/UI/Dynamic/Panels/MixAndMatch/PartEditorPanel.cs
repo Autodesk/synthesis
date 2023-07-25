@@ -1,13 +1,15 @@
-/*using System;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using SimObjects.MixAndMatch;
 using Synthesis.Gizmo;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
-using UnityEngine.EventSystems;
+using Object = UnityEngine.Object;
 
-namespace UI.Dynamic.Panels.Spawning.MixAndMatch
+namespace UI.Dynamic.Panels.MixAndMatch
 {
-    public class PartConfigPanel : PanelDynamic
+    public class PartEditorPanel : PanelDynamic
     {
         private const float MODAL_WIDTH = 500f;
         private const float MODAL_HEIGHT = 600f;
@@ -17,15 +19,16 @@ namespace UI.Dynamic.Panels.Spawning.MixAndMatch
         private const float SCROLLBAR_WIDTH = 10f;
         private const float BUTTON_WIDTH = 64f;
         private const float ROW_HEIGHT = 64f;
-        
-        private static readonly int _snapPointLayerMask = 1 << LayerMask.NameToLayer("ConnectionPoint");
+
+        private MixAndMatchPartData _partData;
+
+        private GameObject _partGameObject;
+        private List<GameObject> _connectionGameObjects = new();
 
         private float _scrollViewWidth;
         private float _entryWidth;
 
         private ScrollView _snapPointScrollView;
-
-        private PartEditorPart _partEditorPart;
         
         private readonly Func<UIComponent, UIComponent> VerticalLayout = (u) =>
         {
@@ -42,22 +45,19 @@ namespace UI.Dynamic.Panels.Spawning.MixAndMatch
             return u;
         };
 
-        public PartConfigPanel(PartEditorPart partEditorPart) : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT))
+        public PartEditorPanel(MixAndMatchPartData partData) : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT))
         {
-            _partEditorPart = partEditorPart;
+            _partData = partData;
         }
         
         public override bool Create()
         {
-            Title.SetText("Part Config");
+            Title.SetText("Part Editor");
             
-            _partEditorPart.ConnectionPoints.ForEach(x => x.GetComponent<Collider>().enabled = false);
-
             AcceptButton.StepIntoLabel(l => l.SetText("Close"))
-                .AddOnClickedEvent(b =>
-                {
-                    DynamicUIManager.ClosePanel<PartConfigPanel>();
-                    GizmoManager.ExitGizmo();
+                .AddOnClickedEvent(b => {
+                    SavePartData();
+                    DynamicUIManager.ClosePanel<PartEditorPanel>();
                 });
             CancelButton.RootGameObject.SetActive(false);
 
@@ -71,26 +71,43 @@ namespace UI.Dynamic.Panels.Spawning.MixAndMatch
             var addPointButton = MainContent.CreateButton()
                 .SetTopStretch<Button>()
                 .StepIntoLabel(l => l.SetText("Add Snap Point"))
-                .AddOnClickedEvent(
-                    _ =>
-                    {
-                        _partEditorPart.AddConnectionPoint();
-                        AddAllPoints();
-                    })
+                .AddOnClickedEvent(_ => {
+                    throw new NotImplementedException();
+                })
                 .ApplyTemplate(VerticalLayout);
 
-            AddAllPoints();
+            _partGameObject = InstantiatePartGameObject();
+            CreateConnectionPoints();
             
             return true;
         }
 
-        private void AddAllPoints()
+        private void CreateConnectionPoints()
         {
             _snapPointScrollView.Content.DeleteAllChildren();
-            foreach (var point in _partEditorPart.ConnectionPoints)
-            {
-                AddPoint(point);
-            }
+            
+            _partData.ConnectionPoints.ForEach(point => {
+                var pointGameObject = InstantiatePointGameObject(point);
+                
+                _connectionGameObjects.Add(pointGameObject);
+                AddPoint(pointGameObject);
+            });
+        }
+
+        private GameObject InstantiatePartGameObject() {
+            return GameObject.CreatePrimitive(PrimitiveType.Cube);
+        }
+
+        private GameObject InstantiatePointGameObject(ConnectionPointData point) {
+            var gameObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            gameObject.name = "ConnectionPoint";
+            gameObject.transform.SetParent(_partGameObject.transform);
+
+            gameObject.transform.position = point.Position;
+            gameObject.transform.forward = point.Normal;
+            gameObject.transform.localScale = Vector3.one / 2f;
+
+            return gameObject;
         }
 
         private void AddPoint(GameObject point)
@@ -99,10 +116,12 @@ namespace UI.Dynamic.Panels.Spawning.MixAndMatch
                 _snapPointScrollView.Content.CreateSubContent(new Vector2(_entryWidth, ROW_HEIGHT))
                     .ApplyTemplate(ListVerticalLayout)
                     .SplitLeftRight(BUTTON_WIDTH, HORIZONTAL_PADDING);
+            
             leftContent.SetBackgroundColor<Content>(Color.blue);
 
             (Content labelsContent, Content buttonsContent) =
                 rightContent.SplitLeftRight(_entryWidth - (HORIZONTAL_PADDING + BUTTON_WIDTH) * 3, HORIZONTAL_PADDING);
+            
             (Content topContent, Content bottomContent) = labelsContent.SplitTopBottom(ROW_HEIGHT / 2, 0);
             topContent.CreateLabel()
                 .SetText("Name")
@@ -143,26 +162,23 @@ namespace UI.Dynamic.Panels.Spawning.MixAndMatch
 
         public override void Update()
         {
-            if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButton(1)) {
-                // Raycast out from camera to see where the mouse is pointing
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(ray, out var hit, 100, _snapPointLayerMask))
-                {
-                    _partEditorPart.Transform.position = hit.transform.position;
 
-                    _partEditorPart.Transform.rotation = Quaternion.LookRotation(-hit.transform.forward, Vector3.up);
-                    _partEditorPart.Transform.Rotate(-_partEditorPart.ConnectionPoints[0].transform.localRotation.eulerAngles);
-                    //Debug.Log($"Rotation: {-hit.transform.forward} and {Quaternion.LookRotation(-hit.transform.forward, Vector3.up)}");
-                    _partEditorPart.Transform.Translate(-_partEditorPart.ConnectionPoints[0].transform.localPosition);
-
-                    _partEditorPart.ConnectedPartEditorPart = hit.transform.GetComponent<ConnectionPointReference>().part;
-                }
-            }
         }
 
         public override void Delete()
         {
-            _partEditorPart.ConnectionPoints.ForEach(x => x.GetComponent<Collider>().enabled = true);
+            Object.Destroy(_partGameObject);
+        }
+
+        private void SavePartData() {
+            List<ConnectionPointData> connectionPoints = new();
+            _connectionGameObjects.ForEach(point => {
+                connectionPoints.Add(new ConnectionPointData(point.transform.position, point.transform.forward));
+            });
+
+            _partData.ConnectionPoints = connectionPoints.ToArray();
+            
+            MixAndMatchSaveUtil.SavePartData(_partData);
         }
     }
-}*/
+}

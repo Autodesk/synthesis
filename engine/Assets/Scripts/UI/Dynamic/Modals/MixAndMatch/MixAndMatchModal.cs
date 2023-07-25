@@ -1,8 +1,9 @@
 using System;
 using JetBrains.Annotations;
+using SimObjects.MixAndMatch;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
-using UI.Dynamic.Panels.Spawning.MixAndMatch;
+using UI.Dynamic.Panels.MixAndMatch;
 using UnityEngine;
 
 namespace UI.Dynamic.Modals.MixAndMatch {
@@ -41,10 +42,7 @@ namespace UI.Dynamic.Modals.MixAndMatch {
             
             var robotEditorButton = left.CreateButton("Robot Editor")
                 .ApplyTemplate<Button>(VerticalLayout)
-                .AddOnClickedEvent(_ => {
-                    DynamicUIManager.CloseActiveModal();
-                    DynamicUIManager.CreatePanel<BuildRobotPanel>();
-                });
+                .AddOnClickedEvent(_ => CreateChooseObjectModal(true));
 
             var partEditorButton = right.CreateButton("Part Editor")
                 .ApplyTemplate<Button>(VerticalLayout)
@@ -57,13 +55,16 @@ namespace UI.Dynamic.Modals.MixAndMatch {
             ClearAndResizeContent(new Vector2(MainContent.Size.x, SELECT_OBJECT_HEIGHT));
 
             if (robot) {
-                //TODO: Load robot files
+                _robotFiles = MixAndMatchSaveUtil.RobotFiles;
             }
             else {
-                //TODO: Load part files
+                _partFiles = MixAndMatchSaveUtil.PartFiles;
             }
 
-            var dropdown = MainContent.CreateDropdown().ApplyTemplate(VerticalLayout);
+            var dropdown = MainContent.CreateDropdown().ApplyTemplate(VerticalLayout).SetOptions((robot
+                ? _robotFiles
+                : _partFiles)!);
+            
             var (left, right) = MainContent.CreateSubContent(new Vector2(MainContent.Size.x, 50)).ApplyTemplate(VerticalLayout).SplitLeftRight((MainContent.Size.x / 2f) - (SPLIT_SPACING / 2f), SPLIT_SPACING);
 
             var loadSelected = left.CreateButton("Select").ApplyTemplate(VerticalLayout)
@@ -103,16 +104,14 @@ namespace UI.Dynamic.Modals.MixAndMatch {
 
         /// <summary>Either load a robot if it exists or create a new one if it doesn't</summary>
         private void LoadRobot(string fileName) {
-            // TODO: create a static class to handle loading and saving robots and parts
-            // TODO: after loading a robot, open the robot editor
             throw new NotImplementedException($"Load robot {fileName}");
         }
 
         /// <summary>Either load a part if it exists or create a new one if it doesn't</summary>
         private void LoadPart(string fileName) {
-            // TODO: create a static class to handle loading and saving robots and parts
-            // TODO: after loading a part, open the part editor
-            throw new NotImplementedException($"Load part {fileName}");
+            MixAndMatchPartData partData = MixAndMatchSaveUtil.LoadPartData(fileName);
+            DynamicUIManager.CloseActiveModal();
+            DynamicUIManager.CreatePanel<PartEditorPanel>(args: partData);
         }
 
         public override void Delete() {}

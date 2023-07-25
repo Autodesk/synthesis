@@ -1,7 +1,5 @@
-using System;
+/*using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using SimObjects.MixAndMatch;
 using Synthesis.Physics;
 using Synthesis.UI.Dynamic;
@@ -154,7 +152,7 @@ namespace UI.Dynamic.Panels.Spawning.MixAndMatch {
                 }
             });
             
-            var trfData = new MixAndMatchRobotData(partData.ToArray());
+            var trfData = new MixAndMatchRobotData("Test Robot", partData.ToArray());
 
             _parts.ForEach(p => { GameObject.Destroy(p.UnityObject); });
 
@@ -173,8 +171,8 @@ namespace UI.Dynamic.Panels.Spawning.MixAndMatch {
             var files = Directory.GetFiles(root).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
 
             var robotsToSpawn = Enumerable.Range(0, _parts.Count).Select(i => files[1]).ToArray();
-            RobotSimObject.SpawnRobot(trfData, robotsToSpawn);*/
-            MixAndMatchSaveUtil.SavePart(trfData.Parts[0]);
+            RobotSimObject.SpawnRobot(trfData, robotsToSpawn);#1#
+            MixAndMatchSaveUtil.SavePartData(trfData.Parts[0]);
             //Transform grounded = new GameObject("grounded").transform;
             //grounded.gameObject.AddComponent<Rigidbody>();
             //grounded.parent = parent;
@@ -196,8 +194,8 @@ namespace UI.Dynamic.Panels.Spawning.MixAndMatch {
                 thisJoint.connectedBody = otherJoint.GetComponent<Rigidbody>();
                 otherJoint.connectedBody = thisJoint.GetComponent<Rigidbody>();
             });
-*/
+#1#
             PhysicsManager.IsFrozen = false;
         }
     }
-}
+}*/

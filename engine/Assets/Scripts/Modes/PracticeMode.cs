@@ -10,14 +10,11 @@ using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Utilities;
 using UI.Dynamic.Modals.MixAndMatch;
-using UI.Dynamic.Panels.Spawning;
-using UI.Dynamic.Panels.Spawning.MixAndMatch;
 using UnityEngine;
-using UnityEngine.XR;
 using Logger = SynthesisAPI.Utilities.Logger;
 
 public class PracticeMode : IMode {
-    public static Vector3 GamepieceSpawnpoint = new Vector3(0, 10, 0);
+    public static Vector3 GamepieceSpawnpoint = new Vector3(0, 10, 0); 
     private static GameObject _gamepieceSpawnpointObject;
 
     private bool _lastEscapeValue   = false;
