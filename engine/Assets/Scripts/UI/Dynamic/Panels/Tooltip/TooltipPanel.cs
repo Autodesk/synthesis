@@ -11,8 +11,8 @@ namespace UI.Dynamic.Panels.Tooltip {
         private const float TOOLTIP_HEIGHT = 26;
         private const float HOZ_SPACING    = 15;
 
-        private const float KEY_CHAR_WIDTH = 12;
-        private const float KEY_PADDING    = 9f;
+        private const float KEY_CHAR_WIDTH = 13;
+        private const float KEY_PADDING    = 10;
 
         private const float DESC_CHAR_WIDTH = 13;
         private const float DESC_PADDING    = 12;
