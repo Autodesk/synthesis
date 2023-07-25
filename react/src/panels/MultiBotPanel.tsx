@@ -2,10 +2,10 @@ import React, { useState } from "react"
 import Label, { LabelSize } from "../components/Label"
 import Panel, { PanelPropsImpl } from "../components/Panel"
 import { IoPeople } from "react-icons/io5"
-import Checkbox from "../components/Checkbox"
 import Stack, { StackDirection } from "../components/Stack"
 import Button from "../components/Button"
 import { useModalControlContext } from "../ModalContext"
+import Checkbox from "../components/Checkbox"
 
 const MultiBotPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const [robots, setRobots] = useState([
@@ -17,14 +17,19 @@ const MultiBotPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     return (
         <Panel name={"MultiBot"} icon={<IoPeople />} panelId={panelId}>
             <Label size={LabelSize.Medium}>MultiBot</Label>
-            {robots.map((name: string, i: number) => (
-                <Checkbox
-                    label={name}
-                    defaultState={i == selected}
-                    className="whitespace-nowrap"
-                    onClick={() => setSelected(i)}
-                />
-            ))}
+            <form>
+                <fieldset>
+                    {robots.map((name: string, i: number) => (
+                        <Checkbox
+                            label={name}
+                            defaultState={i == selected}
+                            className="whitespace-nowrap"
+                            onClick={() => setSelected(i)}
+                            stateOverride={i == selected}
+                        />
+                    ))}
+                </fieldset>
+            </form>
             <Stack direction={StackDirection.Horizontal}>
                 <Button value="Add" onClick={() => openModal("robots")} />
                 <Button

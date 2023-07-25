@@ -106,8 +106,8 @@ export const useModalManager = (modals: ReactElement[]) => {
             registerModal(id, {
                 id: id,
                 component: modalComponent,
-                onOpen: () => { },
-                onClose: () => { },
+                onOpen: () => {},
+                onClose: () => {},
             })
         })
     }, [modals, closeModal, openModal, registerModal])

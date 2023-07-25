@@ -22,7 +22,7 @@ const Dropdown: React.FC<DropdownProps> = ({ label, className, options }) => {
     const DropdownOption: React.FC<DropdownOptionProps> = ({
         children,
         value,
-        className
+        className,
     }) => (
         <span
             onClick={() => {

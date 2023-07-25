@@ -1,11 +1,6 @@
 import React, { useState } from "react"
 import { BsCodeSquare } from "react-icons/bs"
-import {
-    FaCar,
-    FaGear,
-    FaMagnifyingGlass,
-    FaPlus,
-} from "react-icons/fa6"
+import { FaCar, FaGear, FaMagnifyingGlass, FaPlus } from "react-icons/fa6"
 import { BiMenuAltLeft } from "react-icons/bi"
 import { GrFormClose } from "react-icons/gr"
 import { GiSteeringWheel } from "react-icons/gi"
@@ -34,8 +29,9 @@ const MainHUDButton: React.FC<ButtonProps> = ({
     return (
         <div
             onClick={onClick}
-            className={`relative flex flex-row cursor-pointer bg-black w-full m-auto px-2 py-1 text-white rounded-md ${larger ? "justify-center" : ""
-                } items-center hover:backdrop-brightness-105`}
+            className={`relative flex flex-row cursor-pointer bg-black w-full m-auto px-2 py-1 text-white rounded-md ${
+                larger ? "justify-center" : ""
+            } items-center hover:backdrop-brightness-105`}
         >
             {larger && icon}
             {!larger && (
@@ -45,8 +41,9 @@ const MainHUDButton: React.FC<ButtonProps> = ({
             )}
             <input
                 type="button"
-                className={`px-2 ${larger ? "py-2" : "py-1 ml-6"
-                    } text-white cursor-pointer`}
+                className={`px-2 ${
+                    larger ? "py-2" : "py-1 ml-6"
+                } text-white cursor-pointer`}
                 value={value}
                 onClick={onClick}
             />
@@ -62,7 +59,7 @@ const variants = {
 const MainHUD: React.FC = () => {
     const { openModal } = useModalControlContext()
     const { openPanel } = usePanelControlContext()
-    const { addToast } = useToastContext();
+    const { addToast } = useToastContext()
     const [isOpen, setIsOpen] = useState(false)
 
     return (
@@ -139,8 +136,16 @@ const MainHUD: React.FC = () => {
                         value={"Toasts"}
                         icon={<FaCar />}
                         onClick={() => {
-                            const type: ToastType = ['info', 'warning', 'error'][Math.floor(Math.random() * 3)] as ToastType
-                            addToast(type, type, 'This is a test toast to test the toast system')
+                            const type: ToastType = [
+                                "info",
+                                "warning",
+                                "error",
+                            ][Math.floor(Math.random() * 3)] as ToastType
+                            addToast(
+                                type,
+                                type,
+                                "This is a test toast to test the toast system"
+                            )
                         }}
                     />
                 </div>

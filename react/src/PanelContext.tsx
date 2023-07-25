@@ -52,7 +52,7 @@ export const usePanelManager = (panels: ReactElement[]) => {
     const openPanel = useCallback(
         (panelId: string, onOpen?: () => void, onClose?: () => void) => {
             setActivePanelIds(prevPanelIds => {
-                if (prevPanelIds.includes(panelId)) return prevPanelIds;
+                if (prevPanelIds.includes(panelId)) return prevPanelIds
                 if (panelDictionary[panelId]) {
                     if (onOpen) {
                         panelDictionary[panelId].onOpen = onOpen
@@ -134,8 +134,8 @@ export const usePanelManager = (panels: ReactElement[]) => {
             registerPanel(id, {
                 id: id,
                 component: panelData,
-                onOpen: () => { },
-                onClose: () => { },
+                onOpen: () => {},
+                onClose: () => {},
             })
         })
     }, [panels, closePanel, openPanel, registerPanel])
