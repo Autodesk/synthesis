@@ -22,12 +22,12 @@ namespace SimObjects.MixAndMatch {
                 return Directory.GetFiles(PART_FOLDER_PATH).Select(Path.GetFileNameWithoutExtension).ToArray();
             }
         }
-        
+
         public static string[] RobotFiles {
             get {
                 if (!Directory.Exists(ROBOT_FOLDER_PATH))
                     Directory.CreateDirectory(ROBOT_FOLDER_PATH);
-                return Directory.GetFiles(ROBOT_FOLDER_PATH).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
+                return Directory.GetFiles(ROBOT_FOLDER_PATH).Select(Path.GetFileNameWithoutExtension).ToArray();
             }
         }
 
@@ -35,76 +35,91 @@ namespace SimObjects.MixAndMatch {
             if (!Directory.Exists(PART_FOLDER_PATH)) {
                 Directory.CreateDirectory(PART_FOLDER_PATH);
             }
-            var filePath = Path.GetFullPath(PART_FOLDER_PATH)+ALT_SEP+part.Name+".json";
+
+            var filePath = Path.GetFullPath(PART_FOLDER_PATH) + ALT_SEP + part.Name + ".json";
 
             File.WriteAllText(filePath, JsonUtility.ToJson(part));
         }
 
         public static MixAndMatchPartData LoadPartData(string fileName) {
-            var filePath = Path.GetFullPath(PART_FOLDER_PATH)+ALT_SEP+fileName+".json";
-            
             if (!Directory.Exists(PART_FOLDER_PATH)) {
-                // TODO: Create a new part if it does not already exist
-                throw new Exception($"Part {fileName} not found");
+                Directory.CreateDirectory(PART_FOLDER_PATH);
             }
-            
+
+            var filePath = Path.GetFullPath(PART_FOLDER_PATH) + ALT_SEP + fileName + ".json";
+
+            if (!File.Exists(filePath)) {
+                return CreateNewPart(fileName);
+            }
+
             return JsonUtility.FromJson<MixAndMatchPartData>(File.ReadAllText(filePath));
         }
-        
+
         public static void SaveRobotData(MixAndMatchRobotData robot) {
             if (!Directory.Exists(ROBOT_FOLDER_PATH)) {
                 Directory.CreateDirectory(ROBOT_FOLDER_PATH);
             }
-            var filePath = Path.GetFullPath(ROBOT_FOLDER_PATH)+ALT_SEP+robot.Name+".json";
+
+            var filePath = Path.GetFullPath(ROBOT_FOLDER_PATH) + ALT_SEP + robot.Name + ".json";
 
             File.WriteAllText(filePath, JsonUtility.ToJson(robot));
         }
-        
+
         public static MixAndMatchRobotData LoadRobotData(string fileName) {
-            var filePath = Path.GetFullPath(ROBOT_FOLDER_PATH)+ALT_SEP+fileName+".json";
-            
             if (!Directory.Exists(ROBOT_FOLDER_PATH)) {
-                // TODO: Create a new robot if it does not already exist
-                throw new Exception($"Robot {fileName} not found");
+                Directory.CreateDirectory(ROBOT_FOLDER_PATH);
             }
-            
+
+            var filePath = Path.GetFullPath(ROBOT_FOLDER_PATH) + ALT_SEP + fileName + ".json";
+
+            if (!File.Exists(filePath)) {
+                return CreateNewRobot(fileName);
+            }
+
             return JsonUtility.FromJson<MixAndMatchRobotData>(File.ReadAllText(filePath));
+        }
+
+        /// <summary>Creates a new mix and match part</summary>
+        private static MixAndMatchPartData CreateNewPart(string name) {
+            return new MixAndMatchPartData(name, "", Array.Empty<(Vector3, Vector3)>());
+        }
+
+        /// <summary>Creates a new mix and match robot</summary>
+        private static MixAndMatchRobotData CreateNewRobot(string name) {
+            return new MixAndMatchRobotData(name, Array.Empty<(string, Vector3, Quaternion)>());
         }
     }
 
+    [Serializable]
     public class MixAndMatchRobotData {
         public string Name;
-        public MixAndMatchPartData[] Parts;
+        private Tuple<string, Vector3, Quaternion>[] _parts;
 
-        public MixAndMatchRobotData(string name, MixAndMatchPartData[] parts) {
+        [JsonIgnore]
+        public (string fileName, Vector3 localPosition, Quaternion localRotation)[] Parts {
+            get => _parts?.Select(p => (p.Item1, p.Item2, p.Item3)).ToArray();
+            set => _parts = value?.Select(p => p.ToTuple()).ToArray();
+        }
+
+        public MixAndMatchRobotData(string name, (string fileName, Vector3 localPosition, Quaternion localRotation)[] parts) {
             Name = name;
-            Parts = parts;
-            
-            parts.ForEachIndex((i, p) => {
-                p.PartIndex = i;
-            });
+            _parts = parts.Select(p => p.ToTuple()).ToArray();
         }
     }
 
     [Serializable]
     public class MixAndMatchPartData {
-        public Vector3 LocalPosition;
-        public Quaternion LocalRotation;
-        
+        public string MirabufPartFile;
+        [JsonIgnore] public string Name; // Ignored because it is the filename
+
         public ConnectionPointData[] ConnectionPoints;
         
-        public MixAndMatchPartData ConnectedPart;
-        
-        // TODO: figure out how to handle part rotations
-        // TODO: store which mesh this corresponds to without just using the index
-        [JsonIgnore] public int PartIndex;
-        [JsonIgnore] public string Name;
+        public string ConnectedPart;
 
-        public MixAndMatchPartData(string name, Vector3 localPosition, Quaternion localRotation, (Vector3 position, Vector3 normal)[] connectionPoints) {
-            LocalPosition = localPosition;
-            ConnectionPoints = connectionPoints.Select(c => new ConnectionPointData(c.position, c.normal)).ToArray();
-            LocalRotation = localRotation;
+        public MixAndMatchPartData(string name, string mirabufPartFile, (Vector3 position, Vector3 normal)[] connectionPoints) {
             Name = name;
+            MirabufPartFile = mirabufPartFile;
+            ConnectionPoints = connectionPoints.Select(c => new ConnectionPointData(c.position, c.normal)).ToArray();
         }
     }
 

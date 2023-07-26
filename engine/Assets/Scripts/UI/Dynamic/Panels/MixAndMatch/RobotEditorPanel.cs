@@ -10,7 +10,7 @@ using Object = UnityEngine.Object;
 
 namespace UI.Dynamic.Panels.MixAndMatch
 {
-    public class PartEditorPanel : PanelDynamic
+    public class RobotEditorPanel : PanelDynamic
     {
         private const float PANEL_WIDTH = 400f;
         private const float PANEL_HEIGHT = 400f;
@@ -18,10 +18,10 @@ namespace UI.Dynamic.Panels.MixAndMatch
         private const float VERTICAL_PADDING = 7f;
         private const float HORIZONTAL_PADDING = 16f;
 
-        private MixAndMatchPartData _partData;
+        private MixAndMatchRobotData _robotData;
 
-        private GameObject _partGameObject;
-        private readonly List<GameObject> _connectionGameObjects = new();
+        private GameObject _robotGameObject;
+        private readonly List<GameObject> _partGameObjects = new();
 
         private float _scrollViewWidth;
         private float _entryWidth;
@@ -30,7 +30,7 @@ namespace UI.Dynamic.Panels.MixAndMatch
 
         private Button _removeButton;
 
-        private GameObject _selectedPoint = null;
+        private GameObject _selectedPart = null;
         
         // TODO: Remove and replace with the vert layout in dynamic components after merge
         private readonly Func<UIComponent, UIComponent> VerticalLayout = (u) =>
@@ -68,20 +68,20 @@ namespace UI.Dynamic.Panels.MixAndMatch
                 .StepIntoLabel(l => l.SetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT))
                 .DisableEvents<Button>();
 
-        public PartEditorPanel(MixAndMatchPartData partData) : base(new Vector2(PANEL_WIDTH, PANEL_HEIGHT))
+        public RobotEditorPanel(MixAndMatchRobotData robotData) : base(new Vector2(PANEL_WIDTH, PANEL_HEIGHT))
         {
-            _partData = partData;
+            _robotData = robotData;
         }
         
         public override bool Create()
         {
-            Title.SetText("Part Editor");
+            Title.SetText("Robot Editor");
             
             AcceptButton.StepIntoLabel(l => l.SetText("Save"))
                 .AddOnClickedEvent(b => {
-                    SavePartData();
+                    SaveRobotData();
                     GizmoManager.ExitGizmo();
-                    DynamicUIManager.ClosePanel<PartEditorPanel>();
+                    DynamicUIManager.ClosePanel<RobotEditorPanel>();
                 });
             CancelButton.RootGameObject.SetActive(false);
             
@@ -89,9 +89,9 @@ namespace UI.Dynamic.Panels.MixAndMatch
 
             CreateAddRemoveButtons();
 
-            _partGameObject = InstantiatePartGameObject();
+            _robotGameObject = InstantiateRobotGameObject();
             
-            InstantiatePointGameObjects();
+            InstantiatePartGameObjects();
             PopulateScrollView();
             
             return true;
@@ -103,15 +103,16 @@ namespace UI.Dynamic.Panels.MixAndMatch
                 .SplitLeftRight((PANEL_WIDTH - 10f) / 2f, 10f);
 
             var addButton = left.CreateButton("Add").SetStretch<Button>().AddOnClickedEvent(_ => {
-                AddScrollViewEntry(InstantiatePointGameObject(new ConnectionPointData()));
+                // TODO: Prompt the user to pick a part from files
+                AddScrollViewEntry(InstantiatePartGameObject(("abc", Vector3.zero, Quaternion.identity)));
                 UpdateRemoveButton();
             });
             
             _removeButton = right.CreateButton("Remove").SetStretch<Button>().AddOnClickedEvent(_ => {
-                if (_selectedPoint != null) _connectionGameObjects.Remove(_selectedPoint);
+                if (_selectedPart != null) _partGameObjects.Remove(_selectedPart);
                 PopulateScrollView();
                 GizmoManager.ExitGizmo();
-                _selectedPoint = null;
+                _selectedPart = null;
                 UpdateRemoveButton();
             });
             UpdateRemoveButton();
@@ -121,58 +122,59 @@ namespace UI.Dynamic.Panels.MixAndMatch
         {
             _scrollView.Content.DeleteAllChildren();
             
-            _connectionGameObjects.ForEach(pointGameObject => {
-                AddScrollViewEntry(pointGameObject);
+            _partGameObjects.ForEach(partGameObject => {
+                AddScrollViewEntry(partGameObject);
             });
         }
         
-        private GameObject InstantiatePartGameObject() {
-            // TODO: Spawn part mesh
-            return GameObject.CreatePrimitive(PrimitiveType.Cube);
-        }
-        
-        private void InstantiatePointGameObjects() {
-            if (_partData.ConnectionPoints == null)
+        private void InstantiatePartGameObjects() {
+            if (_robotData.Parts == null)
                 return;
             
-            _partData.ConnectionPoints.ForEach(point => {
-                InstantiatePointGameObject(point);
+            _robotData.Parts.ForEach(part => {
+                InstantiatePartGameObject(part);
             });
         }
 
-        private GameObject InstantiatePointGameObject(ConnectionPointData point) {
-            var gameObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            gameObject.name = "ConnectionPoint";
-            gameObject.transform.SetParent(_partGameObject.transform);
+        private GameObject InstantiateRobotGameObject() {
+            return new GameObject("Mix and Match Robot Editor Parent");
+        }
 
-            gameObject.transform.position = point.Position;
-            gameObject.transform.forward = point.Normal;
-            gameObject.transform.localScale = Vector3.one / 2f;
+        private GameObject InstantiatePartGameObject((string fileName, Vector3 localPosition, Quaternion localRotation) part) {
+            var partData = MixAndMatchSaveUtil.LoadPartData(part.fileName);
             
-            _connectionGameObjects.Add(gameObject);
+            // TODO: spawn part mirabuf instead of cube
+            var gameObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            gameObject.name = part.fileName;
+            gameObject.transform.SetParent(_robotGameObject.transform);
+
+            gameObject.transform.position = part.localPosition;
+            gameObject.transform.rotation = part.localRotation;
+
+            _partGameObjects.Add(gameObject);
             return gameObject;
         }
 
-        private void AddScrollViewEntry(GameObject point)
+        private void AddScrollViewEntry(GameObject part)
         {
             var toggle = _scrollView.Content
-                .CreateToggle(label: "Connection Point")
+                .CreateToggle(label: part.name)
                 .SetSize<Toggle>(new Vector2(PANEL_WIDTH, 50f))
                 .ApplyTemplate(RadioToggleLayout)
                 .StepIntoLabel(l => l.SetFontSize(16f))
                 .SetDisabledColor(ColorManager.SYNTHESIS_BLACK);
             toggle.AddOnStateChangedEvent((t, s) => {
-                SelectConnectionPoint(point, t, s);
+                SelectPart(part, t, s);
             });
         }
 
-        private void SelectConnectionPoint(GameObject point, Toggle toggle, bool state) {
+        private void SelectPart(GameObject part, Toggle toggle, bool state) {
             if (state) {
-                _selectedPoint = point;
-                GizmoManager.SpawnGizmo(point.transform,
+                _selectedPart = part;
+                GizmoManager.SpawnGizmo(part.transform,
                     t => {
-                        point.transform.position = t.Position;
-                        point.transform.rotation = t.Rotation;
+                        part.transform.position = t.Position;
+                        part.transform.rotation = t.Rotation;
                     },
                     _ => { });
                 
@@ -182,32 +184,33 @@ namespace UI.Dynamic.Panels.MixAndMatch
                 toggle.SetStateWithoutEvents(true);
             }
             else {
-                _selectedPoint = null;
+                _selectedPart = null;
                 GizmoManager.ExitGizmo();
             }
             UpdateRemoveButton();
         }
 
         private void UpdateRemoveButton() {
-            _removeButton.ApplyTemplate((_connectionGameObjects.Count > 0 && _selectedPoint != null) ? EnableButton : DisableButton);
+            _removeButton.ApplyTemplate((_partGameObjects.Count > 0 && _selectedPart != null) ? EnableButton : DisableButton);
         }
 
         public override void Update() { }
 
         public override void Delete()
         {
-            Object.Destroy(_partGameObject);
+            Object.Destroy(_robotGameObject);
         }
 
-        private void SavePartData() {
-            List<ConnectionPointData> connectionPoints = new();
-            _connectionGameObjects.ForEach(point => {
-                connectionPoints.Add(new ConnectionPointData(point.transform.position, point.transform.forward));
+        private void SaveRobotData() {
+            List<(string fileName, Vector3 localPosition, Quaternion localRotation)> parts = new();
+            _partGameObjects.ForEach(part => {
+                parts.Add((part.name, part.transform.position, part.transform.rotation));
             });
 
-            _partData.ConnectionPoints = connectionPoints.ToArray();
+            _robotData.Parts = parts.ToArray();
+            Debug.Log(_robotData.Parts.Length);
             
-            MixAndMatchSaveUtil.SavePartData(_partData);
+            MixAndMatchSaveUtil.SaveRobotData(_robotData);
         }
     }
 }

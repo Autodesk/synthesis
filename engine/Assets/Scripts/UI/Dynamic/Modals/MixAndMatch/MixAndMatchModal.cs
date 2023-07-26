@@ -104,7 +104,9 @@ namespace UI.Dynamic.Modals.MixAndMatch {
 
         /// <summary>Either load a robot if it exists or create a new one if it doesn't</summary>
         private void LoadRobot(string fileName) {
-            throw new NotImplementedException($"Load robot {fileName}");
+            MixAndMatchRobotData robotData = MixAndMatchSaveUtil.LoadRobotData(fileName);
+            DynamicUIManager.CloseActiveModal();
+            DynamicUIManager.CreatePanel<RobotEditorPanel>(args: robotData);
         }
 
         /// <summary>Either load a part if it exists or create a new one if it doesn't</summary>

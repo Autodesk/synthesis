@@ -192,7 +192,6 @@ namespace Synthesis.UI.Dynamic {
 
             // Quality Settings
             QualitySettings.SetQualityLevel(Get<int>(QUALITY_SETTINGS), true);
-            Debug.Log(GraphicsSettings.currentRenderPipeline.name);
 
             // Analytics
             AnalyticsManager.UseAnalytics = Get<bool>(AnalyticsManager.USE_ANALYTICS_PREF);

@@ -349,22 +349,24 @@ namespace Synthesis.Import {
             assemblyObjects.ForEachIndex((partIndex, gameObject) => {
                 var transform = gameObject.transform;
 
+                /* TODO: fix (now using part name not index)
                 var partTrfData = robotData.Parts[partIndex];
                 transform.localPosition = partTrfData.LocalPosition;
-                transform.localRotation = partTrfData.LocalRotation;
+                transform.localRotation = partTrfData.LocalRotation;*/
             });
         }
 
         /// <summary>Connects all mix and match parts together using <see cref="CreateMixAndMatchJoint">CreateMixAndMatchJoint</see></summary>
         private static void ConnectMixAndMatchParts(MixAndMatchRobotData robotData, Dictionary<string,GameObject>[] groupObjects) {
             robotData.Parts.ForEachIndex((partIndex, part) => {
-                if (part.ConnectedPart != null) {
+                /* TODO: fix (now using part name not index)
+                 if (part.ConnectedPart != null) {
                     var thisObject = groupObjects[partIndex]["grounded"];
                     var connectedObject = groupObjects[part.ConnectedPart.PartIndex]["grounded"];
                     CreateMixAndMatchJoint(thisObject, connectedObject,
                         new Vector3(), new Vector3());
                 }
-                else Debug.Log($"Part connection was null");
+                else Debug.Log($"Part connection was null");*/
             });
         }
 
