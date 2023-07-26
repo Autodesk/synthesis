@@ -18,13 +18,14 @@ public class SpawningModal : ModalDynamic {
 
     public override void Create() {
         Title.SetText("Spawning");
-        Description.SetText("What do you want to spawn?");
 
-        ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("plus"))
+        ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("plus"))
             .SetColor(ColorManager.SynthesisColor.MainText);
 
-        var spacing           = 15f;
-        (var left, var right) = MainContent.SplitLeftRight((MainContent.Size.x / 2f) - (spacing / 2f), spacing);
+        AcceptButton.RootGameObject.SetActive(false);
+
+        var spacing           = 22f;
+        (var left, var right) = MainContent.SplitLeftRight((MainContent.Size.x / 2f) - (spacing), spacing * 2);
         var robot             = left.CreateButton("Robot")
                         .ApplyTemplate<Button>(VerticalLayout)
                         .AddOnClickedEvent(b => DynamicUIManager.CreateModal<AddRobotModal>())

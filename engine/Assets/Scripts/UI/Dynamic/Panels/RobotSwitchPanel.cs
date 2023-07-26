@@ -16,7 +16,7 @@ using Logger = SynthesisAPI.Utilities.Logger;
 #nullable enable
 
 public class RobotSwitchPanel : PanelDynamic {
-    private const float PANEL_WIDTH = 400f;
+    private const float PANEL_WIDTH = 300f;
 
     private ScrollView _scrollView;
     private Button _addButton;
@@ -24,19 +24,20 @@ public class RobotSwitchPanel : PanelDynamic {
 
     private bool _isMatchMode;
 
-    public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
+    private Func<UIComponent, UIComponent> VerticalLayout = (u) => {
         var offset = (-u.Parent!.RectOfChildren(u).yMin);
-        u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 15f, rightPadding: 15f); // used to be 15f
+        u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 15f, rightPadding: 15f);
         return u;
     };
 
-    public Func<Button, Button> EnableButton = b =>
-        b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementSolid))
+    private Func<Button, Button> EnableButton = b =>
+        b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                            ColorManager.SynthesisColor.InteractiveElementRight))
             .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
             .EnableEvents<Button>();
 
-    public Func<Button, Button> DisableButton = b =>
-        b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary))
+    private Func<Button, Button> DisableButton = b =>
+        b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground))
             .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
             .DisableEvents<Button>();
 
@@ -52,7 +53,7 @@ public class RobotSwitchPanel : PanelDynamic {
         AcceptButton.AddOnClickedEvent(b => DynamicUIManager.ClosePanel<RobotSwitchPanel>());
         _scrollView = MainContent.CreateScrollView().SetStretch<ScrollView>(bottomPadding: 60f);
 
-        (Content left, Content right) = MainContent.CreateSubContent(new Vector2(400, 50))
+        (Content left, Content right) = MainContent.CreateSubContent(new Vector2(PANEL_WIDTH, 50))
                                             .SetBottomStretch<Content>()
                                             .SplitLeftRight((PANEL_WIDTH - 10f) / 2f, 10f);
 
@@ -83,12 +84,12 @@ public class RobotSwitchPanel : PanelDynamic {
     }
 
     private void AddEntry(RobotSimObject robot) {
-        var toggle = _scrollView.Content
-                         .CreateToggle(isOn: RobotSimObject.CurrentlyPossessedRobot == robot.Name, label: robot.Name)
-                         .SetSize<Toggle>(new Vector2(PANEL_WIDTH, 50f))
-                         .ApplyTemplate(VerticalLayout)
-                         .StepIntoLabel(l => l.SetFontSize(16f))
-                         .SetDisabledColor(ColorManager.SynthesisColor.Background);
+        var toggle =
+            _scrollView.Content.CreateToggle(true, RobotSimObject.CurrentlyPossessedRobot == robot.Name, robot.Name)
+                .SetSize<Toggle>(new Vector2(PANEL_WIDTH, 40f))
+                .ApplyTemplate(VerticalLayout)
+                .StepIntoLabel(l => l.SetFontSize(16f))
+                .SetDisabledColor(ColorManager.SynthesisColor.Background);
         toggle.AddOnStateChangedEvent((t, s) => { UpdateState(robot, t, s); });
     }
 
@@ -102,14 +103,8 @@ public class RobotSwitchPanel : PanelDynamic {
         if (state) {
             RobotSimObject.CurrentlyPossessedRobot = robot.Name;
             MainHUD.ConfigRobot                    = robot;
-            _scrollView.Content.ChildrenReadOnly.OfType<Toggle>().ForEach(x => {
-                x.DisableEvents<Toggle>();
-                x.State = false;
-                x.EnableEvents<Toggle>();
-            });
-            toggle.DisableEvents<Toggle>();
-            toggle.State = true;
-            toggle.EnableEvents<Toggle>();
+            _scrollView.Content.ChildrenReadOnly.OfType<Toggle>().ForEach(x => { x.SetStateWithoutEvents(false); });
+            toggle.SetStateWithoutEvents(true);
         } else {
             MainHUD.ConfigRobot                    = null;
             RobotSimObject.CurrentlyPossessedRobot = string.Empty;

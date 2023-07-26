@@ -5,11 +5,13 @@ using SynthesisAPI.EventBus;
 using _UnityButton = UnityEngine.UIElements.Button;
 using SynthesisAPI.Utilities;
 
+#nullable enable
+
 namespace SynthesisAPI.UIManager.VisualElements
 {
     public class Button : VisualElement
     {
-        private EventBus.EventBus.EventCallback _callback;
+        private EventBus.EventBus.EventCallback? _callback;
 
         internal _UnityButton Element
         {

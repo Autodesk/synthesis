@@ -53,8 +53,9 @@ Shader "ImageGradient/ImageGradient" {
             float4 _WidthHeightRadius;
             float4 _StartColor;
             float4 _EndColor;
-
+            float4 _TintColor;
             float4 _ClipRect;
+            float2 _Offset;
 
             sampler2D _MainTex;
             fixed4 _TextureSampleAdd;
@@ -63,6 +64,7 @@ Shader "ImageGradient/ImageGradient" {
             float _GradientSpread;
 
             fixed4 frag (v2f i) : SV_Target {
+                
                 float maskAlpha = UnityGet2DClipping(i.worldPosition.xy, _ClipRect);
                 
                 float alpha = CalcAlpha(i.uv, _WidthHeightRadius.xy, _WidthHeightRadius.z);
@@ -72,13 +74,13 @@ Shader "ImageGradient/ImageGradient" {
                 float4 gradientDirection = float4(cos(_GradientAngle), sin(_GradientAngle), 0, 1);
                 gradientDirection *= _GradientSpread;
 
-                float2 uvOffset = (gradientDirection.xy / 2) - float2(0.5, 0.5);
+                float2 uvOffset = (gradientDirection.xy / 2) - float2(0.5 + _Offset.x, 0.5 + _Offset.y);
 
                 float4 col = lerp(_StartColor, _EndColor, clamp(dot(gradientDirection.xy, i.uv + uvOffset), 0, 1));
                 // float4 col = lerp(_StartColor, _EndColor, _Horizontal > 0 ? i.uv.x : 1 - i.uv.y);
 
                 //return float4(col.x, col.y, col.z, alpha*maskAlpha);
-                return float4(col.x, col.y, col.z, alpha * maskAlpha * col.a);
+                return float4(col.x, col.y, col.z, alpha * maskAlpha * col.a) * _TintColor;
             }
             
             ENDCG

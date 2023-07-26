@@ -12,11 +12,12 @@ public class ChooseModeModal : ModalDynamic {
         return u;
     };
 
-    public ChooseModeModal() : base(new Vector2(300, 400)) {}
+    public ChooseModeModal() : base(new Vector2(230, 300)) {}
 
     public override void Create() {
         Title.SetText("Choose Mode");
-        Description.SetText("Choose a mode to play in.");
+
+        ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("settings"));
 
         AcceptButton.RootGameObject.SetActive(false);
         CancelButton.Label.SetText("Close");
@@ -49,7 +50,7 @@ public class ChooseModeModal : ModalDynamic {
             });
 
         MainContent.CreateButton()
-            .StepIntoLabel(l => l.SetText("Host a Multiplayer Server"))
+            .StepIntoLabel(l => l.SetText("Host a Server"))
             .ApplyTemplate(VerticalLayout)
             .AddOnClickedEvent(b => {
                 if (SceneManager.GetActiveScene().name != "MainScene")
@@ -58,7 +59,7 @@ public class ChooseModeModal : ModalDynamic {
             });
 
         MainContent.CreateButton()
-            .StepIntoLabel(l => l.SetText("Connect to a Multiplayer Server"))
+            .StepIntoLabel(l => l.SetText("Connect to a Server"))
             .ApplyTemplate(VerticalLayout)
             .AddOnClickedEvent(b => {
                 if (SceneManager.GetActiveScene().name != "MainScene")

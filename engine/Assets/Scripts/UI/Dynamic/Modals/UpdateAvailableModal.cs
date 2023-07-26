@@ -11,7 +11,6 @@ namespace Synthesis.UI.Dynamic {
 
         public override void Create() {
             Title.SetText("Exit Synthesis");
-            Description.SetText("");
             AcceptButton
                 .AddOnClickedEvent(x => {
                     Process.Start(
@@ -23,9 +22,9 @@ namespace Synthesis.UI.Dynamic {
             CancelButton.StepIntoLabel(l => l.SetText("I'm Good"))
                 .SetPivot<Button>(new Vector2(0.0f, 0.0f))
                 .SetWidth<Button>(125);
-            ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"));
+            ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"));
 
-            ModalImage.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.MainText));
+            ModalIcon.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.MainText));
 
             MainContent.CreateLabel(40)
                 .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Center)
