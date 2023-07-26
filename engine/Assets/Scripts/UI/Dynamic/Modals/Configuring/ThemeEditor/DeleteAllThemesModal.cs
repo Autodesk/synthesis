@@ -14,14 +14,14 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
         public override void Create() {
             Title.SetText($"Delete All Themes?").SetWrapping(false);
-            
+
             AcceptButton.AddOnClickedEvent(x => {
                 ColorManager.DeleteAllThemes();
                 DynamicUIManager.CreateModal<EditThemeModal>();
             });
 
             CancelButton.AddOnClickedEvent(x => { DynamicUIManager.CreateModal<EditThemeModal>(); });
-            
+
             ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("plus"))
                 .SetColor(ColorManager.SynthesisColor.MainText);
         }

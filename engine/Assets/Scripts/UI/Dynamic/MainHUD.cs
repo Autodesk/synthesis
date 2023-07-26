@@ -131,12 +131,11 @@ public static class MainHUD {
     public static List<string> DrawerTitles = new List<string>();
 
     public static void Setup() {
-
         _topDrawerItems.Clear();
         _bottomDrawerItems.Clear();
         _accordionButton = new Button(null, GameObject.Find("MainHUD").transform.Find("Accordion").gameObject, null);
         _accordionButton.Image.SetColor(ColorManager.SynthesisColor.Icon);
-        
+
         _tabDrawerContent = new Content(null, GameObject.Find("MainHUD").transform.Find("TabDrawer").gameObject, null);
         _logoImage   = new Image(_tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("Logo").gameObject);
         _closeButton = new Button(
@@ -149,16 +148,16 @@ public static class MainHUD {
             _itemContainer, _itemContainer.RootGameObject.transform.Find("BottomItemContainer").gameObject, null);
         _spawnButton = new Button(
             _tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("SpawnButton").gameObject, null);
-        
-        
-        _spawnIcon  = new Image(_spawnButton, _spawnButton.RootGameObject.transform.Find("Button").Find("PlusIcon").gameObject);
-        
-        _homeButton = new Button(
-            null, _tabDrawerContent.RootGameObject.transform.Find("HomeButton").gameObject, null);
+
+        _spawnIcon =
+            new Image(_spawnButton, _spawnButton.RootGameObject.transform.Find("Button").Find("PlusIcon").gameObject);
+
+        _homeButton = new Button(null, _tabDrawerContent.RootGameObject.transform.Find("HomeButton").gameObject, null);
         _homeButton.StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText))
             .Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptButton));
-        
-        _homeIcon = new Image(_homeButton, _homeButton.RootGameObject.transform.Find("Button").Find("HomeIcon").gameObject);
+
+        _homeIcon =
+            new Image(_homeButton, _homeButton.RootGameObject.transform.Find("Button").Find("HomeIcon").gameObject);
 
         _closeButton.OnClicked += (b) => Collapsed = true;
 
@@ -228,9 +227,10 @@ public static class MainHUD {
         var drawerButton = new Button(_tabDrawerContent, drawerButtonObj, null);
         drawerButton.Label!.SetText(title).SetFontSize(16);
         drawerButton.AddOnClickedEvent(onClick);
-        
-        var drawerIcon = new Image(_tabDrawerContent, drawerButtonObj.transform.Find("Button").Find("ItemIcon").gameObject);
-        
+
+        var drawerIcon =
+            new Image(_tabDrawerContent, drawerButtonObj.transform.Find("Button").Find("ItemIcon").gameObject);
+
         if (icon != null)
             drawerIcon.SetSprite(icon);
 
