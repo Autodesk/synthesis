@@ -1,6 +1,6 @@
+#pragma once
 #ifndef SYNTHESIS_CEF_BROWSER_UTIL_H_
 #define SYNTHESIS_CEF_BROWSER_UTIL_H_
-#pragma once
 
 #include <include/cef_client.h>
 

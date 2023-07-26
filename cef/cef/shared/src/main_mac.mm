@@ -10,7 +10,6 @@
 #include "client_manager.h"
 #include "core.h"
 #include "debug.h"
-#include "html_resource_handler.h"
 
 @interface SharedAppDelegate : NSObject <NSApplicationDelegate>
 - (void)createApplication:(id)object;
@@ -84,6 +83,7 @@ int main(int argc, char* argv[]) {
 
     CefInitialize(main_args, settings, app, nullptr);
 
+    // TODO: Remove
     // CefRefPtr<HTMLSchemeHandlerFactory> resourceHandlerFactory = new HTMLSchemeHandlerFactory();
     // CefRegisterSchemeHandlerFactory(SYNTHESIS_HTML_SCHEME, "", resourceHandlerFactory);
     // std::string url = std::string(SYNTHESIS_HTML_SCHEME) + "index.html";

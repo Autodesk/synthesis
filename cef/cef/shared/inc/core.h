@@ -1,6 +1,6 @@
+#pragma once
 #ifndef SYNTHESIS_CEF_CORE_H_
 #define SYNTHESIS_CEF_CORE_H_
-#pragma once
 
 #ifdef __cplusplus
 #define SYNTHESIS_BEGIN_EXTERN_C extern "C" {

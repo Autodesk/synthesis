@@ -1,13 +1,12 @@
+#pragma once
 #ifndef SYNTHESIS_CEF_HTML_RESOURCE_HANDLER_H_
 #define SYNTHESIS_CEF_HTML_RESOURCE_HANDLER_H_
-#pragma once
 
 #include <include/cef_resource_handler.h>
 #include <include/cef_scheme.h>
 #include <include/wrapper/cef_helpers.h>
 
 namespace synthesis {
-namespace shared {
 
 class HTMLResourceHandler : public CefResourceHandler {
 public:
@@ -33,7 +32,6 @@ private:
     IMPLEMENT_REFCOUNTING(HTMLSchemeHandlerFactory);
 };
 
-} // namespace shared
 } // namespace synthesis
 
 #endif // SYNTHESIS_CEF_HTML_RESOURCE_HANDLER_H_

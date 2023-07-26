@@ -7,7 +7,6 @@
 #include "core.h"
 
 namespace synthesis {
-namespace shared {
 
 HTMLResourceHandler::HTMLResourceHandler() {}
 
@@ -56,5 +55,4 @@ CefRefPtr<CefResourceHandler> HTMLSchemeHandlerFactory::Create(CefRefPtr<CefBrow
     return new HTMLResourceHandler();
 }
 
-} // namespace shared
 } // namespace synthesis

@@ -5,9 +5,8 @@
 #include "debug.h"
 
 namespace synthesis {
-namespace shared {
 
-OffscreenCefClient(int width, int height) {
+OffscreenCefClient::OffscreenCefClient(int width, int height) {
     renderHandler = new OffscreenCefRenderHandler(width, height);
     SYNTHESIS_DEBUG_LOG("Offscreen client created");
 }
@@ -45,5 +44,4 @@ void OffscreenCefRenderHandler::OnPaint(CefRefPtr<CefBrowser> browser, PaintElem
     memcpy(browserTextureBuffer, buffer, width * height * 4);
 }
 
-} // namespace shared
 } // namespace synthesis

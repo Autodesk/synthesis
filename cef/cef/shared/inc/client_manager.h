@@ -1,6 +1,6 @@
+#pragma once
 #ifndef SYNTHESIS_CEF_CLIENT_MANAGER_H_
 #define SYNTHESIS_CEF_CLIENT_MANAGER_H_
-#pragma once
 
 #include <include/base/cef_thread_checker.h>
 #include <include/cef_browser.h>

@@ -1,6 +1,6 @@
+#pragma once
 #ifndef SYNTHESIS_CEF_RESOURCE_UTIL_H_
 #define SYNTHESIS_CEF_RESOURCE_UTIL_H_
-#pragma once
 
 #include <include/cef_resource_handler.h>
 #include <include/cef_stream.h>

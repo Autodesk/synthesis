@@ -1,6 +1,6 @@
+#pragma once
 #ifndef SYNTHESIS_CEF_SHARED_MAIN_H_
 #define SYNTHESIS_CEF_SHARED_MAIN_H_
-#pragma once
 
 #include <include/base/cef_build.h>
 

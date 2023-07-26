@@ -1,6 +1,6 @@
+#pragma once
 #ifndef SYNTHESIS_OFFSCREEN_CEF_CLIENT_H_
 #define SYNTHESIS_OFFSCREEN_CEF_CLIENT_H_
-#pragma once
 
 #include <include/cef_client.h>
 #include <include/cef_render_handler.h>
@@ -10,7 +10,6 @@
 #include <mutex>
 
 namespace synthesis {
-namespace shared {
 
 class OffscreenCefClient : public CefClient {
 public:
@@ -39,11 +38,12 @@ private:
     int width;
     int height;
 
-    static std::mutex textureBufferGuard;
-    static int8_t* browserTextureBuffer;
+    std::mutex textureBufferGuard;
+    int8_t* browserTextureBuffer;
+
+    IMPLEMENT_REFCOUNTING(OffscreenCefRenderHandler);
 };
 
-} // namespace shared
 } // namespace synthesis
 
 #endif // SYNTHESIS_OFFSCREEN_CEF_CLIENT_H_

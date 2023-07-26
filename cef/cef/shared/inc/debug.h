@@ -1,6 +1,6 @@
+#pragma once
 #ifndef SYNTHESIS_CEF_DEBUG_H_
 #define SYNTHESIS_CEF_DEBUG_H_
-#pragma once
 
 #include <iostream>
 #include <algorithm>

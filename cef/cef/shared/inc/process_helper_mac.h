@@ -1,6 +1,6 @@
+#pragma once
 #ifndef SYNTHESIS_CEF_PROCESS_HELPER_MAC_H_
 #define SYNTHESIS_CEF_PROCESS_HELPER_MAC_H_
-#pragma once
 
 namespace synthesis {
 namespace shared {

@@ -13,19 +13,17 @@ set(SHARED_SOURCES
     ${SHARED_COMMON_SOURCES}
     ${CMAKE_CURRENT_LIST_DIR}/src/client_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/client_util.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/html_resource_handler.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/browser_util.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/resource_util.cpp
 )
 
 set(SHARED_HEADERS
     ${SHARED_COMMON_HEADERS}
+    ${CMAKE_CURRENT_LIST_DIR}/inc/browser_util.h
     ${CMAKE_CURRENT_LIST_DIR}/inc/client_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/inc/client_util.h
-    ${CMAKE_CURRENT_LIST_DIR}/inc/html_resource_handler.h
-    ${CMAKE_CURRENT_LIST_DIR}/inc/browser_util.h
-    ${CMAKE_CURRENT_LIST_DIR}/inc/shared_main.h
     ${CMAKE_CURRENT_LIST_DIR}/inc/resource_util.h
+    ${CMAKE_CURRENT_LIST_DIR}/inc/shared_main.h
 )
 
 set(SHARED_SOURCES_MAC
