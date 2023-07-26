@@ -34,64 +34,64 @@ namespace Synthesis.UI.Dynamic {
         public ConnectToMultiplayerModal() : base(new Vector2(MAIN_CONTENT_WIDTH, MAIN_CONTENT_HEIGHT)) {}
 
         public override void Create() {
-            _mode = (ModeManager.CurrentMode as ClientMode)!;
-
-            AcceptButton.RootGameObject.SetActive(false);
-            CancelButton.Label.SetText("Disconnect");
-
-            (var left, var right) = MainContent.SplitLeftRight(leftWidth: (MAIN_CONTENT_WIDTH - 20.0f) / 2.0f, 20.0f);
-            left.EnsureImage().StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary));
-
-            _clientConnectionStatus = left.CreateLabel(30)
-                                          .SetTopStretch<Label>(anchoredY: 30.0f)
-                                          .SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Top)
-                                          .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Left);
-
-            _clientActionStatus = left.CreateLabel(30)
-                                      .SetTopStretch<Label>(anchoredY: 30.0f * 2)
-                                      .SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Top)
-                                      .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Left);
-
-            _otherInfo = left.CreateLabel(30)
-                             .SetTopStretch<Label>(anchoredY: 30.0f * 3)
-                             .SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Top)
-                             .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Left)
-                             .SetText("");
-
-            _robotDropdown = right.CreateDropdown()
-                                 .SetOptions(_mode.GetAvailableRobots().Select(x => Path.GetFileName(x)).ToArray())
-                                 .AddOnValueChangedEvent((d, i, data) => _selectedRobotIndex = i)
-                                 .SetTopStretch<Dropdown>();
-
-            right.CreateButton(text: "Choose Robot")
-                .SetHeight<Button>(30.0f)
-                .SetTopStretch<Button>(anchoredY: 45.0f)
-                .AddOnClickedEvent(b => {
-                    Logger.Log("Selecting robot", LogLevel.Info);
-                    if (!_robotSelected) {
-                        try {
-                            _mode.SelectRobot(_mode.GetAvailableRobots()[_selectedRobotIndex]);
-                        } catch (Exception e) {
-                            Logger.Log($"Error selecting robot: {e.Message}", LogLevel.Error);
-                            _otherInfo.SetText($"Error selecting robot: {e.Message}");
-                            return;
-                        }
-
-                        _otherInfo.SetText("Robot selected.");
-                        _robotSelected = true;
-                    } else {
-                        _otherInfo.SetText("Robot is already selected.");
-                    }
-                });
-
-            right.CreateButton(text: "Refresh robot list")
-                .SetHeight<Button>(30.0f)
-                .SetTopStretch<Button>(anchoredY: 45.0f * 2)
-                .AddOnClickedEvent(b => {
-                    Logger.Log("Refreshing robot list", LogLevel.Info);
-                    _mode.RequestServerRobotData();
-                    _robotDropdown.SetOptions(_mode.GetAvailableRobots().Select(x => Path.GetFileName(x)).ToArray());
-                });
+            // _mode = (ModeManager.CurrentMode as ClientMode)!;
+            //
+            // AcceptButton.RootGameObject.SetActive(false);
+            // CancelButton.Label.SetText("Disconnect");
+            //
+            // (var left, var right) = MainContent.SplitLeftRight(leftWidth: (MAIN_CONTENT_WIDTH - 20.0f) / 2.0f, 20.0f);
+            // left.EnsureImage().StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary));
+            //
+            // _clientConnectionStatus = left.CreateLabel(30)
+            //                               .SetTopStretch<Label>(anchoredY: 30.0f)
+            //                               .SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Top)
+            //                               .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Left);
+            //
+            // _clientActionStatus = left.CreateLabel(30)
+            //                           .SetTopStretch<Label>(anchoredY: 30.0f * 2)
+            //                           .SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Top)
+            //                           .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Left);
+            //
+            // _otherInfo = left.CreateLabel(30)
+            //                  .SetTopStretch<Label>(anchoredY: 30.0f * 3)
+            //                  .SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Top)
+            //                  .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Left)
+            //                  .SetText("");
+            //
+            // _robotDropdown = right.CreateDropdown()
+            //                      .SetOptions(_mode.GetAvailableRobots().Select(x => Path.GetFileName(x)).ToArray())
+            //                      .AddOnValueChangedEvent((d, i, data) => _selectedRobotIndex = i)
+            //                      .SetTopStretch<Dropdown>();
+            //
+            // right.CreateButton(text: "Choose Robot")
+            //     .SetHeight<Button>(30.0f)
+            //     .SetTopStretch<Button>(anchoredY: 45.0f)
+            //     .AddOnClickedEvent(b => {
+            //         Logger.Log("Selecting robot", LogLevel.Info);
+            //         if (!_robotSelected) {
+            //             try {
+            //                 _mode.SelectRobot(_mode.GetAvailableRobots()[_selectedRobotIndex]);
+            //             } catch (Exception e) {
+            //                 Logger.Log($"Error selecting robot: {e.Message}", LogLevel.Error);
+            //                 _otherInfo.SetText($"Error selecting robot: {e.Message}");
+            //                 return;
+            //             }
+            //
+            //             _otherInfo.SetText("Robot selected.");
+            //             _robotSelected = true;
+            //         } else {
+            //             _otherInfo.SetText("Robot is already selected.");
+            //         }
+            //     });
+            //
+            // right.CreateButton(text: "Refresh robot list")
+            //     .SetHeight<Button>(30.0f)
+            //     .SetTopStretch<Button>(anchoredY: 45.0f * 2)
+            //     .AddOnClickedEvent(b => {
+            //         Logger.Log("Refreshing robot list", LogLevel.Info);
+            //         _mode.RequestServerRobotData();
+            //         _robotDropdown.SetOptions(_mode.GetAvailableRobots().Select(x => Path.GetFileName(x)).ToArray());
+            //     });
         }
 
         public override void Update() {

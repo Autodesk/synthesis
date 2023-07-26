@@ -20,7 +20,7 @@ namespace SynthesisAPI.Aether.Lobby {
 
         private Inner? _instance;
 
-        public IReadOnlyCollection<string> Clients => _instance?.Clients ?? new List<string>(1).AsReadOnly();
+        public IReadOnlyCollection<LobbyClientInformation> Clients => _instance?.Clients ?? new List<LobbyClientInformation>(1).AsReadOnly();
         public IReadOnlyCollection<SynthesisDataDescriptor> AvailableSynthesisData
             => _instance?.AvailableSynthesisData ?? new List<SynthesisDataDescriptor>(1).AsReadOnly();
 
@@ -48,13 +48,13 @@ namespace SynthesisAPI.Aether.Lobby {
 
             private readonly SHA256 _shaHashFunction = SHA256.Create();
 
-            public IReadOnlyCollection<string> Clients {
+            public IReadOnlyCollection<LobbyClientInformation> Clients {
                 get {
-                    List<string> clientsInfo;
+                    List<LobbyClientInformation> clientsInfo;
                     _clientsLock.EnterReadLock();
                     try {
-                        clientsInfo = new List<string>(_clients.Count);
-                        _clients.Values.ForEach(x => clientsInfo.Add(x.ToString()));
+                        clientsInfo = new List<LobbyClientInformation>(_clients.Count);
+                        _clients.Values.ForEach(x => clientsInfo.Add(x.ClientInformation));
                     } finally {
                         _clientsLock.ExitReadLock();
                     }

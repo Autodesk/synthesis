@@ -476,7 +476,7 @@ namespace SynthesisAPI.Aether.Lobby {
 
         public override string ToString() {
             int time = LastHeartbeat.HasValue ? (int)System.Math.Round((DateTime.UtcNow - LastHeartbeat.Value).TotalMilliseconds) : -1;
-            return $"[{ClientInformation.Guid}] {ClientInformation.Name} <- {time}ms";
+            return $"[{ClientInformation.Guid}] {ClientInformation.Name} <- ({time}ms)";
         }
 
         public void Dispose() {

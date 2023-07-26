@@ -26,7 +26,7 @@ public class ServerTestMode : IMode {
     private RobotSimObject _host;
     private RobotSimObject _ghost;
 
-    public IReadOnlyCollection<string> ClientInformation => _server?.Clients ?? new List<string>();
+    public IReadOnlyCollection<LobbyClientInformation> ClientInformation => _server?.Clients ?? new List<LobbyClientInformation>(1);
 
     public void Start() {
         DynamicUIManager.CloseActiveModal();

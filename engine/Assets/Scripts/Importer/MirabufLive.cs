@@ -70,7 +70,7 @@ namespace Synthesis.Import {
         }
 
         public static MirabufLive OpenMirabufFile(string path) => MirabufCache.Get(path);
-
+        
 #region File Management
 
         private void Load() {
@@ -104,7 +104,21 @@ namespace Synthesis.Import {
             File.WriteAllBytes(_path, buff);
         }
 
-#endregion
+        public static string[] GetRobotFiles()
+            => GetMiraFiles("Mira");
+
+        public static string[] GetFieldFiles()
+            => GetMiraFiles(Path.Combine("Mira", "Fields"));
+
+        public static string[] GetMiraFiles(string subdirectory) {
+            var root = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "Autodesk", "Synthesis", subdirectory);
+            if (!Directory.Exists(root))
+                Directory.CreateDirectory(root);
+            return Directory.GetFiles(root).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
+        }
+
+        #endregion
 
 #region Creation
 

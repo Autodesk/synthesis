@@ -55,9 +55,9 @@ namespace Synthesis.UI.Dynamic {
             }
 
             _lastRefresh = Time.realtimeSinceStartup;
-            var clients  = _mode.ClientInformation;
+            var clients  = _mode.AllClients;
             string s     = "";
-            clients.ForEach(x => s += $"{x}\n");
+            clients.ForEach(x => s += $"{x.Name}\n");
             _statusLabel.SetText(s == string.Empty ? "Waiting for clients..." : s);
         }
 

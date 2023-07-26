@@ -4,19 +4,29 @@ using SynthesisAPI.Aether.Lobby;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-public class HostMode : IMode {
-    private LobbyServer _server;
+#nullable enable
 
-    public IReadOnlyCollection<string> ClientInformation =>
-        _server.Clients == null ? new List<string>() : _server.Clients;
+public class HostMode : IMode {
+
+    private const string SERVER_IP = "127.0.0.1";
+    
+    private LobbyServer? _server;
+    private LobbyClient? _hostClient;
+
+    public IReadOnlyCollection<LobbyClientInformation> AllClients
+        => _server?.Clients ?? new List<LobbyClientInformation>(1).AsReadOnly();
 
     public bool IsServerAlive => _server != null;
 
     public void Start() {
         _server = new LobbyServer();
 
-        DynamicUIManager.CreateModal<ServerHostingModal>();
+        DynamicUIManager.CreateModal<InitLobbyConnection>(SERVER_IP);
         SimulationRunner.OnGameObjectDestroyed += End;
+    }
+
+    public void StartHostClient(string username) {
+        _hostClient = new LobbyClient(SERVER_IP, username);
     }
 
     public void End() {

@@ -46,33 +46,6 @@ public class ClientMode : IMode {
         return robots;
     }
 
-    public Task<Result<LobbyMessage?, Exception>> SelectRobot(string pathToRobotMira) {
-        if (!File.Exists(pathToRobotMira)) {
-            Logger.Log("Robot does not exist", LogLevel.Error);
-            return Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("Robot file does not exist.")));
-        }
-
-        var robot = new DataRobot {
-            Name = Path.GetFileNameWithoutExtension(pathToRobotMira),
-            Data = ByteString.CopyFrom(File.ReadAllBytes(pathToRobotMira)),
-            // Guid = _client.Guid
-        };
-
-        ActionState = ClientActionState.UploadingData;
-
-        Task < Result < LobbyMessage ?, Exception >> task;
-        try {
-            task = _client.UploadRobotData(robot);
-        } catch (Exception e) {
-            Logger.Log("Failed to upload robot data", LogLevel.Error);
-            ActionState = ClientActionState.Idle;
-            return Task.FromResult(new Result<LobbyMessage?, Exception>(e));
-        }
-
-        ActionState = ClientActionState.Idle;
-        return task;
-    }
-
     public void Start() {
         DynamicUIManager.CreateModal<ConnectToMultiplayerModal>();
         SimulationRunner.OnGameObjectDestroyed += End;
@@ -87,32 +60,6 @@ public class ClientMode : IMode {
                 ConnectionState = ClientConnectionState.Connected;
             }
         });
-    }
-
-    public void RequestServerRobotData() {
-        ActionState = ClientActionState.DownloadingData;
-
-        _client.RequestServerRobotData().ContinueWith(t => {
-            if (t.IsFaulted) {
-                Logger.Log("Failed to request robot data from server", LogLevel.Error);
-                ActionState = ClientActionState.Idle;
-                return;
-            }
-
-            string root = ParsePath(Path.Combine("$appdata/Autodesk/Synthesis", _multiplayerRobotFolder), '/');
-
-            foreach (DataRobot robot in _client.RobotsFromServer) {
-                string path = Path.Combine(root, robot.Name + ".mira");
-                var bytes   = robot.Data.ToByteArray();
-                if (!File.Exists(path)) {
-                    File.Create(path);
-                }
-
-                File.WriteAllBytes(path, bytes);
-            }
-        });
-
-        ActionState = ClientActionState.Idle;
     }
 
     public void Update() {}

@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UI;
+using UnityEditor;
 using UnityEngine.EventSystems;
 using Utilities.ColorManager;
 using UButton     = UnityEngine.UI.Button;
@@ -755,6 +756,8 @@ namespace Synthesis.UI.Dynamic {
         public FontStyles FontStyle     => _unityText.fontStyle;
         public bool IsFontSizeAutomatic => _unityText.enableAutoSizing;
 
+        public Color Color => _unityText.color;
+
         public static readonly Func<Label, Label> VerticalLayoutTemplate = (Label label) => {
             return label.SetTopStretch(anchoredY: label.Parent!.HeightOfChildren - label.Size.y + 15f);
         };
@@ -1075,6 +1078,7 @@ namespace Synthesis.UI.Dynamic {
             var ifObj = unityObject.transform.Find("InputField");
             _tmpInput = ifObj.GetComponent<TMP_InputField>();
             _hint     = new Label(this, ifObj.Find("Text Area").Find("Placeholder").gameObject, null);
+            _hint.SetColor(_hint.Color * new Color(1,1,1,0.6f));
             _label    = new Label(this, unityObject.transform.Find("Label").gameObject, null);
             _tmpInput.onValueChanged.AddListener(x => {
                 if (_eventsActive && OnValueChanged != null)
@@ -1118,6 +1122,21 @@ namespace Synthesis.UI.Dynamic {
         public InputField SetValueTextColor(Color color) {
             Debug.Log(color);
             RootGameObject.transform.Find("InputField/Text Area/Text").GetComponent<TextMeshProUGUI>().color = color;
+            return this;
+        }
+
+        public InputField Activate() {
+            _tmpInput.ActivateInputField();
+            return this;
+        }
+
+        public InputField Deactivate() {
+            _tmpInput.DeactivateInputField();
+            return this;
+        }
+
+        public InputField SetCharacterValidator(TMP_InputField.CharacterValidation validation) {
+            _tmpInput.characterValidation = validation;
             return this;
         }
     }
