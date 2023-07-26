@@ -1224,6 +1224,23 @@ namespace Synthesis.UI.Dynamic {
                 _image.SetCornerRadius(6);
         }
 
+        public Button SetTransition(Selectable.Transition transition) {
+            _unityButton.transition = transition;
+            return this;
+        }
+
+        public Button SetInteractableColors(
+            ColorManager.SynthesisColor highlightedColor = ColorManager.SynthesisColor.InteractiveHover,
+            ColorManager.SynthesisColor pressedColor     = ColorManager.SynthesisColor.InteractiveSelect,
+            float fadeDuration                           = 0.1F) {
+            _unityButton.colors = new ColorBlock { normalColor = Color.white,
+                highlightedColor                               = ColorManager.GetColor(highlightedColor),
+                pressedColor                                   = ColorManager.GetColor(pressedColor),
+                selectedColor                                  = ColorManager.GetColor(highlightedColor),
+                disabledColor = new Color32(191, 191, 191, 255), fadeDuration = fadeDuration, colorMultiplier = 1F };
+            return this;
+        }
+
         public Button StepIntoLabel(Action<Label> mod) {
             if (_label != null)
                 mod(_label);

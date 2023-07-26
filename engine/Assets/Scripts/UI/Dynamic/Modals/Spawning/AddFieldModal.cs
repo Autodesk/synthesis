@@ -29,7 +29,7 @@ namespace Synthesis.UI.Dynamic {
 
             Title.SetText("Field Selection");
 
-            ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("PlusIcon"))
+            ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("plus"))
                 .SetColor(ColorManager.SynthesisColor.MainText);
 
             AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {

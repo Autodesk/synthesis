@@ -25,8 +25,9 @@ namespace UI.Dynamic.Modals.Spawning {
             _files = Directory.GetFiles(_root).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
 
             Title.SetText("Robot Selection");
-
-            ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
+            
+            ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("plus"))
+                .SetColor(ColorManager.SynthesisColor.MainText);
 
             AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
                 if (_selectedIndex != -1) {

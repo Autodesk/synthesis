@@ -102,6 +102,7 @@ public class RobotSwitchPanel : PanelDynamic {
     private void UpdateState(RobotSimObject robot, Toggle toggle, bool state) {
         if (state) {
             RobotSimObject.CurrentlyPossessedRobot = robot.Name;
+            MainHUD.ConfigRobot                    = robot;
             _scrollView.Content.ChildrenReadOnly.OfType<Toggle>().ForEach(x => {
                 x.DisableEvents<Toggle>();
                 x.State = false;
@@ -111,6 +112,7 @@ public class RobotSwitchPanel : PanelDynamic {
             toggle.State = true;
             toggle.EnableEvents<Toggle>();
         } else {
+            MainHUD.ConfigRobot                    = null;
             RobotSimObject.CurrentlyPossessedRobot = string.Empty;
         }
     }
