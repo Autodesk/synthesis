@@ -114,6 +114,7 @@ public class ZoneConfigPanel : PanelDynamic {
         });
 
         CancelButton.AddOnClickedEvent(b => {
+            GizmoManager.ExitGizmo();
             _pressedButtonToClose = true;
             DoCancel();
             DynamicUIManager.ClosePanel<ZoneConfigPanel>();
