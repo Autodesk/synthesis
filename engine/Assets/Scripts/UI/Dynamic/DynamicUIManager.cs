@@ -19,7 +19,7 @@ namespace Synthesis.UI.Dynamic {
         private static Dictionary<Type, (PanelDynamic, bool)> _persistentPanels =
             new Dictionary<Type, (PanelDynamic, bool)>();
         public static bool AnyPanels              => _persistentPanels.Count > 0;
-        public static Content _screenSpaceContent = null;
+        public static Content _screenSpaceContent  = null;
         public static Content ScreenSpaceContent {
             get {
                 if (_screenSpaceContent == null) {

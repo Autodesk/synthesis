@@ -136,10 +136,10 @@ public static class MainHUD {
     public static void Setup() {
         _topDrawerItems.Clear();
         _bottomDrawerItems.Clear();
-        _accordionButton  = new Button(null, GameObject.Find("MainHUD").transform.Find("Accordion").gameObject, null);
-        _tabDrawerContent = new Content(null, GameObject.Find("MainHUD").transform.Find("TabDrawer").gameObject, null);
-        _tabDrawerGradient = _tabDrawerContent.RootGameObject.GetComponent<GradientImageUpdater>()
-            ?? _tabDrawerContent.RootGameObject.AddComponent<GradientImageUpdater>();
+        _accordionButton   = new Button(null, GameObject.Find("MainHUD").transform.Find("Accordion").gameObject, null);
+        _tabDrawerContent  = new Content(null, GameObject.Find("MainHUD").transform.Find("TabDrawer").gameObject, null);
+        _tabDrawerGradient = _tabDrawerContent.RootGameObject.GetComponent<GradientImageUpdater>() ??
+                             _tabDrawerContent.RootGameObject.AddComponent<GradientImageUpdater>();
         _tabDrawerGradient.GradientAngle = Mathf.PI * (3f / 2f);
         _logoImage   = new Image(_tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("Logo").gameObject);
         _closeButton = new Button(

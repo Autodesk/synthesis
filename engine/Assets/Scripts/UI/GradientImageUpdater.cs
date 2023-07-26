@@ -16,7 +16,7 @@ namespace UI {
         public float Radius = 8;
         public Color StartColor;
         public Color EndColor;
-        public float GradientAngle = 0;
+        public float GradientAngle  = 0;
         public float GradientSpread = 1;
 
         private Material _material;
@@ -49,7 +49,8 @@ namespace UI {
             var rect = ((RectTransform) transform).rect;
 
             GradientAngle %= 2f * Mathf.PI;
-            if (GradientAngle < 0) GradientAngle += 2f * Mathf.PI;
+            if (GradientAngle < 0)
+                GradientAngle += 2f * Mathf.PI;
 
             GradientSpread = Mathf.Clamp(GradientSpread, 0.1f, 2f);
 
