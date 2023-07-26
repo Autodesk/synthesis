@@ -33,6 +33,8 @@ namespace UI.Dynamic.Panels.MixAndMatch
 
         private Button _addButton;
         private Button _removeButton;
+
+        private GameObject _selectedPoint = null;
         
         // TODO: Remove and replace with the vert layout in dynamic components after merge
         private readonly Func<UIComponent, UIComponent> VerticalLayout = (u) =>
@@ -88,44 +90,43 @@ namespace UI.Dynamic.Panels.MixAndMatch
             CancelButton.RootGameObject.SetActive(false);
             
             _scrollView = MainContent.CreateScrollView().SetStretch<ScrollView>(bottomPadding: 60f);
-            
-            var addPointButton = MainContent.CreateButton()
-                .SetTopStretch<Button>()
-                .StepIntoLabel(l => l.SetText("Add Snap Point"))
-                .AddOnClickedEvent(_ => {
-                    AddPoint(InstantiatePointGameObject(new ConnectionPointData()));
-                })
-                .ApplyTemplate(VerticalLayout);
+
+            CreateAddRemoveButtons();
 
             _partGameObject = InstantiatePartGameObject();
-            CreateConnectionPoints();
+            
+            InstantiatePartGameObjects();
+            PopulateScrollView();
             
             return true;
         }
 
-        private void CreateButtons() {
+        private void CreateAddRemoveButtons() {
             (Content left, Content right) = MainContent.CreateSubContent(new Vector2(400, 50))
                 .SetBottomStretch<Content>()
                 .SplitLeftRight((PANEL_WIDTH - 10f) / 2f, 10f);
 
-                _addButton = left.CreateButton("Add").SetStretch<Button>().AddOnClickedEvent(
-                    b => { DynamicUIManager.CreateModal<AddRobotModal>(); });
-                _removeButton = right.CreateButton("Remove").SetStretch<Button>().AddOnClickedEvent(b => {
-                    RobotSimObject.RemoveRobot(RobotSimObject.CurrentlyPossessedRobot);
-                    PopulateScrollView();
-                    if (RobotSimObject.SpawnedRobots.Count < RobotSimObject.MAX_ROBOTS)
-                        _addButton.ApplyTemplate<Button>(EnableButton);
-                });
+            _addButton = left.CreateButton("Add").SetStretch<Button>().AddOnClickedEvent(_ =>
+                AddScrollViewEntry(InstantiatePointGameObject(new ConnectionPointData())));
+            _removeButton = right.CreateButton("Remove").SetStretch<Button>().AddOnClickedEvent(_ => {
+                if (_selectedPoint != null) _connectionGameObjects.Remove(_selectedPoint);
+                PopulateScrollView();
+                GizmoManager.ExitGizmo();
+            });
         }
 
-        private void CreateConnectionPoints()
+        private void PopulateScrollView()
         {
-            //_scrollView.Content.DeleteAllChildren();
+            _scrollView.Content.DeleteAllChildren();
             
+            _connectionGameObjects.ForEach(pointGameObject => {
+                AddScrollViewEntry(pointGameObject);
+            });
+        }
+        
+        private void InstantiatePartGameObjects() {
             _partData.ConnectionPoints.ForEach(point => {
-                var pointGameObject = InstantiatePointGameObject(point);
-                
-                AddPoint(pointGameObject);
+                InstantiatePointGameObject(point);
             });
         }
 
@@ -146,7 +147,7 @@ namespace UI.Dynamic.Panels.MixAndMatch
             return gameObject;
         }
 
-        private void AddPoint(GameObject point)
+        private void AddScrollViewEntry(GameObject point)
         {
             var toggle = _scrollView.Content
                 .CreateToggle(label: "Connection Point")
@@ -161,6 +162,7 @@ namespace UI.Dynamic.Panels.MixAndMatch
 
         private void SelectConnectionPoint(GameObject point, Toggle toggle, bool state) {
             if (state) {
+                _selectedPoint = point;
                 GizmoManager.SpawnGizmo(point.transform,
                     t => {
                         point.transform.position = t.Position;
@@ -174,6 +176,7 @@ namespace UI.Dynamic.Panels.MixAndMatch
                 toggle.SetStateWithoutEvents(true);
             }
             else {
+                _selectedPoint = null;
                 GizmoManager.ExitGizmo();
             }
         }
