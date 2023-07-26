@@ -604,6 +604,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         mira.MainObject.transform.rotation = rotation;
 
         simObject.Possess();
+        MainHUD.ConfigRobot = simObject;
 
         if (spawnGizmo)
             GizmoManager.SpawnGizmo(simObject);
@@ -619,6 +620,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         if (robot == CurrentlyPossessedRobot)
             CurrentlyPossessedRobot = string.Empty;
         _spawnedRobots.Remove(robot);
+        MainHUD.ConfigRobot = null;
         return SimulationManager.RemoveSimObject(robot);
     }
 
