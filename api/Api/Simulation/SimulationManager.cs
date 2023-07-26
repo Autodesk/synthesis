@@ -5,22 +5,24 @@ using System.Collections.ObjectModel;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.Utilities;
 
+#nullable enable
+
 namespace SynthesisAPI.Simulation {
     public static class SimulationManager {
         public delegate void SimObjectEvent(SimObject entity);
 
-        public static event SimObjectEvent OnNewSimulationObject;
-        public static event SimObjectEvent OnRemoveSimulationObject;
+        public static event SimObjectEvent? OnNewSimulationObject;
+        public static event SimObjectEvent? OnRemoveSimulationObject;
         
         internal static Dictionary<string, SimObject> _simObjects = new Dictionary<string, SimObject>();
         public static IReadOnlyDictionary<string, SimObject> SimulationObjects
             = new ReadOnlyDictionary<string, SimObject>(_simObjects);
 
         public delegate void UpdateDelegate();
-        public static event UpdateDelegate OnDriverUpdate;
-        public static event UpdateDelegate OnBehaviourUpdate;
-        public static event UpdateDelegate OnDriverFixedUpdate;
-        public static event UpdateDelegate OnBehaviourFixedUpdate;
+        public static event UpdateDelegate? OnDriverUpdate;
+        public static event UpdateDelegate? OnBehaviourUpdate;
+        public static event UpdateDelegate? OnDriverFixedUpdate;
+        public static event UpdateDelegate? OnBehaviourFixedUpdate;
 
 
         // TODO: Switch to using guids cuz all the signals have the same name
