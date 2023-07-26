@@ -6,11 +6,12 @@ namespace Synthesis.UI.Dynamic {
         private string _selectedView = "Orbit";
         private string[] _viewOptions;
 
-        public ChangeViewModal() : base(new Vector2(400, 40)) {}
+        public ChangeViewModal() : base(new Vector2(400, 55)) {}
 
         public override void Create() {
             Title.SetText("Change View");
-            Description.SetText("Change the current camera view");
+
+            ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("CameraIcon"));
 
             CameraController controller = Camera.main.GetComponent<CameraController>();
 

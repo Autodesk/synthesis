@@ -216,9 +216,9 @@ namespace Utilities.ColorManager {
             InteractiveElementSolid,
             InteractiveElementLeft,
             InteractiveElementRight,
-            InteractiveSecondary,
             Background,
             BackgroundSecondary,
+            InteractiveBackground,
             BackgroundHUD,
             InteractiveHover,
             InteractiveSelect,
@@ -234,7 +234,8 @@ namespace Utilities.ColorManager {
             HighlightSelect,
             SkyboxTop,
             SkyboxBottom,
-            FloorGrid
+            FloorGrid,
+            AcceptCancelButtonText
         }
     }
 }
