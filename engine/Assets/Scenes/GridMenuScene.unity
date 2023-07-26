@@ -4061,6 +4061,7 @@ GameObject:
   - component: {fileID: 975497623}
   - component: {fileID: 975497622}
   - component: {fileID: 975497624}
+  - component: {fileID: 975497625}
   m_Layer: 5
   m_Name: LaunchButton
   m_TagString: Untagged
@@ -4170,19 +4171,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 975497622}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8178300923073055982}
-        m_TargetAssemblyTypeName: Synthesis.UI.MenuManager, CoreEngine
-        m_MethodName: Singleplayer
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
+--- !u!114 &975497625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 975497620}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91db329aefaa1264380c444c16a51a64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1034264194
 GameObject:
   m_ObjectHideFlags: 0
@@ -6599,8 +6600,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -340, y: 0}
-  m_SizeDelta: {x: -1160, y: -500}
+  m_AnchoredPosition: {x: -330, y: 0}
+  m_SizeDelta: {x: -1180, y: -500}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1618772385
 MonoBehaviour:
