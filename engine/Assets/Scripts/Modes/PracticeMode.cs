@@ -60,8 +60,6 @@ public class PracticeMode : IMode {
     /// Adds buttons to the main hud (panel on left side)
     public void ConfigureMainHUD() {
         MainHUD.SetUpPractice();
-
-        EventBus.NewTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
     }
 
     private void HandleScoreEvent(IEvent e) {
