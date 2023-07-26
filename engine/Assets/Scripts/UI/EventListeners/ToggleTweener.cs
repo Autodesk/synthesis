@@ -8,7 +8,6 @@ namespace UI.EventListeners {
     public class ToggleTweener : MonoBehaviour {
         [HideInInspector]
         public Synthesis.UI.Dynamic.Toggle _synthesisToggle;
-
         [SerializeField]
         private Toggle _unityToggle;
         [SerializeField]
