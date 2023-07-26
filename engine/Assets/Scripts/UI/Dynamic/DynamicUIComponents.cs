@@ -803,6 +803,12 @@ namespace Synthesis.UI.Dynamic {
             set { SetState(value); }
         }
 
+        public void SetStateWithoutEvents(bool state) {
+            DisableEvents<Toggle>();
+            State = state;
+            EnableEvents<Toggle>();
+        }
+
         public Toggle(UIComponent? parent, GameObject unityObject, bool isOn, string text) : base(parent, unityObject) {
             _titleLabel  = new Label(this, RootGameObject.transform.Find("Label").gameObject, null);
             _unityToggle = RootGameObject.transform.Find("Toggle").GetComponent<UToggle>();

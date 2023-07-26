@@ -117,5 +117,10 @@ namespace SimObjects.MixAndMatch {
             Position = position;
             Normal = normal;
         }
+
+        public ConnectionPointData() {
+            Position = Vector3.zero;
+            Normal = Vector3.forward;
+        }
     }
 }
