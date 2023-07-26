@@ -78,4 +78,5 @@ public static class SynthesisTweenScaleFunctions {
 
 public static class SynthesisTweenInterpolationFunctions {
     public static Func<float, float, float, float> FloatInterp = (t, a, b) => (1 - t) * a + t * b;
+    public static Func<float, float, float, int> IntInterp = (t, a, b) => Mathf.RoundToInt((1 - t) * a + t * b);
 }

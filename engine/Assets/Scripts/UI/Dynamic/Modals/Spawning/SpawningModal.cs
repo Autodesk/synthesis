@@ -20,7 +20,7 @@ public class SpawningModal : ModalDynamic {
         Title.SetText("Spawning");
         Description.SetText("What do you want to spawn?");
 
-        ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("PlusIcon"))
+        ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("plus"))
             .SetColor(ColorManager.SynthesisColor.MainText);
 
         var spacing           = 15f;

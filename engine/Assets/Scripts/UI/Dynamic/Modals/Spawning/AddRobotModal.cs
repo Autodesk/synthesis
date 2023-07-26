@@ -27,7 +27,7 @@ namespace UI.Dynamic.Modals.Spawning {
             Title.SetText("Robot Selection");
             Description.SetText("Choose which robot you wish to play as");
 
-            ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("PlusIcon"))
+            ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("plus"))
                 .SetColor(ColorManager.SynthesisColor.MainText);
 
             AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
