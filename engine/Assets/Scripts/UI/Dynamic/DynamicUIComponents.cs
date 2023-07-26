@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UI;
+using UI.EventListeners;
 using UnityEngine.EventSystems;
 using UnityEngine.PlayerLoop;
 using Utilities.ColorManager;
@@ -892,6 +893,7 @@ namespace Synthesis.UI.Dynamic {
                 leftPadding: 15f, anchoredY: toggle.Parent!.HeightOfChildren - toggle.Size.y + 15f);
 
         public event Action<Toggle, bool> OnStateChanged;
+        private GameObject _unityObject;
         private Label _titleLabel;
         public Label TitleLabel => _titleLabel;
         private UToggle _unityToggle;
@@ -902,7 +904,7 @@ namespace Synthesis.UI.Dynamic {
         public Image EnabledImage => _enabledImage;
 
         private Color _disabledColor;
-        private Color DisabledColor {
+        public Color DisabledColor {
             get => _disabledColor;
             set {
                 _disabledColor = value;
@@ -925,6 +927,12 @@ namespace Synthesis.UI.Dynamic {
 
         public Toggle(UIComponent? parent, GameObject unityObject, bool isOn, string text, bool radioSelect)
             : base(parent, unityObject) {
+            _unityObject = unityObject;
+
+            if (unityObject.transform.Find("Toggle").TryGetComponent<ToggleTweener>(out var tweener)) {
+                tweener._synthesisToggle = this;
+            }
+
             _titleLabel  = new Label(this, RootGameObject.transform.Find("Label").gameObject, null);
             _unityToggle = RootGameObject.transform.Find("Toggle").GetComponent<UToggle>();
             _unityToggle.onValueChanged.AddListener(x => {
@@ -979,6 +987,15 @@ namespace Synthesis.UI.Dynamic {
             mod(TitleLabel);
             return this;
         }
+
+        public void SetStateWithoutEvents(bool state) {
+            DisableEvents<Toggle>();
+            SetState(state);
+            if (_unityObject.transform.Find("Toggle").TryGetComponent<ToggleTweener>(out var tweener)) {
+                tweener.OnStateChanged();
+            }
+            EnableEvents<Toggle>();
+        }
     }
 
     public class Slider : UIComponent {
@@ -1005,7 +1022,7 @@ namespace Synthesis.UI.Dynamic {
             var infoObj  = unityObject.transform.Find("Info");
             _titleLabel  = new Label(this, infoObj.Find("Label").gameObject, null);
             _valueLabel  = new Label(this, infoObj.Find("Value").gameObject, null);
-            _unitySlider = unityObject.transform.Find("Slider").GetComponent<USlider>();
+            _unitySlider = unityObject.transform.Find("ScaleAnim").Find("Slider").GetComponent<USlider>();
             _titleLabel.SetText(label);
             _unitySlider.onValueChanged.AddListener(x => {
                 var roundedVal = Math.Round(x, 2);

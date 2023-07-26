@@ -37,7 +37,7 @@ namespace UI {
             }
             image.material = _material;
 
-            if (TryGetComponent<ButtonEventListener>(out var listener))
+            if (TryGetComponent<HoverEventListener>(out var listener))
                 listener.ImageUpdater = this;
 
             Refresh();
