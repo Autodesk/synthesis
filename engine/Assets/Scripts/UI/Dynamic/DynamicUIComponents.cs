@@ -531,7 +531,8 @@ namespace Synthesis.UI.Dynamic {
             where T : UIComponent {
             GradientImageUpdater gradientImage = RootGameObject.GetComponent<GradientImageUpdater>();
             if (gradientImage) {
-                gradientImage.Horizontal = horizontal;
+                gradientImage.GradientAngle = Mathf.PI * (horizontal ? 0 : 1) * (3f / 2f);
+                gradientImage.Refresh();
             }
 
             return (this as T)!;
