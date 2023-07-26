@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 namespace UI {
     [RequireComponent(typeof(Image))]
+    [ExecuteAlways]
     public class GradientImageUpdater : MonoBehaviour {
         private static readonly int Props          = Shader.PropertyToID("_WidthHeightRadius");
         private static readonly int StartColorProp = Shader.PropertyToID("_StartColor");
@@ -34,6 +35,10 @@ namespace UI {
             if (enabled && _material != null) {
                 Refresh();
             }
+        }
+
+        private void OnValidate() {
+            Refresh();
         }
 
         public void Refresh() {
