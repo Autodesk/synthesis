@@ -22,7 +22,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
             CancelButton.AddOnClickedEvent(x => { DynamicUIManager.CreateModal<EditThemeModal>(); });
 
-            ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("plus"))
+            ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"))
                 .SetColor(ColorManager.SynthesisColor.MainText);
         }
 
