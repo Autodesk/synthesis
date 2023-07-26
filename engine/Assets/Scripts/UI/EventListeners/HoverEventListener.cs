@@ -31,7 +31,6 @@ namespace UI.EventListeners {
         public GradientImageUpdater ImageUpdater { set => _imageUpdater = value; }
 
         public void OnPointerEnter(PointerEventData eventData) {
-            Debug.Log("Enter");
             SetTintColor(_hoverColor);
             SetScaleMultiplier(_hoverScaleMultiplier);
         }
@@ -47,7 +46,6 @@ namespace UI.EventListeners {
         private bool _pointerDown;
 
         public void OnPointerDown(PointerEventData eventData) {
-            Debug.Log("Down");
             SetTintColor(_selectedColor);
             SetScaleMultiplier(_clickedScaleMultiplier);
             _pointerDown = true;
