@@ -134,7 +134,9 @@ public static class MainHUD {
 
         _topDrawerItems.Clear();
         _bottomDrawerItems.Clear();
-        _accordionButton  = new Button(null, GameObject.Find("MainHUD").transform.Find("Accordion").gameObject, null);
+        _accordionButton = new Button(null, GameObject.Find("MainHUD").transform.Find("Accordion").gameObject, null);
+        _accordionButton.Image.SetColor(ColorManager.SynthesisColor.Icon);
+        
         _tabDrawerContent = new Content(null, GameObject.Find("MainHUD").transform.Find("TabDrawer").gameObject, null);
         _logoImage   = new Image(_tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("Logo").gameObject);
         _closeButton = new Button(
@@ -147,24 +149,32 @@ public static class MainHUD {
             _itemContainer, _itemContainer.RootGameObject.transform.Find("BottomItemContainer").gameObject, null);
         _spawnButton = new Button(
             _tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("SpawnButton").gameObject, null);
-        _spawnIcon  = new Image(_spawnButton, _spawnButton.RootGameObject.transform.Find("PlusIcon").gameObject);
+        
+        
+        _spawnIcon  = new Image(_spawnButton, _spawnButton.RootGameObject.transform.Find("Button").Find("PlusIcon").gameObject);
+        
         _homeButton = new Button(
-            _tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("HomeButton").gameObject, null);
-        _homeIcon = new Image(_homeButton, _homeButton.RootGameObject.transform.Find("HomeIcon").gameObject);
+            null, _tabDrawerContent.RootGameObject.transform.Find("HomeButton").gameObject, null);
+        _homeButton.StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText))
+            .Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptButton));
+        
+        _homeIcon = new Image(_homeButton, _homeButton.RootGameObject.transform.Find("Button").Find("HomeIcon").gameObject);
 
         _closeButton.OnClicked += (b) => Collapsed = true;
 
-        _spawnButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.Background)
-            .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText));
-        _homeButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.Background)
-            .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText));
+        /*_spawnButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.Background)
+            .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText));*/
+        _spawnButton.StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText))
+            .Image.SetColor(ColorManager.SynthesisColor.BackgroundHUD);
+        _homeButton.StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText))
+            .Image.SetColor(ColorManager.SynthesisColor.BackgroundHUD);
 
         _accordionButton.OnClicked += (b) => { Collapsed = false; };
 
-        _spawnButton.SetTransition(Selectable.Transition.ColorTint).SetInteractableColors();
+        //_spawnButton.SetTransition(Selectable.Transition.ColorTint).SetInteractableColors();
 
         _homeButton.OnClicked += (b) => { DynamicUIManager.CreateModal<ExitSynthesisModal>(); };
-        _homeButton.SetTransition(Selectable.Transition.ColorTint).SetInteractableColors();
+        //_homeButton.SetTransition(Selectable.Transition.ColorTint).SetInteractableColors();
 
         _spawnCallback = b => { DynamicUIManager.CreateModal<SpawningModal>(); };
         _backCallback = b => { LeaveConfig(); };
@@ -213,15 +223,13 @@ public static class MainHUD {
 
         var drawerButtonObj = Object.Instantiate(SynthesisAssetCollection.GetUIPrefab("hud-drawer-item-base"),
             (drawerPosition == DrawerPosition.Top ? _topItemContainer : _bottomItemContainer).RootGameObject.transform);
-        drawerButtonObj.GetComponent<UnityEngine.UI.Image>().pixelsPerUnitMultiplier = 30;
+        drawerButtonObj.transform.Find("Button").GetComponent<UnityEngine.UI.Image>().pixelsPerUnitMultiplier = 30;
 
         var drawerButton = new Button(_tabDrawerContent, drawerButtonObj, null);
         drawerButton.Label!.SetText(title).SetFontSize(16);
         drawerButton.AddOnClickedEvent(onClick);
-
-        drawerButton.SetTransition(Selectable.Transition.ColorTint).SetInteractableColors();
-
-        var drawerIcon = new Image(_tabDrawerContent, drawerButtonObj.transform.Find("ItemIcon").gameObject);
+        
+        var drawerIcon = new Image(_tabDrawerContent, drawerButtonObj.transform.Find("Button").Find("ItemIcon").gameObject);
         
         if (icon != null)
             drawerIcon.SetSprite(icon);
