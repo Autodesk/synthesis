@@ -138,7 +138,7 @@ public static class MainHUD {
         _bottomDrawerItems.Clear();
         _accordionButton = new Button(null, GameObject.Find("MainHUD").transform.Find("Accordion").gameObject, null);
         _accordionButton.Image.SetColor(ColorManager.SynthesisColor.Icon);
-        _tabDrawerContent = new Content(null, GameObject.Find("MainHUD").transform.Find("TabDrawer").gameObject, null);
+        _tabDrawerContent  = new Content(null, GameObject.Find("MainHUD").transform.Find("TabDrawer").gameObject, null);
         _tabDrawerGradient = _tabDrawerContent.RootGameObject.GetComponent<GradientImageUpdater>() ??
                              _tabDrawerContent.RootGameObject.AddComponent<GradientImageUpdater>();
         _tabDrawerGradient.GradientAngle = Mathf.PI * (3f / 2f);
