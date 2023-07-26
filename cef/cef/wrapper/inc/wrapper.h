@@ -8,7 +8,7 @@ SYNTHESIS_BEGIN_EXTERN_C
 
 typedef struct OffscreenCefClientInterop OffscreenCefClientInterop;
 
-SYNTHESIS_EXPORT OffscreenCefClientInterop* CreateOffscreenCefClientInterop();
+SYNTHESIS_EXPORT OffscreenCefClientInterop* CreateOffscreenCefClientInterop(int width, int height);
 
 SYNTHESIS_EXPORT void DestroyOffscreenCefClientInterop(OffscreenCefClientInterop* interop);
 

@@ -3,6 +3,7 @@
 #define SYNTHESIS_OFFSCREEN_CEF_CLIENT_H_
 
 #include <include/cef_client.h>
+#include <include/cef_load_handler.h>
 #include <include/cef_render_handler.h>
 #include <include/wrapper/cef_helpers.h>
 
@@ -17,9 +18,11 @@ public:
 
 protected:
     virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override;
+    virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override;
 
 private:
     CefRefPtr<CefRenderHandler> renderHandler;
+    CefRefPtr<CefLoadHandler> loadHandler;
 
     IMPLEMENT_REFCOUNTING(OffscreenCefClient);
 };
@@ -42,6 +45,18 @@ private:
     int8_t* browserTextureBuffer;
 
     IMPLEMENT_REFCOUNTING(OffscreenCefRenderHandler);
+};
+
+class OffscreenCefLoadHandler : public CefLoadHandler {
+public:
+    CefRefPtr<CefBrowser> GetBrowserReference();
+
+private:
+    virtual void OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, TransitionType transitionType) override;
+
+    CefRefPtr<CefBrowser> browserReference;
+
+    IMPLEMENT_REFCOUNTING(OffscreenCefLoadHandler);
 };
 
 } // namespace synthesis

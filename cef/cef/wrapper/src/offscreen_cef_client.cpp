@@ -15,6 +15,10 @@ CefRefPtr<CefRenderHandler> OffscreenCefClient::GetRenderHandler() {
     return renderHandler;
 }
 
+CefRefPtr<CefLoadHandler> OffscreenCefClient::GetLoadHandler() {
+    return loadHandler;
+}
+
 OffscreenCefRenderHandler::OffscreenCefRenderHandler(const int& width, const int& height) {
     this->width = width;
     this->height = height;
@@ -42,6 +46,14 @@ void OffscreenCefRenderHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRe
 void OffscreenCefRenderHandler::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList& dirtyRects, const void* buffer, int width, int height) {
     std::lock_guard<std::mutex> lock(textureBufferGuard);
     memcpy(browserTextureBuffer, buffer, width * height * 4);
+}
+
+CefRefPtr<CefBrowser> OffscreenCefLoadHandler::GetBrowserReference() {
+    return browserReference;
+}
+
+void OffscreenCefLoadHandler::OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, TransitionType transitionType) {
+    browserReference = browser;
 }
 
 } // namespace synthesis

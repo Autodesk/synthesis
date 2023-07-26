@@ -10,9 +10,9 @@ struct OffscreenCefClientInterop {
     synthesis::OffscreenCefClient* instance;
 };
 
-SYNTHESIS_EXPORT OffscreenCefClientInterop* CreateOffscreenCefClientInterop() {
+SYNTHESIS_EXPORT OffscreenCefClientInterop* CreateOffscreenCefClientInterop(int width, int height) {
     OffscreenCefClientInterop* interop = new OffscreenCefClientInterop();
-    interop->instance = new synthesis::OffscreenCefClient(1280, 720);
+    interop->instance = new synthesis::OffscreenCefClient(width, height);
     return interop;
 }
 
