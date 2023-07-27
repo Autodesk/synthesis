@@ -162,9 +162,9 @@ if [[ -z "`apt-key list 2> /dev/null | grep -i llvm`" ]]; then
     # Delete the key in the old format
     apt-key del AF4F7421
 fi
-add-apt-repository "${REPO_NAME}"
+add-apt-repository "deb http://apt.llvm.org/jammy/  llvm-toolchain-jammy-16 main"
 apt-get update
-PKG="clang-format-$LLVM_VERSION"
+PKG="clang-format-16"
 if [[ $ALL -eq 1 ]]; then
     # same as in test-install.sh
     # No worries if we have dups
