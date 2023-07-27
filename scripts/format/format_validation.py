@@ -9,6 +9,9 @@ def main():
     if sys.platform != "linux":
         print("Warning: This script was designed to be run by github action linux machines")
 
+    os.system("ls")
+    os.system("scripts/format/install_clang_format.sh 16 all")
+
     files = []
     for dir in FILES_DIRS:
         for root, _, filenames in os.walk(dir):
