@@ -46,30 +46,27 @@ namespace Synthesis.UI {
         }
 
         public void ShowSocials() {
-            GameObject[] objects = GameObject.FindGameObjectsWithTag("socials-drop-down");
-            foreach (GameObject gObject in objects) {
-                CanvasGroup cGroup = gObject.GetComponent<CanvasGroup>();
-                cGroup.alpha = 1;
-                cGroup.interactable = true;
-            };
+            Transform linksTransform = GameObject.Find("Canvas").transform.Find("MenuPanel").transform.Find("Links").transform;
+            CanvasGroup cGroup = linksTransform.Find("Socials").transform.Find("SocialsDropDown").gameObject.GetComponent<CanvasGroup>();
+            cGroup.alpha = 1;
+            cGroup.interactable = true;
+
+            cGroup = linksTransform.Find("SocialsDropDownHide").gameObject.GetComponent<CanvasGroup>();
+            cGroup.alpha = 0;
+            cGroup.interactable = false;
+            linksTransform.Find("SocialsDropDownHide").gameObject.SetActive(false);
         }
 
         public void HideSocials() {
-            if (socialDropDownHover) return;
-            GameObject[] objects = GameObject.FindGameObjectsWithTag("socials-drop-down");
-            foreach (GameObject gObject in objects) {
-                CanvasGroup cGroup = gObject.GetComponent<CanvasGroup>();
-                cGroup.alpha = 0;
-                cGroup.interactable = false;
-            };
-        }
+            Transform linksTransform = GameObject.Find("Canvas").transform.Find("MenuPanel").transform.Find("Links").transform;
+            CanvasGroup cGroup = linksTransform.Find("Socials").transform.Find("SocialsDropDown").gameObject.GetComponent<CanvasGroup>();
+            cGroup.alpha = 0;
+            cGroup.interactable = false;
 
-        public void EnterSocialsDrop() {
-            socialDropDownHover = true;
-        }
-
-        public void ExitSocialsDrop() {
-            socialDropDownHover = false;
+            linksTransform.Find("SocialsDropDownHide").gameObject.SetActive(true);
+            cGroup = linksTransform.Find("SocialsDropDownHide").gameObject.GetComponent<CanvasGroup>();
+            cGroup.alpha = 1;
+            cGroup.interactable = true;
         }
     }
 }
