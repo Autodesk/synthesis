@@ -13,10 +13,7 @@ jobs:
     steps:
     - name: Get Clang Format
       run: |
-        sudo apt-get update
-        wget https://apt.llvm.org/llvm.sh
-        chmod +x llvm.sh
-        sudo ./llvm.sh 16
+        ./scripts/format/install_clang_format.sh 16 all
     - name: Checkout Code
       uses: actions/checkout@v2
     - name: Python Setup
