@@ -10,7 +10,7 @@ def main():
         print("Warning: This script was designed to be run by github action linux machines")
 
     os.system("ls")
-    os.system("scripts/format/install_clang_format.sh 16 all")
+    os.system("sudo scripts/format/install_clang_format.sh 16 all")
 
     files = []
     for dir in FILES_DIRS:
