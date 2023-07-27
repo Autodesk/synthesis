@@ -11,6 +11,7 @@ def main():
 
     os.system("ls")
     os.system("sudo scripts/format/install_clang_format.sh 16")
+    os.system("clang-format --version")
 
     files = []
     for dir in FILES_DIRS:
@@ -25,7 +26,7 @@ def main():
             previous_file_state = f.readlines()
 
         subprocess.call(
-            ["clang-format-16", "-i", "-style=file", file],
+            ["clang-format", "-i", "-style=file", file],
             bufsize=1,
             shell=False,
         )
