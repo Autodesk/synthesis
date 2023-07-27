@@ -174,3 +174,6 @@ if [[ $ALL -eq 1 ]]; then
     fi
 fi
 apt-get install -y $PKG
+echo "--------------------------------------"
+echo "${REPO_NAME}"
+echo "--------------------------------------"

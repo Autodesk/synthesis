@@ -9,10 +9,8 @@ def main():
     if sys.platform != "linux":
         print("Warning: This script was designed to be run by github action linux machines")
 
-    os.system("ls")
-    os.system("sudo scripts/format/install_clang_format.sh 16")
-    os.system("clang-format-16 --version")
-    os.system("clang-format --version")
+    if not os.path.exists("/usr/bin/clang-format-16") and sys.platform == "linux":
+        os.system("sudo scripts/format/install_clang_format.sh 16")
 
     files = []
     for dir in FILES_DIRS:
@@ -27,7 +25,7 @@ def main():
             previous_file_state = f.readlines()
 
         subprocess.call(
-            ["clang-format", "-i", "-style=file", file],
+            ["clang-format-16", "-i", "-style=file", file],
             bufsize=1,
             shell=False,
         )
