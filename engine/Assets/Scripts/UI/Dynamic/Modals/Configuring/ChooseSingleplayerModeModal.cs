@@ -12,11 +12,13 @@ public class ChooseSingleplayerModeModal : ModalDynamic {
         return u;
     };
 
-    public ChooseSingleplayerModeModal() : base(new Vector2(300, 200)) {}
+    public ChooseSingleplayerModeModal() : base(new Vector2(230, 200)) {}
 
     public override void Create() {
         Title.SetText("Choose Mode");
         Description.SetText("Choose a mode to play in.");
+
+        ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("settings"));
 
         AcceptButton.RootGameObject.SetActive(false);
         CancelButton.Label.SetText("Close");
