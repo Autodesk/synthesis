@@ -2,7 +2,8 @@ name: Format Validation (Clang)
 
 on:
   workflow_dispatch: {}
-  push: {}
+  push:
+    branches: [ master, dev ]
   pull_request:
     branches: [ master, dev ]
 
