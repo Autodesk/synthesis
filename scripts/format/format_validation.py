@@ -11,6 +11,7 @@ def main():
 
     os.system("ls")
     os.system("sudo scripts/format/install_clang_format.sh 16")
+    os.system("clang-format-16 --version")
     os.system("clang-format --version")
 
     files = []
