@@ -138,22 +138,24 @@ namespace Synthesis.UI.Dynamic {
             return true;
         }
 
-        private static void TweenPanel(Type t, PanelDynamic panel, Vector2 direction, bool tweenIn, bool persistent = false) {
-            string tweenKey = Guid.NewGuid() + "_panel" + direction;
+        private static void TweenPanel(
+            Type t, PanelDynamic panel, Vector2 direction, bool tweenIn, bool persistent = false) {
+            string tweenKey        = Guid.NewGuid() + "_panel" + direction;
             GameObject unityObject = panel.UnityObject;
 
-            Vector3 inPosition   = panel.UnityObject.transform.localPosition;
-            Vector3 outPosition = inPosition + (Vector3)(((RectTransform) unityObject.transform).sizeDelta*direction*(persistent&&tweenIn ? -1 : 1));
+            Vector3 inPosition  = panel.UnityObject.transform.localPosition;
+            Vector3 outPosition = inPosition + (Vector3) (((RectTransform) unityObject.transform).sizeDelta *
+                                                          direction * (persistent && tweenIn ? -1 : 1));
 
             Vector3 tweenStart = tweenIn ? outPosition : inPosition;
-            Vector3 tweenEnd = tweenIn ? inPosition : outPosition;
+            Vector3 tweenEnd   = tweenIn ? inPosition : outPosition;
 
             if (tweenIn && persistent)
                 (tweenStart, tweenEnd) = (tweenEnd, tweenStart);
 
             SynthesisTween.MakeTween(tweenKey, tweenStart, tweenEnd, PANEL_TWEEN_DURATION,
-                (time, a, b) => Vector3.Lerp((Vector3)a, (Vector3)b, time),
-                SynthesisTweenScaleFunctions.EaseOutCubic, TweenCallback);
+                (time, a, b) => Vector3.Lerp((Vector3) a, (Vector3) b, time), SynthesisTweenScaleFunctions.EaseOutCubic,
+                TweenCallback);
 
             void TweenCallback(SynthesisTween.SynthesisTweenStatus status) {
                 if (unityObject == null) {
@@ -176,8 +178,7 @@ namespace Synthesis.UI.Dynamic {
                         panel.Delete_Internal();
 
                         _persistentPanels.Remove(t);
-                    }
-                    else 
+                    } else
                         panel.Hidden = true;
                 }
             }
@@ -195,7 +196,8 @@ namespace Synthesis.UI.Dynamic {
                 ClosePanel(typeof(T));
 
             if (PanelExists<T>() && typeof(T) != typeof(TooltipPanel)) {
-                Debug.Log("Failed to create, panel exists");   return false;
+                Debug.Log("Failed to create, panel exists");
+                return false;
             }
 
             var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("dynamic-panel-base"),
@@ -215,7 +217,7 @@ namespace Synthesis.UI.Dynamic {
                 EventBus.Push(new PanelCreatedEvent(panel, persistent));
 
             TweenPanel(typeof(T), panel, panel.TweenDirection, true);
-            
+
             AnalyticsManager.LogCustomEvent(AnalyticsEvent.PanelCreated, ("UIType", typeof(T).Name));
             return true;
         }
@@ -283,7 +285,7 @@ namespace Synthesis.UI.Dynamic {
             where T : PanelDynamic => ClosePanel(typeof(T), bypassTween);
 
   public static bool ClosePanel(Type t, bool bypassTween = false) {
-      Debug.Log("Close Panel");
+            Debug.Log("Close Panel");
             if (!PanelExists(t))
                 return false;
 
@@ -296,8 +298,7 @@ namespace Synthesis.UI.Dynamic {
                 panel.Delete_Internal();
 
                 _persistentPanels.Remove(t);
-            }
-            else
+            } else
                 TweenPanel(t, panel, panel.TweenDirection, false);
 
             AnalyticsManager.LogCustomEvent(AnalyticsEvent.PanelClosed, ("UIType", t.Name));

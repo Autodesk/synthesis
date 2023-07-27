@@ -791,8 +791,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                     ("WS", "Drivetrain Left"), ("IK", "Drivetrain Right"), ("E", "Intake"), ("Q", "Dispense"));
                 return;
             case "Swerve":
-                TooltipManager.CreateTooltip(
-                    ("WASD", "Drive"), ("< >", "Turn"), ("E", "Intake"), ("Q", "Dispense"));
+                TooltipManager.CreateTooltip(("WASD", "Drive"), ("< >", "Turn"), ("E", "Intake"), ("Q", "Dispense"));
                 return;
         }
     }

@@ -44,7 +44,7 @@ namespace UI.Dynamic.Panels.Tooltip {
         public override bool Create() {
             TweenDirection = Vector2.up;
             Title.SetText("");
-            
+
             var iconObj = new GameObject("Icon", typeof(RectTransform), typeof(UnityEngine.UI.Image));
             iconObj.transform.SetParent(HeaderRt);
             iconObj.transform.localScale = Vector3.one;
@@ -52,7 +52,7 @@ namespace UI.Dynamic.Panels.Tooltip {
             var iconContent =
                 new Content(null, iconObj, ICON_SIZE)
                     .StepIntoImage(i => i.SetSprite(SynthesisAssetCollection.GetSpriteByName("info-icon-white-solid")))
-                    .SetAnchoredPosition<Image>(Vector2.up*10);
+                    .SetAnchoredPosition<Image>(Vector2.up * 10);
 
             // Align top center
             var transform              = base.UnityObject.GetComponent<RectTransform>();
@@ -79,7 +79,8 @@ namespace UI.Dynamic.Panels.Tooltip {
                         .SplitLeftRight((KEY_CHAR_WIDTH * kvp.key.Length) + KEY_PADDING, HOZ_SPACING);
 
                 keyContent
-                    .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground).SetCornerRadius(3.5f))
+                    .StepIntoImage(
+                        i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground).SetCornerRadius(3.5f))
                     .CreateLabel(TOOLTIP_HEIGHT)
                     .SetText(kvp.key)
                     .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)

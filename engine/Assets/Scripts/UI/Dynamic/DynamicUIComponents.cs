@@ -29,7 +29,7 @@ namespace Synthesis.UI.Dynamic {
 
     public abstract class PanelDynamic {
         public const float MAIN_CONTENT_HORZ_PADDING = 25f;
-        public Vector2 TweenDirection                  = Vector2.right;
+        public Vector2 TweenDirection                = Vector2.right;
         public bool IsClosing                        = false;
 
         private float _leftContentPadding, _rightContentPadding;
@@ -119,8 +119,8 @@ namespace Synthesis.UI.Dynamic {
         public void Create_Internal(GameObject unityObject) {
             _unityObject = unityObject;
 
-            var header       = _unityObject.transform.Find("Header");
-            _headerRt        = header.GetComponent<RectTransform>();
+            var header = _unityObject.transform.Find("Header");
+            _headerRt  = header.GetComponent<RectTransform>();
 
             _panelIcon = new Image(null, header.Find("Image").gameObject);
             _panelIcon.SetColor(ColorManager.SynthesisColor.MainText);
