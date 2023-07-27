@@ -16,8 +16,7 @@ jobs:
         sudo apt-get update
         wget https://apt.llvm.org/llvm.sh
         chmod +x llvm.sh
-        sudo ./llvm.sh 16 all
-        sudo apt remove libc++-x.y libc++abi-x.y libunwind-x.y python3-lldb-x.y
+        sudo ./llvm.sh 16
     - name: Checkout Code
       uses: actions/checkout@v2
     - name: Python Setup
