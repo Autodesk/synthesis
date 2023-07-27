@@ -8,16 +8,16 @@ using Utilities.ColorManager;
 
 namespace UI.Dynamic.Panels.Tooltip {
     public class TooltipPanel : PanelDynamic {
-        private const float TOOLTIP_HEIGHT = 26;
+        private const float TOOLTIP_HEIGHT = 15;
         private const float HOZ_SPACING    = 15;
 
-        private const float KEY_CHAR_WIDTH = 13;
-        private const float KEY_PADDING    = 10;
+        private const float KEY_CHAR_WIDTH = 8;
+        private const float KEY_PADDING    = 12;
 
-        private const float DESC_CHAR_WIDTH = 13;
+        private const float DESC_CHAR_WIDTH = 11;
         private const float DESC_PADDING    = 12;
 
-        private static readonly Vector2 ICON_SIZE = new(43, 43);
+        private static readonly Vector2 ICON_SIZE = new(22, 22);
 
         private static float CalcContentWidth((string key, string description)[] tooltips) {
             float maxWidth = 0;
@@ -31,17 +31,10 @@ namespace UI.Dynamic.Panels.Tooltip {
         }
 
         private static float CalcContentHeight((string key, string description)[] tooltips) {
-            return (TOOLTIP_HEIGHT + 7.5f) * tooltips.Length - 49;
+            return (TOOLTIP_HEIGHT + 7.5f) * tooltips.Length - 76;
         }
 
         (string key, string description)[] _tooltips;
-
-        // TODO: Remove when merged with the rest of the UI and use the vertical layout in dynamic components
-        private static readonly Func<UIComponent, UIComponent> VERTICAL_LAYOUT = (u) => {
-            var offset = (-u.Parent!.RectOfChildren(u).yMin) + 7.5f;
-            u.SetTopStretch<UIComponent>(anchoredY: offset);
-            return u;
-        };
 
         public TooltipPanel((string key, string description)[] tooltips)
             : base(new Vector2(CalcContentWidth(tooltips), CalcContentHeight(tooltips))) {
@@ -59,19 +52,19 @@ namespace UI.Dynamic.Panels.Tooltip {
             var iconContent =
                 new Content(null, iconObj, ICON_SIZE)
                     .StepIntoImage(i => i.SetSprite(SynthesisAssetCollection.GetSpriteByName("info-icon-white-solid")))
-                    .SetAnchoredPosition<Image>(Vector3.zero);
+                    .SetAnchoredPosition<Image>(Vector2.up*10);
 
             // Align top center
             var transform              = base.UnityObject.GetComponent<RectTransform>();
             transform.pivot            = new Vector2(0.5f, 1f);
             transform.anchorMax        = new Vector2(0.5f, 1f);
             transform.anchorMin        = new Vector2(0.5f, 1f);
-            transform.anchoredPosition = new Vector2(0.0f, -38.0f);
+            transform.anchoredPosition = new Vector2(0.0f, -10.0f);
 
             AcceptButton.RootGameObject.SetActive(false);
             CancelButton.RootGameObject.SetActive(false);
 
-            MainContent.RootRectTransform.Translate(new Vector2(0, 5));
+            MainContent.RootRectTransform.Translate(new Vector2(0, 20));
 
             CreateTooltips();
 
@@ -82,18 +75,17 @@ namespace UI.Dynamic.Panels.Tooltip {
             Extensions.ForEach(_tooltips, kvp => {
                 var (keyContent, descriptionContent) =
                     MainContent.CreateSubContent(new Vector2(MainContent.Size.x, TOOLTIP_HEIGHT))
-                        .ApplyTemplate(VERTICAL_LAYOUT)
+                        .ApplyTemplate(UIComponent.VerticalLayout)
                         .SplitLeftRight((KEY_CHAR_WIDTH * kvp.key.Length) + KEY_PADDING, HOZ_SPACING);
 
                 keyContent
-                    .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary).SetCornerRadius(5))
+                    .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground).SetCornerRadius(3.5f))
                     .CreateLabel(TOOLTIP_HEIGHT)
                     .SetText(kvp.key)
                     .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
-                    .SetFontSize(20);
+                    .SetFontSize(15);
 
-                descriptionContent.CreateLabel(TOOLTIP_HEIGHT).SetText(kvp.description).SetFontSize(20);
-                ;
+                descriptionContent.CreateLabel(TOOLTIP_HEIGHT).SetText(kvp.description).SetFontSize(17);
             });
         }
 
@@ -111,8 +103,10 @@ namespace UI.Dynamic.Panels.Tooltip {
         /// <summary>Creates a new tooltip at the top center of the screen. Closes any active tooltip</summary>
         public static void CreateTooltip(params(string key, string description)[] tooltips) {
             Debug.Log("Tooltip made");
-            if (_currentTooltip != null)
+            if (_currentTooltip != null) {
                 DynamicUIManager.ClosePanel<TooltipPanel>();
+                _cts.Token.ThrowIfCancellationRequested();
+            }
 
             if (_cts != null) {
                 _cts.Token.ThrowIfCancellationRequested();
@@ -128,7 +122,7 @@ namespace UI.Dynamic.Panels.Tooltip {
         }
 
         /// <summary>Closes the active tooltip if there is one</summary>
-        public static void CloseTooltip() {
+        private static void CloseTooltip() {
             DynamicUIManager.ClosePanel<TooltipPanel>();
         }
 
@@ -138,6 +132,7 @@ namespace UI.Dynamic.Panels.Tooltip {
             float startTime = Time.time;
             while (true) {
                 if (Time.time > startTime + TOOLTIP_TIMEOUT_SEC) {
+                    Debug.Log("Tooltip ended");
                     CloseTooltip();
                     return;
                 }
@@ -145,6 +140,7 @@ namespace UI.Dynamic.Panels.Tooltip {
                 try {
                     await Task.Delay(100, ct);
                 } catch {
+                    Debug.Log("Tooltip Canceled");
                     return;
                 }
             }

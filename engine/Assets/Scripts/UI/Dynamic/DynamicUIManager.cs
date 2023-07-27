@@ -9,6 +9,7 @@ using Analytics;
 using Synthesis.Util;
 using Utilities.ColorManager;
 using SynthesisAPI.EventBus;
+using UI.Dynamic.Panels.Tooltip;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -185,16 +186,17 @@ namespace Synthesis.UI.Dynamic {
         // Currently only going to allow one active panel
         public static bool CreatePanel<T>(bool persistent = false, params object[] args)
             where T : PanelDynamic {
-
+            Debug.Log("Create Panel");
             if (ActiveModal != null && !persistent) {
                 return false;
             }
 
             if (_persistentPanels.ContainsKey(typeof(T)))
                 ClosePanel(typeof(T));
-            
-            if (PanelExists<T>())
-                return false;
+
+            if (PanelExists<T>() && typeof(T) != typeof(TooltipPanel)) {
+                Debug.Log("Failed to create, panel exists");   return false;
+            }
 
             var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("dynamic-panel-base"),
                 GameObject.Find("UI").transform.Find("ScreenSpace").Find("PanelContainer"));
@@ -281,6 +283,7 @@ namespace Synthesis.UI.Dynamic {
             where T : PanelDynamic => ClosePanel(typeof(T), bypassTween);
 
   public static bool ClosePanel(Type t, bool bypassTween = false) {
+      Debug.Log("Close Panel");
             if (!PanelExists(t))
                 return false;
 
