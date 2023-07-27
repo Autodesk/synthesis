@@ -40,7 +40,7 @@ namespace Synthesis.Import {
 #endregion
 
         private string _path;
-        
+
         public Assembly MiraAssembly;
 
         public enum MirabufFileState {
@@ -64,7 +64,7 @@ namespace Synthesis.Import {
 
         public MirabufLive(string path) {
             _path = path;
-            
+
             Load();
 
             _findDefinitions = Task<RigidbodyDefinitions>.Factory.StartNew(() => FindRigidbodyDefinitions(this));
@@ -203,11 +203,13 @@ namespace Synthesis.Import {
                 var filter        = bodyObject.AddComponent<MeshFilter>();
                 var renderer      = bodyObject.AddComponent<MeshRenderer>();
                 filter.sharedMesh = body.TriangleMesh.UnityMesh;
-                renderer.material = assemblyData.Materials.Appearances.TryGetValue(instance.Appearance, out var appearance)
-                                        ? appearance.UnityMaterial
-                                    : assemblyData.Materials.Appearances.TryGetValue(body.AppearanceOverride, out var materialsAppearance)
-                                        ? materialsAppearance.UnityMaterial
-                                        : Appearance.DefaultAppearance.UnityMaterial; // Setup the override
+                renderer.material =
+                    assemblyData.Materials.Appearances.TryGetValue(instance.Appearance, out var appearance)
+                        ? appearance.UnityMaterial
+                    : assemblyData.Materials.Appearances.TryGetValue(
+                          body.AppearanceOverride, out var materialsAppearance)
+                        ? materialsAppearance.UnityMaterial
+                        : Appearance.DefaultAppearance.UnityMaterial; // Setup the override
                 // renderer.material = assemblyData.Materials.Appearances.ContainsKey(instance.Appearance)
                 // 	? assemblyData.Materials.Appearances[instance.Appearance].UnityMaterial
                 // 	: Appearance.DefaultAppearance.UnityMaterial;
@@ -259,28 +261,28 @@ namespace Synthesis.Import {
         private static RigidbodyDefinitions FindRigidbodyDefinitions(MirabufLive live) {
             Assembly assembly = live.MiraAssembly;
 
-/*#if DEBUG_MIRABUF
-            MemoryStream ms = new MemoryStream();
-            ms.Seek(0, SeekOrigin.Begin);
-            assembly.WriteTo(ms);
-            ms.Seek(0, SeekOrigin.Begin);
-            var debugAssembly = Assembly.Parser.ParseFrom(ms);
+            /*#if DEBUG_MIRABUF
+                        MemoryStream ms = new MemoryStream();
+                        ms.Seek(0, SeekOrigin.Begin);
+                        assembly.WriteTo(ms);
+                        ms.Seek(0, SeekOrigin.Begin);
+                        var debugAssembly = Assembly.Parser.ParseFrom(ms);
 
-            debugAssembly.Data.Parts.PartDefinitions.ForEach(x => x.Value.Bodies.ForEach(x => x.TriangleMesh = null));
-            var jFormatter = new JsonFormatter(JsonFormatter.Settings.Default);
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
-                                  $"{Path.AltDirectorySeparatorChar}{debugAssembly.Info.Name}.json",
-                jFormatter.Format(debugAssembly));
+                        debugAssembly.Data.Parts.PartDefinitions.ForEach(x => x.Value.Bodies.ForEach(x => x.TriangleMesh
+            = null)); var jFormatter = new JsonFormatter(JsonFormatter.Settings.Default);
+                        File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
+                                              $"{Path.AltDirectorySeparatorChar}{debugAssembly.Info.Name}.json",
+                            jFormatter.Format(debugAssembly));
 
-            bool allUnique = false;
-            {
-                var allNodes                = debugAssembly.Data.Joints.RigidGroups.Select(x => x.Name);
-                HashSet<string> uniqueGuids = new HashSet<string>((int) (allNodes.Count() * (1f / 0.75f)));
-                allUnique                   = allNodes.All(x => uniqueGuids.Add(x));
-            }
-            if (!allUnique)
-                Logger.Log("Not all unique", LogLevel.Warning);
-#endif*/
+                        bool allUnique = false;
+                        {
+                            var allNodes                = debugAssembly.Data.Joints.RigidGroups.Select(x => x.Name);
+                            HashSet<string> uniqueGuids = new HashSet<string>((int) (allNodes.Count() * (1f / 0.75f)));
+                            allUnique                   = allNodes.All(x => uniqueGuids.Add(x));
+                        }
+                        if (!allUnique)
+                            Logger.Log("Not all unique", LogLevel.Warning);
+            #endif*/
 
             var defs    = new Dictionary<string, RigidbodyDefinition>();
             var partMap = new Dictionary<string, string>();

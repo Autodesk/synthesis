@@ -137,8 +137,8 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         // SynthesisAssetCollection.DefaultFloor.SetActive(true);
     }
 
-    public static void SpawnField(string filePath, bool spawnRobotGizmo = true) => 
-        SpawnField(new MirabufLive(filePath));
+    public static void SpawnField(string filePath, bool spawnRobotGizmo = true) => SpawnField(
+        new MirabufLive(filePath));
 
     // TODO: Fix field spawning
     public static void SpawnField(MirabufLive miraAssem, bool spawnRobotGizmo = true) {

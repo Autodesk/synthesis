@@ -29,26 +29,25 @@ namespace Synthesis.UI.Dynamic {
                 .SetColor(ColorManager.SYNTHESIS_WHITE);
 
             AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
-
                 /*
                 var connectionA = new[] { new MixAndMatchConnectionPoint(
                     Vector3.zero, Vector2.zero) };
                 var connectionB = new[] { new MixAndMatchConnectionPoint(
                     Vector3.zero, Vector2.zero) };
-                
+
                 var parts = new[] {
                     new MixAndMatchPartData(Vector3.zero, Quaternion.identity, connectionA),
                     new MixAndMatchPartData(new Vector3(0, 0.73f, -1.211f), Quaternion.Euler(180, 0, 0), connectionB)
                 };
 
                 parts[0].ConnectedPart = parts[1];
-                
+
                 var trfData = new MixAndMatchTransformData(parts);
                 */
-                
+
                 if (_selectedIndex != -1) {
                     RobotSimObject.SpawnRobot(null, _files[_selectedIndex]);
-                    //ItemAnalytics("Robot");
+                    // ItemAnalytics("Robot");
                     DynamicUIManager.CloseActiveModal();
                 }
             });
@@ -60,7 +59,6 @@ namespace Synthesis.UI.Dynamic {
             _selectedIndex = _files.Length > 0 ? 0 : -1;
             // MainContent.CreateLabeledButton().SetTopStretch<LabeledButton>(anchoredY: 50).StepIntoLabel(l =>
             // l.SetText("Test"));
-
         }
 
         public override void Update() {

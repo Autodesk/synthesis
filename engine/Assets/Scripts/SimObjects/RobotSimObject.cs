@@ -91,8 +91,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             _simulationTranslationLayer = value;
             _simBehaviour.Translation   = _simulationTranslationLayer;
 
-            SimulationPreferences.SetRobotSimTranslationLayer(
-                MiraGUID, _simulationTranslationLayer);
+            SimulationPreferences.SetRobotSimTranslationLayer(MiraGUID, _simulationTranslationLayer);
             PreferenceManager.Save();
         }
     }
@@ -181,7 +180,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         _spawnedRobots.Add(name, this);
         EventBus.Push(new RobotSpawnEvent { Bot = name });
 
-        MiraLiveFiles       = miraLiveFiles;
+        MiraLiveFiles  = miraLiveFiles;
         GroundedNode   = groundedNode;
         RobotNode      = groundedNode.transform.parent.gameObject;
         RobotBounds    = GetBounds(RobotNode.transform);
@@ -217,8 +216,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         IntakeData     = SimulationPreferences.GetRobotIntakeTriggerData(MiraGUID);
         TrajectoryData = SimulationPreferences.GetRobotTrajectoryData(MiraGUID);
         _simulationTranslationLayer =
-            SimulationPreferences.GetRobotSimTranslationLayer(MiraGUID) ??
-            new RioTranslationLayer();
+            SimulationPreferences.GetRobotSimTranslationLayer(MiraGUID) ?? new RioTranslationLayer();
         // _simulationTranslationLayer = new RioTranslationLayer();
 
         cam = Camera.main.GetComponent<CameraController>();
@@ -357,7 +355,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
         int wheelsInContact = _wheelDrivers.Count(x => x.HasContacts);
         float mod           = wheelsInContact <= 4 ? 1f : Mathf.Pow(0.7f, wheelsInContact - 4);
-        
+
         _wheelDrivers.ForEach(x => x.WheelsPhysicsUpdate(mod));
     }
 
@@ -413,11 +411,11 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             // Spin all of the wheels straight
             MiraLiveFiles.ForEach(miraLive => {
                 wheels.ForEach(x => {
-                    var def = miraLive.MiraAssembly.Data.Joints.JointDefinitions[x.JointInstance.JointReference];
-                    var jointAxis = new Vector3(def.Rotational.RotationalFreedom.Axis.X,
-                        def.Rotational.RotationalFreedom.Axis.Y, def.Rotational.RotationalFreedom.Axis.Z);
+                    var def        = miraLive.MiraAssembly.Data.Joints.JointDefinitions[x.JointInstance.JointReference];
+                    var jointAxis  = new Vector3(def.Rotational.RotationalFreedom.Axis.X,
+                         def.Rotational.RotationalFreedom.Axis.Y, def.Rotational.RotationalFreedom.Axis.Z);
                     var globalAxis = GroundedNode.transform.rotation * jointAxis.normalized;
-                    var cross = Vector3.Cross(GroundedNode.transform.up, globalAxis);
+                    var cross      = Vector3.Cross(GroundedNode.transform.up, globalAxis);
                     if (miraLive.MiraAssembly.Info.Version < 5) {
                         if (Vector3.Dot(GroundedNode.transform.forward, cross) > 0) {
                             var ogAxis = jointAxis;
@@ -426,24 +424,23 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                             ogAxis.y *= -1;
                             ogAxis.z *= -1;
                             // Modify assembly for if a new behaviour evaluates this again
-                            // def.Rotational.RotationalFreedom.Axis = ogAxis; // I think this is irrelevant after the last
-                            // few lines
+                            // def.Rotational.RotationalFreedom.Axis = ogAxis; // I think this is irrelevant after the
+                            // last few lines
                             def.Rotational.RotationalFreedom.Axis =
                                 new MVector3() { X = jointAxis.x, Y = jointAxis.y, Z = jointAxis.z };
 
                             x.LocalAxis = ogAxis;
                         }
-                    }
-                    else {
+                    } else {
                         if (Vector3.Dot(GroundedNode.transform.forward, cross) < 0) {
                             jointAxis.x = -jointAxis.x;
-                            var ogAxis = jointAxis;
+                            var ogAxis  = jointAxis;
                             ogAxis.x *= -1;
                             ogAxis.y *= -1;
                             ogAxis.z *= -1;
                             // Modify assembly for if a new behaviour evaluates this again
-                            // def.Rotational.RotationalFreedom.Axis = ogAxis; // I think this is irrelevant after the last
-                            // few lines
+                            // def.Rotational.RotationalFreedom.Axis = ogAxis; // I think this is irrelevant after the
+                            // last few lines
                             def.Rotational.RotationalFreedom.Axis =
                                 new MVector3() { X = -jointAxis.x, Y = jointAxis.y, Z = jointAxis.z };
 
@@ -452,7 +449,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                     }
                 });
             });
-            
+
             _tankTrackWheels = (leftWheels, rightWheels);
         }
 
@@ -590,13 +587,15 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     public static void SpawnRobot(MixAndMatchRobotData mixAndMatchRobotData, params string[] filePaths) {
         SpawnRobot(mixAndMatchRobotData, new Vector3(0f, 0f, 0f), Quaternion.identity, true, filePaths);
     }
-    
-    public static void SpawnRobot(MixAndMatchRobotData mixAndMatchRobotData, bool spawnGizmo, params string[] filePaths) {
+
+    public static void SpawnRobot(
+        MixAndMatchRobotData mixAndMatchRobotData, bool spawnGizmo, params string[] filePaths) {
         SpawnRobot(mixAndMatchRobotData, new Vector3(0f, 0.5f, 0f), Quaternion.identity, spawnGizmo, filePaths);
     }
-    
-    public static void SpawnRobot(MixAndMatchRobotData mixAndMatchRobotData, Vector3 position, Quaternion rotation, bool spawnGizmo, params string[] filePaths) {
-        var mira = Importer.MirabufAssemblyImport(filePaths, mixAndMatchRobotData);
+
+    public static void SpawnRobot(MixAndMatchRobotData mixAndMatchRobotData, Vector3 position, Quaternion rotation,
+        bool spawnGizmo, params string[] filePaths) {
+        var mira                 = Importer.MirabufAssemblyImport(filePaths, mixAndMatchRobotData);
         RobotSimObject simObject = (mira.sim as RobotSimObject)!;
         mira.mainObject.transform.SetParent(GameObject.Find("Game").transform);
         simObject.ConfigureDefaultBehaviours();

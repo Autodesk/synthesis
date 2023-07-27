@@ -65,7 +65,7 @@ public class MixAndMatchSimObject : SimObject, IPhysicsOverridable, IGizmo {
             }
         }
     }
-    
+
     private List<Rigidbody> _allRigidbodies;
     public IReadOnlyCollection<Rigidbody> AllRigidbodies => _allRigidbodies.AsReadOnly();
 
@@ -88,11 +88,11 @@ public class MixAndMatchSimObject : SimObject, IPhysicsOverridable, IGizmo {
         // tags every mesh collider component in the robot with a tag of robot
         RobotNode.tag = "robot";
         RobotNode.GetComponentsInChildren<MeshCollider>().ForEach(g => g.tag = "robot");
-        
+
         _simulationTranslationLayer =
             SimulationPreferences.GetRobotSimTranslationLayer(MiraLive.MiraAssembly.Info.GUID) ??
             new RioTranslationLayer();
-        
+
         _allRigidbodies.ForEach(x => {
             var rc     = x.gameObject.AddComponent<HighlightComponent>();
             rc.Color   = ColorManager.TryGetColor(ColorManager.SYNTHESIS_HIGHLIGHT_HOVER);
@@ -132,16 +132,16 @@ public class MixAndMatchSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     public static GameObject CreatePartMesh(string filePath, Vector3 position, Quaternion rotation) {
         MirabufLive miraLive = new MirabufLive(filePath);
-        Assembly assembly = miraLive.MiraAssembly;
-        
+        Assembly assembly    = miraLive.MiraAssembly;
+
         GameObject assemblyObject = new GameObject(assembly.Info.Name);
         assemblyObject.transform.SetParent(GameObject.Find("Game").transform);
 
         miraLive.GenerateDefinitionObjects(assemblyObject, false);
-        
+
         assemblyObject.transform.position = position;
         assemblyObject.transform.rotation = rotation;
-        
+
         return assemblyObject;
     }
 
@@ -167,8 +167,8 @@ public class MixAndMatchSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }*/
 
     private Dictionary<Rigidbody, (bool isKine, Vector3 vel, Vector3 angVel)> _preFreezeStates = new();
-    
-    private bool _isFrozen = false;
+
+    private bool _isFrozen  = false;
     public bool isFrozen() => _isFrozen;
 
     public void Freeze() {

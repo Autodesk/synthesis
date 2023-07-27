@@ -14,7 +14,7 @@ using UnityEngine;
 using Logger = SynthesisAPI.Utilities.Logger;
 
 public class PracticeMode : IMode {
-    public static Vector3 GamepieceSpawnpoint = new Vector3(0, 10, 0); 
+    public static Vector3 GamepieceSpawnpoint = new Vector3(0, 10, 0);
     private static GameObject _gamepieceSpawnpointObject;
 
     private bool _lastEscapeValue   = false;
@@ -96,7 +96,7 @@ public class PracticeMode : IMode {
                     DynamicUIManager.CreatePanel<ScoringZonesPanel>();
             }
         });
-        
+
         MainHUD.AddItemToDrawer("Mix & Match", b => DynamicUIManager.CreateModal<MixAndMatchModal>());
 
         EventBus.NewTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);

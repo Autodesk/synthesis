@@ -60,7 +60,8 @@ namespace Synthesis {
         }
 
         public Analog TryLoadInput(string key, Analog defaultInput) {
-            return SimulationPreferences.GetRobotInput(_robot.MiraLiveFiles[0].MiraAssembly.Info.GUID, key) ?? defaultInput;
+            return SimulationPreferences.GetRobotInput(_robot.MiraLiveFiles[0].MiraAssembly.Info.GUID, key) ??
+                   defaultInput;
         }
 
         private void OnValueInputAssigned(IEvent tmp) {

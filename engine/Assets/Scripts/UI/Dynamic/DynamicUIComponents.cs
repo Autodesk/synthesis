@@ -132,7 +132,7 @@ namespace Synthesis.UI.Dynamic {
         protected virtual void OnVisibilityChange() {}
 
         public void Delete_Internal() => Object.Destroy(_unityObject);
-        public void ClearContent() => MainContent.DeleteAllChildren();
+        public void ClearContent()    => MainContent.DeleteAllChildren();
     }
 
     public abstract class ModalDynamic {
@@ -140,7 +140,7 @@ namespace Synthesis.UI.Dynamic {
 
         private Vector2 _mainContentSize; // Shouldn't really be used after init is called
         private GameObject _unityObject;
-        
+
         private RectTransform _headerRt;
         private RectTransform _footerRt;
 
@@ -172,9 +172,9 @@ namespace Synthesis.UI.Dynamic {
             _unityObject = unityObject;
 
             // Grab Customizable Modal Components
-            var header   = _unityObject.transform.Find("Header");
-            _headerRt = header.GetComponent<RectTransform>();
-            _modalImage  = new Image(null, header.Find("Image").gameObject);
+            var header  = _unityObject.transform.Find("Header");
+            _headerRt   = header.GetComponent<RectTransform>();
+            _modalImage = new Image(null, header.Find("Image").gameObject);
             // _modalImage.SetColor(new Color(1, 1, 1, 0));
 
             _modalBackground = new Image(null, unityObject);
@@ -188,7 +188,7 @@ namespace Synthesis.UI.Dynamic {
             _description.SetColor(ColorManager.TryGetColor(ColorManager.SYNTHESIS_WHITE));
 
             var footer    = _unityObject.transform.Find("Footer");
-            _footerRt  = footer.GetComponent<RectTransform>();
+            _footerRt     = footer.GetComponent<RectTransform>();
             _cancelButton = new Button(null!, footer.Find("Cancel").gameObject, null);
             _cancelButton.AddOnClickedEvent(b => {
                 if (!DynamicUIManager.CloseActiveModal())
@@ -238,15 +238,17 @@ namespace Synthesis.UI.Dynamic {
             ClearMainContent();
             ResizeMainContent(size);
         }
+
         protected void ClearMainContent() => MainContent.DeleteAllChildren();
+
         protected void ResizeMainContent(Vector2 size) {
             // Reposition all elements
             foreach (Transform child in MainContent.RootGameObject.transform) {
-                ((RectTransform)child.transform).anchoredPosition += (size-_mainContentSize) / 2f;
+                ((RectTransform) child.transform).anchoredPosition += (size - _mainContentSize) / 2f;
             }
-            
+
             _mainContentSize = size;
-            
+
             var hiddenContentT        = _unityObject.transform.Find("Content");
             var hiddenRt              = hiddenContentT.GetComponent<RectTransform>();
             hiddenRt.sizeDelta        = new Vector2(hiddenRt.sizeDelta.x, _mainContentSize.y);
@@ -254,16 +256,15 @@ namespace Synthesis.UI.Dynamic {
             hiddenRt.anchorMax        = new Vector2(1, 1);
             hiddenRt.pivot            = new Vector2(0.5f, 1);
             hiddenRt.anchoredPosition = new Vector2(0, -_headerRt.sizeDelta.y);
-            var actualContentObj =
-                MainContent.RootGameObject;
-            actualContentObj.name = "CentralContent";
-            var contentRt         = actualContentObj.GetComponent<RectTransform>();
-            contentRt.offsetMax   = new Vector2(-MAIN_CONTENT_HORZ_PADDING, contentRt.offsetMax.y);
-            contentRt.offsetMin   = new Vector2(MAIN_CONTENT_HORZ_PADDING, contentRt.offsetMin.y);
-            var modalRt           = _unityObject.GetComponent<RectTransform>();
-            modalRt.sizeDelta     = new Vector2(_mainContentSize.x + (MAIN_CONTENT_HORZ_PADDING * 2),
-                hiddenRt.sizeDelta.y + _headerRt.sizeDelta.y + _footerRt.sizeDelta.y);
-            _mainContent          = new Content(null!, actualContentObj, _mainContentSize);
+            var actualContentObj      = MainContent.RootGameObject;
+            actualContentObj.name     = "CentralContent";
+            var contentRt             = actualContentObj.GetComponent<RectTransform>();
+            contentRt.offsetMax       = new Vector2(-MAIN_CONTENT_HORZ_PADDING, contentRt.offsetMax.y);
+            contentRt.offsetMin       = new Vector2(MAIN_CONTENT_HORZ_PADDING, contentRt.offsetMin.y);
+            var modalRt               = _unityObject.GetComponent<RectTransform>();
+            modalRt.sizeDelta         = new Vector2(_mainContentSize.x + (MAIN_CONTENT_HORZ_PADDING * 2),
+                        hiddenRt.sizeDelta.y + _headerRt.sizeDelta.y + _footerRt.sizeDelta.y);
+            _mainContent              = new Content(null!, actualContentObj, _mainContentSize);
         }
     }
 
