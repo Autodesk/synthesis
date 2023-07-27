@@ -13,9 +13,9 @@ jobs:
     steps:
     - name: Get Clang Format
       run: |
-        add-apt-repository "deb http://apt.llvm.org/jammy/  llvm-toolchain-jammy-16 main"
-        apt-get update
-        apt-get install -y clang-format-16
+        sudo add-apt-repository "deb http://apt.llvm.org/jammy/  llvm-toolchain-jammy-16 main"
+        sudo apt-get update
+        sudo apt-get install -y clang-format-16
     - name: Checkout Code
       uses: actions/checkout@v2
     - name: Python Setup
