@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SimObjects.MixAndMatch {
     public static class MixAndMatchSaveUtil {
@@ -102,7 +103,7 @@ namespace SimObjects.MixAndMatch {
 
         /// <summary>Creates a new mix and match part with no connection points</summary>
         public static MixAndMatchPartData CreateNewPart(string name, string mirabufFile = "") {
-            return new MixAndMatchPartData(name, mirabufFile, Array.Empty<(Vector3, Vector3)>());
+            return new MixAndMatchPartData(name, mirabufFile, Array.Empty<(Vector3, Quaternion)>());
         }
 
         /// <summary>Creates a new mix and match robot with no parts</summary>
@@ -168,27 +169,27 @@ namespace SimObjects.MixAndMatch {
         public string ConnectedPart;
 
         public MixAndMatchPartData(
-            string name, string mirabufPartFile, (Vector3 position, Vector3 normal)[] connectionPoints) {
+            string name, string mirabufPartFile, (Vector3 position, Quaternion rotation)[] connectionPoints) {
             Name             = name;
             MirabufPartFile  = mirabufPartFile;
-            ConnectionPoints = connectionPoints.Select(c => new ConnectionPointData(c.position, c.normal)).ToArray();
+            ConnectionPoints = connectionPoints.Select(c => new ConnectionPointData(c.position, c.rotation)).ToArray();
         }
     }
 
     /// <summary>The position and direction of a part's connection point. Always saved in a part's json file.</summary>
     [Serializable]
     public class ConnectionPointData {
-        public Vector3 Position;
-        public Vector3 Normal;
+        public Vector3 LocalPosition;
+        [FormerlySerializedAs("Rotation")] public Quaternion LocalRotation;
 
-        public ConnectionPointData(Vector3 position, Vector3 normal) {
-            Position = position;
-            Normal   = normal;
+        public ConnectionPointData(Vector3 localPosition, Quaternion localRotation) {
+            LocalPosition = localPosition;
+            LocalRotation   = localRotation;
         }
 
         public ConnectionPointData() {
-            Position = Vector3.zero;
-            Normal   = Vector3.forward;
+            LocalPosition = Vector3.zero;
+            LocalRotation   = Quaternion.identity;
         }
     }
 }

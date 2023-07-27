@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Mirabuf;
 using SimObjects.MixAndMatch;
 using Synthesis.Gizmo;
 using Synthesis.Import;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
+using UI.Dynamic.Modals.MixAndMatch;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Vector3 = UnityEngine.Vector3;
@@ -74,7 +74,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         public override bool Create() {
             Title.SetText("Robot Editor");
 
-            AcceptButton.StepIntoLabel(l => l.SetText("Save")).AddOnClickedEvent(b => {
+            AcceptButton.StepIntoLabel(l => l.SetText("Save")).AddOnClickedEvent(_ => {
                 SaveRobotData();
                 GizmoManager.ExitGizmo();
                 DynamicUIManager.ClosePanel<RobotEditorPanel>();
@@ -101,10 +101,8 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
             var addButton = left.CreateButton("Add").SetStretch<Button>().AddOnClickedEvent(
                 _ => {
-                    // TODO: Prompt the user to pick a part from files
                     GizmoManager.ExitGizmo();
-                    AddScrollViewEntry(InstantiatePartGameObject(("test robot", Vector3.zero, Quaternion.identity)));
-                    UpdateRemoveButton();
+                    DynamicUIManager.CreateModal<SelectPartModal>(args: new Action<MixAndMatchPartData>(AddAdditionalPart));
                 });
 
             _removeButton = right.CreateButton("Remove").SetStretch<Button>().AddOnClickedEvent(
@@ -123,6 +121,11 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             UpdateRemoveButton();
         }
 
+        private void AddAdditionalPart(MixAndMatchPartData part) {
+            AddScrollViewEntry(InstantiatePartGameObject(Vector3.zero, Quaternion.identity, part));
+            UpdateRemoveButton();
+        }
+
         private void PopulateScrollView() {
             _scrollView.Content.DeleteAllChildren();
 
@@ -137,25 +140,46 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         }
 
         private GameObject InstantiatePartGameObject(
-            (string fileName, Vector3 localPosition, Quaternion localRotation) part) {
-            var partData = MixAndMatchSaveUtil.LoadPartData(part.fileName);
-            
+            (string fileName, Vector3 localPosition, Quaternion localRotation) partData) {
+            return InstantiatePartGameObject(partData.localPosition, partData.localRotation,
+                MixAndMatchSaveUtil.LoadPartData(partData.fileName));
+        }
+
+        private GameObject InstantiatePartGameObject(
+            Vector3 localPosition, Quaternion localRotation, MixAndMatchPartData partData) {
             // TODO: check if part file exists
             MirabufLive miraLive = new MirabufLive(partData.MirabufPartFile);
 
-            GameObject gameObject = new GameObject(part.fileName);
+            GameObject gameObject = new GameObject(partData.Name);
 
             miraLive.GenerateDefinitionObjects(gameObject, false);
-            
+
             gameObject.transform.SetParent(_robotGameObject.transform);
-            
-            gameObject.transform.position = part.localPosition;
-            gameObject.transform.rotation = part.localRotation;
+
+            gameObject.transform.position = localPosition;
+            gameObject.transform.rotation = localRotation;
 
             _partGameObjects.Add(gameObject);
+
+            InstantiatePartConnectionPoints(gameObject, partData);
             return gameObject;
         }
 
+        private void InstantiatePartConnectionPoints(GameObject partGameObject, MixAndMatchPartData partData) {
+            partData.ConnectionPoints.ForEach(point => {
+                var trf = GameObject.CreatePrimitive(PrimitiveType.Sphere).transform;
+                trf.SetParent(partGameObject.transform);
+                trf.localPosition = point.LocalPosition;
+                trf.localRotation = point.LocalRotation;
+                trf.localScale = Vector3.one * 0.25f;
+                
+                //TODO: after merge, use color manager
+                trf.GetComponent<MeshRenderer>().material.color = Color.green;
+                trf.GetComponent<SphereCollider>().isTrigger = true;
+                trf.GetComponent<SphereCollider>().radius = 1f;
+            });
+        }
+        
         private void AddScrollViewEntry(GameObject part) {
             var toggle = _scrollView.Content.CreateToggle(label: part.name)
                              .SetSize<Toggle>(new Vector2(PANEL_WIDTH, 50f))

@@ -8,6 +8,7 @@ using Synthesis.Import;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
+using Color = UnityEngine.Color;
 using Object = UnityEngine.Object;
 using Vector3 = UnityEngine.Vector3;
 
@@ -31,7 +32,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
         private Button _removeButton;
 
-        private GameObject _selectedPoint = null;
+        private GameObject _selectedPoint;
 
         // TODO: Remove and replace with the vert layout in dynamic components after merge
         private readonly Func<UIComponent, UIComponent> VerticalLayout = (u) => {
@@ -144,13 +145,16 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
         private GameObject InstantiatePointGameObject(ConnectionPointData point) {
             var gameObject  = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            var trf = gameObject.transform;
             gameObject.name = "ConnectionPoint";
-            gameObject.transform.SetParent(_partGameObject.transform);
+            trf.SetParent(_partGameObject.transform);
 
-            gameObject.transform.position   = point.Position;
-            gameObject.transform.forward    = point.Normal;
-            gameObject.transform.localScale = Vector3.one / 2f;
-
+            trf.position   = point.LocalPosition;
+            trf.rotation    = point.LocalRotation;
+            trf.localScale = Vector3.one * 0.25f;
+            //TODO: after merge, use color manager
+            trf.GetComponent<MeshRenderer>().material.color = Color.green;
+            Object.Destroy(trf.GetComponent<Collider>());
             _connectionGameObjects.Add(gameObject);
             return gameObject;
         }
@@ -197,7 +201,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         private void SavePartData() {
             List<ConnectionPointData> connectionPoints = new();
             _connectionGameObjects.ForEach(point => {
-                connectionPoints.Add(new ConnectionPointData(point.transform.position, point.transform.forward));
+                connectionPoints.Add(new ConnectionPointData(point.transform.position, point.transform.rotation));
             });
 
             _partData.ConnectionPoints = connectionPoints.ToArray();

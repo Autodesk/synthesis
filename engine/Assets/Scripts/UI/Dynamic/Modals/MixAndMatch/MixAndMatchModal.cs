@@ -19,7 +19,7 @@ namespace UI.Dynamic.Modals.MixAndMatch {
         public MixAndMatchModal() : base(new Vector2(CONTENT_WIDTH, CHOOSE_MODE_HEIGHT)) { }
 
         // TODO: after merge, remove this and use the one in dynamic UI components
-        private Func<UIComponent, UIComponent> VerticalLayout = (u) => {
+        public static Func<UIComponent, UIComponent> VerticalLayout = (u) => {
             var offset = (-u.Parent!.RectOfChildren(u).yMin) + 7.5f;
             u.SetTopStretch<UIComponent>(anchoredY: offset);
             return u;
@@ -138,13 +138,13 @@ namespace UI.Dynamic.Modals.MixAndMatch {
         /// <summary>Either load a robot if it exists or create a new one if it doesn't</summary>
         private void OpenRobotEditor(MixAndMatchRobotData robot) {
             DynamicUIManager.CloseActiveModal();
-            DynamicUIManager.CreatePanel<RobotEditorPanel>(args: robot);
+            DynamicUIManager.CreatePanel<RobotEditorPanel>(persistent: true, args: robot);
         }
 
         /// <summary>Either load a part if it exists or create a new one if it doesn't</summary>
         private void OpenPartEditor(MixAndMatchPartData part) {
             DynamicUIManager.CloseActiveModal();
-            DynamicUIManager.CreatePanel<PartEditorPanel>(args: part);
+            DynamicUIManager.CreatePanel<PartEditorPanel>(persistent: true, args: part);
         }
 
         public override void Delete() { }
