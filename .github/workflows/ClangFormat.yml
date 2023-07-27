@@ -11,10 +11,11 @@ jobs:
     name: Run Clang Format Validation Script
     runs-on: ubuntu-latest
     steps:
-    # - name: Get Clang Format
-    #   run: |
-    #     chmod +x scripts/format/install_clang_format.sh
-    #     ./scripts/format/install_clang_format.sh 16 all
+    - name: Get Clang Format
+      run: |
+        add-apt-repository "deb http://apt.llvm.org/jammy/  llvm-toolchain-jammy-16 main"
+        apt-get update
+        apt-get install -y clang-format-16
     - name: Checkout Code
       uses: actions/checkout@v2
     - name: Python Setup
