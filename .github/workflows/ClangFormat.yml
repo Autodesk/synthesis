@@ -14,12 +14,10 @@ jobs:
     - name: Get Clang Format
       run: |
         sudo apt-get update
-        sudo apt remove libc++-x.y libc++abi-x.y libunwind-x.y python3-lldb-x.y
-        sudo apt-get --fix-broken install
-        sudo apt-get install libc++1-14 libc++1-16 libc++abi1-14 libc++abi1-16 libunwind-14 libunwind-16 python3-lldb-14 python3-lldb-16
         wget https://apt.llvm.org/llvm.sh
         chmod +x llvm.sh
         sudo ./llvm.sh 16 all
+        sudo apt remove libc++-x.y libc++abi-x.y libunwind-x.y python3-lldb-x.y
     - name: Checkout Code
       uses: actions/checkout@v2
     - name: Python Setup
