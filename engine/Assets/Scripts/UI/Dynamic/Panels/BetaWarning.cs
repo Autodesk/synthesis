@@ -25,13 +25,14 @@ public class BetaWarningPanel : PanelDynamic {
             return false;
 
         Title.SetText("Warning");
+        Title.SetText("Match Mode Configuration");
 
         AcceptButton.AddOnClickedEvent(b => DynamicUIManager.ClosePanel<BetaWarningPanel>())
             .StepIntoLabel(l => l.SetText("Okidoki"));
 
         CancelButton.RootGameObject.SetActive(false);
 
-        PanelImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"))
+        PanelIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"))
             .SetColor(ColorManager.SynthesisColor.MainText);
 
         MainContent.CreateLabel(40)

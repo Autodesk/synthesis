@@ -49,7 +49,9 @@ namespace UI.Dynamic.Panels.Tooltip {
         }
 
         public override bool Create() {
+            TweenDirection = Vector2.up;
             Title.SetText("");
+            
             var iconObj = new GameObject("Icon", typeof(RectTransform), typeof(UnityEngine.UI.Image));
             iconObj.transform.SetParent(HeaderRt);
             iconObj.transform.localScale = Vector3.one;
@@ -108,6 +110,7 @@ namespace UI.Dynamic.Panels.Tooltip {
 
         /// <summary>Creates a new tooltip at the top center of the screen. Closes any active tooltip</summary>
         public static void CreateTooltip(params(string key, string description)[] tooltips) {
+            Debug.Log("Tooltip made");
             if (_currentTooltip != null)
                 DynamicUIManager.ClosePanel<TooltipPanel>();
 

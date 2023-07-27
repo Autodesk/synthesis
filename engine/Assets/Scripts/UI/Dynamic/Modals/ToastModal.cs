@@ -17,13 +17,14 @@ public class ToastModal : ModalDynamic {
 
     public override void Create() {
         Title.SetStretch<Content>();
+
         Title.SetText("    " + _toastLevel + " Message: ").SetFontSize(30);
         AcceptButton
             .AddOnClickedEvent(
                 _ => { WriteToFile(); })
             .Label!.SetText("Write File");
         Description.RootGameObject.SetActive(false);
-        ModalImage.RootGameObject.SetActive(false);
+        ModalIcon.RootGameObject.SetActive(false);
         CancelButton.Label!.SetText("Close");
 
         var sv      = MainContent.CreateScrollView().SetStretch<ScrollView>();

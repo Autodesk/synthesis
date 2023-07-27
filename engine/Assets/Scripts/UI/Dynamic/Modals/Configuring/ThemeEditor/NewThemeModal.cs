@@ -7,7 +7,7 @@ using Utilities.ColorManager;
 namespace UI.Dynamic.Modals.Configuring {
     public class NewThemeModal : ModalDynamic {
         private const float MODAL_WIDTH  = 300;
-        private const float MODAL_HEIGHT = 50;
+        private const float MODAL_HEIGHT = 55;
 
         public NewThemeModal() : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) {}
 
@@ -15,7 +15,8 @@ namespace UI.Dynamic.Modals.Configuring {
 
         public override void Create() {
             Title.SetText("New Theme");
-            Description.SetText("Create a Custom Theme");
+
+            ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("plus"));
 
             AcceptButton
                 .AddOnClickedEvent(x => {
@@ -24,7 +25,7 @@ namespace UI.Dynamic.Modals.Configuring {
                     DynamicUIManager.CreateModal<EditThemeModal>();
                 })
                 .DisableEvents<Button>()
-                .SetBackgroundColor<Button>(ColorManager.SynthesisColor.BackgroundSecondary);
+                .SetBackgroundColor<Button>(ColorManager.SynthesisColor.InteractiveBackground);
 
             CancelButton.AddOnClickedEvent(x => { DynamicUIManager.CreateModal<EditThemeModal>(); });
 
@@ -33,7 +34,7 @@ namespace UI.Dynamic.Modals.Configuring {
                                  .AddOnValueChangedEvent((fieldRef, value) => {
                                      if (value is "Default" or "")
                                          AcceptButton.DisableEvents<Button>().SetBackgroundColor<Button>(
-                                             ColorManager.SynthesisColor.BackgroundSecondary);
+                                             ColorManager.SynthesisColor.InteractiveBackground);
                                      else
                                          AcceptButton.EnableEvents<Button>().SetBackgroundColor<Button>(
                                              ColorManager.SynthesisColor.AcceptButton);
@@ -41,6 +42,7 @@ namespace UI.Dynamic.Modals.Configuring {
                                  })
                                  .SetCharacterLimit(20)
                                  .SetTopStretch<InputField>();
+            inputField.Label.RootGameObject.SetActive(false);
         }
 
         public override void Update() {}

@@ -6,6 +6,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 
+#nullable enable
+
 namespace SynthesisAPI.EnvironmentManager.Components
 {
     /// <summary>
@@ -17,10 +19,10 @@ namespace SynthesisAPI.EnvironmentManager.Components
         private static List<Joints> _allJointContainers = new List<Joints>();
 
         public delegate void JointChanged(IJoint joint);
-        public static event JointChanged GlobalAddJoint;
-        internal event JointChanged AddJoint;
-        public static event JointChanged GlobalRemoveJoint;
-        internal event JointChanged RemoveJoint;
+        public static event JointChanged? GlobalAddJoint;
+        internal event JointChanged? AddJoint;
+        public static event JointChanged? GlobalRemoveJoint;
+        internal event JointChanged? RemoveJoint;
 
         private List<IJoint> _joints = new List<IJoint>();
         public List<IJoint> AllJoints {
@@ -68,7 +70,7 @@ namespace SynthesisAPI.EnvironmentManager.Components
             if (!(obj is Joints))
                 return false;
 
-            return (obj as Joints).GetHashCode() == GetHashCode();
+            return (obj as Joints)?.GetHashCode() == GetHashCode();
         }
         public override int GetHashCode() => _guid.GetHashCode();
     }

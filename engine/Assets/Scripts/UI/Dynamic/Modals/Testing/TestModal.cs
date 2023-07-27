@@ -17,7 +17,7 @@ namespace Synthesis.UI.Dynamic {
 
         public override void Create() {
             Title.SetText("Test Modal");
-            Description.SetText("This is a test modal for our new Dynamic UI system");
+
             // TODO: Make these do things with the
             AcceptButton.AddOnClickedEvent(b => Debug.Log("Test Modal -> Accept"));
             CancelButton.AddOnClickedEvent(b => Debug.Log("Test Modal -> Cancel"));
