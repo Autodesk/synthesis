@@ -13,6 +13,7 @@ jobs:
     steps:
     - name: Get Clang Format
       run: |
+        ls
         ./scripts/format/install_clang_format.sh 16 all
     - name: Checkout Code
       uses: actions/checkout@v2
