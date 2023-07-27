@@ -26,6 +26,12 @@ namespace Synthesis.UI {
         }
 
         public void Singleplayer() {
+            ModeManager.isSinglePlayer = true;
+            SceneManager.LoadScene("MainScene");
+        }
+
+        public void Multiplayer() {
+            ModeManager.isSinglePlayer = false;
             SceneManager.LoadScene("MainScene");
         }
 
