@@ -9,9 +9,6 @@ def main():
     if sys.platform != "linux":
         print("Warning: This script was designed to be run by github action linux machines")
 
-    # if not os.path.exists("/usr/bin/clang-format-16") and sys.platform == "linux":
-    #     os.system("sudo scripts/format/install_clang_format.sh 16")
-
     files = []
     for dir in FILES_DIRS:
         for root, _, filenames in os.walk(dir):

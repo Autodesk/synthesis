@@ -11,7 +11,7 @@ jobs:
     name: Run Clang Format Validation Script
     runs-on: ubuntu-latest
     steps:
-    - name: Get Clang Format
+    - name: Get Clang Format 16
       run: |
         sudo wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
         sudo add-apt-repository "deb http://apt.llvm.org/jammy/  llvm-toolchain-jammy-16 main"

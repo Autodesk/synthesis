@@ -14,8 +14,10 @@
 - Run the following commands to install `clang-format` on your system:
 
 ```Text
+sudo wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+sudo add-apt-repository "deb http://apt.llvm.org/jammy/  llvm-toolchain-jammy-16 main"
 sudo apt-get update
-sudo apt-get install clang-format
+sudo apt-get install -y clang-format-16
 ```
 
 ### MacOS
