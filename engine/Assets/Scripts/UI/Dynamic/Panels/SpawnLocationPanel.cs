@@ -13,7 +13,7 @@ namespace Synthesis.UI.Dynamic {
         private const string SNAP_MODE_KEY = "ROBOT_PLACEMENT_SNAPPING";
 
         private const float WIDTH            = 400f;
-        private const float HEIGHT           = 150f;
+        private const float HEIGHT           = 130f;
         private const float VERTICAL_PADDING = 15f;
 
         private const float ROBOT_MOVE_SPEED  = 7f;
@@ -43,7 +43,7 @@ namespace Synthesis.UI.Dynamic {
         private readonly Transform[] _robotHighlights = new Transform[6];
 
         private readonly Func<Button, Button> DisabledTemplate = b =>
-            b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary))
+            b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground))
                 .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText));
 
         public readonly Func<UIComponent, UIComponent> VerticalLayout = (u) => {
@@ -58,12 +58,14 @@ namespace Synthesis.UI.Dynamic {
         public SpawnLocationPanel() : base(new Vector2(WIDTH, HEIGHT)) {}
 
         public override bool Create() {
+            TweenFromBottom = true;
+
             if (!InputManager.MappedDigitalInputs.ContainsKey(SNAP_MODE_KEY))
                 InputManager.AssignDigitalInput(
                     SNAP_MODE_KEY, (Digital) new Digital("LeftShift").WithModifier((int) ModKey.LeftShift));
 
             Title.SetText("Set Spawn Locations").SetFontSize(25f);
-            PanelImage.RootGameObject.SetActive(false);
+            PanelIcon.RootGameObject.SetActive(false);
 
             Content panel = new Content(null, UnityObject, null);
 
@@ -159,7 +161,8 @@ namespace Synthesis.UI.Dynamic {
         private void SelectButton(int index) {
             buttons[SelectedButton].Image.SetColor(
                 ColorManager.GetColor(ColorManager.SynthesisColor.BackgroundSecondary));
-            SelectedButton = index;
+            SelectedButton      = index;
+            MainHUD.ConfigRobot = MatchMode.Robots[index];
 
             buttons[index].Image.SetColor((index < 3) ? redButtonColor : blueButtonColor);
         }

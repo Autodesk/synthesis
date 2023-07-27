@@ -216,20 +216,26 @@ namespace Utilities.ColorManager {
             InteractiveElementSolid,
             InteractiveElementLeft,
             InteractiveElementRight,
-            InteractiveSecondary,
             Background,
             BackgroundSecondary,
+            InteractiveBackground,
+            BackgroundHUD,
+            InteractiveHover,
+            InteractiveSelect,
             MainText,
             Scrollbar,
             AcceptButton,
             CancelButton,
             InteractiveElementText,
             Icon,
+            MainHUDIcon,
+            MainHUDCloseIcon,
             HighlightHover,
             HighlightSelect,
             SkyboxTop,
             SkyboxBottom,
-            FloorGrid
+            FloorGrid,
+            AcceptCancelButtonText
         }
     }
 }

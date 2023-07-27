@@ -2,6 +2,8 @@
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.UIManager.VisualElements;
 
+#nullable enable
+
 namespace SynthesisAPI.UIManager.UIComponents
 {
     public struct Tab
@@ -10,8 +12,8 @@ namespace SynthesisAPI.UIManager.UIComponents
         public VisualElementAsset ToobarAsset { get; private set; }
         public BindToolbarDelegate BindToolbar { get; set; }
         public bool CacheToolbar { get; set; }
-        internal VisualElement ToolbarElement;
-        internal Button buttonElement;
+        internal VisualElement? ToolbarElement;
+        internal Button? buttonElement;
 
         public delegate void BindToolbarDelegate(VisualElement toolbarElement);
 

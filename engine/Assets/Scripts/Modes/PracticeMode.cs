@@ -52,9 +52,14 @@ public class PracticeMode : IMode {
             TOGGLE_ESCAPE_MENU_INPUT, TryGetSavedInput(TOGGLE_ESCAPE_MENU_INPUT,
                                           new Digital("Escape", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
 
-        MainHUD.SetUpPractice();
-
         EventBus.NewTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
+
+        ConfigureMainHUD();
+    }
+
+    /// Adds buttons to the main hud (panel on left side)
+    public void ConfigureMainHUD() {
+        MainHUD.SetUpPractice();
     }
 
     private void HandleScoreEvent(IEvent e) {
@@ -103,7 +108,8 @@ public class PracticeMode : IMode {
             DynamicUIManager.CreatePanel<ScoreboardPanel>(true, false);
         }
 
-        bool openEscapeMenu = InputManager.MappedValueInputs[TOGGLE_ESCAPE_MENU_INPUT].Value == 1.0F;
+        // TODO: This randomly broke again for no apparent reason
+        /*bool openEscapeMenu = InputManager.MappedValueInputs[TOGGLE_ESCAPE_MENU_INPUT].Value == 1.0F;
         if (openEscapeMenu && !_lastEscapeValue) {
             if (_escapeMenuOpen) {
                 CloseMenu();
@@ -112,7 +118,7 @@ public class PracticeMode : IMode {
             }
         }
 
-        _lastEscapeValue = openEscapeMenu;
+        _lastEscapeValue = openEscapeMenu;*/
     }
 
     public void OpenMenu() {
