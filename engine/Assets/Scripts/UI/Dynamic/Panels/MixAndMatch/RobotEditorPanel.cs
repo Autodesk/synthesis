@@ -104,6 +104,7 @@ namespace UI.Dynamic.Panels.MixAndMatch
 
             var addButton = left.CreateButton("Add").SetStretch<Button>().AddOnClickedEvent(_ => {
                 // TODO: Prompt the user to pick a part from files
+                GizmoManager.ExitGizmo();
                 AddScrollViewEntry(InstantiatePartGameObject(("abc", Vector3.zero, Quaternion.identity)));
                 UpdateRemoveButton();
             });
@@ -128,10 +129,10 @@ namespace UI.Dynamic.Panels.MixAndMatch
         }
         
         private void InstantiatePartGameObjects() {
-            if (_robotData.Parts == null)
+            if (_robotData.PartData == null)
                 return;
             
-            _robotData.Parts.ForEach(part => {
+            _robotData.PartData.ForEach(part => {
                 InstantiatePartGameObject(part);
             });
         }
@@ -207,8 +208,7 @@ namespace UI.Dynamic.Panels.MixAndMatch
                 parts.Add((part.name, part.transform.position, part.transform.rotation));
             });
 
-            _robotData.Parts = parts.ToArray();
-            Debug.Log(_robotData.Parts.Length);
+            _robotData.PartData = parts.ToArray();
             
             MixAndMatchSaveUtil.SaveRobotData(_robotData);
         }

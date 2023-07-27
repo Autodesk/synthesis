@@ -358,7 +358,7 @@ namespace Synthesis.Import {
 
         /// <summary>Connects all mix and match parts together using <see cref="CreateMixAndMatchJoint">CreateMixAndMatchJoint</see></summary>
         private static void ConnectMixAndMatchParts(MixAndMatchRobotData robotData, Dictionary<string,GameObject>[] groupObjects) {
-            robotData.Parts.ForEachIndex((partIndex, part) => {
+            robotData.PartData.ForEachIndex((partIndex, part) => {
                 /* TODO: fix (now using part name not index)
                  if (part.ConnectedPart != null) {
                     var thisObject = groupObjects[partIndex]["grounded"];

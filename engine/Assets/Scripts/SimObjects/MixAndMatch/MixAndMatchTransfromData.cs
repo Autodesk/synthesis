@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SimObjects.MixAndMatch {
     public static class MixAndMatchSaveUtil {
@@ -63,6 +64,7 @@ namespace SimObjects.MixAndMatch {
             var filePath = Path.GetFullPath(ROBOT_FOLDER_PATH) + ALT_SEP + robot.Name + ".json";
 
             File.WriteAllText(filePath, JsonUtility.ToJson(robot));
+            Debug.Log($"saved robot {robot.Name}");
         }
 
         public static MixAndMatchRobotData LoadRobotData(string fileName) {
@@ -93,17 +95,40 @@ namespace SimObjects.MixAndMatch {
     [Serializable]
     public class MixAndMatchRobotData {
         public string Name;
-        private Tuple<string, Vector3, Quaternion>[] _parts;
-
+        public SerializableTransformData[] SerializablePartData;
+        
         [JsonIgnore]
-        public (string fileName, Vector3 localPosition, Quaternion localRotation)[] Parts {
-            get => _parts?.Select(p => (p.Item1, p.Item2, p.Item3)).ToArray();
-            set => _parts = value?.Select(p => p.ToTuple()).ToArray();
+        public (string fileName, Vector3 localPosition, Quaternion localRotation)[] PartData {
+            get => SerializablePartData?.Select(p => p.ToTuple()).ToArray();
+            set {
+                SerializablePartData = value?.Select(p => new SerializableTransformData(
+                    (p.fileName, p.localPosition, p.localRotation))).ToArray();
+                Debug.Log(SerializablePartData?.Length);
+            }
         }
 
         public MixAndMatchRobotData(string name, (string fileName, Vector3 localPosition, Quaternion localRotation)[] parts) {
             Name = name;
-            _parts = parts.Select(p => p.ToTuple()).ToArray();
+            SerializablePartData = parts.Select(p => new SerializableTransformData(
+                (p.fileName, p.localPosition, p.localRotation))).ToArray();
+            Debug.Log(SerializablePartData.Length);
+        }
+    }
+
+    [Serializable]
+    public struct SerializableTransformData {
+        public string FileName;
+        public Vector3 Position;
+        public Quaternion Rotation;
+        
+        public SerializableTransformData((string name, Vector3 position, Quaternion rotation) partData) {
+            FileName = partData.name;
+            Position = partData.position;
+            Rotation = partData.rotation;
+        }
+
+        public (string name, Vector3 position, Quaternion rotation) ToTuple() {
+            return (FileName, Position, Rotation);
         }
     }
 
