@@ -1,7 +1,10 @@
 Shader "ImageGradient/ImageGradient" {
     Properties {
         [HideInInspector] _MainTex ("Texture", 2D) = "white" {}
-        
+
+        _GradientAngle ("Gradient Angle", Float) = 0
+        _GradientSpread ("Gradient Spread", Range(0.1, 2)) = 1
+
         _ColorMask ("Color Mask", Float) = 15
         _StencilComp ("Stencil Comparison", Float) = 8
         _Stencil ("Stencil ID", Float) = 0
@@ -52,24 +55,25 @@ Shader "ImageGradient/ImageGradient" {
             float4 _EndColor;
             float4 _TintColor;
             float4 _ClipRect;
-            float _Offset;
-            int _Horizontal;
+            float2 _Offset;
 
             sampler2D _MainTex;
             fixed4 _TextureSampleAdd;
 
+            float _GradientAngle;
+            float _GradientSpread;
+
             fixed4 frag (v2f i) : SV_Target {
-                
                 float maskAlpha = UnityGet2DClipping(i.worldPosition.xy, _ClipRect);
-                
                 float alpha = CalcAlpha(i.uv, _WidthHeightRadius.xy, _WidthHeightRadius.z);
 
-                float gradientPos = (_Horizontal > 0 ? i.uv.x : 1 - i.uv.y) + _Offset;
-                if (gradientPos > 1)
-                    gradientPos = 2 - gradientPos;
+                float4 gradientDirection = float4(cos(_GradientAngle), sin(_GradientAngle), 0, 1);
+                gradientDirection *= _GradientSpread;
+                float2 uvOffset = (gradientDirection.xy / 2) - float2(0.5 + _Offset.x, 0.5 + _Offset.y);
+
+                float4 col = lerp(_StartColor, _EndColor, clamp(dot(gradientDirection.xy, i.uv + uvOffset), 0, 1));
                 
-                float4 col = lerp(_StartColor, _EndColor, _Horizontal > 0 ? i.uv.x : 1 - i.uv.y);
-                return float4(col.x, col.y, col.z, alpha * maskAlpha * col.a)*_TintColor;
+                return float4(col.x, col.y, col.z, alpha * maskAlpha * col.a) * _TintColor;
             }
             
             ENDCG

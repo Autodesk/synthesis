@@ -9,6 +9,7 @@ using SynthesisAPI.EventBus;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
 using UI.Dynamic.Modals.Spawning;
+using UI.Dynamic.Panels.Tooltip;
 using UnityEngine;
 using Utilities.ColorManager;
 using Logger = SynthesisAPI.Utilities.Logger;

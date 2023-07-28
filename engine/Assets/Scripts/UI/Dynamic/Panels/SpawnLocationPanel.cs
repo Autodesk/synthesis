@@ -2,6 +2,7 @@ using System;
 using Modes.MatchMode;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
+using UI.Dynamic.Panels.Tooltip;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Utilities.ColorManager;
@@ -58,7 +59,8 @@ namespace Synthesis.UI.Dynamic {
         public SpawnLocationPanel() : base(new Vector2(WIDTH, HEIGHT)) {}
 
         public override bool Create() {
-            TweenFromBottom = true;
+            TooltipManager.CreateTooltip(("Scroll", "Rotate Robot"), ("Shift", "Hold to Snap"));
+            TweenDirection = Vector2.down;
 
             if (!InputManager.MappedDigitalInputs.ContainsKey(SNAP_MODE_KEY))
                 InputManager.AssignDigitalInput(

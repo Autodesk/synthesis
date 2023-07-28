@@ -28,7 +28,7 @@ public class ScoreboardPanel : PanelDynamic {
     }
 
     public override bool Create() {
-        TweenFromBottom = true;
+        TweenDirection = Vector2.down;
 
         CancelButton.RootGameObject.SetActive(false);
         AcceptButton.RootGameObject.SetActive(false);
