@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Mirabuf;
 using Newtonsoft.Json;
 using Org.BouncyCastle.Asn1;
 using Synthesis.Import;
@@ -120,8 +121,10 @@ namespace Synthesis.PreferenceManager {
                     // clang-format off
                     var live = RobotSimObject.GetCurrentlyPossessedRobot().MiraLive;
                     live.MiraAssembly.Data.Parts.UserData ??= new Mirabuf.UserData();
-                    live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY] =
-                        JsonConvert.SerializeObject(_allRobotData[live.MiraAssembly.Info.GUID]);
+                    if (_allRobotData.ContainsKey(live.MiraAssembly.Info.GUID)) {
+                        live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY] =
+                            JsonConvert.SerializeObject(_allRobotData[live.MiraAssembly.Info.GUID]);
+                    }
                     live.Save();
                     // clang-format on
                 }
@@ -130,8 +133,10 @@ namespace Synthesis.PreferenceManager {
                     // clang-format off
                     var live = FieldSimObject.CurrentField.MiraLive;
                     live.MiraAssembly.Data.Parts.UserData ??= new Mirabuf.UserData();
-                    live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY] =
-                        JsonConvert.SerializeObject(_allFieldData[live.MiraAssembly.Info.GUID]);
+                    if (_allFieldData.ContainsKey(live.MiraAssembly.Info.GUID)) {
+                        live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY] =
+                            JsonConvert.SerializeObject(_allFieldData[live.MiraAssembly.Info.GUID]);
+                    }
                     live.Save();
                     // clang-format on
                 }
