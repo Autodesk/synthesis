@@ -14,8 +14,11 @@ using SynthesisAPI.Utilities;
 using Google.Protobuf;
 using Mirabuf.Material;
 using Newtonsoft.Json;
+using SimObjects.MixAndMatch;
 using Logger              = SynthesisAPI.Utilities.Logger;
 using MPhysicalProperties = Mirabuf.PhysicalProperties;
+using Object = System.Object;
+using Transform = Mirabuf.Transform;
 using Vector3             = Mirabuf.Vector3;
 using UVector3            = UnityEngine.Vector3;
 
@@ -107,6 +110,47 @@ namespace Synthesis.Import {
 #endregion
 
 #region Creation
+
+        public static Dictionary<string, GameObject>[] GenerateMixAndMatchDefinitionObjects(MirabufLive[] miraLiveFiles,
+            GameObject assemblyContainer, MixAndMatchRobotData robotTransformData) {
+            Dictionary<string, GameObject>[] groupObjects = new Dictionary<string, GameObject>[miraLiveFiles.Length];
+            miraLiveFiles.ForEachIndex((i, m) => groupObjects[i] = m.GenerateDefinitionObjects(assemblyContainer));
+
+            var mainGrounded = new GameObject("grounded");
+            var rb = mainGrounded.AddComponent<Rigidbody>();
+            
+
+            groupObjects.ForEachIndex((i, objects) => {
+                objects.Values.ForEach(o => {
+                    o.transform.Translate(robotTransformData.PartData[i].localPosition);
+                    o.transform.Rotate(robotTransformData.PartData[i].localRotation.eulerAngles);
+                });
+                
+                // TODO: Position parts based on MixAndMatchRobotData
+                if (objects.TryGetValue("grounded", out var partGrounded)) {
+                    Debug.Log(partGrounded.transform.childCount);
+                    var children = new List<UnityEngine.Transform>();
+
+                    foreach (UnityEngine.Transform child in partGrounded.transform) {
+                        children.Add(child);
+                    }
+                    
+                    children.ForEach(c => c.SetParent(mainGrounded.transform));
+
+                    rb.mass += partGrounded.GetComponent<Rigidbody>().mass;
+                    rb.centerOfMass += partGrounded.GetComponent<Rigidbody>().centerOfMass;
+                    //UnityEngine.Object.Destroy(partGrounded);
+                    objects.Remove("grounded");
+
+                    objects.Add("grounded", mainGrounded);
+                }
+                else {
+                    // TODO: do something about this?
+                    throw new Exception("No grounded object found");
+                }
+            });
+            return groupObjects;
+        }
 
         public Dictionary<string, GameObject> GenerateDefinitionObjects(
             GameObject assemblyContainer, bool physics = true) {

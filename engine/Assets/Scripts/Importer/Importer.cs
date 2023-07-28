@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -31,21 +31,29 @@ namespace Synthesis.Import {
         private static ulong _robotTally = 0; // Just a number to add to the name of the sim object spawned
 
         public static (GameObject mainObject, MirabufLive[] miraLiveFiles, SimObject sim)
-            MirabufAssemblyImport(string[] filePaths, MixAndMatchRobotData mixAndMatchRobotData) {
+            MirabufAssemblyImport(string[] filePaths, MixAndMatchRobotData robotTransformData) {
             MirabufLive[] miraLiveFiles = filePaths.Select(path => new MirabufLive(path)).ToArray();
 
+            return MirabufAssemblyImport(miraLiveFiles, robotTransformData);
+        }
+
+        public static (GameObject mainObject, MirabufLive[] miraLiveFiles, SimObject sim)
+            MirabufAssemblyImport(MixAndMatchRobotData mixAndMatchRobotData) {
+            MirabufLive[] miraLiveFiles = mixAndMatchRobotData.PartData.Select(part =>
+                new MirabufLive(MixAndMatchSaveUtil.LoadPartData(part.fileName).MirabufPartFile)).ToArray();
+            
             return MirabufAssemblyImport(miraLiveFiles, mixAndMatchRobotData);
         }
 
         public static (GameObject mainObject, MirabufLive[] miraLiveFiles, SimObject sim)
-            MirabufAssemblyImport(MirabufLive[] miraLiveFiles, MixAndMatchRobotData mixAndMatchRobotData) {
+            MirabufAssemblyImport(MirabufLive[] miraLiveFiles, MixAndMatchRobotData robotTransformData) {
             Assembly[] assemblies = miraLiveFiles.Select(m => m.MiraAssembly).ToArray();
 
             // TODO: give root object a unique name
-            GameObject rootGameObject    = new GameObject($"{assemblies[0].Info.Name}_{_robotTally}");
-            GameObject[] assemblyObjects = assemblies.Select(a => new GameObject(a.Info.Name)).ToArray();
+            GameObject assemblyObject    = new GameObject($"{assemblies[0].Info.Name}_{_robotTally}");
+            //GameObject[] assemblyObjects = assemblies.Select(a => new GameObject(a.Info.Name)).ToArray();
 
-            assemblyObjects.ForEach(o => o.transform.SetParent(rootGameObject.transform));
+            //assemblyObjects.ForEach(o => o.transform.SetParent(assemblyObject.transform));
 
             UnityEngine.Physics.sleepThreshold = 0;
 
@@ -54,9 +62,9 @@ namespace Synthesis.Import {
             var gamepieces       = new List<GamepieceSimObject>();
             var rigidDefinitions = miraLiveFiles.Select(m => m.Definitions).ToArray();
 
-            Dictionary<string, GameObject>[] groupObjects = new Dictionary<string, GameObject>[assemblyObjects.Length];
-            miraLiveFiles.ForEachIndex((i, m) => groupObjects[i] = m.GenerateDefinitionObjects(assemblyObjects[i]));
-
+            Dictionary<string, GameObject>[] groupObjects =
+                MirabufLive.GenerateMixAndMatchDefinitionObjects(miraLiveFiles, assemblyObject, robotTransformData);
+                
             groupObjects.ForEachIndex(
                 (i, x) => x.Where(x => miraLiveFiles[i].Definitions.Definitions[x.Key].IsGamepiece).ForEach(x => {
                     var gpSim = new GamepieceSimObject(miraLiveFiles[i].Definitions.Definitions[x.Key].Name, x.Value);
@@ -71,16 +79,16 @@ namespace Synthesis.Import {
                 }));
 
             SimObject simObject = CreateSimObject(assemblies, miraLiveFiles, groupObjects, gamepieces);
-            RegisterSimObject(simObject, assemblies, assemblyObjects);
+            RegisterSimObject(simObject, assemblies, assemblyObject);
 
             MakeAllJoints(assemblies, rigidDefinitions, groupObjects, simObject);
 
-            if (mixAndMatchRobotData != null) {
-                PositionMixAndMatchParts(mixAndMatchRobotData, assemblyObjects);
-                ConnectMixAndMatchParts(mixAndMatchRobotData, groupObjects);
+            if (robotTransformData != null) {
+                PositionMixAndMatchParts(robotTransformData, assemblyObject);
+                ConnectMixAndMatchParts(robotTransformData, groupObjects);
             }
 
-            return (rootGameObject, miraLiveFiles, simObject);
+            return (assemblyObject, miraLiveFiles, simObject);
         }
 
         /// <summary>Creates and registers the robots sim object</summary>
@@ -103,13 +111,13 @@ namespace Synthesis.Import {
         }
 
         private static void RegisterSimObject(
-            SimObject simObject, Assembly[] assemblies, GameObject[] assemblyObjects) {
+            SimObject simObject, Assembly[] assemblies, GameObject assemblyObject) {
             try {
                 SimulationManager.RegisterSimObject(simObject);
             } catch {
                 // TODO: Fix
                 Logger.Log($"Field with assembly {assemblies[0].Info.Name} already exists.");
-                assemblyObjects.ForEach(UnityEngine.Object.Destroy);
+                UnityEngine.Object.Destroy(assemblyObject);
             }
         }
 
@@ -320,15 +328,16 @@ namespace Synthesis.Import {
         }
 
         /// <summary>Locally positions each mix and match part</summary>
-        private static void PositionMixAndMatchParts(MixAndMatchRobotData robotData, GameObject[] assemblyObjects) {
-            assemblyObjects.ForEachIndex((partIndex, gameObject) => {
+        private static void PositionMixAndMatchParts(MixAndMatchRobotData robotData, GameObject assemblyObject) {
+            // TODO: fix this
+            /*assemblyObjects.ForEachIndex((partIndex, gameObject) => {
                 var transform = gameObject.transform;
 
                 /* TODO: fix (now using part name not index)
                 var partTrfData = robotData.Parts[partIndex];
                 transform.localPosition = partTrfData.LocalPosition;
-                transform.localRotation = partTrfData.LocalRotation;*/
-            });
+                transform.localRotation = partTrfData.LocalRotation;#1#
+            });*/
         }
 
         /// <summary>Connects all mix and match parts together using <see

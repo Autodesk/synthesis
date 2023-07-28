@@ -46,7 +46,7 @@ namespace Synthesis.UI.Dynamic {
                 */
 
                 if (_selectedIndex != -1) {
-                    RobotSimObject.SpawnRobot(null, _files[_selectedIndex]);
+                    RobotSimObject.SpawnRobot(null, false, _files[_selectedIndex]);
                     // ItemAnalytics("Robot");
                     DynamicUIManager.CloseActiveModal();
                 }

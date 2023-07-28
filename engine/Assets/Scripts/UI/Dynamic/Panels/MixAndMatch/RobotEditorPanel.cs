@@ -293,6 +293,8 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             _robotData.PartData = parts.ToArray();
 
             MixAndMatchSaveUtil.SaveRobotData(_robotData);
+            
+            RobotSimObject.SpawnRobot(_robotData);
         }
     }
 }
