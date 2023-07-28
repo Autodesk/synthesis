@@ -8,6 +8,7 @@ using Synthesis.Runtime;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.Utilities;
+using UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -117,6 +118,8 @@ public static class MainHUD {
     private static Button _homeButton;
     private static Image _homeIcon;
 
+    private static GradientImageUpdater _tabDrawerGradient;
+
     private static Action<Button> _backCallback;
     private static Action<Button> _spawnCallback;
 
@@ -135,8 +138,10 @@ public static class MainHUD {
         _bottomDrawerItems.Clear();
         _accordionButton = new Button(null, GameObject.Find("MainHUD").transform.Find("Accordion").gameObject, null);
         _accordionButton.Image.SetColor(ColorManager.SynthesisColor.Icon);
-
-        _tabDrawerContent = new Content(null, GameObject.Find("MainHUD").transform.Find("TabDrawer").gameObject, null);
+        _tabDrawerContent  = new Content(null, GameObject.Find("MainHUD").transform.Find("TabDrawer").gameObject, null);
+        _tabDrawerGradient = _tabDrawerContent.RootGameObject.GetComponent<GradientImageUpdater>() ??
+                             _tabDrawerContent.RootGameObject.AddComponent<GradientImageUpdater>();
+        _tabDrawerGradient.GradientAngle = Mathf.PI * (3f / 2f);
         _logoImage   = new Image(_tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("Logo").gameObject);
         _closeButton = new Button(
             _tabDrawerContent, _tabDrawerContent.RootGameObject.transform.transform.Find("Close").gameObject, null);

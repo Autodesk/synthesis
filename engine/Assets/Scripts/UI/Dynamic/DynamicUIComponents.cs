@@ -567,7 +567,8 @@ namespace Synthesis.UI.Dynamic {
             where T : UIComponent {
             GradientImageUpdater gradientImage = RootGameObject.GetComponent<GradientImageUpdater>();
             if (gradientImage) {
-                gradientImage.Horizontal = horizontal;
+                gradientImage.GradientAngle = Mathf.PI * (horizontal ? 0 : 1) * (3f / 2f);
+                gradientImage.Refresh();
             }
 
             return (this as T)!;
@@ -1359,7 +1360,7 @@ namespace Synthesis.UI.Dynamic {
 
             // scrollbarHandle.SetColor(ColorManager.SynthesisColor.InteractiveBackground);
             scrollbarHandle.SetColor(ColorManager.SynthesisColor.Scrollbar);
-            scrollbarHandle.SetGradientDirection(false);
+            scrollbarHandle.SetGradientDirection(Mathf.PI * 1.5f);
             scrollbarHandle.SetCornerRadius(6);
         }
 
@@ -1509,11 +1510,11 @@ namespace Synthesis.UI.Dynamic {
             return this;
         }
 
-        public void SetGradientDirection(bool horizontal) {
+        public void SetGradientDirection(float angle) {
             if (!_gradientUpdater)
                 return;
 
-            _gradientUpdater.Horizontal = horizontal;
+            _gradientUpdater.GradientAngle = angle;
             _gradientUpdater.Refresh();
         }
     }
