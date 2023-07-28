@@ -457,6 +457,7 @@ public static class MainHUD {
 
         _spawnButton.RootGameObject.SetActive(true);
         _spawnIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"));
+        _spawnIcon.SetSize<Image>(new Vector2(30, 30));
         _spawnButton.Label.SetText("Back");
 
         if (ModeManager.CurrentMode.GetType() == typeof(MatchMode) &&
@@ -510,6 +511,7 @@ public static class MainHUD {
         DynamicUIManager.CloseAllPanels();
         GizmoManager.ExitGizmo();
         isConfig = false;
+        _spawnIcon.SetSize<Image>(new Vector2(22, 22));
         if (ModeManager.CurrentMode.GetType() == typeof(PracticeMode)) {
             SetUpPractice();
         } else if (ModeManager.CurrentMode.GetType() == typeof(MatchMode)) {
