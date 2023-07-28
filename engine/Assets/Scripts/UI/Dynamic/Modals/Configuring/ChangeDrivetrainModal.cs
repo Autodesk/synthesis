@@ -28,9 +28,11 @@ public class ChangeDrivetrainModal : ModalDynamic {
 
         AcceptButton.AddOnClickedEvent(b => {
             MainHUD.ConfigRobot.ConfiguredDrivetrainType = _selectedType;
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.DrivetrainSwitched, ("DrivetrainType", _selectedType.Name));
+
             DynamicUIManager.CloseActiveModal();
 
-            AnalyticsManager.LogCustomEvent(AnalyticsEvent.DrivetrainSwitched, ("DrivetrainType", _selectedType.Name));
+            RobotSimObject.GetCurrentlyPossessedRobot().CreateDrivetrainTooltip();
         });
 
         _selectedType = MainHUD.ConfigRobot.ConfiguredDrivetrainType;

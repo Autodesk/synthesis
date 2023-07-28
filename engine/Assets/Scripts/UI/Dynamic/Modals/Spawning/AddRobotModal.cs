@@ -1,7 +1,10 @@
 using System.IO;
 using System.Linq;
+using Org.BouncyCastle.Asn1.X509.Qualified;
+using Synthesis;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.Utilities;
+using UI.Dynamic.Panels.Tooltip;
 using UnityEngine;
 using Utilities.ColorManager;
 using Logger = SynthesisAPI.Utilities.Logger;
@@ -33,6 +36,7 @@ namespace UI.Dynamic.Modals.Spawning {
                 if (_selectedIndex != -1) {
                     RobotSimObject.SpawnRobot(_files[_selectedIndex]);
                     DynamicUIManager.CloseActiveModal();
+                    RobotSimObject.GetCurrentlyPossessedRobot().CreateDrivetrainTooltip();
                 }
             });
 

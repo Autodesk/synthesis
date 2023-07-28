@@ -29,7 +29,7 @@ namespace Synthesis.UI.Dynamic {
 
     public abstract class PanelDynamic {
         public const float MAIN_CONTENT_HORZ_PADDING = 25f;
-        public bool TweenFromBottom                  = false;
+        public Vector2 TweenDirection                = Vector2.right;
         public bool IsClosing                        = false;
 
         private float _leftContentPadding, _rightContentPadding;
@@ -43,7 +43,9 @@ namespace Synthesis.UI.Dynamic {
         private Transform _footer;
         protected Transform Footer => _footer;
         private Button _cancelButton;
-        protected Button CancelButton => _cancelButton;
+        private RectTransform _headerRt;
+        protected RectTransform HeaderRt => _headerRt;
+        protected Button CancelButton    => _cancelButton;
         private Button _acceptButton;
         protected Button AcceptButton => _acceptButton;
 
@@ -117,9 +119,8 @@ namespace Synthesis.UI.Dynamic {
         public void Create_Internal(GameObject unityObject) {
             _unityObject = unityObject;
 
-            // Grab Customizable Modal Components
-            var header   = _unityObject.transform.Find("Header");
-            var headerRt = header.GetComponent<RectTransform>();
+            var header = _unityObject.transform.Find("Header");
+            _headerRt  = header.GetComponent<RectTransform>();
 
             _panelIcon = new Image(null, header.Find("Image").gameObject);
             _panelIcon.SetColor(ColorManager.SynthesisColor.MainText);
@@ -158,7 +159,7 @@ namespace Synthesis.UI.Dynamic {
             hiddenRt.anchorMin        = new Vector2(0, 1);
             hiddenRt.anchorMax        = new Vector2(1, 1);
             hiddenRt.pivot            = new Vector2(0.5f, 1);
-            hiddenRt.anchoredPosition = new Vector2(0, -headerRt.sizeDelta.y);
+            hiddenRt.anchoredPosition = new Vector2(0, -_headerRt.sizeDelta.y);
             var actualContentObj =
                 GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("content-base"), hiddenContentT);
             actualContentObj.name = "CentralContent";
@@ -167,7 +168,7 @@ namespace Synthesis.UI.Dynamic {
             contentRt.offsetMin   = new Vector2(_leftContentPadding, contentRt.offsetMin.y);
             var modalRt           = _unityObject.GetComponent<RectTransform>();
             modalRt.sizeDelta     = new Vector2(_mainContentSize.x + (_leftContentPadding + _rightContentPadding),
-                    hiddenRt.sizeDelta.y + headerRt.sizeDelta.y + footerRt.sizeDelta.y);
+                    hiddenRt.sizeDelta.y + _headerRt.sizeDelta.y + footerRt.sizeDelta.y);
             _mainContent          = new Content(null!, actualContentObj, _mainContentSize);
         }
 

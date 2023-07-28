@@ -22,7 +22,7 @@ public class DriverStationPanel : PanelDynamic {
     public DriverStationPanel() : base(new Vector2(800, 60)) {}
 
     public override bool Create() {
-        TweenFromBottom = true;
+        TweenDirection = Vector2.down;
 
         if (RobotSimObject.CurrentlyPossessedRobot == string.Empty) {
             Logger.Log("Spawn a robot first", LogLevel.Info);

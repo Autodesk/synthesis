@@ -19,6 +19,7 @@ using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
+using UI.Dynamic.Panels.Tooltip;
 using UnityEngine;
 using Utilities.ColorManager;
 using Bounds   = UnityEngine.Bounds;
@@ -778,5 +779,20 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     public class RobotRemoveEvent : IEvent {
         public string Bot;
+    }
+
+    public void CreateDrivetrainTooltip() {
+        switch (ConfiguredDrivetrainType.Name) {
+            case "Arcade":
+                TooltipManager.CreateTooltip(("WASD", "Drive"), ("E", "Intake"), ("Q", "Dispense"));
+                return;
+            case "Tank":
+                TooltipManager.CreateTooltip(
+                    ("WS", "Drivetrain Left"), ("IK", "Drivetrain Right"), ("E", "Intake"), ("Q", "Dispense"));
+                return;
+            case "Swerve":
+                TooltipManager.CreateTooltip(("WASD", "Drive"), ("< >", "Turn"), ("E", "Intake"), ("Q", "Dispense"));
+                return;
+        }
     }
 }
