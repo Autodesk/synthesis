@@ -30,7 +30,6 @@ public class SocialMediaButtons : MonoBehaviour {
     }
 
     public void Website() {
-        Process.Start(
-            new ProcessStartInfo() { FileName = "https://synthesis.autodesk.com/", UseShellExecute = true });
+        Process.Start(new ProcessStartInfo() { FileName = "https://synthesis.autodesk.com/", UseShellExecute = true });
     }
 }

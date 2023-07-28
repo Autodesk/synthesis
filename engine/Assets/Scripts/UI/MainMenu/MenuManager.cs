@@ -46,34 +46,38 @@ namespace Synthesis.UI {
         }
 
         public void ShowSocials() {
-            Transform linksTransform = GameObject.Find("Canvas").transform.Find("MenuPanel").transform.Find("Links").transform;
-            CanvasGroup cGroup = linksTransform.Find("SocialsDropDownHide").gameObject.GetComponent<CanvasGroup>();
-            cGroup.alpha = 0;
+            Transform linksTransform =
+                GameObject.Find("Canvas").transform.Find("MenuPanel").transform.Find("Links").transform;
+            CanvasGroup cGroup  = linksTransform.Find("SocialsDropDownHide").gameObject.GetComponent<CanvasGroup>();
+            cGroup.alpha        = 0;
             cGroup.interactable = false;
             linksTransform.Find("SocialsDropDownHide").gameObject.SetActive(false);
-            
-            cGroup = linksTransform.Find("SocialsShadow").gameObject.GetComponent<CanvasGroup>();
-            cGroup.alpha = 1;
+
+            cGroup              = linksTransform.Find("SocialsShadow").gameObject.GetComponent<CanvasGroup>();
+            cGroup.alpha        = 1;
             cGroup.interactable = true;
-            
-            cGroup = linksTransform.Find("Socials").transform.Find("SocialsDropDown").gameObject.GetComponent<CanvasGroup>();
-            cGroup.alpha = 1;
+
+            cGroup =
+                linksTransform.Find("Socials").transform.Find("SocialsDropDown").gameObject.GetComponent<CanvasGroup>();
+            cGroup.alpha        = 1;
             cGroup.interactable = true;
         }
 
         public void HideSocials() {
-            Transform linksTransform = GameObject.Find("Canvas").transform.Find("MenuPanel").transform.Find("Links").transform;
-            CanvasGroup cGroup = linksTransform.Find("SocialsShadow").gameObject.GetComponent<CanvasGroup>();
-            cGroup.alpha = 0;
+            Transform linksTransform =
+                GameObject.Find("Canvas").transform.Find("MenuPanel").transform.Find("Links").transform;
+            CanvasGroup cGroup  = linksTransform.Find("SocialsShadow").gameObject.GetComponent<CanvasGroup>();
+            cGroup.alpha        = 0;
             cGroup.interactable = false;
-            
-            cGroup = linksTransform.Find("Socials").transform.Find("SocialsDropDown").gameObject.GetComponent<CanvasGroup>();
-            cGroup.alpha = 0;
+
+            cGroup =
+                linksTransform.Find("Socials").transform.Find("SocialsDropDown").gameObject.GetComponent<CanvasGroup>();
+            cGroup.alpha        = 0;
             cGroup.interactable = false;
 
             linksTransform.Find("SocialsDropDownHide").gameObject.SetActive(true);
-            cGroup = linksTransform.Find("SocialsDropDownHide").gameObject.GetComponent<CanvasGroup>();
-            cGroup.alpha = 1;
+            cGroup              = linksTransform.Find("SocialsDropDownHide").gameObject.GetComponent<CanvasGroup>();
+            cGroup.alpha        = 1;
             cGroup.interactable = true;
         }
     }

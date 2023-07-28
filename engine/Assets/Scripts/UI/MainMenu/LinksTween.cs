@@ -11,15 +11,15 @@ using TMPro;
 
 [RequireComponent(typeof(Button))]
 
-public class LinksTween: MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
-    private readonly string _growKey = "link_grow";
+public class LinksTween : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
+    private readonly string _growKey   = "link_grow";
     private readonly string _shrinkKey = "link_shrink";
     private TMP_Text text;
     public float sizeStart;
     public float sizeEnd;
 
     public void OnPointerEnter(PointerEventData eventData) {
-        text = gameObject.GetComponent<TMP_Text>();
+        text      = gameObject.GetComponent<TMP_Text>();
         sizeStart = text.fontSize;
         SynthesisTween.MakeTween(_growKey, text.fontSize, sizeEnd, 1f,
             (t, a, b) => SynthesisTweenInterpolationFunctions.FloatInterp(t, (float) a, (float) b),
@@ -36,15 +36,16 @@ public class LinksTween: MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     }
 
     private void TweenUp(SynthesisTween.SynthesisTweenStatus status) {
-        if (text.fontSize < sizeEnd) gameObject.GetComponent<TMP_Text>().fontSize += 1;
+        if (text.fontSize < sizeEnd)
+            gameObject.GetComponent<TMP_Text>().fontSize += 1;
     }
 
-     private void TweenDown(SynthesisTween.SynthesisTweenStatus status) {
-        if (text.fontSize > sizeStart) gameObject.GetComponent<TMP_Text>().fontSize -= 1;
+    private void TweenDown(SynthesisTween.SynthesisTweenStatus status) {
+        if (text.fontSize > sizeStart)
+            gameObject.GetComponent<TMP_Text>().fontSize -= 1;
     }
 
     public void OnDestroy() {
         SynthesisTween.CancelTween(_growKey);
     }
 }
-

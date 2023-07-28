@@ -4,8 +4,8 @@ using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(Button))]
 
-public class MenuSlideTween: MonoBehaviour, IPointerClickHandler {
-    private readonly string _key = "slide";
+public class MenuSlideTween : MonoBehaviour, IPointerClickHandler {
+    private readonly string _key               = "slide";
     private const float SCREEN_TWO_ANCHOR_DIFF = 4000f;
     private float _imageAnchorDiff;
     private float _textAnchorDiff;
@@ -14,11 +14,11 @@ public class MenuSlideTween: MonoBehaviour, IPointerClickHandler {
     public void OnPointerClick(PointerEventData eventData) {
         _screenTransform = GameObject.Find("Canvas").transform.Find("MenuPanel").transform.Find("ScreenSpace");
         _imageAnchorDiff = GetRectTransform("MakeAnythingImage").anchoredPosition.x;
-        _textAnchorDiff = GetRectTransform("ScreenOneText").anchoredPosition.x;
-        
+        _textAnchorDiff  = GetRectTransform("ScreenOneText").anchoredPosition.x;
+
         SynthesisTween.MakeTween(_key, GetRectTransform("Anchor").anchoredPosition.x, -SCREEN_TWO_ANCHOR_DIFF, 0.5f,
-                (t, a, b) => SynthesisTweenInterpolationFunctions.FloatInterp(t, (float) a, (float) b),
-                SynthesisTweenScaleFunctions.EaseOutCubic, TweenProgress);
+            (t, a, b) => SynthesisTweenInterpolationFunctions.FloatInterp(t, (float) a, (float) b),
+            SynthesisTweenScaleFunctions.EaseOutCubic, TweenProgress);
     }
 
     private void TweenProgress(SynthesisTween.SynthesisTweenStatus status) {
@@ -36,9 +36,7 @@ public class MenuSlideTween: MonoBehaviour, IPointerClickHandler {
         return _screenTransform.transform.Find(name).gameObject.GetComponent<RectTransform>();
     }
 
-
     public void OnDestroy() {
         SynthesisTween.CancelTween(_key);
     }
 }
-
