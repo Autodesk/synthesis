@@ -16,9 +16,9 @@ public class MenuSlideTween: MonoBehaviour, IPointerClickHandler {
         _imageAnchorDiff = GetRectTransform("MakeAnythingImage").anchoredPosition.x;
         _textAnchorDiff = GetRectTransform("ScreenOneText").anchoredPosition.x;
         
-        SynthesisTween.MakeTween(_key, GetRectTransform("Anchor").anchoredPosition.x, -SCREEN_TWO_ANCHOR_DIFF, 1f,
+        SynthesisTween.MakeTween(_key, GetRectTransform("Anchor").anchoredPosition.x, -SCREEN_TWO_ANCHOR_DIFF, 0.5f,
                 (t, a, b) => SynthesisTweenInterpolationFunctions.FloatInterp(t, (float) a, (float) b),
-                SynthesisTweenScaleFunctions.EaseInOutQuint, TweenProgress);
+                SynthesisTweenScaleFunctions.EaseOutCubic, TweenProgress);
     }
 
     private void TweenProgress(SynthesisTween.SynthesisTweenStatus status) {
@@ -29,7 +29,7 @@ public class MenuSlideTween: MonoBehaviour, IPointerClickHandler {
     }
 
     private void MoveObject(RectTransform t, float pos) {
-        t.anchoredPosition = new Vector2(pos - 10f, t.anchoredPosition.y);
+        t.anchoredPosition = new Vector2(pos, t.anchoredPosition.y);
     }
 
     private RectTransform GetRectTransform(string name) {
