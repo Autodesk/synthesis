@@ -21,7 +21,7 @@ public class ChooseSingleplayerModeModal : ModalDynamic {
         ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("settings"));
 
         AcceptButton.RootGameObject.SetActive(false);
-        CancelButton.Label.SetText("Close");
+        CancelButton.RootGameObject.SetActive(false);
 
         MainContent.CreateButton()
             .StepIntoLabel(l => l.SetText("Practice Mode"))

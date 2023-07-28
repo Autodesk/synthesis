@@ -21,7 +21,7 @@ public class ChooseMultiplayerModeModal : ModalDynamic {
         ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("settings"));
 
         AcceptButton.RootGameObject.SetActive(false);
-        CancelButton.Label.SetText("Close");
+        CancelButton.RootGameObject.SetActive(false);
         MainContent.CreateButton()
             .StepIntoLabel(l => l.SetText("Server Test Mode"))
             .ApplyTemplate(VerticalLayout)
@@ -41,7 +41,7 @@ public class ChooseMultiplayerModeModal : ModalDynamic {
             });
 
         MainContent.CreateButton()
-            .StepIntoLabel(l => l.SetText("Connect to a sServer"))
+            .StepIntoLabel(l => l.SetText("Connect to a Server"))
             .ApplyTemplate(VerticalLayout)
             .AddOnClickedEvent(b => {
                 if (SceneManager.GetActiveScene().name != "MainScene")
