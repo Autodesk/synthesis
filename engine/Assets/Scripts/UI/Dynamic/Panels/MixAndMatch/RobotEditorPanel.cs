@@ -19,6 +19,8 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         private const float VERTICAL_PADDING = 7f;
         private const float HORIZONTAL_PADDING = 16f;
 
+        private const float PART_ROTATION_SPEED = 10f;
+        
         private static readonly int _connectionLayer = LayerMask.NameToLayer("ConnectionPoint");
         private static readonly int _connectionLayerMask = 1 << _connectionLayer;
 
@@ -123,6 +125,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         }
 
         private void AddAdditionalPart(MixAndMatchPartData part) {
+            EnablePartColliders(_selectedPart?.gameObject);
             AddScrollViewEntry((InstantiatePartGameObject(Vector3.zero, Quaternion.identity, part), part));
             UpdateRemoveButton();
         }
@@ -197,22 +200,13 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
         private void SelectPart((GameObject gameObject, MixAndMatchPartData partData) part, Toggle toggle, bool state) {
             if (state) {
-                if (_selectedPart != null)
-                    EnablePartColliders(_selectedPart.Value.gameObject);
-
-                _selectedPart = part;
-                DisablePartColliders(part.gameObject);
-
-                /*
-                GizmoManager.SpawnGizmo(part.transform,
-                    t => {
-                        part.transform.position = t.Position;
-                        part.transform.rotation = t.Rotation;
-                    },
-                    _ => { });*/
-
                 _scrollView.Content.ChildrenReadOnly.OfType<Toggle>().ForEach(x => { x.SetStateWithoutEvents(false); });
                 toggle.SetStateWithoutEvents(true);
+                
+                _partGameObjects.ForEach(x => EnablePartColliders(x.gameObject));
+                DisablePartColliders(part.gameObject);
+                
+                _selectedPart = part;
             }
             else
                 _selectedPart = null;
@@ -244,6 +238,9 @@ namespace UI.Dynamic.Panels.MixAndMatch {
                 (_partGameObjects.Count > 0 && _selectedPart != null) ? EnableButton : DisableButton);
         }
 
+        // TODO: store separately for each part not globally
+        private float _axisRotation;
+        
         private void PartPlacement() {
 
             if (EventSystem.current.IsPointerOverGameObject() || _selectedPart == null)
@@ -263,9 +260,17 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
                 selectedTrf.rotation = Quaternion.LookRotation(-hit.transform.forward, Vector3.up);
                 selectedTrf.Rotate(-selectedPartData.ConnectionPoints[0].LocalRotation.eulerAngles);
-                //Debug.Log($"Rotation: {-hit.transform.forward} and {Quaternion.LookRotation(-hit.transform.forward, Vector3.up)}");
-                selectedTrf.Translate(-selectedPartData.ConnectionPoints[0].LocalPosition);
 
+                if (Input.GetKey(KeyCode.R)) {
+                    _axisRotation += Time.deltaTime*PART_ROTATION_SPEED 
+                                                   * (Input.GetKey(KeyCode.LeftShift) ? -1 : 1);
+                }
+
+                Vector3 axis = selectedTrf.localToWorldMatrix.rotation *
+                               (selectedPartData.ConnectionPoints[0].LocalRotation * Vector3.forward);
+                selectedTrf.RotateAround(axis, _axisRotation);
+
+                selectedTrf.Translate(-selectedPartData.ConnectionPoints[0].LocalPosition);
             }
         }
 

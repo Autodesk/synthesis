@@ -29,7 +29,6 @@ namespace UI.Dynamic.Modals.MixAndMatch {
                         if (files.Length == 0 || dropdown.Value < 0) // TODO: Disable select button
                             return;
 
-                        Debug.Log(files[dropdown.Value]);
                         _callback(MixAndMatchSaveUtil.LoadPartData(files[dropdown.Value]));
                         DynamicUIManager.CloseActiveModal();
                     });
