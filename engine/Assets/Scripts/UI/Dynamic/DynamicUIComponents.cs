@@ -1170,7 +1170,6 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public InputField SetValueTextColor(Color color) {
-            Debug.Log(color);
             RootGameObject.transform.Find("InputField/Text Area/Text").GetComponent<TextMeshProUGUI>().color = color;
             return this;
         }

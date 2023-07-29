@@ -185,8 +185,6 @@ namespace Synthesis.UI.Dynamic {
                 bool hit = UnityEngine.Physics.Raycast(ray, out hitInfo);
                 if (hit && hitInfo.rigidbody != null &&
                     hitInfo.rigidbody.transform.parent == _robot.RobotNode.transform) {
-                    Debug.Log($"Selecting Node: {hitInfo.rigidbody.name}");
-
                     if (_hoveringNode != null) {
                         _hoveringNode.enabled = false;
                     }

@@ -91,8 +91,6 @@ namespace Modes.MatchMode {
                         _redScore += zone.Points;
                         break;
                 }
-                Debug.Log(
-                    $"{zone.Alliance.ToString()} scored {zone.Points} points! Blue: {_blueScore} Red: {_redScore}");
             });
         }
 
