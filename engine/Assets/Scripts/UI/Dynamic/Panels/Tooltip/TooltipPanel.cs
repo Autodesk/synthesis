@@ -103,7 +103,6 @@ namespace UI.Dynamic.Panels.Tooltip {
 
         /// <summary>Creates a new tooltip at the top center of the screen. Closes any active tooltip</summary>
         public static void CreateTooltip(params(string key, string description)[] tooltips) {
-            Debug.Log("Tooltip made");
             if (_currentTooltip != null) {
                 DynamicUIManager.ClosePanel<TooltipPanel>();
                 _cts.Token.ThrowIfCancellationRequested();
@@ -133,7 +132,6 @@ namespace UI.Dynamic.Panels.Tooltip {
             float startTime = Time.time;
             while (true) {
                 if (Time.time > startTime + TOOLTIP_TIMEOUT_SEC) {
-                    Debug.Log("Tooltip ended");
                     CloseTooltip();
                     return;
                 }
@@ -141,7 +139,6 @@ namespace UI.Dynamic.Panels.Tooltip {
                 try {
                     await Task.Delay(100, ct);
                 } catch {
-                    Debug.Log("Tooltip Canceled");
                     return;
                 }
             }

@@ -20,7 +20,6 @@ public class Interactable3DDetector : MonoBehaviour {
 
     private void Update() {
         if (Input.GetKeyDown(KeyCode.Mouse1)) {
-            Debug.Log("3d Detector");
             var refResolution = ContextMenu.CanvasScaler.referenceResolution;
 
             Vector2 screen = new Vector2(Screen.currentResolution.width, Screen.currentResolution.height);

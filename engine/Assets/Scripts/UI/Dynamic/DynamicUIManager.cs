@@ -187,7 +187,6 @@ namespace Synthesis.UI.Dynamic {
         // Currently only going to allow one active panel
         public static bool CreatePanel<T>(bool persistent = false, params object[] args)
             where T : PanelDynamic {
-            Debug.Log("Create Panel");
             if (ActiveModal != null && !persistent) {
                 return false;
             }
@@ -267,6 +266,7 @@ namespace Synthesis.UI.Dynamic {
             }
 
             ShowAllPanels();
+            MainHUD.Collapsed = false;
             AnalyticsManager.LogCustomEvent(AnalyticsEvent.ActiveModalClosed, ("UIType", modal.GetType().Name));
             return true;
         }
@@ -285,7 +285,6 @@ namespace Synthesis.UI.Dynamic {
             where T : PanelDynamic => ClosePanel(typeof(T), bypassTween);
 
   public static bool ClosePanel(Type t, bool bypassTween = false) {
-            Debug.Log("Close Panel");
             if (!PanelExists(t))
                 return false;
 

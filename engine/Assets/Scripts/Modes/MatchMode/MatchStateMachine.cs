@@ -28,7 +28,6 @@ namespace Modes.MatchMode {
         /// Sets the current state. Automatically calls any event functions in the state
         /// <param name="stateName">The new state to switch to</param>
         public void SetState(StateName stateName) {
-            Debug.Log($"State set to {stateName}");
             var newState = _matchStates[stateName];
             if (newState == null) {
                 Debug.LogError($"No state found for {stateName}");
