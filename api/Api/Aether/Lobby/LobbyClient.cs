@@ -16,6 +16,9 @@ using System.Threading.Tasks;
 namespace SynthesisAPI.Aether.Lobby {
     public class LobbyClient : IDisposable {
 
+        private static readonly Result<LobbyMessage?, Exception> NO_INSTANCE_ERROR_RESULT
+            = new Result<LobbyMessage?, Exception>(new Exception("No instance"));
+
         private const long HEARTBEAT_FREQUENCY = 1000;
 
         public string IP => _instance == null ? string.Empty : _instance.IP;
@@ -29,21 +32,21 @@ namespace SynthesisAPI.Aether.Lobby {
             _instance = new Inner(ip, name);
         }
 
-        public Task<LobbyMessage.Types.FromGetLobbyInformation?>? GetLobbyInformation() {
-            return _instance?.GetLobbyInformation();
+        public Task<Result<LobbyMessage?, Exception>> GetLobbyInformation() {
+            return _instance?.GetLobbyInformation() ?? Task.FromResult(NO_INSTANCE_ERROR_RESULT);
         }
 
         public Task<Result<LobbyMessage?, Exception>> UpdateControllableState(List<SignalData> updates)
-            => _instance?.UpdateControllableState(updates) ?? Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("No instance")));
+            => _instance?.UpdateControllableState(updates) ?? Task.FromResult(NO_INSTANCE_ERROR_RESULT);
 
         public Task<Result<LobbyMessage?, Exception>> UpdateTransforms(List<ServerTransforms> transforms)
-            => _instance?.UpdateTransforms(transforms) ?? Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("No instance")));
+            => _instance?.UpdateTransforms(transforms) ?? Task.FromResult(NO_INSTANCE_ERROR_RESULT);
 
         public Task<Result<LobbyMessage?, Exception>> MakeDataAvailable(SynthesisDataDescriptor description)
-            => _instance?.MakeDataAvailable(description) ?? Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("No instance")));
+            => _instance?.MakeDataAvailable(description) ?? Task.FromResult(NO_INSTANCE_ERROR_RESULT);
 
         public Task<Result<LobbyMessage?, Exception>> GetAllAvailableData()
-            => _instance?.GetAllAvailableData() ?? Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("No instance")));
+            => _instance?.GetAllAvailableData() ?? Task.FromResult(NO_INSTANCE_ERROR_RESULT);
 
         private class Inner : IDisposable {
 
@@ -90,34 +93,25 @@ namespace SynthesisAPI.Aether.Lobby {
                     Dispose();
             }
 
-            public Task<LobbyMessage.Types.FromGetLobbyInformation?>? GetLobbyInformation() {
-                var msg = new LobbyMessage{ 
-                    ToGetLobbyInformation = new LobbyMessage.Types.ToGetLobbyInformation{
-                        SenderGuid = _handler.Guid
-                    }
+            public Task<Result<LobbyMessage?, Exception>> GetLobbyInformation() {
+                if (!_isAlive.Value)
+                    return Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("Client no longer alive")));
+
+                var request = new LobbyMessage.Types.ToGetLobbyInformation {
+                    SenderGuid = Handler.Guid
                 };
 
-                if (_handler.WriteMessage(msg).isError) {
-                    return null;
-                }
+                var task = new Task<Result<LobbyMessage?, Exception>>(() => {
+                    var response = HandleResponseBoilerplate(
+                        new LobbyMessage { ToGetLobbyInformation = request },
+                        LobbyMessage.MessageTypeOneofCase.FromGetLobbyInformation
+                    );
 
-                return Task<LobbyMessage.Types.FromGetLobbyInformation?>.Factory.StartNew(() => {
-                    var msgTask = _handler.ReadMessage();
-                    msgTask.Wait();
-                    var msgRes = msgTask.Result;
-
-                    if (msgRes.isError) {
-                        Logger.Log($"Failed to Read: [{msgRes.GetError().GetType().Name}] {msgRes.GetError().Message}\n\n{msgRes.GetError().StackTrace}");
-                    }
-
-                    var msg = msgRes.GetResult();
-
-                    if (msg.MessageTypeCase != LobbyMessage.MessageTypeOneofCase.FromGetLobbyInformation) {
-                        return null;
-                    }
-
-                    return msg.FromGetLobbyInformation;
+                    return response;
                 });
+
+                _requestQueue.Enqueue(task);
+                return task;
             }
 
             private void RequestQueueProcessor() {

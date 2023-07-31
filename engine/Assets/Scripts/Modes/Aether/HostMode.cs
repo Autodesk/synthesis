@@ -2,7 +2,9 @@ using Synthesis.Runtime;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.Aether.Lobby;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
+using Synthesis.Import;
 
 #nullable enable
 
@@ -27,6 +29,27 @@ public class HostMode : IMode {
 
     public void StartHostClient(string username) {
         _hostClient = new LobbyClient(SERVER_IP, username);
+    }
+
+    public void UploadSelectionDescriptions() {
+        if (_hostClient?.IsAlive ?? false)
+            return;
+
+        MirabufLive.GetFieldFiles().Select(x => new SynthesisDataDescriptor {
+            Name = Path.GetFileNameWithoutExtension(x),
+            Description = "Field"
+        }).ForEach(x => _hostClient?.MakeDataAvailable(x));
+        MirabufLive.GetRobotFiles().Select(x => new SynthesisDataDescriptor {
+            Name = Path.GetFileNameWithoutExtension(x),
+            Description = "Robot"
+        }).ForEach(x => _hostClient?.MakeDataAvailable(x));
+    }
+
+    public void UploadSelections() {
+        if (_hostClient?.IsAlive ?? false)
+            return;
+
+        _hostClient.GetLobbyInformation();
     }
 
     public void End() {
