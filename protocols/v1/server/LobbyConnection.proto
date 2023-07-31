@@ -10,14 +10,19 @@ message LobbyMessage {
         ToClientHeartbeat to_client_heartbeat = 2;
         ToGetLobbyInformation to_get_lobby_information = 3;
         ToDataDump to_data_dump = 4;
+
         ToUpdateControllableState to_update_controllable_state = 8;
         ToUpdateTransformData to_update_transform_data = 10;
+        ToDataRobot to_data_robot = 12;
+        ToRequestDataRobots to_request_data_robots = 14;
 
         FromRegisterClient from_register_client = 5;
         FromGetLobbyInformation from_get_lobby_information = 6;
         FromDataDumpConfirm from_data_dump_confirm = 7;
         FromSimulationTransformData from_simulation_transform_data = 9;
         FromControllableStates from_controllable_states = 11;
+        FromDataRobot from_data_robot = 13;
+        FromRequestDataRobots from_request_data_robots = 15;
     }
 
     /////////////////////
@@ -50,6 +55,15 @@ message LobbyMessage {
         repeated ServerTransforms transform_data = 1;
     }
 
+    message ToDataRobot {
+        uint64 guid = 1;
+        DataRobot data_robot = 2;
+    }
+
+    message ToRequestDataRobots {
+        uint64 guid = 1;
+    }
+
     /////////////////////
     // From The Server
     /////////////////////
@@ -74,4 +88,11 @@ message LobbyMessage {
         repeated SignalUpdates all_updates = 1;
     }
 
+    message FromDataRobot {
+        uint64 guid = 1;
+    }
+
+    message FromRequestDataRobots {
+        repeated DataRobot all_available_robots = 1;
+    }
 }

@@ -130,8 +130,6 @@ namespace Engine.ModuleLoader.Adapters {
                 _unityJoint = GameObject.Find($"Entity {_joint.connectedParent.Entity?.Index}")
                                   .AddComponent<UnityEngine.HingeJoint>();
 
-                // Logger.Log($"Creating Joint on \"{_unityJoint.gameObject.name}\""); // Useful for debugging
-
                 _unityJoint.anchor          = _joint.anchor.Map() - _unityJoint.transform.position;
                 _unityJoint.axis            = _joint.axis.Map();
                 _unityJoint.breakForce      = _joint.breakForce;

@@ -5,11 +5,13 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour {
     private AudioSource source;
+    private EventBus.EventCallback startCallback;
+    private EventBus.EventCallback endCallback;
 
     public void Start() {
         source = gameObject.GetComponent<AudioSource>();
 
-        EventBus.NewTypeListener<MatchStateMachine.OnStateStarted>(e => {
+        startCallback = e => {
             MatchStateMachine.OnStateStarted onStateStarted = (MatchStateMachine.OnStateStarted) e;
             Type stateType                                  = onStateStarted.state.GetType();
             if (stateType == typeof(MatchStateMachine.Auto)) {
@@ -22,15 +24,23 @@ public class AudioManager : MonoBehaviour {
                 source.clip = SynthesisAssetCollection.GetAudioClip("Start_of_End_Game");
                 source.Play();
             }
-        });
+        };
 
-        EventBus.NewTypeListener<MatchStateMachine.OnStateEnded>(e => {
+        endCallback = e => {
             MatchStateMachine.OnStateEnded onStateEnded = (MatchStateMachine.OnStateEnded) e;
             Type stateType                              = onStateEnded.state.GetType();
             if (stateType == typeof(MatchStateMachine.Endgame)) {
                 source.clip = SynthesisAssetCollection.GetAudioClip("Match_End");
                 source.Play();
             }
-        });
+        };
+
+        EventBus.NewTypeListener<MatchStateMachine.OnStateStarted>(startCallback);
+        EventBus.NewTypeListener<MatchStateMachine.OnStateEnded>(endCallback);
+    }
+
+    public void OnDestroy() {
+        EventBus.RemoveTypeListener<MatchStateMachine.OnStateStarted>(startCallback);
+        EventBus.RemoveTypeListener<MatchStateMachine.OnStateEnded>(endCallback);
     }
 }

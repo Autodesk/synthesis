@@ -28,10 +28,12 @@ public class ScoreboardPanel : PanelDynamic {
     }
 
     public override bool Create() {
+        TweenDirection = Vector2.down;
+
         CancelButton.RootGameObject.SetActive(false);
         AcceptButton.RootGameObject.SetActive(false);
         Title.RootGameObject.SetActive(false);
-        PanelImage.RootGameObject.SetActive(false);
+        PanelIcon.RootGameObject.SetActive(false);
 
         var panel = new Content(null, UnityObject, null);
         panel.SetBottomStretch<Content>(Screen.width / 2 - WIDTH / 2, Screen.width / 2 - WIDTH / 2);

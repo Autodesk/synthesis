@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Synthesis;
 using UnityEngine;
+using Synthesis.Util;
 
 public class CustomWheel : MonoBehaviour {
     // When enabled, you get weird priority effects. Leave disabled for now.
@@ -35,7 +36,7 @@ public class CustomWheel : MonoBehaviour {
 
     public bool HasContacts => _collisionDataThisFrame.numCollisions > 0;
 
-    public float Inertia => WheelDriver.GetInertiaFromAxisVector(Rb, LocalAxis);
+    public float Inertia => SynthesisUtil.GetInertiaFromAxisVector(Rb, LocalAxis);
 
     private Vector3 _lastImpulseTotal;
 

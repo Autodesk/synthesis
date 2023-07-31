@@ -11,6 +11,8 @@ using SynthesisAPI.Utilities;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.InputManager.InputEvents;
 
+#nullable enable
+
 namespace SynthesisAPI.UIManager
 {
     public static class UIManager
@@ -18,7 +20,16 @@ namespace SynthesisAPI.UIManager
         private const string SelectedTabBlankName = "__";
 
         public static VisualElement RootElement {
-            get => ApiProvider.GetRootVisualElement()?.GetVisualElement();
+            get {
+                var root = ApiProvider.GetRootVisualElement();
+
+                if (root == null) 
+                {
+                    return new VisualElement(); // Returning a blank element to prevent a nullable cascade
+                }
+
+                return root.GetVisualElement();
+            } 
         }
         private static UnityVisualElement CreateTab(string tabName) => BlankTabAsset.GetElement(tabName).UnityVisualElement;
 
@@ -112,9 +123,9 @@ namespace SynthesisAPI.UIManager
             }
             if (LoadedTabs.ContainsKey(SelectedTabName))
             {
-                LoadedTabs[SelectedTabName].buttonElement.AddToClassList("active-tab");
-                LoadedTabs[SelectedTabName].buttonElement.RemoveFromClassList("inactive-tab");
-                StyleSheetManager.ApplyClassFromStyleSheets("active-tab", LoadedTabs[SelectedTabName].buttonElement.UnityVisualElement);
+                LoadedTabs[SelectedTabName].buttonElement?.AddToClassList("active-tab");
+                LoadedTabs[SelectedTabName].buttonElement?.RemoveFromClassList("inactive-tab");
+                StyleSheetManager.ApplyClassFromStyleSheets("active-tab", LoadedTabs[SelectedTabName].buttonElement?.UnityVisualElement);
             }
 
             // TODO: Maybe some event
@@ -171,12 +182,18 @@ namespace SynthesisAPI.UIManager
                     LoadedTabs[SelectedTabName] = x;
                 }
                 // toolbar.VisualElement.AddToClassList("custom-toolbar"); // May cause some kind of error
-                toolbarContainer.Add(LoadedTabs[SelectedTabName].ToolbarElement);
                 float height = 0;
-                foreach(var i in LoadedTabs[SelectedTabName].ToolbarElement.GetChildren())
+
+                if (LoadedTabs[SelectedTabName].ToolbarElement != null) 
                 {
-                    height += i.UnityVisualElement.style.height.value.value;
+                    toolbarContainer.Add(LoadedTabs[SelectedTabName].ToolbarElement!);
+
+                    foreach(var i in LoadedTabs[SelectedTabName].ToolbarElement!.GetChildren())
+                    {
+                        height += i.UnityVisualElement.style.height.value.value;
+                    }
                 }
+
                 toolbarContainer.UnityVisualElement.style.height = height;
                 Instance.TitleBarContainer.UnityVisualElement.style.height = Instance.TitleBarContainer.UnityVisualElement.style.height.value.value + height;
             }
@@ -201,7 +218,12 @@ namespace SynthesisAPI.UIManager
                     x.PanelElement = elm;
                     LoadedPanels[panelName] = x;
                 }
-                Instance.PanelContainer.Add(LoadedPanels[panelName].PanelElement);
+
+                if (LoadedPanels[panelName].PanelElement != null)
+                {
+                    Instance.PanelContainer.Add(LoadedPanels[panelName].PanelElement!);
+                }
+
                 EventBus.EventBus.Push("ui/show-panel", new ShowPanelEvent(LoadedPanels[panelName]));
             }
             
@@ -234,13 +256,18 @@ namespace SynthesisAPI.UIManager
 
         internal static void Setup()
         {
-            Instance.SetupCatchAllMouseDown(RootElement.Get("catch-all-mouse-down"));
+            var root = RootElement.Get("catch-all-mouse-down");
+
+            if (root != null) {
+                Instance.SetupCatchAllMouseDown(root);
+            }
+
             Instance.PanelContainer.Enabled = false;
         }
 
         private class Inner
         {
-            private VisualElement _panelContainer = null;
+            private VisualElement? _panelContainer = null;
             public VisualElement PanelContainer
             {
                 get
@@ -251,7 +278,7 @@ namespace SynthesisAPI.UIManager
                 }
             }
 
-            private VisualElement _tabContainer = null;
+            private VisualElement? _tabContainer = null;
 
             public VisualElement TabContainer
             {
@@ -263,7 +290,7 @@ namespace SynthesisAPI.UIManager
                 }
             }
 
-            private VisualElement _titleBarContainer = null;
+            private VisualElement? _titleBarContainer = null;
 
             public VisualElement TitleBarContainer
             {
@@ -275,7 +302,7 @@ namespace SynthesisAPI.UIManager
                 }
             }
 
-            private VisualElement _toolbarContainer = null;
+            private VisualElement? _toolbarContainer = null;
 
             public VisualElement ToolbarContainer
             {
@@ -360,7 +387,7 @@ namespace SynthesisAPI.UIManager
                 }
             }
 
-            public VisualElementAsset BlankTabAsset;
+            public VisualElementAsset? BlankTabAsset;
             
             public string SelectedTabName = SelectedTabBlankName;
             public string DefaultSelectedTabName = SelectedTabBlankName;
@@ -428,7 +455,11 @@ namespace SynthesisAPI.UIManager
         }
         private static VisualElementAsset BlankTabAsset
         {
-            get => Instance.BlankTabAsset;
+            get {
+                if (Instance.BlankTabAsset == null)
+                    Instance.BlankTabAsset = AssetManager.AssetManager.GetAsset<VisualElementAsset>("ui/blank-tab");
+                return Instance.BlankTabAsset!;
+            } 
             set => Instance.BlankTabAsset = value;
         }
 

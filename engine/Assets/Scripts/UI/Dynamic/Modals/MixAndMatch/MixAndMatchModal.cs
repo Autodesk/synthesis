@@ -6,17 +6,18 @@ using Synthesis.UI;
 using Synthesis.UI.Dynamic;
 using UI.Dynamic.Panels.MixAndMatch;
 using UnityEngine;
+using Utilities.ColorManager;
 
 namespace UI.Dynamic.Modals.MixAndMatch {
     public class MixAndMatchModal : ModalDynamic {
         private const float SPLIT_SPACING = 15;
         private const float CONTENT_WIDTH = 400;
 
-        private const float CHOOSE_MODE_HEIGHT = 55;
+        private const float CHOOSE_MODE_HEIGHT   = 55;
         private const float SELECT_OBJECT_HEIGHT = 110;
-        private const float CREATE_NEW_HEIGHT = 55;
+        private const float CREATE_NEW_HEIGHT    = 55;
 
-        public MixAndMatchModal() : base(new Vector2(CONTENT_WIDTH, CHOOSE_MODE_HEIGHT)) { }
+        public MixAndMatchModal() : base(new Vector2(CONTENT_WIDTH, CHOOSE_MODE_HEIGHT)) {}
 
         // TODO: after merge, remove this and use the one in dynamic UI components
         public static Func<UIComponent, UIComponent> VerticalLayout = (u) => {
@@ -56,26 +57,22 @@ namespace UI.Dynamic.Modals.MixAndMatch {
             Title.SetText($"Choose a {(robot ? "Robot" : "Part")} to Edit");
             ClearAndResizeContent(new Vector2(MainContent.Size.x, SELECT_OBJECT_HEIGHT));
 
-            string[] files = robot
-                ? MixAndMatchSaveUtil.RobotFiles
-                : MixAndMatchSaveUtil.PartFiles;
+            string[] files = robot ? MixAndMatchSaveUtil.RobotFiles : MixAndMatchSaveUtil.PartFiles;
 
-            var dropdown = MainContent.CreateDropdown()
-                .ApplyTemplate(VerticalLayout)
-                .SetOptions(files);
+            var dropdown = MainContent.CreateDropdown().ApplyTemplate(VerticalLayout).SetOptions(files);
 
             var (left, right) = MainContent.CreateSubContent(new Vector2(MainContent.Size.x, 50))
-                .ApplyTemplate(VerticalLayout)
-                .SplitLeftRight((MainContent.Size.x / 2f) - (SPLIT_SPACING / 2f), SPLIT_SPACING);
+                                    .ApplyTemplate(VerticalLayout)
+                                    .SplitLeftRight((MainContent.Size.x / 2f) - (SPLIT_SPACING / 2f), SPLIT_SPACING);
 
             left.CreateButton("Select")
                 .ApplyTemplate(VerticalLayout) // Load selected part button
                 .AddOnClickedEvent(
                     _ => {
                         if (files.Length == 0 || dropdown.Value < 0) // TODO: Disable select button
-                                                                                 // when this condition is true
+                                                                     // when this condition is true
                             return;
-                        
+
                         if (robot)
                             OpenRobotEditor(MixAndMatchSaveUtil.LoadRobotData(files[dropdown.Value]));
                         else
@@ -93,9 +90,9 @@ namespace UI.Dynamic.Modals.MixAndMatch {
             ClearAndResizeContent(new Vector2(MainContent.Size.x, CREATE_NEW_HEIGHT));
 
             var nameInputField = MainContent.CreateInputField()
-                .ApplyTemplate(VerticalLayout)
-                .StepIntoHint(h => h.SetText(""))
-                .AddOnValueChangedEvent((_, v) => UpdateAcceptButton(v));
+                                     .ApplyTemplate(VerticalLayout)
+                                     .StepIntoHint(h => h.SetText(""))
+                                     .AddOnValueChangedEvent((_, v) => UpdateAcceptButton(v));
 
             AcceptButton
                 .AddOnClickedEvent(
@@ -109,10 +106,13 @@ namespace UI.Dynamic.Modals.MixAndMatch {
 
             void UpdateAcceptButton(string inputValue) {
                 if (inputValue == "")
-                    AcceptButton.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_BLACK_ACCENT))
+                    AcceptButton
+                        .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                                           ColorManager.SynthesisColor.InteractiveElementRight))
                         .DisableEvents<Button>();
                 else
-                    AcceptButton.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_ACCEPT)).EnableEvents<Button>();
+                    AcceptButton.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary))
+                        .EnableEvents<Button>();
             }
 
             UpdateAcceptButton("");
@@ -126,13 +126,11 @@ namespace UI.Dynamic.Modals.MixAndMatch {
             string[] files = MixAndMatchSaveUtil.PartMirabufFiles;
 
             var dropdown = MainContent.CreateDropdown()
-                .ApplyTemplate(VerticalLayout)
-                .SetOptions(files.Select(Path.GetFileName).ToArray());
+                               .ApplyTemplate(VerticalLayout)
+                               .SetOptions(files.Select(Path.GetFileName).ToArray());
 
-            AcceptButton.AddOnClickedEvent(_ =>
-                OpenPartEditor(
-                    MixAndMatchSaveUtil.CreateNewPart(fileName, files[dropdown.Value]))
-            );
+            AcceptButton.AddOnClickedEvent(
+                _ => OpenPartEditor(MixAndMatchSaveUtil.CreateNewPart(fileName, files[dropdown.Value])));
         }
 
         /// <summary>Either load a robot if it exists or create a new one if it doesn't</summary>
@@ -147,8 +145,8 @@ namespace UI.Dynamic.Modals.MixAndMatch {
             DynamicUIManager.CreatePanel<PartEditorPanel>(persistent: true, args: part);
         }
 
-        public override void Delete() { }
+        public override void Delete() {}
 
-        public override void Update() { }
+        public override void Update() {}
     }
 }

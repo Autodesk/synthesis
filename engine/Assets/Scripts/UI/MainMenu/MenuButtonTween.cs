@@ -31,7 +31,6 @@ public class MenuButtonTween : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     public void OnPointerEnter(PointerEventData eventData) {
         _state = "enter";
-        // MenuManager.Instance.SpotlightButton(transform);
         TweenFactory.RemoveTweenKey(gameObject.name + CLICKED_TWEEN, TweenStopBehavior.DoNotModify);
         TweenFactory.RemoveTweenKey(gameObject.name + RETURN_TWEEN, TweenStopBehavior.DoNotModify);
         // transform.GetComponent<Image>().
@@ -46,7 +45,6 @@ public class MenuButtonTween : MonoBehaviour, IPointerEnterHandler, IPointerExit
             _activeTween.ContinueWith(new Vector3Tween().Setup(Vector3.one * ClickedScaleFactor, Vector3.one,
                 _completionTime, TweenScaleFunctions.CubicEaseOut, updateButtonScale));
         } else {
-            // transform.position = new Vector3(transform.position.x, transform.position.y, 0f);
             _activeTween = gameObject.Tween(gameObject.name + RETURN_TWEEN, gameObject.transform.localScale,
                 Vector3.one, _completionTime, TweenScaleFunctions.CubicEaseOut, updateButtonScale);
         }

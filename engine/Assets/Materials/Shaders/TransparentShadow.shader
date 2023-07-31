@@ -237,6 +237,9 @@ Shader "Custom/TransparentShadow"
                 
                 // float4 col = tex2D(_MainTex, i.uv) * _TintColor;
                 float4 col = float4(_GridColor.xyz, _GridColor.w * shouldGrid);
+                if (col.a < 0.001) {
+                    col = float4(0, 0, 0, 0);
+                }
                 // float4 col = float4(0,0,0,1);
 
                 //below texture sampling code does not use in material inspector             

@@ -8,8 +8,9 @@ using Synthesis.Import;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
-using Color = UnityEngine.Color;
-using Object = UnityEngine.Object;
+using Utilities.ColorManager;
+using Color   = UnityEngine.Color;
+using Object  = UnityEngine.Object;
 using Vector3 = UnityEngine.Vector3;
 
 namespace UI.Dynamic.Panels.MixAndMatch {
@@ -33,40 +34,6 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         private Button _removeButton;
 
         private GameObject _selectedPoint;
-
-        // TODO: Remove and replace with the vert layout in dynamic components after merge
-        private readonly Func<UIComponent, UIComponent> VerticalLayout = (u) => {
-            var offset = (-u.Parent!.RectOfChildren(u).yMin) + VERTICAL_PADDING;
-            u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 0, rightPadding: 0);
-            return u;
-        };
-
-        // TODO: After merge move this to dynamic components
-        public Func<UIComponent, UIComponent> RadioToggleLayout = (u) => {
-            var offset = (-u.Parent!.RectOfChildren(u).yMin);
-            u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 15f, rightPadding: 15f); // used to be 15f
-            return u;
-        };
-
-        // TODO: After merge move this to dynamic components
-        private readonly Func<UIComponent, UIComponent> ListVerticalLayout = (u) => {
-            var offset = (-u.Parent!.RectOfChildren(u).yMin) + VERTICAL_PADDING;
-            u.SetTopStretch<UIComponent>(
-                anchoredY: offset, leftPadding: HORIZONTAL_PADDING, rightPadding: HORIZONTAL_PADDING);
-            return u;
-        };
-
-        // TODO: same
-        public Func<Button, Button> EnableButton = b =>
-            b.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_ORANGE))
-                .StepIntoLabel(l => l.SetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT))
-                .EnableEvents<Button>();
-
-        // TODO: same
-        public Func<Button, Button> DisableButton = b =>
-            b.StepIntoImage(i => i.SetColor(ColorManager.SYNTHESIS_BLACK_ACCENT))
-                .StepIntoLabel(l => l.SetColor(ColorManager.SYNTHESIS_ORANGE_CONTRAST_TEXT))
-                .DisableEvents<Button>();
 
         public PartEditorPanel(MixAndMatchPartData partData) : base(new Vector2(PANEL_WIDTH, PANEL_HEIGHT)) {
             _partData = partData;
@@ -145,14 +112,14 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
         private GameObject InstantiatePointGameObject(ConnectionPointData point) {
             var gameObject  = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            var trf = gameObject.transform;
+            var trf         = gameObject.transform;
             gameObject.name = "ConnectionPoint";
             trf.SetParent(_partGameObject.transform);
 
             trf.position   = point.LocalPosition;
-            trf.rotation    = point.LocalRotation;
+            trf.rotation   = point.LocalRotation;
             trf.localScale = Vector3.one * 0.25f;
-            //TODO: after merge, use color manager
+            // TODO: after merge, use color manager
             trf.GetComponent<MeshRenderer>().material.color = Color.green;
             Object.Destroy(trf.GetComponent<Collider>());
             _connectionGameObjects.Add(gameObject);
@@ -160,11 +127,11 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         }
 
         private void AddScrollViewEntry(GameObject point) {
-            var toggle = _scrollView.Content.CreateToggle(label: "Connection Point")
+            var toggle = _scrollView.Content.CreateToggle(label: "Connection Point", radioSelect: true)
                              .SetSize<Toggle>(new Vector2(PANEL_WIDTH, 50f))
-                             .ApplyTemplate(RadioToggleLayout)
+                             .ApplyTemplate(Toggle.RadioToggleLayout)
                              .StepIntoLabel(l => l.SetFontSize(16f))
-                             .SetDisabledColor(ColorManager.SYNTHESIS_BLACK);
+                             .SetDisabledColor(ColorManager.SynthesisColor.Background);
             toggle.AddOnStateChangedEvent((t, s) => { SelectConnectionPoint(point, t, s); });
         }
 
@@ -188,8 +155,9 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         }
 
         private void UpdateRemoveButton() {
-            _removeButton.ApplyTemplate(
-                (_connectionGameObjects.Count > 0 && _selectedPoint != null) ? EnableButton : DisableButton);
+            _removeButton.ApplyTemplate((_connectionGameObjects.Count > 0 && _selectedPoint != null)
+                                            ? Button.EnableButton
+                                            : Button.DisableButton);
         }
 
         public override void Update() {}

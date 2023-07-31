@@ -8,10 +8,10 @@ using UnityEngine.Serialization;
 namespace SimObjects.MixAndMatch {
     public static class MixAndMatchSaveUtil {
         private static readonly char ALT_SEP = Path.AltDirectorySeparatorChar;
-        
-        private static readonly string PART_MIRABUF_FOLDER_PATH = 
+
+        private static readonly string PART_MIRABUF_FOLDER_PATH =
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + ALT_SEP + "Autodesk" + ALT_SEP +
-                                                                  "Synthesis" + ALT_SEP + "Mira";
+            "Synthesis" + ALT_SEP + "Mira";
 
         private static readonly string MIX_AND_MATCH_FOLDER_PATH =
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + ALT_SEP + "Autodesk" + ALT_SEP +
@@ -44,7 +44,8 @@ namespace SimObjects.MixAndMatch {
             get {
                 if (!Directory.Exists(PART_MIRABUF_FOLDER_PATH))
                     Directory.CreateDirectory(PART_MIRABUF_FOLDER_PATH);
-                return Directory.GetFiles(PART_MIRABUF_FOLDER_PATH).Where(x => Path.GetExtension(x).Equals(".mira"))
+                return Directory.GetFiles(PART_MIRABUF_FOLDER_PATH)
+                    .Where(x => Path.GetExtension(x).Equals(".mira"))
                     .ToArray();
             }
         }
@@ -180,16 +181,17 @@ namespace SimObjects.MixAndMatch {
     [Serializable]
     public class ConnectionPointData {
         public Vector3 LocalPosition;
-        [FormerlySerializedAs("Rotation")] public Quaternion LocalRotation;
+        [FormerlySerializedAs("Rotation")]
+        public Quaternion LocalRotation;
 
         public ConnectionPointData(Vector3 localPosition, Quaternion localRotation) {
             LocalPosition = localPosition;
-            LocalRotation   = localRotation;
+            LocalRotation = localRotation;
         }
 
         public ConnectionPointData() {
             LocalPosition = Vector3.zero;
-            LocalRotation   = Quaternion.identity;
+            LocalRotation = Quaternion.identity;
         }
     }
 }

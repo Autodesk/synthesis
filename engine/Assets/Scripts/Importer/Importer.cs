@@ -23,6 +23,8 @@ using UPhysicalMaterial   = UnityEngine.PhysicMaterial;
 using SynthesisAPI.Controller;
 using Random = UnityEngine.Random;
 
+#nullable enable
+
 namespace Synthesis.Import {
     /// <summary>
     /// The Importer class connected functions with string parameters to import an Entity/Model into the Engine
@@ -40,9 +42,11 @@ namespace Synthesis.Import {
 
         public static (GameObject mainObject, MirabufLive[] miraLiveFiles, SimObject sim)
             MirabufAssemblyImport(MixAndMatchRobotData mixAndMatchRobotData) {
-            MirabufLive[] miraLiveFiles = mixAndMatchRobotData.PartData.Select(part =>
-                new MirabufLive(MixAndMatchSaveUtil.LoadPartData(part.fileName).MirabufPartFile)).ToArray();
-            
+            MirabufLive[] miraLiveFiles =
+                mixAndMatchRobotData.PartData
+                    .Select(part => new MirabufLive(MixAndMatchSaveUtil.LoadPartData(part.fileName).MirabufPartFile))
+                    .ToArray();
+
             return MirabufAssemblyImport(miraLiveFiles, mixAndMatchRobotData);
         }
 
@@ -52,15 +56,15 @@ namespace Synthesis.Import {
 
             // TODO: give root object a unique name
             GameObject assemblyObject = new GameObject($"{assemblies[0].Info.Name}_{_robotTally}");
-            //GameObject[] assemblyObjects = assemblies.Select(a => new GameObject(a.Info.Name)).ToArray();
+            // GameObject[] assemblyObjects = assemblies.Select(a => new GameObject(a.Info.Name)).ToArray();
 
-            //assemblyObjects.ForEach(o => o.transform.SetParent(assemblyObject.transform));
+            // assemblyObjects.ForEach(o => o.transform.SetParent(assemblyObject.transform));
 
             UnityEngine.Physics.sleepThreshold = 0;
 
             float totalMass = 0;
 
-            var gamepieces = new List<GamepieceSimObject>();
+            var gamepieces       = new List<GamepieceSimObject>();
             var rigidDefinitions = miraLiveFiles.Select(m => m.Definitions).ToArray();
 
             Dictionary<string, GameObject>[] groupObjects =
@@ -71,8 +75,7 @@ namespace Synthesis.Import {
                     var gpSim = new GamepieceSimObject(miraLiveFiles[i].Definitions.Definitions[x.Key].Name, x.Value);
                     try {
                         SimulationManager.RegisterSimObject(gpSim);
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         // TODO: Fix
                         throw e;
                     }
@@ -99,6 +102,7 @@ namespace Synthesis.Import {
             var state = assemblies[0].Data.Signals == null ? new ControllableState()
                                                            : new ControllableState(assemblies[0].Data.Signals);
             SimObject simObject;
+
             if (assemblies[0].Dynamic) {
                 string name = $"{assemblies[0].Info.Name}_{_robotTally}";
                 _robotTally++;
@@ -112,8 +116,7 @@ namespace Synthesis.Import {
             return simObject;
         }
 
-        private static void RegisterSimObject(
-            SimObject simObject, Assembly[] assemblies, GameObject assemblyObject) {
+        private static void RegisterSimObject(SimObject simObject, Assembly[] assemblies, GameObject assemblyObject) {
             try {
                 SimulationManager.RegisterSimObject(simObject);
             } catch {
@@ -141,7 +144,7 @@ namespace Synthesis.Import {
 
         /// <summary>Connects two robot parts with a joint. (ex: connecting a wheel to a drivetrain)</summary>
         private static void MakeJoint(GameObject gameObjectA, GameObject gameObjectB, JointInstance instance,
-            Assembly assembly, SimObject simObject, int partIndex, Dictionary<string,GameObject>[] groupObjects) {
+            Assembly assembly, SimObject simObject, int partIndex, Dictionary<string, GameObject>[] groupObjects) {
             var definition = assembly.Data.Joints.JointDefinitions[instance.JointReference];
 
             var rigidbodyA = gameObjectA.GetComponent<Rigidbody>();
@@ -195,16 +198,13 @@ namespace Synthesis.Import {
                 var customWheel = gameObjectA.AddComponent<CustomWheel>();
 
                 if (instance.HasSignal()) {
-                    var driver =
-                        new WheelDriver(assembly.Data.Signals.SignalMap[instance.SignalReference].Info.GUID + partIndex,
-                            new string[] { instance.SignalReference + partIndex,
-                                $"{instance.SignalReference}_mode" + partIndex },
-                            new string[] { $"{instance.SignalReference}_encoder" + partIndex,
-                                $"{instance.SignalReference}_absolute" + partIndex },
-                            simObject, instance, customWheel, wheelA.anchor, axisWut, float.NaN,
-                            assembly.Data.Joints.MotorDefinitions.ContainsKey(definition.MotorReference)
-                                ? assembly.Data.Joints.MotorDefinitions[definition.MotorReference]
-                                : null);
+                    var driver = new WheelDriver(assembly.Data.Signals.SignalMap[instance.SignalReference].Info.GUID,
+                        new string[] { instance.SignalReference, $"{instance.SignalReference}_mode" },
+                        new string[] { $"{instance.SignalReference}_encoder", $"{instance.SignalReference}_absolute" },
+                        simObject, instance, customWheel, wheelA.anchor, axisWut, float.NaN,
+                        assembly.Data.Joints.MotorDefinitions.ContainsKey(definition.MotorReference)
+                            ? definition.MotorReference
+                            : null);
                     SimulationManager.AddDriver(simObject.Name, driver);
                 }
             }
@@ -257,9 +257,8 @@ namespace Synthesis.Import {
                         new string[] { instance.SignalReference, $"{instance.SignalReference}_mode" },
                         new string[] { $"{instance.SignalReference}_encoder", $"{instance.SignalReference}_absolute" },
                         simObject, revoluteA, revoluteB, instance.IsWheel(assembly),
-                        assembly.Data.Joints.MotorDefinitions.TryGetValue(
-                            definition.MotorReference, out var motorDefinition)
-                            ? motorDefinition
+                        assembly.Data.Joints.MotorDefinitions.ContainsKey(definition.MotorReference)
+                            ? definition.MotorReference
                             : null);
                     SimulationManager.AddDriver(simObject.Name, driver);
                 }
@@ -412,6 +411,10 @@ namespace Synthesis.Import {
                 jFormatter.Format(debugAssembly));
         }
 
+#endregion
+
+#region Debug Functions
+
         public static void DebugGraph(GraphContainer graph) {
             graph.Nodes.ForEach(x => DebugNode(x, 0));
         }
@@ -440,8 +443,6 @@ namespace Synthesis.Import {
         /// </summary>
         public struct SourceType {
             public static readonly SourceType MIRABUF_ASSEMBLY = new SourceType("mirabuf_assembly", "mira");
-            // public static readonly SourceType PROTOBUF_FIELD = new SourceType("proto_field", ProtoField.FILE_ENDING);
-
             public string FileEnding { get; private set; }
             public string Indentifier { get; private set; }
 

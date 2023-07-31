@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using TMPro;
+using UI.Dynamic.Modals.Spawning;
 using UnityEngine;
 
 namespace Synthesis.UI.Dynamic {
@@ -49,7 +50,6 @@ namespace Synthesis.UI.Dynamic {
             Task.Run(GetAvailableAssets);
 
             Title.SetText("Download Assets");
-            Description.SetText("Download robots and fields from the Synthesis Asset Library.");
 
             AcceptButton.StepIntoLabel(l => l.SetText("Close"))
                 .AddOnClickedEvent(b => DynamicUIManager.CloseActiveModal());

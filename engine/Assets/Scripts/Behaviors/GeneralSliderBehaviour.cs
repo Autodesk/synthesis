@@ -23,6 +23,8 @@ namespace Synthesis {
         public GeneralSliderBehaviour(string simObjectId, LinearDriver driver) : base(simObjectId) {
             _driver = driver;
 
+            _forwardInputKey    = driver.Signal + _forwardInputKey;
+            _reverseInputKey    = driver.Signal + _reverseInputKey;
             var name            = driver.Name;
             _forwardDisplayName = name + _forwardDisplayName;
             _reverseDisplayName = name + _reverseDisplayName;

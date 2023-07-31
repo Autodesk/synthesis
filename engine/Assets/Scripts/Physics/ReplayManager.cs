@@ -14,12 +14,7 @@ namespace Synthesis.Replay {
         private static bool _isRecording = false;
         public static bool IsRecording {
             get => _isRecording;
-            set {
-                _isRecording = value;
-                // if (!_isRecording) {
-                //     InvalidateRecording();
-                // }
-            }
+            set { _isRecording = value; }
         }
         // clang-format off
         private static float _timeSpan = 5f;
@@ -102,14 +97,6 @@ namespace Synthesis.Replay {
                 (Time.realtimeSinceStartup - _desyncTime) - _contactReports.ElementAt(0).Value.TimeStamp > _timeSpan) {
                 _contactReports.RemoveAt(0);
             }
-
-            // int frameCount = 1;
-            // var tmp = _newestFrame;
-            // while (tmp.LastFrame != null) {
-            //     tmp = tmp.LastFrame;
-            //     frameCount++;
-            // }
-            // Debug.Log($"Replay Frames: {frameCount}");
         }
 
         /// <summary>
@@ -245,10 +232,6 @@ namespace Synthesis.Replay {
                         Rotation = y.transform.rotation, Velocity = y.velocity, AngularVelocity = y.angularVelocity };
                     frame.RigidbodyData[y] = data;
                 });
-                // PhysicsManager.GetContactRecorders(x)?.ForEach(y => {
-                //     frame.ContactReports[x] = y.Reports;
-                //     y.Reports = new List<ContactReport>();
-                // });
             });
             return frame;
         }
@@ -277,7 +260,6 @@ namespace Synthesis.Replay {
                         AngularVelocity =
                             Vector3.Lerp(x.Value.AngularVelocity, b.RigidbodyData[x.Key].AngularVelocity, t) };
                     c.RigidbodyData[x.Key] = data;
-                    // c.ContactReports = new Dictionary<IPhysicsOverridable, List<ContactReport>>(b.ContactReports);
                 }
             });
             return c;
@@ -299,10 +281,6 @@ namespace Synthesis.Replay {
                 x.Key.velocity           = x.Value.Velocity;
                 x.Key.angularVelocity    = x.Value.AngularVelocity;
             });
-            // if (ReplayManager.ResetContactUI != null) {
-            //     ReplayManager.ResetContactUI();
-            //     a.ContactReports.ForEach(x => x.Value.ForEach(y => ReplayManager.CreateContactUI!(y)));
-            // }
             ReplayManager.CurrentFrame = a;
         }
     }

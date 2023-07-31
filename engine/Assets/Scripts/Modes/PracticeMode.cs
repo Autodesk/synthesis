@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing.Text;
+using System.Linq;
 using Synthesis.Gizmo;
 using Synthesis.Physics;
 using Synthesis.PreferenceManager;
@@ -12,6 +14,7 @@ using SynthesisAPI.Utilities;
 using UI.Dynamic.Modals.MixAndMatch;
 using UnityEngine;
 using Logger = SynthesisAPI.Utilities.Logger;
+using Random = System.Random;
 
 public class PracticeMode : IMode {
     public static Vector3 GamepieceSpawnpoint = new Vector3(0, 10, 0);
@@ -45,12 +48,6 @@ public class PracticeMode : IMode {
     public void Start() {
         DynamicUIManager.CreateModal<AddFieldModal>();
 
-        // var mira = new
-        // MirabufLive("C:\\Users\\hunte\\AppData\\Roaming\\Autodesk\\Synthesis\\Mira\\BrokenLinksRobot_v1.mira");
-        //
-        // GameObject container = new GameObject();
-        // mira.GenerateDefinitionObjects(container, false);
-
         InputManager.AssignValueInput(
             TOGGLE_ESCAPE_MENU_INPUT, TryGetSavedInput(TOGGLE_ESCAPE_MENU_INPUT,
                                           new Digital("Escape", context: SimulationRunner.RUNNING_SIM_CONTEXT)));
@@ -62,44 +59,7 @@ public class PracticeMode : IMode {
 
     /// Adds buttons to the main hud (panel on left side)
     public void ConfigureMainHUD() {
-        MainHUD.AddItemToDrawer("Spawn", b => DynamicUIManager.CreateModal<SpawningModal>(),
-            icon: SynthesisAssetCollection.GetSpriteByName("PlusIcon"));
-        if (RobotSimObject.CurrentlyPossessedRobot != string.Empty)
-            MainHUD.AddItemToDrawer("Configure", b => DynamicUIManager.CreateModal<ConfiguringModal>(),
-                icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-
-        MainHUD.AddItemToDrawer("Multibot", b => DynamicUIManager.CreatePanel<RobotSwitchPanel>());
-
-        MainHUD.AddItemToDrawer("Controls", b => DynamicUIManager.CreateModal<ChangeInputsModal>(),
-            icon: SynthesisAssetCollection.GetSpriteByName("DriverStationView"));
-        MainHUD.AddItemToDrawer("Camera View", b => DynamicUIManager.CreateModal<ChangeViewModal>(),
-            icon: SynthesisAssetCollection.GetSpriteByName("CameraIcon"));
-        MainHUD.AddItemToDrawer("Download Asset", b => DynamicUIManager.CreateModal<DownloadAssetModal>(),
-            icon: SynthesisAssetCollection.GetSpriteByName("DownloadIcon"));
-
-        MainHUD.AddItemToDrawer("Settings", b => DynamicUIManager.CreateModal<SettingsModal>(),
-            icon: SynthesisAssetCollection.GetSpriteByName("settings"));
-        MainHUD.AddItemToDrawer("RoboRIO Conf.", b => DynamicUIManager.CreateModal<RioConfigurationModal>(true),
-            icon: SynthesisAssetCollection.GetSpriteByName("rio-config-icon"));
-
-        MainHUD.AddItemToDrawer("DriverStation",
-            b => DynamicUIManager.CreatePanel<BetaWarningPanel>(
-                false, (Action) (() => DynamicUIManager.CreatePanel<DriverStationPanel>(true))),
-            icon: SynthesisAssetCollection.GetSpriteByName("driverstation-icon"));
-
-        MainHUD.AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>());
-        MainHUD.AddItemToDrawer("Scoring Zones", b => {
-            if (FieldSimObject.CurrentField == null) {
-                Logger.Log("No field loaded!", LogLevel.Info);
-            } else {
-                if (!DynamicUIManager.PanelExists<ScoringZonesPanel>())
-                    DynamicUIManager.CreatePanel<ScoringZonesPanel>();
-            }
-        });
-
-        MainHUD.AddItemToDrawer("Mix & Match", b => DynamicUIManager.CreateModal<MixAndMatchModal>());
-
-        EventBus.NewTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
+        MainHUD.SetUpPractice();
     }
 
     private void HandleScoreEvent(IEvent e) {
@@ -147,7 +107,9 @@ public class PracticeMode : IMode {
             _showingScoreboard = true;
             DynamicUIManager.CreatePanel<ScoreboardPanel>(true, false);
         }
-        bool openEscapeMenu = InputManager.MappedValueInputs[TOGGLE_ESCAPE_MENU_INPUT].Value == 1.0F;
+
+        // TODO: This randomly broke again for no apparent reason
+        /*bool openEscapeMenu = InputManager.MappedValueInputs[TOGGLE_ESCAPE_MENU_INPUT].Value == 1.0F;
         if (openEscapeMenu && !_lastEscapeValue) {
             if (_escapeMenuOpen) {
                 CloseMenu();
@@ -156,7 +118,7 @@ public class PracticeMode : IMode {
             }
         }
 
-        _lastEscapeValue = openEscapeMenu;
+        _lastEscapeValue = openEscapeMenu;*/
     }
 
     public void OpenMenu() {
@@ -171,6 +133,9 @@ public class PracticeMode : IMode {
 
     public void End() {
         InputManager._mappedValueInputs.Remove(TOGGLE_ESCAPE_MENU_INPUT);
+        Scoring.redScore  = 0;
+        Scoring.blueScore = 0;
+        EventBus.RemoveTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
     }
 
     public static void ConfigureGamepieceSpawnpoint() {
@@ -193,8 +158,6 @@ public class PracticeMode : IMode {
         GizmoManager.SpawnGizmo(_gamepieceSpawnpointObject.transform,
             t => { _gamepieceSpawnpointObject.transform.position = t.Position; },
             t => { EndConfigureGamepieceSpawnpoint(); });
-        // GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, _gamepieceSpawnpointObject.transform,
-        // _gamepieceSpawnpointObject.transform.position);
     }
 
     public static void EndConfigureGamepieceSpawnpoint() {
@@ -275,12 +238,6 @@ public class PracticeMode : IMode {
             parent.transform.parent               = data.Parent;
             parent.transform.position             = Vector3.zero;
             childWithTransform.transform.position = spawnPosition;
-            // GameObject.Instantiate(parent);
-
-            // if (childTransform != null)
-            // {
-            //     childTransform.position = spawnPosition;
-            // }
 
             gamepiece = new GamepieceSimObject(data.Name, parent);
         }

@@ -13,6 +13,14 @@ message LobbyInformation {
     uint64 lobby_host = 3;
 }
 
+message DataRobot {
+    string name = 1;
+    string description = 2;
+    // TODO: Possible PNG thumbnail?
+    uint64 guid = 3;
+    bytes data = 4;
+}
+
 message ServerTransformData {
     repeated float matrixData = 1;
 }

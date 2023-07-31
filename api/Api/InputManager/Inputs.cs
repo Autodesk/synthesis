@@ -8,6 +8,8 @@ using UnityEngine.UIElements;
 using Logger = UnityEngine.Logger;
 using Math = System.Math;
 
+#nullable enable
+
 namespace SynthesisAPI.InputManager.Inputs
 {
     // TODO: Should I add HashCodes?
@@ -77,7 +79,7 @@ namespace SynthesisAPI.InputManager.Inputs
         public override bool Equals(object obj) {
             if (ReferenceEquals(obj, null) || !(obj is Analog))
                 return false;
-            return (obj as Analog).GetHashCode() == GetHashCode();
+            return (obj as Analog)?.GetHashCode() == GetHashCode();
         }
 
         public override int GetHashCode()
@@ -147,7 +149,7 @@ namespace SynthesisAPI.InputManager.Inputs
         public override bool Equals(object obj) {
             if (ReferenceEquals(obj, null) || !(obj is Digital))
                 return false;
-            return (obj as Digital).GetHashCode() == GetHashCode();
+            return (obj as Digital)?.GetHashCode() == GetHashCode();
         }
 
         public override int GetHashCode()

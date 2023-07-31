@@ -12,18 +12,13 @@ public class MatchModeModal : ModalDynamic {
     private List<String> _robotOptions = new List<string>();
     private string[] _fieldFiles;
 
-    private int _allianceColor = 0;
-    private int _spawnPosition = 0;
-
-    public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
-        var offset = (-u.Parent!.RectOfChildren(u).yMin) + 15f;
-        u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 15f);
-        return u;
-    };
-
-    public MatchModeModal() : base(new Vector2(500, 800)) {}
+    public MatchModeModal() : base(new Vector2(400, 475)) {}
 
     public override void Create() {
+        Title.SetText("Field and Robot Selection");
+
+        ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+
         var robotsFolder = ParsePath("$appdata/Autodesk/Synthesis/Mira", '/');
         if (!Directory.Exists(robotsFolder))
             Directory.CreateDirectory(robotsFolder);
@@ -37,9 +32,6 @@ public class MatchModeModal : ModalDynamic {
 
         _fieldFiles = Directory.GetFiles(fieldsFolder).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
 
-        Title.SetText("Match Mode");
-        Description.SetText("Configure Match Mode");
-
         AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
             if (_fieldIndex != -1) {
                 DynamicUIManager.CreateModal<LoadingScreenModal>();
@@ -49,31 +41,30 @@ public class MatchModeModal : ModalDynamic {
                 }
             }
         });
-        CancelButton.AddOnClickedEvent(b => { // need to add in isMatchModalOpen integration
-            DynamicUIManager.CloseActiveModal();
-        });
+
+        CancelButton.RootGameObject.SetActive(false);
 
         for (int robot = 0; robot < 6; robot++) {
             int robotIndex = robot;
             if (robotIndex % 3 == 0)
                 MainContent.CreateLabel()
-                    .ApplyTemplate(VerticalLayout)
-                    .SetText($"Select {(robotIndex == 0 ? "Red" : "Blue")} Robots");
+                    .ApplyTemplate(UIComponent.VerticalLayoutBigSpacing)
+                    .SetText($"{(robotIndex == 0 ? "Red" : "Blue")} Robots");
 
             MainContent.CreateDropdown()
                 .SetOptions(_robotOptions.Select(x => Path.GetFileName(x)).ToArray())
                 .AddOnValueChangedEvent((d, i, data) => MatchMode.SelectedRobots[robotIndex] =
                                             i - 1 // Subtract 1 to account for "None" option
                     )
-                .ApplyTemplate(VerticalLayout)
+                .ApplyTemplate(UIComponent.VerticalLayout)
                 .SetValue(0);
         }
 
-        MainContent.CreateLabel().ApplyTemplate(VerticalLayout).SetText("Select Field");
+        MainContent.CreateLabel().ApplyTemplate(UIComponent.VerticalLayoutBigSpacing).SetText("Field");
         var chooseFieldDropdown = MainContent.CreateDropdown()
                                       .SetOptions(_fieldFiles.Select(x => Path.GetFileName(x)).ToArray())
                                       .AddOnValueChangedEvent((d, i, data) => _fieldIndex = i)
-                                      .ApplyTemplate(VerticalLayout);
+                                      .ApplyTemplate(UIComponent.VerticalLayout);
 
         _fieldIndex = _fieldFiles.Length > 0 ? 0 : -1;
     }
@@ -81,12 +72,10 @@ public class MatchModeModal : ModalDynamic {
     public IEnumerator LoadMatch() {
         yield return new WaitForSeconds(0.05f);
 
-        if (MatchMode.CurrentFieldIndex != _fieldIndex) {
-            if (FieldSimObject.CurrentField != null)
-                FieldSimObject.DeleteField();
-            FieldSimObject.SpawnField(_fieldFiles[_fieldIndex], false);
-            MatchMode.CurrentFieldIndex = _fieldIndex;
-        }
+        if (FieldSimObject.CurrentField != null)
+            FieldSimObject.DeleteField();
+
+        FieldSimObject.SpawnField(_fieldFiles[_fieldIndex], false);
 
         DynamicUIManager.CloseActiveModal();
         DynamicUIManager.CreatePanel<SpawnLocationPanel>(true);

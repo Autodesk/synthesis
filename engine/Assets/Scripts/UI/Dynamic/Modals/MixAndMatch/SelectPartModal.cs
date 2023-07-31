@@ -5,12 +5,13 @@ using UnityEngine;
 
 namespace UI.Dynamic.Modals.MixAndMatch {
     public class SelectPartModal : ModalDynamic {
-        private const float CONTENT_WIDTH = 400;
+        private const float CONTENT_WIDTH  = 400;
         private const float CONTENT_HEIGHT = 110;
 
         private Action<MixAndMatchPartData> _callback;
 
-        public SelectPartModal(Action<MixAndMatchPartData> callback) : base(new Vector2(CONTENT_WIDTH, CONTENT_HEIGHT)) {
+        public SelectPartModal(Action<MixAndMatchPartData> callback)
+            : base(new Vector2(CONTENT_WIDTH, CONTENT_HEIGHT)) {
             _callback = callback;
         }
 
@@ -19,23 +20,21 @@ namespace UI.Dynamic.Modals.MixAndMatch {
 
             string[] files = MixAndMatchSaveUtil.PartFiles;
 
-            var dropdown = MainContent.CreateDropdown()
-                .ApplyTemplate(MixAndMatchModal.VerticalLayout)
-                .SetOptions(files);
+            var dropdown =
+                MainContent.CreateDropdown().ApplyTemplate(MixAndMatchModal.VerticalLayout).SetOptions(files);
 
-            AcceptButton
-                .AddOnClickedEvent(
-                    _ => {
-                        if (files.Length == 0 || dropdown.Value < 0) // TODO: Disable select button
-                            return;
+            AcceptButton.AddOnClickedEvent(
+                _ => {
+                    if (files.Length == 0 || dropdown.Value < 0) // TODO: Disable select button
+                        return;
 
-                        _callback(MixAndMatchSaveUtil.LoadPartData(files[dropdown.Value]));
-                        DynamicUIManager.CloseActiveModal();
-                    });
+                    _callback(MixAndMatchSaveUtil.LoadPartData(files[dropdown.Value]));
+                    DynamicUIManager.CloseActiveModal();
+                });
         }
 
-        public override void Update() { }
+        public override void Update() {}
 
-        public override void Delete() { }
+        public override void Delete() {}
     }
 }

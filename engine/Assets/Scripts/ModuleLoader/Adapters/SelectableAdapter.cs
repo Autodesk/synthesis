@@ -49,7 +49,6 @@ namespace Engine.ModuleLoader.Adapters {
         }
 
         private void Select() {
-            // Debug.Log("Select()");
             var currentClickTime = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
             var lastSelected     = Selectable.Selected;
             if (!instance.IsSelected) {
