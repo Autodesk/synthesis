@@ -18,6 +18,8 @@ elseif(OS_WINDOWS)
 
     set(SHARED_EXE_MANIFEST ../res/win/shared.exe.manifest)
     set(SHARED_COMPATIBILITY_MANIFEST ../res/win/compatibility.manifest)
+
+    add_compile_options(-DWINDOWS_WHY)
 endif()
 
 if(OS_MACOSX OR OS_WINDOWS)

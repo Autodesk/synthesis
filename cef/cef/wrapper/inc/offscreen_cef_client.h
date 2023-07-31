@@ -38,8 +38,8 @@ protected:
     virtual void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList& dirtyRects, const void* buffer, int width, int height) override;
 
 private:
-    int width;
-    int height;
+    int m_width;
+    int m_height;
 
     std::mutex textureBufferGuard;
     int8_t* browserTextureBuffer;

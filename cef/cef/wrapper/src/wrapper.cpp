@@ -3,7 +3,6 @@
 #include <memory>
 
 #include "core.h"
-#include "debug.h"
 #include "offscreen_cef_client.h"
 
 struct OffscreenCefClientInterop {

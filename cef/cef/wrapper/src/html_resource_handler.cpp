@@ -35,7 +35,7 @@ void HTMLResourceHandler::GetResponseHeaders(CefRefPtr<CefResponse> response, in
 }
 
 bool HTMLResourceHandler::Read(void* dataOut, int bytesToRead, int& bytesRead, CefRefPtr<CefResourceReadCallback> callback) {
-    bytesRead = fileStream->Read(dataOut, bytesToRead, offset);
+    bytesRead = static_cast<int>(fileStream->Read(dataOut, bytesToRead, offset));
     offset += bytesRead;
 
     if (offset >= fileStream->Seek(0, SEEK_END)) {

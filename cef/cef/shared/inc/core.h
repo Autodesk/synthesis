@@ -10,7 +10,7 @@
 #define SYNTHESIS_END_EXTERN_C
 #endif
 
-#if __WIN32
+#ifdef WINDOWS_WHY
 #define SYNTHESIS_EXPORT __declspec(dllexport)
 #else
 #define SYNTHESIS_EXPORT __attribute__((visibility("default")))
