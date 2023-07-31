@@ -30,8 +30,8 @@ public static class MainHUD {
             new Vector2(s.CurrentValue<int>(), _tabDrawerContent.RootRectTransform.anchoredPosition.y));
     };
 
-    private const int TAB_DRAWER_WIDTH = 250;
-    private const int TAB_DRAWER_X     = 20;
+    private const int TAB_DRAWER_WIDTH = 300;
+    private const int TAB_DRAWER_X     = 30;
 
     private static bool _isSetup = false;
     private static bool _enabled = true;
@@ -44,8 +44,9 @@ public static class MainHUD {
             if (_enabled != value) {
                 _enabled = value;
                 if (_enabled) {
+                    Collapsed = false;
                     _tabDrawerContent.RootGameObject.SetActive(true);
-                    _accordionButton.RootGameObject.SetActive(true);
+                    // _accordionButton.RootGameObject.SetActive(true);
                 } else {
                     Collapsed = true;
                     _tabDrawerContent.RootGameObject.SetActive(false);
@@ -230,7 +231,7 @@ public static class MainHUD {
         drawerButtonObj.transform.Find("Button").GetComponent<UnityEngine.UI.Image>().pixelsPerUnitMultiplier = 30;
 
         var drawerButton = new Button(_tabDrawerContent, drawerButtonObj, null);
-        drawerButton.Label!.SetText(title).SetFontSize(16);
+        drawerButton.Label!.SetText(title).SetFontSize(24);
         drawerButton.AddOnClickedEvent(onClick);
 
         var drawerIcon =
@@ -290,12 +291,12 @@ public static class MainHUD {
     }
 
     public static void UpdateDrawerSizing() {
-        int LOGO_BOTTOM_Y       = 50;
-        int LOGO_BUTTON_SPACING = 5;
+        int LOGO_BOTTOM_Y       = 55;
+        int LOGO_BUTTON_SPACING = 20;
         int BUTTON_HEIGHT       = 60;
         int SPACING             = 15;
         int GROUP_SPACING       = 5;
-        int ITEM_HEIGHT         = 40;
+        int ITEM_HEIGHT         = 60;
         int BOTTOM_PADDING      = 40;
 
         for (int i = 0; i < _topDrawerItems.Count; i++) {
@@ -303,14 +304,14 @@ public static class MainHUD {
                 .button
                 .SetTopStretch<Button>(anchoredY: GROUP_SPACING + i * (ITEM_HEIGHT + GROUP_SPACING),
                     leftPadding: GROUP_SPACING, rightPadding: GROUP_SPACING)
-                .StepIntoLabel(l => l.SetStretch<Label>(leftPadding: 50));
+                .StepIntoLabel(l => l.SetStretch<Label>(leftPadding: 60));
         }
         for (int i = 0; i < _bottomDrawerItems.Count; i++) {
             _bottomDrawerItems[i]
                 .button
                 .SetTopStretch<Button>(anchoredY: GROUP_SPACING + i * (ITEM_HEIGHT + GROUP_SPACING),
                     leftPadding: GROUP_SPACING, rightPadding: GROUP_SPACING)
-                .StepIntoLabel(l => l.SetStretch<Label>(leftPadding: 50));
+                .StepIntoLabel(l => l.SetStretch<Label>(leftPadding: 60));
         }
         _itemContainer.SetTopStretch<Content>(
             anchoredY: LOGO_BOTTOM_Y + LOGO_BUTTON_SPACING +
@@ -457,6 +458,7 @@ public static class MainHUD {
 
         _spawnButton.RootGameObject.SetActive(true);
         _spawnIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"));
+        _spawnIcon.SetSize<Image>(new Vector2(30, 30));
         _spawnButton.Label.SetText("Back");
 
         if (ModeManager.CurrentMode.GetType() == typeof(MatchMode) &&
@@ -510,6 +512,7 @@ public static class MainHUD {
         DynamicUIManager.CloseAllPanels();
         GizmoManager.ExitGizmo();
         isConfig = false;
+        _spawnIcon.SetSize<Image>(new Vector2(22, 22));
         if (ModeManager.CurrentMode.GetType() == typeof(PracticeMode)) {
             SetUpPractice();
         } else if (ModeManager.CurrentMode.GetType() == typeof(MatchMode)) {

@@ -36,7 +36,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 40}
+  m_SizeDelta: {x: 0, y: 60}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &9216448353067359894
 CanvasRenderer:
@@ -87,7 +87,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -12, y: -7}
+  m_SizeDelta: {x: -16, y: -9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8318608356784977791
 MonoBehaviour:
@@ -189,6 +189,8 @@ MonoBehaviour:
   _selectedColor: {r: 1, g: 1, b: 1, a: 0.09803922}
   _hoverScaleMultiplier: 1.02
   _clickedScaleMultiplier: 1.045
+  _scaledObj: {fileID: 0}
+  _isSlider: 0
 --- !u!1 &6168888928718946096
 GameObject:
   m_ObjectHideFlags: 0
@@ -225,7 +227,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 10, y: 0}
-  m_SizeDelta: {x: 25, y: 25}
+  m_SizeDelta: {x: 30, y: 30}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &3645992313312098480
 CanvasRenderer:
@@ -301,7 +303,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -65, y: 0}
+  m_SizeDelta: {x: -120, y: 0}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &5806030534208226618
 CanvasRenderer:
@@ -358,8 +360,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 19
-  m_fontSizeBase: 19
+  m_fontSize: 24
+  m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
