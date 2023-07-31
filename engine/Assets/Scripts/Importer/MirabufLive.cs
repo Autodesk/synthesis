@@ -119,7 +119,7 @@ namespace Synthesis.Import {
             Dictionary<string, GameObject>[] groupObjects = new Dictionary<string, GameObject>[miraLiveFiles.Length];
             miraLiveFiles.ForEachIndex(
                 (i, m) => groupObjects[i] = m.GenerateDefinitionObjects(assemblyContainer, true, true, i));
-
+            
             var mainGrounded = new GameObject("grounded");
             mainGrounded.transform.SetParent(assemblyContainer.transform);
             var rb = mainGrounded.AddComponent<Rigidbody>();
@@ -143,7 +143,7 @@ namespace Synthesis.Import {
                     rb.centerOfMass += partGrounded.GetComponent<Rigidbody>().centerOfMass;
 
                     objects.Remove("grounded");
-                    UnityEngine.Object.Destroy(partGrounded);
+                    UnityEngine.Object.DestroyImmediate(partGrounded);
 
                     objects.Add("grounded", mainGrounded);
                 } else {

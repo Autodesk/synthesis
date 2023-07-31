@@ -23,16 +23,18 @@ namespace Synthesis.Import {
         public static (GameObject mainObject, MirabufLive[] miraLiveFiles, SimObject sim)
             ImportSimpleRobot(string filePath) {
 
-            ImportHelper importHelper = new ImportHelper(filePath);
-            importHelper.CreateSimObject();
-            importHelper.MakeAllJoints();
-            return (importHelper.AssemblyObject, importHelper.MiraLiveFiles, importHelper.SimObject as RobotSimObject);
-        }
+            return ImportRobot(new ImportHelper(filePath));
+           }
 
         public static (GameObject mainObject, MirabufLive[] miraLiveFiles, RobotSimObject sim) ImportMixAndMatchRobot(
             MixAndMatchRobotData mixAndMatchRobotData) {
 
-            ImportHelper importHelper = new ImportHelper(mixAndMatchRobotData);
+            return ImportRobot(new ImportHelper(mixAndMatchRobotData));
+        }
+        
+        private static (GameObject mainObject, MirabufLive[] miraLiveFiles, RobotSimObject sim) ImportRobot(
+            ImportHelper importHelper) {
+
             importHelper.CreateSimObject();
             importHelper.MakeAllJoints();
             return (importHelper.AssemblyObject, importHelper.MiraLiveFiles, importHelper.SimObject as RobotSimObject);
