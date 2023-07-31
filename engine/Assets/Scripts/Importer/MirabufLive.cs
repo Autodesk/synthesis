@@ -118,7 +118,7 @@ namespace Synthesis.Import {
             MirabufLive[] miraLiveFiles, GameObject assemblyContainer, MixAndMatchRobotData robotTransformData) {
             Dictionary<string, GameObject>[] groupObjects = new Dictionary<string, GameObject>[miraLiveFiles.Length];
             miraLiveFiles.ForEachIndex(
-                (i, m) => groupObjects[i] = m.GenerateDefinitionObjects(assemblyContainer, true, i));
+                (i, m) => groupObjects[i] = m.GenerateDefinitionObjects(assemblyContainer, true, true, i));
 
             var mainGrounded = new GameObject("grounded");
             mainGrounded.transform.SetParent(assemblyContainer.transform);
@@ -158,7 +158,7 @@ namespace Synthesis.Import {
         }
 
         public Dictionary<string, GameObject> GenerateDefinitionObjects(
-            GameObject assemblyContainer, bool physics = true, int partIndex = 0) {
+            GameObject assemblyContainer, bool physics = true, bool useIndex = false, int partIndex = 0) {
             Dictionary<string, GameObject> groupObjects = new Dictionary<string, GameObject>();
 
             int dynamicLayer = 0;
@@ -173,8 +173,7 @@ namespace Synthesis.Import {
             }
 
             foreach (var group in Definitions.Definitions.Values) {
-                GameObject groupObject = new GameObject($"{group.Name}_{partIndex}");
-                Debug.Log($"{group.Name}_{partIndex}");
+                GameObject groupObject = new GameObject(useIndex ? $"{group.Name}_{partIndex}" : group.Name);
                 var isGamepiece = group.IsGamepiece;
                 var isStatic    = group.IsStatic;
                 // Import Parts
@@ -184,12 +183,13 @@ namespace Synthesis.Import {
                 foreach (var part in group.Parts) {
                     var partInstance   = part.Value;
                     var partDefinition = MiraAssembly.Data.Parts.PartDefinitions[partInstance.PartDefinitionReference];
-                    GameObject partObject = new GameObject($"{partInstance.Info.Name}_{partIndex}");
+                    GameObject partObject = new GameObject(useIndex ? $"{partInstance.Info.Name}_{partIndex}" 
+                        : partInstance.Info.Name);
 
                     MakePartDefinition(partObject, partDefinition, partInstance, MiraAssembly.Data,
                         !physics ? ColliderGenType.NoCollider
                                  : (isStatic ? ColliderGenType.Concave : ColliderGenType.Convex),
-                        partIndex);
+                        useIndex, partIndex);
                     partObject.transform.parent        = groupObject.transform;
                     var gt                             = partInstance.GlobalTransform.UnityMatrix;
                     partObject.transform.localPosition = gt.GetPosition();
@@ -231,13 +231,13 @@ namespace Synthesis.Import {
         }
 
         private static void MakePartDefinition(GameObject container, PartDefinition definition, PartInstance instance,
-            AssemblyData assemblyData, ColliderGenType colliderGenType, int partIndex) {
+            AssemblyData assemblyData, ColliderGenType colliderGenType, bool useIndex, int partIndex) {
             PhysicMaterial physMat = new PhysicMaterial {
                 dynamicFriction = 0.6f, // definition.PhysicalData.,
                 staticFriction  = 0.6f  // definition.PhysicalData.Friction
             };
             foreach (var body in definition.Bodies) {
-                var bodyObject    = new GameObject($"{body.Info.Name}_{partIndex}");
+                var bodyObject    = new GameObject(useIndex ? $"{body.Info.Name}_{partIndex}" : body.Info.Name);
                 var filter        = bodyObject.AddComponent<MeshFilter>();
                 var renderer      = bodyObject.AddComponent<MeshRenderer>();
                 filter.sharedMesh = body.TriangleMesh.UnityMesh;

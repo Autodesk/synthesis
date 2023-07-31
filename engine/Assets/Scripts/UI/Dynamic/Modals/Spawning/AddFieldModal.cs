@@ -34,7 +34,6 @@ namespace Synthesis.UI.Dynamic {
 
             AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
                 if (_selectedIndex != -1) {
-                    FieldSimObject.DeleteField();
                     FieldSimObject.SpawnField(_files[_selectedIndex]);
                     DynamicUIManager.CloseActiveModal();
                 }

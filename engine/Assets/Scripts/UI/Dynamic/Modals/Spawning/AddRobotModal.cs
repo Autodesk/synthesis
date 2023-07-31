@@ -36,7 +36,7 @@ namespace UI.Dynamic.Modals.Spawning {
 
             AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
                 if (_selectedIndex != -1) {
-                    RobotSimObject.SpawnRobot(null, false, _files[_selectedIndex]);
+                    RobotSimObject.SpawnRobot(null, true, _files[_selectedIndex]);
 
                     DynamicUIManager.CloseActiveModal();
                     RobotSimObject.GetCurrentlyPossessedRobot().CreateDrivetrainTooltip();

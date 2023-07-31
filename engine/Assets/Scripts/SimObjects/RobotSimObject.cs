@@ -11,7 +11,6 @@ using Synthesis.Import;
 using Synthesis.Physics;
 using Synthesis.PreferenceManager;
 using Synthesis.Runtime;
-using Synthesis.UI;
 using Synthesis.WS.Translation;
 using SynthesisAPI.Aether.Lobby;
 using SynthesisAPI.Controller;
@@ -185,7 +184,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
         MiraLiveFiles  = miraLiveFiles;
         GroundedNode   = groundedNode;
-        RobotNode      = groundedNode.transform.gameObject;
+        RobotNode      = groundedNode.transform.parent.gameObject;
         RobotBounds    = GetBounds(RobotNode.transform);
         GroundedBounds = GetBounds(GroundedNode.transform);
         DebugJointAxes.DebugBounds.Add((GroundedBounds, () => GroundedNode.transform.localToWorldMatrix));
@@ -201,6 +200,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
         // TODO: fix by giving each node a unique name
         foreach (Transform child in RobotNode.transform) {
+            Debug.Log(child.name);
             _nodes.Add(child.name, child.gameObject);
         }
 
@@ -594,15 +594,15 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     public static void SpawnRobot(
-        MixAndMatchRobotData mixAndMatchRobotData, bool spawnGizmo = true, params string[] filePaths) {
-        SpawnRobot(mixAndMatchRobotData, new Vector3(0f, 0.5f, 0f), Quaternion.identity, spawnGizmo, filePaths);
+        MixAndMatchRobotData mixAndMatchRobotData, bool spawnGizmo = true, string? filePath = null) {
+        SpawnRobot(mixAndMatchRobotData, new Vector3(0f, 0.5f, 0f), Quaternion.identity, spawnGizmo, filePath);
     }
 
     public static void SpawnRobot(MixAndMatchRobotData mixAndMatchRobotData, Vector3 position, Quaternion rotation,
-        bool spawnGizmo, params string[]? filePaths) {
-        var mira = filePaths == null || (filePaths.Length == 0)
-                       ? Importer.MirabufAssemblyImport(mixAndMatchRobotData)
-                       : Importer.MirabufAssemblyImport(filePaths, mixAndMatchRobotData);
+        bool spawnGizmo, string? filePath) {
+        var mira = filePath == null
+                       ? Importer.ImportMixAndMatchRobot(mixAndMatchRobotData)
+                       : Importer.ImportSimpleRobot(filePath);
 
         RobotSimObject simObject = (mira.sim as RobotSimObject)!;
         mira.mainObject.transform.SetParent(GameObject.Find("Game").transform);
