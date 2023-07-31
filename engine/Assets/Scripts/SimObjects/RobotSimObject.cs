@@ -606,8 +606,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
         if (spawnGizmo)
             GizmoManager.SpawnGizmo(simObject);
-        // GizmoManager.SpawnGizmo(GizmoStore.GizmoPrefabStatic, mira.MainObject.transform,
-        // mira.MainObject.transform.position);
     }
 
     public static bool RemoveRobot(string robot) {

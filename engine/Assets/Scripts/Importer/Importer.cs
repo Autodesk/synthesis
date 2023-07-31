@@ -21,6 +21,7 @@ using Node                = Mirabuf.Node;
 using MPhysicalProperties = Mirabuf.PhysicalProperties;
 using UPhysicalMaterial   = UnityEngine.PhysicMaterial;
 using SynthesisAPI.Controller;
+using Random = UnityEngine.Random;
 
 namespace Synthesis.Import {
     /// <summary>
@@ -50,7 +51,7 @@ namespace Synthesis.Import {
             Assembly[] assemblies = miraLiveFiles.Select(m => m.MiraAssembly).ToArray();
 
             // TODO: give root object a unique name
-            GameObject assemblyObject    = new GameObject($"{assemblies[0].Info.Name}_{_robotTally}");
+            GameObject assemblyObject = new GameObject($"{assemblies[0].Info.Name}_{_robotTally}");
             //GameObject[] assemblyObjects = assemblies.Select(a => new GameObject(a.Info.Name)).ToArray();
 
             //assemblyObjects.ForEach(o => o.transform.SetParent(assemblyObject.transform));
@@ -59,18 +60,19 @@ namespace Synthesis.Import {
 
             float totalMass = 0;
 
-            var gamepieces       = new List<GamepieceSimObject>();
+            var gamepieces = new List<GamepieceSimObject>();
             var rigidDefinitions = miraLiveFiles.Select(m => m.Definitions).ToArray();
 
             Dictionary<string, GameObject>[] groupObjects =
                 MirabufLive.GenerateMixAndMatchDefinitionObjects(miraLiveFiles, assemblyObject, robotTransformData);
-                
+
             groupObjects.ForEachIndex(
                 (i, x) => x.Where(x => miraLiveFiles[i].Definitions.Definitions[x.Key].IsGamepiece).ForEach(x => {
                     var gpSim = new GamepieceSimObject(miraLiveFiles[i].Definitions.Definitions[x.Key].Name, x.Value);
                     try {
                         SimulationManager.RegisterSimObject(gpSim);
-                    } catch (Exception e) {
+                    }
+                    catch (Exception e) {
                         // TODO: Fix
                         throw e;
                     }
@@ -132,14 +134,14 @@ namespace Synthesis.Import {
                     var bKey = rigidDefinitions[partIndex].PartToDefinitionMap[jointKvp.Value.ChildPart];
                     var b    = groupObjects[partIndex][bKey];
 
-                    MakeJoint(a, b, jointKvp.Value, assemblies[partIndex], simObject, partIndex);
+                    MakeJoint(a, b, jointKvp.Value, assemblies[partIndex], simObject, partIndex, groupObjects);
                 }
             }));
         }
 
         /// <summary>Connects two robot parts with a joint. (ex: connecting a wheel to a drivetrain)</summary>
         private static void MakeJoint(GameObject gameObjectA, GameObject gameObjectB, JointInstance instance,
-            Assembly assembly, SimObject simObject, int partIndex) {
+            Assembly assembly, SimObject simObject, int partIndex, Dictionary<string,GameObject>[] groupObjects) {
             var definition = assembly.Data.Joints.JointDefinitions[instance.JointReference];
 
             var rigidbodyA = gameObjectA.GetComponent<Rigidbody>();

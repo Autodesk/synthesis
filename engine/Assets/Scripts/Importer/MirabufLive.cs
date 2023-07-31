@@ -117,18 +117,16 @@ namespace Synthesis.Import {
             miraLiveFiles.ForEachIndex((i, m) => groupObjects[i] = m.GenerateDefinitionObjects(assemblyContainer));
 
             var mainGrounded = new GameObject("grounded");
+            mainGrounded.transform.SetParent(assemblyContainer.transform);
             var rb = mainGrounded.AddComponent<Rigidbody>();
-            
 
             groupObjects.ForEachIndex((i, objects) => {
                 objects.Values.ForEach(o => {
-                    o.transform.Translate(robotTransformData.PartData[i].localPosition);
-                    o.transform.Rotate(robotTransformData.PartData[i].localRotation.eulerAngles);
+                    o.transform.position += robotTransformData.PartData[i].localPosition;
+                    o.transform.rotation *= robotTransformData.PartData[i].localRotation;
                 });
                 
-                // TODO: Position parts based on MixAndMatchRobotData
                 if (objects.TryGetValue("grounded", out var partGrounded)) {
-                    Debug.Log(partGrounded.transform.childCount);
                     var children = new List<UnityEngine.Transform>();
 
                     foreach (UnityEngine.Transform child in partGrounded.transform) {
@@ -139,8 +137,9 @@ namespace Synthesis.Import {
 
                     rb.mass += partGrounded.GetComponent<Rigidbody>().mass;
                     rb.centerOfMass += partGrounded.GetComponent<Rigidbody>().centerOfMass;
-                    //UnityEngine.Object.Destroy(partGrounded);
+
                     objects.Remove("grounded");
+                    UnityEngine.Object.Destroy(partGrounded);
 
                     objects.Add("grounded", mainGrounded);
                 }
@@ -149,6 +148,9 @@ namespace Synthesis.Import {
                     throw new Exception("No grounded object found");
                 }
             });
+
+            rb.centerOfMass /= groupObjects.Length;
+
             return groupObjects;
         }
 
@@ -157,6 +159,7 @@ namespace Synthesis.Import {
             Dictionary<string, GameObject> groupObjects = new Dictionary<string, GameObject>();
 
             int dynamicLayer = 0;
+            // TODO: figure out why dozer is not dynamic
             if (physics && !MiraAssembly.Dynamic) {
                 if (dynamicLayers.Count == 0)
                     throw new Exception("No more dynamic layers");
@@ -164,8 +167,8 @@ namespace Synthesis.Import {
 
                 assemblyContainer.layer = dynamicLayer;
                 assemblyContainer.AddComponent<DynamicLayerReserver>();
+                Debug.Log($"Layer {dynamicLayer}");
             }
-
             foreach (var group in Definitions.Definitions.Values) {
                 GameObject groupObject = new GameObject(group.Name);
                 var isGamepiece        = group.IsGamepiece;
