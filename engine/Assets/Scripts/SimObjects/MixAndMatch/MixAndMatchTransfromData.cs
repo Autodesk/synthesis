@@ -111,6 +111,20 @@ namespace SimObjects.MixAndMatch {
         public static MixAndMatchRobotData CreateNewRobot(string name) {
             return new MixAndMatchRobotData(name, Array.Empty<(string, Vector3, Quaternion)>());
         }
+
+        /// <summary>Deletes the part if it exists</summary>
+        public static void DeletePart(string fileName) {
+            var filePath = Path.GetFullPath(PART_FOLDER_PATH) + ALT_SEP + fileName + ".json";
+            if (UnityEngine.Windows.File.Exists(filePath))
+                File.Delete(filePath);
+        }
+
+        /// <summary>Deletes the robot if it exists</summary>
+        public static void DeleteRobot(string fileName) {
+            var filePath = Path.GetFullPath(ROBOT_FOLDER_PATH) + ALT_SEP + fileName + ".json";
+            if (UnityEngine.Windows.File.Exists(filePath))
+                File.Delete(filePath);
+        }
     }
 
     /// <summary>Stores info about a robot including the positions of it's parts. Always saved in it's own json

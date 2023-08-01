@@ -37,6 +37,8 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
         private GameObject _selectedConnection;
 
+        private Vector3 _centerOffset;
+
         public PartEditorPanel(MixAndMatchPartData partData) : base(new Vector2(PANEL_WIDTH, PANEL_HEIGHT)) {
             _partData = partData;
         }
@@ -109,8 +111,9 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
             // Center part
             var groundedTransform = assemblyObject.transform.Find("grounded");
-            assemblyObject.transform.position = Vector3.up 
-                                                - groundedTransform.transform.localToWorldMatrix.MultiplyPoint(groundedTransform.GetBounds().center);
+            _centerOffset =
+                Vector3.down*0.5f + groundedTransform.transform.localToWorldMatrix.MultiplyPoint(groundedTransform.GetBounds().center);
+            assemblyObject.transform.position = -_centerOffset;
             return assemblyObject;
         }
 
@@ -128,7 +131,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             var trf         = gameObject.transform;
             trf.SetParent(_partGameObject.transform);
             
-            trf.position   = connection.LocalPosition;
+            trf.position   = connection.LocalPosition - _centerOffset;
             trf.rotation   = connection.LocalRotation;
             trf.localScale = Vector3.one * 0.25f;
             
@@ -187,7 +190,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             
             List<ConnectionPointData> connectionPoints = new();
             _connectionGameObjects.ForEach(point => {
-                connectionPoints.Add(new ConnectionPointData(point.transform.position, point.transform.rotation));
+                connectionPoints.Add(new ConnectionPointData(point.transform.position+_centerOffset, point.transform.rotation));
             });
 
             _partData.ConnectionPoints = connectionPoints.ToArray();

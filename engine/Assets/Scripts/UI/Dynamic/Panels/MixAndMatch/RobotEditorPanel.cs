@@ -20,9 +20,6 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         private const float PANEL_WIDTH  = 400f;
         private const float PANEL_HEIGHT = 400f;
 
-        private const float VERTICAL_PADDING   = 7f;
-        private const float HORIZONTAL_PADDING = 16f;
-
         private const float PART_ROTATION_SPEED = 10f;
 
         private static readonly int _connectionLayer     = LayerMask.NameToLayer("ConnectionPoint");
