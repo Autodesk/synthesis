@@ -1,15 +1,20 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using Mirabuf;
 using SimObjects.MixAndMatch;
 using Synthesis.Gizmo;
 using Synthesis.Import;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
+using Synthesis.Util;
+using SynthesisAPI.Utilities;
 using UnityEngine;
 using Utilities.ColorManager;
 using Color   = UnityEngine.Color;
+using Logger = SynthesisAPI.Utilities.Logger;
 using Object  = UnityEngine.Object;
 using Vector3 = UnityEngine.Vector3;
 
@@ -17,9 +22,6 @@ namespace UI.Dynamic.Panels.MixAndMatch {
     public class PartEditorPanel : PanelDynamic {
         private const float PANEL_WIDTH  = 400f;
         private const float PANEL_HEIGHT = 400f;
-
-        private const float VERTICAL_PADDING   = 7f;
-        private const float HORIZONTAL_PADDING = 16f;
 
         private MixAndMatchPartData _partData;
 
@@ -33,7 +35,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
         private Button _removeButton;
 
-        private GameObject _selectedPoint;
+        private GameObject _selectedConnection;
 
         public PartEditorPanel(MixAndMatchPartData partData) : base(new Vector2(PANEL_WIDTH, PANEL_HEIGHT)) {
             _partData = partData;
@@ -54,8 +56,10 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             CreateAddRemoveButtons();
 
             _partGameObject = InstantiatePartGameObject();
+            if (_partGameObject == null)
+                return false;
 
-            InstantiatePointGameObjects();
+            InstantiateConnectionGameObjects();
             PopulateScrollView();
 
             return true;
@@ -68,16 +72,16 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
             var addButton = left.CreateButton("Add").SetStretch<Button>().AddOnClickedEvent(
                 _ => {
-                    AddScrollViewEntry(InstantiatePointGameObject(new ConnectionPointData()));
+                    AddScrollViewEntry(InstantiateConnectionGameObject(new ConnectionPointData()));
                     UpdateRemoveButton();
                 });
 
             _removeButton = right.CreateButton("Remove").SetStretch<Button>().AddOnClickedEvent(
                 _ => {
-                    if (_selectedPoint != null) {
-                        _connectionGameObjects.Remove(_selectedPoint);
-                        Object.Destroy(_selectedPoint);
-                        _selectedPoint = null;
+                    if (_selectedConnection != null) {
+                        _connectionGameObjects.Remove(_selectedConnection);
+                        Object.Destroy(_selectedConnection);
+                        _selectedConnection = null;
                     }
                     PopulateScrollView();
                     GizmoManager.ExitGizmo();
@@ -89,40 +93,51 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         private void PopulateScrollView() {
             _scrollView.Content.DeleteAllChildren();
 
-            _connectionGameObjects.ForEach(pointGameObject => { AddScrollViewEntry(pointGameObject); });
+            _connectionGameObjects.ForEach(connectionGameObject => { AddScrollViewEntry(connectionGameObject); });
         }
 
         private GameObject InstantiatePartGameObject() {
-            // TODO: check if part file exists
+            if (!File.Exists(_partData.MirabufPartFile)) {
+                Logger.Log($"Part file {_partData.MirabufPartFile} not found!", LogLevel.Error);
+                return null;
+            }
+            
             MirabufLive miraLive = new MirabufLive(_partData.MirabufPartFile);
 
             GameObject assemblyObject = new GameObject(miraLive.MiraAssembly.Info.Name);
-            // TODO: set parent
             miraLive.GenerateDefinitionObjects(assemblyObject, false);
-            // TODO: Center part
+
+            // Center part
+            var groundedTransform = assemblyObject.transform.Find("grounded");
+            assemblyObject.transform.position = Vector3.up 
+                                                - groundedTransform.transform.localToWorldMatrix.MultiplyPoint(groundedTransform.GetBounds().center);
             return assemblyObject;
         }
 
-        private void InstantiatePointGameObjects() {
+        private void InstantiateConnectionGameObjects() {
             if (_partData.ConnectionPoints == null)
                 return;
 
-            _partData.ConnectionPoints.ForEach(point => { InstantiatePointGameObject(point); });
+            _partData.ConnectionPoints.ForEach(connection => { InstantiateConnectionGameObject(connection); });
         }
 
-        private GameObject InstantiatePointGameObject(ConnectionPointData point) {
+        private GameObject InstantiateConnectionGameObject(ConnectionPointData connection) {
             var gameObject  = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            var trf         = gameObject.transform;
             gameObject.name = "ConnectionPoint";
-            trf.SetParent(_partGameObject.transform);
 
-            trf.position   = point.LocalPosition;
-            trf.rotation   = point.LocalRotation;
+            var trf         = gameObject.transform;
+            trf.SetParent(_partGameObject.transform);
+            
+            trf.position   = connection.LocalPosition;
+            trf.rotation   = connection.LocalRotation;
             trf.localScale = Vector3.one * 0.25f;
-            // TODO: after merge, use color manager
-            trf.GetComponent<MeshRenderer>().material.color = Color.green;
+            
+            trf.GetComponent<MeshRenderer>().material.color = ColorManager.GetColor(
+                ColorManager.SynthesisColor.HighlightHover);
+            
             Object.Destroy(trf.GetComponent<Collider>());
             _connectionGameObjects.Add(gameObject);
+            
             return gameObject;
         }
 
@@ -137,7 +152,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
         private void SelectConnectionPoint(GameObject point, Toggle toggle, bool state) {
             if (state) {
-                _selectedPoint = point;
+                _selectedConnection = point;
                 GizmoManager.SpawnGizmo(point.transform,
                     t => {
                         point.transform.position = t.Position;
@@ -148,14 +163,14 @@ namespace UI.Dynamic.Panels.MixAndMatch {
                 _scrollView.Content.ChildrenReadOnly.OfType<Toggle>().ForEach(x => { x.SetStateWithoutEvents(false); });
                 toggle.SetStateWithoutEvents(true);
             } else {
-                _selectedPoint = null;
+                _selectedConnection = null;
                 GizmoManager.ExitGizmo();
             }
             UpdateRemoveButton();
         }
 
         private void UpdateRemoveButton() {
-            _removeButton.ApplyTemplate((_connectionGameObjects.Count > 0 && _selectedPoint != null)
+            _removeButton.ApplyTemplate((_connectionGameObjects.Count > 0 && _selectedConnection != null)
                                             ? Button.EnableButton
                                             : Button.DisableButton);
         }
@@ -167,6 +182,9 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         }
 
         private void SavePartData() {
+            if (_partGameObject == null)
+                return;
+            
             List<ConnectionPointData> connectionPoints = new();
             _connectionGameObjects.ForEach(point => {
                 connectionPoints.Add(new ConnectionPointData(point.transform.position, point.transform.rotation));

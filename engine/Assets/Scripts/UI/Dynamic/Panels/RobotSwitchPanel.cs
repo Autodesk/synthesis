@@ -104,9 +104,9 @@ public class RobotSwitchPanel : PanelDynamic {
 
         if (!_isMatchMode) {
             if (possChangeEvent.NewBot == string.Empty)
-                _removeButton.ApplyTemplate(Button.EnableButton);
-            else
                 _removeButton.ApplyTemplate(Button.DisableButton);
+            else
+                _removeButton.ApplyTemplate(Button.EnableButton);
         }
     }
 

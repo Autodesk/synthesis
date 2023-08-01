@@ -1,14 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using SimObjects.MixAndMatch;
 using Synthesis.Import;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
+using SynthesisAPI.Utilities;
 using UI.Dynamic.Modals.MixAndMatch;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Utilities.ColorManager;
+using Logger = SynthesisAPI.Utilities.Logger;
 using Object  = UnityEngine.Object;
 using Vector3 = UnityEngine.Vector3;
 
@@ -43,6 +46,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             _robotData = robotData;
         }
 
+        private bool _creationFailed;
         public override bool Create() {
             Title.SetText("Robot Editor");
 
@@ -58,10 +62,12 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
             CreateAddRemoveButtons();
 
-            // TODO: set parent
             _robotGameObject = new GameObject(_robotData.Name);
 
             InstantiatePartGameObjects();
+            if (_creationFailed)
+                return false;
+            
             PopulateScrollView();
 
             return true;
@@ -120,7 +126,12 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
         private GameObject InstantiatePartGameObject(
             Vector3 localPosition, Quaternion localRotation, MixAndMatchPartData partData) {
-            // TODO: check if part file exists
+            if (!File.Exists(partData.MirabufPartFile)) {
+                Logger.Log($"Part file {partData.MirabufPartFile} not found!", LogLevel.Error);
+                _creationFailed = true;
+                return null;
+            }
+            
             MirabufLive miraLive = new MirabufLive(partData.MirabufPartFile);
 
             GameObject gameObject = new GameObject(partData.Name);
@@ -140,21 +151,24 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
         private void InstantiatePartConnectionPoints(GameObject partGameObject, MixAndMatchPartData partData) {
             partData.ConnectionPoints.ForEachIndex((i, point) => {
-                var trf = GameObject.CreatePrimitive(PrimitiveType.Sphere).transform;
+                var obj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                var trf = obj.transform;
+                
                 trf.SetParent(partGameObject.transform);
                 trf.localPosition = point.LocalPosition;
                 trf.localRotation = point.LocalRotation;
                 trf.localScale    = Vector3.one * 0.25f;
+                
+                obj.layer = _connectionLayer;
+                obj.name = "Connection Point";
 
-                if (i != 0)
-                    trf.gameObject.layer = _connectionLayer;
+                trf.GetComponent<MeshRenderer>().material.color = ColorManager.GetColor(
+                    ColorManager.SynthesisColor.HighlightHover);
 
-                trf.gameObject.name = "Connection Point";
-
-                // TODO: after merge, use color manager
-                trf.GetComponent<MeshRenderer>().material.color = (i == 0) ? Color.blue : Color.green;
-                trf.GetComponent<SphereCollider>().isTrigger    = true;
-                trf.GetComponent<SphereCollider>().radius       = 1f;
+                if (trf.TryGetComponent<SphereCollider>(out var collider)) {
+                    collider.isTrigger    = true;
+                    collider.radius       = 1f;
+                }
             });
         }
 

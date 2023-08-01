@@ -57,6 +57,7 @@ namespace Synthesis.Runtime {
 
         private void Awake() {
             Synthesis.PreferenceManager.PreferenceManager.Load();
+            UnityEngine.Physics.defaultSolverIterations = 20;
         }
 
         private void Start() {
