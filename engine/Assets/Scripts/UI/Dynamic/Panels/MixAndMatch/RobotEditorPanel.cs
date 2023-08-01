@@ -261,6 +261,8 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
                 Vector3 axis = selectedTrf.localToWorldMatrix.rotation *
                                (selectedPartData.ConnectionPoints[0].LocalRotation * Vector3.forward);
+                
+                // It says rotate around is obsolete but .Rotate didn't seem to work the same way
                 selectedTrf.RotateAround(axis, _axisRotation);
 
                 // Offset so that the connection points are overlapping
