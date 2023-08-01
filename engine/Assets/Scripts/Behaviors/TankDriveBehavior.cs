@@ -74,7 +74,7 @@ namespace Synthesis {
                 case LEFT_REVERSE:
                 case RIGHT_FORWARD:
                 case RIGHT_REVERSE:
-                    if (base.SimObjectId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID)
+                    if (base.MiraId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID)
                         return;
                     RobotSimObject robot = SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject;
                     SimulationPreferences.SetRobotInput(
