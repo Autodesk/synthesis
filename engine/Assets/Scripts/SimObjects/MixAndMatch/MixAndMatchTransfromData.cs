@@ -38,7 +38,7 @@ namespace SimObjects.MixAndMatch {
             }
         }
 
-        // TODO: Create a separate folder for mix and match mirabuf files
+        // TODO: Keep mix and match mirabuf files in a different folder
         /// <summary>An array of all part mirabuf files found in the appdata folder</summary>
         public static string[] PartMirabufFiles {
             get {

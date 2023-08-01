@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using SimObjects.MixAndMatch;
 using Synthesis.Import;
-using Synthesis.UI;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.Utilities;
 using UI.Dynamic.Modals.MixAndMatch;
@@ -24,19 +23,17 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
         private static readonly int _connectionLayer     = LayerMask.NameToLayer("ConnectionPoint");
         private static readonly int _connectionLayerMask = 1 << _connectionLayer;
-
-        private readonly MixAndMatchRobotData _robotData;
-
-        private GameObject _robotGameObject;
-        private readonly List<(GameObject gameObject, MixAndMatchPartData partData)> _partGameObjects = new();
-
+        
         private float _scrollViewWidth;
         private float _entryWidth;
 
         private ScrollView _scrollView;
-
         private Button _removeButton;
+        
+        private readonly MixAndMatchRobotData _robotData;
 
+        private GameObject _robotGameObject;
+        private readonly List<(GameObject gameObject, MixAndMatchPartData partData)> _partGameObjects = new();
         private (GameObject gameObject, MixAndMatchPartData partData)? _selectedPart;
 
         public RobotEditorPanel(MixAndMatchRobotData robotData) : base(new Vector2(PANEL_WIDTH, PANEL_HEIGHT)) {
@@ -70,12 +67,13 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             return true;
         }
 
+        /// <summary>Creates the buttons to add and remove parts from the robot assembly</summary>
         private void CreateAddRemoveButtons() {
             (Content left, Content right) = MainContent.CreateSubContent(new Vector2(400, 50))
                                                 .SetBottomStretch<Content>()
                                                 .SplitLeftRight((PANEL_WIDTH - 10f) / 2f, 10f);
 
-            var addButton = left.CreateButton("Add").SetStretch<Button>().AddOnClickedEvent(
+            left.CreateButton("Add").SetStretch<Button>().AddOnClickedEvent(
                 _ => {
                     DynamicUIManager.CreateModal<SelectPartModal>(
                         args: new Action<MixAndMatchPartData>(AddAdditionalPart));
@@ -96,31 +94,22 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             UpdateRemoveButton();
         }
 
-        private void AddAdditionalPart(MixAndMatchPartData part) {
-            EnablePartColliders(_selectedPart?.gameObject);
-            AddScrollViewEntry((InstantiatePartGameObject(Vector3.zero, Quaternion.identity, part), part));
-            UpdateRemoveButton();
-        }
-
-        private void PopulateScrollView() {
-            _scrollView.Content.DeleteAllChildren();
-
-            _partGameObjects.ForEach(x => AddScrollViewEntry(x));
-        }
-
+        /// <summary>Creates all of the part objects when the panel is first opened</summary>
         private void InstantiatePartGameObjects() {
             if (_robotData.PartData == null)
                 return;
 
-            _robotData.PartData.ForEach(part => { InstantiatePartGameObject(part); });
+            _robotData.PartData.ForEach(InstantiatePartGameObject);
         }
 
-        private GameObject InstantiatePartGameObject(
+        /// <summary>Instantiates a part object to position from a part fileName</summary>
+        private void InstantiatePartGameObject(
             (string fileName, Vector3 localPosition, Quaternion localRotation) partData) {
-            return InstantiatePartGameObject(
+            InstantiatePartGameObject(
                 partData.localPosition, partData.localRotation, MixAndMatchSaveUtil.LoadPartData(partData.fileName));
         }
 
+        /// <summary>Instantiates a part object to position from a partData object</summary>
         private GameObject InstantiatePartGameObject(
             Vector3 localPosition, Quaternion localRotation, MixAndMatchPartData partData) {
             if (!File.Exists(partData.MirabufPartFile)) {
@@ -131,29 +120,31 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             
             MirabufLive miraLive = new MirabufLive(partData.MirabufPartFile);
 
-            GameObject gameObject = new GameObject(partData.Name);
+            GameObject obj = new GameObject(partData.Name);
+            Transform trf = obj.transform;
 
-            miraLive.GenerateDefinitionObjects(gameObject, false);
+            miraLive.GenerateDefinitionObjects(obj, false);
 
-            gameObject.transform.SetParent(_robotGameObject.transform);
+            trf.SetParent(_robotGameObject.transform);
 
-            gameObject.transform.position = localPosition;
-            gameObject.transform.rotation = localRotation;
+            trf.position = localPosition;
+            trf.rotation = localRotation;
 
-            _partGameObjects.Add((gameObject, partData));
+            _partGameObjects.Add((obj, partData));
 
-            InstantiatePartConnectionPoints(gameObject, partData);
-            return gameObject;
+            InstantiatePartConnectionPoints(obj, partData);
+            return obj;
         }
 
+        /// <summary>Instantiates objects for all the connection points of a part</summary>
         private void InstantiatePartConnectionPoints(GameObject partGameObject, MixAndMatchPartData partData) {
-            partData.ConnectionPoints.ForEachIndex((i, point) => {
+            partData.ConnectionPoints.ForEachIndex((_, connection) => {
                 var obj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                 var trf = obj.transform;
                 
                 trf.SetParent(partGameObject.transform);
-                trf.localPosition = point.LocalPosition;
-                trf.localRotation = point.LocalRotation;
+                trf.localPosition = connection.LocalPosition;
+                trf.localRotation = connection.LocalRotation;
                 trf.localScale    = Vector3.one * 0.25f;
                 
                 obj.layer = _connectionLayer;
@@ -168,7 +159,22 @@ namespace UI.Dynamic.Panels.MixAndMatch {
                 }
             });
         }
+        
+        /// <summary>Adds an addition part to the robot anytime during editing</summary>
+        private void AddAdditionalPart(MixAndMatchPartData part) {
+            EnableConnectionColliders(_selectedPart?.gameObject);
+            AddScrollViewEntry((InstantiatePartGameObject(Vector3.zero, Quaternion.identity, part), part));
+            UpdateRemoveButton();
+        }
+        
+        /// <summary>Clears the scroll view then repopulates it with all the current parts</summary>
+        private void PopulateScrollView() {
+            _scrollView.Content.DeleteAllChildren();
 
+            _partGameObjects.ForEach(AddScrollViewEntry);
+        }
+
+        /// <summary>Adds an entry to the scroll view</summary>
         private void AddScrollViewEntry((GameObject gameObject, MixAndMatchPartData partData) part) {
             var toggle = _scrollView.Content.CreateToggle(label: part.gameObject.name, radioSelect: true)
                              .SetSize<Toggle>(new Vector2(PANEL_WIDTH, 50f))
@@ -178,13 +184,14 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             toggle.AddOnStateChangedEvent((t, s) => { SelectPart(part, t, s); });
         }
 
+        /// <summary>Selects which part will be edited, and updates radio select buttons accordingly</summary>
         private void SelectPart((GameObject gameObject, MixAndMatchPartData partData) part, Toggle toggle, bool state) {
             if (state) {
                 _scrollView.Content.ChildrenReadOnly.OfType<Toggle>().ForEach(x => { x.SetStateWithoutEvents(false); });
                 toggle.SetStateWithoutEvents(true);
 
-                _partGameObjects.ForEach(x => EnablePartColliders(x.gameObject));
-                DisablePartColliders(part.gameObject);
+                _partGameObjects.ForEach(x => EnableConnectionColliders(x.gameObject));
+                DisableConnectionColliders(part.gameObject);
 
                 _selectedPart = part;
             } else
@@ -193,25 +200,30 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             UpdateRemoveButton();
         }
 
+        /// <summary>Deselects all radio select buttons</summary>
         private void DeselectSelectedPart() {
             _scrollView.Content.ChildrenReadOnly.OfType<Toggle>().ForEach(x => { x.SetStateWithoutEvents(false); });
             _selectedPart = null;
         }
 
-        private void EnablePartColliders(GameObject part) {
+        /// <summary>Enables the colliders of a part's connection points so other parts can snap to it</summary>
+        private void EnableConnectionColliders(GameObject part) {
             if (part == null)
                 return;
 
             part.GetComponentsInChildren<SphereCollider>(true).ForEach(c => c.enabled = true);
         }
 
-        private void DisablePartColliders(GameObject part) {
+        /// <summary>Disables the colliders of a part's connection points so other parts can't snap to it</summary>
+        private void DisableConnectionColliders(GameObject part) {
             if (part == null)
                 return;
 
             part.GetComponentsInChildren<SphereCollider>().ForEach(c => c.enabled = false);
         }
-
+        
+        
+        /// Updates the remove button based on if a part is selected
         private void UpdateRemoveButton() {
             _removeButton.ApplyTemplate(
                 (_partGameObjects.Count > 0 && _selectedPart != null) ? Button.EnableButton : Button.DisableButton);
@@ -220,6 +232,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         // TODO: store separately for each part not globally
         private float _axisRotation;
 
+        /// <summary>Handles raycasts to find connection points and part rotation</summary>
         private void PartPlacement() {
             if (EventSystem.current.IsPointerOverGameObject() || _selectedPart == null)
                 return;
@@ -229,36 +242,34 @@ namespace UI.Dynamic.Panels.MixAndMatch {
                 return;
             }
 
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = Camera.main!.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out var hit, 100, _connectionLayerMask)) {
-                var selectedTrf      = _selectedPart.Value.gameObject.transform;
+                var selectedTrf = _selectedPart.Value.gameObject.transform;
                 var selectedPartData = _selectedPart.Value.partData;
 
+                // Align the connection points normals
                 selectedTrf.position = hit.transform.position;
-
                 selectedTrf.rotation = Quaternion.LookRotation(-hit.transform.forward, Vector3.up);
                 selectedTrf.Rotate(-selectedPartData.ConnectionPoints[0].LocalRotation.eulerAngles);
 
+
+                // Handle rotation about the connection points normals
                 if (Input.GetKey(KeyCode.R)) {
-                    _axisRotation += Time.deltaTime * PART_ROTATION_SPEED * (Input.GetKey(KeyCode.LeftShift) ? -1 : 1);
+                    _axisRotation += Time.deltaTime * PART_ROTATION_SPEED *
+                                     (Input.GetKey(KeyCode.LeftShift) ? -1 : 1);
                 }
 
                 Vector3 axis = selectedTrf.localToWorldMatrix.rotation *
                                (selectedPartData.ConnectionPoints[0].LocalRotation * Vector3.forward);
                 selectedTrf.RotateAround(axis, _axisRotation);
 
+
+                // Offset so that the connection points are overlapping
                 selectedTrf.Translate(-selectedPartData.ConnectionPoints[0].LocalPosition);
             }
         }
 
-        public override void Update() {
-            PartPlacement();
-        }
-
-        public override void Delete() {
-            Object.Destroy(_robotGameObject);
-        }
-
+        /// <summary>Saves all edits that have been made</summary>
         private void SaveRobotData() {
             List<(string fileName, Vector3 localPosition, Quaternion localRotation)> parts = new();
             _partGameObjects.ForEach(part => {
@@ -272,6 +283,14 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
             if (parts.Count > 0)
                 RobotSimObject.SpawnRobot(_robotData);
+        }
+
+        public override void Update() {
+            PartPlacement();
+        }
+
+        public override void Delete() {
+            Object.Destroy(_robotGameObject);
         }
     }
 }

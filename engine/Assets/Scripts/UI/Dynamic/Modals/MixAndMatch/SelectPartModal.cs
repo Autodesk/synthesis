@@ -4,9 +4,10 @@ using Synthesis.UI.Dynamic;
 using UnityEngine;
 
 namespace UI.Dynamic.Modals.MixAndMatch {
+    /// <summary>The modal for selecting a part to add when editing a robot</summary>
     public class SelectPartModal : ModalDynamic {
         private const float CONTENT_WIDTH  = 400;
-        private const float CONTENT_HEIGHT = 110;
+        private const float CONTENT_HEIGHT = 55;
 
         private Action<MixAndMatchPartData> _callback;
 
@@ -21,16 +22,25 @@ namespace UI.Dynamic.Modals.MixAndMatch {
             string[] files = MixAndMatchSaveUtil.PartFiles;
 
             var dropdown =
-                MainContent.CreateDropdown().ApplyTemplate(MixAndMatchModal.VerticalLayout).SetOptions(files);
+                MainContent.CreateDropdown().ApplyTemplate(UIComponent.VerticalLayout).SetOptions(files);
 
             AcceptButton.AddOnClickedEvent(
                 _ => {
-                    if (files.Length == 0 || dropdown.Value < 0) // TODO: Disable select button
+                    if (files.Length == 0 || dropdown.Value < 0)
                         return;
 
                     _callback(MixAndMatchSaveUtil.LoadPartData(files[dropdown.Value]));
                     DynamicUIManager.CloseActiveModal();
-                });
+                }).StepIntoLabel(l => l.SetText("Add"));
+
+            dropdown.AddOnValueChangedEvent((_, _, _) => UpdateSelectButton());
+
+            void UpdateSelectButton() {
+                AcceptButton.ApplyTemplate(files.Length == 0 || dropdown.Value < 0
+                    ? Button.DisableButton
+                    : Button.EnableButton);
+            }
+            UpdateSelectButton();
         }
 
         public override void Update() {}

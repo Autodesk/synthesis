@@ -1,13 +1,10 @@
 using System;
 using System.IO;
 using System.Linq;
-using Org.BouncyCastle.Crypto.Digests;
 using SimObjects.MixAndMatch;
-using Synthesis.UI;
 using Synthesis.UI.Dynamic;
 using UI.Dynamic.Panels.MixAndMatch;
 using UnityEngine;
-using Utilities.ColorManager;
 
 namespace UI.Dynamic.Modals.MixAndMatch {
     public class MixAndMatchModal : ModalDynamic {
@@ -20,13 +17,6 @@ namespace UI.Dynamic.Modals.MixAndMatch {
         private const float DELETE_HEIGHT = 0;
 
         public MixAndMatchModal() : base(new Vector2(CONTENT_WIDTH, CHOOSE_TYPE_HEIGHT)) { }
-
-        // TODO: after merge, remove this and use the one in dynamic UI components
-        public static Func<UIComponent, UIComponent> VerticalLayout = (u) => {
-            var offset = (-u.Parent!.RectOfChildren(u).yMin) + 7.5f;
-            u.SetTopStretch<UIComponent>(anchoredY: offset);
-            return u;
-        };
 
         public override void Create() {
             Description.RootGameObject.SetActive(false);
@@ -45,13 +35,13 @@ namespace UI.Dynamic.Modals.MixAndMatch {
                 MainContent.SplitLeftRight((MainContent.Size.x / 2f) - (SPLIT_SPACING / 2f), SPLIT_SPACING);
 
             left.CreateButton("Robot Editor") // Robot editor button
-                .ApplyTemplate(VerticalLayout)
+                .ApplyTemplate(UIComponent.VerticalLayout)
                 .AddOnClickedEvent(
                     _ => CreateChooseObjectModal(true));
 
             right
                 .CreateButton("Part Editor") // Part editor button
-                .ApplyTemplate(VerticalLayout)
+                .ApplyTemplate(UIComponent.VerticalLayout)
                 .AddOnClickedEvent(
                     _ => CreateChooseObjectModal(false));
         }
@@ -67,17 +57,17 @@ namespace UI.Dynamic.Modals.MixAndMatch {
 
             string[] files = robot ? MixAndMatchSaveUtil.RobotFiles : MixAndMatchSaveUtil.PartFiles;
 
-            var dropdown = MainContent.CreateDropdown().ApplyTemplate(VerticalLayout).SetOptions(files);
+            var dropdown = MainContent.CreateDropdown().ApplyTemplate(UIComponent.VerticalLayout).SetOptions(files);
 
             var (selectContent, right) = MainContent.CreateSubContent(new Vector2(MainContent.Size.x, 50))
-                .ApplyTemplate(VerticalLayout)
+                .ApplyTemplate(UIComponent.VerticalLayout)
                 .SplitLeftRight((MainContent.Size.x / 3f) - (SPLIT_SPACING * 0.5f), SPLIT_SPACING);
 
             var (newContent, deleteContent) =
                 right.SplitLeftRight((MainContent.Size.x / 3f) - (SPLIT_SPACING * 0.5f), SPLIT_SPACING);
 
             var selectButton = selectContent.CreateButton("Select")
-                .ApplyTemplate(VerticalLayout)
+                .ApplyTemplate(UIComponent.VerticalLayout)
                 .AddOnClickedEvent(
                     _ => {
                         if (files.Length == 0 || dropdown.Value < 0)
@@ -90,12 +80,12 @@ namespace UI.Dynamic.Modals.MixAndMatch {
                     });
 
             newContent.CreateButton("New")
-                .ApplyTemplate(VerticalLayout)
+                .ApplyTemplate(UIComponent.VerticalLayout)
                 .AddOnClickedEvent(
                     _ => CreateNewObjectModal(robot));
 
             var deleteButton = deleteContent.CreateButton("Delete")
-                .ApplyTemplate(VerticalLayout)
+                .ApplyTemplate(UIComponent.VerticalLayout)
                 .AddOnClickedEvent(
                     _ => CreateDeleteObjectModal(robot, files[dropdown.Value]));
 
@@ -120,7 +110,7 @@ namespace UI.Dynamic.Modals.MixAndMatch {
             string[] files = robot ? MixAndMatchSaveUtil.RobotFiles : MixAndMatchSaveUtil.PartFiles;
 
             var nameInputField = MainContent.CreateInputField()
-                .ApplyTemplate(VerticalLayout)
+                .ApplyTemplate(UIComponent.VerticalLayout)
                 .StepIntoHint(h => h.SetText(""))
                 .AddOnValueChangedEvent((_, v) => UpdateAcceptButton(v));
 
@@ -137,7 +127,6 @@ namespace UI.Dynamic.Modals.MixAndMatch {
             CancelButton.StepIntoLabel(l => l.SetText("Back")).AddOnClickedEvent(_ => CreateChooseObjectModal(robot))
                 .RootGameObject.SetActive(true);
 
-            // TODO: Check if the name exists already
             void UpdateAcceptButton(string inputValue) {
                 AcceptButton.ApplyTemplate(inputValue == "" || files.Contains(inputValue)
                     ? Button.DisableButton
@@ -173,7 +162,7 @@ namespace UI.Dynamic.Modals.MixAndMatch {
             string[] files = MixAndMatchSaveUtil.PartMirabufFiles;
 
             var dropdown = MainContent.CreateDropdown()
-                .ApplyTemplate(VerticalLayout)
+                .ApplyTemplate(UIComponent.VerticalLayout)
                 .SetOptions(files.Select(Path.GetFileName).ToArray());
 
             AcceptButton.AddOnClickedEvent(

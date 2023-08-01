@@ -1,19 +1,13 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using Mirabuf;
 using SimObjects.MixAndMatch;
 using Synthesis.Gizmo;
 using Synthesis.Import;
-using Synthesis.UI;
 using Synthesis.UI.Dynamic;
-using Synthesis.Util;
 using SynthesisAPI.Utilities;
 using UnityEngine;
 using Utilities.ColorManager;
-using Color   = UnityEngine.Color;
 using Logger = SynthesisAPI.Utilities.Logger;
 using Object  = UnityEngine.Object;
 using Vector3 = UnityEngine.Vector3;
@@ -23,19 +17,18 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         private const float PANEL_WIDTH  = 400f;
         private const float PANEL_HEIGHT = 400f;
 
-        private MixAndMatchPartData _partData;
-
-        private GameObject _partGameObject;
-        private readonly List<GameObject> _connectionGameObjects = new();
-
+        
         private float _scrollViewWidth;
         private float _entryWidth;
 
         private ScrollView _scrollView;
-
         private Button _removeButton;
 
-        private GameObject _selectedConnection;
+        private GameObject _partGameObject;
+        private readonly List<GameObject> _connectionGameObjects = new();
+        private GameObject _selectedConnection; 
+        
+        private readonly MixAndMatchPartData _partData;
 
         private Vector3 _centerOffset;
 
@@ -46,7 +39,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         public override bool Create() {
             Title.SetText("Part Editor");
 
-            AcceptButton.StepIntoLabel(l => l.SetText("Save")).AddOnClickedEvent(b => {
+            AcceptButton.StepIntoLabel(l => l.SetText("Save")).AddOnClickedEvent(_ => {
                 SavePartData();
                 GizmoManager.ExitGizmo();
                 DynamicUIManager.ClosePanel<PartEditorPanel>();
@@ -67,12 +60,13 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             return true;
         }
 
+        /// <summary>Creates the buttons to add and remove connection points </summary>
         private void CreateAddRemoveButtons() {
             (Content left, Content right) = MainContent.CreateSubContent(new Vector2(400, 50))
                                                 .SetBottomStretch<Content>()
                                                 .SplitLeftRight((PANEL_WIDTH - 10f) / 2f, 10f);
 
-            var addButton = left.CreateButton("Add").SetStretch<Button>().AddOnClickedEvent(
+            left.CreateButton("Add").SetStretch<Button>().AddOnClickedEvent(
                 _ => {
                     AddScrollViewEntry(InstantiateConnectionGameObject(new ConnectionPointData()));
                     UpdateRemoveButton();
@@ -95,9 +89,20 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         private void PopulateScrollView() {
             _scrollView.Content.DeleteAllChildren();
 
-            _connectionGameObjects.ForEach(connectionGameObject => { AddScrollViewEntry(connectionGameObject); });
+            _connectionGameObjects.ForEach(AddScrollViewEntry);
+        }
+        
+        /// <summary>Adds an entry to the scroll view</summary>
+        private void AddScrollViewEntry(GameObject point) {
+            var toggle = _scrollView.Content.CreateToggle(label: "Connection Point", radioSelect: true)
+                .SetSize<Toggle>(new Vector2(PANEL_WIDTH, 50f))
+                .ApplyTemplate(Toggle.RadioToggleLayout)
+                .StepIntoLabel(l => l.SetFontSize(16f))
+                .SetDisabledColor(ColorManager.SynthesisColor.Background);
+            toggle.AddOnStateChangedEvent((t, s) => { SelectConnectionPoint(point, t, s); });
         }
 
+        /// <summary>Instantiates the main part object</summary>
         private GameObject InstantiatePartGameObject() {
             if (!File.Exists(_partData.MirabufPartFile)) {
                 Logger.Log($"Part file {_partData.MirabufPartFile} not found!", LogLevel.Error);
@@ -117,6 +122,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             return assemblyObject;
         }
 
+        /// <summary>Instantiates all of the connection point objects</summary>
         private void InstantiateConnectionGameObjects() {
             if (_partData.ConnectionPoints == null)
                 return;
@@ -124,6 +130,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             _partData.ConnectionPoints.ForEach(connection => { InstantiateConnectionGameObject(connection); });
         }
 
+        /// <summary>Instantiates a single connection point object</summary>
         private GameObject InstantiateConnectionGameObject(ConnectionPointData connection) {
             var gameObject  = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             gameObject.name = "ConnectionPoint";
@@ -144,15 +151,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             return gameObject;
         }
 
-        private void AddScrollViewEntry(GameObject point) {
-            var toggle = _scrollView.Content.CreateToggle(label: "Connection Point", radioSelect: true)
-                             .SetSize<Toggle>(new Vector2(PANEL_WIDTH, 50f))
-                             .ApplyTemplate(Toggle.RadioToggleLayout)
-                             .StepIntoLabel(l => l.SetFontSize(16f))
-                             .SetDisabledColor(ColorManager.SynthesisColor.Background);
-            toggle.AddOnStateChangedEvent((t, s) => { SelectConnectionPoint(point, t, s); });
-        }
-
+        /// <summary>Selects a connection point to edit</summary>
         private void SelectConnectionPoint(GameObject point, Toggle toggle, bool state) {
             if (state) {
                 _selectedConnection = point;
@@ -172,18 +171,14 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             UpdateRemoveButton();
         }
 
+        /// <summary>Updates the remove connection point button based on if one is selected</summary>
         private void UpdateRemoveButton() {
             _removeButton.ApplyTemplate((_connectionGameObjects.Count > 0 && _selectedConnection != null)
                                             ? Button.EnableButton
                                             : Button.DisableButton);
         }
-
-        public override void Update() {}
-
-        public override void Delete() {
-            Object.Destroy(_partGameObject);
-        }
-
+        
+        /// <summary>Saves all edits to the part</summary>
         private void SavePartData() {
             if (_partGameObject == null)
                 return;
@@ -196,6 +191,12 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             _partData.ConnectionPoints = connectionPoints.ToArray();
 
             MixAndMatchSaveUtil.SavePartData(_partData);
+        }
+
+        public override void Update() {}
+
+        public override void Delete() {
+            Object.Destroy(_partGameObject);
         }
     }
 }
