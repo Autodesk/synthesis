@@ -1,21 +1,19 @@
 #include "wrapper.h"
 
-#include <memory>
+#include <include/cef_app.h>
+#include <include/cef_browser.h>
+
+#include <vector>
 
 #include "core.h"
 #include "offscreen_cef_client.h"
+#include "offscreen_cef_app.h"
 
-struct OffscreenCefClientInterop {
-    synthesis::OffscreenCefClient* instance;
-};
-
-SYNTHESIS_EXPORT OffscreenCefClientInterop* CreateOffscreenCefClientInterop(int width, int height) {
-    OffscreenCefClientInterop* interop = new OffscreenCefClientInterop();
-    interop->instance = new synthesis::OffscreenCefClient(width, height);
-    return interop;
-}
-
-SYNTHESIS_EXPORT void DestroyOffscreenCefClientInterop(OffscreenCefClientInterop* interop) {
-    delete interop->instance;
-    delete interop;
+SYNTHESIS_EXPORT void RunCefInterop() {
+    CefMainArgs mainArgs;
+    CefSettings settings;
+    CefRefPtr<synthesis::OffscreenCefApp> app(new synthesis::OffscreenCefApp());
+    CefInitialize(mainArgs, settings, app, nullptr);
+    CefRunMessageLoop();
+    CefShutdown();
 }

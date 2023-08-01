@@ -1,6 +1,9 @@
 .vs/
 /build/
 /out/
+obj/
+bin/
+TestResults/
 
 /cef_binaries/
 /DawnCache/

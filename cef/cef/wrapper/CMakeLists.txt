@@ -6,6 +6,7 @@ set(WRAPPER_SOURCES
 
 set(WRAPPER_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/inc/html_resource_handler.h
+    ${CMAKE_CURRENT_LIST_DIR}/inc/offscreen_cef_app.h
     ${CMAKE_CURRENT_LIST_DIR}/inc/offscreen_cef_client.h
     ${CMAKE_CURRENT_LIST_DIR}/inc/wrapper.h
 )
