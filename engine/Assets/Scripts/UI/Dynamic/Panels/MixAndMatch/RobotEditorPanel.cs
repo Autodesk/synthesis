@@ -10,7 +10,7 @@ using UI.Dynamic.Modals.MixAndMatch;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Utilities.ColorManager;
-using Logger = SynthesisAPI.Utilities.Logger;
+using Logger  = SynthesisAPI.Utilities.Logger;
 using Object  = UnityEngine.Object;
 using Vector3 = UnityEngine.Vector3;
 
@@ -23,13 +23,13 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
         private static readonly int _connectionLayer     = LayerMask.NameToLayer("ConnectionPoint");
         private static readonly int _connectionLayerMask = 1 << _connectionLayer;
-        
+
         private float _scrollViewWidth;
         private float _entryWidth;
 
         private ScrollView _scrollView;
         private Button _removeButton;
-        
+
         private readonly MixAndMatchRobotData _robotData;
 
         private GameObject _robotGameObject;
@@ -41,6 +41,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         }
 
         private bool _creationFailed;
+
         public override bool Create() {
             Title.SetText("Robot Editor");
 
@@ -61,7 +62,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             InstantiatePartGameObjects();
             if (_creationFailed)
                 return false;
-            
+
             PopulateScrollView();
 
             return true;
@@ -80,18 +81,20 @@ namespace UI.Dynamic.Panels.MixAndMatch {
                 });
 
             _removeButton = right.CreateButton("Remove").SetStretch<Button>().AddOnClickedEvent(
-                _ => {
-                    if (_selectedPart != null) {
-                        _partGameObjects.Remove(_selectedPart.Value);
-                        Object.Destroy(_selectedPart.Value.gameObject);
-                        _selectedPart = null;
-                    }
-
-                    PopulateScrollView();
-
-                    UpdateRemoveButton();
-                });
+                _ => DynamicUIManager.CreateModal<RemovePartModal>(args: new Action(RemovePartCallback)));
             UpdateRemoveButton();
+
+            void RemovePartCallback() {
+                if (_selectedPart == null)
+                    return;
+
+                _partGameObjects.Remove(_selectedPart.Value);
+                Object.Destroy(_selectedPart.Value.gameObject);
+                _selectedPart = null;
+
+                PopulateScrollView();
+                UpdateRemoveButton();
+            }
         }
 
         /// <summary>Creates all of the part objects when the panel is first opened</summary>
@@ -117,11 +120,11 @@ namespace UI.Dynamic.Panels.MixAndMatch {
                 _creationFailed = true;
                 return null;
             }
-            
+
             MirabufLive miraLive = new MirabufLive(partData.MirabufPartFile);
 
             GameObject obj = new GameObject(partData.Name);
-            Transform trf = obj.transform;
+            Transform trf  = obj.transform;
 
             miraLive.GenerateDefinitionObjects(obj, false);
 
@@ -141,32 +144,32 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             partData.ConnectionPoints.ForEachIndex((_, connection) => {
                 var obj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                 var trf = obj.transform;
-                
+
                 trf.SetParent(partGameObject.transform);
                 trf.localPosition = connection.LocalPosition;
                 trf.localRotation = connection.LocalRotation;
                 trf.localScale    = Vector3.one * 0.25f;
-                
-                obj.layer = _connectionLayer;
-                obj.name = "Connection Point";
 
-                trf.GetComponent<MeshRenderer>().material.color = ColorManager.GetColor(
-                    ColorManager.SynthesisColor.HighlightHover);
+                obj.layer = _connectionLayer;
+                obj.name  = "Connection Point";
+
+                trf.GetComponent<MeshRenderer>().material.color =
+                    ColorManager.GetColor(ColorManager.SynthesisColor.HighlightHover);
 
                 if (trf.TryGetComponent<SphereCollider>(out var collider)) {
-                    collider.isTrigger    = true;
-                    collider.radius       = 1f;
+                    collider.isTrigger = true;
+                    collider.radius    = 1f;
                 }
             });
         }
-        
+
         /// <summary>Adds an addition part to the robot anytime during editing</summary>
         private void AddAdditionalPart(MixAndMatchPartData part) {
             EnableConnectionColliders(_selectedPart?.gameObject);
             AddScrollViewEntry((InstantiatePartGameObject(Vector3.zero, Quaternion.identity, part), part));
             UpdateRemoveButton();
         }
-        
+
         /// <summary>Clears the scroll view then repopulates it with all the current parts</summary>
         private void PopulateScrollView() {
             _scrollView.Content.DeleteAllChildren();
@@ -221,8 +224,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
             part.GetComponentsInChildren<SphereCollider>().ForEach(c => c.enabled = false);
         }
-        
-        
+
         /// Updates the remove button based on if a part is selected
         private void UpdateRemoveButton() {
             _removeButton.ApplyTemplate(
@@ -244,7 +246,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
             Ray ray = Camera.main!.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out var hit, 100, _connectionLayerMask)) {
-                var selectedTrf = _selectedPart.Value.gameObject.transform;
+                var selectedTrf      = _selectedPart.Value.gameObject.transform;
                 var selectedPartData = _selectedPart.Value.partData;
 
                 // Align the connection points normals
@@ -252,17 +254,14 @@ namespace UI.Dynamic.Panels.MixAndMatch {
                 selectedTrf.rotation = Quaternion.LookRotation(-hit.transform.forward, Vector3.up);
                 selectedTrf.Rotate(-selectedPartData.ConnectionPoints[0].LocalRotation.eulerAngles);
 
-
                 // Handle rotation about the connection points normals
                 if (Input.GetKey(KeyCode.R)) {
-                    _axisRotation += Time.deltaTime * PART_ROTATION_SPEED *
-                                     (Input.GetKey(KeyCode.LeftShift) ? -1 : 1);
+                    _axisRotation += Time.deltaTime * PART_ROTATION_SPEED * (Input.GetKey(KeyCode.LeftShift) ? -1 : 1);
                 }
 
                 Vector3 axis = selectedTrf.localToWorldMatrix.rotation *
                                (selectedPartData.ConnectionPoints[0].LocalRotation * Vector3.forward);
                 selectedTrf.RotateAround(axis, _axisRotation);
-
 
                 // Offset so that the connection points are overlapping
                 selectedTrf.Translate(-selectedPartData.ConnectionPoints[0].LocalPosition);

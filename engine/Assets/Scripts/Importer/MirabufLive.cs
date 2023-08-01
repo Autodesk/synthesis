@@ -119,7 +119,7 @@ namespace Synthesis.Import {
             Dictionary<string, GameObject>[] groupObjects = new Dictionary<string, GameObject>[miraLiveFiles.Length];
             miraLiveFiles.ForEachIndex(
                 (i, m) => groupObjects[i] = m.GenerateDefinitionObjects(assemblyContainer, true, true, i));
-            
+
             var mainGrounded = new GameObject("grounded");
             mainGrounded.transform.SetParent(assemblyContainer.transform);
             var rb = mainGrounded.AddComponent<Rigidbody>();
@@ -174,8 +174,8 @@ namespace Synthesis.Import {
 
             foreach (var group in Definitions.Definitions.Values) {
                 GameObject groupObject = new GameObject(useIndex ? $"{group.Name}_{partIndex}" : group.Name);
-                var isGamepiece = group.IsGamepiece;
-                var isStatic    = group.IsStatic;
+                var isGamepiece        = group.IsGamepiece;
+                var isStatic           = group.IsStatic;
                 // Import Parts
 
 #region Parts
@@ -183,8 +183,8 @@ namespace Synthesis.Import {
                 foreach (var part in group.Parts) {
                     var partInstance   = part.Value;
                     var partDefinition = MiraAssembly.Data.Parts.PartDefinitions[partInstance.PartDefinitionReference];
-                    GameObject partObject = new GameObject(useIndex ? $"{partInstance.Info.Name}_{partIndex}" 
-                        : partInstance.Info.Name);
+                    GameObject partObject =
+                        new GameObject(useIndex ? $"{partInstance.Info.Name}_{partIndex}" : partInstance.Info.Name);
 
                     MakePartDefinition(partObject, partDefinition, partInstance, MiraAssembly.Data,
                         !physics ? ColliderGenType.NoCollider

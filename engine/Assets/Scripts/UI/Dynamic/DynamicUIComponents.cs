@@ -1250,7 +1250,7 @@ namespace Synthesis.UI.Dynamic {
                                 ColorManager.SynthesisColor.InteractiveElementRight))
                 .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
                 .EnableEvents<Button>();
-        
+
         public static readonly Func<Button, Button> EnableDeleteButton = b =>
             b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.CancelButton))
                 .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
@@ -1325,6 +1325,7 @@ namespace Synthesis.UI.Dynamic {
         }
 
         private List<Action<Button>> _clickEvents = new();
+
         public Button AddOnClickedEvent(Action<Button> callback) {
             OnClicked += callback;
             _clickEvents.Add(callback);

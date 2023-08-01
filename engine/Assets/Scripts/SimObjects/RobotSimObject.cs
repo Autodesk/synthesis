@@ -25,7 +25,7 @@ using Utilities.ColorManager;
 using Bounds   = UnityEngine.Bounds;
 using Logger   = SynthesisAPI.Utilities.Logger;
 using MVector3 = Mirabuf.Vector3;
-using Object = UnityEngine.Object;
+using Object   = UnityEngine.Object;
 
 #nullable enable
 
@@ -189,7 +189,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         RobotBounds    = GetBounds(RobotNode.transform);
         GroundedBounds = GetBounds(GroundedNode.transform);
         DebugJointAxes.DebugBounds.Add((GroundedBounds, () => GroundedNode.transform.localToWorldMatrix));
-        
+
         // Resets whatever Hunter corrupted
         // SimulationPreferences.SetRobotDrivetrainType(MiraLive.MiraAssembly.Info.GUID, DrivetrainType.ARCADE);
         // PreferenceManager.Save();
@@ -197,7 +197,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         SimulationPreferences.LoadRobotFromMira(MiraLiveFiles[0]);
 
         _allRigidbodies = new List<Rigidbody>(RobotNode.transform.GetComponentsInChildren<Rigidbody>());
-        
+
         PhysicsManager.Register(this);
 
         // TODO: fix by giving each node a unique name
@@ -600,9 +600,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     public static void SpawnRobot(MixAndMatchRobotData mixAndMatchRobotData, Vector3 position, Quaternion rotation,
         bool spawnGizmo, string? filePath) {
-        var mira = filePath == null
-                       ? Importer.ImportMixAndMatchRobot(mixAndMatchRobotData)
-                       : Importer.ImportSimpleRobot(filePath);
+        var mira = filePath == null ? Importer.ImportMixAndMatchRobot(mixAndMatchRobotData)
+                                    : Importer.ImportSimpleRobot(filePath);
 
         RobotSimObject simObject = (mira.sim as RobotSimObject)!;
         mira.mainObject.transform.SetParent(GameObject.Find("Game").transform);

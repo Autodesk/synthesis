@@ -9,7 +9,7 @@ namespace UI.Dynamic.Modals.MixAndMatch {
         private const float CONTENT_WIDTH  = 400;
         private const float CONTENT_HEIGHT = 55;
 
-        private Action<MixAndMatchPartData> _callback;
+        private readonly Action<MixAndMatchPartData> _callback;
 
         public SelectPartModal(Action<MixAndMatchPartData> callback)
             : base(new Vector2(CONTENT_WIDTH, CONTENT_HEIGHT)) {
@@ -21,24 +21,24 @@ namespace UI.Dynamic.Modals.MixAndMatch {
 
             string[] files = MixAndMatchSaveUtil.PartFiles;
 
-            var dropdown =
-                MainContent.CreateDropdown().ApplyTemplate(UIComponent.VerticalLayout).SetOptions(files);
+            var dropdown = MainContent.CreateDropdown().ApplyTemplate(UIComponent.VerticalLayout).SetOptions(files);
 
-            AcceptButton.AddOnClickedEvent(
-                _ => {
-                    if (files.Length == 0 || dropdown.Value < 0)
-                        return;
+            AcceptButton
+                .AddOnClickedEvent(
+                    _ => {
+                        if (files.Length == 0 || dropdown.Value < 0)
+                            return;
 
-                    _callback(MixAndMatchSaveUtil.LoadPartData(files[dropdown.Value]));
-                    DynamicUIManager.CloseActiveModal();
-                }).StepIntoLabel(l => l.SetText("Add"));
+                        _callback(MixAndMatchSaveUtil.LoadPartData(files[dropdown.Value]));
+                        DynamicUIManager.CloseActiveModal();
+                    })
+                .StepIntoLabel(l => l.SetText("Add"));
 
             dropdown.AddOnValueChangedEvent((_, _, _) => UpdateSelectButton());
 
             void UpdateSelectButton() {
-                AcceptButton.ApplyTemplate(files.Length == 0 || dropdown.Value < 0
-                    ? Button.DisableButton
-                    : Button.EnableButton);
+                AcceptButton.ApplyTemplate(
+                    files.Length == 0 || dropdown.Value < 0 ? Button.DisableButton : Button.EnableButton);
             }
             UpdateSelectButton();
         }
