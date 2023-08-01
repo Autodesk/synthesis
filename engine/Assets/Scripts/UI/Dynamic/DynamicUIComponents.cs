@@ -321,6 +321,8 @@ namespace Synthesis.UI.Dynamic {
         protected void ClearAndResizeContent(Vector2 size) {
             ClearMainContent();
             ResizeMainContent(size);
+            AcceptButton.ClearOnClickedEvents();
+            CancelButton.ClearOnClickedEvents();
         }
 
         protected void ClearMainContent() => MainContent.DeleteAllChildren();
@@ -1248,6 +1250,11 @@ namespace Synthesis.UI.Dynamic {
                                 ColorManager.SynthesisColor.InteractiveElementRight))
                 .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
                 .EnableEvents<Button>();
+        
+        public static readonly Func<Button, Button> EnableDeleteButton = b =>
+            b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.CancelButton))
+                .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
+                .EnableEvents<Button>();
 
         public static readonly Func<Button, Button> DisableButton = b =>
             b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground))
@@ -1317,8 +1324,18 @@ namespace Synthesis.UI.Dynamic {
             return this;
         }
 
+        private List<Action<Button>> _clickEvents = new();
         public Button AddOnClickedEvent(Action<Button> callback) {
             OnClicked += callback;
+            _clickEvents.Add(callback);
+            return this;
+        }
+
+        public Button ClearOnClickedEvents() {
+            _clickEvents.ForEach(e => {
+                if (e != null)
+                    OnClicked -= e;
+            });
             return this;
         }
     }

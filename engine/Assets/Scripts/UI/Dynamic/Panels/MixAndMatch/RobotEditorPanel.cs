@@ -270,7 +270,8 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
             MixAndMatchSaveUtil.SaveRobotData(_robotData);
 
-            RobotSimObject.SpawnRobot(_robotData);
+            if (parts.Count > 0)
+                RobotSimObject.SpawnRobot(_robotData);
         }
     }
 }

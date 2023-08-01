@@ -149,19 +149,14 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
         /// <summary>Updates the color of the delete buttons and if they can be pressed</summary>
         private void UpdateDeleteButtons() {
             if (_selectedThemeIndex < 1)
-                _deleteButton.DisableEvents<Button>().StepIntoImage(
-                    i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground));
+                _deleteButton.ApplyTemplate(Button.DisableButton);
             else
-                _deleteButton.EnableEvents<Button>().StepIntoImage(
-                    i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
-                        ColorManager.SynthesisColor.InteractiveElementRight));
+                _deleteButton.ApplyTemplate(Button.EnableButton);
 
             if (_availableThemes.Length == 1)
-                _deleteAllButton.DisableEvents<Button>().StepIntoImage(
-                    i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground));
+                _deleteAllButton.ApplyTemplate(Button.DisableButton);
             else
-                _deleteAllButton.EnableEvents<Button>().StepIntoImage(
-                    i => i.SetColor(ColorManager.SynthesisColor.CancelButton));
+                _deleteAllButton.ApplyTemplate(Button.EnableDeleteButton);
         }
 
         /// <summary>Creates the color sliders at the bottom left of the modal</summary>
