@@ -69,7 +69,6 @@ namespace Synthesis.Runtime {
             RobotSimObject.Setup();
             WebSocketManager.Init();
 
-            OnUpdate += DynamicUIManager.Update;
             OnUpdate += ModeManager.Update;
             OnUpdate += () => RobotSimObject.SpawnedRobots.ForEach(r => r.UpdateMultiplayer());
 
@@ -93,9 +92,11 @@ namespace Synthesis.Runtime {
         void Update() {
             InputManager.UpdateInputs(_simulationContext);
             SimulationManager.Update();
+            DynamicUIManager.Update();
 
-            if (OnUpdate != null)
+            if (OnUpdate != null) {
                 OnUpdate();
+            }
         }
 
         private void FixedUpdate() {
