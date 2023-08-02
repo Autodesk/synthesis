@@ -139,6 +139,7 @@ function App() {
                     <AnimatePresence>
                         {motionPanelElements.length > 0 && motionPanelElements}
                         {motionModalElement && motionModalElement}
+                        <ThemeEditorModal modalId="theme-editor" />
                     </AnimatePresence>
                     <ToastContainer />
                 </ToastProvider>

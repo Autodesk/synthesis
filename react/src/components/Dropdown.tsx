@@ -7,9 +7,10 @@ type DropdownProps = {
     label?: string
     className?: string
     options: string[]
+    onSelect: (opt: string) => void
 }
 
-const Dropdown: React.FC<DropdownProps> = ({ label, className, options }) => {
+const Dropdown: React.FC<DropdownProps> = ({ label, className, options, onSelect }) => {
     const [expanded, setExpanded] = useState(false)
     const [optionList, setOptionList] = useState(options)
 
@@ -18,6 +19,8 @@ const Dropdown: React.FC<DropdownProps> = ({ label, className, options }) => {
         children?: ReactNode
         className?: string
     }
+
+    console.log(optionList)
 
     const DropdownOption: React.FC<DropdownOptionProps> = ({
         children,
@@ -29,6 +32,7 @@ const Dropdown: React.FC<DropdownProps> = ({ label, className, options }) => {
                 const newOptions = options.filter(item => item !== value)
                 newOptions.unshift(value)
                 setOptionList(newOptions)
+                if (onSelect) onSelect(value)
             }}
             className={`block relative duration-100 hover:backdrop-brightness-90 w-full h-full px-2 py-2 ${className}`}
         >
@@ -45,10 +49,12 @@ const Dropdown: React.FC<DropdownProps> = ({ label, className, options }) => {
             >
                 <DropdownOption value={optionList[0]}>
                     {optionList[0]}
-                    <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col h-1/2 content-center items-center">
-                        <FaChevronUp className="h-1/2" />
-                        <FaChevronDown className="h-1/2" />
-                    </div>
+                    {optionList.length > 1 &&
+                        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col h-1/2 content-center items-center">
+                            <FaChevronUp className="h-1/2" />
+                            <FaChevronDown className="h-1/2" />
+                        </div>
+                    }
                 </DropdownOption>
                 {expanded &&
                     optionList.slice(1).map(o => (

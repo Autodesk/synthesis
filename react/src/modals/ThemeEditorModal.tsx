@@ -1,36 +1,45 @@
 import React, { useState } from "react"
 import { FaChessBoard } from "react-icons/fa6"
 import Modal, { ModalPropsImpl } from "../components/Modal"
-import { RgbaColorPicker } from "react-colorful"
+import { RgbaColor, RgbaColorPicker } from "react-colorful"
 import Stack, { StackDirection } from "../components/Stack"
 import Dropdown from "../components/Dropdown"
 import Button from "../components/Button"
 
 type Color = [red: number, green: number, blue: number, alpha: number]
+type Theme = { [name: string]: RgbaColor }
 
-const colors: { [name: string]: Color } = {
-    InteractiveElementSolid: [250, 162, 27, 255],
-    InteractiveElementLeft: [224, 130, 65, 255],
-    InteractiveElementRight: [218, 102, 89, 255],
-    InteractiveSecondary: [204, 124, 0, 255],
-    Background: [33, 37, 41, 255],
-    BackgroundSecondary: [52, 58, 64, 255],
-    MainText: [248, 249, 250, 255],
-    Scrollbar: [213, 216, 223, 255],
-    AcceptButton: [34, 139, 230, 255],
-    CancelButton: [250, 82, 82, 255],
-    InteractiveElementText: [0, 0, 0, 255],
-    Icon: [255, 255, 255, 255],
-    HighlightHover: [89, 255, 133, 255],
-    HighlightSelect: [255, 89, 133, 255],
-    SkyboxTop: [255, 255, 255, 255],
-    SkyboxBottom: [255, 255, 255, 255],
-    FloorGrid: [93, 93, 93, 255],
+const defaultColors: Theme = {
+    InteractiveElementSolid: { r: 250, g: 162, b: 27, a: 255 },
+    InteractiveElementLeft: { r: 224, g: 130, b: 65, a: 255 },
+    InteractiveElementRight: { r: 218, g: 102, b: 89, a: 255 },
+    InteractiveSecondary: { r: 204, g: 124, b: 0, a: 255 },
+    Background: { r: 33, g: 37, b: 41, a: 255 },
+    BackgroundSecondary: { r: 52, g: 58, b: 64, a: 255 },
+    MainText: { r: 248, g: 249, b: 250, a: 255 },
+    Scrollbar: { r: 213, g: 216, b: 223, a: 255 },
+    AcceptButton: { r: 34, g: 139, b: 230, a: 255 },
+    CancelButton: { r: 250, g: 82, b: 82, a: 255 },
+    InteractiveElementText: { r: 0, g: 0, b: 0, a: 255 },
+    Icon: { r: 255, g: 255, b: 255, a: 255 },
+    HighlightHover: { r: 89, g: 255, b: 133, a: 255 },
+    HighlightSelect: { r: 255, g: 89, b: 133, a: 255 },
+    SkyboxTop: { r: 255, g: 255, b: 255, a: 255 },
+    SkyboxBottom: { r: 255, g: 255, b: 255, a: 255 },
+    FloorGrid: { r: 93, g: 93, b: 93, a: 255 },
+}
+
+const defaultThemes: { [name: string]: Theme } = {
+    'Default': defaultColors
 }
 
 const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [selectedColor, setSelectedColor] = useState("")
-    const [, setCurrentColor] = useState<Color>([0, 0, 0, 0])
+    const [selectedTheme, setSelectedTheme] = useState(Object.keys(defaultThemes)[0])
+    const [, setCurrentColor] = useState<RgbaColor>({ r: 0, g: 0, b: 0, a: 0 })
+    const [themes, setThemes] = useState<{ [name: string]: Theme }>({ ...defaultThemes });
+
+    console.log(selectedTheme, themes)
 
     return (
         <Modal name="Theme Editor" icon={<FaChessBoard />} modalId={modalId}>
@@ -38,36 +47,45 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 <Stack direction={StackDirection.Vertical}>
                     <Dropdown
                         label="Select a Theme"
-                        options={["Default", "Test 1"]}
+                        options={Object.keys(themes)}
+                        onSelect={(opt) => setSelectedTheme(opt)}
                         className="h-min"
                     />
                     <Stack direction={StackDirection.Horizontal} spacing={10}>
-                        <Button value="Create Theme" />
-                        <Button value="Delete Selected" />
+                        <Button value="Create Theme" onClick={() => {
+                            const newThemeName = `${Object.keys(themes).length}`
+                            setThemes({ ...themes, [newThemeName]: { ...defaultColors } })
+                            setSelectedTheme(newThemeName)
+                        }} />
+                        <Button value="Delete Selected" onClick={() => {
+                            const themesCopy = { ...themes };
+                            delete themesCopy[selectedTheme];
+                            setSelectedTheme(Object.keys(themes).filter(k => k !== selectedTheme)[0])
+                            setThemes(themesCopy)
+                        }} />
                         <Button value="Delete All" />
                     </Stack>
                     <RgbaColorPicker
+                        color={themes[selectedTheme][selectedColor]}
                         onChange={c => {
-                            const color: Color = [c.r, c.g, c.b, c.a]
-                            colors[selectedColor] = color
-                            setCurrentColor(color)
+                            themes[selectedTheme][selectedColor] = c
+                            setCurrentColor(c)
                         }}
                     />
                 </Stack>
                 <div className="w-full h-full">
-                    <div className="w-max m-4 h-full overflow-scroll">
-                        {Object.entries(colors).map(([n, c]) => (
+                    <div className="w-max m-4 h-full overflow-y-scroll pr-4 flex flex-col">
+                        {Object.entries(themes[selectedTheme]).map(([n, c]) => (
                             <div
                                 key={n}
-                                className={`flex flex-row gap-2 content-middle align-center cursor-pointer ${
-                                    n == selectedColor ? "bg-gray-700" : ""
-                                }`}
+                                className={`flex flex-row gap-2 content-middle align-center cursor-pointer rounded-md p-1 ${n == selectedColor ? "bg-gray-700" : ""
+                                    }`}
                                 onClick={() => setSelectedColor(n)}
                             >
                                 <div
                                     className="w-6 h-6 rounded-md"
                                     style={{
-                                        background: `rgba(${c[0]}, ${c[1]}, ${c[2]}, ${c[3]})`,
+                                        background: `rgba(${c.r}, ${c.g}, ${c.b}, ${c.a})`,
                                     }}
                                 ></div>
                                 <div className="h-6 text-white">{n}</div>
