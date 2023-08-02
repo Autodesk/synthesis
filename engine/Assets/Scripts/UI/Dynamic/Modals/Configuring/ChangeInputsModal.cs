@@ -166,21 +166,23 @@ public class ChangeInputsModal : ModalDynamic {
         ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("settings"));
 
         // no cancel button because keybinds are saved automatically when set
-        AcceptButton.AddOnClickedEvent(b => {
-            isSave = true;
-            _changedInputs.ForEach(x => {
-                InputManager.AssignValueInput(x.Item1, x.Item2);
-                if (x.Item2 is Digital) {
-                    PreferenceManager.SetPreference<Digital>(x.Item1, x.Item2 as Digital);
-                    PreferenceManager.Save();
-                }
-            });
-            DynamicUIManager.CloseActiveModal();
-        }
-        ).StepIntoLabel(l => l.SetText("Save"));
+        AcceptButton
+            .AddOnClickedEvent(b => {
+                isSave = true;
+                _changedInputs.ForEach(x => {
+                    InputManager.AssignValueInput(x.Item1, x.Item2);
+                    if (x.Item2 is Digital) {
+                        PreferenceManager.SetPreference<Digital>(x.Item1, x.Item2 as Digital);
+                        PreferenceManager.Save();
+                    }
+                });
+                DynamicUIManager.CloseActiveModal();
+            })
+            .StepIntoLabel(l => l.SetText("Save"));
         CancelButton.RootGameObject.SetActive(false);
-        MiddleButton.AddOnClickedEvent(b => DynamicUIManager.CloseActiveModal()).StepIntoLabel(l => l.SetText("Session"));
-        
+        MiddleButton.AddOnClickedEvent(b => DynamicUIManager.CloseActiveModal())
+            .StepIntoLabel(l => l.SetText("Session"));
+
         PopulateInputSelections();
     }
 
