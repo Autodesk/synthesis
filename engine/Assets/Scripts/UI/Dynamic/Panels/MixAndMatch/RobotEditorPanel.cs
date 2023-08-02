@@ -243,6 +243,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
         /// <summary>Handles raycasts to find connection points and part rotation</summary>
         private void PartPlacement() {
+            Debug.Log($"{EventSystem.current.IsPointerOverGameObject()}, {_selectedPart == null}");
             if (EventSystem.current.IsPointerOverGameObject() || _selectedPart == null)
                 return;
 
@@ -294,6 +295,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         }
 
         public override void Update() {
+            Debug.Log("Update called");
             PartPlacement();
         }
 
