@@ -321,8 +321,8 @@ namespace Synthesis.UI.Dynamic {
         protected void ClearAndResizeContent(Vector2 size) {
             ClearMainContent();
             ResizeMainContent(size);
-            AcceptButton.ClearOnClickedEvents();
-            CancelButton.ClearOnClickedEvents();
+            AcceptButton.ClearOnClickedEvents().StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.AcceptButton));
+            CancelButton.ClearOnClickedEvents().StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.CancelButton));
         }
 
         protected void ClearMainContent() => MainContent.DeleteAllChildren();

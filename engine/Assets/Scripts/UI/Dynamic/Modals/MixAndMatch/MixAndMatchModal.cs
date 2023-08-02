@@ -1,10 +1,14 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SimObjects.MixAndMatch;
 using Synthesis.UI.Dynamic;
+using TMPro;
 using UI.Dynamic.Panels.MixAndMatch;
 using UnityEngine;
+using UnityEngine.UI;
+using Button = Synthesis.UI.Dynamic.Button;
 
 namespace UI.Dynamic.Modals.MixAndMatch {
     public class MixAndMatchModal : ModalDynamic {
@@ -25,7 +29,7 @@ namespace UI.Dynamic.Modals.MixAndMatch {
 
         /// <summary>The screen where the user specifies if they will edit a robot or part</summary>
         private void CreateChooseTypeModal() {
-            ClearAndResizeContent(new Vector2(MainContent.Size.x, CHOOSE_TYPE_HEIGHT));
+            ClearAndResizeContent(new Vector2(CONTENT_WIDTH, CHOOSE_TYPE_HEIGHT));
             Title.SetText("Mix and Match Robot Editor");
 
             AcceptButton.RootGameObject.SetActive(false);
@@ -35,7 +39,7 @@ namespace UI.Dynamic.Modals.MixAndMatch {
                 .RootGameObject.SetActive(true);
 
             var (left, right) =
-                MainContent.SplitLeftRight((MainContent.Size.x / 2f) - (SPLIT_SPACING / 2f), SPLIT_SPACING);
+                MainContent.SplitLeftRight((CONTENT_WIDTH / 2f) - (SPLIT_SPACING / 2f), SPLIT_SPACING);
 
             left.CreateButton("Robot Editor") // Robot editor button
                 .ApplyTemplate(UIComponent.VerticalLayout)
@@ -52,7 +56,7 @@ namespace UI.Dynamic.Modals.MixAndMatch {
         /// <summary>User either selects a part/robot file chooses to create a new one</summary>
         private void CreateChooseObjectModal(bool robot) {
             Title.SetText($"Choose a {(robot ? "Robot" : "Part")} to Edit");
-            ClearAndResizeContent(new Vector2(MainContent.Size.x, SELECT_OBJECT_HEIGHT));
+            ClearAndResizeContent(new Vector2(CONTENT_WIDTH, SELECT_OBJECT_HEIGHT));
 
             AcceptButton.RootGameObject.SetActive(false);
             CancelButton.StepIntoLabel(l => l.SetText("Back"))
@@ -65,12 +69,12 @@ namespace UI.Dynamic.Modals.MixAndMatch {
             var dropdown = MainContent.CreateDropdown().ApplyTemplate(UIComponent.VerticalLayout).SetOptions(files);
 
             var (selectContent, right) =
-                MainContent.CreateSubContent(new Vector2(MainContent.Size.x, 50))
+                MainContent.CreateSubContent(new Vector2(CONTENT_WIDTH, 50))
                     .ApplyTemplate(UIComponent.VerticalLayout)
-                    .SplitLeftRight((MainContent.Size.x / 3f) - (SPLIT_SPACING * 0.5f), SPLIT_SPACING);
+                    .SplitLeftRight((CONTENT_WIDTH / 3f) - (SPLIT_SPACING * 0.5f), SPLIT_SPACING);
 
             var (newContent, deleteContent) =
-                right.SplitLeftRight((MainContent.Size.x / 3f) - (SPLIT_SPACING * 0.5f), SPLIT_SPACING);
+                right.SplitLeftRight((CONTENT_WIDTH / 3f) - (SPLIT_SPACING * 0.5f), SPLIT_SPACING);
 
             var selectButton =
                 selectContent.CreateButton("Select")
@@ -111,7 +115,7 @@ namespace UI.Dynamic.Modals.MixAndMatch {
         /// <summary>User names a new part/robot</summary>
         private void CreateNewObjectModal(bool robot) {
             Title.SetText($"Create a New {(robot ? "Robot" : "Part")}");
-            ClearAndResizeContent(new Vector2(MainContent.Size.x, CREATE_NEW_HEIGHT));
+            ClearAndResizeContent(new Vector2(CONTENT_WIDTH, CREATE_NEW_HEIGHT));
 
             string[] files = robot ? MixAndMatchSaveUtil.RobotFiles : MixAndMatchSaveUtil.PartFiles;
 
@@ -127,8 +131,7 @@ namespace UI.Dynamic.Modals.MixAndMatch {
                             OpenRobotEditor(MixAndMatchSaveUtil.CreateNewRobot(nameInputField.Value));
                         else
                             CreateChoosePartFileModal(nameInputField.Value);
-                    })
-                .RootGameObject.SetActive(true);
+                    }).StepIntoLabel(l => l.SetText("Create")).RootGameObject.SetActive(true);
 
             CancelButton.StepIntoLabel(l => l.SetText("Back"))
                 .AddOnClickedEvent(
@@ -142,33 +145,61 @@ namespace UI.Dynamic.Modals.MixAndMatch {
             UpdateAcceptButton("");
         }
 
-        /// <summary>Prompt the user to delete a part</summary>
+        /// <summary>Prompt the user to delete something</summary>
         private void CreateDeleteObjectModal(bool robot, string fileName) {
             Title.SetText($"Delete {fileName}?");
-            ClearAndResizeContent(new Vector2(MainContent.Size.x, DELETE_HEIGHT));
 
-            AcceptButton.StepIntoLabel(l => l.SetText("Back"))
+            // A list of robots that depend on the part
+            List<string> dependencies = new();
+            if (!robot) {
+                foreach (var robotName in MixAndMatchSaveUtil.RobotFiles) {
+                    foreach (var part in MixAndMatchSaveUtil.LoadRobotData(robotName).PartData) {
+                        if (part.fileName == fileName) {
+                            dependencies.Add(robotName);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            ClearAndResizeContent(new Vector2(CONTENT_WIDTH,
+                DELETE_HEIGHT + (dependencies.Count > 0 ? 150 : 0)));
+
+            if (dependencies.Count > 0) {
+
+                var scrollView = MainContent.CreateScrollView().SetHeight<ScrollView>(150);
+                var textContent = scrollView.Content.CreateSubContent(new Vector2(CONTENT_WIDTH, 150))
+                    .SetTopStretch<Content>(leftPadding: 15);
+                
+                textContent.CreateLabel().SetFontSize(20).SetText($"Unable to delete! Dependencies:").SetTopStretch<Label>(anchoredY: 15).SetFontStyle(FontStyles.Bold);
+                dependencies.ForEach(d => textContent.CreateLabel().SetFontSize(17).SetText(d).ApplyTemplate(UIComponent.VerticalLayoutBigSpacing));
+                    
+                CancelButton.RootGameObject.SetActive(false);
+            }
+            else {
+                CancelButton.StepIntoLabel(l => l.SetText("Delete"))
+                    .AddOnClickedEvent(
+                        _ => {
+                            if (robot)
+                                MixAndMatchSaveUtil.DeleteRobot(fileName);
+                            else
+                                MixAndMatchSaveUtil.DeletePart(fileName);
+                            CreateChooseObjectModal(robot);
+                        })
+                    .RootGameObject.SetActive(true);
+            }
+
+            AcceptButton
                 .AddOnClickedEvent(
                     _ => CreateChooseObjectModal(robot))
-                .RootGameObject.SetActive(true);
-
-            CancelButton
-                .AddOnClickedEvent(
-                    _ => {
-                        if (robot)
-                            MixAndMatchSaveUtil.DeleteRobot(fileName);
-                        else
-                            MixAndMatchSaveUtil.DeletePart(fileName);
-                        CreateChooseObjectModal(robot);
-                    })
-                .StepIntoLabel(l => l.SetText("Delete"))
+                .StepIntoLabel(l => l.SetText("Back"))
                 .RootGameObject.SetActive(true);
         }
 
         /// <summary>User selects a mirabuf file to use for the new part</summary>
         private void CreateChoosePartFileModal(string fileName) {
             Title.SetText("Select a Base Part File");
-            ClearAndResizeContent(new Vector2(MainContent.Size.x, CREATE_NEW_HEIGHT));
+            ClearAndResizeContent(new Vector2(CONTENT_WIDTH, CREATE_NEW_HEIGHT));
 
             CancelButton.StepIntoLabel(l => l.SetText("Back"))
                 .AddOnClickedEvent(
