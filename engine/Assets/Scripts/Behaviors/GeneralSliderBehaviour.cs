@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Google.Protobuf.WellKnownTypes;
 using Synthesis.PreferenceManager;
+using Synthesis.UI.Dynamic;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
@@ -53,7 +54,7 @@ namespace Synthesis {
         private void OnValueInputAssigned(IEvent tmp) {
             ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
             if (args.InputKey.Equals(_forwardInputKey) || args.InputKey.Equals(_reverseInputKey)) {
-                if (base.MiraId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID)
+                if (base.MiraId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID || !(DynamicUIManager.ActiveModal as ChangeInputsModal).isSave)
                     return;
                 RobotSimObject robot = SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject;
                 SimulationPreferences.SetRobotInput(robot.MiraGUID, args.InputKey, args.Input);

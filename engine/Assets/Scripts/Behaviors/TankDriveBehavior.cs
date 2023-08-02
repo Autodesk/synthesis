@@ -2,6 +2,7 @@
 using Google.Protobuf.WellKnownTypes;
 using Mirabuf;
 using Synthesis.PreferenceManager;
+using Synthesis.UI.Dynamic;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
@@ -74,7 +75,7 @@ namespace Synthesis {
                 case LEFT_REVERSE:
                 case RIGHT_FORWARD:
                 case RIGHT_REVERSE:
-                    if (base.MiraId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID)
+                    if (base.MiraId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID || !(DynamicUIManager.ActiveModal as ChangeInputsModal).isSave)
                         return;
                     RobotSimObject robot = SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject;
                     SimulationPreferences.SetRobotInput(

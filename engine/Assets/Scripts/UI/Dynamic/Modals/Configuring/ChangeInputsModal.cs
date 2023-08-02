@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Synthesis.PreferenceManager;
@@ -30,6 +31,8 @@ public class ChangeInputsModal : ModalDynamic {
     private Analog _currentlyReassigning;
     private Button _reassigningButton;
     private string _reassigningKey;
+    private List<(string, Analog)> _changedInputs;
+    public Boolean isSave = false;
 
     private void PopulateInputSelections() {
         (Content leftContent, Content rightContent) = MainContent.SplitLeftRight(580, 20);
@@ -157,14 +160,27 @@ public class ChangeInputsModal : ModalDynamic {
     }
 
     public override void Create() {
+        _changedInputs = new List<(string, Analog)>();
         Title.SetText("Keybinds");
 
         ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("settings"));
 
         // no cancel button because keybinds are saved automatically when set
-        AcceptButton.AddOnClickedEvent(b => DynamicUIManager.CloseActiveModal()).StepIntoLabel(l => l.SetText("Close"));
+        AcceptButton.AddOnClickedEvent(b => {
+            isSave = true;
+            _changedInputs.ForEach(x => {
+                InputManager.AssignValueInput(x.Item1, x.Item2);
+                if (x.Item2 is Digital) {
+                    PreferenceManager.SetPreference<Digital>(x.Item1, x.Item2 as Digital);
+                    PreferenceManager.Save();
+                }
+            });
+            DynamicUIManager.CloseActiveModal();
+        }
+        ).StepIntoLabel(l => l.SetText("Save"));
         CancelButton.RootGameObject.SetActive(false);
-
+        MiddleButton.AddOnClickedEvent(b => DynamicUIManager.CloseActiveModal()).StepIntoLabel(l => l.SetText("Session"));
+        
         PopulateInputSelections();
     }
 
@@ -178,10 +194,7 @@ public class ChangeInputsModal : ModalDynamic {
             // because the user clicks on the button
             if (input != null && !Regex.IsMatch(input.Name, ".*Mouse.*")) {
                 InputManager.AssignValueInput(_reassigningKey, input);
-                if (input is Digital) {
-                    PreferenceManager.SetPreference<Digital>(_reassigningKey, input as Digital);
-                    PreferenceManager.Save();
-                }
+                _changedInputs.Add((_reassigningKey, input));
 
                 UpdateAnalogInputButton(_reassigningButton, input, input is Digital);
 
