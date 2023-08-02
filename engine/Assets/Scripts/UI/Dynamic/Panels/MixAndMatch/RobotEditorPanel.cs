@@ -108,15 +108,22 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         /// <summary>Instantiates a part object to position from a part fileName</summary>
         private void InstantiatePartGameObject(
             (string fileName, Vector3 localPosition, Quaternion localRotation) partData) {
+            var partFile = MixAndMatchSaveUtil.LoadPartData(partData.fileName, false);
+            if (partFile == null) {
+                Logger.Log($"Part file \"{partData.fileName}\" not found!", LogLevel.Error);
+                _creationFailed = true;
+                return;
+            }
+                
             InstantiatePartGameObject(
-                partData.localPosition, partData.localRotation, MixAndMatchSaveUtil.LoadPartData(partData.fileName));
+                partData.localPosition, partData.localRotation, partFile);
         }
 
         /// <summary>Instantiates a part object to position from a partData object</summary>
         private GameObject InstantiatePartGameObject(
             Vector3 localPosition, Quaternion localRotation, MixAndMatchPartData partData) {
             if (!File.Exists(partData.MirabufPartFile)) {
-                Logger.Log($"Part file {partData.MirabufPartFile} not found!", LogLevel.Error);
+                Logger.Log($"Mirabuf file \"{partData.MirabufPartFile}\" not found!", LogLevel.Error);
                 _creationFailed = true;
                 return null;
             }

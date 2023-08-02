@@ -62,7 +62,7 @@ namespace SimObjects.MixAndMatch {
         }
 
         /// <summary>Load a part from the appdata folder. If no found, a blank part with be created</summary>
-        public static MixAndMatchPartData LoadPartData(string fileName) {
+        public static MixAndMatchPartData LoadPartData(string fileName, bool createNewIfNoExist = true) {
             if (!Directory.Exists(PART_FOLDER_PATH)) {
                 Directory.CreateDirectory(PART_FOLDER_PATH);
             }
@@ -70,7 +70,9 @@ namespace SimObjects.MixAndMatch {
             var filePath = Path.GetFullPath(PART_FOLDER_PATH) + ALT_SEP + fileName + ".json";
 
             if (!File.Exists(filePath)) {
-                return CreateNewPart(fileName);
+                if (createNewIfNoExist)
+                    return CreateNewPart(fileName);
+                else return null;
             }
 
             return JsonUtility.FromJson<MixAndMatchPartData>(File.ReadAllText(filePath));
