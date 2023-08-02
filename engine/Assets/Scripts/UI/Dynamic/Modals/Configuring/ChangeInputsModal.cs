@@ -1,6 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Synthesis.PreferenceManager;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
@@ -177,6 +178,10 @@ public class ChangeInputsModal : ModalDynamic {
             // because the user clicks on the button
             if (input != null && !Regex.IsMatch(input.Name, ".*Mouse.*")) {
                 InputManager.AssignValueInput(_reassigningKey, input);
+                if (input is Digital) {
+                    PreferenceManager.SetPreference<Digital>(_reassigningKey, input as Digital);
+                    PreferenceManager.Save();
+                }
 
                 UpdateAnalogInputButton(_reassigningButton, input, input is Digital);
 

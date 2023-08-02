@@ -94,7 +94,7 @@ public class PracticeMode : IMode {
 
     private Analog TryGetSavedInput(string key, Analog defaultInput) {
         if (PreferenceManager.ContainsPreference(key)) {
-            var input            = (Digital) PreferenceManager.GetPreference<InputData[]>(key) [0].GetInput();
+            var input            = PreferenceManager.GetPreference<Digital>(key);
             input.ContextBitmask = defaultInput.ContextBitmask;
             return input;
         }
