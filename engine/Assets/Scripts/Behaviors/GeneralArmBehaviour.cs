@@ -31,8 +31,8 @@ namespace Synthesis {
             armDriver.Reserve(this);
             _armDriver = armDriver;
 
-            _forwardInputKey    = _armDriver.Signal + _forwardInputKey;
-            _reverseInputKey    = _armDriver.Signal + _reverseInputKey;
+            _forwardInputKey    = SimObjectId + _armDriver.Signal + _forwardInputKey;
+            _reverseInputKey    = SimObjectId + _armDriver.Signal + _reverseInputKey;
             var name            = _armDriver.Name;
             _forwardDisplayName = name + _forwardDisplayName;
             _reverseDisplayName = name + _reverseDisplayName;
@@ -61,11 +61,10 @@ namespace Synthesis {
         private void OnValueInputAssigned(IEvent tmp) {
             ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
             if (args.InputKey.Equals(_forwardInputKey) || args.InputKey.Equals(_reverseInputKey)) {
-                if (base.MiraId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID ||
+                if (base.MiraId != MainHUD.SelectedRobot.MiraGUID ||
                     !(DynamicUIManager.ActiveModal as ChangeInputsModal).isSave)
                     return;
-                RobotSimObject robot = SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject;
-                SimulationPreferences.SetRobotInput(robot.MiraGUID, args.InputKey, args.Input);
+                SimulationPreferences.SetRobotInput(MainHUD.SelectedRobot.MiraGUID, args.InputKey, args.Input);
             }
         }
 

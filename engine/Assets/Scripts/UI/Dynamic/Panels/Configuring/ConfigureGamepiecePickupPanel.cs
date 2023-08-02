@@ -36,7 +36,7 @@ namespace Synthesis.UI.Dynamic {
                 return false;
             }
 
-            _robot           = MainHUD.ConfigRobot;
+            _robot           = MainHUD.SelectedRobot;
             var existingData = _robot.IntakeData;
             if (existingData.HasValue) {
                 _resultingData = existingData.Value;

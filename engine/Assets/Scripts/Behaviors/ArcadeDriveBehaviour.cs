@@ -17,8 +17,13 @@ namespace Synthesis {
     public class ArcadeDriveBehaviour : SimBehaviour {
         internal const string FORWARD  = "Arcade Forward";
         internal const string BACKWARD = "Arcade Backward";
-        internal const string LEFT     = "Arcade Left";
-        internal const string RIGHT    = "Arcade Right";
+        internal const string LEFT = "Arcade Left";
+        internal const string RIGHT = "Arcade Right";
+        private string forward  = FORWARD;
+        private string backward = BACKWARD;
+        private string left = LEFT;
+        private string right = RIGHT;
+
 
         private List<WheelDriver> _leftWheels;
         private List<WheelDriver> _rightWheels;
@@ -51,6 +56,11 @@ namespace Synthesis {
             _leftWheels  = leftWheels;
             _rightWheels = rightWheels;
 
+            forward = SimObjectId + FORWARD;
+            backward = SimObjectId + BACKWARD;
+            left = SimObjectId + LEFT;
+            right = SimObjectId + RIGHT;
+
             InitInputs(GetInputs());
 
             EventBus.NewTypeListener<ValueInputAssignedEvent>(OnValueInputAssigned);
@@ -58,10 +68,10 @@ namespace Synthesis {
 
         public (string key, string displayName, Analog input)[] GetInputs() {
             return new(string key, string displayName,
-                Analog input)[] { (FORWARD, FORWARD, TryLoadInput(FORWARD, new Digital("W"))),
-                (BACKWARD, BACKWARD, TryLoadInput(BACKWARD, new Digital("S"))),
-                (LEFT, LEFT, TryLoadInput(LEFT, new Digital("A"))),
-                (RIGHT, RIGHT, TryLoadInput(RIGHT, new Digital("D"))) };
+                Analog input)[] { (forward, FORWARD, TryLoadInput(forward, new Digital("W"))),
+                (backward, BACKWARD, TryLoadInput(backward, new Digital("S"))),
+                (left, LEFT, TryLoadInput(left, new Digital("A"))),
+                (right, RIGHT, TryLoadInput(right, new Digital("D"))) };
         }
 
         public Analog TryLoadInput(string key, Analog defaultInput) {
@@ -72,26 +82,26 @@ namespace Synthesis {
 
         private void OnValueInputAssigned(IEvent tmp) {
             ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
-            switch (args.InputKey) {
+            string s = args.InputKey.Remove(0, SimObjectId.Length);
+            switch (s) {
                 case FORWARD:
                 case BACKWARD:
                 case LEFT:
                 case RIGHT:
-                    if (base.MiraId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID ||
+                    if (base.MiraId != MainHUD.SelectedRobot.MiraGUID ||
                         !(DynamicUIManager.ActiveModal as ChangeInputsModal).isSave)
                         return;
-                    RobotSimObject robot = SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject;
                     SimulationPreferences.SetRobotInput(
-                        _robot.MiraLive.MiraAssembly.Info.GUID, args.InputKey, args.Input);
+                        MainHUD.SelectedRobot.MiraLive.MiraAssembly.Info.GUID, args.InputKey, args.Input);
                     break;
             }
         }
 
         public override void Update() {
-            var forwardInput  = InputManager.MappedValueInputs[FORWARD];
-            var backwardInput = InputManager.MappedValueInputs[BACKWARD];
-            var leftInput     = InputManager.MappedValueInputs[LEFT];
-            var rightInput    = InputManager.MappedValueInputs[RIGHT];
+            var forwardInput  = InputManager.MappedValueInputs[forward];
+            var backwardInput = InputManager.MappedValueInputs[backward];
+            var leftInput     = InputManager.MappedValueInputs[left];
+            var rightInput    = InputManager.MappedValueInputs[right];
 
             _xSpeed = Mathf.Abs(forwardInput.Value) - Mathf.Abs(backwardInput.Value);
             _zRot   = Mathf.Abs(rightInput.Value) - Mathf.Abs(leftInput.Value);

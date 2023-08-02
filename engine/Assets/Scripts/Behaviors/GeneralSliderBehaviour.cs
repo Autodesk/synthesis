@@ -24,8 +24,8 @@ namespace Synthesis {
         public GeneralSliderBehaviour(string simObjectId, LinearDriver driver) : base(simObjectId) {
             _driver = driver;
 
-            _forwardInputKey    = driver.Signal + _forwardInputKey;
-            _reverseInputKey    = driver.Signal + _reverseInputKey;
+            _forwardInputKey    = SimObjectId + driver.Signal + _forwardInputKey;
+            _reverseInputKey    = SimObjectId + driver.Signal + _reverseInputKey;
             var name            = driver.Name;
             _forwardDisplayName = name + _forwardDisplayName;
             _reverseDisplayName = name + _reverseDisplayName;
@@ -54,7 +54,7 @@ namespace Synthesis {
         private void OnValueInputAssigned(IEvent tmp) {
             ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
             if (args.InputKey.Equals(_forwardInputKey) || args.InputKey.Equals(_reverseInputKey)) {
-                if (base.MiraId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID ||
+                if (base.MiraId != MainHUD.SelectedRobot.MiraGUID ||
                     !(DynamicUIManager.ActiveModal as ChangeInputsModal).isSave)
                     return;
                 RobotSimObject robot = SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject;

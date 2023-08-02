@@ -13,7 +13,7 @@ using UnityEngine;
 public class ChangeInputsModal : ModalDynamic {
     public ChangeInputsModal() : base(new Vector2(1200, CONTENT_HEIGHT + 30)) {}
 
-    private static bool RobotLoaded => MainHUD.ConfigRobot != null;
+    private static bool RobotLoaded => MainHUD.SelectedRobot != null;
 
     private const float VERTICAL_PADDING = 10f;
     private const float TITLE_INDENT     = 10f;
@@ -48,10 +48,8 @@ public class ChangeInputsModal : ModalDynamic {
 
             // make background transparent
             inputScrollView.RootGameObject.GetComponent<UnityEngine.UI.Image>().color = Color.clear;
-
-            SimObject robot = MainHUD.ConfigRobot;
-            if (robot != null) {
-                foreach (var inputKey in robot.GetAllReservedInputs()) {
+            if (MainHUD.SelectedRobot != null) {
+                foreach (var inputKey in MainHUD.SelectedRobot.GetAllReservedInputs()) {
                     var val = InputManager.MappedValueInputs[inputKey.key];
 
                     var item = inputScrollView.Content.CreateLabeledButton()

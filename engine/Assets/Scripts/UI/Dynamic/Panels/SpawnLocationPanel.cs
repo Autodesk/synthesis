@@ -164,7 +164,7 @@ namespace Synthesis.UI.Dynamic {
             buttons[SelectedButton].Image.SetColor(
                 ColorManager.GetColor(ColorManager.SynthesisColor.BackgroundSecondary));
             SelectedButton      = index;
-            MainHUD.ConfigRobot = MatchMode.Robots[index];
+            MainHUD.SelectedRobot = MatchMode.Robots[index];
 
             buttons[index].Image.SetColor((index < 3) ? redButtonColor : blueButtonColor);
         }
