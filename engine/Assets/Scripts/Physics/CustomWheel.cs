@@ -67,29 +67,29 @@ public class CustomWheel : MonoBehaviour {
         Rb.velocity += _lastImpulseTotal * mod; // / Rb.mass;
     }
 
-	public void OnCollisionEnter(Collision collision) {
+    public void OnCollisionEnter(Collision collision) {
         AddCollisionData(collision);
-	}
+    }
 
-	public void OnCollisionStay(Collision collision) {
+    public void OnCollisionStay(Collision collision) {
         AddCollisionData(collision);
     }
 
     public void AddCollisionData(Collision collision) {
-		Vector3 impulse = collision.impulse;
+        Vector3 impulse = collision.impulse;
 
-		// If impulse vector is suspected of being backwards (happens with mean machine), calculate it manually
-		if (impulse.normalized.y < 0.5) {
-			impulse = Vector3.zero;
-			collision.contacts.ForEach(contact => {
-				impulse += (Rb.worldCenterOfMass - contact.point).normalized * contact.impulse.magnitude;
-			});
-		}
+        // If impulse vector is suspected of being backwards (happens with mean machine), calculate it manually
+        if (impulse.normalized.y < 0.5) {
+            impulse = Vector3.zero;
+            collision.contacts.ForEach(contact => {
+                impulse += (Rb.worldCenterOfMass - contact.point).normalized * contact.impulse.magnitude;
+            });
+        }
 
-		_collisionDataThisFrame.impulse += impulse;
-		_collisionDataThisFrame.velocity += collision.relativeVelocity;
-		_collisionDataThisFrame.numCollisions++;
-	}
+        _collisionDataThisFrame.impulse += impulse;
+        _collisionDataThisFrame.velocity += collision.relativeVelocity;
+        _collisionDataThisFrame.numCollisions++;
+    }
 
     private (Vector3 impulse, Vector3 velocity, int numCollisions) _collisionDataThisFrame;
 
