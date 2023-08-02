@@ -27,7 +27,7 @@ public class RioConfigurationModal : ModalDynamic {
         if (reload && RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
             Entries.Clear();
 
-            var trans = RobotSimObject.GetCurrentlyPossessedRobot().SimulationTranslationLayer;
+            var trans = MainHUD.ConfigRobot.SimulationTranslationLayer;
 
             trans.PWMGroups.ForEach(x => Entries.Add((PWMGroupEntry) x!));
 
@@ -53,10 +53,9 @@ public class RioConfigurationModal : ModalDynamic {
     public override void Create() {
         Title.SetText("RoboRIO Configuration");
         Title.SetWidth<Label>(300);
-        Description.SetText("Configuring RoboRIO for Synthesis simulation");
 
-        ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-        ModalImage.SetColor(ColorManager.SynthesisColor.MainText);
+        ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+        ModalIcon.SetColor(ColorManager.SynthesisColor.Icon);
 
         _scrollView = MainContent.CreateScrollView();
         _scrollView.SetStretch<ScrollView>();
@@ -92,35 +91,27 @@ public class RioConfigurationModal : ModalDynamic {
     }
 
     public void CreateItem(string text, string buttonText, Action onButton, Action onDelete) {
-        var content = _scrollView.Content.CreateSubContent(new Vector2(_scrollView.Content.Size.x, 80))
-                          .EnsureImage()
-                          .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElement));
+        var content = _scrollView.Content.CreateSubContent(new Vector2(_scrollView.Content.Size.x, 80));
 
         content.SetTopStretch<Content>(anchoredY: -_scrollView.Content.RectOfChildren(content).yMin);
         var label = content.CreateLabel()
                         .SetStretch<Label>(leftPadding: 20, topPadding: 20, bottomPadding: 20)
                         .SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Middle)
                         .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Left)
-                        .SetText(text)
-                        .SetColor(ColorManager.SynthesisColor.Background);
-
+                        .SetText(text);
         var confButton = content.CreateButton(buttonText);
 
         confButton.SetPivot<Button>(new Vector2(1, 0.5f))
             .SetRightStretch<Button>(20, 20, 15)
             .SetWidth<Button>(110)
             .SetHeight<Button>(-30)
-            .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.Background))
-            .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText))
             .AddOnClickedEvent(b => onButton());
 
         content.CreateButton("Remove")
-            .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.Background))
             .SetPivot<Button>(new Vector2(1, 0.5f))
             .SetRightStretch<Button>(20, 20, 140)
             .SetWidth<Button>(110)
             .SetHeight<Button>(-30)
-            .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText))
             .AddOnClickedEvent(b => onDelete());
     }
 
@@ -132,7 +123,8 @@ public class RioConfigurationModal : ModalDynamic {
         content.SetWidth<Content>(1000);
 
         content.CreateButton("Create Device")
-            .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElement))
+            .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                               ColorManager.SynthesisColor.InteractiveElementRight))
             .SetStretch<Button>(leftPadding: 300, rightPadding: 300, topPadding: 20, bottomPadding: 20)
             .AddOnClickedEvent(b => { DynamicUIManager.CreateModal<RCCreateDeviceModal>(); });
     }
@@ -152,7 +144,7 @@ public class RioConfigurationModal : ModalDynamic {
             }
         });
 
-        RobotSimObject.GetCurrentlyPossessedRobot().SimulationTranslationLayer = trans;
+        MainHUD.ConfigRobot.SimulationTranslationLayer = trans;
     }
 
     public override void Delete() {}

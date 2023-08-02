@@ -35,7 +35,6 @@ namespace Synthesis.UI {
             new List<(string title, Sprite icon, Action<object> callback)>();
 
         public void OnPointerClick(PointerEventData eventData) {
-            Debug.Log(gameObject.name);
             if (eventData.button == PointerEventData.InputButton.Right) {
                 Vector2 position = new Vector2(eventData.position.x,
                     eventData.position.y); // Maybe have that 1080 number adjust but for rn it's fine

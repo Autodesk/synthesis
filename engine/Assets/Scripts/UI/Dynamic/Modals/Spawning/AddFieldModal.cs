@@ -19,7 +19,7 @@ namespace Synthesis.UI.Dynamic {
 
         public string Folder = "Mira/Fields";
 
-        public AddFieldModal() : base(new Vector2(400, 40)) {}
+        public AddFieldModal() : base(new Vector2(400, 55)) {}
 
         public override void Create() {
             _root = ParsePath(Path.Combine("$appdata/Autodesk/Synthesis", Folder), '/');
@@ -28,9 +28,8 @@ namespace Synthesis.UI.Dynamic {
             _files = Directory.GetFiles(_root).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
 
             Title.SetText("Field Selection");
-            Description.SetText("Choose which field you wish to use");
 
-            ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("PlusIcon"))
+            ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("plus"))
                 .SetColor(ColorManager.SynthesisColor.MainText);
 
             AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {

@@ -213,21 +213,29 @@ namespace Utilities.ColorManager {
 
         /// <summary>Each value represents a different color that can differ across themes</summary>
         public enum SynthesisColor {
-            InteractiveElement,
-            InteractiveSecondary,
+            InteractiveElementSolid,
+            InteractiveElementLeft,
+            InteractiveElementRight,
             Background,
             BackgroundSecondary,
+            InteractiveBackground,
+            BackgroundHUD,
+            InteractiveHover,
+            InteractiveSelect,
             MainText,
             Scrollbar,
             AcceptButton,
             CancelButton,
             InteractiveElementText,
             Icon,
+            MainHUDIcon,
+            MainHUDCloseIcon,
             HighlightHover,
             HighlightSelect,
             SkyboxTop,
             SkyboxBottom,
-            FloorGrid
+            FloorGrid,
+            AcceptCancelButtonText
         }
     }
 }

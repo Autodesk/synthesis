@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -204,7 +204,7 @@ namespace Synthesis.Import {
                                         $"{instance.SignalReference}_absolute" },
                                     simObject, instance, customWheel, wheelA.anchor, axisWut, float.NaN,
                                     assembly.Data.Joints.MotorDefinitions.ContainsKey(definition.MotorReference)
-                                        ? assembly.Data.Joints.MotorDefinitions[definition.MotorReference]
+                                        ? definition.MotorReference
                                         : null);
                             SimulationManager.AddDriver(simObject.Name, driver);
                         }
@@ -272,7 +272,7 @@ namespace Synthesis.Import {
                                     $"{instance.SignalReference}_absolute" },
                                 simObject, revoluteA, revoluteB, instance.IsWheel(assembly),
                                 assembly.Data.Joints.MotorDefinitions.ContainsKey(definition.MotorReference)
-                                    ? assembly.Data.Joints.MotorDefinitions[definition.MotorReference]
+                                    ? definition.MotorReference
                                     : null);
                             SimulationManager.AddDriver(simObject.Name, driver);
                         }
@@ -331,12 +331,15 @@ namespace Synthesis.Import {
                     if (instance.HasSignal()) {
                         assembly.Data.Joints.MotorDefinitions.TryGetValue(definition.MotorReference, out var motor);
                         var currentPosition = definition.Prismatic.PrismaticFreedom.Value;
-                        var slideDriver =
-                            new LinearDriver(assembly.Data.Signals.SignalMap[instance.SignalReference].Info.GUID,
-                                new string[] { instance.SignalReference }, Array.Empty<string>(), simObject, sliderA,
-                                sliderB, (motor?.SimpleMotor.MaxVelocity ?? 30f) / 100f,
-                                ((definition.Prismatic.PrismaticFreedom.Limits.Upper - currentPosition) * 0.01f,
-                                    (definition.Prismatic.PrismaticFreedom.Limits.Lower - currentPosition) * 0.01f));
+                        var slideDriver     = new LinearDriver(
+                            assembly.Data.Signals.SignalMap[instance.SignalReference].Info.GUID,
+                            new string[] { instance.SignalReference }, Array.Empty<string>(), simObject, sliderA,
+                            sliderB, (motor?.SimpleMotor.MaxVelocity ?? 30f) / LinearDriver.LINEAR_TO_MOTOR_VELOCITY,
+                            ((definition.Prismatic.PrismaticFreedom.Limits.Upper - currentPosition) * 0.01f,
+                                (definition.Prismatic.PrismaticFreedom.Limits.Lower - currentPosition) * 0.01f),
+                            assembly.Data.Joints.MotorDefinitions.ContainsKey(definition.MotorReference)
+                                    ? definition.MotorReference
+                                    : null);
                         SimulationManager.AddDriver(simObject.Name, slideDriver);
                     }
 

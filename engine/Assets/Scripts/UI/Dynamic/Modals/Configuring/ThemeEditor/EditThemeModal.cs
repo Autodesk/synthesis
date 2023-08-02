@@ -12,9 +12,9 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
     /// A modal to select, create, remove, and edit themes
     /// </summary>
     public class EditThemeModal : ModalDynamic {
-        private const float MODAL_WIDTH        = 1350;
-        private const float MODAL_HEIGHT       = 500;
-        private const float ROW_HEIGHT         = 60;
+        private const float MODAL_WIDTH        = 1000;
+        private const float MODAL_HEIGHT       = 390;
+        private const float ROW_HEIGHT         = 40;
         private const float HORIZONTAL_PADDING = 15;
 
         private Func<UIComponent, UIComponent> VerticalLayout = (u) => {
@@ -45,7 +45,6 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
         public override void Create() {
             Title.SetText("Theme Editor");
-            Description.SetText("Select and Customize Themes");
 
             AcceptButton.StepIntoLabel(l => l.SetText("Save")).AddOnClickedEvent(x => {
                 SaveThemeChanges();
@@ -60,7 +59,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
             MiddleButton.AddOnClickedEvent(x => { PreviewColors(); }).StepIntoLabel(l => l.SetText("Preview"));
 
-            var (left, right) = MainContent.SplitLeftRight(500 - (HORIZONTAL_PADDING / 2), HORIZONTAL_PADDING);
+            var (left, right) = MainContent.SplitLeftRight(380 - (HORIZONTAL_PADDING / 2), HORIZONTAL_PADDING);
 
             CreateThemeSelection(left);
             CreateColorSliders(left);
@@ -84,9 +83,9 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
             _colors[_selectedColor.Value] = (colorInput, valueTuple.image, valueTuple.background, valueTuple.label);
 
-            _hSlider.SetValue((int) _hSlider.Value);
-            _sSlider.SetValue((int) _sSlider.Value);
-            _vSlider.SetValue((int) _vSlider.Value);
+            _hSlider.SetValue(Mathf.RoundToInt(_hSlider.Value));
+            _sSlider.SetValue(Mathf.RoundToInt(_sSlider.Value));
+            _vSlider.SetValue(Mathf.RoundToInt(_vSlider.Value));
         }
 
         public override void Delete() {}
@@ -113,13 +112,14 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
             var addThemeButton = addContent.CreateButton()
                                      .ApplyTemplate(VerticalLayout)
-                                     .StepIntoLabel(l => l.SetText("Create Theme"))
+                                     .StepIntoLabel(l => l.SetText("New"))
                                      .AddOnClickedEvent(b => { DynamicUIManager.CreateModal<NewThemeModal>(); });
 
             _deleteButton = deleteContent.CreateButton()
                                 .ApplyTemplate(VerticalLayout)
-                                .StepIntoLabel(l => l.SetText("Delete Selected"))
-                                .SetBackgroundColor<Button>(ColorManager.SynthesisColor.InteractiveElement)
+                                .StepIntoLabel(l => l.SetText("Delete"))
+                                .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                                                   ColorManager.SynthesisColor.InteractiveElementRight))
                                 .AddOnClickedEvent(b => {
                                     if (_selectedThemeIndex != 0) {
                                         SaveThemeChanges();
@@ -130,7 +130,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             _deleteAllButton = deleteAllContent.CreateButton()
                                    .ApplyTemplate(VerticalLayout)
                                    .StepIntoLabel(l => l.SetText("Delete All"))
-                                   .SetBackgroundColor<Button>(ColorManager.SynthesisColor.CancelButton)
+                                   .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.CancelButton))
                                    .AddOnClickedEvent(b => {
                                        if (_selectedThemeIndex != 0) {
                                            SaveThemeChanges();
@@ -149,18 +149,19 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
         /// <summary>Updates the color of the delete buttons and if they can be pressed</summary>
         private void UpdateDeleteButtons() {
             if (_selectedThemeIndex < 1)
-                _deleteButton.DisableEvents<Button>().SetBackgroundColor<Button>(
-                    ColorManager.SynthesisColor.BackgroundSecondary);
+                _deleteButton.DisableEvents<Button>().StepIntoImage(
+                    i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground));
             else
-                _deleteButton.EnableEvents<Button>().SetBackgroundColor<Button>(
-                    ColorManager.SynthesisColor.InteractiveElement);
+                _deleteButton.EnableEvents<Button>().StepIntoImage(
+                    i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                        ColorManager.SynthesisColor.InteractiveElementRight));
 
             if (_availableThemes.Length == 1)
-                _deleteAllButton.DisableEvents<Button>().SetBackgroundColor<Button>(
-                    ColorManager.SynthesisColor.BackgroundSecondary);
+                _deleteAllButton.DisableEvents<Button>().StepIntoImage(
+                    i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground));
             else
-                _deleteAllButton.EnableEvents<Button>().SetBackgroundColor<Button>(
-                    ColorManager.SynthesisColor.CancelButton);
+                _deleteAllButton.EnableEvents<Button>().StepIntoImage(
+                    i => i.SetColor(ColorManager.SynthesisColor.CancelButton));
         }
 
         /// <summary>Creates the color sliders at the bottom left of the modal</summary>
@@ -202,18 +203,21 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
                 var (colorImage, name) = colorContent.SplitLeftRight(ROW_HEIGHT, HORIZONTAL_PADDING);
 
-                colorContent.SetBackgroundColor<Content>(ColorManager.SynthesisColor.BackgroundSecondary);
-                colorImage.SetBackgroundColor<Content>(c.Value);
+                colorContent.StepIntoImage(i => i.SetSprite(null!).SetCornerRadius(8))
+                    .SetBackgroundColor<Content>(ColorManager.SynthesisColor.BackgroundSecondary);
+
+                colorImage.SetBackgroundColor<Content>(c.Value).StepIntoImage(i => i.SetCornerRadius(8));
 
                 // Regex.Replace formats color's name with spaces (ColorName -> Color Name)
-                var label = name.CreateLabel().SetText(Regex.Replace(c.Key.ToString(), "(\\B[A-Z])", " $1"));
+                var label =
+                    name.CreateLabel().SetText(Regex.Replace(c.Key.ToString(), "(\\B[A-Z])", " $1")).SetFontSize(15f);
 
                 var button = colorContent.CreateButton()
                                  .StepIntoLabel(l => l.RootGameObject.SetActive(false))
                                  .AddOnClickedEvent(x => { SelectColor(c.Key); })
-                                 .SetBackgroundColor<Button>(Color.clear)
                                  .SetStretch<Button>()
-                                 .SetAnchoredPosition<Button>(Vector3.zero);
+                                 .SetAnchoredPosition<Button>(Vector3.zero)
+                                 .StepIntoImage(i => i.SetColor(Color.clear));
 
                 _colors.Add(c.Key, (c.Value, colorImage, colorContent, label));
 
@@ -224,7 +228,6 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
         /// <summary>Selects a color to change with the RGB slider</summary>
         /// <param name="colorName">The color to select</param>
         private void SelectColor(ColorManager.SynthesisColor? colorName) {
-            Debug.Log("Color selected");
             if (_selectedColor != null) {
                 var prevSelected = _colors[_selectedColor.Value];
                 prevSelected.background.SetBackgroundColor<Image>(ColorManager.SynthesisColor.BackgroundSecondary);
@@ -239,7 +242,8 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             _selectedColor = colorName;
 
             var newSelected = _colors[_selectedColor.Value];
-            newSelected.background.SetBackgroundColor<Image>(ColorManager.SynthesisColor.InteractiveElement);
+            newSelected.background.SetBackgroundColor<Image>(ColorManager.SynthesisColor.InteractiveElementLeft,
+                ColorManager.SynthesisColor.InteractiveElementRight);
             newSelected.label.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
 
             // Regex.Replace formats color's name with spaces (ColorName -> Color Name)
@@ -283,21 +287,18 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             List<(ColorManager.SynthesisColor name, Color color)> colors = new();
             _colors.ForEach(c => { colors.Add((c.Key, c.Value.color)); });
             ColorManager.ModifySelectedTheme(colors);
-            Debug.Log($"Saved theme changes to {_selectedThemeIndex}");
         }
 
         /// <summary>Gets the selected theme preference</summary>
         private void GetThemePref() {
             _selectedThemeIndex = ColorManager.ThemeNameToIndex(
                 PreferenceManager.GetPreference<string>(ColorManager.SELECTED_THEME_PREF));
-            Debug.Log($"Get theme pref of {_selectedThemeIndex}");
         }
 
         /// <summary>Sets the selected theme preference</summary>
         private void SetThemePref() {
             PreferenceManager.SetPreference(
                 ColorManager.SELECTED_THEME_PREF, ColorManager.ThemeIndexToName(_selectedThemeIndex));
-            Debug.Log($"Set theme pref to {_selectedThemeIndex}");
         }
 
         /// <summary>Update all colors of this modal to preview selected colors</summary>

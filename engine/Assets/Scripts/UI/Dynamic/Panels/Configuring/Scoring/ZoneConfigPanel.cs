@@ -114,6 +114,7 @@ public class ZoneConfigPanel : PanelDynamic {
         });
 
         CancelButton.AddOnClickedEvent(b => {
+            GizmoManager.ExitGizmo();
             _pressedButtonToClose = true;
             DoCancel();
             DynamicUIManager.ClosePanel<ZoneConfigPanel>();
@@ -125,15 +126,17 @@ public class ZoneConfigPanel : PanelDynamic {
                 .StepIntoHint(h => h.SetText(_initialData.Name is not null ? _initialData.Name : "Zone Name"))
                 .SetCharacterLimit(16)
                 .ApplyTemplate(VerticalLayout);
-        _zoneAllianceButton = MainContent.CreateButton()
-                                  .StepIntoLabel(l => l.SetText("Blue Alliance"))
-                                  .AddOnClickedEvent(b => {
-                                      _data.Alliance = _data.Alliance == Alliance.Blue ? Alliance.Red : Alliance.Blue;
-                                      ConfigureAllianceButton();
-                                      DataUpdated();
-                                  })
-                                  .SetBackgroundColor<Button>(Color.blue)
-                                  .ApplyTemplate(VerticalLayout);
+        _zoneAllianceButton =
+            MainContent.CreateButton()
+                .StepIntoLabel(l => l.SetText("Blue Alliance"))
+                .AddOnClickedEvent(b => {
+                    _data.Alliance = _data.Alliance == Alliance.Blue ? Alliance.Red : Alliance.Blue;
+                    ConfigureAllianceButton();
+                    DataUpdated();
+                })
+                .StepIntoImage(i => i.SetColor((_data.Alliance == Alliance.Blue) ? Color.blue : Color.red))
+                .ApplyTemplate(VerticalLayout);
+        ConfigureAllianceButton();
 
         _zoneParentButton =
             MainContent.CreateLabeledButton()
@@ -152,14 +155,14 @@ public class ZoneConfigPanel : PanelDynamic {
                                 .SetValue(_initialData.Points)
                                 .AddOnValueChangedEvent((f, n) => _data.Points = n);
 
-        _deleteGamepieceToggle = MainContent.CreateToggle(_initialData.DestroyGamepiece, "Destroy Gamepiece")
+        _deleteGamepieceToggle = MainContent.CreateToggle(false, _initialData.DestroyGamepiece, "Destroy Gamepiece")
                                      .AddOnStateChangedEvent((t, v) => {
                                          _data.DestroyGamepiece = !_data.DestroyGamepiece;
                                          t.State                = _data.DestroyGamepiece; // just in case
                                      })
                                      .ApplyTemplate(VerticalLayout);
 
-        _persistentPointsToggle = MainContent.CreateToggle(_initialData.PersistentPoints, "Persistent Points")
+        _persistentPointsToggle = MainContent.CreateToggle(false, _initialData.PersistentPoints, "Persistent Points")
                                       .AddOnStateChangedEvent((t, v) => {
                                           _data.PersistentPoints = !_data.PersistentPoints;
                                           t.State                = _data.PersistentPoints;
@@ -233,9 +236,13 @@ public class ZoneConfigPanel : PanelDynamic {
         } else {
             _zoneAllianceButton.StepIntoLabel(l => l.SetText("Red Alliance")).SetBackgroundColor<Button>(Color.red);
         }
+
+        _zoneAllianceButton
+            .StepIntoLabel(l => l.SetText((_data.Alliance == Alliance.Blue) ? "Blue Alliance" : "Red Alliance"))
+            .StepIntoImage(i => i.SetColor((_data.Alliance == Alliance.Blue) ? Color.blue : Color.red));
     }
 
-    public void UseZone(ScoringZone zone) {
+    private void UseZone(ScoringZone zone) {
         _zone      = zone;
         _data.Name = _zone.Name;
         _zoneNameInput.SetValue(_zone.Name);
@@ -273,7 +280,7 @@ public class ZoneConfigPanel : PanelDynamic {
         _callback = callback;
     }
 
-    public void SelectParentButton(Button b) {
+    private void SelectParentButton(Button b) {
         if (!_selectingNode) {
             if (_selectedNode || _data.Parent != "grounded") {
                 if (_selectedNode)
@@ -303,9 +310,9 @@ public class ZoneConfigPanel : PanelDynamic {
     private void SetSelectUIState(bool isUserSelecting) {
         if (isUserSelecting) {
             _zoneParentButton.StepIntoLabel(l => l.SetText("Selecting..."));
-            _zoneParentButton.StepIntoButton(b => b.StepIntoImage(i => i.SetColor(ColorManager.GetColor(
-                                                                      ColorManager.SynthesisColor.BackgroundSecondary)))
-                                                      .StepIntoLabel(l => l.SetText("...")));
+            _zoneParentButton.StepIntoButton(
+                b => b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground))
+                         .StepIntoLabel(l => l.SetText("...")));
         } else {
             if (_selectedNode is null)
                 _data.Parent = "grounded";
@@ -313,8 +320,8 @@ public class ZoneConfigPanel : PanelDynamic {
                 l => l.SetText(_selectedNode is not null ? _selectedNode.name : "Parent Object"));
 
             _zoneParentButton.StepIntoButton(
-                b => b.StepIntoImage(
-                          i => i.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElement)))
+                b => b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                                         ColorManager.SynthesisColor.InteractiveElementRight))
                          .StepIntoLabel(l => l.SetText(_selectedNode is not null ? "Remove" : "Click to select...")));
         }
     }

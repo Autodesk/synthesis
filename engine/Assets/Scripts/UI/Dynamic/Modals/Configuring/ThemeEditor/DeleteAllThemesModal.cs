@@ -5,7 +5,7 @@ using Utilities.ColorManager;
 
 namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
     public class DeleteAllThemesModal : ModalDynamic {
-        private const float MODAL_WIDTH  = 500;
+        private const float MODAL_WIDTH  = 300;
         private const float MODAL_HEIGHT = 0;
 
         public DeleteAllThemesModal() : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) {}
@@ -14,7 +14,6 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
         public override void Create() {
             Title.SetText($"Delete All Themes?").SetWrapping(false);
-            Description.SetText("Warning! All themes will be permanently deleted.");
 
             AcceptButton.AddOnClickedEvent(x => {
                 ColorManager.DeleteAllThemes();
@@ -23,7 +22,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
             CancelButton.AddOnClickedEvent(x => { DynamicUIManager.CreateModal<EditThemeModal>(); });
 
-            ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("PlusIcon"))
+            ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"))
                 .SetColor(ColorManager.SynthesisColor.MainText);
         }
 

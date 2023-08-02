@@ -12,6 +12,7 @@ public class CameraController : MonoBehaviour {
             if (_cameraMode != null && _cameraMode != value) {
                 _cameraMode.End(this);
             }
+
             var previous = _cameraMode;
             _cameraMode  = value;
             _cameraMode.Start(this, previous);

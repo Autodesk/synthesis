@@ -1,7 +1,10 @@
 using System.IO;
 using System.Linq;
+using Org.BouncyCastle.Asn1.X509.Qualified;
+using Synthesis;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.Utilities;
+using UI.Dynamic.Panels.Tooltip;
 using UnityEngine;
 using Utilities.ColorManager;
 using Logger = SynthesisAPI.Utilities.Logger;
@@ -16,7 +19,7 @@ namespace UI.Dynamic.Modals.Spawning {
 
         public string Folder = "Mira";
 
-        public AddRobotModal() : base(new Vector2(400, 40)) {}
+        public AddRobotModal() : base(new Vector2(400, 55)) {}
 
         public override void Create() {
             _root = ParsePath(Path.Combine("$appdata/Autodesk/Synthesis", Folder), '/');
@@ -25,15 +28,15 @@ namespace UI.Dynamic.Modals.Spawning {
             _files = Directory.GetFiles(_root).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
 
             Title.SetText("Robot Selection");
-            Description.SetText("Choose which robot you wish to play as");
 
-            ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("PlusIcon"))
+            ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("plus"))
                 .SetColor(ColorManager.SynthesisColor.MainText);
 
             AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
                 if (_selectedIndex != -1) {
                     RobotSimObject.SpawnRobot(_files[_selectedIndex]);
                     DynamicUIManager.CloseActiveModal();
+                    RobotSimObject.GetCurrentlyPossessedRobot().CreateDrivetrainTooltip();
                 }
             });
 

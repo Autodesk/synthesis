@@ -19,6 +19,7 @@ using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
 using SynthesisAPI.Utilities;
+using UI.Dynamic.Panels.Tooltip;
 using UnityEngine;
 using Utilities.ColorManager;
 using Bounds   = UnityEngine.Bounds;
@@ -78,6 +79,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     private IEnumerable<WheelDriver>? _wheelDrivers;
+    public (RotationalDriver azimuth, WheelDriver driver)[] modules;
 
     public string MiraGUID => MiraLive.MiraAssembly.Info.GUID;
 
@@ -143,9 +145,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             } else {
                 _intakeTrigger.SetActive(false);
             }
-
-            SimulationPreferences.SetRobotIntakeTriggerData(MiraLive.MiraAssembly.Info.GUID, _intakeData);
-            PreferenceManager.Save();
         }
     }
 
@@ -160,9 +159,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                 _trajectoryPointer.transform.localPosition = _trajectoryData.Value.RelativePosition.ToVector3();
                 _trajectoryPointer.transform.localRotation = _trajectoryData.Value.RelativeRotation.ToQuaternion();
             }
-
-            SimulationPreferences.SetRobotTrajectoryData(MiraLive.MiraAssembly.Info.GUID, _trajectoryData);
-            PreferenceManager.Save();
         }
     }
 
@@ -224,8 +220,11 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         _trajectoryPointer.transform.position = Vector3.zero;
         _trajectoryPointer.transform.rotation = Quaternion.identity;
 
-        IntakeData     = SimulationPreferences.GetRobotIntakeTriggerData(MiraLive.MiraAssembly.Info.GUID);
+        IntakeData = SimulationPreferences.GetRobotIntakeTriggerData(MiraLive.MiraAssembly.Info.GUID);
+        SimulationPreferences.SetRobotIntakeTriggerData(MiraLive.MiraAssembly.Info.GUID, _intakeData);
         TrajectoryData = SimulationPreferences.GetRobotTrajectoryData(MiraLive.MiraAssembly.Info.GUID);
+        SimulationPreferences.SetRobotTrajectoryData(MiraLive.MiraAssembly.Info.GUID, _trajectoryData);
+        PreferenceManager.Save();
         _simulationTranslationLayer =
             SimulationPreferences.GetRobotSimTranslationLayer(MiraLive.MiraAssembly.Info.GUID) ??
             new RioTranslationLayer();
@@ -367,7 +366,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         // if (!DriversEnabled) return;
 
         int wheelsInContact = _wheelDrivers.Count(x => x.HasContacts);
-        float mod           = wheelsInContact <= 4 ? 1f : Mathf.Pow(0.7f, wheelsInContact - 4);
+        float mod           = wheelsInContact <= 3 ? 1f : Mathf.Pow(0.7f, wheelsInContact - 3);
         _wheelDrivers.ForEach(x => x.WheelsPhysicsUpdate(mod));
     }
 
@@ -392,7 +391,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         return new Bounds(((max + min) / 2f) - top.position, max - min);
     }
 
-    private (List<WheelDriver> leftWheels, List<WheelDriver> rightWheels)? GetLeftRightWheels() {
+    public (List<WheelDriver> leftWheels, List<WheelDriver> rightWheels)? GetLeftRightWheels() {
         if (!_tankTrackWheels.HasValue) {
             var wheels = SimulationManager.Drivers[base.Name].OfType<WheelDriver>();
 
@@ -547,8 +546,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         // Sets wheels rotating forward
         GetLeftRightWheels();
 
-        (RotationalDriver azimuth, WheelDriver driver)[] modules;
-
         try {
             List<RotationalDriver> potentialAzimuthDrivers =
                 SimulationManager.Drivers[base._name]
@@ -608,6 +605,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         mira.MainObject.transform.rotation = rotation;
 
         simObject.Possess();
+        MainHUD.ConfigRobot = simObject;
 
         if (spawnGizmo)
             GizmoManager.SpawnGizmo(simObject);
@@ -623,6 +621,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         if (robot == CurrentlyPossessedRobot)
             CurrentlyPossessedRobot = string.Empty;
         _spawnedRobots.Remove(robot);
+        MainHUD.ConfigRobot = null;
         return SimulationManager.RemoveSimObject(robot);
     }
 
@@ -780,5 +779,20 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     public class RobotRemoveEvent : IEvent {
         public string Bot;
+    }
+
+    public void CreateDrivetrainTooltip() {
+        switch (ConfiguredDrivetrainType.Name) {
+            case "Arcade":
+                TooltipManager.CreateTooltip(("WASD", "Drive"), ("E", "Intake"), ("Q", "Dispense"));
+                return;
+            case "Tank":
+                TooltipManager.CreateTooltip(
+                    ("WS", "Drivetrain Left"), ("IK", "Drivetrain Right"), ("E", "Intake"), ("Q", "Dispense"));
+                return;
+            case "Swerve":
+                TooltipManager.CreateTooltip(("WASD", "Drive"), ("< >", "Turn"), ("E", "Intake"), ("Q", "Dispense"));
+                return;
+        }
     }
 }

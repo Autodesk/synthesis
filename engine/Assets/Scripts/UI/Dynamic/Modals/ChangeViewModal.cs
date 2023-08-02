@@ -1,4 +1,5 @@
 using System.Linq;
+using UI.Dynamic.Panels.Tooltip;
 using UnityEngine;
 
 namespace Synthesis.UI.Dynamic {
@@ -6,11 +7,12 @@ namespace Synthesis.UI.Dynamic {
         private string _selectedView = "Orbit";
         private string[] _viewOptions;
 
-        public ChangeViewModal() : base(new Vector2(400, 40)) {}
+        public ChangeViewModal() : base(new Vector2(400, 55)) {}
 
         public override void Create() {
             Title.SetText("Change View");
-            Description.SetText("Change the current camera view");
+
+            ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("CameraIcon"));
 
             CameraController controller = Camera.main.GetComponent<CameraController>();
 
@@ -35,10 +37,26 @@ namespace Synthesis.UI.Dynamic {
                                    .AddOnValueChangedEvent((d, i, option) => _selectedView = option.text)
                                    .SetTopStretch<Dropdown>();
 
-            AcceptButton.AddOnClickedEvent(b => {
-                controller.CameraMode = CameraController.CameraModes[_selectedView];
-                DynamicUIManager.CloseActiveModal();
-            });
+            AcceptButton.AddOnClickedEvent(
+                _ => {
+                    controller.CameraMode = CameraController.CameraModes[_selectedView];
+                    DynamicUIManager.CloseActiveModal();
+
+                    switch (_selectedView) {
+                        case "Orbit":
+                            TooltipManager.CreateTooltip(("LM", "Orbit Cam"), ("Scroll", "Zoom Cam"));
+                            break;
+                        case "Freecam":
+                            TooltipManager.CreateTooltip(
+                                ("RM", "Rotate Cam"), ("RM + WASD", "Move Cam"), ("Scroll", "Zoom Cam"));
+                            break;
+                        case "Overview":
+                            break;
+                        case "Driver Station":
+                            TooltipManager.CreateTooltip(("RM + WASD", "Move Cam"), ("Scroll", "Zoom Cam"));
+                            break;
+                    }
+                });
         }
 
         public override void Update() {}

@@ -1,4 +1,5 @@
 using Synthesis.Runtime;
+using Synthesis.UI;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,6 +9,8 @@ public class ModeManager {
     private static bool _modeHasStarted  = false;
     public static bool ModeHasStarted => _modeHasStarted;
     // clang-format on
+
+    public static bool isSinglePlayer = true;
 
     private static IMode _currentMode;
     public static IMode CurrentMode {
@@ -29,7 +32,11 @@ public class ModeManager {
 
     public static void Start() {
         if (CurrentMode == null) {
-            DynamicUIManager.CreateModal<ChooseModeModal>();
+            if (isSinglePlayer) {
+                DynamicUIManager.CreateModal<ChooseSingleplayerModeModal>();
+            } else {
+                DynamicUIManager.CreateModal<ChooseMultiplayerModeModal>();
+            }
         } else if (!ModeHasStarted) {
             CurrentMode.Start();
         }

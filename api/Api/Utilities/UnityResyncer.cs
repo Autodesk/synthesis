@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
+#nullable enable
+
 namespace SynthesisAPI.Utilities {
     /// <summary>
     /// The Unity Resyncer schedules actions to be run on the main thread. Unity requires an annoying
@@ -27,9 +29,7 @@ namespace SynthesisAPI.Utilities {
             return handler;
         }
 
-        public static UnityResyncerComponent Instance = null;
-
-        
+        public static UnityResyncerComponent? Instance = null;
     }
 
     /// <summary>
