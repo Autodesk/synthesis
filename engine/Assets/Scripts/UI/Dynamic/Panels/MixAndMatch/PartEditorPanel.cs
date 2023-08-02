@@ -133,20 +133,18 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
         /// <summary>Instantiates a single connection point object</summary>
         private GameObject InstantiateConnectionGameObject(ConnectionPointData connection) {
-            var gameObject  = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            gameObject.name = "ConnectionPoint";
+            var gameObject  = GameObject.Instantiate(SynthesisAssetCollection.Instance.MixAndMatchConnectionPrefab);
 
             var trf = gameObject.transform;
             trf.SetParent(_partGameObject.transform);
 
             trf.position   = connection.LocalPosition - _centerOffset;
             trf.rotation   = connection.LocalRotation;
-            trf.localScale = Vector3.one * 0.25f;
 
-            trf.GetComponent<MeshRenderer>().material.color =
+            trf.Find("Sphere").GetComponent<MeshRenderer>().material.color =
                 ColorManager.GetColor(ColorManager.SynthesisColor.HighlightHover);
 
-            Object.Destroy(trf.GetComponent<Collider>());
+            Object.Destroy(trf.Find("Sphere").GetComponent<Collider>());
             _connectionGameObjects.Add(gameObject);
 
             return gameObject;

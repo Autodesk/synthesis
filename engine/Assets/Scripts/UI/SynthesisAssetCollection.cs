@@ -25,6 +25,8 @@ public class SynthesisAssetCollection : MonoBehaviour {
     public GameObject GizmoPrefab;
     [SerializeField]
     public List<AudioClip> AudioClips;
+    [SerializeField] 
+    public GameObject MixAndMatchConnectionPrefab;
 
     [SerializeField]
     public Material DefaultSpriteMaterial;
