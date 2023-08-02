@@ -19,11 +19,11 @@ CefRefPtr<CefLoadHandler> OffscreenCefClient::GetLoadHandler() {
     return loadHandler;
 }
 
-OffscreenCefRenderHandler::OffscreenCefRenderHandler(const int& width, const int& height) {
-    this->m_width = width;
-    this->m_height = height;
+OffscreenCefRenderHandler::OffscreenCefRenderHandler(const int& width_, const int& height_) {
+    this->width = width_;
+    this->height = height_;
 
-    browserTextureBuffer = new int8_t[width * height * 4];
+    browserTextureBuffer = new int8_t[width_ * height_ * 4];
 
     SYNTHESIS_DEBUG_LOG("Offscreen render handler created");
 }
@@ -40,16 +40,12 @@ bool OffscreenCefRenderHandler::GetRootScreenRect(CefRefPtr<CefBrowser> browser,
 }
 
 void OffscreenCefRenderHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
-    rect = CefRect(0, 0, m_width, m_height);
+    rect = CefRect(0, 0, this->width, this->height);
 }
 
-void OffscreenCefRenderHandler::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList& dirtyRects, const void* buffer, int width, int height) {
-    
-    m_width = width;
-    m_height = height;
-
+void OffscreenCefRenderHandler::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList& dirtyRects, const void* buffer, int width_, int height_) {
     std::lock_guard<std::mutex> lock(textureBufferGuard);
-    memcpy(browserTextureBuffer, buffer, width * height * 4);
+    memcpy(browserTextureBuffer, buffer, width_ * height_ * 4);
 }
 
 CefRefPtr<CefBrowser> OffscreenCefLoadHandler::GetBrowserReference() {

@@ -5,9 +5,9 @@
 #include <include/cef_resource_handler.h>
 #include <include/cef_stream.h>
 
-#if defined(OS_WIN)
+#if defined(OS_WINDOWS)
 #include <include/wrapper/cef_resource_manager.h>
-#endif // defined(OS_WIN)
+#endif // defined(OS_WINDOWS)
 
 namespace synthesis {
 namespace shared {
@@ -22,10 +22,10 @@ bool GetResourceDir(std::string& dir);
 std::string GetResourcePath(const std::string& url);
 std::string GetMimeType(const std::string& resourcePath);
 
-#if defined(OS_WIN)
+#if defined(OS_WINDOWS)
 int GetResourceId(const std::string& resourcePath);
 CefResourceManager::Provider* CreateResourceManagerProvider(const std::string& rootUrl);
-#endif // defined(OS_WIN)
+#endif // defined(OS_WINDOWS)
 
 bool GetResourceString(const std::string& resourcePath, std::string& outData);
 CefRefPtr<CefStreamReader> GetResourceReader(const std::string& resourcePath);

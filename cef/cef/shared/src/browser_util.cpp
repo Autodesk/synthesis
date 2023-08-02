@@ -50,12 +50,12 @@ private:
 void CreateBrowser(CefRefPtr<CefClient> client, const CefString& url, const CefBrowserSettings& settings) {
     CEF_REQUIRE_UI_THREAD();
 
-#if defined(OS_WIN) || defined(OS_LINUX)
+#if defined(OS_WINDOWS) || defined(OS_LINUX)
     CefRefPtr<CefCommandLine> command_line = CefCommandLine::GetGlobalCommandLine();
     const bool use_views = command_line->HasSwitch("use-views");
-#else // ^^^ defined(OS_WIN) || defined(OS_LINUX) ^^^ // vvv !defined(OS_WIN) && !defined(OS_LINUX) vvv
+#else // ^^^ defined(OS_WINDOWS) || defined(OS_LINUX) ^^^ // vvv !defined(OS_WINDOWS) && !defined(OS_LINUX) vvv
     const bool use_views = false;
-#endif // !defined(OS_WIN) && !defined(OS_LINUX)
+#endif // !defined(OS_WINDOWS) && !defined(OS_LINUX)
 
     if (use_views) {
         CefRefPtr<CefBrowserView> browser_view = 
@@ -65,9 +65,9 @@ void CreateBrowser(CefRefPtr<CefClient> client, const CefString& url, const CefB
     } else {
         CefWindowInfo window_info;
 
-#if defined(OS_WIN)
+#if defined(OS_WINDOWS)
         window_info.SetAsPopup(nullptr, "Synthesis");
-#endif // defined(OS_WIN)
+#endif // defined(OS_WINDOWS)
 
         CefBrowserHost::CreateBrowser(window_info, client, url, settings, nullptr, nullptr);
     }

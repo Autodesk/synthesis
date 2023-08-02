@@ -3,8 +3,6 @@
 #include <include/cef_app.h>
 #include <include/cef_browser.h>
 
-#include <vector>
-
 #include "core.h"
 #include "offscreen_cef_client.h"
 #include "offscreen_cef_app.h"

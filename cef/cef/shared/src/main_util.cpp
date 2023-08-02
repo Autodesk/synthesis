@@ -1,8 +1,8 @@
 #include "main_util.h"
 
-#if defined(OS_WIN)
+#if defined(OS_WINDOWS)
 #include <windows.h>
-#endif // defined(OS_WIN)
+#endif // defined(OS_WINDOWS)
 
 namespace synthesis {
 namespace shared {
@@ -18,11 +18,11 @@ const char zygoteProcess[] = "zygote";
 
 CefRefPtr<CefCommandLine> CreateCommandLine(const CefMainArgs& mainArgs) {
     auto commandLine = CefCommandLine::CreateCommandLine();
-#if defined(OS_WIN)
+#if defined(OS_WINDOWS)
     commandLine->InitFromString(::GetCommandLineW());
-#else // ^^^ defined(OS_WIN) ^^^ / vvv !defined(OS_WIN) vvv
+#else // ^^^ defined(OS_WINDOWS) ^^^ / vvv !defined(OS_WINDOWS) vvv
     commandLine->InitFromArgv(mainArgs.argc, mainArgs.argv);
-#endif // !defined(OS_WIN)
+#endif // !defined(OS_WINDOWS)
     return commandLine;
 }
 

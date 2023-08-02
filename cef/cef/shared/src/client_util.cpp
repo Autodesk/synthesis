@@ -15,7 +15,7 @@ namespace shared {
 void OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString& title) {
     CEF_REQUIRE_UI_THREAD();
 
-#if defined(OS_WIN) || defined(OS_LINUX)
+#if defined(OS_WINDOWS) || defined(OS_LINUX)
     CefRefPtr<CefBrowserView> browserView = CefBrowserView::GetForBrowser(browser);
 
     if (browserView) {
@@ -25,7 +25,7 @@ void OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString& title) {
             window->SetTitle(title);
         }
     } else
-#endif // defined(OS_WIN) || defined(OS_LINUX)
+#endif // defined(OS_WINDOWS) || defined(OS_LINUX)
     {
         PlatformTitleChange(browser, title);
     }
