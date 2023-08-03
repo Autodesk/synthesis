@@ -11,6 +11,9 @@ using Logger = SynthesisAPI.Utilities.Logger;
 
 namespace Modes.MatchMode {
     public class MatchMode : IMode {
+
+        public static float MatchTime = 15f;
+        
         public static MatchResultsTracker MatchResultsTracker;
 
         /// Integers to represent which robots the user selected in the MatchModeModal
@@ -93,7 +96,7 @@ namespace Modes.MatchMode {
             if (_stateMachine != null) {
                 _stateMachine.Update();
 
-                if (Scoring.targetTime <= 0 && _stateMachine.CurrentState.StateName is >=
+                if (MatchTime <= 0 && _stateMachine.CurrentState.StateName is >=
                                                    MatchStateMachine.StateName.Auto and <=
                                                    MatchStateMachine.StateName.Endgame)
                     _stateMachine.AdvanceState();

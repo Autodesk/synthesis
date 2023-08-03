@@ -211,7 +211,7 @@ namespace Modes.MatchMode {
             public override void Start() {
                 base.Start();
 
-                Scoring.targetTime = 15;
+                MatchMode.MatchTime = 15;
                 DynamicUIManager.CreatePanel<ScoreboardPanel>(true, true);
 
                 AnalyticsManager.LogCustomEvent(
@@ -239,7 +239,7 @@ namespace Modes.MatchMode {
                 base.Start();
                 _possessed                             = RobotSimObject.CurrentlyPossessedRobot;
                 RobotSimObject.CurrentlyPossessedRobot = string.Empty;
-                Scoring.targetTime                     = 135;
+                MatchMode.MatchTime                    = 135;
                 _timer                                 = 3;
             }
 
@@ -266,7 +266,7 @@ namespace Modes.MatchMode {
             }
 
             public override void Update() {
-                if (Scoring.targetTime <= 30)
+                if (MatchMode.MatchTime <= 30)
                     Instance.AdvanceState();
             }
 

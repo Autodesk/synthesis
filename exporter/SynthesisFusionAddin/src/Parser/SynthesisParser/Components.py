@@ -122,9 +122,12 @@ def __parseChildOccurrence(
         part.skip_collider = True
 
     if occurrence.appearance:
-        part.appearance = "{}_{}".format(
-            occurrence.appearance.name, occurrence.appearance.id
-        )
+        try:
+            part.appearance = "{}_{}".format(
+                occurrence.appearance.name, occurrence.appearance.id
+            )
+        except:
+            part.appearance = 'default'
         # TODO: Add phyical_material parser
 
     if occurrence.component.material:

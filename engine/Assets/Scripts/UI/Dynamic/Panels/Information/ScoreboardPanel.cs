@@ -51,7 +51,7 @@ public class ScoreboardPanel : PanelDynamic {
 
             time = topContent.CreateLabel(topHeight)
                        .SetStretch<Label>()
-                       .SetText(Scoring.targetTime.ToString())
+                       .SetText(MatchMode.MatchTime.ToString())
                        .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
                        .SetVerticalAlignment(VerticalAlignmentOptions.Middle)
                        .SetFontSize(40);
@@ -113,8 +113,8 @@ public class ScoreboardPanel : PanelDynamic {
             // state advances in MatchMode update
             if (MatchStateMachine.Instance.CurrentState.StateName is >= MatchStateMachine.StateName.Auto and <=
                 MatchStateMachine.StateName.Endgame and not MatchStateMachine.StateName.Transition) {
-                Scoring.targetTime -= Time.deltaTime;
-                time.SetText(Mathf.RoundToInt(Scoring.targetTime).ToString());
+                MatchMode.MatchTime -= Time.deltaTime;
+                time.SetText(Mathf.RoundToInt(MatchMode.MatchTime).ToString());
             }
         }
 

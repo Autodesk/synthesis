@@ -88,6 +88,7 @@ public class ScoringZone : IPhysicsOverridable {
         _meshRenderer = GameObject.GetComponent<MeshRenderer>();
 
         _collider.isTrigger = true;
+        Alliance = alliance;
 
         PhysicsManager.Register(this);
         UpdateColor();
