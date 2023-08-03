@@ -168,9 +168,7 @@ namespace Modes.MatchMode {
 
             public override void End() {
                 base.End();
-
-                PhysicsManager.IsFrozen = false;
-
+                
                 if (Camera.main != null) {
                     Camera.main.GetComponent<CameraController>().CameraMode = CameraController.CameraModes["Orbit"];
                 }
@@ -219,6 +217,7 @@ namespace Modes.MatchMode {
 
                 AnalyticsManager.LogCustomEvent(
                     AnalyticsEvent.MatchStarted, ("NumRobots", RobotSimObject.SpawnedRobots.Count));
+                PhysicsManager.IsFrozen = false;
             }
 
             public override void Update() {}
