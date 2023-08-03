@@ -229,7 +229,8 @@ namespace Synthesis.Util {
                 var xPos =
                     Mathf.SmoothStep(0f, (Toaster.TOAST_CONTAINER_WIDTH + 1) - Toaster.TOAST_CONTAINER_OFFSET.x, t);
 
-                _toastMainContent.RootRectTransform.anchoredPosition = new Vector2(xPos, height);
+                if (_toastMainContent.RootRectTransform != null)
+                    _toastMainContent.RootRectTransform.anchoredPosition = new Vector2(xPos, height);
             }
         }
 
