@@ -141,7 +141,7 @@ public class ScoringZonesPanel : PanelDynamic {
     }
 
     private void OpenScoringZoneGizmo(ScoringZone zone = null) {
-        DynamicUIManager.CreatePanel<ZoneConfigPanel>(persistent: false, zone);
+        DynamicUIManager.CreatePanel<ZoneConfigPanel>(persistent: true, zone);
         ZoneConfigPanel panel = DynamicUIManager.GetPanel<ZoneConfigPanel>();
         panel.SetCallback(AddZoneEntry);
     }
