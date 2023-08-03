@@ -12,7 +12,7 @@ public class ChooseMultiplayerModeModal : ModalDynamic {
         return u;
     };
 
-    public ChooseMultiplayerModeModal() : base(new Vector2(230, 300)) {}
+    public ChooseMultiplayerModeModal() : base(new Vector2(230, 130)) {}
 
     public override void Create() {
         Title.SetText("Choose Mode");
