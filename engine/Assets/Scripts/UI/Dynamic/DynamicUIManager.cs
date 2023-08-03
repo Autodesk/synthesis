@@ -90,11 +90,11 @@ namespace Synthesis.UI.Dynamic {
 
         public static bool CreateModal<T>(params object[] args)
             where T : ModalDynamic {
-            CloseAllPanels();
+            CloseAllPanels(false);
             HideAllPanels();
             GizmoManager.ExitGizmo();
             if (ActiveModal != null)
-                CloseActiveModal();
+                CloseActiveModal(false);
 
             return CreateModal_Internal<T>(args);
         }
@@ -221,7 +221,7 @@ namespace Synthesis.UI.Dynamic {
             return true;
         }
 
-        public static bool CloseActiveModal() {
+        public static bool CloseActiveModal(bool showPersistentPanels = true) {
             var modal = ActiveModal;
 
             if (modal == null) {
@@ -265,7 +265,9 @@ namespace Synthesis.UI.Dynamic {
                 }
             }
 
-            ShowAllPanels();
+            if (showPersistentPanels)
+                ShowAllPanels();
+            
             MainHUD.Collapsed = false;
             AnalyticsManager.LogCustomEvent(AnalyticsEvent.ActiveModalClosed, ("UIType", modal.GetType().Name));
             return true;
