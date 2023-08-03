@@ -90,6 +90,7 @@ public class ScoringZone : IPhysicsOverridable {
         _collider.isTrigger = true;
 
         PhysicsManager.Register(this);
+        UpdateColor();
     }
 
     public ScoringZone(ScoringZoneData data) {

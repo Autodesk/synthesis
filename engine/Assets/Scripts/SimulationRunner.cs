@@ -159,7 +159,7 @@ namespace Synthesis.Runtime {
                 OnSimKill();
 
             OnSimKill = null;
-            OnUpdate = null;
+            OnUpdate  = null;
 
             PhysicsManager.Reset();
             ReplayManager.Teardown();
