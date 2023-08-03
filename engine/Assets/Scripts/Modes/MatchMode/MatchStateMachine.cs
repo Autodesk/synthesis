@@ -168,7 +168,7 @@ namespace Modes.MatchMode {
 
             public override void End() {
                 base.End();
-                
+
                 if (Camera.main != null) {
                     Camera.main.GetComponent<CameraController>().CameraMode = CameraController.CameraModes["Orbit"];
                 }

@@ -7,12 +7,11 @@ using TMPro;
 using UnityEngine;
 
 public class ScoreboardPanel : PanelDynamic {
-
     private const float PANEL_HEIGHT_WITHOUT_TIMER = 100;
-    private const float PANEL_HEIGHT_WITH_TIMER = 150;
+    private const float PANEL_HEIGHT_WITH_TIMER    = 150;
 
     private const float VERTICAL_PADDING = 10f;
-    private const float INSET_PADDING = 10f;
+    private const float INSET_PADDING    = 10f;
 
     private const float PANEL_WIDTH = 200f;
     private float PANEL_HEIGHT;
@@ -28,10 +27,8 @@ public class ScoreboardPanel : PanelDynamic {
         return u;
     };
 
-    public ScoreboardPanel(bool showTimer = true) : base(new Vector2(
-            PANEL_WIDTH,
-            showTimer ? PANEL_HEIGHT_WITH_TIMER : PANEL_HEIGHT_WITHOUT_TIMER)
-    ) {
+    public ScoreboardPanel(bool showTimer = true)
+        : base(new Vector2(PANEL_WIDTH, showTimer ? PANEL_HEIGHT_WITH_TIMER : PANEL_HEIGHT_WITHOUT_TIMER)) {
         _showTimer   = showTimer;
         PANEL_HEIGHT = showTimer ? PANEL_HEIGHT_WITH_TIMER : PANEL_HEIGHT_WITHOUT_TIMER;
     }
@@ -39,13 +36,9 @@ public class ScoreboardPanel : PanelDynamic {
     public override bool Create() {
         TweenDirection = Vector2.down;
 
-        var newMainContent = Strip(
-            new Vector2(PANEL_WIDTH, PANEL_HEIGHT + (_showTimer ? VERTICAL_PADDING : 0)),
-            leftPadding: INSET_PADDING,
-            rightPadding: INSET_PADDING,
-            topPadding: INSET_PADDING,
-            bottomPadding: INSET_PADDING
-            );
+        var newMainContent = Strip(new Vector2(PANEL_WIDTH, PANEL_HEIGHT + (_showTimer ? VERTICAL_PADDING : 0)),
+            leftPadding: INSET_PADDING, rightPadding: INSET_PADDING, topPadding: INSET_PADDING,
+            bottomPadding: INSET_PADDING);
 
         float bottomHeight = PANEL_HEIGHT;
 
