@@ -127,7 +127,7 @@ def __parseChildOccurrence(
                 occurrence.appearance.name, occurrence.appearance.id
             )
         except:
-            part.appearance = 'default'
+            part.appearance = "default"
         # TODO: Add phyical_material parser
 
     if occurrence.component.material:
