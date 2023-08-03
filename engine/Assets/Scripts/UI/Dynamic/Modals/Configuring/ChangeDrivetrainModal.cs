@@ -32,7 +32,7 @@ public class ChangeDrivetrainModal : ModalDynamic {
 
             DynamicUIManager.CloseActiveModal();
 
-            RobotSimObject.GetCurrentlyPossessedRobot().CreateDrivetrainTooltip();
+            MainHUD.SelectedRobot.CreateDrivetrainTooltip();
         });
 
         _selectedType = MainHUD.SelectedRobot.ConfiguredDrivetrainType;

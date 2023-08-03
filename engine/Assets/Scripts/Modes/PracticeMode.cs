@@ -167,7 +167,7 @@ public class PracticeMode : IMode {
     }
 
     public static void ResetRobot() {
-        RobotSimObject robot = RobotSimObject.GetCurrentlyPossessedRobot();
+        RobotSimObject robot = MainHUD.SelectedRobot;
         if (robot == null)
             return;
         robot.ClearGamepieces();

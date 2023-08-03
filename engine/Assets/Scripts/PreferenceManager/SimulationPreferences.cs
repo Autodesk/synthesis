@@ -119,13 +119,17 @@ namespace Synthesis.PreferenceManager {
                 // PreferenceManager.SetPreference(ALL_ROBOT_DATA_KEY, _allRobotData);
                 if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
                     // clang-format off
-                    var live = RobotSimObject.GetCurrentlyPossessedRobot().MiraLive;
-                    live.MiraAssembly.Data.Parts.UserData ??= new Mirabuf.UserData();
-                    if (_allRobotData.ContainsKey(live.MiraAssembly.Info.GUID)) {
-                        live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY] =
-                            JsonConvert.SerializeObject(_allRobotData[live.MiraAssembly.Info.GUID]);
+                    var live = MainHUD.SelectedRobot.MiraLive;
+                    if (live != null) {
+                        live.MiraAssembly.Data.Parts.UserData ??= new Mirabuf.UserData();
+                        if (_allRobotData.ContainsKey(live.MiraAssembly.Info.GUID)) {
+                            live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY] =
+                                JsonConvert.SerializeObject(_allRobotData[live.MiraAssembly.Info.GUID]);
+                        }
+                        live.Save();
+                    } else {
+                        Debug.LogWarning("Need a robot first!");
                     }
-                    live.Save();
                     // clang-format on
                 }
 
