@@ -32,7 +32,7 @@ namespace Modes.MatchMode {
         }
 
         public static List<RobotSimObject> Robots = new List<RobotSimObject>();
-        
+
         public const string PREVIOUS_SPAWN_LOCATION = "Previous Spawn Location";
         public const string PREVIOUS_SPAWN_ROTATION = "Previous Spawn Rotation";
 

@@ -319,7 +319,7 @@ namespace Modes.MatchMode {
 
                 DynamicUIManager.CloseActiveModal();
                 DynamicUIManager.CloseAllPanels(true);
-                
+
                 // Reset robots to their selected spawn position
                 int i = 0;
                 MatchMode.Robots.ForEach(x => {
@@ -361,11 +361,11 @@ namespace Modes.MatchMode {
             public override void Start() {
                 DynamicUIManager.CloseActiveModal();
                 DynamicUIManager.CloseAllPanels(true);
-                
+
                 RobotSimObject.RemoveAllRobots();
                 FieldSimObject.DeleteField();
                 MatchMode.ResetMatchConfiguration();
-                
+
                 Instance.SetState(StateName.MatchConfig);
             }
 

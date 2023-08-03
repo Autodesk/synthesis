@@ -68,7 +68,8 @@ namespace Synthesis.UI.Dynamic {
             set {
                 if (value != _hidden) {
                     _hidden = value;
-                    if (_unityObject != null) _unityObject.SetActive(!_hidden);
+                    if (_unityObject != null)
+                        _unityObject.SetActive(!_hidden);
                     OnVisibilityChange();
                 }
             }
