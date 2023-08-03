@@ -188,7 +188,6 @@ namespace Modes.MatchMode {
                     DynamicUIManager.CreateModal<ConfirmModal>("Start Match?");
                     DynamicUIManager.ActiveModal.OnAccepted += () => {
                         DynamicUIManager.CloseActiveModal();
-                        DynamicUIManager.CreatePanel<ScoreboardPanel>(true, true);
                         Instance.SetState(StateName.Auto);
                     };
                     DynamicUIManager.ActiveModal.OnCancelled += () => {

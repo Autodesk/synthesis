@@ -26,7 +26,7 @@ public static class MainHUD {
     private const string EXPAND_TWEEN   = "expand";
 
     private static Action<SynthesisTween.SynthesisTweenStatus> collapseTweenProgress = s => {
-        _tabDrawerContent?.SetAnchoredPosition<Content>(
+        _tabDrawerContent.CheckIfNull<Content>()?.SetAnchoredPosition<Content>(
             new Vector2(s.CurrentValue<int>(), _tabDrawerContent.RootRectTransform.anchoredPosition.y));
     };
 
