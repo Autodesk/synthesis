@@ -267,7 +267,7 @@ namespace Synthesis.UI.Dynamic {
 
             if (showPersistentPanels)
                 ShowAllPanels();
-            
+
             MainHUD.Collapsed = false;
             AnalyticsManager.LogCustomEvent(AnalyticsEvent.ActiveModalClosed, ("UIType", modal.GetType().Name));
             return true;
