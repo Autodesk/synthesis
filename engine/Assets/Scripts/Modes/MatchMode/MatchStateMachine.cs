@@ -317,6 +317,9 @@ namespace Modes.MatchMode {
             public override void Start() {
                 base.Start();
 
+                DynamicUIManager.CloseActiveModal();
+                DynamicUIManager.CloseAllPanels(true);
+                
                 // Reset robots to their selected spawn position
                 int i = 0;
                 MatchMode.Robots.ForEach(x => {
@@ -335,10 +338,15 @@ namespace Modes.MatchMode {
                     i++;
                 });
 
-                // TODO: reset the match results tracker
-                // TODO: reset the scoreboard and timer
-                // TODO: add a modal or panel to start the match so it doesn't instantly start
-                Instance.SetState(StateName.Auto);
+                DynamicUIManager.CreateModal<ConfirmModal>("Start Match?");
+                DynamicUIManager.ActiveModal.OnAccepted += () => {
+                    DynamicUIManager.CloseActiveModal();
+                    Instance.SetState(StateName.Auto);
+                };
+                DynamicUIManager.ActiveModal.OnCancelled += () => {
+                    DynamicUIManager.CloseActiveModal();
+                    Instance.SetState(StateName.Reconfigure);
+                };
             }
 
             public override void Update() {}
@@ -351,12 +359,13 @@ namespace Modes.MatchMode {
         /// Resets the match and sends he user back to the MatchConfig modal
         public class Reconfigure : MatchState {
             public override void Start() {
+                DynamicUIManager.CloseActiveModal();
+                DynamicUIManager.CloseAllPanels(true);
+                
                 RobotSimObject.RemoveAllRobots();
                 FieldSimObject.DeleteField();
                 MatchMode.ResetMatchConfiguration();
-
-                // TODO: reset the match results tracker
-                // TODO: reset the scoreboard and timer
+                
                 Instance.SetState(StateName.MatchConfig);
             }
 
