@@ -17,13 +17,12 @@ namespace Synthesis {
     public class ArcadeDriveBehaviour : SimBehaviour {
         internal const string FORWARD  = "Arcade Forward";
         internal const string BACKWARD = "Arcade Backward";
-        internal const string LEFT = "Arcade Left";
-        internal const string RIGHT = "Arcade Right";
-        private string forward  = FORWARD;
-        private string backward = BACKWARD;
-        private string left = LEFT;
-        private string right = RIGHT;
-
+        internal const string LEFT     = "Arcade Left";
+        internal const string RIGHT    = "Arcade Right";
+        private string forward         = FORWARD;
+        private string backward        = BACKWARD;
+        private string left            = LEFT;
+        private string right           = RIGHT;
 
         private List<WheelDriver> _leftWheels;
         private List<WheelDriver> _rightWheels;
@@ -56,10 +55,10 @@ namespace Synthesis {
             _leftWheels  = leftWheels;
             _rightWheels = rightWheels;
 
-            forward = SimObjectId + FORWARD;
+            forward  = SimObjectId + FORWARD;
             backward = SimObjectId + BACKWARD;
-            left = SimObjectId + LEFT;
-            right = SimObjectId + RIGHT;
+            left     = SimObjectId + LEFT;
+            right    = SimObjectId + RIGHT;
 
             InitInputs(GetInputs());
 
@@ -82,7 +81,7 @@ namespace Synthesis {
 
         private void OnValueInputAssigned(IEvent tmp) {
             ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
-            string s = args.InputKey.Remove(0, SimObjectId.Length);
+            string s                     = args.InputKey.Remove(0, SimObjectId.Length);
             switch (s) {
                 case FORWARD:
                 case BACKWARD:

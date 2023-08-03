@@ -121,12 +121,12 @@ namespace Synthesis {
             var turnRightInput = InputManager.MappedValueInputs[turn_right];
 
             float _forward = Mathf.Abs(forwardInput.Value) - Mathf.Abs(backwardInput.Value);
-            float strafe  = Mathf.Abs(rightInput.Value) - Mathf.Abs(leftInput.Value);
-            float turn    = Mathf.Abs(turnRightInput.Value) - Mathf.Abs(turnLeftInput.Value);
+            float strafe   = Mathf.Abs(rightInput.Value) - Mathf.Abs(leftInput.Value);
+            float turn     = Mathf.Abs(turnRightInput.Value) - Mathf.Abs(turnLeftInput.Value);
 
             _forward = Diff(_forward, 0f, 0.1f) ? 0f : _forward;
-            strafe  = Diff(strafe, 0f, 0.1f) ? 0f : strafe;
-            turn    = Diff(turn, 0f, 0.1f) ? 0f : turn;
+            strafe   = Diff(strafe, 0f, 0.1f) ? 0f : strafe;
+            turn     = Diff(turn, 0f, 0.1f) ? 0f : turn;
 
             // Are the inputs basically zero
             if (_forward == 0f && turn == 0f && strafe == 0f) {
