@@ -35,12 +35,12 @@ public class ChooseMultiplayerModeModal : ModalDynamic {
             });
 
         var comingSoonButton = MainContent.CreateButton()
-            .StepIntoLabel(l => l.SetText("Coming Soon"))
-            .ApplyTemplate(VerticalLayout)
-            .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground))
-                .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
-                .DisableEvents<Button>();
-        
+                                   .StepIntoLabel(l => l.SetText("Coming Soon"))
+                                   .ApplyTemplate(VerticalLayout)
+                                   .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground))
+                                   .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
+                                   .DisableEvents<Button>();
+
         Object.Destroy(comingSoonButton.RootGameObject.transform.Find("Button").GetComponent<HoverEventListener>());
     }
 
