@@ -60,7 +60,7 @@ public class GodMode : MonoBehaviour {
                 if (hit) {
                     grabbedObject = GetGameObjectWithRigidbody(hitInfo.collider.gameObject);
                     if (grabbedObject != null) {
-                        _pointer       = new GameObject("GODMODE_POINTER_RB");
+                        _pointer                 = new GameObject("GODMODE_POINTER_RB");
                         _pointerBody             = _pointer.AddComponent<Rigidbody>();
                         _pointerBody.isKinematic = true;
 
@@ -102,7 +102,7 @@ public class GodMode : MonoBehaviour {
             Destroy(_pointerBody);
             if (_pointer != null)
                 Destroy(_pointer);
-            
+
             _pointerBody                                     = null;
             grabbedObject.GetComponent<Rigidbody>().velocity = _speed;
             grabbedObject                                    = null;

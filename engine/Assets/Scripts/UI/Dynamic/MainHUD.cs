@@ -26,7 +26,7 @@ public static class MainHUD {
     private const string EXPAND_TWEEN   = "expand";
 
     private static Action<SynthesisTween.SynthesisTweenStatus> collapseTweenProgress = s => {
-        _tabDrawerContent?.SetAnchoredPosition<Content>(
+        _tabDrawerContent.CheckIfNull<Content>()?.SetAnchoredPosition<Content>(
             new Vector2(s.CurrentValue<int>(), _tabDrawerContent.RootRectTransform.anchoredPosition.y));
     };
 
@@ -41,17 +41,15 @@ public static class MainHUD {
             if (!_isSetup)
                 return;
 
-            if (_enabled != value) {
-                _enabled = value;
-                if (_enabled) {
-                    Collapsed = false;
-                    _tabDrawerContent.RootGameObject.SetActive(true);
-                    // _accordionButton.RootGameObject.SetActive(true);
-                } else {
-                    Collapsed = true;
-                    _tabDrawerContent.RootGameObject.SetActive(false);
-                    _accordionButton.RootGameObject.SetActive(false);
-                }
+            _enabled = value;
+            if (_enabled) {
+                Collapsed = false;
+                _tabDrawerContent.RootGameObject.SetActive(true);
+                // _accordionButton.RootGameObject.SetActive(true);
+            } else {
+                Collapsed = true;
+                _tabDrawerContent.RootGameObject.SetActive(false);
+                _accordionButton.RootGameObject.SetActive(false);
             }
         }
     }
