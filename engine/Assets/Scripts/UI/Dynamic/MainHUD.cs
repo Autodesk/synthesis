@@ -41,16 +41,23 @@ public static class MainHUD {
             if (!_isSetup)
                 return;
 
-            _enabled = value;
-            if (_enabled) {
-                Collapsed = false;
+            if (value) {
+                if (_enabled != value) {
+                    Collapsed = false;
+                }
+
                 _tabDrawerContent.RootGameObject.SetActive(true);
                 // _accordionButton.RootGameObject.SetActive(true);
             } else {
-                Collapsed = true;
+                if (_enabled != value) {
+                    Collapsed = true;
+                }
+
                 _tabDrawerContent.RootGameObject.SetActive(false);
                 _accordionButton.RootGameObject.SetActive(false);
             }
+
+            _enabled = value;
         }
     }
 
