@@ -73,7 +73,6 @@ public static class SynthesisTween {
     public static Boolean TweenExists(string key) {
         return _tweens.ContainsKey(key);
     }
-
 }
 
 public static class SynthesisTweenScaleFunctions {
