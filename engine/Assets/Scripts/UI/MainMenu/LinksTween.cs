@@ -21,9 +21,10 @@ public class LinksTween : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public void OnPointerEnter(PointerEventData eventData) {
         text      = gameObject.GetComponent<TMP_Text>();
         sizeStart = text.fontSize;
-        SynthesisTween.MakeTween(_growKey, text.fontSize, sizeEnd, 1f,
-            (t, a, b) => SynthesisTweenInterpolationFunctions.FloatInterp(t, (float) a, (float) b),
-            SynthesisTweenScaleFunctions.EaseOutCubic, TweenUp);
+        if (!SynthesisTween.TweenExists(_growKey))
+            SynthesisTween.MakeTween(_growKey, text.fontSize, sizeEnd, 1f,
+                (t, a, b) => SynthesisTweenInterpolationFunctions.FloatInterp(t, (float) a, (float) b),
+                SynthesisTweenScaleFunctions.EaseOutCubic, TweenUp);
     }
 
     public void OnPointerExit(PointerEventData eventData) {
