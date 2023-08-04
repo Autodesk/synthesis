@@ -1,5 +1,6 @@
 using System.IO;
 using System.Linq;
+using SimObjects.MixAndMatch;
 using SynthesisAPI.Utilities;
 using Synthesis.UI.Dynamic;
 using UnityEngine;
@@ -9,32 +10,27 @@ using Logger = SynthesisAPI.Utilities.Logger;
 #nullable enable
 
 namespace UI.Dynamic.Modals.Spawning {
-    public class AddRobotModal : ModalDynamic {
-        private string _root;
+    public class SpawnMixAndMatchModal : ModalDynamic {
         private int _selectedIndex = -1;
         private string[] _files;
 
-        public string Folder = "Mira";
 
-        public AddRobotModal() : base(new Vector2(400, 55)) {}
+        public SpawnMixAndMatchModal() : base(new Vector2(400, 55)) {}
 
         public override void Create() {
-            _root = ParsePath(Path.Combine("$appdata/Autodesk/Synthesis", Folder), '/');
-            if (!Directory.Exists(_root))
-                Directory.CreateDirectory(_root);
-            _files = Directory.GetFiles(_root).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
+            _files = MixAndMatchSaveUtil.RobotFiles;
 
-            Title.SetText("Robot Selection");
+            Title.SetText("Mix And Match Selection");
 
             ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("plus"))
                 .SetColor(ColorManager.SynthesisColor.MainText);
 
             AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
                 if (_selectedIndex != -1) {
-                    RobotSimObject.SpawnRobot(null, true, _files[_selectedIndex]);
+                    RobotSimObject.SpawnRobot(MixAndMatchSaveUtil.LoadRobotData(_files[_selectedIndex]));
 
                     DynamicUIManager.CloseActiveModal();
-                    RobotSimObject.GetCurrentlyPossessedRobot().CreateDrivetrainTooltip();
+                    RobotSimObject.GetCurrentlyPossessedRobot()?.CreateDrivetrainTooltip();
                 }
             });
             var chooseRobotDropdown = MainContent.CreateDropdown()

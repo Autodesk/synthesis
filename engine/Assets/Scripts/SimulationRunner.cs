@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Synthesis.Import;
 using System.Linq;
+using Synthesis.Gizmo;
 using Synthesis.PreferenceManager;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.InputManager;
@@ -68,6 +69,7 @@ namespace Synthesis.Runtime {
             ModeManager.Start();
             RobotSimObject.Setup();
             WebSocketManager.Init();
+            GizmoManager.Setup();
 
             OnUpdate += ModeManager.Update;
             OnUpdate += () => RobotSimObject.SpawnedRobots.ForEach(r => r.UpdateMultiplayer());
@@ -161,6 +163,7 @@ namespace Synthesis.Runtime {
                 OnSimKill();
 
             OnSimKill = null;
+            OnUpdate  = null;
 
             PhysicsManager.Reset();
             ReplayManager.Teardown();

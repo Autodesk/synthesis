@@ -44,6 +44,10 @@ namespace Synthesis.UI {
                 new ProcessStartInfo() { FileName = "https://www.discord.gg/hHcF9AVgZA", UseShellExecute = true });
         }
 
+        public void QuitSim() {
+            DynamicUIManager.CreateModal<ExitSynthesisModal>();
+        }
+
         public void ShowSocials() {
             Transform linksTransform =
                 GameObject.Find("Canvas").transform.Find("MenuPanel").transform.Find("Links").transform;

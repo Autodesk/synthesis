@@ -44,7 +44,7 @@ namespace Synthesis.UI.Dynamic {
         private readonly Transform[] _robotHighlights = new Transform[6];
 
         private readonly Func<Button, Button> DisabledTemplate = b =>
-            b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground))
+            b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary))
                 .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText));
 
         public readonly Func<UIComponent, UIComponent> VerticalLayout = (u) => {
@@ -108,7 +108,10 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public override void Delete() {
-            _robotHighlights.ForEach(x => Object.Destroy(x.gameObject));
+            _robotHighlights.ForEach(x => {
+                if (x != null)
+                    Object.Destroy(x.gameObject);
+            });
         }
 
         /// <summary>

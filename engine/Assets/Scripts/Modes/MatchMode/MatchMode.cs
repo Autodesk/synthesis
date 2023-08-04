@@ -11,6 +11,8 @@ using Logger = SynthesisAPI.Utilities.Logger;
 
 namespace Modes.MatchMode {
     public class MatchMode : IMode {
+        public static float MatchTime = 15f;
+
         public static MatchResultsTracker MatchResultsTracker;
 
         /// Integers to represent which robots the user selected in the MatchModeModal
@@ -32,9 +34,6 @@ namespace Modes.MatchMode {
         }
 
         public static List<RobotSimObject> Robots = new List<RobotSimObject>();
-
-        private int _redScore  = 0;
-        private int _blueScore = 0;
 
         public const string PREVIOUS_SPAWN_LOCATION = "Previous Spawn Location";
         public const string PREVIOUS_SPAWN_ROTATION = "Previous Spawn Rotation";
@@ -79,16 +78,14 @@ namespace Modes.MatchMode {
         public void SetupMatchResultTracking() {
             MatchResultsTracker = new MatchResultsTracker();
 
-            SynthesisAPI.EventBus.EventBus.NewTypeListener<OnScoreUpdateEvent>(e => {
+            EventBus.NewTypeListener<OnScoreUpdateEvent>(e => {
                 ScoringZone zone = ((OnScoreUpdateEvent) e).Zone;
                 switch (zone.Alliance) {
                     case Alliance.Blue:
                         ((BluePoints) MatchResultsTracker.MatchResultEntries[typeof(BluePoints)]).Points += zone.Points;
-                        _blueScore += zone.Points;
                         break;
                     case Alliance.Red:
                         ((RedPoints) MatchResultsTracker.MatchResultEntries[typeof(RedPoints)]).Points += zone.Points;
-                        _redScore += zone.Points;
                         break;
                 }
             });
@@ -98,9 +95,8 @@ namespace Modes.MatchMode {
             if (_stateMachine != null) {
                 _stateMachine.Update();
 
-                if (Scoring.targetTime <= 0 && _stateMachine.CurrentState.StateName is >=
-                                                   MatchStateMachine.StateName.Auto and <=
-                                                   MatchStateMachine.StateName.Endgame)
+                if (MatchTime <= 0 && _stateMachine.CurrentState.StateName is >= MatchStateMachine.StateName.Auto and <=
+                                          MatchStateMachine.StateName.Endgame)
                     _stateMachine.AdvanceState();
             }
         }

@@ -79,6 +79,10 @@ namespace Synthesis.Physics {
             }
         }
 
+        public static void SetFrozenCounter(int value) {
+            _frozenCounter = value;
+        }
+
         public static void FixedUpdate() {
             RobotSimObject.SpawnedRobots.ForEach(x => { x.UpdateWheels(); });
         }

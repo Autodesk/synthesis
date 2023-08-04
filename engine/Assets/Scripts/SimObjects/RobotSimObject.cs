@@ -54,7 +54,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             }
         }
     }
-    public static RobotSimObject GetCurrentlyPossessedRobot() => _currentlyPossessedRobot == string.Empty
+    public static RobotSimObject? GetCurrentlyPossessedRobot() => _currentlyPossessedRobot == string.Empty
                                                                      ? null
                                                                      : _spawnedRobots[_currentlyPossessedRobot];
 
@@ -367,7 +367,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         // if (!DriversEnabled) return;
 
         int wheelsInContact = _wheelDrivers.Count(x => x.HasContacts);
-        float mod           = wheelsInContact <= 3 ? 1f : Mathf.Pow(0.8f, wheelsInContact - 3);
+        float mod           = wheelsInContact <= 3 ? 1f : Mathf.Pow(0.7f, wheelsInContact - 3);
+
         _wheelDrivers.ForEach(x => x.WheelsPhysicsUpdate(mod));
     }
 
@@ -600,6 +601,11 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     public static void SpawnRobot(MixAndMatchRobotData mixAndMatchRobotData, Vector3 position, Quaternion rotation,
         bool spawnGizmo, string? filePath) {
+        if (mixAndMatchRobotData?.PartData.Length == 0) {
+            Logger.Log("Mix and match robot contains no parts", LogLevel.Info);
+            return;
+        }
+
         var mira = filePath == null ? Importer.ImportMixAndMatchRobot(mixAndMatchRobotData)
                                     : Importer.ImportSimpleRobot(filePath);
 
