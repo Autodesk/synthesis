@@ -221,7 +221,7 @@ namespace Synthesis.UI.Dynamic {
             if (!Screen.fullScreen && !Application.isEditor)
                 ShowWindowAsync(GetActiveWindow().ToInt32(), 3);
 #else
-            Debug.LogWarning("No Supported")
+            Debug.LogWarning("No Supported");
 #endif
         }
     }
