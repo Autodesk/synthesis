@@ -109,7 +109,8 @@ namespace Synthesis.UI.Dynamic {
 
         public override void Delete() {
             _robotHighlights.ForEach(x => {
-                if (x != null) Object.Destroy(x.gameObject);
+                if (x != null)
+                    Object.Destroy(x.gameObject);
             });
         }
 

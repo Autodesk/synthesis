@@ -261,7 +261,7 @@ namespace Synthesis.UI.Dynamic {
                     SubScreenSpaceContent.RootGameObject.SetActive(true);
                 }
             }
-            
+
             // Unfreeze physics no matter what because it has a counter
             PhysicsManager.IsFrozen = false;
 

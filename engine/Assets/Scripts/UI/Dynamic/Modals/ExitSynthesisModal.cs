@@ -26,10 +26,10 @@ namespace Synthesis.UI.Dynamic {
                             FieldSimObject.DeleteField();
                             MatchMode.ResetMatchConfiguration();
                         }
-                        
+
                         SimulationRunner.InSim = false;
                         DynamicUIManager.CloseAllPanels(true);
-                        
+
                         ModeManager.CurrentMode = null;
                         SceneManager.LoadScene("GridMenuScene", LoadSceneMode.Single);
 
