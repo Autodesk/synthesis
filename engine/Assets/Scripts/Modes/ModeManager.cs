@@ -33,7 +33,6 @@ public class ModeManager {
     public static void Start() {
         if (CurrentMode == null) {
             if (isSinglePlayer) {
-                Debug.Log("Sim runner start create modal");
                 DynamicUIManager.CreateModal<ChooseSingleplayerModeModal>();
             } else {
                 DynamicUIManager.CreateModal<ChooseMultiplayerModeModal>();
