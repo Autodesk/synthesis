@@ -140,7 +140,7 @@ namespace UI.Dynamic.Modals.MixAndMatch {
 
             void UpdateAcceptButton(string inputValue) {
                 AcceptButton.ApplyTemplate(
-                    inputValue == "" || files.Contains(inputValue) ? Button.DisableButton : Button.EnableButton);
+                    inputValue == "" || files.Contains(inputValue) ? Button.DisableButton : Button.EnableAcceptButton);
             }
             UpdateAcceptButton("");
         }
