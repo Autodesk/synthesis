@@ -138,7 +138,7 @@ public class ConfigMotorModal : ModalDynamic {
         CreateEntry("Drive", (_motors[0].driver as WheelDriver).Motor.targetVelocity, x => ChangeDriveVelocity(x));
         if (_robotISSwerve) {
             CreateEntry("Turn", (_motors[driveMotorCount].driver as RotationalDriver).Motor.targetVelocity,
-                x => ChangeTurnVelocity(x));
+                x => ChangeTurnVelocity(x), "RPM", 10.0f);
         }
 
         // original target velocities for each motor and entry in scrollview for other motors
@@ -170,16 +170,16 @@ public class ConfigMotorModal : ModalDynamic {
 
     public override void Delete() {}
 
-    private void CreateEntry(string name, float currVel, Action<float> onClick, string units = "RPM") {
+    private void CreateEntry(
+        string name, float currVel, Action<float> onClick, string units = "RPM", float max = 150.0f) {
         (Content nameContent, Content velContent) =
             _scrollView.Content.CreateSubContent(new Vector2(_scrollViewWidth, 40f))
                 .SetTopStretch<Content>(0, 0, 0)
                 .ApplyTemplate<Content>(VerticalLayout)
                 .SplitLeftRight(NAME_WIDTH, PADDING);
+        if (currVel < 5.0f && max > 50.0f)
+            max = 50.0f;
         nameContent.CreateLabel().SetText(name).SetTopStretch(0, PADDING, PADDING + _scrollView.HeightOfChildren);
-        float max = 150;
-        if (currVel < 5)
-            max = 50f;
         velContent.CreateSlider(units, minValue: 0f, maxValue: max, currentValue: currVel)
             .SetTopStretch<Slider>(PADDING, PADDING, _scrollView.HeightOfChildren)
             .AddOnValueChangedEvent((s, v) => { onClick(v); });

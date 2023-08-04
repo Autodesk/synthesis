@@ -43,8 +43,12 @@ namespace Engine.ModuleLoader {
 
         public void Start() // Must happen after ResourceLedger is initialized (in Awake)
         {
-            if (Instance == null)
+            if (Instance == null) {
                 Instance = this;
+            } else {
+                Destroy(gameObject);
+                return;
+            }
 
             SetupApplication(); // Always do this first
 
@@ -101,6 +105,10 @@ namespace Engine.ModuleLoader {
 
             // GameObject.Find("Screen").GetComponent<PanelScaler>().scaleMode =
             // PanelScaler.ScaleMode.ConstantPhysicalSize;
+        }
+
+        private void OnDestroy() {
+            Instance = null;
         }
 
         private class LoggerImpl : SynthesisAPI.Utilities.ILogger {
