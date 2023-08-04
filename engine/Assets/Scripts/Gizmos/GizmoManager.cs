@@ -16,7 +16,7 @@ namespace Synthesis.Gizmo {
         public static GizmoConfig? CurrentGizmoConfig => _currentGizmoConfig;
         private static Transform? _currentTargetTransform;
 
-        static GizmoManager() {
+        public static void Setup() {
             SimulationRunner.OnUpdate += UpdateGizmo;
 
             InputManager.AssignDigitalInput(
