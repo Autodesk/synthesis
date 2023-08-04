@@ -150,6 +150,7 @@ namespace Modes.MatchMode {
             public override void Start() {
                 base.Start();
 
+                
                 PhysicsManager.IsFrozen = true;
                 MatchMode.SpawnAllRobots();
 
@@ -219,7 +220,7 @@ namespace Modes.MatchMode {
                 PhysicsManager.IsFrozen = false;
             }
 
-            public override void Update() {}
+            public override void Update() { }
 
             public override void End() {
                 base.End();

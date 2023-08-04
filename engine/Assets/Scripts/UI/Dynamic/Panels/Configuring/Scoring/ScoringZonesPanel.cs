@@ -149,7 +149,9 @@ public class ScoringZonesPanel : PanelDynamic {
     public override void Update() {}
 
     public override void Delete() {
-        FieldSimObject.CurrentField.ScoringZones.ForEach(x => x.VisibilityCounter--);
+        FieldSimObject.CurrentField.ScoringZones.ForEach(x => {
+            if (x != null) x.VisibilityCounter--;
+        });
         PhysicsManager.IsFrozen = false;
     }
 }
