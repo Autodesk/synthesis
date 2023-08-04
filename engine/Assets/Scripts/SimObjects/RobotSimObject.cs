@@ -266,7 +266,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     private static Analog TryGetSavedInput(string key, Analog defaultInput) {
         if (PreferenceManager.ContainsPreference(key)) {
-            var input            = PreferenceManager.GetPreference<Digital>(key);
+            var input = PreferenceManager.GetPreference<Digital>(key) ??
+                        (Digital) PreferenceManager.GetPreference<InputData[]>(key) [0].GetInput();
             input.ContextBitmask = defaultInput.ContextBitmask;
             return input;
         }
@@ -366,7 +367,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         // if (!DriversEnabled) return;
 
         int wheelsInContact = _wheelDrivers.Count(x => x.HasContacts);
-        float mod           = wheelsInContact <= 4 ? 1f : Mathf.Pow(0.7f, wheelsInContact - 4);
+        float mod           = wheelsInContact <= 3 ? 1f : Mathf.Pow(0.7f, wheelsInContact - 3);
         _wheelDrivers.ForEach(x => x.WheelsPhysicsUpdate(mod));
     }
 

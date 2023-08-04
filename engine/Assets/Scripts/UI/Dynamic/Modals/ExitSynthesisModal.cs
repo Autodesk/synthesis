@@ -9,12 +9,12 @@ using Utilities.ColorManager;
 
 namespace Synthesis.UI.Dynamic {
     public class ExitSynthesisModal : ModalDynamic {
-        public ExitSynthesisModal() : base(new Vector2(350, 50)) {}
+        public ExitSynthesisModal() : base(new Vector2(350, 0)) {}
 
         public override void Create() {
             bool isOnMainMenu = SceneManager.GetActiveScene().name != "MainScene";
 
-            Title.SetText("Exit Synthesis");
+            Title.SetText(isOnMainMenu ? "Exit Synthesis" : "Leave Simulation");
 
             AcceptButton
                 .AddOnClickedEvent(x => {
@@ -30,19 +30,10 @@ namespace Synthesis.UI.Dynamic {
                         AnalyticsManager.LogCustomEvent(AnalyticsEvent.ExitedToMenu);
                     }
                 })
-                .StepIntoLabel(l => l.SetText("Exit"));
+                .StepIntoLabel(l => l.SetText(isOnMainMenu ? "Exit" : "Leave"));
 
             ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"))
                 .SetColor(ColorManager.SynthesisColor.MainText);
-
-            MainContent.CreateLabel(40)
-                .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Center)
-                .SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Middle)
-                .SetAnchoredPosition<Label>(new Vector2(0, 15))
-                .SetText(
-                    isOnMainMenu ? "Are you sure you wish to Exit?" : "Are you sure you wish to\nleave to main menu?")
-                .SetFont(SynthesisAssetCollection.GetFont("Roboto-Regular SDF"))
-                .SetFontSize(20);
         }
 
         public override void Update() {}
