@@ -51,6 +51,7 @@ public class ServerTestMode : IMode {
         _ghost.Freeze();
 
         SimulationRunner.OnGameObjectDestroyed += End;
+        MainHUD.RemoveAllItemsFromDrawer();
     }
 
     public void KillClient(int i) {
@@ -63,7 +64,14 @@ public class ServerTestMode : IMode {
         }
     }
 
+    private bool _isFrozen = false;
+
     public void Update() {
+        if (_ghost is not null && !_isFrozen) {
+            _ghost.Freeze();
+            _isFrozen = true;
+        }
+
         var transformsList = new List<ServerTransforms>();
         if (_ghost is null || _host is null)
             return;
