@@ -216,9 +216,13 @@ namespace Synthesis.UI.Dynamic {
         private static void Save() => PreferenceManager.PreferenceManager.Save();
 
         public static void MaximizeScreen() {
+#if UNITY_STANDALONE_WIN
             // auto maximizes if its a window and the resolution is maximum.
             if (!Screen.fullScreen && !Application.isEditor)
                 ShowWindowAsync(GetActiveWindow().ToInt32(), 3);
+#else
+            Debug.LogWarning("No Supported")
+#endif
         }
     }
 }
