@@ -10,7 +10,12 @@ type DropdownProps = {
     onSelect: (opt: string) => void
 }
 
-const Dropdown: React.FC<DropdownProps> = ({ label, className, options, onSelect }) => {
+const Dropdown: React.FC<DropdownProps> = ({
+    label,
+    className,
+    options,
+    onSelect,
+}) => {
     const [expanded, setExpanded] = useState(false)
     const [optionList, setOptionList] = useState(options)
 
@@ -49,12 +54,12 @@ const Dropdown: React.FC<DropdownProps> = ({ label, className, options, onSelect
             >
                 <DropdownOption value={optionList[0]}>
                     {optionList[0]}
-                    {optionList.length > 1 &&
+                    {optionList.length > 1 && (
                         <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col h-1/2 content-center items-center">
                             <FaChevronUp className="h-1/2" />
                             <FaChevronDown className="h-1/2" />
                         </div>
-                    }
+                    )}
                 </DropdownOption>
                 {expanded &&
                     optionList.slice(1).map(o => (

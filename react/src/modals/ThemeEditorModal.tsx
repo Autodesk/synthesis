@@ -6,7 +6,6 @@ import Stack, { StackDirection } from "../components/Stack"
 import Dropdown from "../components/Dropdown"
 import Button from "../components/Button"
 
-type Color = [red: number, green: number, blue: number, alpha: number]
 type Theme = { [name: string]: RgbaColor }
 
 const defaultColors: Theme = {
@@ -30,14 +29,18 @@ const defaultColors: Theme = {
 }
 
 const defaultThemes: { [name: string]: Theme } = {
-    'Default': defaultColors
+    Default: defaultColors,
 }
 
 const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [selectedColor, setSelectedColor] = useState("")
-    const [selectedTheme, setSelectedTheme] = useState(Object.keys(defaultThemes)[0])
+    const [selectedTheme, setSelectedTheme] = useState(
+        Object.keys(defaultThemes)[0]
+    )
     const [, setCurrentColor] = useState<RgbaColor>({ r: 0, g: 0, b: 0, a: 0 })
-    const [themes, setThemes] = useState<{ [name: string]: Theme }>({ ...defaultThemes });
+    const [themes, setThemes] = useState<{ [name: string]: Theme }>({
+        ...defaultThemes,
+    })
 
     console.log(selectedTheme, themes)
 
@@ -48,21 +51,36 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     <Dropdown
                         label="Select a Theme"
                         options={Object.keys(themes)}
-                        onSelect={(opt) => setSelectedTheme(opt)}
+                        onSelect={opt => setSelectedTheme(opt)}
                         className="h-min"
                     />
                     <Stack direction={StackDirection.Horizontal} spacing={10}>
-                        <Button value="Create Theme" onClick={() => {
-                            const newThemeName = `${Object.keys(themes).length}`
-                            setThemes({ ...themes, [newThemeName]: { ...defaultColors } })
-                            setSelectedTheme(newThemeName)
-                        }} />
-                        <Button value="Delete Selected" onClick={() => {
-                            const themesCopy = { ...themes };
-                            delete themesCopy[selectedTheme];
-                            setSelectedTheme(Object.keys(themes).filter(k => k !== selectedTheme)[0])
-                            setThemes(themesCopy)
-                        }} />
+                        <Button
+                            value="Create Theme"
+                            onClick={() => {
+                                const newThemeName = `${
+                                    Object.keys(themes).length
+                                }`
+                                setThemes({
+                                    ...themes,
+                                    [newThemeName]: { ...defaultColors },
+                                })
+                                setSelectedTheme(newThemeName)
+                            }}
+                        />
+                        <Button
+                            value="Delete Selected"
+                            onClick={() => {
+                                const themesCopy = { ...themes }
+                                delete themesCopy[selectedTheme]
+                                setSelectedTheme(
+                                    Object.keys(themes).filter(
+                                        k => k !== selectedTheme
+                                    )[0]
+                                )
+                                setThemes(themesCopy)
+                            }}
+                        />
                         <Button value="Delete All" />
                     </Stack>
                     <RgbaColorPicker
@@ -78,8 +96,9 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         {Object.entries(themes[selectedTheme]).map(([n, c]) => (
                             <div
                                 key={n}
-                                className={`flex flex-row gap-2 content-middle align-center cursor-pointer rounded-md p-1 ${n == selectedColor ? "bg-gray-700" : ""
-                                    }`}
+                                className={`flex flex-row gap-2 content-middle align-center cursor-pointer rounded-md p-1 ${
+                                    n == selectedColor ? "bg-gray-700" : ""
+                                }`}
                                 onClick={() => setSelectedColor(n)}
                             >
                                 <div
