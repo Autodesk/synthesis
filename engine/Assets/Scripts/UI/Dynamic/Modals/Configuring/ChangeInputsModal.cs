@@ -177,8 +177,19 @@ public class ChangeInputsModal : ModalDynamic {
                 DynamicUIManager.CloseActiveModal();
             })
             .StepIntoLabel(l => l.SetText("Save"));
-        CancelButton.RootGameObject.SetActive(false);
-        MiddleButton.AddOnClickedEvent(b => DynamicUIManager.CloseActiveModal())
+        CancelButton.AddOnClickedEvent(b => DynamicUIManager.CloseActiveModal());
+        MiddleButton.AddOnClickedEvent(b => {
+                isSave = false;
+                _changedInputs.ForEach(x => {
+                    InputManager.AssignValueInput(x.Item1, x.Item2);
+                    if (x.Item2 is Digital) {
+                        PreferenceManager.SetPreference<Digital>(x.Item1, x.Item2 as Digital);
+                        PreferenceManager.Save();
+                    }
+                });
+                DynamicUIManager.CloseActiveModal();
+
+        })
             .StepIntoLabel(l => l.SetText("Session"));
 
         PopulateInputSelections();
@@ -193,7 +204,6 @@ public class ChangeInputsModal : ModalDynamic {
             // if we allow mouse inputs the input will always get set to Mouse0
             // because the user clicks on the button
             if (input != null && !Regex.IsMatch(input.Name, ".*Mouse.*")) {
-                InputManager.AssignValueInput(_reassigningKey, input);
                 _changedInputs.Add((_reassigningKey, input));
 
                 UpdateAnalogInputButton(_reassigningButton, input, input is Digital);
