@@ -783,16 +783,17 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     public void CreateDrivetrainTooltip() {
+        string intake = ((Digital) TryGetSavedInput(INTAKE_GAMEPIECES, new Digital("E", context: SimulationRunner.RUNNING_SIM_CONTEXT))).Name;
         switch (ConfiguredDrivetrainType.Name) {
             case "Arcade":
-                TooltipManager.CreateTooltip(("WASD", "Drive"), ("E", "Intake"), ("Q", "Dispense"));
+                TooltipManager.CreateTooltip(("WASD", "Drive"), (intake, "Intake"), ("Q", "Dispense"));
                 return;
             case "Tank":
                 TooltipManager.CreateTooltip(
-                    ("WS", "Drivetrain Left"), ("IK", "Drivetrain Right"), ("E", "Intake"), ("Q", "Dispense"));
+                    ("WS", "Drivetrain Left"), ("IK", "Drivetrain Right"), (intake, "Intake"), ("Q", "Dispense"));
                 return;
             case "Swerve":
-                TooltipManager.CreateTooltip(("WASD", "Drive"), ("< >", "Turn"), ("E", "Intake"), ("Q", "Dispense"));
+                TooltipManager.CreateTooltip(("WASD", "Drive"), ("< >", "Turn"), (intake, "Intake"), ("Q", "Dispense"));
                 return;
         }
     }
