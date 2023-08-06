@@ -2116,23 +2116,18 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
 
             elif cmdInput.id == "wheel_select":
                 self.reset()
-
-                # wheelSelect.isEnabled = False
+                
                 # wheelSelect.isVisible = False
                 addWheelInput.isEnabled = True
 
             elif cmdInput.id == "joint_select":
                 self.reset()
-
-                # jointSelect.isEnabled = False
-                # jointSelect.isVisible = False
+                
                 addJointInput.isEnabled = True
 
             elif cmdInput.id == "gamepiece_select":
                 self.reset()
-
-                # gamepieceSelect.isEnabled = False
-                # gamepieceSelect.isVisible = False
+                
                 addFieldInput.isEnabled = True
 
             elif cmdInput.id == "friction_override":
