@@ -7,8 +7,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UI;
-using UnityEditor;
+using UI.EventListeners;
 using UnityEngine.EventSystems;
+using UnityEngine.PlayerLoop;
 using Utilities.ColorManager;
 using UButton     = UnityEngine.UI.Button;
 using UToggle     = UnityEngine.UI.Toggle;
@@ -27,24 +28,32 @@ namespace Synthesis.UI.Dynamic {
 #region Abstracts
 
     public abstract class PanelDynamic {
+        public const float MAIN_CONTENT_HORZ_PADDING = 25f;
+        public Vector2 TweenDirection                = Vector2.right;
+        public bool IsClosing                        = false;
+
         private float _leftContentPadding, _rightContentPadding;
         public float LeftContentPadding  => _leftContentPadding;
         public float RightContentPadding => _rightContentPadding;
 
         private Vector2 _mainContentSize; // Shouldn't really be used after init is called
         private GameObject _unityObject;
-        protected GameObject UnityObject => _unityObject;
+        public GameObject UnityObject => _unityObject;
         // Default for Modal
         private Transform _footer;
         protected Transform Footer => _footer;
         private Button _cancelButton;
-        protected Button CancelButton => _cancelButton;
+        private RectTransform _headerRt;
+        protected RectTransform HeaderRt => _headerRt;
+        protected Button CancelButton    => _cancelButton;
         private Button _acceptButton;
         protected Button AcceptButton => _acceptButton;
+
+        private Image _panelIcon;
+        protected Image PanelIcon => _panelIcon;
+
         private Button _middleButton;
 
-        private Image _panelImage;
-        protected Image PanelImage => _panelImage;
         private Image _panelBackground;
         protected Image PanelBackground => _panelBackground;
         private Label _title;
@@ -59,11 +68,8 @@ namespace Synthesis.UI.Dynamic {
             set {
                 if (value != _hidden) {
                     _hidden = value;
-                    if (_hidden) {
-                        _unityObject.SetActive(false);
-                    } else {
-                        _unityObject.SetActive(true);
-                    }
+                    if (_unityObject != null)
+                        _unityObject.SetActive(!_hidden);
                     OnVisibilityChange();
                 }
             }
@@ -88,7 +94,7 @@ namespace Synthesis.UI.Dynamic {
 
                     Button middleButton = new Button(null!, buttonTransform.gameObject, null);
                     middleButton.Image.SetColor(ColorManager.SynthesisColor.AcceptButton);
-                    middleButton.Label?.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
+                    middleButton.Label?.SetColor(ColorManager.SynthesisColor.AcceptCancelButtonText);
 
                     _middleButton = middleButton;
                     return middleButton;
@@ -100,8 +106,8 @@ namespace Synthesis.UI.Dynamic {
 
         public Action OnAccepted;
 
-        protected PanelDynamic(
-            Vector2 mainContentSize, float leftContentPadding = 20f, float rightContentPadding = 20f) {
+        protected PanelDynamic(Vector2 mainContentSize, float leftContentPadding = MAIN_CONTENT_HORZ_PADDING,
+            float rightContentPadding = MAIN_CONTENT_HORZ_PADDING) {
             _mainContentSize     = mainContentSize;
             _leftContentPadding  = leftContentPadding;
             _rightContentPadding = rightContentPadding;
@@ -110,13 +116,16 @@ namespace Synthesis.UI.Dynamic {
         public void Create_Internal(GameObject unityObject) {
             _unityObject = unityObject;
 
-            // Grab Customizable Modal Components
-            var header       = _unityObject.transform.Find("Header");
-            var headerRt     = header.GetComponent<RectTransform>();
-            _panelImage      = new Image(null, header.Find("Image").gameObject);
+            var header = _unityObject.transform.Find("Header");
+            _headerRt  = header.GetComponent<RectTransform>();
+
+            _panelIcon = new Image(null, header.Find("Image").gameObject);
+            _panelIcon.SetColor(ColorManager.SynthesisColor.MainText);
+            _panelIcon.RootGameObject.SetActive(false);
+
             _panelBackground = new Image(null, unityObject);
             _panelBackground.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.Background));
-            _panelBackground.SetCornerRadius(15);
+            _panelBackground.SetCornerRadius(20);
 
             _title = new Label(null, header.Find("Title").gameObject, null);
 
@@ -129,10 +138,12 @@ namespace Synthesis.UI.Dynamic {
                     Logger.Log("Failed to Close Panel", LogLevel.Error);
             });
             _cancelButton.Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.CancelButton));
-            _cancelButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElementText));
+
+            _cancelButton.Label?.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptCancelButtonText));
             _acceptButton = new Button(null!, _footer.Find("Accept").gameObject, null);
+
             _acceptButton.Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptButton));
-            _acceptButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElementText));
+            _acceptButton.Label!.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptCancelButtonText));
             _acceptButton.AddOnClickedEvent(b => {
                 if (OnAccepted != null)
                     OnAccepted.Invoke();
@@ -145,7 +156,7 @@ namespace Synthesis.UI.Dynamic {
             hiddenRt.anchorMin        = new Vector2(0, 1);
             hiddenRt.anchorMax        = new Vector2(1, 1);
             hiddenRt.pivot            = new Vector2(0.5f, 1);
-            hiddenRt.anchoredPosition = new Vector2(0, -headerRt.sizeDelta.y);
+            hiddenRt.anchoredPosition = new Vector2(0, -_headerRt.sizeDelta.y);
             var actualContentObj =
                 GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("content-base"), hiddenContentT);
             actualContentObj.name = "CentralContent";
@@ -154,7 +165,7 @@ namespace Synthesis.UI.Dynamic {
             contentRt.offsetMin   = new Vector2(_leftContentPadding, contentRt.offsetMin.y);
             var modalRt           = _unityObject.GetComponent<RectTransform>();
             modalRt.sizeDelta     = new Vector2(_mainContentSize.x + (_leftContentPadding + _rightContentPadding),
-                    hiddenRt.sizeDelta.y + headerRt.sizeDelta.y + footerRt.sizeDelta.y);
+                    hiddenRt.sizeDelta.y + _headerRt.sizeDelta.y + footerRt.sizeDelta.y);
             _mainContent          = new Content(null!, actualContentObj, _mainContentSize);
         }
 
@@ -167,21 +178,46 @@ namespace Synthesis.UI.Dynamic {
         public void Delete_Internal() {
             GameObject.Destroy(_unityObject);
         }
+
+        protected Content Strip(Vector2? newContentSize = null, float leftPadding = 0f, float rightPadding = 0f,
+            float topPadding = 0f, float bottomPadding = 0f) {
+            CancelButton.RootGameObject.SetActive(false);
+            AcceptButton.RootGameObject.SetActive(false);
+            Title.RootGameObject.SetActive(false);
+            PanelIcon.RootGameObject.SetActive(false);
+
+            var panel = new Content(null, UnityObject, null);
+            if (newContentSize.HasValue) {
+                panel.SetSize<Content>(new Vector2(newContentSize.Value.x + leftPadding + rightPadding,
+                    newContentSize.Value.y + topPadding + bottomPadding));
+            }
+            panel.SetAnchors<Content>(new Vector2(0.5f, 0.0f), new Vector2(0.5f, 0.0f));
+            panel.SetPivot<Content>(new Vector2(0.5f, 0.0f));
+            panel.SetAnchoredPosition<Content>(new Vector2(0.0f, 10.0f));
+            var newMainContent =
+                panel.CreateSubContent(newContentSize ?? new Vector2(panel.Size.x - (rightPadding + leftPadding),
+                                                             panel.Size.y - (topPadding + bottomPadding)));
+            newMainContent.SetStretch<Content>(leftPadding, rightPadding, topPadding, bottomPadding);
+
+            return newMainContent;
+        }
     }
 
     public abstract class ModalDynamic {
-        public const float MAIN_CONTENT_HORZ_PADDING = 20f;
+        public const float MAIN_CONTENT_HORZ_PADDING = 35f;
 
         private Vector2 _mainContentSize; // Shouldn't really be used after init is called
         private GameObject _unityObject;
+
+        public GameObject UnityObject => _unityObject;
 
         // Default for Modal
         private Button _cancelButton;
         protected Button CancelButton => _cancelButton;
         private Button _acceptButton;
         protected Button AcceptButton => _acceptButton;
-        private Image _modalImage;
-        protected Image ModalImage => _modalImage;
+        private Image _modalIcon;
+        protected Image ModalIcon => _modalIcon;
         private Image _modalBackground;
         protected Image ModalBackground => _modalBackground;
 
@@ -217,7 +253,7 @@ namespace Synthesis.UI.Dynamic {
 
                     Button middleButton = new Button(null!, buttonTransform.gameObject, null);
                     middleButton.Image.SetColor(ColorManager.SynthesisColor.AcceptButton);
-                    middleButton.Label?.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
+                    middleButton.Label?.SetColor(ColorManager.SynthesisColor.AcceptCancelButtonText);
 
                     _middleButton = middleButton;
                     return middleButton;
@@ -235,12 +271,14 @@ namespace Synthesis.UI.Dynamic {
             _unityObject = unityObject;
 
             // Grab Customizable Modal Components
-            var header       = _unityObject.transform.Find("Header");
-            var headerRt     = header.GetComponent<RectTransform>();
-            _modalImage      = new Image(null, header.Find("Image").gameObject);
+            var header   = _unityObject.transform.Find("Header");
+            var headerRt = header.GetComponent<RectTransform>();
+            _modalIcon   = new Image(null, header.Find("Image").gameObject);
+            _modalIcon.SetColor(ColorManager.SynthesisColor.MainText);
+
             _modalBackground = new Image(null, unityObject);
             _modalBackground.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.Background));
-            _modalBackground.SetCornerRadius(20);
+            _modalBackground.SetCornerRadius(35);
 
             _title = new Label(null, header.Find("Title").gameObject, null);
             _title.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.MainText));
@@ -257,10 +295,10 @@ namespace Synthesis.UI.Dynamic {
                     Logger.Log("Failed to Close Modal", LogLevel.Error);
             });
             _cancelButton.Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.CancelButton));
-            _cancelButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElementText));
+            _cancelButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptCancelButtonText));
             _acceptButton = new Button(null!, _footer.Find("Accept").gameObject, null);
             _acceptButton.Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptButton));
-            _acceptButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElementText));
+            _acceptButton.Label.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptCancelButtonText));
 
             _cancelButton.AddOnClickedEvent(b => {
                 if (OnCancelled != null)
@@ -301,6 +339,24 @@ namespace Synthesis.UI.Dynamic {
     }
 
     public abstract class UIComponent {
+        public static Func<UIComponent, UIComponent> VerticalLayout = (u) => {
+            var offset = (-u.Parent!.RectOfChildren(u).yMin) + 7.5f;
+            u.SetTopStretch<UIComponent>(anchoredY: offset);
+            return u;
+        };
+
+        public static Func<UIComponent, UIComponent> VerticalLayoutNoSpacing = (u) => {
+            var offset = (-u.Parent!.RectOfChildren(u).yMin);
+            u.SetTopStretch<UIComponent>(anchoredY: offset);
+            return u;
+        };
+
+        public static Func<UIComponent, UIComponent> VerticalLayoutBigSpacing = (u) => {
+            var offset = (-u.Parent!.RectOfChildren(u).yMin + 15f);
+            u.SetTopStretch<UIComponent>(anchoredY: offset);
+            return u;
+        };
+
         public float HeightOfChildren {
             get {
                 float sum = 0f;
@@ -532,10 +588,16 @@ namespace Synthesis.UI.Dynamic {
             where T : UIComponent {
             GradientImageUpdater gradientImage = RootGameObject.GetComponent<GradientImageUpdater>();
             if (gradientImage) {
-                gradientImage.Horizontal = horizontal;
+                gradientImage.GradientAngle = Mathf.PI * (horizontal ? 0 : 1) * (3f / 2f);
+                gradientImage.Refresh();
             }
 
             return (this as T)!;
+        }
+
+        public T? CheckIfNull<T>()
+            where T : UIComponent {
+            return RootGameObject == null ? null : (this as T)!;
         }
     }
 
@@ -629,10 +691,11 @@ namespace Synthesis.UI.Dynamic {
             return label;
         }
 
-        public Toggle CreateToggle(bool isOn = false, string label = "New Toggle") {
+        public Toggle CreateToggle(bool radioSelect = false, bool isOn = false, string label = "New Toggle") {
             var toggleObj = GameObject.Instantiate(
-                SynthesisAssetCollection.GetUIPrefab("toggle-base"), base.RootGameObject.transform);
-            var toggle = new Toggle(this, toggleObj, isOn, label);
+                SynthesisAssetCollection.GetUIPrefab((radioSelect) ? "radio-select-base" : "toggle-base"),
+                base.RootGameObject.transform);
+            var toggle = new Toggle(this, toggleObj, isOn, label, radioSelect);
             base.Children.Add(toggle);
             return toggle;
         }
@@ -740,7 +803,8 @@ namespace Synthesis.UI.Dynamic {
             _content = new Content(this, unityObject.transform.Find("Viewport").Find("Content").gameObject, null);
 
             _backgroundImage = new Image(this, unityObject);
-            _backgroundImage.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.BackgroundSecondary));
+            _backgroundImage.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.BackgroundSecondary))
+                .SetCornerRadius(12);
         }
 
         public ScrollView StepIntoContent(Action<Content> mod) {
@@ -764,7 +828,7 @@ namespace Synthesis.UI.Dynamic {
         public static readonly Func<Label, Label> BigLabelTemplate = (Label label) => {
             return label.SetHeight<Label>(30)
                 .SetFontSize(24)
-                .ApplyTemplate(Label.VerticalLayoutTemplate)
+                .ApplyTemplate(VerticalLayoutTemplate)
                 .SetHorizontalAlignment(HorizontalAlignmentOptions.Left)
                 .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
         };
@@ -858,6 +922,7 @@ namespace Synthesis.UI.Dynamic {
                 leftPadding: 15f, anchoredY: toggle.Parent!.HeightOfChildren - toggle.Size.y + 15f);
 
         public event Action<Toggle, bool> OnStateChanged;
+        private GameObject _unityObject;
         private Label _titleLabel;
         public Label TitleLabel => _titleLabel;
         private UToggle _unityToggle;
@@ -868,19 +933,19 @@ namespace Synthesis.UI.Dynamic {
         public Image EnabledImage => _enabledImage;
 
         private Color _disabledColor;
-        private Color DisabledColor {
+        public Color DisabledColor {
             get => _disabledColor;
             set {
                 _disabledColor = value;
                 _disabledImage.SetColor(_disabledColor);
             }
         }
-        private Color _enabledColor;
-        public Color EnabledColor {
+        private (ColorManager.SynthesisColor left, ColorManager.SynthesisColor right) _enabledColor;
+        public (ColorManager.SynthesisColor left, ColorManager.SynthesisColor right) EnabledColor {
             get => _enabledColor;
             set {
                 _enabledColor = value;
-                _enabledImage.SetColor(_enabledColor);
+                _enabledImage.SetColor(_enabledColor.left, _enabledColor.right);
             }
         }
 
@@ -889,7 +954,14 @@ namespace Synthesis.UI.Dynamic {
             set { SetState(value); }
         }
 
-        public Toggle(UIComponent? parent, GameObject unityObject, bool isOn, string text) : base(parent, unityObject) {
+        public Toggle(UIComponent? parent, GameObject unityObject, bool isOn, string text, bool radioSelect)
+            : base(parent, unityObject) {
+            _unityObject = unityObject;
+
+            if (unityObject.transform.Find("Toggle").TryGetComponent<ToggleTweener>(out var tweener)) {
+                tweener._synthesisToggle = this;
+            }
+
             _titleLabel  = new Label(this, RootGameObject.transform.Find("Label").gameObject, null);
             _unityToggle = RootGameObject.transform.Find("Toggle").GetComponent<UToggle>();
             _unityToggle.onValueChanged.AddListener(x => {
@@ -902,10 +974,14 @@ namespace Synthesis.UI.Dynamic {
             _titleLabel.SetText(text);
 
             _disabledImage = new Image(this, _unityToggle.transform.Find("Background").gameObject);
-            _enabledImage  = new Image(this, _unityToggle.transform.Find("Background").Find("Checkmark").gameObject);
+            _disabledImage.SetCornerRadius((radioSelect) ? 10 : 2);
 
-            DisabledColor = ColorManager.GetColor(ColorManager.SynthesisColor.BackgroundSecondary);
-            EnabledColor  = ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveElementSolid);
+            _enabledImage = new Image(this, _unityToggle.transform.Find("Background").Find("Checkmark").gameObject);
+            _enabledImage.SetCornerRadius((radioSelect) ? 10 : 2);
+
+            DisabledColor = ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveBackground);
+            EnabledColor  = (ColorManager.SynthesisColor.InteractiveElementLeft,
+                ColorManager.SynthesisColor.InteractiveElementRight);
         }
 
         public Toggle SetState(bool state, bool notify = true) {
@@ -921,13 +997,8 @@ namespace Synthesis.UI.Dynamic {
             return this;
         }
 
-        public Toggle SetEnabledColor(Color c) {
-            EnabledColor = c;
-            return this;
-        }
-
-        public Toggle SetEnabledColor(ColorManager.SynthesisColor s) {
-            EnabledColor = ColorManager.GetColor(s);
+        public Toggle SetEnabledColor(ColorManager.SynthesisColor left, ColorManager.SynthesisColor right) {
+            EnabledColor = (left, right);
             return this;
         }
 
@@ -944,6 +1015,15 @@ namespace Synthesis.UI.Dynamic {
         public Toggle StepIntoLabel(Action<Label> mod) {
             mod(TitleLabel);
             return this;
+        }
+
+        public void SetStateWithoutEvents(bool state) {
+            DisableEvents<Toggle>();
+            SetState(state);
+            if (_unityObject.transform.Find("Toggle").TryGetComponent<ToggleTweener>(out var tweener)) {
+                tweener.OnStateChanged();
+            }
+            EnableEvents<Toggle>();
         }
     }
 
@@ -971,7 +1051,7 @@ namespace Synthesis.UI.Dynamic {
             var infoObj  = unityObject.transform.Find("Info");
             _titleLabel  = new Label(this, infoObj.Find("Label").gameObject, null);
             _valueLabel  = new Label(this, infoObj.Find("Value").gameObject, null);
-            _unitySlider = unityObject.transform.Find("Slider").GetComponent<USlider>();
+            _unitySlider = unityObject.transform.Find("ScaleAnim").Find("Slider").GetComponent<USlider>();
             _titleLabel.SetText(label);
             _unitySlider.onValueChanged.AddListener(x => {
                 var roundedVal = Math.Round(x, 2);
@@ -981,14 +1061,12 @@ namespace Synthesis.UI.Dynamic {
             });
 
             _backgroundImage = new Image(this, _unitySlider.transform.Find("Background").gameObject);
-            _backgroundImage.SetColor(ColorManager.SynthesisColor.BackgroundSecondary);
+            _backgroundImage.SetColor(ColorManager.SynthesisColor.InteractiveBackground);
 
             _fillImage = new Image(this, _unitySlider.transform.Find("Fill Area").Find("Fill").gameObject);
             _fillImage.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
                 ColorManager.SynthesisColor.InteractiveElementRight);
-
-            _handleImage = new Image(this, _unitySlider.transform.Find("Handle Slide Area").Find("Handle").gameObject);
-            _handleImage.SetColor(ColorManager.SynthesisColor.InteractiveSecondary);
+            _fillImage.SetCornerRadius(8);
 
             if (unitSuffix != null)
                 _unitSuffix = unitSuffix;
@@ -1086,7 +1164,7 @@ namespace Synthesis.UI.Dynamic {
             });
 
             _backgroundImage = new Image(this, ifObj.gameObject);
-            _backgroundImage.SetColor(ColorManager.SynthesisColor.BackgroundSecondary);
+            _backgroundImage.SetColor(ColorManager.SynthesisColor.InteractiveBackground);
         }
 
         public InputField StepIntoHint(Action<Label> mod) {
@@ -1120,7 +1198,6 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public InputField SetValueTextColor(Color color) {
-            Debug.Log(color);
             RootGameObject.transform.Find("InputField/Text Area/Text").GetComponent<TextMeshProUGUI>().color = color;
             return this;
         }
@@ -1185,22 +1262,44 @@ namespace Synthesis.UI.Dynamic {
                 Size = size.Value;
             }
 
-            var labelTransform = unityObject.transform.Find("Text (TMP)");
+            var labelTransform = unityObject.transform.Find("Button").Find("Text (TMP)");
             if (labelTransform != null) {
                 _label = new Label(this, labelTransform.gameObject, null);
                 _label.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
             }
 
-            _unityButton = unityObject.GetComponent<UButton>();
+            _unityButton = unityObject.transform.Find("Button").GetComponent<UButton>();
             _unityButton.onClick.AddListener(() => {
                 if (_eventsActive && OnClicked != null) {
                     OnClicked(this);
                 }
             });
 
-            _image = new Image(this, unityObject);
-            _image.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
-                ColorManager.SynthesisColor.InteractiveElementRight);
+            _image = new Image(this, unityObject.transform.Find("Button").gameObject)
+                         .SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                             ColorManager.SynthesisColor.InteractiveElementRight);
+
+            var gradientUpdater = _image.RootGameObject.GetComponent<GradientImageUpdater>();
+
+            if (gradientUpdater)
+                _image.SetCornerRadius(6);
+        }
+
+        public Button SetTransition(Selectable.Transition transition) {
+            _unityButton.transition = transition;
+            return this;
+        }
+
+        public Button SetInteractableColors(
+            ColorManager.SynthesisColor highlightedColor = ColorManager.SynthesisColor.InteractiveHover,
+            ColorManager.SynthesisColor pressedColor     = ColorManager.SynthesisColor.InteractiveSelect,
+            float fadeDuration                           = 0.1F) {
+            _unityButton.colors = new ColorBlock { normalColor = Color.white,
+                highlightedColor                               = ColorManager.GetColor(highlightedColor),
+                pressedColor                                   = ColorManager.GetColor(pressedColor),
+                selectedColor                                  = ColorManager.GetColor(highlightedColor),
+                disabledColor = new Color32(191, 191, 191, 255), fadeDuration = fadeDuration, colorMultiplier = 1F };
+            return this;
         }
 
         public Button StepIntoLabel(Action<Label> mod) {
@@ -1270,19 +1369,18 @@ namespace Synthesis.UI.Dynamic {
             _headerImage = new Image(this, unityObject.transform.Find("Header").gameObject);
             _headerImage.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
                 ColorManager.SynthesisColor.InteractiveElementRight);
+            _headerImage.SetCornerRadius(8);
 
             _headerLabel = new Label(this, unityObject.transform.Find("Header").Find("Label").gameObject, null);
             _headerLabel.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
 
             var itemObj =
-                unityObject.transform.Find("Template").Find("Viewport").Find("Mask").Find("Content").Find("Item");
+                unityObject.transform.Find("Template").Find("Viewport").Find("Padding").Find("Content").Find("Item");
 
-            _itemBackgroundImage = new Image(this, itemObj.Find("Item Background").gameObject);
-            _itemBackgroundImage.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
-                ColorManager.SynthesisColor.InteractiveElementRight);
+            /*_itemCheckmarkImage = new Image(this, itemObj.Find("Item Checkmark").gameObject);
 
-            _itemCheckmarkImage = new Image(this, itemObj.Find("Item Checkmark").gameObject);
-            _itemCheckmarkImage.SetColor(ColorManager.SynthesisColor.Background);
+            Color bgColor = ColorManager.GetColor(ColorManager.SynthesisColor.Background);
+            _itemCheckmarkImage.SetColor(new Color(bgColor.r, bgColor.g, bgColor.b, 0.21f));*/
 
             _itemLabel = new Label(this, itemObj.Find("Item Label").gameObject, null);
             _itemLabel.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
@@ -1291,6 +1389,22 @@ namespace Synthesis.UI.Dynamic {
 
             _viewportImage.SetColor(ColorManager.SynthesisColor.InteractiveElementRight,
                 ColorManager.SynthesisColor.InteractiveElementLeft);
+            _viewportImage.SetCornerRadius(15);
+
+            var scrollbarBG     = new Image(this, unityObject.transform.Find("Template").Find("Scrollbar").gameObject);
+            var scrollbarHandle = new Image(this, unityObject.transform.Find("Template")
+                                                      .Find("Scrollbar")
+                                                      .Find("Sliding Area")
+                                                      .Find("Handle")
+                                                      .gameObject);
+
+            scrollbarBG.SetColor(ColorManager.SynthesisColor.BackgroundSecondary);
+            scrollbarBG.SetCornerRadius(10);
+
+            // scrollbarHandle.SetColor(ColorManager.SynthesisColor.InteractiveBackground);
+            scrollbarHandle.SetColor(ColorManager.SynthesisColor.Scrollbar);
+            scrollbarHandle.SetGradientDirection(Mathf.PI * 1.5f);
+            scrollbarHandle.SetCornerRadius(6);
         }
 
         public Dropdown SetOptions(string[] options) {
@@ -1334,7 +1448,7 @@ namespace Synthesis.UI.Dynamic {
         public Label Label => _label;
 
         public LabeledDropdown(UIComponent? parent, GameObject unityObject) : base(parent, unityObject) {
-            _dropdown = new Dropdown(this, unityObject.transform.Find("Dropdown").gameObject, null);
+            _dropdown = new Dropdown(this, unityObject.transform.Find("dropdown-base").gameObject, null);
             _label    = new Label(this, unityObject.transform.Find("Label").gameObject, null);
         }
 
@@ -1362,6 +1476,8 @@ namespace Synthesis.UI.Dynamic {
             get => _unityImage.color;
             set { _unityImage.color = value; }
         }
+
+        public UImage UnityImage => _unityImage;
 
         public Image(UIComponent? parent, GameObject unityObject) : base(parent, unityObject) {
             _unityImage = unityObject.GetComponent<UImage>();
@@ -1406,6 +1522,13 @@ namespace Synthesis.UI.Dynamic {
                 return this;
             }
 
+            if (start == Color.clear) {
+                _gradientUpdater.enabled = false;
+                _unityImage.material     = null;
+                _unityImage.color        = start;
+                return this;
+            }
+
             _gradientUpdater.StartColor = start;
             _gradientUpdater.EndColor   = end;
             _gradientUpdater.Refresh();
@@ -1416,8 +1539,10 @@ namespace Synthesis.UI.Dynamic {
         public Image SetCornerRadius(float r) {
             if (_hasCustomSprite)
                 _unityImage.pixelsPerUnitMultiplier = 250f / r;
-            else
+            else {
                 _gradientUpdater.Radius = r;
+                _gradientUpdater.Refresh();
+            }
             return this;
         }
 
@@ -1426,6 +1551,14 @@ namespace Synthesis.UI.Dynamic {
                 _unityImage.pixelsPerUnitMultiplier = m;
 
             return this;
+        }
+
+        public void SetGradientDirection(float angle) {
+            if (!_gradientUpdater)
+                return;
+
+            _gradientUpdater.GradientAngle = angle;
+            _gradientUpdater.Refresh();
         }
     }
 
@@ -1494,7 +1627,7 @@ namespace Synthesis.UI.Dynamic {
                                    .AddOnClickedEvent(b => Value -= Value > Int32.MinValue ? 1 : 0);
 
             _backgroundImage = new Image(this, ifObj.gameObject);
-            _backgroundImage.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.BackgroundSecondary));
+            _backgroundImage.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.InteractiveBackground));
         }
 
         public NumberInputField StepIntoHint(Action<Label> mod) {

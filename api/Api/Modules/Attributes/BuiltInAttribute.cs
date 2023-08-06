@@ -1,5 +1,7 @@
 ﻿using System;
 
+#nullable enable
+
 namespace SynthesisAPI.Modules.Attributes
 {
 	[AttributeUsage(AttributeTargets.Class)]
@@ -9,6 +11,6 @@ namespace SynthesisAPI.Modules.Attributes
 		{
 			DependencyType = t;
 		}
-		public Type DependencyType = null;
+		public Type? DependencyType = null;
 	}
 }

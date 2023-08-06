@@ -178,7 +178,7 @@ namespace Synthesis.Import {
                         rb.isKinematic = true;
                     rb.mass         = (float) group.CollectivePhysicalProperties.Mass;
                     rb.centerOfMass = group.CollectivePhysicalProperties.Com; // I actually don't need to flip this
-                    rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+                    rb.collisionDetectionMode = CollisionDetectionMode.Discrete;
                 }
 
                 groupObjects.Add(group.GUID, groupObject);

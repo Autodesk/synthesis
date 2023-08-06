@@ -136,12 +136,13 @@ namespace Synthesis.UI.Dynamic {
             if (isUserSelecting) {
                 _selectNodeButton.StepIntoLabel(l => l.SetText("Selecting..."));
                 _selectNodeButton.StepIntoButton(
-                    b => b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary))
+                    b => b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground))
                              .StepIntoLabel(l => l.SetText("...")));
             } else {
                 _selectNodeButton.StepIntoLabel(l => l.SetText(_resultingData.NodeName));
                 _selectNodeButton.StepIntoButton(
-                    b => b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementSolid))
+                    b => b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                                             ColorManager.SynthesisColor.InteractiveElementRight))
                              .StepIntoLabel(l => l.SetText("Select")));
             }
         }
@@ -184,8 +185,6 @@ namespace Synthesis.UI.Dynamic {
                 bool hit = UnityEngine.Physics.Raycast(ray, out hitInfo);
                 if (hit && hitInfo.rigidbody != null &&
                     hitInfo.rigidbody.transform.parent == _robot.RobotNode.transform) {
-                    Debug.Log($"Selecting Node: {hitInfo.rigidbody.name}");
-
                     if (_hoveringNode != null) {
                         _hoveringNode.enabled = false;
                     }

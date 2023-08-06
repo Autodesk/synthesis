@@ -100,7 +100,7 @@ public class ScoringZonesPanel : PanelDynamic {
             _zonesScrollView.Content.CreateSubContent(new Vector2(_entryWidth, ROW_HEIGHT))
                 .ApplyTemplate(ListVerticalLayout)
                 .SplitLeftRight(BUTTON_WIDTH, HORIZONTAL_PADDING);
-        leftContent.SetBackgroundColor<Content>(zone.Alliance == Alliance.Red ? Color.red : Color.blue);
+        leftContent.StepIntoImage(i => i.SetColor((zone.Alliance == Alliance.Red) ? Color.red : Color.blue));
 
         (Content labelsContent, Content buttonsContent) =
             rightContent.SplitLeftRight(_entryWidth - (HORIZONTAL_PADDING + BUTTON_WIDTH) * 3, HORIZONTAL_PADDING);
@@ -141,7 +141,7 @@ public class ScoringZonesPanel : PanelDynamic {
     }
 
     private void OpenScoringZoneGizmo(ScoringZone zone = null) {
-        DynamicUIManager.CreatePanel<ZoneConfigPanel>(persistent: false, zone);
+        DynamicUIManager.CreatePanel<ZoneConfigPanel>(persistent: true, zone);
         ZoneConfigPanel panel = DynamicUIManager.GetPanel<ZoneConfigPanel>();
         panel.SetCallback(AddZoneEntry);
     }
@@ -149,7 +149,10 @@ public class ScoringZonesPanel : PanelDynamic {
     public override void Update() {}
 
     public override void Delete() {
-        FieldSimObject.CurrentField.ScoringZones.ForEach(x => x.VisibilityCounter--);
+        FieldSimObject.CurrentField.ScoringZones.ForEach(x => {
+            if (x != null)
+                x.VisibilityCounter--;
+        });
         PhysicsManager.IsFrozen = false;
     }
 }

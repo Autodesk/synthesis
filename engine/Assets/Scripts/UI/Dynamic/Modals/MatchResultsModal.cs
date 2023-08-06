@@ -38,17 +38,11 @@ namespace UI.Dynamic.Modals {
 
         public override void Create() {
             Title.SetText("Match Results");
-            Description.SetText("Statistics about the match");
 
             CancelButton
                 .AddOnClickedEvent(x => {
-                    MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.None);
-                    SimulationRunner.InSim = false;
-                    DynamicUIManager.CloseAllPanels(true);
-                    ModeManager.CurrentMode = null;
-                    DynamicUIManager.CloseActiveModal();
-
-                    SceneManager.LoadScene("GridMenuScene", LoadSceneMode.Single);
+                    DynamicUIManager.CreateModal<ExitSynthesisModal>();
+                    DynamicUIManager.ActiveModal.OnCancelled = () => DynamicUIManager.CreateModal<MatchResultsModal>();
                 })
                 .StepIntoLabel(l => l.SetText("Exit"));
 
@@ -72,11 +66,11 @@ namespace UI.Dynamic.Modals {
         private RectTransform _middleButtonObject;
 
         /// Creates the main scroll menu and adds all of the match result entries
-        public void CreateScrollMenu() {
+        private void CreateScrollMenu() {
             var scrollView = MainContent.CreateScrollView()
                                  .SetRightStretch<ScrollView>()
                                  .ApplyTemplate(VerticalLayout)
-                                 .SetHeight<ScrollView>(MODAL_HEIGHT - VERTICAL_PADDING * 2 - 50);
+                                 .SetHeight<ScrollView>(MODAL_HEIGHT - 16);
 
             MatchMode.MatchResultsTracker.MatchResultEntries.ForEach(x => {
                 var entry = x.Value;

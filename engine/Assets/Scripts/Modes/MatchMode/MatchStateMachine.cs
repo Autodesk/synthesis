@@ -28,7 +28,6 @@ namespace Modes.MatchMode {
         /// Sets the current state. Automatically calls any event functions in the state
         /// <param name="stateName">The new state to switch to</param>
         public void SetState(StateName stateName) {
-            Debug.Log($"State set to {stateName}");
             var newState = _matchStates[stateName];
             if (newState == null) {
                 Debug.LogError($"No state found for {stateName}");
@@ -170,8 +169,6 @@ namespace Modes.MatchMode {
             public override void End() {
                 base.End();
 
-                PhysicsManager.IsFrozen = false;
-
                 if (Camera.main != null) {
                     Camera.main.GetComponent<CameraController>().CameraMode = CameraController.CameraModes["Orbit"];
                 }
@@ -191,7 +188,6 @@ namespace Modes.MatchMode {
                     DynamicUIManager.CreateModal<ConfirmModal>("Start Match?");
                     DynamicUIManager.ActiveModal.OnAccepted += () => {
                         DynamicUIManager.CloseActiveModal();
-                        DynamicUIManager.CreatePanel<ScoreboardPanel>(true, true);
                         Instance.SetState(StateName.Auto);
                     };
                     DynamicUIManager.ActiveModal.OnCancelled += () => {
@@ -215,11 +211,12 @@ namespace Modes.MatchMode {
             public override void Start() {
                 base.Start();
 
-                Scoring.targetTime = 15;
+                MatchMode.MatchTime = 15;
                 DynamicUIManager.CreatePanel<ScoreboardPanel>(true, true);
 
                 AnalyticsManager.LogCustomEvent(
                     AnalyticsEvent.MatchStarted, ("NumRobots", RobotSimObject.SpawnedRobots.Count));
+                PhysicsManager.IsFrozen = false;
             }
 
             public override void Update() {}
@@ -242,7 +239,7 @@ namespace Modes.MatchMode {
                 base.Start();
                 _possessed                             = RobotSimObject.CurrentlyPossessedRobot;
                 RobotSimObject.CurrentlyPossessedRobot = string.Empty;
-                Scoring.targetTime                     = 135;
+                MatchMode.MatchTime                    = 135;
                 _timer                                 = 3;
             }
 
@@ -269,7 +266,7 @@ namespace Modes.MatchMode {
             }
 
             public override void Update() {
-                if (Scoring.targetTime <= 30)
+                if (MatchMode.MatchTime <= 30)
                     Instance.AdvanceState();
             }
 
@@ -320,6 +317,9 @@ namespace Modes.MatchMode {
             public override void Start() {
                 base.Start();
 
+                DynamicUIManager.CloseActiveModal();
+                DynamicUIManager.CloseAllPanels(true);
+
                 // Reset robots to their selected spawn position
                 int i = 0;
                 MatchMode.Robots.ForEach(x => {
@@ -338,10 +338,15 @@ namespace Modes.MatchMode {
                     i++;
                 });
 
-                // TODO: reset the match results tracker
-                // TODO: reset the scoreboard and timer
-                // TODO: add a modal or panel to start the match so it doesn't instantly start
-                Instance.SetState(StateName.Auto);
+                DynamicUIManager.CreateModal<ConfirmModal>("Start Match?");
+                DynamicUIManager.ActiveModal.OnAccepted += () => {
+                    DynamicUIManager.CloseActiveModal();
+                    Instance.SetState(StateName.Auto);
+                };
+                DynamicUIManager.ActiveModal.OnCancelled += () => {
+                    DynamicUIManager.CloseActiveModal();
+                    Instance.SetState(StateName.Reconfigure);
+                };
             }
 
             public override void Update() {}
@@ -354,12 +359,13 @@ namespace Modes.MatchMode {
         /// Resets the match and sends he user back to the MatchConfig modal
         public class Reconfigure : MatchState {
             public override void Start() {
+                DynamicUIManager.CloseActiveModal();
+                DynamicUIManager.CloseAllPanels(true);
+
                 RobotSimObject.RemoveAllRobots();
                 FieldSimObject.DeleteField();
                 MatchMode.ResetMatchConfiguration();
 
-                // TODO: reset the match results tracker
-                // TODO: reset the scoreboard and timer
                 Instance.SetState(StateName.MatchConfig);
             }
 

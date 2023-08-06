@@ -11,7 +11,7 @@ using Logger = SynthesisAPI.Utilities.Logger;
 
 public class ChangeDrivetrainModal : ModalDynamic {
     public const float MODAL_WIDTH  = 400f;
-    public const float MODAL_HEIGHT = 100f;
+    public const float MODAL_HEIGHT = 55;
 
     private RobotSimObject.DrivetrainType _selectedType;
 
@@ -23,23 +23,25 @@ public class ChangeDrivetrainModal : ModalDynamic {
         }
 
         Title.SetText("Change Drivetrain");
-        Description.SetText("Select the drivetrain you want to use");
+
+        ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+
         AcceptButton.AddOnClickedEvent(b => {
             MainHUD.ConfigRobot.ConfiguredDrivetrainType = _selectedType;
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.DrivetrainSwitched, ("DrivetrainType", _selectedType.Name));
+
             DynamicUIManager.CloseActiveModal();
 
-            AnalyticsManager.LogCustomEvent(AnalyticsEvent.DrivetrainSwitched, ("DrivetrainType", _selectedType.Name));
+            RobotSimObject.GetCurrentlyPossessedRobot().CreateDrivetrainTooltip();
         });
 
         _selectedType = MainHUD.ConfigRobot.ConfiguredDrivetrainType;
 
-        MainContent.CreateLabeledDropdown()
-            .SetTopStretch<LabeledDropdown>()
-            .StepIntoLabel(l => l.SetText("Type"))
-            .StepIntoDropdown(
-                d => d.SetOptions(RobotSimObject.DRIVETRAIN_TYPES.Select(x => x.Name).ToArray())
-                         .AddOnValueChangedEvent((d, i, o) => _selectedType = RobotSimObject.DRIVETRAIN_TYPES[i])
-                         .SetValue(_selectedType.Value));
+        MainContent.CreateDropdown()
+            .SetTopStretch<Dropdown>()
+            .SetOptions(RobotSimObject.DRIVETRAIN_TYPES.Select(x => x.Name).ToArray())
+            .AddOnValueChangedEvent((d, i, o) => _selectedType = RobotSimObject.DRIVETRAIN_TYPES[i])
+            .SetValue(_selectedType.Value);
     }
 
     public override void Update() {

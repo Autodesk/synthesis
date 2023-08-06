@@ -5,6 +5,7 @@ using System.IO;
 using Newtonsoft.Json;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
+using UnityEngine;
 
 namespace Synthesis.PreferenceManager {
     public static class PreferenceManager {
@@ -62,7 +63,14 @@ namespace Synthesis.PreferenceManager {
         }
 
         public static T GetPreference<T>(string key) {
-            return ContainsPreference(key) ? JsonConvert.DeserializeObject<T>((string) _preferences[key]) : default;
+            if (ContainsPreference(key)) {
+                try {
+                    return JsonConvert.DeserializeObject<T>((string) _preferences[key]);
+                } catch {
+                    Debug.Log("Cannot deserialize that type");
+                }
+            }
+            return default;
         }
 
         public static bool ContainsPreference(string key) {

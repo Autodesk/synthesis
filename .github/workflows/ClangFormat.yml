@@ -2,7 +2,7 @@ name: Format Validation (Clang)
 
 on:
   workflow_dispatch: {}
-  push: 
+  push:
     branches: [ master, dev ]
   pull_request:
     branches: [ master, dev ]
@@ -12,12 +12,12 @@ jobs:
     name: Run Clang Format Validation Script
     runs-on: ubuntu-latest
     steps:
-    - name: Get Clang Format
+    - name: Get Clang Format 16
       run: |
+        sudo wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+        sudo add-apt-repository "deb http://apt.llvm.org/jammy/  llvm-toolchain-jammy-16 main"
         sudo apt-get update
-        sudo apt-get install --no-install-recommends -y
-        sudo apt-get install clang-format-15
-        sudo mv /usr/bin/clang-format-15 /usr/bin/clang-format
+        sudo apt-get install -y clang-format-16
     - name: Checkout Code
       uses: actions/checkout@v2
     - name: Python Setup
