@@ -787,6 +787,15 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 enabled=True,
             )
 
+            self.createBooleanInput(
+                "export_as_part",
+                "Export As Part",
+                exporter_settings,
+                checked=False,
+                tooltip="Use to export as a part for Mix And Match",
+                enabled=True,
+            )
+
             # ~~~~~~~~~~~~~~~~ PHYSICS SETINGS ~~~~~~~~~~~~~~~~
             """
             Physics settings group command
@@ -1174,6 +1183,12 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             if mode_dropdown.selectedItem.name == "Synthesis Exporter":
                 mode = 5
 
+            export_as_part_boolean = (
+                eventArgs.command.commandInputs.itemById("advanced_settings")
+                .children.itemById("exporter_settings")
+                .children.itemById("export_as_part")
+            )
+
             # defaultPath = self.fp
             # defaultPath = os.getenv()
 
@@ -1193,12 +1208,20 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
 
             if platform.system() == "Windows":
                 if isRobot:
-                    savepath = (
-                        os.getenv("APPDATA")
-                        + "\\Autodesk\\Synthesis\\Mira\\"
-                        + processedFileName
-                        + ".mira"
-                    )
+                    if export_as_part_boolean.value:
+                        savepath = (
+                            os.getenv("APPDATA")
+                            + "\\Autodesk\\Synthesis\\MixAndMatch\\Mira\\"
+                            + processedFileName
+                            + ".mira"
+                        )
+                    else:
+                        savepath = (
+                            os.getenv("APPDATA")
+                            + "\\Autodesk\\Synthesis\\Mira\\"
+                            + processedFileName
+                            + ".mira"
+                        )
                 else:
                     savepath = (
                         os.getenv("APPDATA")
@@ -1211,12 +1234,20 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
 
                 home = expanduser("~")
                 if isRobot:
-                    savepath = (
-                        home
-                        + "/.config/Autodesk/Synthesis/Mira/"
-                        + processedFileName
-                        + ".mira"
-                    )
+                    if export_as_part_boolean.value:
+                        savepath = (
+                            home
+                            + "/.config/Autodesk/Synthesis/MixAndMatch/Mira/"
+                            + processedFileName
+                            + ".mira"
+                        )
+                    else:
+                        savepath = (
+                            home
+                            + "/.config/Autodesk/Synthesis/Mira/"
+                            + processedFileName
+                            + ".mira"
+                        )
                 else:
                     savepath = (
                         home
@@ -2116,18 +2147,18 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
 
             elif cmdInput.id == "wheel_select":
                 self.reset()
-                
+
                 # wheelSelect.isVisible = False
                 addWheelInput.isEnabled = True
 
             elif cmdInput.id == "joint_select":
                 self.reset()
-                
+
                 addJointInput.isEnabled = True
 
             elif cmdInput.id == "gamepiece_select":
                 self.reset()
-                
+
                 addFieldInput.isEnabled = True
 
             elif cmdInput.id == "friction_override":
