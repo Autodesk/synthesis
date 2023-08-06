@@ -1,6 +1,5 @@
 #define DEBUG_MIRABUF
 
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirabuf;
@@ -13,13 +12,9 @@ using System.Threading.Tasks;
 using SynthesisAPI.Utilities;
 using Google.Protobuf;
 using Mirabuf.Material;
-using Newtonsoft.Json;
 using SimObjects.MixAndMatch;
 using Logger              = SynthesisAPI.Utilities.Logger;
 using MPhysicalProperties = Mirabuf.PhysicalProperties;
-using Object              = System.Object;
-using Transform           = Mirabuf.Transform;
-using Vector3             = Mirabuf.Vector3;
 using UVector3            = UnityEngine.Vector3;
 
 namespace Synthesis.Import {
@@ -51,8 +46,6 @@ namespace Synthesis.Import {
             Valid          = 1,
             DuplicateParts = 2
         }
-
-        ;
 
         private MirabufFileState _state = MirabufFileState.Valid;
 
@@ -120,6 +113,10 @@ namespace Synthesis.Import {
             miraLiveFiles.ForEachIndex(
                 (i, m) => groupObjects[i] = m.GenerateDefinitionObjects(assemblyContainer, true, true, i));
 
+            if (miraLiveFiles.Length == 1) {
+                return groupObjects;
+            }
+            
             var mainGrounded = new GameObject("grounded");
             mainGrounded.transform.SetParent(assemblyContainer.transform);
             var rb = mainGrounded.AddComponent<Rigidbody>();

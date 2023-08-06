@@ -11,7 +11,7 @@ namespace SimObjects.MixAndMatch {
 
         private static readonly string PART_MIRABUF_FOLDER_PATH =
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + ALT_SEP + "Autodesk" + ALT_SEP +
-            "Synthesis" + ALT_SEP + "Mira";
+            "Synthesis" + ALT_SEP + "MixAndMatch" + ALT_SEP + "Mira";
 
         private static readonly string MIX_AND_MATCH_FOLDER_PATH =
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + ALT_SEP + "Autodesk" + ALT_SEP +
