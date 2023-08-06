@@ -57,6 +57,9 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
             InstantiateConnectionGameObjects();
             PopulateScrollView();
+            
+            Camera.main!.GetComponent<CameraController>().CameraMode = CameraController.CameraModes["Orbit"];
+            OrbitCameraMode.FocusPoint = () => Vector3.up * 0.5f;
 
             return true;
         }
@@ -133,7 +136,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
         /// <summary>Instantiates a single connection point object</summary>
         private GameObject InstantiateConnectionGameObject(ConnectionPointData connection) {
-            var gameObject  = GameObject.Instantiate(SynthesisAssetCollection.Instance.MixAndMatchConnectionPrefab);
+            var gameObject  = Object.Instantiate(SynthesisAssetCollection.Instance.MixAndMatchConnectionPrefab);
 
             var trf = gameObject.transform;
             trf.SetParent(_partGameObject.transform);

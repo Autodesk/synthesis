@@ -65,6 +65,13 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
             PopulateScrollView();
 
+            Camera.main!.GetComponent<CameraController>().CameraMode = CameraController.CameraModes["Orbit"];
+            
+            OrbitCameraMode.FocusPoint = () =>
+                _robotGameObject != null
+                    ? _robotGameObject.transform.position
+                    : Vector3.up/2f;
+
             return true;
         }
 

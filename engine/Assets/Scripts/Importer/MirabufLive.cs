@@ -149,7 +149,7 @@ namespace Synthesis.Import {
                 }
             });
 
-            rb.centerOfMass /= groupObjects.Length;
+            rb.centerOfMass /= miraLiveFiles.Length;
 
             return groupObjects;
         }

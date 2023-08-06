@@ -117,14 +117,14 @@ namespace SimObjects.MixAndMatch {
         /// <summary>Deletes the part if it exists</summary>
         public static void DeletePart(string fileName) {
             var filePath = Path.GetFullPath(PART_FOLDER_PATH) + ALT_SEP + fileName + ".json";
-            if (UnityEngine.Windows.File.Exists(filePath))
+            if (File.Exists(filePath))
                 File.Delete(filePath);
         }
 
         /// <summary>Deletes the robot if it exists</summary>
         public static void DeleteRobot(string fileName) {
             var filePath = Path.GetFullPath(ROBOT_FOLDER_PATH) + ALT_SEP + fileName + ".json";
-            if (UnityEngine.Windows.File.Exists(filePath))
+            if (File.Exists(filePath))
                 File.Delete(filePath);
         }
     }
