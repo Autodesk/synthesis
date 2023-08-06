@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package SynthesisAPI.Aether;
+
 import "v1/controller.proto";
 
 message LobbyClientInformation {

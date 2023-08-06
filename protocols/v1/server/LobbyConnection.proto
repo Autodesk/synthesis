@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package SynthesisAPI.Aether;
+
 import "v1/server/ServerData.proto";
 import "v1/controller.proto";
 
@@ -123,7 +125,7 @@ message LobbyMessage {
     // Data Handling
 
     message FromMakeDataAvailableConfirmation {
-        uint64 data_guid = 1;
+        SynthesisDataDescriptor updated_description = 1;
     }
 
     message FromAllDataAvailable {

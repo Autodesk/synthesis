@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Synthesis.Physics;
 using Synthesis.Runtime;
 using Synthesis.UI.Dynamic;
+using SynthesisAPI.Aether;
 using SynthesisAPI.Aether.Lobby;
 using SynthesisAPI.Controller;
 using SynthesisAPI.Simulation;

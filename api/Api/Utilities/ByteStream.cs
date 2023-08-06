@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 
 namespace SynthesisAPI.Utilities {
 
+    /// <summary>
+    /// Creates a read-only stream from a byte enumerator
+    /// </summary>
     public class ByteStream : Stream {
         public override bool CanRead => true;
         public override bool CanSeek => false;
@@ -18,6 +20,11 @@ namespace SynthesisAPI.Utilities {
 
         private readonly IEnumerator<byte> _enumer;
 
+        /// <summary>
+        /// Constructs a stream from a byte enumerator
+        /// </summary>
+        /// <param name="enumer">Enumerator or byte data</param>
+        /// <param name="length">Length of byte data</param>
         public ByteStream(IEnumerator<byte> enumer, long length) {
             _enumer = enumer;
             _length = length;

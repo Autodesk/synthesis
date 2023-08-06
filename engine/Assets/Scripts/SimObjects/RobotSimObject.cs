@@ -12,6 +12,7 @@ using Synthesis.PreferenceManager;
 using Synthesis.Runtime;
 using Synthesis.UI;
 using Synthesis.WS.Translation;
+using SynthesisAPI.Aether;
 using SynthesisAPI.Aether.Lobby;
 using SynthesisAPI.Controller;
 using SynthesisAPI.EventBus;

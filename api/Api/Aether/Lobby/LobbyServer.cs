@@ -250,7 +250,7 @@ namespace SynthesisAPI.Aether.Lobby {
 
                 handler.WriteMessage(new LobbyMessage {
                     FromMakeDataAvailableConfirmation = new LobbyMessage.Types.FromMakeDataAvailableConfirmation {
-                        DataGuid = dataGuid
+                        UpdatedDescription = description
                     }
                 });
             }

@@ -14,6 +14,11 @@ using System.Threading.Tasks;
 #nullable enable
 
 namespace SynthesisAPI.Aether.Lobby {
+
+    /// <summary>
+    /// LobbyClient establishes a connection to the LobbyServer and creates channels for communication
+    /// of lobby updates as well as data exchanging between clients
+    /// </summary>
     public class LobbyClient : IDisposable {
 
         private static readonly Result<LobbyMessage?, Exception> NO_INSTANCE_ERROR_RESULT
@@ -28,29 +33,80 @@ namespace SynthesisAPI.Aether.Lobby {
         public string Name => _instance?.Handler.Name ?? "--unknown--";
         public bool IsAlive => _instance != null;
 
+        /// <summary>
+        /// Constructs a LobbyClient that will connect to <paramref name="ip" /> and attempt
+        /// to set the client's lobby name to <paramref name="name" />.
+        /// </summary>
+        /// <param name="ip">IP to connect to. (Format: ###.###.###.###)</param>
+        /// <param name="name">Username to attempt. Can potentially be corrected by Server</param>
         public LobbyClient(string ip, string name) {
             _instance = new Inner(ip, name);
         }
 
+#region Public Instance Functions
+
+#region Generic Requests
+
+        /// <summary>
+        /// Get Lobby Information from currently connected Lobby.
+        /// </summary>
+        /// <returns>LobbyInformation, mostly including a list of other clients and their information</returns>
         public Task<Result<LobbyMessage?, Exception>> GetLobbyInformation() {
             return _instance?.GetLobbyInformation() ?? Task.FromResult(NO_INSTANCE_ERROR_RESULT);
         }
 
+#endregion
+
+#region Runtime Requests
+
+        /// <summary>
+        /// Sends signal updates to the server to receive transform data for the rest of the clients
+        /// </summary>
+        /// <param name="updates">List of signal updates</param>
+        /// <returns>Task that gives you the raw response</returns>
         public Task<Result<LobbyMessage?, Exception>> UpdateControllableState(List<SignalData> updates)
             => _instance?.UpdateControllableState(updates) ?? Task.FromResult(NO_INSTANCE_ERROR_RESULT);
 
+        /// <summary>
+        /// Sends transform data for all clients in the HostSimulation in exchange for the newest signal data (or updates I can't remember)
+        /// </summary>
+        /// <param name="transforms">Lists of transformations of all client robots</param>
+        /// <returns>Task that gives you the raw response</returns>
         public Task<Result<LobbyMessage?, Exception>> UpdateTransforms(List<ServerTransforms> transforms)
             => _instance?.UpdateTransforms(transforms) ?? Task.FromResult(NO_INSTANCE_ERROR_RESULT);
 
+#endregion
+
+#region Data Handling Requests
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="description"></param>
+        /// <returns>Task that gives you the raw response</returns>
         public Task<Result<LobbyMessage?, Exception>> MakeDataAvailable(SynthesisDataDescriptor description)
             => _instance?.MakeDataAvailable(description) ?? Task.FromResult(NO_INSTANCE_ERROR_RESULT);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>Task that gives you the raw response</returns>
         public Task<Result<LobbyMessage?, Exception>> GetAllAvailableData()
             => _instance?.GetAllAvailableData() ?? Task.FromResult(NO_INSTANCE_ERROR_RESULT);
 
+        public Task<Result<LobbyMessage?, Exception>> UploadData(SynthesisData data)
+            => _instance?.UploadData(data) ?? Task.FromResult(NO_INSTANCE_ERROR_RESULT);
+
+#endregion
+
+#endregion
+
         private class Inner : IDisposable {
 
-            private Atomic<bool> _isAlive = new Atomic<bool>(true);
+            private readonly Atomic<bool> _isAlive = new Atomic<bool>(true);
+
+            private static readonly Result<LobbyMessage?, Exception> CLIENT_NOT_ALIVE_ERROR_RESULT
+                = new Result<LobbyMessage?, Exception>(new Exception("Client no longer alive"));
             
             public readonly string IP;
             private readonly LobbyClientHandler _handler;
@@ -59,7 +115,7 @@ namespace SynthesisAPI.Aether.Lobby {
             public ReaderWriterLockSlim TransformDataLock;
             public Dictionary<ulong, ServerTransforms> TransformData;
 
-            private ConcurrentQueue<Task<Result<LobbyMessage?, Exception>>> _requestQueue;
+            private readonly ConcurrentQueue<Task<Result<LobbyMessage?, Exception>>> _requestQueue;
 
             private readonly Thread _heartbeatThread;
             private readonly Thread _requestSenderThread;
@@ -93,9 +149,22 @@ namespace SynthesisAPI.Aether.Lobby {
                     Dispose();
             }
 
+            private void RequestQueueProcessor() {
+                while (_isAlive) {
+                    var success = _requestQueue.TryDequeue(out var task);
+                    if (!success)
+                        continue;
+
+                    task.Start();
+                    task.Wait();
+                }
+            }
+
+#region Generic Request Handling
+
             public Task<Result<LobbyMessage?, Exception>> GetLobbyInformation() {
                 if (!_isAlive.Value)
-                    return Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("Client no longer alive")));
+                    return Task.FromResult(CLIENT_NOT_ALIVE_ERROR_RESULT);
 
                 var request = new LobbyMessage.Types.ToGetLobbyInformation {
                     SenderGuid = Handler.Guid
@@ -112,17 +181,6 @@ namespace SynthesisAPI.Aether.Lobby {
 
                 _requestQueue.Enqueue(task);
                 return task;
-            }
-
-            private void RequestQueueProcessor() {
-                while (_isAlive) {
-                    var success = _requestQueue.TryDequeue(out var task);
-                    if (!success)
-                        continue;
-
-                    task.Start();
-                    task.Wait();
-                }
             }
 
             private void ClientHeartbeat() {
@@ -145,9 +203,13 @@ namespace SynthesisAPI.Aether.Lobby {
                 }
             }
 
+#endregion
+
+#region Shared Data Handling
+
             public Task<Result<LobbyMessage?, Exception>> MakeDataAvailable(SynthesisDataDescriptor description) {
                 if (!_isAlive.Value)
-                    return Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("Client no longer alive")));
+                    return Task.FromResult(CLIENT_NOT_ALIVE_ERROR_RESULT);
 
                 var request = new LobbyMessage.Types.ToMakeDataAvailable {
                     Description = description
@@ -168,7 +230,7 @@ namespace SynthesisAPI.Aether.Lobby {
 
             public Task<Result<LobbyMessage?, Exception>> GetAllAvailableData() {
                 if (!_isAlive.Value)
-                    return Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("Client no longer alive")));
+                    return Task.FromResult(CLIENT_NOT_ALIVE_ERROR_RESULT);
 
                 var request = new LobbyMessage.Types.ToAllDataAvailable();
 
@@ -185,9 +247,34 @@ namespace SynthesisAPI.Aether.Lobby {
                 return task;
             }
 
+            public Task<Result<LobbyMessage?, Exception>> UploadData(SynthesisData data) {
+                if (!_isAlive.Value)
+                    return Task.FromResult(CLIENT_NOT_ALIVE_ERROR_RESULT);
+
+                var request = new LobbyMessage.Types.ToUploadSynthesisData {
+                    Data = data
+                };
+
+                var task = new Task<Result<LobbyMessage?, Exception>>(() => {
+                    var response = HandleResponseBoilerplate(
+                        new LobbyMessage { ToUploadSynthesisData = request },
+                        LobbyMessage.MessageTypeOneofCase.FromUploadSynthesisDataConfirmation
+                    );
+
+                    return response;
+                });
+
+                _requestQueue.Enqueue(task);
+                return task;
+            }
+
+#endregion
+
+#region Runtime Handling
+
             public Task<Result<LobbyMessage?, Exception>> UpdateControllableState(List<SignalData> updates) {
                 if (!_isAlive.Value)
-                    return Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("Client no longer alive")));
+                    return Task.FromResult(CLIENT_NOT_ALIVE_ERROR_RESULT);
 
                 var request = new LobbyMessage.Types.ToUpdateControllableState {
                     Guid = _handler.Guid
@@ -209,7 +296,7 @@ namespace SynthesisAPI.Aether.Lobby {
 
             public Task<Result<LobbyMessage?, Exception>> UpdateTransforms(List<ServerTransforms> transforms) {
                 if (!_isAlive.Value)
-                    return Task.FromResult(new Result<LobbyMessage?, Exception>(new Exception("Client no longer alive")));
+                    return Task.FromResult(CLIENT_NOT_ALIVE_ERROR_RESULT);
 
                 var request = new LobbyMessage.Types.ToUpdateTransformData();
                 request.TransformData.AddRange(transforms);
@@ -225,6 +312,8 @@ namespace SynthesisAPI.Aether.Lobby {
                 _requestQueue.Enqueue(task);
                 return task;
             }
+
+#endregion
 
             /// <summary>
             /// TODO: Rename
@@ -272,7 +361,6 @@ namespace SynthesisAPI.Aether.Lobby {
     internal class LobbyClientHandler : IDisposable {
 
         private const int READ_TIMEOUT_MS = 10000;
-        private const int READ_BUFFER_SIZE = 2048;
 
         private readonly ReaderWriterLockSlim _clientInfoLock = new ReaderWriterLockSlim();
         private readonly LobbyClientInformation _clientInformation;

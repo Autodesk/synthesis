@@ -1,10 +1,15 @@
+using System;
 using Synthesis.Runtime;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.Aether.Lobby;
+using SynthesisAPI.Aether;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Google.Protobuf;
 using Synthesis.Import;
+using Synthesis.Util;
+using SynthesisAPI.Utilities;
 
 #nullable enable
 
@@ -14,6 +19,9 @@ public class HostMode : IMode {
     
     private LobbyServer? _server;
     private LobbyClient? _hostClient;
+
+    // Key: DataGuid, Value: MirabufPath
+    private readonly Dictionary<ulong, (SynthesisDataDescriptor descriptor, string pathToData)> _shareableMirafiles = new();
 
     public IReadOnlyCollection<LobbyClientInformation> AllClients
         => _server?.Clients ?? new List<LobbyClientInformation>(1).AsReadOnly();
@@ -31,25 +39,89 @@ public class HostMode : IMode {
         _hostClient = new LobbyClient(SERVER_IP, username);
     }
 
-    public void UploadSelectionDescriptions() {
+    public void GatherAndUploadDataDescriptions() {
         if (_hostClient?.IsAlive ?? false)
             return;
 
-        MirabufLive.GetFieldFiles().Select(x => new SynthesisDataDescriptor {
-            Name = Path.GetFileNameWithoutExtension(x),
-            Description = "Field"
-        }).ForEach(x => _hostClient?.MakeDataAvailable(x));
-        MirabufLive.GetRobotFiles().Select(x => new SynthesisDataDescriptor {
-            Name = Path.GetFileNameWithoutExtension(x),
-            Description = "Robot"
-        }).ForEach(x => _hostClient?.MakeDataAvailable(x));
+        LinkedList<(SynthesisDataDescriptor descriptor, string path)> dataPairings = new();
+
+        MirabufLive.GetFieldFiles().ForEach(x => dataPairings.AddLast(
+            (
+                new SynthesisDataDescriptor {
+                    Name = Path.GetFileNameWithoutExtension(x),
+                    Description = "Field"
+                },
+                x
+            )));
+        MirabufLive.GetRobotFiles().ForEach(x => dataPairings.AddLast(
+            (
+                new SynthesisDataDescriptor {
+                    Name = Path.GetFileNameWithoutExtension(x),
+                    Description = "Robot"
+                },
+                x
+            )));
+        dataPairings.ForEach(x => {
+            var makeDataAvailableTask = _hostClient!.MakeDataAvailable(x.descriptor);
+            makeDataAvailableTask.Wait();
+            var updatedDescriptor = makeDataAvailableTask.Result.GetResult()!.FromMakeDataAvailableConfirmation.UpdatedDescription;
+            _shareableMirafiles.Add(updatedDescriptor.Guid, (updatedDescriptor, x.path));
+        });
     }
 
-    public void UploadSelections() {
+    public (Task<bool> task, AtomicReadOnly<NetworkTaskStatus>? status) UploadData() {
         if (_hostClient?.IsAlive ?? false)
-            return;
+            return (Task.FromResult(false), null);
 
-        _hostClient.GetLobbyInformation();
+        Atomic<NetworkTaskStatus> status = new Atomic<NetworkTaskStatus>(new NetworkTaskStatus {
+            Progress = 0f,
+            Message = ""
+        });
+        return (Task<bool>.Factory.StartNew(() => {
+
+            var statusAtomic = status;
+            var statusData = statusAtomic.Value;
+
+            statusData.Message = "Gathering Selections...";
+            statusAtomic.Value = statusData;
+
+            var hostGuid = _hostClient!.Guid;
+
+            var lobbyInfoTask = _hostClient!.GetLobbyInformation();
+            lobbyInfoTask.Wait();
+            var lobbyInfo = lobbyInfoTask.Result.GetResult()!.FromGetLobbyInformation.LobbyInformation;
+            HashSet<ulong> guidsToUpload = new HashSet<ulong>();
+            lobbyInfo.Clients.ForEach(x => x.Selections.ForEach(y => {
+                if (y.Value.DataOwner == hostGuid) {
+                    guidsToUpload.Add(y.Value.DataGuid);
+                }
+            }));
+
+            float counter = 0;
+            guidsToUpload.ForEach(x => {
+                var dataInfo = _shareableMirafiles[x];
+
+                statusData.Message = $"Uploading '{dataInfo.descriptor.Name}'...";
+                statusData.Progress = counter / guidsToUpload.Count;
+                statusAtomic.Value = statusData;
+                counter++;
+
+                ReadOnlySpan<byte> raw = File.ReadAllBytes(dataInfo.pathToData);
+
+                SynthesisData data = new() {
+                    Description = dataInfo.descriptor,
+                    Buffer = ByteString.CopyFrom(raw)
+                };
+
+                _hostClient!.UploadData(data);
+            });
+
+            statusData.Progress = 1f;
+            statusAtomic.Value = statusData;
+
+            return true;
+
+        }), status.AsReadOnly());
     }
 
     public void End() {

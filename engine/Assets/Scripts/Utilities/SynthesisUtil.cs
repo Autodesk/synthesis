@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System.Threading.Tasks;
 using Mirabuf;
 using Mirabuf.Joint;
 
@@ -136,5 +137,10 @@ namespace Synthesis.Util {
             cart = cart.normalized;
             return new UVector3(cart.magnitude, Mathf.Acos(cart.y / 1), Mathf.Asin(cart.z / 1));
         }
+    }
+    
+    public struct NetworkTaskStatus {
+        public float Progress;
+        public string Message;
     }
 }
