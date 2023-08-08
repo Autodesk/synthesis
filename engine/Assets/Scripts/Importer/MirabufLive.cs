@@ -553,7 +553,10 @@ namespace Synthesis.Import {
 
                     var partInstance   = part.Value;
                     var partDefinition = assembly.Data.Parts.PartDefinitions[partInstance.PartDefinitionReference];
-                    collectivePhysData.Add((partInstance.GlobalTransform.UnityMatrix, partDefinition.PhysicalData));
+                    
+                    if (partDefinition.Bodies.Any()) {
+                        collectivePhysData.Add((partInstance.GlobalTransform.UnityMatrix, partDefinition.PhysicalData));
+                    }
                 }
 
                 var combPhysProps = CombinePhysicalProperties(collectivePhysData);
