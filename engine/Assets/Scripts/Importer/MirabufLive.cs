@@ -497,10 +497,10 @@ namespace Synthesis.Import {
                         live._state = MirabufFileState.DuplicateParts;
                         continue;
                     }
-                    
+
                     var partInstance   = part.Value;
                     var partDefinition = assembly.Data.Parts.PartDefinitions[partInstance.PartDefinitionReference];
-                    
+
                     if (partDefinition.Bodies.Any()) {
                         collectivePhysData.Add((partInstance.GlobalTransform.UnityMatrix, partDefinition.PhysicalData));
                     }
