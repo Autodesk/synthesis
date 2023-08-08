@@ -336,7 +336,32 @@ namespace Synthesis.UI.Dynamic {
         public void Delete_Internal() {
             GameObject.Destroy(_unityObject);
         }
-    }
+
+		protected Content Strip(Vector2? newContentSize = null, float leftPadding = 0f, float rightPadding = 0f,
+			float topPadding = 0f, float bottomPadding = 0f) {
+			CancelButton.RootGameObject.SetActive(false);
+			AcceptButton.RootGameObject.SetActive(false);
+            MiddleButton.RootGameObject.SetActive(false);
+			Title.RootGameObject.SetActive(false);
+            Description.RootGameObject.SetActive(false);
+			ModalIcon.RootGameObject.SetActive(false);
+
+			var panel = new Content(null, UnityObject, null);
+			if (newContentSize.HasValue) {
+				panel.SetSize<Content>(new Vector2(newContentSize.Value.x + leftPadding + rightPadding,
+					newContentSize.Value.y + topPadding + bottomPadding));
+			}
+			panel.SetAnchors<Content>(new Vector2(0.5f, 0.0f), new Vector2(0.5f, 0.0f));
+			panel.SetPivot<Content>(new Vector2(0.5f, 0.0f));
+			panel.SetAnchoredPosition<Content>(new Vector2(0.0f, 10.0f));
+			var newMainContent =
+				panel.CreateSubContent(newContentSize ?? new Vector2(panel.Size.x - (rightPadding + leftPadding),
+															 panel.Size.y - (topPadding + bottomPadding)));
+			newMainContent.SetStretch<Content>(leftPadding, rightPadding, topPadding, bottomPadding);
+
+			return newMainContent;
+		}
+	}
 
     public abstract class UIComponent {
         public static Func<UIComponent, UIComponent> VerticalLayout = (u) => {
@@ -430,6 +455,13 @@ namespace Synthesis.UI.Dynamic {
             RootRectTransform.offsetMin = oMin;
             RootRectTransform.offsetMax = oMax;
         }
+
+        public T SetAnchorOffset<T>(Vector2 aMin, Vector2 aMax, Vector2 oMin, Vector2 oMax)
+            where T : UIComponent {
+            SetAnchorOffset(aMin, aMax, oMin, oMax);
+            return (this as T)!;
+        }
+
         public T SetTopStretch<T>(float leftPadding = 0f, float rightPadding = 0f, float anchoredY = 0f)
             where T : UIComponent {
             SetAnchorOffset(

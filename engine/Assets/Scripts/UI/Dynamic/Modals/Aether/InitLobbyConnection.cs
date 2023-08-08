@@ -39,16 +39,16 @@ public class InitLobbyConnection : ModalDynamic {
             }
         });
         CancelButton.RootGameObject.SetActive(false);
-        
-        _ipInputField = MainContent.CreateInputField().SetTopStretch<InputField>()
-            .StepIntoHint(h => h.SetText(_ip ?? "Enter IP...")).AddOnValueChangedEvent((i, v) => {
-                _ip = v;
-                Logger.Log(_ip, LogLevel.Debug);
-            }).StepIntoLabel(l => l.SetText("IP Address"));
-        if (_ip != null) {
-            _ipInputField.DisableEvents<InputField>().Deactivate().SetCharacterValidator(TMP_InputField.CharacterValidation.None);
+
+        if (!_isHost) {
+            _ipInputField = MainContent.CreateInputField().SetTopStretch<InputField>()
+                .StepIntoHint(h => h.SetText(_ip ?? "Enter IP...")).AddOnValueChangedEvent((i, v) => {
+                    _ip = v;
+                    Logger.Log(_ip, LogLevel.Debug);
+                }).StepIntoLabel(l => l.SetText("IP Address"));
         }
-        _usernameInputField = MainContent.CreateInputField().SetTopStretch<InputField>(anchoredY: _ipInputField.Size.y + 15f)
+
+        _usernameInputField = MainContent.CreateInputField().SetTopStretch<InputField>(anchoredY: _isHost ? 0f : _ipInputField!.Size.y + 15f)
             .StepIntoHint(h => h.SetText("Mary, Tim, Alice, Bob...")).AddOnValueChangedEvent((i, v) => {
                 _username = v;
             }).StepIntoLabel(l => l.SetText("Username"));

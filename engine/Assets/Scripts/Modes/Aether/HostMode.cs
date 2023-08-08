@@ -37,6 +37,8 @@ public class HostMode : IMode {
 
     public void StartHostClient(string username) {
         _hostClient = new LobbyClient(SERVER_IP, username);
+
+        GatherAndUploadDataDescriptions();
     }
 
     public void GatherAndUploadDataDescriptions() {

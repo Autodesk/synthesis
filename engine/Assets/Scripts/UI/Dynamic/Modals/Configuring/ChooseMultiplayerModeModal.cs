@@ -15,7 +15,7 @@ public class ChooseMultiplayerModeModal : ModalDynamic {
         return u;
     };
 
-    public ChooseMultiplayerModeModal() : base(new Vector2(230, 80)) {}
+    public ChooseMultiplayerModeModal() : base(new Vector2(230, 120)) {}
 
     public override void Create() {
         Title.SetText("Choose Mode");
@@ -34,7 +34,16 @@ public class ChooseMultiplayerModeModal : ModalDynamic {
                     SceneManager.LoadScene("MainScene");
             });
 
-        var comingSoonButton = MainContent.CreateButton()
+		MainContent.CreateButton()
+			.StepIntoLabel(l => l.SetText("Host Mode"))
+			.ApplyTemplate(VerticalLayout)
+			.AddOnClickedEvent(b => {
+				ModeManager.CurrentMode = new HostMode();
+				if (SceneManager.GetActiveScene().name != "MainScene")
+					SceneManager.LoadScene("MainScene");
+			});
+
+		var comingSoonButton = MainContent.CreateButton()
                                    .StepIntoLabel(l => l.SetText("Coming Soon"))
                                    .ApplyTemplate(VerticalLayout)
                                    .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground))

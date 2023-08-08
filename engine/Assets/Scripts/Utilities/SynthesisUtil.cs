@@ -142,5 +142,9 @@ namespace Synthesis.Util {
     public struct NetworkTaskStatus {
         public float Progress;
         public string Message;
-    }
+
+		public override string ToString() {
+            return $"[{Math.Round(Progress * 100f, 1)}%] {Message}";
+		}
+	}
 }

@@ -32,7 +32,10 @@ public class LobbyManagerModal : ModalDynamic {
         left.EnsureImage().StepIntoImage(i => i.SetSprite(null).SetColor(ColorManager.SynthesisColor.BackgroundSecondary)
             .SetCornerRadius(20f));
 
-        AcceptButton.StepIntoLabel(l => l.SetText("Start"));
+        AcceptButton.StepIntoLabel(l => l.SetText("Start")).AddOnClickedEvent(b => {
+            (var task, var status) = _mode.UploadData();
+            DynamicUIManager.CreateModal<NetworkWaitModal>(task, status);
+        });
         CancelButton.RootGameObject.SetActive(false);
 
         _playerListLabel = left.CreateLabel().SetStretch(
