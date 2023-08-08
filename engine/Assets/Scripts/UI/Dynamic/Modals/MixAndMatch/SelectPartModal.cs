@@ -38,7 +38,7 @@ namespace UI.Dynamic.Modals.MixAndMatch {
 
             void UpdateSelectButton() {
                 AcceptButton.ApplyTemplate(
-                    files.Length == 0 || dropdown.Value < 0 ? Button.DisableButton : Button.EnableButton);
+                    files.Length == 0 || dropdown.Value < 0 ? Button.DisableButton : Button.EnableAcceptButton);
             }
             UpdateSelectButton();
         }

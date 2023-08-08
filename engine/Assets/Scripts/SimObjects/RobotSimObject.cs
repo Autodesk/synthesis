@@ -397,14 +397,15 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         if (!_tankTrackWheels.HasValue) {
             var wheels = SimulationManager.Drivers[base.Name].OfType<WheelDriver>();
 
-            var leftWheels  = new List<WheelDriver>();
+            var leftWheels = new List<WheelDriver>();
             var rightWheels = new List<WheelDriver>();
 
             Dictionary<WheelDriver, float> wheelDotProducts = new Dictionary<WheelDriver, float>();
             foreach (var wheel in wheels) {
-                wheel.MainInput         = 0f;
+                wheel.MainInput = 0f;
                 wheelDotProducts[wheel] = Vector3.Dot(Vector3.right, wheel.LocalAnchor);
             }
+
             float min = float.MaxValue;
             float max = float.MinValue;
             wheelDotProducts.ForEach(x => {
@@ -422,13 +423,16 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             });
 
             // Spin all of the wheels straight
-            MiraLiveFiles.ForEach(miraLive => {
-                wheels.ForEach(x => {
-                    var def        = miraLive.MiraAssembly.Data.Joints.JointDefinitions[x.JointInstance.JointReference];
-                    var jointAxis  = new Vector3(def.Rotational.RotationalFreedom.Axis.X,
-                         def.Rotational.RotationalFreedom.Axis.Y, def.Rotational.RotationalFreedom.Axis.Z);
+            wheels.ForEach(x => {
+                foreach (var miraLive in MiraLiveFiles) {
+                    if (!miraLive.MiraAssembly.Data.Joints.JointDefinitions
+                            .TryGetValue(x.JointInstance.JointReference, out var def))
+                        continue;
+
+                    var jointAxis = new Vector3(def.Rotational.RotationalFreedom.Axis.X,
+                        def.Rotational.RotationalFreedom.Axis.Y, def.Rotational.RotationalFreedom.Axis.Z);
                     var globalAxis = GroundedNode.transform.rotation * jointAxis.normalized;
-                    var cross      = Vector3.Cross(GroundedNode.transform.up, globalAxis);
+                    var cross = Vector3.Cross(GroundedNode.transform.up, globalAxis);
                     if (miraLive.MiraAssembly.Info.Version < 5) {
                         if (Vector3.Dot(GroundedNode.transform.forward, cross) > 0) {
                             var ogAxis = jointAxis;
@@ -444,10 +448,11 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
                             x.LocalAxis = ogAxis;
                         }
-                    } else {
+                    }
+                    else {
                         if (Vector3.Dot(GroundedNode.transform.forward, cross) < 0) {
                             jointAxis.x = -jointAxis.x;
-                            var ogAxis  = jointAxis;
+                            var ogAxis = jointAxis;
                             ogAxis.x *= -1;
                             ogAxis.y *= -1;
                             ogAxis.z *= -1;
@@ -460,7 +465,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                             x.LocalAxis = ogAxis;
                         }
                     }
-                });
+                }
             });
 
             _tankTrackWheels = (leftWheels, rightWheels);

@@ -83,7 +83,11 @@ namespace Synthesis {
             }
         }
 
-        public new string Name => State.SignalMap[_inputs[0]].Name;
+        public new string Name {
+            get {/*Debug.Log(_inputs[0]);*/ // TODO
+                return State.SignalMap[_inputs[0]].Name;
+            }
+        }
 
         private JointMotor _motor;
         public JointMotor Motor {

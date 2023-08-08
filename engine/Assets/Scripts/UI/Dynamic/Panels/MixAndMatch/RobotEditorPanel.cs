@@ -16,7 +16,7 @@ using Vector3 = UnityEngine.Vector3;
 
 namespace UI.Dynamic.Panels.MixAndMatch {
     public class RobotEditorPanel : PanelDynamic {
-        private const float PANEL_WIDTH  = 400f;
+        private const float PANEL_WIDTH  = 300f;
         private const float PANEL_HEIGHT = 400f;
 
         private const float PART_ROTATION_SPEED = 10f;
@@ -77,9 +77,11 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
         /// <summary>Creates the buttons to add and remove parts from the robot assembly</summary>
         private void CreateAddRemoveButtons() {
-            (Content left, Content right) = MainContent.CreateSubContent(new Vector2(400, 50))
+            (Content left, Content right) = MainContent.CreateSubContent(new Vector2(PANEL_WIDTH, 50))
                                                 .SetBottomStretch<Content>()
                                                 .SplitLeftRight((PANEL_WIDTH - 10f) / 2f, 10f);
+            
+            
 
             left.CreateButton("Add").SetStretch<Button>().AddOnClickedEvent(
                 _ => {

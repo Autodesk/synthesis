@@ -110,8 +110,10 @@ namespace Synthesis.Import {
 
             /// <summary>Creates and registers the robots sim object</summary>
             public void CreateSimObject() {
-                var state = _assemblies[0].Data.Signals == null ? new ControllableState()
-                                                                : new ControllableState(_assemblies[0].Data.Signals);
+                // TODO: add part index to signal and make sure it is accessed with the part index added as well
+                var allSignals = _assemblies.Where(a => a.Data.Signals != null).Select(a => a.Data.Signals).ToArray();
+                
+                var state = new ControllableState(allSignals);
 
                 if (_assemblies[0].Dynamic) {
                     string name = $"{_assemblies[0].Info.Name}_{_robotTally}";
@@ -357,7 +359,7 @@ namespace Synthesis.Import {
 
 #endregion
 
-            // TODO: Old debug code
+            // TODO: Unused debug code to ask Hunter about
             /*/// <summary>
             /// Gets the change between 2 transformations
             /// </summary>

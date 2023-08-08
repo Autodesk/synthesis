@@ -23,8 +23,8 @@ namespace SynthesisAPI.Controller {
 
 		public bool HasUpdates => ModifiedSignals.Count > 0;
 
-		public ControllableState(Signals signals) {
-			signals.SignalMap.ForEach(x => {
+		public ControllableState(Signals[] allSignals) {
+			allSignals.ForEach(partSignals => partSignals.SignalMap.ForEach(x => {
 				SignalMap.Add(
 					x.Key,
 					new SignalData {
@@ -33,7 +33,7 @@ namespace SynthesisAPI.Controller {
 						Value = Value.ForNull()
 					}
 				);
-			});
+			}));
 		}
 
 		public Value? GetValue(string signal_guid) {
