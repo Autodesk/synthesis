@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Synthesis.UI.Dynamic;
 using TMPro;
@@ -44,6 +45,16 @@ public class LobbyManagerModal : ModalDynamic {
             PLAYER_LIST_RIGHT_PADDING,
             PLAYER_LIST_RIGHT_PADDING
         ).SetVerticalAlignment(VerticalAlignmentOptions.Top);
+        
+        // Right
+        var allAvailableTask = _mode.HostClient!.GetAllAvailableData();
+        allAvailableTask.Wait();
+        var allAvailable = allAvailableTask.Result.GetResult()!.FromAllDataAvailable;
+        var names = allAvailable.AvailableData.Select(x => x.Name).ToArray();
+        
+        right.CreateLabeledDropdown().SetTopStretch<LabeledDropdown>().StepIntoLabel(l => l.SetText("Robots"))
+            .StepIntoDropdown(d => d.SetOptions());
+        
         RefreshPlayers();
     }
 

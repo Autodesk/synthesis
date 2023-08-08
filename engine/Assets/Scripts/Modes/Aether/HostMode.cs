@@ -19,6 +19,7 @@ public class HostMode : IMode {
     
     private LobbyServer? _server;
     private LobbyClient? _hostClient;
+    public LobbyClient? HostClient => _hostClient;
 
     // Key: DataGuid, Value: MirabufPath
     private readonly Dictionary<ulong, (SynthesisDataDescriptor descriptor, string pathToData)> _shareableMirafiles = new();
@@ -72,7 +73,7 @@ public class HostMode : IMode {
     }
 
     public (Task<bool> task, AtomicReadOnly<NetworkTaskStatus>? status) UploadData() {
-        if (_hostClient?.IsAlive ?? false)
+        if (!(_hostClient?.IsAlive ?? false))
             return (Task.FromResult(false), null);
 
         Atomic<NetworkTaskStatus> status = new Atomic<NetworkTaskStatus>(new NetworkTaskStatus {

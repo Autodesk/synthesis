@@ -33,9 +33,10 @@ public class NetworkWaitModal : ModalDynamic {
             .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Center).SetFontSize(20f);
 
         var container = newContent.CreateSubContent(new Vector2(20f, 10f)).SetBottomStretch<Content>().EnsureImage().StepIntoImage(
-            i => i.SetSprite(null).SetColor(ColorManager.SynthesisColor.BackgroundSecondary));
+            i => i.SetSprite(null).SetColor(ColorManager.SynthesisColor.BackgroundSecondary).SetCornerRadius(5f));
 		_progressContent = container.CreateSubContent(new Vector2(20f, 10f)).SetStretch<Content>().EnsureImage().StepIntoImage(
-			i => i.SetSprite(null).SetColor(ColorManager.SynthesisColor.InteractiveElementLeft, ColorManager.SynthesisColor.InteractiveElementRight));
+			i => i.SetSprite(null).SetColor(ColorManager.SynthesisColor.InteractiveElementLeft, ColorManager.SynthesisColor.InteractiveElementRight)
+                .SetCornerRadius(5f));
 
         UpdateStatusLabel();
 	}
