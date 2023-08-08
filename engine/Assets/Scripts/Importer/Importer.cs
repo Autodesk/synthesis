@@ -63,7 +63,7 @@ namespace Synthesis.Import {
             private readonly List<GamepieceSimObject> _gamepieces = new();
             private SimObject _simObject;
 
-#region Constructors &Setup
+#region Constructors & Setup
 
             public ImportHelper(MixAndMatchRobotData mixAndMatchRobotData)
                 : this(mixAndMatchRobotData,

@@ -136,8 +136,10 @@ namespace Synthesis.Import {
 
                     children.ForEach(c => c.SetParent(mainGrounded.transform));
 
-                    rb.mass += partGrounded.GetComponent<Rigidbody>().mass;
-                    rb.centerOfMass += partGrounded.GetComponent<Rigidbody>().centerOfMass;
+                    var partRb = partGrounded.GetComponent<Rigidbody>();
+                    
+                    rb.mass += partRb.mass;
+                    rb.centerOfMass += partRb.centerOfMass * partRb.mass;
 
                     objects.Remove("grounded");
                     UnityEngine.Object.DestroyImmediate(partGrounded);
@@ -149,7 +151,7 @@ namespace Synthesis.Import {
                 }
             });
 
-            rb.centerOfMass /= miraLiveFiles.Length;
+            rb.centerOfMass /= rb.mass;
 
             return groupObjects;
         }
