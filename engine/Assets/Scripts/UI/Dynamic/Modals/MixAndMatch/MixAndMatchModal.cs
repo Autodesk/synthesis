@@ -154,8 +154,8 @@ namespace UI.Dynamic.Modals.MixAndMatch {
             List<string> dependencies = new();
             if (!robot) {
                 foreach (var robotName in MixAndMatchSaveUtil.RobotFiles) {
-                    foreach (var part in MixAndMatchSaveUtil.LoadRobotData(robotName).PartData) {
-                        if (part.fileName == fileName) {
+                    foreach (var part in MixAndMatchSaveUtil.LoadRobotData(robotName).PartTransformData) {
+                        if (part.FileName == fileName) {
                             dependencies.Add(robotName);
                             break;
                         }

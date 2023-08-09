@@ -125,8 +125,8 @@ namespace Synthesis.Import {
 
             groupObjects.ForEachIndex((i, objects) => {
                 objects.Values.ForEach(o => {
-                    o.transform.position += robotTransformData.PartData[i].localPosition;
-                    o.transform.rotation *= robotTransformData.PartData[i].localRotation;
+                    o.transform.position += robotTransformData.PartTransformData[i].LocalPosition;
+                    o.transform.rotation *= robotTransformData.PartTransformData[i].LocalRotation;
                 });
 
                 if (objects.TryGetValue("grounded", out var partGrounded)) {
@@ -170,9 +170,7 @@ namespace Synthesis.Import {
             if ((colliders) && MiraAssembly.Dynamic) {
                 if (dynamicLayers.Count == 0)
                     throw new Exception("No more dynamic layers");
-
-                Debug.Log(dynamicLayer);
-
+                
                 if (dynamicLayer == -1)
                     dynamicLayer = dynamicLayers.Dequeue();
                 

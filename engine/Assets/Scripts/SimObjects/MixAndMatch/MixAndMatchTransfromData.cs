@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -72,11 +73,15 @@ namespace SimObjects.MixAndMatch {
             if (!File.Exists(filePath)) {
                 if (createNewIfNoExist)
                     return CreateNewPart(fileName);
-                else
-                    return null;
+                return null;
             }
+            
+            var part = JsonUtility.FromJson<MixAndMatchPartData>(File.ReadAllText(filePath));
 
-            return JsonUtility.FromJson<MixAndMatchPartData>(File.ReadAllText(filePath));
+            if (part.Guid is null or "")
+                part.Guid = GUID.Generate().ToString();
+
+            return part;
         }
 
         /// <summary>Save a robot to the appdata folder. Overrides an existing robot with the same name</summary>
@@ -107,12 +112,13 @@ namespace SimObjects.MixAndMatch {
 
         /// <summary>Creates a new mix and match part with no connection points</summary>
         public static MixAndMatchPartData CreateNewPart(string name, string mirabufFile = "") {
-            return new MixAndMatchPartData(name, mirabufFile, Array.Empty<(Vector3, Quaternion)>());
+            return new MixAndMatchPartData(name, GUID.Generate().ToString(), mirabufFile, 
+                Array.Empty<(Vector3, Quaternion)>());
         }
 
         /// <summary>Creates a new mix and match robot with no parts</summary>
         public static MixAndMatchRobotData CreateNewRobot(string name) {
-            return new MixAndMatchRobotData(name, Array.Empty<(string, Vector3, Quaternion)>());
+            return new MixAndMatchRobotData(name, Array.Empty<RobotPartTransformData>());
         }
 
         /// <summary>Deletes the part if it exists</summary>
@@ -130,75 +136,62 @@ namespace SimObjects.MixAndMatch {
         }
     }
 
-    /// <summary>Stores info about a robot including the positions of it's parts. Always saved in it's own json
+    /// <summary>Stores info about a robot including the positions of it's parts. Only ever saved in it's own json
     /// file.</summary>
     [Serializable]
     public class MixAndMatchRobotData {
         public string Name;
-        public SerializableTransformData[] SerializablePartData;
+        public RobotPartTransformData[] PartTransformData;
 
-        [JsonIgnore]
-        public (string fileName, Vector3 localPosition, Quaternion localRotation)[] PartData {
-            get => SerializablePartData?.Select(p => p.ToTuple()).ToArray();
-            set {
-                SerializablePartData =
-                    value?.Select(p => new SerializableTransformData((p.fileName, p.localPosition, p.localRotation)))
-                        .ToArray();
-            }
-        }
-
-        public MixAndMatchRobotData(
-            string name, (string fileName, Vector3 localPosition, Quaternion localRotation)[] parts) {
+        public MixAndMatchRobotData(string name, RobotPartTransformData[] transforms) {
             Name = name;
-            SerializablePartData =
-                parts.Select(p => new SerializableTransformData((p.fileName, p.localPosition, p.localRotation)))
-                    .ToArray();
+            PartTransformData = transforms;
         }
     }
 
-    /// <summary>Stores where a part is positioned relative to a robot, not specific info about it. Always saved within
-    /// a robot's json file.</summary>
+    /// <summary>Robot specific part data (position, parent node). Only ever saved in a robot's json file.</summary>
     [Serializable]
-    public struct SerializableTransformData {
+    public struct RobotPartTransformData {
         public string FileName;
-        public Vector3 Position;
-        public Quaternion Rotation;
+        public Vector3 LocalPosition;
+        public Quaternion LocalRotation;
+        public ParentNodeData ParentNodeData;
 
-        public SerializableTransformData((string name, Vector3 position, Quaternion rotation) partData) {
-            FileName = partData.name;
-            Position = partData.position;
-            Rotation = partData.rotation;
+        public RobotPartTransformData(string fileName, ParentNodeData parentNodeData, Vector3 position, Quaternion rotation) {
+            FileName = fileName;
+            ParentNodeData = parentNodeData;
+            LocalPosition = position;
+            LocalRotation = rotation;
         }
 
-        public (string name, Vector3 position, Quaternion rotation) ToTuple() {
-            return (FileName, Position, Rotation);
+        public (string name, ParentNodeData parentNodeData, Vector3 position,Quaternion rotation) ToTuple() {
+            return (FileName, ParentNodeData, LocalPosition, LocalRotation);
         }
     }
 
-    /// <summary>Stores a parts mirabuf file and connection points. Always saved in it's own json file.</summary>
+    /// <summary>Stores a parts mirabuf file and connection points. Only ever saved in it's own json file.</summary>
     [Serializable]
     public class MixAndMatchPartData {
-        public string MirabufPartFile;
         [JsonIgnore]
         public string Name; // Ignored because it is the filename
+        public string Guid;
+        public string MirabufPartFile;
 
         public ConnectionPointData[] ConnectionPoints;
 
-        public string ConnectedPart;
-
-        public MixAndMatchPartData(
-            string name, string mirabufPartFile, (Vector3 position, Quaternion rotation)[] connectionPoints) {
+        public MixAndMatchPartData(string name, string guid, string mirabufPartFile, 
+            (Vector3 position, Quaternion rotation)[] connectionPoints) {
             Name             = name;
             MirabufPartFile  = mirabufPartFile;
             ConnectionPoints = connectionPoints.Select(c => new ConnectionPointData(c.position, c.rotation)).ToArray();
+            Guid = guid;
         }
     }
 
-    /// <summary>The position and direction of a part's connection point. Always saved in a part's json file.</summary>
+    /// <summary>The position and direction of a part's connection point. Only ever saved in a part's json file.</summary>
     [Serializable]
     public class ConnectionPointData {
         public Vector3 LocalPosition;
-        [FormerlySerializedAs("Rotation")]
         public Quaternion LocalRotation;
 
         public ConnectionPointData(Vector3 localPosition, Quaternion localRotation) {
@@ -209,6 +202,18 @@ namespace SimObjects.MixAndMatch {
         public ConnectionPointData() {
             LocalPosition = Vector3.zero;
             LocalRotation = Quaternion.identity;
+        }
+    }
+
+    /// <summary>Stores data about what a part is parented to. Only ever saved in a part's json file</summary>
+    [Serializable]
+    public class ParentNodeData {
+        public string PartGuid;
+        public string NodeName;
+
+        public ParentNodeData(string partGuid, string nodeName) {
+            PartGuid = partGuid;
+            NodeName = nodeName;
         }
     }
 }
