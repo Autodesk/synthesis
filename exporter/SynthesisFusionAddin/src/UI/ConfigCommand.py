@@ -2148,7 +2148,6 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
             elif cmdInput.id == "wheel_select":
                 self.reset()
 
-                # wheelSelect.isVisible = False
                 addWheelInput.isEnabled = True
 
             elif cmdInput.id == "joint_select":
