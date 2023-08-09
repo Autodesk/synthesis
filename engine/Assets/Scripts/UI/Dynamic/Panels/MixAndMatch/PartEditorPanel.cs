@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Mirabuf.Material;
 using SimObjects.MixAndMatch;
 using Synthesis.Gizmo;
 using Synthesis.Import;
@@ -36,6 +37,9 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         }
 
         public override bool Create() {
+            RobotSimObject.CurrentlyPossessedRobot = string.Empty;
+            MainHUD.ConfigRobot                    = null;
+
             Title.SetText("Part Editor");
 
             AcceptButton.StepIntoLabel(l => l.SetText("Save"))
@@ -57,7 +61,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
             InstantiateConnectionGameObjects();
             PopulateScrollView();
-            
+
             Camera.main!.GetComponent<CameraController>().CameraMode = CameraController.CameraModes["Orbit"];
             OrbitCameraMode.FocusPoint = () => Vector3.up * 0.5f;
 
@@ -116,7 +120,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             MirabufLive miraLive = new MirabufLive(_partData.MirabufPartFile);
 
             GameObject assemblyObject = new GameObject(miraLive.MiraAssembly.Info.Name);
-            miraLive.GenerateDefinitionObjects(assemblyObject, false);
+            miraLive.GenerateDefinitionObjects(assemblyObject, false, false);
 
             // Center part
             var groundedTransform = assemblyObject.transform.Find("grounded");
@@ -137,19 +141,26 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         /// <summary>Instantiates a single connection point object</summary>
         private GameObject InstantiateConnectionGameObject(ConnectionPointData connection) {
             var gameObject  = Object.Instantiate(SynthesisAssetCollection.Instance.MixAndMatchConnectionPrefab);
+            gameObject.name = "Connection Point";
 
             var trf = gameObject.transform;
             trf.SetParent(_partGameObject.transform);
 
-            trf.position   = connection.LocalPosition - _centerOffset;
-            trf.rotation   = connection.LocalRotation;
+            trf.position = connection.LocalPosition - _centerOffset;
+            trf.rotation = connection.LocalRotation;
 
-            trf.Find("Sphere").GetComponent<MeshRenderer>().material.color =
-                ColorManager.GetColor(ColorManager.SynthesisColor.HighlightHover);
+            Object.Destroy(trf.GetComponent<Collider>());
 
-            Object.Destroy(trf.Find("Sphere").GetComponent<Collider>());
+            var color = ColorManager.GetColor(ColorManager.SynthesisColor.HighlightHover);
+            color.a   = 0.5f;
+
+            Material mat = new Material(Appearance.DefaultTransparentShader);
+            mat.SetColor(Appearance.TRANSPARENT_COLOR, color);
+            mat.SetFloat(Appearance.TRANSPARENT_SMOOTHNESS, 0);
+
+            trf.Find("Sphere").GetComponent<MeshRenderer>().material = mat;
+
             _connectionGameObjects.Add(gameObject);
-
             return gameObject;
         }
 

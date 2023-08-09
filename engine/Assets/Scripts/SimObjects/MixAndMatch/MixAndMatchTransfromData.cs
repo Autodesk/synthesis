@@ -72,7 +72,8 @@ namespace SimObjects.MixAndMatch {
             if (!File.Exists(filePath)) {
                 if (createNewIfNoExist)
                     return CreateNewPart(fileName);
-                else return null;
+                else
+                    return null;
             }
 
             return JsonUtility.FromJson<MixAndMatchPartData>(File.ReadAllText(filePath));

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Mirabuf.Material;
 using SimObjects.MixAndMatch;
 using Synthesis.Import;
 using Synthesis.UI.Dynamic;
@@ -22,7 +23,10 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         private const float PART_ROTATION_SPEED = 10f;
 
         private static readonly int _connectionLayer     = LayerMask.NameToLayer("ConnectionPoint");
+        private static readonly int _robotLayer = LayerMask.NameToLayer("MixAndMatchEditor");
+        
         private static readonly int _connectionLayerMask = 1 << _connectionLayer;
+        private static readonly int _robotLayerMask = 1 << _robotLayer;
 
         private float _scrollViewWidth;
         private float _entryWidth;
@@ -41,8 +45,12 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         }
 
         private bool _creationFailed;
+        private bool _selectingNode;
 
         public override bool Create() {
+            RobotSimObject.CurrentlyPossessedRobot = string.Empty;
+            MainHUD.ConfigRobot                    = null;
+
             Title.SetText("Robot Editor");
 
             AcceptButton.StepIntoLabel(l => l.SetText("Save"))
@@ -66,11 +74,9 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             PopulateScrollView();
 
             Camera.main!.GetComponent<CameraController>().CameraMode = CameraController.CameraModes["Orbit"];
-            
+
             OrbitCameraMode.FocusPoint = () =>
-                _robotGameObject != null
-                    ? _robotGameObject.transform.position
-                    : Vector3.up/2f;
+                _robotGameObject != null ? _robotGameObject.transform.position : Vector3.up / 2f;
 
             return true;
         }
@@ -80,8 +86,6 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             (Content left, Content right) = MainContent.CreateSubContent(new Vector2(PANEL_WIDTH, 50))
                                                 .SetBottomStretch<Content>()
                                                 .SplitLeftRight((PANEL_WIDTH - 10f) / 2f, 10f);
-            
-            
 
             left.CreateButton("Add").SetStretch<Button>().AddOnClickedEvent(
                 _ => {
@@ -123,9 +127,8 @@ namespace UI.Dynamic.Panels.MixAndMatch {
                 _creationFailed = true;
                 return;
             }
-                
-            InstantiatePartGameObject(
-                partData.localPosition, partData.localRotation, partFile);
+
+            InstantiatePartGameObject(partData.localPosition, partData.localRotation, partFile);
         }
 
         /// <summary>Instantiates a part object to position from a partData object</summary>
@@ -139,43 +142,51 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
             MirabufLive miraLive = new MirabufLive(partData.MirabufPartFile);
 
-            GameObject obj = new GameObject(partData.Name);
-            Transform trf  = obj.transform;
-
-            miraLive.GenerateDefinitionObjects(obj, false);
+            GameObject gameObject = new GameObject(partData.Name);
+            Transform trf  = gameObject.transform;
+            
+            Debug.Log($"Layer {_robotLayer}");
+            miraLive.GenerateDefinitionObjects(gameObject, dynamicLayer: _robotLayer);
 
             trf.SetParent(_robotGameObject.transform);
 
             trf.position = localPosition;
             trf.rotation = localRotation;
 
-            _partGameObjects.Add((obj, partData));
+            _partGameObjects.Add((gameObject, partData));
 
-            InstantiatePartConnectionPoints(obj, partData);
-            return obj;
+            trf.GetComponentsInChildren<Rigidbody>().ForEach(x => {
+                var rc     = x.gameObject.AddComponent<HighlightComponent>();
+                rc.Color   = ColorManager.GetColor(ColorManager.SynthesisColor.HighlightHover);
+                rc.enabled = false;
+
+                x.isKinematic = true;
+            });
+
+            InstantiatePartConnectionPoints(gameObject, partData);
+            return gameObject;
         }
 
         /// <summary>Instantiates objects for all the connection points of a part</summary>
         private void InstantiatePartConnectionPoints(GameObject partGameObject, MixAndMatchPartData partData) {
             partData.ConnectionPoints.ForEachIndex((_, connection) => {
-                var obj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                var trf = obj.transform;
+                var gameObject   = Object.Instantiate(SynthesisAssetCollection.Instance.MixAndMatchConnectionPrefab);
+                gameObject.layer = _connectionLayer;
+                gameObject.name  = "Connection Point";
+
+                var trf = gameObject.transform;
 
                 trf.SetParent(partGameObject.transform);
                 trf.localPosition = connection.LocalPosition;
                 trf.localRotation = connection.LocalRotation;
-                trf.localScale    = Vector3.one * 0.25f;
 
-                obj.layer = _connectionLayer;
-                obj.name  = "Connection Point";
+                var color = ColorManager.GetColor(ColorManager.SynthesisColor.HighlightHover);
+                color.a   = 0.5f;
 
-                trf.GetComponent<MeshRenderer>().material.color =
-                    ColorManager.GetColor(ColorManager.SynthesisColor.HighlightHover);
-
-                if (trf.TryGetComponent<SphereCollider>(out var collider)) {
-                    collider.isTrigger = true;
-                    collider.radius    = 1f;
-                }
+                Material mat = new Material(Appearance.DefaultTransparentShader);
+                mat.SetColor(Appearance.TRANSPARENT_COLOR, color);
+                mat.SetFloat(Appearance.TRANSPARENT_SMOOTHNESS, 0);
+                trf.Find("Sphere").GetComponent<MeshRenderer>().material = mat;
             });
         }
 
@@ -277,13 +288,63 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
                 Vector3 axis = selectedTrf.localToWorldMatrix.rotation *
                                (selectedPartData.ConnectionPoints[0].LocalRotation * Vector3.forward);
-                
+
                 // It says rotate around is obsolete but .Rotate didn't seem to work the same way
                 selectedTrf.RotateAround(axis, _axisRotation);
 
                 // Offset so that the connection points are overlapping
                 selectedTrf.Translate(-selectedPartData.ConnectionPoints[0].LocalPosition);
             }
+        }
+
+        private HighlightComponent _hoveringNode;
+        private HighlightComponent _selectedNode;
+        private void NodeSelection() {
+            // Enable Collision Detection for the Robot
+                //_robot.RobotNode.GetComponentsInChildren<Rigidbody>().ForEach(x => x.detectCollisions = true);
+
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                bool hit = Physics.Raycast(ray, out var hitInfo, 100, _robotLayerMask);
+                //Debu.Log($"{hit}, {hitInfo.rigidbody != null}, {hitInfo.rigidbody.transform.parent.parent == _robotGameObject.transform}");
+                if (hit && hitInfo.rigidbody != null && hitInfo.transform.GetComponent<HighlightComponent>() != _selectingNode) {
+                    Debug.Log(hitInfo.transform.name);
+                    if (_hoveringNode != null &&
+                        (_selectedNode == null ? true : !_selectedNode.name.Equals(_hoveringNode.name))) {
+                        _hoveringNode.enabled = false;
+                    }
+                    _hoveringNode = hitInfo.rigidbody.GetComponent<HighlightComponent>();
+                    //if (_selectedNode == null || hitInfo.rigidbody.name != _selectedNode.name) {
+                        _hoveringNode.enabled = true;
+                        _hoveringNode.Color   = ColorManager.GetColor(ColorManager.SynthesisColor.HighlightHover);
+                    //}
+
+                    if (Input.GetKeyDown(KeyCode.Mouse0)) {
+                        if (_selectedNode != null) {
+                            _selectedNode.enabled = false;
+                        }
+
+                        _selectedNode         = _hoveringNode;
+                        _selectedNode.enabled = true;
+                        _selectedNode.Color   = ColorManager.GetColor(ColorManager.SynthesisColor.HighlightSelect);
+                        _hoveringNode         = null;
+
+                        _selectingNode          = false;
+                        
+                        // TODO: Update ui
+                        //_resultingData.NodeName = hitInfo.rigidbody.name;
+                        // SetSelectUIState(false);
+                    }
+                } else {
+                    if (_hoveringNode != null) {
+
+                        _hoveringNode.enabled = false;
+                        _hoveringNode = null;
+                    }
+
+                }
+
+                // Disable Collision Detection for the Robot
+                //_robot.RobotNode.GetComponentsInChildren<Rigidbody>().ForEach(x => x.detectCollisions = true);
         }
 
         /// <summary>Saves all edits that have been made</summary>
@@ -301,9 +362,16 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             if (parts.Count > 0)
                 RobotSimObject.SpawnRobot(_robotData);
         }
-
+        
         public override void Update() {
-            PartPlacement();
+            if (Input.GetKeyDown(KeyCode.S)) {
+                _selectingNode = !_selectingNode;
+                Debug.Log($"Selecting node set to {_selectingNode}");
+            }
+            if (_selectingNode)
+                NodeSelection();
+            else
+                PartPlacement();
         }
 
         public override void Delete() {

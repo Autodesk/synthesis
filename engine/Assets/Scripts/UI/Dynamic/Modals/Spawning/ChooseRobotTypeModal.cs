@@ -11,17 +11,17 @@ public class ChooseRobotTypeModal : ModalDynamic {
 
         AcceptButton.RootGameObject.SetActive(false);
 
-        var spacing = 22f;
+        var spacing           = 22f;
         (var left, var right) = MainContent.SplitLeftRight((MainContent.Size.x / 2f) - (spacing), spacing * 2);
-        var normal = left.CreateButton("Regular")
-            .ApplyTemplate(UIComponent.VerticalLayout)
-            .AddOnClickedEvent(b => DynamicUIManager.CreateModal<AddRobotModal>())
-            .StepIntoLabel(l => l.SetText("Regular"));
+        var normal            = left.CreateButton("Regular")
+                         .ApplyTemplate(UIComponent.VerticalLayout)
+                         .AddOnClickedEvent(b => DynamicUIManager.CreateModal<AddRobotModal>())
+                         .StepIntoLabel(l => l.SetText("Regular"));
 
         var MixAndMatch = right.CreateButton("Mix And Match")
-            .ApplyTemplate(UIComponent.VerticalLayout)
-            .AddOnClickedEvent(b => DynamicUIManager.CreateModal<SpawnMixAndMatchModal>())
-            .StepIntoLabel(l => l.SetText("Mix And Match"));
+                              .ApplyTemplate(UIComponent.VerticalLayout)
+                              .AddOnClickedEvent(b => DynamicUIManager.CreateModal<SpawnMixAndMatchModal>())
+                              .StepIntoLabel(l => l.SetText("Mix And Match"));
     }
 
     public override void Delete() {}

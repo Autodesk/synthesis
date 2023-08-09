@@ -14,7 +14,6 @@ namespace UI.Dynamic.Modals.Spawning {
         private int _selectedIndex = -1;
         private string[] _files;
 
-
         public SpawnMixAndMatchModal() : base(new Vector2(400, 55)) {}
 
         public override void Create() {

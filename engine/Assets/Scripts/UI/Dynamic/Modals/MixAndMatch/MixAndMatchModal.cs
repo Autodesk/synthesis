@@ -38,8 +38,7 @@ namespace UI.Dynamic.Modals.MixAndMatch {
                     _ => DynamicUIManager.CloseActiveModal())
                 .RootGameObject.SetActive(true);
 
-            var (left, right) =
-                MainContent.SplitLeftRight((CONTENT_WIDTH / 2f) - (SPLIT_SPACING / 2f), SPLIT_SPACING);
+            var (left, right) = MainContent.SplitLeftRight((CONTENT_WIDTH / 2f) - (SPLIT_SPACING / 2f), SPLIT_SPACING);
 
             left.CreateButton("Robot Editor") // Robot editor button
                 .ApplyTemplate(UIComponent.VerticalLayout)
@@ -131,7 +130,9 @@ namespace UI.Dynamic.Modals.MixAndMatch {
                             OpenRobotEditor(MixAndMatchSaveUtil.CreateNewRobot(nameInputField.Value));
                         else
                             CreateChoosePartFileModal(nameInputField.Value);
-                    }).StepIntoLabel(l => l.SetText("Create")).RootGameObject.SetActive(true);
+                    })
+                .StepIntoLabel(l => l.SetText("Create"))
+                .RootGameObject.SetActive(true);
 
             CancelButton.StepIntoLabel(l => l.SetText("Back"))
                 .AddOnClickedEvent(
@@ -162,21 +163,23 @@ namespace UI.Dynamic.Modals.MixAndMatch {
                 }
             }
 
-            ClearAndResizeContent(new Vector2(CONTENT_WIDTH,
-                DELETE_HEIGHT + (dependencies.Count > 0 ? 150 : 0)));
+            ClearAndResizeContent(new Vector2(CONTENT_WIDTH, DELETE_HEIGHT + (dependencies.Count > 0 ? 150 : 0)));
 
             if (dependencies.Count > 0) {
-
-                var scrollView = MainContent.CreateScrollView().SetHeight<ScrollView>(150);
+                var scrollView  = MainContent.CreateScrollView().SetHeight<ScrollView>(150);
                 var textContent = scrollView.Content.CreateSubContent(new Vector2(CONTENT_WIDTH, 150))
-                    .SetTopStretch<Content>(leftPadding: 15);
-                
-                textContent.CreateLabel().SetFontSize(20).SetText($"Unable to delete! Dependencies:").SetTopStretch<Label>(anchoredY: 15).SetFontStyle(FontStyles.Bold);
-                dependencies.ForEach(d => textContent.CreateLabel().SetFontSize(17).SetText(d).ApplyTemplate(UIComponent.VerticalLayoutBigSpacing));
-                    
+                                      .SetTopStretch<Content>(leftPadding: 15);
+
+                textContent.CreateLabel()
+                    .SetFontSize(20)
+                    .SetText($"Unable to delete! Dependencies:")
+                    .SetTopStretch<Label>(anchoredY: 15)
+                    .SetFontStyle(FontStyles.Bold);
+                dependencies.ForEach(d => textContent.CreateLabel().SetFontSize(17).SetText(d).ApplyTemplate(
+                                         UIComponent.VerticalLayoutBigSpacing));
+
                 CancelButton.RootGameObject.SetActive(false);
-            }
-            else {
+            } else {
                 CancelButton.StepIntoLabel(l => l.SetText("Delete"))
                     .AddOnClickedEvent(
                         _ => {

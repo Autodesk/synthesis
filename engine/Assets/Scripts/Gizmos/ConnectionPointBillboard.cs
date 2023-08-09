@@ -5,7 +5,7 @@ public class ConnectionPointBillboard : MonoBehaviour {
         transform.RotateAround(transform.position, transform.up,
             CalcSignedCentralAngle(transform.forward,
                 Vector3.Normalize(Camera.main.transform.position - transform.position), transform.up) *
-            Mathf.Rad2Deg);
+                Mathf.Rad2Deg);
     }
 
     private float CalcSignedCentralAngle(

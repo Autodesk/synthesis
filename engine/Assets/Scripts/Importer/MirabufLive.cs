@@ -110,13 +110,15 @@ namespace Synthesis.Import {
         public static Dictionary<string, GameObject>[] GenerateMixAndMatchDefinitionObjects(
             MirabufLive[] miraLiveFiles, GameObject assemblyContainer, MixAndMatchRobotData robotTransformData) {
             Dictionary<string, GameObject>[] groupObjects = new Dictionary<string, GameObject>[miraLiveFiles.Length];
-            miraLiveFiles.ForEachIndex(
-                (i, m) => groupObjects[i] = m.GenerateDefinitionObjects(assemblyContainer, true, true, i));
+            int dynamicLayer                              = dynamicLayers.Dequeue();
+
+            miraLiveFiles.ForEachIndex((i, m) => groupObjects[i] =
+                                           m.GenerateDefinitionObjects(assemblyContainer, true, true, true, i, dynamicLayer));
 
             if (miraLiveFiles.Length == 1) {
                 return groupObjects;
             }
-            
+
             var mainGrounded = new GameObject("grounded");
             mainGrounded.transform.SetParent(assemblyContainer.transform);
             var rb = mainGrounded.AddComponent<Rigidbody>();
@@ -137,7 +139,7 @@ namespace Synthesis.Import {
                     children.ForEach(c => c.SetParent(mainGrounded.transform));
 
                     var partRb = partGrounded.GetComponent<Rigidbody>();
-                    
+
                     rb.mass += partRb.mass;
                     rb.centerOfMass += partRb.centerOfMass * partRb.mass;
 
@@ -156,17 +158,24 @@ namespace Synthesis.Import {
             return groupObjects;
         }
 
-        public Dictionary<string, GameObject> GenerateDefinitionObjects(
-            GameObject assemblyContainer, bool physics = true, bool useIndex = false, int partIndex = 0) {
+        public Dictionary<string, GameObject> GenerateDefinitionObjects(GameObject assemblyContainer,
+            bool rigidbodies = true, bool colliders = true, bool useIndex = false, int partIndex = 0, int dynamicLayer = -1) {
             Dictionary<string, GameObject> groupObjects = new Dictionary<string, GameObject>();
 
-            int dynamicLayer = 0;
+            if (rigidbodies && !colliders) {
+                Logger.Log("Cannot generate definition objects with rigidbodies and colliders", LogLevel.Error);
+                throw new Exception();
+            }
 
-            if (physics && MiraAssembly.Dynamic) {
+            if ((colliders) && MiraAssembly.Dynamic) {
                 if (dynamicLayers.Count == 0)
                     throw new Exception("No more dynamic layers");
-                dynamicLayer = dynamicLayers.Dequeue();
 
+                Debug.Log(dynamicLayer);
+
+                if (dynamicLayer == -1)
+                    dynamicLayer = dynamicLayers.Dequeue();
+                
                 assemblyContainer.layer = dynamicLayer;
                 assemblyContainer.AddComponent<DynamicLayerReserver>();
             }
@@ -186,7 +195,7 @@ namespace Synthesis.Import {
                         new GameObject(useIndex ? $"{partInstance.Info.Name}_{partIndex}" : partInstance.Info.Name);
 
                     MakePartDefinition(partObject, partDefinition, partInstance, MiraAssembly.Data,
-                        !physics ? ColliderGenType.NoCollider
+                        !colliders ? ColliderGenType.NoCollider
                                  : (isStatic ? ColliderGenType.Concave : ColliderGenType.Convex),
                         useIndex, partIndex);
                     partObject.transform.parent        = groupObject.transform;
@@ -202,12 +211,12 @@ namespace Synthesis.Import {
                 if (!MiraAssembly.Dynamic && !isGamepiece) {
                     groupObject.transform.GetComponentsInChildren<UnityEngine.Transform>().ForEach(
                         x => x.gameObject.layer = FIELD_LAYER);
-                } else if (MiraAssembly.Dynamic && physics) {
+                } else if (MiraAssembly.Dynamic && colliders) {
                     groupObject.transform.GetComponentsInChildren<UnityEngine.Transform>().ForEach(
                         x => x.gameObject.layer = dynamicLayer);
                 }
 
-                if (physics) {
+                if (rigidbodies && colliders) {
                     // Combine all physical data for grouping
                     var rb = groupObject.AddComponent<Rigidbody>();
                     if (isStatic)
@@ -553,7 +562,7 @@ namespace Synthesis.Import {
 
                     var partInstance   = part.Value;
                     var partDefinition = assembly.Data.Parts.PartDefinitions[partInstance.PartDefinitionReference];
-                    
+
                     if (partDefinition.Bodies.Any()) {
                         collectivePhysData.Add((partInstance.GlobalTransform.UnityMatrix, partDefinition.PhysicalData));
                     }

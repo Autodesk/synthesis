@@ -157,7 +157,7 @@ namespace Synthesis {
             }
 
             UseFakeMotion = jointA.useLimits;
-            
+
             EnableMotor();
 
             // TODO: fix

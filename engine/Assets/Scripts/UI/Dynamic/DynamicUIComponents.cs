@@ -179,7 +179,6 @@ namespace Synthesis.UI.Dynamic {
         public void Delete_Internal() => Object.Destroy(_unityObject);
         public void ClearContent()    => MainContent.DeleteAllChildren();
 
-
         protected Content Strip(Vector2? newContentSize = null, float leftPadding = 0f, float rightPadding = 0f,
             float topPadding = 0f, float bottomPadding = 0f) {
             CancelButton.RootGameObject.SetActive(false);
@@ -346,9 +345,11 @@ namespace Synthesis.UI.Dynamic {
             if (!resetButtons)
                 return;
 
-            AcceptButton.ClearOnClickedEvents().StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.AcceptButton))
+            AcceptButton.ClearOnClickedEvents()
+                .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.AcceptButton))
                 .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.AcceptCancelButtonText));
-            CancelButton.ClearOnClickedEvents().StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.CancelButton))
+            CancelButton.ClearOnClickedEvents()
+                .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.CancelButton))
                 .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.AcceptCancelButtonText));
         }
 
@@ -1282,7 +1283,7 @@ namespace Synthesis.UI.Dynamic {
                                 ColorManager.SynthesisColor.InteractiveElementRight))
                 .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
                 .EnableEvents<Button>();
-        
+
         public static readonly Func<Button, Button> EnableAcceptButton = b =>
             b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.AcceptButton))
                 .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.AcceptCancelButtonText))

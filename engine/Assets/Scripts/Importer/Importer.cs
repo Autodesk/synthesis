@@ -63,7 +63,7 @@ namespace Synthesis.Import {
             private readonly List<GamepieceSimObject> _gamepieces = new();
             private SimObject _simObject;
 
-#region Constructors & Setup
+#region Constructors &Setup
 
             public ImportHelper(MixAndMatchRobotData mixAndMatchRobotData)
                 : this(mixAndMatchRobotData,
@@ -112,7 +112,7 @@ namespace Synthesis.Import {
             public void CreateSimObject() {
                 // TODO: add part index to signal and make sure it is accessed with the part index added as well
                 var allSignals = _assemblies.Where(a => a.Data.Signals != null).Select(a => a.Data.Signals).ToArray();
-                
+
                 var state = new ControllableState(allSignals);
 
                 if (_assemblies[0].Dynamic) {
@@ -161,7 +161,7 @@ namespace Synthesis.Import {
             }
 
             private readonly static float TWO_PI = 2f * Mathf.PI;
-            
+
             /// <summary>Connects two robot parts with a joint. (ex: connecting a wheel to a drivetrain)</summary>
             private void MakeJoint(
                 GameObject gameObjectA, GameObject gameObjectB, JointInstance instance, Assembly assembly) {
@@ -232,79 +232,74 @@ namespace Synthesis.Import {
                     }
                 }
 
-                
                 void HingeJoint() {
                     var revoluteA = gameObjectA.AddComponent<HingeJoint>();
 
-                        var parentPartInstance = assembly.Data.Parts.PartInstances[instance.ParentPart];
-                        var parentPartDefinition =
-                            assembly.Data.Parts.PartDefinitions[parentPartInstance.PartDefinitionReference];
+                    var parentPartInstance = assembly.Data.Parts.PartInstances[instance.ParentPart];
+                    var parentPartDefinition =
+                        assembly.Data.Parts.PartDefinitions[parentPartInstance.PartDefinitionReference];
 
-                        var originA          = (UVector3) (definition.Origin ?? new UVector3());
-                        UVector3 jointOffset = instance.Offset ?? new Vector3();
-                        revoluteA.anchor     = originA + jointOffset;
+                    var originA          = (UVector3) (definition.Origin ?? new UVector3());
+                    UVector3 jointOffset = instance.Offset ?? new Vector3();
+                    revoluteA.anchor     = originA + jointOffset;
 
-                        UVector3 axisWut;
-                        if (assembly.Info.Version < 5) {
-                            axisWut = new UVector3(definition.Rotational.RotationalFreedom.Axis.X,
-                                definition.Rotational.RotationalFreedom.Axis.Y,
-                                definition.Rotational.RotationalFreedom.Axis.Z);
-                        } else {
-                            axisWut = new UVector3(-definition.Rotational.RotationalFreedom.Axis.X,
-                                definition.Rotational.RotationalFreedom.Axis.Y,
-                                definition.Rotational.RotationalFreedom.Axis.Z);
-                        }
+                    UVector3 axisWut;
+                    if (assembly.Info.Version < 5) {
+                        axisWut = new UVector3(definition.Rotational.RotationalFreedom.Axis.X,
+                            definition.Rotational.RotationalFreedom.Axis.Y,
+                            definition.Rotational.RotationalFreedom.Axis.Z);
+                    } else {
+                        axisWut = new UVector3(-definition.Rotational.RotationalFreedom.Axis.X,
+                            definition.Rotational.RotationalFreedom.Axis.Y,
+                            definition.Rotational.RotationalFreedom.Axis.Z);
+                    }
 
-                        revoluteA.axis               = axisWut;
-                        revoluteA.connectedBody      = rigidbodyB;
-                        revoluteA.connectedMassScale = revoluteA.connectedBody.mass / rigidbodyA.mass;
-                        revoluteA.useMotor           = true;
-                        // TODO: Implement and test limits
-                        var limits = definition.Rotational.RotationalFreedom.Limits;
-                        if (limits != null && limits.Lower != limits.Upper) {
-                            var currentPosition = definition.Rotational.RotationalFreedom.Value;
-                            currentPosition     = (currentPosition % (TWO_PI)) -
-                                              ((int) (currentPosition % (TWO_PI) / Mathf.PI) * (TWO_PI));
-                            var min             = -(limits.Upper - currentPosition);
-                            min                 = (min % (TWO_PI) -TWO_PI) % (TWO_PI);
-                            var max             = -(limits.Lower - currentPosition);
-                            max                 = (max % (TWO_PI) + TWO_PI) % (TWO_PI);
-                            revoluteA.useLimits = true;
-                            revoluteA.limits =
-                                new JointLimits() { min = min * Mathf.Rad2Deg, max = max * Mathf.Rad2Deg };
-                            revoluteA.extendedLimits = true;
-                        }
+                    revoluteA.axis               = axisWut;
+                    revoluteA.connectedBody      = rigidbodyB;
+                    revoluteA.connectedMassScale = revoluteA.connectedBody.mass / rigidbodyA.mass;
+                    revoluteA.useMotor           = true;
+                    // TODO: Implement and test limits
+                    var limits = definition.Rotational.RotationalFreedom.Limits;
+                    if (limits != null && limits.Lower != limits.Upper) {
+                        var currentPosition = definition.Rotational.RotationalFreedom.Value;
+                        currentPosition =
+                            (currentPosition % (TWO_PI)) - ((int) (currentPosition % (TWO_PI) / Mathf.PI) * (TWO_PI));
+                        var min             = -(limits.Upper - currentPosition);
+                        min                 = (min % (TWO_PI) -TWO_PI) % (TWO_PI);
+                        var max             = -(limits.Lower - currentPosition);
+                        max                 = (max % (TWO_PI) + TWO_PI) % (TWO_PI);
+                        revoluteA.useLimits = true;
+                        revoluteA.limits = new JointLimits() { min = min * Mathf.Rad2Deg, max = max * Mathf.Rad2Deg };
+                        revoluteA.extendedLimits = true;
+                    }
 
-                        var revoluteB = gameObjectB.AddComponent<HingeJoint>();
+                    var revoluteB = gameObjectB.AddComponent<HingeJoint>();
 
-                        // All of the rigidbodies have the same location and orientation so these are the same for both
-                        // joints
-                        revoluteB.anchor = revoluteA.anchor;
-                        revoluteB.axis   = revoluteA.axis; // definition.Rotational.RotationalFreedom.Axis;
+                    // All of the rigidbodies have the same location and orientation so these are the same for both
+                    // joints
+                    revoluteB.anchor = revoluteA.anchor;
+                    revoluteB.axis   = revoluteA.axis; // definition.Rotational.RotationalFreedom.Axis;
 
-                        revoluteB.connectedBody      = rigidbodyA;
-                        revoluteB.connectedMassScale = revoluteB.connectedBody.mass / rigidbodyB.mass;
+                    revoluteB.connectedBody      = rigidbodyA;
+                    revoluteB.connectedMassScale = revoluteB.connectedBody.mass / rigidbodyB.mass;
 
-                        // TODO: Encoder Signals
-                        if (instance.HasSignal()) {
-                            var driver = new RotationalDriver(
-                                assembly.Data.Signals.SignalMap[instance.SignalReference].Info.GUID,
+                    // TODO: Encoder Signals
+                    if (instance.HasSignal()) {
+                        var driver =
+                            new RotationalDriver(assembly.Data.Signals.SignalMap[instance.SignalReference].Info.GUID,
                                 new string[] { instance.SignalReference, $"{instance.SignalReference}_mode" },
-                                new string[] {
-                                    $"{instance.SignalReference}_encoder",
-                                    $"{instance.SignalReference}_absolute"
-                                },
+                                new string[] { $"{instance.SignalReference}_encoder",
+                                    $"{instance.SignalReference}_absolute" },
                                 _simObject, revoluteA, revoluteB, instance.IsWheel(assembly),
                                 assembly.Data.Joints.MotorDefinitions.ContainsKey(definition.MotorReference)
                                     ? definition.MotorReference
                                     : null);
-                            SimulationManager.AddDriver(_simObject.Name, driver);
-                        }
-
+                        SimulationManager.AddDriver(_simObject.Name, driver);
+                    }
                 }
 
                 void SliderJoint() {
-                     UVector3 anchor = definition.Origin ?? new Vector3() + instance.Offset ?? new Vector3();
+                    UVector3 anchor = definition.Origin ?? new Vector3() + instance.Offset ?? new Vector3();
                     UVector3 axis   = definition.Prismatic.PrismaticFreedom.Axis;
                     axis            = axis.normalized;
                     axis.x          = -axis.x;
@@ -363,7 +358,6 @@ namespace Synthesis.Import {
                                     : null);
                         SimulationManager.AddDriver(_simObject.Name, slideDriver);
                     }
-
                 }
 
                 void FixedJoint() {
