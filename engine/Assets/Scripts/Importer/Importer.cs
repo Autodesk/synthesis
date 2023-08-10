@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MathNet.Numerics.LinearAlgebra;
 using Mirabuf.Joint;
 using Synthesis.Util;
 using SynthesisAPI.Simulation;
@@ -59,7 +60,7 @@ namespace Synthesis.Import {
             private readonly MirabufLive[] _miraLiveFiles;
             private readonly GameObject _assemblyObject;
             private readonly Assembly[] _assemblies;
-            private readonly Dictionary<string, GameObject>[] _groupObjects;
+            private readonly (Dictionary<string, GameObject> objectDict, Matrix4x4 transformation)[] _groupObjects;
             private readonly List<GamepieceSimObject> _gamepieces = new();
             private SimObject _simObject;
 
@@ -86,17 +87,16 @@ namespace Synthesis.Import {
                 UnityEngine.Physics.sleepThreshold = 0;
 
                 _groupObjects = (mixAndMatchRobotData == null)
-                                    ? new[] { miraLiveFiles[0].GenerateDefinitionObjects(_assemblyObject) }
-                                    : MirabufLive.GenerateMixAndMatchDefinitionObjects(
-                                          _miraLiveFiles, _assemblyObject, mixAndMatchRobotData);
+                                    ? new[] { (miraLiveFiles[0].GenerateDefinitionObjects(_assemblyObject), Matrix4x4.identity) }
+                                    : MirabufLive.GenerateMixAndMatchDefinitionObjects(_miraLiveFiles, _assemblyObject, mixAndMatchRobotData);
             }
 
             /// <summary>Populates the <see cref="_gamepieces">gamepieces</see> list with gamepieces found</summary>
             public void ConfigureGamepieces() {
                 _groupObjects.ForEachIndex(
-                    (i, x) => x.Where(x => _miraLiveFiles[i].Definitions.Definitions[x.Key].IsGamepiece).ForEach(x => {
+                    (i, x) => x.objectDict.Where(y => _miraLiveFiles[i].Definitions.Definitions[y.Key].IsGamepiece).ForEach(z => {
                         var gpSim =
-                            new GamepieceSimObject(_miraLiveFiles[i].Definitions.Definitions[x.Key].Name, x.Value);
+                            new GamepieceSimObject(_miraLiveFiles[i].Definitions.Definitions[z.Key].Name, z.Value);
                         try {
                             SimulationManager.RegisterSimObject(gpSim);
                         } catch (Exception e) {
@@ -119,10 +119,10 @@ namespace Synthesis.Import {
                     string name = $"{_assemblies[0].Info.Name}_{_robotTally}";
                     _robotTally++;
 
-                    _simObject = new RobotSimObject(name, state, _miraLiveFiles, _groupObjects[0]["grounded"]);
+                    _simObject = new RobotSimObject(name, state, _miraLiveFiles, _groupObjects[0].objectDict["grounded"]);
                 } else {
                     _simObject = new FieldSimObject(
-                        _assemblies[0].Info.Name, state, _miraLiveFiles[0], _groupObjects[0]["grounded"], _gamepieces);
+                        _assemblies[0].Info.Name, state, _miraLiveFiles[0], _groupObjects[0].objectDict["grounded"], _gamepieces);
                 }
 
                 void RegisterSimObject() {
@@ -150,12 +150,12 @@ namespace Synthesis.Import {
                     (partIndex, assembly) => assembly.Data.Joints.JointInstances.ForEach(jointKvp => {
                         if (jointKvp.Key != "grounded") {
                             var aKey = rigidDefinitions[partIndex].PartToDefinitionMap[jointKvp.Value.ParentPart];
-                            var a    = _groupObjects[partIndex][aKey];
+                            var a    = _groupObjects[partIndex].objectDict[aKey];
 
                             var bKey = rigidDefinitions[partIndex].PartToDefinitionMap[jointKvp.Value.ChildPart];
-                            var b    = _groupObjects[partIndex][bKey];
+                            var b    = _groupObjects[partIndex].objectDict[bKey];
 
-                            MakeJoint(a, b, jointKvp.Value, _assemblies[partIndex]);
+                            MakeJoint(a, b, jointKvp.Value, _assemblies[partIndex], _groupObjects[partIndex].transformation);
                         }
                     }));
             }
@@ -164,7 +164,7 @@ namespace Synthesis.Import {
 
             /// <summary>Connects two robot parts with a joint. (ex: connecting a wheel to a drivetrain)</summary>
             private void MakeJoint(
-                GameObject gameObjectA, GameObject gameObjectB, JointInstance instance, Assembly assembly) {
+                GameObject gameObjectA, GameObject gameObjectB, JointInstance instance, Assembly assembly, Matrix4x4 partTransform) {
                 var definition = assembly.Data.Joints.JointDefinitions[instance.JointReference];
 
                 var rigidbodyA = gameObjectA.GetComponent<Rigidbody>();
@@ -196,7 +196,7 @@ namespace Synthesis.Import {
                     var wheelA           = gameObjectA.AddComponent<FixedJoint>();
                     var originA          = (UVector3) (definition.Origin ?? new UVector3());
                     UVector3 jointOffset = instance.Offset ?? new Vector3();
-                    wheelA.anchor        = originA + jointOffset;
+                    wheelA.anchor        = partTransform.MultiplyPoint3x4(originA + jointOffset);
 
                     UVector3 axisWut;
                     if (assembly.Info.Version < 5) {
@@ -241,7 +241,7 @@ namespace Synthesis.Import {
 
                     var originA          = (UVector3) (definition.Origin ?? new UVector3());
                     UVector3 jointOffset = instance.Offset ?? new Vector3();
-                    revoluteA.anchor     = originA + jointOffset;
+                    revoluteA.anchor     = partTransform.MultiplyPoint3x4(originA + jointOffset);
 
                     UVector3 axisWut;
                     if (assembly.Info.Version < 5) {
@@ -254,7 +254,7 @@ namespace Synthesis.Import {
                             definition.Rotational.RotationalFreedom.Axis.Z);
                     }
 
-                    revoluteA.axis               = axisWut;
+                    revoluteA.axis               = partTransform.MultiplyVector(axisWut);
                     revoluteA.connectedBody      = rigidbodyB;
                     revoluteA.connectedMassScale = revoluteA.connectedBody.mass / rigidbodyA.mass;
                     revoluteA.useMotor           = true;
@@ -309,11 +309,11 @@ namespace Synthesis.Import {
                                      0.01f;
 
                     var sliderA                          = gameObjectA.AddComponent<ConfigurableJoint>();
-                    sliderA.anchor                       = anchor; // + (axis * midRange);
-                    sliderA.axis                         = axis;
+                    sliderA.anchor                       = partTransform.MultiplyPoint3x4(anchor); // + (axis * midRange);
+                    sliderA.axis                         = partTransform.MultiplyVector(axis);
                     sliderA.autoConfigureConnectedAnchor = false;
-                    sliderA.connectedAnchor              = anchor + (axis * midRange);
-                    sliderA.secondaryAxis                = axis;
+                    sliderA.connectedAnchor              = partTransform.MultiplyPoint3x4(anchor + (axis * midRange));
+                    sliderA.secondaryAxis                = partTransform.MultiplyVector(axis);
                     sliderA.angularXMotion               = ConfigurableJointMotion.Locked;
                     sliderA.angularYMotion               = ConfigurableJointMotion.Locked;
                     sliderA.angularZMotion               = ConfigurableJointMotion.Locked;
@@ -367,8 +367,8 @@ namespace Synthesis.Import {
                     void AddUnityFixedJoint(
                         Rigidbody rootObject, Rigidbody otherObject, Vector3 origin, Vector3 offset) {
                         var fixedJoint                = rootObject.gameObject.AddComponent<FixedJoint>();
-                        fixedJoint.anchor             = (origin ?? new Vector3()) + (offset ?? new Vector3());
-                        fixedJoint.axis               = UVector3.forward;
+                        fixedJoint.anchor             = partTransform.MultiplyPoint3x4((origin ?? new Vector3()) + (offset ?? new Vector3()));
+                        fixedJoint.axis               = partTransform.MultiplyVector(UVector3.forward);
                         fixedJoint.connectedBody      = otherObject;
                         fixedJoint.connectedMassScale = fixedJoint.connectedBody.mass / rootObject.mass;
                     }

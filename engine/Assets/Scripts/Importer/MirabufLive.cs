@@ -109,16 +109,22 @@ namespace Synthesis.Import {
 
 #region Creation
 
-        public static Dictionary<string, GameObject>[] GenerateMixAndMatchDefinitionObjects(
+        public static (Dictionary<string, GameObject> objectDict, Matrix4x4 transformation)[] GenerateMixAndMatchDefinitionObjects(
             MirabufLive[] miraLiveFiles, GameObject assemblyContainer, MixAndMatchRobotData robotTransformData) {
             Dictionary<string, GameObject>[] groupObjects = new Dictionary<string, GameObject>[miraLiveFiles.Length];
+            Matrix4x4[] transformations = new Matrix4x4[miraLiveFiles.Length];
             int dynamicLayer = dynamicLayers.Dequeue();
 
             miraLiveFiles.ForEachIndex((i, m) => groupObjects[i] =
                 m.GenerateDefinitionObjects(assemblyContainer, true, true, true, i, dynamicLayer));
 
+            for (int i = 0; i < miraLiveFiles.Length; i++) {
+                var partData = robotTransformData.PartTransformData[i];
+                transformations[i] = Matrix4x4.TRS(partData.LocalPosition, partData.LocalRotation, UVector3.one);
+            }
+            
             if (miraLiveFiles.Length == 1) {
-                return groupObjects;
+                return new[] { (groupObjects[0], transformations[0]) };
             }
             
             var mainGrounded = new GameObject("grounded");
@@ -130,8 +136,12 @@ namespace Synthesis.Import {
                 
                 // Locally position parts TODO: make this not break joint offsets
                 objects.Values.ForEach(o => {
-                    o.transform.position += partData.LocalPosition;
-                    o.transform.rotation *= partData.LocalRotation;
+                    for (int childIndex = 0; childIndex < o.transform.childCount; childIndex++) {
+                        var childTransform = o.transform.GetChild(childIndex);
+                        var newMat = transformations[i] * childTransform.localToWorldMatrix;
+                        childTransform.position = newMat.GetPosition();
+                        childTransform.rotation = newMat.rotation;
+                    }
                 });
 
                 // Locate parent node
@@ -187,7 +197,7 @@ namespace Synthesis.Import {
 
             rb.centerOfMass /= rb.mass;
 
-            return groupObjects;
+            return groupObjects.Zip(transformations, (d, t) => (d, t)).ToArray();
         }
 
         public Dictionary<string, GameObject> GenerateDefinitionObjects(GameObject assemblyContainer,
