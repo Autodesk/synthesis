@@ -63,13 +63,13 @@ namespace Synthesis.Import {
             private readonly List<GamepieceSimObject> _gamepieces = new();
             private SimObject _simObject;
 
-#region Constructors &Setup
+#region Constructors & Setup
 
             public ImportHelper(MixAndMatchRobotData mixAndMatchRobotData)
                 : this(mixAndMatchRobotData,
-                      mixAndMatchRobotData.PartTransformData
+                      mixAndMatchRobotData.GlobalPartData
                           .Select(
-                              part => new MirabufLive(MixAndMatchSaveUtil.LoadPartData(part.FileName).MirabufPartFile))
+                              part => new MirabufLive(part.MirabufPartFile))
                           .ToArray()) {}
 
             public ImportHelper(string filePath) : this(null, new[] { new MirabufLive(filePath) }) {}

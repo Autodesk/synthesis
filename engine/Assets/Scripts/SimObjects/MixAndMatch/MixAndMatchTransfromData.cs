@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
+using Synthesis.Import;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -143,10 +144,39 @@ namespace SimObjects.MixAndMatch {
         public string Name;
         public RobotPartTransformData[] PartTransformData;
 
+        [JsonIgnore]private MixAndMatchPartData[] _globalPartData;
+
+        [JsonIgnore]
+        public MixAndMatchPartData[] GlobalPartData {
+            get {
+                if (_globalPartData != null)
+                    return _globalPartData;
+                
+                _globalPartData = PartTransformData
+                    .Select(
+                        part => MixAndMatchSaveUtil.LoadPartData(part.FileName))
+                    .ToArray();
+                
+                return _globalPartData;
+            }
+        }
+
         public MixAndMatchRobotData(string name, RobotPartTransformData[] transforms) {
             Name = name;
             PartTransformData = transforms;
         }
+
+        public int PartGuidToIndex(string partGuid) {
+            int index = 0;
+            
+            foreach (var part in GlobalPartData) {
+                if (partGuid == part.Guid)
+                    return index;
+                
+                index++;
+            }
+            return -1;
+        } 
     }
 
     /// <summary>Robot specific part data (position, parent node). Only ever saved in a robot's json file.</summary>

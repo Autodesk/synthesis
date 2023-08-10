@@ -413,7 +413,7 @@ public static class MainHUD {
             }
         }, drawerPosition: DrawerPosition.Bottom);
 
-        AddItemToDrawer("Mix & match", b => DynamicUIManager.CreateModal<MixAndMatchModal>(),
+        AddItemToDrawer("Mix & Match", b => DynamicUIManager.CreateModal<MixAndMatchModal>(),
             drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
 
         PhysicsManager.IsFrozen = false;

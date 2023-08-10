@@ -124,6 +124,7 @@ namespace Synthesis.Import {
             var rb = mainGrounded.AddComponent<Rigidbody>();
 
             groupObjects.ForEachIndex((i, objects) => {
+                // Locally position parts
                 objects.Values.ForEach(o => {
                     o.transform.position += robotTransformData.PartTransformData[i].LocalPosition;
                     o.transform.rotation *= robotTransformData.PartTransformData[i].LocalRotation;
@@ -152,6 +153,10 @@ namespace Synthesis.Import {
                     throw new Exception("No grounded object found");
                 }
             });
+
+            void CombineNodes() {
+                
+            }
 
             rb.centerOfMass /= rb.mass;
 
