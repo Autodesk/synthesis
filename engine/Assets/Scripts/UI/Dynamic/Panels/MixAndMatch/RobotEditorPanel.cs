@@ -87,19 +87,24 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
         /// <summary>Creates the buttons to add and remove parts from the robot assembly</summary>
         private void CreateAddRemoveButtons() {
-            (Content left, Content right) = MainContent.CreateSubContent(new Vector2(PANEL_WIDTH, 50))
+            (Content add, Content right) = MainContent.CreateSubContent(new Vector2(PANEL_WIDTH, 50))
                 .SetBottomStretch<Content>()
-                .SplitLeftRight((PANEL_WIDTH - 10f) / 2f, 10f);
+                .SplitLeftRight((PANEL_WIDTH - 10f) / 3f, 10f);
+            
+            (Content remove, Content parent) = right.SplitLeftRight((PANEL_WIDTH - 10f) / 3f, 10f);
 
-            left.CreateButton("Add").SetStretch<Button>().AddOnClickedEvent(
+            add.CreateButton("Add").SetStretch<Button>().AddOnClickedEvent(
                 _ => {
                     DynamicUIManager.CreateModal<SelectPartModal>(
                         args: new Action<MixAndMatchPartData>(AddAdditionalPart));
                 });
 
-            _removeButton = right.CreateButton("Remove").SetStretch<Button>().AddOnClickedEvent(
+            _removeButton = remove.CreateButton("Remove").SetStretch<Button>().AddOnClickedEvent(
                 _ => DynamicUIManager.CreateModal<RemovePartModal>(args: new Action(RemovePartCallback)));
             UpdateRemoveButton();
+            
+            parent.CreateButton("Parent").SetStretch<Button>().AddOnClickedEvent(
+                _ => _selectingNode = !_selectingNode);
 
             void RemovePartCallback() {
                 if (_selectedPart == null)
@@ -271,11 +276,6 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             if (EventSystem.current.IsPointerOverGameObject() || _selectedPart == null)
                 return;
 
-            if (Input.GetMouseButtonDown(0)) {
-                DeselectSelectedPart();
-                return;
-            }
-
             Ray ray = Camera.main!.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out var hit, 100, _connectionLayerMask)) {
                 var selectedTrf = _selectedPart.Value.gameObject.transform;
@@ -311,16 +311,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
             Ray ray = Camera.main!.ScreenPointToRay(Input.mousePosition);
             bool hit = Physics.Raycast(ray, out var hitInfo, 100, _robotLayerMask);
-
             
-            /*if (hit)
-                Debug.Log(hitInfo.transform.name + " " + (hitInfo.transform.GetComponent<HighlightComponent>() == null));
-            if (hit)
-                Debug.Log((hitInfo.rigidbody != null) + " " +   
-                          (hitInfo.transform.GetComponent<HighlightComponent>() != _selectedNode));
-                          */
-            
-            //Debug.Log();
             if (hit && hitInfo.rigidbody != null &&  
                 hitInfo.transform.GetComponent<HighlightComponent>() != _selectedNode) {
                 if (_hoveringNode != null &&
@@ -349,7 +340,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
                     var part = _partGameObjects[selectedPartIndex];
                     part.parentNodeData = new ParentNodeData(_selectedNode.transform.parent.GetComponent<PartGuidHolder>().Guid, _selectedNode.name);
                     _partGameObjects[selectedPartIndex] = part;
-                    // TODO: Update ui
+                    // TODO: Update ui?
                     //_resultingData.NodeName = hitInfo.rigidbody.name;
                     // SetSelectUIState(false);
                 }
@@ -360,7 +351,6 @@ namespace UI.Dynamic.Panels.MixAndMatch {
                     _hoveringNode.enabled = false;
                     _hoveringNode = null;
                 }
-
             }
         }
 
@@ -378,10 +368,10 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         }
 
         public override void Update() {
-            if (Input.GetKeyDown(KeyCode.S)) {
+            Debug.Log(_selectingNode);
+            /*if (Input.GetKeyDown(KeyCode.S)) {
                 _selectingNode = !_selectingNode;
-                Debug.Log($"Selecting node set to {_selectingNode}");
-            }
+            }*/
 
             if (_selectingNode)
                 NodeSelection();

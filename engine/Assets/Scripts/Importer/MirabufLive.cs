@@ -13,8 +13,6 @@ using SynthesisAPI.Utilities;
 using Google.Protobuf;
 using Mirabuf.Material;
 using SimObjects.MixAndMatch;
-using Synthesis.UI.Dynamic;
-using UnityEngine.Assertions.Must;
 using Logger              = SynthesisAPI.Utilities.Logger;
 using MPhysicalProperties = Mirabuf.PhysicalProperties;
 using UVector3            = UnityEngine.Vector3;
@@ -26,13 +24,13 @@ namespace Synthesis.Import {
         public const UInt32 CURRENT_MIRA_EXPORTER_VERSION = 5;
         public const UInt32 OLDEST_MIRA_EXPORTER_VERSION  = 4;
 
-        public const int FIELD_LAYER     = 7;
-        public const int DYNAMIC_1_LAYER = 8;
-        public const int DYNAMIC_2_LAYER = 9;
-        public const int DYNAMIC_3_LAYER = 10;
-        public const int DYNAMIC_4_LAYER = 11;
-        public const int DYNAMIC_5_LAYER = 12;
-        public const int DYNAMIC_6_LAYER = 13;
+        private const int FIELD_LAYER     = 7;
+        private const int DYNAMIC_1_LAYER = 8;
+        private const int DYNAMIC_2_LAYER = 9;
+        private const int DYNAMIC_3_LAYER = 10;
+        private const int DYNAMIC_4_LAYER = 11;
+        private const int DYNAMIC_5_LAYER = 12;
+        private const int DYNAMIC_6_LAYER = 13;
 
         private static Queue<int> dynamicLayers = new Queue<int>(new int[] { DYNAMIC_1_LAYER, DYNAMIC_2_LAYER,
             DYNAMIC_3_LAYER, DYNAMIC_4_LAYER, DYNAMIC_5_LAYER, DYNAMIC_6_LAYER });
