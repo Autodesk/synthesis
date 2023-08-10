@@ -13,6 +13,8 @@ using SynthesisAPI.Utilities;
 using Google.Protobuf;
 using Mirabuf.Material;
 using SimObjects.MixAndMatch;
+using Synthesis.UI.Dynamic;
+using UnityEngine.Assertions.Must;
 using Logger              = SynthesisAPI.Utilities.Logger;
 using MPhysicalProperties = Mirabuf.PhysicalProperties;
 using UVector3            = UnityEngine.Vector3;
@@ -110,26 +112,54 @@ namespace Synthesis.Import {
         public static Dictionary<string, GameObject>[] GenerateMixAndMatchDefinitionObjects(
             MirabufLive[] miraLiveFiles, GameObject assemblyContainer, MixAndMatchRobotData robotTransformData) {
             Dictionary<string, GameObject>[] groupObjects = new Dictionary<string, GameObject>[miraLiveFiles.Length];
-            int dynamicLayer                              = dynamicLayers.Dequeue();
+            int dynamicLayer = dynamicLayers.Dequeue();
 
             miraLiveFiles.ForEachIndex((i, m) => groupObjects[i] =
-                                           m.GenerateDefinitionObjects(assemblyContainer, true, true, true, i, dynamicLayer));
+                m.GenerateDefinitionObjects(assemblyContainer, true, true, true, i, dynamicLayer));
 
             if (miraLiveFiles.Length == 1) {
                 return groupObjects;
             }
-
+            
             var mainGrounded = new GameObject("grounded");
             mainGrounded.transform.SetParent(assemblyContainer.transform);
             var rb = mainGrounded.AddComponent<Rigidbody>();
 
             groupObjects.ForEachIndex((i, objects) => {
-                // Locally position parts
+                var partData = robotTransformData.PartTransformData[i];
+                
+                // Locally position parts TODO: make this not break joint offsets
                 objects.Values.ForEach(o => {
-                    o.transform.position += robotTransformData.PartTransformData[i].LocalPosition;
-                    o.transform.rotation *= robotTransformData.PartTransformData[i].LocalRotation;
+                    o.transform.position += partData.LocalPosition;
+                    o.transform.rotation *= partData.LocalRotation;
                 });
 
+                // Locate parent node
+                GameObject parentNode;
+                {
+                    var parentNodeData = partData.ParentNodeData;
+                    if (parentNodeData.NodeName is "grounded" or "") {
+                        parentNode = mainGrounded;
+                        goto PartFound;
+                    }
+
+                    var parentPartIndex = robotTransformData.PartGuidToIndex(parentNodeData.PartGuid);
+
+                    var targetName = $"{parentNodeData.NodeName}_{parentPartIndex}";
+                    var obj = groupObjects[parentPartIndex].Values
+                        .Find(x => x.name == targetName);
+
+                    if (obj != null) {
+                        parentNode = obj;
+                        goto PartFound;
+                    }
+
+                    parentNode = mainGrounded;
+                }
+
+                PartFound:
+
+                // Combine objects onto grounded
                 if (objects.TryGetValue("grounded", out var partGrounded)) {
                     var children = new List<UnityEngine.Transform>();
 
@@ -137,7 +167,7 @@ namespace Synthesis.Import {
                         children.Add(child);
                     }
 
-                    children.ForEach(c => c.SetParent(mainGrounded.transform));
+                    children.ForEach(c => c.SetParent(parentNode.transform));
 
                     var partRb = partGrounded.GetComponent<Rigidbody>();
 
@@ -147,16 +177,13 @@ namespace Synthesis.Import {
                     objects.Remove("grounded");
                     UnityEngine.Object.DestroyImmediate(partGrounded);
 
-                    objects.Add("grounded", mainGrounded);
-                } else {
+                    objects.Add("grounded", parentNode);
+                }
+                else {
                     // TODO: do something about this?
                     throw new Exception("No grounded object found");
                 }
             });
-
-            void CombineNodes() {
-                
-            }
 
             rb.centerOfMass /= rb.mass;
 

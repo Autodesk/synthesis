@@ -312,16 +312,17 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             Ray ray = Camera.main!.ScreenPointToRay(Input.mousePosition);
             bool hit = Physics.Raycast(ray, out var hitInfo, 100, _robotLayerMask);
 
+            
             /*if (hit)
-                Debug.Log(hitInfo.transform.name + " " + (hitInfo.transform.GetComponent<HighlightComponent>() == null));*/
+                Debug.Log(hitInfo.transform.name + " " + (hitInfo.transform.GetComponent<HighlightComponent>() == null));
             if (hit)
                 Debug.Log((hitInfo.rigidbody != null) + " " +   
                           (hitInfo.transform.GetComponent<HighlightComponent>() != _selectedNode));
+                          */
             
             //Debug.Log();
             if (hit && hitInfo.rigidbody != null &&  
                 hitInfo.transform.GetComponent<HighlightComponent>() != _selectedNode) {
-                Debug.Log(hitInfo.transform.name);
                 if (_hoveringNode != null &&
                     (_selectedNode == null || !_selectedNode.name.Equals(_hoveringNode.name))) {
                     _hoveringNode.enabled = false;
