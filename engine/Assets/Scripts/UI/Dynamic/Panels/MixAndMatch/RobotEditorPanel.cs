@@ -375,9 +375,6 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             _robotData.PartTransformData = parts.ToArray();
 
             MixAndMatchSaveUtil.SaveRobotData(_robotData);
-
-            if (parts.Count > 0)
-                RobotSimObject.SpawnRobot(_robotData);
         }
 
         public override void Update() {
