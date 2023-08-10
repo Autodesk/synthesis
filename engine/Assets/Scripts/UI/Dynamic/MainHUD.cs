@@ -294,7 +294,7 @@ public static class MainHUD {
         UpdateDrawerSizing();
     }
 
-    q` public static void UpdateDrawerSizing() {
+    public static void UpdateDrawerSizing() {
         int LOGO_BOTTOM_Y       = 55;
         int LOGO_BUTTON_SPACING = 20;
         int BUTTON_HEIGHT       = 60;
