@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Synthesis.UI.Dynamic;
+using SynthesisAPI.Aether;
 using TMPro;
 using UnityEngine;
 using Utilities.ColorManager;
@@ -19,8 +20,11 @@ public class LobbyManagerModal : ModalDynamic {
     private HostMode _mode;
 
     private Label _playerListLabel;
+    private LabeledDropdown _availableDataDropdown;
 
     private float _lastPlayerRefresh;
+
+    private List<SynthesisDataDescriptor> _availableData = new();
 
     public LobbyManagerModal(HostMode mode): base(CONTENT_SIZE) {
         _mode = mode;
@@ -47,15 +51,19 @@ public class LobbyManagerModal : ModalDynamic {
         ).SetVerticalAlignment(VerticalAlignmentOptions.Top);
         
         // Right
+
+
+        _availableDataDropdown = right.CreateLabeledDropdown().SetTopStretch<LabeledDropdown>().StepIntoLabel(l => l.SetText("Robots"));
+        
+        RefreshPlayers();
+    }
+
+    private void RefreshAvailableData() {
         var allAvailableTask = _mode.HostClient!.GetAllAvailableData();
         allAvailableTask.Wait();
         var allAvailable = allAvailableTask.Result.GetResult()!.FromAllDataAvailable;
+        
         var names = allAvailable.AvailableData.Select(x => x.Name).ToArray();
-        
-        right.CreateLabeledDropdown().SetTopStretch<LabeledDropdown>().StepIntoLabel(l => l.SetText("Robots"))
-            .StepIntoDropdown(d => d.SetOptions());
-        
-        RefreshPlayers();
     }
 
     private void RefreshPlayers() {
