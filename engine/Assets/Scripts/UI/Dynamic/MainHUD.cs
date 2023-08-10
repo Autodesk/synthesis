@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using DigitalRuby.Tween;
 using Modes.MatchMode;
 using Synthesis.Gizmo;
@@ -8,11 +6,14 @@ using Synthesis.Runtime;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.Utilities;
+using System;
+using System.Collections.Generic;
 using UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Utilities.ColorManager;
+
 using Button  = Synthesis.UI.Dynamic.Button;
 using Image   = Synthesis.UI.Dynamic.Image;
 using Logger  = SynthesisAPI.Utilities.Logger;
@@ -47,7 +48,6 @@ public static class MainHUD {
                 }
 
                 _tabDrawerContent.RootGameObject.SetActive(true);
-                // _accordionButton.RootGameObject.SetActive(true);
             } else {
                 if (_enabled != value) {
                     Collapsed = true;
@@ -80,6 +80,10 @@ public static class MainHUD {
                             SynthesisTweenInterpolationFunctions.IntInterp(t, Convert.ToSingle(a), Convert.ToSingle(b)),
                         TweenScaleFunctions.CubicEaseOut, collapseTweenProgress);
                     _accordionButton.RootGameObject.SetActive(true);
+
+                    if (isConfig) {
+                        LeaveConfig();
+                    }
                 } else {
                     TweenFactory.RemoveTweenKey(COLLAPSE_TWEEN, TweenStopBehavior.DoNotModify);
                     SynthesisTween.MakeTween(EXPAND_TWEEN, _tabDrawerContent.RootRectTransform.anchoredPosition.x,
@@ -172,8 +176,6 @@ public static class MainHUD {
 
         _closeButton.OnClicked += (b) => Collapsed = true;
 
-        /*_spawnButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.Background)
-            .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText));*/
         _spawnButton.StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText))
             .Image.SetColor(ColorManager.SynthesisColor.BackgroundHUD);
         _homeButton.StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText))
@@ -181,10 +183,7 @@ public static class MainHUD {
 
         _accordionButton.OnClicked += (b) => { Collapsed = false; };
 
-        //_spawnButton.SetTransition(Selectable.Transition.ColorTint).SetInteractableColors();
-
         _homeButton.OnClicked += (b) => { DynamicUIManager.CreateModal<ExitSynthesisModal>(); };
-        //_homeButton.SetTransition(Selectable.Transition.ColorTint).SetInteractableColors();
 
         _spawnCallback = b => { DynamicUIManager.CreateModal<SpawningModal>(); };
         _backCallback = b => { LeaveConfig(); };
@@ -295,7 +294,7 @@ public static class MainHUD {
         UpdateDrawerSizing();
     }
 
-    public static void UpdateDrawerSizing() {
+    q` public static void UpdateDrawerSizing() {
         int LOGO_BOTTOM_Y       = 55;
         int LOGO_BUTTON_SPACING = 20;
         int BUTTON_HEIGHT       = 60;
@@ -476,13 +475,17 @@ public static class MainHUD {
         RemoveAllItemsFromDrawer();
 
         AddItemToDrawer("Pickup", b => {
-            if (DynamicUIManager.PanelExists<ConfigureShotTrajectoryPanel>())
+            if (DynamicUIManager.PanelExists<ConfigureShotTrajectoryPanel>()) {
                 DynamicUIManager.ClosePanel<ConfigureShotTrajectoryPanel>();
+            }
+
             DynamicUIManager.CreatePanel<ConfigureGamepiecePickupPanel>();
         }, drawerPosition: DrawerPosition.Top);
         AddItemToDrawer("Ejector", b => {
-            if (DynamicUIManager.PanelExists<ConfigureGamepiecePickupPanel>())
+            if (DynamicUIManager.PanelExists<ConfigureGamepiecePickupPanel>()) {
                 DynamicUIManager.ClosePanel<ConfigureGamepiecePickupPanel>();
+            }
+
             DynamicUIManager.CreatePanel<ConfigureShotTrajectoryPanel>();
         }, drawerPosition: DrawerPosition.Top);
 
@@ -495,12 +498,14 @@ public static class MainHUD {
 
         if (ModeManager.CurrentMode.GetType() == typeof(PracticeMode))
             AddItemToDrawer("Move", b => {
-                if (!isMatchFreeCam)
+                if (!isMatchFreeCam) {
                     OrbitCameraMode.FocusPoint = () =>
                         ConfigRobot.GroundedNode != null && ConfigRobot.GroundedBounds != null
                             ? ConfigRobot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(
                                   ConfigRobot.GroundedBounds.center)
                             : Vector3.zero;
+                }
+
                 GizmoManager.SpawnGizmo(ConfigRobot);
             }, drawerPosition: DrawerPosition.Bottom);
 

@@ -150,7 +150,8 @@ namespace Modes.MatchMode {
             public override void Start() {
                 base.Start();
 
-                PhysicsManager.IsFrozen = true;
+                DynamicUIManager.ManualMainHUDEnabled = false;
+                PhysicsManager.IsFrozen               = true;
                 MatchMode.SpawnAllRobots();
 
                 if (Camera.main != null) {
@@ -168,6 +169,8 @@ namespace Modes.MatchMode {
 
             public override void End() {
                 base.End();
+
+                DynamicUIManager.ManualMainHUDEnabled = true;
 
                 if (Camera.main != null) {
                     Camera.main.GetComponent<CameraController>().CameraMode = CameraController.CameraModes["Orbit"];

@@ -1,17 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Analytics;
 using Synthesis.Gizmo;
 using Synthesis.Physics;
 using Synthesis.Replay;
 using Synthesis.Runtime;
-using Analytics;
 using Synthesis.Util;
-using Utilities.ColorManager;
 using SynthesisAPI.EventBus;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UI.Dynamic.Panels.Tooltip;
 using UnityEngine;
 using UnityEngine.UI;
+using Utilities.ColorManager;
 
 namespace Synthesis.UI.Dynamic {
     public static class DynamicUIManager {
@@ -20,10 +20,22 @@ namespace Synthesis.UI.Dynamic {
 
         public static ModalDynamic ActiveModal { get; private set; }
 
+        private static bool _manualMainHUDEnabled = true;
+        public static bool ManualMainHUDEnabled {
+            get => _manualMainHUDEnabled;
+            set {
+                if (value != _manualMainHUDEnabled) {
+                    _manualMainHUDEnabled = value;
+                    MainHUD.Enabled       = value;
+                }
+            }
+        }
+
         private static Dictionary<Type, (PanelDynamic, bool)> _persistentPanels =
             new Dictionary<Type, (PanelDynamic, bool)>();
-        public static bool AnyPanels              => _persistentPanels.Count > 0;
-        public static Content _screenSpaceContent  = null;
+        public static bool AnyPanels => _persistentPanels.Count > 0;
+
+        public static Content _screenSpaceContent = null;
         public static Content ScreenSpaceContent {
             get {
                 if (_screenSpaceContent == null) {
@@ -34,6 +46,7 @@ namespace Synthesis.UI.Dynamic {
                 return _screenSpaceContent;
             }
         }
+
         public static Content _subScreenSpaceContent = null;
         public static Content SubScreenSpaceContent {
             get {
@@ -45,6 +58,7 @@ namespace Synthesis.UI.Dynamic {
                 return _subScreenSpaceContent;
             }
         }
+
         private static Slider _replaySlider = null;
         public static Slider ReplaySlider {
             get {
@@ -123,7 +137,11 @@ namespace Synthesis.UI.Dynamic {
 
             SynthesisAssetCollection.BlurVolumeStatic.weight = 1f;
             PhysicsManager.IsFrozen                          = true;
-            MainHUD.Enabled                                  = false;
+
+            if (_manualMainHUDEnabled) {
+                MainHUD.Enabled = false;
+            }
+
             SubScreenSpaceContent.RootGameObject.SetActive(false);
 
             string tweenKey = Guid.NewGuid() + "_modalOpen";
@@ -257,7 +275,11 @@ namespace Synthesis.UI.Dynamic {
                     ActiveModal = null;
 
                     SynthesisAssetCollection.BlurVolumeStatic.weight = 0f;
-                    MainHUD.Enabled                                  = true;
+
+                    if (_manualMainHUDEnabled) {
+                        MainHUD.Enabled = true;
+                    }
+
                     SubScreenSpaceContent.RootGameObject.SetActive(true);
                 }
             }
@@ -284,9 +306,11 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public static bool ClosePanel<T>(bool bypassTween = false)
-            where T : PanelDynamic => ClosePanel(typeof(T), bypassTween);
+            where T : PanelDynamic {
+            return ClosePanel(typeof(T), bypassTween);
+        }
 
-  public static bool ClosePanel(Type t, bool bypassTween = false) {
+        public static bool ClosePanel(Type t, bool bypassTween = false) {
             if (!PanelExists(t))
                 return false;
 

@@ -1,9 +1,9 @@
-using System;
 using Synthesis.Gizmo;
-using UnityEngine;
 using Synthesis.PreferenceManager;
-
+using System;
+using UnityEngine;
 using Utilities.ColorManager;
+
 using STD = RobotSimObject.ShotTrajectoryData;
 
 namespace Synthesis.UI.Dynamic {
@@ -81,11 +81,12 @@ namespace Synthesis.UI.Dynamic {
             _arrowObject.transform.position =
                 node.transform.localToWorldMatrix.MultiplyPoint(_resultingData.RelativePosition.ToVector3());
 
-            if (!MainHUD.isMatchFreeCam)
+            if (!MainHUD.isMatchFreeCam) {
                 OrbitCameraMode.FocusPoint = () =>
                     _robot.GroundedNode != null && _robot.GroundedBounds != null
                         ? _robot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(_robot.GroundedBounds.center)
                         : Vector3.zero;
+            }
 
             GizmoManager.SpawnGizmo(_arrowObject.transform,
                 t => {
@@ -116,12 +117,9 @@ namespace Synthesis.UI.Dynamic {
                                              .SetWidth<Button>(125))
                     .ApplyTemplate<LabeledButton>(VerticalLayout);
             SetSelectUIState(false);
-            _exitSpeedSlider = MainContent.CreateSlider(label: "Speed", minValue: 0f, maxValue: 10f)
+            _exitSpeedSlider = MainContent.CreateSlider(label: "Speed", minValue: 0.0f, maxValue: 15.0f)
                                    .ApplyTemplate<Slider>(VerticalLayout)
-                                   .AddOnValueChangedEvent((s, v) => {
-                                       _resultingData.EjectionSpeed = v;
-                                       // TODO: Change the arrow?
-                                   })
+                                   .AddOnValueChangedEvent((s, v) => { _resultingData.EjectionSpeed = v; })
                                    .SetValue(_resultingData.EjectionSpeed);
 
             return true;
@@ -161,6 +159,7 @@ namespace Synthesis.UI.Dynamic {
             if (_hoveringNode != null) {
                 _hoveringNode.enabled = false;
             }
+
             if (_selectedNode != null) {
                 _selectedNode.enabled = false;
             }
@@ -176,49 +175,49 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public override void Update() {
-            if (_selectingNode) {
-                // Enable Collision Detection for the Robot
-                _robot.RobotNode.GetComponentsInChildren<Rigidbody>().ForEach(x => x.detectCollisions = true);
+            if (!_selectingNode) {
+                return;
+            }
 
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hitInfo;
-                bool hit = UnityEngine.Physics.Raycast(ray, out hitInfo);
-                if (hit && hitInfo.rigidbody != null &&
-                    hitInfo.rigidbody.transform.parent == _robot.RobotNode.transform) {
-                    if (_hoveringNode != null) {
-                        _hoveringNode.enabled = false;
-                    }
-                    _hoveringNode = hitInfo.rigidbody.GetComponent<HighlightComponent>();
-                    if (hitInfo.rigidbody.name != _selectedNode.name) {
-                        _hoveringNode.enabled = true;
-                        _hoveringNode.Color   = ColorManager.GetColor(ColorManager.SynthesisColor.HighlightHover);
-                    }
+            // Enable Collision Detection for the Robot
+            _robot.RobotNode.GetComponentsInChildren<Rigidbody>().ForEach(x => x.detectCollisions = true);
 
-                    if (Input.GetKeyDown(KeyCode.Mouse0)) {
-                        if (_selectedNode != null) {
-                            _selectedNode.enabled = false;
-                        }
-
-                        _selectedNode         = _hoveringNode;
-                        _selectedNode.enabled = true;
-                        _selectedNode.Color   = ColorManager.GetColor(ColorManager.SynthesisColor.HighlightSelect);
-                        _hoveringNode         = null;
-
-                        _resultingData.NodeName = hitInfo.rigidbody.name;
-                        _selectingNode          = false;
-                        SetSelectUIState(false);
-                    }
-                } else {
-                    if (_hoveringNode != null &&
-                        (_selectedNode == null ? true : !_selectedNode.name.Equals(_hoveringNode.name))) {
-                        _hoveringNode.enabled = false;
-                        _hoveringNode         = null;
-                    }
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hitInfo;
+            bool hit = UnityEngine.Physics.Raycast(ray, out hitInfo);
+            if (hit && hitInfo.rigidbody != null && hitInfo.rigidbody.transform.parent == _robot.RobotNode.transform) {
+                if (_hoveringNode != null) {
+                    _hoveringNode.enabled = false;
                 }
 
-                // Disable Collision Detection for the Robot
-                _robot.RobotNode.GetComponentsInChildren<Rigidbody>().ForEach(x => x.detectCollisions = true);
+                _hoveringNode = hitInfo.rigidbody.GetComponent<HighlightComponent>();
+                if (hitInfo.rigidbody.name != _selectedNode.name) {
+                    _hoveringNode.enabled = true;
+                    _hoveringNode.Color   = ColorManager.GetColor(ColorManager.SynthesisColor.HighlightHover);
+                }
+
+                if (Input.GetKeyDown(KeyCode.Mouse0)) {
+                    if (_selectedNode != null) {
+                        _selectedNode.enabled = false;
+                    }
+
+                    _selectedNode         = _hoveringNode;
+                    _selectedNode.enabled = true;
+                    _selectedNode.Color   = ColorManager.GetColor(ColorManager.SynthesisColor.HighlightSelect);
+                    _hoveringNode         = null;
+
+                    _resultingData.NodeName = hitInfo.rigidbody.name;
+                    _selectingNode          = false;
+                    SetSelectUIState(false);
+                }
+            } else if (_hoveringNode != null &&
+                       (_selectedNode == null ? true : !_selectedNode.name.Equals(_hoveringNode.name))) {
+                _hoveringNode.enabled = false;
+                _hoveringNode         = null;
             }
+
+            // Disable Collision Detection for the Robot
+            _robot.RobotNode.GetComponentsInChildren<Rigidbody>().ForEach(x => x.detectCollisions = true);
         }
     }
 }
