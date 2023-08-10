@@ -13,14 +13,6 @@ using UnityEngine;
 
 namespace Synthesis {
     public class SwerveDriveBehaviour : SimBehaviour {
-        private string forward             = "Swerve Forward";
-        private string backward            = "Swerve Backward";
-        private string left                = "Swerve Left";
-        private string right               = "Swerve Right";
-        private string turn_left           = "Swerve Turn Left";
-        private string turn_right          = "Swerve Turn Right";
-        private string reset_field_forward = "Swerve Reset Forward";
-
         internal const string FORWARD             = "Swerve Forward";
         internal const string BACKWARD            = "Swerve Backward";
         internal const string LEFT                = "Swerve Left";
@@ -29,8 +21,17 @@ namespace Synthesis {
         internal const string TURN_RIGHT          = "Swerve Turn Right";
         internal const string RESET_FIELD_FORWARD = "Swerve Reset Forward";
 
+        private readonly string forward             = FORWARD;
+        private readonly string backward            = BACKWARD;
+        private readonly string left                = LEFT;
+        private readonly string right               = RIGHT;
+        private readonly string turn_left           = TURN_LEFT;
+        private readonly string turn_right          = TURN_RIGHT;
+        private readonly string reset_field_forward = RESET_FIELD_FORWARD;
+
+
         private (RotationalDriver azimuth, WheelDriver drive)[] _moduleDrivers;
-        private RobotSimObject _robot;
+        private readonly RobotSimObject _robot;
 
         private float _turnFavor = 1.5f;
 
@@ -53,6 +54,14 @@ namespace Synthesis {
                 x.azimuth.SetAxis(robot.GroundedNode.transform.up);
             });
 
+            forward             = MiraId + "Swerve Forward";
+            backward            = MiraId + "Swerve Backward";
+            left                = MiraId + "Swerve Left";
+            right               = MiraId + "Swerve Right";
+            turn_left           = MiraId + "Swerve Turn Left";
+            turn_right          = MiraId + "Swerve Turn Right";
+            reset_field_forward = MiraId + "Swerve Reset Forward";
+
             InitInputs(GetInputs());
             EventBus.NewTypeListener<ValueInputAssignedEvent>(OnValueInputAssigned);
         }
@@ -69,12 +78,13 @@ namespace Synthesis {
         }
 
         public Analog TryLoadInput(string key, Analog defaultInput) {
-            return SimulationPreferences.GetRobotInput(_robot.MiraLive.MiraAssembly.Info.GUID, key) ?? defaultInput;
+            return SimulationPreferences.GetRobotInput(MiraId, key) ?? defaultInput;
         }
 
         private void OnValueInputAssigned(IEvent tmp) {
             ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
-            switch (args.InputKey) {
+            string s                     = args.InputKey.Remove(0, MiraId.Length);
+            switch (s) {
                 case FORWARD:
                 case BACKWARD:
                 case LEFT:
@@ -85,9 +95,8 @@ namespace Synthesis {
                     if (base.MiraId != MainHUD.SelectedRobot.MiraGUID ||
                         !(DynamicUIManager.ActiveModal as ChangeInputsModal).isSave)
                         return;
-                    RobotSimObject robot = SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject;
                     SimulationPreferences.SetRobotInput(
-                        _robot.MiraLive.MiraAssembly.Info.GUID, args.InputKey, args.Input);
+                        MiraId, args.InputKey, args.Input);
                     break;
             }
         }

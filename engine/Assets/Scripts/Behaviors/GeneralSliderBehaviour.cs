@@ -24,8 +24,8 @@ namespace Synthesis {
         public GeneralSliderBehaviour(string simObjectId, LinearDriver driver) : base(simObjectId) {
             _driver = driver;
 
-            _forwardInputKey    = SimObjectId + driver.Signal + _forwardInputKey;
-            _reverseInputKey    = SimObjectId + driver.Signal + _reverseInputKey;
+            _forwardInputKey    = MiraId + driver.Signal + _forwardInputKey;
+            _reverseInputKey    = MiraId + driver.Signal + _reverseInputKey;
             var name            = driver.Name;
             _forwardDisplayName = name + _forwardDisplayName;
             _reverseDisplayName = name + _reverseDisplayName;
@@ -46,10 +46,7 @@ namespace Synthesis {
         }
 
         public Analog TryLoadInput(string key, Analog defaultInput) =>
-            SimulationPreferences.GetRobotInput(
-                (SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject).MiraLive.MiraAssembly.Info.GUID,
-                key) ??
-            defaultInput;
+            SimulationPreferences.GetRobotInput(MiraId, key) ?? defaultInput;
 
         private void OnValueInputAssigned(IEvent tmp) {
             ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
@@ -57,8 +54,7 @@ namespace Synthesis {
                 if (base.MiraId != MainHUD.SelectedRobot.MiraGUID ||
                     !(DynamicUIManager.ActiveModal as ChangeInputsModal).isSave)
                     return;
-                RobotSimObject robot = SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject;
-                SimulationPreferences.SetRobotInput(robot.MiraGUID, args.InputKey, args.Input);
+                SimulationPreferences.SetRobotInput(MiraId, args.InputKey, args.Input);
             }
 
             PreferenceManager.PreferenceManager.Save();

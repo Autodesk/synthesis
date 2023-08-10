@@ -19,13 +19,13 @@ namespace Synthesis {
         internal const string BACKWARD = "Arcade Backward";
         internal const string LEFT     = "Arcade Left";
         internal const string RIGHT    = "Arcade Right";
-        private string forward         = FORWARD;
-        private string backward        = BACKWARD;
-        private string left            = LEFT;
-        private string right           = RIGHT;
+        private readonly string forward         = FORWARD;
+        private readonly string backward        = BACKWARD;
+        private readonly string left            = LEFT;
+        private readonly string right           = RIGHT;
 
-        private List<WheelDriver> _leftWheels;
-        private List<WheelDriver> _rightWheels;
+        private readonly List<WheelDriver> _leftWheels;
+        private readonly List<WheelDriver> _rightWheels;
 
         private double _leftSpeed;
         private double _rightSpeed;
@@ -43,22 +43,19 @@ namespace Synthesis {
 
         public double speedMult = 1.0f;
 
-        private RobotSimObject _robot;
-
         public ArcadeDriveBehaviour(
             string simObjectId, List<WheelDriver> leftWheels, List<WheelDriver> rightWheels, string inputName = "")
             : base(simObjectId) {
             if (inputName == "")
                 inputName = simObjectId;
 
-            SimObjectId  = simObjectId;
             _leftWheels  = leftWheels;
             _rightWheels = rightWheels;
 
-            forward  = SimObjectId + FORWARD;
-            backward = SimObjectId + BACKWARD;
-            left     = SimObjectId + LEFT;
-            right    = SimObjectId + RIGHT;
+            forward  = MiraId + FORWARD;
+            backward = MiraId + BACKWARD;
+            left     = MiraId + LEFT;
+            right    = MiraId + RIGHT;
 
             InitInputs(GetInputs());
 
@@ -74,14 +71,12 @@ namespace Synthesis {
         }
 
         public Analog TryLoadInput(string key, Analog defaultInput) {
-            if (_robot == null)
-                _robot = SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject;
-            return SimulationPreferences.GetRobotInput(_robot.MiraLive.MiraAssembly.Info.GUID, key) ?? defaultInput;
+            return SimulationPreferences.GetRobotInput(MiraId, key) ?? defaultInput;
         }
 
         private void OnValueInputAssigned(IEvent tmp) {
             ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
-            string s                     = args.InputKey.Remove(0, SimObjectId.Length);
+            string s                     = args.InputKey.Remove(0, MiraId.Length);
             switch (s) {
                 case FORWARD:
                 case BACKWARD:
@@ -91,7 +86,7 @@ namespace Synthesis {
                         !(DynamicUIManager.ActiveModal as ChangeInputsModal).isSave)
                         return;
                     SimulationPreferences.SetRobotInput(
-                        MainHUD.SelectedRobot.MiraLive.MiraAssembly.Info.GUID, args.InputKey, args.Input);
+                        MiraId, args.InputKey, args.Input);
                     break;
             }
         }
