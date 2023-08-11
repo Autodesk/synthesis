@@ -68,23 +68,30 @@ namespace Synthesis {
         }
 
         public Analog TryLoadInput(string key, Analog defaultInput) {
-            return SimulationPreferences.GetRobotInput(MiraId, key) ?? defaultInput;
+            Analog input = SimulationPreferences.GetRobotInput(MiraId, key);
+            if (input == null) {
+                SimulationPreferences.SetRobotInput(MiraId, key, defaultInput);
+                return defaultInput;
+            }
+            return input;
         }
 
         private void OnValueInputAssigned(IEvent tmp) {
             ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
-            string s                     = args.InputKey.Remove(0, MiraId.Length);
-            switch (s) {
-                case LEFT_FORWARD:
-                case LEFT_REVERSE:
-                case RIGHT_FORWARD:
-                case RIGHT_REVERSE:
-                    if (base.MiraId != MainHUD.SelectedRobot.MiraGUID ||
-                        !(DynamicUIManager.ActiveModal as ChangeInputsModal).isSave)
-                        return;
-                    SimulationPreferences.SetRobotInput(
-                        MiraId, args.InputKey, args.Input);
-                    break;
+            if (args.InputKey.Length > MiraId.Length) {
+                string s                     = args.InputKey.Remove(0, MiraId.Length);
+                switch (s) {
+                    case LEFT_FORWARD:
+                    case LEFT_REVERSE:
+                    case RIGHT_FORWARD:
+                    case RIGHT_REVERSE:
+                        if (base.MiraId != MainHUD.SelectedRobot.MiraGUID ||
+                            !(DynamicUIManager.ActiveModal as ChangeInputsModal).isSave)
+                            return;
+                        SimulationPreferences.SetRobotInput(
+                            MiraId, args.InputKey, args.Input);
+                        break;
+                }
             }
         }
 

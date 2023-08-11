@@ -52,8 +52,14 @@ namespace Synthesis {
             };
         }
 
-        public Analog TryLoadInput(string key, Analog defaultInput) =>
-            SimulationPreferences.GetRobotInput(MiraId, key) ?? defaultInput;
+        public Analog TryLoadInput(string key, Analog defaultInput) {
+            Analog input = SimulationPreferences.GetRobotInput(MiraId, key);
+            if (input == null) {
+                SimulationPreferences.SetRobotInput(MiraId, key, defaultInput);
+                return defaultInput;
+            }
+            return input;
+        }
 
         private void OnValueInputAssigned(IEvent tmp) {
             ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
