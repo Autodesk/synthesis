@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using MathNet.Numerics.LinearAlgebra;
+using Google.Protobuf;
+using Mirabuf;
 using Mirabuf.Joint;
 using Synthesis.Util;
 using SynthesisAPI.Simulation;
@@ -16,6 +18,7 @@ using UVector3            = UnityEngine.Vector3;
 using MPhysicalProperties = Mirabuf.PhysicalProperties;
 using UPhysicalMaterial   = UnityEngine.PhysicMaterial;
 using SynthesisAPI.Controller;
+using Joint = Mirabuf.Joint.Joint;
 
 namespace Synthesis.Import {
     public static class Importer {
@@ -60,20 +63,18 @@ namespace Synthesis.Import {
             private readonly MirabufLive[] _miraLiveFiles;
             private readonly GameObject _assemblyObject;
             private readonly Assembly[] _assemblies;
-            private readonly (Dictionary<string, GameObject> objectDict, Matrix4x4 transformation)[] _groupObjects;
+            private readonly(Dictionary<string, GameObject> objectDict, Matrix4x4 transformation)[] _groupObjects;
             private readonly List<GamepieceSimObject> _gamepieces = new();
             private SimObject _simObject;
-            
+
             private readonly MixAndMatchRobotData _mixAndMatchRobotData;
             private readonly bool _isMixAndMatch;
 
-#region Constructors & Setup
+#region Constructors &Setup
 
             public ImportHelper(MixAndMatchRobotData mixAndMatchRobotData)
                 : this(mixAndMatchRobotData,
-                      mixAndMatchRobotData.GlobalPartData
-                          .Select(
-                              part => new MirabufLive(part.MirabufPartFile))
+                      mixAndMatchRobotData.GlobalPartData.Select(part => new MirabufLive(part.MirabufPartFile))
                           .ToArray()) {}
 
             public ImportHelper(string filePath) : this(null, new[] { new MirabufLive(filePath) }) {}
@@ -82,7 +83,7 @@ namespace Synthesis.Import {
                 _miraLiveFiles = miraLiveFiles;
 
                 _mixAndMatchRobotData = mixAndMatchRobotData;
-                _isMixAndMatch = mixAndMatchRobotData != null;
+                _isMixAndMatch        = mixAndMatchRobotData != null;
 
                 _assemblies = _miraLiveFiles.Select(m => m.MiraAssembly).ToArray();
 
@@ -91,26 +92,29 @@ namespace Synthesis.Import {
 
                 UnityEngine.Physics.sleepThreshold = 0;
 
-                _groupObjects = (mixAndMatchRobotData == null)
-                                    ? new[] { (miraLiveFiles[0].GenerateDefinitionObjects(_assemblyObject), Matrix4x4.identity) }
-                                    : MirabufLive.GenerateMixAndMatchDefinitionObjects(_miraLiveFiles, _assemblyObject, mixAndMatchRobotData);
+                _groupObjects =
+                    (mixAndMatchRobotData == null)
+                        ? new[] { (miraLiveFiles[0].GenerateDefinitionObjects(_assemblyObject), Matrix4x4.identity) }
+                        : MirabufDefinitionHelper.GenerateMixAndMatchDefinitionObjects(
+                              _miraLiveFiles, _assemblyObject, mixAndMatchRobotData);
             }
 
             /// <summary>Populates the <see cref="_gamepieces">gamepieces</see> list with gamepieces found</summary>
             public void ConfigureGamepieces() {
                 _groupObjects.ForEachIndex(
-                    (i, x) => x.objectDict.Where(y => _miraLiveFiles[i].Definitions.Definitions[y.Key].IsGamepiece).ForEach(z => {
-                        var gpSim =
-                            new GamepieceSimObject(_miraLiveFiles[i].Definitions.Definitions[z.Key].Name, z.Value);
-                        try {
-                            SimulationManager.RegisterSimObject(gpSim);
-                        } catch (Exception e) {
-                            // TODO: Fix
-                            throw e;
-                        }
+                    (i, x) => x.objectDict.Where(y => _miraLiveFiles[i].Definitions.Definitions[y.Key].IsGamepiece)
+                                  .ForEach(z => {
+                                      var gpSim = new GamepieceSimObject(
+                                          _miraLiveFiles[i].Definitions.Definitions[z.Key].Name, z.Value);
+                                      try {
+                                          SimulationManager.RegisterSimObject(gpSim);
+                                      } catch (Exception e) {
+                                          // TODO: Fix
+                                          throw e;
+                                      }
 
-                        _gamepieces.Add(gpSim);
-                    }));
+                                      _gamepieces.Add(gpSim);
+                                  }));
             }
 
             /// <summary>Creates and registers the robots sim object</summary>
@@ -122,11 +126,11 @@ namespace Synthesis.Import {
 
                 if (_assemblies[0].Dynamic) {
                     _robotTally++;
-                    _simObject = new RobotSimObject(_assemblyObject.name, state, _miraLiveFiles, 
+                    _simObject = new RobotSimObject(_assemblyObject.name, state, _miraLiveFiles,
                         _groupObjects[0].objectDict["grounded"], _isMixAndMatch, _mixAndMatchRobotData);
                 } else {
-                    _simObject = new FieldSimObject(
-                        _assemblies[0].Info.Name, state, _miraLiveFiles[0], _groupObjects[0].objectDict["grounded"], _gamepieces);
+                    _simObject = new FieldSimObject(_assemblies[0].Info.Name, state, _miraLiveFiles[0],
+                        _groupObjects[0].objectDict["grounded"], _gamepieces);
                 }
 
                 void RegisterSimObject() {
@@ -159,16 +163,17 @@ namespace Synthesis.Import {
                             var bKey = rigidDefinitions[partIndex].PartToDefinitionMap[jointKvp.Value.ChildPart];
                             var b    = _groupObjects[partIndex].objectDict[bKey];
 
-                            MakeJoint(a, b, jointKvp.Value, _assemblies[partIndex], _groupObjects[partIndex].transformation);
+                            MakeJoint(
+                                a, b, jointKvp.Value, _assemblies[partIndex], _groupObjects[partIndex].transformation);
                         }
                     }));
             }
 
-            private readonly static float TWO_PI = 2f * Mathf.PI;
+            private static readonly float TWO_PI = 2f * Mathf.PI;
 
             /// <summary>Connects two robot parts with a joint. (ex: connecting a wheel to a drivetrain)</summary>
-            private void MakeJoint(
-                GameObject gameObjectA, GameObject gameObjectB, JointInstance instance, Assembly assembly, Matrix4x4 partTransform) {
+            private void MakeJoint(GameObject gameObjectA, GameObject gameObjectB, JointInstance instance,
+                Assembly assembly, Matrix4x4 partTransform) {
                 var definition = assembly.Data.Joints.JointDefinitions[instance.JointReference];
 
                 var rigidbodyA = gameObjectA.GetComponent<Rigidbody>();
@@ -239,10 +244,6 @@ namespace Synthesis.Import {
                 void HingeJoint() {
                     var revoluteA = gameObjectA.AddComponent<HingeJoint>();
 
-                    var parentPartInstance = assembly.Data.Parts.PartInstances[instance.ParentPart];
-                    var parentPartDefinition =
-                        assembly.Data.Parts.PartDefinitions[parentPartInstance.PartDefinitionReference];
-
                     var originA          = (UVector3) (definition.Origin ?? new UVector3());
                     UVector3 jointOffset = instance.Offset ?? new Vector3();
                     revoluteA.anchor     = partTransform.MultiplyPoint3x4(originA + jointOffset);
@@ -291,13 +292,13 @@ namespace Synthesis.Import {
                     if (instance.HasSignal()) {
                         var driver =
                             new RotationalDriver(assembly.Data.Signals.SignalMap[instance.SignalReference].Info.GUID,
-                                new string[] { instance.SignalReference, $"{instance.SignalReference}_mode" },
-                                new string[] { $"{instance.SignalReference}_encoder",
-                                    $"{instance.SignalReference}_absolute" },
+                                new[] { instance.SignalReference, $"{instance.SignalReference}_mode" },
+                                new[] { $"{instance.SignalReference}_encoder", $"{instance.SignalReference}_absolute" },
                                 _simObject, revoluteA, revoluteB, instance.IsWheel(assembly),
-                                assembly.Data.Joints.MotorDefinitions.ContainsKey(definition.MotorReference)
-                                    ? definition.MotorReference
-                                    : null);
+                                (assembly.Data.Joints.MotorDefinitions.ContainsKey(definition.MotorReference)
+                                        ? definition.MotorReference
+                                        : null) ??
+                                    string.Empty);
                         SimulationManager.AddDriver(_simObject.Name, driver);
                     }
                 }
@@ -312,9 +313,9 @@ namespace Synthesis.Import {
                                          2) *
                                      0.01f;
 
-                    var sliderA                          = gameObjectA.AddComponent<ConfigurableJoint>();
-                    sliderA.anchor                       = partTransform.MultiplyPoint3x4(anchor); // + (axis * midRange);
-                    sliderA.axis                         = partTransform.MultiplyVector(axis);
+                    var sliderA    = gameObjectA.AddComponent<ConfigurableJoint>();
+                    sliderA.anchor = partTransform.MultiplyPoint3x4(anchor); // + (axis * midRange);
+                    sliderA.axis   = partTransform.MultiplyVector(axis);
                     sliderA.autoConfigureConnectedAnchor = false;
                     sliderA.connectedAnchor              = partTransform.MultiplyPoint3x4(anchor + (axis * midRange));
                     sliderA.secondaryAxis                = partTransform.MultiplyVector(axis);
@@ -351,13 +352,13 @@ namespace Synthesis.Import {
                     if (instance.HasSignal()) {
                         assembly.Data.Joints.MotorDefinitions.TryGetValue(definition.MotorReference, out var motor);
                         var currentPosition = definition.Prismatic.PrismaticFreedom.Value;
-                        var slideDriver     = new LinearDriver(
-                            assembly.Data.Signals.SignalMap[instance.SignalReference].Info.GUID,
-                            new string[] { instance.SignalReference }, Array.Empty<string>(), _simObject, sliderA,
-                            sliderB, (motor?.SimpleMotor.MaxVelocity ?? 30f) / LinearDriver.LINEAR_TO_MOTOR_VELOCITY,
-                            ((definition.Prismatic.PrismaticFreedom.Limits.Upper - currentPosition) * 0.01f,
-                                (definition.Prismatic.PrismaticFreedom.Limits.Lower - currentPosition) * 0.01f),
-                            assembly.Data.Joints.MotorDefinitions.ContainsKey(definition.MotorReference)
+                        var slideDriver =
+                            new LinearDriver(assembly.Data.Signals.SignalMap[instance.SignalReference].Info.GUID,
+                                new[] { instance.SignalReference }, Array.Empty<string>(), _simObject, sliderA, sliderB,
+                                (motor?.SimpleMotor.MaxVelocity ?? 30f) / LinearDriver.LINEAR_TO_MOTOR_VELOCITY,
+                                ((definition.Prismatic.PrismaticFreedom.Limits.Upper - currentPosition) * 0.01f,
+                                    (definition.Prismatic.PrismaticFreedom.Limits.Lower - currentPosition) * 0.01f),
+                                assembly.Data.Joints.MotorDefinitions.ContainsKey(definition.MotorReference)
                                     ? definition.MotorReference
                                     : null);
                         SimulationManager.AddDriver(_simObject.Name, slideDriver);
@@ -370,8 +371,9 @@ namespace Synthesis.Import {
 
                     void AddUnityFixedJoint(
                         Rigidbody rootObject, Rigidbody otherObject, Vector3 origin, Vector3 offset) {
-                        var fixedJoint                = rootObject.gameObject.AddComponent<FixedJoint>();
-                        fixedJoint.anchor             = partTransform.MultiplyPoint3x4((origin ?? new Vector3()) + (offset ?? new Vector3()));
+                        var fixedJoint = rootObject.gameObject.AddComponent<FixedJoint>();
+                        fixedJoint.anchor =
+                            partTransform.MultiplyPoint3x4((origin ?? new Vector3()) + (offset ?? new Vector3()));
                         fixedJoint.axis               = partTransform.MultiplyVector(UVector3.forward);
                         fixedJoint.connectedBody      = otherObject;
                         fixedJoint.connectedMassScale = fixedJoint.connectedBody.mass / rootObject.mass;
@@ -381,17 +383,15 @@ namespace Synthesis.Import {
 
 #endregion
 
-            // TODO: Unused debug code to ask Hunter about
-            /*/// <summary>
+            /// <summary>
             /// Gets the change between 2 transformations
             /// </summary>
             /// <param name="from">Starting transformation</param>
             /// <param name="to">End transformation</param>
             /// <returns>Transformation to apply to move from start to end</returns>
             public Matrix4x4 TransformationDelta(Matrix4x4 from, Matrix4x4 to) {
-                return Matrix4x4.TRS(
-                    to.GetPosition() - from.GetPosition(), to.rotation * Quaternion.Inverse(from.rotation),
-            UVector3.one);
+                return Matrix4x4.TRS(to.GetPosition() - from.GetPosition(),
+                    to.rotation * Quaternion.Inverse(from.rotation), UVector3.one);
             }
 
             public void DebugAssembly(Assembly assembly) {
@@ -442,15 +442,14 @@ namespace Synthesis.Import {
             /// Stock source type definitions
             /// </summary>
             public struct SourceType {
-                public readonly SourceType MIRABUF_ASSEMBLY = new SourceType("mirabuf_assembly", "mira");
                 public string FileEnding { get; private set; }
-                public string Indentifier { get; private set; }
+                public string Identifier { get; private set; }
 
-                public SourceType(string indentifier, string fileEnding) {
-                    Indentifier = indentifier;
-                    FileEnding  = fileEnding;
+                public SourceType(string identifier, string fileEnding) {
+                    Identifier = identifier;
+                    FileEnding = fileEnding;
                 }
-            }*/
+            }
         }
     }
 }

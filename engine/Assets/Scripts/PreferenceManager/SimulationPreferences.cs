@@ -33,8 +33,8 @@ namespace Synthesis.PreferenceManager {
         public static void LoadRobotFromMira(MirabufLive live) => Instance.LoadRobotFromMira(live);
         public static void LoadFieldFromMira(MirabufLive live) => Instance.LoadFieldFromMira(live);
 
-        public static void LoadRobotFromMixAndMatch(MixAndMatchRobotData robotData)
-            => Instance.LoadRobotFromMixAndMatch(robotData);
+        public static void LoadRobotFromMixAndMatch(
+            MixAndMatchRobotData robotData) => Instance.LoadRobotFromMixAndMatch(robotData);
 
         public static Analog GetRobotInput(string robot, string input) => Instance.GetRobotInput(robot, input);
 
@@ -122,16 +122,14 @@ namespace Synthesis.PreferenceManager {
             public void PreSaveDump(IEvent _) {
                 if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
                     var robot = RobotSimObject.GetCurrentlyPossessedRobot()!;
-                    
+
                     if (robot.IsMixAndMatch) {
-                        var robotData = robot.MixAndMatchRobotData!;
-                        robotData.RobotPreferencesJson = 
-                            JsonConvert.SerializeObject(_allRobotData[robotData.Name]);
-                        
+                        var robotData                  = robot.MixAndMatchRobotData!;
+                        robotData.RobotPreferencesJson = JsonConvert.SerializeObject(_allRobotData[robotData.Name]);
+
                         MixAndMatchSaveUtil.SaveRobotData(robotData);
-                    }
-                    else {
-                        var live = robot.MiraLiveFiles[0];
+                    } else {
+                        var live                                = robot.MiraLiveFiles[0];
                         live.MiraAssembly.Data.Parts.UserData ??= new UserData();
                         live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY] =
                             JsonConvert.SerializeObject(_allRobotData[live.MiraAssembly.Info.GUID]);
@@ -161,15 +159,13 @@ namespace Synthesis.PreferenceManager {
                         live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY])!;
                 }
             }
-            
+
             public void LoadRobotFromMixAndMatch(MixAndMatchRobotData robotData) {
                 if (robotData.RobotPreferencesJson != null) {
-                    var robotPrefs = JsonConvert.DeserializeObject<RobotData>(
-                        robotData.RobotPreferencesJson);
+                    var robotPrefs = JsonConvert.DeserializeObject<RobotData>(robotData.RobotPreferencesJson);
                     if (robotPrefs != null)
                         _allRobotData[robotData.Name] = robotPrefs;
                 }
-                    
             }
 
             public void LoadFieldFromMira(MirabufLive live) {

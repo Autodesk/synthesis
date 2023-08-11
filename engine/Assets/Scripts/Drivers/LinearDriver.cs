@@ -62,8 +62,7 @@ namespace Synthesis {
         public readonly string MotorRef;
 
         public LinearDriver(string name, string[] inputs, string[] outputs, SimObject simObject,
-            ConfigurableJoint jointA, ConfigurableJoint jointB, float maxSpeed, (float, float) limits,
-            string motorRef)
+            ConfigurableJoint jointA, ConfigurableJoint jointB, float maxSpeed, (float, float) limits, string motorRef)
             : base(name, inputs, outputs, simObject) {
             // Takeover joint configuration and make it more suited to control rather than passive
             var l              = jointA.linearLimit;
@@ -76,9 +75,8 @@ namespace Synthesis {
             Position = 0f;
             Limits   = limits;
             MotorRef = motorRef;
-            
-            var motor = 
-                SimulationPreferences.GetRobotJointMotor((simObject as RobotSimObject)!.RobotGUID, motorRef);
+
+            var motor = SimulationPreferences.GetRobotJointMotor((simObject as RobotSimObject)!.RobotGUID, motorRef);
 
             if (motor != null) {
                 _motor = motor.Value;

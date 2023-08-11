@@ -160,9 +160,8 @@ namespace Synthesis {
 
             EnableMotor();
 
-            var motor = 
-                SimulationPreferences.GetRobotJointMotor((simObject as RobotSimObject)!.RobotGUID, motorRef);
-            
+            var motor = SimulationPreferences.GetRobotJointMotor((simObject as RobotSimObject)!.RobotGUID, motorRef);
+
             if (motor != null) {
                 _motor = motor.Value;
             } else {

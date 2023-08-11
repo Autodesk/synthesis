@@ -61,8 +61,7 @@ namespace Synthesis.UI.Dynamic {
 
             AcceptButton
                 .AddOnClickedEvent(b => {
-                    SimulationPreferences.SetRobotIntakeTriggerData(
-                        _robot.RobotGUID, _resultingData);
+                    SimulationPreferences.SetRobotIntakeTriggerData(_robot.RobotGUID, _resultingData);
                     PreferenceManager.PreferenceManager.Save();
                     _save = true;
                     DynamicUIManager.ClosePanel<ConfigureGamepiecePickupPanel>();

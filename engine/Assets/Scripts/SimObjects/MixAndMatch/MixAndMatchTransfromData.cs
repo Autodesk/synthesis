@@ -38,7 +38,6 @@ namespace SimObjects.MixAndMatch {
             }
         }
 
-        // TODO: Keep mix and match mirabuf files in a different folder
         /// <summary>An array of all part mirabuf files found in the appdata folder</summary>
         public static string[] PartMirabufFiles {
             get {
@@ -74,7 +73,7 @@ namespace SimObjects.MixAndMatch {
                     return CreateNewPart(fileName);
                 return null;
             }
-            
+
             var part = JsonUtility.FromJson<MixAndMatchPartData>(File.ReadAllText(filePath));
 
             if (part.Guid is null or "")
@@ -111,8 +110,8 @@ namespace SimObjects.MixAndMatch {
 
         /// <summary>Creates a new mix and match part with no connection points</summary>
         public static MixAndMatchPartData CreateNewPart(string name, string mirabufFile = "") {
-            return new MixAndMatchPartData(name, GUID.Generate().ToString(), mirabufFile, 
-                Array.Empty<(Vector3, Quaternion)>());
+            return new MixAndMatchPartData(
+                name, GUID.Generate().ToString(), mirabufFile, Array.Empty<(Vector3, Quaternion)>());
         }
 
         /// <summary>Creates a new mix and match robot with no parts</summary>
@@ -152,33 +151,31 @@ namespace SimObjects.MixAndMatch {
             get {
                 if (_globalPartData != null)
                     return _globalPartData;
-                
-                _globalPartData = PartTransformData
-                    .Select(
-                        part => MixAndMatchSaveUtil.LoadPartData(part.FileName))
-                    .ToArray();
-                
+
+                _globalPartData =
+                    PartTransformData.Select(part => MixAndMatchSaveUtil.LoadPartData(part.FileName)).ToArray();
+
                 return _globalPartData;
             }
         }
 
         public MixAndMatchRobotData(string name, RobotPartTransformData[] transforms) {
-            Name = name;
-            PartTransformData = transforms;
+            Name                 = name;
+            PartTransformData    = transforms;
             RobotPreferencesJson = "";
         }
 
         public int PartGuidToIndex(string partGuid) {
             int index = 0;
-            
+
             foreach (var part in GlobalPartData) {
                 if (partGuid == part.Guid)
                     return index;
-                
+
                 index++;
             }
             return -1;
-        } 
+        }
     }
 
     /// <summary>Robot specific part data (position, parent node). Only ever saved in a robot's json file.</summary>
@@ -189,14 +186,15 @@ namespace SimObjects.MixAndMatch {
         public Quaternion LocalRotation;
         public ParentNodeData ParentNodeData;
 
-        public RobotPartTransformData(string fileName, ParentNodeData parentNodeData, Vector3 position, Quaternion rotation) {
-            FileName = fileName;
+        public RobotPartTransformData(
+            string fileName, ParentNodeData parentNodeData, Vector3 position, Quaternion rotation) {
+            FileName       = fileName;
             ParentNodeData = parentNodeData;
-            LocalPosition = position;
-            LocalRotation = rotation;
+            LocalPosition  = position;
+            LocalRotation  = rotation;
         }
 
-        public (string name, ParentNodeData parentNodeData, Vector3 position,Quaternion rotation) ToTuple() {
+        public (string name, ParentNodeData parentNodeData, Vector3 position, Quaternion rotation) ToTuple() {
             return (FileName, ParentNodeData, LocalPosition, LocalRotation);
         }
     }
@@ -211,16 +209,17 @@ namespace SimObjects.MixAndMatch {
 
         public ConnectionPointData[] ConnectionPoints;
 
-        public MixAndMatchPartData(string name, string guid, string mirabufPartFile, 
+        public MixAndMatchPartData(string name, string guid, string mirabufPartFile,
             (Vector3 position, Quaternion rotation)[] connectionPoints) {
             Name             = name;
             MirabufPartFile  = mirabufPartFile;
             ConnectionPoints = connectionPoints.Select(c => new ConnectionPointData(c.position, c.rotation)).ToArray();
-            Guid = guid;
+            Guid             = guid;
         }
     }
 
-    /// <summary>The position and direction of a part's connection point. Only ever saved in a part's json file.</summary>
+    /// <summary>The position and direction of a part's connection point. Only ever saved in a part's json
+    /// file.</summary>
     [Serializable]
     public class ConnectionPointData {
         public Vector3 LocalPosition;

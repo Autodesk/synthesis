@@ -57,8 +57,7 @@ namespace Synthesis.UI.Dynamic {
 
             AcceptButton
                 .AddOnClickedEvent(b => {
-                    SimulationPreferences.SetRobotTrajectoryData(
-                        _robot.RobotGUID, _resultingData);
+                    SimulationPreferences.SetRobotTrajectoryData(_robot.RobotGUID, _resultingData);
                     PreferenceManager.PreferenceManager.Save();
                     _save = true;
                     DynamicUIManager.ClosePanel<ConfigureShotTrajectoryPanel>();

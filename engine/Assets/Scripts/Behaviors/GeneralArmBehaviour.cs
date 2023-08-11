@@ -52,8 +52,9 @@ namespace Synthesis {
         }
 
         public Analog TryLoadInput(string key, Analog defaultInput) =>
-            SimulationPreferences.GetRobotInput((SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject)!
-                .RobotGUID, key) ?? defaultInput;
+            SimulationPreferences.GetRobotInput(
+                (SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject)!.RobotGUID, key) ??
+            defaultInput;
 
         private void OnValueInputAssigned(IEvent tmp) {
             ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;

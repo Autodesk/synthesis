@@ -102,7 +102,7 @@ public class ConfigMotorModal : ModalDynamic {
                     SaveMotor(x.driver);
                 }
             });
-            
+
             PreferenceManager.Save();
         });
 
@@ -245,11 +245,8 @@ public class ConfigMotorModal : ModalDynamic {
     }
 
     private void SaveMotor(dynamic driver) {
-        var motor = new JointMotor() {
-            targetVelocity = driver.Motor.targetVelocity,
-            force = driver.Motor.force
-        };
-        
+        var motor = new JointMotor() { targetVelocity = driver.Motor.targetVelocity, force = driver.Motor.force };
+
         SimulationPreferences.SetRobotJointMotor(_robot.RobotGUID, driver.MotorRef, motor);
     }
 }

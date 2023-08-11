@@ -66,8 +66,7 @@ namespace Synthesis {
         public Analog TryLoadInput(string key, Analog defaultInput) {
             if (_robot == null)
                 _robot = SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject;
-            return SimulationPreferences.GetRobotInput(_robot.RobotGUID, key) ??
-                   defaultInput;
+            return SimulationPreferences.GetRobotInput(_robot.RobotGUID, key) ?? defaultInput;
         }
 
         private void OnValueInputAssigned(IEvent tmp) {
@@ -80,8 +79,7 @@ namespace Synthesis {
                     if (base.SimObjectId != RobotSimObject.GetCurrentlyPossessedRobot().RobotGUID)
                         return;
                     RobotSimObject robot = SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject;
-                    SimulationPreferences.SetRobotInput(
-                        _robot.RobotGUID, args.InputKey, args.Input);
+                    SimulationPreferences.SetRobotInput(_robot.RobotGUID, args.InputKey, args.Input);
                     break;
             }
         }

@@ -113,7 +113,6 @@ namespace Synthesis {
         /// <param name="anchor">Anchor of the Rotational Joint</param>
         /// <param name="axis">Axis of the Rotational Joint</param>
         /// <param name="radius">Radius of the wheel. Automatically calculated if set to NaN</param>
-        /// <param name="motor">Motor settings for the wheel</param>
         public WheelDriver(string name, string[] inputs, string[] outputs, SimObject simObject,
             JointInstance jointInstance, CustomWheel customWheel, Vector3 anchor, Vector3 axis, float radius,
             string motorRef)
@@ -132,13 +131,11 @@ namespace Synthesis {
                 Radius = radius;
             }
 
-            var motor = 
-                SimulationPreferences.GetRobotJointMotor((simObject as RobotSimObject)!.RobotGUID, motorRef);
-            
+            var motor = SimulationPreferences.GetRobotJointMotor((simObject as RobotSimObject)!.RobotGUID, motorRef);
+
             if (motor != null) {
                 _motor = motor.Value;
             } else {
-                Debug.Log("Created new motor");
                 Motor = new JointMotor() {
                     // Default Motor. Slow but powerful enough. Also uses Motor to save it
                     force          = 2000,
