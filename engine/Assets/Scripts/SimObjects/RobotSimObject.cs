@@ -314,11 +314,12 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     private static Analog TryGetSavedInput(string key, Analog defaultInput) {
-        if (!PreferenceManager.ContainsPreference(key))
+        if (!PreferenceManager.ContainsPreference(key)) 
             return defaultInput;
-
-        var input            = (Digital) PreferenceManager.GetPreference<InputData[]>(key) [0].GetInput();
+        
+        var input = PreferenceManager.GetPreference<Digital>(key) ?? (Digital) PreferenceManager.GetPreference<InputData[]>(key) [0].GetInput();
         input.ContextBitmask = defaultInput.ContextBitmask;
+        
         return input;
     }
 
