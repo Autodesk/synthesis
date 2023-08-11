@@ -82,9 +82,10 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     private IEnumerable<WheelDriver>? _wheelDrivers;
     public (RotationalDriver azimuth, WheelDriver driver)[] modules;
 
-    public string MiraGUID => MiraLiveFiles[0].MiraAssembly.Info.GUID;
+    public string RobotGUID => (IsMixAndMatch) ? MixAndMatchRobotData!.Name : MiraLiveFiles[0].MiraAssembly.Info.GUID;
 
     public MirabufLive[] MiraLiveFiles { get; private set; }
+    public MixAndMatchRobotData? MixAndMatchRobotData { get; private set; }
     public GameObject GroundedNode { get; private set; }
     public Bounds GroundedBounds { get; private set; }
     public GameObject RobotNode { get; private set; } // Doesn't work??
@@ -98,7 +99,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             _simulationTranslationLayer = value;
             _simBehaviour.Translation   = _simulationTranslationLayer;
 
-            SimulationPreferences.SetRobotSimTranslationLayer(MiraGUID, _simulationTranslationLayer);
+            SimulationPreferences.SetRobotSimTranslationLayer(RobotGUID, _simulationTranslationLayer);
             PreferenceManager.Save();
         }
     }
@@ -166,7 +167,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         get => _drivetrainType ?? DrivetrainType.ARCADE;
         set {
             _drivetrainType = value;
-            SimulationPreferences.SetRobotDrivetrainType(MiraGUID, value);
+            SimulationPreferences.SetRobotDrivetrainType(RobotGUID, value);
             PreferenceManager.Save();
             ConfigureDrivetrain();
         }
@@ -175,8 +176,14 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     private Queue<GamepieceSimObject> _gamepiecesInPossession = new Queue<GamepieceSimObject>();
     public bool PickingUpGamepieces { get; private set; }
 
-    public RobotSimObject(string name, ControllableState state, MirabufLive[] miraLiveFiles, GameObject groundedNode)
+    public bool IsMixAndMatch;
+
+    public RobotSimObject(string name, ControllableState state, MirabufLive[] miraLiveFiles, GameObject groundedNode, 
+        bool isMixAndMatch, MixAndMatchRobotData? robotData)
         : base(name, state) {
+        MixAndMatchRobotData = robotData;
+        IsMixAndMatch = isMixAndMatch;
+        
         if (_spawnedRobots.ContainsKey(name)) {
             throw new Exception("Robot with that name already loaded");
         }
@@ -193,14 +200,17 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         // Resets whatever Hunter corrupted
         // SimulationPreferences.SetRobotDrivetrainType(MiraLive.MiraAssembly.Info.GUID, DrivetrainType.ARCADE);
         // PreferenceManager.Save();
-        _drivetrainType = SimulationPreferences.GetRobotDrivetrain(MiraGUID);
-        SimulationPreferences.LoadRobotFromMira(MiraLiveFiles[0]);
+        
+        if (isMixAndMatch)
+            SimulationPreferences.LoadRobotFromMixAndMatch(robotData!);
+        else SimulationPreferences.LoadRobotFromMira(MiraLiveFiles[0]);
+        
+        _drivetrainType = SimulationPreferences.GetRobotDrivetrain(RobotGUID);
 
         _allRigidbodies = new List<Rigidbody>(RobotNode.transform.GetComponentsInChildren<Rigidbody>());
 
         PhysicsManager.Register(this);
 
-        // TODO: fix by giving each node a unique name
         foreach (Transform child in RobotNode.transform) {
             _nodes.Add(child.name, child.gameObject);
         }
@@ -222,13 +232,13 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         _trajectoryPointer.transform.position = Vector3.zero;
         _trajectoryPointer.transform.rotation = Quaternion.identity;
 
-        IntakeData = SimulationPreferences.GetRobotIntakeTriggerData(MiraGUID);
-        SimulationPreferences.SetRobotIntakeTriggerData(MiraGUID, _intakeData);
-        TrajectoryData = SimulationPreferences.GetRobotTrajectoryData(MiraGUID);
-        SimulationPreferences.SetRobotTrajectoryData(MiraGUID, _trajectoryData);
+        IntakeData = SimulationPreferences.GetRobotIntakeTriggerData(RobotGUID);
+        SimulationPreferences.SetRobotIntakeTriggerData(RobotGUID, _intakeData);
+        TrajectoryData = SimulationPreferences.GetRobotTrajectoryData(RobotGUID);
+        SimulationPreferences.SetRobotTrajectoryData(RobotGUID, _trajectoryData);
         PreferenceManager.Save();
         _simulationTranslationLayer =
-            SimulationPreferences.GetRobotSimTranslationLayer(MiraGUID) ?? new RioTranslationLayer();
+            SimulationPreferences.GetRobotSimTranslationLayer(RobotGUID) ?? new RioTranslationLayer();
         cam = Camera.main.GetComponent<CameraController>();
 
         _allRigidbodies.ForEach(x => {

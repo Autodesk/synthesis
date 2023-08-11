@@ -368,11 +368,6 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         }
 
         public override void Update() {
-            Debug.Log(_selectingNode);
-            /*if (Input.GetKeyDown(KeyCode.S)) {
-                _selectingNode = !_selectingNode;
-            }*/
-
             if (_selectingNode)
                 NodeSelection();
             else

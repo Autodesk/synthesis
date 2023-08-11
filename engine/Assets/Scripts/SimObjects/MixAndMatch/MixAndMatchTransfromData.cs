@@ -2,10 +2,8 @@ using System;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
-using Synthesis.Import;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace SimObjects.MixAndMatch {
     public static class MixAndMatchSaveUtil {
@@ -144,7 +142,10 @@ namespace SimObjects.MixAndMatch {
         public string Name;
         public RobotPartTransformData[] PartTransformData;
 
-        [JsonIgnore]private MixAndMatchPartData[] _globalPartData;
+        public string RobotPreferencesJson;
+
+        [JsonIgnore]
+        private MixAndMatchPartData[] _globalPartData;
 
         [JsonIgnore]
         public MixAndMatchPartData[] GlobalPartData {
@@ -164,6 +165,7 @@ namespace SimObjects.MixAndMatch {
         public MixAndMatchRobotData(string name, RobotPartTransformData[] transforms) {
             Name = name;
             PartTransformData = transforms;
+            RobotPreferencesJson = "";
         }
 
         public int PartGuidToIndex(string partGuid) {

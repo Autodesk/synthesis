@@ -52,19 +52,16 @@ namespace Synthesis {
         }
 
         public Analog TryLoadInput(string key, Analog defaultInput) =>
-            SimulationPreferences.GetRobotInput((SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject)
-                                                    .MiraLiveFiles[0]
-                                                    .MiraAssembly.Info.GUID,
-                key) ??
-            defaultInput;
+            SimulationPreferences.GetRobotInput((SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject)!
+                .RobotGUID, key) ?? defaultInput;
 
         private void OnValueInputAssigned(IEvent tmp) {
             ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
             if (args.InputKey.Equals(_forwardInputKey) || args.InputKey.Equals(_reverseInputKey)) {
-                if (base.SimObjectId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID)
+                if (base.SimObjectId != RobotSimObject.GetCurrentlyPossessedRobot().RobotGUID)
                     return;
                 RobotSimObject robot = SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject;
-                SimulationPreferences.SetRobotInput(robot.MiraGUID, args.InputKey, args.Input);
+                SimulationPreferences.SetRobotInput(robot.RobotGUID, args.InputKey, args.Input);
             }
         }
 

@@ -58,8 +58,7 @@ namespace Synthesis.UI.Dynamic {
             AcceptButton
                 .AddOnClickedEvent(b => {
                     SimulationPreferences.SetRobotTrajectoryData(
-                        // TODO: fix
-                        _robot.MiraLiveFiles[0].MiraAssembly.Info.GUID, _resultingData);
+                        _robot.RobotGUID, _resultingData);
                     PreferenceManager.PreferenceManager.Save();
                     _save = true;
                     DynamicUIManager.ClosePanel<ConfigureShotTrajectoryPanel>();

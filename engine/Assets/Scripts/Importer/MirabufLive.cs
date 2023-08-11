@@ -41,7 +41,7 @@ namespace Synthesis.Import {
         public string MiraPath => _path;
 
         public Assembly MiraAssembly;
-
+        
         public enum MirabufFileState {
             Valid          = 1,
             DuplicateParts = 2
@@ -121,9 +121,9 @@ namespace Synthesis.Import {
                 transformations[i] = Matrix4x4.TRS(partData.LocalPosition, partData.LocalRotation, UVector3.one);
             }
             
-            if (miraLiveFiles.Length == 1) {
+            /*if (miraLiveFiles.Length == 1) {
                 return new[] { (groupObjects[0], transformations[0]) };
-            }
+            }*/
             
             var mainGrounded = new GameObject("grounded");
             mainGrounded.transform.SetParent(assemblyContainer.transform);

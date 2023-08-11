@@ -63,6 +63,9 @@ namespace Synthesis.Import {
             private readonly (Dictionary<string, GameObject> objectDict, Matrix4x4 transformation)[] _groupObjects;
             private readonly List<GamepieceSimObject> _gamepieces = new();
             private SimObject _simObject;
+            
+            private readonly MixAndMatchRobotData _mixAndMatchRobotData;
+            private readonly bool _isMixAndMatch;
 
 #region Constructors & Setup
 
@@ -78,12 +81,14 @@ namespace Synthesis.Import {
             public ImportHelper(MixAndMatchRobotData mixAndMatchRobotData, MirabufLive[] miraLiveFiles) {
                 _miraLiveFiles = miraLiveFiles;
 
+                _mixAndMatchRobotData = mixAndMatchRobotData;
+                _isMixAndMatch = mixAndMatchRobotData != null;
+
                 _assemblies = _miraLiveFiles.Select(m => m.MiraAssembly).ToArray();
 
-                // TODO: give root object a unique name
-                _assemblyObject = new GameObject($"{_assemblies[0].Info.Name}_{_robotTally}");
+                _assemblyObject = new GameObject(
+                    $"{(_isMixAndMatch ? mixAndMatchRobotData!.Name :_assemblies[0].Info.Name)}_{_robotTally}");
 
-                // TODO: Is this important? Removing it doesn't seem to break anything
                 UnityEngine.Physics.sleepThreshold = 0;
 
                 _groupObjects = (mixAndMatchRobotData == null)
@@ -116,10 +121,9 @@ namespace Synthesis.Import {
                 var state = new ControllableState(allSignals);
 
                 if (_assemblies[0].Dynamic) {
-                    string name = $"{_assemblies[0].Info.Name}_{_robotTally}";
                     _robotTally++;
-
-                    _simObject = new RobotSimObject(name, state, _miraLiveFiles, _groupObjects[0].objectDict["grounded"]);
+                    _simObject = new RobotSimObject(_assemblyObject.name, state, _miraLiveFiles, 
+                        _groupObjects[0].objectDict["grounded"], _isMixAndMatch, _mixAndMatchRobotData);
                 } else {
                     _simObject = new FieldSimObject(
                         _assemblies[0].Info.Name, state, _miraLiveFiles[0], _groupObjects[0].objectDict["grounded"], _gamepieces);

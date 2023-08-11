@@ -88,7 +88,7 @@ namespace Synthesis {
             get => _motor;
             set {
                 _motor = value;
-                SimulationPreferences.SetRobotJointMotor((_simObject as RobotSimObject)!.MiraGUID, Name, _motor);
+                SimulationPreferences.SetRobotJointMotor((_simObject as RobotSimObject)!.RobotGUID, MotorRef, _motor);
             }
         }
 
@@ -116,7 +116,7 @@ namespace Synthesis {
         /// <param name="motor">Motor settings for the wheel</param>
         public WheelDriver(string name, string[] inputs, string[] outputs, SimObject simObject,
             JointInstance jointInstance, CustomWheel customWheel, Vector3 anchor, Vector3 axis, float radius,
-            string motorRef = "")
+            string motorRef)
             : base(name, inputs, outputs, simObject) {
             _jointInstance = jointInstance;
             _customWheel   = customWheel;
@@ -132,18 +132,18 @@ namespace Synthesis {
                 Radius = radius;
             }
 
-            // TODO: fix
-            (simObject as RobotSimObject)!.MiraLiveFiles[0].MiraAssembly.Data.Joints.MotorDefinitions.TryGetValue(
-                motorRef, out var motor);
-
-            if (motor != null && motor.MotorTypeCase == Mirabuf.Motor.Motor.MotorTypeOneofCase.SimpleMotor) {
-                _motor = motor!.SimpleMotor.UnityMotor;
+            var motor = 
+                SimulationPreferences.GetRobotJointMotor((simObject as RobotSimObject)!.RobotGUID, motorRef);
+            
+            if (motor != null) {
+                _motor = motor.Value;
             } else {
+                Debug.Log("Created new motor");
                 Motor = new JointMotor() {
                     // Default Motor. Slow but powerful enough. Also uses Motor to save it
                     force          = 2000,
                     freeSpin       = false,
-                    targetVelocity = 500,
+                    targetVelocity = 30,
                 };
             }
 

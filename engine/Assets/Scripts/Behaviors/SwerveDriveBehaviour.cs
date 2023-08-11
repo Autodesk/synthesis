@@ -60,7 +60,7 @@ namespace Synthesis {
         }
 
         public Analog TryLoadInput(string key, Analog defaultInput) {
-            return SimulationPreferences.GetRobotInput(_robot.MiraLiveFiles[0].MiraAssembly.Info.GUID, key) ??
+            return SimulationPreferences.GetRobotInput(_robot.RobotGUID, key) ??
                    defaultInput;
         }
 
@@ -74,11 +74,11 @@ namespace Synthesis {
                 case TURN_LEFT:
                 case TURN_RIGHT:
                 case RESET_FIELD_FORWARD:
-                    if (base.SimObjectId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID)
+                    if (base.SimObjectId != RobotSimObject.GetCurrentlyPossessedRobot().RobotGUID)
                         return;
                     RobotSimObject robot = SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject;
                     SimulationPreferences.SetRobotInput(
-                        _robot.MiraLiveFiles[0].MiraAssembly.Info.GUID, args.InputKey, args.Input);
+                        _robot.RobotGUID, args.InputKey, args.Input);
                     break;
             }
         }

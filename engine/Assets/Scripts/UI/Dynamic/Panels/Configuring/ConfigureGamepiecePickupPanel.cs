@@ -41,6 +41,7 @@ namespace Synthesis.UI.Dynamic {
             if (existingData.HasValue) {
                 _resultingData = existingData.Value;
             } else {
+                Debug.Log("created new ITD");
                 _resultingData =
                     new ITD { NodeName = "grounded", RelativePosition = _robot.GroundedBounds.center.ToArray(),
                         TriggerSize = 0.5f, StorageCapacity = 1 };
@@ -61,8 +62,7 @@ namespace Synthesis.UI.Dynamic {
             AcceptButton
                 .AddOnClickedEvent(b => {
                     SimulationPreferences.SetRobotIntakeTriggerData(
-                        // TODO: fix
-                        _robot.MiraLiveFiles[0].MiraAssembly.Info.GUID, _resultingData);
+                        _robot.RobotGUID, _resultingData);
                     PreferenceManager.PreferenceManager.Save();
                     _save = true;
                     DynamicUIManager.ClosePanel<ConfigureGamepiecePickupPanel>();
