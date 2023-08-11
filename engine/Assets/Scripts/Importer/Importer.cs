@@ -5,6 +5,7 @@ using System.Linq;
 using Google.Protobuf;
 using Mirabuf;
 using Mirabuf.Joint;
+using Mirabuf.Signal;
 using Synthesis.Util;
 using SynthesisAPI.Simulation;
 using UnityEngine;
@@ -119,10 +120,19 @@ namespace Synthesis.Import {
 
             /// <summary>Creates and registers the robots sim object</summary>
             public void CreateSimObject() {
-                // TODO: add part index to signal and make sure it is accessed with the part index added as well
-                var allSignals = _assemblies.Where(a => a.Data.Signals != null).Select(a => a.Data.Signals).ToArray();
+                List<Signals> allSignals = new();
 
-                var state = new ControllableState(allSignals);
+                // Append part index to signal keys so two of the same part have different signals
+                _assemblies.ForEachIndex((i, a) => {
+                    Signals newSignals = new Signals();
+                    if (a.Data.Signals != null) {
+                        a.Data.Signals.SignalMap.ForEach(
+                            kvp => { newSignals.SignalMap[kvp.Key + $"_{i}"] = kvp.Value; });
+                        allSignals.Add(newSignals);
+                    }
+                });
+
+                var state = new ControllableState(allSignals.ToArray());
 
                 if (_assemblies[0].Dynamic) {
                     _robotTally++;
@@ -163,8 +173,8 @@ namespace Synthesis.Import {
                             var bKey = rigidDefinitions[partIndex].PartToDefinitionMap[jointKvp.Value.ChildPart];
                             var b    = _groupObjects[partIndex].objectDict[bKey];
 
-                            MakeJoint(
-                                a, b, jointKvp.Value, _assemblies[partIndex], _groupObjects[partIndex].transformation);
+                            MakeJoint(a, b, jointKvp.Value, _assemblies[partIndex],
+                                _groupObjects[partIndex].transformation, partIndex);
                         }
                     }));
             }
@@ -173,7 +183,7 @@ namespace Synthesis.Import {
 
             /// <summary>Connects two robot parts with a joint. (ex: connecting a wheel to a drivetrain)</summary>
             private void MakeJoint(GameObject gameObjectA, GameObject gameObjectB, JointInstance instance,
-                Assembly assembly, Matrix4x4 partTransform) {
+                Assembly assembly, Matrix4x4 partTransform, int partIndex) {
                 var definition = assembly.Data.Joints.JointDefinitions[instance.JointReference];
 
                 var rigidbodyA = gameObjectA.GetComponent<Rigidbody>();
@@ -292,7 +302,7 @@ namespace Synthesis.Import {
                     if (instance.HasSignal()) {
                         var driver =
                             new RotationalDriver(assembly.Data.Signals.SignalMap[instance.SignalReference].Info.GUID,
-                                new[] { instance.SignalReference, $"{instance.SignalReference}_mode" },
+                                new[] { $"{instance.SignalReference}_{partIndex}", $"{instance.SignalReference}_mode" },
                                 new[] { $"{instance.SignalReference}_encoder", $"{instance.SignalReference}_absolute" },
                                 _simObject, revoluteA, revoluteB, instance.IsWheel(assembly),
                                 (assembly.Data.Joints.MotorDefinitions.ContainsKey(definition.MotorReference)
@@ -354,7 +364,8 @@ namespace Synthesis.Import {
                         var currentPosition = definition.Prismatic.PrismaticFreedom.Value;
                         var slideDriver =
                             new LinearDriver(assembly.Data.Signals.SignalMap[instance.SignalReference].Info.GUID,
-                                new[] { instance.SignalReference }, Array.Empty<string>(), _simObject, sliderA, sliderB,
+                                new[] { $"{instance.SignalReference}_{partIndex}" }, Array.Empty<string>(), _simObject,
+                                sliderA, sliderB,
                                 (motor?.SimpleMotor.MaxVelocity ?? 30f) / LinearDriver.LINEAR_TO_MOTOR_VELOCITY,
                                 ((definition.Prismatic.PrismaticFreedom.Limits.Upper - currentPosition) * 0.01f,
                                     (definition.Prismatic.PrismaticFreedom.Limits.Lower - currentPosition) * 0.01f),

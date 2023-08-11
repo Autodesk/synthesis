@@ -154,7 +154,7 @@ namespace Synthesis.Import {
 
             return groupObjects;
         }
-        
+
         private enum ColliderGenType {
             NoCollider = 0,
             Convex     = 1,
@@ -207,7 +207,7 @@ namespace Synthesis.Import {
                 bodyObject.transform.localScale    = UVector3.one;
             }
         }
-        
+
 #region Rigidbody Identification
 
         /// <summary>
