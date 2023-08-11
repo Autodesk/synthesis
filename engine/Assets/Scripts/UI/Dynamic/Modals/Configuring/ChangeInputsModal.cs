@@ -166,21 +166,17 @@ public class ChangeInputsModal : ModalDynamic {
         AcceptButton
             .AddOnClickedEvent(b => {
                 isSave = true;
-                _changedInputs.ForEach(x => {
-                    InputManager.AssignValueInput(x.Item1, x.Item2);
-                });
+                _changedInputs.ForEach(x => { InputManager.AssignValueInput(x.Item1, x.Item2); });
                 DynamicUIManager.CloseActiveModal();
             })
             .StepIntoLabel(l => l.SetText("Save"));
         CancelButton.AddOnClickedEvent(b => DynamicUIManager.CloseActiveModal());
-        MiddleButton.AddOnClickedEvent(b => {
+        MiddleButton
+            .AddOnClickedEvent(b => {
                 isSave = false;
-                _changedInputs.ForEach(x => {
-                    InputManager.AssignValueInput(x.Item1, x.Item2);
-                });
+                _changedInputs.ForEach(x => { InputManager.AssignValueInput(x.Item1, x.Item2); });
                 DynamicUIManager.CloseActiveModal();
-
-        })
+            })
             .StepIntoLabel(l => l.SetText("Session"));
 
         PopulateInputSelections();

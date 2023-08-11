@@ -13,7 +13,7 @@ namespace Synthesis {
         internal const string LEFT_REVERSE  = "Tank Left-Reverse";
         internal const string RIGHT_FORWARD = "Tank Right-Forward";
         internal const string RIGHT_REVERSE = "Tank Right-Reverse";
-        
+
         private readonly string left_forward  = LEFT_FORWARD;
         private readonly string left_reverse  = LEFT_REVERSE;
         private readonly string right_forward = RIGHT_FORWARD;
@@ -79,7 +79,7 @@ namespace Synthesis {
         private void OnValueInputAssigned(IEvent tmp) {
             ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
             if (args.InputKey.Length > MiraId.Length) {
-                string s                     = args.InputKey.Remove(0, MiraId.Length);
+                string s = args.InputKey.Remove(0, MiraId.Length);
                 switch (s) {
                     case LEFT_FORWARD:
                     case LEFT_REVERSE:
@@ -88,8 +88,7 @@ namespace Synthesis {
                         if (base.MiraId != MainHUD.SelectedRobot.MiraGUID ||
                             !(DynamicUIManager.ActiveModal as ChangeInputsModal).isSave)
                             return;
-                        SimulationPreferences.SetRobotInput(
-                            MiraId, args.InputKey, args.Input);
+                        SimulationPreferences.SetRobotInput(MiraId, args.InputKey, args.Input);
                         break;
                 }
             }

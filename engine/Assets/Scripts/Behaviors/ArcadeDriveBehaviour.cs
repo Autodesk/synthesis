@@ -15,14 +15,14 @@ using Math   = SynthesisAPI.Utilities.Math;
 
 namespace Synthesis {
     public class ArcadeDriveBehaviour : SimBehaviour {
-        internal const string FORWARD  = "Arcade Forward";
-        internal const string BACKWARD = "Arcade Backward";
-        internal const string LEFT     = "Arcade Left";
-        internal const string RIGHT    = "Arcade Right";
-        private readonly string forward         = FORWARD;
-        private readonly string backward        = BACKWARD;
-        private readonly string left            = LEFT;
-        private readonly string right           = RIGHT;
+        internal const string FORWARD    = "Arcade Forward";
+        internal const string BACKWARD   = "Arcade Backward";
+        internal const string LEFT       = "Arcade Left";
+        internal const string RIGHT      = "Arcade Right";
+        private readonly string forward  = FORWARD;
+        private readonly string backward = BACKWARD;
+        private readonly string left     = LEFT;
+        private readonly string right    = RIGHT;
 
         private readonly List<WheelDriver> _leftWheels;
         private readonly List<WheelDriver> _rightWheels;
@@ -91,8 +91,7 @@ namespace Synthesis {
                         if (base.MiraId != MainHUD.SelectedRobot.MiraGUID ||
                             !(DynamicUIManager.ActiveModal as ChangeInputsModal).isSave)
                             return;
-                        SimulationPreferences.SetRobotInput(
-                            MiraId, args.InputKey, args.Input);
+                        SimulationPreferences.SetRobotInput(MiraId, args.InputKey, args.Input);
                         break;
                 }
             }

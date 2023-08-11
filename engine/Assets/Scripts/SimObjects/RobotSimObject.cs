@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Analytics;
 using Newtonsoft.Json;
@@ -783,60 +784,70 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     public void CreateDrivetrainTooltip() {
-        string MiraId = MainHUD.SelectedRobot.MiraGUID;
-        int i = 3; //for drive, intake, and eject
+        string MiraId  = MainHUD.SelectedRobot.MiraGUID;
+        int inputCount = 3; // for drive, intake, and eject
         if (ConfiguredDrivetrainType.Name.Equals("Swerve"))
-                i++; //for turn
+            inputCount++; // for turn
         MainHUD.SelectedRobot.GetAllReservedInputs().ForEach(input => {
-            if (!input.displayName.Contains("Arcade") && (!input.displayName.Contains("Swerve") || input.displayName.Contains("Reset Forward")) && !input.displayName.Contains("Tank"))
-                i++;
+            if (!input.displayName.Contains("Arcade") &&
+                (!input.displayName.Contains("Swerve") || input.displayName.Contains("Reset Forward")) &&
+                !input.displayName.Contains("Tank"))
+                inputCount++;
         });
-        (string, string)[] inputs = new (string key, string input)[i];
-        i = 0;
+        (string, string)[] inputs = new(string key, string input)[inputCount];
+        int i                         = 0;
         switch (ConfiguredDrivetrainType.Name) {
             case "Arcade":
-                string f = GetTooltipOutput(MiraId + "Arcade Forward", "W");
-                string b = GetTooltipOutput(MiraId + "Arcade Backward", "S");
-                string l = GetTooltipOutput(MiraId + "Arcade Left", "A");
-                string r = GetTooltipOutput(MiraId + "Arcade Right", "D");
+                string f  = GetTooltipOutput(MiraId + "Arcade Forward", "W");
+                string b  = GetTooltipOutput(MiraId + "Arcade Backward", "S");
+                string l  = GetTooltipOutput(MiraId + "Arcade Left", "A");
+                string r  = GetTooltipOutput(MiraId + "Arcade Right", "D");
                 inputs[0] = (f + b + l + r, "Drive");
                 i++;
                 break;
             case "Tank":
-                f = GetTooltipOutput(MiraId + "Tank Left-Forward", "W");
-                b = GetTooltipOutput(MiraId + "Tank Left-Reverse", "S");
-                l = GetTooltipOutput(MiraId + "Tank Right-Forward", "I");
-                r = GetTooltipOutput(MiraId + "Tank Right-Reverse", "K");
+                f         = GetTooltipOutput(MiraId + "Tank Left-Forward", "W");
+                b         = GetTooltipOutput(MiraId + "Tank Left-Reverse", "S");
+                l         = GetTooltipOutput(MiraId + "Tank Right-Forward", "I");
+                r         = GetTooltipOutput(MiraId + "Tank Right-Reverse", "K");
                 inputs[0] = (f + b + l + r, "Drive");
                 i++;
                 break;
             case "Swerve":
-                f = GetTooltipOutput(MiraId + "Swerve Forward", "W");
-                b = GetTooltipOutput(MiraId + "Swerve Backward", "S");
-                l = GetTooltipOutput(MiraId + "Swerve Left", "A");
-                r = GetTooltipOutput(MiraId + "Swerve Right", "D");
+                f         = GetTooltipOutput(MiraId + "Swerve Forward", "W");
+                b         = GetTooltipOutput(MiraId + "Swerve Backward", "S");
+                l         = GetTooltipOutput(MiraId + "Swerve Left", "A");
+                r         = GetTooltipOutput(MiraId + "Swerve Right", "D");
                 inputs[0] = (f + b + l + r, "Drive");
                 i++;
                 string lturn = GetTooltipOutput(MiraId + "Swerve Turn Left", "LeftArrow");
                 string rturn = GetTooltipOutput(MiraId + "Swerve Turn Right", "RightArrow");
-                inputs[1] = (lturn + rturn, "Turn");
+                inputs[1]    = (lturn + " " + rturn, "Turn");
                 i++;
                 break;
         }
         foreach (var inputKey in MainHUD.SelectedRobot.GetAllReservedInputs()) {
-            if (!inputKey.displayName.Contains("Arcade") && (!inputKey.displayName.Contains("Swerve") || inputKey.displayName.Contains("Reset Forward")) && !inputKey.displayName.Contains("Tank")) {
+            if (!inputKey.displayName.Contains("Arcade") &&
+                (!inputKey.displayName.Contains("Swerve") || inputKey.displayName.Contains("Reset Forward")) &&
+                !inputKey.displayName.Contains("Tank")) {
                 inputs[i] = (InputManager.MappedValueInputs[inputKey.key].Name, inputKey.displayName);
                 i++;
             }
         }
-        inputs[i] = (((Digital) TryGetSavedInput(INTAKE_GAMEPIECES, new Digital("E", context: SimulationRunner.RUNNING_SIM_CONTEXT))).Name, "Intake");
+        inputs[i] = (((Digital) TryGetSavedInput(
+                          INTAKE_GAMEPIECES, new Digital("E", context: SimulationRunner.RUNNING_SIM_CONTEXT)))
+                         .Name,
+            "Intake");
         i++;
-        inputs[i] = (((Digital) TryGetSavedInput(OUTTAKE_GAMEPIECES, new Digital("Q", context: SimulationRunner.RUNNING_SIM_CONTEXT))).Name, "Eject");
+        inputs[i] = (((Digital) TryGetSavedInput(
+                          OUTTAKE_GAMEPIECES, new Digital("Q", context: SimulationRunner.RUNNING_SIM_CONTEXT)))
+                         .Name,
+            "Eject");
         TooltipManager.CreateTooltip(inputs);
     }
 
     private string GetTooltipOutput(string key, string defaultInput) {
         var input = SimulationPreferences.GetRobotInput(MainHUD.SelectedRobot.MiraGUID, key);
-        return input != null? input.Name : defaultInput;
+        return input != null ? input.Name : defaultInput;
     }
 }
