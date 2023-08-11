@@ -795,7 +795,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                 inputCount++;
         });
         (string, string)[] inputs = new(string key, string input)[inputCount];
-        int i                         = 0;
+        int i                     = 0;
         switch (ConfiguredDrivetrainType.Name) {
             case "Arcade":
                 string f  = GetTooltipOutput(MiraId + "Arcade Forward", "W");
