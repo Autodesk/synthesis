@@ -41,13 +41,8 @@ namespace UI.Dynamic.Modals {
 
             CancelButton
                 .AddOnClickedEvent(x => {
-                    MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.None);
-                    SimulationRunner.InSim = false;
-                    DynamicUIManager.CloseAllPanels(true);
-                    ModeManager.CurrentMode = null;
-                    DynamicUIManager.CloseActiveModal();
-
-                    SceneManager.LoadScene("GridMenuScene", LoadSceneMode.Single);
+                    DynamicUIManager.CreateModal<ExitSynthesisModal>();
+                    DynamicUIManager.ActiveModal.OnCancelled = () => DynamicUIManager.CreateModal<MatchResultsModal>();
                 })
                 .StepIntoLabel(l => l.SetText("Exit"));
 

@@ -21,9 +21,15 @@ namespace Synthesis.UI.Dynamic {
                     if (isOnMainMenu) {
                         Application.Quit();
                     } else {
+                        if (ModeManager.CurrentMode!.GetType() == typeof(MatchMode)) {
+                            RobotSimObject.RemoveAllRobots();
+                            FieldSimObject.DeleteField();
+                            MatchMode.ResetMatchConfiguration();
+                        }
+
                         SimulationRunner.InSim = false;
                         DynamicUIManager.CloseAllPanels(true);
-                        MatchMode.ResetMatchConfiguration();
+
                         ModeManager.CurrentMode = null;
                         SceneManager.LoadScene("GridMenuScene", LoadSceneMode.Single);
 

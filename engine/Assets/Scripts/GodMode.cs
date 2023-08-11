@@ -46,6 +46,8 @@ public class GodMode : MonoBehaviour {
     private float _lastUpdate = float.NaN;
     private Vector3 _speed, _lastPosition;
 
+    private GameObject _pointer;
+
     private void Update() {
         bool godModeKeyDown = InputManager.MappedValueInputs[ENABLED_GOD_MODE_INPUT].Value == 1.0F;
         bool mouseDown      = InputManager.MappedValueInputs[GOD_MODE_DRAG_INPUT].Value == 1.0F;
@@ -58,8 +60,8 @@ public class GodMode : MonoBehaviour {
                 if (hit) {
                     grabbedObject = GetGameObjectWithRigidbody(hitInfo.collider.gameObject);
                     if (grabbedObject != null) {
-                        GameObject gameObj       = new GameObject("GODMODE_POINTER_RB");
-                        _pointerBody             = gameObj.AddComponent<Rigidbody>();
+                        _pointer                 = new GameObject("GODMODE_POINTER_RB");
+                        _pointerBody             = _pointer.AddComponent<Rigidbody>();
                         _pointerBody.isKinematic = true;
 
                         _lastUpdate   = Time.realtimeSinceStartup;
@@ -98,6 +100,9 @@ public class GodMode : MonoBehaviour {
         if (!mouseDown && grabJoint != null) {
             Destroy(grabJoint);
             Destroy(_pointerBody);
+            if (_pointer != null)
+                Destroy(_pointer);
+
             _pointerBody                                     = null;
             grabbedObject.GetComponent<Rigidbody>().velocity = _speed;
             grabbedObject                                    = null;

@@ -12,7 +12,7 @@ public class ChooseSingleplayerModeModal : ModalDynamic {
         return u;
     };
 
-    public ChooseSingleplayerModeModal() : base(new Vector2(230, 200)) {}
+    public ChooseSingleplayerModeModal() : base(new Vector2(230, 80)) {}
 
     public override void Create() {
         Title.SetText("Choose Mode");
