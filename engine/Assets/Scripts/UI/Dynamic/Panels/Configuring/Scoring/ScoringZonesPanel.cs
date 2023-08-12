@@ -141,7 +141,7 @@ public class ScoringZonesPanel : PanelDynamic {
     }
 
     private void OpenScoringZoneGizmo(ScoringZone zone = null) {
-        DynamicUIManager.CreatePanel<ZoneConfigPanel>(persistent: false, zone);
+        DynamicUIManager.CreatePanel<ZoneConfigPanel>(persistent: true, zone);
         ZoneConfigPanel panel = DynamicUIManager.GetPanel<ZoneConfigPanel>();
         panel.SetCallback(AddZoneEntry);
     }
@@ -149,7 +149,10 @@ public class ScoringZonesPanel : PanelDynamic {
     public override void Update() {}
 
     public override void Delete() {
-        FieldSimObject.CurrentField.ScoringZones.ForEach(x => x.VisibilityCounter--);
+        FieldSimObject.CurrentField.ScoringZones.ForEach(x => {
+            if (x != null)
+                x.VisibilityCounter--;
+        });
         PhysicsManager.IsFrozen = false;
     }
 }

@@ -2,8 +2,11 @@ using System;
 using Modes.MatchMode;
 using Synthesis.UI;
 using Synthesis.UI.Dynamic;
+using UI.EventListeners;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Utilities.ColorManager;
+using Object = UnityEngine.Object;
 
 public class ChooseMultiplayerModeModal : ModalDynamic {
     readonly Func<UIComponent, UIComponent> VerticalLayout = (u) => {
@@ -12,7 +15,7 @@ public class ChooseMultiplayerModeModal : ModalDynamic {
         return u;
     };
 
-    public ChooseMultiplayerModeModal() : base(new Vector2(230, 300)) {}
+    public ChooseMultiplayerModeModal() : base(new Vector2(230, 80)) {}
 
     public override void Create() {
         Title.SetText("Choose Mode");
@@ -31,23 +34,14 @@ public class ChooseMultiplayerModeModal : ModalDynamic {
                     SceneManager.LoadScene("MainScene");
             });
 
-        MainContent.CreateButton()
-            .StepIntoLabel(l => l.SetText("Host a Server"))
-            .ApplyTemplate(VerticalLayout)
-            .AddOnClickedEvent(b => {
-                if (SceneManager.GetActiveScene().name != "MainScene")
-                    SceneManager.LoadScene("MainScene");
-                ModeManager.CurrentMode = new ServerHostingMode();
-            });
+        var comingSoonButton = MainContent.CreateButton()
+                                   .StepIntoLabel(l => l.SetText("Coming Soon"))
+                                   .ApplyTemplate(VerticalLayout)
+                                   .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground))
+                                   .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
+                                   .DisableEvents<Button>();
 
-        MainContent.CreateButton()
-            .StepIntoLabel(l => l.SetText("Connect to a Server"))
-            .ApplyTemplate(VerticalLayout)
-            .AddOnClickedEvent(b => {
-                if (SceneManager.GetActiveScene().name != "MainScene")
-                    SceneManager.LoadScene("MainScene");
-                ModeManager.CurrentMode = new ConnectToMultiplayerMode();
-            });
+        Object.Destroy(comingSoonButton.RootGameObject.transform.Find("Button").GetComponent<HoverEventListener>());
     }
 
     public override void Update() {}
