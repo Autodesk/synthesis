@@ -82,10 +82,14 @@ namespace Modes.MatchMode {
                 ScoringZone zone = ((OnScoreUpdateEvent) e).Zone;
                 switch (zone.Alliance) {
                     case Alliance.Blue:
-                        ((BluePoints) MatchResultsTracker.MatchResultEntries[typeof(BluePoints)]).Points += zone.Points;
+                        int i = ((BluePoints) MatchResultsTracker.MatchResultEntries[typeof(BluePoints)]).Points;
+                        ((BluePoints) MatchResultsTracker.MatchResultEntries[typeof(BluePoints)]).Points +=
+                            zone.Points * (((OnScoreUpdateEvent) e).IncreaseScore ? 1 : -1);
                         break;
                     case Alliance.Red:
-                        ((RedPoints) MatchResultsTracker.MatchResultEntries[typeof(RedPoints)]).Points += zone.Points;
+                        i = ((RedPoints) MatchResultsTracker.MatchResultEntries[typeof(RedPoints)]).Points;
+                        ((RedPoints) MatchResultsTracker.MatchResultEntries[typeof(RedPoints)]).Points +=
+                            zone.Points * (((OnScoreUpdateEvent) e).IncreaseScore ? 1 : -1);
                         break;
                 }
             });
