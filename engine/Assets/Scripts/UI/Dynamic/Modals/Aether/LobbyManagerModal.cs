@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.Aether;
 using TMPro;
@@ -9,6 +11,12 @@ using UnityEngine;
 using Utilities.ColorManager;
 
 public class LobbyManagerModal : ModalDynamic {
+    
+    readonly Func<UIComponent, UIComponent> VerticalLayout = (u) => {
+        var offset = (-u.Parent!.RectOfChildren(u).yMin) + 7.5f;
+        u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 0);
+        return u;
+    };
 
     private static readonly Vector2 CONTENT_SIZE = new Vector2(900, 600);
 
@@ -51,19 +59,32 @@ public class LobbyManagerModal : ModalDynamic {
         ).SetVerticalAlignment(VerticalAlignmentOptions.Top);
         
         // Right
-
-
         _availableDataDropdown = right.CreateLabeledDropdown().SetTopStretch<LabeledDropdown>().StepIntoLabel(l => l.SetText("Robots"));
-        
+        right.CreateButton("Select").SetTopStretch<Button>().ApplyTemplate(VerticalLayout).AddOnClickedEvent(
+            b => {
+                var selection = _availableData[_availableDataDropdown.Dropdown.Value];
+                var selectTask = _mode.HostClient?.SelectData(selection.Owner, selection.Guid);
+                selectTask?.ContinueWith(x => {
+                    Debug.Log($"Selection ID: {x.Result ?? "NULL"}");
+                });
+            });
+        right.CreateButton("Refresh Selections").SetTopStretch<Button>().ApplyTemplate(VerticalLayout).AddOnClickedEvent(
+            b => {
+                RefreshAvailableData();
+            });
+
         RefreshPlayers();
+        // RefreshAvailableData();
     }
 
     private void RefreshAvailableData() {
         var allAvailableTask = _mode.HostClient!.GetAllAvailableData();
         allAvailableTask.Wait();
-        var allAvailable = allAvailableTask.Result.GetResult()!.FromAllDataAvailable;
+        _availableData.Clear();
+        _availableData.AddRange(allAvailableTask.Result);
         
-        var names = allAvailable.AvailableData.Select(x => x.Name).ToArray();
+        var names = _availableData.Select(x => x.Name).ToArray();
+        _availableDataDropdown.StepIntoDropdown(d => d.SetOptions(names));
     }
 
     private void RefreshPlayers() {

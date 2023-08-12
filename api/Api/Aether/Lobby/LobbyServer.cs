@@ -208,13 +208,20 @@ namespace SynthesisAPI.Aether.Lobby {
                     var ownerData = _remoteData[selection.DataOwner];
                     ownerData.EnterReadLock();
                     if (ownerData.OwnedData.ContainsKey(selection.DataGuid)) {
+                        var selectionId = NextGuid().ToString();
                         handler.AddSelection(new ClientSelection {
                             DataGuid = selection.DataGuid,
-                            SelectionId = NextGuid().ToString(),
+                            SelectionId = selectionId,
                             DataOwner = selection.DataOwner
                         });
+                        Logger.Log($"Found Data: {ownerData.OwnedData[selection.DataGuid].Description.Name}");
+                        Logger.Log($"Selection ID: {selectionId}");
+                    } else {
+                        Logger.Log($"Owner '{selection.DataOwner}' doesn't have data with GUID '{selection.DataGuid}'");
                     }
                     ownerData.ExitReadLock();
+                } else {
+                    Logger.Log($"Owner '{selection.DataOwner}' not found");
                 }
                 _remoteDataLock.ExitReadLock();
 

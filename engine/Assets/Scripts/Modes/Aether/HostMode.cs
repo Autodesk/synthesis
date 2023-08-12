@@ -4,6 +4,7 @@ using Synthesis.UI.Dynamic;
 using SynthesisAPI.Aether.Lobby;
 using SynthesisAPI.Aether;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using Google.Protobuf;
@@ -43,8 +44,10 @@ public class HostMode : IMode {
     }
 
     public void GatherAndUploadDataDescriptions() {
-        if (_hostClient?.IsAlive ?? false)
+        if (!(_hostClient?.IsAlive ?? false)) {
+            Logger.Log("Host is either null or no longer alive");
             return;
+        }
 
         LinkedList<(SynthesisDataDescriptor descriptor, string path)> dataPairings = new();
 
@@ -64,10 +67,14 @@ public class HostMode : IMode {
                 },
                 x
             )));
+        
+        Logger.Log($"Data to Upload: {dataPairings.Count}");
+        
         dataPairings.ForEach(x => {
             var makeDataAvailableTask = _hostClient!.MakeDataAvailable(x.descriptor);
             makeDataAvailableTask.Wait();
-            var updatedDescriptor = makeDataAvailableTask.Result.GetResult()!.FromMakeDataAvailableConfirmation.UpdatedDescription;
+            var updatedDescriptor = makeDataAvailableTask.Result;
+            Logger.Log($"File Added: OWNER [{updatedDescriptor?.Owner ?? 666}], GUID [{updatedDescriptor?.Guid ?? 666}]");
             _shareableMirafiles.Add(updatedDescriptor.Guid, (updatedDescriptor, x.path));
         });
     }
@@ -115,6 +122,8 @@ public class HostMode : IMode {
                     Description = dataInfo.descriptor,
                     Buffer = ByteString.CopyFrom(raw)
                 };
+                
+                Logger.Log($"Uploading Data: [{data.Description.Owner}:{data.Description.Guid}] {data.Description.Name}");
 
                 _hostClient!.UploadData(data);
             });

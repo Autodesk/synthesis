@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Google.Protobuf.Collections;
 
 #nullable enable
 
@@ -79,23 +80,29 @@ namespace SynthesisAPI.Aether.Lobby {
 
 #region Data Handling Requests
 
+        public Task<string?> SelectData(ulong owner, ulong guid)
+            => _instance?.SelectData(owner, guid) ?? Task.FromResult((string?)null);
+
+        public Task<Ref<bool>> UnselectData(string selectionId)
+            => _instance?.UnselectData(selectionId) ?? Task.FromResult((Ref<bool>)false);
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="description"></param>
         /// <returns>Task that gives you the raw response</returns>
-        public Task<Result<LobbyMessage?, Exception>> MakeDataAvailable(SynthesisDataDescriptor description)
-            => _instance?.MakeDataAvailable(description) ?? Task.FromResult(NO_INSTANCE_ERROR_RESULT);
+        public Task<SynthesisDataDescriptor?> MakeDataAvailable(SynthesisDataDescriptor description)
+            => _instance?.MakeDataAvailable(description) ?? Task.FromResult((SynthesisDataDescriptor?)null);
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns>Task that gives you the raw response</returns>
-        public Task<Result<LobbyMessage?, Exception>> GetAllAvailableData()
-            => _instance?.GetAllAvailableData() ?? Task.FromResult(NO_INSTANCE_ERROR_RESULT);
+        public Task<RepeatedField<SynthesisDataDescriptor>> GetAllAvailableData()
+            => _instance?.GetAllAvailableData() ?? Task.FromResult(new RepeatedField<SynthesisDataDescriptor>());
 
-        public Task<Result<LobbyMessage?, Exception>> UploadData(SynthesisData data)
-            => _instance?.UploadData(data) ?? Task.FromResult(NO_INSTANCE_ERROR_RESULT);
+        public Task<string?> UploadData(SynthesisData data)
+            => _instance?.UploadData(data) ?? Task.FromResult((string?)null);
 
 #endregion
 
@@ -115,7 +122,7 @@ namespace SynthesisAPI.Aether.Lobby {
             public ReaderWriterLockSlim TransformDataLock;
             public Dictionary<ulong, ServerTransforms> TransformData;
 
-            private readonly ConcurrentQueue<Task<Result<LobbyMessage?, Exception>>> _requestQueue;
+            private readonly ConcurrentQueue<Task<object?>> _requestQueue;
 
             private readonly Thread _heartbeatThread;
             private readonly Thread _requestSenderThread;
@@ -126,7 +133,7 @@ namespace SynthesisAPI.Aether.Lobby {
                 TransformData = new Dictionary<ulong, ServerTransforms>();
                 TransformDataLock = new ReaderWriterLockSlim();
 
-                _requestQueue = new ConcurrentQueue<Task<Result<LobbyMessage?, Exception>>>();
+                _requestQueue = new ConcurrentQueue<Task<object?>>();
 
                 var tcp = new TcpClient();
                 tcp.Connect(ip, LobbyServer.TCP_PORT);
@@ -170,7 +177,7 @@ namespace SynthesisAPI.Aether.Lobby {
                     SenderGuid = Handler.Guid
                 };
 
-                var task = new Task<Result<LobbyMessage?, Exception>>(() => {
+                var task = new Task<object?>(() => {
                     var response = HandleResponseBoilerplate(
                         new LobbyMessage { ToGetLobbyInformation = request },
                         LobbyMessage.MessageTypeOneofCase.FromGetLobbyInformation
@@ -180,7 +187,7 @@ namespace SynthesisAPI.Aether.Lobby {
                 });
 
                 _requestQueue.Enqueue(task);
-                return task;
+                return task.CastTask<object?, Result<LobbyMessage?, Exception>>();
             }
 
             private void ClientHeartbeat() {
@@ -188,7 +195,7 @@ namespace SynthesisAPI.Aether.Lobby {
                 while (_isAlive) {
                     long currentTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                     if (currentTime - lastUpdate > HEARTBEAT_FREQUENCY) {
-                        var task = new Task<Result<LobbyMessage?, Exception>>(() => {
+                        var task = new Task<object?>(() => {
                             var res = _handler.WriteMessage(new LobbyMessage { ToClientHeartbeat = new LobbyMessage.Types.ToClientHeartbeat() });
                             if (res.isError)
                                 return new Result<LobbyMessage?, Exception>(res.GetError());
@@ -207,65 +214,122 @@ namespace SynthesisAPI.Aether.Lobby {
 
 #region Shared Data Handling
 
-            public Task<Result<LobbyMessage?, Exception>> MakeDataAvailable(SynthesisDataDescriptor description) {
+            public Task<string?> SelectData(ulong dataOwner, ulong dataGuid) {
                 if (!_isAlive.Value)
-                    return Task.FromResult(CLIENT_NOT_ALIVE_ERROR_RESULT);
+                    return Task.FromResult((string?)null);
+
+                var request = new LobbyMessage.Types.ToSelectData {
+                    ClientGuid = _handler.Guid,
+                    DataGuid = dataGuid,
+                    DataOwner = dataOwner
+                };
+
+                var task = new Task<object?>(() => {
+                    Logger.Log($"Selecting OWNER: {dataOwner}, GUID: {dataGuid}");
+                    var response = HandleResponseBoilerplate(
+                        new LobbyMessage { ToSelectData = request },
+                        LobbyMessage.MessageTypeOneofCase.FromSelectData
+                    );
+
+                    string? selectionId = null;
+                    var allSelections = response.GetResult()?.FromSelectData.ClientInfo.Selections;
+                    allSelections.ForEach(x => {
+                        Logger.Log($"OWNER: {x.Value.DataOwner}, GUID: {x.Value.DataGuid}");
+                    });
+                    var matching = allSelections.Where(x => x.Value.DataGuid == dataGuid && x.Value.DataOwner == dataOwner);
+                    if (matching.Any())
+                        selectionId = matching.First().Key;
+                    else
+                        Logger.Log("No matching selection found");
+
+                    return selectionId;
+                });
+
+                _requestQueue.Enqueue(task);
+                return task.CastTask<object?, string?>();
+            }
+
+            public Task<Ref<bool>> UnselectData(string selectionId) {
+                if (!_isAlive.Value)
+                    return Task.FromResult(Ref<bool>.Default);
+
+                var request = new LobbyMessage.Types.ToUnselectData {
+                    ClientGuid = _handler.Guid,
+                    SelectionId = selectionId
+                };
+
+                var task = new Task<object?>(() => {
+                    var response = HandleResponseBoilerplate(
+                        new LobbyMessage { ToUnselectData = request },
+                        LobbyMessage.MessageTypeOneofCase.FromUnselectData
+                    );
+
+                    return !(response.GetResult()?.FromUnselectData.ClientInfo.Selections.ContainsKey(selectionId));
+                });
+
+                _requestQueue.Enqueue(task);
+                return task.CastTask<object?, Ref<bool>>();
+            }
+
+            public Task<SynthesisDataDescriptor?> MakeDataAvailable(SynthesisDataDescriptor description) {
+                if (!_isAlive.Value)
+                    return Task.FromResult((SynthesisDataDescriptor?)null);
 
                 var request = new LobbyMessage.Types.ToMakeDataAvailable {
                     Description = description
                 };
 
-                var task = new Task<Result<LobbyMessage?, Exception>>(() => {
+                var task = new Task<object?>(() => {
                     var response = HandleResponseBoilerplate(
                         new LobbyMessage { ToMakeDataAvailable = request },
                         LobbyMessage.MessageTypeOneofCase.FromMakeDataAvailableConfirmation
                     );
 
-                    return response;
+                    return response.GetResult()?.FromMakeDataAvailableConfirmation.UpdatedDescription;
                 });
 
                 _requestQueue.Enqueue(task);
-                return task;
+                return task.CastTask<object?, SynthesisDataDescriptor?>();
             }
 
-            public Task<Result<LobbyMessage?, Exception>> GetAllAvailableData() {
+            public Task<RepeatedField<SynthesisDataDescriptor>> GetAllAvailableData() {
                 if (!_isAlive.Value)
-                    return Task.FromResult(CLIENT_NOT_ALIVE_ERROR_RESULT);
+                    return Task.FromResult(new RepeatedField<SynthesisDataDescriptor>());
 
                 var request = new LobbyMessage.Types.ToAllDataAvailable();
 
-                var task = new Task<Result<LobbyMessage?, Exception>>(() => {
+                var task = new Task<object?>(() => {
                     var response = HandleResponseBoilerplate(
                         new LobbyMessage { ToAllDataAvailable = request },
                         LobbyMessage.MessageTypeOneofCase.FromAllDataAvailable
                     );
 
-                    return response;
+                    return response.GetResult()!.FromAllDataAvailable.AvailableData;
                 });
 
                 _requestQueue.Enqueue(task);
-                return task;
+                return task.CastTask<object?, RepeatedField<SynthesisDataDescriptor>>();
             }
 
-            public Task<Result<LobbyMessage?, Exception>> UploadData(SynthesisData data) {
+            public Task<string?> UploadData(SynthesisData data) {
                 if (!_isAlive.Value)
-                    return Task.FromResult(CLIENT_NOT_ALIVE_ERROR_RESULT);
+                    return Task.FromResult((string?)null);
 
                 var request = new LobbyMessage.Types.ToUploadSynthesisData {
                     Data = data
                 };
 
-                var task = new Task<Result<LobbyMessage?, Exception>>(() => {
+                var task = new Task<object?>(() => {
                     var response = HandleResponseBoilerplate(
                         new LobbyMessage { ToUploadSynthesisData = request },
                         LobbyMessage.MessageTypeOneofCase.FromUploadSynthesisDataConfirmation
                     );
 
-                    return response;
+                    return response.GetResult()?.FromUploadSynthesisDataConfirmation.Checksum;
                 });
 
                 _requestQueue.Enqueue(task);
-                return task;
+                return task.CastTask<object?, string?>();
             }
 
 #endregion
@@ -281,7 +345,7 @@ namespace SynthesisAPI.Aether.Lobby {
                 };
                 request.Data.Add(updates);
 
-                var task = new Task<Result<LobbyMessage?, Exception>>(() => {
+                var task = new Task<object?>(() => {
                     var response = HandleResponseBoilerplate(
                         new LobbyMessage { ToUpdateControllableState = request },
                         LobbyMessage.MessageTypeOneofCase.FromSimulationTransformData
@@ -291,7 +355,7 @@ namespace SynthesisAPI.Aether.Lobby {
                     
                 });
                 _requestQueue.Enqueue(task);
-                return task;
+                return task.CastTask<object?, Result<LobbyMessage?, Exception>>();
             }
 
             public Task<Result<LobbyMessage?, Exception>> UpdateTransforms(List<ServerTransforms> transforms) {
@@ -301,7 +365,7 @@ namespace SynthesisAPI.Aether.Lobby {
                 var request = new LobbyMessage.Types.ToUpdateTransformData();
                 request.TransformData.AddRange(transforms);
 
-                var task = new Task<Result<LobbyMessage?, Exception>>(() => {
+                var task = new Task<object?>(() => {
                     var response = HandleResponseBoilerplate(
                         new LobbyMessage { ToUpdateTransformData = request },
                         LobbyMessage.MessageTypeOneofCase.FromControllableStates
@@ -310,7 +374,7 @@ namespace SynthesisAPI.Aether.Lobby {
                     return response;
                 });
                 _requestQueue.Enqueue(task);
-                return task;
+                return task.CastTask<object?, Result<LobbyMessage?, Exception>>();
             }
 
 #endregion
