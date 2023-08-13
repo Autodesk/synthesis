@@ -170,8 +170,6 @@ namespace Modes.MatchMode {
             public override void End() {
                 base.End();
 
-                DynamicUIManager.ManualMainHUDEnabled = true;
-
                 if (Camera.main != null) {
                     Camera.main.GetComponent<CameraController>().CameraMode = CameraController.CameraModes["Orbit"];
                 }
@@ -184,6 +182,7 @@ namespace Modes.MatchMode {
         public class FieldConfig : MatchState {
             public override void Start() {
                 base.Start();
+                ScoringZonesPanel.MatchModeSetup = true;
                 DynamicUIManager.CreatePanel<ScoringZonesPanel>(true);
                 var panel = DynamicUIManager.GetPanel<ScoringZonesPanel>();
 
@@ -204,6 +203,8 @@ namespace Modes.MatchMode {
 
             public override void End() {
                 base.End();
+                DynamicUIManager.ManualMainHUDEnabled = true;
+                ScoringZonesPanel.MatchModeSetup      = false;
             }
 
             public FieldConfig() : base(StateName.FieldConfig) {}

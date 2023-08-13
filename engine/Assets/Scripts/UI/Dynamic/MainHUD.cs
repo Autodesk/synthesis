@@ -80,10 +80,6 @@ public static class MainHUD {
                             SynthesisTweenInterpolationFunctions.IntInterp(t, Convert.ToSingle(a), Convert.ToSingle(b)),
                         TweenScaleFunctions.CubicEaseOut, collapseTweenProgress);
                     _accordionButton.RootGameObject.SetActive(true);
-
-                    if (isConfig) {
-                        LeaveConfig();
-                    }
                 } else {
                     TweenFactory.RemoveTweenKey(COLLAPSE_TWEEN, TweenStopBehavior.DoNotModify);
                     SynthesisTween.MakeTween(EXPAND_TWEEN, _tabDrawerContent.RootRectTransform.anchoredPosition.x,
@@ -174,7 +170,13 @@ public static class MainHUD {
         _homeIcon =
             new Image(_homeButton, _homeButton.RootGameObject.transform.Find("Button").Find("HomeIcon").gameObject);
 
-        _closeButton.OnClicked += (b) => Collapsed = true;
+        _closeButton.OnClicked += (b) => {
+            Collapsed = true;
+
+            if (isConfig) {
+                LeaveConfig();
+            }
+        };
 
         _spawnButton.StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText))
             .Image.SetColor(ColorManager.SynthesisColor.BackgroundHUD);
