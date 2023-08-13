@@ -166,9 +166,9 @@ namespace Synthesis {
             } else {
                 Motor = new JointMotor() {
                     // Default Motor. Slow but powerful enough. Also uses Motor to save it
-                    force          = 2000,
+                    force          = 1, // About a Neo 550. Max is Falcon 550 at 4.67
                     freeSpin       = false,
-                    targetVelocity = 500,
+                    targetVelocity = 20,
                 };
             }
 

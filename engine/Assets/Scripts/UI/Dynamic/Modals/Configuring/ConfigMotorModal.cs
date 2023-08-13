@@ -3,6 +3,7 @@ using UnityEngine;
 using System;
 using SynthesisAPI.Simulation;
 using Synthesis;
+using Utilities.ColorManager;
 
 public class ConfigMotorModal : ModalDynamic {
     const float MODAL_HEIGHT = 500f;
@@ -97,7 +98,7 @@ public class ConfigMotorModal : ModalDynamic {
 
             // Save to Mira
             _motors.ForEach(x => {
-                if (x.velChanged) {
+                if (x.changed) {
                     SaveToMira(x.driver);
                 }
             });
@@ -113,7 +114,7 @@ public class ConfigMotorModal : ModalDynamic {
         CancelButton.AddOnClickedEvent(b => {
             // change the target velocities back
             _motors.ForEach(x => {
-                if (x.velChanged) {
+                if (x.changed) {
                     x.setTargetVelocity(x.origVel);
                 }
             });
@@ -135,9 +136,10 @@ public class ConfigMotorModal : ModalDynamic {
 
         _scrollViewWidth = _scrollView.Parent!.RectOfChildren().width - SCROLL_WIDTH;
 
-        CreateEntry("Drive", (_motors[0].driver as WheelDriver).Motor.targetVelocity, x => ChangeDriveVelocity(x));
+        CreateEntry("Drive", (_motors[0].driver as WheelDriver).Motor.force, (_motors[0].driver as WheelDriver).Motor.targetVelocity, x => ChangeDriveForce(x), x => ChangeDriveVelocity(x));
         if (_robotISSwerve) {
-            CreateEntry("Turn", (_motors[driveMotorCount].driver as RotationalDriver).Motor.targetVelocity,
+            CreateEntry("Turn", (_motors[driveMotorCount].driver as RotationalDriver).Motor.force, (_motors[driveMotorCount].driver as RotationalDriver).Motor.targetVelocity,
+                x => ChangeTurnForce(x),
                 x => ChangeTurnVelocity(x), "RPM", 10.0f);
         }
 
@@ -161,7 +163,7 @@ public class ConfigMotorModal : ModalDynamic {
                 var u = "RPM";
                 if (_motors[i].driver is LinearDriver)
                     u = "M/S";
-                CreateEntry(GetName(_motors[i].driver), _motors[j].origVel, x => _motors[j].setTargetVelocity(x), u);
+                CreateEntry(GetName(_motors[i].driver), _motors[j].origForce, _motors[j].origVel, x => _motors[j].setForce(x), x => _motors[j].setTargetVelocity(x), u);
             }
         }
     }
@@ -171,18 +173,40 @@ public class ConfigMotorModal : ModalDynamic {
     public override void Delete() {}
 
     private void CreateEntry(
-        string name, float currVel, Action<float> onClick, string units = "RPM", float max = 150.0f) {
-        (Content nameContent, Content velContent) =
-            _scrollView.Content.CreateSubContent(new Vector2(_scrollViewWidth, 40f))
+        string name, float currForce, float currVel, Action<float> onForce, Action<float> onVelocity, string velUnits = "RPM", float max = 150.0f) {
+        (Content nameContent, Content motorContent) =
+            _scrollView.Content.CreateSubContent(new Vector2(_scrollViewWidth, PADDING + PADDING + PADDING + 80f))
                 .SetTopStretch<Content>(0, 0, 0)
+                .SetBackgroundColor<Content>(ColorManager.SynthesisColor.Scrollbar)
                 .ApplyTemplate<Content>(VerticalLayout)
                 .SplitLeftRight(NAME_WIDTH, PADDING);
         if (currVel < 5.0f && max > 50.0f)
             max = 50.0f;
-        nameContent.CreateLabel().SetText(name).SetTopStretch(0, PADDING, PADDING + _scrollView.HeightOfChildren);
-        velContent.CreateSlider(units, minValue: 0f, maxValue: max, currentValue: currVel)
+        nameContent.CreateLabel().SetText(name).SetTopStretch(PADDING, PADDING, PADDING + 40f + _scrollView.HeightOfChildren);
+        motorContent.CreateSubContent(new Vector2(_scrollViewWidth - NAME_WIDTH - PADDING, 40f))
+            .SetTopStretch<Content>(0, 0, PADDING + PADDING)
+            .CreateSlider($"Target Velocity ({velUnits})", minValue: 0f, maxValue: max, currentValue: currVel)
+            .SetTopStretch<Slider>(PADDING, PADDING, _scrollView.HeightOfChildren + 40f)
+            .AddOnValueChangedEvent((s, v) => { onVelocity(v); });
+        motorContent.CreateSubContent(new Vector2(_scrollViewWidth - NAME_WIDTH - PADDING, 40f))
+            .SetTopStretch<Content>(0, 0, PADDING)
+            .CreateSlider("Stall Torque (Nm)", minValue: 0f, maxValue: 6f, currentValue: currForce)
             .SetTopStretch<Slider>(PADDING, PADDING, _scrollView.HeightOfChildren)
-            .AddOnValueChangedEvent((s, v) => { onClick(v); });
+            .AddOnValueChangedEvent((s, f) => { onForce(f); });
+    }
+
+    private void ChangeDriveForce(float force) {
+        foreach (ConfigMotor motor in _motors) {
+            if (motor.motorType == MotorType.Drive)
+                motor.setForce(force);
+        }
+    }
+
+    private void ChangeTurnForce(float force) {
+        foreach (ConfigMotor motor in _motors) {
+            if (motor.motorType == MotorType.Turn)
+                motor.setForce(force);
+        }
     }
 
     private void ChangeDriveVelocity(float vel) {
@@ -201,35 +225,58 @@ public class ConfigMotorModal : ModalDynamic {
 
     private class ConfigMotor {
         public Driver driver;
+        public float origForce;
         public float origVel;
         private float _force;
-        public bool velChanged = false;
+        private float _vel;
+        public bool changed = false;
         public MotorType motorType;
 
         public ConfigMotor(MotorType t) {
             motorType = t;
         }
 
+        public void setForce(float f) {
+            switch (driver) {
+                case RotationalDriver:
+                    _vel = (driver as RotationalDriver).Motor.targetVelocity;
+                    (driver as RotationalDriver).Motor =
+                        new JointMotor() { force = f, freeSpin = false, targetVelocity = _vel};
+                    break;
+                case WheelDriver:
+                    _vel = (driver as WheelDriver).Motor.targetVelocity;
+                    (driver as WheelDriver).Motor =
+                        new JointMotor() { force = f, freeSpin = false, targetVelocity = _vel };
+                    break;
+                case LinearDriver:
+                    _vel                            = (driver as LinearDriver).Motor.targetVelocity;
+                    (driver as LinearDriver).Motor  = new JointMotor() { force = f, freeSpin = false,
+                           targetVelocity = _vel };
+                    break;
+            }
+            changed = true;
+        }
+
         public void setTargetVelocity(float v) {
             switch (driver) {
-                case (RotationalDriver):
+                case RotationalDriver:
                     _force = (driver as RotationalDriver).Motor.force;
                     (driver as RotationalDriver).Motor =
                         new JointMotor() { force = _force, freeSpin = false, targetVelocity = v };
                     break;
-                case (WheelDriver):
+                case WheelDriver:
                     _force = (driver as WheelDriver).Motor.force;
                     (driver as WheelDriver).Motor =
                         new JointMotor() { force = _force, freeSpin = false, targetVelocity = v };
                     break;
-                case (LinearDriver):
+                case LinearDriver:
                     (driver as LinearDriver).MaxSpeed = v;
                     _force                            = (driver as LinearDriver).Motor.force;
                     (driver as LinearDriver).Motor    = new JointMotor() { force = _force, freeSpin = false,
                            targetVelocity = v * LinearDriver.LINEAR_TO_MOTOR_VELOCITY };
                     break;
             }
-            velChanged = true;
+            changed = true;
         }
     }
 
@@ -245,8 +292,10 @@ public class ConfigMotorModal : ModalDynamic {
 
     private void SaveToMira(dynamic driver) {
         _robot.MiraLive.MiraAssembly.Data.Joints.MotorDefinitions[driver.MotorRef] = new Mirabuf.Motor.Motor {
+    // clang-format off
             SimpleMotor = new Mirabuf.Motor.SimpleMotor {MaxVelocity = driver.Motor.targetVelocity,
-                                                         StallTorque                                           = driver.Motor.force}
+                                                         StallTorque = driver.Motor.force}
+    // clang-format on
         };
     }
 }

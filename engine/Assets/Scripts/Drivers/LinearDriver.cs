@@ -84,9 +84,9 @@ namespace Synthesis {
                 _motor = motor!.SimpleMotor.UnityMotor;
             } else {
                 Motor = new JointMotor() {
-                    force          = 2000,
+                    force          = 1, // About a Neo 550. Max is Falcon 550 at 4.67
                     freeSpin       = false,
-                    targetVelocity = 100,
+                    targetVelocity = 20,
                 };
             }
 
