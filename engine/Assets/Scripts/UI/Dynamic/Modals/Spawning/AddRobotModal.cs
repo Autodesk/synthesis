@@ -25,9 +25,8 @@ namespace UI.Dynamic.Modals.Spawning {
             _root = ParsePath(Path.Combine("$appdata/Autodesk/Synthesis", Folder), '/');
             if (!Directory.Exists(_root))
                 Directory.CreateDirectory(_root);
-            _files = Directory.GetFiles(_root)
-                .Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
-            
+            _files = Directory.GetFiles(_root).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
+
             Title.SetText("Robot Selection");
 
             ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("plus"))
@@ -41,11 +40,12 @@ namespace UI.Dynamic.Modals.Spawning {
                 }
             });
 
-            var chooseRobotDropdown = MainContent.CreateDropdown()
-                                          .SetOptions(_files.Select(x => Path.GetFileName(x)
-                                              .Substring(0, Path.GetFileName(x).Length - 5)).ToArray())
-                                          .AddOnValueChangedEvent((d, i, data) => _selectedIndex = i)
-                                          .SetTopStretch<Dropdown>();
+            var chooseRobotDropdown =
+                MainContent.CreateDropdown()
+                    .SetOptions(
+                        _files.Select(x => Path.GetFileName(x).Substring(0, Path.GetFileName(x).Length - 5)).ToArray())
+                    .AddOnValueChangedEvent((d, i, data) => _selectedIndex = i)
+                    .SetTopStretch<Dropdown>();
 
             _selectedIndex = _files.Length > 0 ? 0 : -1;
         }
