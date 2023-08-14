@@ -166,7 +166,13 @@ public class ChangeInputsModal : ModalDynamic {
         AcceptButton
             .AddOnClickedEvent(b => {
                 isSave = true;
-                _changedInputs.ForEach(x => { InputManager.AssignValueInput(x.Item1, x.Item2); });
+                _changedInputs.ForEach(x => { 
+                    InputManager.AssignValueInput(x.Item1, x.Item2);
+                    if (x.Item2 is Digital) {
+                        PreferenceManager.SetPreference<Digital>(x.Item1, x.Item2 as Digital);
+                        PreferenceManager.Save();
+                    }});
+                MainHUD.SelectedRobot.MiraLive.Save();
                 DynamicUIManager.CloseActiveModal();
             })
             .StepIntoLabel(l => l.SetText("Save"));
@@ -174,7 +180,12 @@ public class ChangeInputsModal : ModalDynamic {
         MiddleButton
             .AddOnClickedEvent(b => {
                 isSave = false;
-                _changedInputs.ForEach(x => { InputManager.AssignValueInput(x.Item1, x.Item2); });
+                _changedInputs.ForEach(x => { 
+                    InputManager.AssignValueInput(x.Item1, x.Item2); 
+                    if (x.Item2 is Digital) {
+                        PreferenceManager.SetPreference<Digital>(x.Item1, x.Item2 as Digital);
+                        PreferenceManager.Save();
+                    }});
                 DynamicUIManager.CloseActiveModal();
             })
             .StepIntoLabel(l => l.SetText("Session"));
