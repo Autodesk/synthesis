@@ -27,9 +27,6 @@ namespace Synthesis.UI.Dynamic {
                 Directory.CreateDirectory(_root);
             
             _files = Directory.GetFiles(_root).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
-            
-            // Remove .mira
-            _files = _files.Select(x => x.Substring(0, x.Length - 5)).ToArray();
 
             Title.SetText("Field Selection");
 
@@ -45,7 +42,8 @@ namespace Synthesis.UI.Dynamic {
             });
 
             var chooseRobotDropdown = MainContent.CreateDropdown()
-                                          .SetOptions(_files.Select(x => Path.GetFileName(x)).ToArray())
+                                          .SetOptions(_files.Select(x => Path.GetFileName(x)
+                                              .Substring(0, Path.GetFileName(x).Length - 5)).ToArray())
                                           .AddOnValueChangedEvent((d, i, data) => _selectedIndex = i)
                                           .SetTopStretch<Dropdown>();
 

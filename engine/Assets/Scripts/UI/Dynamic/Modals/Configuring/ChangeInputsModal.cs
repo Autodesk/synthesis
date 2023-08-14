@@ -152,6 +152,9 @@ public class ChangeInputsModal : ModalDynamic {
             text += " + Right Control";
         }
 
+        if (text.StartsWith("Alpha"))
+            text = text.Remove(0, 5);
+
         l.SetText(text);
     }
 
