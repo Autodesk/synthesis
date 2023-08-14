@@ -39,6 +39,9 @@ public class LobbyManagerModal : ModalDynamic {
     }
 
     public override void Create() {
+
+        Debug.Log("Open");
+        
         Title.SetText("Manage Lobby");
         Description.SetText("...");
         var (left, right) = MainContent.SplitLeftRight(PLAYER_LIST_WIDTH, PLAYER_LIST_RIGHT_PADDING);
@@ -46,11 +49,11 @@ public class LobbyManagerModal : ModalDynamic {
             .SetCornerRadius(20f));
 
         AcceptButton.StepIntoLabel(l => l.SetText("Start")).AddOnClickedEvent(b => {
-            (var task, var status) = _mode.UploadData();
-            DynamicUIManager.CreateModal<NetworkWaitModal>(task, status);
+            var task = _mode.UploadData();
+            DynamicUIManager.CreateModal<NetworkWaitModal>(task, null);
         });
         CancelButton.RootGameObject.SetActive(false);
-
+ 
         _playerListLabel = left.CreateLabel().SetStretch(
             PLAYER_LIST_RIGHT_PADDING,
             PLAYER_LIST_RIGHT_PADDING,

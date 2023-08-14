@@ -382,16 +382,23 @@ namespace SynthesisAPI.Aether.Lobby {
             /// <summary>
             /// TODO: Rename
             /// </summary>
-            private Result<LobbyMessage?, Exception> HandleResponseBoilerplate(LobbyMessage request, LobbyMessage.MessageTypeOneofCase expectedMessageType) {
+            private Result<LobbyMessage?, Exception> HandleResponseBoilerplate(LobbyMessage request, LobbyMessage.MessageTypeOneofCase expectedMessageType, int timeoutMS = -1) {
                 var writeResult = _handler.WriteMessage(request);
                 if (writeResult.isError)
                     return new Result<LobbyMessage?, Exception>(writeResult.GetError());
 
                 var readResult = _handler.ReadMessage();
-                var completedBeforeTimeout = readResult.Wait(1000);
-                if (!completedBeforeTimeout)
-                    return new Result<LobbyMessage?, Exception>(new Exception("Task Timeout"));
-                else if (readResult.Result.isError)
+                if (timeoutMS < 0) {
+                    while (!readResult.IsCompleted)
+                        readResult.Wait();
+                } else {
+                    var completedBeforeTimeout = readResult.Wait(timeoutMS);
+                    if (!completedBeforeTimeout)
+                        return new Result<LobbyMessage?, Exception>(new Exception("Task Timeout"));
+                }
+                
+                
+                if (readResult.Result.isError)
                     return new Result<LobbyMessage?, Exception>(readResult.Result.GetError());
 
                 var msg = readResult.Result.GetResult();

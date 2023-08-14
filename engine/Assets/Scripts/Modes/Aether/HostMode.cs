@@ -6,6 +6,9 @@ using SynthesisAPI.Aether;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Threading;
 using System.Threading.Tasks;
 using Google.Protobuf;
 using Synthesis.Import;
@@ -37,57 +40,75 @@ public class HostMode : IMode {
         SimulationRunner.OnGameObjectDestroyed += End;
     }
 
-    public void StartHostClient(string username) {
+    public NetworkTask<bool> StartHostClient(string username) {
         _hostClient = new LobbyClient(SERVER_IP, username);
 
-        GatherAndUploadDataDescriptions();
+        return GatherAndUploadDataDescriptions();
     }
 
-    public void GatherAndUploadDataDescriptions() {
+    public NetworkTask<bool> GatherAndUploadDataDescriptions() {
         if (!(_hostClient?.IsAlive ?? false)) {
-            Logger.Log("Host is either null or no longer alive");
-            return;
+            return NetworkTask<bool>.FromResult(false, "Host is either null or no longer alive");
         }
 
-        LinkedList<(SynthesisDataDescriptor descriptor, string path)> dataPairings = new();
-
-        MirabufLive.GetFieldFiles().ForEach(x => dataPairings.AddLast(
-            (
-                new SynthesisDataDescriptor {
-                    Name = Path.GetFileNameWithoutExtension(x),
-                    Description = "Field"
-                },
-                x
-            )));
-        MirabufLive.GetRobotFiles().ForEach(x => dataPairings.AddLast(
-            (
-                new SynthesisDataDescriptor {
-                    Name = Path.GetFileNameWithoutExtension(x),
-                    Description = "Robot"
-                },
-                x
-            )));
-        
-        Logger.Log($"Data to Upload: {dataPairings.Count}");
-        
-        dataPairings.ForEach(x => {
-            var makeDataAvailableTask = _hostClient!.MakeDataAvailable(x.descriptor);
-            makeDataAvailableTask.Wait();
-            var updatedDescriptor = makeDataAvailableTask.Result;
-            Logger.Log($"File Added: OWNER [{updatedDescriptor?.Owner ?? 666}], GUID [{updatedDescriptor?.Guid ?? 666}]");
-            _shareableMirafiles.Add(updatedDescriptor.Guid, (updatedDescriptor, x.path));
-        });
-    }
-
-    public (Task<bool> task, AtomicReadOnly<NetworkTaskStatus>? status) UploadData() {
-        if (!(_hostClient?.IsAlive ?? false))
-            return (Task.FromResult(false), null);
-
-        Atomic<NetworkTaskStatus> status = new Atomic<NetworkTaskStatus>(new NetworkTaskStatus {
+        var status = new Atomic<NetworkTaskStatus>(new NetworkTaskStatus {
             Progress = 0f,
             Message = ""
         });
-        return (Task<bool>.Factory.StartNew(() => {
+        var task = Task<bool>.Factory.StartNew(() => {
+            
+            var statusAtomic = status;
+            var statusData = statusAtomic.Value;
+            
+            LinkedList<(SynthesisDataDescriptor descriptor, string path)> dataPairings = new();
+
+            MirabufLive.GetFieldFiles().ForEach(x => dataPairings.AddLast(
+                (
+                    new SynthesisDataDescriptor {
+                        Name = Path.GetFileNameWithoutExtension(x),
+                        Description = "Field"
+                    },
+                    x
+                )));
+            MirabufLive.GetRobotFiles().ForEach(x => dataPairings.AddLast(
+                (
+                    new SynthesisDataDescriptor {
+                        Name = Path.GetFileNameWithoutExtension(x),
+                        Description = "Robot"
+                    },
+                    x
+                )));
+
+            int count = 0;
+            dataPairings.ForEach(x => {
+                count++;
+
+                statusData.Progress = count / (float)dataPairings.Count;
+                statusData.Message = $"Making '{x.descriptor.Name}' available...";
+                statusAtomic.Value = statusData;
+                
+                var makeDataAvailableTask = _hostClient!.MakeDataAvailable(x.descriptor);
+                makeDataAvailableTask.Wait();
+                Thread.Sleep(200);
+                var updatedDescriptor = makeDataAvailableTask.Result;
+                _shareableMirafiles.Add(updatedDescriptor!.Guid, (updatedDescriptor, x.path));
+            });
+
+            return true;
+        });
+        
+        return new NetworkTask<bool>(task, status);
+    }
+
+    public NetworkTask<bool> UploadData() {
+        if (!(_hostClient?.IsAlive ?? false))
+            return NetworkTask<bool>.FromResult(false, "Host is either null or no longer alive");
+
+        var status = new Atomic<NetworkTaskStatus>(new NetworkTaskStatus {
+            Progress = 0f,
+            Message = ""
+        });
+        var task = Task<bool>.Factory.StartNew(() => {
 
             var statusAtomic = status;
             var statusData = statusAtomic.Value;
@@ -111,12 +132,15 @@ public class HostMode : IMode {
             guidsToUpload.ForEach(x => {
                 var dataInfo = _shareableMirafiles[x];
 
+                counter++;
                 statusData.Message = $"Uploading '{dataInfo.descriptor.Name}'...";
                 statusData.Progress = counter / guidsToUpload.Count;
                 statusAtomic.Value = statusData;
-                counter++;
 
                 ReadOnlySpan<byte> raw = File.ReadAllBytes(dataInfo.pathToData);
+                SHA256 sha = SHA256.Create();
+                var stream = new ByteStream(raw.ToArray().ToList().GetEnumerator(), raw.Length);
+                string checksum = Convert.ToBase64String(sha.ComputeHash(stream));
 
                 SynthesisData data = new() {
                     Description = dataInfo.descriptor,
@@ -125,7 +149,14 @@ public class HostMode : IMode {
                 
                 Logger.Log($"Uploading Data: [{data.Description.Owner}:{data.Description.Guid}] {data.Description.Name}");
 
-                _hostClient!.UploadData(data);
+                var uploadTask = _hostClient!.UploadData(data);
+                uploadTask.Wait();
+
+                if (uploadTask.Result?.Equals(checksum) ?? false) {
+                    Logger.Log("Upload Succeeded");
+                } else {
+                    Logger.Log("Upload Failed");
+                }
             });
 
             statusData.Progress = 1f;
@@ -133,7 +164,9 @@ public class HostMode : IMode {
 
             return true;
 
-        }), status.AsReadOnly());
+        });
+
+        return new NetworkTask<bool>(task, status);
     }
 
     public void End() {

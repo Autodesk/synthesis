@@ -16,9 +16,15 @@ internal static class GlobalUtil {
         return success ? res : defa;
     }
 
-    public static Task<U> CastTask<T, U>(this Task<T> task) where U : class
+    public static Task<U> CastTask<T, U>(this Task<T> task, int timeout = -1) where U : class
         => Task<U>.Factory.StartNew(() => {
-            task.Wait();
+            if (timeout < 0) {
+                while (!task.IsCompleted) {
+                    task.Wait();
+                }
+            } else {
+                task.Wait(timeout);
+            }
             return task.Result as U;
         });
 

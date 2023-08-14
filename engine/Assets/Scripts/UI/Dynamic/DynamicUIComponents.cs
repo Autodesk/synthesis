@@ -230,6 +230,8 @@ namespace Synthesis.UI.Dynamic {
         private Content _mainContent;
         protected Content MainContent => _mainContent;
         private Button? _middleButton;
+        private Content _externalContent;
+        protected Content ExternalContent => _externalContent;
 
         public Action OnAccepted;
         public Action OnCancelled;
@@ -308,6 +310,8 @@ namespace Synthesis.UI.Dynamic {
                 if (OnAccepted != null)
                     OnAccepted.Invoke();
             });
+            
+            _externalContent = new Content(null, UnityObject, null);
 
             // Create Inital Content Component
             var hiddenContentT        = _unityObject.transform.Find("Content");
@@ -346,17 +350,16 @@ namespace Synthesis.UI.Dynamic {
             Description.RootGameObject.SetActive(false);
 			ModalIcon.RootGameObject.SetActive(false);
 
-			var panel = new Content(null, UnityObject, null);
 			if (newContentSize.HasValue) {
-				panel.SetSize<Content>(new Vector2(newContentSize.Value.x + leftPadding + rightPadding,
+				ExternalContent.SetSize<Content>(new Vector2(newContentSize.Value.x + leftPadding + rightPadding,
 					newContentSize.Value.y + topPadding + bottomPadding));
 			}
-			panel.SetAnchors<Content>(new Vector2(0.5f, 0.0f), new Vector2(0.5f, 0.0f));
-			panel.SetPivot<Content>(new Vector2(0.5f, 0.0f));
-			panel.SetAnchoredPosition<Content>(new Vector2(0.0f, 10.0f));
+            ExternalContent.SetAnchors<Content>(new Vector2(0.5f, 0.0f), new Vector2(0.5f, 0.0f));
+            ExternalContent.SetPivot<Content>(new Vector2(0.5f, 0.0f));
+            ExternalContent.SetAnchoredPosition<Content>(new Vector2(0.0f, 10.0f));
 			var newMainContent =
-				panel.CreateSubContent(newContentSize ?? new Vector2(panel.Size.x - (rightPadding + leftPadding),
-															 panel.Size.y - (topPadding + bottomPadding)));
+                ExternalContent.CreateSubContent(newContentSize ?? new Vector2(ExternalContent.Size.x - (rightPadding + leftPadding),
+                    ExternalContent.Size.y - (topPadding + bottomPadding)));
 			newMainContent.SetStretch<Content>(leftPadding, rightPadding, topPadding, bottomPadding);
 
 			return newMainContent;

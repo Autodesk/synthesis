@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Synthesis.UI.Dynamic;
@@ -32,8 +33,12 @@ public class InitLobbyConnection : ModalDynamic {
         AcceptButton.AddOnClickedEvent(b => {
             if (_isHost) {
                 var mode = (ModeManager.CurrentMode as HostMode)!;
-                mode.StartHostClient(_username);
-                DynamicUIManager.CreateModal<LobbyManagerModal>(ModeManager.CurrentMode);
+
+                DynamicUIManager.CreateModal<NetworkWaitModal>(
+                    mode.StartHostClient(_username),
+                    (Action)(() => DynamicUIManager.CreateModal<LobbyManagerModal>(ModeManager.CurrentMode))
+                );
+
             } else {
                 // TODO
             }

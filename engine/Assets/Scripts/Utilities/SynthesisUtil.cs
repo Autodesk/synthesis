@@ -138,13 +138,4 @@ namespace Synthesis.Util {
             return new UVector3(cart.magnitude, Mathf.Acos(cart.y / 1), Mathf.Asin(cart.z / 1));
         }
     }
-    
-    public struct NetworkTaskStatus {
-        public float Progress;
-        public string Message;
-
-		public override string ToString() {
-            return $"[{Math.Round(Progress * 100f, 1)}%] {Message}";
-		}
-	}
 }
