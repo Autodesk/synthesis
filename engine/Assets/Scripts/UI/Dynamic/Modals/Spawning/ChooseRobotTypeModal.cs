@@ -18,10 +18,10 @@ public class ChooseRobotTypeModal : ModalDynamic {
                          .AddOnClickedEvent(b => DynamicUIManager.CreateModal<AddRobotModal>())
                          .StepIntoLabel(l => l.SetText("Regular"));
 
-        var MixAndMatch = right.CreateButton("Mix And Match")
+        var MixAndMatch = right.CreateButton("Custom")
                               .ApplyTemplate(UIComponent.VerticalLayout)
                               .AddOnClickedEvent(b => DynamicUIManager.CreateModal<SpawnMixAndMatchModal>())
-                              .StepIntoLabel(l => l.SetText("Mix And Match"));
+                              .StepIntoLabel(l => l.SetText("Custom"));
     }
 
     public override void Delete() {}

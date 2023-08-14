@@ -93,7 +93,7 @@ namespace Synthesis.Import {
 
                     rb.mass += partRb.mass;
 
-                    // Adds CoM * mass because a parts mass influences it's effect of the robots CoM
+                    // Adds CoM * mass because a parts mass influences it's effect on the robots total CoM
                     rb.centerOfMass += partRb.centerOfMass * partRb.mass;
 
                     objects.Remove("grounded");

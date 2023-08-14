@@ -8,6 +8,7 @@ using Synthesis.Import;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.Utilities;
 using UnityEngine;
+using Utilities;
 using Utilities.ColorManager;
 using Logger  = SynthesisAPI.Utilities.Logger;
 using Object  = UnityEngine.Object;
@@ -30,13 +31,15 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
         private readonly MixAndMatchPartData _partData;
 
-        private Vector3 _centerOffset;
+        private Vector3 centerOffset;
 
         public PartEditorPanel(MixAndMatchPartData partData) : base(new Vector2(PANEL_WIDTH, PANEL_HEIGHT)) {
             _partData = partData;
         }
 
         public override bool Create() {
+            SceneHider.IsHidden = true;
+
             RobotSimObject.CurrentlyPossessedRobot = string.Empty;
             MainHUD.ConfigRobot                    = null;
 
@@ -124,9 +127,9 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
             // Center part
             var groundedTransform = assemblyObject.transform.Find("grounded");
-            _centerOffset         = Vector3.down * 0.5f + groundedTransform.transform.localToWorldMatrix.MultiplyPoint(
-                                                      groundedTransform.GetBounds().center);
-            assemblyObject.transform.position = -_centerOffset;
+            centerOffset          = Vector3.down * 0.5f + groundedTransform.transform.localToWorldMatrix.MultiplyPoint(
+                                                     groundedTransform.GetBounds().center);
+            assemblyObject.transform.position = -centerOffset;
             return assemblyObject;
         }
 
@@ -140,16 +143,16 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
         /// <summary>Instantiates a single connection point object</summary>
         private GameObject InstantiateConnectionGameObject(ConnectionPointData connection) {
-            var gameObject  = Object.Instantiate(SynthesisAssetCollection.Instance.MixAndMatchConnectionPrefab);
-            gameObject.name = "Connection Point";
+            var connectionObj  = Object.Instantiate(SynthesisAssetCollection.Instance.MixAndMatchConnectionPrefab);
+            connectionObj.name = "Connection Point";
 
-            var trf = gameObject.transform;
-            trf.SetParent(_partGameObject.transform);
+            var connectionTrf = connectionObj.transform;
+            connectionTrf.SetParent(_partGameObject.transform);
 
-            trf.position = connection.LocalPosition - _centerOffset;
-            trf.rotation = connection.LocalRotation;
+            connectionTrf.position = connection.LocalPosition - centerOffset;
+            connectionTrf.rotation = connection.LocalRotation;
 
-            Object.Destroy(trf.GetComponent<Collider>());
+            Object.Destroy(connectionTrf.GetComponent<Collider>());
 
             var color = ColorManager.GetColor(ColorManager.SynthesisColor.HighlightHover);
             color.a   = 0.5f;
@@ -158,10 +161,10 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             mat.SetColor(Appearance.TRANSPARENT_COLOR, color);
             mat.SetFloat(Appearance.TRANSPARENT_SMOOTHNESS, 0);
 
-            trf.Find("Sphere").GetComponent<MeshRenderer>().material = mat;
+            connectionTrf.Find("Sphere").GetComponent<MeshRenderer>().material = mat;
 
-            _connectionGameObjects.Add(gameObject);
-            return gameObject;
+            _connectionGameObjects.Add(connectionObj);
+            return connectionObj;
         }
 
         /// <summary>Selects a connection point to edit</summary>
@@ -199,7 +202,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             List<ConnectionPointData> connectionPoints = new();
             _connectionGameObjects.ForEach(point => {
                 connectionPoints.Add(
-                    new ConnectionPointData(point.transform.position + _centerOffset, point.transform.rotation));
+                    new ConnectionPointData(point.transform.position + centerOffset, point.transform.rotation));
             });
 
             _partData.ConnectionPoints = connectionPoints.ToArray();
@@ -210,6 +213,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         public override void Update() {}
 
         public override void Delete() {
+            SceneHider.IsHidden = false;
             Object.Destroy(_partGameObject);
         }
     }

@@ -257,13 +257,13 @@ namespace Synthesis.UI.Dynamic {
                     ActiveModal = null;
 
                     SynthesisAssetCollection.BlurVolumeStatic.weight = 0f;
-                    MainHUD.Enabled                                  = true;
                     SubScreenSpaceContent.RootGameObject.SetActive(true);
                 }
             }
 
             // Unfreeze physics no matter what because it has a counter
             PhysicsManager.IsFrozen = false;
+            MainHUD.Enabled         = true;
 
             if (showPersistentPanels)
                 ShowAllPanels();

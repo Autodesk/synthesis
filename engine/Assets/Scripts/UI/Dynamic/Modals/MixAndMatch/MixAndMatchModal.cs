@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,7 +6,6 @@ using Synthesis.UI.Dynamic;
 using TMPro;
 using UI.Dynamic.Panels.MixAndMatch;
 using UnityEngine;
-using UnityEngine.UI;
 using Button = Synthesis.UI.Dynamic.Button;
 
 namespace UI.Dynamic.Modals.MixAndMatch {
@@ -30,7 +28,7 @@ namespace UI.Dynamic.Modals.MixAndMatch {
         /// <summary>The screen where the user specifies if they will edit a robot or part</summary>
         private void CreateChooseTypeModal() {
             ClearAndResizeContent(new Vector2(CONTENT_WIDTH, CHOOSE_TYPE_HEIGHT));
-            Title.SetText("Mix and Match Robot Editor");
+            Title.SetText("Robot Builder");
 
             AcceptButton.RootGameObject.SetActive(false);
             CancelButton.StepIntoLabel(l => l.SetText("Close"))
@@ -65,6 +63,12 @@ namespace UI.Dynamic.Modals.MixAndMatch {
 
             string[] files = robot ? MixAndMatchSaveUtil.RobotFiles : MixAndMatchSaveUtil.PartFiles;
 
+            // Automatically transition to new object modal if no existing are found
+            if (files.Length == 0) {
+                CreateNewObjectModal(robot, false);
+                return;
+            }
+
             var dropdown = MainContent.CreateDropdown().ApplyTemplate(UIComponent.VerticalLayout).SetOptions(files);
 
             var (selectContent, right) =
@@ -92,7 +96,7 @@ namespace UI.Dynamic.Modals.MixAndMatch {
             newContent.CreateButton("New")
                 .ApplyTemplate(UIComponent.VerticalLayout)
                 .AddOnClickedEvent(
-                    _ => CreateNewObjectModal(robot));
+                    _ => CreateNewObjectModal(robot, true));
 
             var deleteButton = deleteContent.CreateButton("Delete")
                                    .ApplyTemplate(UIComponent.VerticalLayout)
@@ -112,7 +116,7 @@ namespace UI.Dynamic.Modals.MixAndMatch {
         }
 
         /// <summary>User names a new part/robot</summary>
-        private void CreateNewObjectModal(bool robot) {
+        private void CreateNewObjectModal(bool robot, bool userSelected) {
             Title.SetText($"Create a New {(robot ? "Robot" : "Part")}");
             ClearAndResizeContent(new Vector2(CONTENT_WIDTH, CREATE_NEW_HEIGHT));
 
@@ -136,7 +140,12 @@ namespace UI.Dynamic.Modals.MixAndMatch {
 
             CancelButton.StepIntoLabel(l => l.SetText("Back"))
                 .AddOnClickedEvent(
-                    _ => CreateChooseObjectModal(robot))
+                    _ => {
+                        if (userSelected)
+                            CreateChooseObjectModal(robot);
+                        else
+                            CreateChooseTypeModal();
+                    })
                 .RootGameObject.SetActive(true);
 
             void UpdateAcceptButton(string inputValue) {
@@ -206,7 +215,7 @@ namespace UI.Dynamic.Modals.MixAndMatch {
 
             CancelButton.StepIntoLabel(l => l.SetText("Back"))
                 .AddOnClickedEvent(
-                    _ => CreateNewObjectModal(false))
+                    _ => CreateNewObjectModal(false, false))
                 .RootGameObject.SetActive(true);
 
             string[] files = MixAndMatchSaveUtil.PartMirabufFiles;
