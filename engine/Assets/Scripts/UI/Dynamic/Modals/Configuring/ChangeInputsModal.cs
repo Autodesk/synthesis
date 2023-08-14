@@ -173,7 +173,6 @@ public class ChangeInputsModal : ModalDynamic {
                         PreferenceManager.Save();
                     }
                 });
-                MainHUD.SelectedRobot.MiraLive.Save();
                 DynamicUIManager.CloseActiveModal();
             })
             .StepIntoLabel(l => l.SetText("Save"));
@@ -183,10 +182,6 @@ public class ChangeInputsModal : ModalDynamic {
                 isSave = false;
                 _changedInputs.ForEach(x => {
                     InputManager.AssignValueInput(x.Item1, x.Item2);
-                    if (x.Item2 is Digital) {
-                        PreferenceManager.SetPreference<Digital>(x.Item1, x.Item2 as Digital);
-                        PreferenceManager.Save();
-                    }
                 });
                 DynamicUIManager.CloseActiveModal();
             })
