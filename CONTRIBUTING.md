@@ -30,7 +30,7 @@ Did you add a feature to Synthesis, or learn how to use a specific feature? Writ
 ### Share a Use Case Story
 Hearing how you use Synthesis is valuable feedback to our team. Share your stories by tagging us [@synthesis.adsk](https://www.instagram.com/synthesis.adsk/) or [@synthesis_adsk](https://twitter.com/synthesis_adsk) or send them to frc@autodesk.com with reference to this guide.
 
-**Expand FIRST Support** 
+### Expand FIRST Support
 FIRST control systems and essentials like sensors, cameras, various motors, etc. would greatly increase simulation support. Learn more about [contributing development here](#How-to-Contribute).
 
 ### Beta Testing
