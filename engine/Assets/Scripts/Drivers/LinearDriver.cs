@@ -99,6 +99,10 @@ namespace Synthesis {
             float value = (float) MainInput;
 
             _velocity = value * MaxSpeed;
+            var possibleDelta = _motor.force * Time.deltaTime / JointB.connectedBody.mass * 100;
+            Debug.Log($"aMass {JointA.connectedBody.mass} bMass {JointB.connectedBody.mass} force {_motor.force} pos {possibleDelta}");
+            if (Mathf.Abs(_velocity) > possibleDelta)
+                _velocity = possibleDelta * Mathf.Sign(_velocity);
             Position += Time.deltaTime * _velocity;
         }
     }

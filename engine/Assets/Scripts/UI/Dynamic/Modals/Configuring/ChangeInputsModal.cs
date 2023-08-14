@@ -7,6 +7,7 @@ using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
 using TMPro;
 using UnityEngine;
+using Utilities.ColorManager;
 
 public class ChangeInputsModal : ModalDynamic {
     public ChangeInputsModal() : base(new Vector2(1200, CONTENT_HEIGHT + 30)) {}
@@ -41,6 +42,7 @@ public class ChangeInputsModal : ModalDynamic {
 
             var inputScrollView =
                 leftContent.CreateScrollView().SetHeight<ScrollView>(CONTENT_HEIGHT).ApplyTemplate(VerticalLayout);
+            inputScrollView.SetBackgroundColor<ScrollView>(ColorManager.SynthesisColor.HighlightHover);
 
             // make background transparent
             inputScrollView.RootGameObject.GetComponent<UnityEngine.UI.Image>().color = Color.clear;

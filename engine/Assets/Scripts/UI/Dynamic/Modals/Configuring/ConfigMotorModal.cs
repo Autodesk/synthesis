@@ -115,6 +115,7 @@ public class ConfigMotorModal : ModalDynamic {
             // change the target velocities back
             _motors.ForEach(x => {
                 if (x.changed) {
+                    x.setForce(x.origForce);
                     x.setTargetVelocity(x.origVel);
                 }
             });
@@ -132,7 +133,8 @@ public class ConfigMotorModal : ModalDynamic {
             MainContent.CreateScrollView()
                 .SetRightStretch<ScrollView>()
                 .SetTopStretch<ScrollView>(0, 0, -nameLabelContent.Parent!.RectOfChildren().yMin + PADDING * 2)
-                .SetHeight<ScrollView>(MODAL_HEIGHT - nameLabelContent.Parent!.RectOfChildren().yMin - 50);
+                .SetHeight<ScrollView>(MODAL_HEIGHT - nameLabelContent.Parent!.RectOfChildren().yMin - 50)
+                .ApplyTemplate(VerticalLayout);
 
         _scrollViewWidth = _scrollView.Parent!.RectOfChildren().width - SCROLL_WIDTH;
 
@@ -177,8 +179,8 @@ public class ConfigMotorModal : ModalDynamic {
         (Content nameContent, Content motorContent) =
             _scrollView.Content.CreateSubContent(new Vector2(_scrollViewWidth, PADDING + PADDING + PADDING + 80f))
                 .SetTopStretch<Content>(0, 0, 0)
-                .SetBackgroundColor<Content>(ColorManager.SynthesisColor.Scrollbar)
-                .ApplyTemplate<Content>(VerticalLayout)
+                .SetBackgroundColor<Content>(ColorManager.SynthesisColor.Background)
+                .ApplyTemplate(VerticalLayout)
                 .SplitLeftRight(NAME_WIDTH, PADDING);
         if (currVel < 5.0f && max > 50.0f)
             max = 50.0f;
@@ -250,7 +252,7 @@ public class ConfigMotorModal : ModalDynamic {
                     break;
                 case LinearDriver:
                     _vel                            = (driver as LinearDriver).Motor.targetVelocity;
-                    (driver as LinearDriver).Motor  = new JointMotor() { force = f, freeSpin = false,
+                    (driver as LinearDriver).Motor  = new JointMotor() { force = 50, freeSpin = false,
                            targetVelocity = _vel };
                     break;
             }
