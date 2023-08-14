@@ -66,6 +66,8 @@ public class RobotSwitchPanel : PanelDynamic {
                 PopulateScrollView();
                 if (RobotSimObject.SpawnedRobots.Count < RobotSimObject.MAX_ROBOTS)
                     _addButton.ApplyTemplate<Button>(EnableButton);
+
+                OrbitCameraMode.FocusPoint = () => Vector3.zero;
             });
 
             if (RobotSimObject.CurrentlyPossessedRobot == string.Empty)

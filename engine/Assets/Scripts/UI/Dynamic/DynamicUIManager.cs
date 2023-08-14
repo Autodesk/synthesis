@@ -374,6 +374,9 @@ namespace Synthesis.UI.Dynamic {
             if (ActiveModal != null)
                 ActiveModal.Update();
             _persistentPanels.ForEach(kvp => kvp.Value.Item1.Update());
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+                CloseActiveModal();
         }
 
         public static T ApplyTemplate<T>(this T component, Func<T, T> template)

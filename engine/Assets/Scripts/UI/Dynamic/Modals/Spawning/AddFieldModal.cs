@@ -25,7 +25,11 @@ namespace Synthesis.UI.Dynamic {
             _root = ParsePath(Path.Combine("$appdata/Autodesk/Synthesis", Folder), '/');
             if (!Directory.Exists(_root))
                 Directory.CreateDirectory(_root);
+            
             _files = Directory.GetFiles(_root).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
+            
+            // Remove .mira
+            _files = _files.Select(x => x.Substring(0, x.Length - 5)).ToArray();
 
             Title.SetText("Field Selection");
 
