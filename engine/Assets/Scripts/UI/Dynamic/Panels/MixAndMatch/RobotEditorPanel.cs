@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Mirabuf.Material;
 using SimObjects.MixAndMatch;
@@ -136,12 +135,12 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         }
 
         /// <summary>Instantiates a part object to position from a partData object</summary>
-        private GameObject InstantiatePartGameObject(LocalPartData localPartData) {
+        private void InstantiatePartGameObject(LocalPartData localPartData) {
             var loadPartData = MixAndMatchSaveUtil.LoadPartData(localPartData.FileName, false);
             if (loadPartData == null) {
                 Logger.Log($"Part file \"{localPartData.FileName}\" not found!", LogLevel.Error);
                 _creationFailed = true;
-                return null;
+                return;
             }
 
             MirabufLive miraLive = new MirabufLive(loadPartData.MirabufPartFile);
@@ -170,7 +169,6 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             InstantiatePartConnectionPoints(partObj, loadPartData);
 
             localPartData.EditorPartInfo.GameObject = partObj;
-            return partObj;
         }
 
         /// <summary>Instantiates objects for all the connection points of a part</summary>
@@ -298,9 +296,9 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             int connectionIndex = _selectedPart.EditorPartInfo.ConnectedPoint;
 
             // Align the connection points normals
-            selectedTrf.position = _connectedTransform.transform.position;
-            selectedTrf.rotation = Quaternion.LookRotation(-_connectedTransform.transform.forward, Vector3.up);
-            Debug.Log(selectedPartGlobalData.ConnectionPoints.Length + " " + selectedPartGlobalData.Name);
+            var trf              = _connectedTransform.transform;
+            selectedTrf.position = trf.position;
+            selectedTrf.rotation = Quaternion.LookRotation(-trf.forward, Vector3.up);
             selectedTrf.Rotate(-selectedPartGlobalData.ConnectionPoints[connectionIndex].LocalRotation.eulerAngles);
 
             // Apply the user specified rotation
