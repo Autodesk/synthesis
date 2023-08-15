@@ -169,15 +169,16 @@ namespace Synthesis.UI.Dynamic {
                     TweenFinished();
             }
 
+            if (!tweenIn && !persistent) {
+                EventBus.Push(new PanelClosedEvent(panel));
+                _persistentPanels.Remove(t);
+            }
+            
             void TweenFinished() {
                 if (!tweenIn) {
                     if (!persistent) {
-                        EventBus.Push(new PanelClosedEvent(panel));
-
                         panel.Delete();
                         panel.Delete_Internal();
-
-                        _persistentPanels.Remove(t);
                     } else
                         panel.Hidden = true;
                 }
@@ -247,20 +248,21 @@ namespace Synthesis.UI.Dynamic {
 
             void TweenFinished() {
                 SynthesisTween.CancelTween(tweenKey);
-
-                EventBus.Push(new ModalClosedEvent(modal));
-
+                
                 modal.Delete();
                 modal.Delete_Internal();
-
-                if (modal == ActiveModal) {
-                    ActiveModal = null;
-
-                    SynthesisAssetCollection.BlurVolumeStatic.weight = 0f;
-                    MainHUD.Enabled                                  = true;
-                    SubScreenSpaceContent.RootGameObject.SetActive(true);
-                }
             }
+
+            modal.UnityObject.transform.GetComponentsInChildren<UnityEngine.UI.Button>().ForEach(b => {
+                b.enabled = false;
+            });
+            
+            SubScreenSpaceContent.RootGameObject.SetActive(true);
+            EventBus.Push(new ModalClosedEvent(modal));
+            ActiveModal = null;
+            SynthesisAssetCollection.BlurVolumeStatic.weight = 0f;
+            MainHUD.Enabled                                  = true;
+            EventBus.Push(new ModalClosedEvent(modal));
 
             // Unfreeze physics no matter what because it has a counter
             PhysicsManager.IsFrozen = false;
