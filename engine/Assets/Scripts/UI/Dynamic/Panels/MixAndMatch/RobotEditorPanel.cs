@@ -23,7 +23,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         private const float PANEL_WIDTH  = 300f;
         private const float PANEL_HEIGHT = 400f;
 
-        private const float PART_ROTATION_SPEED = 10f;
+        private const float PART_ROTATION_SPEED = 3.75f;
 
         private static readonly int _connectionLayer = LayerMask.NameToLayer("ConnectionPoint");
         private static readonly int _robotLayer      = LayerMask.NameToLayer("MixAndMatchEditor");
@@ -238,6 +238,12 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             } else
                 _selectedPart = null;
 
+            _hoveringNode = null;
+
+            if (_selectedNode != null) {
+                _selectedNode.enabled = false;
+                _selectedNode         = null;
+            }
             _connectedTransform = null;
             UpdateRemoveButton();
         }

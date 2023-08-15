@@ -787,6 +787,15 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 enabled=True,
             )
 
+            self.createBooleanInput(
+                "export_as_part",
+                "Export As Part",
+                exporter_settings,
+                checked=False,
+                tooltip="Use to export as a part for Mix And Match",
+                enabled=True,
+            )
+
             # ~~~~~~~~~~~~~~~~ PHYSICS SETINGS ~~~~~~~~~~~~~~~~
             """
             Physics settings group command
@@ -1174,6 +1183,12 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             if mode_dropdown.selectedItem.name == "Synthesis Exporter":
                 mode = 5
 
+            export_as_part_boolean = (
+                eventArgs.command.commandInputs.itemById("advanced_settings")
+                .children.itemById("exporter_settings")
+                .children.itemById("export_as_part")
+            )
+
             # defaultPath = self.fp
             # defaultPath = os.getenv()
 
@@ -1193,12 +1208,20 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
 
             if platform.system() == "Windows":
                 if isRobot:
-                    savepath = (
-                        os.getenv("APPDATA")
-                        + "\\Autodesk\\Synthesis\\Mira\\"
-                        + processedFileName
-                        + ".mira"
-                    )
+                    if export_as_part_boolean.value:
+                        savepath = (
+                            os.getenv("APPDATA")
+                            + "\\Autodesk\\Synthesis\\MixAndMatch\\Mira\\"
+                            + processedFileName
+                            + ".mira"
+                        )
+                    else:
+                        savepath = (
+                            os.getenv("APPDATA")
+                            + "\\Autodesk\\Synthesis\\Mira\\"
+                            + processedFileName
+                            + ".mira"
+                        )
                 else:
                     savepath = (
                         os.getenv("APPDATA")
@@ -1211,12 +1234,20 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
 
                 home = expanduser("~")
                 if isRobot:
-                    savepath = (
-                        home
-                        + "/.config/Autodesk/Synthesis/Mira/"
-                        + processedFileName
-                        + ".mira"
-                    )
+                    if export_as_part_boolean.value:
+                        savepath = (
+                            home
+                            + "/.config/Autodesk/Synthesis/MixAndMatch/Mira/"
+                            + processedFileName
+                            + ".mira"
+                        )
+                    else:
+                        savepath = (
+                            home
+                            + "/.config/Autodesk/Synthesis/Mira/"
+                            + processedFileName
+                            + ".mira"
+                        )
                 else:
                     savepath = (
                         home
@@ -1652,6 +1683,8 @@ class MySelectHandler(adsk.core.SelectionEventHandler):
             self.selectedOcc = adsk.fusion.Occurrence.cast(args.selection.entity)
             self.selectedJoint = args.selection.entity
 
+            selectionInput = args.activeInput
+
             dropdownExportMode = INPUTS_ROOT.itemById("mode")
             duplicateSelection = INPUTS_ROOT.itemById("duplicate_selection")
             # indicator = INPUTS_ROOT.itemById("algorithmic_indicator")
@@ -1667,6 +1700,9 @@ class MySelectHandler(adsk.core.SelectionEventHandler):
                         else:
                             removeGamePieceFromTable(GamepieceListGlobal.index(occ))
 
+                    selectionInput.isEnabled = False
+                    selectionInput.isVisible = False
+
             elif self.selectedJoint:
                 jointType = self.selectedJoint.jointMotion.jointType
                 if (
@@ -1675,7 +1711,7 @@ class MySelectHandler(adsk.core.SelectionEventHandler):
                 ):
                     if (
                         jointType == JointMotions.REVOLUTE.value
-                        and MySelectHandler.lastInputCmd.id == "wheel_add"
+                        and MySelectHandler.lastInputCmd.id == "wheel_select"
                     ):
                         addWheelToTable(self.selectedJoint)
                     elif (
@@ -1691,6 +1727,9 @@ class MySelectHandler(adsk.core.SelectionEventHandler):
                             addJointToTable(self.selectedJoint)
                         else:
                             removeJointFromTable(self.selectedJoint)
+
+                    selectionInput.isEnabled = False
+                    selectionInput.isVisible = False
         except:
             if gm.ui:
                 gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
@@ -2109,22 +2148,16 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
             elif cmdInput.id == "wheel_select":
                 self.reset()
 
-                wheelSelect.isEnabled = False
-                wheelSelect.isVisible = False
                 addWheelInput.isEnabled = True
 
             elif cmdInput.id == "joint_select":
                 self.reset()
 
-                jointSelect.isEnabled = False
-                jointSelect.isVisible = False
                 addJointInput.isEnabled = True
 
             elif cmdInput.id == "gamepiece_select":
                 self.reset()
 
-                gamepieceSelect.isEnabled = False
-                gamepieceSelect.isVisible = False
                 addFieldInput.isEnabled = True
 
             elif cmdInput.id == "friction_override":
