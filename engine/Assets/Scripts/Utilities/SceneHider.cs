@@ -22,11 +22,11 @@ namespace Utilities {
                 if (shouldHide != _isHidden) {
                     _isHidden = shouldHide;
                     if (_isHidden) {
-                        MainHUD.Enabled = false;
+                        MainHUD.Collapsed = true;
                         _sceneObject.SetActive(false);
                         PhysicsManager.IsFrozen = true;
                     } else {
-                        MainHUD.Enabled = true;
+                        MainHUD.Collapsed = false;
                         _sceneObject.SetActive(true);
                         PhysicsManager.IsFrozen = false;
                     }

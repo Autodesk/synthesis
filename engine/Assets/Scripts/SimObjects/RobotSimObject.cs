@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Analytics;
 using Newtonsoft.Json;
@@ -265,8 +266,23 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                 SimulationPreferences.LoadRobotFromMixAndMatch(robotData!);
             else
                 SimulationPreferences.LoadRobotFromMira(MiraLiveFiles[0]);
+            
+            var _drivetrainInfo = SimulationPreferences.GetRobotDrivetrain(RobotGUID);
 
-            _drivetrainType = SimulationPreferences.GetRobotDrivetrain(RobotGUID);
+            // If no drivetrain is found in robot data, search all mira files for a drivetrain type
+            if (isMixAndMatch && !_drivetrainInfo.foundDrivetrain) {
+                foreach (var m in MiraLiveFiles) {
+                    SimulationPreferences.LoadRobotFromMira(m);
+                    var miraDrivetrain = SimulationPreferences.GetRobotDrivetrain(m.MiraAssembly.Info.GUID);
+                    if (miraDrivetrain.foundDrivetrain) {
+                        _drivetrainType = miraDrivetrain.drivetrain;
+                        break;
+                    }
+                }
+            }
+            else
+                _drivetrainType = _drivetrainInfo.drivetrain;
+
             SimulationPreferences.SetRobotDrivetrainType(RobotGUID, _drivetrainType);
 
             IntakeData = SimulationPreferences.GetRobotIntakeTriggerData(RobotGUID);

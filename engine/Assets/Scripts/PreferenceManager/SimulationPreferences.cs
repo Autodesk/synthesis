@@ -53,8 +53,8 @@ namespace Synthesis.PreferenceManager {
         public static RioTranslationLayer? GetRobotSimTranslationLayer(string robot) => Instance.GetSimTranslationLayer(
             robot);
 
-        public static RobotSimObject.DrivetrainType GetRobotDrivetrain(string robot) => Instance.GetRobotDrivetrainType(
-            robot);
+        public static (RobotSimObject.DrivetrainType drivetrain, bool foundDrivetrain) GetRobotDrivetrain(string robot)
+            => Instance.GetRobotDrivetrainType(robot);
 
         public static void SetRobotInput(string robot, string inputKey, Analog inputValue) {
             Instance.SetRobotInput(robot, inputKey, inputValue);
@@ -244,11 +244,13 @@ namespace Synthesis.PreferenceManager {
                 return _allRobotData[robot].SimTranslationLayer;
             }
 
-            public RobotSimObject.DrivetrainType GetRobotDrivetrainType(string robot) {
+            public (RobotSimObject.DrivetrainType drivetrain, bool foundDrivetrain) GetRobotDrivetrainType(string robot) {
                 if (!_allRobotData.ContainsKey(robot))
-                    return RobotSimObject.DrivetrainType.ARCADE;
+                    return (RobotSimObject.DrivetrainType.ARCADE, false);
 
-                return _allRobotData[robot].DrivetrainType ?? RobotSimObject.DrivetrainType.ARCADE;
+                var drivetrain = _allRobotData[robot].DrivetrainType;
+
+                return drivetrain == null ? (RobotSimObject.DrivetrainType.ARCADE, false) : (drivetrain.Value, true);
             }
 
 #endregion

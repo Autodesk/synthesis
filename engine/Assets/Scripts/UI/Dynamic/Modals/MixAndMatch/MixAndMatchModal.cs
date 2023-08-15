@@ -124,8 +124,9 @@ namespace UI.Dynamic.Modals.MixAndMatch {
 
             var nameInputField = MainContent.CreateInputField()
                                      .ApplyTemplate(UIComponent.VerticalLayout)
-                                     .StepIntoHint(h => h.SetText(""))
-                                     .AddOnValueChangedEvent((_, v) => UpdateAcceptButton(v));
+                                     .StepIntoHint(h => h.SetText($"{(robot ? "Robot" : "Part")} Name"))
+                                     .AddOnValueChangedEvent((_, v) => UpdateAcceptButton(v))
+                                     .StepIntoLabel(l => l.RootGameObject.SetActive(false));
 
             AcceptButton
                 .AddOnClickedEvent(
