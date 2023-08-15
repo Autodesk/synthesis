@@ -22,12 +22,16 @@ public class NetworkWaitModal : ModalDynamic {
 
     private Label? _statusLabel;
     private Content? _progressContent;
-    private readonly Action? _callback;
 
-    public NetworkWaitModal(NetworkTask<bool> networkTask, Action? callback)
+    private Type? _modalCallback;
+    private object[]? _modalCallbackParameters;
+
+    public NetworkWaitModal(NetworkTask<bool> networkTask, Type modalCallback, params object[] parameters)
         : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) {
         _networkTask = networkTask;
-        _callback = callback;
+
+        _modalCallback = modalCallback;
+        _modalCallbackParameters = parameters;
     }
     
     public override void Create() {
@@ -85,12 +89,17 @@ public class NetworkWaitModal : ModalDynamic {
         }
 
         if (_networkTask.IsCompleted) {
-            _isClosing = DynamicUIManager.CloseActiveModal();
+            _isClosing = true;
+            if (_modalCallback != null) {
+                typeof(DynamicUIManager).GetMethod("CreateModal").MakeGenericMethod(_modalCallback)
+                    .Invoke(null, _modalCallbackParameters);
+            }
         }
     }
     
     public override void Delete() {
         SynthesisTween.CancelTween(PROGRESS_BAR_TWEEN);
-        _callback?.Invoke();
+        Debug.Log("Delete Called");
+        
     }
 }

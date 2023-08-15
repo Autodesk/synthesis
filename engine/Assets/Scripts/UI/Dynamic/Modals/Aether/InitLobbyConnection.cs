@@ -36,7 +36,8 @@ public class InitLobbyConnection : ModalDynamic {
 
                 DynamicUIManager.CreateModal<NetworkWaitModal>(
                     mode.StartHostClient(_username),
-                    (Action)(() => DynamicUIManager.CreateModal<LobbyManagerModal>(ModeManager.CurrentMode))
+                    typeof(LobbyManagerModal),
+                    ModeManager.CurrentMode
                 );
 
             } else {

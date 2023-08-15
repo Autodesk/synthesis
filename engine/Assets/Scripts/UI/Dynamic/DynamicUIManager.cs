@@ -19,6 +19,7 @@ namespace Synthesis.UI.Dynamic {
         public const float MODAL_TWEEN_DURATION = 0.1f;
         public const float PANEL_TWEEN_DURATION = 0.1f;
 
+        private static ModalState CurrentModalState = ModalState.None;
         public static ModalDynamic ActiveModal { get; private set; }
 
         private static Dictionary<Type, (PanelDynamic, bool)> _persistentPanels =
@@ -428,6 +429,10 @@ namespace Synthesis.UI.Dynamic {
             public PanelClosedEvent(PanelDynamic panel) {
                 Panel = panel;
             }
+        }
+
+        public enum ModalState {
+            None = 0, Opening = 1, Open = 2, Closing = 3, Closed = 4
         }
     }
 }

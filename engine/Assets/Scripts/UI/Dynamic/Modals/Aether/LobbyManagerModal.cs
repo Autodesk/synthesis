@@ -50,7 +50,7 @@ public class LobbyManagerModal : ModalDynamic {
 
         AcceptButton.StepIntoLabel(l => l.SetText("Start")).AddOnClickedEvent(b => {
             var task = _mode.UploadData();
-            DynamicUIManager.CreateModal<NetworkWaitModal>(task, null);
+            DynamicUIManager.CreateModal<NetworkWaitModal>(task, null, null);
         });
         CancelButton.RootGameObject.SetActive(false);
  
