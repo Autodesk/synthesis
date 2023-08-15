@@ -150,7 +150,8 @@ namespace Modes.MatchMode {
             public override void Start() {
                 base.Start();
 
-                PhysicsManager.IsFrozen = true;
+                DynamicUIManager.ManualMainHUDEnabled = false;
+                PhysicsManager.IsFrozen               = true;
                 MatchMode.SpawnAllRobots();
 
                 if (Camera.main != null) {
@@ -181,6 +182,7 @@ namespace Modes.MatchMode {
         public class FieldConfig : MatchState {
             public override void Start() {
                 base.Start();
+                ScoringZonesPanel.MatchModeSetup = true;
                 DynamicUIManager.CreatePanel<ScoringZonesPanel>(true);
                 var panel = DynamicUIManager.GetPanel<ScoringZonesPanel>();
 
@@ -201,6 +203,8 @@ namespace Modes.MatchMode {
 
             public override void End() {
                 base.End();
+                DynamicUIManager.ManualMainHUDEnabled = true;
+                ScoringZonesPanel.MatchModeSetup      = false;
             }
 
             public FieldConfig() : base(StateName.FieldConfig) {}
