@@ -33,7 +33,7 @@ const Modal: React.FC<ModalProps> = ({
     acceptName,
     cancelEnabled = true,
     middleEnabled = false,
-    acceptEnabled = true
+    acceptEnabled = true,
 }) => {
     const { closeModal } = useModalControlContext()
 
@@ -61,7 +61,7 @@ const Modal: React.FC<ModalProps> = ({
                 {children}
             </div>
             <div id="footer" className="flex justify-between mx-10 py-8 gap-4">
-                {cancelEnabled &&
+                {cancelEnabled && (
                     <input
                         type="button"
                         value={cancelName || "Cancel"}
@@ -71,8 +71,8 @@ const Modal: React.FC<ModalProps> = ({
                         }}
                         className="bg-red-500 rounded-md cursor-pointer px-4 py-1 text-black font-bold duration-100 hover:bg-red-600"
                     />
-                }
-                {middleEnabled &&
+                )}
+                {middleEnabled && (
                     <input
                         type="button"
                         value={middleName || ""}
@@ -82,8 +82,8 @@ const Modal: React.FC<ModalProps> = ({
                         }}
                         className="bg-blue-500 rounded-md cursor-pointer px-4 py-1 text-black font-bold duration-100 hover:bg-blue-600"
                     />
-                }
-                {acceptEnabled &&
+                )}
+                {acceptEnabled && (
                     <input
                         type="button"
                         value={acceptName || "Accept"}
@@ -93,7 +93,7 @@ const Modal: React.FC<ModalProps> = ({
                         }}
                         className="bg-blue-500 rounded-md cursor-pointer px-4 py-1 text-black font-bold duration-100 hover:bg-blue-600"
                     />
-                }
+                )}
             </div>
         </div>
     )

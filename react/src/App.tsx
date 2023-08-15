@@ -38,7 +38,7 @@ const initialModals = [
     <ThemeEditorModal modalId="theme-editor" />,
     <ExitSynthesisModal modalId="exit-synthesis" />,
     <MatchResultsModal modalId="match-results" />,
-    <UpdateAvailableModal modalId="update-availale" />
+    <UpdateAvailableModal modalId="update-availale" />,
 ]
 
 const initialPanels: ReactElement[] = [
