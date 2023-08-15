@@ -6,7 +6,7 @@ import Dropdown from "../components/Dropdown"
 const RobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal name={"Robot Selection"} icon={<FaPlus />} modalId={modalId}>
-            <Dropdown options={["Dozer_v9.mira", "Team_2471_2018_v7.mira"]} />
+            <Dropdown options={["Dozer_v9.mira", "Team_2471_2018_v7.mira"]} onSelect={() => { }} />
         </Modal>
     )
 }

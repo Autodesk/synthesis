@@ -10,7 +10,14 @@ type ModalProps = {
     icon: ReactNode | string
     modalId: string
     onCancel?: () => void
+    onMiddle?: () => void
     onAccept?: () => void
+    cancelName?: string
+    middleName?: string
+    acceptName?: string
+    cancelEnabled?: boolean
+    middleEnabled?: boolean
+    acceptEnabled?: boolean
     children?: ReactNode
 }
 
@@ -19,7 +26,14 @@ const Modal: React.FC<ModalProps> = ({
     name,
     icon,
     onCancel,
+    onMiddle,
     onAccept,
+    cancelName,
+    middleName,
+    acceptName,
+    cancelEnabled = true,
+    middleEnabled = false,
+    acceptEnabled = true
 }) => {
     const { closeModal } = useModalControlContext()
 
@@ -46,25 +60,40 @@ const Modal: React.FC<ModalProps> = ({
             <div id="content" className="mx-16 flex flex-col gap-8">
                 {children}
             </div>
-            <div id="footer" className="flex justify-between mx-10 py-8">
-                <input
-                    type="button"
-                    value="Cancel"
-                    onClick={() => {
-                        closeModal()
-                        if (onCancel) onCancel()
-                    }}
-                    className="bg-red-500 rounded-md cursor-pointer px-4 py-1 text-black font-bold duration-100 hover:bg-red-600"
-                />
-                <input
-                    type="button"
-                    value="Accept"
-                    onClick={() => {
-                        closeModal()
-                        if (onAccept) onAccept()
-                    }}
-                    className="bg-blue-500 rounded-md cursor-pointer px-4 py-1 text-black font-bold duration-100 hover:bg-blue-600"
-                />
+            <div id="footer" className="flex justify-between mx-10 py-8 gap-4">
+                {cancelEnabled &&
+                    <input
+                        type="button"
+                        value={cancelName || "Cancel"}
+                        onClick={() => {
+                            closeModal()
+                            if (onCancel) onCancel()
+                        }}
+                        className="bg-red-500 rounded-md cursor-pointer px-4 py-1 text-black font-bold duration-100 hover:bg-red-600"
+                    />
+                }
+                {middleEnabled &&
+                    <input
+                        type="button"
+                        value={middleName || ""}
+                        onClick={() => {
+                            closeModal()
+                            if (onMiddle) onMiddle()
+                        }}
+                        className="bg-blue-500 rounded-md cursor-pointer px-4 py-1 text-black font-bold duration-100 hover:bg-blue-600"
+                    />
+                }
+                {acceptEnabled &&
+                    <input
+                        type="button"
+                        value={acceptName || "Accept"}
+                        onClick={() => {
+                            closeModal()
+                            if (onAccept) onAccept()
+                        }}
+                        className="bg-blue-500 rounded-md cursor-pointer px-4 py-1 text-black font-bold duration-100 hover:bg-blue-600"
+                    />
+                }
             </div>
         </div>
     )

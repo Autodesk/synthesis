@@ -19,6 +19,9 @@ import { motion } from "framer-motion"
 import { ReactElement } from "react"
 import { ToastContainer, ToastProvider } from "./ToastContext"
 import ThemeEditorModal from "./modals/ThemeEditorModal"
+import MatchResultsModal from "./modals/MatchResultsModal"
+import UpdateAvailableModal from "./modals/UpdateAvailableModal"
+import ExitSynthesisModal from "./modals/ExitSynthesisModal"
 
 const initialModals = [
     <SettingsModal modalId="settings" />,
@@ -33,6 +36,9 @@ const initialModals = [
     <CreateDeviceModal modalId="create-device" />,
     <DrivetrainModal modalId="drivetrain" />,
     <ThemeEditorModal modalId="theme-editor" />,
+    <ExitSynthesisModal modalId="exit-synthesis" />,
+    <MatchResultsModal modalId="match-results" />,
+    <UpdateAvailableModal modalId="update-availale" />
 ]
 
 const initialPanels: ReactElement[] = [
@@ -139,7 +145,6 @@ function App() {
                     <AnimatePresence>
                         {motionPanelElements.length > 0 && motionPanelElements}
                         {motionModalElement && motionModalElement}
-                        <ThemeEditorModal modalId="theme-editor" />
                     </AnimatePresence>
                     <ToastContainer />
                 </ToastProvider>
