@@ -41,8 +41,8 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         private readonly MixAndMatchRobotData _robotData;
 
         private GameObject _robotGameObject;
-        private readonly List<RobotEditorPartInfo> _parts = new();
-        private RobotEditorPartInfo? _selectedPart;
+        private readonly List<LocalPartData> _parts = new();
+        private LocalPartData? _selectedPart;
 
         private bool _creationFailed;
         private bool _selectingNode;
@@ -101,8 +101,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
             add.CreateButton("Add").SetStretch<Button>().AddOnClickedEvent(
                 _ => {
-                    DynamicUIManager.CreateModal<SelectPartModal>(
-                        args: new Action<MixAndMatchPartData>(AddAdditionalPart));
+                    DynamicUIManager.CreateModal<SelectPartModal>(args: new Action<GlobalPartData>(AddAdditionalPart));
                 });
 
             _removeButton = remove.CreateButton("Remove").SetStretch<Button>().AddOnClickedEvent(
@@ -117,7 +116,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
                     return;
 
                 _parts.Remove(_selectedPart);
-                Object.Destroy(_selectedPart.GameObject);
+                Object.Destroy(_selectedPart.EditorPartInfo.GameObject);
                 _selectedPart = null;
 
                 PopulateScrollView();
@@ -130,43 +129,33 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             if (_robotData.PartTransformData == null)
                 return;
 
-            _robotData.PartTransformData.ForEach(InstantiatePartGameObject);
-        }
-
-        /// <summary>Instantiates a part object to position from a part fileName</summary>
-        private void InstantiatePartGameObject(RobotPartTransformData partData) {
-            var partFile = MixAndMatchSaveUtil.LoadPartData(partData.FileName, false);
-            if (partFile == null) {
-                Logger.Log($"Part file \"{partData.FileName}\" not found!", LogLevel.Error);
-                _creationFailed = true;
-                return;
-            }
-
-            InstantiatePartGameObject(
-                partData.LocalPosition, partData.LocalRotation, partFile, partData.ParentNodeData);
+            _robotData.PartTransformData.ForEachIndex((i, p) => {
+                p.EditorPartInfo.GlobalPartData = _robotData.GlobalPartData[i];
+                InstantiatePartGameObject(p);
+            });
         }
 
         /// <summary>Instantiates a part object to position from a partData object</summary>
-        private GameObject InstantiatePartGameObject(Vector3 localPosition, Quaternion localRotation,
-            MixAndMatchPartData partData, ParentNodeData parentNodeData) {
-            if (!File.Exists(partData.MirabufPartFile)) {
-                Logger.Log($"Mirabuf file \"{partData.MirabufPartFile}\" not found!", LogLevel.Error);
+        private GameObject InstantiatePartGameObject(LocalPartData localPartData) {
+            var loadPartData = MixAndMatchSaveUtil.LoadPartData(localPartData.FileName, false);
+            if (loadPartData == null) {
+                Logger.Log($"Part file \"{localPartData.FileName}\" not found!", LogLevel.Error);
                 _creationFailed = true;
                 return null;
             }
 
-            MirabufLive miraLive = new MirabufLive(partData.MirabufPartFile);
+            MirabufLive miraLive = new MirabufLive(loadPartData.MirabufPartFile);
 
-            GameObject partObj = new GameObject(partData.Name);
+            GameObject partObj = new GameObject(loadPartData.Name);
             Transform partTrf  = partObj.transform;
 
             miraLive.GenerateDefinitionObjects(partObj, dynamicLayer: _robotLayer);
 
             partTrf.SetParent(_robotGameObject.transform);
-            partTrf.localPosition = localPosition;
-            partTrf.localRotation = localRotation;
+            partTrf.localPosition = localPartData.LocalPosition;
+            partTrf.localRotation = localPartData.LocalRotation;
 
-            _parts.Add(new RobotEditorPartInfo(partObj, partData, parentNodeData));
+            _parts.Add(localPartData);
 
             partTrf.GetComponentsInChildren<Rigidbody>().ForEach(x => {
                 var rc     = x.gameObject.AddComponent<HighlightComponent>();
@@ -176,15 +165,17 @@ namespace UI.Dynamic.Panels.MixAndMatch {
                 x.isKinematic = true;
             });
 
-            partObj.AddComponent<PartGuidHolder>().Guid = partData.Guid;
+            partObj.AddComponent<PartGuidHolder>().Guid = loadPartData.Guid;
 
-            InstantiatePartConnectionPoints(partObj, partData);
+            InstantiatePartConnectionPoints(partObj, loadPartData);
+
+            localPartData.EditorPartInfo.GameObject = partObj;
             return partObj;
         }
 
         /// <summary>Instantiates objects for all the connection points of a part</summary>
-        private void InstantiatePartConnectionPoints(GameObject partGameObject, MixAndMatchPartData partData) {
-            partData.ConnectionPoints.ForEachIndex((_, connection) => {
+        private void InstantiatePartConnectionPoints(GameObject partGameObject, GlobalPartData globalPartData) {
+            globalPartData.ConnectionPoints.ForEachIndex((_, connection) => {
                 var connectionObj   = Object.Instantiate(SynthesisAssetCollection.Instance.MixAndMatchConnectionPrefab);
                 connectionObj.layer = _connectionLayer;
                 connectionObj.name  = "Connection Point";
@@ -206,12 +197,15 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         }
 
         /// <summary>Adds an addition part to the robot anytime during editing</summary>
-        private void AddAdditionalPart(MixAndMatchPartData partData) {
-            EnableConnectionColliders(_selectedPart?.GameObject);
+        private void AddAdditionalPart(GlobalPartData globalPartData) {
+            EnableConnectionColliders(_selectedPart?.EditorPartInfo.GameObject);
 
-            var partInfo = new RobotEditorPartInfo(
-                InstantiatePartGameObject(Vector3.zero, Quaternion.identity, partData, null), partData, null);
-            AddScrollViewEntry(partInfo);
+            var localPartData = new LocalPartData(globalPartData.Name, null, Vector3.zero, Quaternion.identity,
+                new RobotEditorPartInfo()) { EditorPartInfo = { GlobalPartData = globalPartData } };
+
+            InstantiatePartGameObject(localPartData);
+
+            AddScrollViewEntry(localPartData);
             UpdateRemoveButton();
         }
 
@@ -223,25 +217,26 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         }
 
         /// <summary>Adds an entry to the scroll view</summary>
-        private void AddScrollViewEntry(RobotEditorPartInfo part) {
-            var toggle = _scrollView.Content.CreateToggle(label: part.GameObject.name, radioSelect: true)
-                             .SetSize<Toggle>(new Vector2(PANEL_WIDTH, 50f))
-                             .ApplyTemplate(Toggle.RadioToggleLayout)
-                             .StepIntoLabel(l => l.SetFontSize(16f))
-                             .SetDisabledColor(ColorManager.SynthesisColor.Background);
-            toggle.AddOnStateChangedEvent((t, s) => { SelectPart(part, t, s); });
+        private void AddScrollViewEntry(LocalPartData localPart) {
+            var toggle =
+                _scrollView.Content.CreateToggle(label: localPart.EditorPartInfo.GameObject.name, radioSelect: true)
+                    .SetSize<Toggle>(new Vector2(PANEL_WIDTH, 50f))
+                    .ApplyTemplate(Toggle.RadioToggleLayout)
+                    .StepIntoLabel(l => l.SetFontSize(16f))
+                    .SetDisabledColor(ColorManager.SynthesisColor.Background);
+            toggle.AddOnStateChangedEvent((t, s) => { SelectPart(localPart, t, s); });
         }
 
         /// <summary>Selects which part will be edited, and updates radio select buttons accordingly</summary>
-        private void SelectPart(RobotEditorPartInfo part, Toggle toggle, bool state) {
+        private void SelectPart(LocalPartData localPart, Toggle toggle, bool state) {
             if (state) {
                 _scrollView.Content.ChildrenReadOnly.OfType<Toggle>().ForEach(x => { x.SetStateWithoutEvents(false); });
                 toggle.SetStateWithoutEvents(true);
 
-                _parts.ForEach(x => EnableConnectionColliders(x.GameObject));
-                DisableConnectionColliders(part.GameObject);
+                _parts.ForEach(x => EnableConnectionColliders(x.EditorPartInfo.GameObject));
+                DisableConnectionColliders(localPart.EditorPartInfo.GameObject);
 
-                _selectedPart = part;
+                _selectedPart = localPart;
             } else
                 _selectedPart = null;
 
@@ -250,19 +245,19 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         }
 
         /// <summary>Enables the colliders of a part's connection points so other parts can snap to it</summary>
-        private void EnableConnectionColliders(GameObject part) {
-            if (part == null)
+        private void EnableConnectionColliders(GameObject partObject) {
+            if (partObject == null)
                 return;
 
-            part.GetComponentsInChildren<SphereCollider>(true).ForEach(c => c.enabled = true);
+            partObject.GetComponentsInChildren<SphereCollider>(true).ForEach(c => c.enabled = true);
         }
 
         /// <summary>Disables the colliders of a part's connection points so other parts can't snap to it</summary>
-        private void DisableConnectionColliders(GameObject part) {
-            if (part == null)
+        private void DisableConnectionColliders(GameObject partObject) {
+            if (partObject == null)
                 return;
 
-            part.GetComponentsInChildren<SphereCollider>().ForEach(c => c.enabled = false);
+            partObject.GetComponentsInChildren<SphereCollider>().ForEach(c => c.enabled = false);
         }
 
         /// Updates the remove button based on if a part is selected
@@ -278,19 +273,18 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             if (EventSystem.current.IsPointerOverGameObject() || _selectedPart == null)
                 return;
 
-            var selectedPartData = _selectedPart.PartData;
-            var selectedTrf      = _selectedPart.GameObject.transform;
+            var selectedPartGlobalData = _selectedPart.EditorPartInfo.GlobalPartData;
+            var selectedTrf            = _selectedPart.EditorPartInfo.GameObject.transform;
 
             // Handle rotation about the connection points normals
             if (Input.GetKey(KeyCode.R))
-                _selectedPart.Rotation +=
+                _selectedPart.EditorPartInfo.Rotation +=
                     Time.deltaTime * PART_ROTATION_SPEED * (Input.GetKey(KeyCode.LeftShift) ? -1 : 1);
 
             // Tab to cycle between connection points
             if (Input.GetKeyDown(KeyCode.Tab))
-                _selectedPart.ConnectedPoint =
-                    (_selectedPart.ConnectedPoint + 1) % selectedPartData.ConnectionPoints.Length;
-            Debug.Log(_selectedPart.ConnectedPoint);
+                _selectedPart.EditorPartInfo.ConnectedPoint =
+                    (_selectedPart.EditorPartInfo.ConnectedPoint + 1) % selectedPartGlobalData.ConnectionPoints.Length;
 
             // Raycast to check if the mouse is pointing at a connection point
             Ray ray = Camera.main!.ScreenPointToRay(Input.mousePosition);
@@ -301,20 +295,21 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             if (_connectedTransform == null)
                 return;
 
-            int connectionIndex = _selectedPart.ConnectedPoint;
+            int connectionIndex = _selectedPart.EditorPartInfo.ConnectedPoint;
 
             // Align the connection points normals
             selectedTrf.position = _connectedTransform.transform.position;
             selectedTrf.rotation = Quaternion.LookRotation(-_connectedTransform.transform.forward, Vector3.up);
-            selectedTrf.Rotate(-selectedPartData.ConnectionPoints[connectionIndex].LocalRotation.eulerAngles);
+            Debug.Log(selectedPartGlobalData.ConnectionPoints.Length + " " + selectedPartGlobalData.Name);
+            selectedTrf.Rotate(-selectedPartGlobalData.ConnectionPoints[connectionIndex].LocalRotation.eulerAngles);
 
             // Apply the user specified rotation
             Vector3 axis = selectedTrf.localToWorldMatrix.rotation *
-                           (selectedPartData.ConnectionPoints[connectionIndex].LocalRotation * Vector3.forward);
-            selectedTrf.RotateAround(axis, _selectedPart.Rotation);
+                           (selectedPartGlobalData.ConnectionPoints[connectionIndex].LocalRotation * Vector3.forward);
+            selectedTrf.RotateAround(axis, _selectedPart.EditorPartInfo.Rotation);
 
             // Offset so that the connection points are overlapping
-            selectedTrf.Translate(-selectedPartData.ConnectionPoints[connectionIndex].LocalPosition);
+            selectedTrf.Translate(-selectedPartGlobalData.ConnectionPoints[connectionIndex].LocalPosition);
         }
 
         private HighlightComponent _hoveringNode;
@@ -352,10 +347,10 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
                     int selectedPartIndex = _parts.FindIndex(x => x.Equals(_selectedPart));
 
-                    var part            = _parts[selectedPartIndex];
-                    part.ParentNodeData = new ParentNodeData(
+                    var localPart            = _parts[selectedPartIndex];
+                    localPart.ParentNodeData = new ParentNodeData(
                         _selectedNode.transform.parent.GetComponent<PartGuidHolder>().Guid, _selectedNode.name);
-                    _parts[selectedPartIndex] = part;
+                    _parts[selectedPartIndex] = localPart;
                 }
             } else {
                 if (_hoveringNode == null)
@@ -368,10 +363,11 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
         /// <summary>Saves all edits that have been made</summary>
         private void SaveRobotData() {
-            List<RobotPartTransformData> parts = new();
+            List<LocalPartData> parts = new();
             _parts.ForEach(part => {
-                parts.Add(new RobotPartTransformData(part.GameObject.name, part.ParentNodeData,
-                    part.GameObject.transform.localPosition, part.GameObject.transform.localRotation));
+                parts.Add(new LocalPartData(part.EditorPartInfo.GameObject.name, part.ParentNodeData,
+                    part.EditorPartInfo.GameObject.transform.localPosition,
+                    part.EditorPartInfo.GameObject.transform.localRotation, part.EditorPartInfo));
             });
 
             _robotData.PartTransformData = parts.ToArray();
@@ -392,23 +388,6 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         public override void Delete() {
             Object.Destroy(_robotGameObject);
             SceneHider.IsHidden = false;
-        }
-
-        private class RobotEditorPartInfo {
-            public readonly GameObject GameObject;
-            public readonly MixAndMatchPartData PartData;
-            public ParentNodeData ParentNodeData;
-            public float Rotation;
-            public int ConnectedPoint;
-
-            public RobotEditorPartInfo(GameObject gameObject, MixAndMatchPartData partData,
-                ParentNodeData parentNodeData, float rotation = 0f, int connectedPoint = 0) {
-                GameObject     = gameObject;
-                PartData       = partData;
-                ParentNodeData = parentNodeData;
-                Rotation       = rotation;
-                ConnectedPoint = connectedPoint;
-            }
         }
     }
 

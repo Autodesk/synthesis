@@ -1,9 +1,11 @@
 using System;
 using System.IO;
 using System.Linq;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SimObjects.MixAndMatch {
     public static class MixAndMatchSaveUtil {
@@ -50,7 +52,7 @@ namespace SimObjects.MixAndMatch {
         }
 
         /// <summary>Save a part to the appdata folder. Overrides an existing part with the same name</summary>
-        public static void SavePartData(MixAndMatchPartData part) {
+        public static void SavePartData(GlobalPartData part) {
             if (!Directory.Exists(PART_FOLDER_PATH)) {
                 Directory.CreateDirectory(PART_FOLDER_PATH);
             }
@@ -61,7 +63,7 @@ namespace SimObjects.MixAndMatch {
         }
 
         /// <summary>Load a part from the appdata folder. If no found, a blank part with be created</summary>
-        public static MixAndMatchPartData LoadPartData(string fileName, bool createNewIfNoExist = true) {
+        public static GlobalPartData LoadPartData(string fileName, bool createNewIfNoExist = true) {
             if (!Directory.Exists(PART_FOLDER_PATH)) {
                 Directory.CreateDirectory(PART_FOLDER_PATH);
             }
@@ -74,7 +76,7 @@ namespace SimObjects.MixAndMatch {
                 return null;
             }
 
-            var part = JsonUtility.FromJson<MixAndMatchPartData>(File.ReadAllText(filePath));
+            var part = JsonUtility.FromJson<GlobalPartData>(File.ReadAllText(filePath));
 
             if (part.Guid is null or "")
                 part.Guid = GUID.Generate().ToString();
@@ -109,14 +111,14 @@ namespace SimObjects.MixAndMatch {
         }
 
         /// <summary>Creates a new mix and match part with no connection points</summary>
-        public static MixAndMatchPartData CreateNewPart(string name, string mirabufFile = "") {
-            return new MixAndMatchPartData(
+        public static GlobalPartData CreateNewPart(string name, string mirabufFile = "") {
+            return new GlobalPartData(
                 name, GUID.Generate().ToString(), mirabufFile, Array.Empty<(Vector3, Quaternion)>());
         }
 
         /// <summary>Creates a new mix and match robot with no parts</summary>
         public static MixAndMatchRobotData CreateNewRobot(string name) {
-            return new MixAndMatchRobotData(name, Array.Empty<RobotPartTransformData>());
+            return new MixAndMatchRobotData(name, Array.Empty<LocalPartData>());
         }
 
         /// <summary>Deletes the part if it exists</summary>
@@ -139,15 +141,15 @@ namespace SimObjects.MixAndMatch {
     [Serializable]
     public class MixAndMatchRobotData {
         public string Name;
-        public RobotPartTransformData[] PartTransformData;
+        public LocalPartData[] PartTransformData;
 
         public string RobotPreferencesJson;
 
         [JsonIgnore]
-        private MixAndMatchPartData[] _globalPartData;
+        private GlobalPartData[] _globalPartData;
 
         [JsonIgnore]
-        public MixAndMatchPartData[] GlobalPartData {
+        public GlobalPartData[] GlobalPartData {
             get {
                 if (_globalPartData != null)
                     return _globalPartData;
@@ -159,7 +161,7 @@ namespace SimObjects.MixAndMatch {
             }
         }
 
-        public MixAndMatchRobotData(string name, RobotPartTransformData[] transforms) {
+        public MixAndMatchRobotData(string name, LocalPartData[] transforms) {
             Name                 = name;
             PartTransformData    = transforms;
             RobotPreferencesJson = "";
@@ -174,24 +176,27 @@ namespace SimObjects.MixAndMatch {
 
                 index++;
             }
+
             return -1;
         }
     }
 
-    /// <summary>Robot specific part data (position, parent node). Only ever saved in a robot's json file.</summary>
+    /// <summary>Robot specific part data (position, parent node, etc) that is local to a single robot</summary>
     [Serializable]
-    public struct RobotPartTransformData {
+    public class LocalPartData {
         public string FileName;
         public Vector3 LocalPosition;
         public Quaternion LocalRotation;
         public ParentNodeData ParentNodeData;
+        public RobotEditorPartInfo EditorPartInfo;
 
-        public RobotPartTransformData(
-            string fileName, ParentNodeData parentNodeData, Vector3 position, Quaternion rotation) {
+        public LocalPartData(string fileName, ParentNodeData parentNodeData, Vector3 position, Quaternion rotation,
+            RobotEditorPartInfo editorPartInfo) {
             FileName       = fileName;
             ParentNodeData = parentNodeData;
             LocalPosition  = position;
             LocalRotation  = rotation;
+            EditorPartInfo = editorPartInfo;
         }
 
         public (string name, ParentNodeData parentNodeData, Vector3 position, Quaternion rotation) ToTuple() {
@@ -199,9 +204,9 @@ namespace SimObjects.MixAndMatch {
         }
     }
 
-    /// <summary>Stores a parts mirabuf file and connection points. Only ever saved in it's own json file.</summary>
+    /// <summary>Global data about a part that is shared with all robots that use it.</summary>
     [Serializable]
-    public class MixAndMatchPartData {
+    public class GlobalPartData {
         [JsonIgnore]
         public string Name; // Ignored because it is the filename
         public string Guid;
@@ -209,7 +214,7 @@ namespace SimObjects.MixAndMatch {
 
         public ConnectionPointData[] ConnectionPoints;
 
-        public MixAndMatchPartData(string name, string guid, string mirabufPartFile,
+        public GlobalPartData(string name, string guid, string mirabufPartFile,
             (Vector3 position, Quaternion rotation)[] connectionPoints) {
             Name             = name;
             MirabufPartFile  = mirabufPartFile;
@@ -246,5 +251,18 @@ namespace SimObjects.MixAndMatch {
             PartGuid = partGuid;
             NodeName = nodeName;
         }
+    }
+
+    /// <summary>Info about how parts connect together used in the robot editor</summary>
+    [Serializable]
+    public class RobotEditorPartInfo {
+        [JsonIgnore]
+        public GameObject GameObject;
+        [FormerlySerializedAs("PartData")]
+        [JsonIgnore]
+        public GlobalPartData GlobalPartData;
+
+        public float Rotation;
+        public int ConnectedPoint;
     }
 }

@@ -29,11 +29,11 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         private readonly List<GameObject> _connectionGameObjects = new();
         private GameObject _selectedConnection;
 
-        private readonly MixAndMatchPartData _partData;
+        private readonly GlobalPartData _partData;
 
         private Vector3 centerOffset;
 
-        public PartEditorPanel(MixAndMatchPartData partData) : base(new Vector2(PANEL_WIDTH, PANEL_HEIGHT)) {
+        public PartEditorPanel(GlobalPartData partData) : base(new Vector2(PANEL_WIDTH, PANEL_HEIGHT)) {
             _partData = partData;
         }
 

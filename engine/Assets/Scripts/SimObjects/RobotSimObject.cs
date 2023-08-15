@@ -266,7 +266,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                 SimulationPreferences.LoadRobotFromMixAndMatch(robotData!);
             else
                 SimulationPreferences.LoadRobotFromMira(MiraLiveFiles[0]);
-            
+
             var _drivetrainInfo = SimulationPreferences.GetRobotDrivetrain(RobotGUID);
 
             // If no drivetrain is found in robot data, search all mira files for a drivetrain type
@@ -279,8 +279,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                         break;
                     }
                 }
-            }
-            else
+            } else
                 _drivetrainType = _drivetrainInfo.drivetrain;
 
             SimulationPreferences.SetRobotDrivetrainType(RobotGUID, _drivetrainType);

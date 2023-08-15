@@ -31,9 +31,6 @@ namespace Synthesis.UI.Dynamic {
 
             ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("plus"))
                 .SetColor(ColorManager.SynthesisColor.MainText);
-            
-            CancelButton.StepIntoLabel(l => l.SetText("Back")).AddOnClickedEvent(
-                _ => DynamicUIManager.CreateModal<SpawningModal>());
 
             AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
                 if (_selectedIndex != -1) {

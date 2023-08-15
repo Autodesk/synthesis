@@ -9,10 +9,9 @@ namespace UI.Dynamic.Modals.MixAndMatch {
         private const float CONTENT_WIDTH  = 400;
         private const float CONTENT_HEIGHT = 55;
 
-        private readonly Action<MixAndMatchPartData> _callback;
+        private readonly Action<GlobalPartData> _callback;
 
-        public SelectPartModal(Action<MixAndMatchPartData> callback)
-            : base(new Vector2(CONTENT_WIDTH, CONTENT_HEIGHT)) {
+        public SelectPartModal(Action<GlobalPartData> callback) : base(new Vector2(CONTENT_WIDTH, CONTENT_HEIGHT)) {
             _callback = callback;
         }
 

@@ -239,7 +239,7 @@ namespace UI.Dynamic.Modals.MixAndMatch {
         }
 
         /// <summary>Either load a part if it exists or create a new one if it doesn't</summary>
-        private void OpenPartEditor(MixAndMatchPartData part) {
+        private void OpenPartEditor(GlobalPartData part) {
             DynamicUIManager.CloseActiveModal();
             DynamicUIManager.CreatePanel<PartEditorPanel>(persistent: true, args: part);
         }

@@ -11,8 +11,9 @@ public class ChooseRobotTypeModal : ModalDynamic {
 
         AcceptButton.RootGameObject.SetActive(false);
 
-        CancelButton.StepIntoLabel(l => l.SetText("Back")).AddOnClickedEvent(
-            _ => DynamicUIManager.CreateModal<SpawningModal>());
+        CancelButton.StepIntoLabel(l => l.SetText("Back"))
+            .AddOnClickedEvent(
+                _ => DynamicUIManager.CreateModal<SpawningModal>());
 
         var spacing           = 22f;
         (var left, var right) = MainContent.SplitLeftRight((MainContent.Size.x / 2f) - (spacing), spacing * 2);

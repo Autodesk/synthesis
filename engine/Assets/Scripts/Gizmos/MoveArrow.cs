@@ -109,7 +109,7 @@ namespace Synthesis.Configuration {
             cam.CameraMode         = CameraController.CameraModes["Orbit"];
 
             // makes a list of the rigidbodies in the hierarchy and their state
-            HierarchyRigidbodiesToDictionary();
+            // HierarchyRigidbodiesToDictionary(); TODO: figure out if this is important
 
             // configure axis arrow transforms for later use
             arrowX = transform.Find("X").GetComponent<Transform>();
