@@ -214,7 +214,7 @@ namespace Synthesis.UI.Dynamic {
 
         // Default for Modal
         private Button _cancelButton;
-        protected Button CancelButton => _cancelButton;
+        public Button CancelButton => _cancelButton;
         private Button _acceptButton;
         protected Button AcceptButton => _acceptButton;
         private Image _modalIcon;
@@ -603,7 +603,10 @@ namespace Synthesis.UI.Dynamic {
 
         public T SetAlpha<T>(float alpha)
             where T : UIComponent {
-            RootGameObject.AddComponent<CanvasGroup>().alpha = alpha;
+            if (RootGameObject.TryGetComponent<CanvasGroup>(out var canvasGroup))
+                canvasGroup.alpha = alpha;
+            else
+                RootGameObject.AddComponent<CanvasGroup>().alpha = alpha;
 
             return (this as T)!;
         }
@@ -1034,9 +1037,20 @@ namespace Synthesis.UI.Dynamic {
     }
 
     public class Slider : UIComponent {
-        public static readonly Func<Slider, Slider> VerticalLayoutTemplate = (Slider slider) =>
-            slider.SetTopStretch<Slider>(
-                leftPadding: 15f, anchoredY: slider.Parent!.HeightOfChildren - slider.Size.y + 15f);
+        public static readonly Func<Slider, Slider> VerticalLayoutTemplate = (slider) => slider.SetTopStretch<Slider>(
+            leftPadding: 15f, anchoredY: slider.Parent!.HeightOfChildren - slider.Size.y + 15f);
+
+        public static readonly Func<Slider, Slider> DisableSlider = (slider) => {
+            slider.RootGameObject.GetComponentInChildren<HoverEventListener>().enabled = false;
+            slider._unitySlider.enabled                                                = false;
+            return slider.SetAlpha<Slider>(0.4f);
+        };
+
+        public static readonly Func<Slider, Slider> EnableSlider = (slider) => {
+            slider.RootGameObject.GetComponentInChildren<HoverEventListener>().enabled = true;
+            slider._unitySlider.enabled                                                = true;
+            return slider.SetAlpha<Slider>(1);
+        };
 
         public event Action<Slider, float> OnValueChanged;
         private Func<float, string> _customValuePresentation = (x) => Math.Round(x, 2).ToString();

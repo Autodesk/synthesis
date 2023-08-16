@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using Synthesis.PreferenceManager;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.EventBus;
+using UI.EventListeners;
 using UnityEngine;
 using Utilities.ColorManager;
 
@@ -148,20 +149,12 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
         /// <summary>Updates the color of the delete buttons and if they can be pressed</summary>
         private void UpdateDeleteButtons() {
             if (_selectedThemeIndex < 1)
-                _deleteButton.DisableEvents<Button>().StepIntoImage(
-                    i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground));
+                _deleteButton.ApplyTemplate(Button.DisableButton);
             else
-                _deleteButton.EnableEvents<Button>()
-                    .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
-                                       ColorManager.SynthesisColor.InteractiveElementRight))
-                    .StepIntoImage(i => i.InvertGradient());
+                _deleteButton.ApplyTemplate(Button.EnableButton).StepIntoImage(i => i.InvertGradient());
 
-            if (_availableThemes.Length == 1)
-                _deleteAllButton.DisableEvents<Button>().StepIntoImage(
-                    i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground));
-            else
-                _deleteAllButton.EnableEvents<Button>().StepIntoImage(
-                    i => i.SetColor(ColorManager.SynthesisColor.CancelButton));
+            _deleteAllButton.ApplyTemplate(
+                _availableThemes.Length == 1 ? Button.DisableButton : Button.EnableDeleteButton);
         }
 
         /// <summary>Creates the color sliders at the bottom left of the modal</summary>
@@ -188,11 +181,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
                            .SetRange(0, 100)
                            .EnableRounding();
 
-            if (_selectedThemeIndex < 1) {
-                _hSlider.SetAlpha<Slider>(0.4f).DisableEvents<Slider>();
-                _sSlider.SetAlpha<Slider>(0.4f).DisableEvents<Slider>();
-                _vSlider.SetAlpha<Slider>(0.4f).DisableEvents<Slider>();
-            }
+            DisableSliders();
         }
 
         /// <summary>Creates the color selection grid on the right of the modal</summary>
@@ -248,6 +237,9 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
         /// <summary>Selects a color to change with the RGB slider</summary>
         /// <param name="colorName">The color to select</param>
         private void SelectColor(ColorManager.SynthesisColor? colorName) {
+            if (_selectedColor == null && colorName != null)
+                EnableSliders();
+
             if (_selectedColor != null) {
                 (Color color, Content image, Button button, Label label) prevSelected = _colors[_selectedColor.Value];
                 prevSelected.button.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary));
@@ -327,6 +319,18 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             _colors.ForEach(c => { colors.Add(c.Key, c.Value.color); });
             ColorManager.SetTempPreviewColors(colors);
             DynamicUIManager.CreateModal<EditThemeModal>();
+        }
+
+        private void DisableSliders() {
+            _hSlider.ApplyTemplate(Slider.DisableSlider);
+            _sSlider.ApplyTemplate(Slider.DisableSlider);
+            _vSlider.ApplyTemplate(Slider.DisableSlider);
+        }
+
+        private void EnableSliders() {
+            _hSlider.ApplyTemplate(Slider.EnableSlider);
+            _sSlider.ApplyTemplate(Slider.EnableSlider);
+            _vSlider.ApplyTemplate(Slider.EnableSlider);
         }
     }
 }
