@@ -21,6 +21,7 @@ namespace Synthesis.UI.Dynamic {
         public static ModalDynamic ActiveModal { get; private set; }
 
         private static bool _manualMainHUDEnabled = true;
+
         public static bool ManualMainHUDEnabled {
             get => _manualMainHUDEnabled;
             set {
@@ -33,9 +34,11 @@ namespace Synthesis.UI.Dynamic {
 
         private static Dictionary<Type, (PanelDynamic, bool)> _persistentPanels =
             new Dictionary<Type, (PanelDynamic, bool)>();
+
         public static bool AnyPanels => _persistentPanels.Count > 0;
 
         public static Content _screenSpaceContent = null;
+
         public static Content ScreenSpaceContent {
             get {
                 if (_screenSpaceContent == null) {
@@ -43,11 +46,13 @@ namespace Synthesis.UI.Dynamic {
                         new Content(null, GameObject.Find("UI").transform.Find("ScreenSpace").gameObject, null);
                     SimulationRunner.OnSimKill += () => _screenSpaceContent = null;
                 }
+
                 return _screenSpaceContent;
             }
         }
 
         public static Content _subScreenSpaceContent = null;
+
         public static Content SubScreenSpaceContent {
             get {
                 if (_subScreenSpaceContent == null) {
@@ -55,11 +60,13 @@ namespace Synthesis.UI.Dynamic {
                         new Content(null, GameObject.Find("UI").transform.Find("SubScreenSpace").gameObject, null);
                     SimulationRunner.OnSimKill += () => _subScreenSpaceContent = null;
                 }
+
                 return _subScreenSpaceContent;
             }
         }
 
         private static Slider _replaySlider = null;
+
         public static Slider ReplaySlider {
             get {
                 if (_replaySlider == null)
@@ -84,6 +91,7 @@ namespace Synthesis.UI.Dynamic {
         }
 
         private static Content _toastContainer = null;
+
         public static Content ToastContainer {
             get {
                 if (_toastContainer == null || _toastContainer.RootGameObject == null) {
@@ -97,6 +105,7 @@ namespace Synthesis.UI.Dynamic {
                                           .StepIntoImage(i => i.SetColor(new Color(0.1f, 0.1f, 0.1f, 0f)));
                     _toastContainer.RootGameObject.AddComponent<RectMask2D>();
                 }
+
                 SimulationRunner.OnSimKill += () => { _toastContainer = null; };
                 return _toastContainer;
             }
@@ -152,6 +161,7 @@ namespace Synthesis.UI.Dynamic {
             void TweenCallback(SynthesisTween.SynthesisTweenStatus status) {
                 unityObject.transform.localScale = Vector3.one * status.CurrentValue<float>();
             }
+
             AnalyticsManager.LogCustomEvent(AnalyticsEvent.ModalCreated, ("UIType", typeof(T).Name));
             return true;
         }
@@ -271,8 +281,9 @@ namespace Synthesis.UI.Dynamic {
                 modal.Delete_Internal();
             }
 
-            modal.UnityObject.transform.GetComponentsInChildren<UnityEngine.UI.Button>().ForEach(
-                b => { b.enabled = false; });
+            if (modal.UnityObject != null)
+                modal.UnityObject.transform.GetComponentsInChildren<UnityEngine.UI.Button>().ForEach(
+                    b => { b.enabled = false; });
 
             SubScreenSpaceContent.RootGameObject.SetActive(true);
             EventBus.Push(new ModalClosedEvent(modal));
