@@ -11,9 +11,10 @@ type ButtonProps = {
     value: string
     size?: ButtonSize
     onClick?: () => void
+    className?: string
 }
 
-const Button: React.FC<ButtonProps> = ({ value, size, onClick }) => {
+const Button: React.FC<ButtonProps> = ({ value, size, onClick, className }) => {
     let sizeClassNames
 
     if (!size) size = ButtonSize.Medium as ButtonSize
@@ -38,7 +39,7 @@ const Button: React.FC<ButtonProps> = ({ value, size, onClick }) => {
             type="button"
             value={value}
             onClick={onClick}
-            className={`bg-gradient-to-r from-orange-500 via-red-500 to-orange-500 bg-[length:200%_100%] w-min ${sizeClassNames} rounded-sm font-semibold cursor-pointer duration-200 active:bg-right`}
+            className={`bg-gradient-to-r from-orange-500 via-red-500 to-orange-500 bg-[length:200%_100%] w-min ${sizeClassNames} rounded-sm font-semibold cursor-pointer duration-200 active:bg-right ${className || ""}`}
         />
     )
 }

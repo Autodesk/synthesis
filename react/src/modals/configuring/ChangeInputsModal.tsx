@@ -4,6 +4,7 @@ import { FaGamepad } from "react-icons/fa6"
 import Stack, { StackDirection } from "../../components/Stack"
 import Label, { LabelSize } from "../../components/Label"
 import Button from "../../components/Button"
+import LabeledButton, { LabelPlacement } from "../../components/LabeledButton"
 
 type ModifierState = {
     alt?: boolean
@@ -72,7 +73,8 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                             {Object.values(robotControls).map(c => (
                                 <Stack direction={StackDirection.Horizontal}>
                                     <Label>{c.name}</Label>
-                                    <Button value={c.name == selectedInput ? "Press anything" : transformKeyName(c)} onClick={() => { setSelectedInput(c.name) }} />
+                                    <LabeledButton label={c.name} placement={LabelPlacement.Left}
+                                        value={c.name == selectedInput ? "Press anything" : transformKeyName(c)} onClick={() => { setSelectedInput(c.name) }} />
                                 </Stack>
                             ))}
                         </>

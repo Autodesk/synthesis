@@ -7,7 +7,7 @@ type CheckboxProps = {
     className?: string
     defaultState: boolean
     stateOverride?: boolean
-    onClick?: () => void
+    onClick?: (checked: boolean) => void
 }
 
 const Checkbox: React.FC<CheckboxProps> = ({
@@ -28,13 +28,15 @@ const Checkbox: React.FC<CheckboxProps> = ({
             </Label>
             <input
                 type="checkbox"
-                defaultChecked={state}
-                onClick={e => {
-                    setState((e.target as HTMLInputElement).checked)
-                    if (onClick) onClick()
+                defaultChecked={stateOverride != null ? undefined : state}
+                onChange={e => {
+                    console.log(e)
+                    const checked = (e.target as HTMLInputElement).checked;
+                    setState(checked)
+                    if (onClick) onClick(checked)
                 }}
                 className="bg-gray-500 translate-y-1/4 duration-200 cursor-pointer appearance-none w-5 h-5 rounded-full checked:bg-gradient-to-br checked:from-red-700 checked:to-orange-400"
-                checked={stateOverride != null ? stateOverride : state}
+                checked={stateOverride != null ? stateOverride : undefined}
             />
         </Stack>
     )

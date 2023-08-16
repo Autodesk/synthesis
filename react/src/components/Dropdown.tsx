@@ -25,8 +25,6 @@ const Dropdown: React.FC<DropdownProps> = ({
         className?: string
     }
 
-    console.log(optionList)
-
     const DropdownOption: React.FC<DropdownOptionProps> = ({
         children,
         value,

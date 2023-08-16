@@ -2,8 +2,6 @@ import { ModalControlProvider, useModalManager } from "./ModalContext"
 import { PanelControlProvider, usePanelManager } from "./PanelContext"
 import MainHUD from "./components/MainHUD"
 import SpawningModal from "./modals/SpawningModal"
-import ConfigurationModal from "./modals/ConfigurationModal"
-import ControlsModal from "./modals/ControlsModal"
 import CreateDeviceModal from "./modals/CreateDeviceModal"
 import DownloadAssetsModal from "./modals/DownloadAssetsModal"
 import RoboRIOModal from "./modals/configuring/RoboRIOModal"
@@ -25,15 +23,22 @@ import ExitSynthesisModal from "./modals/ExitSynthesisModal"
 import ConnectToMultiplayerModal from "./modals/aether/ConnectToMultiplayerModal"
 import ServerHostingModal from "./modals/aether/ServerHostingModal"
 import ChangeInputsModal from "./modals/configuring/ChangeInputsModal"
+import ChooseMultiplayerModeModal from "./modals/configuring/ChooseMultiplayerModeModal"
+import ChooseSingleplayerModeModal from "./modals/configuring/ChooseSingleplayerModeModal"
+import PracticeSettingsModal from "./modals/configuring/PracticeSettingsModal"
+import DeleteThemeModal from "./modals/configuring/theme-editor/DeleteThemeModal"
+import DeleteAllThemesModal from "./modals/configuring/theme-editor/DeleteAllThemesModal"
+import NewThemeModal from "./modals/configuring/theme-editor/NewThemeModal"
+import RCCreateDeviceModal from "./modals/configuring/rio-config/RCCreateDeviceModal"
+import RCConfigPwmGroupModal from "./modals/configuring/rio-config/RCConfigPwmGroupModal"
+import RCConfigEncoderModal from "./modals/configuring/rio-config/RCConfigEncoderModal"
 
 const initialModals = [
     <SettingsModal modalId="settings" />,
     <SpawningModal modalId="spawning" />,
     <RobotsModal modalId="robots" />,
     <FieldsModal modalId="fields" />,
-    <ConfigurationModal modalId="configuration" />,
     <ViewModal modalId="view" />,
-    <ControlsModal modalId="controls" />,
     <DownloadAssetsModal modalId="download-assets" />,
     <RoboRIOModal modalId="roborio" />,
     <CreateDeviceModal modalId="create-device" />,
@@ -44,7 +49,16 @@ const initialModals = [
     <UpdateAvailableModal modalId="update-availale" />,
     <ConnectToMultiplayerModal modalId="connect-to-multiplayer" />,
     <ServerHostingModal modalId="server-hosting" />,
-    <ChangeInputsModal modalId="change-inputs" />
+    <ChangeInputsModal modalId="change-inputs" />,
+    <ChooseMultiplayerModeModal modalId="multiplayer-mode" />,
+    <ChooseSingleplayerModeModal modalId="singleplayer-mode" />,
+    <PracticeSettingsModal modalId="practice-settings" />,
+    <DeleteThemeModal modalId="delete-theme" />,
+    <DeleteAllThemesModal modalId="delete-all-themes" />,
+    <NewThemeModal modalId="new-theme" />,
+    <RCCreateDeviceModal modalId="create-device" />,
+    <RCConfigPwmGroupModal modalId="config-pwm" />,
+    <RCConfigEncoderModal modalId="config-pwm" />,
 ]
 
 const initialPanels: ReactElement[] = [
@@ -149,9 +163,9 @@ function App() {
                 <ToastProvider>
                     <MainHUD />
                     <AnimatePresence>
+                        <RCConfigEncoderModal modalId="practice-settings" />
                         {motionPanelElements.length > 0 && motionPanelElements}
                         {motionModalElement && motionModalElement}
-                        <ChangeInputsModal modalId="server-hosting" />
                     </AnimatePresence>
                     <ToastContainer />
                 </ToastProvider>

@@ -18,6 +18,9 @@ type ModalProps = {
     cancelEnabled?: boolean
     middleEnabled?: boolean
     acceptEnabled?: boolean
+    cancelBlocked?: boolean
+    middleBlocked?: boolean
+    acceptBlocked?: boolean
     children?: ReactNode
 }
 
@@ -34,6 +37,9 @@ const Modal: React.FC<ModalProps> = ({
     cancelEnabled = true,
     middleEnabled = false,
     acceptEnabled = true,
+    cancelBlocked = false,
+    middleBlocked = false,
+    acceptBlocked = false
 }) => {
     const { closeModal } = useModalControlContext()
 
@@ -67,9 +73,9 @@ const Modal: React.FC<ModalProps> = ({
                         value={cancelName || "Cancel"}
                         onClick={() => {
                             closeModal()
-                            if (onCancel) onCancel()
+                            if (!cancelBlocked && onCancel) onCancel()
                         }}
-                        className="bg-red-500 rounded-md cursor-pointer px-4 py-1 text-black font-bold duration-100 hover:bg-red-600"
+                        className={`${cancelBlocked ? "bg-gray-700" : "bg-red-500"} rounded-md cursor-pointer px-4 py-1 text-black font-bold duration-100 hover:bg-red-600`}
                     />
                 )}
                 {middleEnabled && (
@@ -78,9 +84,9 @@ const Modal: React.FC<ModalProps> = ({
                         value={middleName || ""}
                         onClick={() => {
                             closeModal()
-                            if (onMiddle) onMiddle()
+                            if (!middleBlocked && onMiddle) onMiddle()
                         }}
-                        className="bg-blue-500 rounded-md cursor-pointer px-4 py-1 text-black font-bold duration-100 hover:bg-blue-600"
+                        className={`${middleBlocked ? "bg-gray-700" : "bg-blue-500"} rounded-md cursor-pointer px-4 py-1 text-black font-bold duration-100 hover:bg-blue-600`}
                     />
                 )}
                 {acceptEnabled && (
@@ -89,9 +95,9 @@ const Modal: React.FC<ModalProps> = ({
                         value={acceptName || "Accept"}
                         onClick={() => {
                             closeModal()
-                            if (onAccept) onAccept()
+                            if (!acceptBlocked && onAccept) onAccept()
                         }}
-                        className="bg-blue-500 rounded-md cursor-pointer px-4 py-1 text-black font-bold duration-100 hover:bg-blue-600"
+                        className={`${acceptBlocked ? "bg-gray-700" : "bg-blue-500"} rounded-md cursor-pointer px-4 py-1 text-black font-bold duration-100 hover:bg-blue-600`}
                     />
                 )}
             </div>
