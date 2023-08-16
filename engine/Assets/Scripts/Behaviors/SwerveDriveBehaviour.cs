@@ -77,7 +77,13 @@ namespace Synthesis {
         }
 
         public Analog TryLoadInput(string key, Analog defaultInput) {
-            Analog input = SimulationPreferences.GetRobotInput(MiraId, key);
+            Analog input;
+            if (InputManager.MappedValueInputs.ContainsKey(key)) {
+                input = InputManager.GetAnalog(key);
+                input.ContextBitmask = defaultInput.ContextBitmask;
+                return input;
+            }
+            input = SimulationPreferences.GetRobotInput(MiraId, key);
             if (input == null) {
                 SimulationPreferences.SetRobotInput(MiraId, key, defaultInput);
                 return defaultInput;

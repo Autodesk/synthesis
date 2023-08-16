@@ -172,7 +172,7 @@ public class ChangeInputsModal : ModalDynamic {
                 _changedInputs.ForEach(x => {
                     InputManager.AssignValueInput(x.Key, x.Value);
                     if (x.Value is Digital) {
-                        PreferenceManager.SetPreference<Digital>(x.Key, x.Value as Digital);
+                        PreferenceManager.SetPreference(x.Key, x.Value as Digital);
                         PreferenceManager.Save();
                     }
                 });
