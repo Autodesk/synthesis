@@ -1,3 +1,6 @@
+![Synthesis: An Autodesk Technology](/engine/Assets/Resources/Branding/Synthesis/Synthesis-An-Autodesk-Technology-2023-lockup-Blk-OL-No-Year-stacked.png#gh-light-mode-only)
+![Synthesis: An Autodesk Technology](/engine/Assets/Resources/Branding/Synthesis/Synthesis-An-Autodesk-Technology-2023-lockup-Wht-OL-No-Year-stacked.png#gh-dark-mode-only)
+
 # Synthesis Contribution Guide
 Synthesis is 100% open source and relies on the FIRST community to help make it better. The Synthesis Contribution Guide suggests ways in which you can get involved through development and non-development avenues. 
 
