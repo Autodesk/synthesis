@@ -267,7 +267,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     private static Analog TryGetSavedInput(string key, Analog defaultInput) {
         if (InputManager.MappedValueInputs.ContainsKey(key)) {
-            var input = InputManager.GetAnalog(key);
+            var input            = InputManager.GetAnalog(key);
             input.ContextBitmask = defaultInput.ContextBitmask;
             return input;
         }
@@ -852,9 +852,9 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     private string GetTooltipOutput(string key, string defaultInput) {
-        Analog input = InputManager.MappedValueInputs.ContainsKey(key) ?
-            InputManager.GetAnalog(key)
-            : SimulationPreferences.GetRobotInput(MainHUD.SelectedRobot.MiraGUID, key);
+        Analog input = InputManager.MappedValueInputs.ContainsKey(key)
+                           ? InputManager.GetAnalog(key)
+                           : SimulationPreferences.GetRobotInput(MainHUD.SelectedRobot.MiraGUID, key);
         return input != null ? input.Name : defaultInput;
     }
 }

@@ -183,9 +183,7 @@ public class ChangeInputsModal : ModalDynamic {
         MiddleButton
             .AddOnClickedEvent(b => {
                 isSave = false;
-                _changedInputs.ForEach(x => {
-                    InputManager.AssignValueInput(x.Key, x.Value);
-                });
+                _changedInputs.ForEach(x => { InputManager.AssignValueInput(x.Key, x.Value); });
                 DynamicUIManager.CloseActiveModal();
             })
             .StepIntoLabel(l => l.SetText("Session"))
@@ -206,11 +204,9 @@ public class ChangeInputsModal : ModalDynamic {
                 if (_changedInputs.ContainsKey(_reassigningKey))
                     _changedInputs.Remove(_reassigningKey);
                 _changedInputs.Add(_reassigningKey, input);
-                
+
                 UpdateUI(_reassigningButton, input, input is Digital);
                 _reassigningButton.Parent.SetBackgroundColor<Content>(ColorManager.SynthesisColor.BackgroundSecondary);
-
-                
 
                 _currentlyReassigning = null;
                 _reassigningButton    = null;

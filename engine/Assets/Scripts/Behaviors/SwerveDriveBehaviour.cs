@@ -79,7 +79,7 @@ namespace Synthesis {
         public Analog TryLoadInput(string key, Analog defaultInput) {
             Analog input;
             if (InputManager.MappedValueInputs.ContainsKey(key)) {
-                input = InputManager.GetAnalog(key);
+                input                = InputManager.GetAnalog(key);
                 input.ContextBitmask = defaultInput.ContextBitmask;
                 return input;
             }

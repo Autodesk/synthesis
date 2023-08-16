@@ -35,7 +35,7 @@ public class GodMode : MonoBehaviour {
 
     private Analog TryGetSavedInput(string key, Analog defaultInput) {
         if (InputManager.MappedValueInputs.ContainsKey(key)) {
-            var input = InputManager.GetAnalog(key);
+            var input            = InputManager.GetAnalog(key);
             input.ContextBitmask = defaultInput.ContextBitmask;
             return input;
         }

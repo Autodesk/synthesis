@@ -32,8 +32,8 @@ public class SocialMediaButtons : MonoBehaviour {
     public void Website() {
         Process.Start(new ProcessStartInfo() { FileName = "https://synthesis.autodesk.com/", UseShellExecute = true });
     }
-    
+
     public void Email() {
-        Process.Start(new ProcessStartInfo() { FileName = "mailto:frc@autodesk.com", UseShellExecute = true});
+        Process.Start(new ProcessStartInfo() { FileName = "mailto:frc@autodesk.com", UseShellExecute = true });
     }
 }
