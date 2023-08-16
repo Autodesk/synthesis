@@ -18,4 +18,4 @@ const ChooseSingleplayerModeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     )
 }
 
-export default ChooseSingleplayerModeModal 
+export default ChooseSingleplayerModeModal

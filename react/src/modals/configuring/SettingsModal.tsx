@@ -17,12 +17,12 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             <Dropdown
                 label="Screen Mode"
                 options={["Windowed", "Fullscreen"]}
-                onSelect={() => { }}
+                onSelect={() => {}}
             />
             <Dropdown
                 label="Quality Settings"
                 options={["Low", "Medium", "High", "Ultra"]}
-                onSelect={() => { }}
+                onSelect={() => {}}
             />
             <Button
                 value="Theme Editor"

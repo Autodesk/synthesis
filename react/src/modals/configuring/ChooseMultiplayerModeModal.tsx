@@ -18,4 +18,4 @@ const ChooseMultiplayerModeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     )
 }
 
-export default ChooseMultiplayerModeModal 
+export default ChooseMultiplayerModeModal

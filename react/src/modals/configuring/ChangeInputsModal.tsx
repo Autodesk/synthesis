@@ -1,9 +1,8 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import Modal, { ModalPropsImpl } from "../../components/Modal"
 import { FaGamepad } from "react-icons/fa6"
 import Stack, { StackDirection } from "../../components/Stack"
 import Label, { LabelSize } from "../../components/Label"
-import Button from "../../components/Button"
 import LabeledButton, { LabelPlacement } from "../../components/LabeledButton"
 
 type ModifierState = {
@@ -22,7 +21,7 @@ type Control = {
 const globalControls: { [key: string]: Control } = {
     "Intake": { name: "Intake", key: "E" },
     "Shoot Gamepiece": { name: "Shoot Gamepiece", key: "Q" },
-    "Enable God Mode": { name: "Enable God Mode", key: "G" }
+    "Enable God Mode": { name: "Enable God Mode", key: "G" },
 }
 
 const robotControls: { [key: string]: Control } = {
@@ -32,66 +31,100 @@ const robotControls: { [key: string]: Control } = {
     "Arcade Right": { name: "Arcade Right", key: "D" },
 }
 
-
 // capitalize first letter
 const transformKeyName = (control: Control) => {
     let suffix = ""
     if (control.modifiers) {
-        if (control.modifiers.meta) suffix += " + Meta";
-        if (control.modifiers.shift) suffix += " + Shift";
-        if (control.modifiers.ctrl) suffix += " + Ctrl";
-        if (control.modifiers.alt) suffix += " + Alt";
+        if (control.modifiers.meta) suffix += " + Meta"
+        if (control.modifiers.shift) suffix += " + Shift"
+        if (control.modifiers.ctrl) suffix += " + Ctrl"
+        if (control.modifiers.alt) suffix += " + Alt"
     }
-    return control.key[0].toUpperCase() + control.key.substring(1) + suffix;
+    return control.key[0].toUpperCase() + control.key.substring(1) + suffix
 }
 
 const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
-    const [loadedRobot, setLoadedRobot] = useState<string>("");
-    const [selectedInput, setSelectedInput] = useState<string>("");
-    const [chosenKey, setChosenKey] = useState<string>("");
+    const [loadedRobot, setLoadedRobot] = useState<string>("")
+    const [selectedInput, setSelectedInput] = useState<string>("")
+    const [chosenKey, setChosenKey] = useState<string>("")
     const [modifierState, setModifierState] = useState<ModifierState>({})
 
+    useEffect(() => {
+        setTimeout(() => setLoadedRobot("Dozer v9"), 2_000)
+    })
+
     if (selectedInput && chosenKey) {
-        const selected = globalControls[selectedInput];
-        selected.key = chosenKey;
-        selected.modifiers = modifierState;
-        setChosenKey("");
-        setSelectedInput("");
+        const selected = globalControls[selectedInput]
+        selected.key = chosenKey
+        selected.modifiers = modifierState
+        setChosenKey("")
+        setSelectedInput("")
         setModifierState({})
     }
 
     return (
         <Modal name="Keybinds" icon={<FaGamepad />} modalId={modalId}>
             <Stack direction={StackDirection.Horizontal}>
-                <div onKeyUp={e => {
-                    setChosenKey(selectedInput ? e.key : "");
-                    setModifierState({ ctrl: e.ctrlKey, alt: e.altKey, shift: e.shiftKey, meta: e.metaKey })
-                }}>
+                <div
+                    className="w-max"
+                    onKeyUp={e => {
+                        setChosenKey(selectedInput ? e.key : "")
+                        setModifierState({
+                            ctrl: e.ctrlKey,
+                            alt: e.altKey,
+                            shift: e.shiftKey,
+                            meta: e.metaKey,
+                        })
+                    }}
+                >
                     {loadedRobot ? (
                         <>
                             <Label size={LabelSize.Large}>Robot Controls</Label>
                             {Object.values(robotControls).map(c => (
-                                <Stack direction={StackDirection.Horizontal}>
-                                    <Label>{c.name}</Label>
-                                    <LabeledButton label={c.name} placement={LabelPlacement.Left}
-                                        value={c.name == selectedInput ? "Press anything" : transformKeyName(c)} onClick={() => { setSelectedInput(c.name) }} />
-                                </Stack>
+                                <LabeledButton
+                                    label={c.name}
+                                    placement={LabelPlacement.Left}
+                                    value={
+                                        c.name == selectedInput
+                                            ? "Press anything"
+                                            : transformKeyName(c)
+                                    }
+                                    onClick={() => {
+                                        setSelectedInput(c.name)
+                                    }}
+                                />
                             ))}
                         </>
                     ) : (
                         <Label>No robot loaded.</Label>
                     )}
                 </div>
-                <div onKeyUp={e => {
-                    setChosenKey(selectedInput ? e.key : "");
-                    setModifierState({ ctrl: e.ctrlKey, alt: e.altKey, shift: e.shiftKey, meta: e.metaKey })
-                }}>
+                <div
+                    className="w-max"
+                    onKeyUp={e => {
+                        setChosenKey(selectedInput ? e.key : "")
+                        setModifierState({
+                            ctrl: e.ctrlKey,
+                            alt: e.altKey,
+                            shift: e.shiftKey,
+                            meta: e.metaKey,
+                        })
+                    }}
+                >
                     <Label size={LabelSize.Large}>Global Controls</Label>
                     {Object.values(globalControls).map(c => (
-                        <Stack direction={StackDirection.Horizontal}>
-                            <Label>{c.name}</Label>
-                            <Button value={c.name == selectedInput ? "Press anything" : transformKeyName(c)} onClick={() => { setSelectedInput(c.name) }} />
-                        </Stack>
+                        <LabeledButton
+                            label={c.name}
+                            placement={LabelPlacement.Left}
+                            value={
+                                c.name == selectedInput
+                                    ? "Press anything"
+                                    : transformKeyName(c)
+                            }
+                            onClick={() => {
+                                setSelectedInput(c.name)
+                            }}
+                        />
                     ))}
                 </div>
             </Stack>

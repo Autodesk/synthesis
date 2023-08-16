@@ -12,7 +12,16 @@ type InputProps = {
     className?: string
 }
 
-const Input: React.FC<InputProps> = ({ placeholder, value, defaultValue, numeric, validate, label, onInput, className }) => {
+const Input: React.FC<InputProps> = ({
+    placeholder,
+    value,
+    defaultValue,
+    numeric,
+    validate,
+    label,
+    onInput,
+    className,
+}) => {
     return (
         <>
             {label && <Label size={LabelSize.Small}>{label}</Label>}
@@ -20,17 +29,23 @@ const Input: React.FC<InputProps> = ({ placeholder, value, defaultValue, numeric
                 placeholder={placeholder}
                 defaultValue={defaultValue}
                 value={value}
-                onKeyPress={(e) => {
-                    if (e.key != null && numeric && !"1234567890,.".includes(e.key)) {
-                        e.preventDefault();
+                onKeyPress={e => {
+                    if (
+                        e.key != null &&
+                        numeric &&
+                        !"1234567890,.".includes(e.key)
+                    ) {
+                        e.preventDefault()
                     }
 
-                    if (validate && !validate(e.key)) e.preventDefault();
+                    if (validate && !validate(e.key)) e.preventDefault()
                 }}
                 onChange={e => {
-                    if (onInput) onInput(e.target.value);
+                    if (onInput) onInput(e.target.value)
                 }}
-                className={`bg-gray-700 px-2 py-1 bg-[length:200%_100%] w-min rounded-md font-semibold cursor-pointer placeholder:italic ${className || ""}`}
+                className={`bg-gray-700 px-2 py-1 bg-[length:200%_100%] w-min rounded-md font-semibold cursor-pointer placeholder:italic ${
+                    className || ""
+                }`}
             />
         </>
     )

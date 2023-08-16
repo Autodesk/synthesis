@@ -31,7 +31,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
                 defaultChecked={stateOverride != null ? undefined : state}
                 onChange={e => {
                     console.log(e)
-                    const checked = (e.target as HTMLInputElement).checked;
+                    const checked = (e.target as HTMLInputElement).checked
                     setState(checked)
                     if (onClick) onClick(checked)
                 }}

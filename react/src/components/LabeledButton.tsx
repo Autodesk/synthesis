@@ -16,6 +16,8 @@ type LabeledButtonProps = {
     placement: LabelPlacement
     labelSize?: LabelSize
     onClick?: () => void
+    labelClassName?: string
+    buttonClassName?: string
 }
 
 const LabeledButton: React.FC<LabeledButtonProps> = ({
@@ -24,12 +26,23 @@ const LabeledButton: React.FC<LabeledButtonProps> = ({
     placement,
     labelSize,
     onClick,
+    labelClassName,
+    buttonClassName,
 }) => {
     const buttonComponent = (
-        <Button key={"button"} value={value} onClick={onClick} />
+        <Button
+            key={"button"}
+            value={value}
+            onClick={onClick}
+            className={buttonClassName}
+        />
     )
     const labelComponent = (
-        <Label key={"label"} size={labelSize || LabelSize.Small}>
+        <Label
+            key={"label"}
+            size={labelSize || LabelSize.Small}
+            className={labelClassName}
+        >
             {label}
         </Label>
     )

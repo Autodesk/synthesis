@@ -8,16 +8,12 @@ import Dropdown from "../../components/Dropdown"
 
 const PracticeSettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
-        <Modal
-            name="Practice Settings"
-            icon={<FaGear />}
-            modalId={modalId}
-        >
+        <Modal name="Practice Settings" icon={<FaGear />} modalId={modalId}>
             <Label size={LabelSize.Large}>Gamepiece Spawning</Label>
             <Stack direction={StackDirection.Horizontal}>
                 <Dropdown
                     options={["Sphere", "Cube", "Capsule"]}
-                    onSelect={() => { }}
+                    onSelect={() => {}}
                 />
                 <Button value="Spawn" />
             </Stack>
@@ -31,4 +27,4 @@ const PracticeSettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     )
 }
 
-export default PracticeSettingsModal 
+export default PracticeSettingsModal

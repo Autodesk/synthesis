@@ -4,7 +4,7 @@ import { GrFormClose } from "react-icons/gr"
 import { useModalControlContext } from "../../../ModalContext"
 
 const DeleteAllThemesModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
-    const { openModal } = useModalControlContext();
+    const { openModal } = useModalControlContext()
 
     return (
         <Modal
@@ -17,9 +17,8 @@ const DeleteAllThemesModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             onCancel={() => {
                 openModal("theme-editor")
             }}
-        >
-        </Modal>
+        ></Modal>
     )
 }
 
-export default DeleteAllThemesModal 
+export default DeleteAllThemesModal

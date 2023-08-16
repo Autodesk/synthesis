@@ -58,7 +58,7 @@ const initialModals = [
     <NewThemeModal modalId="new-theme" />,
     <RCCreateDeviceModal modalId="create-device" />,
     <RCConfigPwmGroupModal modalId="config-pwm" />,
-    <RCConfigEncoderModal modalId="config-pwm" />,
+    <RCConfigEncoderModal modalId="config-encoder" />,
 ]
 
 const initialPanels: ReactElement[] = [
@@ -163,7 +163,6 @@ function App() {
                 <ToastProvider>
                     <MainHUD />
                     <AnimatePresence>
-                        <RCConfigEncoderModal modalId="practice-settings" />
                         {motionPanelElements.length > 0 && motionPanelElements}
                         {motionModalElement && motionModalElement}
                     </AnimatePresence>

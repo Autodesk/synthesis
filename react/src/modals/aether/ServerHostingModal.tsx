@@ -17,7 +17,7 @@ const clients_source: Client[] = [
 ]
 
 const ServerHostingModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
-    const [clients, setClients] = useState<Client[]>([]);
+    const [clients, setClients] = useState<Client[]>([])
     // should replace with actual clients when communication works
     useEffect(() => {
         setTimeout(() => {
@@ -28,12 +28,14 @@ const ServerHostingModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         <Modal name={"Server Hosting"} icon={<FaPlus />} modalId={modalId}>
             {clients.length == 0 ? (
                 <Label>Waiting for clients...</Label>
-            ) : clients.map(c => (
-                <Stack direction={StackDirection.Horizontal}>
-                    <Label>{c.name}</Label>
-                    <Label>{c.ping}ms</Label>
-                </Stack>
-            ))}
+            ) : (
+                clients.map(c => (
+                    <Stack direction={StackDirection.Horizontal}>
+                        <Label>{c.name}</Label>
+                        <Label>{c.ping}ms</Label>
+                    </Stack>
+                ))
+            )}
         </Modal>
     )
 }

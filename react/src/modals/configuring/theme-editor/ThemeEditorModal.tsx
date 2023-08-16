@@ -58,8 +58,9 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         <Button
                             value="Create Theme"
                             onClick={() => {
-                                const newThemeName = `${Object.keys(themes).length
-                                    }`
+                                const newThemeName = `${
+                                    Object.keys(themes).length
+                                }`
                                 setThemes({
                                     ...themes,
                                     [newThemeName]: { ...defaultColors },
@@ -95,8 +96,9 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         {Object.entries(themes[selectedTheme]).map(([n, c]) => (
                             <div
                                 key={n}
-                                className={`flex flex-row gap-2 content-middle align-center cursor-pointer rounded-md p-1 ${n == selectedColor ? "bg-gray-700" : ""
-                                    }`}
+                                className={`flex flex-row gap-2 content-middle align-center cursor-pointer rounded-md p-1 ${
+                                    n == selectedColor ? "bg-gray-700" : ""
+                                }`}
                                 onClick={() => setSelectedColor(n)}
                             >
                                 <div

@@ -5,16 +5,9 @@ type ScrollViewProps = {
     className?: string
 }
 
-const ScrollView: React.FC<ScrollViewProps> = ({
-    className,
-    children,
-}) => {
+const ScrollView: React.FC<ScrollViewProps> = ({ className, children }) => {
     return (
-        <div
-            className={`w-max ${className} overflow-y-scroll`}
-        >
-            {children}
-        </div>
+        <div className={`w-max ${className} overflow-y-scroll`}>{children}</div>
     )
 }
 

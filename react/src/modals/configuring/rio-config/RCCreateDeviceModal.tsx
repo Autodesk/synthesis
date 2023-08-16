@@ -5,8 +5,8 @@ import { FaPlus } from "react-icons/fa6"
 import Dropdown from "../../../components/Dropdown"
 
 const RCCreateDeviceModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
-    const { openModal } = useModalControlContext();
-    const [type, setType] = useState<string>("");
+    const { openModal } = useModalControlContext()
+    const [type, setType] = useState<string>("")
 
     return (
         <Modal
@@ -17,13 +17,13 @@ const RCCreateDeviceModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             onAccept={() => {
                 switch (type) {
                     case "PWM":
-                        openModal("config-pwm");
-                        break;
+                        openModal("config-pwm")
+                        break
                     case "Encoder":
-                        openModal("config-encoder");
-                        break;
+                        openModal("config-encoder")
+                        break
                     default:
-                        break;
+                        break
                 }
             }}
             onCancel={() => {
@@ -33,10 +33,12 @@ const RCCreateDeviceModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             <Dropdown
                 label={"Type"}
                 options={["PWM", "Encoder"]}
-                onSelect={(selected) => { setType(selected) }}
+                onSelect={selected => {
+                    setType(selected)
+                }}
             />
         </Modal>
     )
 }
 
-export default RCCreateDeviceModal 
+export default RCCreateDeviceModal

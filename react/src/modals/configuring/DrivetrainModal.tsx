@@ -9,7 +9,7 @@ const DrivetrainModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             <Dropdown
                 label="Type"
                 options={["None", "Tank", "Arcade", "Swerve"]}
-                onSelect={() => { }}
+                onSelect={() => {}}
             />
         </Modal>
     )
