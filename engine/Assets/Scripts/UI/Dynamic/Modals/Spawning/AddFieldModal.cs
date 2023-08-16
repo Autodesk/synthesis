@@ -44,7 +44,7 @@ namespace Synthesis.UI.Dynamic {
             var chooseRobotDropdown =
                 MainContent.CreateDropdown()
                     .SetOptions(
-                        _files.Select(x => Path.GetFileName(x).Substring(0, Path.GetFileName(x).Length - 5)).ToArray())
+                        _files.Select(Path.GetFileNameWithoutExtension).ToArray())
                     .AddOnValueChangedEvent((d, i, data) => _selectedIndex = i)
                     .SetTopStretch<Dropdown>();
 
