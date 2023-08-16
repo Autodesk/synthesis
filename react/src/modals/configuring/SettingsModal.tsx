@@ -1,12 +1,12 @@
 import React from "react"
-import { useModalControlContext } from "../ModalContext"
-import Modal, { ModalPropsImpl } from "../components/Modal"
+import { useModalControlContext } from "../../ModalContext"
+import Modal, { ModalPropsImpl } from "../../components/Modal"
 import { FaGear } from "react-icons/fa6"
-import Label, { LabelSize } from "../components/Label"
-import Dropdown from "../components/Dropdown"
-import Button from "../components/Button"
-import Slider from "../components/Slider"
-import Checkbox from "../components/Checkbox"
+import Label, { LabelSize } from "../../components/Label"
+import Dropdown from "../../components/Dropdown"
+import Button from "../../components/Button"
+import Slider from "../../components/Slider"
+import Checkbox from "../../components/Checkbox"
 
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
@@ -17,10 +17,12 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             <Dropdown
                 label="Screen Mode"
                 options={["Windowed", "Fullscreen"]}
+                onSelect={() => { }}
             />
             <Dropdown
                 label="Quality Settings"
                 options={["Low", "Medium", "High", "Ultra"]}
+                onSelect={() => { }}
             />
             <Button
                 value="Theme Editor"

@@ -1,7 +1,7 @@
 import React from "react"
-import Modal, { ModalPropsImpl } from "../components/Modal"
-import LabeledButton, { LabelPlacement } from "../components/LabeledButton"
-import { useModalControlContext } from "../ModalContext"
+import Modal, { ModalPropsImpl } from "../../components/Modal"
+import LabeledButton, { LabelPlacement } from "../../components/LabeledButton"
+import { useModalControlContext } from "../../ModalContext"
 import { BsCodeSquare } from "react-icons/bs"
 
 const RoboRIOModal: React.FC<ModalPropsImpl> = ({ modalId }) => {

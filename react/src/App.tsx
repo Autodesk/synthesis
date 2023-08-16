@@ -6,22 +6,25 @@ import ConfigurationModal from "./modals/ConfigurationModal"
 import ControlsModal from "./modals/ControlsModal"
 import CreateDeviceModal from "./modals/CreateDeviceModal"
 import DownloadAssetsModal from "./modals/DownloadAssetsModal"
-import RoboRIOModal from "./modals/RoboRIOModal"
+import RoboRIOModal from "./modals/configuring/RoboRIOModal"
 import ViewModal from "./modals/ViewModal"
 import MultiBotPanel from "./panels/MultiBotPanel"
 import RobotsModal from "./modals/RobotsModal"
 import FieldsModal from "./modals/FieldsModal"
-import SettingsModal from "./modals/SettingsModal"
+import SettingsModal from "./modals/configuring/SettingsModal"
 import DriverStationPanel from "./panels/DriverStationPanel"
-import DrivetrainModal from "./modals/DrivetrainModal"
+import DrivetrainModal from "./modals/configuring/DrivetrainModal"
 import { AnimatePresence } from "framer-motion"
 import { motion } from "framer-motion"
 import { ReactElement } from "react"
 import { ToastContainer, ToastProvider } from "./ToastContext"
-import ThemeEditorModal from "./modals/ThemeEditorModal"
+import ThemeEditorModal from "./modals/configuring/theme-editor/ThemeEditorModal"
 import MatchResultsModal from "./modals/MatchResultsModal"
 import UpdateAvailableModal from "./modals/UpdateAvailableModal"
 import ExitSynthesisModal from "./modals/ExitSynthesisModal"
+import ConnectToMultiplayerModal from "./modals/aether/ConnectToMultiplayerModal"
+import ServerHostingModal from "./modals/aether/ServerHostingModal"
+import ChangeInputsModal from "./modals/configuring/ChangeInputsModal"
 
 const initialModals = [
     <SettingsModal modalId="settings" />,
@@ -39,6 +42,9 @@ const initialModals = [
     <ExitSynthesisModal modalId="exit-synthesis" />,
     <MatchResultsModal modalId="match-results" />,
     <UpdateAvailableModal modalId="update-availale" />,
+    <ConnectToMultiplayerModal modalId="connect-to-multiplayer" />,
+    <ServerHostingModal modalId="server-hosting" />,
+    <ChangeInputsModal modalId="change-inputs" />
 ]
 
 const initialPanels: ReactElement[] = [
@@ -145,6 +151,7 @@ function App() {
                     <AnimatePresence>
                         {motionPanelElements.length > 0 && motionPanelElements}
                         {motionModalElement && motionModalElement}
+                        <ChangeInputsModal modalId="server-hosting" />
                     </AnimatePresence>
                     <ToastContainer />
                 </ToastProvider>

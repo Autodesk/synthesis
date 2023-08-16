@@ -28,6 +28,7 @@ const Stack: React.FC<StackProps> = ({
     return (
         <div
             className={`flex ${directionClassName} justify-${justify} gap-[${spacing}px] w-full ${className}`}
+            style={{ gap: `${spacing}px` }}
         >
             {" "}
             {children}

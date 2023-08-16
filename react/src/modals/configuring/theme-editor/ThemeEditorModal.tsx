@@ -1,10 +1,10 @@
 import React, { useState } from "react"
 import { FaChessBoard } from "react-icons/fa6"
-import Modal, { ModalPropsImpl } from "../components/Modal"
+import Modal, { ModalPropsImpl } from "../../../components/Modal"
 import { RgbaColor, RgbaColorPicker } from "react-colorful"
-import Stack, { StackDirection } from "../components/Stack"
-import Dropdown from "../components/Dropdown"
-import Button from "../components/Button"
+import Stack, { StackDirection } from "../../../components/Stack"
+import Dropdown from "../../../components/Dropdown"
+import Button from "../../../components/Button"
 
 type Theme = { [name: string]: RgbaColor }
 
@@ -58,9 +58,8 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         <Button
                             value="Create Theme"
                             onClick={() => {
-                                const newThemeName = `${
-                                    Object.keys(themes).length
-                                }`
+                                const newThemeName = `${Object.keys(themes).length
+                                    }`
                                 setThemes({
                                     ...themes,
                                     [newThemeName]: { ...defaultColors },
@@ -96,9 +95,8 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         {Object.entries(themes[selectedTheme]).map(([n, c]) => (
                             <div
                                 key={n}
-                                className={`flex flex-row gap-2 content-middle align-center cursor-pointer rounded-md p-1 ${
-                                    n == selectedColor ? "bg-gray-700" : ""
-                                }`}
+                                className={`flex flex-row gap-2 content-middle align-center cursor-pointer rounded-md p-1 ${n == selectedColor ? "bg-gray-700" : ""
+                                    }`}
                                 onClick={() => setSelectedColor(n)}
                             >
                                 <div
