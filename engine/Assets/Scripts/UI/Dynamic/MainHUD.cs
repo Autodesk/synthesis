@@ -444,7 +444,10 @@ public static class MainHUD {
                     DynamicUIManager.CreatePanel<ScoringZonesPanel>();
             }
         }, drawerPosition: DrawerPosition.Bottom);
-        AddItemToDrawer("Skip to End", b => MatchMode.MatchTime = 10, drawerPosition: DrawerPosition.Bottom);
+
+#if UNITY_EDITOR
+        AddItemToDrawer("Skip to End", b => MatchMode.MatchTime = MatchMode.MatchTime > 10 ? 10 : MatchMode.MatchTime, drawerPosition: DrawerPosition.Bottom);
+#endif
 
         if ((MatchStateMachine.Instance.CurrentState.StateName is MatchStateMachine.StateName.RobotPositioning) &&
             Camera.main != null) {

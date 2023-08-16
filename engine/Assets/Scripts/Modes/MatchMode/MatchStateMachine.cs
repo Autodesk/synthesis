@@ -300,6 +300,8 @@ namespace Modes.MatchMode {
             public override void Update() {}
 
             public override void End() {
+                Scoring.blueScore = 0;
+                Scoring.redScore  = 0;
                 AnalyticsManager.LogCustomEvent(AnalyticsEvent.MatchEnded,
                     ("BluePoints", int.Parse(MatchMode.MatchResultsTracker
                                                  .MatchResultEntries[typeof(MatchResultsTracker.BluePoints)]

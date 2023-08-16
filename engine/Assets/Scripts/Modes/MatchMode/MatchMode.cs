@@ -50,7 +50,7 @@ namespace Modes.MatchMode {
             _stateMachine = MatchStateMachine.Instance;
             _stateMachine.SetState(MatchStateMachine.StateName.MatchConfig);
 
-            SetupMatchResultTracking();
+            MatchResultsTracker = new MatchResultsTracker();
             MainHUD.SetUpMatch();
         }
 
@@ -72,27 +72,6 @@ namespace Modes.MatchMode {
                     Scoring.redScore += points;
                     break;
             }
-        }
-
-        /// Creates a MatchResultsTracker and event listeners to update it
-        public void SetupMatchResultTracking() {
-            MatchResultsTracker = new MatchResultsTracker();
-
-            EventBus.NewTypeListener<OnScoreUpdateEvent>(e => {
-                ScoringZone zone = ((OnScoreUpdateEvent) e).Zone;
-                switch (zone.Alliance) {
-                    case Alliance.Blue:
-                        int i = ((BluePoints) MatchResultsTracker.MatchResultEntries[typeof(BluePoints)]).Points;
-                        ((BluePoints) MatchResultsTracker.MatchResultEntries[typeof(BluePoints)]).Points +=
-                            zone.Points * (((OnScoreUpdateEvent) e).IncreaseScore ? 1 : -1);
-                        break;
-                    case Alliance.Red:
-                        i = ((RedPoints) MatchResultsTracker.MatchResultEntries[typeof(RedPoints)]).Points;
-                        ((RedPoints) MatchResultsTracker.MatchResultEntries[typeof(RedPoints)]).Points +=
-                            zone.Points * (((OnScoreUpdateEvent) e).IncreaseScore ? 1 : -1);
-                        break;
-                }
-            });
         }
 
         public void Update() {
