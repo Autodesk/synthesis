@@ -14,7 +14,7 @@ namespace UI.Dynamic.Modals.Spawning {
         private int _selectedIndex = -1;
         private string[] _files;
 
-        public string Folder = "Mira";
+        private readonly string Folder = "Mira";
 
         public AddRobotModal() : base(new Vector2(400, 55)) {}
 
@@ -45,6 +45,11 @@ namespace UI.Dynamic.Modals.Spawning {
                                           .SetOptions(_files.Select(x => Path.GetFileName(x)).ToArray())
                                           .AddOnValueChangedEvent((d, i, data) => _selectedIndex = i)
                                           .SetTopStretch<Dropdown>();
+            
+            if (_files.Length == 0) {
+                chooseRobotDropdown.ApplyTemplate(Dropdown.DisableDropdown);
+                AcceptButton.RootGameObject.SetActive(false);
+            }
 
             _selectedIndex = _files.Length > 0 ? 0 : -1;
         }

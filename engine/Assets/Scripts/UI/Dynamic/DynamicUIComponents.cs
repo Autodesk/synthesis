@@ -1278,26 +1278,54 @@ namespace Synthesis.UI.Dynamic {
             button.SetTopStretch<Button>(
                 leftPadding: 15f, anchoredY: button.Parent!.HeightOfChildren - button.Size.y + 15f);
 
-        public static readonly Func<Button, Button> EnableButton = b =>
+        public static readonly Func<Button, Button> EnableButton = b => {
             b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
-                                ColorManager.SynthesisColor.InteractiveElementRight))
+                    ColorManager.SynthesisColor.InteractiveElementRight))
                 .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
                 .EnableEvents<Button>();
 
-        public static readonly Func<Button, Button> EnableAcceptButton = b =>
+            var eventListener = b.RootGameObject.GetComponentInChildren<HoverEventListener>();
+            if (eventListener != null)
+                eventListener.enabled = true;
+
+            return b;
+        };
+
+        public static readonly Func<Button, Button> EnableAcceptButton = b => {
             b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.AcceptButton))
                 .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.AcceptCancelButtonText))
                 .EnableEvents<Button>();
 
-        public static readonly Func<Button, Button> EnableDeleteButton = b =>
+            var eventListener = b.RootGameObject.GetComponentInChildren<HoverEventListener>();
+            if (eventListener != null)
+                eventListener.enabled = true;
+
+            return b;
+        };
+
+        public static readonly Func<Button, Button> EnableDeleteButton = b => {
             b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.CancelButton))
                 .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
                 .EnableEvents<Button>();
 
-        public static readonly Func<Button, Button> DisableButton = b =>
+            var eventListener = b.RootGameObject.GetComponentInChildren<HoverEventListener>();
+            if (eventListener != null)
+                eventListener.enabled = true;
+
+            return b;
+        };
+
+        public static readonly Func<Button, Button> DisableButton = b => {
             b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground))
                 .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
                 .DisableEvents<Button>();
+
+            var eventListener = b.RootGameObject.GetComponentInChildren<HoverEventListener>();
+            if (eventListener != null)
+                eventListener.enabled = false;
+
+            return b;
+        };
 
         public event Action<Button> OnClicked;
         private Label? _label;
@@ -1325,8 +1353,8 @@ namespace Synthesis.UI.Dynamic {
             });
 
             _image = new Image(this, unityObject.transform.Find("Button").gameObject)
-                         .SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
-                             ColorManager.SynthesisColor.InteractiveElementRight);
+                .SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                    ColorManager.SynthesisColor.InteractiveElementRight);
 
             var gradientUpdater = _image.RootGameObject.GetComponent<GradientImageUpdater>();
 
@@ -1341,13 +1369,15 @@ namespace Synthesis.UI.Dynamic {
 
         public Button SetInteractableColors(
             ColorManager.SynthesisColor highlightedColor = ColorManager.SynthesisColor.InteractiveHover,
-            ColorManager.SynthesisColor pressedColor     = ColorManager.SynthesisColor.InteractiveSelect,
-            float fadeDuration                           = 0.1F) {
-            _unityButton.colors = new ColorBlock { normalColor = Color.white,
-                highlightedColor                               = ColorManager.GetColor(highlightedColor),
-                pressedColor                                   = ColorManager.GetColor(pressedColor),
-                selectedColor                                  = ColorManager.GetColor(highlightedColor),
-                disabledColor = new Color32(191, 191, 191, 255), fadeDuration = fadeDuration, colorMultiplier = 1F };
+            ColorManager.SynthesisColor pressedColor = ColorManager.SynthesisColor.InteractiveSelect,
+            float fadeDuration = 0.1F) {
+            _unityButton.colors = new ColorBlock {
+                normalColor = Color.white,
+                highlightedColor = ColorManager.GetColor(highlightedColor),
+                pressedColor = ColorManager.GetColor(pressedColor),
+                selectedColor = ColorManager.GetColor(highlightedColor),
+                disabledColor = new Color32(191, 191, 191, 255), fadeDuration = fadeDuration, colorMultiplier = 1F
+            };
             return this;
         }
 
@@ -1384,12 +1414,36 @@ namespace Synthesis.UI.Dynamic {
             dropdown.SetTopStretch<Dropdown>(
                 leftPadding: 15f, anchoredY: dropdown.Parent!.HeightOfChildren - dropdown.Size.y + 15f);
 
+        public static readonly Func<Dropdown, Dropdown> EnableDropdown = d => {
+            d.HeaderImage.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                ColorManager.SynthesisColor.InteractiveElementRight);
+            d._tmpDropdown.enabled = true;
+
+            var eventListener = d.RootGameObject.GetComponentInChildren<HoverEventListener>();
+            if (eventListener != null)
+                eventListener.enabled = true;
+            
+            return d;
+        };
+
+        public static readonly Func<Dropdown, Dropdown> DisableDropdown = d => {
+            d.HeaderImage.SetColor(ColorManager.SynthesisColor.InteractiveBackground);
+            d._tmpDropdown.enabled = false;
+            
+            var eventListener = d.RootGameObject.GetComponentInChildren<HoverEventListener>();
+            if (eventListener != null)
+                eventListener.enabled = false;
+            
+            return d;
+        };
+
         public event Action<Dropdown, int, TMP_Dropdown.OptionData> OnValueChanged;
         private Image _image;
         public Image Image => _image;
         private Content _viewport;
         public Content Viewport => _viewport;
         private TMP_Dropdown _tmpDropdown;
+        public TMP_Dropdown TMPDropdown => _tmpDropdown;
         public IReadOnlyList<TMP_Dropdown.OptionData> Options => _tmpDropdown.options.AsReadOnly();
         public int Value                                      => _tmpDropdown.value;
         public TMP_Dropdown.OptionData SelectedOption         => _tmpDropdown.options[Value];
@@ -1594,6 +1648,15 @@ namespace Synthesis.UI.Dynamic {
             _gradientUpdater.Refresh();
 
             return this;
+        }
+
+        public void InvertGradient() {
+            if (_hasCustomSprite)
+                return;
+
+            (_gradientUpdater.StartColor, _gradientUpdater.EndColor) = 
+                (_gradientUpdater.EndColor, _gradientUpdater.StartColor);
+            _gradientUpdater.Refresh();
         }
 
         public Image SetCornerRadius(float r) {

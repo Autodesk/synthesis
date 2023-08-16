@@ -63,13 +63,10 @@ namespace UI.Dynamic.Modals.MixAndMatch {
 
             string[] files = robot ? MixAndMatchSaveUtil.RobotFiles : MixAndMatchSaveUtil.PartFiles;
 
-            // Automatically transition to new object modal if no existing are found
-            if (files.Length == 0) {
-                CreateNewObjectModal(robot, false);
-                return;
-            }
-
             var dropdown = MainContent.CreateDropdown().ApplyTemplate(UIComponent.VerticalLayout).SetOptions(files);
+
+            if (files.Length == 0)
+                dropdown.ApplyTemplate(Dropdown.DisableDropdown);
 
             var (selectContent, right) =
                 MainContent.CreateSubContent(new Vector2(CONTENT_WIDTH, 50))
@@ -96,7 +93,8 @@ namespace UI.Dynamic.Modals.MixAndMatch {
             newContent.CreateButton("New")
                 .ApplyTemplate(UIComponent.VerticalLayout)
                 .AddOnClickedEvent(
-                    _ => CreateNewObjectModal(robot, true));
+                    _ => CreateNewObjectModal(robot))
+                .StepIntoImage(i => i.InvertGradient());
 
             var deleteButton = deleteContent.CreateButton("Delete")
                                    .ApplyTemplate(UIComponent.VerticalLayout)
@@ -116,7 +114,7 @@ namespace UI.Dynamic.Modals.MixAndMatch {
         }
 
         /// <summary>User names a new part/robot</summary>
-        private void CreateNewObjectModal(bool robot, bool userSelected) {
+        private void CreateNewObjectModal(bool robot) {
             Title.SetText($"Create a New {(robot ? "Robot" : "Part")}");
             ClearAndResizeContent(new Vector2(CONTENT_WIDTH, CREATE_NEW_HEIGHT));
 
@@ -142,10 +140,7 @@ namespace UI.Dynamic.Modals.MixAndMatch {
             CancelButton.StepIntoLabel(l => l.SetText("Back"))
                 .AddOnClickedEvent(
                     _ => {
-                        if (userSelected)
                             CreateChooseObjectModal(robot);
-                        else
-                            CreateChooseTypeModal();
                     })
                 .RootGameObject.SetActive(true);
 
@@ -216,7 +211,7 @@ namespace UI.Dynamic.Modals.MixAndMatch {
 
             CancelButton.StepIntoLabel(l => l.SetText("Back"))
                 .AddOnClickedEvent(
-                    _ => CreateNewObjectModal(false, false))
+                    _ => CreateNewObjectModal(false))
                 .RootGameObject.SetActive(true);
 
             string[] files = MixAndMatchSaveUtil.PartMirabufFiles;

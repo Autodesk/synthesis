@@ -7,14 +7,12 @@ using UnityEngine;
 using Utilities.ColorManager;
 using Logger = SynthesisAPI.Utilities.Logger;
 
-#nullable enable
-
 namespace UI.Dynamic.Modals.Spawning {
-    public class SpawnMixAndMatchModal : ModalDynamic {
+    public class AddMixAndMatchModal : ModalDynamic {
         private int _selectedIndex = -1;
         private string[] _files;
 
-        public SpawnMixAndMatchModal() : base(new Vector2(400, 55)) {}
+        public AddMixAndMatchModal() : base(new Vector2(400, 55)) {}
 
         public override void Create() {
             _files = MixAndMatchSaveUtil.RobotFiles;
@@ -28,7 +26,7 @@ namespace UI.Dynamic.Modals.Spawning {
                 .AddOnClickedEvent(
                     _ => DynamicUIManager.CreateModal<ChooseRobotTypeModal>());
 
-            AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
+            AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(_ => {
                 if (_selectedIndex != -1) {
                     RobotSimObject.SpawnRobot(MixAndMatchSaveUtil.LoadRobotData(_files[_selectedIndex]));
 
@@ -37,9 +35,14 @@ namespace UI.Dynamic.Modals.Spawning {
                 }
             });
             var chooseRobotDropdown = MainContent.CreateDropdown()
-                                          .SetOptions(_files.Select(x => Path.GetFileName(x)).ToArray())
-                                          .AddOnValueChangedEvent((d, i, data) => _selectedIndex = i)
+                                          .SetOptions(_files.Select(Path.GetFileNameWithoutExtension).ToArray())
+                                          .AddOnValueChangedEvent((_, i, _) => _selectedIndex = i)
                                           .SetTopStretch<Dropdown>();
+
+            if (_files.Length == 0) {
+                chooseRobotDropdown.ApplyTemplate(Dropdown.DisableDropdown);
+                AcceptButton.RootGameObject.SetActive(false);
+            }
 
             _selectedIndex = _files.Length > 0 ? 0 : -1;
         }
@@ -52,23 +55,5 @@ namespace UI.Dynamic.Modals.Spawning {
         }
 
         public override void Delete() {}
-
-        public static string ParsePath(string p, char c) {
-            string[] a = p.Split(c);
-            string b   = "";
-            for (int i = 0; i < a.Length; i++) {
-                switch (a[i]) {
-                    case "$appdata":
-                        b += System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
-                        break;
-                    default:
-                        b += a[i];
-                        break;
-                }
-                if (i != a.Length - 1)
-                    b += System.IO.Path.AltDirectorySeparatorChar;
-            }
-            return b;
-        }
     }
 }
