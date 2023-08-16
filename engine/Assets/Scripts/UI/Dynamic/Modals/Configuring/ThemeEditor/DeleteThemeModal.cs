@@ -16,12 +16,17 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
             ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"));
 
-            AcceptButton.AddOnClickedEvent(x => {
-                ColorManager.DeleteSelectedTheme();
-                DynamicUIManager.CreateModal<EditThemeModal>();
-            });
+            AcceptButton
+                .AddOnClickedEvent(x => {
+                    ColorManager.DeleteSelectedTheme();
+                    DynamicUIManager.CreateModal<EditThemeModal>();
+                })
+                .ApplyTemplate(Button.EnableCancelButton)
+                .StepIntoLabel(l => l.SetText("Delete"));
 
-            CancelButton.AddOnClickedEvent(x => { DynamicUIManager.CreateModal<EditThemeModal>(); });
+            CancelButton.AddOnClickedEvent(x => { DynamicUIManager.CreateModal<EditThemeModal>(); })
+                .ApplyTemplate(Button.EnableAcceptButton)
+                .StepIntoLabel(l => l.SetText("Back"));
         }
 
         public override void Update() {}

@@ -27,8 +27,9 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
         private string[] _availableThemes = ColorManager.AvailableThemes;
 
-        private Dictionary<ColorManager.SynthesisColor, (Color color, Content image, Content background, Label label)>
-            _colors = new();
+        private readonly
+            Dictionary<ColorManager.SynthesisColor, (Color color, Content image, Button button, Label label)> _colors =
+                new();
 
         private ColorManager.SynthesisColor? _selectedColor = null;
         private int _selectedThemeIndex;
@@ -81,11 +82,8 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             valueTuple.image.SetBackgroundColor<Button>(colorInput);
             valueTuple.color = colorInput;
 
-            _colors[_selectedColor.Value] = (colorInput, valueTuple.image, valueTuple.background, valueTuple.label);
-
-            _hSlider.SetValue(Mathf.RoundToInt(_hSlider.Value));
-            _sSlider.SetValue(Mathf.RoundToInt(_sSlider.Value));
-            _vSlider.SetValue(Mathf.RoundToInt(_vSlider.Value));
+            _colors[_selectedColor.Value] =
+                (colorInput, valueTuple.image, background: valueTuple.button, valueTuple.label);
         }
 
         public override void Delete() {}
@@ -118,28 +116,29 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             _deleteButton = deleteContent.CreateButton()
                                 .ApplyTemplate(VerticalLayout)
                                 .StepIntoLabel(l => l.SetText("Delete"))
-                                .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
-                                                   ColorManager.SynthesisColor.InteractiveElementRight))
-                                .AddOnClickedEvent(b => {
-                                    if (_selectedThemeIndex != 0) {
-                                        SaveThemeChanges();
-                                        DynamicUIManager.CreateModal<DeleteThemeModal>();
-                                    }
-                                });
+                                .StepIntoImage(i => i.InvertGradient())
+                                .AddOnClickedEvent(
+                                    _ => {
+                                        if (_selectedThemeIndex != 0) {
+                                            SaveThemeChanges();
+                                            DynamicUIManager.CreateModal<DeleteThemeModal>();
+                                        }
+                                    });
 
             _deleteAllButton = deleteAllContent.CreateButton()
                                    .ApplyTemplate(VerticalLayout)
                                    .StepIntoLabel(l => l.SetText("Delete All"))
                                    .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.CancelButton))
-                                   .AddOnClickedEvent(b => {
-                                       if (_selectedThemeIndex != 0) {
-                                           SaveThemeChanges();
-                                       }
+                                   .AddOnClickedEvent(
+                                       _ => {
+                                           if (_selectedThemeIndex != 0) {
+                                               SaveThemeChanges();
+                                           }
 
-                                       DynamicUIManager.CreateModal<DeleteAllThemesModal>();
-                                   });
+                                           DynamicUIManager.CreateModal<DeleteAllThemesModal>();
+                                       });
 
-            themeChooser.AddOnValueChangedEvent((dropdown, index, data) => {
+            themeChooser.AddOnValueChangedEvent((_, index, _) => {
                 SelectTheme(index);
                 DynamicUIManager.CreateModal<EditThemeModal>();
                 UpdateDeleteButtons();
@@ -152,9 +151,10 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
                 _deleteButton.DisableEvents<Button>().StepIntoImage(
                     i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground));
             else
-                _deleteButton.EnableEvents<Button>().StepIntoImage(
-                    i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
-                        ColorManager.SynthesisColor.InteractiveElementRight));
+                _deleteButton.EnableEvents<Button>()
+                    .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                                       ColorManager.SynthesisColor.InteractiveElementRight))
+                    .StepIntoImage(i => i.InvertGradient());
 
             if (_availableThemes.Length == 1)
                 _deleteAllButton.DisableEvents<Button>().StepIntoImage(
@@ -175,15 +175,24 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             _hSlider = content.CreateSlider()
                            .ApplyTemplate(VerticalLayout)
                            .StepIntoTitleLabel(l => l.SetText("Hue"))
-                           .SetRange(0, 360);
+                           .SetRange(0, 360)
+                           .EnableRounding();
             _sSlider = content.CreateSlider()
                            .ApplyTemplate(VerticalLayout)
                            .StepIntoTitleLabel(l => l.SetText("Saturation"))
-                           .SetRange(0, 100);
+                           .SetRange(0, 100)
+                           .EnableRounding();
             _vSlider = content.CreateSlider()
                            .ApplyTemplate(VerticalLayout)
                            .StepIntoTitleLabel(l => l.SetText("Value"))
-                           .SetRange(0, 100);
+                           .SetRange(0, 100)
+                           .EnableRounding();
+
+            if (_selectedThemeIndex < 1) {
+                _hSlider.SetAlpha<Slider>(0.4f).DisableEvents<Slider>();
+                _sSlider.SetAlpha<Slider>(0.4f).DisableEvents<Slider>();
+                _vSlider.SetAlpha<Slider>(0.4f).DisableEvents<Slider>();
+            }
         }
 
         /// <summary>Creates the color selection grid on the right of the modal</summary>
@@ -201,25 +210,36 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
                 var colorContent =
                     columns[i % 3].CreateSubContent(new Vector2(left.Size.x, ROW_HEIGHT)).ApplyTemplate(VerticalLayout);
 
+                var button = colorContent.CreateButton()
+                                 .StepIntoLabel(l => l.RootGameObject.SetActive(false))
+                                 .AddOnClickedEvent(
+                                     _ => { SelectColor(c.Key); })
+                                 .SetStretch<Button>()
+                                 .SetAnchoredPosition<Button>(Vector3.zero)
+                                 .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary));
+
                 var (colorImage, name) = colorContent.SplitLeftRight(ROW_HEIGHT, HORIZONTAL_PADDING);
 
-                colorContent.StepIntoImage(i => i.SetSprite(null!).SetCornerRadius(8))
-                    .SetBackgroundColor<Content>(ColorManager.SynthesisColor.BackgroundSecondary);
+                colorImage.Image!.UnityImage.raycastTarget = false;
+                name.Image!.UnityImage.raycastTarget       = false;
 
-                colorImage.SetBackgroundColor<Content>(c.Value).StepIntoImage(i => i.SetCornerRadius(8));
+                colorImage.RootGameObject.transform.SetParent(button.RootGameObject.transform.Find("Button"));
+                name.RootGameObject.transform.SetParent(button.RootGameObject.transform.Find("Button"));
+
+                colorImage.SetBackgroundColor<Content>(c.Value).StepIntoImage(i => i.SetCornerRadius(6));
 
                 // Regex.Replace formats color's name with spaces (ColorName -> Color Name)
                 var label =
                     name.CreateLabel().SetText(Regex.Replace(c.Key.ToString(), "(\\B[A-Z])", " $1")).SetFontSize(15f);
+                label.RootGameObject.AddComponent<CanvasGroup>().blocksRaycasts = false;
 
-                var button = colorContent.CreateButton()
-                                 .StepIntoLabel(l => l.RootGameObject.SetActive(false))
-                                 .AddOnClickedEvent(x => { SelectColor(c.Key); })
-                                 .SetStretch<Button>()
-                                 .SetAnchoredPosition<Button>(Vector3.zero)
-                                 .StepIntoImage(i => i.SetColor(Color.clear));
+                if (_selectedThemeIndex < 1) {
+                    button.ApplyTemplate(Button.DisableButton)
+                        .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary))
+                        .SetAlpha<Button>(0.4f);
+                }
 
-                _colors.Add(c.Key, (c.Value, colorImage, colorContent, label));
+                _colors.Add(c.Key, (c.Value, colorImage, button, label));
 
                 i++;
             });
@@ -229,8 +249,8 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
         /// <param name="colorName">The color to select</param>
         private void SelectColor(ColorManager.SynthesisColor? colorName) {
             if (_selectedColor != null) {
-                var prevSelected = _colors[_selectedColor.Value];
-                prevSelected.background.SetBackgroundColor<Image>(ColorManager.SynthesisColor.BackgroundSecondary);
+                (Color color, Content image, Button button, Label label) prevSelected = _colors[_selectedColor.Value];
+                prevSelected.button.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.BackgroundSecondary));
                 prevSelected.label.SetColor(ColorManager.SynthesisColor.MainText);
             }
 
@@ -242,8 +262,8 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             _selectedColor = colorName;
 
             var newSelected = _colors[_selectedColor.Value];
-            newSelected.background.SetBackgroundColor<Image>(ColorManager.SynthesisColor.InteractiveElementLeft,
-                ColorManager.SynthesisColor.InteractiveElementRight);
+            newSelected.button.StepIntoImage(b => b.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                                                 ColorManager.SynthesisColor.InteractiveElementRight));
             newSelected.label.SetColor(ColorManager.SynthesisColor.InteractiveElementText);
 
             // Regex.Replace formats color's name with spaces (ColorName -> Color Name)

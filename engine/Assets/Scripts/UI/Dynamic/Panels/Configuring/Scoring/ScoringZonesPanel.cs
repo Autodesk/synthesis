@@ -9,6 +9,7 @@ using Synthesis.UI.Dynamic;
 using Synthesis.PreferenceManager;
 using TMPro;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 public record ScoringZoneData() {
     public string Name { get; set; }                                        = "";
@@ -124,20 +125,23 @@ public class ScoringZonesPanel : PanelDynamic {
             buttonsContent.SplitLeftRight(BUTTON_WIDTH, HORIZONTAL_PADDING);
         editButtonContent.CreateButton()
             .StepIntoLabel(l => l.SetText("Edit"))
-            .AddOnClickedEvent(b => OpenScoringZoneGizmo(zone))
+            .AddOnClickedEvent(
+                _ => OpenScoringZoneGizmo(zone))
             .ApplyTemplate(VerticalLayout)
             .SetSize<Button>(new Vector2(BUTTON_WIDTH, ROW_HEIGHT))
             .SetStretch<Button>();
         deleteButtonContent.CreateButton()
             .StepIntoLabel(l => l.SetText("Delete"))
-            .AddOnClickedEvent(b => {
-                FieldSimObject.CurrentField.RemoveScoringZone(zone);
-                GameObject.Destroy(zone.GameObject);
-                AddZoneEntries();
-            })
+            .AddOnClickedEvent(
+                _ => {
+                    FieldSimObject.CurrentField.RemoveScoringZone(zone);
+                    Object.Destroy(zone.GameObject);
+                    AddZoneEntries();
+                })
             .ApplyTemplate(VerticalLayout)
             .SetSize<Button>(new Vector2(BUTTON_WIDTH, ROW_HEIGHT))
-            .SetStretch<Button>();
+            .SetStretch<Button>()
+            .StepIntoImage(i => i.InvertGradient());
     }
 
     private void OpenScoringZoneGizmo(ScoringZone zone = null) {

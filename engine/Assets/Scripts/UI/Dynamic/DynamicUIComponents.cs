@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UI;
+using UI.Dynamic.Modals.Spawning;
 using UI.EventListeners;
 using UnityEngine.EventSystems;
 using UnityEngine.PlayerLoop;
@@ -599,6 +600,13 @@ namespace Synthesis.UI.Dynamic {
             where T : UIComponent {
             return RootGameObject == null ? null : (this as T)!;
         }
+
+        public T SetAlpha<T>(float alpha)
+            where T : UIComponent {
+            RootGameObject.AddComponent<CanvasGroup>().alpha = alpha;
+
+            return (this as T)!;
+        }
     }
 
 #endregion
@@ -1132,6 +1140,11 @@ namespace Synthesis.UI.Dynamic {
             mod(_handleImage);
             return this;
         }
+
+        public Slider EnableRounding() {
+            OnValueChanged += (_, value) => { SetValue((int) value); };
+            return this;
+        }
     }
 
     public class InputField : UIComponent {
@@ -1231,6 +1244,67 @@ namespace Synthesis.UI.Dynamic {
         public static readonly Func<Button, Button> VerticalLayoutTemplate = (Button button) =>
             button.SetTopStretch<Button>(
                 leftPadding: 15f, anchoredY: button.Parent!.HeightOfChildren - button.Size.y + 15f);
+
+        public static readonly Func<Button, Button> EnableButton = b => {
+            b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                                ColorManager.SynthesisColor.InteractiveElementRight))
+                .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
+                .EnableEvents<Button>();
+
+            var eventListener = b.RootGameObject.GetComponentInChildren<HoverEventListener>();
+            if (eventListener != null)
+                eventListener.enabled = true;
+
+            return b;
+        };
+
+        public static readonly Func<Button, Button> EnableAcceptButton = b => {
+            b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.AcceptButton))
+                .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.AcceptCancelButtonText))
+                .EnableEvents<Button>();
+
+            var eventListener = b.RootGameObject.GetComponentInChildren<HoverEventListener>();
+            if (eventListener != null)
+                eventListener.enabled = true;
+
+            return b;
+        };
+
+        public static readonly Func<Button, Button> EnableCancelButton = b => {
+            b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.CancelButton))
+                .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.AcceptCancelButtonText))
+                .EnableEvents<Button>();
+
+            var eventListener = b.RootGameObject.GetComponentInChildren<HoverEventListener>();
+            if (eventListener != null)
+                eventListener.enabled = true;
+
+            return b;
+        };
+
+        public static readonly Func<Button, Button> EnableDeleteButton = b => {
+            b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.CancelButton))
+                .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
+                .EnableEvents<Button>();
+
+            var eventListener = b.RootGameObject.GetComponentInChildren<HoverEventListener>();
+            if (eventListener != null)
+                eventListener.enabled = true;
+
+            return b;
+        };
+
+        public static readonly Func<Button, Button> DisableButton = b => {
+            b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground))
+                .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
+                .DisableEvents<Button>();
+
+            var eventListener = b.RootGameObject.GetComponentInChildren<HoverEventListener>();
+            if (eventListener != null)
+                eventListener.enabled = false;
+
+            return b;
+        };
 
         public event Action<Button> OnClicked;
         private Label? _label;
@@ -1516,6 +1590,15 @@ namespace Synthesis.UI.Dynamic {
             _gradientUpdater.Refresh();
 
             return this;
+        }
+
+        public void InvertGradient() {
+            if (_hasCustomSprite)
+                return;
+
+            (_gradientUpdater.StartColor, _gradientUpdater.EndColor) =
+                (_gradientUpdater.EndColor, _gradientUpdater.StartColor);
+            _gradientUpdater.Refresh();
         }
 
         public Image SetCornerRadius(float r) {
