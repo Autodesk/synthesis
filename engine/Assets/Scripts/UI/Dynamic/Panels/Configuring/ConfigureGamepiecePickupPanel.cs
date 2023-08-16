@@ -103,7 +103,7 @@ namespace Synthesis.UI.Dynamic {
 
             _selectNodeButton =
                 MainContent.CreateLabeledButton()
-                    .SetHeight<LabeledButton>(30)
+                    .SetHeight<LabeledButton>(36)
                     .StepIntoLabel(l => l.SetText("Select a node").SetLeftStretch<Label>().SetWidth<Label>(125))
                     .StepIntoButton(b => b.StepIntoLabel(l => l.SetText("Select"))
                                              .AddOnClickedEvent(SelectNodeButton)

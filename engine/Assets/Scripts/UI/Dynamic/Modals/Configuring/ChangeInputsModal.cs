@@ -9,17 +9,18 @@ using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
 using TMPro;
 using UnityEngine;
+using Utilities.ColorManager;
 
 public class ChangeInputsModal : ModalDynamic {
     public ChangeInputsModal() : base(new Vector2(1200, CONTENT_HEIGHT + 30)) {}
 
     private static bool RobotLoaded => MainHUD.SelectedRobot != null;
 
-    private const float VERTICAL_PADDING = 10f;
+    private const float VERTICAL_PADDING = 6f;
     private const float TITLE_INDENT     = 10f;
     private const int CONTENT_HEIGHT     = 400;
 
-    private const float ENTRY_HEIGHT        = 37f;
+    private const float ENTRY_HEIGHT        = 46f;
     private const float ENTRY_RIGHT_PADDING = 5f;
 
     private readonly Func<UIComponent, UIComponent> VerticalLayout = (u) => {
@@ -31,7 +32,7 @@ public class ChangeInputsModal : ModalDynamic {
     private Analog _currentlyReassigning;
     private Button _reassigningButton;
     private string _reassigningKey;
-    private List<(string, Analog)> _changedInputs;
+    private Dictionary<string, Analog> _changedInputs;
     public Boolean isSave = false;
 
     private void PopulateInputSelections() {
@@ -57,7 +58,7 @@ public class ChangeInputsModal : ModalDynamic {
                                    .StepIntoLabel(l => l.SetText(inputKey.displayName))
                                    .StepIntoButton(b => {
                                        b.SetRightStretch<Button>(anchoredX: ENTRY_RIGHT_PADDING).SetWidth<Button>(200);
-                                       UpdateAnalogInputButton(b, val, val is Digital);
+                                       UpdateUI(b, val, val is Digital);
                                        b.AddOnClickedEvent(
                                            _ => {
                                                // handle changing input keybind here
@@ -104,7 +105,7 @@ public class ChangeInputsModal : ModalDynamic {
                     .StepIntoLabel(l => l.SetText(capitalized))
                     .StepIntoButton(b => {
                         b.SetRightStretch<Button>(anchoredX: ENTRY_RIGHT_PADDING).SetWidth<Button>(200);
-                        UpdateAnalogInputButton(b, val, val is Digital);
+                        UpdateUI(b, val, val is Digital);
                         b.AddOnClickedEvent(
                             _ => {
                                 // handle changing input keybind here
@@ -121,7 +122,9 @@ public class ChangeInputsModal : ModalDynamic {
         globalControlView.Content.SetHeight<Content>(-globalControlView.Content.RectOfChildren().yMin);
     }
 
-    private void UpdateAnalogInputButton(Button button, Analog input, bool isDigital) {
+    private void UpdateUI(Button button, Analog input, bool isDigital) {
+        AcceptButton.StepIntoLabel(l => l.SetText($"Save ({_changedInputs.Count})"));
+        MiddleButton.StepIntoLabel(l => l.SetText($"Session Save ({_changedInputs.Count})"));
         var l = button.Label;
         if (l == null)
             return;
@@ -158,7 +161,7 @@ public class ChangeInputsModal : ModalDynamic {
     }
 
     public override void Create() {
-        _changedInputs = new List<(string, Analog)>();
+        _changedInputs = new Dictionary<string, Analog>();
         Title.SetText("Keybinds");
 
         ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("settings"));
@@ -167,9 +170,9 @@ public class ChangeInputsModal : ModalDynamic {
             .AddOnClickedEvent(b => {
                 isSave = true;
                 _changedInputs.ForEach(x => {
-                    InputManager.AssignValueInput(x.Item1, x.Item2);
-                    if (x.Item2 is Digital) {
-                        PreferenceManager.SetPreference<Digital>(x.Item1, x.Item2 as Digital);
+                    InputManager.AssignValueInput(x.Key, x.Value);
+                    if (x.Value is Digital) {
+                        PreferenceManager.SetPreference<Digital>(x.Key, x.Value as Digital);
                         PreferenceManager.Save();
                     }
                 });
@@ -181,11 +184,12 @@ public class ChangeInputsModal : ModalDynamic {
             .AddOnClickedEvent(b => {
                 isSave = false;
                 _changedInputs.ForEach(x => {
-                    InputManager.AssignValueInput(x.Item1, x.Item2);
+                    InputManager.AssignValueInput(x.Key, x.Value);
                 });
                 DynamicUIManager.CloseActiveModal();
             })
-            .StepIntoLabel(l => l.SetText("Session"));
+            .StepIntoLabel(l => l.SetText("Session"))
+            .SetWidth<Button>(140);
 
         PopulateInputSelections();
     }
@@ -199,9 +203,14 @@ public class ChangeInputsModal : ModalDynamic {
             // if we allow mouse inputs the input will always get set to Mouse0
             // because the user clicks on the button
             if (input != null && !Regex.IsMatch(input.Name, ".*Mouse.*")) {
-                _changedInputs.Add((_reassigningKey, input));
+                if (_changedInputs.ContainsKey(_reassigningKey))
+                    _changedInputs.Remove(_reassigningKey);
+                _changedInputs.Add(_reassigningKey, input);
+                
+                UpdateUI(_reassigningButton, input, input is Digital);
+                _reassigningButton.Parent.SetBackgroundColor<Content>(ColorManager.SynthesisColor.BackgroundSecondary);
 
-                UpdateAnalogInputButton(_reassigningButton, input, input is Digital);
+                
 
                 _currentlyReassigning = null;
                 _reassigningButton    = null;
