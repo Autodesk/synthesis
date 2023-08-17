@@ -41,7 +41,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             SceneHider.IsHidden = true;
 
             RobotSimObject.CurrentlyPossessedRobot = string.Empty;
-            MainHUD.SelectedRobot                    = null;
+            MainHUD.SelectedRobot                  = null;
 
             Title.SetText("Part Editor");
 

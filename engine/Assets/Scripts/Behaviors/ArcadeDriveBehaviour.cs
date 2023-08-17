@@ -52,7 +52,7 @@ namespace Synthesis {
             : base(simObjectId) {
             if (inputName == "")
                 inputName = simObjectId;
-            
+
             _robot = (SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject)!;
 
             _leftWheels  = leftWheels;
@@ -77,7 +77,7 @@ namespace Synthesis {
         }
 
         public Analog TryLoadInput(string key, Analog defaultInput) {
-            //return SimulationPreferences.GetRobotInput(_robot.RobotGUID, key) ?? defaultInput;
+            // return SimulationPreferences.GetRobotInput(_robot.RobotGUID, key) ?? defaultInput;
 
             Analog input;
             if (InputManager.MappedValueInputs.ContainsKey(key)) {

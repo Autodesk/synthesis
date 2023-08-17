@@ -43,7 +43,7 @@ namespace Synthesis.UI.Dynamic {
                                           .SetOptions(_files.Select(x => Path.GetFileName(x)).ToArray())
                                           .AddOnValueChangedEvent((_, i, _) => _selectedIndex = i)
                                           .SetTopStretch<Dropdown>();
-            
+
             if (_files.Length == 0) {
                 chooseRobotDropdown.ApplyTemplate(Dropdown.DisableDropdown);
                 AcceptButton.RootGameObject.SetActive(false);

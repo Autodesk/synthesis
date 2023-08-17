@@ -45,7 +45,7 @@ namespace UI.Dynamic.Modals.Spawning {
                                           .SetOptions(_files.Select(x => Path.GetFileName(x)).ToArray())
                                           .AddOnValueChangedEvent((d, i, data) => _selectedIndex = i)
                                           .SetTopStretch<Dropdown>();
-            
+
             if (_files.Length == 0) {
                 chooseRobotDropdown.ApplyTemplate(Dropdown.DisableDropdown);
                 AcceptButton.RootGameObject.SetActive(false);

@@ -26,14 +26,16 @@ namespace UI.Dynamic.Modals.Spawning {
                 .AddOnClickedEvent(
                     _ => DynamicUIManager.CreateModal<ChooseRobotTypeModal>());
 
-            AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(_ => {
-                if (_selectedIndex != -1) {
-                    RobotSimObject.SpawnRobot(MixAndMatchSaveUtil.LoadRobotData(_files[_selectedIndex]));
+            AcceptButton.StepIntoLabel(label => label.SetText("Load"))
+                .AddOnClickedEvent(
+                    _ => {
+                        if (_selectedIndex != -1) {
+                            RobotSimObject.SpawnRobot(MixAndMatchSaveUtil.LoadRobotData(_files[_selectedIndex]));
 
-                    DynamicUIManager.CloseActiveModal();
-                    RobotSimObject.GetCurrentlyPossessedRobot()?.CreateDrivetrainTooltip();
-                }
-            });
+                            DynamicUIManager.CloseActiveModal();
+                            RobotSimObject.GetCurrentlyPossessedRobot()?.CreateDrivetrainTooltip();
+                        }
+                    });
             var chooseRobotDropdown = MainContent.CreateDropdown()
                                           .SetOptions(_files.Select(Path.GetFileNameWithoutExtension).ToArray())
                                           .AddOnValueChangedEvent((_, i, _) => _selectedIndex = i)

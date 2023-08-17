@@ -330,7 +330,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     private static Analog TryGetSavedInput(string key, Analog defaultInput) {
-
         if (InputManager.MappedValueInputs.ContainsKey(key)) {
             var input            = InputManager.GetAnalog(key);
             input.ContextBitmask = defaultInput.ContextBitmask;

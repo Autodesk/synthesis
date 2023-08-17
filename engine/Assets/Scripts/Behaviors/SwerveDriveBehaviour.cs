@@ -38,7 +38,6 @@ namespace Synthesis {
 
         private Vector3 _fieldForward;
 
-
         public SwerveDriveBehaviour(RobotSimObject robot, (RotationalDriver azimuth, WheelDriver drive)[] moduleDrivers)
             : base(robot.Name) {
             _moduleDrivers = moduleDrivers;

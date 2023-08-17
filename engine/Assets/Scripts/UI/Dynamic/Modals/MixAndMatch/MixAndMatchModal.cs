@@ -139,9 +139,7 @@ namespace UI.Dynamic.Modals.MixAndMatch {
 
             CancelButton.StepIntoLabel(l => l.SetText("Back"))
                 .AddOnClickedEvent(
-                    _ => {
-                            CreateChooseObjectModal(robot);
-                    })
+                    _ => { CreateChooseObjectModal(robot); })
                 .RootGameObject.SetActive(true);
 
             void UpdateAcceptButton(string inputValue) {
@@ -193,14 +191,16 @@ namespace UI.Dynamic.Modals.MixAndMatch {
                             else
                                 MixAndMatchSaveUtil.DeletePart(fileName);
                             CreateChooseObjectModal(robot);
-                        }).ApplyTemplate(Button.EnableCancelButton)
+                        })
+                    .ApplyTemplate(Button.EnableCancelButton)
                     .RootGameObject.SetActive(true);
             }
 
             CancelButton
                 .AddOnClickedEvent(
                     _ => CreateChooseObjectModal(robot))
-                .StepIntoLabel(l => l.SetText("Back")).ApplyTemplate(Button.EnableAcceptButton)
+                .StepIntoLabel(l => l.SetText("Back"))
+                .ApplyTemplate(Button.EnableAcceptButton)
                 .RootGameObject.SetActive(true);
         }
 

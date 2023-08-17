@@ -57,7 +57,7 @@ namespace Synthesis {
                     TryLoadInput(_reverseInputKey, new Digital("Alpha" + key, (int) ModKey.LeftShift)))
             };
         }
-        
+
         public Analog TryLoadInput(string key, Analog defaultInput) {
             Analog input;
             if (InputManager.MappedValueInputs.ContainsKey(key)) {
@@ -76,7 +76,6 @@ namespace Synthesis {
         private void OnValueInputAssigned(IEvent tmp) {
             ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
             if (args.InputKey.Equals(_forwardInputKey) || args.InputKey.Equals(_reverseInputKey)) {
-
                 if (_robot.RobotGUID != (MainHUD.SelectedRobot?.RobotGUID ?? string.Empty) ||
                     !((DynamicUIManager.ActiveModal as ChangeInputsModal)?.isSave ?? false))
                     return;
