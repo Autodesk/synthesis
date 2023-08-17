@@ -3,16 +3,20 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Synthesis.UI.Dynamic;
+using SynthesisAPI.EventBus;
+using SynthesisAPI.Utilities;
 using UnityEngine;
 using static MatchResultsTracker;
 using Logger = SynthesisAPI.Utilities.Logger;
 
 namespace Modes.MatchMode {
     public class MatchMode : IMode {
+        public static float MatchTime = 15f;
+
         public static MatchResultsTracker MatchResultsTracker;
 
-        public static int CurrentFieldIndex = -1;
-        public static int[] SelectedRobots  = new int[6];
+        /// Integers to represent which robots the user selected in the MatchModeModal
+        public static int[] SelectedRobots = new int[6];
 
         /// Whether or not the robot should snap to a grid in positioning mode
         public static bool[] RoundSpawnLocation = new bool[6];
@@ -31,63 +35,61 @@ namespace Modes.MatchMode {
 
         public static List<RobotSimObject> Robots = new List<RobotSimObject>();
 
-        private int _redScore  = 0;
-        private int _blueScore = 0;
-
         public const string PREVIOUS_SPAWN_LOCATION = "Previous Spawn Location";
         public const string PREVIOUS_SPAWN_ROTATION = "Previous Spawn Rotation";
 
         private MatchStateMachine _stateMachine;
 
         public void Start() {
-            _stateMachine = MatchStateMachine.Instance;
-            _stateMachine.SetState(MatchStateMachine.StateName.MatchConfig);
+            DynamicUIManager.CreateModal<MatchModeModal>();
+            EventBus.NewTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
 
             Array.Fill(SelectedRobots, -1);
             Array.Fill(RawSpawnLocations, (Vector3.zero, Quaternion.identity));
 
-            SetupMatchResultTracking();
-            ConfigureMainHUD();
-        }
+            _stateMachine = MatchStateMachine.Instance;
+            _stateMachine.SetState(MatchStateMachine.StateName.MatchConfig);
 
-        /// Creates a MatchResultsTracker and event listeners to update it
-        public void SetupMatchResultTracking() {
             MatchResultsTracker = new MatchResultsTracker();
-
-            SynthesisAPI.EventBus.EventBus.NewTypeListener<OnScoreUpdateEvent>(e => {
-                ScoringZone zone = ((OnScoreUpdateEvent) e).Zone;
-                switch (zone.Alliance) {
-                    case Alliance.Blue:
-                        ((BluePoints) MatchResultsTracker.MatchResultEntries[typeof(BluePoints)]).Points += zone.Points;
-                        _blueScore += zone.Points;
-                        break;
-                    case Alliance.Red:
-                        ((RedPoints) MatchResultsTracker.MatchResultEntries[typeof(RedPoints)]).Points += zone.Points;
-                        _redScore += zone.Points;
-                        break;
-                }
-                Debug.Log(
-                    $"{zone.Alliance.ToString()} scored {zone.Points} points! Blue: {_blueScore} Red: {_redScore}");
-            });
+            MainHUD.SetUpMatch();
         }
 
-        /// Adds buttons to the main hud (panel on left side)
-        public void ConfigureMainHUD() {
-            MainHUD.AddItemToDrawer("Scoring Zones", b => {
-                if (FieldSimObject.CurrentField == null) {
-                    Logger.Log("No field loaded!");
-                } else {
-                    DynamicUIManager.CreatePanel<ScoringZonesPanel>();
-                }
-            });
+        private void HandleScoreEvent(IEvent e) {
+            if (e.GetType() != typeof(OnScoreUpdateEvent))
+                return;
+            OnScoreUpdateEvent scoreUpdateEvent = e as OnScoreUpdateEvent;
+            if (scoreUpdateEvent == null)
+                return;
+
+            ScoringZone zone = scoreUpdateEvent.Zone;
+            int points       = zone.Points * (scoreUpdateEvent.IncreaseScore ? 1 : -1);
+
+            switch (zone.Alliance) {
+                case Alliance.Blue:
+                    Scoring.blueScore += points;
+                    break;
+                case Alliance.Red:
+                    Scoring.redScore += points;
+                    break;
+            }
         }
 
         public void Update() {
-            if (_stateMachine != null)
+            if (_stateMachine != null) {
                 _stateMachine.Update();
+
+                if (MatchTime <= 0 && _stateMachine.CurrentState.StateName is >= MatchStateMachine.StateName.Auto and <=
+                                          MatchStateMachine.StateName.Endgame)
+                    _stateMachine.AdvanceState();
+            }
         }
 
-        public void End() {}
+        public void End() {
+            Scoring.redScore  = 0;
+            Scoring.blueScore = 0;
+            Robots.Clear();
+            EventBus.RemoveTypeListener<OnScoreUpdateEvent>(HandleScoreEvent);
+        }
 
         public void OpenMenu() {}
 
@@ -113,6 +115,12 @@ namespace Modes.MatchMode {
                     Robots.Add(null);
                 i++;
             });
+        }
+
+        /// Resets the currently selected robots and field
+        public static void ResetMatchConfiguration() {
+            Robots = new List<RobotSimObject>();
+            Array.Fill(SelectedRobots, -1);
         }
 
         public static string ParsePath(string p, char c) {

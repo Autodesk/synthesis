@@ -1,4 +1,6 @@
-﻿namespace SynthesisAPI.Simulation {
+﻿using SynthesisAPI.Controller;
+
+namespace SynthesisAPI.Simulation {
     public abstract class Driver {
         protected string _name;
         public string Name {
@@ -17,6 +19,20 @@
         public ControllableState State {
             get => _simObject.State;
         }
+        
+        private bool _enabled = true;
+        public bool Enabled {
+            get => _enabled;
+            set {
+                if (_enabled != value) {
+                    _enabled = value;
+                    if (_enabled)
+                        OnEnable();
+                    else
+                        OnDisable();
+                }
+            }
+        }
 
         public Driver(string name, string[] inputs, string[] outputs, SimObject simObject) {
             _name = name;
@@ -33,6 +49,8 @@
             //     SimulationManager.OnDriverUpdate -= this.Update;
         }
 
+        protected virtual void OnEnable() { }
+        protected virtual void OnDisable() { }
         public virtual void OnRemove() { }
         public abstract void Update();
         public virtual void FixedUpdate() { }

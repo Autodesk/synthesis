@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using TMPro;
+using UI.Dynamic.Modals.Spawning;
 using UnityEngine;
 
 namespace Synthesis.UI.Dynamic {
@@ -22,7 +23,7 @@ namespace Synthesis.UI.Dynamic {
         private List<string> _downloadedRobots;
         private List<string> _downloadedFields;
 
-        private const float VERTICAL_PADDING = 16f;
+        private const float VERTICAL_PADDING = 6f;
         private const int CONTENT_HEIGHT     = 400;
 
         private ScrollView robotScrollView;
@@ -49,7 +50,6 @@ namespace Synthesis.UI.Dynamic {
             Task.Run(GetAvailableAssets);
 
             Title.SetText("Download Assets");
-            Description.SetText("Download robots and fields from the Synthesis Asset Library.");
 
             AcceptButton.StepIntoLabel(l => l.SetText("Close"))
                 .AddOnClickedEvent(b => DynamicUIManager.CloseActiveModal());
@@ -118,6 +118,7 @@ namespace Synthesis.UI.Dynamic {
                 bool alreadyDownloaded = _downloadedRobots.Exists(x => Path.GetFileName(x).Equals(robotName));
                 var downloadButton =
                     robotScrollView.Content.CreateLabeledButton()
+                        .SetHeight<LabeledButton>(40)
                         .StepIntoLabel(l => l.SetText(robotName.Split('.')[0]))
                         .StepIntoButton(
                             b => b.StepIntoLabel(l => l.SetText("Download" + (alreadyDownloaded ? "ed" : ""))))
@@ -135,6 +136,7 @@ namespace Synthesis.UI.Dynamic {
                 bool alreadyDownloaded = _downloadedFields.Exists(x => Path.GetFileName(x).Equals(fieldName));
                 var downloadButton =
                     fieldScrollView.Content.CreateLabeledButton()
+                        .SetHeight<LabeledButton>(40)
                         .StepIntoLabel(l => l.SetText(fieldName.Split('.')[0]))
                         .StepIntoButton(
                             b => b.StepIntoLabel(l => l.SetText("Download" + (alreadyDownloaded ? "ed" : ""))))

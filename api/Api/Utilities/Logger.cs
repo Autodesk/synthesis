@@ -26,9 +26,9 @@ namespace SynthesisAPI.Utilities
         }
 
         public static void SetEnableDebugLogs(bool enable) {
-            foreach (var logger in Loggers)
-            {
-                logger.SetEnableDebugLogs(enable);
+            foreach (var logger in Loggers) {
+                if (logger.IsEnabled())
+                    logger.SetEnableDebugLogs(enable);
             }
         }
 

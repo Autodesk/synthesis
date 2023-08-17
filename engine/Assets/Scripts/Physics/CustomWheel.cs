@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Synthesis;
 using UnityEngine;
+using Synthesis.Util;
 
 public class CustomWheel : MonoBehaviour {
     // When enabled, you get weird priority effects. Leave disabled for now.
@@ -35,7 +36,7 @@ public class CustomWheel : MonoBehaviour {
 
     public bool HasContacts => _collisionDataThisFrame.numCollisions > 0;
 
-    public float Inertia => WheelDriver.GetInertiaFromAxisVector(Rb, LocalAxis);
+    public float Inertia => SynthesisUtil.GetInertiaFromAxisVector(Rb, LocalAxis);
 
     private Vector3 _lastImpulseTotal;
 
@@ -66,11 +67,19 @@ public class CustomWheel : MonoBehaviour {
         Rb.velocity += _lastImpulseTotal * mod; // / Rb.mass;
     }
 
+    public void OnCollisionEnter(Collision collision) {
+        AddCollisionData(collision);
+    }
+
     public void OnCollisionStay(Collision collision) {
+        AddCollisionData(collision);
+    }
+
+    public void AddCollisionData(Collision collision) {
         Vector3 impulse = collision.impulse;
 
         // If impulse vector is suspected of being backwards (happens with mean machine), calculate it manually
-        if (impulse.normalized.y < 0.01) {
+        if (impulse.normalized.y < 0.5) {
             impulse = Vector3.zero;
             collision.contacts.ForEach(contact => {
                 impulse += (Rb.worldCenterOfMass - contact.point).normalized * contact.impulse.magnitude;

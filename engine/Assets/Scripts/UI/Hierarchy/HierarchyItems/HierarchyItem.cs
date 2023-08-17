@@ -47,7 +47,6 @@ namespace Synthesis.UI.Hierarchy.HierarchyItems {
             }
         }
         public TMP_Text TitleText = null!;
-        // public Transform Root;
         public HierarchyFolderItem? Parent;
         private string title = String.Empty;
         public string Title {
@@ -95,12 +94,9 @@ namespace Synthesis.UI.Hierarchy.HierarchyItems {
         public virtual void Init(string title, HierarchyFolderItem? parent) {
             Title = title;
             if (parent != null) {
-                // Parent = parent;
                 parent.Add(this);
             }
             Visible = true;
-            // if (Parent != null)
-            //     Root = Parent.Root;
         }
 
         protected virtual void SetVisible(bool visible) {
@@ -111,8 +107,7 @@ namespace Synthesis.UI.Hierarchy.HierarchyItems {
             HierarchyFolderItem parent = Parent!;
             while (parent != null) {
                 int num = parent.Items.RemoveAll(x => x.item.gameObject == this.gameObject);
-                // Debug.Log($"{Title} removed {num} times");
-                parent = parent.Parent!;
+                parent  = parent.Parent!;
             }
             Parent            = null;
             Visible           = false;

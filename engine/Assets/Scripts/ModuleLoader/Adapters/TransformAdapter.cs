@@ -18,16 +18,12 @@ namespace Engine.ModuleLoader.Adapters {
 
             unityTransform = gameObject.transform;
 
-            // SynthesisAPI.Utilities.Logger.Log($"Parent: {gameObject.transform.parent.name}");
-
             unityTransform.localPosition = instance.Position.Map();
             unityTransform.localRotation = instance.Rotation.Map();
             unityTransform.localScale    = instance.Scale.Map();
         }
 
         private void UpdateProperty(object sender, PropertyChangedEventArgs args) {
-            // SynthesisAPI.Utilities.Logger.Log($"Updating Property: {instance.Entity.Value.Index}");
-
             switch (args.PropertyName) {
                 case "Position":
                     unityTransform.localPosition = instance.Position.Map();

@@ -24,7 +24,6 @@ namespace SynthesisAPI.Utilities {
             _lock = new ReaderWriterLockSlim();
         }
 
-        public static implicit operator Atomic<T>(T value) => new Atomic<T>(value);
         public static implicit operator T(Atomic<T> atomic) => atomic.Value;
     }
 

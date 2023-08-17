@@ -1,26 +1,26 @@
 syntax = "proto3";
 
-import "google/protobuf/struct.proto";
+package SynthesisAPI.Controller;
 
+import "google/protobuf/struct.proto";
 
 /**
  * UpdateIOType is a way to specify Input or Output.
- * 
  */
 enum UpdateIOType {
     INPUT = 0;  /// Input Signal
     OUTPUT = 1; /// Output Signal
 }
 
-message UpdateSignal {
-    UpdateIOType io = 1; /// Is this a Input or Output
-    string device_type = 2; /// Is this a PWM, Digital, Analog, I2C, etc.
-    google.protobuf.Value value = 3; 
+message SignalData {
+    string signal_guid = 1;
+    string name = 2;
+    UpdateIOType io = 3; /// Is this a Input or Output
+    optional string device_hint = 4; /// Is this a PWM, Digital, Analog, I2C, etc.
+    google.protobuf.Value value = 5;
 }
 
-message UpdateSignals {
-    string resource_name = 1;
-    bytes guid = 2;
-    int32 generation = 3;
-    map<string, UpdateSignal> signal_map = 4;
+message ControllableState {
+    string owner = 1;
+    map<string, SignalData> signal_map = 2;
 }

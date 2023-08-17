@@ -11,6 +11,7 @@
 |[Download Data](#download-data)|[Data Response](#data-response)|
 |[Get Lobby Info](#get-lobby-info)|[Lobby Info](#lobby-info)|
 |[Host Command](#host-command)|[Command Status](#command-status)|
+|||
 
 ---
 
@@ -47,6 +48,11 @@
 (<-> Select Robot Status)
 - ulong GUID
 
+### Update Controllable State
+(<-> Simulation Transform Data)
+- ulong GUID
+- repeated [Signal Data](#signal-data)
+
 ---
 
 ### Response
@@ -78,6 +84,10 @@
 (<-> Select Robot)
 - int status code
 
+### Simulation Transform Data
+(<-> Update Controllable State)
+- repeated [Transform Data](#transform-data)
+
 ---
 
 ### Client Info
@@ -90,6 +100,15 @@
 - PNG thumbnail?
 - ulong GUID
 - ulong Owner
+
+### Signal-Data
+- string SignalGuid
+- string Name
+- Protobuf.Value Value
+
+### Transform-Data
+- ulong Guid
+- map<string, Matrix4x4> Transforms
 
 ### Command
 - TBD

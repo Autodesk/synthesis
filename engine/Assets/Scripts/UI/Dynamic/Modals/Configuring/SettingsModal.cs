@@ -1,12 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-using Synthesis.UI.Dynamic;
 using UnityEngine;
-using TMPro;
 using System;
 using System.Runtime.InteropServices;
-using System.Linq;
-using UnityEngine.Rendering;
+using Analytics;
+using UI.Dynamic.Modals.Configuring.ThemeEditor;
 
 namespace Synthesis.UI.Dynamic {
     public class SettingsModal : ModalDynamic {
@@ -19,6 +15,9 @@ namespace Synthesis.UI.Dynamic {
         private static string[] _screenModeList      = { "Fullscreen", "Windowed" };
         private static string[] _qualitySettingsList = { "Low", "Medium", "High", "Ultra" };
 
+        private const float MODAL_WIDTH  = 400;
+        private const float MODAL_HEIGHT = 562;
+
         private static int _screenModeIndex;
         private static int _qualitySettingsIndex;
         private static float _zoomSensitivity;
@@ -28,17 +27,11 @@ namespace Synthesis.UI.Dynamic {
         private static bool _useMetric;
         private static bool _renderScoreZones;
 
-        public SettingsModal() : base(new Vector2(500, 500)) {}
-
-        public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
-            var offset = (-u.Parent!.RectOfChildren(u).yMin) + 7.5f;
-            u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 15f);
-            return u;
-        };
+        public SettingsModal() : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) {}
 
         public override void Create() {
             Title.SetText("Settings");
-            Description.SetText("Select one of the settings in order to change simulation settings");
+            ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("settings"));
 
             AcceptButton.StepIntoLabel(b => { b.SetText("Save"); }).AddOnClickedEvent(b => {
                 SaveSettings();
@@ -52,12 +45,12 @@ namespace Synthesis.UI.Dynamic {
 
             MainContent.CreateLabel()
                 .ApplyTemplate(Label.BigLabelTemplate)
-                .ApplyTemplate(VerticalLayout)
+                .ApplyTemplate(UIComponent.VerticalLayoutNoSpacing)
                 .SetText("Screen Settings");
 
             var screenModeDropdown =
                 MainContent.CreateLabeledDropdown()
-                    .ApplyTemplate(VerticalLayout)
+                    .ApplyTemplate(UIComponent.VerticalLayout)
                     .StepIntoLabel(l => l.SetText("Screen Mode"))
                     .StepIntoDropdown(d => d.SetOptions(_screenModeList)
                                                .AddOnValueChangedEvent((d, i, o) => { _screenModeIndex = i; })
@@ -65,51 +58,60 @@ namespace Synthesis.UI.Dynamic {
 
             var qualitySettingsDropdown =
                 MainContent.CreateLabeledDropdown()
-                    .ApplyTemplate(VerticalLayout)
+                    .ApplyTemplate(UIComponent.VerticalLayout)
                     .StepIntoLabel(l => l.SetText("Quality Settings"))
                     .StepIntoDropdown(d => d.SetOptions(_qualitySettingsList)
                                                .AddOnValueChangedEvent((d, i, o) => _qualitySettingsIndex = i)
                                                .SetValue(Get<int>(QUALITY_SETTINGS)));
 
+            // MainContent.CreateSubContent().ApplyTemplate(UI)
+            var editThemeButton = MainContent.CreateButton("Theme Editor")
+                                      .ApplyTemplate<Button>(UIComponent.VerticalLayout)
+                                      .AddOnClickedEvent(b => {
+                                          SaveSettings();
+                                          ApplySettings();
+                                          DynamicUIManager.CreateModal<EditThemeModal>();
+                                      });
+
             MainContent.CreateLabel()
                 .ApplyTemplate(Label.BigLabelTemplate)
-                .ApplyTemplate(VerticalLayout)
+                .ApplyTemplate(UIComponent.VerticalLayoutBigSpacing)
                 .SetText("Camera Settings");
             var zoomSensitivity = MainContent
                                       .CreateSlider(label: "Zoom Sensitivity", minValue: 1f, maxValue: 15f,
                                           currentValue: Get<float>(CameraController.ZOOM_SENSITIVITY_PREF))
-                                      .ApplyTemplate(VerticalLayout)
+                                      .ApplyTemplate(UIComponent.VerticalLayout)
                                       .AddOnValueChangedEvent((s, v) => _zoomSensitivity = v)
                                       .SetValue(Get<float>(CameraController.ZOOM_SENSITIVITY_PREF));
             var yawSensitivity = MainContent
                                      .CreateSlider(label: "Yaw Sensitivity", minValue: 1f, maxValue: 15f,
                                          currentValue: Get<float>(CameraController.YAW_SENSITIVITY_PREF))
-                                     .ApplyTemplate(VerticalLayout)
+                                     .ApplyTemplate(UIComponent.VerticalLayout)
                                      .AddOnValueChangedEvent((s, v) => _yawSensitivity = v)
                                      .SetValue(Get<float>(CameraController.YAW_SENSITIVITY_PREF));
             var pitchSensitivity = MainContent
                                        .CreateSlider(label: "Pitch Sensitivity", minValue: 1f, maxValue: 15f,
                                            currentValue: Get<float>(CameraController.PITCH_SENSITIVITY_PREF))
-                                       .ApplyTemplate(VerticalLayout)
+                                       .ApplyTemplate(UIComponent.VerticalLayout)
                                        .AddOnValueChangedEvent((s, v) => _pitchSensitivity = v)
                                        .SetValue(Get<float>(CameraController.PITCH_SENSITIVITY_PREF));
 
             MainContent.CreateLabel()
                 .ApplyTemplate(Label.BigLabelTemplate)
-                .ApplyTemplate(VerticalLayout)
+                .ApplyTemplate(UIComponent.VerticalLayoutBigSpacing)
                 .SetText("Preferences");
             var reportAnalyticsToggle = MainContent.CreateToggle()
-                                            .ApplyTemplate(VerticalLayout)
+                                            .ApplyTemplate(UIComponent.VerticalLayout)
                                             .AddOnStateChangedEvent((t, s) => _useAnalytics = s)
                                             .SetState(Get<bool>(AnalyticsManager.USE_ANALYTICS_PREF))
                                             .TitleLabel.SetText("Report Analytics");
             var measurementsToggle = MainContent.CreateToggle()
-                                         .ApplyTemplate(VerticalLayout)
+                                         .ApplyTemplate(UIComponent.VerticalLayout)
                                          .AddOnStateChangedEvent((t, s) => _useMetric = s)
                                          .SetState(Get<bool>(MEASUREMENTS))
                                          .TitleLabel.SetText("Use Metric");
             var renderScoreModesToggle = MainContent.CreateToggle()
-                                             .ApplyTemplate(VerticalLayout)
+                                             .ApplyTemplate(UIComponent.VerticalLayout)
                                              .AddOnStateChangedEvent((t, s) => _renderScoreZones = s)
                                              .SetState(Get<bool>(RENDER_SCORE_ZONES))
                                              .TitleLabel.SetText("Render Score Zones");
@@ -137,9 +139,7 @@ namespace Synthesis.UI.Dynamic {
 
             Save();
 
-            var update = new AnalyticsEvent(category: "Settings", action: "Saved", label: $"Saved Settings");
-            AnalyticsManager.LogEvent(update);
-            AnalyticsManager.PostData();
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.SettingsSaved);
         }
 
         public static void LoadSettings() {
@@ -158,9 +158,7 @@ namespace Synthesis.UI.Dynamic {
             ApplySettings();
             RepopulatePanel();
 
-            var update = new AnalyticsEvent(category: "Settings", action: "Reset", label: $"Reset Settings");
-            AnalyticsManager.LogEvent(update);
-            AnalyticsManager.PostData();
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.SettingsReset);
         }
 
         private void RepopulatePanel() {
@@ -192,13 +190,6 @@ namespace Synthesis.UI.Dynamic {
 
             // Quality Settings
             QualitySettings.SetQualityLevel(Get<int>(QUALITY_SETTINGS), true);
-            Debug.Log(GraphicsSettings.currentRenderPipeline.name);
-
-            // Analytics
-            AnalyticsManager.UseAnalytics = Get<bool>(AnalyticsManager.USE_ANALYTICS_PREF);
-
-            // imperial or metric
-            //  useImperial = Get<bool>(MEASUREMENTS);
 
             // Camera
             CameraController.ZoomSensitivity =
@@ -225,9 +216,13 @@ namespace Synthesis.UI.Dynamic {
         private static void Save() => PreferenceManager.PreferenceManager.Save();
 
         public static void MaximizeScreen() {
+#if UNITY_STANDALONE_WIN
             // auto maximizes if its a window and the resolution is maximum.
             if (!Screen.fullScreen && !Application.isEditor)
                 ShowWindowAsync(GetActiveWindow().ToInt32(), 3);
+#else
+            Debug.LogWarning("No Supported");
+#endif
         }
     }
 }

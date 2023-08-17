@@ -21,9 +21,6 @@ public class WSSimBehavior : SimBehaviour {
     }
 
     public override void Update() {
-        // if (!WebSocketManager.RioState.GetData<DriverStationData>("").Enabled)
-        //     return; // TODO: This should zero out the signals because they aren't "pulled" towards a center point
-
         var signalState = SimulationManager.SimulationObjects[SimObjectId].State;
 
         // Motor Groups

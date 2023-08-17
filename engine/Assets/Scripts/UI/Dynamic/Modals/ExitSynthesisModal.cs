@@ -1,43 +1,45 @@
 using System.Collections;
 using System.Collections.Generic;
+using Analytics;
+using Modes.MatchMode;
 using Synthesis.Runtime;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Utilities.ColorManager;
 
 namespace Synthesis.UI.Dynamic {
     public class ExitSynthesisModal : ModalDynamic {
-        public ExitSynthesisModal() : base(new Vector2(350, 50)) {}
+        public ExitSynthesisModal() : base(new Vector2(350, 0)) {}
 
         public override void Create() {
             bool isOnMainMenu = SceneManager.GetActiveScene().name != "MainScene";
 
-            Title.SetText("Exit Synthesis");
-            Description.SetText("");
+            Title.SetText(isOnMainMenu ? "Exit Synthesis" : "Leave Simulation");
 
             AcceptButton
                 .AddOnClickedEvent(x => {
-                    if (isOnMainMenu)
+                    if (isOnMainMenu) {
                         Application.Quit();
-                    else {
+                    } else {
+                        if (ModeManager.CurrentMode!.GetType() == typeof(MatchMode)) {
+                            RobotSimObject.RemoveAllRobots();
+                            FieldSimObject.DeleteField();
+                            MatchMode.ResetMatchConfiguration();
+                        }
+
                         SimulationRunner.InSim = false;
                         DynamicUIManager.CloseAllPanels(true);
+
                         ModeManager.CurrentMode = null;
                         SceneManager.LoadScene("GridMenuScene", LoadSceneMode.Single);
+
+                        AnalyticsManager.LogCustomEvent(AnalyticsEvent.ExitedToMenu);
                     }
                 })
-                .StepIntoLabel(l => l.SetText("Exit"));
+                .StepIntoLabel(l => l.SetText(isOnMainMenu ? "Exit" : "Leave"));
 
-            ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"));
-            ModalImage.SetColor(ColorManager.SYNTHESIS_WHITE);
-
-            MainContent.CreateLabel(40)
-                .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Center)
-                .SetVerticalAlignment(TMPro.VerticalAlignmentOptions.Middle)
-                .SetAnchoredPosition<Label>(new Vector2(0, 15))
-                .SetText(
-                    isOnMainMenu ? "Are you sure you wish to Exit?" : "Are you sure you wish to\nleave to main menu?")
-                .SetFont(SynthesisAssetCollection.GetFont("Roboto-Regular SDF"))
-                .SetFontSize(20);
+            ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"))
+                .SetColor(ColorManager.SynthesisColor.MainText);
         }
 
         public override void Update() {}

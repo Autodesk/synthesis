@@ -4,9 +4,11 @@ using SynthesisAPI.Utilities;
 
 using Logger = SynthesisAPI.Utilities.Logger;
 
+#nullable enable
+
 namespace Mirabuf.Material {
     public partial class Appearance {
-        private UMaterial _unityMaterial = null;
+        private UMaterial? _unityMaterial = null;
         public UMaterial UnityMaterial {
             get {
                 if (_unityMaterial == null) {
@@ -15,7 +17,7 @@ namespace Mirabuf.Material {
                     
                     // TODO: Something here breaks transparent materials for builds
                     
-                    if (c.a < 1.0f) {
+                    if (c.a < 255) {
                         _unityMaterial = new UMaterial(DefaultTransparentShader);
                         _unityMaterial.SetColor(TRANSPARENT_COLOR, c);
                         _unityMaterial.SetFloat(TRANSPARENT_SMOOTHNESS, 1 - (float)Roughness);
@@ -53,7 +55,7 @@ namespace Mirabuf.Material {
         public const string OPAQUE_COLOR = "Color_2aa135b32e7e4808b9be05c544657380";
         public const string OPAQUE_SMOOTHNESS = "Vector1_dd87d7fcd1f1419f894566001d248ab9";
         public const string OPAQUE_METALLIC = "OPAQUE_METALLIC";
-        private static Shader _defaultOpaqueShader = null;
+        private static Shader? _defaultOpaqueShader = null;
         public static Shader DefaultOpaqueShader {
             get {
                 if (_defaultOpaqueShader == null) {
@@ -64,7 +66,7 @@ namespace Mirabuf.Material {
         }
         public const string TRANSPARENT_COLOR = "Color_48545d7793c14f3d9e1dd2264f072068";
         public const string TRANSPARENT_SMOOTHNESS = "Vector1_d66a0e8b289a457c85b3b4408b4f3c2f";
-        private static Shader _defaultTransparentShader = null;
+        private static Shader? _defaultTransparentShader = null;
         public static Shader DefaultTransparentShader {
             get {
                 if (_defaultTransparentShader == null) {

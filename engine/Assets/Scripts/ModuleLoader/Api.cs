@@ -39,10 +39,16 @@ namespace Engine.ModuleLoader {
 
         private static bool _registerCore = false;
 
+        public static ToastLogger ToastLogger;
+
         public void Start() // Must happen after ResourceLedger is initialized (in Awake)
         {
-            if (Instance == null)
+            if (Instance == null) {
                 Instance = this;
+            } else {
+                Destroy(gameObject);
+                return;
+            }
 
             SetupApplication(); // Always do this first
 
@@ -54,7 +60,9 @@ namespace Engine.ModuleLoader {
                 ModuleManager.RegisterModuleAssemblyName(Assembly.GetExecutingAssembly().GetName().Name, "Core Engine");
                 Logger.RegisterLogger(new LoggerImpl());
                 ApiProvider.RegisterApiProvider(new ApiProviderImpl());
-                Logger.RegisterLogger(new ToastLogger()); // Must happen after ApiProvider is registered
+
+                ToastLogger = new ToastLogger();
+                Logger.RegisterLogger(ToastLogger); // Must happen after ApiProvider is registered
             }
 
             // ModuleLoader.PreloadApi();
@@ -99,8 +107,13 @@ namespace Engine.ModuleLoader {
             // PanelScaler.ScaleMode.ConstantPhysicalSize;
         }
 
+        private void OnDestroy() {
+            Instance = null;
+        }
+
         private class LoggerImpl : SynthesisAPI.Utilities.ILogger {
             private bool debugLogsEnabled = true;
+            private bool _isEnabled       = true;
 
             public void Log(object o, LogLevel logLevel = LogLevel.Info, string memberName = "", string filePath = "",
                 int lineNumber = 0) {
@@ -133,6 +146,12 @@ namespace Engine.ModuleLoader {
             public void SetEnableDebugLogs(bool enable) {
                 debugLogsEnabled = enable;
             }
+
+            public void SetEnabled(bool enabled) {
+                _isEnabled = enabled;
+            }
+
+            public bool IsEnabled() => _isEnabled;
         }
 
         private void RerouteConsoleOutput() {
@@ -289,9 +308,11 @@ namespace Engine.ModuleLoader {
             }
 
             public TUnityType InstantiateFocusable<TUnityType>()
-                where TUnityType : Focusable => (TUnityType) Activator.CreateInstance(typeof(TUnityType));
+                where TUnityType : Focusable {
+                return (TUnityType) Activator.CreateInstance(typeof(TUnityType));
+            }
 
-  public VisualElement GetRootVisualElement() {
+            public VisualElement GetRootVisualElement() {
                 // TODO: Re-evaluate this
                 return null; // PanelRenderer.visualTree;
             }

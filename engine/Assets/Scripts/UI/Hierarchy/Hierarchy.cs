@@ -31,9 +31,6 @@ namespace Synthesis.UI.Hierarchy {
         }
 
         public void Start() {
-            // ContextMenu.Show()
-            // ContextMenu.Show(new Vector2(500, -500), "Test Menu", new string[]{"Hello", "There"});
-
             rootFolder.Init("Scene", null);
 
             var robots = rootFolder.CreateFolder("Robots");
@@ -60,12 +57,6 @@ namespace Synthesis.UI.Hierarchy {
                         float tabSize = RootFolder.Items[i].item.Depth * TabSize;
                         t             = RootFolder.Items[i].item.GetComponent<RectTransform>();
 
-                        // t.offsetMin = new Vector2(tabSize, t.offsetMin.y);
-                        // t.localPosition = new Vector3(t.localPosition.x, -heightAccum, t.localPosition.z);
-
-                        // t.offsetMin = new Vector2(tabSize, t.offsetMin.y);
-
-                        // childWidth = t.transform.GetChild(0).GetComponent<RectTransform>().offsetMax.x;
                         childWidth = t.transform.GetChild(0).GetComponent<TMPro.TMP_Text>().bounds.max.x -
                                      t.transform.GetChild(0).GetComponent<TMPro.TMP_Text>().bounds.min.x;
                         horizontalPadding =

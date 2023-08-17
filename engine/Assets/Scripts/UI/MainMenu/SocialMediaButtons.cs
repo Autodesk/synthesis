@@ -28,4 +28,12 @@ public class SocialMediaButtons : MonoBehaviour {
         Process.Start(
             new ProcessStartInfo() { FileName = "https://www.facebook.com/synthesis.adsk/", UseShellExecute = true });
     }
+
+    public void Website() {
+        Process.Start(new ProcessStartInfo() { FileName = "https://synthesis.autodesk.com/", UseShellExecute = true });
+    }
+
+    public void Email() {
+        Process.Start(new ProcessStartInfo() { FileName = "mailto:frc@autodesk.com", UseShellExecute = true });
+    }
 }

@@ -1,18 +1,32 @@
-using System.Collections;
-using System.Collections.Generic;
-using Synthesis.UI;
+using System;
+using JetBrains.Annotations;
 using Synthesis.UI.Dynamic;
+using SynthesisAPI.EventBus;
+using TMPro;
 using UnityEngine;
-
+using Utilities.ColorManager;
 using Image = UnityEngine.UI.Image;
 
 public class TopBar : MonoBehaviour {
-    // TODO: Change colors of other stuff on the top bar
     public void Start() {
-        GetComponent<Image>().color = ColorManager.TryGetColor(ColorManager.SYNTHESIS_BLACK);
+        AssignColors(null);
+
+        EventBus.NewTypeListener<ColorManager.OnThemeChanged>(AssignColors);
     }
 
     public void Exit() {
         DynamicUIManager.CreateModal<ExitSynthesisModal>();
+    }
+
+    private void OnDestroy() {
+        EventBus.RemoveTypeListener<ColorManager.OnThemeChanged>(AssignColors);
+    }
+
+    private void AssignColors(IEvent e) {
+        GetComponent<Image>().color = ColorManager.GetColor(ColorManager.SynthesisColor.Background);
+        transform.Find("ExitButton").GetComponent<Image>().color =
+            ColorManager.GetColor(ColorManager.SynthesisColor.MainText);
+        transform.Find("VersionNumber").GetComponent<TextMeshProUGUI>().color =
+            ColorManager.GetColor(ColorManager.SynthesisColor.MainText);
     }
 }

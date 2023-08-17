@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using SynthesisAPI.Utilities;
 
+#nullable enable
+
 namespace SynthesisAPI.UIManager
 {
     public class StyleSheet
@@ -15,7 +17,7 @@ namespace SynthesisAPI.UIManager
 
         private void ParseLines(string[] lines)
         {
-            UssClass currentClass = null;
+            UssClass? currentClass = null;
             
             foreach (string rawLine in lines)
             {
@@ -73,7 +75,7 @@ namespace SynthesisAPI.UIManager
             return classes.ContainsKey(className);
         }
 
-        internal _UnityVisualElement ApplyClassToVisualElement(string className, _UnityVisualElement visualElement)
+        internal _UnityVisualElement? ApplyClassToVisualElement(string className, _UnityVisualElement? visualElement)
         {
             //Logger.Log("[UI] Attempting to apply class [" + className + "] to [" + visualElement.name + "]");
             UssClass ussClass = classes[className];

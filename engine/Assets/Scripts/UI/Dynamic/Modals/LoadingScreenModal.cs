@@ -12,11 +12,10 @@ public class LoadingScreenModal : ModalDynamic {
             .SetText("Loading...")
             .SetHorizontalAlignment(TMPro.HorizontalAlignmentOptions.Center)
             .SetAnchoredPosition<Label>(new Vector2(0, 10));
-        Description.RootGameObject.SetActive(false);
         Title.RootGameObject.SetActive(false);
         AcceptButton.RootGameObject.SetActive(false);
         CancelButton.RootGameObject.SetActive(false);
-        ModalImage.RootGameObject.SetActive(false);
+        ModalIcon.RootGameObject.SetActive(false);
     }
 
     public override void Update() {}

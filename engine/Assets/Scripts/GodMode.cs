@@ -34,8 +34,14 @@ public class GodMode : MonoBehaviour {
     }
 
     private Analog TryGetSavedInput(string key, Analog defaultInput) {
+        if (InputManager.MappedValueInputs.ContainsKey(key)) {
+            var input            = InputManager.GetAnalog(key);
+            input.ContextBitmask = defaultInput.ContextBitmask;
+            return input;
+        }
         if (PreferenceManager.ContainsPreference(key)) {
-            var input            = (Digital) PreferenceManager.GetPreference<InputData[]>(key) [0].GetInput();
+            var input = PreferenceManager.GetPreference<Digital>(key) ??
+                        (Digital) PreferenceManager.GetPreference<InputData[]>(key) [0].GetInput();
             input.ContextBitmask = defaultInput.ContextBitmask;
             return input;
         } else {
@@ -45,6 +51,8 @@ public class GodMode : MonoBehaviour {
 
     private float _lastUpdate = float.NaN;
     private Vector3 _speed, _lastPosition;
+
+    private GameObject _pointer;
 
     private void Update() {
         bool godModeKeyDown = InputManager.MappedValueInputs[ENABLED_GOD_MODE_INPUT].Value == 1.0F;
@@ -58,8 +66,8 @@ public class GodMode : MonoBehaviour {
                 if (hit) {
                     grabbedObject = GetGameObjectWithRigidbody(hitInfo.collider.gameObject);
                     if (grabbedObject != null) {
-                        GameObject gameObj       = new GameObject("GODMODE_POINTER_RB");
-                        _pointerBody             = gameObj.AddComponent<Rigidbody>();
+                        _pointer                 = new GameObject("GODMODE_POINTER_RB");
+                        _pointerBody             = _pointer.AddComponent<Rigidbody>();
                         _pointerBody.isKinematic = true;
 
                         _lastUpdate   = Time.realtimeSinceStartup;
@@ -73,8 +81,6 @@ public class GodMode : MonoBehaviour {
                         grabJoint           = grabbedObject.AddComponent<ConfigurableJoint>();
                         grabJoint.connectedBody = _pointerBody;
                         grabJoint.anchor        = localCoords;
-                        // grabJoint.autoConfigureConnectedAnchor = false;
-                        // grabJoint.connectedAnchor = localCoords;
                         grabJoint.xMotion = grabJoint.yMotion = grabJoint.zMotion = ConfigurableJointMotion.Locked;
                     }
                 }
@@ -100,6 +106,9 @@ public class GodMode : MonoBehaviour {
         if (!mouseDown && grabJoint != null) {
             Destroy(grabJoint);
             Destroy(_pointerBody);
+            if (_pointer != null)
+                Destroy(_pointer);
+
             _pointerBody                                     = null;
             grabbedObject.GetComponent<Rigidbody>().velocity = _speed;
             grabbedObject                                    = null;

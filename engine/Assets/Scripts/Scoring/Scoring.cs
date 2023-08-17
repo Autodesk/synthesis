@@ -2,16 +2,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public static class Scoring {
-    public static int redScore     = 0;
-    public static int blueScore    = 0;
-    public static float targetTime = 135;
-    public static bool matchEnd    = false;
+    public static int redScore  = 0;
+    public static int blueScore = 0;
 
     public static void ResetScore() {
-        redScore   = 0;
-        blueScore  = 0;
-        targetTime = 135;
-        matchEnd   = false;
+        redScore  = 0;
+        blueScore = 0;
     }
 
     public static List<GameObject> CreatePowerupScoreZones() {

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Analytics;
 using Synthesis.UI.Panels;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -18,20 +19,11 @@ namespace Synthesis.UI.Panels {
                 updateAgreed = true;
 
                 Process.Start(UpdaterLink);
-
-                var update =
-                    new AnalyticsEvent(category: "Startup", action: "Update Prompted", label: $"Update Agreed");
-                AnalyticsManager.LogEvent(update);
             }
 
             if (updateAgreed == false) {
                 Debug.Log("Update Declined");
-                var update =
-                    new AnalyticsEvent(category: "Startup", action: "Update Prompted", label: $"Update Declined");
-                AnalyticsManager.LogEvent(update);
             }
-
-            AnalyticsManager.PostData();
 
             if (Application.isEditor)
                 Debug.Log("Would exit, but it's editor mode");
