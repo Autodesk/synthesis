@@ -11,7 +11,7 @@ namespace Synthesis.CEF {
 
         private static bool _loaded = false;
 
-        static CefRuntime() {
+        static CEFRuntime() {
             var platformID = Environment.OSVersion.Platform;
 
             if (platformID == PlatformID.MacOSX) {
@@ -41,8 +41,8 @@ namespace Synthesis.CEF {
                         return true;
                     }
                 }
-            } catch {}
-            finally {
+            } catch {
+            } finally {
                 if (buffer != IntPtr.Zero) {
                     Marshal.FreeHGlobal(buffer);
                 }
@@ -59,12 +59,12 @@ namespace Synthesis.CEF {
                 return;
             }
 
-            string? actual;
+            string ? actual;
 
             // Check cef api hash by platform
             try {
                 var actual_ = libcef.api_hash(0);
-                actual = actual_ != null ? new string(actual_) : null;
+                actual      = actual_ != null ? new string(actual_) : null;
             } catch (EntryPointNotFoundException) {
                 throw new CEFCallMismatch("cef_api_hash call not found");
             }
