@@ -7,6 +7,8 @@ using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
 using UnityEngine;
 
+#nullable enable
+
 namespace Synthesis {
     public class TankDriveBehavior : SimBehaviour {
         internal const string LEFT_FORWARD  = "Tank Left-Forward";
@@ -91,8 +93,8 @@ namespace Synthesis {
                     case LEFT_REVERSE:
                     case RIGHT_FORWARD:
                     case RIGHT_REVERSE:
-                        if (base.MiraId != MainHUD.SelectedRobot.MiraGUID ||
-                            !(DynamicUIManager.ActiveModal as ChangeInputsModal).isSave)
+                        if (base.MiraId != (MainHUD.SelectedRobot?.MiraGUID ?? string.Empty) ||
+                            !((DynamicUIManager.ActiveModal as ChangeInputsModal)?.isSave ?? false))
                             return;
                         SimulationPreferences.SetRobotInput(MiraId, args.InputKey, args.Input);
                         break;

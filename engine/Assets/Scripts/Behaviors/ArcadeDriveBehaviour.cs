@@ -13,6 +13,8 @@ using Input  = UnityEngine.Input;
 using Logger = SynthesisAPI.Utilities.Logger;
 using Math   = SynthesisAPI.Utilities.Math;
 
+#nullable enable
+
 namespace Synthesis {
     public class ArcadeDriveBehaviour : SimBehaviour {
         internal const string FORWARD    = "Arcade Forward";
@@ -94,8 +96,8 @@ namespace Synthesis {
                     case BACKWARD:
                     case LEFT:
                     case RIGHT:
-                        if (base.MiraId != MainHUD.SelectedRobot.MiraGUID ||
-                            !(DynamicUIManager.ActiveModal as ChangeInputsModal).isSave)
+                        if (base.MiraId != (MainHUD.SelectedRobot?.MiraGUID ?? string.Empty) ||
+                            !((DynamicUIManager.ActiveModal as ChangeInputsModal)?.isSave ?? false))
                             return;
                         SimulationPreferences.SetRobotInput(MiraId, args.InputKey, args.Input);
                         break;

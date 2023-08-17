@@ -11,6 +11,8 @@ using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
 using UnityEngine;
 
+#nullable enable
+
 namespace Synthesis {
     public class SwerveDriveBehaviour : SimBehaviour {
         internal const string FORWARD             = "Swerve Forward";
@@ -103,8 +105,8 @@ namespace Synthesis {
                     case TURN_LEFT:
                     case TURN_RIGHT:
                     case RESET_FIELD_FORWARD:
-                        if (base.MiraId != MainHUD.SelectedRobot.MiraGUID ||
-                            !(DynamicUIManager.ActiveModal as ChangeInputsModal).isSave)
+                        if (base.MiraId != (MainHUD.SelectedRobot?.MiraGUID ?? string.Empty) ||
+                            !((DynamicUIManager.ActiveModal as ChangeInputsModal)?.isSave ?? false))
                             return;
                         SimulationPreferences.SetRobotInput(MiraId, args.InputKey, args.Input);
                         break;

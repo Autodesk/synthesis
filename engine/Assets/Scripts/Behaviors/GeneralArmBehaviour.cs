@@ -13,6 +13,8 @@ using UnityEngine;
 
 using Logger = SynthesisAPI.Utilities.Logger;
 
+#nullable enable
+
 namespace Synthesis {
     public class GeneralArmBehaviour : SimBehaviour {
         private string _forwardInputKey    = "_forward";
@@ -70,8 +72,8 @@ namespace Synthesis {
         private void OnValueInputAssigned(IEvent tmp) {
             ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
             if (args.InputKey.Equals(_forwardInputKey) || args.InputKey.Equals(_reverseInputKey)) {
-                if (base.MiraId != MainHUD.SelectedRobot.MiraGUID ||
-                    !(DynamicUIManager.ActiveModal as ChangeInputsModal).isSave)
+                if (base.MiraId != (MainHUD.SelectedRobot?.MiraGUID ?? string.Empty) ||
+                    !((DynamicUIManager.ActiveModal as ChangeInputsModal)?.isSave ?? false))
                     return;
                 SimulationPreferences.SetRobotInput(MiraId, args.InputKey, args.Input);
             }
