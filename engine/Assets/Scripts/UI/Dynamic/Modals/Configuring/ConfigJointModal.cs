@@ -8,7 +8,7 @@ using Utilities.ColorManager;
 public class ConfigJointModal : ModalDynamic {
     const float MODAL_HEIGHT = 500f;
     const float MODAL_WIDTH  = 800f;
-    const float PADDING      = 16f;
+    const float PADDING      = 8f;
     const float NAME_WIDTH   = 260f;
     const float SCROLL_WIDTH = 10f;
 
@@ -58,7 +58,7 @@ public class ConfigJointModal : ModalDynamic {
                 _joints[i + driveCount] = new ConfigJoint(JointType.Turn) {
                     driver = _robot.modules[i].azimuth
                 };
-                _turnDrivers[i]                     = _robot.modules[i].azimuth;
+                _turnDrivers[i] = _robot.modules[i].azimuth;
             }
         } else {
             _driveDrivers = new WheelDriver[driveCount];
@@ -87,8 +87,9 @@ public class ConfigJointModal : ModalDynamic {
 
         SimulationManager.Drivers[_robot.Name].ForEach(x => {
             if (Array.IndexOf(_driveDrivers, x) == -1 && (!_robotISSwerve || Array.IndexOf(_turnDrivers, x) == -1)) {
-                _joints[i]        = new ConfigJoint(JointType.Other);
-                _joints[i].driver = x;
+                _joints[i] = new ConfigJoint(JointType.Other) {
+                    driver = x
+                };
                 i++;
             }
         });
@@ -153,13 +154,13 @@ public class ConfigJointModal : ModalDynamic {
         for (i = 0; i < _joints.Length; i++) {
             var driver = _joints[i].driver;
             switch (driver) {
-                case (RotationalDriver):
+                case RotationalDriver:
                     _joints[i].origVel = (driver as RotationalDriver).Motor.targetVelocity;
                     break;
-                case (WheelDriver):
+                case WheelDriver:
                     _joints[i].origVel = (driver as WheelDriver).Motor.targetVelocity;
                     break;
-                case (LinearDriver):
+                case LinearDriver:
                     _joints[i].origVel = (driver as LinearDriver).MaxSpeed;
                     break;
             }
@@ -190,7 +191,8 @@ public class ConfigJointModal : ModalDynamic {
         (Content nameContent, Content jointContent) = entry.SplitLeftRight(NAME_WIDTH, PADDING);
         if (currVel < 5.0f && max > 50.0f)
             max = 50.0f;
-        nameContent.CreateLabel().SetText(name).SetTopStretch(PADDING, PADDING, PADDING + 40f + _scrollView.HeightOfChildren);
+        nameContent.CreateLabel().SetText(name).SetTopStretch(PADDING, PADDING, PADDING / 2 + 40f + _scrollView.HeightOfChildren);
+        Debug.Log($"curr {currForce}");
         jointContent.CreateSubContent(new Vector2(_scrollViewWidth - NAME_WIDTH - PADDING, 40f))
             .SetTopStretch<Content>(0, 0, PADDING + PADDING)
             .CreateSlider($"Target Velocity ({velUnits})", minValue: 0f, maxValue: max, currentValue: currVel)
@@ -198,7 +200,7 @@ public class ConfigJointModal : ModalDynamic {
             .AddOnValueChangedEvent((s, v) => { onVelocity(v); });
         jointContent.CreateSubContent(new Vector2(_scrollViewWidth - NAME_WIDTH - PADDING, 40f))
             .SetTopStretch<Content>(0, 0, PADDING)
-            .CreateSlider("Stall Torque (Nm)", minValue: 0f, maxValue: 6f, currentValue: currForce)
+            .CreateSlider("Stall Torque (Nm)", minValue: 0f, maxValue: 12f, currentValue: currForce)
             .SetTopStretch<Slider>(PADDING, PADDING, _scrollView.HeightOfChildren)
             .AddOnValueChangedEvent((s, f) => { onForce(f); });
     }
