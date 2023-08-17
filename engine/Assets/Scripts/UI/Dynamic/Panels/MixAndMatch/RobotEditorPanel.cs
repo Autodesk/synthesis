@@ -99,16 +99,18 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             (Content remove, Content parent) = right.SplitLeftRight((PANEL_WIDTH - 10f) / 3f, 10f);
 
             add.CreateButton("Add").SetStretch<Button>().AddOnClickedEvent(
-                _ => {
-                    DynamicUIManager.CreateModal<SelectPartModal>(args: new Action<GlobalPartData>(AddAdditionalPart));
-                });
+                _ =>
+                    DynamicUIManager.CreateModal<SelectPartModal>(args: new Action<GlobalPartData>(AddAdditionalPart)));
 
             _removeButton = remove.CreateButton("Remove").SetStretch<Button>().AddOnClickedEvent(
                 _ => DynamicUIManager.CreateModal<RemovePartModal>(args: new Action(RemovePartCallback)));
             UpdateRemoveButton();
 
-            parent.CreateButton("Parent").SetStretch<Button>().AddOnClickedEvent(
-                _ => _selectingNode = !_selectingNode);
+            parent.CreateButton("Parent")
+                .SetStretch<Button>()
+                .AddOnClickedEvent(
+                    _ => _selectingNode = !_selectingNode)
+                .StepIntoImage(i => i.InvertGradient());
 
             void RemovePartCallback() {
                 if (_selectedPart == null)
@@ -267,7 +269,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         /// Updates the remove button based on if a part is selected
         private void UpdateRemoveButton() {
             _removeButton.ApplyTemplate(
-                (_parts.Count > 0 && _selectedPart != null) ? Button.EnableButton : Button.DisableButton);
+                (_parts.Count > 0 && _selectedPart != null) ? Button.EnableDeleteButton : Button.DisableButton);
         }
 
         private Transform _connectedTransform;

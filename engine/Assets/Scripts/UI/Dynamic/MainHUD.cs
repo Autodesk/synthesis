@@ -12,7 +12,6 @@ using UI;
 using UI.Dynamic.Modals.MixAndMatch;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using Utilities.ColorManager;
 
 using Button  = Synthesis.UI.Dynamic.Button;
@@ -37,9 +36,22 @@ public static class MainHUD {
 
     private static bool _isSetup = false;
     private static bool _enabled = true;
+
+    private static bool _overrideEnable = false;
+    public static bool OverrideEnable {
+        get => _overrideEnable;
+        set {
+            Enabled         = !value;
+            _overrideEnable = value;
+        }
+    }
+
     public static bool Enabled {
         get => _enabled;
         set {
+            if (_overrideEnable)
+                return;
+
             if (!_isSetup)
                 return;
 

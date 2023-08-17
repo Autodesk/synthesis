@@ -190,7 +190,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         /// <summary>Updates the remove connection point button based on if one is selected</summary>
         private void UpdateRemoveButton() {
             _removeButton.ApplyTemplate((_connectionGameObjects.Count > 0 && _selectedConnection != null)
-                                            ? Button.EnableButton
+                                            ? Button.EnableDeleteButton
                                             : Button.DisableButton);
         }
 
