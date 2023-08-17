@@ -40,4 +40,12 @@ FIRST control systems and essentials like sensors, cameras, various motors, etc.
 Help us try and break Synthesis! At the end of summer development, we provide a Synthesis beta for users to test and sometimes in exchange for your time we offer incentives to users. You can stay up-to-date with any Synthesis releases by joining our [Discord server](https://www.discord.gg/hHcF9AVgZA) and/or following us on Instagram [@synthesis.adsk](https://www.instagram.com/synthesis.adsk/).
 
 ### Contact Us
-You can reach us by email at frc@autodesk.com, on Instagram [@synthesis.adsk](https://www.instagram.com/synthesis.adsk/), on [ChiefDelphi](https://www.chiefdelphi.com/), or by joining our [Discord server](https://discord.gg/FuuQ9UGycM). To let us know about an issue with Synthesis, you can submit a [GitHub issue](https://github.com/Autodesk/synthesis/issues/new/choose).
+| Platform | Link |
+| :--- | :---: |
+| Discord     | [Synthesis Community Discord](https://discord.gg/FuuQ9UGycM)           |
+| Email       | [frc@autodesk.com](mailto:frc@autodesk.com)                            |
+| Instagram   | [@synthesis.adsk](https://www.instagram.com/synthesis.adsk/)           |
+| Reddit      | [u/synthesis_adsk](https://www.reddit.com/user/synthesis_adsk/)        |
+| ChiefDelphi | [synthesis_adsk](https://www.chiefdelphi.com/u/synthesis_adsk/summary) |
+
+To let us know about an issue with Synthesis, you can submit a [GitHub issue](https://github.com/Autodesk/synthesis/issues/new/choose).
