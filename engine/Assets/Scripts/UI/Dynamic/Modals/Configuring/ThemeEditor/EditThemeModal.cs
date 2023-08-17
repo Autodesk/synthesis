@@ -141,7 +141,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
             themeChooser.AddOnValueChangedEvent((_, index, _) => {
                 SelectTheme(index);
-                DynamicUIManager.CreateModal<EditThemeModal>();
+                DynamicUIManager.CreateModal<EditThemeModal>(true);
                 UpdateDeleteButtons();
             });
         }
@@ -318,7 +318,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             Dictionary<ColorManager.SynthesisColor, Color> colors = new();
             _colors.ForEach(c => { colors.Add(c.Key, c.Value.color); });
             ColorManager.SetTempPreviewColors(colors);
-            DynamicUIManager.CreateModal<EditThemeModal>();
+            DynamicUIManager.CreateModal<EditThemeModal>(true);
         }
 
         private void DisableSliders() {

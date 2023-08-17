@@ -185,7 +185,7 @@ namespace Modes.MatchMode {
                 var panel = DynamicUIManager.GetPanel<ScoringZonesPanel>();
 
                 panel.OnAccepted += () => {
-                    DynamicUIManager.CreateModal<ConfirmModal>("Start Match?");
+                    DynamicUIManager.CreateModal<ConfirmModal>(false, "Start Match?");
                     DynamicUIManager.ActiveModal.OnAccepted += () => {
                         DynamicUIManager.CloseActiveModal();
                         Instance.SetState(StateName.Auto);
@@ -338,7 +338,7 @@ namespace Modes.MatchMode {
                     i++;
                 });
 
-                DynamicUIManager.CreateModal<ConfirmModal>("Start Match?");
+                DynamicUIManager.CreateModal<ConfirmModal>(false, "Start Match?");
                 DynamicUIManager.ActiveModal.OnAccepted += () => {
                     DynamicUIManager.CloseActiveModal();
                     Instance.SetState(StateName.Auto);

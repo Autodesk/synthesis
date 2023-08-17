@@ -71,10 +71,10 @@ public class RioConfigurationModal : ModalDynamic {
             CreateItem($"{e.GetDisplayName()}", "Config",
                 () => {
                     if (e.GetType().Name.Equals(typeof(PWMGroupEntry).Name)) {
-                        DynamicUIManager.CreateModal<RCConfigPwmGroupModal>(e);
+                        DynamicUIManager.CreateModal<RCConfigPwmGroupModal>(false, e);
                     }
                     if (e.GetType().Name.Equals(typeof(EncoderEntry).Name)) {
-                        DynamicUIManager.CreateModal<RCConfigEncoderModal>(e);
+                        DynamicUIManager.CreateModal<RCConfigEncoderModal>(false, e);
                     } else {
                         Debug.Log($"{e.GetType().Name}");
                     }

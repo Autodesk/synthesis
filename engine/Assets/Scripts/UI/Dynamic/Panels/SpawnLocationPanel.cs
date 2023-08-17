@@ -14,7 +14,7 @@ namespace Synthesis.UI.Dynamic {
         private const string SNAP_MODE_KEY = "ROBOT_PLACEMENT_SNAPPING";
 
         private const float WIDTH            = 350f;
-        private const float HEIGHT           = 110;
+        private const float HEIGHT           = 210;
         private const float VERTICAL_PADDING = 10f;
         private const float INSET_PADDING    = 10f;
 
@@ -55,8 +55,8 @@ namespace Synthesis.UI.Dynamic {
             return u;
         };
 
-        public readonly Func<UIComponent, UIComponent> VerticalLayoutNoSpacing = (u) => {
-            var offset = (-u.Parent!.RectOfChildren(u).yMin);
+        public readonly Func<UIComponent, UIComponent> VerticalLayoutBigSpacing = (u) => {
+            var offset = (-u.Parent!.RectOfChildren(u).yMin) + 50;
             u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 0f); // used to be 15f
             return u;
         };
@@ -68,8 +68,8 @@ namespace Synthesis.UI.Dynamic {
         public SpawnLocationPanel() : base(new Vector2(WIDTH, HEIGHT)) {}
 
         public override bool Create() {
-            _newMainContent = Strip(new Vector2(WIDTH, HEIGHT), leftPadding: INSET_PADDING, rightPadding: INSET_PADDING,
-                topPadding: INSET_PADDING, bottomPadding: INSET_PADDING);
+            _newMainContent = CenterAtBottom(new Vector2(WIDTH, HEIGHT), leftPadding: INSET_PADDING,
+                rightPadding: INSET_PADDING, topPadding: INSET_PADDING, bottomPadding: INSET_PADDING);
 
             TooltipManager.CreateTooltip(("Scroll", "Rotate Robot"), ("Shift", "Hold to Snap"));
             TweenDirection = Vector2.down;
@@ -161,7 +161,7 @@ namespace Synthesis.UI.Dynamic {
                                  .CreateButton()
                                  .StepIntoLabel(
                                      l => l.SetText($"{((buttonIndex < 3) ? "Red" : "Blue")} {(buttonIndex % 3 + 1)}"))
-                                 .ApplyTemplate((i < 3) ? VerticalLayoutNoSpacing : VerticalLayout)
+                                 .ApplyTemplate((i < 3) ? VerticalLayoutBigSpacing : VerticalLayout)
                                  .ApplyTemplate(DisabledTemplate)
                                  .AddOnClickedEvent(b => { SelectButton(buttonIndex); });
             }
