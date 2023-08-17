@@ -5,7 +5,7 @@ using SynthesisAPI.Simulation;
 using Synthesis;
 using Utilities.ColorManager;
 
-public class ConfigMotorModal : ModalDynamic {
+public class ConfigJointModal : ModalDynamic {
     const float MODAL_HEIGHT = 500f;
     const float MODAL_WIDTH  = 800f;
     const float PADDING      = 16f;
@@ -17,11 +17,11 @@ public class ConfigMotorModal : ModalDynamic {
 
     private static RobotSimObject _robot;
     private bool _robotISSwerve;
-    private ConfigMotor[] _motors;
+    private ConfigJoint[] _joints;
     private WheelDriver[] _driveDrivers;
     private RotationalDriver[] _turnDrivers;
 
-    public ConfigMotorModal() : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) {}
+    public ConfigJointModal() : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) {}
 
     private readonly Func<UIComponent, UIComponent> VerticalLayout = (u) => {
         var offset = (-u.Parent!.RectOfChildren(u).yMin) + PADDING;
@@ -32,72 +32,76 @@ public class ConfigMotorModal : ModalDynamic {
     public override void Create() {
         _robot         = MainHUD.ConfigRobot;
         _robotISSwerve = _robot.ConfiguredDrivetrainType.Equals(RobotSimObject.DrivetrainType.SWERVE);
-        _motors        = new ConfigMotor[SimulationManager.Drivers[_robot.Name].Count];
+        _joints        = new ConfigJoint[SimulationManager.Drivers[_robot.Name].Count];
 
         // set up drivetrain arrays
-        var driveMotorCount = 0;
+        var driveCount = 0;
         if (_robotISSwerve) {
-            driveMotorCount = _robot.modules.Length;
+            driveCount = _robot.modules.Length;
         } else {
-            driveMotorCount = _robot.GetLeftRightWheels()!.Value.leftWheels.Count +
+            driveCount = _robot.GetLeftRightWheels()!.Value.leftWheels.Count +
                               _robot.GetLeftRightWheels()!.Value.rightWheels.Count;
         }
 
         var i = 0;
         if (_robotISSwerve) {
-            _driveDrivers = new WheelDriver[driveMotorCount];
-            for (i = 0; i < driveMotorCount; i++) {
-                _motors[i]        = new ConfigMotor(MotorType.Drive);
-                _motors[i].driver = _robot.modules[i].driver;
+            _driveDrivers = new WheelDriver[driveCount];
+            for (i = 0; i < driveCount; i++) {
+                _joints[i] = new ConfigJoint(JointType.Drive) {
+                    driver = _robot.modules[i].driver
+                };
                 _driveDrivers[i]  = _robot.modules[i].driver;
             }
 
-            _turnDrivers = new RotationalDriver[driveMotorCount];
-            for (i = 0; i < driveMotorCount; i++) {
-                _motors[i + driveMotorCount]        = new ConfigMotor(MotorType.Turn);
-                _motors[i + driveMotorCount].driver = _robot.modules[i].azimuth;
+            _turnDrivers = new RotationalDriver[driveCount];
+            for (i = 0; i < driveCount; i++) {
+                _joints[i + driveCount] = new ConfigJoint(JointType.Turn) {
+                    driver = _robot.modules[i].azimuth
+                };
                 _turnDrivers[i]                     = _robot.modules[i].azimuth;
             }
         } else {
-            _driveDrivers = new WheelDriver[driveMotorCount];
+            _driveDrivers = new WheelDriver[driveCount];
             _robot.GetLeftRightWheels()!.Value.leftWheels.ForEach(x => {
-                _motors[i]        = new ConfigMotor(MotorType.Drive);
-                _motors[i].driver = x;
+                _joints[i] = new ConfigJoint(JointType.Drive) {
+                    driver = x
+                };
                 _driveDrivers[i]  = x;
                 i++;
             });
             _robot.GetLeftRightWheels()!.Value.rightWheels.ForEach(x => {
-                _motors[i]        = new ConfigMotor(MotorType.Drive);
-                _motors[i].driver = x;
+                _joints[i] = new ConfigJoint(JointType.Drive) {
+                    driver = x
+                };
                 _driveDrivers[i]  = x;
                 i++;
             });
         }
 
-        // set up other motors array
+        // set up other joints array
         if (_robotISSwerve) {
-            i = driveMotorCount * 2;
+            i = driveCount * 2;
         } else {
-            i = driveMotorCount;
+            i = driveCount;
         }
 
         SimulationManager.Drivers[_robot.Name].ForEach(x => {
             if (Array.IndexOf(_driveDrivers, x) == -1 && (!_robotISSwerve || Array.IndexOf(_turnDrivers, x) == -1)) {
-                _motors[i]        = new ConfigMotor(MotorType.Other);
-                _motors[i].driver = x;
+                _joints[i]        = new ConfigJoint(JointType.Other);
+                _joints[i].driver = x;
                 i++;
             }
         });
 
         // UI
-        Title.SetText("Motor Configuration").SetWidth<Label>(MODAL_WIDTH - PADDING * 4);
-        Description.SetText("Change motor settings");
+        Title.SetText("Joint Configuration").SetWidth<Label>(MODAL_WIDTH - PADDING * 4);
+        Description.SetText("Change joint settings");
 
         AcceptButton.StepIntoLabel(b => { b.SetText("Save"); }).AddOnClickedEvent(b => {
             DynamicUIManager.CloseActiveModal();
 
             // Save to Mira
-            _motors.ForEach(x => {
+            _joints.ForEach(x => {
                 if (x.changed) {
                     SaveToMira(x.driver);
                 }
@@ -113,7 +117,7 @@ public class ConfigMotorModal : ModalDynamic {
 
         CancelButton.AddOnClickedEvent(b => {
             // change the target velocities back
-            _motors.ForEach(x => {
+            _joints.ForEach(x => {
                 if (x.changed) {
                     x.setForce(x.origForce);
                     x.setTargetVelocity(x.origVel);
@@ -126,48 +130,50 @@ public class ConfigMotorModal : ModalDynamic {
                 .SetTopStretch<Content>(PADDING, PADDING, 0)
                 .SplitLeftRight(NAME_WIDTH + PADDING, PADDING);
 
-        nameLabelContent.CreateLabel().SetText("Motor");
+        nameLabelContent.CreateLabel().SetText("Joint");
         velLabelContent.CreateLabel().SetText("Target Velocity");
 
         _scrollView =
             MainContent.CreateScrollView()
-                .SetRightStretch<ScrollView>()
-                .SetTopStretch<ScrollView>(0, 0, -nameLabelContent.Parent!.RectOfChildren().yMin + PADDING * 2)
+                // .SetRightStretch<ScrollView>()
+                // .SetTopStretch<ScrollView>(0, 0, -nameLabelContent.Parent!.RectOfChildren().yMin + PADDING * 2)
                 .SetHeight<ScrollView>(MODAL_HEIGHT - nameLabelContent.Parent!.RectOfChildren().yMin - 50)
                 .ApplyTemplate(VerticalLayout);
 
         _scrollViewWidth = _scrollView.Parent!.RectOfChildren().width - SCROLL_WIDTH;
 
-        CreateEntry("Drive", (_motors[0].driver as WheelDriver).Motor.force, (_motors[0].driver as WheelDriver).Motor.targetVelocity, x => ChangeDriveForce(x), x => ChangeDriveVelocity(x));
+        CreateEntry("Drive", (_joints[0].driver as WheelDriver).Motor.force, (_joints[0].driver as WheelDriver).Motor.targetVelocity, x => ChangeDriveForce(x), x => ChangeDriveVelocity(x));
         if (_robotISSwerve) {
-            CreateEntry("Turn", (_motors[driveMotorCount].driver as RotationalDriver).Motor.force, (_motors[driveMotorCount].driver as RotationalDriver).Motor.targetVelocity,
+            CreateEntry("Turn", (_joints[driveCount].driver as RotationalDriver).Motor.force, (_joints[driveCount].driver as RotationalDriver).Motor.targetVelocity,
                 x => ChangeTurnForce(x),
                 x => ChangeTurnVelocity(x), "RPM", 10.0f);
         }
 
-        // original target velocities for each motor and entry in scrollview for other motors
-        for (i = 0; i < _motors.Length; i++) {
-            var driver = _motors[i].driver;
+        // original target velocities for each joint and entry in scrollview for other joints
+        for (i = 0; i < _joints.Length; i++) {
+            var driver = _joints[i].driver;
             switch (driver) {
                 case (RotationalDriver):
-                    _motors[i].origVel = (driver as RotationalDriver).Motor.targetVelocity;
+                    _joints[i].origVel = (driver as RotationalDriver).Motor.targetVelocity;
                     break;
                 case (WheelDriver):
-                    _motors[i].origVel = (driver as WheelDriver).Motor.targetVelocity;
+                    _joints[i].origVel = (driver as WheelDriver).Motor.targetVelocity;
                     break;
                 case (LinearDriver):
-                    _motors[i].origVel = (driver as LinearDriver).MaxSpeed;
+                    _joints[i].origVel = (driver as LinearDriver).MaxSpeed;
                     break;
             }
 
-            if (_motors[i].motorType == MotorType.Other) {
+            if (_joints[i].jointType == JointType.Other) {
                 int j = i;
                 var u = "RPM";
-                if (_motors[i].driver is LinearDriver)
+                if (_joints[i].driver is LinearDriver)
                     u = "M/S";
-                CreateEntry(GetName(_motors[i].driver), _motors[j].origForce, _motors[j].origVel, x => _motors[j].setForce(x), x => _motors[j].setTargetVelocity(x), u);
+                CreateEntry(GetName(_joints[i].driver), _joints[j].origForce, _joints[j].origVel, x => _joints[j].setForce(x), x => _joints[j].setTargetVelocity(x), u);
             }
         }
+        _scrollView.Content.SetTopStretch<Content>().SetHeight<Content>(-_scrollView.Content.RectOfChildren().yMin + PADDING);
+
     }
 
     public override void Update() {}
@@ -176,21 +182,21 @@ public class ConfigMotorModal : ModalDynamic {
 
     private void CreateEntry(
         string name, float currForce, float currVel, Action<float> onForce, Action<float> onVelocity, string velUnits = "RPM", float max = 150.0f) {
-        (Content nameContent, Content motorContent) =
-            _scrollView.Content.CreateSubContent(new Vector2(_scrollViewWidth, PADDING + PADDING + PADDING + 80f))
-                .SetTopStretch<Content>(0, 0, 0)
+        Content entry =
+            _scrollView.Content.CreateSubContent(new Vector2(_scrollViewWidth - 20, PADDING + PADDING + PADDING + 80f))
+                .SetTopStretch<Content>(0, 20, 0)
                 .SetBackgroundColor<Content>(ColorManager.SynthesisColor.Background)
-                .ApplyTemplate(VerticalLayout)
-                .SplitLeftRight(NAME_WIDTH, PADDING);
+                .ApplyTemplate(VerticalLayout);
+        (Content nameContent, Content jointContent) = entry.SplitLeftRight(NAME_WIDTH, PADDING);
         if (currVel < 5.0f && max > 50.0f)
             max = 50.0f;
         nameContent.CreateLabel().SetText(name).SetTopStretch(PADDING, PADDING, PADDING + 40f + _scrollView.HeightOfChildren);
-        motorContent.CreateSubContent(new Vector2(_scrollViewWidth - NAME_WIDTH - PADDING, 40f))
+        jointContent.CreateSubContent(new Vector2(_scrollViewWidth - NAME_WIDTH - PADDING, 40f))
             .SetTopStretch<Content>(0, 0, PADDING + PADDING)
             .CreateSlider($"Target Velocity ({velUnits})", minValue: 0f, maxValue: max, currentValue: currVel)
             .SetTopStretch<Slider>(PADDING, PADDING, _scrollView.HeightOfChildren + 40f)
             .AddOnValueChangedEvent((s, v) => { onVelocity(v); });
-        motorContent.CreateSubContent(new Vector2(_scrollViewWidth - NAME_WIDTH - PADDING, 40f))
+        jointContent.CreateSubContent(new Vector2(_scrollViewWidth - NAME_WIDTH - PADDING, 40f))
             .SetTopStretch<Content>(0, 0, PADDING)
             .CreateSlider("Stall Torque (Nm)", minValue: 0f, maxValue: 6f, currentValue: currForce)
             .SetTopStretch<Slider>(PADDING, PADDING, _scrollView.HeightOfChildren)
@@ -198,44 +204,44 @@ public class ConfigMotorModal : ModalDynamic {
     }
 
     private void ChangeDriveForce(float force) {
-        foreach (ConfigMotor motor in _motors) {
-            if (motor.motorType == MotorType.Drive)
-                motor.setForce(force);
+        foreach (ConfigJoint joint in _joints) {
+            if (joint.jointType == JointType.Drive)
+                joint.setForce(force);
         }
     }
 
     private void ChangeTurnForce(float force) {
-        foreach (ConfigMotor motor in _motors) {
-            if (motor.motorType == MotorType.Turn)
-                motor.setForce(force);
+        foreach (ConfigJoint joint in _joints) {
+            if (joint.jointType == JointType.Turn)
+                joint.setForce(force);
         }
     }
 
     private void ChangeDriveVelocity(float vel) {
-        foreach (ConfigMotor motor in _motors) {
-            if (motor.motorType == MotorType.Drive)
-                motor.setTargetVelocity(vel);
+        foreach (ConfigJoint joint in _joints) {
+            if (joint.jointType == JointType.Drive)
+                joint.setTargetVelocity(vel);
         }
     }
 
     private void ChangeTurnVelocity(float vel) {
-        foreach (ConfigMotor motor in _motors) {
-            if (motor.motorType == MotorType.Turn)
-                motor.setTargetVelocity(vel);
+        foreach (ConfigJoint joint in _joints) {
+            if (joint.jointType == JointType.Turn)
+                joint.setTargetVelocity(vel);
         }
     }
 
-    private class ConfigMotor {
+    private class ConfigJoint {
         public Driver driver;
         public float origForce;
         public float origVel;
         private float _force;
         private float _vel;
         public bool changed = false;
-        public MotorType motorType;
+        public JointType jointType;
 
-        public ConfigMotor(MotorType t) {
-            motorType = t;
+        public ConfigJoint(JointType t) {
+            jointType = t;
         }
 
         public void setForce(float f) {
@@ -282,7 +288,7 @@ public class ConfigMotorModal : ModalDynamic {
         }
     }
 
-    private enum MotorType {
+    private enum JointType {
         Drive,
         Turn,
         Other
