@@ -36,7 +36,7 @@ namespace UI.Dynamic.Modals.Spawning {
                 if (_selectedIndex != -1) {
                     RobotSimObject.SpawnRobot(_files[_selectedIndex]);
                     DynamicUIManager.CloseActiveModal();
-                    RobotSimObject.GetCurrentlyPossessedRobot().CreateDrivetrainTooltip();
+                    MainHUD.SelectedRobot.CreateDrivetrainTooltip();
                 }
             });
 

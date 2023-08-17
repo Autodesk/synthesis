@@ -99,11 +99,16 @@ public static class MainHUD {
     public static bool isConfig       = false;
     public static bool isMatchFreeCam = false;
 
-    private static RobotSimObject? _configRobot = RobotSimObject.GetCurrentlyPossessedRobot();
-    public static RobotSimObject? ConfigRobot {
-        get => _configRobot;
+    public static RobotSimObject? SelectedRobot {
+        get {
+            if (ModeManager.CurrentMode.GetType() == typeof(MatchMode) &&
+                DynamicUIManager.PanelExists<SpawnLocationPanel>()) {
+                return MatchMode.Robots[DynamicUIManager.GetPanel<SpawnLocationPanel>().SelectedButton];
+            } else {
+                return RobotSimObject.GetCurrentlyPossessedRobot();
+            }
+        }
         set {
-            _configRobot = value;
             if (value == null) {
                 RemoveItemFromDrawer("Configure");
             } else if (!isConfig && !DrawerTitles.Contains("Configure")) {
@@ -469,9 +474,9 @@ public static class MainHUD {
 
         if (ModeManager.CurrentMode.GetType() == typeof(MatchMode) &&
             DynamicUIManager.PanelExists<SpawnLocationPanel>()) {
-            ConfigRobot = MatchMode.Robots[DynamicUIManager.GetPanel<SpawnLocationPanel>().SelectedButton];
+            SelectedRobot = MatchMode.Robots[DynamicUIManager.GetPanel<SpawnLocationPanel>().SelectedButton];
         } else {
-            ConfigRobot = RobotSimObject.GetCurrentlyPossessedRobot();
+            SelectedRobot = RobotSimObject.GetCurrentlyPossessedRobot();
         }
 
         RemoveAllItemsFromDrawer();
@@ -502,13 +507,13 @@ public static class MainHUD {
             AddItemToDrawer("Move", b => {
                 if (!isMatchFreeCam) {
                     OrbitCameraMode.FocusPoint = () =>
-                        ConfigRobot.GroundedNode != null && ConfigRobot.GroundedBounds != null
-                            ? ConfigRobot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(
-                                  ConfigRobot.GroundedBounds.center)
+                        SelectedRobot.GroundedNode != null && SelectedRobot.GroundedBounds != null
+                            ? SelectedRobot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(
+                                  SelectedRobot.GroundedBounds.center)
                             : Vector3.zero;
                 }
 
-                GizmoManager.SpawnGizmo(ConfigRobot);
+                GizmoManager.SpawnGizmo(SelectedRobot);
             }, drawerPosition: DrawerPosition.Bottom);
 
         if (MatchStateMachine.Instance.CurrentState.StateName is MatchStateMachine.StateName.RobotPositioning) {

@@ -78,6 +78,16 @@ namespace SynthesisAPI.InputManager
             }
         }
 
+        public static Analog GetAnalog(string name)
+        {
+            if (_mappedValueInputs.ContainsKey(name))
+            {
+                _mappedValueInputs[name].Update();
+                return _mappedValueInputs[name];
+            }
+            throw new Exception($"Analog Input is not mapped with name \"{name}\"");
+        }
+
         public static float GetValue(string name) {
             if (_mappedValueInputs.ContainsKey(name)) {
                 _mappedValueInputs[name].Update();
