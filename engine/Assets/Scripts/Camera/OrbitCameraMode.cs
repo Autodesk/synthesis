@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 #nullable enable
 
 public class OrbitCameraMode : ICameraMode {
-    public static Func<Vector3> FocusPoint = () => Vector3.zero;
+    public static Func<Vector3>? FocusPoint = () => Vector3.zero;
 
     public float TargetZoom { get; private set; }  = 8.0f;
     public float TargetPitch { get; private set; } = 10.0f;
