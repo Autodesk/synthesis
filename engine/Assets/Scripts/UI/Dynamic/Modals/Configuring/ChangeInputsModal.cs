@@ -1,23 +1,26 @@
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Synthesis.PreferenceManager;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
 using TMPro;
 using UnityEngine;
+using Utilities.ColorManager;
 
 public class ChangeInputsModal : ModalDynamic {
     public ChangeInputsModal() : base(new Vector2(1200, CONTENT_HEIGHT + 30)) {}
 
-    private static bool RobotLoaded => MainHUD.ConfigRobot != null;
+    private static bool RobotLoaded => MainHUD.SelectedRobot != null;
 
-    private const float VERTICAL_PADDING = 10f;
+    private const float VERTICAL_PADDING = 6f;
     private const float TITLE_INDENT     = 10f;
     private const int CONTENT_HEIGHT     = 400;
 
-    private const float ENTRY_HEIGHT        = 37f;
+    private const float ENTRY_HEIGHT        = 46f;
     private const float ENTRY_RIGHT_PADDING = 5f;
 
     private readonly Func<UIComponent, UIComponent> VerticalLayout = (u) => {
@@ -29,6 +32,8 @@ public class ChangeInputsModal : ModalDynamic {
     private Analog _currentlyReassigning;
     private Button _reassigningButton;
     private string _reassigningKey;
+    private Dictionary<string, Analog> _changedInputs;
+    public Boolean isSave = false;
 
     private void PopulateInputSelections() {
         (Content leftContent, Content rightContent) = MainContent.SplitLeftRight(580, 20);
@@ -44,10 +49,8 @@ public class ChangeInputsModal : ModalDynamic {
 
             // make background transparent
             inputScrollView.RootGameObject.GetComponent<UnityEngine.UI.Image>().color = Color.clear;
-
-            SimObject robot = MainHUD.ConfigRobot;
-            if (robot != null) {
-                foreach (var inputKey in robot.GetAllReservedInputs()) {
+            if (MainHUD.SelectedRobot != null) {
+                foreach (var inputKey in MainHUD.SelectedRobot.GetAllReservedInputs()) {
                     var val = InputManager.MappedValueInputs[inputKey.key];
 
                     var item = inputScrollView.Content.CreateLabeledButton()
@@ -55,7 +58,7 @@ public class ChangeInputsModal : ModalDynamic {
                                    .StepIntoLabel(l => l.SetText(inputKey.displayName))
                                    .StepIntoButton(b => {
                                        b.SetRightStretch<Button>(anchoredX: ENTRY_RIGHT_PADDING).SetWidth<Button>(200);
-                                       UpdateAnalogInputButton(b, val, val is Digital);
+                                       UpdateUI(b, val, val is Digital);
                                        b.AddOnClickedEvent(
                                            _ => {
                                                // handle changing input keybind here
@@ -102,7 +105,7 @@ public class ChangeInputsModal : ModalDynamic {
                     .StepIntoLabel(l => l.SetText(capitalized))
                     .StepIntoButton(b => {
                         b.SetRightStretch<Button>(anchoredX: ENTRY_RIGHT_PADDING).SetWidth<Button>(200);
-                        UpdateAnalogInputButton(b, val, val is Digital);
+                        UpdateUI(b, val, val is Digital);
                         b.AddOnClickedEvent(
                             _ => {
                                 // handle changing input keybind here
@@ -119,7 +122,9 @@ public class ChangeInputsModal : ModalDynamic {
         globalControlView.Content.SetHeight<Content>(-globalControlView.Content.RectOfChildren().yMin);
     }
 
-    private void UpdateAnalogInputButton(Button button, Analog input, bool isDigital) {
+    private void UpdateUI(Button button, Analog input, bool isDigital) {
+        AcceptButton.StepIntoLabel(l => l.SetText($"Save ({_changedInputs.Count})"));
+        MiddleButton.StepIntoLabel(l => l.SetText($"Session Save ({_changedInputs.Count})"));
         var l = button.Label;
         if (l == null)
             return;
@@ -156,13 +161,33 @@ public class ChangeInputsModal : ModalDynamic {
     }
 
     public override void Create() {
+        _changedInputs = new Dictionary<string, Analog>();
         Title.SetText("Keybinds");
 
         ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("settings"));
 
-        // no cancel button because keybinds are saved automatically when set
-        AcceptButton.AddOnClickedEvent(b => DynamicUIManager.CloseActiveModal()).StepIntoLabel(l => l.SetText("Close"));
-        CancelButton.RootGameObject.SetActive(false);
+        AcceptButton
+            .AddOnClickedEvent(b => {
+                isSave = true;
+                _changedInputs.ForEach(x => {
+                    InputManager.AssignValueInput(x.Key, x.Value);
+                    if (x.Value is Digital) {
+                        PreferenceManager.SetPreference(x.Key, x.Value as Digital);
+                        PreferenceManager.Save();
+                    }
+                });
+                DynamicUIManager.CloseActiveModal();
+            })
+            .StepIntoLabel(l => l.SetText("Save"));
+        CancelButton.AddOnClickedEvent(b => DynamicUIManager.CloseActiveModal());
+        MiddleButton
+            .AddOnClickedEvent(b => {
+                isSave = false;
+                _changedInputs.ForEach(x => { InputManager.AssignValueInput(x.Key, x.Value); });
+                DynamicUIManager.CloseActiveModal();
+            })
+            .StepIntoLabel(l => l.SetText("Session"))
+            .SetWidth<Button>(140);
 
         PopulateInputSelections();
     }
@@ -176,9 +201,12 @@ public class ChangeInputsModal : ModalDynamic {
             // if we allow mouse inputs the input will always get set to Mouse0
             // because the user clicks on the button
             if (input != null && !Regex.IsMatch(input.Name, ".*Mouse.*")) {
-                InputManager.AssignValueInput(_reassigningKey, input);
+                if (_changedInputs.ContainsKey(_reassigningKey))
+                    _changedInputs.Remove(_reassigningKey);
+                _changedInputs.Add(_reassigningKey, input);
 
-                UpdateAnalogInputButton(_reassigningButton, input, input is Digital);
+                UpdateUI(_reassigningButton, input, input is Digital);
+                _reassigningButton.Parent.SetBackgroundColor<Content>(ColorManager.SynthesisColor.BackgroundSecondary);
 
                 _currentlyReassigning = null;
                 _reassigningButton    = null;

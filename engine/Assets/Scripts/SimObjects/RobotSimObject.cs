@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Analytics;
 using Newtonsoft.Json;
@@ -329,14 +330,19 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     private static Analog TryGetSavedInput(string key, Analog defaultInput) {
-        if (!PreferenceManager.ContainsPreference(key))
-            return defaultInput;
 
-        var input = PreferenceManager.GetPreference<Digital>(key) ??
-                    (Digital) PreferenceManager.GetPreference<InputData[]>(key) [0].GetInput();
-        input.ContextBitmask = defaultInput.ContextBitmask;
-
-        return input;
+        if (InputManager.MappedValueInputs.ContainsKey(key)) {
+            var input            = InputManager.GetAnalog(key);
+            input.ContextBitmask = defaultInput.ContextBitmask;
+            return input;
+        }
+        if (PreferenceManager.ContainsPreference(key)) {
+            var input = PreferenceManager.GetPreference<Digital>(key) ??
+                        (Digital) PreferenceManager.GetPreference<InputData[]>(key) [0].GetInput();
+            input.ContextBitmask = defaultInput.ContextBitmask;
+            return input;
+        }
+        return defaultInput;
     }
 
     private void Possess() {
@@ -694,7 +700,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         mira.mainObject.transform.rotation = rotation;
 
         simObject.Possess();
-        MainHUD.ConfigRobot = simObject;
+        MainHUD.SelectedRobot = simObject;
 
         if (spawnGizmo)
             GizmoManager.SpawnGizmo(simObject);
@@ -710,7 +716,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         if (robot == CurrentlyPossessedRobot)
             CurrentlyPossessedRobot = string.Empty;
         _spawnedRobots.Remove(robot);
-        MainHUD.ConfigRobot = null;
+        MainHUD.SelectedRobot = null;
         return SimulationManager.RemoveSimObject(robot);
     }
 
@@ -869,17 +875,72 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     public void CreateDrivetrainTooltip() {
+        string MiraId  = MainHUD.SelectedRobot.RobotGUID;
+        int inputCount = 3; // for drive, intake, and eject
+        if (ConfiguredDrivetrainType.Name.Equals("Swerve"))
+            inputCount++; // for turn
+        MainHUD.SelectedRobot.GetAllReservedInputs().ForEach(input => {
+            if (!input.displayName.Contains("Arcade") &&
+                (!input.displayName.Contains("Swerve") || input.displayName.Contains("Reset Forward")) &&
+                !input.displayName.Contains("Tank"))
+                inputCount++;
+        });
+        (string, string)[] inputs = new(string key, string input)[inputCount];
+        int i                     = 0;
         switch (ConfiguredDrivetrainType.Name) {
             case "Arcade":
-                TooltipManager.CreateTooltip(("WASD", "Drive"), ("E", "Intake"), ("Q", "Dispense"));
-                return;
+                string f  = GetTooltipOutput(MiraId + "Arcade Forward", "W");
+                string b  = GetTooltipOutput(MiraId + "Arcade Backward", "S");
+                string l  = GetTooltipOutput(MiraId + "Arcade Left", "A");
+                string r  = GetTooltipOutput(MiraId + "Arcade Right", "D");
+                inputs[0] = (f + b + l + r, "Drive");
+                i++;
+                break;
             case "Tank":
-                TooltipManager.CreateTooltip(
-                    ("WS", "Drivetrain Left"), ("IK", "Drivetrain Right"), ("E", "Intake"), ("Q", "Dispense"));
-                return;
+                f         = GetTooltipOutput(MiraId + "Tank Left-Forward", "W");
+                b         = GetTooltipOutput(MiraId + "Tank Left-Reverse", "S");
+                l         = GetTooltipOutput(MiraId + "Tank Right-Forward", "I");
+                r         = GetTooltipOutput(MiraId + "Tank Right-Reverse", "K");
+                inputs[0] = (f + b + l + r, "Drive");
+                i++;
+                break;
             case "Swerve":
-                TooltipManager.CreateTooltip(("WASD", "Drive"), ("< >", "Turn"), ("E", "Intake"), ("Q", "Dispense"));
-                return;
+                f         = GetTooltipOutput(MiraId + "Swerve Forward", "W");
+                b         = GetTooltipOutput(MiraId + "Swerve Backward", "S");
+                l         = GetTooltipOutput(MiraId + "Swerve Left", "A");
+                r         = GetTooltipOutput(MiraId + "Swerve Right", "D");
+                inputs[0] = (f + b + l + r, "Drive");
+                i++;
+                string lturn = GetTooltipOutput(MiraId + "Swerve Turn Left", "LeftArrow");
+                string rturn = GetTooltipOutput(MiraId + "Swerve Turn Right", "RightArrow");
+                inputs[1]    = (lturn + " " + rturn, "Turn");
+                i++;
+                break;
         }
+        foreach (var inputKey in MainHUD.SelectedRobot.GetAllReservedInputs()) {
+            if (!inputKey.displayName.Contains("Arcade") &&
+                (!inputKey.displayName.Contains("Swerve") || inputKey.displayName.Contains("Reset Forward")) &&
+                !inputKey.displayName.Contains("Tank")) {
+                inputs[i] = (InputManager.MappedValueInputs[inputKey.key].Name, inputKey.displayName);
+                i++;
+            }
+        }
+        inputs[i] = (((Digital) TryGetSavedInput(
+                          INTAKE_GAMEPIECES, new Digital("E", context: SimulationRunner.RUNNING_SIM_CONTEXT)))
+                         .Name,
+            "Intake");
+        i++;
+        inputs[i] = (((Digital) TryGetSavedInput(
+                          OUTTAKE_GAMEPIECES, new Digital("Q", context: SimulationRunner.RUNNING_SIM_CONTEXT)))
+                         .Name,
+            "Eject");
+        TooltipManager.CreateTooltip(inputs);
+    }
+
+    private string GetTooltipOutput(string key, string defaultInput) {
+        Analog input = InputManager.MappedValueInputs.ContainsKey(key)
+                           ? InputManager.GetAnalog(key)
+                           : SimulationPreferences.GetRobotInput(MainHUD.SelectedRobot.RobotGUID, key);
+        return input != null ? input.Name : defaultInput;
     }
 }

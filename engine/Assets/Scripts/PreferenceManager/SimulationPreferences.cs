@@ -133,8 +133,6 @@ namespace Synthesis.PreferenceManager {
                         live.MiraAssembly.Data.Parts.UserData ??= new UserData();
                         live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY] =
                             JsonConvert.SerializeObject(_allRobotData[live.MiraAssembly.Info.GUID]);
-
-                        live.Save();
                     }
                     // clang-format on
                 }

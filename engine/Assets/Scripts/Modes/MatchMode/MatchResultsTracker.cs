@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using TMPro;
 using UnityEngine;
 
@@ -19,7 +20,7 @@ public class MatchResultsTracker {
 
     /// The number of points scored by the blue team
     public class BluePoints : ITrackedData {
-        public int Points;
+        public int Points => Scoring.blueScore;
 
         public override string ToString() {
             return Points.ToString();
@@ -32,7 +33,7 @@ public class MatchResultsTracker {
 
     /// The number of points scored by the red team
     public class RedPoints : ITrackedData {
-        public int Points;
+        public int Points => Scoring.redScore;
 
         public override string ToString() {
             return Points.ToString();

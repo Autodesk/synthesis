@@ -38,7 +38,7 @@ namespace UI.Dynamic.Modals.Spawning {
                     RobotSimObject.SpawnRobot(null, true, _files[_selectedIndex]);
 
                     DynamicUIManager.CloseActiveModal();
-                    RobotSimObject.GetCurrentlyPossessedRobot().CreateDrivetrainTooltip();
+                    MainHUD.SelectedRobot.CreateDrivetrainTooltip();
                 }
             });
             var chooseRobotDropdown = MainContent.CreateDropdown()
