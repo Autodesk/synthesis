@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Synthesis.Gizmo;
 using Synthesis.Physics;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Synthesis.Configuration {
     public class MoveArrow : MonoBehaviour {
@@ -127,9 +125,8 @@ namespace Synthesis.Configuration {
                 _arrowTransform.localScale.y / arrowScale.y, arrowScale.z / arrowScale.z);
         }
 
-        private void setTransform() // called to set certain value when activated or when the parent changes
-        {
-            // SetRigidbodies(false);
+        private void SetTransform() { // called to set certain value when activated or when the parent changes
+
             PhysicsManager.IsFrozen = true;
 
             _parent                       = transform.parent;
@@ -164,8 +161,7 @@ namespace Synthesis.Configuration {
             }
         }
 
-        private void DisableGizmo() // makes sure values are set correctly when the gizmo is removed
-        {
+        private void DisableGizmo() { // makes sure values are set correctly when the gizmo is removed
             Destroy(_gizmoCameraTransform.gameObject);
             RestoreCameraMode();
             CameraController.isOverGizmo = false; // this doesn't get reset?
@@ -173,7 +169,7 @@ namespace Synthesis.Configuration {
         }
 
         private void OnEnable() {
-            setTransform();
+            SetTransform();
         }
 
         private void OnDestroy() {
@@ -189,12 +185,10 @@ namespace Synthesis.Configuration {
                 GizmoManager.ExitGizmo();
                 RestoreCameraMode();
             }
-            if (Input.GetKeyDown(KeyCode.R)) // Reset on press R
-            {
+            if (Input.GetKeyDown(KeyCode.R)) { // Reset on press R
                 _parent.rotation = Quaternion.identity;
             }
-            if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) // enable snap on ctrl press
-            {
+            if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) { // enable snap on ctrl press
                 _snapEnabled = true;
             } else {
                 _snapEnabled = false;
@@ -334,8 +328,7 @@ namespace Synthesis.Configuration {
 
             if (arrowType == ArrowType.P) // sets marker's plane
                 _markerPlane = new Plane(Vector3.Normalize(_mainCam.transform.forward), _parent.position);
-            else if (arrowType <= ArrowType.Z) // sets up axis arrows for plane creation
-            {
+            else if (arrowType <= ArrowType.Z) { // sets up axis arrows for plane creation
                 switch (arrowType) {
                     case ArrowType.X:
                         _axisArrowTransform = _arrowX;
@@ -347,8 +340,7 @@ namespace Synthesis.Configuration {
                         _axisArrowTransform = _arrowZ;
                         break;
                 }
-            } else if (arrowType >= ArrowType.RX) // creates plane for rotation
-            {
+            } else if (arrowType >= ArrowType.RX) { // creates plane for rotation
                 _axisPlane = new Plane(ArrowDirection, _parent.position);
 
                 // the following code determines the starting offset between the mouse and the gizmo.
@@ -466,19 +458,17 @@ namespace Synthesis.Configuration {
             return true;
         }
 
-        float RoundTo(float value, float multipleOf) // used for snapping the gizmo to the nearest value
-        {
+        float RoundTo(float value, float multipleOf) { // used for snapping the gizmo to the nearest value
             if (multipleOf != 0)
                 return Mathf.Round(value / multipleOf) * multipleOf;
-            else
-                return value;
+
+            return value;
         }
 
         /// <summary>
         /// Finds the Vector3 point a distance of x away from Point A and on line AB
         /// </summary>
-        public Vector3 LerpByDistance(Vector3 A, Vector3 B, float x) // for snapping transformations
-        {
+        public Vector3 LerpByDistance(Vector3 A, Vector3 B, float x) { // for snapping transformations
             Vector3 P = x * Vector3.Normalize(B - A) + A;
             return P;
         }
