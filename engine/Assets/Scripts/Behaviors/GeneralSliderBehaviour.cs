@@ -67,7 +67,8 @@ namespace Synthesis {
             if (args.InputKey.Equals(_forwardInputKey) || args.InputKey.Equals(_reverseInputKey)) {
                 if (base.MiraId != (MainHUD.SelectedRobot?.MiraGUID ?? string.Empty) ||
                     !((DynamicUIManager.ActiveModal as ChangeInputsModal)?.isSave ?? false))
-                    return;;
+                    return;
+                ;
                 SimulationPreferences.SetRobotInput(MiraId, args.InputKey, args.Input);
             }
 
