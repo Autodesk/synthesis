@@ -99,11 +99,16 @@ public static class MainHUD {
     public static bool isConfig       = false;
     public static bool isMatchFreeCam = false;
 
-    private static RobotSimObject? _configRobot = RobotSimObject.GetCurrentlyPossessedRobot();
-    public static RobotSimObject? ConfigRobot {
-        get => _configRobot;
+    public static RobotSimObject? SelectedRobot {
+        get {
+            if (ModeManager.CurrentMode.GetType() == typeof(MatchMode) &&
+                DynamicUIManager.PanelExists<SpawnLocationPanel>()) {
+                return MatchMode.Robots[DynamicUIManager.GetPanel<SpawnLocationPanel>().SelectedButton];
+            } else {
+                return RobotSimObject.GetCurrentlyPossessedRobot();
+            }
+        }
         set {
-            _configRobot = value;
             if (value == null) {
                 RemoveItemFromDrawer("Configure");
             } else if (!isConfig && !DrawerTitles.Contains("Configure")) {
@@ -446,6 +451,11 @@ public static class MainHUD {
             }
         }, drawerPosition: DrawerPosition.Bottom);
 
+#if UNITY_EDITOR
+        AddItemToDrawer("Skip to End", b => MatchMode.MatchTime = MatchMode.MatchTime > 10 ? 10 : MatchMode.MatchTime,
+            drawerPosition: DrawerPosition.Bottom);
+#endif
+
         if ((MatchStateMachine.Instance.CurrentState.StateName is MatchStateMachine.StateName.RobotPositioning) &&
             Camera.main != null) {
             FreeCameraMode camMode = CameraController.CameraModes["Freecam"] as FreeCameraMode;
@@ -469,9 +479,9 @@ public static class MainHUD {
 
         if (ModeManager.CurrentMode.GetType() == typeof(MatchMode) &&
             DynamicUIManager.PanelExists<SpawnLocationPanel>()) {
-            ConfigRobot = MatchMode.Robots[DynamicUIManager.GetPanel<SpawnLocationPanel>().SelectedButton];
+            SelectedRobot = MatchMode.Robots[DynamicUIManager.GetPanel<SpawnLocationPanel>().SelectedButton];
         } else {
-            ConfigRobot = RobotSimObject.GetCurrentlyPossessedRobot();
+            SelectedRobot = RobotSimObject.GetCurrentlyPossessedRobot();
         }
 
         RemoveAllItemsFromDrawer();
@@ -502,13 +512,13 @@ public static class MainHUD {
             AddItemToDrawer("Move", b => {
                 if (!isMatchFreeCam) {
                     OrbitCameraMode.FocusPoint = () =>
-                        ConfigRobot.GroundedNode != null && ConfigRobot.GroundedBounds != null
-                            ? ConfigRobot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(
-                                  ConfigRobot.GroundedBounds.center)
+                        SelectedRobot.GroundedNode != null && SelectedRobot.GroundedBounds != null
+                            ? SelectedRobot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(
+                                  SelectedRobot.GroundedBounds.center)
                             : Vector3.zero;
                 }
 
-                GizmoManager.SpawnGizmo(ConfigRobot);
+                GizmoManager.SpawnGizmo(SelectedRobot);
             }, drawerPosition: DrawerPosition.Bottom);
 
         if (MatchStateMachine.Instance.CurrentState.StateName is MatchStateMachine.StateName.RobotPositioning) {

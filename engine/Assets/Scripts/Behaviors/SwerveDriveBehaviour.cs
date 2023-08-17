@@ -4,11 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Google.Protobuf.WellKnownTypes;
 using Synthesis.PreferenceManager;
+using Synthesis.UI.Dynamic;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
 using UnityEngine;
+
+#nullable enable
 
 namespace Synthesis {
     public class SwerveDriveBehaviour : SimBehaviour {
@@ -20,8 +23,16 @@ namespace Synthesis {
         internal const string TURN_RIGHT          = "Swerve Turn Right";
         internal const string RESET_FIELD_FORWARD = "Swerve Reset Forward";
 
+        private readonly string forward             = FORWARD;
+        private readonly string backward            = BACKWARD;
+        private readonly string left                = LEFT;
+        private readonly string right               = RIGHT;
+        private readonly string turn_left           = TURN_LEFT;
+        private readonly string turn_right          = TURN_RIGHT;
+        private readonly string reset_field_forward = RESET_FIELD_FORWARD;
+
         private (RotationalDriver azimuth, WheelDriver drive)[] _moduleDrivers;
-        private RobotSimObject _robot;
+        private readonly RobotSimObject _robot;
 
         private float _turnFavor = 1.5f;
 
@@ -44,41 +55,62 @@ namespace Synthesis {
                 x.azimuth.SetAxis(robot.GroundedNode.transform.up);
             });
 
+            forward             = MiraId + "Swerve Forward";
+            backward            = MiraId + "Swerve Backward";
+            left                = MiraId + "Swerve Left";
+            right               = MiraId + "Swerve Right";
+            turn_left           = MiraId + "Swerve Turn Left";
+            turn_right          = MiraId + "Swerve Turn Right";
+            reset_field_forward = MiraId + "Swerve Reset Forward";
+
             InitInputs(GetInputs());
             EventBus.NewTypeListener<ValueInputAssignedEvent>(OnValueInputAssigned);
         }
 
         public (string key, string name, Analog input)[] GetInputs() {
             return new(
-                string key, string name, Analog input)[] { (FORWARD, FORWARD, TryLoadInput(FORWARD, new Digital("W"))),
-                (BACKWARD, BACKWARD, TryLoadInput(BACKWARD, new Digital("S"))),
-                (LEFT, LEFT, TryLoadInput(LEFT, new Digital("A"))),
-                (RIGHT, RIGHT, TryLoadInput(RIGHT, new Digital("D"))),
-                (TURN_LEFT, TURN_LEFT, TryLoadInput(TURN_LEFT, new Digital("LeftArrow"))),
-                (TURN_RIGHT, TURN_RIGHT, TryLoadInput(TURN_RIGHT, new Digital("RightArrow"))),
-                (RESET_FIELD_FORWARD, RESET_FIELD_FORWARD, TryLoadInput(RESET_FIELD_FORWARD, new Digital("R"))) };
+                string key, string name, Analog input)[] { (forward, FORWARD, TryLoadInput(forward, new Digital("W"))),
+                (backward, BACKWARD, TryLoadInput(backward, new Digital("S"))),
+                (left, LEFT, TryLoadInput(left, new Digital("A"))),
+                (right, RIGHT, TryLoadInput(right, new Digital("D"))),
+                (turn_left, TURN_LEFT, TryLoadInput(turn_left, new Digital("LeftArrow"))),
+                (turn_right, TURN_RIGHT, TryLoadInput(turn_right, new Digital("RightArrow"))),
+                (reset_field_forward, RESET_FIELD_FORWARD, TryLoadInput(reset_field_forward, new Digital("R"))) };
         }
 
         public Analog TryLoadInput(string key, Analog defaultInput) {
-            return SimulationPreferences.GetRobotInput(_robot.MiraLive.MiraAssembly.Info.GUID, key) ?? defaultInput;
+            Analog input;
+            if (InputManager.MappedValueInputs.ContainsKey(key)) {
+                input                = InputManager.GetAnalog(key);
+                input.ContextBitmask = defaultInput.ContextBitmask;
+                return input;
+            }
+            input = SimulationPreferences.GetRobotInput(MiraId, key);
+            if (input == null) {
+                SimulationPreferences.SetRobotInput(MiraId, key, defaultInput);
+                return defaultInput;
+            }
+            return input;
         }
 
         private void OnValueInputAssigned(IEvent tmp) {
             ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
-            switch (args.InputKey) {
-                case FORWARD:
-                case BACKWARD:
-                case LEFT:
-                case RIGHT:
-                case TURN_LEFT:
-                case TURN_RIGHT:
-                case RESET_FIELD_FORWARD:
-                    if (base.SimObjectId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID)
-                        return;
-                    RobotSimObject robot = SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject;
-                    SimulationPreferences.SetRobotInput(
-                        _robot.MiraLive.MiraAssembly.Info.GUID, args.InputKey, args.Input);
-                    break;
+            if (args.InputKey.Length > MiraId.Length) {
+                string s = args.InputKey.Remove(0, MiraId.Length);
+                switch (s) {
+                    case FORWARD:
+                    case BACKWARD:
+                    case LEFT:
+                    case RIGHT:
+                    case TURN_LEFT:
+                    case TURN_RIGHT:
+                    case RESET_FIELD_FORWARD:
+                        if (base.MiraId != (MainHUD.SelectedRobot?.MiraGUID ?? string.Empty) ||
+                            !((DynamicUIManager.ActiveModal as ChangeInputsModal)?.isSave ?? false))
+                            return;
+                        SimulationPreferences.SetRobotInput(MiraId, args.InputKey, args.Input);
+                        break;
+                }
             }
         }
 
@@ -94,7 +126,7 @@ namespace Synthesis {
         }
 
         public override void Update() {
-            if (Mathf.Abs(InputManager.MappedValueInputs[RESET_FIELD_FORWARD].Value) > 0.5f)
+            if (Mathf.Abs(InputManager.MappedValueInputs[reset_field_forward].Value) > 0.5f)
                 _fieldForward = _robot.GroundedNode.transform.forward;
 
             Vector3 headingVector = _robot.GroundedNode.transform.forward -
@@ -103,23 +135,23 @@ namespace Synthesis {
             float headingVectorX = Vector3.Dot(Vector3.Cross(_fieldForward, Vector3.up), headingVector);
             float chassisAngle   = Mathf.Atan2(headingVectorX, headingVectorY) * Mathf.Rad2Deg;
 
-            var forwardInput   = InputManager.MappedValueInputs[FORWARD];
-            var backwardInput  = InputManager.MappedValueInputs[BACKWARD];
-            var leftInput      = InputManager.MappedValueInputs[LEFT];
-            var rightInput     = InputManager.MappedValueInputs[RIGHT];
-            var turnLeftInput  = InputManager.MappedValueInputs[TURN_LEFT];
-            var turnRightInput = InputManager.MappedValueInputs[TURN_RIGHT];
+            var forwardInput   = InputManager.MappedValueInputs[forward];
+            var backwardInput  = InputManager.MappedValueInputs[backward];
+            var leftInput      = InputManager.MappedValueInputs[left];
+            var rightInput     = InputManager.MappedValueInputs[right];
+            var turnLeftInput  = InputManager.MappedValueInputs[turn_left];
+            var turnRightInput = InputManager.MappedValueInputs[turn_right];
 
-            float forward = Mathf.Abs(forwardInput.Value) - Mathf.Abs(backwardInput.Value);
-            float strafe  = Mathf.Abs(rightInput.Value) - Mathf.Abs(leftInput.Value);
-            float turn    = Mathf.Abs(turnRightInput.Value) - Mathf.Abs(turnLeftInput.Value);
+            float _forward = Mathf.Abs(forwardInput.Value) - Mathf.Abs(backwardInput.Value);
+            float strafe   = Mathf.Abs(rightInput.Value) - Mathf.Abs(leftInput.Value);
+            float turn     = Mathf.Abs(turnRightInput.Value) - Mathf.Abs(turnLeftInput.Value);
 
-            forward = Diff(forward, 0f, 0.1f) ? 0f : forward;
-            strafe  = Diff(strafe, 0f, 0.1f) ? 0f : strafe;
-            turn    = Diff(turn, 0f, 0.1f) ? 0f : turn;
+            _forward = Diff(_forward, 0f, 0.1f) ? 0f : _forward;
+            strafe   = Diff(strafe, 0f, 0.1f) ? 0f : strafe;
+            turn     = Diff(turn, 0f, 0.1f) ? 0f : turn;
 
             // Are the inputs basically zero
-            if (forward == 0f && turn == 0f && strafe == 0f) {
+            if (_forward == 0f && turn == 0f && strafe == 0f) {
                 _moduleDrivers.ForEach(x => x.drive.MainInput = 0f);
                 return;
             }
@@ -129,7 +161,7 @@ namespace Synthesis {
 
             var robotTransform = _robot.GroundedNode.transform;
 
-            Vector3 chassisVelocity        = robotTransform.forward * forward + robotTransform.right * strafe;
+            Vector3 chassisVelocity        = robotTransform.forward * _forward + robotTransform.right * strafe;
             Vector3 chassisAngularVelocity = robotTransform.up * turn;
 
             // Normalize velocity so its between 1 and 0. Should only max out at like 1 sqrt(2), but still

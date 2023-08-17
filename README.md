@@ -47,7 +47,7 @@ The linux installer does not come with the Fusion360 Addin for exporting robots 
 
 When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change. This  way, we can ensure that there is no overlap between contributions and internal development work. You may contact us at frc@autodesk.com.
 
-When ready to contribute, just submit a pull request and be sure to include a clear and detailed description of the changes you've made so that we can verify them and eventually merge. Feel free to check out our [contributing guidlines](contributing.md) to learn more.
+When ready to contribute, just submit a pull request and be sure to include a clear and detailed description of the changes you've made so that we can verify them and eventually merge. Feel free to check out our [contributing guidlines](CONTRIBUTING.md) to learn more.
 
 ## Contact
 

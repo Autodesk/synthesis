@@ -27,15 +27,15 @@ public class ChangeDrivetrainModal : ModalDynamic {
         ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
 
         AcceptButton.AddOnClickedEvent(b => {
-            MainHUD.ConfigRobot.ConfiguredDrivetrainType = _selectedType;
+            MainHUD.SelectedRobot.ConfiguredDrivetrainType = _selectedType;
             AnalyticsManager.LogCustomEvent(AnalyticsEvent.DrivetrainSwitched, ("DrivetrainType", _selectedType.Name));
 
             DynamicUIManager.CloseActiveModal();
 
-            RobotSimObject.GetCurrentlyPossessedRobot().CreateDrivetrainTooltip();
+            MainHUD.SelectedRobot.CreateDrivetrainTooltip();
         });
 
-        _selectedType = MainHUD.ConfigRobot.ConfiguredDrivetrainType;
+        _selectedType = MainHUD.SelectedRobot.ConfiguredDrivetrainType;
 
         MainContent.CreateDropdown()
             .SetTopStretch<Dropdown>()
