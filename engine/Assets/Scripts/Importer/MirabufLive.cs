@@ -9,6 +9,7 @@ using System;
 using System.Threading.Tasks;
 using SynthesisAPI.Utilities;
 using Google.Protobuf;
+using Synthesis.UI.Dynamic;
 using Utilities;
 using Logger              = SynthesisAPI.Utilities.Logger;
 using MPhysicalProperties = Mirabuf.PhysicalProperties;
@@ -48,6 +49,11 @@ namespace Synthesis.Import {
         public static MirabufLive OpenMirabufFile(string path) => MirabufCache.Get(path);
 
         private void Load() {
+            if (!File.Exists(_path)) {
+                Logger.Log($"Mira file {_path} not found!", LogLevel.Error);
+                DynamicUIManager.CloseActiveModal();
+                return;
+            }
             byte[] buff = File.ReadAllBytes(_path);
 
             // Check if data is compressed, and if so decompress it

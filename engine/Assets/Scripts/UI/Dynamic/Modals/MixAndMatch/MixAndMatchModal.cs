@@ -183,9 +183,9 @@ namespace UI.Dynamic.Modals.MixAndMatch {
                 dependencies.ForEach(d => textContent.CreateLabel().SetFontSize(17).SetText(d).ApplyTemplate(
                                          UIComponent.VerticalLayoutBigSpacing));
 
-                CancelButton.RootGameObject.SetActive(false);
+                AcceptButton.RootGameObject.SetActive(false);
             } else {
-                CancelButton.StepIntoLabel(l => l.SetText("Delete"))
+                AcceptButton.StepIntoLabel(l => l.SetText("Delete"))
                     .AddOnClickedEvent(
                         _ => {
                             if (robot)
@@ -193,14 +193,14 @@ namespace UI.Dynamic.Modals.MixAndMatch {
                             else
                                 MixAndMatchSaveUtil.DeletePart(fileName);
                             CreateChooseObjectModal(robot);
-                        })
+                        }).ApplyTemplate(Button.EnableCancelButton)
                     .RootGameObject.SetActive(true);
             }
 
-            AcceptButton
+            CancelButton
                 .AddOnClickedEvent(
                     _ => CreateChooseObjectModal(robot))
-                .StepIntoLabel(l => l.SetText("Back"))
+                .StepIntoLabel(l => l.SetText("Back")).ApplyTemplate(Button.EnableAcceptButton)
                 .RootGameObject.SetActive(true);
         }
 

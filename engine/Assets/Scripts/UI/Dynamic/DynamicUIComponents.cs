@@ -346,11 +346,9 @@ namespace Synthesis.UI.Dynamic {
                 return;
 
             AcceptButton.ClearOnClickedEvents()
-                .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.AcceptButton))
-                .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.AcceptCancelButtonText));
+                .ApplyTemplate(Button.EnableAcceptButton);
             CancelButton.ClearOnClickedEvents()
-                .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.CancelButton))
-                .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.AcceptCancelButtonText));
+                .ApplyTemplate(Button.EnableCancelButton);
         }
 
         protected void ClearMainContent() => MainContent.DeleteAllChildren();
@@ -1306,6 +1304,18 @@ namespace Synthesis.UI.Dynamic {
         public static readonly Func<Button, Button> EnableDeleteButton = b => {
             b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.CancelButton))
                 .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
+                .EnableEvents<Button>();
+
+            var eventListener = b.RootGameObject.GetComponentInChildren<HoverEventListener>();
+            if (eventListener != null)
+                eventListener.enabled = true;
+
+            return b;
+        };
+        
+        public static readonly Func<Button, Button> EnableCancelButton = b => {
+            b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.CancelButton))
+                .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.AcceptCancelButtonText))
                 .EnableEvents<Button>();
 
             var eventListener = b.RootGameObject.GetComponentInChildren<HoverEventListener>();
