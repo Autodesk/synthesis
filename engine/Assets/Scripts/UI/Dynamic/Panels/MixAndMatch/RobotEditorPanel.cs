@@ -64,8 +64,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
                         SaveRobotData();
                         DynamicUIManager.ClosePanel<RobotEditorPanel>();
                     });
-            CancelButton.RootGameObject.SetActive(false);
-
+            
             _scrollView = MainContent.CreateScrollView().SetStretch<ScrollView>(bottomPadding: 60f);
 
             CreateAddRemoveButtons();
@@ -207,6 +206,8 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
             AddScrollViewEntry(localPartData);
             UpdateRemoveButton();
+            
+            DeselectSelectedPart();
         }
 
         /// <summary>Clears the scroll view then repopulates it with all the current parts</summary>
@@ -249,6 +250,15 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             _connectedTransform = null;
             UpdateRemoveButton();
         }
+        
+        /// <summary>Deselects all radio select buttons</summary>
+        private void DeselectSelectedPart() {
+            _scrollView.Content.ChildrenReadOnly.OfType<Toggle>().ForEach(x => {
+                if (x.State)
+                    x.SetStateWithoutEvents(false);
+            });
+            _selectedPart = null;
+        }
 
         /// <summary>Enables the colliders of a part's connection points so other parts can snap to it</summary>
         private void EnableConnectionColliders(GameObject partObject) {
@@ -278,7 +288,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         private void PartPlacement() {
             if (EventSystem.current.IsPointerOverGameObject() || _selectedPart == null)
                 return;
-
+            
             var selectedPartGlobalData = _selectedPart.EditorPartInfo.GlobalPartData;
             var selectedTrf            = _selectedPart.EditorPartInfo.GameObject.transform;
 
@@ -322,7 +332,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         private HighlightComponent _selectedNode;
 
         /// <summary>Raycast to select a part node</summary>
-        private void NodeSelection() {
+        private void ParentNodeSelection() {
             if (_selectedPart == null)
                 return;
 
@@ -386,7 +396,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
                 return;
 
             if (_selectingNode)
-                NodeSelection();
+                ParentNodeSelection();
             else
                 PartPlacement();
         }

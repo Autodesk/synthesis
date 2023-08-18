@@ -52,7 +52,6 @@ namespace UI.Dynamic.Panels.MixAndMatch {
                         GizmoManager.ExitGizmo();
                         DynamicUIManager.ClosePanel<PartEditorPanel>();
                     });
-            CancelButton.RootGameObject.SetActive(false);
 
             _scrollView = MainContent.CreateScrollView().SetStretch<ScrollView>(bottomPadding: 60f);
 
