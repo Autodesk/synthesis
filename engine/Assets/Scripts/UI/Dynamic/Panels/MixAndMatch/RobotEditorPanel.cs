@@ -64,7 +64,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
                         SaveRobotData();
                         DynamicUIManager.ClosePanel<RobotEditorPanel>();
                     });
-            
+
             _scrollView = MainContent.CreateScrollView().SetStretch<ScrollView>(bottomPadding: 60f);
 
             CreateAddRemoveButtons();
@@ -206,7 +206,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
             AddScrollViewEntry(localPartData);
             UpdateRemoveButton();
-            
+
             DeselectSelectedPart();
         }
 
@@ -250,7 +250,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
             _connectedTransform = null;
             UpdateRemoveButton();
         }
-        
+
         /// <summary>Deselects all radio select buttons</summary>
         private void DeselectSelectedPart() {
             _scrollView.Content.ChildrenReadOnly.OfType<Toggle>().ForEach(x => {
@@ -288,7 +288,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         private void PartPlacement() {
             if (EventSystem.current.IsPointerOverGameObject() || _selectedPart == null)
                 return;
-            
+
             var selectedPartGlobalData = _selectedPart.EditorPartInfo.GlobalPartData;
             var selectedTrf            = _selectedPart.EditorPartInfo.GameObject.transform;
 

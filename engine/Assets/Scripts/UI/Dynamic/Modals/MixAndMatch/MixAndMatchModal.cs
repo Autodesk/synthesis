@@ -40,12 +40,14 @@ namespace UI.Dynamic.Modals.MixAndMatch {
 
             left.CreateButton("Robot Editor") // Robot editor button
                 .ApplyTemplate(UIComponent.VerticalLayout)
-                .AddOnClickedEvent(_ => CreateChooseObjectModal(true));
+                .AddOnClickedEvent(
+                    _ => CreateChooseObjectModal(true));
 
             right
                 .CreateButton("Part Editor") // Part editor button
                 .ApplyTemplate(UIComponent.VerticalLayout)
-                .AddOnClickedEvent(_ => CreateChooseObjectModal(false))
+                .AddOnClickedEvent(
+                    _ => CreateChooseObjectModal(false))
                 .StepIntoImage(i => i.InvertGradient());
         }
 
