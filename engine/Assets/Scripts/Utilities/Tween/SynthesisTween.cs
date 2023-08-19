@@ -22,6 +22,9 @@ public static class SynthesisTween {
         Action<SynthesisTweenStatus> callback) {
         EnsureComponent();
 
+        if (_tweens.ContainsKey(key))
+            _tweens.Remove(key);
+
         _tweens.Add(key, new SynthesisTweenConfig { Key = key, Start = start, End = end, Duration = duration,
             StartTime = Time.realtimeSinceStartup, Interpolation = interpolateFunc, Scaling = scalingFunc,
             Callback = callback });

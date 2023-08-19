@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
-using Google.Protobuf.WellKnownTypes;
-using Mirabuf;
 using Synthesis.PreferenceManager;
-using SynthesisAPI.EnvironmentManager;
+using Synthesis.UI.Dynamic;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
-using SynthesisAPI.Utilities;
 using UnityEngine;
+
+#nullable enable
 
 namespace Synthesis {
     public class TankDriveBehavior : SimBehaviour {
@@ -16,6 +15,11 @@ namespace Synthesis {
         internal const string LEFT_REVERSE  = "Tank Left-Reverse";
         internal const string RIGHT_FORWARD = "Tank Right-Forward";
         internal const string RIGHT_REVERSE = "Tank Right-Reverse";
+
+        private readonly string left_forward  = LEFT_FORWARD;
+        private readonly string left_reverse  = LEFT_REVERSE;
+        private readonly string right_forward = RIGHT_FORWARD;
+        private readonly string right_reverse = RIGHT_REVERSE;
 
         private List<WheelDriver> _leftWheels;
         private List<WheelDriver> _rightWheels;
@@ -44,9 +48,13 @@ namespace Synthesis {
             if (inputName == "")
                 inputName = simObjectId;
 
-            SimObjectId  = simObjectId;
             _leftWheels  = leftWheels;
             _rightWheels = rightWheels;
+
+            left_forward  = MiraId + "Tank Left-Forward";
+            left_reverse  = MiraId + "Tank Left-Reverse";
+            right_forward = MiraId + "Tank Right-Forward";
+            right_reverse = MiraId + "Tank Right-Reverse";
 
             InitInputs(GetInputs());
 
@@ -55,39 +63,50 @@ namespace Synthesis {
 
         public (string key, string displayName, Analog input)[] GetInputs() {
             return new(string key, string displayName,
-                Analog input)[] { (LEFT_FORWARD, LEFT_FORWARD, TryLoadInput(LEFT_FORWARD, new Digital("W"))),
-                (LEFT_REVERSE, LEFT_REVERSE, TryLoadInput(LEFT_REVERSE, new Digital("S"))),
-                (RIGHT_FORWARD, RIGHT_FORWARD, TryLoadInput(RIGHT_FORWARD, new Digital("I"))),
-                (RIGHT_REVERSE, RIGHT_REVERSE, TryLoadInput(RIGHT_REVERSE, new Digital("K"))) };
+                Analog input)[] { (left_forward, LEFT_FORWARD, TryLoadInput(left_forward, new Digital("W"))),
+                (left_reverse, LEFT_REVERSE, TryLoadInput(left_reverse, new Digital("S"))),
+                (right_forward, RIGHT_FORWARD, TryLoadInput(right_forward, new Digital("I"))),
+                (right_reverse, RIGHT_REVERSE, TryLoadInput(right_reverse, new Digital("K"))) };
         }
 
         public Analog TryLoadInput(string key, Analog defaultInput) {
-            if (_robot == null)
-                _robot = SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject;
-            return SimulationPreferences.GetRobotInput(_robot.MiraLive.MiraAssembly.Info.GUID, key) ?? defaultInput;
+            Analog input;
+            if (InputManager.MappedValueInputs.ContainsKey(key)) {
+                input                = InputManager.GetAnalog(key);
+                input.ContextBitmask = defaultInput.ContextBitmask;
+                return input;
+            }
+            input = SimulationPreferences.GetRobotInput(MiraId, key);
+            if (input == null) {
+                SimulationPreferences.SetRobotInput(MiraId, key, defaultInput);
+                return defaultInput;
+            }
+            return input;
         }
 
         private void OnValueInputAssigned(IEvent tmp) {
             ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
-            switch (args.InputKey) {
-                case LEFT_FORWARD:
-                case LEFT_REVERSE:
-                case RIGHT_FORWARD:
-                case RIGHT_REVERSE:
-                    if (base.SimObjectId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID)
-                        return;
-                    RobotSimObject robot = SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject;
-                    SimulationPreferences.SetRobotInput(
-                        _robot.MiraLive.MiraAssembly.Info.GUID, args.InputKey, args.Input);
-                    break;
+            if (args.InputKey.Length > MiraId.Length) {
+                string s = args.InputKey.Remove(0, MiraId.Length);
+                switch (s) {
+                    case LEFT_FORWARD:
+                    case LEFT_REVERSE:
+                    case RIGHT_FORWARD:
+                    case RIGHT_REVERSE:
+                        if (base.MiraId != (MainHUD.SelectedRobot?.MiraGUID ?? string.Empty) ||
+                            !((DynamicUIManager.ActiveModal as ChangeInputsModal)?.isSave ?? false))
+                            return;
+                        SimulationPreferences.SetRobotInput(MiraId, args.InputKey, args.Input);
+                        break;
+                }
             }
         }
 
         public override void Update() {
-            var leftForwardInput   = InputManager.MappedValueInputs[LEFT_FORWARD];
-            var leftBackwardInput  = InputManager.MappedValueInputs[LEFT_REVERSE];
-            var rightForwardInput  = InputManager.MappedValueInputs[RIGHT_FORWARD];
-            var rightBackwardInput = InputManager.MappedValueInputs[RIGHT_REVERSE];
+            var leftForwardInput   = InputManager.MappedValueInputs[left_forward];
+            var leftBackwardInput  = InputManager.MappedValueInputs[left_reverse];
+            var rightForwardInput  = InputManager.MappedValueInputs[right_forward];
+            var rightBackwardInput = InputManager.MappedValueInputs[right_reverse];
 
             var leftSpeed  = Mathf.Abs(leftForwardInput.Value) - Mathf.Abs(leftBackwardInput.Value);
             var rightSpeed = Mathf.Abs(rightForwardInput.Value) - Mathf.Abs(rightBackwardInput.Value);

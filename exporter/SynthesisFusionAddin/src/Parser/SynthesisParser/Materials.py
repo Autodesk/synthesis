@@ -174,7 +174,7 @@ def setDefaultAppearance(appearance: material_pb2.Appearance) -> None:
     color.R = 127
     color.G = 127
     color.B = 127
-    color.A = 127
+    color.A = 255
 
 
 def getMaterialAppearance(
@@ -198,7 +198,7 @@ def getMaterialAppearance(
     color.R = 10
     color.G = 10
     color.B = 10
-    color.A = 10
+    color.A = 127
 
     properties = fusionAppearance.appearanceProperties
 
@@ -210,10 +210,13 @@ def getMaterialAppearance(
 
         if matModelType == 0:
             baseColor = properties.itemById("opaque_albedo").value
+            baseColor.opacity = 255
         elif matModelType == 1:
             baseColor = properties.itemById("metal_f0").value
+            baseColor.opacity = 255
         elif matModelType == 2:
             baseColor = properties.itemById("layered_diffuse").value
+            baseColor.opacity = 255
         elif matModelType == 3:
             baseColor = properties.itemById("transparent_color").value
             transparent_distance = properties.itemById("transparent_distance").value

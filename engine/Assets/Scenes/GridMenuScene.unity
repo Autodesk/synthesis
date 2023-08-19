@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2808,6 +2808,17 @@ RectTransform:
   m_AnchoredPosition: {x: -150, y: 0}
   m_SizeDelta: {x: -300, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &973703905 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7066168400804079797, guid: a164eb99c8d3069438923ac0c0b61657, type: 3}
+  m_PrefabInstance: {fileID: 8178300923073055980}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93a422c8bc4c6d142a7709e579b5824e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1034264194
 GameObject:
   m_ObjectHideFlags: 0
@@ -6189,6 +6200,14 @@ PrefabInstance:
     - target: {fileID: 2339183383630760493, guid: a164eb99c8d3069438923ac0c0b61657, type: 3}
       propertyPath: m_VerticalAlignment
       value: 512
+      objectReference: {fileID: 0}
+    - target: {fileID: 3730065189251445096, guid: a164eb99c8d3069438923ac0c0b61657, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 973703905}
+    - target: {fileID: 3730065189251445096, guid: a164eb99c8d3069438923ac0c0b61657, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Email
       objectReference: {fileID: 0}
     - target: {fileID: 4758894416657705936, guid: a164eb99c8d3069438923ac0c0b61657, type: 3}
       propertyPath: m_AnchorMax.x
