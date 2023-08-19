@@ -1,4 +1,5 @@
 import React from "react"
+import { useTheme } from "../ThemeContext"
 
 enum ButtonSize {
     Small,
@@ -15,6 +16,9 @@ type ButtonProps = {
 }
 
 const Button: React.FC<ButtonProps> = ({ value, size, onClick, className }) => {
+    const { themes, currentTheme } = useTheme()
+    let leftColor = themes[currentTheme]["InteractiveElementLeft"]
+    let rightColor = themes[currentTheme]["InteractiveElementRight"]
     let sizeClassNames
 
     if (!size) size = ButtonSize.Medium as ButtonSize
