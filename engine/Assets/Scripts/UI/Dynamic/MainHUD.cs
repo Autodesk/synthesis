@@ -9,9 +9,9 @@ using SynthesisAPI.Utilities;
 using System;
 using System.Collections.Generic;
 using UI;
+using UI.Dynamic.Modals.MixAndMatch;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using Utilities.ColorManager;
 
 using Button  = Synthesis.UI.Dynamic.Button;
@@ -36,9 +36,22 @@ public static class MainHUD {
 
     private static bool _isSetup = false;
     private static bool _enabled = true;
+
+    private static bool _overrideEnable = false;
+    public static bool OverrideEnable {
+        get => _overrideEnable;
+        set {
+            Enabled         = !value;
+            _overrideEnable = value;
+        }
+    }
+
     public static bool Enabled {
         get => _enabled;
         set {
+            if (_overrideEnable)
+                return;
+
             if (!_isSetup)
                 return;
 
@@ -417,6 +430,9 @@ public static class MainHUD {
                     DynamicUIManager.CreatePanel<ScoringZonesPanel>();
             }
         }, drawerPosition: DrawerPosition.Bottom);
+
+        AddItemToDrawer("Robot Builder", b => DynamicUIManager.CreateModal<MixAndMatchModal>(),
+            drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
 
         PhysicsManager.IsFrozen = false;
     }

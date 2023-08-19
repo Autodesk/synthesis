@@ -23,17 +23,18 @@ namespace SynthesisAPI.Controller {
 
 		public bool HasUpdates => ModifiedSignals.Count > 0;
 
-		public ControllableState(Signals signals) {
-			signals.SignalMap.ForEach(x => {
-				SignalMap.Add(
-					x.Key,
-					new SignalData {
-						SignalGuid = x.Key,
-						Name = x.Value.Info.Name,
-						Value = Value.ForNull()
-					}
-				);
-			});
+		public ControllableState(params Signals[] allSignals) {
+			allSignals.ForEach(partSignals => partSignals.SignalMap.ForEach(x => {
+				if (!SignalMap.ContainsKey(x.Key))
+					SignalMap.Add(
+						x.Key,
+						new SignalData {
+							SignalGuid = x.Key,
+							Name = x.Value.Info.Name,
+							Value = Value.ForNull()
+						}
+					);
+			}));
 		}
 
 		public Value? GetValue(string signal_guid) {

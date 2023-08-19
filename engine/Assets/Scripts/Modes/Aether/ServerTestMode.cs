@@ -38,13 +38,13 @@ public class ServerTestMode : IMode {
         // TODO remove and allow user to choose robot
         string dozer = "Dozer_v9.mira";
         string tmm   = "Team 2471 (2018)_v5.mira";
-        RobotSimObject.SpawnRobot(AddRobotModal.ParsePath("$appdata/Autodesk/Synthesis/Mira/" + dozer, '/'),
-            new Vector3(-2, 1, 0), Quaternion.Euler(0, 0, 0), false);
+        RobotSimObject.SpawnRobot(null, new Vector3(-2, 1, 0), Quaternion.Euler(0, 0, 0), false,
+            AddRobotModal.ParsePath("$appdata/Autodesk/Synthesis/Mira/" + dozer, '/'));
         _host                   = RobotSimObject.GetCurrentlyPossessedRobot();
         _host.RobotNode.name    = "host";
         _host.BehavioursEnabled = false;
-        RobotSimObject.SpawnRobot(AddRobotModal.ParsePath("$appdata/Autodesk/Synthesis/Mira/" + dozer, '/'),
-            new Vector3(2, 1, 0), Quaternion.Euler(0, 0, 0), false);
+        RobotSimObject.SpawnRobot(null, new Vector3(2, 1, 0), Quaternion.Euler(0, 0, 0), false,
+            AddRobotModal.ParsePath("$appdata/Autodesk/Synthesis/Mira/" + dozer, '/'));
         _ghost                = RobotSimObject.GetCurrentlyPossessedRobot();
         _ghost.RobotNode.name = "ghost";
         _ghost.DriversEnabled = false;

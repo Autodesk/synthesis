@@ -25,6 +25,8 @@ namespace Synthesis {
         private RotationalDriver _armDriver;
         private float _speedMod = 0.4f;
 
+        private RobotSimObject _robot;
+
         public GeneralArmBehaviour(string simObjectId, RotationalDriver armDriver)
             : base(simObjectId) { // base(simObjectId, GetInputs(this, armSignal))
 
@@ -33,8 +35,10 @@ namespace Synthesis {
             armDriver.Reserve(this);
             _armDriver = armDriver;
 
-            _forwardInputKey    = MiraId + _armDriver.Signal + _forwardInputKey;
-            _reverseInputKey    = MiraId + _armDriver.Signal + _reverseInputKey;
+            _robot = (SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject)!;
+
+            _forwardInputKey    = _robot.RobotGUID + _armDriver.Signal + _forwardInputKey;
+            _reverseInputKey    = _robot.RobotGUID + _armDriver.Signal + _reverseInputKey;
             var name            = _armDriver.Name;
             _forwardDisplayName = name + _forwardDisplayName;
             _reverseDisplayName = name + _reverseDisplayName;
@@ -61,9 +65,9 @@ namespace Synthesis {
                 input.ContextBitmask = defaultInput.ContextBitmask;
                 return input;
             }
-            input = SimulationPreferences.GetRobotInput(MiraId, key);
+            input = SimulationPreferences.GetRobotInput(_robot.RobotGUID, key);
             if (input == null) {
-                SimulationPreferences.SetRobotInput(MiraId, key, defaultInput);
+                SimulationPreferences.SetRobotInput(_robot.RobotGUID, key, defaultInput);
                 return defaultInput;
             }
             return input;
@@ -72,10 +76,10 @@ namespace Synthesis {
         private void OnValueInputAssigned(IEvent tmp) {
             ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
             if (args.InputKey.Equals(_forwardInputKey) || args.InputKey.Equals(_reverseInputKey)) {
-                if (base.MiraId != (MainHUD.SelectedRobot?.MiraGUID ?? string.Empty) ||
+                if (_robot.RobotGUID != (MainHUD.SelectedRobot?.RobotGUID ?? string.Empty) ||
                     !((DynamicUIManager.ActiveModal as ChangeInputsModal)?.isSave ?? false))
                     return;
-                SimulationPreferences.SetRobotInput(MiraId, args.InputKey, args.Input);
+                SimulationPreferences.SetRobotInput(_robot.RobotGUID, args.InputKey, args.Input);
             }
         }
 

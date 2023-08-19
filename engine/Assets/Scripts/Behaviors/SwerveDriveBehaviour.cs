@@ -55,13 +55,13 @@ namespace Synthesis {
                 x.azimuth.SetAxis(robot.GroundedNode.transform.up);
             });
 
-            forward             = MiraId + "Swerve Forward";
-            backward            = MiraId + "Swerve Backward";
-            left                = MiraId + "Swerve Left";
-            right               = MiraId + "Swerve Right";
-            turn_left           = MiraId + "Swerve Turn Left";
-            turn_right          = MiraId + "Swerve Turn Right";
-            reset_field_forward = MiraId + "Swerve Reset Forward";
+            forward             = _robot.RobotGUID + "Swerve Forward";
+            backward            = _robot.RobotGUID + "Swerve Backward";
+            left                = _robot.RobotGUID + "Swerve Left";
+            right               = _robot.RobotGUID + "Swerve Right";
+            turn_left           = _robot.RobotGUID + "Swerve Turn Left";
+            turn_right          = _robot.RobotGUID + "Swerve Turn Right";
+            reset_field_forward = _robot.RobotGUID + "Swerve Reset Forward";
 
             InitInputs(GetInputs());
             EventBus.NewTypeListener<ValueInputAssignedEvent>(OnValueInputAssigned);
@@ -85,9 +85,9 @@ namespace Synthesis {
                 input.ContextBitmask = defaultInput.ContextBitmask;
                 return input;
             }
-            input = SimulationPreferences.GetRobotInput(MiraId, key);
+            input = SimulationPreferences.GetRobotInput(_robot.RobotGUID, key);
             if (input == null) {
-                SimulationPreferences.SetRobotInput(MiraId, key, defaultInput);
+                SimulationPreferences.SetRobotInput(_robot.RobotGUID, key, defaultInput);
                 return defaultInput;
             }
             return input;
@@ -95,8 +95,9 @@ namespace Synthesis {
 
         private void OnValueInputAssigned(IEvent tmp) {
             ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
-            if (args.InputKey.Length > MiraId.Length) {
-                string s = args.InputKey.Remove(0, MiraId.Length);
+
+            if (args.InputKey.Length > _robot.RobotGUID.Length) {
+                string s = args.InputKey.Remove(0, _robot.RobotGUID.Length);
                 switch (s) {
                     case FORWARD:
                     case BACKWARD:
@@ -105,10 +106,7 @@ namespace Synthesis {
                     case TURN_LEFT:
                     case TURN_RIGHT:
                     case RESET_FIELD_FORWARD:
-                        if (base.MiraId != (MainHUD.SelectedRobot?.MiraGUID ?? string.Empty) ||
-                            !((DynamicUIManager.ActiveModal as ChangeInputsModal)?.isSave ?? false))
-                            return;
-                        SimulationPreferences.SetRobotInput(MiraId, args.InputKey, args.Input);
+                        SimulationPreferences.SetRobotInput(_robot.RobotGUID, args.InputKey, args.Input);
                         break;
                 }
             }

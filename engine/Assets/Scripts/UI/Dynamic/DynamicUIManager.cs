@@ -294,6 +294,7 @@ namespace Synthesis.UI.Dynamic {
 
             // Unfreeze physics no matter what because it has a counter
             PhysicsManager.IsFrozen = false;
+            MainHUD.Enabled         = true;
 
             if (showPersistentPanels)
                 ShowAllPanels();
