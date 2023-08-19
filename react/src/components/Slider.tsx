@@ -86,17 +86,17 @@ const Slider: React.FC<SliderProps> = ({
             >
                 <div
                     id="background"
-                    className="absolute bg-gray-500 w-full h-full rounded-lg"
+                    className="absolute bg-interactive-background w-full h-full rounded-lg"
                 ></div>
                 <div
                     id="color"
                     style={{ width: `max(calc(${getPercent()}%), 1rem)` }}
-                    className="absolute bg-gradient-to-r from-orange-500 to-red-600 h-full rounded-lg"
+                    className="absolute bg-gradient-to-r from-interactive-element-left to-interactive-element-right h-full rounded-lg"
                 ></div>
                 <div
                     id="handle"
                     style={{ width: `max(calc(${getPercent()}%), 1rem)` }}
-                    className="hidden absolute w-4 h-4 bg-red-700 rounded-lg -translate-x-full"
+                    className="hidden absolute w-4 h-4 bg-interactive-element-right rounded-lg -translate-x-full"
                 ></div>
             </div>
         </div>

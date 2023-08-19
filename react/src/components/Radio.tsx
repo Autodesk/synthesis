@@ -30,7 +30,7 @@ const Radio: React.FC<RadioProps> = ({
                     setState((e.target as HTMLInputElement).checked)
                     if (onClick) onClick()
                 }}
-                className="bg-gray-500 translate-y-1/4 duration-200 cursor-pointer appearance-none w-5 h-5 rounded-full checked:bg-gradient-to-br checked:from-red-700 checked:to-orange-400"
+                className="bg-interactive-background translate-y-1/4 duration-200 cursor-pointer appearance-none w-5 h-5 rounded-full checked:bg-gradient-to-br checked:from-interactive-element-left checked:to-interactive-element-right"
             />
         </Stack>
     )

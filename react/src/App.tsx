@@ -1,38 +1,37 @@
+import { AnimatePresence, motion } from "framer-motion"
+import { ReactElement, useEffect } from "react"
 import { ModalControlProvider, useModalManager } from "./ModalContext"
 import { PanelControlProvider, usePanelManager } from "./PanelContext"
+import { useTheme } from "./ThemeContext"
+import { ToastContainer, ToastProvider } from "./ToastContext"
 import MainHUD from "./components/MainHUD"
-import SpawningModal from "./modals/SpawningModal"
 import CreateDeviceModal from "./modals/CreateDeviceModal"
 import DownloadAssetsModal from "./modals/DownloadAssetsModal"
-import RoboRIOModal from "./modals/configuring/RoboRIOModal"
-import ViewModal from "./modals/ViewModal"
-import MultiBotPanel from "./panels/MultiBotPanel"
-import RobotsModal from "./modals/RobotsModal"
-import FieldsModal from "./modals/FieldsModal"
-import SettingsModal from "./modals/configuring/SettingsModal"
-import DriverStationPanel from "./panels/DriverStationPanel"
-import DrivetrainModal from "./modals/configuring/DrivetrainModal"
-import { AnimatePresence } from "framer-motion"
-import { motion } from "framer-motion"
-import { ReactElement } from "react"
-import { ToastContainer, ToastProvider } from "./ToastContext"
-import ThemeEditorModal from "./modals/configuring/theme-editor/ThemeEditorModal"
-import MatchResultsModal from "./modals/MatchResultsModal"
-import UpdateAvailableModal from "./modals/UpdateAvailableModal"
 import ExitSynthesisModal from "./modals/ExitSynthesisModal"
+import FieldsModal from "./modals/FieldsModal"
+import MatchResultsModal from "./modals/MatchResultsModal"
+import RobotsModal from "./modals/RobotsModal"
+import SpawningModal from "./modals/SpawningModal"
+import UpdateAvailableModal from "./modals/UpdateAvailableModal"
+import ViewModal from "./modals/ViewModal"
 import ConnectToMultiplayerModal from "./modals/aether/ConnectToMultiplayerModal"
 import ServerHostingModal from "./modals/aether/ServerHostingModal"
 import ChangeInputsModal from "./modals/configuring/ChangeInputsModal"
 import ChooseMultiplayerModeModal from "./modals/configuring/ChooseMultiplayerModeModal"
 import ChooseSingleplayerModeModal from "./modals/configuring/ChooseSingleplayerModeModal"
+import DrivetrainModal from "./modals/configuring/DrivetrainModal"
 import PracticeSettingsModal from "./modals/configuring/PracticeSettingsModal"
-import DeleteThemeModal from "./modals/configuring/theme-editor/DeleteThemeModal"
-import DeleteAllThemesModal from "./modals/configuring/theme-editor/DeleteAllThemesModal"
-import NewThemeModal from "./modals/configuring/theme-editor/NewThemeModal"
-import RCCreateDeviceModal from "./modals/configuring/rio-config/RCCreateDeviceModal"
-import RCConfigPwmGroupModal from "./modals/configuring/rio-config/RCConfigPwmGroupModal"
+import RoboRIOModal from "./modals/configuring/RoboRIOModal"
+import SettingsModal from "./modals/configuring/SettingsModal"
 import RCConfigEncoderModal from "./modals/configuring/rio-config/RCConfigEncoderModal"
-import { Theme, ThemeProvider } from "./ThemeContext"
+import RCConfigPwmGroupModal from "./modals/configuring/rio-config/RCConfigPwmGroupModal"
+import RCCreateDeviceModal from "./modals/configuring/rio-config/RCCreateDeviceModal"
+import DeleteAllThemesModal from "./modals/configuring/theme-editor/DeleteAllThemesModal"
+import DeleteThemeModal from "./modals/configuring/theme-editor/DeleteThemeModal"
+import NewThemeModal from "./modals/configuring/theme-editor/NewThemeModal"
+import ThemeEditorModal from "./modals/configuring/theme-editor/ThemeEditorModal"
+import DriverStationPanel from "./panels/DriverStationPanel"
+import MultiBotPanel from "./panels/MultiBotPanel"
 
 const initialModals = [
     <SettingsModal modalId="settings" />,
@@ -73,6 +72,12 @@ function App() {
     const { openPanel, closePanel, closeAllPanels, getActivePanelElements } =
         usePanelManager(initialPanels)
 
+    const { currentTheme, applyTheme } = useTheme();
+
+    useEffect(() => {
+        applyTheme(currentTheme)
+    }, [currentTheme, applyTheme])
+
     if (process.env.NODE_ENV && process.env.NODE_ENV !== "development") {
         document.body.style.background = "purple"
     }
@@ -112,30 +117,6 @@ function App() {
         </motion.div>
     ))
 
-    const initialTheme = "Default"
-    const defaultColors: Theme = {
-        InteractiveElementSolid: { r: 250, g: 162, b: 27, a: 255 },
-        InteractiveElementLeft: { r: 224, g: 130, b: 65, a: 255 },
-        InteractiveElementRight: { r: 218, g: 102, b: 89, a: 255 },
-        InteractiveSecondary: { r: 204, g: 124, b: 0, a: 255 },
-        Background: { r: 33, g: 37, b: 41, a: 255 },
-        BackgroundSecondary: { r: 52, g: 58, b: 64, a: 255 },
-        MainText: { r: 248, g: 249, b: 250, a: 255 },
-        Scrollbar: { r: 213, g: 216, b: 223, a: 255 },
-        AcceptButton: { r: 34, g: 139, b: 230, a: 255 },
-        CancelButton: { r: 250, g: 82, b: 82, a: 255 },
-        InteractiveElementText: { r: 0, g: 0, b: 0, a: 255 },
-        Icon: { r: 255, g: 255, b: 255, a: 255 },
-        HighlightHover: { r: 89, g: 255, b: 133, a: 255 },
-        HighlightSelect: { r: 255, g: 89, b: 133, a: 255 },
-        SkyboxTop: { r: 255, g: 255, b: 255, a: 255 },
-        SkyboxBottom: { r: 255, g: 255, b: 255, a: 255 },
-        FloorGrid: { r: 93, g: 93, b: 93, a: 255 },
-    }
-    const themes = {
-        Default: defaultColors,
-    }
-
     const modalElement = getActiveModalElement()
     const motionModalElement =
         modalElement == null ? null : (
@@ -172,37 +153,30 @@ function App() {
         )
 
     return (
-        <ThemeProvider
-            initialTheme={initialTheme}
-            themes={themes}
-            defaultTheme={defaultColors}
+        <ModalControlProvider
+            openModal={(modalId: string) => {
+                closeAllPanels()
+                openModal(modalId)
+            }}
+            closeModal={closeModal}
         >
-            <ModalControlProvider
-                openModal={(modalId: string) => {
-                    closeAllPanels()
-                    openModal(modalId)
+            <PanelControlProvider
+                openPanel={openPanel}
+                closePanel={(id: string) => {
+                    closePanel(id)
                 }}
-                closeModal={closeModal}
             >
-                <PanelControlProvider
-                    openPanel={openPanel}
-                    closePanel={(id: string) => {
-                        closePanel(id)
-                    }}
-                >
-                    <ToastProvider>
-                        <MainHUD />
-                        <AnimatePresence>
-                            {motionPanelElements.length > 0 &&
-                                motionPanelElements}
-                            {motionModalElement && motionModalElement}
-                            <ThemeEditorModal modalId="a" />
-                        </AnimatePresence>
-                        <ToastContainer />
-                    </ToastProvider>
-                </PanelControlProvider>
-            </ModalControlProvider>
-        </ThemeProvider>
+                <ToastProvider>
+                    <MainHUD />
+                    <AnimatePresence>
+                        {motionPanelElements.length > 0 &&
+                            motionPanelElements}
+                        {motionModalElement && motionModalElement}
+                    </AnimatePresence>
+                    <ToastContainer />
+                </ToastProvider>
+            </PanelControlProvider>
+        </ModalControlProvider>
     )
 }
 

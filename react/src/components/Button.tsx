@@ -1,5 +1,4 @@
 import React from "react"
-import { useTheme } from "../ThemeContext"
 
 enum ButtonSize {
     Small,
@@ -16,9 +15,6 @@ type ButtonProps = {
 }
 
 const Button: React.FC<ButtonProps> = ({ value, size, onClick, className }) => {
-    const { themes, currentTheme } = useTheme()
-    let leftColor = themes[currentTheme]["InteractiveElementLeft"]
-    let rightColor = themes[currentTheme]["InteractiveElementRight"]
     let sizeClassNames
 
     if (!size) size = ButtonSize.Medium as ButtonSize
@@ -43,9 +39,8 @@ const Button: React.FC<ButtonProps> = ({ value, size, onClick, className }) => {
             type="button"
             value={value}
             onClick={onClick}
-            className={`bg-gradient-to-r from-orange-500 via-red-500 to-orange-500 bg-[length:200%_100%] w-min ${sizeClassNames} rounded-sm font-semibold cursor-pointer duration-200 active:bg-right ${
-                className || ""
-            }`}
+            className={`bg-gradient-to-r from-interactive-element-left via-interactive-element-right to-interactive-element-left bg-[length:200%_100%] w-min ${sizeClassNames} rounded-sm font-semibold cursor-pointer duration-200 active:bg-right ${className || ""
+                }`}
         />
     )
 }

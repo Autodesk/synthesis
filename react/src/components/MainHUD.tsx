@@ -29,21 +29,18 @@ const MainHUDButton: React.FC<ButtonProps> = ({
     return (
         <div
             onClick={onClick}
-            className={`relative flex flex-row cursor-pointer bg-black w-full m-auto px-2 py-1 text-white rounded-md ${
-                larger ? "justify-center" : ""
-            } items-center hover:backdrop-brightness-105`}
+            className={`relative flex flex-row cursor-pointer bg-background w-full m-auto px-2 py-1 text-main-text rounded-md ${larger ? "justify-center" : ""
+                } items-center hover:backdrop-brightness-105`}
         >
             {larger && icon}
             {!larger && (
-                <span onClick={onClick} className="absolute left-3">
+                <span onClick={onClick} className="absolute left-3 text-main-hud-icon">
                     {icon}
                 </span>
             )}
             <input
                 type="button"
-                className={`px-2 ${
-                    larger ? "py-2" : "py-1 ml-6"
-                } text-white cursor-pointer`}
+                className={`px-2 ${larger ? "py-2" : "py-1 ml-6"} text-main-text cursor-pointer`}
                 value={value}
                 onClick={onClick}
             />
@@ -69,18 +66,18 @@ const MainHUD: React.FC = () => {
                     onClick={() => setIsOpen(!isOpen)}
                     className="absolute left-6 top-6"
                 >
-                    <BiMenuAltLeft size={40} />
+                    <BiMenuAltLeft size={40} className="text-main-hud-close-icon" />
                 </button>
             )}
             <motion.div
                 animate={isOpen ? "open" : "closed"}
                 variants={variants}
-                className="fixed flex flex-col gap-2 bg-gradient-to-b from-orange-500 to-red-500 w-min p-4 rounded-3xl ml-4 top-1/2 -translate-y-1/2"
+                className="fixed flex flex-col gap-2 bg-gradient-to-b from-interactive-element-right to-interactive-element-left w-min p-4 rounded-3xl ml-4 top-1/2 -translate-y-1/2"
             >
                 <div className="flex flex-row gap-2">
                     <img src={logo} width={"80%"} />
                     <button onClick={() => setIsOpen(false)}>
-                        <GrFormClose size={20} />
+                        <GrFormClose size={20} className="text-main-hud-close-icon" />
                     </button>
                 </div>
                 <MainHUDButton
@@ -89,7 +86,7 @@ const MainHUD: React.FC = () => {
                     larger={true}
                     onClick={() => openModal("spawning")}
                 />
-                <div className="flex flex-col gap-0 bg-black w-full rounded-3xl">
+                <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton
                         value={"Settings"}
                         icon={<FaGear />}
@@ -103,7 +100,7 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton
                         value={"Controls"}
                         icon={<IoGameControllerOutline />}
-                        onClick={() => openModal("controls")}
+                        onClick={() => openModal("change-inputs")}
                     />
                     <MainHUDButton
                         value={"MultiBot"}
@@ -111,7 +108,7 @@ const MainHUD: React.FC = () => {
                         onClick={() => openPanel("multibot")}
                     />
                 </div>
-                <div className="flex flex-col gap-0 bg-black w-full rounded-3xl">
+                <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton
                         value={"Download Asset"}
                         icon={<HiDownload />}

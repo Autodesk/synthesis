@@ -48,7 +48,7 @@ const Dropdown: React.FC<DropdownProps> = ({
             {label && <Label size={LabelSize.Medium}>{label}</Label>}
             <div
                 onClick={() => setExpanded(!expanded)}
-                className={`relative flex flex-col gap-2 select-none cursor-pointer bg-gradient-to-r from-red-500 to-orange-500 w-full rounded-md ${className}`}
+                className={`relative flex flex-col gap-2 select-none cursor-pointer bg-gradient-to-r from-interactive-element-left to-interactive-element-right w-full rounded-md ${className}`}
             >
                 <DropdownOption value={optionList[0]}>
                     {optionList[0]}

@@ -1,23 +1,34 @@
 import React, { ReactNode, createContext, useContext, useState } from 'react'
 import { RgbaColor } from 'react-colorful'
 
-export enum ColorName {
-    InteractiveSecondary = '--interactive-secondary',
-    Background = '--background',
-    BackgroundSecondary = '--background-secondary',
-    MainText = '--main-text',
-    Scrollbar = '--scrollbar',
-    AcceptButton = '--accept-button',
-    CancelButton = '--cancel-button',
-    InteractiveElementText = '--interactive-element-text',
-    Icon = '--icon',
-    HighlightHover = '--highlight-hover',
-    HighlightSelect = '--highlight-select',
-    SkyboxTop = '--skybox-top',
-    SkyboxBottom = '--skybox-bottom',
-    FloorGrid = '--floor-grid',
+export type ColorName =
+    'InteractiveElementSolid' |
+    'InteractiveElementLeft' |
+    'InteractiveElementRight' |
+    'Background' |
+    'BackgroundSecondary' |
+    'InteractiveBackground' |
+    'BackgroundHUD' |
+    'InteractiveHover' |
+    'InteractiveSelect' |
+    'MainText' |
+    'Scrollbar' |
+    'AcceptButton' |
+    'CancelButton' |
+    'InteractiveElementText' |
+    'Icon' |
+    'MainHUDIcon' |
+    'MainHUDCloseIcon' |
+    'HighlightHover' |
+    'HighlightSelect' |
+    'SkyboxTop' |
+    'SkyboxBottom' |
+    'FloorGrid' |
+    'AcceptCancelButtonText';
+
+const colorNameToProp = (colorName: ColorName) => {
+    return "-" + colorName.replace(/([A-Z]+)/g, "-$1").replace(/(?<=[A-Z])([A-Z])(?![A-Z])/g, "-$1").toLowerCase();
 }
-export type ColorPropName = `${ColorName}`
 export type Theme = { [name in ColorName]: RgbaColor };
 export type Themes = { [name: string]: Theme };
 
@@ -30,6 +41,7 @@ type ThemeContextType = {
     createTheme: (themeName: string) => void
     deleteTheme: (themeName: string) => void
     deleteAllThemes: () => void
+    applyTheme: (themeName: string) => void
 }
 
 type ThemeProviderProps = {
@@ -51,7 +63,8 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ initialTheme, them
     }
 
     const createTheme = (themeName: string) => {
-        themes[themeName] = defaultTheme;
+        // deep copy
+        themes[themeName] = JSON.parse(JSON.stringify(defaultTheme));
     }
 
     const deleteTheme = (themeName: string) => {
@@ -64,8 +77,19 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ initialTheme, them
         }
     }
 
+    const applyTheme = (themeName: string) => {
+        const themeObject: Theme = themes[themeName];
+        if (!themeObject) return;
+
+        const root = document.documentElement;
+        Object.entries(themeObject).map(([n, c]) => {
+            console.log(n, colorNameToProp(n as ColorName))
+            root.style.setProperty(colorNameToProp(n as ColorName), `rgba(${c.r}, ${c.g}, ${c.b}, ${c.a}`)
+        })
+    }
+
     return (
-        <ThemeContext.Provider value={{ themes, currentTheme, defaultTheme, setTheme: setCurrentTheme, updateColor, createTheme, deleteTheme, deleteAllThemes }}>
+        <ThemeContext.Provider value={{ themes, currentTheme, defaultTheme, setTheme: setCurrentTheme, updateColor, createTheme, deleteTheme, deleteAllThemes, applyTheme }}>
             {children}
         </ThemeContext.Provider>
     )

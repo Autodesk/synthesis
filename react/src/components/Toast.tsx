@@ -27,14 +27,14 @@ const Toast: React.FC<ToastData> = ({ id, type, title, description }) => {
             icon = (
                 <BsFillWrenchAdjustableCircleFill
                     size={48}
-                    className="h-full w-full text-white"
+                    className="h-full w-full text-main-text"
                 />
             )
             className = "bg-purple-700"
             break
         case "warning":
             icon = (
-                <AiFillWarning size={48} className="h-full w-full text-white" />
+                <AiFillWarning size={48} className="h-full w-full text-main-text" />
             )
             className = "bg-yellow-500"
             break
@@ -42,7 +42,7 @@ const Toast: React.FC<ToastData> = ({ id, type, title, description }) => {
             icon = (
                 <BiSolidErrorCircle
                     size={48}
-                    className="h-full w-full text-white"
+                    className="h-full w-full text-main-text"
                 />
             )
             className = "bg-red-500"
@@ -58,10 +58,10 @@ const Toast: React.FC<ToastData> = ({ id, type, title, description }) => {
                 onClick={handleClose}
                 className="toast-close absolute right-2 top-2"
             >
-                <GrFormClose size={20} className="w-full h-full text-white" />
+                <GrFormClose size={20} className="w-full h-full text-main-text" />
             </button>
             <div className="w-10 h-10 mr-1">{icon}</div>
-            <div className="toast-content w-5/6 ml-2 text-white">
+            <div className="toast-content w-5/6 ml-2 text-main-text">
                 <p className="font-bold uppercase">{title}</p>
                 <p className="truncate">{description}</p>
             </div>

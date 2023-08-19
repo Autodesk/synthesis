@@ -43,9 +43,7 @@ const Input: React.FC<InputProps> = ({
                 onChange={e => {
                     if (onInput) onInput(e.target.value)
                 }}
-                className={`bg-gray-700 px-2 py-1 bg-[length:200%_100%] w-min rounded-md font-semibold cursor-pointer placeholder:italic ${
-                    className || ""
-                }`}
+                className={`bg-interactive-background px-2 py-1 bg-[length:200%_100%] w-min rounded-md font-semibold cursor-pointer placeholder:italic ${className || ""}`}
             />
         </>
     )

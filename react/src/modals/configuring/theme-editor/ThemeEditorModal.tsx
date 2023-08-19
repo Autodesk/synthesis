@@ -5,7 +5,7 @@ import { RgbaColor, RgbaColorPicker } from "react-colorful"
 import Stack, { StackDirection } from "../../../components/Stack"
 import Dropdown from "../../../components/Dropdown"
 import Button from "../../../components/Button"
-import { useTheme } from "../../../ThemeContext"
+import { ColorName, useTheme } from "../../../ThemeContext"
 
 const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const {
@@ -17,15 +17,14 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         createTheme,
         deleteTheme,
         deleteAllThemes,
+        applyTheme
     } = useTheme()
 
-    console.log(currentTheme, themes[currentTheme])
-
-    const [selectedColor, setSelectedColor] = useState("")
+    const [selectedColor, setSelectedColor] = useState<ColorName>("InteractiveElementSolid")
     const [, setCurrentColor] = useState<RgbaColor>({ r: 0, g: 0, b: 0, a: 0 })
 
     return (
-        <Modal name="Theme Editor" icon={<FaChessBoard />} modalId={modalId}>
+        <Modal name="Theme Editor" icon={<FaChessBoard />} modalId={modalId} onAccept={() => { applyTheme(currentTheme); setTheme(currentTheme) }}>
             <Stack direction={StackDirection.Horizontal}>
                 <Stack direction={StackDirection.Vertical}>
                     <Dropdown
@@ -38,9 +37,7 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         <Button
                             value="Create Theme"
                             onClick={() => {
-                                const newThemeName = `${
-                                    Object.keys(themes).length
-                                }`
+                                const newThemeName = `${Object.keys(themes).length}`
                                 createTheme(newThemeName)
                                 setTheme(newThemeName)
                             }}
@@ -59,10 +56,9 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         />
                     </Stack>
                     <RgbaColorPicker
-                        color={themes[currentTheme][selectedColor]}
+                        color={themes[currentTheme] ? themes[currentTheme][selectedColor] : { r: 0, g: 0, b: 0, a: 0 }}
                         onChange={c => {
-                            if (currentTheme == "Default") return
-                            themes[currentTheme][selectedColor] = c
+                            if (currentTheme == "Default") return;
                             setCurrentColor(c)
                             updateColor(currentTheme, selectedColor, c)
                         }}
@@ -73,10 +69,11 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         {Object.entries(themes[currentTheme]).map(([n, c]) => (
                             <div
                                 key={n}
-                                className={`flex flex-row gap-2 content-middle align-center cursor-pointer rounded-md p-1 ${
-                                    n == selectedColor ? "bg-gray-700" : ""
-                                }`}
-                                onClick={() => setSelectedColor(n)}
+                                className={`flex flex-row gap-2 content-middle align-center cursor-pointer rounded-md p-1 ${n == selectedColor ? "bg-gray-700" : ""
+                                    }`}
+                                onClick={() => {
+                                    setSelectedColor(n as ColorName)
+                                }}
                             >
                                 <div
                                     className="w-6 h-6 rounded-md"
@@ -84,7 +81,7 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                         background: `rgba(${c.r}, ${c.g}, ${c.b}, ${c.a})`,
                                     }}
                                 ></div>
-                                <div className="h-6 text-white">{n}</div>
+                                <div className="h-6 text-main-text">{n}</div>
                             </div>
                         ))}
                     </div>
