@@ -90,7 +90,6 @@ const Modal: React.FC<ModalProps> = ({
                         type="button"
                         value={middleName || ""}
                         onClick={() => {
-                            closeModal()
                             if (!middleBlocked && onMiddle) onMiddle()
                         }}
                         className={`${

@@ -5,7 +5,12 @@ import { RgbaColor, RgbaColorPicker } from "react-colorful"
 import Stack, { StackDirection } from "../../../components/Stack"
 import Dropdown from "../../../components/Dropdown"
 import Button from "../../../components/Button"
-import { ColorName, useTheme } from "../../../ThemeContext"
+import {
+    ColorName,
+    Theme,
+    defaultThemeName,
+    useTheme,
+} from "../../../ThemeContext"
 import { useModalControlContext } from "../../../ModalContext"
 
 const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
@@ -17,24 +22,41 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [selectedColor, setSelectedColor] = useState<ColorName>(
         "InteractiveElementSolid"
     )
+    const [selectedTheme, setSelectedTheme] = useState<string>(defaultThemeName)
     const [, setCurrentColor] = useState<RgbaColor>({ r: 0, g: 0, b: 0, a: 0 })
+    // needs to be useState so it doesn't get reset on re-render
+    const [initialThemeValues] = useState<Theme>({ ...themes[selectedTheme] })
 
     return (
         <Modal
             name="Theme Editor"
             icon={<FaChessBoard />}
             modalId={modalId}
+            middleEnabled={true}
+            middleName="Preview"
             onAccept={() => {
+                applyTheme(selectedTheme)
+                setTheme(selectedTheme)
+            }}
+            onMiddle={() => {
+                applyTheme(selectedTheme)
+            }}
+            onCancel={() => {
+                themes[currentTheme] = initialThemeValues
                 applyTheme(currentTheme)
-                setTheme(currentTheme)
             }}
         >
             <Stack direction={StackDirection.Horizontal}>
                 <Stack direction={StackDirection.Vertical}>
                     <Dropdown
                         label="Select a Theme"
-                        options={Object.keys(themes)}
-                        onSelect={opt => setTheme(opt)}
+                        options={[
+                            currentTheme,
+                            ...Object.keys(themes).filter(
+                                t => t != currentTheme
+                            ),
+                        ]}
+                        onSelect={setSelectedTheme}
                         className="h-min"
                     />
                     <Stack direction={StackDirection.Horizontal} spacing={10}>
@@ -59,20 +81,20 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     </Stack>
                     <RgbaColorPicker
                         color={
-                            themes[currentTheme]
-                                ? themes[currentTheme][selectedColor]
+                            themes[selectedTheme]
+                                ? themes[selectedTheme][selectedColor]
                                 : { r: 0, g: 0, b: 0, a: 0 }
                         }
                         onChange={c => {
-                            if (currentTheme == "Default") return
+                            if (selectedTheme == "Default") return
                             setCurrentColor(c)
-                            updateColor(currentTheme, selectedColor, c)
+                            updateColor(selectedTheme, selectedColor, c)
                         }}
                     />
                 </Stack>
                 <div className="w-full h-full">
                     <div className="w-max m-4 h-full overflow-y-scroll pr-4 flex flex-col">
-                        {Object.entries(themes[currentTheme]).map(([n, c]) => (
+                        {Object.entries(themes[selectedTheme]).map(([n, c]) => (
                             <div
                                 key={n}
                                 className={`flex flex-row gap-2 content-middle align-center cursor-pointer rounded-md p-1 ${

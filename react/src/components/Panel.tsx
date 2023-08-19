@@ -89,7 +89,6 @@ const Panel: React.FC<PanelProps> = ({
                         type="button"
                         value={middleName || ""}
                         onClick={() => {
-                            closePanel(panelId)
                             if (!middleBlocked && onMiddle) onMiddle()
                         }}
                         className={`${
