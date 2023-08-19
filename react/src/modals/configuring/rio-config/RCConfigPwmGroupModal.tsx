@@ -25,20 +25,15 @@ const RCConfigPwmGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             modalId={modalId}
             acceptName="Done"
             onAccept={() => {
-                console.log("Name: ", name)
-                console.log("Checked Ports: ", checkedPorts)
-                console.log("Checked Signals: ", checkedSignals)
+                // no eslint complain
+                console.log(name, checkedPorts, checkedSignals)
             }}
             onCancel={() => {
                 openModal("roborio")
             }}
         >
             <Label size={LabelSize.Small}>Name</Label>
-            <Input
-                placeholder="..."
-                className="w-full"
-                onInput={e => setName(e.target.value)}
-            />
+            <Input placeholder="..." className="w-full" onInput={setName} />
             <Stack
                 direction={StackDirection.Horizontal}
                 className="w-full min-w-full"

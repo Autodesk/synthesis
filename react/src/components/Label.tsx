@@ -29,7 +29,9 @@ type LabelProps = {
 }
 
 const Label: React.FC<LabelProps> = ({ children, size, className }) => (
-    <span className={`text-main-text ${labelSizeToClassName(size)} ${className}`}>
+    <span
+        className={`text-main-text ${labelSizeToClassName(size)} ${className}`}
+    >
         {" "}
         {children}
     </span>

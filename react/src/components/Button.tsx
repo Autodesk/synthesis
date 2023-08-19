@@ -39,8 +39,9 @@ const Button: React.FC<ButtonProps> = ({ value, size, onClick, className }) => {
             type="button"
             value={value}
             onClick={onClick}
-            className={`bg-gradient-to-r from-interactive-element-left via-interactive-element-right to-interactive-element-left bg-[length:200%_100%] w-min ${sizeClassNames} rounded-sm font-semibold cursor-pointer duration-200 active:bg-right ${className || ""
-                }`}
+            className={`bg-gradient-to-r from-interactive-element-left via-interactive-element-right to-interactive-element-left bg-[length:200%_100%] w-min ${sizeClassNames} rounded-sm font-semibold cursor-pointer duration-200 active:bg-right ${
+                className || ""
+            }`}
         />
     )
 }

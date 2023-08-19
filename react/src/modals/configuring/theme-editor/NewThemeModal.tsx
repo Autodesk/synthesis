@@ -1,11 +1,13 @@
-import React, { FormEvent, useState } from "react"
+import React, { useState } from "react"
 import Modal, { ModalPropsImpl } from "../../../components/Modal"
 import { useModalControlContext } from "../../../ModalContext"
 import { FaPlus } from "react-icons/fa6"
 import Input from "../../../components/Input"
+import { useTheme } from "../../../ThemeContext"
 
 const NewThemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
+    const { createTheme, setTheme } = useTheme()
     const [themeName, setThemeName] = useState<string>("")
 
     return (
@@ -15,18 +17,15 @@ const NewThemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             modalId={modalId}
             acceptBlocked={!themeName}
             onAccept={() => {
-                // create theme somehow
+                createTheme(themeName)
+                setTheme(themeName)
+                openModal("theme-editor")
             }}
             onCancel={() => {
                 openModal("theme-editor")
             }}
         >
-            <Input
-                placeholder={"Theme Name"}
-                onInput={(e: FormEvent<HTMLInputElement>) =>
-                    setThemeName(e.target.value)
-                }
-            />
+            <Input placeholder={"Theme Name"} onInput={setThemeName} />
         </Modal>
     )
 }

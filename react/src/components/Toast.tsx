@@ -34,7 +34,10 @@ const Toast: React.FC<ToastData> = ({ id, type, title, description }) => {
             break
         case "warning":
             icon = (
-                <AiFillWarning size={48} className="h-full w-full text-main-text" />
+                <AiFillWarning
+                    size={48}
+                    className="h-full w-full text-main-text"
+                />
             )
             className = "bg-yellow-500"
             break
@@ -58,7 +61,10 @@ const Toast: React.FC<ToastData> = ({ id, type, title, description }) => {
                 onClick={handleClose}
                 className="toast-close absolute right-2 top-2"
             >
-                <GrFormClose size={20} className="w-full h-full text-main-text" />
+                <GrFormClose
+                    size={20}
+                    className="w-full h-full text-main-text"
+                />
             </button>
             <div className="w-10 h-10 mr-1">{icon}</div>
             <div className="toast-content w-5/6 ml-2 text-main-text">

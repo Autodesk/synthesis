@@ -29,18 +29,24 @@ const MainHUDButton: React.FC<ButtonProps> = ({
     return (
         <div
             onClick={onClick}
-            className={`relative flex flex-row cursor-pointer bg-background w-full m-auto px-2 py-1 text-main-text rounded-md ${larger ? "justify-center" : ""
-                } items-center hover:backdrop-brightness-105`}
+            className={`relative flex flex-row cursor-pointer bg-background w-full m-auto px-2 py-1 text-main-text rounded-md ${
+                larger ? "justify-center" : ""
+            } items-center hover:backdrop-brightness-105`}
         >
             {larger && icon}
             {!larger && (
-                <span onClick={onClick} className="absolute left-3 text-main-hud-icon">
+                <span
+                    onClick={onClick}
+                    className="absolute left-3 text-main-hud-icon"
+                >
                     {icon}
                 </span>
             )}
             <input
                 type="button"
-                className={`px-2 ${larger ? "py-2" : "py-1 ml-6"} text-main-text cursor-pointer`}
+                className={`px-2 ${
+                    larger ? "py-2" : "py-1 ml-6"
+                } text-main-text cursor-pointer`}
                 value={value}
                 onClick={onClick}
             />
@@ -66,7 +72,10 @@ const MainHUD: React.FC = () => {
                     onClick={() => setIsOpen(!isOpen)}
                     className="absolute left-6 top-6"
                 >
-                    <BiMenuAltLeft size={40} className="text-main-hud-close-icon" />
+                    <BiMenuAltLeft
+                        size={40}
+                        className="text-main-hud-close-icon"
+                    />
                 </button>
             )}
             <motion.div
@@ -77,7 +86,10 @@ const MainHUD: React.FC = () => {
                 <div className="flex flex-row gap-2">
                     <img src={logo} width={"80%"} />
                     <button onClick={() => setIsOpen(false)}>
-                        <GrFormClose size={20} className="text-main-hud-close-icon" />
+                        <GrFormClose
+                            size={20}
+                            className="text-main-hud-close-icon"
+                        />
                     </button>
                 </div>
                 <MainHUDButton

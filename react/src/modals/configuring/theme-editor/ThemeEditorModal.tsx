@@ -6,25 +6,29 @@ import Stack, { StackDirection } from "../../../components/Stack"
 import Dropdown from "../../../components/Dropdown"
 import Button from "../../../components/Button"
 import { ColorName, useTheme } from "../../../ThemeContext"
+import { useModalControlContext } from "../../../ModalContext"
 
 const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
-    const {
-        themes,
-        currentTheme,
-        defaultTheme,
-        setTheme,
-        updateColor,
-        createTheme,
-        deleteTheme,
-        deleteAllThemes,
-        applyTheme
-    } = useTheme()
+    const { themes, currentTheme, setTheme, updateColor, applyTheme } =
+        useTheme()
 
-    const [selectedColor, setSelectedColor] = useState<ColorName>("InteractiveElementSolid")
+    const { openModal } = useModalControlContext()
+
+    const [selectedColor, setSelectedColor] = useState<ColorName>(
+        "InteractiveElementSolid"
+    )
     const [, setCurrentColor] = useState<RgbaColor>({ r: 0, g: 0, b: 0, a: 0 })
 
     return (
-        <Modal name="Theme Editor" icon={<FaChessBoard />} modalId={modalId} onAccept={() => { applyTheme(currentTheme); setTheme(currentTheme) }}>
+        <Modal
+            name="Theme Editor"
+            icon={<FaChessBoard />}
+            modalId={modalId}
+            onAccept={() => {
+                applyTheme(currentTheme)
+                setTheme(currentTheme)
+            }}
+        >
             <Stack direction={StackDirection.Horizontal}>
                 <Stack direction={StackDirection.Vertical}>
                     <Dropdown
@@ -37,28 +41,30 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         <Button
                             value="Create Theme"
                             onClick={() => {
-                                const newThemeName = `${Object.keys(themes).length}`
-                                createTheme(newThemeName)
-                                setTheme(newThemeName)
+                                openModal("new-theme")
                             }}
                         />
                         <Button
                             value="Delete Selected"
                             onClick={() => {
-                                deleteTheme(currentTheme)
+                                openModal("delete-theme")
                             }}
                         />
                         <Button
                             value="Delete All"
                             onClick={() => {
-                                deleteAllThemes()
+                                openModal("delete-all-themes")
                             }}
                         />
                     </Stack>
                     <RgbaColorPicker
-                        color={themes[currentTheme] ? themes[currentTheme][selectedColor] : { r: 0, g: 0, b: 0, a: 0 }}
+                        color={
+                            themes[currentTheme]
+                                ? themes[currentTheme][selectedColor]
+                                : { r: 0, g: 0, b: 0, a: 0 }
+                        }
                         onChange={c => {
-                            if (currentTheme == "Default") return;
+                            if (currentTheme == "Default") return
                             setCurrentColor(c)
                             updateColor(currentTheme, selectedColor, c)
                         }}
@@ -69,8 +75,9 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         {Object.entries(themes[currentTheme]).map(([n, c]) => (
                             <div
                                 key={n}
-                                className={`flex flex-row gap-2 content-middle align-center cursor-pointer rounded-md p-1 ${n == selectedColor ? "bg-gray-700" : ""
-                                    }`}
+                                className={`flex flex-row gap-2 content-middle align-center cursor-pointer rounded-md p-1 ${
+                                    n == selectedColor ? "bg-gray-700" : ""
+                                }`}
                                 onClick={() => {
                                     setSelectedColor(n as ColorName)
                                 }}

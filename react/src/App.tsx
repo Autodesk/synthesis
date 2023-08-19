@@ -5,7 +5,6 @@ import { PanelControlProvider, usePanelManager } from "./PanelContext"
 import { useTheme } from "./ThemeContext"
 import { ToastContainer, ToastProvider } from "./ToastContext"
 import MainHUD from "./components/MainHUD"
-import CreateDeviceModal from "./modals/CreateDeviceModal"
 import DownloadAssetsModal from "./modals/DownloadAssetsModal"
 import ExitSynthesisModal from "./modals/ExitSynthesisModal"
 import FieldsModal from "./modals/FieldsModal"
@@ -41,7 +40,6 @@ const initialModals = [
     <ViewModal modalId="view" />,
     <DownloadAssetsModal modalId="download-assets" />,
     <RoboRIOModal modalId="roborio" />,
-    <CreateDeviceModal modalId="create-device" />,
     <DrivetrainModal modalId="drivetrain" />,
     <ThemeEditorModal modalId="theme-editor" />,
     <ExitSynthesisModal modalId="exit-synthesis" />,
@@ -72,7 +70,7 @@ function App() {
     const { openPanel, closePanel, closeAllPanels, getActivePanelElements } =
         usePanelManager(initialPanels)
 
-    const { currentTheme, applyTheme } = useTheme();
+    const { currentTheme, applyTheme } = useTheme()
 
     useEffect(() => {
         applyTheme(currentTheme)
@@ -169,8 +167,7 @@ function App() {
                 <ToastProvider>
                     <MainHUD />
                     <AnimatePresence>
-                        {motionPanelElements.length > 0 &&
-                            motionPanelElements}
+                        {motionPanelElements.length > 0 && motionPanelElements}
                         {motionModalElement && motionModalElement}
                     </AnimatePresence>
                     <ToastContainer />
