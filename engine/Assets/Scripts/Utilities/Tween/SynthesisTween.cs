@@ -39,6 +39,10 @@ public static class SynthesisTween {
             string[] keys = new string[_tweens.Count];
             _tweens.Keys.CopyTo(keys, 0);
             foreach (var key in keys) {
+                
+                if (!_tweens.ContainsKey(key))
+                    continue;
+                
                 var config   = _tweens[key];
                 var progress = Mathf.Clamp((Time.realtimeSinceStartup - config.StartTime) / config.Duration, 0f, 1f);
                 var val      = config.Interpolation(config.Scaling(progress), config.Start, config.End);

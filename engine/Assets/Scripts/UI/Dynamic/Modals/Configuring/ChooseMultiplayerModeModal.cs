@@ -15,7 +15,7 @@ public class ChooseMultiplayerModeModal : ModalDynamic {
         return u;
     };
 
-    public ChooseMultiplayerModeModal() : base(new Vector2(230, 120)) {}
+    public ChooseMultiplayerModeModal() : base(new Vector2(230, 140)) {}
 
     public override void Create() {
         Title.SetText("Choose Mode");
@@ -42,15 +42,24 @@ public class ChooseMultiplayerModeModal : ModalDynamic {
 				if (SceneManager.GetActiveScene().name != "MainScene")
 					SceneManager.LoadScene("MainScene");
 			});
+		
+		MainContent.CreateButton()
+			.StepIntoLabel(l => l.SetText("Client Mode"))
+			.ApplyTemplate(VerticalLayout)
+			.AddOnClickedEvent(b => {
+				ModeManager.CurrentMode = new ClientMode();
+				if (SceneManager.GetActiveScene().name != "MainScene")
+					SceneManager.LoadScene("MainScene");
+			});
 
-		var comingSoonButton = MainContent.CreateButton()
-                                   .StepIntoLabel(l => l.SetText("Coming Soon"))
-                                   .ApplyTemplate(VerticalLayout)
-                                   .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground))
-                                   .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
-                                   .DisableEvents<Button>();
-
-        Object.Destroy(comingSoonButton.RootGameObject.transform.Find("Button").GetComponent<HoverEventListener>());
+		// var comingSoonButton = MainContent.CreateButton()
+  //                                  .StepIntoLabel(l => l.SetText("Coming Soon"))
+  //                                  .ApplyTemplate(VerticalLayout)
+  //                                  .StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.InteractiveBackground))
+  //                                  .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
+  //                                  .DisableEvents<Button>();
+  //
+  //       Object.Destroy(comingSoonButton.RootGameObject.transform.Find("Button").GetComponent<HoverEventListener>());
     }
 
     public override void Update() {}

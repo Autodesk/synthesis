@@ -209,10 +209,10 @@ namespace SynthesisAPI.Aether.Lobby {
                     ownerData.EnterReadLock();
                     if (ownerData.OwnedData.ContainsKey(selection.DataGuid)) {
                         var selectionId = NextGuid().ToString();
+                        var description = ownerData.OwnedData[selection.DataGuid].Description;
                         handler.AddSelection(new ClientSelection {
-                            DataGuid = selection.DataGuid,
                             SelectionId = selectionId,
-                            DataOwner = selection.DataOwner
+                            Description = description
                         });
                         Logger.Log($"Found Data: {ownerData.OwnedData[selection.DataGuid].Description.Name}");
                         Logger.Log($"Selection ID: {selectionId}");

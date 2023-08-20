@@ -30,8 +30,8 @@ namespace SynthesisAPI.Aether.Lobby {
         public string IP => _instance == null ? string.Empty : _instance.IP;
         private Inner? _instance;
 
-        public ulong? Guid => _instance?.Handler.Guid;
-        public string Name => _instance?.Handler.Name ?? "--unknown--";
+        public ulong? Guid => _instance?.Handler?.Guid;
+        public string Name => _instance?.Handler?.Name ?? "--unknown--";
         public bool IsAlive => _instance != null;
 
         /// <summary>
@@ -116,16 +116,16 @@ namespace SynthesisAPI.Aether.Lobby {
                 = new Result<LobbyMessage?, Exception>(new Exception("Client no longer alive"));
             
             public readonly string IP;
-            private readonly LobbyClientHandler _handler;
-            public LobbyClientHandler Handler => _handler;
+            private readonly LobbyClientHandler? _handler;
+            public LobbyClientHandler? Handler => _handler;
 
             public ReaderWriterLockSlim TransformDataLock;
             public Dictionary<ulong, ServerTransforms> TransformData;
 
             private readonly ConcurrentQueue<Task<object?>> _requestQueue;
 
-            private readonly Thread _heartbeatThread;
-            private readonly Thread _requestSenderThread;
+            private readonly Thread? _heartbeatThread;
+            private readonly Thread? _requestSenderThread;
 
             public Inner(string ip, string name) {
                 IP = ip;
@@ -139,16 +139,19 @@ namespace SynthesisAPI.Aether.Lobby {
                 tcp.Connect(ip, LobbyServer.TCP_PORT);
 
                 var handlerRes = LobbyClientHandler.InitClientSide(tcp, name);
-                if (handlerRes.isError)
-                    throw handlerRes.GetError();
-                _handler = handlerRes.GetResult();
+                if (handlerRes.isError) {
+                    Logger.Log($"FAILED TO SETUP CLIENT: {handlerRes.GetError().Message}", LogLevel.Error);
+                    _isAlive.Value = false;
+                } else {
+                    _handler = handlerRes.GetResult();
 
-                // TODO: Add lifetime stuff
-                _heartbeatThread = new Thread(ClientHeartbeat);
-                _heartbeatThread.Start();
+                    // TODO: Add lifetime stuff
+                    _heartbeatThread = new Thread(ClientHeartbeat);
+                    _heartbeatThread.Start();
 
-                _requestSenderThread = new Thread(RequestQueueProcessor);
-                _requestSenderThread.Start();
+                    _requestSenderThread = new Thread(RequestQueueProcessor);
+                    _requestSenderThread.Start();
+                }
             }
 
             ~Inner() {
@@ -174,7 +177,7 @@ namespace SynthesisAPI.Aether.Lobby {
                     return Task.FromResult(CLIENT_NOT_ALIVE_ERROR_RESULT);
 
                 var request = new LobbyMessage.Types.ToGetLobbyInformation {
-                    SenderGuid = Handler.Guid
+                    SenderGuid = Handler!.Guid
                 };
 
                 var task = new Task<object?>(() => {
@@ -196,7 +199,7 @@ namespace SynthesisAPI.Aether.Lobby {
                     long currentTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                     if (currentTime - lastUpdate > HEARTBEAT_FREQUENCY) {
                         var task = new Task<object?>(() => {
-                            var res = _handler.WriteMessage(new LobbyMessage { ToClientHeartbeat = new LobbyMessage.Types.ToClientHeartbeat() });
+                            var res = _handler!.WriteMessage(new LobbyMessage { ToClientHeartbeat = new LobbyMessage.Types.ToClientHeartbeat() });
                             if (res.isError)
                                 return new Result<LobbyMessage?, Exception>(res.GetError());
                             return new Result<LobbyMessage?, Exception>(val: null);
@@ -219,7 +222,7 @@ namespace SynthesisAPI.Aether.Lobby {
                     return Task.FromResult((string?)null);
 
                 var request = new LobbyMessage.Types.ToSelectData {
-                    ClientGuid = _handler.Guid,
+                    ClientGuid = _handler!.Guid,
                     DataGuid = dataGuid,
                     DataOwner = dataOwner
                 };
@@ -234,9 +237,9 @@ namespace SynthesisAPI.Aether.Lobby {
                     string? selectionId = null;
                     var allSelections = response.GetResult()?.FromSelectData.ClientInfo.Selections;
                     allSelections.ForEach(x => {
-                        Logger.Log($"OWNER: {x.Value.DataOwner}, GUID: {x.Value.DataGuid}");
+                        Logger.Log($"OWNER: {x.Value.Description.Owner}, GUID: {x.Value.Description.Guid}");
                     });
-                    var matching = allSelections.Where(x => x.Value.DataGuid == dataGuid && x.Value.DataOwner == dataOwner);
+                    var matching = allSelections.Where(x => x.Value.Description.Guid == dataGuid && x.Value.Description.Owner == dataOwner);
                     if (matching.Any())
                         selectionId = matching.First().Key;
                     else
@@ -254,7 +257,7 @@ namespace SynthesisAPI.Aether.Lobby {
                     return Task.FromResult(Ref<bool>.Default);
 
                 var request = new LobbyMessage.Types.ToUnselectData {
-                    ClientGuid = _handler.Guid,
+                    ClientGuid = _handler!.Guid,
                     SelectionId = selectionId
                 };
 
@@ -341,7 +344,7 @@ namespace SynthesisAPI.Aether.Lobby {
                     return Task.FromResult(CLIENT_NOT_ALIVE_ERROR_RESULT);
 
                 var request = new LobbyMessage.Types.ToUpdateControllableState {
-                    Guid = _handler.Guid
+                    Guid = _handler!.Guid
                 };
                 request.Data.Add(updates);
 
@@ -383,7 +386,7 @@ namespace SynthesisAPI.Aether.Lobby {
             /// TODO: Rename
             /// </summary>
             private Result<LobbyMessage?, Exception> HandleResponseBoilerplate(LobbyMessage request, LobbyMessage.MessageTypeOneofCase expectedMessageType, int timeoutMS = -1) {
-                var writeResult = _handler.WriteMessage(request);
+                var writeResult = _handler!.WriteMessage(request);
                 if (writeResult.isError)
                     return new Result<LobbyMessage?, Exception>(writeResult.GetError());
 
@@ -415,9 +418,9 @@ namespace SynthesisAPI.Aether.Lobby {
 
             public void Dispose() {
                 _isAlive.Value = false;
-                _heartbeatThread.Join();
-                _requestSenderThread.Join();
-                _handler.Dispose();
+                _heartbeatThread?.Join();
+                _requestSenderThread?.Join();
+                _handler?.Dispose();
 			}
 
 		}
@@ -487,17 +490,6 @@ namespace SynthesisAPI.Aether.Lobby {
                 Result<LobbyMessage, ServerReadException>? result = null;
                 bool isLocked = false;
                 try {
-
-                    // DateTime startedRead = DateTime.UtcNow;
-                    // while (!stream.DataAvailable && (DateTime.UtcNow - startedRead).TotalMilliseconds < READ_TIMEOUT_MS) {
-                    //     Thread.Sleep(50);
-                    // }
-
-                    // if (!stream.DataAvailable) {
-                    //     result = new Result<LobbyMessage, ServerReadException>(new NoDataException());
-                    //     throw result.GetError();
-                    // }
-
                     mutex?.WaitOne();
                     isLocked = true;
 

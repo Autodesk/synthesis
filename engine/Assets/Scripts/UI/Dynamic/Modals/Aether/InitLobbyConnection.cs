@@ -41,7 +41,12 @@ public class InitLobbyConnection : ModalDynamic {
                 );
 
             } else {
-                // TODO
+                var mode = (ModeManager.CurrentMode as ClientMode)!;
+
+                mode.StartClient(_ip ?? "127.0.0.1", _username);
+                if (mode.Client.IsAlive) {
+                    
+                }
             }
         });
         CancelButton.RootGameObject.SetActive(false);
@@ -50,7 +55,6 @@ public class InitLobbyConnection : ModalDynamic {
             _ipInputField = MainContent.CreateInputField().SetTopStretch<InputField>()
                 .StepIntoHint(h => h.SetText(_ip ?? "Enter IP...")).AddOnValueChangedEvent((i, v) => {
                     _ip = v;
-                    Logger.Log(_ip, LogLevel.Debug);
                 }).StepIntoLabel(l => l.SetText("IP Address"));
         }
 

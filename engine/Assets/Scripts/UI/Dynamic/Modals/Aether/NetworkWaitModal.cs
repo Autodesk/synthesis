@@ -5,6 +5,7 @@ using Synthesis.Util;
 using SynthesisAPI.Utilities;
 using UnityEngine;
 using Utilities.ColorManager;
+using Logger = UnityEngine.Logger;
 
 #nullable enable
 
@@ -24,7 +25,7 @@ public class NetworkWaitModal : ModalDynamic {
     private Content? _progressContent;
 
     private Type? _modalCallback;
-    private object[]? _modalCallbackParameters;
+    private object? _modalCallbackParameters;
 
     public NetworkWaitModal(NetworkTask<bool> networkTask, Type modalCallback, params object[] parameters)
         : base(new Vector2(MODAL_WIDTH, MODAL_HEIGHT)) {
@@ -35,8 +36,6 @@ public class NetworkWaitModal : ModalDynamic {
     }
     
     public override void Create() {
-        
-        Debug.Log("Wait Modal Created");
         
         var newContent = Strip(newContentSize: new Vector2(MODAL_WIDTH, MODAL_HEIGHT), leftPadding: EDGE_PADDING,
             rightPadding: EDGE_PADDING, topPadding: EDGE_PADDING, bottomPadding: EDGE_PADDING);
@@ -61,9 +60,9 @@ public class NetworkWaitModal : ModalDynamic {
         SynthesisTween.CancelTween(PROGRESS_BAR_TWEEN);
         SynthesisTween.MakeTween(
             PROGRESS_BAR_TWEEN,
-            _progressContent?.RootRectTransform.offsetMax.x,
+            _progressContent?.RootRectTransform.anchorMax.x,
             currentStatus.Progress,
-            0.1f,
+            0.5f,
             (a, b, c) => SynthesisTweenInterpolationFunctions.FloatInterp(a, (float)b, (float)c),
             SynthesisTweenScaleFunctions.EaseOutCubic,
             x => _progressContent?.SetAnchorOffset<Content>(new Vector2(0, 0), new Vector2(x.CurrentValue<float>(), 1f),
@@ -91,15 +90,16 @@ public class NetworkWaitModal : ModalDynamic {
         if (_networkTask.IsCompleted) {
             _isClosing = true;
             if (_modalCallback != null) {
-                typeof(DynamicUIManager).GetMethod("CreateModal").MakeGenericMethod(_modalCallback)
-                    .Invoke(null, _modalCallbackParameters);
+                typeof(DynamicUIManager).GetMethod("CreateModal")!.MakeGenericMethod(_modalCallback)
+                    .Invoke(null, new [] { _modalCallbackParameters });
+            } else {
+                DynamicUIManager.CloseActiveModal();
             }
         }
     }
     
     public override void Delete() {
         SynthesisTween.CancelTween(PROGRESS_BAR_TWEEN);
-        Debug.Log("Delete Called");
         
     }
 }

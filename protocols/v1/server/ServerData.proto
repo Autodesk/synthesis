@@ -11,9 +11,8 @@ message LobbyClientInformation {
 }
 
 message ClientSelection {
-    uint64 data_guid = 1;
-    uint64 data_owner = 2;
-    string selection_id = 3;
+    string selection_id = 1;
+    SynthesisDataDescriptor description = 2;
 }
 
 message LobbyInformation {

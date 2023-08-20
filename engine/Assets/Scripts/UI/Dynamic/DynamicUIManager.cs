@@ -259,7 +259,6 @@ namespace Synthesis.UI.Dynamic {
                 return false;
             }
 
-            Debug.Log("Close Active Modal");
             string tweenKey = Guid.NewGuid() + "_modalClose";
             SynthesisTween.MakeTween(tweenKey, 1f, 0f, MODAL_TWEEN_DURATION,
                 (t, a, b) => SynthesisTweenInterpolationFunctions.FloatInterp(t, (float) a, (float) b),
