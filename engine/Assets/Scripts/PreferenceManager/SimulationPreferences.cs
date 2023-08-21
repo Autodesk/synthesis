@@ -14,10 +14,9 @@ using SynthesisAPI.Utilities;
 using UnityEngine;
 using Synthesis.WS.Translation;
 using UnityEngine.Windows;
-using ITD = RobotSimObject.IntakeTriggerData;
-using STD = RobotSimObject.ShotTrajectoryData;
+using ITD   = RobotSimObject.IntakeTriggerData;
+using STD   = RobotSimObject.ShotTrajectoryData;
 using Input = UnityEngine.Input;
-
 
 #nullable enable
 

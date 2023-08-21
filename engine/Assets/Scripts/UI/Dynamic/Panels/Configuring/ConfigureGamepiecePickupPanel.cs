@@ -15,7 +15,7 @@ namespace Synthesis.UI.Dynamic {
         private Slider _zoneSizeSlider;
 
         private GameObject _zoneObject;
-        
+
         private ITD _resultingData;
 
         private bool _exiting      = false;
@@ -170,9 +170,11 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public override void Update() {
-            _resultingData.RelativePosition = _robot.RobotNode.transform.Find(_resultingData.NodeName)
-                .transform.localToWorldMatrix.inverse.MultiplyPoint(_zoneObject.transform.position).ToArray();
-            
+            _resultingData.RelativePosition =
+                _robot.RobotNode.transform.Find(_resultingData.NodeName)
+                    .transform.localToWorldMatrix.inverse.MultiplyPoint(_zoneObject.transform.position)
+                    .ToArray();
+
             if (!_selectingNode) {
                 return;
             }

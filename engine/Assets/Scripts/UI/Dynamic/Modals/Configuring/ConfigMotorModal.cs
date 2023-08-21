@@ -226,9 +226,9 @@ public class ConfigMotorModal : ModalDynamic {
                         new JointMotor() { force = _force, freeSpin = false, targetVelocity = v };
                     break;
                 case (LinearDriver):
-                    _force                            = (driver as LinearDriver).Motor.force;
-                    (driver as LinearDriver).Motor    = new JointMotor() { force = _force, freeSpin = false,
-                           targetVelocity = v };
+                    _force = (driver as LinearDriver).Motor.force;
+                    (driver as LinearDriver).Motor =
+                        new JointMotor() { force = _force, freeSpin = false, targetVelocity = v };
                     break;
             }
             velChanged = true;

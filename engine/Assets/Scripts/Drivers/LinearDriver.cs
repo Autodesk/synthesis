@@ -11,7 +11,7 @@ namespace Synthesis {
         public ConfigurableJoint JointA { get; private set; }
         public ConfigurableJoint JointB { get; private set; }
         private float _maxSpeed;
-  
+
         public float _position = 0f;
         public float Position {
             get => _position;
@@ -22,7 +22,7 @@ namespace Synthesis {
                 _position              = newPos;
             }
         }
-   
+
         // Note: only used to save between sessions
         private JointMotor _motor;
         public JointMotor Motor {
