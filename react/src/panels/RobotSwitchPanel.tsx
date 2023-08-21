@@ -7,7 +7,7 @@ import Button from "../components/Button"
 import { useModalControlContext } from "../ModalContext"
 import Checkbox from "../components/Checkbox"
 
-const MultiBotPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
+const RobotSwitchPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const [robots, setRobots] = useState([
         "Dozer_v9_0",
         "Team 2471 (2018) v7_0",
@@ -43,4 +43,4 @@ const MultiBotPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     )
 }
 
-export default MultiBotPanel
+export default RobotSwitchPanel

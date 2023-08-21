@@ -30,6 +30,8 @@ export default {
                 'skybox-bottom': 'var(--skybox-bottom)',
                 'floor-grid': 'var(--floor-grid)',
                 'accept-cancel-button-text': 'var(--accept-cancel-button-text)',
+                'match-red-alliance': 'var(--match-red-alliance)',
+                'match-blue-alliance': 'var(--match-blue-alliance)',
             }
         },
     },

@@ -26,6 +26,8 @@ export type ColorName =
     | "SkyboxBottom"
     | "FloorGrid"
     | "AcceptCancelButtonText"
+    | "MatchRedAlliance"
+    | "MatchBlueAlliance"
 
 const colorNameToProp = (colorName: ColorName) => {
     return (
@@ -108,8 +110,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
 
         const root = document.documentElement
         Object.entries(themeObject).map(([n, c]) => {
+            const propName = colorNameToProp(n as ColorName)
             root.style.setProperty(
-                colorNameToProp(n as ColorName),
+                propName,
                 `rgba(${c.r}, ${c.g}, ${c.b}, ${c.a}`
             )
         })

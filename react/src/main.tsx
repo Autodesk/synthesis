@@ -29,6 +29,8 @@ const defaultColors: Theme = {
     SkyboxTop: { r: 255, g: 255, b: 255, a: 255 },
     SkyboxBottom: { r: 255, g: 255, b: 255, a: 255 },
     FloorGrid: { r: 93, g: 93, b: 93, a: 255 },
+    MatchRedAlliance: { r: 255, g: 0, b: 0, a: 255 },
+    MatchBlueAlliance: { r: 0, g: 0, b: 255, a: 255 }
 }
 const themes = {
     Default: defaultColors,

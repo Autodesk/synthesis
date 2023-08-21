@@ -29,10 +29,12 @@ import DeleteAllThemesModal from "./modals/configuring/theme-editor/DeleteAllThe
 import DeleteThemeModal from "./modals/configuring/theme-editor/DeleteThemeModal"
 import NewThemeModal from "./modals/configuring/theme-editor/NewThemeModal"
 import ThemeEditorModal from "./modals/configuring/theme-editor/ThemeEditorModal"
-import DriverStationPanel from "./panels/DriverStationPanel"
-import MultiBotPanel from "./panels/MultiBotPanel"
+import DriverStationPanel from "./panels/simulation/DriverStationPanel"
+import RobotSwitchPanel from "./panels/RobotSwitchPanel"
 import MatchModeModal from "./modals/spawning/MatchModeModal"
 import ConfigMotorModal from "./modals/configuring/ConfigMotorModal"
+import SpawnLocationsPanel from "./panels/SpawnLocationPanel"
+import ScoreboardPanel from "./panels/information/ScoreboardPanel"
 
 const initialModals = [
     <SettingsModal modalId="settings" />,
@@ -65,7 +67,7 @@ const initialModals = [
 ]
 
 const initialPanels: ReactElement[] = [
-    <MultiBotPanel panelId="multibot" />,
+    <RobotSwitchPanel panelId="multibot" />,
     <DriverStationPanel panelId="driver-station" />,
 ]
 
@@ -172,6 +174,7 @@ function App() {
                 <ToastProvider>
                     <MainHUD />
                     <AnimatePresence>
+                        <ScoreboardPanel panelId="spawn-locations" />
                         {motionPanelElements.length > 0 && motionPanelElements}
                         {motionModalElement && motionModalElement}
                     </AnimatePresence>
