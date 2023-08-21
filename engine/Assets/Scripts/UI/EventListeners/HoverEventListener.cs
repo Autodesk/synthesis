@@ -5,26 +5,32 @@ using UnityEngine.UI;
 
 namespace UI.EventListeners {
     public class HoverEventListener : MonoBehaviour,
-        IPointerEnterHandler,
-        IPointerExitHandler,
-        IPointerDownHandler,
-        IPointerUpHandler {
-        [SerializeField] private Image _image;
-        [SerializeField] private Color _defaultColor = Color.white;
-        [SerializeField] private Color _hoverColor = Color.grey;
-        [SerializeField] private Color _selectedColor = Color.gray;
-        [SerializeField] private float _hoverScaleMultiplier = 1.05f;
-        [SerializeField] private float _clickedScaleMultiplier = 1.1f;
-        [SerializeField] private Transform _scaledObj;
-        [SerializeField] private bool _isSlider;
+                                      IPointerEnterHandler,
+                                      IPointerExitHandler,
+                                      IPointerDownHandler,
+                                      IPointerUpHandler {
+        [SerializeField]
+        private Image _image;
+        [SerializeField]
+        private Color _defaultColor = Color.white;
+        [SerializeField]
+        private Color _hoverColor = Color.grey;
+        [SerializeField]
+        private Color _selectedColor = Color.gray;
+        [SerializeField]
+        private float _hoverScaleMultiplier = 1.05f;
+        [SerializeField]
+        private float _clickedScaleMultiplier = 1.1f;
+        [SerializeField]
+        private Transform _scaledObj;
+        [SerializeField]
+        private bool _isSlider;
 
         private Color _setColor;
 
         private GradientImageUpdater _imageUpdater;
 
-        public GradientImageUpdater ImageUpdater {
-            set => _imageUpdater = value;
-        }
+        public GradientImageUpdater ImageUpdater { set => _imageUpdater = value; }
 
         private void Start() {
             if (_image)
@@ -62,11 +68,11 @@ namespace UI.EventListeners {
             if (_imageUpdater) {
                 _imageUpdater.TintColor = color;
                 _imageUpdater.Refresh();
-            }
-            else if (_image)
+            } else if (_image)
                 if (_isSlider)
                     _image.color = color;
-                else _image.color = color * _setColor;
+                else
+                    _image.color = color * _setColor;
         }
 
         private void SetScaleMultiplier(float multiplier) {
