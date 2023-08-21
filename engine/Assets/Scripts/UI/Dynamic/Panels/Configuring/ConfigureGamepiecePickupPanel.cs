@@ -15,6 +15,7 @@ namespace Synthesis.UI.Dynamic {
         private Slider _zoneSizeSlider;
 
         private GameObject _zoneObject;
+        
         private ITD _resultingData;
 
         private bool _exiting      = false;
@@ -41,7 +42,6 @@ namespace Synthesis.UI.Dynamic {
             if (existingData.HasValue) {
                 _resultingData = existingData.Value;
             } else {
-                Debug.Log("created new ITD");
                 _resultingData =
                     new ITD { NodeName = "grounded", RelativePosition = _robot.GroundedBounds.center.ToArray(),
                         TriggerSize = 0.5f, StorageCapacity = 1 };
@@ -58,7 +58,6 @@ namespace Synthesis.UI.Dynamic {
 
             AcceptButton
                 .AddOnClickedEvent(b => {
-                    Debug.Log($"Result {_resultingData.RelativePosition[1]}");
                     SimulationPreferences.SetRobotIntakeTriggerData(_robot.RobotGUID, _resultingData);
                     PreferenceManager.PreferenceManager.Save();
                     _save = true;
@@ -156,9 +155,8 @@ namespace Synthesis.UI.Dynamic {
                 GizmoManager.ExitGizmo();
 
             // Save Data
-            if (_save) {
+            if (_save)
                 _robot.IntakeData = _resultingData;
-            }
 
             if (_hoveringNode != null) {
                 _hoveringNode.enabled = false;
@@ -172,6 +170,9 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public override void Update() {
+            _resultingData.RelativePosition = _robot.RobotNode.transform.Find(_resultingData.NodeName)
+                .transform.localToWorldMatrix.inverse.MultiplyPoint(_zoneObject.transform.position).ToArray();
+            
             if (!_selectingNode) {
                 return;
             }

@@ -16,6 +16,8 @@ using Synthesis.WS.Translation;
 using UnityEngine.Windows;
 using ITD = RobotSimObject.IntakeTriggerData;
 using STD = RobotSimObject.ShotTrajectoryData;
+using Input = UnityEngine.Input;
+
 
 #nullable enable
 
@@ -126,15 +128,14 @@ namespace Synthesis.PreferenceManager {
                     if (robot.IsMixAndMatch) {
                         var robotData                  = robot.MixAndMatchRobotData!;
                         robotData.RobotPreferencesJson = JsonConvert.SerializeObject(_allRobotData[robotData.Name]);
-
                         MixAndMatchSaveUtil.SaveRobotData(robotData);
                     } else {
                         var live                                = robot.MiraLiveFiles[0];
                         live.MiraAssembly.Data.Parts.UserData ??= new UserData();
                         live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY] =
                             JsonConvert.SerializeObject(_allRobotData[live.MiraAssembly.Info.GUID]);
+                        live.Save();
                     }
-                    // clang-format on
                 }
 
                 if (FieldSimObject.CurrentField != null) {
