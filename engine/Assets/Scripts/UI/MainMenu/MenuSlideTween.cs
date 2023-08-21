@@ -13,7 +13,7 @@ public class MenuSlideTween : MonoBehaviour, IPointerClickHandler {
 
     public void OnPointerClick(PointerEventData eventData) {
         _screenTransform = GameObject.Find("Canvas").transform.Find("MenuPanel").transform.Find("ScreenSpace");
-        _imageAnchorDiff = GetRectTransform("MakeAnythingImage").anchoredPosition.x;
+        _imageAnchorDiff = GetRectTransform("ImageContainer").anchoredPosition.x;
         _textAnchorDiff  = GetRectTransform("ScreenOneText").anchoredPosition.x;
 
         SynthesisTween.MakeTween(_key, GetRectTransform("Anchor").anchoredPosition.x, -SCREEN_TWO_ANCHOR_DIFF, 0.5f,
@@ -23,7 +23,7 @@ public class MenuSlideTween : MonoBehaviour, IPointerClickHandler {
 
     private void TweenProgress(SynthesisTween.SynthesisTweenStatus status) {
         MoveObject(GetRectTransform("Anchor"), status.CurrentValue<float>());
-        MoveObject(GetRectTransform("MakeAnythingImage"), status.CurrentValue<float>() + _imageAnchorDiff);
+        MoveObject(GetRectTransform("ImageContainer"), status.CurrentValue<float>() + _imageAnchorDiff);
         MoveObject(GetRectTransform("ScreenOneText"), status.CurrentValue<float>() + _textAnchorDiff);
         MoveObject(GetRectTransform("ScreenTwo"), status.CurrentValue<float>() + SCREEN_TWO_ANCHOR_DIFF);
     }
