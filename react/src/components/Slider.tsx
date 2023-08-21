@@ -69,8 +69,8 @@ const Slider: React.FC<SliderProps> = ({
     return (
         <div className="flex flex-col select-none">
             <div className="flex flex-row justify-between">
-                <p className="text-md">{label}</p>
-                <p className="text-md float-right">
+                <p className="text-sm">{label}</p>
+                <p className="text-sm float-right">
                     {format.prefix +
                         value.toLocaleString(locale, format) +
                         format.suffix}

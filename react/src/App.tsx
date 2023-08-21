@@ -7,9 +7,9 @@ import { ToastContainer, ToastProvider } from "./ToastContext"
 import MainHUD from "./components/MainHUD"
 import DownloadAssetsModal from "./modals/DownloadAssetsModal"
 import ExitSynthesisModal from "./modals/ExitSynthesisModal"
-import FieldsModal from "./modals/FieldsModal"
+import AddFieldModal from "./modals/spawning/AddFieldModal"
 import MatchResultsModal from "./modals/MatchResultsModal"
-import RobotsModal from "./modals/RobotsModal"
+import AddRobotModal from "./modals/spawning/AddRobotModal"
 import SpawningModal from "./modals/SpawningModal"
 import UpdateAvailableModal from "./modals/UpdateAvailableModal"
 import ViewModal from "./modals/ViewModal"
@@ -31,12 +31,14 @@ import NewThemeModal from "./modals/configuring/theme-editor/NewThemeModal"
 import ThemeEditorModal from "./modals/configuring/theme-editor/ThemeEditorModal"
 import DriverStationPanel from "./panels/DriverStationPanel"
 import MultiBotPanel from "./panels/MultiBotPanel"
+import MatchModeModal from "./modals/spawning/MatchModeModal"
+import ConfigMotorModal from "./modals/configuring/ConfigMotorModal"
 
 const initialModals = [
     <SettingsModal modalId="settings" />,
     <SpawningModal modalId="spawning" />,
-    <RobotsModal modalId="robots" />,
-    <FieldsModal modalId="fields" />,
+    <AddRobotModal modalId="add-robot" />,
+    <AddFieldModal modalId="add-field" />,
     <ViewModal modalId="view" />,
     <DownloadAssetsModal modalId="download-assets" />,
     <RoboRIOModal modalId="roborio" />,
@@ -57,6 +59,9 @@ const initialModals = [
     <RCCreateDeviceModal modalId="create-device" />,
     <RCConfigPwmGroupModal modalId="config-pwm" />,
     <RCConfigEncoderModal modalId="config-encoder" />,
+    <MatchModeModal modalId="match-mode" />,
+    <SpawningModal modalId="spawning" />,
+    <ConfigMotorModal modalId="config-motor" />
 ]
 
 const initialPanels: ReactElement[] = [
