@@ -205,9 +205,6 @@ namespace Synthesis.UI.Dynamic {
 
         protected Content CenterAtBottom(Vector2? newContentSize = null, float leftPadding = 0f,
             float rightPadding = 0f, float topPadding = 0f, float bottomPadding = 0f) {
-            // CancelButton.RootGameObject.SetActive(false);
-            // AcceptButton.RootGameObject.SetActive(false);
-            // Title.RootGameObject.SetActive(false);
 
             var panel = new Content(null, UnityObject, null);
             if (newContentSize.HasValue) {
@@ -221,6 +218,7 @@ namespace Synthesis.UI.Dynamic {
                 panel.CreateSubContent(newContentSize ?? new Vector2(panel.Size.x - (rightPadding + leftPadding),
                                                              panel.Size.y - (topPadding + bottomPadding)));
             newMainContent.SetStretch<Content>(leftPadding, rightPadding, topPadding, bottomPadding);
+             newMainContent.RootRectTransform.transform.SetSiblingIndex(2);
 
             return newMainContent;
         }

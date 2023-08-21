@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Utilities.ColorManager;
 using Input  = UnityEngine.Input;
+using Logger = SynthesisAPI.Utilities.Logger;
 using Object = UnityEngine.Object;
 
 namespace Synthesis.UI.Dynamic {
@@ -70,7 +71,7 @@ namespace Synthesis.UI.Dynamic {
         public override bool Create() {
             _newMainContent = CenterAtBottom(new Vector2(WIDTH, HEIGHT), leftPadding: INSET_PADDING,
                 rightPadding: INSET_PADDING, topPadding: INSET_PADDING, bottomPadding: INSET_PADDING);
-
+            
             TooltipManager.CreateTooltip(("Scroll", "Rotate Robot"), ("Shift", "Hold to Snap"));
             TweenDirection = Vector2.down;
 
@@ -82,6 +83,16 @@ namespace Synthesis.UI.Dynamic {
             PanelIcon.RootGameObject.SetActive(false);
 
             AcceptButton.StepIntoLabel(label => label.SetText("Accept")).AddOnClickedEvent(b => {
+                int i = 0;
+                foreach (var trf in _robotHighlights) {
+                    if (trf.position.magnitude >= 150f) {
+                        Logger.Log($"Spawn location of {((i < 3) ? "Red" : "Blue")} " +
+                                   $"{(i % 3 + 1)} has not been set!");
+                        return;
+                    }
+                    i++;
+                }
+             
                 DynamicUIManager.ClosePanel<SpawnLocationPanel>();
                 MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.FieldConfig);
             });
