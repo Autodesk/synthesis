@@ -15,6 +15,7 @@ namespace Synthesis {
         public ConfigurableJoint JointA { get; private set; }
         public ConfigurableJoint JointB { get; private set; }
         private float _maxSpeed;
+        private float _lastSpeed = 0;
         public float MaxSpeed {
             get => _maxSpeed;
             set {
@@ -33,9 +34,9 @@ namespace Synthesis {
             }
         }
         // clang-format off
-        private float _velocity = 0f;
+        private float _targetVelocity = 0f;
         // clang-format on
-        public float Velocity => _velocity;
+        public float Velocity => _targetVelocity;
         // Note: only used to save between sessions
         private JointMotor _motor;
         public JointMotor Motor {
@@ -90,7 +91,7 @@ namespace Synthesis {
                 };
             }
 
-            _velocity = MaxSpeed;
+            _targetVelocity = MaxSpeed;
         }
 
         public override void Update() {
@@ -98,11 +99,20 @@ namespace Synthesis {
 
             float value = (float) MainInput;
 
-            _velocity = value * MaxSpeed;
+            _targetVelocity = value * MaxSpeed;
+
+            var delta         = _targetVelocity - _lastSpeed;
             var possibleDelta = _motor.force * Time.deltaTime / JointB.connectedBody.mass * 100;
-            if (Mathf.Abs(_velocity) > possibleDelta)
-                _velocity = possibleDelta * Mathf.Sign(_velocity);
-            Position += Time.deltaTime * _velocity;
+
+            if (delta > 0.001)
+                Debug.Log($"tarVel {_targetVelocity} last {_lastSpeed} delta {delta} pos {possibleDelta}");
+            
+            if (Mathf.Abs(delta) > possibleDelta)
+                delta = possibleDelta * Mathf.Sign(delta);
+            _lastSpeed += Time.deltaTime * delta;
+            if (Mathf.Abs(_lastSpeed) > MaxSpeed)
+                _lastSpeed = MaxSpeed * Mathf.Sign(_lastSpeed);
+            Position += _lastSpeed;
         }
     }
 }

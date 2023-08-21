@@ -155,12 +155,15 @@ public class ConfigJointModal : ModalDynamic {
             var driver = _joints[i].driver;
             switch (driver) {
                 case RotationalDriver:
+                    _joints[i].origForce = (driver as RotationalDriver).Motor.force;
                     _joints[i].origVel = (driver as RotationalDriver).Motor.targetVelocity;
                     break;
                 case WheelDriver:
+                    _joints[i].origForce = (driver as WheelDriver).Motor.force;
                     _joints[i].origVel = (driver as WheelDriver).Motor.targetVelocity;
                     break;
                 case LinearDriver:
+                    _joints[i].origForce = (driver as LinearDriver).Motor.force;
                     _joints[i].origVel = (driver as LinearDriver).MaxSpeed;
                     break;
             }
@@ -169,7 +172,7 @@ public class ConfigJointModal : ModalDynamic {
                 int j = i;
                 var u = "RPM";
                 if (_joints[i].driver is LinearDriver)
-                    u = "M/S";
+                    u = "CM/S";
                 CreateEntry(GetName(_joints[i].driver), _joints[j].origForce, _joints[j].origVel, x => _joints[j].setForce(x), x => _joints[j].setTargetVelocity(x), u);
             }
         }
@@ -200,7 +203,7 @@ public class ConfigJointModal : ModalDynamic {
             .AddOnValueChangedEvent((s, v) => { onVelocity(v); });
         jointContent.CreateSubContent(new Vector2(_scrollViewWidth - NAME_WIDTH - PADDING, 40f))
             .SetTopStretch<Content>(0, 0, PADDING)
-            .CreateSlider("Stall Torque (Nm)", minValue: 0f, maxValue: 12f, currentValue: currForce)
+            .CreateSlider("Stall Torque (Nm)", minValue: 0f, maxValue: 50f, currentValue: currForce)
             .SetTopStretch<Slider>(PADDING, PADDING, _scrollView.HeightOfChildren)
             .AddOnValueChangedEvent((s, f) => { onForce(f); });
     }
@@ -260,7 +263,7 @@ public class ConfigJointModal : ModalDynamic {
                     break;
                 case LinearDriver:
                     _vel                            = (driver as LinearDriver).Motor.targetVelocity;
-                    (driver as LinearDriver).Motor  = new JointMotor() { force = 50, freeSpin = false,
+                    (driver as LinearDriver).Motor  = new JointMotor() { force = f, freeSpin = false,
                            targetVelocity = _vel };
                     break;
             }
@@ -280,10 +283,10 @@ public class ConfigJointModal : ModalDynamic {
                         new JointMotor() { force = _force, freeSpin = false, targetVelocity = v };
                     break;
                 case LinearDriver:
-                    (driver as LinearDriver).MaxSpeed = v;
+                    (driver as LinearDriver).MaxSpeed = v / 100;
                     _force                            = (driver as LinearDriver).Motor.force;
                     (driver as LinearDriver).Motor    = new JointMotor() { force = _force, freeSpin = false,
-                           targetVelocity = v * LinearDriver.LINEAR_TO_MOTOR_VELOCITY };
+                           targetVelocity = v / 100 * LinearDriver.LINEAR_TO_MOTOR_VELOCITY };
                     break;
             }
             changed = true;
