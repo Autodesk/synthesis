@@ -11,8 +11,8 @@ using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Utilities;
+using UI.Dynamic.Modals.MixAndMatch;
 using UnityEngine;
-using UnityEngine.XR;
 using Logger = SynthesisAPI.Utilities.Logger;
 using Random = System.Random;
 
@@ -94,7 +94,7 @@ public class PracticeMode : IMode {
 
     private Analog TryGetSavedInput(string key, Analog defaultInput) {
         if (PreferenceManager.ContainsPreference(key)) {
-            var input            = (Digital) PreferenceManager.GetPreference<InputData[]>(key) [0].GetInput();
+            var input            = PreferenceManager.GetPreference<Digital>(key);
             input.ContextBitmask = defaultInput.ContextBitmask;
             return input;
         }
@@ -167,7 +167,7 @@ public class PracticeMode : IMode {
     }
 
     public static void ResetRobot() {
-        RobotSimObject robot = RobotSimObject.GetCurrentlyPossessedRobot();
+        RobotSimObject robot = MainHUD.SelectedRobot;
         if (robot == null)
             return;
         robot.ClearGamepieces();

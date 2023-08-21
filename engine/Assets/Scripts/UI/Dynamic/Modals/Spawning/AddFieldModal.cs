@@ -17,7 +17,7 @@ namespace Synthesis.UI.Dynamic {
         private int _selectedIndex = -1;
         private string[] _files;
 
-        public string Folder = "Mira/Fields";
+        private string Folder = "Mira/Fields";
 
         public AddFieldModal() : base(new Vector2(400, 55)) {}
 
@@ -34,7 +34,6 @@ namespace Synthesis.UI.Dynamic {
 
             AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
                 if (_selectedIndex != -1) {
-                    FieldSimObject.DeleteField();
                     FieldSimObject.SpawnField(_files[_selectedIndex]);
                     DynamicUIManager.CloseActiveModal();
                 }
@@ -42,8 +41,13 @@ namespace Synthesis.UI.Dynamic {
 
             var chooseRobotDropdown = MainContent.CreateDropdown()
                                           .SetOptions(_files.Select(x => Path.GetFileName(x)).ToArray())
-                                          .AddOnValueChangedEvent((d, i, data) => _selectedIndex = i)
+                                          .AddOnValueChangedEvent((_, i, _) => _selectedIndex = i)
                                           .SetTopStretch<Dropdown>();
+
+            if (_files.Length == 0) {
+                chooseRobotDropdown.ApplyTemplate(Dropdown.DisableDropdown);
+                AcceptButton.RootGameObject.SetActive(false);
+            }
 
             _selectedIndex = _files.Length > 0 ? 0 : -1;
         }

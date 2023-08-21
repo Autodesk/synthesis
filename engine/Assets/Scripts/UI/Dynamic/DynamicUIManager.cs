@@ -1,17 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Analytics;
 using Synthesis.Gizmo;
 using Synthesis.Physics;
 using Synthesis.Replay;
 using Synthesis.Runtime;
-using Analytics;
 using Synthesis.Util;
-using Utilities.ColorManager;
 using SynthesisAPI.EventBus;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UI.Dynamic.Panels.Tooltip;
 using UnityEngine;
 using UnityEngine.UI;
+using Utilities.ColorManager;
 
 namespace Synthesis.UI.Dynamic {
     public static class DynamicUIManager {
@@ -20,10 +20,25 @@ namespace Synthesis.UI.Dynamic {
 
         public static ModalDynamic ActiveModal { get; private set; }
 
+        private static bool _manualMainHUDEnabled = true;
+
+        public static bool ManualMainHUDEnabled {
+            get => _manualMainHUDEnabled;
+            set {
+                if (value != _manualMainHUDEnabled) {
+                    _manualMainHUDEnabled = value;
+                    MainHUD.Enabled       = value;
+                }
+            }
+        }
+
         private static Dictionary<Type, (PanelDynamic, bool)> _persistentPanels =
             new Dictionary<Type, (PanelDynamic, bool)>();
-        public static bool AnyPanels              => _persistentPanels.Count > 0;
-        public static Content _screenSpaceContent  = null;
+
+        public static bool AnyPanels => _persistentPanels.Count > 0;
+
+        public static Content _screenSpaceContent = null;
+
         public static Content ScreenSpaceContent {
             get {
                 if (_screenSpaceContent == null) {
@@ -31,10 +46,13 @@ namespace Synthesis.UI.Dynamic {
                         new Content(null, GameObject.Find("UI").transform.Find("ScreenSpace").gameObject, null);
                     SimulationRunner.OnSimKill += () => _screenSpaceContent = null;
                 }
+
                 return _screenSpaceContent;
             }
         }
+
         public static Content _subScreenSpaceContent = null;
+
         public static Content SubScreenSpaceContent {
             get {
                 if (_subScreenSpaceContent == null) {
@@ -42,10 +60,13 @@ namespace Synthesis.UI.Dynamic {
                         new Content(null, GameObject.Find("UI").transform.Find("SubScreenSpace").gameObject, null);
                     SimulationRunner.OnSimKill += () => _subScreenSpaceContent = null;
                 }
+
                 return _subScreenSpaceContent;
             }
         }
+
         private static Slider _replaySlider = null;
+
         public static Slider ReplaySlider {
             get {
                 if (_replaySlider == null)
@@ -70,6 +91,7 @@ namespace Synthesis.UI.Dynamic {
         }
 
         private static Content _toastContainer = null;
+
         public static Content ToastContainer {
             get {
                 if (_toastContainer == null || _toastContainer.RootGameObject == null) {
@@ -83,6 +105,7 @@ namespace Synthesis.UI.Dynamic {
                                           .StepIntoImage(i => i.SetColor(new Color(0.1f, 0.1f, 0.1f, 0f)));
                     _toastContainer.RootGameObject.AddComponent<RectMask2D>();
                 }
+
                 SimulationRunner.OnSimKill += () => { _toastContainer = null; };
                 return _toastContainer;
             }
@@ -123,7 +146,11 @@ namespace Synthesis.UI.Dynamic {
 
             SynthesisAssetCollection.BlurVolumeStatic.weight = 1f;
             PhysicsManager.IsFrozen                          = true;
-            MainHUD.Enabled                                  = false;
+
+            if (_manualMainHUDEnabled) {
+                MainHUD.Enabled = false;
+            }
+
             SubScreenSpaceContent.RootGameObject.SetActive(false);
 
             string tweenKey = Guid.NewGuid() + "_modalOpen";
@@ -134,6 +161,7 @@ namespace Synthesis.UI.Dynamic {
             void TweenCallback(SynthesisTween.SynthesisTweenStatus status) {
                 unityObject.transform.localScale = Vector3.one * status.CurrentValue<float>();
             }
+
             AnalyticsManager.LogCustomEvent(AnalyticsEvent.ModalCreated, ("UIType", typeof(T).Name));
             return true;
         }
@@ -169,15 +197,16 @@ namespace Synthesis.UI.Dynamic {
                     TweenFinished();
             }
 
+            if (!tweenIn && !persistent) {
+                EventBus.Push(new PanelClosedEvent(panel));
+                _persistentPanels.Remove(t);
+            }
+
             void TweenFinished() {
                 if (!tweenIn) {
                     if (!persistent) {
-                        EventBus.Push(new PanelClosedEvent(panel));
-
                         panel.Delete();
                         panel.Delete_Internal();
-
-                        _persistentPanels.Remove(t);
                     } else
                         panel.Hidden = true;
                 }
@@ -248,22 +277,24 @@ namespace Synthesis.UI.Dynamic {
             void TweenFinished() {
                 SynthesisTween.CancelTween(tweenKey);
 
-                EventBus.Push(new ModalClosedEvent(modal));
-
                 modal.Delete();
                 modal.Delete_Internal();
-
-                if (modal == ActiveModal) {
-                    ActiveModal = null;
-
-                    SynthesisAssetCollection.BlurVolumeStatic.weight = 0f;
-                    MainHUD.Enabled                                  = true;
-                    SubScreenSpaceContent.RootGameObject.SetActive(true);
-                }
             }
+
+            if (modal.UnityObject != null)
+                modal.UnityObject.transform.GetComponentsInChildren<UnityEngine.UI.Button>().ForEach(
+                    b => { b.enabled = false; });
+
+            SubScreenSpaceContent.RootGameObject.SetActive(true);
+            EventBus.Push(new ModalClosedEvent(modal));
+            ActiveModal                                      = null;
+            SynthesisAssetCollection.BlurVolumeStatic.weight = 0f;
+            MainHUD.Enabled                                  = true;
+            EventBus.Push(new ModalClosedEvent(modal));
 
             // Unfreeze physics no matter what because it has a counter
             PhysicsManager.IsFrozen = false;
+            MainHUD.Enabled         = true;
 
             if (showPersistentPanels)
                 ShowAllPanels();
@@ -284,9 +315,11 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public static bool ClosePanel<T>(bool bypassTween = false)
-            where T : PanelDynamic => ClosePanel(typeof(T), bypassTween);
+            where T : PanelDynamic {
+            return ClosePanel(typeof(T), bypassTween);
+        }
 
-  public static bool ClosePanel(Type t, bool bypassTween = false) {
+        public static bool ClosePanel(Type t, bool bypassTween = false) {
             if (!PanelExists(t))
                 return false;
 

@@ -58,6 +58,7 @@ namespace Synthesis.Runtime {
 
         private void Awake() {
             Synthesis.PreferenceManager.PreferenceManager.Load();
+            UnityEngine.Physics.defaultSolverIterations = 20;
         }
 
         private void Start() {
@@ -70,7 +71,6 @@ namespace Synthesis.Runtime {
             WebSocketManager.Init();
             GizmoManager.Setup();
 
-            OnUpdate += DynamicUIManager.Update;
             OnUpdate += ModeManager.Update;
             OnUpdate += () => RobotSimObject.SpawnedRobots.ForEach(r => r.UpdateMultiplayer());
 
@@ -94,9 +94,11 @@ namespace Synthesis.Runtime {
         void Update() {
             InputManager.UpdateInputs(_simulationContext);
             SimulationManager.Update();
+            DynamicUIManager.Update();
 
-            if (OnUpdate != null)
+            if (OnUpdate != null) {
                 OnUpdate();
+            }
         }
 
         private void FixedUpdate() {

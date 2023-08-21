@@ -88,7 +88,7 @@ namespace Synthesis {
             get => _motor;
             set {
                 _motor = value;
-                SimulationPreferences.SetRobotJointMotor((_simObject as RobotSimObject)!.MiraGUID, Name, _motor);
+                SimulationPreferences.SetRobotJointMotor((_simObject as RobotSimObject)!.RobotGUID, MotorRef, _motor);
             }
         }
 
@@ -113,10 +113,9 @@ namespace Synthesis {
         /// <param name="anchor">Anchor of the Rotational Joint</param>
         /// <param name="axis">Axis of the Rotational Joint</param>
         /// <param name="radius">Radius of the wheel. Automatically calculated if set to NaN</param>
-        /// <param name="motor">Motor settings for the wheel</param>
         public WheelDriver(string name, string[] inputs, string[] outputs, SimObject simObject,
             JointInstance jointInstance, CustomWheel customWheel, Vector3 anchor, Vector3 axis, float radius,
-            string motorRef = "")
+            string motorRef)
             : base(name, inputs, outputs, simObject) {
             _jointInstance = jointInstance;
             _customWheel   = customWheel;
@@ -132,17 +131,16 @@ namespace Synthesis {
                 Radius = radius;
             }
 
-            (simObject as RobotSimObject)!.MiraLive.MiraAssembly.Data.Joints.MotorDefinitions.TryGetValue(
-                motorRef, out var motor);
+            var motor = SimulationPreferences.GetRobotJointMotor((simObject as RobotSimObject)!.RobotGUID, motorRef);
 
-            if (motor != null && motor.MotorTypeCase == Mirabuf.Motor.Motor.MotorTypeOneofCase.SimpleMotor) {
-                _motor = motor!.SimpleMotor.UnityMotor;
+            if (motor != null) {
+                _motor = motor.Value;
             } else {
                 Motor = new JointMotor() {
                     // Default Motor. Slow but powerful enough. Also uses Motor to save it
                     force          = 1, // About a Neo 550. Max is Falcon 550 at 4.67
                     freeSpin       = false,
-                    targetVelocity = 20,
+                    targetVelocity = 30,
                 };
             }
 

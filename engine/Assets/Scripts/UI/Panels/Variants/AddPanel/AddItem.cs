@@ -14,7 +14,7 @@ public class AddItem : MonoBehaviour {
     private bool _isRobot;
 
     public void AddModel(bool reverseSideMotors) {
-        RobotSimObject.SpawnRobot(_fullPath);
+        // RobotSimObject.SpawnRobot(_fullPath);
     }
 
     public void AddField() {
