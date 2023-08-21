@@ -27,7 +27,7 @@ public class RioConfigurationModal : ModalDynamic {
         if (reload && RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
             Entries.Clear();
 
-            var trans = MainHUD.ConfigRobot.SimulationTranslationLayer;
+            var trans = MainHUD.SelectedRobot.SimulationTranslationLayer;
 
             trans.PWMGroups.ForEach(x => Entries.Add((PWMGroupEntry) x!));
 
@@ -144,7 +144,7 @@ public class RioConfigurationModal : ModalDynamic {
             }
         });
 
-        MainHUD.ConfigRobot.SimulationTranslationLayer = trans;
+        MainHUD.SelectedRobot.SimulationTranslationLayer = trans;
     }
 
     public override void Delete() {}

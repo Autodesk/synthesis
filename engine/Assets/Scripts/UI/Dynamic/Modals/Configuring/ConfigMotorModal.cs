@@ -3,6 +3,7 @@ using UnityEngine;
 using System;
 using SynthesisAPI.Simulation;
 using Synthesis;
+using Synthesis.PreferenceManager;
 
 public class ConfigMotorModal : ModalDynamic {
     const float MODAL_HEIGHT = 500f;
@@ -29,7 +30,7 @@ public class ConfigMotorModal : ModalDynamic {
     };
 
     public override void Create() {
-        _robot         = MainHUD.ConfigRobot;
+        _robot         = MainHUD.SelectedRobot;
         _robotISSwerve = _robot.ConfiguredDrivetrainType.Equals(RobotSimObject.DrivetrainType.SWERVE);
         _motors        = new ConfigMotor[SimulationManager.Drivers[_robot.Name].Count];
 
@@ -98,11 +99,11 @@ public class ConfigMotorModal : ModalDynamic {
             // Save to Mira
             _motors.ForEach(x => {
                 if (x.velChanged) {
-                    SaveToMira(x.driver);
+                    SaveMotor(x.driver);
                 }
             });
 
-            _robot.MiraLive.Save();
+            PreferenceManager.Save();
         });
 
         MiddleButton.SetWidth<Button>(132)
@@ -243,10 +244,9 @@ public class ConfigMotorModal : ModalDynamic {
         return driver.Name;
     }
 
-    private void SaveToMira(dynamic driver) {
-        _robot.MiraLive.MiraAssembly.Data.Joints.MotorDefinitions[driver.MotorRef] = new Mirabuf.Motor.Motor {
-            SimpleMotor = new Mirabuf.Motor.SimpleMotor {MaxVelocity = driver.Motor.targetVelocity,
-                                                         StallTorque                                           = driver.Motor.force}
-        };
+    private void SaveMotor(dynamic driver) {
+        var motor = new JointMotor() { targetVelocity = driver.Motor.targetVelocity, force = driver.Motor.force };
+
+        SimulationPreferences.SetRobotJointMotor(_robot.RobotGUID, driver.MotorRef, motor);
     }
 }

@@ -140,8 +140,11 @@ public class ZoneConfigPanel : PanelDynamic {
 
         _zoneParentButton =
             MainContent.CreateLabeledButton()
-                .StepIntoLabel(l => l.SetText(_initialParent is not null && _initialParent != "" ? _initialParent
-                                                                                                 : "Parent Object"))
+                .SetHeight<LabeledButton>(40)
+                .StepIntoLabel(l => {
+                    l.SetStretch<Label>(0, 254, 0, 0);
+                    l.SetText(_initialParent is not null && _initialParent != "" ? _initialParent : "Parent Object");
+                })
                 .StepIntoButton(b => {
                     b.StepIntoLabel(l => l.SetText(_initialParent is not null ? "Remove" : "Click to select..."))
                         .AddOnClickedEvent(SelectParentButton);

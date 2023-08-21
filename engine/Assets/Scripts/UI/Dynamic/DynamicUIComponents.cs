@@ -21,6 +21,7 @@ using UScrollView = UnityEngine.UI.ScrollRect;
 
 using Logger = SynthesisAPI.Utilities.Logger;
 using Math   = System.Math;
+using Object = UnityEngine.Object;
 
 #nullable enable
 
@@ -176,9 +177,8 @@ namespace Synthesis.UI.Dynamic {
 
         protected virtual void OnVisibilityChange() {}
 
-        public void Delete_Internal() {
-            GameObject.Destroy(_unityObject);
-        }
+        public void Delete_Internal() => Object.Destroy(_unityObject);
+        public void ClearContent()    => MainContent.DeleteAllChildren();
 
         protected Content Strip(Vector2? newContentSize = null, float leftPadding = 0f, float rightPadding = 0f,
             float topPadding = 0f, float bottomPadding = 0f) {
@@ -229,6 +229,8 @@ namespace Synthesis.UI.Dynamic {
         private Vector2 _mainContentSize; // Shouldn't really be used after init is called
         private GameObject _unityObject;
 
+        private RectTransform _headerRt;
+        private RectTransform _footerRt;
         public GameObject UnityObject => _unityObject;
 
         // Default for Modal
@@ -291,9 +293,10 @@ namespace Synthesis.UI.Dynamic {
             _unityObject = unityObject;
 
             // Grab Customizable Modal Components
-            var header   = _unityObject.transform.Find("Header");
-            var headerRt = header.GetComponent<RectTransform>();
-            _modalIcon   = new Image(null, header.Find("Image").gameObject);
+
+            var header = _unityObject.transform.Find("Header");
+            _headerRt  = header.GetComponent<RectTransform>();
+            _modalIcon = new Image(null, header.Find("Image").gameObject);
             _modalIcon.SetColor(ColorManager.SynthesisColor.MainText);
 
             _modalBackground = new Image(null, unityObject);
@@ -308,7 +311,7 @@ namespace Synthesis.UI.Dynamic {
 
             _footer = _unityObject.transform.Find("Footer");
 
-            var footerRt  = _footer.GetComponent<RectTransform>();
+            _footerRt     = _footer.GetComponent<RectTransform>();
             _cancelButton = new Button(null!, _footer.Find("Cancel").gameObject, null);
             _cancelButton.AddOnClickedEvent(b => {
                 if (!DynamicUIManager.CloseActiveModal())
@@ -336,7 +339,7 @@ namespace Synthesis.UI.Dynamic {
             hiddenRt.anchorMin        = new Vector2(0, 1);
             hiddenRt.anchorMax        = new Vector2(1, 1);
             hiddenRt.pivot            = new Vector2(0.5f, 1);
-            hiddenRt.anchoredPosition = new Vector2(0, -headerRt.sizeDelta.y);
+            hiddenRt.anchoredPosition = new Vector2(0, -_headerRt.sizeDelta.y);
             var actualContentObj =
                 GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("content-base"), hiddenContentT);
             actualContentObj.name = "CentralContent";
@@ -345,7 +348,7 @@ namespace Synthesis.UI.Dynamic {
             contentRt.offsetMin   = new Vector2(MAIN_CONTENT_HORZ_PADDING, contentRt.offsetMin.y);
             var modalRt           = _unityObject.GetComponent<RectTransform>();
             modalRt.sizeDelta     = new Vector2(_mainContentSize.x + (MAIN_CONTENT_HORZ_PADDING * 2),
-                    hiddenRt.sizeDelta.y + headerRt.sizeDelta.y + footerRt.sizeDelta.y);
+                    hiddenRt.sizeDelta.y + _headerRt.sizeDelta.y + _footerRt.sizeDelta.y);
             _mainContent          = new Content(null!, actualContentObj, _mainContentSize);
         }
 
@@ -353,8 +356,45 @@ namespace Synthesis.UI.Dynamic {
         public abstract void Update();
         public abstract void Delete();
 
-        public void Delete_Internal() {
-            GameObject.Destroy(_unityObject);
+        public void Delete_Internal() => Object.Destroy(_unityObject);
+
+        protected void ClearAndResizeContent(Vector2 size, bool resetButtons = true) {
+            ClearMainContent();
+            ResizeMainContent(size);
+
+            if (!resetButtons)
+                return;
+
+            AcceptButton.ClearOnClickedEvents().ApplyTemplate(Button.EnableAcceptButton);
+            CancelButton.ClearOnClickedEvents().ApplyTemplate(Button.EnableCancelButton);
+        }
+
+        protected void ClearMainContent() => MainContent.DeleteAllChildren();
+
+        protected void ResizeMainContent(Vector2 size) {
+            // Reposition all elements
+            foreach (Transform child in MainContent.RootGameObject.transform) {
+                ((RectTransform) child.transform).anchoredPosition += (size - _mainContentSize) / 2f;
+            }
+
+            _mainContentSize = size;
+
+            var hiddenContentT        = _unityObject.transform.Find("Content");
+            var hiddenRt              = hiddenContentT.GetComponent<RectTransform>();
+            hiddenRt.sizeDelta        = new Vector2(hiddenRt.sizeDelta.x, _mainContentSize.y);
+            hiddenRt.anchorMin        = new Vector2(0, 1);
+            hiddenRt.anchorMax        = new Vector2(1, 1);
+            hiddenRt.pivot            = new Vector2(0.5f, 1);
+            hiddenRt.anchoredPosition = new Vector2(0, -_headerRt.sizeDelta.y);
+            var actualContentObj      = MainContent.RootGameObject;
+            actualContentObj.name     = "CentralContent";
+            var contentRt             = actualContentObj.GetComponent<RectTransform>();
+            contentRt.offsetMax       = new Vector2(-MAIN_CONTENT_HORZ_PADDING, contentRt.offsetMax.y);
+            contentRt.offsetMin       = new Vector2(MAIN_CONTENT_HORZ_PADDING, contentRt.offsetMin.y);
+            var modalRt               = _unityObject.GetComponent<RectTransform>();
+            modalRt.sizeDelta         = new Vector2(_mainContentSize.x + (MAIN_CONTENT_HORZ_PADDING * 2),
+                        hiddenRt.sizeDelta.y + _headerRt.sizeDelta.y + _footerRt.sizeDelta.y);
+            _mainContent              = new Content(null!, actualContentObj, _mainContentSize);
         }
     }
 
@@ -945,9 +985,11 @@ namespace Synthesis.UI.Dynamic {
     }
 
     public class Toggle : UIComponent {
-        public static readonly Func<Toggle, Toggle> VerticalLayoutTemplate = (Toggle toggle) =>
-            toggle.SetTopStretch<Toggle>(
-                leftPadding: 15f, anchoredY: toggle.Parent!.HeightOfChildren - toggle.Size.y + 15f);
+        public static readonly Func<UIComponent, UIComponent> RadioToggleLayout = (u) => {
+            var offset = (-u.Parent!.RectOfChildren(u).yMin);
+            u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 15f, rightPadding: 15f); // used to be 15f
+            return u;
+        };
 
         public event Action<Toggle, bool> OnStateChanged;
         private GameObject _unityObject;
@@ -1303,9 +1345,9 @@ namespace Synthesis.UI.Dynamic {
             return b;
         };
 
-        public static readonly Func<Button, Button> EnableCancelButton = b => {
+        public static readonly Func<Button, Button> EnableDeleteButton = b => {
             b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.CancelButton))
-                .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.AcceptCancelButtonText))
+                .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
                 .EnableEvents<Button>();
 
             var eventListener = b.RootGameObject.GetComponentInChildren<HoverEventListener>();
@@ -1315,9 +1357,9 @@ namespace Synthesis.UI.Dynamic {
             return b;
         };
 
-        public static readonly Func<Button, Button> EnableDeleteButton = b => {
+        public static readonly Func<Button, Button> EnableCancelButton = b => {
             b.StepIntoImage(i => i.SetColor(ColorManager.SynthesisColor.CancelButton))
-                .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.InteractiveElementText))
+                .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.AcceptCancelButtonText))
                 .EnableEvents<Button>();
 
             var eventListener = b.RootGameObject.GetComponentInChildren<HoverEventListener>();
@@ -1402,8 +1444,19 @@ namespace Synthesis.UI.Dynamic {
             return this;
         }
 
+        private List<Action<Button>> _clickEvents = new();
+
         public Button AddOnClickedEvent(Action<Button> callback) {
             OnClicked += callback;
+            _clickEvents.Add(callback);
+            return this;
+        }
+
+        public Button ClearOnClickedEvents() {
+            _clickEvents.ForEach(e => {
+                if (e != null)
+                    OnClicked -= e;
+            });
             return this;
         }
     }
@@ -1413,12 +1466,36 @@ namespace Synthesis.UI.Dynamic {
             dropdown.SetTopStretch<Dropdown>(
                 leftPadding: 15f, anchoredY: dropdown.Parent!.HeightOfChildren - dropdown.Size.y + 15f);
 
+        public static readonly Func<Dropdown, Dropdown> EnableDropdown = d => {
+            d.HeaderImage.SetColor(ColorManager.SynthesisColor.InteractiveElementLeft,
+                ColorManager.SynthesisColor.InteractiveElementRight);
+            d._tmpDropdown.enabled = true;
+
+            var eventListener = d.RootGameObject.GetComponentInChildren<HoverEventListener>();
+            if (eventListener != null)
+                eventListener.enabled = true;
+
+            return d;
+        };
+
+        public static readonly Func<Dropdown, Dropdown> DisableDropdown = d => {
+            d.HeaderImage.SetColor(ColorManager.SynthesisColor.InteractiveBackground);
+            d._tmpDropdown.enabled = false;
+
+            var eventListener = d.RootGameObject.GetComponentInChildren<HoverEventListener>();
+            if (eventListener != null)
+                eventListener.enabled = false;
+
+            return d;
+        };
+
         public event Action<Dropdown, int, TMP_Dropdown.OptionData> OnValueChanged;
         private Image _image;
         public Image Image => _image;
         private Content _viewport;
         public Content Viewport => _viewport;
         private TMP_Dropdown _tmpDropdown;
+        public TMP_Dropdown TMPDropdown                       => _tmpDropdown;
         public IReadOnlyList<TMP_Dropdown.OptionData> Options => _tmpDropdown.options.AsReadOnly();
         public int Value                                      => _tmpDropdown.value;
         public TMP_Dropdown.OptionData SelectedOption         => _tmpDropdown.options[Value];

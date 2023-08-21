@@ -24,6 +24,8 @@ public record ScoringZoneData() {
 }
 
 public class ScoringZonesPanel : PanelDynamic {
+    public static bool MatchModeSetup = false;
+
     private const float MODAL_WIDTH  = 500f;
     private const float MODAL_HEIGHT = 600f;
 
@@ -56,7 +58,7 @@ public class ScoringZonesPanel : PanelDynamic {
     public override bool Create() {
         Title.SetText("Scoring Zones");
 
-        AcceptButton.StepIntoLabel(l => l.SetText("Close"))
+        AcceptButton.StepIntoLabel(l => l.SetText(MatchModeSetup ? "Continue" : "Close"))
             .AddOnClickedEvent(b => DynamicUIManager.ClosePanel<ScoringZonesPanel>());
         CancelButton.RootGameObject.SetActive(false);
 
