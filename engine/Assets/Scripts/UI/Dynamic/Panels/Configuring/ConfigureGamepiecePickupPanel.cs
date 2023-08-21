@@ -58,6 +58,7 @@ namespace Synthesis.UI.Dynamic {
 
             AcceptButton
                 .AddOnClickedEvent(b => {
+                    Debug.Log($"Result {_resultingData.RelativePosition[1]}");
                     SimulationPreferences.SetRobotIntakeTriggerData(_robot.RobotGUID, _resultingData);
                     PreferenceManager.PreferenceManager.Save();
                     _save = true;
