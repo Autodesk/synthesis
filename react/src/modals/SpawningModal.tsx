@@ -11,8 +11,8 @@ const SpawningModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal name={"Spawning"} icon={<FaPlus />} modalId={modalId}>
             <Stack direction={StackDirection.Horizontal}>
-                <Button value={"Robots"} onClick={() => openModal("robots")} />
-                <Button value={"Fields"} onClick={() => openModal("fields")} />
+                <Button value={"Robots"} onClick={() => openModal("add-robot")} />
+                <Button value={"Fields"} onClick={() => openModal("add-field")} />
             </Stack>
         </Modal>
     )

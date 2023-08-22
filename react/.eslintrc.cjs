@@ -16,4 +16,20 @@ module.exports = {
             { allowConstantExport: true },
         ],
     },
+    settings: {
+        'import/resolver': {
+            node: {
+                extensions: ['.js', '.ts', '.jsx', '.tsx', '.d.ts'],
+            },
+            alias: {
+                extensions: ['.js', '.ts', '.jsx', '.tsx', '.d.ts'],
+                map: [
+                    ["@components/*", "./components/*"],
+                    ["@modals/*", "./modals/*"],
+                    ["@panels/*", "./panels/*"],
+                    ["@assets/*", "./assets/*"]
+                ]
+            }
+        }
+    }
 }

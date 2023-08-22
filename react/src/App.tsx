@@ -4,6 +4,7 @@ import { ModalControlProvider, useModalManager } from "./ModalContext"
 import { PanelControlProvider, usePanelManager } from "./PanelContext"
 import { useTheme } from "./ThemeContext"
 import { ToastContainer, ToastProvider } from "./ToastContext"
+import { TooltipControl, TooltipControlProvider, TooltipType, useTooltipManager } from "./TooltipContext"
 import MainHUD from "./components/MainHUD"
 import DownloadAssetsModal from "./modals/DownloadAssetsModal"
 import ExitSynthesisModal from "./modals/ExitSynthesisModal"
@@ -34,11 +35,11 @@ import MatchModeModal from "./modals/spawning/MatchModeModal"
 import RobotSwitchPanel from "./panels/RobotSwitchPanel"
 import SpawnLocationsPanel from "./panels/SpawnLocationPanel"
 import ConfigureGamepiecePickupPanel from "./panels/configuring/ConfigureGamepiecePickupPanel"
+import ConfigureShotTrajectoryPanel from "./panels/configuring/ConfigureShotTrajectoryPanel"
+import ScoringZonesPanel from "./panels/configuring/scoring/ScoringZonesPanel"
+import ZoneConfigPanel from "./panels/configuring/scoring/ZoneConfigPanel"
 import ScoreboardPanel from "./panels/information/ScoreboardPanel"
 import DriverStationPanel from "./panels/simulation/DriverStationPanel"
-import ConfigureShotTrajectoryPanel from "./panels/configuring/ConfigureShotTrajectoryPanel"
-import ScoringZonesPanel from "./panels/scoring/ScoringZonesPanel"
-import ZoneConfigPanel from "./panels/scoring/ZoneConfigPanel"
 
 const initialModals = [
     <SettingsModal modalId="settings" />,
@@ -86,6 +87,7 @@ function App() {
         useModalManager(initialModals)
     const { openPanel, closePanel, closeAllPanels, getActivePanelElements } =
         usePanelManager(initialPanels)
+    const { showTooltip } = useTooltipManager();
 
     const { currentTheme, applyTheme } = useTheme()
 
@@ -168,30 +170,33 @@ function App() {
         )
 
     return (
-        <ModalControlProvider
-            openModal={(modalId: string) => {
-                closeAllPanels()
-                openModal(modalId)
-            }}
-            closeModal={closeModal}
-        >
-            <PanelControlProvider
-                openPanel={openPanel}
-                closePanel={(id: string) => {
-                    closePanel(id)
-                }}
-            >
-                <ToastProvider>
-                    <MainHUD />
-                    <AnimatePresence>
-                        <ZoneConfigPanel panelId="panel" />
-                        {motionPanelElements.length > 0 && motionPanelElements}
-                        {motionModalElement && motionModalElement}
-                    </AnimatePresence>
-                    <ToastContainer />
-                </ToastProvider>
-            </PanelControlProvider>
-        </ModalControlProvider>
+        <AnimatePresence>
+            <TooltipControlProvider showTooltip={(type: TooltipType, duration: number, controls?: TooltipControl[]) => {
+                showTooltip(type, duration, controls)
+            }}>
+                <ModalControlProvider
+                    openModal={(modalId: string) => {
+                        closeAllPanels()
+                        openModal(modalId)
+                    }}
+                    closeModal={closeModal}
+                >
+                    <PanelControlProvider
+                        openPanel={openPanel}
+                        closePanel={(id: string) => {
+                            closePanel(id)
+                        }}
+                    >
+                        <ToastProvider>
+                            <MainHUD />
+                            {motionPanelElements.length > 0 && motionPanelElements}
+                            {motionModalElement && motionModalElement}
+                            <ToastContainer />
+                        </ToastProvider>
+                    </PanelControlProvider>
+                </ModalControlProvider>
+            </TooltipControlProvider>
+        </AnimatePresence>
     )
 }
 

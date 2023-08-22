@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { usePanelControlContext } from "../../PanelContext";
-import Button from "../../components/Button";
-import Label, { LabelSize } from "../../components/Label";
-import Panel, { PanelPropsImpl } from "../../components/Panel";
-import ScrollView from "../../components/ScrollView";
-import Stack, { StackDirection } from "../../components/Stack";
+import { usePanelControlContext } from "@/PanelContext";
+import Button from "@/components/Button";
+import Label, { LabelSize } from "@/components/Label";
+import Panel, { PanelPropsImpl } from "@/components/Panel";
+import ScrollView from "@/components/ScrollView";
+import Stack, { StackDirection } from "@/components/Stack";
 import { ScoringZone } from "./ZoneConfigPanel";
 
 

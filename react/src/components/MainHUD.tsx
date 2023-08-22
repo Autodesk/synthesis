@@ -29,9 +29,8 @@ const MainHUDButton: React.FC<ButtonProps> = ({
     return (
         <div
             onClick={onClick}
-            className={`relative flex flex-row cursor-pointer bg-background w-full m-auto px-2 py-1 text-main-text rounded-md ${
-                larger ? "justify-center" : ""
-            } items-center hover:backdrop-brightness-105`}
+            className={`relative flex flex-row cursor-pointer bg-background w-full m-auto px-2 py-1 text-main-text rounded-md ${larger ? "justify-center" : ""
+                } items-center hover:backdrop-brightness-105`}
         >
             {larger && icon}
             {!larger && (
@@ -44,9 +43,8 @@ const MainHUDButton: React.FC<ButtonProps> = ({
             )}
             <input
                 type="button"
-                className={`px-2 ${
-                    larger ? "py-2" : "py-1 ml-6"
-                } text-main-text cursor-pointer`}
+                className={`px-2 ${larger ? "py-2" : "py-1 ml-6"
+                    } text-main-text cursor-pointer`}
                 value={value}
                 onClick={onClick}
             />
@@ -79,6 +77,7 @@ const MainHUD: React.FC = () => {
                 </button>
             )}
             <motion.div
+                initial="closed"
                 animate={isOpen ? "open" : "closed"}
                 variants={variants}
                 className="fixed flex flex-col gap-2 bg-gradient-to-b from-interactive-element-right to-interactive-element-left w-min p-4 rounded-3xl ml-4 top-1/2 -translate-y-1/2"

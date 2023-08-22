@@ -1,10 +1,10 @@
 import { useState } from "react"
-import Input from "../../components/Input"
-import Panel, { PanelPropsImpl } from "../../components/Panel"
-import Button from "../../components/Button"
-import SelectButton from "../../components/SelectButton"
-import Checkbox from "../../components/Checkbox"
-import Slider from "../../components/Slider"
+import Input from "@/components/Input"
+import Panel, { PanelPropsImpl } from "@/components/Panel"
+import Button from "@/components/Button"
+import SelectButton from "@/components/SelectButton"
+import Checkbox from "@/components/Checkbox"
+import Slider from "@/components/Slider"
 
 export type ScoringZone = {
     name: string
