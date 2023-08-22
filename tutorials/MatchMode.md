@@ -19,7 +19,7 @@ your choice, complete with alliances, and a scoreboard to track points.
 After opening Synthesis, select Single Player. There, you should be able to choose between Practice
 Mode and Match Mode.
 
-![Choose Mode]()
+![Choose Mode](img/synthesis/choose-mode-modal.png)
 
 ### Preparing a Match
 
@@ -28,7 +28,7 @@ Once Match Mode is selected, you will be able to choose your robots for each all
 Next, you will be able to view your selected field, and set the spawn locations for each robot. You
 can spawn your robots anywhere within the field.
 
-![Spawn Locations]()
+![Spawn Locations](img/synthesis/match-mode-setup.png)
 
 ## Scoring Zones
 
@@ -47,7 +47,7 @@ Other settings include:
 * Persistent Points:
   * Points earned remain even when the game piece leaves the scoring zone.
 
-![Scoring Zone Config]()
+![Scoring Zone Config](img/synthesis/match-mode-scoring.png)
 
 ### Beginning a Match
 
@@ -58,7 +58,7 @@ At the end of the match, you will get a panel showing the points earned, and giv
 exit out of match mode, restart the match, or reconfigure the match with different bots or a different
 field. 
 
-![Match Results Page]()
+![Match Results Page](img/synthesis/match-mode-results.png)
 
 ## Need More Help?
 
