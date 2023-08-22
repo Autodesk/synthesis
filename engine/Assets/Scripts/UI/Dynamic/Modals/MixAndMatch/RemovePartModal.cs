@@ -14,6 +14,7 @@ namespace UI.Dynamic.Modals.MixAndMatch {
         }
 
         public override void Create() {
+            ModalIcon.UnityImage.sprite = SynthesisAssetCollection.GetSpriteByName("trash-icon");
             Title.SetText("Remove Part?");
 
             AcceptButton.AddOnClickedEvent(
