@@ -362,8 +362,10 @@ public static class MainHUD {
         _closeButton.Image.SetColor(ColorManager.SynthesisColor.MainHUDCloseIcon);
 
         _spawnButton.Image.SetColor(ColorManager.SynthesisColor.BackgroundHUD);
+        _spawnButton.Label!.SetColor(ColorManager.SynthesisColor.MainText);
         _spawnIcon.SetColor(ColorManager.SynthesisColor.Icon);
         _homeButton.Image.SetColor(ColorManager.SynthesisColor.BackgroundHUD);
+        _homeButton.Label!.SetColor(ColorManager.SynthesisColor.MainText);
         _homeIcon.SetColor(ColorManager.SynthesisColor.Icon);
 
         _topItemContainer.SetBackgroundColor<Content>(ColorManager.SynthesisColor.BackgroundHUD);
@@ -374,6 +376,7 @@ public static class MainHUD {
             x.button.Image.SetColor(ColorManager.SynthesisColor.BackgroundHUD);
             x.image.SetColor(ColorManager.SynthesisColor.Icon);
         });
+        
         _bottomDrawerItems.ForEach(x => {
             x.button.Label!.SetColor(ColorManager.SynthesisColor.MainText);
             x.button.Image.SetColor(ColorManager.SynthesisColor.BackgroundHUD);
