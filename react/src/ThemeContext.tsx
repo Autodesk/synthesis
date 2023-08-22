@@ -28,13 +28,23 @@ export type ColorName =
     | "AcceptCancelButtonText"
     | "MatchRedAlliance"
     | "MatchBlueAlliance"
+    | "ToastInfo"
+    | "ToastWarning"
+    | "ToastError"
 
-const colorNameToProp = (colorName: ColorName) => {
+export const colorNameToTailwind = (colorName: ColorName) => {
+    return "bg" +
+        colorName
+            .replace(/([A-Z]+)/g, "-$1")
+            .replace(/(?<=[A-Z])([A-Z])(?![A-Z]|$)/g, "-$1")
+            .toLowerCase()
+}
+export const colorNameToProp = (colorName: ColorName) => {
     return (
         "-" +
         colorName
             .replace(/([A-Z]+)/g, "-$1")
-            .replace(/(?<=[A-Z])([A-Z])(?![A-Z])/g, "-$1")
+            .replace(/(?<=[A-Z])([A-Z])(?![A-Z]|$)/g, "-$1")
             .toLowerCase()
     )
 }
@@ -113,7 +123,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
             const propName = colorNameToProp(n as ColorName)
             root.style.setProperty(
                 propName,
-                `rgba(${c.r}, ${c.g}, ${c.b}, ${c.a}`
+                `rgba(${c.r}, ${c.g}, ${c.b}, ${c.a})`
             )
         })
     }

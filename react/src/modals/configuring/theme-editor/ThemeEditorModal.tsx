@@ -1,17 +1,19 @@
 import React, { useState } from "react"
 import { FaChessBoard } from "react-icons/fa6"
-import Modal, { ModalPropsImpl } from "../../../components/Modal"
+import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { RgbaColor, RgbaColorPicker } from "react-colorful"
-import Stack, { StackDirection } from "../../../components/Stack"
-import Dropdown from "../../../components/Dropdown"
-import Button from "../../../components/Button"
+import Stack, { StackDirection } from "@/components/Stack"
+import Dropdown from "@/components/Dropdown"
+import Button from "@/components/Button"
 import {
     ColorName,
     Theme,
+    colorNameToProp,
+    colorNameToTailwind,
     defaultThemeName,
     useTheme,
-} from "../../../ThemeContext"
-import { useModalControlContext } from "../../../ModalContext"
+} from "@/ThemeContext"
+import { useModalControlContext } from "@/ModalContext"
 
 const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { themes, currentTheme, setTheme, updateColor, applyTheme } =
@@ -97,18 +99,14 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         {Object.entries(themes[selectedTheme]).map(([n, c]) => (
                             <div
                                 key={n}
-                                className={`flex flex-row gap-2 content-middle align-center cursor-pointer rounded-md p-1 ${
-                                    n == selectedColor ? "bg-gray-700" : ""
-                                }`}
+                                className={`flex flex-row gap-2 content-middle align-center cursor-pointer rounded-md p-1 ${n == selectedColor ? "bg-background-secondary" : ""
+                                    }`}
                                 onClick={() => {
                                     setSelectedColor(n as ColorName)
                                 }}
                             >
                                 <div
-                                    className="w-6 h-6 rounded-md"
-                                    style={{
-                                        background: `rgba(${c.r}, ${c.g}, ${c.b}, ${c.a})`,
-                                    }}
+                                    className={`w-6 h-6 rounded-md ${colorNameToTailwind(n as ColorName)}`}
                                 ></div>
                                 <div className="h-6 text-main-text">{n}</div>
                             </div>

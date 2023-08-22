@@ -46,6 +46,7 @@ import ScoringZonesPanel from "./panels/configuring/scoring/ScoringZonesPanel"
 import ZoneConfigPanel from "./panels/configuring/scoring/ZoneConfigPanel"
 import ScoreboardPanel from "./panels/information/ScoreboardPanel"
 import DriverStationPanel from "./panels/simulation/DriverStationPanel"
+import Toast from "./components/Toast"
 
 const initialModals = [
     <SettingsModal modalId="settings" />,

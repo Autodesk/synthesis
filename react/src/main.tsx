@@ -31,6 +31,9 @@ const defaultColors: Theme = {
     FloorGrid: { r: 93, g: 93, b: 93, a: 255 },
     MatchRedAlliance: { r: 255, g: 0, b: 0, a: 255 },
     MatchBlueAlliance: { r: 0, g: 0, b: 255, a: 255 },
+    ToastInfo: { r: 126, g: 34, b: 206, a: 255 },
+    ToastWarning: { r: 234, g: 179, b: 8, a: 255 },
+    ToastError: { r: 239, g: 68, b: 68, a: 255 },
 }
 const themes = {
     Default: defaultColors,

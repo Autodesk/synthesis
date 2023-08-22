@@ -9,6 +9,7 @@ const TOAST_TIMEOUT: number = 5_000
 
 const Toast: React.FC<ToastData> = ({ id, type, title, description }) => {
     const { removeToast } = useToastContext()
+
     useEffect(() => {
         const timer = setTimeout(() => {
             removeToast(id)
@@ -30,7 +31,7 @@ const Toast: React.FC<ToastData> = ({ id, type, title, description }) => {
                     className="h-full w-full text-main-text"
                 />
             )
-            className = "bg-purple-700"
+            className = "bg-toast-info"
             break
         case "warning":
             icon = (
@@ -39,7 +40,7 @@ const Toast: React.FC<ToastData> = ({ id, type, title, description }) => {
                     className="h-full w-full text-main-text"
                 />
             )
-            className = "bg-yellow-500"
+            className = "bg-toast-warning"
             break
         case "error":
             icon = (
@@ -48,7 +49,7 @@ const Toast: React.FC<ToastData> = ({ id, type, title, description }) => {
                     className="h-full w-full text-main-text"
                 />
             )
-            className = "bg-red-500"
+            className = "bg-toast-error"
             break
     }
 
