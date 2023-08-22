@@ -1,10 +1,15 @@
 .PHONY: all FusionExporter CodeSimulation
 
-all: FusionExporter CodeSimulation
+all: FusionExporter CodeSimulation ConfigMode MatchMode
 
-# I could do something fancy but I don't want to google it
 FusionExporter:
 	claat export -o ./ FusionExporter.md
 
 CodeSimulation:
 	claat export -o ./ CodeSimulation.md
+
+ConfigMode:
+	claat export -o ./ ConfigMode.md
+
+MatchMode:
+	claat export -o ./ MatchMode.md
