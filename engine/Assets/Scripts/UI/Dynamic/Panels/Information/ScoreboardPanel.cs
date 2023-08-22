@@ -51,11 +51,11 @@ public class ScoreboardPanel : PanelDynamic {
             _bottomContent.SetHeight<Content>(bottomHeight);
 
             _time = _topContent.CreateLabel(topHeight)
-                       .SetStretch<Label>()
-                       .SetText(MatchMode.MatchTime.ToString())
-                       .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
-                       .SetVerticalAlignment(VerticalAlignmentOptions.Middle)
-                       .SetFontSize(40);
+                        .SetStretch<Label>()
+                        .SetText(MatchMode.MatchTime.ToString())
+                        .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
+                        .SetVerticalAlignment(VerticalAlignmentOptions.Middle)
+                        .SetFontSize(40);
         } else {
             _bottomContent = newMainContent;
         }
@@ -70,30 +70,14 @@ public class ScoreboardPanel : PanelDynamic {
         const float scoreSize = 50;
 
         _redLabel = leftContent.CreateLabel()
-            .ApplyTemplate(VerticalLayout)
-            .SetAnchors<Label>(new Vector2(0, 1), new Vector2(1, 1))
-            .SetAnchoredPosition<Label>(new Vector2(0, -10))
-            .SetText("RED")
-            .SetFontSize(titleSize)
-            .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
-            .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
+                        .ApplyTemplate(VerticalLayout)
+                        .SetAnchors<Label>(new Vector2(0, 1), new Vector2(1, 1))
+                        .SetAnchoredPosition<Label>(new Vector2(0, -10))
+                        .SetText("RED")
+                        .SetFontSize(titleSize)
+                        .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
+                        .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
         _redScore = leftContent.CreateLabel()
-                       .ApplyTemplate(VerticalLayout)
-                       .SetText("0")
-                       .SetFontSize(scoreSize)
-                       .SetAnchors<Label>(new Vector2(0, 1), new Vector2(1, 1))
-                       .SetAnchoredPosition<Label>(new Vector2(0, -bottomHeight / 2))
-                       .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
-                       .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
-        _blueLabel = rightContent.CreateLabel()
-            .ApplyTemplate(VerticalLayout)
-            .SetAnchors<Label>(new Vector2(0, 1), new Vector2(1, 1))
-            .SetAnchoredPosition<Label>(new Vector2(0, -10))
-            .SetText("BLUE")
-            .SetFontSize(titleSize)
-            .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
-            .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
-        _blueScore = rightContent.CreateLabel()
                         .ApplyTemplate(VerticalLayout)
                         .SetText("0")
                         .SetFontSize(scoreSize)
@@ -101,6 +85,22 @@ public class ScoreboardPanel : PanelDynamic {
                         .SetAnchoredPosition<Label>(new Vector2(0, -bottomHeight / 2))
                         .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
                         .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
+        _blueLabel = rightContent.CreateLabel()
+                         .ApplyTemplate(VerticalLayout)
+                         .SetAnchors<Label>(new Vector2(0, 1), new Vector2(1, 1))
+                         .SetAnchoredPosition<Label>(new Vector2(0, -10))
+                         .SetText("BLUE")
+                         .SetFontSize(titleSize)
+                         .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
+                         .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
+        _blueScore = rightContent.CreateLabel()
+                         .ApplyTemplate(VerticalLayout)
+                         .SetText("0")
+                         .SetFontSize(scoreSize)
+                         .SetAnchors<Label>(new Vector2(0, 1), new Vector2(1, 1))
+                         .SetAnchoredPosition<Label>(new Vector2(0, -bottomHeight / 2))
+                         .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
+                         .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
         AssignColors(null);
         EventBus.NewTypeListener<ColorManager.OnThemeChanged>(AssignColors);
 
@@ -129,7 +129,7 @@ public class ScoreboardPanel : PanelDynamic {
         EventBus.RemoveTypeListener<ColorManager.OnThemeChanged>(AssignColors);
     }
 
-     public static void AssignColors(IEvent e) {
+    public static void AssignColors(IEvent e) {
         _redLabel.SetColor(ColorManager.SynthesisColor.MainText);
         _blueLabel.SetColor(ColorManager.SynthesisColor.MainText);
         _blueScore.SetColor(ColorManager.SynthesisColor.MainText);

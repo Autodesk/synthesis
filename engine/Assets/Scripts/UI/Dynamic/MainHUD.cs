@@ -376,7 +376,7 @@ public static class MainHUD {
             x.button.Image.SetColor(ColorManager.SynthesisColor.BackgroundHUD);
             x.image.SetColor(ColorManager.SynthesisColor.Icon);
         });
-        
+
         _bottomDrawerItems.ForEach(x => {
             x.button.Label!.SetColor(ColorManager.SynthesisColor.MainText);
             x.button.Image.SetColor(ColorManager.SynthesisColor.BackgroundHUD);
