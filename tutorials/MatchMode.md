@@ -2,7 +2,7 @@ author: Synthesis Team
 summary: Tutorial for using Match Mode
 id: MatchModeCodelab
 tags: Match Mode, Practice Mode, Game Simulation
-categories: WPILib
+categories: Modes
 environments: Synthesis
 status: Draft
 feedback link: https://github.com/Autodesk/synthesis/issues
