@@ -4,7 +4,13 @@ import { ModalControlProvider, useModalManager } from "./ModalContext"
 import { PanelControlProvider, usePanelManager } from "./PanelContext"
 import { useTheme } from "./ThemeContext"
 import { ToastContainer, ToastProvider } from "./ToastContext"
-import { TOOLTIP_DURATION, TooltipControl, TooltipControlProvider, TooltipType, useTooltipManager } from "./TooltipContext"
+import {
+    TOOLTIP_DURATION,
+    TooltipControl,
+    TooltipControlProvider,
+    TooltipType,
+    useTooltipManager,
+} from "./TooltipContext"
 import MainHUD from "./components/MainHUD"
 import DownloadAssetsModal from "./modals/DownloadAssetsModal"
 import ExitSynthesisModal from "./modals/ExitSynthesisModal"
@@ -40,7 +46,6 @@ import ScoringZonesPanel from "./panels/configuring/scoring/ScoringZonesPanel"
 import ZoneConfigPanel from "./panels/configuring/scoring/ZoneConfigPanel"
 import ScoreboardPanel from "./panels/information/ScoreboardPanel"
 import DriverStationPanel from "./panels/simulation/DriverStationPanel"
-import Tooltip from "./components/Tooltip"
 
 const initialModals = [
     <SettingsModal modalId="settings" />,
@@ -69,7 +74,7 @@ const initialModals = [
     <RCConfigEncoderModal modalId="config-encoder" />,
     <MatchModeModal modalId="match-mode" />,
     <SpawningModal modalId="spawning" />,
-    <ConfigMotorModal modalId="config-motor" />
+    <ConfigMotorModal modalId="config-motor" />,
 ]
 
 const initialPanels: ReactElement[] = [
@@ -80,7 +85,7 @@ const initialPanels: ReactElement[] = [
     <ConfigureGamepiecePickupPanel panelId="config-gamepiece-pickup" />,
     <ConfigureShotTrajectoryPanel panelId="config-shot-trajectory" />,
     <ScoringZonesPanel panelId="scoring-zones" />,
-    <ZoneConfigPanel panelId="zone-config" />
+    <ZoneConfigPanel panelId="zone-config" />,
 ]
 
 function App() {
@@ -88,7 +93,7 @@ function App() {
         useModalManager(initialModals)
     const { openPanel, closePanel, closeAllPanels, getActivePanelElements } =
         usePanelManager(initialPanels)
-    const { showTooltip } = useTooltipManager();
+    const { showTooltip } = useTooltipManager()
 
     const { currentTheme, applyTheme } = useTheme()
 
@@ -172,9 +177,15 @@ function App() {
 
     return (
         <AnimatePresence>
-            <TooltipControlProvider showTooltip={(type: TooltipType, controls?: TooltipControl[], duration: number = TOOLTIP_DURATION) => {
-                showTooltip(type, controls, duration)
-            }}>
+            <TooltipControlProvider
+                showTooltip={(
+                    type: TooltipType,
+                    controls?: TooltipControl[],
+                    duration: number = TOOLTIP_DURATION
+                ) => {
+                    showTooltip(type, controls, duration)
+                }}
+            >
                 <ModalControlProvider
                     openModal={(modalId: string) => {
                         closeAllPanels()
@@ -190,7 +201,8 @@ function App() {
                     >
                         <ToastProvider>
                             <MainHUD />
-                            {motionPanelElements.length > 0 && motionPanelElements}
+                            {motionPanelElements.length > 0 &&
+                                motionPanelElements}
                             {motionModalElement && motionModalElement}
                             <ToastContainer />
                         </ToastProvider>

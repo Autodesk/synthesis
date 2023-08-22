@@ -4,9 +4,8 @@ import Stack, { StackDirection } from "../../components/Stack"
 import Button from "../../components/Button"
 import { useModalControlContext } from "../../ModalContext"
 
-
 const SpawningModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
-    const { openModal } = useModalControlContext();
+    const { openModal } = useModalControlContext()
     return (
         <Modal
             name="Spawning"

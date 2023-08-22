@@ -1,8 +1,8 @@
 import { FaGear } from "react-icons/fa6"
 import Modal, { ModalPropsImpl } from "../../components/Modal"
-import Slider from "../../components/Slider";
-import Label, { LabelSize } from "../../components/Label";
-import { useState } from "react";
+import Slider from "../../components/Slider"
+import Label, { LabelSize } from "../../components/Label"
+import { useState } from "react"
 
 type Motor = {
     name: string
@@ -15,12 +15,18 @@ type Motor = {
 // Synthesis should send all of this because we already have logic to generate these entries
 // rather than calculating them here
 const sampleMotors: Motor[] = [
-    { name: "Drive", defaultVelocity: 100, minVelocity: 0, maxVelocity: 150, unit: "RPM" }
+    {
+        name: "Drive",
+        defaultVelocity: 100,
+        minVelocity: 0,
+        maxVelocity: 150,
+        unit: "RPM",
+    },
 ]
 
 const ConfigMotorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
-    const [motors, setMotors] = useState<Motor[]>(sampleMotors);
-    const [initialData,] = useState<Motor[]>([...motors])
+    const [motors, setMotors] = useState<Motor[]>(sampleMotors)
+    const [initialData] = useState<Motor[]>([...motors])
 
     return (
         <Modal
@@ -31,7 +37,7 @@ const ConfigMotorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             middleEnabled={true}
             acceptName="Save"
             onCancel={() => {
-                setMotors(initialData);
+                setMotors(initialData)
                 // send cancel
             }}
             onMiddle={() => {
@@ -56,7 +62,12 @@ const ConfigMotorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                             <Label size={LabelSize.Medium}>{m.name}</Label>
                         </td>
                         <td className="w-48">
-                            <Slider defaultValue={m.defaultVelocity} min={m.minVelocity} max={m.maxVelocity} label={m.unit} />
+                            <Slider
+                                defaultValue={m.defaultVelocity}
+                                min={m.minVelocity}
+                                max={m.maxVelocity}
+                                label={m.unit}
+                            />
                         </td>
                     </tr>
                 ))}
@@ -65,4 +76,4 @@ const ConfigMotorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     )
 }
 
-export default ConfigMotorModal;
+export default ConfigMotorModal

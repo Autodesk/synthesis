@@ -8,8 +8,8 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({
     panelId,
 }) => {
     const defaultZoneSize = 0.5
-    const [node, setNode] = useState<string>("Click to select")
-    const [zoneSize, setZoneSize] = useState<number>(defaultZoneSize)
+    const [, setNode] = useState<string>("Click to select")
+    const [, setZoneSize] = useState<number>(defaultZoneSize)
 
     return (
         <Panel

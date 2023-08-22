@@ -43,7 +43,7 @@ const Modal: React.FC<ModalProps> = ({
     middleBlocked = false,
     acceptBlocked = false,
     className,
-    contentClassName
+    contentClassName,
 }) => {
     const { closeModal } = useModalControlContext()
 
@@ -59,7 +59,7 @@ const Modal: React.FC<ModalProps> = ({
             id={name}
             className={`${className} absolute w-fit h-fit left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background text-main-text m-auto border-5 rounded-2xl shadow-sm shadow-slate-800`}
         >
-            {name &&
+            {name && (
                 <div id="header" className="flex items-center gap-8 h-16">
                     <span className="flex justify-center align-center ml-8 text-icon">
                         {iconEl && iconEl}
@@ -68,8 +68,13 @@ const Modal: React.FC<ModalProps> = ({
                         {name}
                     </h1>
                 </div>
-            }
-            <div id="content" className={`${contentClassName} ${!contentClassName?.includes('mx') ? 'mx-16' : ''} flex flex-col gap-4`}>
+            )}
+            <div
+                id="content"
+                className={`${contentClassName} ${
+                    !contentClassName?.includes("mx") ? "mx-16" : ""
+                } flex flex-col gap-4`}
+            >
                 {children}
             </div>
             <div
@@ -84,10 +89,11 @@ const Modal: React.FC<ModalProps> = ({
                             closeModal()
                             if (!cancelBlocked && onCancel) onCancel()
                         }}
-                        className={`${cancelBlocked
-                            ? "bg-interactive-background"
-                            : "bg-cancel-button"
-                            } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
+                        className={`${
+                            cancelBlocked
+                                ? "bg-interactive-background"
+                                : "bg-cancel-button"
+                        } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
                     />
                 )}
                 {middleEnabled && (
@@ -97,10 +103,11 @@ const Modal: React.FC<ModalProps> = ({
                         onClick={() => {
                             if (!middleBlocked && onMiddle) onMiddle()
                         }}
-                        className={`${middleBlocked
-                            ? "bg-interactive-background"
-                            : "bg-accept-button"
-                            } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
+                        className={`${
+                            middleBlocked
+                                ? "bg-interactive-background"
+                                : "bg-accept-button"
+                        } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
                     />
                 )}
                 {acceptEnabled && (
@@ -111,10 +118,11 @@ const Modal: React.FC<ModalProps> = ({
                             closeModal()
                             if (!acceptBlocked && onAccept) onAccept()
                         }}
-                        className={`${acceptBlocked
-                            ? "bg-interactive-background"
-                            : "bg-accept-button"
-                            } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
+                        className={`${
+                            acceptBlocked
+                                ? "bg-interactive-background"
+                                : "bg-accept-button"
+                        } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
                     />
                 )}
             </div>

@@ -7,9 +7,9 @@ import Slider from "../../components/Slider"
 const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({
     panelId,
 }) => {
-    const defaultShootSpeed = 5;
-    const [node, setNode] = useState<string>("Click to select");
-    const [shootSpeed, setShootSpeed] = useState<number>(defaultShootSpeed);
+    const defaultShootSpeed = 5
+    const [, setNode] = useState<string>("Click to select")
+    const [, setShootSpeed] = useState<number>(defaultShootSpeed)
 
     return (
         <Panel

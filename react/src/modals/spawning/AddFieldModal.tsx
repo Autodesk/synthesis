@@ -14,7 +14,7 @@ const FieldsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     "FRC Field 2022_v4.mira",
                     "FRC_Field_2023_v7.mira",
                 ]}
-                onSelect={() => { }}
+                onSelect={() => {}}
             />
         </Modal>
     )

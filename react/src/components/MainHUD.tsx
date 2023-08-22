@@ -29,8 +29,9 @@ const MainHUDButton: React.FC<ButtonProps> = ({
     return (
         <div
             onClick={onClick}
-            className={`relative flex flex-row cursor-pointer bg-background w-full m-auto px-2 py-1 text-main-text rounded-md ${larger ? "justify-center" : ""
-                } items-center hover:backdrop-brightness-105`}
+            className={`relative flex flex-row cursor-pointer bg-background w-full m-auto px-2 py-1 text-main-text rounded-md ${
+                larger ? "justify-center" : ""
+            } items-center hover:backdrop-brightness-105`}
         >
             {larger && icon}
             {!larger && (
@@ -43,8 +44,9 @@ const MainHUDButton: React.FC<ButtonProps> = ({
             )}
             <input
                 type="button"
-                className={`px-2 ${larger ? "py-2" : "py-1 ml-6"
-                    } text-main-text cursor-pointer`}
+                className={`px-2 ${
+                    larger ? "py-2" : "py-1 ml-6"
+                } text-main-text cursor-pointer`}
                 value={value}
                 onClick={onClick}
             />

@@ -19,7 +19,7 @@ const DriverStationPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     value={enabled ? "Enabled" : "Disabled"}
                     onClick={() => setEnabled(!enabled)}
                 />
-                <Dropdown options={["Auto", "Teleop"]} onSelect={() => { }} />
+                <Dropdown options={["Auto", "Teleop"]} onSelect={() => {}} />
             </Stack>
         </Panel>
     )

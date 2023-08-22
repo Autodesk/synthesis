@@ -15,7 +15,13 @@ type ButtonProps = {
     className?: string
 }
 
-const Button: React.FC<ButtonProps> = ({ value, colorClass, size, onClick, className }) => {
+const Button: React.FC<ButtonProps> = ({
+    value,
+    colorClass,
+    size,
+    onClick,
+    className,
+}) => {
     let sizeClassNames
 
     if (!size) size = ButtonSize.Medium as ButtonSize
@@ -40,7 +46,13 @@ const Button: React.FC<ButtonProps> = ({ value, colorClass, size, onClick, class
             type="button"
             value={value}
             onClick={onClick}
-            className={`${colorClass ? colorClass : 'bg-gradient-to-r from-interactive-element-left via-interactive-element-right to-interactive-element-left bg-[length:200%_100%] active:bg-right'} w-min ${sizeClassNames} rounded-sm font-semibold cursor-pointer duration-200 ${className || ""}`}
+            className={`${
+                colorClass
+                    ? colorClass
+                    : "bg-gradient-to-r from-interactive-element-left via-interactive-element-right to-interactive-element-left bg-[length:200%_100%] active:bg-right"
+            } w-min ${sizeClassNames} rounded-sm font-semibold cursor-pointer duration-200 ${
+                className || ""
+            }`}
         />
     )
 }

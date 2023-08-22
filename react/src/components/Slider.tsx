@@ -63,7 +63,7 @@ const Slider: React.FC<SliderProps> = ({
                 if (diff < step / 2) percent -= diff
                 else percent += step - diff
             }
-            const v = percent * (max - min) + min;
+            const v = percent * (max - min) + min
             onChange(v)
             setValue(v)
         }
