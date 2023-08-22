@@ -11,6 +11,7 @@ const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const [startTime, setStartTime] = useState<number>(Date.now());
     const [time, setTime] = useState<number>(-1);
 
+    // probably useless code because the time left should be sent by Synthesis and not calculated here
     const startTimer = useCallback(async (t: number) => {
         setInitialTime(t);
         setTime(t)
@@ -41,7 +42,7 @@ const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             panelId={panelId}
             cancelEnabled={false}
             acceptEnabled={false}
-            contentClassName="mx-0"
+            contentClassName="mx-0 w-min"
         >
             {time >= 0 &&
                 <div className="flex flex-row justify-center pt-4">

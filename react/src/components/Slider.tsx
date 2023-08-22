@@ -10,6 +10,7 @@ type SliderProps = {
     min: number
     max: number
     defaultValue: number
+    onChange?: (v: number) => void
     step?: number
     locale?: string
     format?: Intl.NumberFormatOptions & CustomFormatOptions
@@ -20,6 +21,7 @@ const Slider: React.FC<SliderProps> = ({
     min,
     max,
     defaultValue,
+    onChange,
     step,
     locale,
     format,
@@ -61,7 +63,9 @@ const Slider: React.FC<SliderProps> = ({
                 if (diff < step / 2) percent -= diff
                 else percent += step - diff
             }
-            setValue(percent * (max - min) + min)
+            const v = percent * (max - min) + min;
+            onChange(v)
+            setValue(v)
         }
     }
 

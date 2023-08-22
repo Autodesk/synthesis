@@ -10,7 +10,8 @@ type StackProps = {
     className?: string
     direction: StackDirection
     spacing?: number
-    justify?: "between" | "around" | "evenly"
+    justify?: "normal" | "start" | "end" | "center" | "between" | "around" | "evenly" | "stretch"
+    align?: "normal" | "center" | "start" | "end" | "between" | "around" | "evenly" | "baseline" | "stretch"
 }
 
 const Stack: React.FC<StackProps> = ({
@@ -19,6 +20,7 @@ const Stack: React.FC<StackProps> = ({
     direction,
     spacing,
     justify,
+    align,
 }) => {
     const directionClassName =
         direction == StackDirection.Horizontal ? "flex-row" : "flex-col"
@@ -27,8 +29,12 @@ const Stack: React.FC<StackProps> = ({
 
     return (
         <div
-            className={`flex ${directionClassName} justify-${justify} gap-[${spacing}px] w-full ${className}`}
-            style={{ gap: `${spacing}px` }}
+            className={`flex ${directionClassName} justify-${justify} align-${align} gap-[${spacing}px] w-full ${className}`}
+            style={{
+                gap: `${spacing}px`,
+                justifyContent: `${justify}`,
+                alignContent: `${align == "start" ? "flex-start" : align == "end" ? "flex-end" : align == "between" ? "space-between" : align == "around" ? "space-around" : align == "evenly" ? "space-evenly" : align}`
+            }}
         >
             {" "}
             {children}

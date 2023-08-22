@@ -7,9 +7,7 @@ import { ToastContainer, ToastProvider } from "./ToastContext"
 import MainHUD from "./components/MainHUD"
 import DownloadAssetsModal from "./modals/DownloadAssetsModal"
 import ExitSynthesisModal from "./modals/ExitSynthesisModal"
-import AddFieldModal from "./modals/spawning/AddFieldModal"
 import MatchResultsModal from "./modals/MatchResultsModal"
-import AddRobotModal from "./modals/spawning/AddRobotModal"
 import SpawningModal from "./modals/SpawningModal"
 import UpdateAvailableModal from "./modals/UpdateAvailableModal"
 import ViewModal from "./modals/ViewModal"
@@ -18,6 +16,7 @@ import ServerHostingModal from "./modals/aether/ServerHostingModal"
 import ChangeInputsModal from "./modals/configuring/ChangeInputsModal"
 import ChooseMultiplayerModeModal from "./modals/configuring/ChooseMultiplayerModeModal"
 import ChooseSingleplayerModeModal from "./modals/configuring/ChooseSingleplayerModeModal"
+import ConfigMotorModal from "./modals/configuring/ConfigMotorModal"
 import DrivetrainModal from "./modals/configuring/DrivetrainModal"
 import PracticeSettingsModal from "./modals/configuring/PracticeSettingsModal"
 import RoboRIOModal from "./modals/configuring/RoboRIOModal"
@@ -29,12 +28,17 @@ import DeleteAllThemesModal from "./modals/configuring/theme-editor/DeleteAllThe
 import DeleteThemeModal from "./modals/configuring/theme-editor/DeleteThemeModal"
 import NewThemeModal from "./modals/configuring/theme-editor/NewThemeModal"
 import ThemeEditorModal from "./modals/configuring/theme-editor/ThemeEditorModal"
-import DriverStationPanel from "./panels/simulation/DriverStationPanel"
-import RobotSwitchPanel from "./panels/RobotSwitchPanel"
+import AddFieldModal from "./modals/spawning/AddFieldModal"
+import AddRobotModal from "./modals/spawning/AddRobotModal"
 import MatchModeModal from "./modals/spawning/MatchModeModal"
-import ConfigMotorModal from "./modals/configuring/ConfigMotorModal"
+import RobotSwitchPanel from "./panels/RobotSwitchPanel"
 import SpawnLocationsPanel from "./panels/SpawnLocationPanel"
+import ConfigureGamepiecePickupPanel from "./panels/configuring/ConfigureGamepiecePickupPanel"
 import ScoreboardPanel from "./panels/information/ScoreboardPanel"
+import DriverStationPanel from "./panels/simulation/DriverStationPanel"
+import ConfigureShotTrajectoryPanel from "./panels/configuring/ConfigureShotTrajectoryPanel"
+import ScoringZonesPanel from "./panels/scoring/ScoringZonesPanel"
+import ZoneConfigPanel from "./panels/scoring/ZoneConfigPanel"
 
 const initialModals = [
     <SettingsModal modalId="settings" />,
@@ -69,6 +73,12 @@ const initialModals = [
 const initialPanels: ReactElement[] = [
     <RobotSwitchPanel panelId="multibot" />,
     <DriverStationPanel panelId="driver-station" />,
+    <SpawnLocationsPanel panelId="spawn-locations" />,
+    <ScoreboardPanel panelId="scoreboard" />,
+    <ConfigureGamepiecePickupPanel panelId="config-gamepiece-pickup" />,
+    <ConfigureShotTrajectoryPanel panelId="config-shot-trajectory" />,
+    <ScoringZonesPanel panelId="scoring-zones" />,
+    <ZoneConfigPanel panelId="zone-config" />
 ]
 
 function App() {
@@ -174,7 +184,7 @@ function App() {
                 <ToastProvider>
                     <MainHUD />
                     <AnimatePresence>
-                        <ScoreboardPanel panelId="spawn-locations" />
+                        <ZoneConfigPanel panelId="panel" />
                         {motionPanelElements.length > 0 && motionPanelElements}
                         {motionModalElement && motionModalElement}
                     </AnimatePresence>
