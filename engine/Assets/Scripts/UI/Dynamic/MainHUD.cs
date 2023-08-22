@@ -361,7 +361,7 @@ public static class MainHUD {
         _accordionButton.Image.SetColor(ColorManager.SynthesisColor.MainHUDIcon);
         _closeButton.Image.SetColor(ColorManager.SynthesisColor.MainHUDCloseIcon);
 
-        _spawnButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.BackgroundHUD);
+        _spawnButton.Image.SetColor(ColorManager.SynthesisColor.BackgroundHUD);
         _spawnIcon.SetColor(ColorManager.SynthesisColor.Icon);
         _homeButton.Image.SetColor(ColorManager.SynthesisColor.BackgroundHUD);
         _homeIcon.SetColor(ColorManager.SynthesisColor.Icon);
