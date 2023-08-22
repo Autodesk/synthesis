@@ -363,7 +363,7 @@ public static class MainHUD {
 
         _spawnButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.BackgroundHUD);
         _spawnIcon.SetColor(ColorManager.SynthesisColor.Icon);
-        _homeButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.BackgroundHUD);
+        _homeButton.Image.SetColor(ColorManager.SynthesisColor.BackgroundHUD);
         _homeIcon.SetColor(ColorManager.SynthesisColor.Icon);
 
         _topItemContainer.SetBackgroundColor<Content>(ColorManager.SynthesisColor.BackgroundHUD);
