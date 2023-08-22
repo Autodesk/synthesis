@@ -84,6 +84,44 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
 }) => {
     const [currentTheme, setCurrentTheme] = useState<string>(initialTheme)
 
+    // potentially dumb algorithm
+    const findUnusedColor = () => {
+        const MAX_VALUE = 255;
+        const reds = Object.values(themes[currentTheme]).map((c: RgbaColor) => c.r).sort();
+        const greens = Object.values(themes[currentTheme]).map((c: RgbaColor) => c.r).sort();
+        const blues = Object.values(themes[currentTheme]).map((c: RgbaColor) => c.r).sort();
+
+
+        const values = [];
+
+        for (const color of [reds, greens, blues]) {
+            let lower = -1;
+            let largestGap = -1;
+
+            for (let i = 0; i < color.length - 1; i++) {
+                const col1 = color[i];
+                const col2 = color[i + 1];
+
+                if (col2 - col1 > largestGap) {
+                    largestGap = col2 - col1;
+                    lower = col1;
+                }
+            }
+
+            const col1 = color[color.length - 1];
+            const col2 = color[0] + MAX_VALUE;
+
+            if (col1 - col2 > largestGap) {
+                largestGap = col2 - col1;
+                lower = col1;
+            }
+
+            values.push((lower + largestGap / 2) % MAX_VALUE);
+        }
+
+        document.body.style.background = `rgba(${values[0]}, ${values[1]}, ${values[2]}, ${MAX_VALUE})`;
+    }
+
     const updateColor = (
         themeName: string,
         colorName: ColorName,
@@ -126,6 +164,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
                 `rgba(${c.r}, ${c.g}, ${c.b}, ${c.a})`
             )
         })
+        findUnusedColor();
     }
 
     return (

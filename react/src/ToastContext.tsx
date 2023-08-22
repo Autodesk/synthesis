@@ -71,9 +71,6 @@ export const ToastContainer: React.FC = () => {
 
     return (
         <div className="absolute right-0 bottom-0 pl-8 pb-8 w-min h-fit overflow-hidden flex flex-col gap-2">
-            <Toast id="id-info" title="Title" type="info" description="Test toast" />
-            <Toast id="id-warning" title="Title" type="warning" description="Test toast" />
-            <Toast id="id-error" title="Title" type="error" description="Test toast" />
             <AnimatePresence>
                 {toasts.length > 0 &&
                     toasts.map(t => (
