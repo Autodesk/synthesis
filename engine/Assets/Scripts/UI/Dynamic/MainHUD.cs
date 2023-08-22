@@ -508,16 +508,14 @@ public static class MainHUD {
             }
 
             DynamicUIManager.CreatePanel<ConfigureGamepiecePickupPanel>();
-        }, drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("intake-icon")
-    );
+        }, drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("intake-icon"));
         AddItemToDrawer("Ejector", b => {
-                if (DynamicUIManager.PanelExists<ConfigureGamepiecePickupPanel>()) {
-                    DynamicUIManager.ClosePanel<ConfigureGamepiecePickupPanel>();
-                }
+            if (DynamicUIManager.PanelExists<ConfigureGamepiecePickupPanel>()) {
+                DynamicUIManager.ClosePanel<ConfigureGamepiecePickupPanel>();
+            }
 
-                DynamicUIManager.CreatePanel<ConfigureShotTrajectoryPanel>();
-            }, drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("eject-icon")
-        );
+            DynamicUIManager.CreatePanel<ConfigureShotTrajectoryPanel>();
+        }, drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("eject-icon"));
 
         AddItemToDrawer("RoboRIO", b => DynamicUIManager.CreateModal<RioConfigurationModal>(true),
             drawerPosition: DrawerPosition.Bottom, icon: SynthesisAssetCollection.GetSpriteByName("roborio"));
