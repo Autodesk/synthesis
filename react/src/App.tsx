@@ -4,7 +4,7 @@ import { ModalControlProvider, useModalManager } from "./ModalContext"
 import { PanelControlProvider, usePanelManager } from "./PanelContext"
 import { useTheme } from "./ThemeContext"
 import { ToastContainer, ToastProvider } from "./ToastContext"
-import { TooltipControl, TooltipControlProvider, TooltipType, useTooltipManager } from "./TooltipContext"
+import { TOOLTIP_DURATION, TooltipControl, TooltipControlProvider, TooltipType, useTooltipManager } from "./TooltipContext"
 import MainHUD from "./components/MainHUD"
 import DownloadAssetsModal from "./modals/DownloadAssetsModal"
 import ExitSynthesisModal from "./modals/ExitSynthesisModal"
@@ -40,6 +40,7 @@ import ScoringZonesPanel from "./panels/configuring/scoring/ScoringZonesPanel"
 import ZoneConfigPanel from "./panels/configuring/scoring/ZoneConfigPanel"
 import ScoreboardPanel from "./panels/information/ScoreboardPanel"
 import DriverStationPanel from "./panels/simulation/DriverStationPanel"
+import Tooltip from "./components/Tooltip"
 
 const initialModals = [
     <SettingsModal modalId="settings" />,
@@ -171,8 +172,8 @@ function App() {
 
     return (
         <AnimatePresence>
-            <TooltipControlProvider showTooltip={(type: TooltipType, duration: number, controls?: TooltipControl[]) => {
-                showTooltip(type, duration, controls)
+            <TooltipControlProvider showTooltip={(type: TooltipType, controls?: TooltipControl[], duration: number = TOOLTIP_DURATION) => {
+                showTooltip(type, controls, duration)
             }}>
                 <ModalControlProvider
                     openModal={(modalId: string) => {

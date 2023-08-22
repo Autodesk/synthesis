@@ -25,6 +25,7 @@ const Stack: React.FC<StackProps> = ({
     const directionClassName =
         direction == StackDirection.Horizontal ? "flex-row" : "flex-col"
     if (!justify) justify = "between"
+    if (!align) align = "center"
     if (spacing == null) spacing = 10
 
     return (

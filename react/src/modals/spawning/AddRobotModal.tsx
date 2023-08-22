@@ -5,6 +5,7 @@ import Dropdown from "../../components/Dropdown"
 import { useTooltipControlContext } from "@/TooltipContext"
 
 const RobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
+    // update tooltip based on type of drivetrain, receive message from Synthesis
     const { showTooltip } = useTooltipControlContext();
 
     return (
@@ -12,7 +13,7 @@ const RobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             name={"Robot Selection"}
             icon={<FaPlus />}
             modalId={modalId}
-            onAccept={() => showTooltip("controls", 2_000, [{ control: "Scroll", description: "Rotate Robot" }, { control: "Shift", description: "Hold to Snap" }])}
+            onAccept={() => showTooltip("controls", [{ control: "WASD", description: "Drive" }, { control: "E", description: "Intake" }, { control: "Q", description: "Dispense" }])}
         >
             <Dropdown
                 options={["Dozer_v9.mira", "Team_2471_2018_v7.mira"]}

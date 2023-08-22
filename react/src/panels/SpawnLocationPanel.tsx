@@ -1,3 +1,4 @@
+import { useTooltipControlContext } from "@/TooltipContext";
 import Button from "../components/Button";
 import Panel, { PanelPropsImpl } from "../components/Panel";
 
@@ -5,6 +6,9 @@ import Panel, { PanelPropsImpl } from "../components/Panel";
 const SpawnLocationsPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const robotsPerAlliance = 3;
     const alliances = 2;
+
+    const { showTooltip } = useTooltipControlContext();
+    showTooltip("controls", [{ control: "Scroll", description: "Rotate Robot" }, { control: "Shift", description: "Hold to Snap" }]);
 
     return (
         <Panel name="Set Spawn Locations" panelId={panelId}>

@@ -11,11 +11,13 @@ import React, {
 export type TooltipControl = { control: string, description: string }
 export type TooltipType = "controls"
 
+export const TOOLTIP_DURATION: number = 7_000;
+
 type TooltipControlContextType = {
     showTooltip: (
         type: TooltipType,
-        duration: number,
-        controls?: TooltipControl[]
+        controls?: TooltipControl[],
+        duration?: number,
     ) => void
     children?: ReactNode
 }
@@ -70,36 +72,22 @@ export const useTooltipManager = () => {
     const [timeout, setTimeoutState] = useState<NodeJS.Timeout | null>(null);
 
     const showTooltip = useCallback(
-        (type: TooltipType, duration: number, controls?: TooltipControl[]) => {
+        (type: TooltipType, controls?: TooltipControl[], duration: number = TOOLTIP_DURATION) => {
             tooltip = (
                 <Tooltip type={type} controls={controls} />
             )
             setDuration(duration)
-
-            console.log(tooltip, duration)
 
             if (timeout !== null) {
                 clearTimeout(timeout);
             }
 
             const newTimeout = setTimeout(() => {
-                console.log("Hiding tooltip")
                 tooltip = undefined;
                 setDuration(0);
             }, duration)
             setTimeoutState(newTimeout);
         }, [timeout])
-
-    // useEffect(() => {
-    //     return () => {
-    //         if (timeout !== null) {
-    //             clearTimeout(timeout);
-    //             setTimeoutState(null);
-    //         }
-    //         tooltip = undefined;
-    //         setDuration(0);
-    //     }
-    // }, [duration, timeout]);
 
     return {
         showTooltip,
