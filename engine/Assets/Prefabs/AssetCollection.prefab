@@ -97,6 +97,7 @@ MonoBehaviour:
   - {fileID: 6908786337394242463, guid: 8411aa8dc027b8b4e858199fbe9181ad, type: 3}
   - {fileID: 3258935418866615420, guid: e4351ecfac0fa6b4da13c1992b4dfd58, type: 3}
   - {fileID: 1527420503741984729, guid: 279a5651df55344728b4d03a9746439e, type: 3}
+  - {fileID: 6908786337394242463, guid: 0615db1480b2386418d9a0c25ef6753f, type: 3}
   Fonts:
   - {fileID: 11400000, guid: c1e0c7f3dc392244e995e9944765a81e, type: 2}
   - {fileID: 11400000, guid: b815287ce3927b64f8c47aa7920ac72b, type: 2}
@@ -109,6 +110,8 @@ MonoBehaviour:
   - {fileID: 8300000, guid: bfeee82c53e28490c8dcd94919a1cdaa, type: 3}
   - {fileID: 8300000, guid: 3cf517ee6879c4a32a7dbda509657173, type: 3}
   - {fileID: 8300000, guid: f1522c3a6dd514aee8db29bfa71b36a5, type: 3}
+  MixAndMatchConnectionPrefab: {fileID: 1168846537352695485, guid: 451a5890903687b4f9dae0770ef3e5d1, type: 3}
+  DefaultSpriteMaterial: {fileID: 0}
 --- !u!114 &2992185900158993256
 MonoBehaviour:
   m_ObjectHideFlags: 0

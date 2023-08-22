@@ -4,6 +4,8 @@ using SynthesisAPI.EventBus;
 using SynthesisAPI.Runtime;
 using _UnityTextField = UnityEngine.UIElements.TextField;
 
+#nullable enable
+
 namespace SynthesisAPI.UIManager.VisualElements
 {
     public class TextField: VisualElement
@@ -22,8 +24,8 @@ namespace SynthesisAPI.UIManager.VisualElements
         }
         */
 
-        private EventBus.EventBus.EventCallback _changeCallback;
-        private EventBus.EventBus.EventCallback _focusCallback;
+        private EventBus.EventBus.EventCallback? _changeCallback;
+        private EventBus.EventBus.EventCallback? _focusCallback;
         private bool _isChangeCallbackRegistered = false;
         private bool _isFocusCallbackRegistered = false;
 

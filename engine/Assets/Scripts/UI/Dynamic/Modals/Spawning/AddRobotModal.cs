@@ -1,7 +1,7 @@
 using System.IO;
 using System.Linq;
-using Synthesis.UI.Dynamic;
 using SynthesisAPI.Utilities;
+using Synthesis.UI.Dynamic;
 using UnityEngine;
 using Utilities.ColorManager;
 using Logger = SynthesisAPI.Utilities.Logger;
@@ -14,9 +14,9 @@ namespace UI.Dynamic.Modals.Spawning {
         private int _selectedIndex = -1;
         private string[] _files;
 
-        public string Folder = "Mira";
+        private readonly string Folder = "Mira";
 
-        public AddRobotModal() : base(new Vector2(400, 40)) {}
+        public AddRobotModal() : base(new Vector2(400, 55)) {}
 
         public override void Create() {
             _root = ParsePath(Path.Combine("$appdata/Autodesk/Synthesis", Folder), '/');
@@ -25,22 +25,31 @@ namespace UI.Dynamic.Modals.Spawning {
             _files = Directory.GetFiles(_root).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
 
             Title.SetText("Robot Selection");
-            Description.SetText("Choose which robot you wish to play as");
 
-            ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("plus"))
+            ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("plus"))
                 .SetColor(ColorManager.SynthesisColor.MainText);
+
+            CancelButton.StepIntoLabel(l => l.SetText("Back"))
+                .AddOnClickedEvent(
+                    _ => DynamicUIManager.CreateModal<ChooseRobotTypeModal>());
 
             AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
                 if (_selectedIndex != -1) {
-                    RobotSimObject.SpawnRobot(_files[_selectedIndex]);
+                    RobotSimObject.SpawnRobot(null, true, _files[_selectedIndex]);
+
                     DynamicUIManager.CloseActiveModal();
+                    MainHUD.SelectedRobot.CreateDrivetrainTooltip();
                 }
             });
-
             var chooseRobotDropdown = MainContent.CreateDropdown()
                                           .SetOptions(_files.Select(x => Path.GetFileName(x)).ToArray())
                                           .AddOnValueChangedEvent((d, i, data) => _selectedIndex = i)
                                           .SetTopStretch<Dropdown>();
+
+            if (_files.Length == 0) {
+                chooseRobotDropdown.ApplyTemplate(Dropdown.DisableDropdown);
+                AcceptButton.RootGameObject.SetActive(false);
+            }
 
             _selectedIndex = _files.Length > 0 ? 0 : -1;
         }

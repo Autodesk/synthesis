@@ -3,8 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Mirabuf;
 using Newtonsoft.Json;
 using Org.BouncyCastle.Asn1;
+using SimObjects.MixAndMatch;
 using Synthesis.Import;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager.Inputs;
@@ -31,6 +33,9 @@ namespace Synthesis.PreferenceManager {
         public static void LoadRobotFromMira(MirabufLive live) => Instance.LoadRobotFromMira(live);
         public static void LoadFieldFromMira(MirabufLive live) => Instance.LoadFieldFromMira(live);
 
+        public static void LoadRobotFromMixAndMatch(
+            MixAndMatchRobotData robotData) => Instance.LoadRobotFromMixAndMatch(robotData);
+
         public static Analog GetRobotInput(string robot, string input) => Instance.GetRobotInput(robot, input);
 
         public static Dictionary<string, Analog> GetRobotInputs(string robot) => Instance.GetRobotInputs(robot);
@@ -48,8 +53,8 @@ namespace Synthesis.PreferenceManager {
         public static RioTranslationLayer? GetRobotSimTranslationLayer(string robot) => Instance.GetSimTranslationLayer(
             robot);
 
-        public static RobotSimObject.DrivetrainType GetRobotDrivetrain(string robot) => Instance.GetRobotDrivetrainType(
-            robot);
+        public static (RobotSimObject.DrivetrainType drivetrain, bool foundDrivetrain)
+            GetRobotDrivetrain(string robot) => Instance.GetRobotDrivetrainType(robot);
 
         public static void SetRobotInput(string robot, string inputKey, Analog inputValue) {
             Instance.SetRobotInput(robot, inputKey, inputValue);
@@ -115,14 +120,20 @@ namespace Synthesis.PreferenceManager {
             /// Load all the necessary data into PreferenceManager before it is saved
             /// </summary>
             public void PreSaveDump(IEvent _) {
-                // PreferenceManager.SetPreference(ALL_ROBOT_DATA_KEY, _allRobotData);
                 if (RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
-                    // clang-format off
-                    var live = RobotSimObject.GetCurrentlyPossessedRobot().MiraLive;
-                    live.MiraAssembly.Data.Parts.UserData ??= new Mirabuf.UserData();
-                    live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY] =
-                        JsonConvert.SerializeObject(_allRobotData[live.MiraAssembly.Info.GUID]);
-                    live.Save();
+                    var robot = RobotSimObject.GetCurrentlyPossessedRobot()!;
+
+                    if (robot.IsMixAndMatch) {
+                        var robotData                  = robot.MixAndMatchRobotData!;
+                        robotData.RobotPreferencesJson = JsonConvert.SerializeObject(_allRobotData[robotData.Name]);
+
+                        MixAndMatchSaveUtil.SaveRobotData(robotData);
+                    } else {
+                        var live                                = robot.MiraLiveFiles[0];
+                        live.MiraAssembly.Data.Parts.UserData ??= new UserData();
+                        live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY] =
+                            JsonConvert.SerializeObject(_allRobotData[live.MiraAssembly.Info.GUID]);
+                    }
                     // clang-format on
                 }
 
@@ -130,8 +141,10 @@ namespace Synthesis.PreferenceManager {
                     // clang-format off
                     var live = FieldSimObject.CurrentField.MiraLive;
                     live.MiraAssembly.Data.Parts.UserData ??= new Mirabuf.UserData();
-                    live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY] =
-                        JsonConvert.SerializeObject(_allFieldData[live.MiraAssembly.Info.GUID]);
+                    if (_allFieldData.ContainsKey(live.MiraAssembly.Info.GUID)) {
+                        live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY] =
+                            JsonConvert.SerializeObject(_allFieldData[live.MiraAssembly.Info.GUID]);
+                    }
                     live.Save();
                     // clang-format on
                 }
@@ -142,6 +155,14 @@ namespace Synthesis.PreferenceManager {
                     live.MiraAssembly.Data.Parts.UserData.Data.ContainsKey(USER_DATA_KEY)) {
                     _allRobotData[live.MiraAssembly.Info.GUID] = JsonConvert.DeserializeObject<RobotData>(
                         live.MiraAssembly.Data.Parts.UserData.Data[USER_DATA_KEY])!;
+                }
+            }
+
+            public void LoadRobotFromMixAndMatch(MixAndMatchRobotData robotData) {
+                if (robotData.RobotPreferencesJson != null) {
+                    var robotPrefs = JsonConvert.DeserializeObject<RobotData>(robotData.RobotPreferencesJson);
+                    if (robotPrefs != null)
+                        _allRobotData[robotData.Name] = robotPrefs;
                 }
             }
 
@@ -221,10 +242,14 @@ namespace Synthesis.PreferenceManager {
                 return _allRobotData[robot].SimTranslationLayer;
             }
 
-            public RobotSimObject.DrivetrainType GetRobotDrivetrainType(string robot) {
+            public (RobotSimObject.DrivetrainType drivetrain, bool foundDrivetrain)
+                GetRobotDrivetrainType(string robot) {
                 if (!_allRobotData.ContainsKey(robot))
-                    return RobotSimObject.DrivetrainType.ARCADE;
-                return _allRobotData[robot].DrivetrainType ?? RobotSimObject.DrivetrainType.ARCADE;
+                    return (RobotSimObject.DrivetrainType.ARCADE, false);
+
+                var drivetrain = _allRobotData[robot].DrivetrainType;
+
+                return drivetrain == null ? (RobotSimObject.DrivetrainType.ARCADE, false) : (drivetrain.Value, true);
             }
 
 #endregion

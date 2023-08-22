@@ -10,9 +10,9 @@ using Utilities.ColorManager;
 #nullable enable
 
 public class RCCreateDeviceModal : ModalDynamic {
-    public RCCreateDeviceModal() : base(new Vector2(400, 120)) {}
+    public RCCreateDeviceModal() : base(new Vector2(400, 55)) {}
 
-    private LabeledDropdown _typeDropdown;
+    private Dropdown _typeDropdown;
 
     public Func<UIComponent, UIComponent> VerticalLayout = (u) => {
         var offset = (-u.Parent!.RectOfChildren(u).yMin) + 7.5f;
@@ -26,14 +26,13 @@ public class RCCreateDeviceModal : ModalDynamic {
     public override void Create() {
         Title.SetText("Create Device");
         Title.SetWidth<Label>(400);
-        Description.SetText("Create a Motor Controller, Encoder, Etc.");
 
-        ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-        ModalImage.SetColor(ColorManager.SynthesisColor.MainText);
+        ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+        ModalIcon.SetColor(ColorManager.SynthesisColor.MainText);
 
         AcceptButton
             .AddOnClickedEvent(b => {
-                switch (_typeDropdown.Dropdown.SelectedOption.text) {
+                switch (_typeDropdown.SelectedOption.text) {
                     case RioConfigurationModal.PWM:
                         DynamicUIManager.CreateModal<RCConfigPwmGroupModal>();
                         break;
@@ -47,9 +46,7 @@ public class RCCreateDeviceModal : ModalDynamic {
             .StepIntoLabel(l => l.SetText("Next"));
         CancelButton.AddOnClickedEvent(b => { DynamicUIManager.CreateModal<RioConfigurationModal>(); });
 
-        _typeDropdown = MainContent.CreateLabeledDropdown().StepIntoLabel(l => l.SetText("Type"));
-        _typeDropdown.StepIntoDropdown(d => d.SetOptions(EntryTypes));
-        _typeDropdown.SetTopStretch<LabeledDropdown>();
+        _typeDropdown = MainContent.CreateDropdown().SetOptions(EntryTypes).SetTopStretch<Dropdown>();
     }
 
     public override void Delete() {}
@@ -87,8 +84,8 @@ public class RCConfigPwmGroupModal : ModalDynamic {
         Title.SetWidth<Label>(400);
         Description.SetText("Create a Motor Controller, Encoder, Etc.");
 
-        ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-        ModalImage.SetColor(ColorManager.SynthesisColor.MainText);
+        ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+        ModalIcon.SetColor(ColorManager.SynthesisColor.MainText);
 
         AcceptButton
             .AddOnClickedEvent(b => {
@@ -128,10 +125,8 @@ public class RCConfigPwmGroupModal : ModalDynamic {
             container.SetTopStretch<Content>(
                 leftPadding: 10, rightPadding: 10, anchoredY: -_portSelection.Content.RectOfChildren(container).yMin);
 
-            var toggle = container.CreateToggle(false, $"{i}");
-            toggle.SetStretch<Toggle>()
-                .SetEnabledColor(ColorManager.SynthesisColor.InteractiveElementSolid)
-                .SetDisabledColor(ColorManager.SynthesisColor.Background);
+            var toggle = container.CreateToggle(false, label: $"{i}");
+            toggle.SetStretch<Toggle>();
 
             _portToggles.Add($"{i}", toggle);
         }
@@ -149,20 +144,20 @@ public class RCConfigPwmGroupModal : ModalDynamic {
         _signalSelection.SetStretch<Content>(topPadding: 30f);
         _signalToggles = new Dictionary<string, Toggle>();
         RobotSimObject.GetCurrentlyPossessedRobot()
-            .MiraLive.MiraAssembly.Data.Joints.JointInstances.Values
+            .MiraLiveFiles[0]
+            .MiraAssembly.Data.Joints.JointInstances.Values
             .Where(x => !x.Info.Name.Equals("grounded") &&
                         RobotSimObject.GetCurrentlyPossessedRobot()
-                                .MiraLive.MiraAssembly.Data.Joints.JointDefinitions[x.JointReference]
+                                .MiraLiveFiles[0]
+                                .MiraAssembly.Data.Joints.JointDefinitions[x.JointReference]
                                 .JointMotionType == Mirabuf.Joint.JointMotion.Revolute)
             .ForEach(j => {
                 var container = _signalSelection.Content.CreateSubContent(new Vector2(600, 40));
                 container.SetTopStretch<Content>(leftPadding: 10, rightPadding: 10,
                     anchoredY: -_signalSelection.Content.RectOfChildren(container).yMin);
 
-                var toggle = container.CreateToggle(false, $"{j.Info.Name} ({j.SignalReference})");
-                toggle.SetStretch<Toggle>()
-                    .SetEnabledColor(ColorManager.SynthesisColor.InteractiveElementSolid)
-                    .SetDisabledColor(ColorManager.SynthesisColor.Background);
+                var toggle = container.CreateToggle(false, label: $"{j.Info.Name} ({j.SignalReference})");
+                toggle.SetStretch<Toggle>();
 
                 toggle.AddOnStateChangedEvent((t, s) => UpdateAcceptButton());
 
@@ -226,8 +221,8 @@ public class RCConfigEncoderModal : ModalDynamic {
         Title.SetWidth<Label>(400);
         Description.SetText("Create a Motor Controller, Encoder, Etc.");
 
-        ModalImage.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-        ModalImage.SetColor(ColorManager.SynthesisColor.MainText);
+        ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+        ModalIcon.SetColor(ColorManager.SynthesisColor.MainText);
 
         AcceptButton
             .AddOnClickedEvent(b => {
@@ -255,7 +250,8 @@ public class RCConfigEncoderModal : ModalDynamic {
         _signals = new List<(string name, string guid)>();
         _signals.AddRange(
             RobotSimObject.GetCurrentlyPossessedRobot()
-                .MiraLive.MiraAssembly.Data.Joints.JointInstances.Values
+                .MiraLiveFiles[0]
+                .MiraAssembly.Data.Joints.JointInstances.Values
                 .Select<Mirabuf.Joint.JointInstance, (string name, string guid)>(x => (x.Info.Name, x.SignalReference))
                 .Where(
                     x => RobotSimObject.GetCurrentlyPossessedRobot().State.SignalMap.ContainsKey($"{x.guid}_encoder"))

@@ -26,7 +26,6 @@ public class ManageLobbiesModal : ModalDynamic {
 
     public override void Create() {
         Title.SetText("Manage Lobbies");
-        Description.SetText("See and manage all lobbies on controlling server");
     }
 
     public override void Update() {}

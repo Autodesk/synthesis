@@ -22,6 +22,9 @@ public static class SynthesisTween {
         Action<SynthesisTweenStatus> callback) {
         EnsureComponent();
 
+        if (_tweens.ContainsKey(key))
+            _tweens.Remove(key);
+
         _tweens.Add(key, new SynthesisTweenConfig { Key = key, Start = start, End = end, Duration = duration,
             StartTime = Time.realtimeSinceStartup, Interpolation = interpolateFunc, Scaling = scalingFunc,
             Callback = callback });
@@ -69,11 +72,18 @@ public static class SynthesisTween {
             CurrentProgress = prog;
         }
     }
+
+    public static Boolean TweenExists(string key) {
+        return _tweens.ContainsKey(key);
+    }
 }
 
 public static class SynthesisTweenScaleFunctions {
     public static Func<float, float> EaseOutQuad = x => -(x * x) + 2 * x;
     public static Func<float, float> EaseOutCubic = x => x * x * x - 3 * x * x + 3 * x;
+    public static Func<float, float> EaseInCubic = x => x * x * x;
+    public static Func<float, float> EaseInOutQuint   = x =>
+        x < 0.5 ? 16 * x * x * x * x * x : 1 - Mathf.Pow(-2 * x + 2, 5) / 2;
 }
 
 public static class SynthesisTweenInterpolationFunctions {

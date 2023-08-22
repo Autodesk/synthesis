@@ -1,25 +1,44 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Analytics;
 using Synthesis.Gizmo;
 using Synthesis.Physics;
 using Synthesis.Replay;
 using Synthesis.Runtime;
-using Analytics;
 using Synthesis.Util;
-using Utilities.ColorManager;
 using SynthesisAPI.EventBus;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UI.Dynamic.Panels.Tooltip;
 using UnityEngine;
 using UnityEngine.UI;
+using Utilities.ColorManager;
 
 namespace Synthesis.UI.Dynamic {
     public static class DynamicUIManager {
+        public const float MODAL_TWEEN_DURATION = 0.1f;
+        public const float PANEL_TWEEN_DURATION = 0.1f;
+
         public static ModalDynamic ActiveModal { get; private set; }
+
+        private static bool _manualMainHUDEnabled = true;
+
+        public static bool ManualMainHUDEnabled {
+            get => _manualMainHUDEnabled;
+            set {
+                if (value != _manualMainHUDEnabled) {
+                    _manualMainHUDEnabled = value;
+                    MainHUD.Enabled       = value;
+                }
+            }
+        }
 
         private static Dictionary<Type, (PanelDynamic, bool)> _persistentPanels =
             new Dictionary<Type, (PanelDynamic, bool)>();
-        public static bool AnyPanels              => _persistentPanels.Count > 0;
+
+        public static bool AnyPanels => _persistentPanels.Count > 0;
+
         public static Content _screenSpaceContent = null;
+
         public static Content ScreenSpaceContent {
             get {
                 if (_screenSpaceContent == null) {
@@ -27,10 +46,13 @@ namespace Synthesis.UI.Dynamic {
                         new Content(null, GameObject.Find("UI").transform.Find("ScreenSpace").gameObject, null);
                     SimulationRunner.OnSimKill += () => _screenSpaceContent = null;
                 }
+
                 return _screenSpaceContent;
             }
         }
+
         public static Content _subScreenSpaceContent = null;
+
         public static Content SubScreenSpaceContent {
             get {
                 if (_subScreenSpaceContent == null) {
@@ -38,10 +60,13 @@ namespace Synthesis.UI.Dynamic {
                         new Content(null, GameObject.Find("UI").transform.Find("SubScreenSpace").gameObject, null);
                     SimulationRunner.OnSimKill += () => _subScreenSpaceContent = null;
                 }
+
                 return _subScreenSpaceContent;
             }
         }
+
         private static Slider _replaySlider = null;
+
         public static Slider ReplaySlider {
             get {
                 if (_replaySlider == null)
@@ -66,6 +91,7 @@ namespace Synthesis.UI.Dynamic {
         }
 
         private static Content _toastContainer = null;
+
         public static Content ToastContainer {
             get {
                 if (_toastContainer == null || _toastContainer.RootGameObject == null) {
@@ -79,6 +105,7 @@ namespace Synthesis.UI.Dynamic {
                                           .StepIntoImage(i => i.SetColor(new Color(0.1f, 0.1f, 0.1f, 0f)));
                     _toastContainer.RootGameObject.AddComponent<RectMask2D>();
                 }
+
                 SimulationRunner.OnSimKill += () => { _toastContainer = null; };
                 return _toastContainer;
             }
@@ -86,11 +113,11 @@ namespace Synthesis.UI.Dynamic {
 
         public static bool CreateModal<T>(params object[] args)
             where T : ModalDynamic {
-            CloseAllPanels();
+            CloseAllPanels(false);
             HideAllPanels();
             GizmoManager.ExitGizmo();
             if (ActiveModal != null)
-                CloseActiveModal();
+                CloseActiveModal(false);
 
             return CreateModal_Internal<T>(args);
         }
@@ -119,22 +146,87 @@ namespace Synthesis.UI.Dynamic {
 
             SynthesisAssetCollection.BlurVolumeStatic.weight = 1f;
             PhysicsManager.IsFrozen                          = true;
-            MainHUD.Enabled                                  = false;
+
+            if (_manualMainHUDEnabled) {
+                MainHUD.Enabled = false;
+            }
+
             SubScreenSpaceContent.RootGameObject.SetActive(false);
 
-            AnalyticsManager.LogCustomEvent(AnalyticsEvent.ModalCreated, ("UIType", typeof(T).Name));
+            string tweenKey = Guid.NewGuid() + "_modalOpen";
+            SynthesisTween.MakeTween(tweenKey, 0f, 1f, MODAL_TWEEN_DURATION,
+                (t, a, b) => SynthesisTweenInterpolationFunctions.FloatInterp(t, (float) a, (float) b),
+                SynthesisTweenScaleFunctions.EaseOutCubic, TweenCallback);
 
+            void TweenCallback(SynthesisTween.SynthesisTweenStatus status) {
+                unityObject.transform.localScale = Vector3.one * status.CurrentValue<float>();
+            }
+
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.ModalCreated, ("UIType", typeof(T).Name));
             return true;
+        }
+
+        private static void TweenPanel(
+            Type t, PanelDynamic panel, Vector2 direction, bool tweenIn, bool persistent = false) {
+            string tweenKey        = Guid.NewGuid() + "_panel" + direction;
+            GameObject unityObject = panel.UnityObject;
+
+            Vector3 inPosition  = panel.UnityObject.transform.localPosition;
+            Vector3 outPosition = inPosition + (Vector3) (((RectTransform) unityObject.transform).sizeDelta *
+                                                          direction * (persistent && tweenIn ? -1 : 1));
+
+            Vector3 tweenStart = tweenIn ? outPosition : inPosition;
+            Vector3 tweenEnd   = tweenIn ? inPosition : outPosition;
+
+            if (tweenIn && persistent)
+                (tweenStart, tweenEnd) = (tweenEnd, tweenStart);
+
+            SynthesisTween.MakeTween(tweenKey, tweenStart, tweenEnd, PANEL_TWEEN_DURATION,
+                (time, a, b) => Vector3.Lerp((Vector3) a, (Vector3) b, time), SynthesisTweenScaleFunctions.EaseOutCubic,
+                TweenCallback);
+
+            void TweenCallback(SynthesisTween.SynthesisTweenStatus status) {
+                if (unityObject == null) {
+                    TweenFinished();
+                    return;
+                }
+
+                unityObject.transform.localPosition = status.CurrentValue<Vector3>();
+
+                if (status.CurrentProgress >= 1f)
+                    TweenFinished();
+            }
+
+            if (!tweenIn && !persistent) {
+                EventBus.Push(new PanelClosedEvent(panel));
+                _persistentPanels.Remove(t);
+            }
+
+            void TweenFinished() {
+                if (!tweenIn) {
+                    if (!persistent) {
+                        panel.Delete();
+                        panel.Delete_Internal();
+                    } else
+                        panel.Hidden = true;
+                }
+            }
         }
 
         // Currently only going to allow one active panel
         public static bool CreatePanel<T>(bool persistent = false, params object[] args)
             where T : PanelDynamic {
-            if (ActiveModal != null)
+            if (ActiveModal != null && !persistent) {
                 return false;
+            }
 
             if (_persistentPanels.ContainsKey(typeof(T)))
                 ClosePanel(typeof(T));
+
+            if (PanelExists<T>() && typeof(T) != typeof(TooltipPanel)) {
+                Debug.Log("Failed to create, panel exists");
+                return false;
+            }
 
             var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("dynamic-panel-base"),
                 GameObject.Find("UI").transform.Find("ScreenSpace").Find("PanelContainer"));
@@ -145,38 +237,70 @@ namespace Synthesis.UI.Dynamic {
             bool success = panel.Create();
 
             if (!success) {
-                ClosePanel<T>();
+                ClosePanel<T>(true);
                 return false;
             }
 
             if (PanelExists(typeof(T)))
                 EventBus.Push(new PanelCreatedEvent(panel, persistent));
 
-            AnalyticsManager.LogCustomEvent(AnalyticsEvent.PanelCreated, ("UIType", typeof(T).Name));
+            TweenPanel(typeof(T), panel, panel.TweenDirection, true);
 
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.PanelCreated, ("UIType", typeof(T).Name));
             return true;
         }
 
-        public static bool CloseActiveModal() {
-            if (ActiveModal == null) {
+        public static bool CloseActiveModal(bool showPersistentPanels = true) {
+            var modal = ActiveModal;
+
+            if (modal == null) {
                 return false;
             }
 
-            AnalyticsManager.LogCustomEvent(AnalyticsEvent.ActiveModalClosed, ("UIType", ActiveModal.GetType().Name));
+            string tweenKey = Guid.NewGuid() + "_modalClose";
+            SynthesisTween.MakeTween(tweenKey, 1f, 0f, MODAL_TWEEN_DURATION,
+                (t, a, b) => SynthesisTweenInterpolationFunctions.FloatInterp(t, (float) a, (float) b),
+                SynthesisTweenScaleFunctions.EaseInCubic, TweenCallback);
 
-            EventBus.Push(new ModalClosedEvent(ActiveModal));
+            void TweenCallback(SynthesisTween.SynthesisTweenStatus status) {
+                if (modal.UnityObject == null) {
+                    TweenFinished();
+                    return;
+                }
 
-            ActiveModal.Delete();
-            ActiveModal.Delete_Internal();
-            ActiveModal = null;
+                modal.UnityObject.transform.localScale = Vector3.one * status.CurrentValue<float>();
 
-            SynthesisAssetCollection.BlurVolumeStatic.weight = 0f;
-            PhysicsManager.IsFrozen                          = false;
-            MainHUD.Enabled                                  = true;
+                if (status.CurrentProgress >= 1f)
+                    TweenFinished();
+            }
+
+            void TweenFinished() {
+                SynthesisTween.CancelTween(tweenKey);
+
+                modal.Delete();
+                modal.Delete_Internal();
+            }
+
+            if (modal.UnityObject != null)
+                modal.UnityObject.transform.GetComponentsInChildren<UnityEngine.UI.Button>().ForEach(
+                    b => { b.enabled = false; });
+
             SubScreenSpaceContent.RootGameObject.SetActive(true);
+            EventBus.Push(new ModalClosedEvent(modal));
+            ActiveModal                                      = null;
+            SynthesisAssetCollection.BlurVolumeStatic.weight = 0f;
+            MainHUD.Enabled                                  = true;
+            EventBus.Push(new ModalClosedEvent(modal));
 
-            ShowAllPanels();
+            // Unfreeze physics no matter what because it has a counter
+            PhysicsManager.IsFrozen = false;
+            MainHUD.Enabled         = true;
 
+            if (showPersistentPanels)
+                ShowAllPanels();
+
+            MainHUD.Collapsed = false;
+            AnalyticsManager.LogCustomEvent(AnalyticsEvent.ActiveModalClosed, ("UIType", modal.GetType().Name));
             return true;
         }
 
@@ -190,23 +314,28 @@ namespace Synthesis.UI.Dynamic {
             panels.ForEach(x => ClosePanel(x));
         }
 
-        public static bool ClosePanel<T>()
-            where T : PanelDynamic => ClosePanel(typeof(T));
+        public static bool ClosePanel<T>(bool bypassTween = false)
+            where T : PanelDynamic {
+            return ClosePanel(typeof(T), bypassTween);
+        }
 
-  public static bool ClosePanel(Type t) {
+        public static bool ClosePanel(Type t, bool bypassTween = false) {
             if (!PanelExists(t))
                 return false;
 
             var panel = _persistentPanels[t].Item1;
-            EventBus.Push(new PanelClosedEvent(panel));
 
-            panel.Delete();
-            panel.Delete_Internal();
+            if (bypassTween) {
+                EventBus.Push(new PanelClosedEvent(panel));
 
-            _persistentPanels.Remove(t);
+                panel.Delete();
+                panel.Delete_Internal();
+
+                _persistentPanels.Remove(t);
+            } else
+                TweenPanel(t, panel, panel.TweenDirection, false);
 
             AnalyticsManager.LogCustomEvent(AnalyticsEvent.PanelClosed, ("UIType", t.Name));
-
             return true;
         }
 
@@ -243,7 +372,8 @@ namespace Synthesis.UI.Dynamic {
             if (panel.Hidden)
                 return false;
 
-            panel.Hidden = true;
+            TweenPanel(t, panel, panel.TweenDirection, false, true);
+
             return true;
         }
 
@@ -264,7 +394,12 @@ namespace Synthesis.UI.Dynamic {
             if (!panel.Hidden)
                 return false;
 
+            string tweenKey = Guid.NewGuid() + "_panelShow";
+
             panel.Hidden = false;
+
+            TweenPanel(t, panel, panel.TweenDirection, true, true);
+
             return true;
         }
 

@@ -2,6 +2,7 @@ using System;
 using Modes.MatchMode;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
+using UI.Dynamic.Panels.Tooltip;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Utilities.ColorManager;
@@ -13,7 +14,7 @@ namespace Synthesis.UI.Dynamic {
         private const string SNAP_MODE_KEY = "ROBOT_PLACEMENT_SNAPPING";
 
         private const float WIDTH            = 400f;
-        private const float HEIGHT           = 150f;
+        private const float HEIGHT           = 130f;
         private const float VERTICAL_PADDING = 15f;
 
         private const float ROBOT_MOVE_SPEED  = 7f;
@@ -58,12 +59,15 @@ namespace Synthesis.UI.Dynamic {
         public SpawnLocationPanel() : base(new Vector2(WIDTH, HEIGHT)) {}
 
         public override bool Create() {
+            TooltipManager.CreateTooltip(("Scroll", "Rotate Robot"), ("Shift", "Hold to Snap"));
+            TweenDirection = Vector2.down;
+
             if (!InputManager.MappedDigitalInputs.ContainsKey(SNAP_MODE_KEY))
                 InputManager.AssignDigitalInput(
                     SNAP_MODE_KEY, (Digital) new Digital("LeftShift").WithModifier((int) ModKey.LeftShift));
 
             Title.SetText("Set Spawn Locations").SetFontSize(25f);
-            PanelImage.RootGameObject.SetActive(false);
+            PanelIcon.RootGameObject.SetActive(false);
 
             Content panel = new Content(null, UnityObject, null);
 
@@ -104,7 +108,10 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public override void Delete() {
-            _robotHighlights.ForEach(x => Object.Destroy(x.gameObject));
+            _robotHighlights.ForEach(x => {
+                if (x != null)
+                    Object.Destroy(x.gameObject);
+            });
         }
 
         /// <summary>
@@ -159,8 +166,8 @@ namespace Synthesis.UI.Dynamic {
         private void SelectButton(int index) {
             buttons[SelectedButton].Image.SetColor(
                 ColorManager.GetColor(ColorManager.SynthesisColor.BackgroundSecondary));
-            SelectedButton      = index;
-            MainHUD.ConfigRobot = MatchMode.Robots[index];
+            SelectedButton        = index;
+            MainHUD.SelectedRobot = MatchMode.Robots[index];
 
             buttons[index].Image.SetColor((index < 3) ? redButtonColor : blueButtonColor);
         }

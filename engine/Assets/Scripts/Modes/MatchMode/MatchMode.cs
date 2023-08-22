@@ -11,6 +11,8 @@ using Logger = SynthesisAPI.Utilities.Logger;
 
 namespace Modes.MatchMode {
     public class MatchMode : IMode {
+        public static float MatchTime = 15f;
+
         public static MatchResultsTracker MatchResultsTracker;
 
         /// Integers to represent which robots the user selected in the MatchModeModal
@@ -33,9 +35,6 @@ namespace Modes.MatchMode {
 
         public static List<RobotSimObject> Robots = new List<RobotSimObject>();
 
-        private int _redScore  = 0;
-        private int _blueScore = 0;
-
         public const string PREVIOUS_SPAWN_LOCATION = "Previous Spawn Location";
         public const string PREVIOUS_SPAWN_ROTATION = "Previous Spawn Rotation";
 
@@ -51,7 +50,7 @@ namespace Modes.MatchMode {
             _stateMachine = MatchStateMachine.Instance;
             _stateMachine.SetState(MatchStateMachine.StateName.MatchConfig);
 
-            SetupMatchResultTracking();
+            MatchResultsTracker = new MatchResultsTracker();
             MainHUD.SetUpMatch();
         }
 
@@ -75,34 +74,12 @@ namespace Modes.MatchMode {
             }
         }
 
-        /// Creates a MatchResultsTracker and event listeners to update it
-        public void SetupMatchResultTracking() {
-            MatchResultsTracker = new MatchResultsTracker();
-
-            SynthesisAPI.EventBus.EventBus.NewTypeListener<OnScoreUpdateEvent>(e => {
-                ScoringZone zone = ((OnScoreUpdateEvent) e).Zone;
-                switch (zone.Alliance) {
-                    case Alliance.Blue:
-                        ((BluePoints) MatchResultsTracker.MatchResultEntries[typeof(BluePoints)]).Points += zone.Points;
-                        _blueScore += zone.Points;
-                        break;
-                    case Alliance.Red:
-                        ((RedPoints) MatchResultsTracker.MatchResultEntries[typeof(RedPoints)]).Points += zone.Points;
-                        _redScore += zone.Points;
-                        break;
-                }
-                Debug.Log(
-                    $"{zone.Alliance.ToString()} scored {zone.Points} points! Blue: {_blueScore} Red: {_redScore}");
-            });
-        }
-
         public void Update() {
             if (_stateMachine != null) {
                 _stateMachine.Update();
 
-                if (Scoring.targetTime <= 0 && _stateMachine.CurrentState.StateName is >=
-                                                   MatchStateMachine.StateName.Auto and <=
-                                                   MatchStateMachine.StateName.Endgame)
+                if (MatchTime <= 0 && _stateMachine.CurrentState.StateName is >= MatchStateMachine.StateName.Auto and <=
+                                          MatchStateMachine.StateName.Endgame)
                     _stateMachine.AdvanceState();
             }
         }
@@ -132,7 +109,7 @@ namespace Modes.MatchMode {
                     Vector3 position              = new Vector3(2 * i - 6, -2.5f, 0);
                     RawSpawnLocations[i].position = position;
 
-                    RobotSimObject.SpawnRobot(robotFiles[x], position, Quaternion.identity, false);
+                    RobotSimObject.SpawnRobot(null, position, Quaternion.identity, false, robotFiles[x]);
                     Robots.Add(RobotSimObject.GetCurrentlyPossessedRobot());
                 } else
                     Robots.Add(null);

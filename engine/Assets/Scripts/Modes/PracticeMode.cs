@@ -11,8 +11,8 @@ using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Utilities;
+using UI.Dynamic.Modals.MixAndMatch;
 using UnityEngine;
-using UnityEngine.XR;
 using Logger = SynthesisAPI.Utilities.Logger;
 using Random = System.Random;
 
@@ -94,7 +94,7 @@ public class PracticeMode : IMode {
 
     private Analog TryGetSavedInput(string key, Analog defaultInput) {
         if (PreferenceManager.ContainsPreference(key)) {
-            var input            = (Digital) PreferenceManager.GetPreference<InputData[]>(key) [0].GetInput();
+            var input            = PreferenceManager.GetPreference<Digital>(key);
             input.ContextBitmask = defaultInput.ContextBitmask;
             return input;
         }
@@ -108,7 +108,8 @@ public class PracticeMode : IMode {
             DynamicUIManager.CreatePanel<ScoreboardPanel>(true, false);
         }
 
-        bool openEscapeMenu = InputManager.MappedValueInputs[TOGGLE_ESCAPE_MENU_INPUT].Value == 1.0F;
+        // TODO: This randomly broke again for no apparent reason
+        /*bool openEscapeMenu = InputManager.MappedValueInputs[TOGGLE_ESCAPE_MENU_INPUT].Value == 1.0F;
         if (openEscapeMenu && !_lastEscapeValue) {
             if (_escapeMenuOpen) {
                 CloseMenu();
@@ -117,7 +118,7 @@ public class PracticeMode : IMode {
             }
         }
 
-        _lastEscapeValue = openEscapeMenu;
+        _lastEscapeValue = openEscapeMenu;*/
     }
 
     public void OpenMenu() {
@@ -166,7 +167,7 @@ public class PracticeMode : IMode {
     }
 
     public static void ResetRobot() {
-        RobotSimObject robot = RobotSimObject.GetCurrentlyPossessedRobot();
+        RobotSimObject robot = MainHUD.SelectedRobot;
         if (robot == null)
             return;
         robot.ClearGamepieces();

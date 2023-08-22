@@ -10,6 +10,7 @@ TagManager:
   - field
   - red zone
   - blue zone
+  - socials-drop-down
   layers:
   - Default
   - TransparentFX
@@ -25,8 +26,8 @@ TagManager:
   - D4CollisionLayer
   - D5CollisionLayer
   - D6CollisionLayer
-  - 
-  - 
+  - ConnectionPoint
+  - MixAndMatchEditor
   - 
   - 
   - 

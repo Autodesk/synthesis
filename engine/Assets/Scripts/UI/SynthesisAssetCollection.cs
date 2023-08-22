@@ -25,6 +25,11 @@ public class SynthesisAssetCollection : MonoBehaviour {
     public GameObject GizmoPrefab;
     [SerializeField]
     public List<AudioClip> AudioClips;
+    [SerializeField]
+    public GameObject MixAndMatchConnectionPrefab;
+
+    [SerializeField]
+    public Material DefaultSpriteMaterial;
 
     private static Volume _blurVolumeStatic = null;
     public static Volume BlurVolumeStatic {
@@ -68,4 +73,6 @@ public class SynthesisAssetCollection : MonoBehaviour {
     public static TMPro.TMP_FontAsset GetFont(string name) => Instance.Fonts.First(x => x.name == name);
 
     public static AudioClip GetAudioClip(string name) => Instance.AudioClips.First(x => x.name == name);
+
+    public static Material GetDefaultSpriteMat() => Instance.DefaultSpriteMaterial;
 }

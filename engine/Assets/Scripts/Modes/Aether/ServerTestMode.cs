@@ -38,19 +38,20 @@ public class ServerTestMode : IMode {
         // TODO remove and allow user to choose robot
         string dozer = "Dozer_v9.mira";
         string tmm   = "Team 2471 (2018)_v5.mira";
-        RobotSimObject.SpawnRobot(AddRobotModal.ParsePath("$appdata/Autodesk/Synthesis/Mira/" + dozer, '/'),
-            new Vector3(-2, 1, 0), Quaternion.Euler(0, 0, 0), false);
+        RobotSimObject.SpawnRobot(null, new Vector3(-2, 1, 0), Quaternion.Euler(0, 0, 0), false,
+            AddRobotModal.ParsePath("$appdata/Autodesk/Synthesis/Mira/" + dozer, '/'));
         _host                   = RobotSimObject.GetCurrentlyPossessedRobot();
         _host.RobotNode.name    = "host";
         _host.BehavioursEnabled = false;
-        RobotSimObject.SpawnRobot(AddRobotModal.ParsePath("$appdata/Autodesk/Synthesis/Mira/" + dozer, '/'),
-            new Vector3(2, 1, 0), Quaternion.Euler(0, 0, 0), false);
+        RobotSimObject.SpawnRobot(null, new Vector3(2, 1, 0), Quaternion.Euler(0, 0, 0), false,
+            AddRobotModal.ParsePath("$appdata/Autodesk/Synthesis/Mira/" + dozer, '/'));
         _ghost                = RobotSimObject.GetCurrentlyPossessedRobot();
         _ghost.RobotNode.name = "ghost";
         _ghost.DriversEnabled = false;
         _ghost.Freeze();
 
         SimulationRunner.OnGameObjectDestroyed += End;
+        MainHUD.RemoveAllItemsFromDrawer();
     }
 
     public void KillClient(int i) {
@@ -63,7 +64,14 @@ public class ServerTestMode : IMode {
         }
     }
 
+    private bool _isFrozen = false;
+
     public void Update() {
+        if (_ghost is not null && !_isFrozen) {
+            _ghost.Freeze();
+            _isFrozen = true;
+        }
+
         var transformsList = new List<ServerTransforms>();
         if (_ghost is null || _host is null)
             return;

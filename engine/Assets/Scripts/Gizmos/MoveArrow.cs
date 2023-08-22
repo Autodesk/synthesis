@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Synthesis.Gizmo;
 using Synthesis.Physics;
@@ -7,45 +6,47 @@ using UnityEngine;
 
 namespace Synthesis.Configuration {
     public class MoveArrow : MonoBehaviour {
-        private const float Scale = 0.075f;
-        private Vector3 initialScale;
-        private Vector3 lastArrowPoint;
-        private ArrowType activeArrow;
-        private bool bufferPassed;
-        private bool snapEnabled;
+        private const float SCALE                    = 0.075f;
+        private const float GIZMO_PITCH              = -80;
+        private const float SNAP_ROTATION_TO_DEGREES = 15;
+        private const float SNAP_POSITION_TO_METERS  = 0.5f;
+        private const float FLOOR_BOUNDS             = 0f;
+        private const float BOUNDS                   = 50f;
 
-        private Plane axisPlane;
-        private Plane markerPlane;
+        // limits a single movement boundary to this number times the distance from camera to position
+        private const float SINGLE_MOVE_LIMIT_SCALE = 20f;
 
-        private Transform parent;
-        private Func<Vector3> originalCameraFocusPoint;
-        private Transform gizmoCameraTransform;
-        Dictionary<Rigidbody, bool> rigidbodiesKinematicStateInScene;
+        private Vector3 _initialScale;
+        private Vector3 _lastArrowPoint;
+        private ArrowType _activeArrow;
+        private bool _bufferPassed;
+        private bool _snapEnabled;
 
-        private CameraController cam;
-        private ICameraMode previousMode;
-        private Vector3 previousCameraPosition;
-        private Quaternion previousCameraRotation;
-        private OrbitCameraMode orbit;
-        private float originalLowerPitch;
-        private float gizmoPitch = -80f;
+        private Plane _axisPlane;
+        private Plane _markerPlane;
 
-        [SerializeField, Range(1f, 30.0f)]
-        public float snapRotationToDegree; // configurable
-        [SerializeField, Range(0.1f, 2f)]
-        public float snapTransformToUnit;
-        private float floorBound = 0f;
-        private float bounds     = 50f;
-        private float singleMoveLimitScale =
-            20f; // limits a single movement boundry to this number times the distance from camera to position
-        private float startRotation;
+        private Transform _parent;
+        private Func<Vector3> _originalCameraFocusPoint;
+        private Transform _gizmoCameraTransform;
 
-        private Transform axisArrowTransform;
-        private Transform arrowX;
-        private Transform arrowY;
-        private Transform arrowZ;
+        private CameraController _camComtroller;
+        private ICameraMode _previousMode;
+        private Vector3 _previousCameraPosition;
+        private Quaternion _previousCameraRotation;
+        private OrbitCameraMode _orbit;
+        private float _originalLowerPitch;
 
-        private RobotSimObject robot;
+        private float _startRotation;
+
+        private Transform _arrowTransform;
+        private Transform _axisArrowTransform;
+        private Transform _arrowX;
+        private Transform _arrowY;
+        private Transform _arrowZ;
+
+        private RobotSimObject _robot;
+
+        private Camera _mainCam;
 
         // To use: move gizmo as a child of the object you want to move in game
         // Press R to reset rotation
@@ -54,14 +55,14 @@ namespace Synthesis.Configuration {
 
         /// <summary>
         /// Gets or sets the active selected arrow. When <see cref="ActiveArrow"/>
-        /// is changed, the "SetActiveArrow" message is broadcasted to all
+        /// is changed, the "SetActiveArrow" message is broadcast to all
         /// <see cref="SelectableArrow"/>s.
         /// </summary>
         private ArrowType ActiveArrow {
-            get { return activeArrow; }
+            get => _activeArrow;
             set {
-                activeArrow = value;
-                BroadcastMessage("SetActiveArrow", activeArrow);
+                _activeArrow = value;
+                BroadcastMessage("SetActiveArrow", _activeArrow);
             }
         }
 
@@ -91,82 +92,84 @@ namespace Synthesis.Configuration {
         }
 
         private void Awake() {
-            cam                = Camera.main.GetComponent<CameraController>();
-            originalLowerPitch = cam.PitchLowerLimit;
-            robot              = RobotSimObject.GetCurrentlyPossessedRobot();
+            _mainCam            = Camera.main!;
+            _camComtroller      = _mainCam.GetComponent<CameraController>();
+            _originalLowerPitch = _camComtroller.PitchLowerLimit;
+            _robot              = RobotSimObject.GetCurrentlyPossessedRobot();
 
-            if ((Func<Vector3>) OrbitCameraMode.FocusPoint == null) {
-                originalCameraFocusPoint = () =>
-                    robot.GroundedNode != null && robot.GroundedBounds != null
-                        ? robot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(robot.GroundedBounds.center)
+            if (OrbitCameraMode.FocusPoint == null) {
+                _originalCameraFocusPoint = () =>
+                    _robot.GroundedNode != null && _robot.GroundedBounds != null
+                        ? _robot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(_robot.GroundedBounds.center)
                         : Vector3.zero;
             } else {
-                originalCameraFocusPoint = (Func<Vector3>) OrbitCameraMode.FocusPoint.Clone();
+                _originalCameraFocusPoint = (Func<Vector3>) OrbitCameraMode.FocusPoint.Clone();
             }
-            previousMode           = cam.CameraMode;
-            previousCameraPosition = cam.transform.position;
-            previousCameraRotation = cam.transform.rotation;
-            cam.CameraMode         = CameraController.CameraModes["Orbit"];
+            _previousMode             = _camComtroller.CameraMode;
+            _camComtroller.CameraMode = CameraController.CameraModes["Orbit"];
 
-            // makes a list of the rigidbodies in the hierarchy and their state
-            HierarchyRigidbodiesToDictionary();
+            var camTrf              = _camComtroller.transform;
+            _previousCameraPosition = camTrf.position;
+            _previousCameraRotation = camTrf.rotation;
 
             // configure axis arrow transforms for later use
-            arrowX = transform.Find("X").GetComponent<Transform>();
-            arrowY = transform.Find("Y").GetComponent<Transform>();
-            arrowZ = transform.Find("Z").GetComponent<Transform>();
+            _arrowTransform = transform;
 
-            initialScale = new Vector3(transform.localScale.x / transform.lossyScale.x,
-                transform.localScale.y / transform.lossyScale.y, transform.localScale.z / transform.lossyScale.z);
+            _arrowX = transform.Find("X").GetComponent<Transform>();
+            _arrowY = transform.Find("Y").GetComponent<Transform>();
+            _arrowZ = _arrowTransform.Find("Z").GetComponent<Transform>();
+
+            var arrowScale = _arrowTransform.localScale;
+
+            _initialScale = new Vector3(arrowScale.x / _arrowTransform.lossyScale.x,
+                _arrowTransform.localScale.y / arrowScale.y, arrowScale.z / arrowScale.z);
         }
 
-        private void setTransform() // called to set certain value when activated or when the parent changes
-        {
-            // SetRigidbodies(false);
+        private void SetTransform() { // called to set certain value when activated or when the parent changes
+
             PhysicsManager.IsFrozen = true;
 
-            parent                  = transform.parent;
-            transform.localPosition = Vector3.zero;
-            transform.localRotation = Quaternion.identity;
+            _parent                       = transform.parent;
+            _arrowTransform.localPosition = Vector3.zero;
+            _arrowTransform.localRotation = Quaternion.identity;
 
             // clang-format off
-            gizmoCameraTransform          = new GameObject().transform;
-            gizmoCameraTransform.position = transform.parent.position;           // camera shifting
-            OrbitCameraMode.FocusPoint    = () => gizmoCameraTransform.position; // camera focus
-            cam.PitchLowerLimit           = gizmoPitch;                          // camera pitch limits
+            _gizmoCameraTransform          = new GameObject().transform;
+            _gizmoCameraTransform.position = _arrowTransform.parent.position;           // camera shifting
+            OrbitCameraMode.FocusPoint    = () => _gizmoCameraTransform.position; // camera focus
+            _camComtroller.PitchLowerLimit           = GIZMO_PITCH;                          // camera pitch limits
             // clang-format on
         }
 
         private void RestoreCameraMode() {
-            cam.CameraMode         = previousMode;
-            cam.transform.position = previousCameraPosition;
-            cam.transform.rotation = previousCameraRotation;
+            _camComtroller.CameraMode         = _previousMode;
+            _camComtroller.transform.position = _previousCameraPosition;
+            _camComtroller.transform.rotation = _previousCameraRotation;
 
-            if (originalCameraFocusPoint == null) {
+            if (_originalCameraFocusPoint == null) {
                 OrbitCameraMode.FocusPoint = () =>
-                    robot.GroundedNode != null && robot.GroundedBounds != null
-                        ? robot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(robot.GroundedBounds.center)
+                    _robot.GroundedNode != null && _robot.GroundedBounds != null
+                        ? _robot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(_robot.GroundedBounds.center)
                         : Vector3.zero;
             } else {
-                OrbitCameraMode.FocusPoint = originalCameraFocusPoint;
+                OrbitCameraMode.FocusPoint = _originalCameraFocusPoint;
             }
 
             // test if cam.cameraMode is of type OrbitCameraMode
-            if (cam.CameraMode is OrbitCameraMode) {
-                OrbitCameraMode orbit = (OrbitCameraMode) cam.CameraMode;
-                cam.PitchLowerLimit   = originalLowerPitch;
+            if (_camComtroller.CameraMode is OrbitCameraMode) {
+                _camComtroller.PitchLowerLimit = _originalLowerPitch;
             }
         }
 
-        private void DisableGizmo() // makes sure values are set correctly when the gizmo is removed
-        {
+        private void DisableGizmo() { // makes sure values are set correctly when the gizmo is removed
+            Destroy(_gizmoCameraTransform.gameObject);
             RestoreCameraMode();
             CameraController.isOverGizmo = false; // this doesn't get reset?
             PhysicsManager.IsFrozen      = false;
         }
 
         private void OnEnable() {
-            setTransform();
+            SetTransform();
         }
 
         private void OnDestroy() {
@@ -176,142 +179,141 @@ namespace Synthesis.Configuration {
         private SelectableArrow _currentlyHovering;
 
         private void Update() {
+            Ray cameraRay = _mainCam.ScreenPointToRay(Input.mousePosition);
+
             if (Input.GetKeyDown(KeyCode.Escape)) {
                 GizmoManager.ExitGizmo();
                 RestoreCameraMode();
             }
-            if (Input.GetKeyDown(KeyCode.R)) // Reset on press R
-            {
-                parent.rotation = Quaternion.identity;
+            if (Input.GetKeyDown(KeyCode.R)) { // Reset on press R
+                _parent.rotation = Quaternion.identity;
             }
-            if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) // enable snap on crtl press
-            {
-                snapEnabled = true;
+            if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) { // enable snap on ctrl press
+                _snapEnabled = true;
             } else {
-                snapEnabled = false;
+                _snapEnabled = false;
             }
 
-            if (activeArrow == ArrowType.None) // skip if there no gizmo components being dragged
+            if (_activeArrow == ArrowType.None) // skip if there no gizmo components being dragged
                 return;
 
             // This allows for any updates from OnClick to complete before translation starts
-            if (!bufferPassed) {
-                bufferPassed = true;
+            if (!_bufferPassed) {
+                _bufferPassed = true;
                 return;
             }
 
-            if (activeArrow == ArrowType.P) // for marker point: allows for drag on a plane directly facing camera
-            {
-                // draws a ray from mouse to plane directly facing the camera and moves parent to that position
+            switch (_activeArrow) {
+                // for marker point: allows for drag on a plane directly facing camera
+                case ArrowType.P: {
+                    _markerPlane.Raycast(cameraRay, out var rayLength); // intersection between mouse ray and plane
+                    _parent.position = cameraRay.GetPoint(rayLength);   // finds point on ray
 
-                Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-                float rayLength;
-                markerPlane.Raycast(cameraRay, out rayLength);   // intersection between mouseray and plane
-                parent.position = cameraRay.GetPoint(rayLength); // finds point on ray
-
-                if (parent.position.y < 0) // limits y axis movements
-                    parent.position = new Vector3(parent.position.x, 0, parent.position.z);
-            } else if (activeArrow <= ArrowType.XY) // plane and axis arrows movements
-            {
-                Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-                Vector3 currentArrowPoint;
-
-                if (activeArrow <= ArrowType.Z) {
-                    // draws plane with the same normal as the axis arrow, which faces the camera
-                    Plane axisArrowPlane = new Plane(axisArrowTransform.forward, parent.position);
-
-                    // a ray from the mouse is drawn to intersect the plane
-                    float rayDistance;
-                    float rayLimit = Vector3.Distance(Camera.main.transform.position, gizmoCameraTransform.position) *
-                                     singleMoveLimitScale;
-                    if (!axisArrowPlane.Raycast(mouseRay, out rayDistance) ||
-                        rayDistance >
-                            rayLimit) // limits the maximum distance the ray can be to prevent moving it to infinity
-                        rayDistance = rayLimit;
-
-                    // finds nearest point on the axis line that is closest to the intersection point
-                    ClosestPointsOnTwoLines(out Vector3 p, out currentArrowPoint,
-                        axisArrowPlane.ClosestPointOnPlane(mouseRay.GetPoint(rayDistance)), axisArrowTransform.right,
-                        parent.position, ArrowDirection);
-
-                } else {
-                    // draws plane on the plane's axis then intersects mouseray with the axis
-                    Plane plane = new Plane(ArrowDirection, parent.position);
-
-                    float rayDistance;
-                    float rayLimit = Vector3.Distance(Camera.main.transform.position, gizmoCameraTransform.position) *
-                                     singleMoveLimitScale;
-                    // limit is distance from camera to object mulitplied by a scalar
-
-                    if (!plane.Raycast(mouseRay, out rayDistance) ||
-                        rayDistance > rayLimit) // limits ray distance to prevent moving to infinity
-                        rayDistance = rayLimit;
-
-                    currentArrowPoint = plane.ClosestPointOnPlane(mouseRay.GetPoint(rayDistance));
+                    if (_parent.position.y < 0) // limits y axis movements
+                        _parent.position = new Vector3(_parent.position.x, 0, _parent.position.z);
+                    break;
                 }
+                // plane and axis arrows movements
+                case <= ArrowType.XY: {
+                    Ray mouseRay = _mainCam.ScreenPointToRay(Input.mousePosition);
+                    Vector3 currentArrowPoint;
 
-                bool setLastArrowPoint = true; // will be set to false if a boundry is hit
-                if (lastArrowPoint != Vector3.zero) {
-                    if (snapEnabled &&
-                        activeArrow <= ArrowType.Z) // snaps to configurable amount when control is held down. does this
-                                                    // by setting current arrow point to rounded distance
-                        currentArrowPoint = LerpByDistance(lastArrowPoint, currentArrowPoint,
-                            RoundTo(Vector3.Distance(lastArrowPoint, currentArrowPoint), snapTransformToUnit));
+                    if (_activeArrow <= ArrowType.Z) {
+                        // draws plane with the same normal as the axis arrow, which faces the camera
+                        Plane axisArrowPlane = new Plane(_axisArrowTransform.forward, _parent.position);
 
-                    Vector3 projectedPosition = parent.position + currentArrowPoint - lastArrowPoint;
-                    setLastArrowPoint         = projectedPosition.y >= floorBound; // sets movement boundries
+                        // a ray from the mouse is drawn to intersect the plane
+                        float rayLimit = Vector3.Distance(_mainCam.transform.position, _gizmoCameraTransform.position) *
+                                         SINGLE_MOVE_LIMIT_SCALE;
+                        if (!axisArrowPlane.Raycast(mouseRay, out var rayDistance) ||
+                            rayDistance >
+                                rayLimit) // limits the maximum distance the ray can be to prevent moving it to infinity
+                            rayDistance = rayLimit;
+
+                        // finds nearest point on the axis line that is closest to the intersection point
+                        ClosestPointsOnTwoLines(out Vector3 _, out currentArrowPoint,
+                            axisArrowPlane.ClosestPointOnPlane(mouseRay.GetPoint(rayDistance)),
+                            _axisArrowTransform.right, _parent.position, ArrowDirection);
+
+                    } else {
+                        // draws plane on the plane's axis then intersects mouse ray with the axis
+                        Plane plane = new Plane(ArrowDirection, _parent.position);
+
+                        float rayLimit = Vector3.Distance(_mainCam.transform.position, _gizmoCameraTransform.position) *
+                                         SINGLE_MOVE_LIMIT_SCALE;
+                        // limit is distance from camera to object multiplied by a scalar
+
+                        if (!plane.Raycast(mouseRay, out var rayDistance) ||
+                            rayDistance > rayLimit) // limits ray distance to prevent moving to infinity
+                            rayDistance = rayLimit;
+
+                        currentArrowPoint = plane.ClosestPointOnPlane(mouseRay.GetPoint(rayDistance));
+                    }
+
+                    bool setLastArrowPoint = true; // will be set to false if a boundary is hit
+                    if (_lastArrowPoint != Vector3.zero) {
+                        if (_snapEnabled &&
+                            _activeArrow <=
+                                ArrowType.Z) // snaps to configurable amount when control is held down. does this
+                            // by setting current arrow point to rounded distance
+                            currentArrowPoint = LerpByDistance(_lastArrowPoint, currentArrowPoint,
+                                RoundTo(Vector3.Distance(_lastArrowPoint, currentArrowPoint), SNAP_POSITION_TO_METERS));
+
+                        Vector3 projectedPosition = _parent.position + currentArrowPoint - _lastArrowPoint;
+                        setLastArrowPoint         = projectedPosition.y >= FLOOR_BOUNDS; // sets movement bounds
+                        if (setLastArrowPoint)
+                            _parent.position += currentArrowPoint - _lastArrowPoint;
+                    }
                     if (setLastArrowPoint)
-                        parent.position += currentArrowPoint - lastArrowPoint;
+                        _lastArrowPoint =
+                            currentArrowPoint; // last arrow point keeps track of where the mouse is relative
+                    // to the center of the parent object
+                    break;
                 }
-                if (setLastArrowPoint)
-                    lastArrowPoint = currentArrowPoint; // last arrow point keeps track of where the mouse is relative
-                                                        // to the center of the parent object
+                default: {
+                    // if mouse ray doesn't intersect plane, set default ray length
+                    if (!_axisPlane.Raycast(cameraRay, out var rayLength))
+                        rayLength = Vector3.Distance(_mainCam.transform.position, _parent.position) * 10;
 
-            } else {
-                // Project a ray from mouse
-                Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-                float rayLength;
+                    // get intersection point; if none, find closest point to default length
+                    Vector3 pointToLook = _axisPlane.ClosestPointOnPlane(cameraRay.GetPoint(rayLength));
 
-                // if mouse ray doesn't intersect plane, set default ray length
-                if (!axisPlane.Raycast(cameraRay, out rayLength))
-                    rayLength = Vector3.Distance(Camera.main.transform.position, parent.position) * 10;
-
-                // get intersection point; if none, find closest point to default length
-                Vector3 pointToLook = axisPlane.ClosestPointOnPlane(cameraRay.GetPoint(rayLength));
-
-                // Correct parent's forward depending on rotation axis. Y-axis does not need corrections
-                Vector3 t;
-                if (ActiveArrow == ArrowType.RZ)
-                    t = parent.right;
-                else if (ActiveArrow == ArrowType.RX)
-                    t = parent.up;
-                else
-                    t = parent.forward;
-                parent.RotateAround(parent.position, axisPlane.normal, // defines point and axis plane
-                    -1 * RoundTo(Vector3.SignedAngle(pointToLook - parent.position, t, axisPlane.normal) -
-                                     startRotation, // rounds degrees of rotation axis forward to mouse ray intersection
-                             snapEnabled
-                                 ? snapRotationToDegree
-                                 : 0f)); // if control is pressed, snap to configurable value, otherwise, don't snap
+                    // Correct parent's forward depending on rotation axis. Y-axis does not need corrections
+                    Vector3 t;
+                    if (ActiveArrow == ArrowType.RZ)
+                        t = _parent.right;
+                    else if (ActiveArrow == ArrowType.RX)
+                        t = _parent.up;
+                    else
+                        t = _parent.forward;
+                    _parent.RotateAround(_parent.position, _axisPlane.normal, // defines point and axis plane
+                        -1 *
+                            RoundTo(
+                                Vector3.SignedAngle(pointToLook - _parent.position, t, _axisPlane.normal) -
+                                    _startRotation, // rounds degrees of rotation axis forward to mouse ray intersection
+                                _snapEnabled
+                                    ? SNAP_ROTATION_TO_DEGREES
+                                    : 0f)); // if control is pressed, snap to configurable value, otherwise, don't snap
+                    break;
+                }
             }
 
             // allows for the parent transform to be modified multiple times without changing the parent's actual
             // transform. It is set at the end of the Update loop.
-            transform.parent = parent;
+            transform.parent = _parent;
         }
 
         /// <summary>
         /// Scales the arrows to maintain a constant size relative to screen coordinates.
         /// </summary>
         private void LateUpdate() {
-            Plane plane          = new Plane(Camera.main.transform.forward, Camera.main.transform.position);
+            Plane plane          = new Plane(_mainCam.transform.forward, _mainCam.transform.position);
             float dist           = plane.GetDistanceToPoint(transform.position);
-            transform.localScale = initialScale * Scale * dist;
+            transform.localScale = _initialScale * SCALE * dist;
             Vector3 scaleTmp     = gameObject.transform.localScale;
-            scaleTmp.x /= parent.localScale.x;
-            scaleTmp.y /= parent.localScale.y;
-            scaleTmp.z /= parent.localScale.z;
+            scaleTmp.x /= _parent.localScale.x;
+            scaleTmp.y /= _parent.localScale.y;
+            scaleTmp.z /= _parent.localScale.z;
             gameObject.transform.localScale = scaleTmp;
         }
 
@@ -320,55 +322,52 @@ namespace Synthesis.Configuration {
         /// </summary>
         /// <param name="arrowType"></param>
         private void OnArrowSelected(ArrowType arrowType) {
-            ActiveArrow    = arrowType;
-            lastArrowPoint = Vector3.zero;
-            bufferPassed   = false;
+            ActiveArrow     = arrowType;
+            _lastArrowPoint = Vector3.zero;
+            _bufferPassed   = false;
 
             if (arrowType == ArrowType.P) // sets marker's plane
-                markerPlane = new Plane(Vector3.Normalize(Camera.main.transform.forward), parent.position);
-            else if (arrowType <= ArrowType.Z) // sets up axis arrows for plane creation
-            {
+                _markerPlane = new Plane(Vector3.Normalize(_mainCam.transform.forward), _parent.position);
+            else if (arrowType <= ArrowType.Z) { // sets up axis arrows for plane creation
                 switch (arrowType) {
                     case ArrowType.X:
-                        axisArrowTransform = arrowX;
+                        _axisArrowTransform = _arrowX;
                         break;
                     case ArrowType.Y:
-                        axisArrowTransform = arrowY;
+                        _axisArrowTransform = _arrowY;
                         break;
                     case ArrowType.Z:
-                        axisArrowTransform = arrowZ;
+                        _axisArrowTransform = _arrowZ;
                         break;
                 }
-            } else if (arrowType >= ArrowType.RX) // creates plane for rotation
-            {
-                axisPlane = new Plane(ArrowDirection, parent.position);
+            } else if (arrowType >= ArrowType.RX) { // creates plane for rotation
+                _axisPlane = new Plane(ArrowDirection, _parent.position);
 
                 // the following code determines the starting offset between the mouse and the gizmo.
                 // does the exact same thing as a normal rotation, but extracts the resulting angle as the initial
                 // offset
 
                 // Project a ray from mouse
-                Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-                float rayLength;
+                Ray cameraRay = _mainCam.ScreenPointToRay(Input.mousePosition);
 
                 // if mouse ray doesn't intersect plane, set default ray length
-                if (!axisPlane.Raycast(cameraRay, out rayLength))
-                    rayLength = Vector3.Distance(Camera.main.transform.position, parent.position) * 10;
+                if (!_axisPlane.Raycast(cameraRay, out var rayLength))
+                    rayLength = Vector3.Distance(_mainCam.transform.position, _parent.position) * 10;
 
                 // get intersection point; if none, find closest point to default length
-                Vector3 pointToLook = axisPlane.ClosestPointOnPlane(cameraRay.GetPoint(rayLength));
+                Vector3 pointToLook = _axisPlane.ClosestPointOnPlane(cameraRay.GetPoint(rayLength));
 
                 // Correct parent's forward depending on rotation axis. Y-axis does not need corrections
                 Vector3 t;
                 if (ActiveArrow == ArrowType.RZ)
-                    t = parent.right;
+                    t = _parent.right;
                 else if (ActiveArrow == ArrowType.RX)
-                    t = parent.up;
+                    t = _parent.up;
                 else
-                    t = parent.forward;
+                    t = _parent.forward;
 
                 // sets the starting rotational offset to the angle
-                startRotation = Vector3.SignedAngle(pointToLook - parent.position, t, axisPlane.normal);
+                _startRotation = Vector3.SignedAngle(pointToLook - _parent.position, t, _axisPlane.normal);
             }
         }
 
@@ -383,25 +382,13 @@ namespace Synthesis.Configuration {
             float x                   = transform.parent.position.x;
             float y                   = transform.parent.position.y;
             float z                   = transform.parent.position.z;
-            transform.parent.position = new Vector3(Mathf.Abs(x) > bounds ? (x / Mathf.Abs(x) * bounds) : x,
-                Mathf.Abs(y) > bounds ? (y / Mathf.Abs(y) * bounds) : y,
-                Mathf.Abs(z) > bounds ? (z / Mathf.Abs(z) * bounds) : z);
+            transform.parent.position = new Vector3(Mathf.Abs(x) > BOUNDS ? (x / Mathf.Abs(x) * BOUNDS) : x,
+                Mathf.Abs(y) > BOUNDS ? (y / Mathf.Abs(y) * BOUNDS) : y,
+                Mathf.Abs(z) > BOUNDS ? (z / Mathf.Abs(z) * BOUNDS) : z);
 
             // move the camera
-            gizmoCameraTransform.position = transform.parent.position;
-            OrbitCameraMode.FocusPoint = () => gizmoCameraTransform.position;
-        }
-
-        public void HierarchyRigidbodiesToDictionary() // save the state of all gameobject's rigidbodies as a dictionary
-        {
-            rigidbodiesKinematicStateInScene = new Dictionary<Rigidbody, bool>();
-            GameObject Game                  = GameObject.Find("Game");
-            foreach (Rigidbody rb in Game
-                         .GetComponentsInChildren<Rigidbody>()) // searches for all rigidbodies under the "Game" parent
-            {
-                if (rb.gameObject.transform.parent != transform) // skips gizmos
-                    rigidbodiesKinematicStateInScene.Add(rb, rb.isKinematic);
-            }
+            _gizmoCameraTransform.position = transform.parent.position;
+            OrbitCameraMode.FocusPoint = () => _gizmoCameraTransform.position;
         }
 
         /// <summary>
@@ -471,19 +458,17 @@ namespace Synthesis.Configuration {
             return true;
         }
 
-        float RoundTo(float value, float multipleOf) // used for snapping the gizmo to the nearest value
-        {
+        float RoundTo(float value, float multipleOf) { // used for snapping the gizmo to the nearest value
             if (multipleOf != 0)
                 return Mathf.Round(value / multipleOf) * multipleOf;
-            else
-                return value;
+
+            return value;
         }
 
         /// <summary>
         /// Finds the Vector3 point a distance of x away from Point A and on line AB
         /// </summary>
-        public Vector3 LerpByDistance(Vector3 A, Vector3 B, float x) // for snapping transformations
-        {
+        public Vector3 LerpByDistance(Vector3 A, Vector3 B, float x) { // for snapping transformations
             Vector3 P = x * Vector3.Normalize(B - A) + A;
             return P;
         }

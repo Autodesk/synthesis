@@ -25,6 +25,7 @@ namespace SynthesisAPI.Simulation {
         }
 
         public string SimObjectId { get; protected set; }
+        public string MiraId { get; protected set; }
         
         /// <summary>
         /// Constructor for a SimObject
@@ -34,6 +35,9 @@ namespace SynthesisAPI.Simulation {
         public SimBehaviour(string simObjectId) {
             Enabled = true;
             SimObjectId = simObjectId;
+            string id = simObjectId;
+            int _i = id.IndexOf("_", 0);
+            MiraId = id.Remove(_i, id.Length - _i);
         }
 
         public void InitInputs(params (string key, string displayName, Analog defaultInput)[] inputs) {

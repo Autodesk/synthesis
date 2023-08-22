@@ -2,6 +2,8 @@
 using System.Collections;
 using UnityEngine.UIElements;
 
+#nullable enable
+
 namespace SynthesisAPI.UIManager
 {
     /// <summary>
@@ -14,9 +16,9 @@ namespace SynthesisAPI.UIManager
         private static UnityEngine.Vector2 mousePosition;
 
         private static bool isTooltipOpen;
-        private static IEnumerator timerCoroutine = null;
+        private static IEnumerator? timerCoroutine = null;
 
-        private static VisualElements.Label tooltip = null;
+        private static VisualElements.Label? tooltip = null;
 
         public string Text;
 
@@ -95,7 +97,8 @@ namespace SynthesisAPI.UIManager
         {
             if (isTooltipOpen)
             {
-                tooltip.RemoveFromHierarchy();
+                // if tooltip is open then tooltip will not be null
+                tooltip!.RemoveFromHierarchy();
                 isTooltipOpen = false;
             }
         }

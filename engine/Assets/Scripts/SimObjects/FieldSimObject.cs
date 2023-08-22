@@ -116,10 +116,6 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         });
     }
 
-    public void ResetField() {
-        SpawnField(MiraLive);
-    }
-
     public bool RemoveScoringZone(ScoringZone zone) {
         var res = _scoringZones.Remove(zone);
         if (res)
@@ -169,28 +165,13 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         return true;
     }
 
+    // TODO: Fix field spawning
     public static void SpawnField(string filePath, bool spawnRobotGizmo = true) {
         DeleteField();
 
-        var mira = Importer.MirabufAssemblyImport(filePath);
-        mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
-        mira.MainObject.tag = "field";
-
-        FieldSimObject.CurrentField.InitializeScoreZones();
-
-        if (spawnRobotGizmo && RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
-            GizmoManager.SpawnGizmo(RobotSimObject.GetCurrentlyPossessedRobot());
-            // TODO: Move robot to default spawn location for field
-        }
-        AnalyticsManager.LogCustomEvent(AnalyticsEvent.FieldSpawned, ("FieldName", mira.MainObject.name));
-    }
-
-    public static void SpawnField(MirabufLive miraAssem, bool spawnRobotGizmo = true) {
-        DeleteField();
-
-        var mira = Importer.MirabufAssemblyImport(miraAssem);
-        mira.MainObject.transform.SetParent(GameObject.Find("Game").transform);
-        mira.MainObject.tag = "field";
+        var mira = Importer.ImportField(filePath);
+        mira.mainObject.transform.SetParent(GameObject.Find("Game").transform);
+        mira.mainObject.tag = "field";
 
         if (spawnRobotGizmo && RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
             GizmoManager.SpawnGizmo(RobotSimObject.GetCurrentlyPossessedRobot());

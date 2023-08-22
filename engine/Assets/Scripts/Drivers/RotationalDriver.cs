@@ -90,7 +90,7 @@ namespace Synthesis {
             get => _motor;
             set {
                 _motor = value;
-                SimulationPreferences.SetRobotJointMotor((_simObject as RobotSimObject)!.MiraGUID, Name, _motor);
+                SimulationPreferences.SetRobotJointMotor((_simObject as RobotSimObject)!.RobotGUID, Name, _motor);
             }
         }
         private HingeJoint _jointA;
@@ -147,7 +147,7 @@ namespace Synthesis {
         private float _convertedMotorTargetVel { get => Motor.targetVelocity * Mathf.Rad2Deg; }
 
         public RotationalDriver(string name, string[] inputs, string[] outputs, SimObject simObject, HingeJoint jointA,
-            HingeJoint jointB, bool isWheel, string motorRef = "")
+            HingeJoint jointB, bool isWheel, string motorRef)
             : base(name, inputs, outputs, simObject) {
             _jointA = jointA;
             _jointB = jointB;
@@ -157,18 +157,19 @@ namespace Synthesis {
             }
 
             UseFakeMotion = jointA.useLimits;
+
             EnableMotor();
 
-            (simObject as RobotSimObject)!.MiraLive.MiraAssembly.Data.Joints.MotorDefinitions.TryGetValue(
-                motorRef, out var motor);
-            if (motor != null && motor.MotorTypeCase == Mirabuf.Motor.Motor.MotorTypeOneofCase.SimpleMotor) {
-                _motor = motor!.SimpleMotor.UnityMotor;
+            var motor = SimulationPreferences.GetRobotJointMotor((simObject as RobotSimObject)!.RobotGUID, motorRef);
+
+            if (motor != null) {
+                _motor = motor.Value;
             } else {
                 Motor = new JointMotor() {
                     // Default Motor. Slow but powerful enough. Also uses Motor to save it
                     force          = 2000,
                     freeSpin       = false,
-                    targetVelocity = 500,
+                    targetVelocity = 5,
                 };
             }
 

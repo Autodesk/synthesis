@@ -30,7 +30,6 @@ namespace Engine {
                                 Toaster.RemoveToast(th.LinkedNode);
                             }
                         };
-                        Debug.Log("Making Optional Callback");
                     }
                     Toaster.MakeToast(o.ToString(), level: logLevel, optionalCallback: optionCallback);
                 }

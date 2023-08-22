@@ -7,9 +7,14 @@ using TMPro;
 using UnityEngine;
 
 public class ScoreboardPanel : PanelDynamic {
+    private const float PANEL_HEIGHT_WITHOUT_TIMER = 100;
+    private const float PANEL_HEIGHT_WITH_TIMER    = 150;
+
     private const float VERTICAL_PADDING = 10f;
-    private static readonly float WIDTH  = 200f;
-    private static float HEIGHT;
+    private const float INSET_PADDING    = 10f;
+
+    private const float PANEL_WIDTH = 200f;
+    private float PANEL_HEIGHT;
 
     private readonly bool _showTimer;
 
@@ -22,39 +27,36 @@ public class ScoreboardPanel : PanelDynamic {
         return u;
     };
 
-    public ScoreboardPanel(bool showTimer = true) : base(new Vector2(WIDTH, showTimer ? 150 : 100)) {
-        _showTimer = showTimer;
-        HEIGHT     = showTimer ? 150f : 100f;
+    public ScoreboardPanel(bool showTimer = true)
+        : base(new Vector2(PANEL_WIDTH, showTimer ? PANEL_HEIGHT_WITH_TIMER : PANEL_HEIGHT_WITHOUT_TIMER)) {
+        _showTimer   = showTimer;
+        PANEL_HEIGHT = showTimer ? PANEL_HEIGHT_WITH_TIMER : PANEL_HEIGHT_WITHOUT_TIMER;
     }
 
     public override bool Create() {
-        CancelButton.RootGameObject.SetActive(false);
-        AcceptButton.RootGameObject.SetActive(false);
-        Title.RootGameObject.SetActive(false);
-        PanelImage.RootGameObject.SetActive(false);
+        TweenDirection = Vector2.down;
 
-        var panel = new Content(null, UnityObject, null);
-        panel.SetBottomStretch<Content>(Screen.width / 2 - WIDTH / 2, Screen.width / 2 - WIDTH / 2);
+        var newMainContent = Strip(new Vector2(PANEL_WIDTH, PANEL_HEIGHT + (_showTimer ? VERTICAL_PADDING : 0)),
+            leftPadding: INSET_PADDING, rightPadding: INSET_PADDING, topPadding: INSET_PADDING,
+            bottomPadding: INSET_PADDING);
 
-        float bottomHeight = HEIGHT;
+        float bottomHeight = PANEL_HEIGHT;
 
         if (_showTimer) {
             float topHeight = 50f;
             bottomHeight -= topHeight;
-            (topContent, bottomContent) = MainContent.SplitTopBottom(topHeight, 0f);
+            (topContent, bottomContent) = newMainContent.SplitTopBottom(topHeight, VERTICAL_PADDING);
 
-            topContent.SetAnchoredPosition<Content>(new Vector2(0, -topHeight / 2));
-            bottomContent.SetAnchoredPosition<Content>(new Vector2(0, -topHeight / 2));
+            bottomContent.SetHeight<Content>(bottomHeight);
+
             time = topContent.CreateLabel(topHeight)
                        .SetStretch<Label>()
-                       .ApplyTemplate(VerticalLayout)
-                       .SetAnchors<Label>(new Vector2(0, 0.5f), new Vector2(1, 0.5f))
-                       .SetAnchoredPosition<Label>(new Vector2(0, topHeight / 2))
-                       .SetText(Scoring.targetTime.ToString())
+                       .SetText(MatchMode.MatchTime.ToString())
                        .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
+                       .SetVerticalAlignment(VerticalAlignmentOptions.Middle)
                        .SetFontSize(40);
         } else {
-            bottomContent = MainContent;
+            bottomContent = newMainContent;
         }
 
         float leftRightPadding              = 8;
@@ -111,8 +113,8 @@ public class ScoreboardPanel : PanelDynamic {
             // state advances in MatchMode update
             if (MatchStateMachine.Instance.CurrentState.StateName is >= MatchStateMachine.StateName.Auto and <=
                 MatchStateMachine.StateName.Endgame and not MatchStateMachine.StateName.Transition) {
-                Scoring.targetTime -= Time.deltaTime;
-                time.SetText(Mathf.RoundToInt(Scoring.targetTime).ToString());
+                MatchMode.MatchTime -= Time.deltaTime;
+                time.SetText(Mathf.RoundToInt(MatchMode.MatchTime).ToString());
             }
         }
 

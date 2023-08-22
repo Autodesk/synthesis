@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Synthesis.Import;
 using System.Linq;
+using Synthesis.Gizmo;
 using Synthesis.PreferenceManager;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.InputManager;
@@ -57,6 +58,7 @@ namespace Synthesis.Runtime {
 
         private void Awake() {
             Synthesis.PreferenceManager.PreferenceManager.Load();
+            UnityEngine.Physics.defaultSolverIterations = 20;
         }
 
         private void Start() {
@@ -67,8 +69,8 @@ namespace Synthesis.Runtime {
             ModeManager.Start();
             RobotSimObject.Setup();
             WebSocketManager.Init();
+            GizmoManager.Setup();
 
-            OnUpdate += DynamicUIManager.Update;
             OnUpdate += ModeManager.Update;
             OnUpdate += () => RobotSimObject.SpawnedRobots.ForEach(r => r.UpdateMultiplayer());
 
@@ -92,9 +94,11 @@ namespace Synthesis.Runtime {
         void Update() {
             InputManager.UpdateInputs(_simulationContext);
             SimulationManager.Update();
+            DynamicUIManager.Update();
 
-            if (OnUpdate != null)
+            if (OnUpdate != null) {
                 OnUpdate();
+            }
         }
 
         private void FixedUpdate() {
@@ -159,6 +163,7 @@ namespace Synthesis.Runtime {
                 OnSimKill();
 
             OnSimKill = null;
+            OnUpdate  = null;
 
             PhysicsManager.Reset();
             ReplayManager.Teardown();

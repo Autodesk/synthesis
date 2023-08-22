@@ -13,7 +13,6 @@ public class ConfirmModal : ModalDynamic {
 
     public override void Create() {
         Title.SetText(_message);
-        Description.RootGameObject.SetActive(false);
         MainContent.RootGameObject.SetActive(false);
 
         AcceptButton.StepIntoLabel(l => l.SetText("Confirm"));

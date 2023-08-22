@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Google.Protobuf.WellKnownTypes;
 using Synthesis.PreferenceManager;
+using Synthesis.UI.Dynamic;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
@@ -12,15 +13,21 @@ using Input  = UnityEngine.Input;
 using Logger = SynthesisAPI.Utilities.Logger;
 using Math   = SynthesisAPI.Utilities.Math;
 
+#nullable enable
+
 namespace Synthesis {
     public class ArcadeDriveBehaviour : SimBehaviour {
-        internal const string FORWARD  = "Arcade Forward";
-        internal const string BACKWARD = "Arcade Backward";
-        internal const string LEFT     = "Arcade Left";
-        internal const string RIGHT    = "Arcade Right";
+        internal const string FORWARD    = "Arcade Forward";
+        internal const string BACKWARD   = "Arcade Backward";
+        internal const string LEFT       = "Arcade Left";
+        internal const string RIGHT      = "Arcade Right";
+        private readonly string forward  = FORWARD;
+        private readonly string backward = BACKWARD;
+        private readonly string left     = LEFT;
+        private readonly string right    = RIGHT;
 
-        private List<WheelDriver> _leftWheels;
-        private List<WheelDriver> _rightWheels;
+        private readonly List<WheelDriver> _leftWheels;
+        private readonly List<WheelDriver> _rightWheels;
 
         private double _leftSpeed;
         private double _rightSpeed;
@@ -46,9 +53,15 @@ namespace Synthesis {
             if (inputName == "")
                 inputName = simObjectId;
 
-            SimObjectId  = simObjectId;
+            _robot = (SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject)!;
+
             _leftWheels  = leftWheels;
             _rightWheels = rightWheels;
+
+            forward  = _robot.RobotGUID + FORWARD;
+            backward = _robot.RobotGUID + BACKWARD;
+            left     = _robot.RobotGUID + LEFT;
+            right    = _robot.RobotGUID + RIGHT;
 
             InitInputs(GetInputs());
 
@@ -57,39 +70,53 @@ namespace Synthesis {
 
         public (string key, string displayName, Analog input)[] GetInputs() {
             return new(string key, string displayName,
-                Analog input)[] { (FORWARD, FORWARD, TryLoadInput(FORWARD, new Digital("W"))),
-                (BACKWARD, BACKWARD, TryLoadInput(BACKWARD, new Digital("S"))),
-                (LEFT, LEFT, TryLoadInput(LEFT, new Digital("A"))),
-                (RIGHT, RIGHT, TryLoadInput(RIGHT, new Digital("D"))) };
+                Analog input)[] { (forward, FORWARD, TryLoadInput(forward, new Digital("W"))),
+                (backward, BACKWARD, TryLoadInput(backward, new Digital("S"))),
+                (left, LEFT, TryLoadInput(left, new Digital("A"))),
+                (right, RIGHT, TryLoadInput(right, new Digital("D"))) };
         }
 
         public Analog TryLoadInput(string key, Analog defaultInput) {
-            if (_robot == null)
-                _robot = SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject;
-            return SimulationPreferences.GetRobotInput(_robot.MiraLive.MiraAssembly.Info.GUID, key) ?? defaultInput;
+            // return SimulationPreferences.GetRobotInput(_robot.RobotGUID, key) ?? defaultInput;
+
+            Analog input;
+            if (InputManager.MappedValueInputs.ContainsKey(key)) {
+                input                = InputManager.GetAnalog(key);
+                input.ContextBitmask = defaultInput.ContextBitmask;
+                return input;
+            }
+            input = SimulationPreferences.GetRobotInput(MiraId, key);
+            if (input == null) {
+                SimulationPreferences.SetRobotInput(MiraId, key, defaultInput);
+                return defaultInput;
+            }
+            return input;
         }
 
         private void OnValueInputAssigned(IEvent tmp) {
             ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
-            switch (args.InputKey) {
-                case FORWARD:
-                case BACKWARD:
-                case LEFT:
-                case RIGHT:
-                    if (base.SimObjectId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID)
-                        return;
-                    RobotSimObject robot = SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject;
-                    SimulationPreferences.SetRobotInput(
-                        _robot.MiraLive.MiraAssembly.Info.GUID, args.InputKey, args.Input);
-                    break;
+
+            if (args.InputKey.Length > MiraId.Length) {
+                string s = args.InputKey.Remove(0, MiraId.Length);
+                switch (s) {
+                    case FORWARD:
+                    case BACKWARD:
+                    case LEFT:
+                    case RIGHT:
+                        if (base.MiraId != (MainHUD.SelectedRobot?.RobotGUID ?? string.Empty) ||
+                            !((DynamicUIManager.ActiveModal as ChangeInputsModal)?.isSave ?? false))
+                            return;
+                        SimulationPreferences.SetRobotInput(MiraId, args.InputKey, args.Input);
+                        break;
+                }
             }
         }
 
         public override void Update() {
-            var forwardInput  = InputManager.MappedValueInputs[FORWARD];
-            var backwardInput = InputManager.MappedValueInputs[BACKWARD];
-            var leftInput     = InputManager.MappedValueInputs[LEFT];
-            var rightInput    = InputManager.MappedValueInputs[RIGHT];
+            var forwardInput  = InputManager.MappedValueInputs[forward];
+            var backwardInput = InputManager.MappedValueInputs[backward];
+            var leftInput     = InputManager.MappedValueInputs[left];
+            var rightInput    = InputManager.MappedValueInputs[right];
 
             _xSpeed = Mathf.Abs(forwardInput.Value) - Mathf.Abs(backwardInput.Value);
             _zRot   = Mathf.Abs(rightInput.Value) - Mathf.Abs(leftInput.Value);
@@ -101,9 +128,15 @@ namespace Synthesis {
             (_leftSpeed, _rightSpeed) = SolveSpeed(_xSpeed, _zRot, _squareInputs);
             foreach (var wheel in _leftWheels) {
                 wheel.MainInput = _leftSpeed * speedMult;
+                /*
+                wheel.MainInput = 1;
+            */
             }
             foreach (var wheel in _rightWheels) {
                 wheel.MainInput = _rightSpeed * speedMult;
+                /*
+                wheel.MainInput = 1;
+            */
             }
         }
 

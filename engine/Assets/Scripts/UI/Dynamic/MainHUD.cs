@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using DigitalRuby.Tween;
 using Modes.MatchMode;
 using Synthesis.Gizmo;
@@ -8,10 +6,14 @@ using Synthesis.Runtime;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.Utilities;
+using System;
+using System.Collections.Generic;
+using UI;
+using UI.Dynamic.Modals.MixAndMatch;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using Utilities.ColorManager;
+
 using Button  = Synthesis.UI.Dynamic.Button;
 using Image   = Synthesis.UI.Dynamic.Image;
 using Logger  = SynthesisAPI.Utilities.Logger;
@@ -25,32 +27,50 @@ public static class MainHUD {
     private const string EXPAND_TWEEN   = "expand";
 
     private static Action<SynthesisTween.SynthesisTweenStatus> collapseTweenProgress = s => {
-        _tabDrawerContent?.SetAnchoredPosition<Content>(
+        _tabDrawerContent.CheckIfNull<Content>()?.SetAnchoredPosition<Content>(
             new Vector2(s.CurrentValue<int>(), _tabDrawerContent.RootRectTransform.anchoredPosition.y));
     };
 
-    private const int TAB_DRAWER_WIDTH = 250;
-    private const int TAB_DRAWER_X     = 20;
+    private const int TAB_DRAWER_WIDTH = 300;
+    private const int TAB_DRAWER_X     = 30;
 
     private static bool _isSetup = false;
     private static bool _enabled = true;
+
+    private static bool _overrideEnable = false;
+    public static bool OverrideEnable {
+        get => _overrideEnable;
+        set {
+            Enabled         = !value;
+            _overrideEnable = value;
+        }
+    }
+
     public static bool Enabled {
         get => _enabled;
         set {
+            if (_overrideEnable)
+                return;
+
             if (!_isSetup)
                 return;
 
-            if (_enabled != value) {
-                _enabled = value;
-                if (_enabled) {
-                    _tabDrawerContent.RootGameObject.SetActive(true);
-                    _accordionButton.RootGameObject.SetActive(true);
-                } else {
-                    Collapsed = true;
-                    _tabDrawerContent.RootGameObject.SetActive(false);
-                    _accordionButton.RootGameObject.SetActive(false);
+            if (value) {
+                if (_enabled != value) {
+                    Collapsed = false;
                 }
+
+                _tabDrawerContent.RootGameObject.SetActive(true);
+            } else {
+                if (_enabled != value) {
+                    Collapsed = true;
+                }
+
+                _tabDrawerContent.RootGameObject.SetActive(false);
+                _accordionButton.RootGameObject.SetActive(false);
             }
+
+            _enabled = value;
         }
     }
 
@@ -92,11 +112,16 @@ public static class MainHUD {
     public static bool isConfig       = false;
     public static bool isMatchFreeCam = false;
 
-    private static RobotSimObject? _configRobot = RobotSimObject.GetCurrentlyPossessedRobot();
-    public static RobotSimObject? ConfigRobot {
-        get => _configRobot;
+    public static RobotSimObject? SelectedRobot {
+        get {
+            if (ModeManager.CurrentMode.GetType() == typeof(MatchMode) &&
+                DynamicUIManager.PanelExists<SpawnLocationPanel>()) {
+                return MatchMode.Robots[DynamicUIManager.GetPanel<SpawnLocationPanel>().SelectedButton];
+            } else {
+                return RobotSimObject.GetCurrentlyPossessedRobot();
+            }
+        }
         set {
-            _configRobot = value;
             if (value == null) {
                 RemoveItemFromDrawer("Configure");
             } else if (!isConfig && !DrawerTitles.Contains("Configure")) {
@@ -117,6 +142,8 @@ public static class MainHUD {
     private static Button _homeButton;
     private static Image _homeIcon;
 
+    private static GradientImageUpdater _tabDrawerGradient;
+
     private static Action<Button> _backCallback;
     private static Action<Button> _spawnCallback;
 
@@ -133,8 +160,12 @@ public static class MainHUD {
     public static void Setup() {
         _topDrawerItems.Clear();
         _bottomDrawerItems.Clear();
-        _accordionButton  = new Button(null, GameObject.Find("MainHUD").transform.Find("Accordion").gameObject, null);
-        _tabDrawerContent = new Content(null, GameObject.Find("MainHUD").transform.Find("TabDrawer").gameObject, null);
+        _accordionButton = new Button(null, GameObject.Find("MainHUD").transform.Find("Accordion").gameObject, null);
+        _accordionButton.Image.SetColor(ColorManager.SynthesisColor.Icon);
+        _tabDrawerContent  = new Content(null, GameObject.Find("MainHUD").transform.Find("TabDrawer").gameObject, null);
+        _tabDrawerGradient = _tabDrawerContent.RootGameObject.GetComponent<GradientImageUpdater>() ??
+                             _tabDrawerContent.RootGameObject.AddComponent<GradientImageUpdater>();
+        _tabDrawerGradient.GradientAngle = Mathf.PI * (3f / 2f);
         _logoImage   = new Image(_tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("Logo").gameObject);
         _closeButton = new Button(
             _tabDrawerContent, _tabDrawerContent.RootGameObject.transform.transform.Find("Close").gameObject, null);
@@ -146,32 +177,38 @@ public static class MainHUD {
             _itemContainer, _itemContainer.RootGameObject.transform.Find("BottomItemContainer").gameObject, null);
         _spawnButton = new Button(
             _tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("SpawnButton").gameObject, null);
-        _spawnIcon  = new Image(_spawnButton, _spawnButton.RootGameObject.transform.Find("PlusIcon").gameObject);
-        _homeButton = new Button(
-            _tabDrawerContent, _tabDrawerContent.RootGameObject.transform.Find("HomeButton").gameObject, null);
-        _homeIcon = new Image(_homeButton, _homeButton.RootGameObject.transform.Find("HomeIcon").gameObject);
 
-        _closeButton.OnClicked += (b) => Collapsed = true;
+        _spawnIcon =
+            new Image(_spawnButton, _spawnButton.RootGameObject.transform.Find("Button").Find("PlusIcon").gameObject);
 
-        _spawnButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.Background)
-            .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText));
-        _homeButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.Background)
-            .StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText));
+        _homeButton = new Button(null, _tabDrawerContent.RootGameObject.transform.Find("HomeButton").gameObject, null);
+        _homeButton.StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText))
+            .Image.SetColor(ColorManager.GetColor(ColorManager.SynthesisColor.AcceptButton));
+
+        _homeIcon =
+            new Image(_homeButton, _homeButton.RootGameObject.transform.Find("Button").Find("HomeIcon").gameObject);
+
+        _closeButton.OnClicked += (b) => {
+            Collapsed = true;
+
+            if (isConfig) {
+                LeaveConfig();
+            }
+        };
+
+        _spawnButton.StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText))
+            .Image.SetColor(ColorManager.SynthesisColor.BackgroundHUD);
+        _homeButton.StepIntoLabel(l => l.SetColor(ColorManager.SynthesisColor.MainText))
+            .Image.SetColor(ColorManager.SynthesisColor.BackgroundHUD);
 
         _accordionButton.OnClicked += (b) => { Collapsed = false; };
 
-        _spawnButton.SetTransition(Selectable.Transition.ColorTint).SetInteractableColors();
-
         _homeButton.OnClicked += (b) => { DynamicUIManager.CreateModal<ExitSynthesisModal>(); };
-        _homeButton.SetTransition(Selectable.Transition.ColorTint).SetInteractableColors();
 
         _spawnCallback = b => { DynamicUIManager.CreateModal<SpawningModal>(); };
         _backCallback = b => { LeaveConfig(); };
         _tabDrawerContent.RootRectTransform.anchoredPosition =
             new Vector2(-TAB_DRAWER_WIDTH - TAB_DRAWER_X, _tabDrawerContent.RootRectTransform.anchoredPosition.y);
-
-        // Setup default HUD
-        // MOVED TO PRACTICE MODE
 
         if (!_hasNewRobotListener) {
             EventBus.NewTypeListener<RobotSimObject.PossessionChangeEvent>(e => {
@@ -215,14 +252,15 @@ public static class MainHUD {
 
         var drawerButtonObj = Object.Instantiate(SynthesisAssetCollection.GetUIPrefab("hud-drawer-item-base"),
             (drawerPosition == DrawerPosition.Top ? _topItemContainer : _bottomItemContainer).RootGameObject.transform);
-        drawerButtonObj.GetComponent<UnityEngine.UI.Image>().pixelsPerUnitMultiplier = 30;
+        drawerButtonObj.transform.Find("Button").GetComponent<UnityEngine.UI.Image>().pixelsPerUnitMultiplier = 30;
 
         var drawerButton = new Button(_tabDrawerContent, drawerButtonObj, null);
-        drawerButton.Label!.SetText(title).SetFontSize(16);
+        drawerButton.Label!.SetText(title).SetFontSize(24);
         drawerButton.AddOnClickedEvent(onClick);
-        drawerButton.SetTransition(Selectable.Transition.ColorTint).SetInteractableColors();
 
-        var drawerIcon = new Image(_tabDrawerContent, drawerButtonObj.transform.Find("ItemIcon").gameObject);
+        var drawerIcon =
+            new Image(_tabDrawerContent, drawerButtonObj.transform.Find("Button").Find("ItemIcon").gameObject);
+
         if (icon != null)
             drawerIcon.SetSprite(icon);
 
@@ -277,12 +315,12 @@ public static class MainHUD {
     }
 
     public static void UpdateDrawerSizing() {
-        int LOGO_BOTTOM_Y       = 50;
-        int LOGO_BUTTON_SPACING = 5;
+        int LOGO_BOTTOM_Y       = 55;
+        int LOGO_BUTTON_SPACING = 20;
         int BUTTON_HEIGHT       = 60;
         int SPACING             = 15;
         int GROUP_SPACING       = 5;
-        int ITEM_HEIGHT         = 40;
+        int ITEM_HEIGHT         = 60;
         int BOTTOM_PADDING      = 40;
 
         for (int i = 0; i < _topDrawerItems.Count; i++) {
@@ -290,14 +328,14 @@ public static class MainHUD {
                 .button
                 .SetTopStretch<Button>(anchoredY: GROUP_SPACING + i * (ITEM_HEIGHT + GROUP_SPACING),
                     leftPadding: GROUP_SPACING, rightPadding: GROUP_SPACING)
-                .StepIntoLabel(l => l.SetStretch<Label>(leftPadding: 50));
+                .StepIntoLabel(l => l.SetStretch<Label>(leftPadding: 60));
         }
         for (int i = 0; i < _bottomDrawerItems.Count; i++) {
             _bottomDrawerItems[i]
                 .button
                 .SetTopStretch<Button>(anchoredY: GROUP_SPACING + i * (ITEM_HEIGHT + GROUP_SPACING),
                     leftPadding: GROUP_SPACING, rightPadding: GROUP_SPACING)
-                .StepIntoLabel(l => l.SetStretch<Label>(leftPadding: 50));
+                .StepIntoLabel(l => l.SetStretch<Label>(leftPadding: 60));
         }
         _itemContainer.SetTopStretch<Content>(
             anchoredY: LOGO_BOTTOM_Y + LOGO_BUTTON_SPACING +
@@ -393,6 +431,9 @@ public static class MainHUD {
             }
         }, drawerPosition: DrawerPosition.Bottom);
 
+        AddItemToDrawer("Robot Builder", b => DynamicUIManager.CreateModal<MixAndMatchModal>(),
+            drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+
         PhysicsManager.IsFrozen = false;
     }
 
@@ -426,6 +467,11 @@ public static class MainHUD {
             }
         }, drawerPosition: DrawerPosition.Bottom);
 
+#if UNITY_EDITOR
+        AddItemToDrawer("Skip to End", b => MatchMode.MatchTime = MatchMode.MatchTime > 10 ? 10 : MatchMode.MatchTime,
+            drawerPosition: DrawerPosition.Bottom);
+#endif
+
         if ((MatchStateMachine.Instance.CurrentState.StateName is MatchStateMachine.StateName.RobotPositioning) &&
             Camera.main != null) {
             FreeCameraMode camMode = CameraController.CameraModes["Freecam"] as FreeCameraMode;
@@ -444,25 +490,30 @@ public static class MainHUD {
 
         _spawnButton.RootGameObject.SetActive(true);
         _spawnIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"));
+        _spawnIcon.SetSize<Image>(new Vector2(30, 30));
         _spawnButton.Label.SetText("Back");
 
         if (ModeManager.CurrentMode.GetType() == typeof(MatchMode) &&
             DynamicUIManager.PanelExists<SpawnLocationPanel>()) {
-            ConfigRobot = MatchMode.Robots[DynamicUIManager.GetPanel<SpawnLocationPanel>().SelectedButton];
+            SelectedRobot = MatchMode.Robots[DynamicUIManager.GetPanel<SpawnLocationPanel>().SelectedButton];
         } else {
-            ConfigRobot = RobotSimObject.GetCurrentlyPossessedRobot();
+            SelectedRobot = RobotSimObject.GetCurrentlyPossessedRobot();
         }
 
         RemoveAllItemsFromDrawer();
 
         AddItemToDrawer("Pickup", b => {
-            if (DynamicUIManager.PanelExists<ConfigureShotTrajectoryPanel>())
+            if (DynamicUIManager.PanelExists<ConfigureShotTrajectoryPanel>()) {
                 DynamicUIManager.ClosePanel<ConfigureShotTrajectoryPanel>();
+            }
+
             DynamicUIManager.CreatePanel<ConfigureGamepiecePickupPanel>();
         }, drawerPosition: DrawerPosition.Top);
         AddItemToDrawer("Ejector", b => {
-            if (DynamicUIManager.PanelExists<ConfigureGamepiecePickupPanel>())
+            if (DynamicUIManager.PanelExists<ConfigureGamepiecePickupPanel>()) {
                 DynamicUIManager.ClosePanel<ConfigureGamepiecePickupPanel>();
+            }
+
             DynamicUIManager.CreatePanel<ConfigureShotTrajectoryPanel>();
         }, drawerPosition: DrawerPosition.Top);
 
@@ -475,13 +526,15 @@ public static class MainHUD {
 
         if (ModeManager.CurrentMode.GetType() == typeof(PracticeMode))
             AddItemToDrawer("Move", b => {
-                if (!isMatchFreeCam)
+                if (!isMatchFreeCam) {
                     OrbitCameraMode.FocusPoint = () =>
-                        ConfigRobot.GroundedNode != null && ConfigRobot.GroundedBounds != null
-                            ? ConfigRobot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(
-                                  ConfigRobot.GroundedBounds.center)
+                        SelectedRobot.GroundedNode != null && SelectedRobot.GroundedBounds != null
+                            ? SelectedRobot.GroundedNode.transform.localToWorldMatrix.MultiplyPoint(
+                                  SelectedRobot.GroundedBounds.center)
                             : Vector3.zero;
-                GizmoManager.SpawnGizmo(ConfigRobot);
+                }
+
+                GizmoManager.SpawnGizmo(SelectedRobot);
             }, drawerPosition: DrawerPosition.Bottom);
 
         if (MatchStateMachine.Instance.CurrentState.StateName is MatchStateMachine.StateName.RobotPositioning) {
@@ -497,6 +550,7 @@ public static class MainHUD {
         DynamicUIManager.CloseAllPanels();
         GizmoManager.ExitGizmo();
         isConfig = false;
+        _spawnIcon.SetSize<Image>(new Vector2(22, 22));
         if (ModeManager.CurrentMode.GetType() == typeof(PracticeMode)) {
             SetUpPractice();
         } else if (ModeManager.CurrentMode.GetType() == typeof(MatchMode)) {
