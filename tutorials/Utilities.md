@@ -30,3 +30,8 @@ drag any dynamic object, including the robot.
     <a><img src="img/synthesis/settings-panel.png" alt="image" width="49.5%" height="50%"/></a>
     <a><img src="img/synthesis/god-mode-dragging.png" alt="image" width="49.5%" height="50%"/></a>
 </p>
+
+## Need More Help?
+
+If you need help with anything regarding Synthesis or it's related features please reach out through our
+[discord sever](https://www.discord.gg/hHcF9AVgZA). It's the best way to get in contact with the community and our current developers.
