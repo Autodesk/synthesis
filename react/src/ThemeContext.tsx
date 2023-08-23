@@ -86,15 +86,17 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
 
     // potentially dumb algorithm
     const findUnusedColor = () => {
+        if (process.env.NODE_ENV !== "production") return;
         const MAX_VALUE = 255;
-        const reds = Object.values(themes[currentTheme]).map((c: RgbaColor) => c.r).sort();
-        const greens = Object.values(themes[currentTheme]).map((c: RgbaColor) => c.r).sort();
-        const blues = Object.values(themes[currentTheme]).map((c: RgbaColor) => c.r).sort();
-
+        const sortFunc = (a: number, b: number) => a - b;
+        const reds = Object.values(themes[currentTheme]).map((c: RgbaColor) => c.r).sort(sortFunc);
+        const greens = Object.values(themes[currentTheme]).map((c: RgbaColor) => c.g).sort(sortFunc);
+        const blues = Object.values(themes[currentTheme]).map((c: RgbaColor) => c.b).sort(sortFunc);
 
         const values = [];
 
-        for (const color of [reds, greens, blues]) {
+        for (const colorArr of [reds, greens, blues]) {
+            const color = Array.from(new Set(colorArr));
             let lower = -1;
             let largestGap = -1;
 

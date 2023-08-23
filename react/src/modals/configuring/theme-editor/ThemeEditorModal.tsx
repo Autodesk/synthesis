@@ -1,19 +1,16 @@
-import React, { useState } from "react"
-import { FaChessBoard } from "react-icons/fa6"
-import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { RgbaColor, RgbaColorPicker } from "react-colorful"
-import Stack, { StackDirection } from "@/components/Stack"
-import Dropdown from "@/components/Dropdown"
-import Button from "@/components/Button"
+import { useModalControlContext } from "@/ModalContext"
 import {
     ColorName,
     Theme,
-    colorNameToProp,
-    colorNameToTailwind,
-    defaultThemeName,
-    useTheme,
+    useTheme
 } from "@/ThemeContext"
-import { useModalControlContext } from "@/ModalContext"
+import Button from "@/components/Button"
+import Dropdown from "@/components/Dropdown"
+import Modal, { ModalPropsImpl } from "@/components/Modal"
+import Stack, { StackDirection } from "@/components/Stack"
+import React, { useState } from "react"
+import { RgbaColor, RgbaColorPicker } from "react-colorful"
+import { FaChessBoard } from "react-icons/fa6"
 
 const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { themes, currentTheme, setTheme, updateColor, applyTheme } =
@@ -24,8 +21,8 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [selectedColor, setSelectedColor] = useState<ColorName>(
         "InteractiveElementSolid"
     )
-    const [selectedTheme, setSelectedTheme] = useState<string>(defaultThemeName)
-    const [, setCurrentColor] = useState<RgbaColor>({ r: 0, g: 0, b: 0, a: 0 })
+    const [selectedTheme, setSelectedTheme] = useState<string>(currentTheme)
+    const [currentColor, setCurrentColor] = useState<RgbaColor>({ r: 0, g: 0, b: 0, a: 0 })
     // needs to be useState so it doesn't get reset on re-render
     const [initialThemeValues] = useState<Theme>({ ...themes[selectedTheme] })
 
@@ -93,6 +90,7 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                             updateColor(selectedTheme, selectedColor, c)
                         }}
                     />
+                    <p>{JSON.stringify(currentColor)}</p>
                 </Stack>
                 <div className="w-full h-full">
                     <div className="w-max m-4 h-full overflow-y-scroll pr-4 flex flex-col">
@@ -106,7 +104,10 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                 }}
                             >
                                 <div
-                                    className={`w-6 h-6 rounded-md ${colorNameToTailwind(n as ColorName)}`}
+                                    className={`w-6 h-6 rounded-md`}
+                                    style={{
+                                        background: `rgba(${c.r}, ${c.g}, ${c.b}, ${c.a})`
+                                    }}
                                 ></div>
                                 <div className="h-6 text-main-text">{n}</div>
                             </div>
