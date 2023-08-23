@@ -12,7 +12,7 @@ const defaultColors: Theme = {
     Background: { color: { r: 0, g: 0, b: 0, a: 1 }, above: [] },
     BackgroundSecondary: { color: { r: 30, g: 30, b: 30, a: 1 }, above: [] },
     InteractiveBackground: { color: { r: 52, g: 58, b: 64, a: 1 }, above: [] },
-    MainText: { color: { r: 255, g: 255, b: 255, a: 1 }, above: ['Background', 'BackgroundSecondary', 'BackgroundHUD', 'InteractiveBackground'] },
+    MainText: { color: { r: 255, g: 255, b: 255, a: 1 }, above: ['Background', 'BackgroundSecondary', 'BackgroundHUD', 'InteractiveBackground', 'InteractiveElementLeft', 'InteractiveElementRight'] },
     Scrollbar: { color: { r: 170, g: 170, b: 170, a: 1 }, above: [] },
     AcceptButton: { color: { r: 71, g: 138, b: 226, a: 1 }, above: [] },
     CancelButton: { color: { r: 231, g: 85, b: 81, a: 1 }, above: [] },

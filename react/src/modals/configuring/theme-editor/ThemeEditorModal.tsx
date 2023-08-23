@@ -17,6 +17,7 @@ import { AiFillWarning } from "react-icons/ai"
 cdExtend([a11yPlugin])
 
 const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
+    const readabilityIndicator: boolean = false;
     const { themes, initialThemeName, currentTheme, setTheme, updateColor, applyTheme } =
         useTheme()
 
@@ -50,37 +51,39 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             }}
         >
             <Stack direction={StackDirection.Horizontal}>
-                <Stack direction={StackDirection.Vertical}>
-                    <Dropdown
-                        label="Select a Theme"
-                        options={[
-                            currentTheme,
-                            ...Object.keys(themes).filter(
-                                t => t != currentTheme
-                            ),
-                        ]}
-                        onSelect={setSelectedTheme}
-                        className="h-min"
-                    />
-                    <Stack direction={StackDirection.Horizontal} spacing={10}>
-                        <Button
-                            value="Create Theme"
-                            onClick={() => {
-                                openModal("new-theme")
-                            }}
+                <Stack direction={StackDirection.Vertical} align="center" justify="between" className="w-1/2">
+                    <Stack direction={StackDirection.Vertical}>
+                        <Dropdown
+                            label="Select a Theme"
+                            options={[
+                                currentTheme,
+                                ...Object.keys(themes).filter(
+                                    t => t != currentTheme
+                                ),
+                            ]}
+                            onSelect={setSelectedTheme}
+                            className="h-min"
                         />
-                        <Button
-                            value="Delete Selected"
-                            onClick={() => {
-                                openModal("delete-theme")
-                            }}
-                        />
-                        <Button
-                            value="Delete All"
-                            onClick={() => {
-                                openModal("delete-all-themes")
-                            }}
-                        />
+                        <Stack direction={StackDirection.Horizontal} spacing={10}>
+                            <Button
+                                value="Create Theme"
+                                onClick={() => {
+                                    openModal("new-theme")
+                                }}
+                            />
+                            <Button
+                                value="Delete Selected"
+                                onClick={() => {
+                                    openModal("delete-theme")
+                                }}
+                            />
+                            {false && (<Button
+                                value="Delete All"
+                                onClick={() => {
+                                    openModal("delete-all-themes")
+                                }}
+                            />)}
+                        </Stack>
                     </Stack>
                     <Stack direction={StackDirection.Vertical}>
                         <RgbaColorPicker
@@ -120,19 +123,19 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
                             }}
                         />
+                        <Button value="Randomize Theme" onClick={() => {
+                            if (selectedTheme == initialThemeName) return;
+                            const keys: ColorName[] = Object.keys(themes[selectedTheme]) as ColorName[];
+                            keys.forEach(k => {
+                                const randAlpha = () => Math.max(0.1, Math.random());
+                                updateColor(selectedTheme, k, { ...cdRandom().toRgb(), a: randAlpha() } as RgbaColor);
+                            })
+                            applyTheme(selectedTheme)
+                            setSelectedTheme(selectedTheme)
+                            setCurrentColor(selectedTheme && themes[selectedTheme] && selectedColor ? themes[selectedTheme][selectedColor].color : { r: 0, g: 0, b: 0, a: 0 })
+                            setSelectedColor(selectedColor)
+                        }} />
                     </Stack>
-                    <Button value="Randomize Theme" onClick={() => {
-                        if (selectedTheme == initialThemeName) return;
-                        const keys: ColorName[] = Object.keys(themes[selectedTheme]) as ColorName[];
-                        keys.forEach(k => {
-                            const randAlpha = () => Math.max(0.1, Math.random());
-                            updateColor(selectedTheme, k, { ...cdRandom().toRgb(), a: randAlpha() } as RgbaColor);
-                        })
-                        applyTheme(selectedTheme)
-                        setSelectedTheme(selectedTheme)
-                        setCurrentColor(selectedTheme && themes[selectedTheme] && selectedColor ? themes[selectedTheme][selectedColor].color : { r: 0, g: 0, b: 0, a: 0 })
-                        setSelectedColor(selectedColor)
-                    }} />
                 </Stack>
                 <div className="w-full h-full">
                     <div className="w-max m-4 h-full overflow-y-scroll pr-4 flex flex-col">
@@ -154,12 +157,12 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                     }}
                                 ></div>
                                 <div className="h-6 text-main-text">{n}</div>
-                                {(() => {
+                                {readabilityIndicator && (() => {
                                     if (c.color.a < 0.1 || ((n.toLowerCase().includes("text") || n.toLowerCase().includes("icon")) && !n.toLowerCase().includes("closeicon"))) {
                                         const aboveColors = c.above.map((above: (ColorName | string)) => typeof (above) == "string" ? above : themes[selectedTheme][above]);
                                         const conflicting = aboveColors.map((above: string | RgbaColor) => [above, colord(c.color).isReadable(above)]).filter(c => !c[1]).map(([n,]) => n);
 
-                                        if (conflicting.length > 0 || c.color.a < 0.1)
+                                        if (currentTheme != initialThemeName && (conflicting.length > 0 || c.color.a < 0.1))
                                             return (
                                                 <div className="flex flex-col w-6 align-center justify-center text-toast-warning" title={c.color.a < 0.1 ? 'Alpha too low!' : `This color will not be readable on top of ${conflicting.join(', ')}!`}>
                                                     <AiFillWarning />
