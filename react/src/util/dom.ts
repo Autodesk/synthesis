@@ -9,3 +9,5 @@ export const click = (btn: number, x: number, y: number) => {
     })
     el?.dispatchEvent(event)
 }
+
+(window as any).click = click;
