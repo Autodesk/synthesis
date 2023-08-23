@@ -24,7 +24,8 @@ namespace UI.EventListeners {
         private float _clickedScaleMultiplier = 1.1f;
         [SerializeField]
         private Transform _scaledObj;
-        [FormerlySerializedAs("_isSlider")] [SerializeField]
+        [FormerlySerializedAs("_isSlider")]
+        [SerializeField]
         private bool _dontUseTint;
 
         private Color _setColor;

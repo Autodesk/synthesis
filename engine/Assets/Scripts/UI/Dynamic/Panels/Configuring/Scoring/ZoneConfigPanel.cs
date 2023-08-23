@@ -64,12 +64,14 @@ public class ZoneConfigPanel : PanelDynamic {
             /*Transform parent;
             if (zone.GameObject.transform.parent == null)
                 parent = null;
-            else parent = zone.GameObject.transform.parent.name == "grounded" ? null : zone.GameObject.transform.parent;*/
-            
-            var parent = (zone.GameObject.transform.parent == null || zone.GameObject.transform.parent.name == "grounded") 
-                ? null 
-                : zone.GameObject.transform.parent;
-            
+            else parent = zone.GameObject.transform.parent.name == "grounded" ? null :
+            zone.GameObject.transform.parent;*/
+
+            var parent =
+                (zone.GameObject.transform.parent == null || zone.GameObject.transform.parent.name == "grounded")
+                    ? null
+                    : zone.GameObject.transform.parent;
+
             if (parent is not null) {
                 _initialParent               = parent.name;
                 _initialData.Parent          = parent.name;

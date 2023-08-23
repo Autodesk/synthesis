@@ -116,7 +116,7 @@ public static class MainHUD {
         get {
             if (ModeManager.CurrentMode == null)
                 return RobotSimObject.GetCurrentlyPossessedRobot();
-            
+
             if (ModeManager.CurrentMode.GetType() == typeof(MatchMode) &&
                 DynamicUIManager.PanelExists<SpawnLocationPanel>()) {
                 return MatchMode.Robots[DynamicUIManager.GetPanel<SpawnLocationPanel>().SelectedButton];
