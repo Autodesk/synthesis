@@ -12,10 +12,10 @@ feedback link: https://github.com/Autodesk/synthesis/issues
 ## Intro
 
 After installing Synthesis, the exporter addin should automatically start up when you open Fusion360. Navigate to the Utilities tab and you should see a Synthesis button.
-![image_caption](img/fusion/exporter-button.png)
+![image](img/fusion/exporter-button.png)
 
 After clicking the button, a panel will open up. This is the exporter. In this panel, you can provide us with most of the extra data we need to properly simulate your robot or field in Synthesis.
-![image_caption](img/fusion/exporter-panel.png)
+![image](img/fusion/exporter-panel.png)
 
 ### General Tab
 
