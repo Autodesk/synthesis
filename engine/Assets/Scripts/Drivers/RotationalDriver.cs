@@ -273,15 +273,15 @@ namespace Synthesis {
                     float tarVel = val * _convertedMotorTargetVel;
                     
                     var delta = tarVel - _lastVel;
-                    var posDelta = _motor.force * Time.deltaTime / JointB.connectedBody.mass;
+                    var posDelta = _motor.force * 10 * Time.deltaTime / JointB.connectedBody.mass;
 
                     if (Mathf.Abs(delta) > posDelta) delta = posDelta * Mathf.Sign(delta);
 
                     _lastVel += delta;
 
-                    if (Mathf.Abs(_lastVel * Time.deltaTime) > tarVel) _lastVel = tarVel;
+                    if (Mathf.Abs(_lastVel * Time.deltaTime) > _convertedMotorTargetVel) _lastVel = _convertedMotorTargetVel * Mathf.Sign(_lastVel);
 
-                    if (tarVel != 0) Debug.Log($"alpha {tarVel} delta {delta} fakeTheta {_fakedTheta}");
+                    if (delta != 0) Debug.Log($"tarVel {tarVel} delta {delta} fakeTheta {_fakedTheta}");
 
                     _fakedTheta += _lastVel * deltaT;
 
@@ -293,6 +293,8 @@ namespace Synthesis {
                         }
 
                         _fakedTheta = Mathf.Clamp(_fakedTheta, -180, 179);
+                        if (_fakedTheta == 179 || _fakedTheta == -180)
+                            _lastVel = 0;
 
                         _jointA.limits =
                             new JointLimits { bounceMinVelocity = _rotationalLimits.Value.bounceMinVelocity,

@@ -15,7 +15,7 @@ namespace Synthesis {
         public ConfigurableJoint JointA { get; private set; }
         public ConfigurableJoint JointB { get; private set; }
         private float _maxSpeed;
-        private float _lastSpeed = 0;
+        private float _lastVel = 0;
         public float MaxSpeed {
             get => _maxSpeed;
             set {
@@ -30,8 +30,8 @@ namespace Synthesis {
             set {
                 var newPos             = Mathf.Clamp(value, Limits.Lower, Limits.Upper);
                 JointA.connectedAnchor = JointA.anchor + (JointA.axis * newPos);
-                // if (_position - newPos < 0.000000001)
-                //     _lastSpeed = 0;
+                if (newPos == Limits.Lower || newPos == Limits.Upper)
+                    _lastVel = 0;
                 _position              = newPos;
             }
         }
@@ -103,18 +103,18 @@ namespace Synthesis {
 
             _targetVelocity = value * MaxSpeed;
 
-            var delta         = _targetVelocity - _lastSpeed;
+            var delta         = _targetVelocity - _lastVel;
             var possibleDelta = _motor.force * Time.deltaTime / JointB.connectedBody.mass * 100;  //100 for m to cm conversion
 
             if (Mathf.Abs(delta) > possibleDelta)
                 delta = possibleDelta * Mathf.Sign(delta);
             
-            _lastSpeed += Time.deltaTime * delta;
+            _lastVel += Time.deltaTime * delta;
 
-            if (Mathf.Abs(_lastSpeed * Time.deltaTime) > MaxSpeed)
-                _lastSpeed = MaxSpeed * Mathf.Sign(_lastSpeed);
+            if (Mathf.Abs(_lastVel * Time.deltaTime) > MaxSpeed)
+                _lastVel = MaxSpeed * Mathf.Sign(_lastVel);
 
-            Position += _lastSpeed;
+            Position += _lastVel;
         }
     }
 }
