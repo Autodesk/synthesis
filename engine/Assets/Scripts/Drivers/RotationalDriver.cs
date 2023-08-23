@@ -115,6 +115,7 @@ namespace Synthesis {
             }
         }
 
+        private float _lastVel = 0f;
         private float _fakedTheta = 0f;
         private float _fakedOmega = 0f;
 
@@ -269,9 +270,20 @@ namespace Synthesis {
                     SynthesisUtil.GetInertiaAroundParallelAxis(_jointB.connectedBody, _jointA.anchor, _jointA.axis);
 
                 if (_useFakeMotion) {
-                    float alpha = val * _convertedMotorTargetVel;
+                    float tarVel = val * _convertedMotorTargetVel;
+                    
+                    var delta = tarVel - _lastVel;
+                    var posDelta = _motor.force * Time.deltaTime / JointB.connectedBody.mass;
 
-                    _fakedTheta += alpha * deltaT;
+                    if (Mathf.Abs(delta) > posDelta) delta = posDelta * Mathf.Sign(delta);
+
+                    _lastVel += delta;
+
+                    if (Mathf.Abs(_lastVel * Time.deltaTime) > tarVel) _lastVel = tarVel;
+
+                    if (tarVel != 0) Debug.Log($"alpha {tarVel} delta {delta} fakeTheta {_fakedTheta}");
+
+                    _fakedTheta += _lastVel * deltaT;
 
                     if (_rotationalLimits.HasValue) {
                         if (_fakedTheta > _rotationalLimits.Value.max) {

@@ -30,6 +30,8 @@ namespace Synthesis {
             set {
                 var newPos             = Mathf.Clamp(value, Limits.Lower, Limits.Upper);
                 JointA.connectedAnchor = JointA.anchor + (JointA.axis * newPos);
+                // if (_position - newPos < 0.000000001)
+                //     _lastSpeed = 0;
                 _position              = newPos;
             }
         }
@@ -93,23 +95,25 @@ namespace Synthesis {
         }
 
         public override void Update() {
-            // TODO: Velocity?
+            // TODO: Position
+
+            // VelocityControl
 
             float value = (float) MainInput;
 
             _targetVelocity = value * MaxSpeed;
 
             var delta         = _targetVelocity - _lastSpeed;
-            var possibleDelta = _motor.force * Time.deltaTime / JointB.connectedBody.mass * 100;
+            var possibleDelta = _motor.force * Time.deltaTime / JointB.connectedBody.mass * 100;  //100 for m to cm conversion
 
-            if (delta > 0.001)
-                Debug.Log($"tarVel {_targetVelocity} last {_lastSpeed} delta {delta} pos {possibleDelta}");
-            
             if (Mathf.Abs(delta) > possibleDelta)
                 delta = possibleDelta * Mathf.Sign(delta);
+            
             _lastSpeed += Time.deltaTime * delta;
-            if (Mathf.Abs(_lastSpeed) > MaxSpeed)
+
+            if (Mathf.Abs(_lastSpeed * Time.deltaTime) > MaxSpeed)
                 _lastSpeed = MaxSpeed * Mathf.Sign(_lastSpeed);
+
             Position += _lastSpeed;
         }
     }

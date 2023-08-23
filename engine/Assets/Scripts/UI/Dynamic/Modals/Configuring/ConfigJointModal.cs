@@ -166,7 +166,7 @@ public class ConfigJointModal : ModalDynamic {
                     break;
                 case LinearDriver:
                     _joints[i].origForce = (driver as LinearDriver).Motor.force;
-                    _joints[i].origVel = (driver as LinearDriver).MaxSpeed;
+                    _joints[i].origVel = (driver as LinearDriver).MaxSpeed * 100;
                     break;
             }
 
@@ -203,9 +203,11 @@ public class ConfigJointModal : ModalDynamic {
             .CreateSlider($"Target Velocity ({velUnits})", minValue: 0f, maxValue: max, currentValue: currVel)
             .SetTopStretch<Slider>(PADDING, PADDING, _scrollView.HeightOfChildren + 40f)
             .AddOnValueChangedEvent((s, v) => { onVelocity(v); });
+        if (currForce < 10.0f && max > 50.0f)
+            max = 50.0f;
         jointContent.CreateSubContent(new Vector2(_scrollViewWidth - NAME_WIDTH - PADDING, 40f))
             .SetTopStretch<Content>(0, 0, PADDING)
-            .CreateSlider("Stall Torque (Nm)", minValue: 0f, maxValue: 50f, currentValue: currForce)
+            .CreateSlider("Stall Torque (Nm)", minValue: 0f, maxValue: max, currentValue: currForce)
             .SetTopStretch<Slider>(PADDING, PADDING, _scrollView.HeightOfChildren)
             .AddOnValueChangedEvent((s, f) => { onForce(f); });
     }
