@@ -5,8 +5,6 @@
 [![Clang Format](https://github.com/Autodesk/synthesis/actions/workflows/ClangFormat.yml/badge.svg?branch=master)](https://github.com/Autodesk/synthesis/actions/workflows/ClangFormat.yml)
 [![Black Format](https://github.com/Autodesk/synthesis/actions/workflows/BlackFormat.yml/badge.svg?branch=master)](https://github.com/Autodesk/synthesis/actions/workflows/BlackFormat.yml)
 
-<br>
-
 Synthesis is a robotics simulator designed by and for FIRST robotics students to help teams design, strategize, test and practice. Teams have the ability to import their own robots and fields using our [Fusion 360 Exporter](/exporter/) or use the pre-packaged ones that come included with every release of Synthesis.
 
 For more information on the product itself or the team, visit [http://synthesis.autodesk.com/](http://synthesis.autodesk.com/).
