@@ -513,7 +513,6 @@ public static class MainHUD {
             if (DynamicUIManager.PanelExists<ConfigureGamepiecePickupPanel>()) {
                 DynamicUIManager.ClosePanel<ConfigureGamepiecePickupPanel>();
             }
-
             DynamicUIManager.CreatePanel<ConfigureShotTrajectoryPanel>();
         }, drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("robot-arm-icon"));
 
