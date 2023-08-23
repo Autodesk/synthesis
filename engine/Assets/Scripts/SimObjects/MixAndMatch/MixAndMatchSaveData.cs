@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -78,7 +77,7 @@ namespace SimObjects.MixAndMatch {
             var part = JsonUtility.FromJson<GlobalPartData>(File.ReadAllText(filePath));
 
             if (part.Guid is null or "")
-                part.Guid = GUID.Generate().ToString();
+                part.Guid = Guid.NewGuid().ToString();
 
             return part;
         }
@@ -112,7 +111,7 @@ namespace SimObjects.MixAndMatch {
         /// <summary>Creates a new mix and match part with no connection points</summary>
         public static GlobalPartData CreateNewPart(string name, string mirabufFile = "") {
             return new GlobalPartData(
-                name, GUID.Generate().ToString(), mirabufFile, Array.Empty<(Vector3, Quaternion)>());
+                name, Guid.NewGuid().ToString(), mirabufFile, Array.Empty<(Vector3, Quaternion)>());
         }
 
         /// <summary>Creates a new mix and match robot with no parts</summary>

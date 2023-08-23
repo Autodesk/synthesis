@@ -22,6 +22,19 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
             });
 
             CancelButton.AddOnClickedEvent(x => { DynamicUIManager.CreateModal<EditThemeModal>(); });
+
+            AcceptButton
+                .AddOnClickedEvent(
+                    _ => {
+                        ColorManager.DeleteAllThemes();
+                        DynamicUIManager.CreateModal<EditThemeModal>();
+                    })
+                .ApplyTemplate(Button.EnableCancelButton)
+                .StepIntoLabel(l => l.SetText("Delete"));
+
+            CancelButton.AddOnClickedEvent(x => { DynamicUIManager.CreateModal<EditThemeModal>(); })
+                .ApplyTemplate(Button.EnableAcceptButton)
+                .StepIntoLabel(l => l.SetText("Back"));
         }
 
         public override void Update() {}

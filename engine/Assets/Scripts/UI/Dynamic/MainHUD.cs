@@ -516,7 +516,7 @@ public static class MainHUD {
             DynamicUIManager.CreatePanel<ConfigureShotTrajectoryPanel>();
         }, drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("robot-arm-icon"));
 
-        AddItemToDrawer("RoboRIO", b => DynamicUIManager.CreateModal<RioConfigurationModal>(true),
+        AddItemToDrawer("RoboRIO", b => DynamicUIManager.CreateModal<RioConfigurationModal>(false, true),
             drawerPosition: DrawerPosition.Bottom, icon: SynthesisAssetCollection.GetSpriteByName("roborio"));
         AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>(),
             drawerPosition: DrawerPosition.Bottom, icon: SynthesisAssetCollection.GetSpriteByName("drivetrain"));

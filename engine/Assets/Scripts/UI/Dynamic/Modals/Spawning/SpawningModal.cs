@@ -25,7 +25,8 @@ public class SpawningModal : ModalDynamic {
         var field = right.CreateButton("Field")
                         .ApplyTemplate(UIComponent.VerticalLayout)
                         .AddOnClickedEvent(b => DynamicUIManager.CreateModal<AddFieldModal>())
-                        .StepIntoLabel(l => l.SetText("Fields"));
+                        .StepIntoLabel(l => l.SetText("Fields"))
+                        .StepIntoImage(i => i.InvertGradient());
     }
 
     public override void Delete() {}

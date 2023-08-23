@@ -14,13 +14,18 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
         public override void Create() {
             ModalIcon.UnityImage.sprite = SynthesisAssetCollection.GetSpriteByName("trash-icon");
             Title.SetText($"Delete {ColorManager.SelectedTheme}?").SetWrapping(false);
+            
+            AcceptButton
+                .AddOnClickedEvent(x => {
+                    ColorManager.DeleteSelectedTheme();
+                    DynamicUIManager.CreateModal<EditThemeModal>();
+                })
+                .ApplyTemplate(Button.EnableCancelButton)
+                .StepIntoLabel(l => l.SetText("Delete"));
 
-            AcceptButton.AddOnClickedEvent(x => {
-                ColorManager.DeleteSelectedTheme();
-                DynamicUIManager.CreateModal<EditThemeModal>();
-            });
-
-            CancelButton.AddOnClickedEvent(x => { DynamicUIManager.CreateModal<EditThemeModal>(); });
+            CancelButton.AddOnClickedEvent(x => { DynamicUIManager.CreateModal<EditThemeModal>(); })
+                .ApplyTemplate(Button.EnableAcceptButton)
+                .StepIntoLabel(l => l.SetText("Back"));
         }
 
         public override void Update() {}
