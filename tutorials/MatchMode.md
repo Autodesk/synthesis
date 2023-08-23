@@ -1,7 +1,7 @@
 author: Synthesis Team
 summary: Tutorial for using Match Mode
 id: MatchModeCodelab
-tags: Match Mode, Practice Mode, Game Simulation
+tags: Match Mode, Modes, Game Simulation
 categories: Modes
 environments: Synthesis
 status: Draft
