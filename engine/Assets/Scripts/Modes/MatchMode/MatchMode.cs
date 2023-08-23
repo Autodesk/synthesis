@@ -106,7 +106,7 @@ namespace Modes.MatchMode {
             int i = 0;
             SelectedRobots.ForEach(x => {
                 if (x != -1) {
-                    Vector3 position              = new Vector3(2 * i - 6, -2.5f, 0);
+                    Vector3 position              = new Vector3(2 * i - 6, -150f, 0);
                     RawSpawnLocations[i].position = position;
 
                     RobotSimObject.SpawnRobot(null, position, Quaternion.identity, false, robotFiles[x]);

@@ -602,6 +602,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Cancel
       objectReference: {fileID: 0}
+    - target: {fileID: 1339051175213289813, guid: 67841954fc797ca4099c4b62c87c3e0e, type: 3}
+      propertyPath: _image
+      value: 
+      objectReference: {fileID: 4769485851255512159}
     - target: {fileID: 1778740103824092176, guid: 67841954fc797ca4099c4b62c87c3e0e, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -688,7 +692,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5247302447376332241, guid: 67841954fc797ca4099c4b62c87c3e0e, type: 3}
       propertyPath: m_Transition
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5247302447376332241, guid: 67841954fc797ca4099c4b62c87c3e0e, type: 3}
       propertyPath: m_TargetGraphic
@@ -702,7 +706,12 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: d9c4c591714f10f448b52c61f82e1c5f, type: 3}
-    m_RemovedComponents: []
+    - target: {fileID: 7310018759022356723, guid: 67841954fc797ca4099c4b62c87c3e0e, type: 3}
+      propertyPath: m_PixelsPerUnitMultiplier
+      value: 33
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 646561847968102766, guid: 67841954fc797ca4099c4b62c87c3e0e, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -749,6 +758,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Accept
       objectReference: {fileID: 0}
+    - target: {fileID: 1339051175213289813, guid: 67841954fc797ca4099c4b62c87c3e0e, type: 3}
+      propertyPath: _image
+      value: 
+      objectReference: {fileID: 4344894685797060241}
     - target: {fileID: 1778740103824092176, guid: 67841954fc797ca4099c4b62c87c3e0e, type: 3}
       propertyPath: m_Pivot.x
       value: 1
@@ -835,7 +848,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5247302447376332241, guid: 67841954fc797ca4099c4b62c87c3e0e, type: 3}
       propertyPath: m_Transition
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5247302447376332241, guid: 67841954fc797ca4099c4b62c87c3e0e, type: 3}
       propertyPath: m_TargetGraphic
@@ -849,7 +862,24 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: d9c4c591714f10f448b52c61f82e1c5f, type: 3}
-    m_RemovedComponents: []
+    - target: {fileID: 7310018759022356723, guid: 67841954fc797ca4099c4b62c87c3e0e, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7310018759022356723, guid: 67841954fc797ca4099c4b62c87c3e0e, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7310018759022356723, guid: 67841954fc797ca4099c4b62c87c3e0e, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7310018759022356723, guid: 67841954fc797ca4099c4b62c87c3e0e, type: 3}
+      propertyPath: m_PixelsPerUnitMultiplier
+      value: 33
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 646561847968102766, guid: 67841954fc797ca4099c4b62c87c3e0e, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
