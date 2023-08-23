@@ -46,9 +46,10 @@ To automatically install DotNet and Protobuf run the following script depending 
 - Windows: `scripts/win/resolve_deps.bat`
 - MacOS & Linux: `scripts/osx/resolve_deps.sh`
 
-Note that the windows script requires admin privileges to install DotNet and Protobuf to the system PATH. For this reason it is not included by default in `init.bat` unlike how `init.sh` includes `resolve_deps.sh`.
+Dependency Notes:
 
-Note that Unity must be installed manually through the Unity Hub app which can be downloaded from [https://unity.com/download](https://unity.com/download).
+- The windows script requires admin privileges to install DotNet and Protobuf to the system PATH. For this reason it is not included by default in `init.bat` unlike how `init.sh` includes `resolve_deps.sh`.
+- Unity must be installed manually through the Unity Hub app which can be downloaded from [https://unity.com/download](https://unity.com/download).
 
 ### How To Build Synthesis Using An `init` Script And Unity
 
