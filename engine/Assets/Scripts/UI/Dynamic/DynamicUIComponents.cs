@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UI;
+using UI.Dynamic.Modals.Spawning;
 using UI.EventListeners;
 using UnityEngine.EventSystems;
 using UnityEngine.PlayerLoop;
@@ -201,6 +202,25 @@ namespace Synthesis.UI.Dynamic {
 
             return newMainContent;
         }
+
+        protected Content CenterAtBottom(Vector2? newContentSize = null, float leftPadding = 0f,
+            float rightPadding = 0f, float topPadding = 0f, float bottomPadding = 0f) {
+            var panel = new Content(null, UnityObject, null);
+            if (newContentSize.HasValue) {
+                panel.SetSize<Content>(new Vector2(newContentSize.Value.x + leftPadding + rightPadding,
+                    newContentSize.Value.y + topPadding + bottomPadding));
+            }
+            panel.SetAnchors<Content>(new Vector2(0.5f, 0.0f), new Vector2(0.5f, 0.0f));
+            panel.SetPivot<Content>(new Vector2(0.5f, 0.0f));
+            panel.SetAnchoredPosition<Content>(new Vector2(0.0f, 10.0f));
+            var newMainContent =
+                panel.CreateSubContent(newContentSize ?? new Vector2(panel.Size.x - (rightPadding + leftPadding),
+                                                             panel.Size.y - (topPadding + bottomPadding)));
+            newMainContent.SetStretch<Content>(leftPadding, rightPadding, topPadding, bottomPadding);
+            newMainContent.RootRectTransform.transform.SetSiblingIndex(2);
+
+            return newMainContent;
+        }
     }
 
     public abstract class ModalDynamic {
@@ -215,7 +235,7 @@ namespace Synthesis.UI.Dynamic {
 
         // Default for Modal
         private Button _cancelButton;
-        protected Button CancelButton => _cancelButton;
+        public Button CancelButton => _cancelButton;
         private Button _acceptButton;
         protected Button AcceptButton => _acceptButton;
         private Image _modalIcon;
@@ -638,6 +658,16 @@ namespace Synthesis.UI.Dynamic {
         public T? CheckIfNull<T>()
             where T : UIComponent {
             return RootGameObject == null ? null : (this as T)!;
+        }
+
+        public T SetAlpha<T>(float alpha)
+            where T : UIComponent {
+            if (RootGameObject.TryGetComponent<CanvasGroup>(out var canvasGroup))
+                canvasGroup.alpha = alpha;
+            else
+                RootGameObject.AddComponent<CanvasGroup>().alpha = alpha;
+
+            return (this as T)!;
         }
     }
 
@@ -1068,9 +1098,20 @@ namespace Synthesis.UI.Dynamic {
     }
 
     public class Slider : UIComponent {
-        public static readonly Func<Slider, Slider> VerticalLayoutTemplate = (Slider slider) =>
-            slider.SetTopStretch<Slider>(
-                leftPadding: 15f, anchoredY: slider.Parent!.HeightOfChildren - slider.Size.y + 15f);
+        public static readonly Func<Slider, Slider> VerticalLayoutTemplate = (slider) => slider.SetTopStretch<Slider>(
+            leftPadding: 15f, anchoredY: slider.Parent!.HeightOfChildren - slider.Size.y + 15f);
+
+        public static readonly Func<Slider, Slider> DisableSlider = (slider) => {
+            slider.RootGameObject.GetComponentInChildren<HoverEventListener>().enabled = false;
+            slider._unitySlider.enabled                                                = false;
+            return slider.SetAlpha<Slider>(0.4f);
+        };
+
+        public static readonly Func<Slider, Slider> EnableSlider = (slider) => {
+            slider.RootGameObject.GetComponentInChildren<HoverEventListener>().enabled = true;
+            slider._unitySlider.enabled                                                = true;
+            return slider.SetAlpha<Slider>(1);
+        };
 
         public event Action<Slider, float> OnValueChanged;
         private Func<float, string> _customValuePresentation = (x) => Math.Round(x, 2).ToString();
@@ -1172,6 +1213,11 @@ namespace Synthesis.UI.Dynamic {
 
         public Slider StepIntoHandleImage(Action<Image> mod) {
             mod(_handleImage);
+            return this;
+        }
+
+        public Slider EnableRounding() {
+            OnValueChanged += (_, value) => { SetValue((int) value); };
             return this;
         }
     }

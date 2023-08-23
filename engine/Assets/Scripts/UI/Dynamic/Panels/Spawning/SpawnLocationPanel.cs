@@ -7,15 +7,17 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Utilities.ColorManager;
 using Input  = UnityEngine.Input;
+using Logger = SynthesisAPI.Utilities.Logger;
 using Object = UnityEngine.Object;
 
 namespace Synthesis.UI.Dynamic {
     public class SpawnLocationPanel : PanelDynamic {
         private const string SNAP_MODE_KEY = "ROBOT_PLACEMENT_SNAPPING";
 
-        private const float WIDTH            = 400f;
-        private const float HEIGHT           = 130f;
-        private const float VERTICAL_PADDING = 15f;
+        private const float WIDTH            = 350f;
+        private const float HEIGHT           = 210;
+        private const float VERTICAL_PADDING = 10f;
+        private const float INSET_PADDING    = 10f;
 
         private const float ROBOT_MOVE_SPEED  = 7f;
         private const float ROBOT_TILT_AMOUNT = 0.32f;
@@ -36,6 +38,7 @@ namespace Synthesis.UI.Dynamic {
 
         private static readonly Material mat =
             new Material(Shader.Find("Shader Graphs/DefaultSynthesisTransparentShader"));
+
         private static readonly int shaderColorProperty = Shader.PropertyToID("Color_48545d7793c14f3d9e1dd2264f072068");
 
         private static readonly int fieldLayerMask = 1 << LayerMask.NameToLayer("FieldCollisionLayer");
@@ -53,12 +56,22 @@ namespace Synthesis.UI.Dynamic {
             return u;
         };
 
+        public readonly Func<UIComponent, UIComponent> VerticalLayoutBigSpacing = (u) => {
+            var offset = (-u.Parent!.RectOfChildren(u).yMin) + 50;
+            u.SetTopStretch<UIComponent>(anchoredY: offset, leftPadding: 0f); // used to be 15f
+            return u;
+        };
+
         public int SelectedButton;
         private bool _renderBoxes = false;
+        private Content _newMainContent;
 
         public SpawnLocationPanel() : base(new Vector2(WIDTH, HEIGHT)) {}
 
         public override bool Create() {
+            _newMainContent = CenterAtBottom(new Vector2(WIDTH, HEIGHT), leftPadding: INSET_PADDING,
+                rightPadding: INSET_PADDING, topPadding: INSET_PADDING, bottomPadding: INSET_PADDING);
+
             TooltipManager.CreateTooltip(("Scroll", "Rotate Robot"), ("Shift", "Hold to Snap"));
             TweenDirection = Vector2.down;
 
@@ -69,12 +82,17 @@ namespace Synthesis.UI.Dynamic {
             Title.SetText("Set Spawn Locations").SetFontSize(25f);
             PanelIcon.RootGameObject.SetActive(false);
 
-            Content panel = new Content(null, UnityObject, null);
-
-            float padding = 700;
-            panel.SetBottomStretch<Content>(padding, padding, 0);
-
             AcceptButton.StepIntoLabel(label => label.SetText("Accept")).AddOnClickedEvent(b => {
+                int i = 0;
+                foreach (var trf in _robotHighlights) {
+                    if (trf.position.magnitude >= 150f) {
+                        Logger.Log(
+                            $"Spawn location of {((i < 3) ? "Red" : "Blue")} " + $"{(i % 3 + 1)} has not been set!");
+                        return;
+                    }
+                    i++;
+                }
+
                 DynamicUIManager.ClosePanel<SpawnLocationPanel>();
                 MatchStateMachine.Instance.SetState(MatchStateMachine.StateName.FieldConfig);
             });
@@ -143,17 +161,18 @@ namespace Synthesis.UI.Dynamic {
         /// Creates the buttons to select which robot to move
         /// </summary>
         private void CreateButtons() {
-            float spacing            = 15f;
-            var (left, rightSection) = MainContent.SplitLeftRight((MainContent.Size.x / 3f) - (spacing / 2f), spacing);
+            float spacing = 10f;
+            var (left, rightSection) =
+                _newMainContent.SplitLeftRight((_newMainContent.Size.x / 3f) - (spacing / 2f), spacing);
 
-            var (center, right) = rightSection.SplitLeftRight((MainContent.Size.x / 3f) - (spacing / 2f), spacing);
+            var (center, right) = rightSection.SplitLeftRight((_newMainContent.Size.x / 3f) - (spacing / 2f), spacing);
             for (int i = 0; i < 6; i++) {
                 int buttonIndex = i;
                 buttons[i]      = ((i % 3 == 0) ? left : ((i % 3 == 1) ? center : right))
                                  .CreateButton()
                                  .StepIntoLabel(
                                      l => l.SetText($"{((buttonIndex < 3) ? "Red" : "Blue")} {(buttonIndex % 3 + 1)}"))
-                                 .ApplyTemplate(VerticalLayout)
+                                 .ApplyTemplate((i < 3) ? VerticalLayoutBigSpacing : VerticalLayout)
                                  .ApplyTemplate(DisabledTemplate)
                                  .AddOnClickedEvent(b => { SelectButton(buttonIndex); });
             }
@@ -240,7 +259,10 @@ namespace Synthesis.UI.Dynamic {
 
                 Vector3 prevPos = box.position;
                 Vector3 target  = MatchMode.GetSpawnLocation(i).position;
-                box.position    = Vector3.Lerp(prevPos, target, ROBOT_MOVE_SPEED * Time.deltaTime);
+
+                box.position = Vector3.Distance(box.position, target) < 100f
+                                   ? Vector3.Lerp(prevPos, target, ROBOT_MOVE_SPEED * Time.deltaTime)
+                                   : target;
 
                 Vector3 robotTilt = (target - prevPos) * (45f * ROBOT_TILT_AMOUNT);
 

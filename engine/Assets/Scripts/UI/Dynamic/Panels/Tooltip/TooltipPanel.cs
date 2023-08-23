@@ -96,7 +96,7 @@ namespace UI.Dynamic.Panels.Tooltip {
     }
 
     public static class TooltipManager {
-        private const float TOOLTIP_TIMEOUT_SEC = 7;
+        private const float TOOLTIP_TIMEOUT_SEC = 12;
 
         private static TooltipPanel _currentTooltip;
         private static CancellationTokenSource _cts;

@@ -25,6 +25,7 @@ namespace Synthesis.UI.Dynamic {
             _root = ParsePath(Path.Combine("$appdata/Autodesk/Synthesis", Folder), '/');
             if (!Directory.Exists(_root))
                 Directory.CreateDirectory(_root);
+
             _files = Directory.GetFiles(_root).Where(x => Path.GetExtension(x).Equals(".mira")).ToArray();
 
             Title.SetText("Field Selection");
@@ -40,7 +41,7 @@ namespace Synthesis.UI.Dynamic {
             });
 
             var chooseRobotDropdown = MainContent.CreateDropdown()
-                                          .SetOptions(_files.Select(x => Path.GetFileName(x)).ToArray())
+                                          .SetOptions(_files.Select(Path.GetFileNameWithoutExtension).ToArray())
                                           .AddOnValueChangedEvent((_, i, _) => _selectedIndex = i)
                                           .SetTopStretch<Dropdown>();
 
