@@ -50,7 +50,7 @@ Note that the windows script requires admin privileges to install DotNet and Pro
 
 Note that Unity must be installed manually through the Unity Hub app which can be downloaded from [https://unity.com/download](https://unity.com/download).
 
-### How To Build Synthesis Using `init` and Unity
+### How To Build Synthesis Using An `init` Script And Unity
 
 Before attempting to build Synthesis, ensure you have all dependencies installed.
 
@@ -72,7 +72,7 @@ Before you contribute to this repository, please first discuss the change you wi
 
 When ready to contribute, just submit a pull request and be sure to include a clear and detailed description of the changes you've made so that we can verify them and eventually merge. Feel free to check out our [contributing guidelines](/CONTRIBUTING.md) to learn more.
 
-## Code Formatting and Style
+## Code Formatting And Style
 
 Synthesis uses [clang-format](https://clang.llvm.org/docs/ClangFormat.html) and [black](https://black.readthedocs.io/en/stable/) to format all of our `C++`, `C#` and `Python` code. Additionally we have GitHub workflows that verify these formatting standards for each and every pull request. For more information about how to run these formatters yourself, check out the [formatting tools](/scripts/format/) we use.
 
@@ -80,7 +80,7 @@ Synthesis uses [clang-format](https://clang.llvm.org/docs/ClangFormat.html) and 
 
 Annually, since 2014, Autodesk has sponsored the Synthesis Immersion Program for FIRST robotics students to develop Synthesis. The immersion program is a 10 week paid work experience at the Portland, Oregon Autodesk office from June 20th to August 25th. The immersion program focuses on not only developing Synthesis, but also allowing for opportunities to meet and collaborate with other Autodesk employees. For more information about the immersion program, visit our website at [synthesis.autodesk.com/internship](https://synthesis.autodesk.com/internship.html).
 
-### Want to be a Part of the Team?
+### Want To Be A Part Of The Team?
 
 If you're a FIRST robotics student who wants to be a part of the Synthesis development team here is some basic information about applying.
 
