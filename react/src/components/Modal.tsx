@@ -57,7 +57,7 @@ const Modal: React.FC<ModalProps> = ({
     return (
         <div
             id={name}
-            className={`${className} absolute w-fit h-fit left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background text-main-text m-auto border-5 rounded-2xl shadow-sm shadow-slate-800`}
+            className={`${className} backdrop-blur-[4px] absolute w-fit h-fit left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background text-main-text m-auto border-5 rounded-2xl shadow-sm shadow-slate-800`}
         >
             {name && (
                 <div id="header" className="flex items-center gap-8 h-16">
@@ -71,9 +71,8 @@ const Modal: React.FC<ModalProps> = ({
             )}
             <div
                 id="content"
-                className={`${contentClassName} ${
-                    !contentClassName?.includes("mx") ? "mx-16" : ""
-                } flex flex-col gap-4`}
+                className={`${contentClassName} ${!contentClassName?.includes("mx") ? "mx-16" : ""
+                    } flex flex-col gap-4`}
             >
                 {children}
             </div>
@@ -89,11 +88,10 @@ const Modal: React.FC<ModalProps> = ({
                             closeModal()
                             if (!cancelBlocked && onCancel) onCancel()
                         }}
-                        className={`${
-                            cancelBlocked
-                                ? "bg-interactive-background"
-                                : "bg-cancel-button"
-                        } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
+                        className={`${cancelBlocked
+                            ? "bg-interactive-background"
+                            : "bg-cancel-button"
+                            } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
                     />
                 )}
                 {middleEnabled && (
@@ -103,11 +101,10 @@ const Modal: React.FC<ModalProps> = ({
                         onClick={() => {
                             if (!middleBlocked && onMiddle) onMiddle()
                         }}
-                        className={`${
-                            middleBlocked
-                                ? "bg-interactive-background"
-                                : "bg-accept-button"
-                        } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
+                        className={`${middleBlocked
+                            ? "bg-interactive-background"
+                            : "bg-accept-button"
+                            } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
                     />
                 )}
                 {acceptEnabled && (
@@ -118,11 +115,10 @@ const Modal: React.FC<ModalProps> = ({
                             closeModal()
                             if (!acceptBlocked && onAccept) onAccept()
                         }}
-                        className={`${
-                            acceptBlocked
-                                ? "bg-interactive-background"
-                                : "bg-accept-button"
-                        } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
+                        className={`${acceptBlocked
+                            ? "bg-interactive-background"
+                            : "bg-accept-button"
+                            } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
                     />
                 )}
             </div>
