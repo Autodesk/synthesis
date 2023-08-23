@@ -8,12 +8,12 @@ import Button from "@/components/Button"
 import Dropdown from "@/components/Dropdown"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Stack, { StackDirection } from "@/components/Stack"
+import { extend as cdExtend, random as cdRandom, colord } from "colord"
+import a11yPlugin from "colord/plugins/a11y"
 import React, { useState } from "react"
 import { HexColorInput, RgbaColor, RgbaColorPicker } from "react-colorful"
-import { FaChessBoard } from "react-icons/fa6"
-import { colord, random as cdRandom, extend as cdExtend } from "colord"
-import a11yPlugin from "colord/plugins/a11y"
 import { AiFillWarning } from "react-icons/ai"
+import { FaChessBoard } from "react-icons/fa6"
 cdExtend([a11yPlugin])
 
 const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
@@ -29,7 +29,7 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [selectedTheme, setSelectedTheme] = useState<string>(currentTheme)
     const [, setCurrentColor] = useState<RgbaColor>({ r: 0, g: 0, b: 0, a: 0 })
     // needs to be useState so it doesn't get reset on re-render
-    const [initialThemeValues] = useState<Theme>({ ...themes[selectedTheme] })
+    const [initialThemeValues] = useState<Theme>(JSON.parse(JSON.stringify(themes[selectedTheme])));
 
     return (
         <Modal
