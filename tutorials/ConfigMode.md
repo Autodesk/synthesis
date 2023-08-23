@@ -53,15 +53,14 @@ motor, you can adjust the target velocity accordingly.
 In drivetrain configuration, you can change the drivetrain your robot uses, which can then be adjusted in
 motor configuration, and controls.
 
-![Change Drivetrain Panel]()
+<img src="img/synthesis/change-drivetrain-panel.png" alt="image" width="50%" height="50%"/>
 
 The drivetrains available on Synthesis are as the following:
 
-**None**: Selecting ‘None’ will disable your robot’s drive.
-**Tank**: A direct-drive control where each joystick is used for one side of the drivetrain
-**Arcade**: A control scheme in which one single joystick controls both the robot’s forward and backward 
-movement, as well as its turning.
-**Swerve**: A specialized drivetrain that allows each wheel to move and rotate independently.
+* **None**: Selecting ‘None’ will disable your robot’s drive.
+* **Tank**: A direct-drive control where each joystick is used for one side of the drivetrain
+* **Arcade**: A control scheme in which one single joystick controls both the robot’s forward and backward movement, as well as its turning.
+* **Swerve**: A specialized drivetrain that allows each wheel to move and rotate independently.
 
 ### Compatibility
 
