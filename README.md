@@ -35,6 +35,12 @@ If you're a developer who wants to contribute to Synthesis, you're in the right 
 
 Each of this components can be manually compiled separately, but this is not recommended. Instead, we recommend using the *init* scripts provided (`init.bat` & `init.sh` respectively) to build and link each component together (excluding the Fusion Robot Exporter).
 
+### Compatibility Notes
+
+As Fusion 360 is not supported on linux the linux installer does not come with the Fusion 360 Addin for exporting robots and fields.
+
+Also note that the linux installer is tailored for Debian based distributions. Synthesis can be installed and ran on other distros but the installer is not guaranteed for your operating system.
+
 ### Dependencies
 
 Synthesis Version `6.0.0` has the following dependencies:
