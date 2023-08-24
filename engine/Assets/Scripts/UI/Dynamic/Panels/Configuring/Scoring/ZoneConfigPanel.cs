@@ -61,7 +61,6 @@ public class ZoneConfigPanel : PanelDynamic {
             _initialData.Name     = zone.Name;
             _initialData.Alliance = zone.Alliance;
 
-
             var parent =
                 (zone.GameObject.transform.parent == null || zone.GameObject.transform.parent.name == "grounded")
                     ? null
