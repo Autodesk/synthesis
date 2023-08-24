@@ -19,7 +19,7 @@ public class ScoreboardPanel : PanelDynamic {
 
     private readonly bool _showTimer;
 
-    private static Label _time, _redScore, _blueScore, _redLabel, _blueLabel;
+    private Label _time, _redScore, _blueScore, _redLabel, _blueLabel;
     private Content _topContent, _bottomContent;
 
     public Func<UIComponent, UIComponent> VerticalLayout = u => {
@@ -129,7 +129,7 @@ public class ScoreboardPanel : PanelDynamic {
         EventBus.RemoveTypeListener<ColorManager.OnThemeChanged>(AssignColors);
     }
 
-    public static void AssignColors(IEvent e) {
+    public void AssignColors(IEvent e) {
         _redLabel.SetColor(ColorManager.SynthesisColor.MainText);
         _blueLabel.SetColor(ColorManager.SynthesisColor.MainText);
         _blueScore.SetColor(ColorManager.SynthesisColor.MainText);
