@@ -34,7 +34,7 @@ Theme Editor is a new feature that allows you to choose between preset themes, a
 
 ### Configure
 
-TBD
+See our [Configure Mode Tutorial](https://synthesis.autodesk.com/codelab/ConfigModeCodelab/index.html#0) for more information about config mode.
 
 ### Robot Builder
 

@@ -84,6 +84,7 @@ NOTE: Linear joints are not fully supported yet.
 <br/>
 You can also specify a parent joint that the joint is supposed to stem from.
 
-## Need more help?
+## Need More Help?
 
-If you need any help with the process, feel free to join our [Discord](https://www.discord.gg/hHcF9AVgZA) where you can be in direct contact with Synthesis developers.
+If you need help with anything regarding Synthesis or it's related features please reach out through our
+[discord sever](https://www.discord.gg/hHcF9AVgZA). It's the best way to get in contact with the community and our current developers.

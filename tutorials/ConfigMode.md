@@ -15,7 +15,7 @@ Configure mode allows you to change and fine tune aspects of your robot to bette
 behavior on the field. Configure mode is available in both Practice and Match mode, accessible via the
 side panel.
 
-![Configure Mode]()
+<img src="img/synthesis/config-mode.png" alt="image" width="50%" height="50%"/>
 
 In each configuration panel, you will be able to cancel and save your modifications. You will also be
 given the option to `session save`, saving your changes until you quit the session. If you want the
@@ -43,7 +43,7 @@ robot.
 Motor configuration allows you to modify the motors on your robot. Using the slide bars assigned to each
 motor, you can adjust the target velocity accordingly.
 
-![Motor Config]()
+<img src="img/synthesis/motor-config.png" alt="image" width="50%" height="50%"/>
 
 **RPM**: Revolutions per minute, standard unit used to measure speed of drivetrains.
 **M/S**: Meter per second, standard unit of both speed and velocity.

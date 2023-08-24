@@ -1,4 +1,4 @@
-.PHONY: all FusionExporter CodeSimulation
+.PHONY: all FusionExporter CodeSimulation ConfigMode PracticeMode MatchMode ReplayMode Utilities
 
 all: FusionExporter CodeSimulation ConfigMode PracticeMode MatchMode ReplayMode Utilities
 
