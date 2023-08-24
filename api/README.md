@@ -7,7 +7,7 @@ functionality and reused as throughout future iterations of Synthesis no matter 
 
 ## Getting Started
 
-For more information on cloning this repository and the initial setup of the Synthesis codebase please visit the [Getting Started](../README.md#getting-started) section of the root *README*.
+For more information on cloning this repository and the initial setup of the Synthesis codebase please visit the [Getting Started](/README.md#getting-started) section of the root *README*.
 
 ### Dependencies
 

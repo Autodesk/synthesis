@@ -6,7 +6,7 @@ This is the main Simulator aspect to Synthesis. We take the robots and fields th
 
 ## Getting Started
 
-For more information on cloning this repository and the initial setup of the Synthesis codebase please visit the [Getting Started](../README.md#getting-started) section of the root *README*.
+For more information on cloning this repository and the initial setup of the Synthesis codebase please visit the [Getting Started](/README.md#getting-started) section of the root *README*.
 
 ### Dependencies
 
@@ -18,8 +18,8 @@ Similar to the rest of Synthesis, the Synthesis Engine has the following depende
   - [Protobuf 23.3](https://github.com/protocolbuffers/protobuf/releases/tag/v23.3)
   - Unity Version 2022.3.2f1 (d74737c6db50)
 - Internal Dependencies:
-  - [Synthesis API](/../api/)
-  - [Protocols](/../protocols/)
+  - [Synthesis API](/api)
+  - [Protocols](/protocols/)
 
 <!-- # Building
 
