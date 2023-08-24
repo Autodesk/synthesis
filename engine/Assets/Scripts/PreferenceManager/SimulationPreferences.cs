@@ -322,6 +322,7 @@ namespace Synthesis.PreferenceManager {
 
             public void SetFieldScoringZones(string field, List<ScoringZoneData> zones) {
                 _allFieldData.TryGetValue(field, out var data);
+                
                 data ??= new FieldData(field);
                 data.ScoringZones.Clear();
                 data.ScoringZones.AddRange(zones);

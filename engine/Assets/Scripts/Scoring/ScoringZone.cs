@@ -23,9 +23,13 @@ public class ScoringZone : IPhysicsOverridable {
             _zoneData       = value;
             GameObject.name = _zoneData.Name;
             GameObject.tag  = _zoneData.Alliance == Alliance.Red ? "red zone" : "blue zone";
-            GameObject.transform.parent =
-                FieldSimObject.CurrentField.FieldObject.transform.Find(_zoneData.Parent ?? "grounded") ??
-                FieldSimObject.CurrentField.FieldObject.transform.Find("grounded");
+
+            if (FieldSimObject.CurrentField != null) {
+                GameObject.transform.parent =
+                    FieldSimObject.CurrentField.FieldObject.transform.Find(_zoneData.Parent ?? "grounded") ??
+                    FieldSimObject.CurrentField.FieldObject.transform.Find("grounded");
+            }
+
             Alliance = _zoneData.Alliance;
             GameObject.transform.localPosition =
                 new Vector3(_zoneData.LocalPosition.x, _zoneData.LocalPosition.y, _zoneData.LocalPosition.z);

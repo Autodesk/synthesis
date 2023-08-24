@@ -173,6 +173,8 @@ public class FieldSimObject : SimObject, IPhysicsOverridable {
         mira.mainObject.transform.SetParent(GameObject.Find("Game").transform);
         mira.mainObject.tag = "field";
 
+        CurrentField.InitializeScoreZones();
+
         if (spawnRobotGizmo && RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
             GizmoManager.SpawnGizmo(RobotSimObject.GetCurrentlyPossessedRobot());
             // TODO: Move robot to default spawn location for field

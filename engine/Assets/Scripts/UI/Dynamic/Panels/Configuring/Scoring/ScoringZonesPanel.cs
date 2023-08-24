@@ -11,6 +11,7 @@ using TMPro;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
+[Serializable]
 public record ScoringZoneData() {
     public string Name { get; set; }                                        = "";
     public Alliance Alliance { get; set; }                                  = Alliance.Blue;

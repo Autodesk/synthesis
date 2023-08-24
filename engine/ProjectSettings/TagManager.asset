@@ -11,6 +11,7 @@ TagManager:
   - red zone
   - blue zone
   - socials-drop-down
+  - zone-editor
   layers:
   - Default
   - TransparentFX
