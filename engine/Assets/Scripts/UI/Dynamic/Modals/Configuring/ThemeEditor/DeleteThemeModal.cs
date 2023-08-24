@@ -14,7 +14,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
         public override void Create() {
             ModalIcon.UnityImage.sprite = SynthesisAssetCollection.GetSpriteByName("trash-icon");
             Title.SetText($"Delete {ColorManager.SelectedTheme}?").SetWrapping(false);
-            
+
             AcceptButton
                 .AddOnClickedEvent(x => {
                     ColorManager.DeleteSelectedTheme();

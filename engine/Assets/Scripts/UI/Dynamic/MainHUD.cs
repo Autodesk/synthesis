@@ -432,7 +432,7 @@ public static class MainHUD {
         }, drawerPosition: DrawerPosition.Bottom, icon: SynthesisAssetCollection.GetSpriteByName("flag-icon"));
 
         AddItemToDrawer("Robot Builder", b => DynamicUIManager.CreateModal<MixAndMatchModal>(),
-            drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("puzzle-icon"));
+            drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("robot-builder-icon"));
 
         PhysicsManager.IsFrozen = false;
     }

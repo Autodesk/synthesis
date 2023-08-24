@@ -718,45 +718,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9dfc7d08dd93df46af64b96c25ec147, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!21 &654152551
-Material:
-  serializedVersion: 8
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: ImageGradient/ImageGradient
-  m_Shader: {fileID: 4800000, guid: b2f48a0e1c42cdf4581d6f9c8e88f351, type: 3}
-  m_Parent: {fileID: 0}
-  m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
-  m_InvalidKeywords: []
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_LockedProperties: 
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs:
-    - _MainTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Ints: []
-    m_Floats:
-    - _ColorMask: 15
-    - _GradientAngle: 0
-    - _GradientSpread: 1
-    - _Stencil: 0
-    - _StencilComp: 8
-    - _StencilOp: 0
-    - _StencilReadMask: 255
-    - _StencilWriteMask: 255
-    m_Colors: []
-  m_BuildTextureStacks: []
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -1281,6 +1242,45 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3747646977971318131, guid: b3985e37a9d73f74ea11a43c72f5a391, type: 3}
   m_PrefabInstance: {fileID: 3747646978383511403}
   m_PrefabAsset: {fileID: 0}
+--- !u!21 &1032471539
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ImageGradient/ImageGradient
+  m_Shader: {fileID: 4800000, guid: b2f48a0e1c42cdf4581d6f9c8e88f351, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _ColorMask: 15
+    - _GradientAngle: 0
+    - _GradientSpread: 1
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
+    m_Colors: []
+  m_BuildTextureStacks: []
 --- !u!1 &1040913155
 GameObject:
   m_ObjectHideFlags: 0
@@ -2309,42 +2309,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: AssetCollection
       objectReference: {fileID: 0}
-    - target: {fileID: 507563843828576301, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
-      propertyPath: SpriteAssets.Array.size
-      value: 38
-      objectReference: {fileID: 0}
-    - target: {fileID: 507563843828576301, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
-      propertyPath: SpriteAssets.Array.data[30]
-      value: 
-      objectReference: {fileID: 21300000, guid: 2917b192bdd5050468dbd6fee1a8eaf5, type: 3}
-    - target: {fileID: 507563843828576301, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
-      propertyPath: SpriteAssets.Array.data[31]
-      value: 
-      objectReference: {fileID: 21300000, guid: 2d936f59bb063cc40922973c1491e8cd, type: 3}
-    - target: {fileID: 507563843828576301, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
-      propertyPath: SpriteAssets.Array.data[32]
-      value: 
-      objectReference: {fileID: 21300000, guid: ac5db5f54f277824a82c1a22c016a54c, type: 3}
-    - target: {fileID: 507563843828576301, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
-      propertyPath: SpriteAssets.Array.data[33]
-      value: 
-      objectReference: {fileID: 21300000, guid: 8b8c6f6fd3b7fd64698af3b787d3d6cb, type: 3}
-    - target: {fileID: 507563843828576301, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
-      propertyPath: SpriteAssets.Array.data[34]
-      value: 
-      objectReference: {fileID: 21300000, guid: 8735fcc6f25c2af4d8d147e1448e8eb2, type: 3}
-    - target: {fileID: 507563843828576301, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
-      propertyPath: SpriteAssets.Array.data[35]
-      value: 
-      objectReference: {fileID: 21300000, guid: 0db1c67d0876f434ca04a497e9958d11, type: 3}
-    - target: {fileID: 507563843828576301, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
-      propertyPath: SpriteAssets.Array.data[36]
-      value: 
-      objectReference: {fileID: 21300000, guid: be80e4c9102a5f14189efe2f834c02b2, type: 3}
-    - target: {fileID: 507563843828576301, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
-      propertyPath: SpriteAssets.Array.data[37]
-      value: 
-      objectReference: {fileID: 21300000, guid: d9845a0d948d2c34f9325f43e5ee5ac1, type: 3}
     - target: {fileID: 507563843828576302, guid: 7d63ef3f2ae605349af9adc4fe66511b, type: 3}
       propertyPath: m_RootOrder
       value: 8
