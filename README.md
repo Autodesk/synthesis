@@ -86,6 +86,12 @@ When ready to contribute, just submit a pull request and be sure to include a cl
 
 Synthesis uses [clang-format](https://clang.llvm.org/docs/ClangFormat.html) and [black](https://black.readthedocs.io/en/stable/) to format all of our `C++`, `C#` and `Python` code. Additionally we have GitHub workflows that verify these formatting standards for each and every pull request. For more information about how to run these formatters yourself, check out the [formatting tools](/scripts/format/) we use.
 
+## Tutorials
+
+We have a variety of tutorials available to help you get started with Synthesis. These tutorials can be found on our [Tutorials Page](https://synthesis.autodesk.com/tutorials.html) on our website. Additionally, you can view these same tutorials as Markdown files in the [tutorials](/tutorials/) directory of this repository.
+
+Updating our tutorials is a ongoing process. If you are at all interested in helping, checkout the [Synthesis Contribution Guide](/CONTRIBUTING.md) for more information on how to get started.
+
 ## Immersion Program
 
 Annually, since 2014, Autodesk has sponsored the Synthesis Immersion Program for FIRST robotics students to develop Synthesis. The immersion program is a 10 week paid work experience at the Portland, Oregon Autodesk office from June 20th to August 25th. The immersion program focuses on not only developing Synthesis, but also allowing for opportunities to meet and collaborate with other Autodesk employees. For more information about the immersion program, visit our website at [synthesis.autodesk.com/internship](https://synthesis.autodesk.com/internship.html).
