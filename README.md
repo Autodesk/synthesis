@@ -102,7 +102,7 @@ Here is a brief overview of each of the components found in this repository. For
   - The Fusion 360 plugin that allows users to export their robots and fields into Synthesis.
 - [Installer](/installer/)
   - Tools used to build the Synthesis installer for Windows, MacOS and Linux featured on our [Download Page](https://synthesis.autodesk.com/download.html).
-- [Mirabuf](/mirabuf/)
+- [Mirabuf](https://github.com/HiceS/mirabuf/)
   - A custom 3D file format developed by [@HiceS](https://github.com/HiceS) that our Fusion 360 exporter uses.
 - [Tutorials](/tutorials/)
   - Our source code for the tutorials featured on our [Tutorials Page](https://synthesis.autodesk.com/tutorials.html).
