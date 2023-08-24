@@ -45,19 +45,20 @@ Also note that the linux installer is tailored for Debian based distributions. S
 
 Synthesis Version `6.0.0` has the following dependencies:
 
-- DotNet 7.0
-- Protobuf 23.3
+- [.NET Standard 2.0](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-1-0)
+- [.NET 7.0](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
+- [Protobuf 23.3](https://github.com/protocolbuffers/protobuf/releases/tag/v23.3)
 - Unity Version 2022.3.2f1 (d74737c6db50)
 
 These dependencies need to be satisfied before attempting to build Synthesis with unity. You can either install these dependencies manually or use the *resolve dependencies* scripts (`scripts/win/resolve_deps.bat` & `scripts/osx/resolve_deps.sh` respectively) to install some of them for you.
 
-To automatically install DotNet and Protobuf run the following script depending on your operating system:
+To automatically install .NET and Protobuf run the following script depending on your operating system:
 - Windows: `scripts/win/resolve_deps.bat`
 - MacOS & Linux: `scripts/osx/resolve_deps.sh`
 
 Dependency Notes:
 
-- The windows script requires admin privileges to install DotNet and Protobuf to the system PATH. For this reason it is not included by default in `init.bat` unlike how `init.sh` includes `resolve_deps.sh`.
+- The windows script requires admin privileges to install .NET and Protobuf to the system PATH. For this reason it is not included by default in `init.bat` unlike how `init.sh` includes `resolve_deps.sh`.
 - Unity must be installed manually through the Unity Hub app which can be downloaded from [https://unity.com/download](https://unity.com/download).
 
 ### How To Build Synthesis Using An `init` Script And Unity
@@ -85,6 +86,26 @@ When ready to contribute, just submit a pull request and be sure to include a cl
 ## Code Formatting And Style
 
 Synthesis uses [clang-format](https://clang.llvm.org/docs/ClangFormat.html) and [black](https://black.readthedocs.io/en/stable/) to format all of our `C++`, `C#` and `Python` code. Additionally we have GitHub workflows that verify these formatting standards for each and every pull request. For more information about how to run these formatters yourself, check out the [formatting tools](/scripts/format/) we use.
+
+## Components
+
+Here is a brief overview of each of the components found in this repository. For more information about each component, their dependencies and their individual build processes, check out their respective *READMEs*.
+
+- [Synthesis API](/api/)
+  - Components used to extend Synthesis' functionality while remaining Unity agnostic.
+- [Code Emulation](/emulation/)
+  - Synthesis tool designed to help users test their FRC robot code in a simulated environment. 
+  - Code emulation is an advanced feature that is still under development, functionality and support is limited.
+- [Core Engine](/engine/)
+  - The core of Synthesis, the Unity project that contains the simulation engine.
+- [Fusion Exporter](/exporter/)
+  - The Fusion 360 plugin that allows users to export their robots and fields into Synthesis.
+- [Installer](/installer/)
+  - Tools used to build the Synthesis installer for Windows, MacOS and Linux featured on our [Download Page](https://synthesis.autodesk.com/download.html).
+- [Mirabuf](/mirabuf/)
+  - A custom 3D file format developed by [@HiceS](https://github.com/HiceS) that our Fusion 360 exporter uses.
+- [Tutorials](/tutorials/)
+  - Our source code for the tutorials featured on our [Tutorials Page](https://synthesis.autodesk.com/tutorials.html).
 
 ## Tutorials
 
