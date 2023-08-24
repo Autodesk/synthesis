@@ -10,11 +10,11 @@
 
 Synthesis is a robotics simulator designed by and for FIRST robotics students to help teams design, strategize, test and practice. Teams have the ability to import their own robots and fields using our [Fusion 360 Exporter](/exporter/) or use the pre-packaged ones that come included with every release of Synthesis.
 
-For more information on the product itself or the team, visit [http://synthesis.autodesk.com/](http://synthesis.autodesk.com/).
+For more information on the product itself or the team, visit [http://synthesis.autodesk.com](http://synthesis.autodesk.com/).
 
 ## Goals
 
-Synthesis is built with a direct focus on the FIRST community. Every single one of our developers is a FIRST student, striving to better the community. We've also made the project completely open source in order to better involve the community. This way contributors can help make Synthesis better or modify Synthesis to better suit their team’s needs.
+Synthesis is built with a direct focus on the FIRST community. Every single one of our developers is a FIRST student. We've also made the project completely open source in order to better involve the community. This way contributors can help make Synthesis better or modify Synthesis to better suit their team’s needs.
 
 Here are some of our primary goals for Synthesis:
 
