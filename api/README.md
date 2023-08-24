@@ -37,7 +37,7 @@ To build the API with an `init` script first ensure that all dependencies are re
 
 ### How To Build The API With The API Build Scripts
 
-The Synthesis API comes with it's own build scripts to simplify the process of building the API from the command line. First ensure that all dependencies are resolved. Then run the following command based on your operating system in the [api](/) directory of this repository:
+The Synthesis API comes with it's own build scripts to simplify the process of building the API from the command line. First ensure that all dependencies are resolved. Then run the following command based on your operating system in the [api](/api/) directory of this repository:
 
 - Windows: `build.bat`
 - MacOS & Linux: `build.sh`
