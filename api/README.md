@@ -2,8 +2,8 @@
 
 [![API](https://github.com/Autodesk/synthesis/actions/workflows/API.yml/badge.svg?branch=master)](https://github.com/Autodesk/synthesis/actions/workflows/API.yml)
 
-The Synthesis API contains parts of Synthesis that can remain mostly Unity abnostic. The end goal of this API is to be used to extend Synthesis'
-functionality and reused as throughout future iterations of Synthesis no matter where it may go.
+The Synthesis API contains parts of Synthesis that can remain mostly Unity abnostic. The end goal of this API is to extend Synthesis'
+functionality via a reliable set of tools that will be reused throughout future iterations of Synthesis, no matter where it may go.
 
 ## Getting Started
 

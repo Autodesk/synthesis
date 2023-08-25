@@ -20,12 +20,12 @@ Here are some of our primary goals for Synthesis:
 
 - **Ease of Use**: It's important for us that Synthesis is out of the box ready for teams to use. We want to make sure that teams can get up and running with Synthesis as quickly as possible. To that end, every release of Synthesis comes pre-packaged with a variety of robots and fields; in addition to the ability to export and import your own.
 - **Testing Robot Designs**: Synthesis is designed to be a tool for teams to quickly test their robot designs in a semi-realistic environment. Are you a builder who wants to use some crazy virtual four-bar linkage and your team says it's a waste of time? Well now you can prove them wrong by testing it in Synthesis!
-- **Exploring the Field Environment**: Every year on kickoff, for both FTC and FRC FIRST competitions, synthesis has a new release with the brand new field for that year included. This allows teams to explore the field through a 3D model, drive a robot around, and begin to strategize for the upcoming season's game.
+- **Exploring the Field Environment**: Every year on kickoff, for both FTC and FRC FIRST competitions, Synthesis has a new release with the brand new field for that year included. This allows teams to explore the field through a 3D model, drive a robot around, and begin to strategize for the upcoming season's game.
 - **Driver Practice & Strategy**: Not getting enough driver practice or don't have a full field available to you? Synthesis has you covered with the ability to drive your robot around with a gamepad from a first-person view at the driver station; allowing you to get a feel for potential control scheme layouts and any line-of-sight challenges that may arise. This also allows the drive team and the programmers to communicate about what control layouts work best for each driver.
 
 ## Getting Started
 
-If your a FIRST robotics student who just wants to use Synthesis, you *don't* need this repo. Simply **install the latest release of Synthesis from [synthesis.autodesk.com/download](https://synthesis.autodesk.com/download.html)**.
+If you are a FIRST robotics student who just wants to use Synthesis, you *don't* need this repo. Simply **install the latest release of Synthesis from [synthesis.autodesk.com/download](https://synthesis.autodesk.com/download.html)**.
 
 If you're a developer who wants to contribute to Synthesis, you're in the right place. Synthesis is comprised of 3 main components that can be developed separately. These components include:
 
@@ -130,7 +130,7 @@ Applications open each year during the spring. For more information about applyi
 
 ## Contact
 
-If you have any questions, about Synthesis or the Immersion Program, you can contact us through email ([frc@autodesk.com](mailto:frc@autodesk.com)). Additionally please reach out through our [community discord](https://www.discord.gg/hHcF9AVgZA), it's the best way to get in touch with not only the community but Synthesis' current development team.
+If you have any questions about Synthesis or the Immersion Program, you can contact us through email ([frc@autodesk.com](mailto:frc@autodesk.com)). Additionally please reach out through our [community discord](https://www.discord.gg/hHcF9AVgZA). It's the best way to get in touch with not only the community, but Synthesis' current development team.
 
 ## License
 
