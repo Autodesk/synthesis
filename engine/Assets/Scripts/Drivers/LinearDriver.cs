@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using SynthesisAPI.Simulation;
 using Synthesis.PreferenceManager;
@@ -8,8 +6,6 @@ using Synthesis.Physics;
 
 namespace Synthesis {
     public class LinearDriver : Driver {
-        public const float LINEAR_TO_MOTOR_VELOCITY = 100f;
-
         public string Signal => _inputs[0];
 
         public ConfigurableJoint JointA { get; private set; }
@@ -65,7 +61,7 @@ namespace Synthesis {
         public readonly string MotorRef;
 
         public LinearDriver(string name, string[] inputs, string[] outputs, SimObject simObject,
-            ConfigurableJoint jointA, ConfigurableJoint jointB, float maxSpeed, (float, float) limits, string motorRef)
+            ConfigurableJoint jointA, ConfigurableJoint jointB, (float, float) limits, string motorRef)
             : base(name, inputs, outputs, simObject) {
             // Takeover joint configuration and make it more suited to control rather than passive
             var l              = jointA.linearLimit;
@@ -74,7 +70,6 @@ namespace Synthesis {
 
             JointA   = jointA;
             JointB   = jointB;
-            MaxSpeed = maxSpeed;
             Position = 0f;
             Limits   = limits;
             MotorRef = motorRef;

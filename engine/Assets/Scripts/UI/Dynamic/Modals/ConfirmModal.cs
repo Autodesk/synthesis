@@ -15,6 +15,8 @@ public class ConfirmModal : ModalDynamic {
         Title.SetText(_message);
         MainContent.RootGameObject.SetActive(false);
 
+        ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("flag-icon"));
+
         AcceptButton.StepIntoLabel(l => l.SetText("Confirm"));
     }
 

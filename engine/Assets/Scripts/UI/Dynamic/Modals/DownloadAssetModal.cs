@@ -49,6 +49,8 @@ namespace Synthesis.UI.Dynamic {
         public override void Create() {
             Task.Run(GetAvailableAssets);
 
+            ModalIcon.UnityImage.sprite = SynthesisAssetCollection.GetSpriteByName("download");
+
             Title.SetText("Download Assets");
 
             AcceptButton.StepIntoLabel(l => l.SetText("Close"))

@@ -27,6 +27,8 @@ namespace UI.Dynamic.Modals.MixAndMatch {
 
         /// <summary>The screen where the user specifies if they will edit a robot or part</summary>
         private void CreateChooseTypeModal() {
+            ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("robot-builder-icon"));
+
             ClearAndResizeContent(new Vector2(CONTENT_WIDTH, CHOOSE_TYPE_HEIGHT));
             Title.SetText("Robot Builder");
 
