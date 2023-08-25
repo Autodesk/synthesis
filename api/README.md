@@ -44,16 +44,8 @@ The Synthesis API comes with it's own build scripts to simplify the process of b
 
 ### How To Build The API With Visual Studio
 
-TODO: Note from Brandon, I need my windows computer first :)
-
-<!--
-## Using the API in Your Project
-### Adding the API Nuget Package
-To use the API in your project, simply add the [Autodesk.Synthesis.Module.API](https://www.nuget.org/packages/Autodesk.Synthesis.Module.API/) NuGet package into your .NET Class Library project. Some example modules can be found in the [modules](/modules/) directory in this repository. Note: A VS template for automating this process is underway.
-### Importing Your Module Into Synthesis
-1. Open your module project solution in Visual Studio.
-2. Build the solution from the Visual Studio toolbar.
-3. Set up the modules by running one of the following scripts:
-	- For Windows users, run `update_modules.ps1` using PowerShell.
-	- Linux and Mac scripts are under construction.
--->
+1. Open Visual Studio 2017 or newer.
+2. Select `Open Project or Solution`.
+3. Choose `api.sln` from the [api](/api/) directory of this repository.
+    - For more information about cloning this repository please visit the [Getting Started](/README.md#getting-started) section of the root *README*.
+4. Select `Build Solution` from the Visual Studio toolbar or hit `Ctrl + Shift + B` to build the API. 
