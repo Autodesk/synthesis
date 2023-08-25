@@ -1,6 +1,6 @@
-.PHONY: all FusionExporter CodeSimulation ConfigMode PracticeMode MatchMode ReplayMode Utilities
+.PHONY: all FusionExporter CodeSimulation ConfigMode PracticeMode MatchMode ReplayMode RobotBuilder Utilities
 
-all: FusionExporter CodeSimulation ConfigMode PracticeMode MatchMode ReplayMode Utilities
+all: FusionExporter CodeSimulation ConfigMode PracticeMode MatchMode ReplayMode RobotBuilder Utilities
 
 FusionExporter:
 	claat export -o ./ FusionExporter.md
@@ -19,6 +19,9 @@ PracticeMode:
 
 ReplayMode:
 	claat export -o ./ ReplayMode.md
+
+RobotBuilder:
+	claat export -o ./ RobotBuilder.md
 
 Utilities:
 	claat export -o ./ Utilities.md

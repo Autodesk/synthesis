@@ -16,29 +16,34 @@ you can load robots and field models into.
 
 To load in a model, select Spawn Asset. You’ll be given the choice between spawning a robot and a field. Then you’ll be able to choose which model to generate (Note: If running Synthesis for the first time, make sure to go to Download Assets and and download the preloaded assets, otherwise there will be nothing to spawn).
 
-## Settings
+## View
 
-Synthesis’ settings panel lets you calibrate your screen size, image quality, camera sensitivity, along with additional preferences:
+View refers to your camera view. In Synthesis, there are four types for you to choose from.
 
-- **Yaw**: Rotation on the vertical axis
-- **Pitch**: Rotation on the horizontal axis
-- **Report Analytics**:  When checked, data on how you use Synthesis will be reported back to the developers.
-- **Use Metric**: When checked, data on how long Synthesis was used per session will be reported back to the developers.
-- **Render Score Zones**: Selecting render scoring zones allows scoring zones you have placed to become visible.
+- **Orbit**: The default camera view, use left click to rotate the camera and scroll to zoom in. 
+- **Freecam**: Freecam gives you full control of the camera. Use right click to rotate the camera, right click plus WASD to move the camera left, right, forward and backwards, and scroll to zoom.
+- **Overview**: Overview is a static camera pointed down at the field. Use scroll to zoom in and out.
+- **Driver Station**: A camera view meant to mimic a driver’s view from the Driver station. Use right click and WASD to position the camera, and scroll to zoom. This view is similar to Freecam, but always points towards your robot.
 
-### Theme Editor
+<img src="img/synthesis/view-panel.png" alt="image" width="50%" height="50%"/>
 
-Theme Editor is a new feature that allows you to choose between preset themes, as well as create your own custom ones.
-
-<img src="img/synthesis/theme-editor.png" alt="image" width="50%" height="50%"/>
-
-### Configure
+## Configure
 
 See our [Configure Mode Tutorial](https://synthesis.autodesk.com/codelab/ConfigModeCodelab/index.html#0) for more information about config mode.
 
-### Robot Builder
+## Download Asset
 
-TBD
+To download preloaded robots and fields, open Download Assets and select which models you would like to download. 
+
+If this is the first time you are running Synthesis, you won’t be able to spawn anything without downloading the models first.
+
+<img src="img/synthesis/asset-downloader.png" alt="image" width="50%" height="50%"/>
+
+## Scoring Zones
+
+In Practice Mode, you can set up scoring zones in a spawned field to score points.
+
+For a more indepth view on Scoring Zones, check out our [Scoring Zone Tutorial](https://synthesis.autodesk.com/codelab/MatchModeCodelab/index.html#1).
 
 ## Need More Help?
 

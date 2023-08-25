@@ -23,13 +23,30 @@ unwanted ones.
 ## God Mode
 
 When you open up the control panel, there is a keybind for something called `God Mode`. 
-When `G` is held (or whichever key you choose) you have the ability to pick up and
-drag any dynamic object, including the robot.
+When `G` is held (or whichever key you choose) you have the ability to pick up and drag any dynamic / movable object, including the robot.  
 
 <p align="center">
     <a><img src="img/synthesis/settings-panel.png" alt="image" width="49.5%" height="50%"/></a>
     <a><img src="img/synthesis/god-mode-dragging.png" alt="image" width="49.5%" height="50%"/></a>
 </p>
+
+<sub>Pictured here is a robot being dragged while in *God Mode*.</sub>
+
+## Settings
+
+Synthesis’ settings panel lets you calibrate your screen size, image quality, camera sensitivity, along with additional preferences:
+
+- **Yaw**: Rotation on the vertical axis
+- **Pitch**: Rotation on the horizontal axis
+- **Report Analytics**:  When checked, data on how you use Synthesis will be reported back to the developers.
+- **Use Metric**: When checked, data on how long Synthesis was used per session will be reported back to the developers.
+- **Render Score Zones**: Selecting render scoring zones allows scoring zones you have placed to become visible.
+
+### Theme Editor
+
+Theme Editor is a new feature that allows you to choose between preset themes, as well as create your own custom ones.
+
+<img src="img/synthesis/theme-editor.png" alt="image" width="50%" height="50%"/>
 
 ## Need More Help?
 

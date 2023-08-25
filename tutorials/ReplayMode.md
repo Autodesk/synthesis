@@ -9,9 +9,9 @@ feedback link: https://github.com/Autodesk/synthesis/issues
 
 # Replay Mode in Synthesis
 
-Replay mode is a feature that allows you to rewind the **last 5 seconds of game play**.
+Replay Mode is a feature that allows you to rewind the **last 5 seconds of game play**.
 
-By hitting tab on your keyboard, a slider will show up on the bottom of your screen.  You can pull the slider in either direction to replay your simulation. Hit tab again to close out of replay mode.
+By hitting `Tab` on your keyboard, a slider will show up on the bottom of your screen.  You can pull the slider in either direction to replay your simulation. Hit `Tab` again to close out of Replay Mode.
 
 <img src="img/synthesis/replay-mode.png" alt="image" width="50%" height="50%"/>
 
