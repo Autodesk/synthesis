@@ -54,8 +54,8 @@ if %ERRORLEVEL% neq 0 (
 dotnet --version >nul 2>&1
 if %ERRORLEVEL% neq 0 (
     echo .NET SDK is not installed.
-
     echo Installing .NET SDK...
+
     PowerShell -Command "Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -OutFile 'dotnet-install.ps1'; .\dotnet-install.ps1 -Version 7.0.304 -InstallDir 'C:\Program Files\dotnet' -NoPath"
 
     echo Linking .NET SDK to system PATH...
