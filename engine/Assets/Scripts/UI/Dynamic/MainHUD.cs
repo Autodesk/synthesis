@@ -523,7 +523,7 @@ public static class MainHUD {
             drawerPosition: DrawerPosition.Bottom, icon: SynthesisAssetCollection.GetSpriteByName("roborio"));
         AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>(),
             drawerPosition: DrawerPosition.Bottom, icon: SynthesisAssetCollection.GetSpriteByName("drivetrain"));
-        AddItemToDrawer("Motors", b => { DynamicUIManager.CreateModal<ConfigMotorModal>(); },
+        AddItemToDrawer("Joints", b => { DynamicUIManager.CreateModal<ConfigJointModal>(); },
             drawerPosition: DrawerPosition.Bottom, icon: SynthesisAssetCollection.GetSpriteByName("joint-icon"));
 
         if (ModeManager.CurrentMode.GetType() == typeof(PracticeMode))

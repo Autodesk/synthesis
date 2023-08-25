@@ -145,12 +145,14 @@ public class ConfigJointModal : ModalDynamic {
                 .ApplyTemplate(VerticalLayout);
 
         _scrollViewWidth = _scrollView.Parent!.RectOfChildren().width - SCROLL_WIDTH;
-
-        CreateEntry("Drive", (_joints[0].driver as WheelDriver).Motor.force / RPM_TO_RADPERSEC, (_joints[0].driver as WheelDriver).Motor.targetVelocity / RPM_TO_RADPERSEC, x => ChangeDriveAcc(x), x => ChangeDriveVelocity(x), max: 350f);
-        if (_robotISSwerve) {
-            CreateEntry("Turn", (_joints[driveCount].driver as RotationalDriver).Motor.force, (_joints[driveCount].driver as RotationalDriver).Motor.targetVelocity,
-                x => ChangeTurnAcc(x),
-                x => ChangeTurnVelocity(x), "RPM", 10.0f);
+        
+        if (_joints[0].driver is WheelDriver) {
+            CreateEntry("Drive", (_joints[0].driver as WheelDriver).Motor.force / RPM_TO_RADPERSEC, (_joints[0].driver as WheelDriver).Motor.targetVelocity / RPM_TO_RADPERSEC, x => ChangeDriveAcc(x), x => ChangeDriveVelocity(x), max: 350f);
+            if (_robotISSwerve) {
+                CreateEntry("Turn", (_joints[driveCount].driver as RotationalDriver).Motor.force, (_joints[driveCount].driver as RotationalDriver).Motor.targetVelocity,
+                    x => ChangeTurnAcc(x),
+                    x => ChangeTurnVelocity(x), "RPM", 10.0f);
+            }
         }
 
         // original target velocities for each joint and entry in scrollview for other joints
@@ -167,7 +169,7 @@ public class ConfigJointModal : ModalDynamic {
                     break;
                 case LinearDriver:
                     _joints[i].origAcc = (driver as LinearDriver).Motor.force * 100;
-                    _joints[i].origVel = (driver as LinearDriver).MaxSpeed * 100;
+                    _joints[i].origVel = (driver as LinearDriver).Motor.targetVelocity * 100;
                     break;
             }
 
@@ -296,10 +298,9 @@ public class ConfigJointModal : ModalDynamic {
                         new JointMotor() { force = _acc, freeSpin = false, targetVelocity = v * RPM_TO_RADPERSEC };
                     break;
                 case LinearDriver:
-                    (driver as LinearDriver).MaxSpeed = v / 100;
                     _acc                            = (driver as LinearDriver).Motor.force;
                     (driver as LinearDriver).Motor    = new JointMotor() { force = _acc, freeSpin = false,
-                           targetVelocity = v / 100 * LinearDriver.LINEAR_TO_MOTOR_VELOCITY };
+                           targetVelocity = v / 100};
                     break;
             }
             changed = true;

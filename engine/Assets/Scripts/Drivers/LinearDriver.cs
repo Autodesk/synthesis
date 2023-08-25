@@ -10,15 +10,7 @@ namespace Synthesis {
 
         public ConfigurableJoint JointA { get; private set; }
         public ConfigurableJoint JointB { get; private set; }
-        private float _maxSpeed;
         private float _lastVel = 0;
-        public float MaxSpeed {
-            get => _maxSpeed;
-            set {
-                _maxSpeed = value;
-                SimulationPreferences.SetRobotJointSpeed((_simObject as RobotSimObject).RobotGUID, Name, _maxSpeed);
-            }
-        }
         public float _position = 0f;
         public float Position {
             get => _position;
@@ -31,10 +23,6 @@ namespace Synthesis {
                 _position              = newPos;
             }
         }
-        // clang-format off
-        private float _targetVelocity = 0f;
-        // clang-format on
-        public float Velocity => _targetVelocity;
         // Note: only used to save between sessions
         private JointMotor _motor;
         public JointMotor Motor {
@@ -85,8 +73,6 @@ namespace Synthesis {
                     targetVelocity = 0.2f,
                 };
             }
-
-            _targetVelocity = MaxSpeed;
         }
 
         public override void Update() {
@@ -96,9 +82,9 @@ namespace Synthesis {
 
             float value = (float) MainInput;
 
-            _targetVelocity = value * MaxSpeed;
+            var tarVel = value * _motor.targetVelocity;
 
-            var delta         = _targetVelocity - _lastVel;
+            var delta         = tarVel - _lastVel;
             var possibleDelta = _motor.force * Time.deltaTime; // Force = acceleration in M/S/S
 
             if (Mathf.Abs(delta) > possibleDelta)
@@ -106,8 +92,8 @@ namespace Synthesis {
             
             _lastVel += delta;
 
-            if (Mathf.Abs(_lastVel * Time.deltaTime) > MaxSpeed)
-                _lastVel = MaxSpeed * Mathf.Sign(_lastVel);
+            if (Mathf.Abs(_lastVel * Time.deltaTime) > _motor.targetVelocity)
+                _lastVel = _motor.targetVelocity * Mathf.Sign(_lastVel);
 
             Position += _lastVel;
         }
