@@ -136,10 +136,12 @@ public class ConfigMotorModal : ModalDynamic {
 
         _scrollViewWidth = _scrollView.Parent!.RectOfChildren().width - SCROLL_WIDTH;
 
-        CreateEntry("Drive", (_motors[0].driver as WheelDriver).Motor.targetVelocity, x => ChangeDriveVelocity(x));
-        if (_robotISSwerve) {
-            CreateEntry("Turn", (_motors[driveMotorCount].driver as RotationalDriver).Motor.targetVelocity,
-                x => ChangeTurnVelocity(x), "RPM", 10.0f);
+        if (_motors[0].driver is WheelDriver) {
+            CreateEntry("Drive", (_motors[0].driver as WheelDriver).Motor.targetVelocity, x => ChangeDriveVelocity(x));
+            if (_robotISSwerve) {
+                CreateEntry("Turn", (_motors[driveMotorCount].driver as RotationalDriver).Motor.targetVelocity,
+                    x => ChangeTurnVelocity(x), "RPM", 10.0f);
+            }
         }
 
         // original target velocities for each motor and entry in scrollview for other motors
@@ -153,7 +155,7 @@ public class ConfigMotorModal : ModalDynamic {
                     _motors[i].origVel = (driver as WheelDriver).Motor.targetVelocity;
                     break;
                 case (LinearDriver):
-                    _motors[i].origVel = (driver as LinearDriver).MaxSpeed;
+                    _motors[i].origVel = (driver as LinearDriver).Motor.targetVelocity;
                     break;
             }
 
@@ -224,10 +226,9 @@ public class ConfigMotorModal : ModalDynamic {
                         new JointMotor() { force = _force, freeSpin = false, targetVelocity = v };
                     break;
                 case (LinearDriver):
-                    (driver as LinearDriver).MaxSpeed = v;
-                    _force                            = (driver as LinearDriver).Motor.force;
-                    (driver as LinearDriver).Motor    = new JointMotor() { force = _force, freeSpin = false,
-                           targetVelocity = v * LinearDriver.LINEAR_TO_MOTOR_VELOCITY };
+                    _force = (driver as LinearDriver).Motor.force;
+                    (driver as LinearDriver).Motor =
+                        new JointMotor() { force = _force, freeSpin = false, targetVelocity = v };
                     break;
             }
             velChanged = true;

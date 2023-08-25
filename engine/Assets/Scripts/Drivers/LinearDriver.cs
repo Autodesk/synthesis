@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using SynthesisAPI.Simulation;
 using Synthesis.PreferenceManager;
@@ -8,20 +6,12 @@ using Synthesis.Physics;
 
 namespace Synthesis {
     public class LinearDriver : Driver {
-        public const float LINEAR_TO_MOTOR_VELOCITY = 100f;
-
         public string Signal => _inputs[0];
 
         public ConfigurableJoint JointA { get; private set; }
         public ConfigurableJoint JointB { get; private set; }
         private float _maxSpeed;
-        public float MaxSpeed {
-            get => _maxSpeed;
-            set {
-                _maxSpeed = value;
-                SimulationPreferences.SetRobotJointSpeed((_simObject as RobotSimObject).RobotGUID, Name, _maxSpeed);
-            }
-        }
+
         public float _position = 0f;
         public float Position {
             get => _position;
@@ -32,10 +22,7 @@ namespace Synthesis {
                 _position              = newPos;
             }
         }
-        // clang-format off
-        private float _velocity = 0f;
-        // clang-format on
-        public float Velocity => _velocity;
+
         // Note: only used to save between sessions
         private JointMotor _motor;
         public JointMotor Motor {
@@ -62,7 +49,7 @@ namespace Synthesis {
         public readonly string MotorRef;
 
         public LinearDriver(string name, string[] inputs, string[] outputs, SimObject simObject,
-            ConfigurableJoint jointA, ConfigurableJoint jointB, float maxSpeed, (float, float) limits, string motorRef)
+            ConfigurableJoint jointA, ConfigurableJoint jointB, (float, float) limits, string motorRef)
             : base(name, inputs, outputs, simObject) {
             // Takeover joint configuration and make it more suited to control rather than passive
             var l              = jointA.linearLimit;
@@ -71,7 +58,6 @@ namespace Synthesis {
 
             JointA   = jointA;
             JointB   = jointB;
-            MaxSpeed = maxSpeed;
             Position = 0f;
             Limits   = limits;
             MotorRef = motorRef;
@@ -87,17 +73,13 @@ namespace Synthesis {
                     targetVelocity = 5,
                 };
             }
-
-            _velocity = MaxSpeed;
         }
 
         public override void Update() {
-            // TODO: Velocity?
-
             float value = (float) MainInput;
 
-            _velocity = value * MaxSpeed;
-            Position += Time.deltaTime * _velocity;
+            var velocity = value * _motor.targetVelocity;
+            Position += Time.deltaTime * velocity;
         }
     }
 }
