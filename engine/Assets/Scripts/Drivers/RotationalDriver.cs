@@ -168,9 +168,9 @@ namespace Synthesis {
             } else {
                 Motor = new JointMotor() {
                     // Default Motor. Slow but powerful enough. Also uses Motor to save it
-                    force          = 1, // About a Neo 550. Max is Falcon 550 at 4.67
+                    force          = 0.1f,
                     freeSpin       = false,
-                    targetVelocity = 5,
+                    targetVelocity = 0.2f,
                 };
             }
 
@@ -270,18 +270,16 @@ namespace Synthesis {
                     SynthesisUtil.GetInertiaAroundParallelAxis(_jointB.connectedBody, _jointA.anchor, _jointA.axis);
 
                 if (_useFakeMotion) {
-                    float tarVel = val * _convertedMotorTargetVel;
+                    float tarVel = val == 0 ? 0 : Mathf.Sign(val) * _convertedMotorTargetVel;
                     
                     var delta = tarVel - _lastVel;
-                    var posDelta = _motor.force * 10 * Time.deltaTime / JointB.connectedBody.mass;
+                    var posDelta = _motor.force * Mathf.Rad2Deg * Time.deltaTime;
 
                     if (Mathf.Abs(delta) > posDelta) delta = posDelta * Mathf.Sign(delta);
 
                     _lastVel += delta;
 
-                    if (Mathf.Abs(_lastVel * Time.deltaTime) > _convertedMotorTargetVel) _lastVel = _convertedMotorTargetVel * Mathf.Sign(_lastVel);
-
-                    if (delta != 0) Debug.Log($"tarVel {tarVel} delta {delta} fakeTheta {_fakedTheta}");
+                    if (Mathf.Abs(_lastVel) > _convertedMotorTargetVel) _lastVel = _convertedMotorTargetVel * Mathf.Sign(_lastVel);
 
                     _fakedTheta += _lastVel * deltaT;
 

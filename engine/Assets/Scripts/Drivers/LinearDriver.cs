@@ -85,9 +85,9 @@ namespace Synthesis {
                 _motor = motor.Value;
             } else {
                 Motor = new JointMotor() {
-                    force          = 1, // About a Neo 550. Max is Falcon 550 at 4.67
+                    force          = 0.1f,
                     freeSpin       = false,
-                    targetVelocity = 5,
+                    targetVelocity = 0.2f,
                 };
             }
 
@@ -104,12 +104,12 @@ namespace Synthesis {
             _targetVelocity = value * MaxSpeed;
 
             var delta         = _targetVelocity - _lastVel;
-            var possibleDelta = _motor.force * Time.deltaTime / JointB.connectedBody.mass * 100;  //100 for m to cm conversion
+            var possibleDelta = _motor.force * Time.deltaTime; // Force = acceleration in M/S/S
 
             if (Mathf.Abs(delta) > possibleDelta)
                 delta = possibleDelta * Mathf.Sign(delta);
             
-            _lastVel += Time.deltaTime * delta;
+            _lastVel += delta;
 
             if (Mathf.Abs(_lastVel * Time.deltaTime) > MaxSpeed)
                 _lastVel = MaxSpeed * Mathf.Sign(_lastVel);
