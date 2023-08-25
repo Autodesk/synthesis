@@ -17,6 +17,7 @@ namespace UI.Dynamic.Modals.MixAndMatch {
 
         public override void Create() {
             Title.SetText($"Choose a Robot Part");
+            ModalIcon.UnityImage.sprite = SynthesisAssetCollection.GetSpriteByName("robot-builder-icon");
 
             string[] files = MixAndMatchSaveUtil.PartFiles;
 

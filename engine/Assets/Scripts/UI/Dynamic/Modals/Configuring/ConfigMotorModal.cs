@@ -30,6 +30,8 @@ public class ConfigMotorModal : ModalDynamic {
     };
 
     public override void Create() {
+        ModalIcon.UnityImage.sprite = SynthesisAssetCollection.GetSpriteByName("joint-icon");
+
         _robot         = MainHUD.SelectedRobot;
         _robotISSwerve = _robot.ConfiguredDrivetrainType.Equals(RobotSimObject.DrivetrainType.SWERVE);
         _motors        = new ConfigMotor[SimulationManager.Drivers[_robot.Name].Count];
