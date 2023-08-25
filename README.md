@@ -72,8 +72,8 @@ Before attempting to build Synthesis, ensure you have all dependencies installed
     - Windows: `init.bat`
     - MacOS & Linux: `init.sh`
 5. Open `synthesis/engine` in Unity.
-6. From there you can run the simulation engine inside the Unity editor, just open `MainScene` from the `Assets/Scenes` directory or build it as a standalone application.
-    - To build Synthesis as a standalone application, go to `File -> Build Settings` and select your target platform. Then click `Build` and select a location to save the built application.
+6. From there, you can run the simulation engine inside the Unity editor by opening `MainScene` from the `Assets/Scenes` directory or build it as a standalone application.
+    - To build Synthesis as a standalone application, go to `File -> Build Settings` and select your target platform. Then, click `Build` and select a location to save the built application.
 
 ## Contributing
 

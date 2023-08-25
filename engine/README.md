@@ -28,6 +28,6 @@ For each of these internal dependencies, please follow the instructions in their
 
 Before attempting to build the Synthesis Engine, ensure you have all dependencies installed.
 
-1. Open up the [`engine`](/engine/) directory in Unity.
-2. From there, you can run the simulation engine inside the Unity editor by opening `MainScene` from the `Assets/Scenes` directory or building it as a standalone application.
+1. Open `synthesis/engine` in Unity.
+2. From there, you can run the simulation engine inside the Unity editor by opening `MainScene` from the `Assets/Scenes` directory or build it as a standalone application.
     - To build Synthesis as a standalone application, go to `File -> Build Settings` and select your target platform. Then, click `Build` and select a location to save the built application.
