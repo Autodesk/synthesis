@@ -2,7 +2,7 @@
 
 [![Engine](https://github.com/Autodesk/synthesis/actions/workflows/Engine.yml/badge.svg?branch=master)](https://github.com/Autodesk/synthesis/actions/workflows/Engine.yml)
 
-This is the main Simulator aspect to Synthesis. We take the robots and fields that have been exported using our exporter, and simulate them with realtime physics within Unity.
+This is the main Simulator aspect to Synthesis. We take the robots and fields that have been exported using our exporter and simulate them with realtime physics within Unity.
 
 ## Getting Started
 
@@ -29,5 +29,5 @@ For each of these internal dependencies, please follow the instructions in their
 Before attempting to build the Synthesis Engine, ensure you have all dependencies installed.
 
 1. Open up the [`engine`](/engine/) directory in Unity.
-2. From there you can run the simulation engine inside the Unity editor, just open `MainScene` from the `Assets/Scenes` directory or build it as a standalone application.
-    - To build Synthesis as a standalone application, go to `File -> Build Settings` and select your target platform. Then click `Build` and select a location to save the built application.
+2. From there, you can run the simulation engine inside the Unity editor by opening `MainScene` from the `Assets/Scenes` directory or building it as a standalone application.
+    - To build Synthesis as a standalone application, go to `File -> Build Settings` and select your target platform. Then, click `Build` and select a location to save the built application.
