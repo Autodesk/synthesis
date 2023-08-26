@@ -38,7 +38,6 @@ namespace Analytics {
                     StopDataCollection();
             });
 
-            
             if (!Application.isEditor) {
                 try {
                     await UnityServices.InitializeAsync();
@@ -53,7 +52,8 @@ namespace Analytics {
 
             // TODO: check if the user gives consent to collect information
 
-            if (PreferenceManager.GetPreference<bool>(USE_ANALYTICS_PREF) && (!Application.isEditor && !_analyticsDisabled))
+            if (PreferenceManager.GetPreference<bool>(USE_ANALYTICS_PREF) &&
+                (!Application.isEditor && !_analyticsDisabled))
                 StartDataCollection();
         }
 
