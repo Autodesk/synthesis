@@ -19,15 +19,15 @@ For information regarding the manual install process visit the [Synthesis Fusion
 
 After installing Synthesis, the exporter addin should automatically start up when you open Fusion 360 (given that it was selected during the Synthesis install process). Navigate to the Utilities tab and you should see a Synthesis button.
 
-![image](img/fusion/exporter-button.png)
+<img src="img/fusion/exporter-button.png" alt="image" width="50%" height="50%"/>
 
 After clicking the button, a panel will open up. This is the exporter. In this panel, you can provide us with most of the extra data we need to properly simulate your robot or field in Synthesis.
 
-![image](img/fusion/exporter-panel.png)
+<img src="img/fusion/exporter-panel.png" alt="image" width="50%" height="50%"/>
 
 ### General Tab
 
-![image](img/fusion/exporter-general.png)
+<img src="img/fusion/exporter-general.png" alt="image" width="50%" height="50%"/>
 
 This is where you will do most of your configuring. Here is a basic overview of the options you will find in the general tab.
 
@@ -50,7 +50,7 @@ Notes:
 
 ### Advanced Tab
 
-![image](img/fusion/exporter-advanced.png)
+<img src="img/fusion/exporter-advanced.png" alt="image" width="50%" height="50%"/>
 
 The advanced tab has some optional toggles for disabling / enabling some more advanced features. If your not confident in your ability with the Synthesis exporter, it is recommended that you leave these options alone.
 
