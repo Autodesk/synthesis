@@ -4,50 +4,90 @@ id: FusionExporterCodelab
 tags: Python, Exporter, CAD
 categories: Python, CAD
 environments: Fusion360
-status: Published
+status: Draft
 feedback link: https://github.com/Autodesk/synthesis/issues
 
 # Synthesis Fusion 360 Exporter Addin
 
 ## Intro
 
-After installing Synthesis, the exporter addin should automatically start up when you open Fusion360. Navigate to the Utilities tab and you should see a Synthesis button.
+The Synthesis Fusion 360 exporter is the tool used by both developers and users to export their CAD models into the Synthesis simulator. The exporter comes as an optional install component of every version of synthesis and requires Fusion 360 to be installed.
+
+For information regarding the manual install process visit the [Synthesis Fusion 360 Exporter](https://github.com/Autodesk/synthesis/tree/master/exporter) source code for more information.
+
+### Getting Started
+
+After installing Synthesis, the exporter addin should automatically start up when you open Fusion 360 (given that it was selected during the Synthesis install process). Navigate to the Utilities tab and you should see a Synthesis button.
+
 ![image](img/fusion/exporter-button.png)
 
 After clicking the button, a panel will open up. This is the exporter. In this panel, you can provide us with most of the extra data we need to properly simulate your robot or field in Synthesis.
+
 ![image](img/fusion/exporter-panel.png)
 
 ### General Tab
 
-The general tab is where you'll do most of the configuring.
-The first option in the general tab is the `Export Mode`
+![image](img/fusion/exporter-general.png)
 
-**Dynamic** -> This exports in the robot mode. General means the object will be completely movable by default\
-**Static** -> This exports in the field mode. Fields are essentially non-controllable robots with a fixed grounded node.
+This is where you will do most of your configuring. Here is a basic overview of the options you will find in the general tab.
+
+- Export Mode:
+  - **Dynamic**: This exports in the robot mode. General means the object will be completely movable by default.
+  - **Static**: This exports in the field mode. Fields are essentially non-controllable robots with a fixed grounded node.
+- Weight:
+  - The weight of your exported model. This is used for physics calculations within Synthesis, however, it does not need to be exact. If you happen to know the real world weight of your robot put that here. Otherwise click the `Calculate` button to have the exporter estimate the weight for you.
+  - Note: The weight can either be measured in `lbs` or `kgs`.
+- Wheel Configuration:
+  - This is where you will select all of your drivetrain wheels on your robot.
+- Joint Configuration:
+  - This is where you will select all other moving joints on your robot that are not a part of your drivetrain. All joints are automatically added to this list. If you want to remove it either suppress it, or manually remove it from the list.
+
+Notes:
+
+- All parts of your robot that you want to be movable must be a part of a joint. Otherwise the exporter will automatically attempt to ground the part. This is the cause for many problems relating to robots not moving expectedly.
+- When selecting your joints it is important that your robot is structured correctly. See [Design Hierarchy](#design-hierarchy) for more information.
+- Signal type specifies what type of IO is used to control the wheel. This is needed for code emulation.
 
 ### Advanced Tab
 
-The advanced tab has some optional toggles to disable/enable some features.
+![image](img/fusion/exporter-advanced.png)
+
+The advanced tab has some optional toggles for disabling / enabling some more advanced features. If your not confident in your ability with the Synthesis exporter, it is recommended that you leave these options alone.
+
+- Exporter Settings:
+  - **Algorithmic Wheel Selection**: Automatically selects similar wheels when a wheel is picked (default on)
+  - **Compress Output**: Compress Output: Compresses resulting mirabuf file with GZip (default on)
+  - **Open Synthesis**: Open Synthesis: Opens Synthesis when the export is finished (default on)
+- Physics Settings:
+  - **Density**: Optionally, include density in mirabuf file (default on)
+  - **Surface Area**: Optionally, include surface area in mirabuf file (default on)
+  - **Restitution**: Optionally, include restitution data in mirabuf file (default on)
+  - **Friction Override**: Manually set a friction level for the entire mirabuf file (default 0.5)
+- Joints Settings:
+  - **Kinematic Only**: Makes the dynamic export only kinematic (no forces acting on it, only contraint solving) (default off)
+  - **Calculate Limits**: Includes joint limits in the mirabuf file (default on) 
+  - **Auto-Assign ID's**: Automatically assigns ID's to the joints (default on)
+- Controller Settings:
+  - **Export Signals**: Include signal ID's with joints and a SignalMap (default on)
+
+Note that some of these features are currently still experimental and may not be working or behave as expected.
 
 ## Design Hierarchy
 
-Synthesis not only relys on the joints between parts to determine structure of your robot or field, but also the hierarchy of all the parts in the design.
-If you look at the browser, you can see the parent child relation ship between all our your parts, and it is important that you have them set correctly in order to ensure Synthesis knows your intentions.
-<br/>
-The term node means a collection of parts that don't move relative to eachother. We use that term a lot in.
+Synthesis not only relys on the joints between parts to determine structure of your robot or field, but also the hierarchy of all the parts in the design. If you look at the browser, you can see the parent child relation ship between all our your parts, and it is important that you have them set correctly in order to ensure Synthesis knows your intentions.
+
+Problems associated with incorrect design hierarchy account for the majority of issues users have with the exporter. It's extremely important to plan out your robot structure before you begin.
+
+The term node refers to a collection of parts that **don't** move relative to eachother.
 
 ### Basic Rules
 
+Below is a basic overview of the design hierarchy rules that the exporter expects your CAD model to follow. It is possible to export a robot without following any of these rules, however, your model will likely not behave as expected once in the simulator.
+
 #### 1. Grounded Node
 
-You must ground one of your parts in the design. This tells Synthesis where to start branching off the rest of the nodes from.
-In the browser, you'll see there is a main root component. All other components under this root component will actually be used in the export.
-NOTE: Generally anything that is underdefined or "disjointed" from the rest of the design will be added under the grounded object, so if objects that are supposed to be moving relative to what you define as grounded aren't, that is likely why.
-<br />
-All child components of the component that is grounded (and disjointed components) will be attached to the grounded node.
-If a component is associated with any joint (rigidgroups are a big exception here) will not be attached to the grounded. Instead, they will start creating their own node.
-As a result, if you joint two child components together, it will create those components (and their children) as completely separate objects in Synthesis. You will need
-to specify which component in the joint should remain with the grounded node.
+You must ground one of your parts in the design. This tells Synthesis where to start branching off the rest of the nodes from. In the browser, you'll see there is a main root component. All other components under this root component will actually be used in the export. **NOTE**: Generally anything that is *underdefined* or *"disjointed"* from the rest of the design will be added under the main grounded object, so if objects that are supposed to be moving relative to what you define as grounded aren't, that is likely why.
+All child components of the component that is grounded (and disjointed components) will be attached to the grounded node. If a component is associated with any joint (rigidgroups are a big exception here) will not be attached to the grounded. Instead, they will start creating their own node. As a result, if you joint two child components together, it will create those components (and their children) as completely separate objects in Synthesis. You will need to specify which component in the joint should remain with the grounded node.
 
 #### 2. Rigidgroups
 
@@ -55,34 +95,7 @@ Rigidgroups act as a bandage. They ensure that whatever components are within th
 
 #### 3. Sub-joints
 
-You can follow the same logic as the grounded node, but instead its stemming from that parent joint.
-
-## Robots
-![image](img/fusion/exporter-robot.png)
-
-### Weight
-
-Click the `Calculate` button to automatically calculate the weight. This uses the physical material and calculated volume of each object to determine the realistic weight and center of mass of the Assembly.
-The default physical material is steel so if your robot is heavier than expected, check the physical materials that are being used.
-You can also specify a total weight for your robot to override the calculated one.
-
-### Wheel Configuration
-
-If your robot has a drivetrain, you'll need to add the joints for the wheels. Click the `Add` button, then either click the joint in the main 3D viewer or find it in the browser on the left. You can remove wheels by selecting the joint you wish to remove and clicking the `Remove` button.
-
-You can specify a wheel type (however, currently only standard is supported).
-
-The signal type specifies what type of IO is used to control the wheel. This will be used when user control via custom code is reintegrated.
-
-### Joint Configuration
-
-You can configure each type joint that will be used in the robot. All joints are automatically added to the list. If you want to ignore a joint you can either supress it, or remove it from the list. In the list, you can specify a max rotational speed for the joint, along with a stall torque for the joint.
-<br/>
-NOTE: These are not super accurate in Synthesis atm. They will be getting updates to be more accurate to user definitions for max angular speed and stall torque.
-<br/>
-NOTE: Linear joints are not fully supported yet.
-<br/>
-You can also specify a parent joint that the joint is supposed to stem from.
+You can follow the same logic as the grounded node, but instead its stemming from that parented joint.
 
 ## Need More Help?
 
