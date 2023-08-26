@@ -1,5 +1,6 @@
 // #define DEBUG_ANALYTICS // Uncomment this line to print analytic debug information
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ namespace Analytics {
         public const string USE_ANALYTICS_PREF = "analytics/use_analytics";
 
         private static bool _useAnalytics;
+        private static bool _analyticsDisabled = false;
 
         private async void Start() {
             _useAnalytics = PreferenceManager.GetPreference<bool>(USE_ANALYTICS_PREF);
@@ -30,14 +32,20 @@ namespace Analytics {
 
                 _useAnalytics = useAnalytics;
 
-                if (useAnalytics)
+                if (useAnalytics && !_analyticsDisabled)
                     StartDataCollection();
                 else
                     StopDataCollection();
             });
 
-            if (!Application.isEditor)
-                await UnityServices.InitializeAsync();
+            
+            if (!Application.isEditor) {
+                try {
+                    await UnityServices.InitializeAsync();
+                } catch (Exception) {
+                    _analyticsDisabled = true;
+                }
+            }
 
 #if DEBUG_ANALYTICS
             AnalyticsDebug("Unity services initialized");
@@ -45,7 +53,7 @@ namespace Analytics {
 
             // TODO: check if the user gives consent to collect information
 
-            if (PreferenceManager.GetPreference<bool>(USE_ANALYTICS_PREF) && !Application.isEditor)
+            if (PreferenceManager.GetPreference<bool>(USE_ANALYTICS_PREF) && (!Application.isEditor && !_analyticsDisabled))
                 StartDataCollection();
         }
 
