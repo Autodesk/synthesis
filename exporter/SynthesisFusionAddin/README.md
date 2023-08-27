@@ -1,5 +1,5 @@
 # Synthesis Exporter
-This is a Addin for *Autodesk Fusion 360* that will export a solid model file into a format that is usable by the Synthesis Unity Project.
+This is a Addin for *Autodesk Fusion 360* that will export a [Mirabuf](https://github.com/HiceS/mirabuf) usable by the Synthesis simulator.
 
 ## Features
 - [x] Materials
@@ -17,15 +17,11 @@ This is a Addin for *Autodesk Fusion 360* that will export a solid model file in
 - [ ] Sending compressed file
 - [ ] File Diffs
 
-
 ### Pre-requisites
 
 #### Protobuf
- - To build protobuf from source look at the docs here [Protobuf](https://github.com/protocolbuffers/protobuf/releases)
-    - `cd proto && sudo ./build.sh` (OSX)
-    - `` (Windows) - Someone fill this in
- - To use pre-built Python Libraries you can grab the latest here [Mirabuf](https://github.com/HiceS/mirabuf/releases) (usually `python.zip`)
-    - Export all but `setup.py` to `proto/proto_out`
+
+You can download Protobuf v23.3 [here](https://github.com/protocolbuffers/protobuf/releases/tag/v23.3).
 
 #### Dev Tools
 
@@ -34,15 +30,17 @@ We use `VSCode` Primarily, download it to interact with our code or use your own
 ---
 
 ### How to Build + Run
-1. Open `Autodesk Fusion 360`
-2. Select `UTILITIES` from the top bar
-3. Click `ADD-INS` Button
-4. Click `Add-Ins` tab at the top of Scripts and Add-Ins dialog
-5. Press + Button under **My Add-Ins** 
-6. Navigate to the containing folder for this Addin and click open at bottom - _clone-directory_/synthesis/exporters/SynthesisFusionAddin
-7. Synthesis should be an option - select it and click run at the bottom of the dialog
-8. There should now be a button that says Synthesis in your utilities menu
-    - If there is no button there may be a problem - see below for checking log file
+1. See root [`README`](/README.md) on how to run `init` script
+2. Open `Autodesk Fusion 360`
+3. Select `UTILITIES` from the top bar
+4. Click `ADD-INS` Button
+5. Click `Add-Ins` tab at the top of Scripts and Add-Ins dialog
+6. Press + Button under **My Add-Ins** 
+7. Navigate to the containing folder for this Addin and click open at bottom - _clone-directory_/synthesis/exporters/SynthesisFusionAddin
+8. Synthesis should be an option - select it and click run at the bottom of the dialog
+9. There should now be a button that says Synthesis in your utilities menu
+    - If there is no button there may be a problem - see below for [checking log file](#debug-non-start)
+
 ---
 
 ### How to Debug
@@ -77,6 +75,7 @@ Packaging is mainly for compressing the files into a smaller footprint
 Contact us for information on how to use the packaging script to obfuscate all of the files using `pyminifier`.
 
 ---
+
 ### How to Format
 
 We format using a Python formatter called `black` [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -85,23 +84,3 @@ We format using a Python formatter called `black` [![Code style: black](https://
 - use `black ./src`, Formats all files in src directory
 
 __Note: black will always ignore files in the proto/proto_out folder since google formats those__
-
----
-
-### Using the Exporter
-
-1. Pre-requisites 
-(VS Code)
-(Fusion 360)
-(PROTOC - provide a link (through pip3))
-(Windows & OSX)
-(git submodule update)
-
-2. How to Build 
-(1. build protos, 2. Open Fusion, etc.)
-
-3. How to Debug (Where is log file - how to read it)
-
-4. How to package (Currently TBD)
-
-5. How to use the software - you could attach screenshots (general how to use not really a tutorial) (if linking screenshots, you need to create a sample false issue and drag and drop to get link)
