@@ -10,7 +10,7 @@ For more information on cloning this repository and the initial setup of the Syn
 
 ### Dependencies
 
-Similar to the rest of Synthesis, the Synthesis Engine has the following dependencies that need to be satisfied before attempting to build Synthesis or the Synthesis Engine. Differently from the rest of Synthesis however, the Synthesis Engine requires other parts of Synthesis to be built before and linked. For this reason we strongly recommend using an `init` script to setup and build the Synthesis Engine dependencies. There is of course the option of manually building these dependencies, but please please don't do this.
+Similar to the rest of Synthesis, the Synthesis Engine has the following dependencies that need to be satisfied before attempting to build Synthesis or the Synthesis Engine. Differently from the rest of Synthesis however, the Synthesis Engine requires other parts of Synthesis to be built before and linked. For this reason we strongly recommend using the [init.bat](/init.bat) (or [init.sh](/init.sh) if you're on Linux/MacOS) script to setup and build the Synthesis Engine dependencies. There is of course the option of manually building these dependencies, but please please don't do this.
 
 - External Dependencies:
   - [.NET Standard 2.0](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-1-0)
