@@ -98,7 +98,7 @@ Here is a brief overview of each of the components found in this repository. For
   - Code emulation is an advanced feature that is still under development, functionality and support is limited.
 - [Core Engine](/engine/)
   - The core of Synthesis, the Unity project that contains the simulation engine.
-- [Fusion Exporter](/exporter/)
+- [Fusion Exporter](/exporter/SynthesisFusionAddin/)
   - The Fusion 360 plugin that allows users to export their robots and fields into Synthesis.
 - [Installer](/installer/)
   - Tools used to build the Synthesis installer for Windows, MacOS and Linux featured on our [Download Page](https://synthesis.autodesk.com/download.html).
