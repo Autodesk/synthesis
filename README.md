@@ -81,7 +81,7 @@ This project welcomes community suggestions and contributions. Synthesis is 100%
 
 Before you contribute to this repository, please first discuss the change you wish to make via a GitHub issue, email us ([frc@autodesk.com](mailto:frc@autodesk.com)), or reach out through our [community discord](https://www.discord.gg/hHcF9AVgZA). This way we can ensure that there is no overlap between outside contributors and internal development work.
 
-When ready to contribute, just submit a pull request and be sure to include a clear and detailed description of the changes you've made so that we can verify them and eventually merge. Feel free to check out our [contributing guidelines](/CONTRIBUTING.md) to learn more.
+When ready to contribute, just submit a pull request and be sure to fill out the template accordingly so that we can verify them and eventually merge. Feel free to check out our [contributing guidelines](/CONTRIBUTING.md) to learn more.
 
 ## Code Formatting And Style
 
