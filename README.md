@@ -50,7 +50,7 @@ Synthesis Version `6.0.0` has the following dependencies:
 - [Protobuf 23.3](https://github.com/protocolbuffers/protobuf/releases/tag/v23.3)
 - Unity Version 2022.3.2f1 (d74737c6db50)
 
-These dependencies need to be satisfied before attempting to build Synthesis with unity. You can either install these dependencies manually or use the *resolve dependencies* scripts (`scripts/win/resolve_deps.bat` & `scripts/osx/resolve_deps.sh` respectively) to install some of them for you.
+These dependencies need to be satisfied before attempting to build Synthesis with unity. You can either install these dependencies manually or use the *resolve dependencies* scripts (`scripts/win/resolve_deps.bat` & `scripts/osx/resolve_deps.sh`) to install some of them for you.
 
 To automatically install .NET and Protobuf run the following script depending on your operating system:
 - Windows: `scripts/win/resolve_deps.bat`
