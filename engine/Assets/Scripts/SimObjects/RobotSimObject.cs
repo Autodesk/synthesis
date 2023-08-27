@@ -685,7 +685,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     public static void SpawnRobot(MixAndMatchRobotData mixAndMatchRobotData, Vector3 position, Quaternion rotation,
         bool spawnGizmo, string? filePath) {
         if (mixAndMatchRobotData?.PartTransformData.Length == 0) {
-            Logger.Log("Mix and match robot contains no parts", LogLevel.Info);
+            Logger.Log("Custom robot contains no parts", LogLevel.Info);
             return;
         }
 

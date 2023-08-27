@@ -44,7 +44,7 @@ public class RobotSwitchPanel : PanelDynamic {
 
         if (!_isMatchMode) {
             _addButton = left.CreateButton("Add").SetStretch<Button>().AddOnClickedEvent(
-                b => { DynamicUIManager.CreateModal<AddRobotModal>(); });
+                b => { DynamicUIManager.CreateModal<ChooseRobotTypeModal>(); });
 
             _removeButton = right.CreateButton("Remove").SetStretch<Button>().AddOnClickedEvent(b => {
                 RobotSimObject.RemoveRobot(RobotSimObject.CurrentlyPossessedRobot);

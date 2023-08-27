@@ -195,7 +195,6 @@ namespace UI.Dynamic.Modals.MixAndMatch {
                                 MixAndMatchSaveUtil.DeletePart(fileName);
                             CreateChooseObjectModal(robot);
                         })
-                    .ApplyTemplate(Button.EnableCancelButton)
                     .RootGameObject.SetActive(true);
             }
 
@@ -203,7 +202,6 @@ namespace UI.Dynamic.Modals.MixAndMatch {
                 .AddOnClickedEvent(
                     _ => CreateChooseObjectModal(robot))
                 .StepIntoLabel(l => l.SetText("Back"))
-                .ApplyTemplate(Button.EnableAcceptButton)
                 .RootGameObject.SetActive(true);
         }
 

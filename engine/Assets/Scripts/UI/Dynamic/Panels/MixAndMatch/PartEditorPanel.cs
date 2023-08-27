@@ -172,6 +172,9 @@ namespace UI.Dynamic.Panels.MixAndMatch {
                 _selectedConnection = point;
                 GizmoManager.SpawnGizmo(point.transform,
                     t => {
+                        if (point.transform == null)
+                            GizmoManager.ExitGizmo();
+
                         point.transform.position = t.Position;
                         point.transform.rotation = t.Rotation;
                     },
@@ -212,6 +215,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         public override void Update() {}
 
         public override void Delete() {
+            GizmoManager.ExitGizmo();
             SceneHider.IsHidden = false;
             Object.Destroy(_partGameObject);
         }
