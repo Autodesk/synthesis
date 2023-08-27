@@ -33,7 +33,7 @@ If you're a developer who wants to contribute to Synthesis, you're in the right 
 - [Simulation Engine](/engine/)
 - [Fusion Robot Exporter (Fusion 360 Plugin)](/exporter/)
 
-Each of this components can be manually compiled separately, but this is not recommended. Instead, we recommend using the *init* scripts provided (`init.bat` & `init.sh` respectively) to build and link each component together (excluding the Fusion Robot Exporter).
+Each of this components can be manually compiled separately, but this is not recommended. Instead, we recommend using the *init* scripts provided (`init.bat` & `init.sh`) to build and link each component together (excluding the Fusion Robot Exporter).
 
 ### Compatibility Notes
 
