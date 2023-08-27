@@ -20,7 +20,7 @@ Similar to the rest of Synthesis, the Synthesis API has the following dependenci
 You can either install these dependencies manually or use the *resolve dependencies* scripts (`scripts/win/resolve_deps.bat` & `scripts/osx/resolve_deps.sh` respectively) to install some of them for you.
 
 To automatically install .NET and Protobuf run the following script depending on your operating system:
-- Windows: `scripts/win/resolve_deps.bat`
+- Windows: [`/scripts/win/resolve_deps.bat`](/scripts/win/resolve_deps.bat)
 - MacOS & Linux: [`/scripts/osx/resolve_deps.sh`](/scripts/osx/resolve_deps.sh)
 
 Note that the windows script requires admin privileges to install .NET and Protobuf to the system PATH. For this reason it is not included by default in `init.bat` unlike how `init.sh` includes `resolve_deps.sh`.
