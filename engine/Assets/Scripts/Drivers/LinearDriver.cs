@@ -20,7 +20,7 @@ namespace Synthesis {
                 JointA.connectedAnchor = JointA.anchor + (JointA.axis * newPos);
                 if (newPos == Limits.Lower || newPos == Limits.Upper)
                     _lastVel = 0;
-                _position              = newPos;
+                _position = newPos;
             }
         }
         // Note: only used to save between sessions
@@ -89,7 +89,7 @@ namespace Synthesis {
 
             if (Mathf.Abs(delta) > possibleDelta)
                 delta = possibleDelta * Mathf.Sign(delta);
-            
+
             _lastVel += delta;
 
             if (Mathf.Abs(_lastVel * Time.deltaTime) > _motor.targetVelocity)

@@ -115,7 +115,7 @@ namespace Synthesis {
             }
         }
 
-        private float _lastVel = 0f;
+        private float _lastVel    = 0f;
         private float _fakedTheta = 0f;
         private float _fakedOmega = 0f;
 
@@ -271,15 +271,17 @@ namespace Synthesis {
 
                 if (_useFakeMotion) {
                     float tarVel = val == 0 ? 0 : Mathf.Sign(val) * _convertedMotorTargetVel;
-                    
-                    var delta = tarVel - _lastVel;
+
+                    var delta    = tarVel - _lastVel;
                     var posDelta = _motor.force * Mathf.Rad2Deg * Time.deltaTime;
 
-                    if (Mathf.Abs(delta) > posDelta) delta = posDelta * Mathf.Sign(delta);
+                    if (Mathf.Abs(delta) > posDelta)
+                        delta = posDelta * Mathf.Sign(delta);
 
                     _lastVel += delta;
 
-                    if (Mathf.Abs(_lastVel) > _convertedMotorTargetVel) _lastVel = _convertedMotorTargetVel * Mathf.Sign(_lastVel);
+                    if (Mathf.Abs(_lastVel) > _convertedMotorTargetVel)
+                        _lastVel = _convertedMotorTargetVel * Mathf.Sign(_lastVel);
 
                     _fakedTheta += _lastVel * deltaT;
 

@@ -187,9 +187,9 @@ namespace Synthesis {
             var val = (float) MainInput;
 
             _targetRotationalSpeed = val * _motor.targetVelocity;
-            var lastRotSpeed = _customWheel.RotationSpeed;
-            var delta         = _targetRotationalSpeed - lastRotSpeed;
-            var possibleDelta = _motor.force * Time.deltaTime;
+            var lastRotSpeed       = _customWheel.RotationSpeed;
+            var delta              = _targetRotationalSpeed - lastRotSpeed;
+            var possibleDelta      = _motor.force * Time.deltaTime;
 
             if (Mathf.Abs(delta) > possibleDelta)
                 delta = possibleDelta * Mathf.Sign(delta);
@@ -201,7 +201,7 @@ namespace Synthesis {
 
                 if (deltaT == 0f)
                     return;
-                
+
                 // Calculations:
                 // var alpha = (_customWheel.RotationSpeed - lastRotSpeed) / deltaT;
                 // 0.5f * alpha * deltaT * deltaT + lastRotSpeed * deltaT;
