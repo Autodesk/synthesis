@@ -6,7 +6,6 @@ using Synthesis;
 using Utilities.ColorManager;
 using Synthesis.PreferenceManager;
 
-
 public class ConfigJointModal : ModalDynamic {
     const float MODAL_HEIGHT = 500f;
     const float MODAL_WIDTH  = 800f;
@@ -129,13 +128,16 @@ public class ConfigJointModal : ModalDynamic {
             });
         });
 
-        (Content nameLabelContent, Content velLabelContent) =
+        (Content nameLabelContent, Content jointLabelContent) =
             MainContent.CreateSubContent(new Vector2(MODAL_WIDTH - SCROLL_WIDTH, 20f))
                 .SetTopStretch<Content>(PADDING, PADDING, 0)
                 .SplitLeftRight(NAME_WIDTH + PADDING, PADDING);
 
-        nameLabelContent.CreateLabel().SetText("Joint");
-        velLabelContent.CreateLabel().SetText("Target Velocity");
+        nameLabelContent.CreateLabel().SetText("Joint").SetTopStretch(PADDING * 2, PADDING);
+        (Content velLabelContent, Content accLabelContent) =
+            jointLabelContent.SplitLeftRight((MODAL_WIDTH - SCROLL_WIDTH - NAME_WIDTH - PADDING) / 2, PADDING);
+        velLabelContent.CreateLabel().SetText("Max Velocity").SetTopStretch(PADDING * 3, PADDING);
+        accLabelContent.CreateLabel().SetText("Max Acceleration").SetTopStretch(PADDING * 2, PADDING);
 
         _scrollView =
             MainContent.CreateScrollView()
@@ -201,24 +203,30 @@ public class ConfigJointModal : ModalDynamic {
     private void CreateEntry(
         string name, float currAcc, float currVel, Action<float> onAcc, Action<float> onVel, string velUnits = "RPM", float max = 150.0f) {
         Content entry =
-            _scrollView.Content.CreateSubContent(new Vector2(_scrollViewWidth - 20, PADDING + PADDING + PADDING + 80f))
+            _scrollView.Content.CreateSubContent(new Vector2(_scrollViewWidth - 20, PADDING + PADDING + PADDING + 50f))
                 .SetTopStretch<Content>(0, 20, 0)
                 .SetBackgroundColor<Content>(ColorManager.SynthesisColor.Background)
                 .ApplyTemplate(VerticalLayout);
         (Content nameContent, Content jointContent) = entry.SplitLeftRight(NAME_WIDTH, PADDING);
         if (currVel < 5.0f && max > 50.0f)
             max = 50.0f;
-        nameContent.CreateLabel().SetText(name).SetTopStretch(PADDING, PADDING, PADDING / 2 + 40f + _scrollView.HeightOfChildren);
-        jointContent.CreateSubContent(new Vector2(_scrollViewWidth - NAME_WIDTH - PADDING, 40f))
-            .SetTopStretch<Content>(0, 0, PADDING + PADDING)
-            .CreateSlider($"Max Velocity ({velUnits})", minValue: 0f, maxValue: max, currentValue: currVel)
-            .SetTopStretch<Slider>(PADDING, PADDING, _scrollView.HeightOfChildren + 40f)
+        nameContent.CreateLabel().SetText(name).SetTopStretch(PADDING, PADDING, PADDING / 2 + 25 + _scrollView.HeightOfChildren);
+
+        (Content velContent, Content accContent) = jointContent.SplitLeftRight((_scrollViewWidth - NAME_WIDTH - PADDING) / 2, PADDING);
+
+        velContent.CreateNumberInputField()
+            .StepIntoLabel(l => l.SetText($"Max Velocity ({velUnits})"))
+            .StepIntoHint(h => h.SetText("Velocity"))
+            .SetValue((int) currVel)
+            .ApplyTemplate(VerticalLayout)
             .AddOnValueChangedEvent((s, v) => { onVel(v); });
+
         max *= 1.5f;
-        jointContent.CreateSubContent(new Vector2(_scrollViewWidth - NAME_WIDTH - PADDING, 40f))
-            .SetTopStretch<Content>(0, 0, PADDING)
-            .CreateSlider($"Max Acceleration ({velUnits}/S)", minValue: 0f, maxValue: max, currentValue: currAcc)
-            .SetTopStretch<Slider>(PADDING, PADDING, _scrollView.HeightOfChildren)
+        accContent.CreateNumberInputField()
+            .StepIntoLabel(l => l.SetText($"Max Acceleration ({velUnits}/S)"))
+            .StepIntoHint(h => h.SetText("Acceleration"))
+            .SetValue((int) currAcc)
+            .ApplyTemplate(VerticalLayout)
             .AddOnValueChangedEvent((s, f) => { onAcc(f); });
     }
 
