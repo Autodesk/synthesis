@@ -292,8 +292,10 @@ namespace Synthesis {
                             _fakedTheta = _rotationalLimits.Value.min;
                         }
 
+                        float _lastFakedTheta = _fakedTheta;
+
                         _fakedTheta = Mathf.Clamp(_fakedTheta, -180, 179);
-                        if (_fakedTheta == 179 || _fakedTheta == -180)
+                        if (_lastFakedTheta == _fakedTheta)
                             _lastVel = 0;
 
                         _jointA.limits =

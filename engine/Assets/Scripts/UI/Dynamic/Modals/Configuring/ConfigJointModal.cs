@@ -5,6 +5,7 @@ using SynthesisAPI.Simulation;
 using Synthesis;
 using Utilities.ColorManager;
 using Synthesis.PreferenceManager;
+using System.Data.SqlTypes;
 
 public class ConfigJointModal : ModalDynamic {
     const float MODAL_HEIGHT     = 500f;
@@ -141,12 +142,12 @@ public class ConfigJointModal : ModalDynamic {
 
         if (_joints[0].driver is WheelDriver) {
             CreateEntry("Drive", (_joints[0].driver as WheelDriver).Motor.force / RPM_TO_RADPERSEC,
-                (_joints[0].driver as WheelDriver).Motor.targetVelocity / RPM_TO_RADPERSEC, x => ChangeDriveAcc(x),
-                x => ChangeDriveVelocity(x), max: 700f);
+                (_joints[0].driver as WheelDriver).Motor.targetVelocity / RPM_TO_RADPERSEC, false, x => ChangeDriveAcc(x),
+                x => ChangeDriveVelocity(x));
             if (_robotISSwerve) {
                 CreateEntry("Turn", (_joints[driveCount].driver as RotationalDriver).Motor.force,
-                    (_joints[driveCount].driver as RotationalDriver).Motor.targetVelocity, x => ChangeTurnAcc(x),
-                    x => ChangeTurnVelocity(x), "RPM", 60.0f);
+                    (_joints[driveCount].driver as RotationalDriver).Motor.targetVelocity, true, x => ChangeTurnAcc(x),
+                    x => ChangeTurnVelocity(x), "RPM");
             }
         }
 
@@ -182,9 +183,8 @@ public class ConfigJointModal : ModalDynamic {
                         u = "RPM";
                         break;
                 }
-                CreateEntry(GetName(_joints[i].driver), _joints[j].origAcc, _joints[j].origVel,
-                    x => _joints[j].setMaxAcceleration(x), x => _joints[j].setMaxVelocity(x), u,
-                    _joints[j].driver is RotationalDriver ? 40f : 150f);
+                CreateEntry(GetName(_joints[i].driver), _joints[j].origAcc, _joints[j].origVel, !(_joints[i].driver is WheelDriver),
+                    x => _joints[j].setMaxAcceleration(x), x => _joints[j].setMaxVelocity(x), u);
             }
         }
         _scrollView.Content.SetTopStretch<Content>().SetHeight<Content>(
@@ -195,16 +195,14 @@ public class ConfigJointModal : ModalDynamic {
 
     public override void Delete() {}
 
-    private void CreateEntry(string name, float currAcc, float currVel, Action<float> onAcc, Action<float> onVel,
-        string velUnits = "RPM", float max = 150.0f) {
+    private void CreateEntry(string name, float currAcc, float currVel, Boolean includeAcc, Action<float> onAcc, Action<float> onVel,
+        string velUnits = "RPM") {
         Content entry =
             _scrollView.Content.CreateSubContent(new Vector2(_scrollViewWidth - 20, PADDING + PADDING + PADDING + 50f))
                 .SetTopStretch<Content>(0, 20, 0)
                 .SetBackgroundColor<Content>(ColorManager.SynthesisColor.Background)
                 .ApplyTemplate(VerticalLayout);
         (Content nameContent, Content jointContent) = entry.SplitLeftRight(NAME_WIDTH, PADDING);
-        if (currVel < 5.0f && max > 50.0f)
-            max = 50.0f;
         nameContent.CreateLabel().SetText(name).SetTopStretch(
             PADDING, PADDING, PADDING / 2 + 25 + _scrollView.HeightOfChildren);
 
@@ -212,19 +210,18 @@ public class ConfigJointModal : ModalDynamic {
             jointContent.SplitLeftRight((_scrollViewWidth - NAME_WIDTH - PADDING) / 2, PADDING);
 
         velContent.CreateNumberInputField()
-            .StepIntoLabel(l => l.SetText($"Max Velocity ({velUnits})"))
+            .StepIntoLabel(l => l.SetText(velUnits))
             .StepIntoHint(h => h.SetText("Velocity"))
             .SetValue((int) currVel)
             .ApplyTemplate(VerticalLayout)
             .AddOnValueChangedEvent((s, v) => { onVel(v); });
-
-        max *= 1.5f;
-        accContent.CreateNumberInputField()
-            .StepIntoLabel(l => l.SetText($"Max Acceleration ({velUnits}/S)"))
-            .StepIntoHint(h => h.SetText("Acceleration"))
-            .SetValue((int) currAcc)
-            .ApplyTemplate(VerticalLayout)
-            .AddOnValueChangedEvent((s, f) => { onAcc(f); });
+        if (includeAcc) 
+            accContent.CreateNumberInputField()
+                .StepIntoLabel(l => l.SetText($"{velUnits}/S"))
+                .StepIntoHint(h => h.SetText("Acceleration"))
+                .SetValue((int) currAcc)
+                .ApplyTemplate(VerticalLayout)
+                .AddOnValueChangedEvent((s, f) => { onAcc(f); });
     }
 
     private void ChangeDriveAcc(float acc) {
