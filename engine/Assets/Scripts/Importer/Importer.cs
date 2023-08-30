@@ -210,6 +210,8 @@ namespace Synthesis.Import {
                         mat.dynamicFriction = 0f;
                         mat.staticFriction  = 0f;
                         mat.frictionCombine = PhysicMaterialCombine.Multiply;
+                        mat.bounceCombine = PhysicMaterialCombine.Multiply;
+                        mat.bounciness = 0f;
                     });
 
                     var wheelA           = gameObjectA.AddComponent<FixedJoint>();

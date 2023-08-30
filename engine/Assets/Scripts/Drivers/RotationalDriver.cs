@@ -8,6 +8,7 @@ using SynthesisAPI.Utilities;
 using UnityEngine;
 using Synthesis.Util;
 using Synthesis.Physics;
+using Math = System.Math;
 
 #nullable enable
 
@@ -283,6 +284,7 @@ namespace Synthesis {
                     if (Mathf.Abs(_lastVel) > _convertedMotorTargetVel)
                         _lastVel = _convertedMotorTargetVel * Mathf.Sign(_lastVel);
 
+                    float lastFakedTheta = _fakedTheta;
                     _fakedTheta += _lastVel * deltaT;
 
                     if (_rotationalLimits.HasValue) {
@@ -291,11 +293,12 @@ namespace Synthesis {
                         } else if (_fakedTheta < _rotationalLimits.Value.min) {
                             _fakedTheta = _rotationalLimits.Value.min;
                         }
-
-                        float _lastFakedTheta = _fakedTheta;
-
+                        
+                        // Limit theta to specific range
                         _fakedTheta = Mathf.Clamp(_fakedTheta, -180, 179);
-                        if (_lastFakedTheta == _fakedTheta)
+                        
+                        // Check and see if we've hit a hard limit to zero out velocity
+                        if (Math.Abs(lastFakedTheta - _fakedTheta) < 0.001f)
                             _lastVel = 0;
 
                         _jointA.limits =

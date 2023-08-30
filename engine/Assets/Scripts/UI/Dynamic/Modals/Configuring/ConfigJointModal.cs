@@ -5,7 +5,6 @@ using SynthesisAPI.Simulation;
 using Synthesis;
 using Utilities.ColorManager;
 using Synthesis.PreferenceManager;
-using System.Data.SqlTypes;
 
 public class ConfigJointModal : ModalDynamic {
     const float MODAL_HEIGHT     = 500f;
@@ -195,7 +194,7 @@ public class ConfigJointModal : ModalDynamic {
 
     public override void Delete() {}
 
-    private void CreateEntry(string name, float currAcc, float currVel, Boolean includeAcc, Action<float> onAcc, Action<float> onVel,
+    private void CreateEntry(string name, float currAcc, float currVel, bool includeAcc, Action<float> onAcc, Action<float> onVel,
         string velUnits = "RPM") {
         Content entry =
             _scrollView.Content.CreateSubContent(new Vector2(_scrollViewWidth - 20, PADDING + PADDING + PADDING + 50f))
