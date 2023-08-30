@@ -141,8 +141,8 @@ public class ConfigJointModal : ModalDynamic {
 
         if (_joints[0].driver is WheelDriver) {
             CreateEntry("Drive", (_joints[0].driver as WheelDriver).Motor.force / RPM_TO_RADPERSEC,
-                (_joints[0].driver as WheelDriver).Motor.targetVelocity / RPM_TO_RADPERSEC, false, x => ChangeDriveAcc(x),
-                x => ChangeDriveVelocity(x));
+                (_joints[0].driver as WheelDriver).Motor.targetVelocity / RPM_TO_RADPERSEC, false,
+                x => ChangeDriveAcc(x), x => ChangeDriveVelocity(x));
             if (_robotISSwerve) {
                 CreateEntry("Turn", (_joints[driveCount].driver as RotationalDriver).Motor.force,
                     (_joints[driveCount].driver as RotationalDriver).Motor.targetVelocity, true, x => ChangeTurnAcc(x),
@@ -182,8 +182,9 @@ public class ConfigJointModal : ModalDynamic {
                         u = "RPM";
                         break;
                 }
-                CreateEntry(GetName(_joints[i].driver), _joints[j].origAcc, _joints[j].origVel, !(_joints[i].driver is WheelDriver),
-                    x => _joints[j].setMaxAcceleration(x), x => _joints[j].setMaxVelocity(x), u);
+                CreateEntry(GetName(_joints[i].driver), _joints[j].origAcc, _joints[j].origVel,
+                    !(_joints[i].driver is WheelDriver), x => _joints[j].setMaxAcceleration(x),
+                    x => _joints[j].setMaxVelocity(x), u);
             }
         }
         _scrollView.Content.SetTopStretch<Content>().SetHeight<Content>(
@@ -194,8 +195,8 @@ public class ConfigJointModal : ModalDynamic {
 
     public override void Delete() {}
 
-    private void CreateEntry(string name, float currAcc, float currVel, bool includeAcc, Action<float> onAcc, Action<float> onVel,
-        string velUnits = "RPM") {
+    private void CreateEntry(string name, float currAcc, float currVel, bool includeAcc, Action<float> onAcc,
+        Action<float> onVel, string velUnits = "RPM") {
         Content entry =
             _scrollView.Content.CreateSubContent(new Vector2(_scrollViewWidth - 20, PADDING + PADDING + PADDING + 50f))
                 .SetTopStretch<Content>(0, 20, 0)
@@ -214,7 +215,7 @@ public class ConfigJointModal : ModalDynamic {
             .SetValue((int) currVel)
             .ApplyTemplate(VerticalLayout)
             .AddOnValueChangedEvent((s, v) => { onVel(v); });
-        if (includeAcc) 
+        if (includeAcc)
             accContent.CreateNumberInputField()
                 .StepIntoLabel(l => l.SetText($"{velUnits}/S"))
                 .StepIntoHint(h => h.SetText("Acceleration"))

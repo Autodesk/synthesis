@@ -293,10 +293,10 @@ namespace Synthesis {
                         } else if (_fakedTheta < _rotationalLimits.Value.min) {
                             _fakedTheta = _rotationalLimits.Value.min;
                         }
-                        
+
                         // Limit theta to specific range
                         _fakedTheta = Mathf.Clamp(_fakedTheta, -180, 179);
-                        
+
                         // Check and see if we've hit a hard limit to zero out velocity
                         if (Math.Abs(lastFakedTheta - _fakedTheta) < 0.001f)
                             _lastVel = 0;
