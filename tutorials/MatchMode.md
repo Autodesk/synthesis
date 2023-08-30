@@ -17,7 +17,7 @@ Match Mode is a new mode in Synthesis that allows you to simulate a FIRST match 
 
 After opening Synthesis, select Single Player. There, you should be able to choose between Practice Mode and Match Mode.
 
-<img src="img/synthesis/choose-mode-modal.png" alt="image" width="50%" height="50%"/>
+![image_caption](img/synthesis/choose-mode-modal.png)
 
 ### Preparing a Match
 
@@ -25,7 +25,7 @@ Once Match Mode is selected, you will be able to choose your robots for each all
 
 Next, you will be able to view your selected field and set the spawn locations for each robot. You can spawn your robots anywhere within the field by selecting each robot and clicking on the location.
 
-<img src="img/synthesis/match-mode-setup.png" alt="image" width="50%" height="50%"/>
+![image_caption](img/synthesis/match-mode-setup.png)
 
 ## Scoring Zones
 
@@ -40,7 +40,7 @@ After setting your robot’s spawning locations, you can place down scoring zone
 * Persistent Points:
   * Points earned remain even when the game piece leaves the scoring zone.
 
-<img src="img/synthesis/match-mode-scoring.png" alt="image" width="50%" height="50%"/>
+![image_caption](img/synthesis/match-mode-scoring.png)
 
 ### Beginning a Match
 
@@ -48,7 +48,7 @@ Once you have set your scoring zones, the match will begin. There is a 15 second
 
 At the end of the match, you will get a panel showing the points earned. Here, you have the option to exit out of match mode, restart the match, or reconfigure the match with different bots or a different field.
 
-<img src="img/synthesis/match-mode-results.png" alt="image" width="50%" height="50%"/>
+![image_caption](img/synthesis/match-mode-results.png)
 
 ## Need More Help?
 

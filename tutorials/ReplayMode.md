@@ -13,7 +13,7 @@ Replay Mode is a feature that allows you to rewind the **last 5 seconds of game 
 
 By hitting `Tab` on your keyboard, a slider will show up on the bottom of your screen.  You can pull the slider in either direction to replay your simulation. Hit `Tab` again to close out of Replay Mode.
 
-[<img src="img/synthesis/replay-mode.png" alt="image" width="50%" height="50%"/>](img/synthesis/replay-mode.png)
+![image_caption](img/synthesis/replay-mode.png)
 
 ## Need More Help?
 

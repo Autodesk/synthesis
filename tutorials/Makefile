@@ -2,26 +2,28 @@
 
 all: FusionExporter CodeSimulation ConfigMode PracticeMode MatchMode ReplayMode RobotBuilder Utilities
 
+OUTPUT_DIRECTORY := ./out/
+
 FusionExporter:
-	claat export -o ./ FusionExporter.md
+	claat export -o $(OUTPUT_DIRECTORY) FusionExporter.md
 
 CodeSimulation:
-	claat export -o ./ CodeSimulation.md
+	claat export -o $(OUTPUT_DIRECTORY) CodeSimulation.md
 
 ConfigMode:
-	claat export -o ./ ConfigMode.md
+	claat export -o $(OUTPUT_DIRECTORY) ConfigMode.md
 
 MatchMode:
-	claat export -o ./ MatchMode.md
+	claat export -o $(OUTPUT_DIRECTORY) MatchMode.md
 
 PracticeMode:
-	claat export -o ./ PracticeMode.md
+	claat export -o $(OUTPUT_DIRECTORY) PracticeMode.md
 
 ReplayMode:
-	claat export -o ./ ReplayMode.md
+	claat export -o $(OUTPUT_DIRECTORY) ReplayMode.md
 
 RobotBuilder:
-	claat export -o ./ RobotBuilder.md
+	claat export -o $(OUTPUT_DIRECTORY) RobotBuilder.md
 
 Utilities:
-	claat export -o ./ Utilities.md
+	claat export -o $(OUTPUT_DIRECTORY) Utilities.md

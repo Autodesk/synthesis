@@ -25,7 +25,7 @@ View refers to your camera view. In Synthesis, there are four types for you to c
 - **Overview**: Overview is a static camera pointed down at the field. Use scroll to zoom in and out.
 - **Driver Station**: A camera view meant to mimic a driver’s view from the Driver station. Use right click and WASD to position the camera, and scroll to zoom. This view is similar to Freecam, but always points towards your robot.
 
-[<img src="img/synthesis/view-panel.png" alt="image" width="50%" height="50%"/>](img/synthesis/view-panel.png)
+![image_caption](img/synthesis/view-panel.png)
 
 ## Configure
 
@@ -37,7 +37,7 @@ To download preloaded robots and fields, open Download Assets and select which m
 
 If this is the first time you are running Synthesis, you won’t be able to spawn anything without downloading the models first.
 
-[<img src="img/synthesis/asset-downloader.png" alt="image" width="50%" height="50%"/>](img/synthesis/asset-downloader.png)
+![image_caption](img/synthesis/asset-downloader.png)
 
 ## Scoring Zones
 

@@ -18,17 +18,15 @@ Multibot is a feature that allows you to switch between different robots that yo
 have on the field. It also allows you to load in additional bots, or remove
 unwanted ones.
 
-[<img src="img/synthesis/multibot.png" alt="image" width="50%" height="50%"/>](img/synthesis/multibot.png)
+![image_caption](img/synthesis/multibot.png)
 
 ## God Mode
 
 When you open up the control panel, there is a keybind for something called `God Mode`. 
 When `G` is held (or whichever key you choose) you have the ability to pick up and drag any dynamic / movable object, including the robot.  
 
-<p align="center">
-    <a>[<img src="img/synthesis/settings-panel.png" alt="image" width="49.5%" height="50%"/>](img/synthesis/settings-panel.png)</a>
-    <a>[<img src="img/synthesis/god-mode-dragging.png" alt="image" width="49.5%" height="50%"/>](img/synthesis/god-mode-dragging.png)</a>
-</p>
+![image_caption](img/synthesis/god-mode-dragging.png)
+![image_caption](img/synthesis/settings-panel.png)
 
 <sub>Pictured here is a robot being dragged while in *God Mode*.</sub>
 
@@ -46,7 +44,7 @@ Synthesis’ settings panel lets you calibrate your screen size, image quality, 
 
 Theme Editor is a new feature that allows you to choose between preset themes, as well as create your own custom ones.
 
-[<img src="img/synthesis/theme-editor.png" alt="image" width="50%" height="50%"/>](img/synthesis/theme-editor.png)
+![image_caption](img/synthesis/theme-editor.png)
 
 ## Need More Help?
 

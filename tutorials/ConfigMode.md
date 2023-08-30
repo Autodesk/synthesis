@@ -13,7 +13,11 @@ feedback link: https://github.com/Autodesk/synthesis/issues
 
 Configure Mode allows you to change and fine tune aspects of your robot to better test and simulate its behavior on the field. Configure Mode is available in both Practice and Match Modes and is accessible via the side panel.
 
+<<<<<<< Updated upstream
 [<img src="img/synthesis/config-mode.png" alt="image" width="50%" height="50%"/>](img/synthesis/config-mode.png)
+=======
+![image_caption](img/synthesis/config-mode.png)
+>>>>>>> Stashed changes
 
 In each configuration panel, you will be able to cancel and save your modifications. You will also be given the option to `Session Save`, saving your changes until you quit the session. If you want the changes you make to that robot to be saved permanently, hit the `Save` button on the far right.
 
@@ -33,7 +37,7 @@ Similarly to pickup configuration, you’re able to move your ejection path in t
 
 Motor configuration allows you to modify the motors on your robot. Using the slide bars assigned to each motor, you can adjust the target velocity accordingly.
 
-[<img src="img/synthesis/motor-config.png" alt="image" width="50%" height="50%"/>](img/synthesis/motor-config.png)
+![image_caption](img/synthesis/motor-config.png)
 
 <sub>Pictured here are the motors on Team 2471's 2018 robot.</sub>
 
@@ -44,7 +48,7 @@ Motor configuration allows you to modify the motors on your robot. Using the sli
 
 In drivetrain configuration, you can change the drivetrain your robot uses, which can then be adjusted in motor configuration and controls.
 
-[<img src="img/synthesis/change-drivetrain-panel.png" alt="image" width="50%" height="50%"/>](img/synthesis/change-drivetrain-panel.png)
+![image_caption](img/synthesis/change-drivetrain-panel.png)
 
 The drivetrains available on Synthesis are as the following:
 

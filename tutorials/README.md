@@ -20,7 +20,11 @@ or
 
 or
 
-`make TUTORIAL` 
+`make [tutorial]`
+
+#### Make Script
+
+Using the make script will dump all the resulting codelabs into an `out/` directory.
 
 ## Usage
 
