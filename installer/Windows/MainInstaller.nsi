@@ -160,10 +160,6 @@ Section "Synthesis (required)" Synthesis
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoModify" 1
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoRepair" 1
   WriteUninstaller "uninstall.exe"
-  
-	; Set extraction path for field files
-	SetOutPath $APPDATA\Autodesk\Synthesis\Fields
-	File /r "Fields\*"
 
 SectionEnd
 
@@ -184,7 +180,8 @@ Section "Fusion Exporter Plugin" fExporter
 
   ; Set extraction path to Fusion plugin directories
   SetOutPath "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\Synthesis"
-  File /r "..\..\exporter\SynthesisFusionAddin\*"
+  File /r "Exporter\*"
+  ; File /r "..\..\exporter\SynthesisFusionAddin\*"
   
   ; SetOutPath "$APPDATA\Autodesk\ApplicationPlugins\FusionRobotExporter.bundle\Contents\"
   ; File /r "FusionExporter\FusionRobotExporter.dll"
@@ -199,6 +196,22 @@ Section "Robots and Fields" RobotFiles
 
   SetOutPath $APPDATA\Autodesk\Synthesis\Mira\Fields
   File /r "Fields\*"
+
+SectionEnd
+
+Section "PartBuilder Samples" PartBuilder
+
+  ; Set extraction path for preloaded robot files
+  SetOutPath $APPDATA\Autodesk\Synthesis\MixAndMatch
+  File /r "MixAndMatch\*"
+
+SectionEnd
+
+Section "Themes" Themes
+
+  ; Set extraction path for preloaded robot files
+  SetOutPath $APPDATA\Autodesk\Synthesis\Themes
+  File /r "Themes\*"
 
 SectionEnd
 
@@ -229,6 +242,8 @@ SectionEnd
   ; LangString DESC_iExporter ${LANG_ENGLISH} "The Inventor Exporter Plugin is an Inventor addin used to export Autodesk Inventor Assemblies directly into the simulator"
   LangString DESC_fExporter ${LANG_ENGLISH} "The Fusion360 Exporter Plugin is a Fusion addin used to export Autodesk Fusion Assemblies directly into the simulator"
   LangString DESC_RobotFiles ${LANG_ENGLISH} "A library of sample robots and fields pre-loaded into the simulator"
+  LangString DESC_PartBuilder ${LANG_ENGLISH} "A library of sample parts to use in Robot Builder"
+  LangString DESC_Themes ${LANG_ENGLISH} "Preinstalled themes"
   ; LangString DESC_Emulator ${LANG_ENGLISH} "The Robot Code Emulator allows you to emulate your C++ & JAVA robot code in the simulator"
 
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -236,6 +251,8 @@ SectionEnd
   ; !insertmacro MUI_DESCRIPTION_TEXT ${iExporter} $(DESC_iExporter)
   !insertmacro MUI_DESCRIPTION_TEXT ${fExporter} $(DESC_fExporter)
   !insertmacro MUI_DESCRIPTION_TEXT ${RobotFiles} $(DESC_RobotFiles)
+  !insertmacro MUI_DESCRIPTION_TEXT ${PartBuilder} $(DESC_PartBuilder)
+  !insertmacro MUI_DESCRIPTION_TEXT ${Themes} $(DESC_Themes)
   ; !insertmacro MUI_DESCRIPTION_TEXT ${Emulator} $(DESC_Emulator)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
   
