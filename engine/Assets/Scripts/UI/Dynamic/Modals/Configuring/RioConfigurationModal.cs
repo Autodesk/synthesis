@@ -27,7 +27,7 @@ public class RioConfigurationModal : ModalDynamic {
         if (reload && RobotSimObject.CurrentlyPossessedRobot != string.Empty) {
             Entries.Clear();
 
-            var trans = MainHUD.ConfigRobot.SimulationTranslationLayer;
+            var trans = MainHUD.SelectedRobot.SimulationTranslationLayer;
 
             trans.PWMGroups.ForEach(x => Entries.Add((PWMGroupEntry) x!));
 
@@ -54,8 +54,7 @@ public class RioConfigurationModal : ModalDynamic {
         Title.SetText("RoboRIO Configuration");
         Title.SetWidth<Label>(300);
 
-        ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
-        ModalIcon.SetColor(ColorManager.SynthesisColor.Icon);
+        ModalIcon.UnityImage.sprite = SynthesisAssetCollection.GetSpriteByName("roborio");
 
         _scrollView = MainContent.CreateScrollView();
         _scrollView.SetStretch<ScrollView>();
@@ -71,10 +70,10 @@ public class RioConfigurationModal : ModalDynamic {
             CreateItem($"{e.GetDisplayName()}", "Config",
                 () => {
                     if (e.GetType().Name.Equals(typeof(PWMGroupEntry).Name)) {
-                        DynamicUIManager.CreateModal<RCConfigPwmGroupModal>(e);
+                        DynamicUIManager.CreateModal<RCConfigPwmGroupModal>(false, e);
                     }
                     if (e.GetType().Name.Equals(typeof(EncoderEntry).Name)) {
-                        DynamicUIManager.CreateModal<RCConfigEncoderModal>(e);
+                        DynamicUIManager.CreateModal<RCConfigEncoderModal>(false, e);
                     } else {
                         Debug.Log($"{e.GetType().Name}");
                     }
@@ -144,7 +143,7 @@ public class RioConfigurationModal : ModalDynamic {
             }
         });
 
-        MainHUD.ConfigRobot.SimulationTranslationLayer = trans;
+        MainHUD.SelectedRobot.SimulationTranslationLayer = trans;
     }
 
     public override void Delete() {}

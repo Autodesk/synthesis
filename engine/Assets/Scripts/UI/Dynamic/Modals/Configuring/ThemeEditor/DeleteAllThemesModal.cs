@@ -13,6 +13,7 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
         private string _newThemeName = null;
 
         public override void Create() {
+            ModalIcon.UnityImage.sprite = SynthesisAssetCollection.GetSpriteByName("trash-icon");
             Title.SetText($"Delete All Themes?").SetWrapping(false);
 
             AcceptButton.AddOnClickedEvent(x => {
@@ -22,8 +23,18 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
 
             CancelButton.AddOnClickedEvent(x => { DynamicUIManager.CreateModal<EditThemeModal>(); });
 
-            ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("CloseIcon"))
-                .SetColor(ColorManager.SynthesisColor.MainText);
+            AcceptButton
+                .AddOnClickedEvent(
+                    _ => {
+                        ColorManager.DeleteAllThemes();
+                        DynamicUIManager.CreateModal<EditThemeModal>();
+                    })
+                .ApplyTemplate(Button.EnableCancelButton)
+                .StepIntoLabel(l => l.SetText("Delete"));
+
+            CancelButton.AddOnClickedEvent(x => { DynamicUIManager.CreateModal<EditThemeModal>(); })
+                .ApplyTemplate(Button.EnableAcceptButton)
+                .StepIntoLabel(l => l.SetText("Back"));
         }
 
         public override void Update() {}

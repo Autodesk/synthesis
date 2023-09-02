@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using Analytics;
 using Synthesis.UI.Dynamic;
@@ -24,18 +21,18 @@ public class ChangeDrivetrainModal : ModalDynamic {
 
         Title.SetText("Change Drivetrain");
 
-        ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+        ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("drivetrain"));
 
         AcceptButton.AddOnClickedEvent(b => {
-            MainHUD.ConfigRobot.ConfiguredDrivetrainType = _selectedType;
+            MainHUD.SelectedRobot.ConfiguredDrivetrainType = _selectedType;
             AnalyticsManager.LogCustomEvent(AnalyticsEvent.DrivetrainSwitched, ("DrivetrainType", _selectedType.Name));
 
             DynamicUIManager.CloseActiveModal();
 
-            RobotSimObject.GetCurrentlyPossessedRobot().CreateDrivetrainTooltip();
+            MainHUD.SelectedRobot.CreateDrivetrainTooltip();
         });
 
-        _selectedType = MainHUD.ConfigRobot.ConfiguredDrivetrainType;
+        _selectedType = MainHUD.SelectedRobot.ConfiguredDrivetrainType;
 
         MainContent.CreateDropdown()
             .SetTopStretch<Dropdown>()

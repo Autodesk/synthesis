@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Google.Protobuf.WellKnownTypes;
 using Synthesis.PreferenceManager;
+using Synthesis.UI.Dynamic;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
@@ -11,6 +12,8 @@ using SynthesisAPI.Utilities;
 using UnityEngine;
 
 using Logger = SynthesisAPI.Utilities.Logger;
+
+#nullable enable
 
 namespace Synthesis {
     public class GeneralArmBehaviour : SimBehaviour {
@@ -22,6 +25,8 @@ namespace Synthesis {
         private RotationalDriver _armDriver;
         private float _speedMod = 0.4f;
 
+        private RobotSimObject _robot;
+
         public GeneralArmBehaviour(string simObjectId, RotationalDriver armDriver)
             : base(simObjectId) { // base(simObjectId, GetInputs(this, armSignal))
 
@@ -30,8 +35,10 @@ namespace Synthesis {
             armDriver.Reserve(this);
             _armDriver = armDriver;
 
-            _forwardInputKey    = _armDriver.Signal + _forwardInputKey;
-            _reverseInputKey    = _armDriver.Signal + _reverseInputKey;
+            _robot = (SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject)!;
+
+            _forwardInputKey    = _robot.RobotGUID + _armDriver.Signal + _forwardInputKey;
+            _reverseInputKey    = _robot.RobotGUID + _armDriver.Signal + _reverseInputKey;
             var name            = _armDriver.Name;
             _forwardDisplayName = name + _forwardDisplayName;
             _reverseDisplayName = name + _reverseDisplayName;
@@ -51,19 +58,28 @@ namespace Synthesis {
             };
         }
 
-        public Analog TryLoadInput(string key, Analog defaultInput) =>
-            SimulationPreferences.GetRobotInput(
-                (SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject).MiraLive.MiraAssembly.Info.GUID,
-                key) ??
-            defaultInput;
+        public Analog TryLoadInput(string key, Analog defaultInput) {
+            Analog input;
+            if (InputManager.MappedValueInputs.ContainsKey(key)) {
+                input                = InputManager.GetAnalog(key);
+                input.ContextBitmask = defaultInput.ContextBitmask;
+                return input;
+            }
+            input = SimulationPreferences.GetRobotInput(_robot.RobotGUID, key);
+            if (input == null) {
+                SimulationPreferences.SetRobotInput(_robot.RobotGUID, key, defaultInput);
+                return defaultInput;
+            }
+            return input;
+        }
 
         private void OnValueInputAssigned(IEvent tmp) {
             ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
             if (args.InputKey.Equals(_forwardInputKey) || args.InputKey.Equals(_reverseInputKey)) {
-                if (base.SimObjectId != RobotSimObject.GetCurrentlyPossessedRobot().MiraGUID)
+                if (_robot.RobotGUID != (MainHUD.SelectedRobot?.RobotGUID ?? string.Empty) ||
+                    !((DynamicUIManager.ActiveModal as ChangeInputsModal)?.isSave ?? false))
                     return;
-                RobotSimObject robot = SimulationManager.SimulationObjects[base.SimObjectId] as RobotSimObject;
-                SimulationPreferences.SetRobotInput(robot.MiraGUID, args.InputKey, args.Input);
+                SimulationPreferences.SetRobotInput(_robot.RobotGUID, args.InputKey, args.Input);
             }
         }
 

@@ -50,7 +50,7 @@ namespace Modes.MatchMode {
             _stateMachine = MatchStateMachine.Instance;
             _stateMachine.SetState(MatchStateMachine.StateName.MatchConfig);
 
-            SetupMatchResultTracking();
+            MatchResultsTracker = new MatchResultsTracker();
             MainHUD.SetUpMatch();
         }
 
@@ -72,23 +72,6 @@ namespace Modes.MatchMode {
                     Scoring.redScore += points;
                     break;
             }
-        }
-
-        /// Creates a MatchResultsTracker and event listeners to update it
-        public void SetupMatchResultTracking() {
-            MatchResultsTracker = new MatchResultsTracker();
-
-            EventBus.NewTypeListener<OnScoreUpdateEvent>(e => {
-                ScoringZone zone = ((OnScoreUpdateEvent) e).Zone;
-                switch (zone.Alliance) {
-                    case Alliance.Blue:
-                        ((BluePoints) MatchResultsTracker.MatchResultEntries[typeof(BluePoints)]).Points += zone.Points;
-                        break;
-                    case Alliance.Red:
-                        ((RedPoints) MatchResultsTracker.MatchResultEntries[typeof(RedPoints)]).Points += zone.Points;
-                        break;
-                }
-            });
         }
 
         public void Update() {
@@ -123,10 +106,10 @@ namespace Modes.MatchMode {
             int i = 0;
             SelectedRobots.ForEach(x => {
                 if (x != -1) {
-                    Vector3 position              = new Vector3(2 * i - 6, -2.5f, 0);
+                    Vector3 position              = new Vector3(2 * i - 6, -150f, 0);
                     RawSpawnLocations[i].position = position;
 
-                    RobotSimObject.SpawnRobot(robotFiles[x], position, Quaternion.identity, false);
+                    RobotSimObject.SpawnRobot(null, position, Quaternion.identity, false, robotFiles[x]);
                     Robots.Add(RobotSimObject.GetCurrentlyPossessedRobot());
                 } else
                     Robots.Add(null);

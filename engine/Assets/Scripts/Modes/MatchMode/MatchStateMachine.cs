@@ -150,7 +150,8 @@ namespace Modes.MatchMode {
             public override void Start() {
                 base.Start();
 
-                PhysicsManager.IsFrozen = true;
+                DynamicUIManager.ManualMainHUDEnabled = false;
+                PhysicsManager.IsFrozen               = true;
                 MatchMode.SpawnAllRobots();
 
                 if (Camera.main != null) {
@@ -181,11 +182,12 @@ namespace Modes.MatchMode {
         public class FieldConfig : MatchState {
             public override void Start() {
                 base.Start();
+                ScoringZonesPanel.MatchModeSetup = true;
                 DynamicUIManager.CreatePanel<ScoringZonesPanel>(true);
                 var panel = DynamicUIManager.GetPanel<ScoringZonesPanel>();
 
                 panel.OnAccepted += () => {
-                    DynamicUIManager.CreateModal<ConfirmModal>("Start Match?");
+                    DynamicUIManager.CreateModal<ConfirmModal>(false, "Start Match?");
                     DynamicUIManager.ActiveModal.OnAccepted += () => {
                         DynamicUIManager.CloseActiveModal();
                         Instance.SetState(StateName.Auto);
@@ -201,6 +203,8 @@ namespace Modes.MatchMode {
 
             public override void End() {
                 base.End();
+                DynamicUIManager.ManualMainHUDEnabled = true;
+                ScoringZonesPanel.MatchModeSetup      = false;
             }
 
             public FieldConfig() : base(StateName.FieldConfig) {}
@@ -300,6 +304,8 @@ namespace Modes.MatchMode {
             public override void Update() {}
 
             public override void End() {
+                Scoring.blueScore = 0;
+                Scoring.redScore  = 0;
                 AnalyticsManager.LogCustomEvent(AnalyticsEvent.MatchEnded,
                     ("BluePoints", int.Parse(MatchMode.MatchResultsTracker
                                                  .MatchResultEntries[typeof(MatchResultsTracker.BluePoints)]
@@ -338,7 +344,7 @@ namespace Modes.MatchMode {
                     i++;
                 });
 
-                DynamicUIManager.CreateModal<ConfirmModal>("Start Match?");
+                DynamicUIManager.CreateModal<ConfirmModal>(false, "Start Match?");
                 DynamicUIManager.ActiveModal.OnAccepted += () => {
                     DynamicUIManager.CloseActiveModal();
                     Instance.SetState(StateName.Auto);

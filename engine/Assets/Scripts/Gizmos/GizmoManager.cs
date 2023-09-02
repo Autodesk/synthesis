@@ -4,6 +4,7 @@ using Synthesis.Runtime;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 #nullable enable
 
@@ -69,10 +70,8 @@ namespace Synthesis.Gizmo {
             }
 
             SimulationRunner.RemoveContext(SimulationRunner.GIZMO_SIM_CONTEXT);
-
             _currentGizmoConfig.Value.EndCallback(_currentTargetTransform);
-            GameObject.Destroy(_currentTargetTransform.gameObject);
-            // GameObject.Destroy(gizmo);
+            Object.DestroyImmediate(_currentTargetTransform.gameObject);
 
             _currentGizmoConfig     = null;
             _currentTargetTransform = null;
