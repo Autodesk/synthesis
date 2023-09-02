@@ -10,8 +10,7 @@ namespace Synthesis {
 
         public ConfigurableJoint JointA { get; private set; }
         public ConfigurableJoint JointB { get; private set; }
-        private float _maxSpeed;
-
+        private float _lastVel = 0;
         public float _position = 0f;
         public float Position {
             get => _position;
@@ -19,10 +18,11 @@ namespace Synthesis {
             set {
                 var newPos             = Mathf.Clamp(value, Limits.Lower, Limits.Upper);
                 JointA.connectedAnchor = JointA.anchor + (JointA.axis * newPos);
-                _position              = newPos;
+                if (newPos == Limits.Lower || newPos == Limits.Upper)
+                    _lastVel = 0;
+                _position = newPos;
             }
         }
-
         // Note: only used to save between sessions
         private JointMotor _motor;
         public JointMotor Motor {
@@ -68,18 +68,34 @@ namespace Synthesis {
                 _motor = motor.Value;
             } else {
                 Motor = new JointMotor() {
-                    force          = 2000,
+                    force          = 0.1f,
                     freeSpin       = false,
-                    targetVelocity = 5,
+                    targetVelocity = 0.2f,
                 };
             }
         }
 
         public override void Update() {
+            // TODO: Position
+
+            // VelocityControl
+
             float value = (float) MainInput;
 
-            var velocity = value * _motor.targetVelocity;
-            Position += Time.deltaTime * velocity;
+            var tarVel = value * _motor.targetVelocity;
+
+            var delta         = tarVel - _lastVel;
+            var possibleDelta = _motor.force * Time.deltaTime; // Force = acceleration in M/S/S
+
+            if (Mathf.Abs(delta) > possibleDelta)
+                delta = possibleDelta * Mathf.Sign(delta);
+
+            _lastVel += delta;
+
+            if (Mathf.Abs(_lastVel * Time.deltaTime) > _motor.targetVelocity)
+                _lastVel = _motor.targetVelocity * Mathf.Sign(_lastVel);
+
+            Position += _lastVel;
         }
     }
 }

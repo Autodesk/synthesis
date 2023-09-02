@@ -46,6 +46,7 @@ public class ChangeInputsModal : ModalDynamic {
 
             var inputScrollView =
                 leftContent.CreateScrollView().SetHeight<ScrollView>(CONTENT_HEIGHT).ApplyTemplate(VerticalLayout);
+            inputScrollView.SetBackgroundColor<ScrollView>(ColorManager.SynthesisColor.HighlightHover);
 
             // make background transparent
             inputScrollView.RootGameObject.GetComponent<UnityEngine.UI.Image>().color = Color.clear;

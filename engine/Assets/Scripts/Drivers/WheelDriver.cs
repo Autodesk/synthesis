@@ -138,7 +138,7 @@ namespace Synthesis {
             } else {
                 Motor = new JointMotor() {
                     // Default Motor. Slow but powerful enough. Also uses Motor to save it
-                    force          = 2000,
+                    force          = 1, // About a Neo 550. Max is Falcon 550 at 4.67
                     freeSpin       = false,
                     targetVelocity = 30,
                 };
@@ -184,17 +184,9 @@ namespace Synthesis {
             if (!_useMotor)
                 return;
 
-            var val = (float) MainInput;
-
-            _targetRotationalSpeed = val * _motor.targetVelocity;
-
-            var delta         = _targetRotationalSpeed - _customWheel.RotationSpeed;
-            var possibleDelta = (_motor.force * Time.deltaTime) / _customWheel.Inertia;
-            if (Mathf.Abs(delta) > possibleDelta)
-                delta = possibleDelta * Mathf.Sign(delta);
-
-            var lastRotSpeed = _customWheel.RotationSpeed;
-            _customWheel.RotationSpeed += delta;
+            var val                    = (float) MainInput;
+            var lastRotSpeed           = _customWheel.RotationSpeed;
+            _customWheel.RotationSpeed = val * _motor.targetVelocity;
 
             if (!float.IsNaN(_lastUpdate)) {
                 var deltaT = Time.realtimeSinceStartup - _lastUpdate;
@@ -202,8 +194,10 @@ namespace Synthesis {
                 if (deltaT == 0f)
                     return;
 
-                var alpha = (_customWheel.RotationSpeed - lastRotSpeed) / deltaT;
-                _jointAngle += 0.5f * alpha * deltaT * deltaT + lastRotSpeed * deltaT;
+                // Calculations:
+                // var alpha = (_customWheel.RotationSpeed - lastRotSpeed) / deltaT;
+                // 0.5f * alpha * deltaT * deltaT + lastRotSpeed * deltaT;
+                _jointAngle += deltaT * (_customWheel.RotationSpeed - 0.5f * lastRotSpeed);
             }
         }
     }
