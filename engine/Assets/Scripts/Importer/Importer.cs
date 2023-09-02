@@ -210,6 +210,8 @@ namespace Synthesis.Import {
                         mat.dynamicFriction = 0f;
                         mat.staticFriction  = 0f;
                         mat.frictionCombine = PhysicMaterialCombine.Multiply;
+                        mat.bounceCombine   = PhysicMaterialCombine.Multiply;
+                        mat.bounciness      = 0f;
                     });
 
                     var wheelA           = gameObjectA.AddComponent<FixedJoint>();
@@ -366,7 +368,6 @@ namespace Synthesis.Import {
                             new LinearDriver(assembly.Data.Signals.SignalMap[instance.SignalReference].Info.GUID,
                                 new[] { $"{instance.SignalReference}_{partIndex}" }, Array.Empty<string>(), _simObject,
                                 sliderA, sliderB,
-                                (motor?.SimpleMotor.MaxVelocity ?? 30f) / LinearDriver.LINEAR_TO_MOTOR_VELOCITY,
                                 ((definition.Prismatic.PrismaticFreedom.Limits.Upper - currentPosition) * 0.01f,
                                     (definition.Prismatic.PrismaticFreedom.Limits.Lower - currentPosition) * 0.01f),
                                 assembly.Data.Joints.MotorDefinitions.ContainsKey(definition.MotorReference)

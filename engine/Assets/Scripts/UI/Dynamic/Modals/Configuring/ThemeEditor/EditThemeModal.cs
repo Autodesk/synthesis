@@ -48,6 +48,8 @@ namespace UI.Dynamic.Modals.Configuring.ThemeEditor {
         public override void Create() {
             Title.SetText("Theme Editor");
 
+            ModalIcon.UnityImage.sprite = SynthesisAssetCollection.GetSpriteByName("paint-icon");
+
             AcceptButton.StepIntoLabel(l => l.SetText("Save")).AddOnClickedEvent(x => {
                 SaveThemeChanges();
                 DynamicUIManager.CloseActiveModal();

@@ -5,6 +5,7 @@ using Synthesis.UI.Dynamic;
 using SynthesisAPI.EventBus;
 using TMPro;
 using UnityEngine;
+using Utilities.ColorManager;
 
 public class ScoreboardPanel : PanelDynamic {
     private const float PANEL_HEIGHT_WITHOUT_TIMER = 100;
@@ -18,8 +19,8 @@ public class ScoreboardPanel : PanelDynamic {
 
     private readonly bool _showTimer;
 
-    private Label time, redScore, blueScore;
-    private Content topContent, bottomContent;
+    private Label _time, _redScore, _blueScore, _redLabel, _blueLabel;
+    private Content _topContent, _bottomContent;
 
     public Func<UIComponent, UIComponent> VerticalLayout = u => {
         float offset = -u.Parent!.RectOfChildren(u).yMin + VERTICAL_PADDING;
@@ -45,54 +46,38 @@ public class ScoreboardPanel : PanelDynamic {
         if (_showTimer) {
             float topHeight = 50f;
             bottomHeight -= topHeight;
-            (topContent, bottomContent) = newMainContent.SplitTopBottom(topHeight, VERTICAL_PADDING);
+            (_topContent, _bottomContent) = newMainContent.SplitTopBottom(topHeight, VERTICAL_PADDING);
 
-            bottomContent.SetHeight<Content>(bottomHeight);
+            _bottomContent.SetHeight<Content>(bottomHeight);
 
-            time = topContent.CreateLabel(topHeight)
-                       .SetStretch<Label>()
-                       .SetText(MatchMode.MatchTime.ToString())
-                       .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
-                       .SetVerticalAlignment(VerticalAlignmentOptions.Middle)
-                       .SetFontSize(40);
+            _time = _topContent.CreateLabel(topHeight)
+                        .SetStretch<Label>()
+                        .SetText(MatchMode.MatchTime.ToString())
+                        .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
+                        .SetVerticalAlignment(VerticalAlignmentOptions.Middle)
+                        .SetFontSize(40);
         } else {
-            bottomContent = newMainContent;
+            _bottomContent = newMainContent;
         }
 
         float leftRightPadding              = 8;
-        float leftWidth                     = (bottomContent.Size.x - leftRightPadding) / 2;
-        (var leftContent, var rightContent) = bottomContent.SplitLeftRight(leftWidth, leftRightPadding);
+        float leftWidth                     = (_bottomContent.Size.x - leftRightPadding) / 2;
+        (var leftContent, var rightContent) = _bottomContent.SplitLeftRight(leftWidth, leftRightPadding);
         leftContent.SetBackgroundColor<Content>(Color.red);
         rightContent.SetBackgroundColor<Content>(Color.blue);
 
         const float titleSize = 20;
         const float scoreSize = 50;
 
-        leftContent.CreateLabel()
-            .ApplyTemplate(VerticalLayout)
-            .SetAnchors<Label>(new Vector2(0, 1), new Vector2(1, 1))
-            .SetAnchoredPosition<Label>(new Vector2(0, -10))
-            .SetText("RED")
-            .SetFontSize(titleSize)
-            .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
-            .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
-        redScore = leftContent.CreateLabel()
-                       .ApplyTemplate(VerticalLayout)
-                       .SetText("0")
-                       .SetFontSize(scoreSize)
-                       .SetAnchors<Label>(new Vector2(0, 1), new Vector2(1, 1))
-                       .SetAnchoredPosition<Label>(new Vector2(0, -bottomHeight / 2))
-                       .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
-                       .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
-        rightContent.CreateLabel()
-            .ApplyTemplate(VerticalLayout)
-            .SetAnchors<Label>(new Vector2(0, 1), new Vector2(1, 1))
-            .SetAnchoredPosition<Label>(new Vector2(0, -10))
-            .SetText("BLUE")
-            .SetFontSize(titleSize)
-            .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
-            .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
-        blueScore = rightContent.CreateLabel()
+        _redLabel = leftContent.CreateLabel()
+                        .ApplyTemplate(VerticalLayout)
+                        .SetAnchors<Label>(new Vector2(0, 1), new Vector2(1, 1))
+                        .SetAnchoredPosition<Label>(new Vector2(0, -10))
+                        .SetText("RED")
+                        .SetFontSize(titleSize)
+                        .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
+                        .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
+        _redScore = leftContent.CreateLabel()
                         .ApplyTemplate(VerticalLayout)
                         .SetText("0")
                         .SetFontSize(scoreSize)
@@ -100,6 +85,24 @@ public class ScoreboardPanel : PanelDynamic {
                         .SetAnchoredPosition<Label>(new Vector2(0, -bottomHeight / 2))
                         .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
                         .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
+        _blueLabel = rightContent.CreateLabel()
+                         .ApplyTemplate(VerticalLayout)
+                         .SetAnchors<Label>(new Vector2(0, 1), new Vector2(1, 1))
+                         .SetAnchoredPosition<Label>(new Vector2(0, -10))
+                         .SetText("BLUE")
+                         .SetFontSize(titleSize)
+                         .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
+                         .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
+        _blueScore = rightContent.CreateLabel()
+                         .ApplyTemplate(VerticalLayout)
+                         .SetText("0")
+                         .SetFontSize(scoreSize)
+                         .SetAnchors<Label>(new Vector2(0, 1), new Vector2(1, 1))
+                         .SetAnchoredPosition<Label>(new Vector2(0, -bottomHeight / 2))
+                         .SetHorizontalAlignment(HorizontalAlignmentOptions.Center)
+                         .SetVerticalAlignment(VerticalAlignmentOptions.Middle);
+        AssignColors(null);
+        EventBus.NewTypeListener<ColorManager.OnThemeChanged>(AssignColors);
 
         return true;
     }
@@ -114,13 +117,22 @@ public class ScoreboardPanel : PanelDynamic {
             if (MatchStateMachine.Instance.CurrentState.StateName is >= MatchStateMachine.StateName.Auto and <=
                 MatchStateMachine.StateName.Endgame and not MatchStateMachine.StateName.Transition) {
                 MatchMode.MatchTime -= Time.deltaTime;
-                time.SetText(Mathf.RoundToInt(MatchMode.MatchTime).ToString());
+                _time.SetText(Mathf.RoundToInt(MatchMode.MatchTime).ToString());
             }
         }
 
-        redScore.SetText(Scoring.redScore.ToString());
-        blueScore.SetText(Scoring.blueScore.ToString());
+        _redScore.SetText(Scoring.redScore.ToString());
+        _blueScore.SetText(Scoring.blueScore.ToString());
     }
 
-    public override void Delete() {}
+    public override void Delete() {
+        EventBus.RemoveTypeListener<ColorManager.OnThemeChanged>(AssignColors);
+    }
+
+    public void AssignColors(IEvent e) {
+        _redLabel.SetColor(ColorManager.SynthesisColor.MainText);
+        _blueLabel.SetColor(ColorManager.SynthesisColor.MainText);
+        _blueScore.SetColor(ColorManager.SynthesisColor.MainText);
+        _redScore.SetColor(ColorManager.SynthesisColor.MainText);
+    }
 }

@@ -8,6 +8,7 @@ using SynthesisAPI.Utilities;
 using UnityEngine;
 using Synthesis.Util;
 using Synthesis.Physics;
+using Math = System.Math;
 
 #nullable enable
 
@@ -115,6 +116,7 @@ namespace Synthesis {
             }
         }
 
+        private float _lastVel    = 0f;
         private float _fakedTheta = 0f;
         private float _fakedOmega = 0f;
 
@@ -167,9 +169,9 @@ namespace Synthesis {
             } else {
                 Motor = new JointMotor() {
                     // Default Motor. Slow but powerful enough. Also uses Motor to save it
-                    force          = 2000,
+                    force          = 0.1f,
                     freeSpin       = false,
-                    targetVelocity = 5,
+                    targetVelocity = 0.2f,
                 };
             }
 
@@ -269,9 +271,21 @@ namespace Synthesis {
                     SynthesisUtil.GetInertiaAroundParallelAxis(_jointB.connectedBody, _jointA.anchor, _jointA.axis);
 
                 if (_useFakeMotion) {
-                    float alpha = val * _convertedMotorTargetVel;
+                    float tarVel = val == 0 ? 0 : Mathf.Sign(val) * _convertedMotorTargetVel;
 
-                    _fakedTheta += alpha * deltaT;
+                    var delta    = tarVel - _lastVel;
+                    var posDelta = _motor.force * Mathf.Rad2Deg * Time.deltaTime;
+
+                    if (Mathf.Abs(delta) > posDelta)
+                        delta = posDelta * Mathf.Sign(delta);
+
+                    _lastVel += delta;
+
+                    if (Mathf.Abs(_lastVel) > _convertedMotorTargetVel)
+                        _lastVel = _convertedMotorTargetVel * Mathf.Sign(_lastVel);
+
+                    float lastFakedTheta = _fakedTheta;
+                    _fakedTheta += _lastVel * deltaT;
 
                     if (_rotationalLimits.HasValue) {
                         if (_fakedTheta > _rotationalLimits.Value.max) {
@@ -280,7 +294,12 @@ namespace Synthesis {
                             _fakedTheta = _rotationalLimits.Value.min;
                         }
 
+                        // Limit theta to specific range
                         _fakedTheta = Mathf.Clamp(_fakedTheta, -180, 179);
+
+                        // Check and see if we've hit a hard limit to zero out velocity
+                        if (Math.Abs(lastFakedTheta - _fakedTheta) < 0.001f)
+                            _lastVel = 0;
 
                         _jointA.limits =
                             new JointLimits { bounceMinVelocity = _rotationalLimits.Value.bounceMinVelocity,
