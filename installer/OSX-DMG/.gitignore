@@ -1,3 +1,5 @@
 source_folder/Synthesis.app/
 Synthesis-Installer.dmg
 create-dmg/
+
+*.dmg
