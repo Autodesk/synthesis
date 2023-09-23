@@ -95,7 +95,7 @@ namespace Synthesis {
             if (Mathf.Abs(_lastVel * Time.deltaTime) > _motor.targetVelocity)
                 _lastVel = _motor.targetVelocity * Mathf.Sign(_lastVel);
 
-            Position += _lastVel;
+            Position += _lastVel * Time.deltaTime;
         }
     }
 }
