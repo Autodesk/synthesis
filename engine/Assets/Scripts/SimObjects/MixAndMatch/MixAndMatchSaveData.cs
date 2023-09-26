@@ -9,7 +9,7 @@ namespace SimObjects.MixAndMatch {
     public static class MixAndMatchSaveUtil {
         private static readonly char ALT_SEP = Path.AltDirectorySeparatorChar;
 
-        private static readonly string PART_MIRABUF_FOLDER_PATH =
+        public static readonly string PART_MIRABUF_FOLDER_PATH =
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + ALT_SEP + "Autodesk" + ALT_SEP +
             "Synthesis" + ALT_SEP + "MixAndMatch" + ALT_SEP + "Mira";
 
@@ -209,6 +209,11 @@ namespace SimObjects.MixAndMatch {
         public string Name; // Ignored because it is the filename
         public string Guid;
         public string MirabufPartFile;
+
+        [JsonIgnore]
+        public string MirabufPartFilePath => MixAndMatchSaveUtil.PART_MIRABUF_FOLDER_PATH
+                                             + Path.AltDirectorySeparatorChar
+                                             + MirabufPartFile;
 
         public ConnectionPointData[] ConnectionPoints;
 

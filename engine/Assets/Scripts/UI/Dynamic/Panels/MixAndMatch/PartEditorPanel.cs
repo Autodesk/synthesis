@@ -114,12 +114,12 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
         /// <summary>Instantiates the main part object</summary>
         private GameObject InstantiatePartGameObject() {
-            if (!File.Exists(_partData.MirabufPartFile)) {
-                Logger.Log($"Part file {_partData.MirabufPartFile} not found!", LogLevel.Error);
+            if (!File.Exists(_partData.MirabufPartFilePath)) {
+                Logger.Log($"Part file {_partData.MirabufPartFilePath} not found!", LogLevel.Error);
                 return null;
             }
 
-            MirabufLive miraLive = new MirabufLive(_partData.MirabufPartFile);
+            MirabufLive miraLive = new MirabufLive(_partData.MirabufPartFilePath);
 
             GameObject assemblyObject = new GameObject(miraLive.MiraAssembly.Info.Name);
             miraLive.GenerateDefinitionObjects(assemblyObject, false, false);

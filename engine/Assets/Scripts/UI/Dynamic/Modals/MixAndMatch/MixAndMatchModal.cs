@@ -223,7 +223,7 @@ namespace UI.Dynamic.Modals.MixAndMatch {
 
             AcceptButton
                 .AddOnClickedEvent(
-                    _ => OpenPartEditor(MixAndMatchSaveUtil.CreateNewPart(fileName, files[dropdown.Value])))
+                    _ => OpenPartEditor(MixAndMatchSaveUtil.CreateNewPart(fileName, Path.GetFileName(files[dropdown.Value]))))
                 .StepIntoLabel(l => l.SetText("Select"))
                 .RootGameObject.SetActive(true);
         }

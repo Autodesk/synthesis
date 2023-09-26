@@ -75,7 +75,7 @@ namespace Synthesis.Import {
 
             public ImportHelper(MixAndMatchRobotData mixAndMatchRobotData)
                 : this(mixAndMatchRobotData,
-                      mixAndMatchRobotData.GlobalPartData.Select(part => new MirabufLive(part.MirabufPartFile))
+                      mixAndMatchRobotData.GlobalPartData.Select(part => new MirabufLive(part.MirabufPartFilePath))
                           .ToArray()) {}
 
             public ImportHelper(string filePath) : this(null, new[] { new MirabufLive(filePath) }) {}
