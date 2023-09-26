@@ -211,9 +211,8 @@ namespace SimObjects.MixAndMatch {
         public string MirabufPartFile;
 
         [JsonIgnore]
-        public string MirabufPartFilePath => MixAndMatchSaveUtil.PART_MIRABUF_FOLDER_PATH
-                                             + Path.AltDirectorySeparatorChar
-                                             + MirabufPartFile;
+        public string MirabufPartFilePath =>
+            MixAndMatchSaveUtil.PART_MIRABUF_FOLDER_PATH + Path.AltDirectorySeparatorChar + MirabufPartFile;
 
         public ConnectionPointData[] ConnectionPoints;
 
