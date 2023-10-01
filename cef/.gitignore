@@ -6,3 +6,5 @@ bin/
 TestResults/
 
 /cef_binaries/
+/DawnCache/
+/GPUCache/

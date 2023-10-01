@@ -1,4 +1,5 @@
 @echo off
 mkdir build
 cd build
-cmake ../
+cmake -G "Ninja" ../
+ninja

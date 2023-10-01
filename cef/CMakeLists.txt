@@ -1,5 +1,14 @@
 cmake_minimum_required(VERSION 3.20.0)
-project(SYNTHESIS_CEF)
+
+if(OS_MAC)
+    project(cef LANGUAGES CXX OBJCXX)
+else()
+    project(cef LANGUAGES CXX)
+endif()
+
+set(CMAKE_CONFIGURATION_TYPES Debug Release)
+
+set_property(GLOBAL PROPERTY OS_FOLDERS ON)
 
 set(CEF_VERSION "106.0.26+ge105400+chromium-106.0.5249.91")
 
@@ -74,3 +83,15 @@ function(DownloadCEF platform version download_dir)
 endfunction()
 
 DownloadCEF(${CEF_PLATFORM} ${CEF_VERSION} "${CMAKE_SOURCE_DIR}/cef_binaries")
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CEF_ROOT}/cmake")
+find_package(CEF REQUIRED)
+
+add_subdirectory(${CEF_LIBCEF_DLL_WRAPPER_PATH} libcef_dll_wrapper)
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    message(STATUS "Building CEF in Debug mode")
+    add_definitions(-DSYNTHESIS_CEF_DEBUG)
+endif()
+
+add_subdirectory(cef)
