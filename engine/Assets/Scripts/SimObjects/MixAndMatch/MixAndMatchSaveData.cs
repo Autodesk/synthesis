@@ -211,8 +211,24 @@ namespace SimObjects.MixAndMatch {
         public string MirabufPartFile;
 
         [JsonIgnore]
-        public string MirabufPartFilePath =>
-            MixAndMatchSaveUtil.PART_MIRABUF_FOLDER_PATH + Path.AltDirectorySeparatorChar + MirabufPartFile;
+        private string _mirabufPartFilePath;
+        [JsonIgnore]
+        public string MirabufPartFilePath {
+            get {
+                if (_mirabufPartFilePath == null) {
+                    _mirabufPartFilePath =
+                        MixAndMatchSaveUtil.PART_MIRABUF_FOLDER_PATH + Path.AltDirectorySeparatorChar + MirabufPartFile;
+                    if (!File.Exists(_mirabufPartFilePath)) {
+                        _mirabufPartFilePath = MirabufPartFile;
+                        if (!File.Exists(_mirabufPartFilePath)) {
+                            throw new Exception($"Can't find mira file '{_mirabufPartFilePath}'.");
+                        }
+                    }
+                }
+
+                return _mirabufPartFilePath;
+            }
+        }
 
         public ConnectionPointData[] ConnectionPoints;
 
