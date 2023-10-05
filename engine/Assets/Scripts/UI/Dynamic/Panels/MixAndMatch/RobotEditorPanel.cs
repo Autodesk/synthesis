@@ -144,7 +144,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
                 return;
             }
 
-            MirabufLive miraLive = new MirabufLive(loadPartData.MirabufPartFile);
+            MirabufLive miraLive = new MirabufLive(loadPartData.MirabufPartFilePath);
 
             GameObject partObj = new GameObject(loadPartData.Name);
             Transform partTrf  = partObj.transform;
