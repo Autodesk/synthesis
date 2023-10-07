@@ -159,9 +159,11 @@ public class LobbyManagerModal : ModalDynamic {
                 if (x.Selections.Any()) {
                     players.Append("(");
                     foreach (var kvp in x.Selections) {
-                        players.Append(kvp.Value.)
+                        players.Append($"{kvp.Value.Description.Name} ");
                     }
+                    players.Append(")");
                 }
+                players.Append("\n");
             });
         } else {
             players.Append("No joined players");

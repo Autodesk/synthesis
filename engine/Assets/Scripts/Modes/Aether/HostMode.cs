@@ -123,8 +123,8 @@ public class HostMode : IMode {
             var lobbyInfo = lobbyInfoTask.Result.GetResult()!.FromGetLobbyInformation.LobbyInformation;
             HashSet<ulong> guidsToUpload = new HashSet<ulong>();
             lobbyInfo.Clients.ForEach(x => x.Selections.ForEach(y => {
-                if (y.Value.DataOwner == hostGuid) {
-                    guidsToUpload.Add(y.Value.DataGuid);
+                if (y.Value.Description.Owner == hostGuid) {
+                    guidsToUpload.Add(y.Value.Description.Owner);
                 }
             }));
 
