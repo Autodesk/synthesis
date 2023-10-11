@@ -23,7 +23,7 @@ public class ClientMode : IMode {
     public LobbyClient? Client => _client;
 
     public void Start() {
-        DynamicUIManager.CreateModal<InitLobbyConnection>((string?)null);
+        DynamicUIManager.CreateModal<InitLobbyConnection>(false, (string?)null);
         SimulationRunner.OnGameObjectDestroyed += End;
     }
 

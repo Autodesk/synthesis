@@ -20,8 +20,12 @@ or
 
 or
 
-`make TUTORIAL` 
+`make [tutorial]`
+
+#### Make Script
+
+Using the make script will dump all the resulting codelabs into an `out/` directory.
 
 ## Usage
 
-Upload these to their correct locations on the webserver. Ask @KyroVibe or contact a subteam lead
+Upload these to their correct locations on the webserver. Ask [@KyroVibe](https://github.com/KyroVibe) or contact a subteam lead.

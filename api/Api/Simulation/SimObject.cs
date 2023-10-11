@@ -37,7 +37,7 @@ namespace SynthesisAPI.Simulation {
             }
         }
 
-        public SimObject(string name, Signals signalLayout) {
+        public SimObject(string name, Signals[] signalLayout) {
             _name = name;
             _state = new ControllableState(signalLayout);
         }

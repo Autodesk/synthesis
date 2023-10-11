@@ -36,7 +36,7 @@ public class HostMode : IMode {
     public void Start() {
         _server = new LobbyServer();
 
-        DynamicUIManager.CreateModal<InitLobbyConnection>(SERVER_IP);
+        DynamicUIManager.CreateModal<InitLobbyConnection>(false, SERVER_IP);
         SimulationRunner.OnGameObjectDestroyed += End;
     }
 

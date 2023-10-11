@@ -26,8 +26,8 @@ TagManager:
   - D4CollisionLayer
   - D5CollisionLayer
   - D6CollisionLayer
-  - 
-  - 
+  - ConnectionPoint
+  - MixAndMatchEditor
   - 
   - 
   - 

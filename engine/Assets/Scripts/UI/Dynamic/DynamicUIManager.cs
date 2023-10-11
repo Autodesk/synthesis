@@ -113,15 +113,15 @@ namespace Synthesis.UI.Dynamic {
             }
         }
 
-        public static bool CreateModal<T>(params object[] args)
+        public static bool CreateModal<T>(bool ignoreTween = false, params object[] args)
             where T : ModalDynamic {
             CloseAllPanels(false);
             HideAllPanels();
             GizmoManager.ExitGizmo();
             if (ActiveModal != null)
-                CloseActiveModal(false);
+                CloseActiveModal(false, ignoreTween);
 
-            return CreateModal_Internal<T>(args);
+            return CreateModal_Internal<T>(ignoreTween, args);
         }
 
         public static bool CreateModalWithoutOverwrite<T>(params object[] args)
@@ -131,10 +131,10 @@ namespace Synthesis.UI.Dynamic {
             if (ActiveModal != null)
                 return false;
 
-            return CreateModal_Internal<T>(args);
+            return CreateModal_Internal<T>(false, args);
         }
 
-        private static bool CreateModal_Internal<T>(params object[] args)
+        private static bool CreateModal_Internal<T>(bool ignoreTween, params object[] args)
             where T : ModalDynamic {
             var unityObject = GameObject.Instantiate(SynthesisAssetCollection.GetUIPrefab("dynamic-modal-base"),
                 GameObject.Find("UI").transform.Find("ScreenSpace").Find("ModalContainer"));
@@ -156,9 +156,12 @@ namespace Synthesis.UI.Dynamic {
             SubScreenSpaceContent.RootGameObject.SetActive(false);
 
             string tweenKey = Guid.NewGuid() + "_modalOpen";
-            SynthesisTween.MakeTween(tweenKey, 0f, 1f, MODAL_TWEEN_DURATION,
-                (t, a, b) => SynthesisTweenInterpolationFunctions.FloatInterp(t, (float) a, (float) b),
-                SynthesisTweenScaleFunctions.EaseOutCubic, TweenCallback);
+
+            if (!ignoreTween) {
+                SynthesisTween.MakeTween(tweenKey, 0f, 1f, MODAL_TWEEN_DURATION,
+                    (t, a, b) => SynthesisTweenInterpolationFunctions.FloatInterp(t, (float) a, (float) b),
+                    SynthesisTweenScaleFunctions.EaseOutCubic, TweenCallback);
+            }
 
             void TweenCallback(SynthesisTween.SynthesisTweenStatus status) {
                 unityObject.transform.localScale = Vector3.one * status.CurrentValue<float>();
@@ -252,7 +255,7 @@ namespace Synthesis.UI.Dynamic {
             return true;
         }
 
-        public static bool CloseActiveModal(bool showPersistentPanels = true) {
+        public static bool CloseActiveModal(bool showPersistentPanels = true, bool ignoreTween = false) {
             var modal = ActiveModal;
 
             if (modal == null) {
@@ -260,9 +263,12 @@ namespace Synthesis.UI.Dynamic {
             }
 
             string tweenKey = Guid.NewGuid() + "_modalClose";
-            SynthesisTween.MakeTween(tweenKey, 1f, 0f, MODAL_TWEEN_DURATION,
-                (t, a, b) => SynthesisTweenInterpolationFunctions.FloatInterp(t, (float) a, (float) b),
-                SynthesisTweenScaleFunctions.EaseInCubic, TweenCallback);
+            if (!ignoreTween) {
+                SynthesisTween.MakeTween(tweenKey, 1f, 0f, MODAL_TWEEN_DURATION,
+                    (t, a, b) => SynthesisTweenInterpolationFunctions.FloatInterp(t, (float) a, (float) b),
+                    SynthesisTweenScaleFunctions.EaseInCubic, TweenCallback);
+            } else
+                TweenFinished();
 
             void TweenCallback(SynthesisTween.SynthesisTweenStatus status) {
                 if (modal.UnityObject == null) {
@@ -296,6 +302,7 @@ namespace Synthesis.UI.Dynamic {
 
             // Unfreeze physics no matter what because it has a counter
             PhysicsManager.IsFrozen = false;
+            MainHUD.Enabled         = true;
 
             if (showPersistentPanels)
                 ShowAllPanels();
@@ -408,6 +415,12 @@ namespace Synthesis.UI.Dynamic {
             if (ActiveModal != null)
                 ActiveModal.Update();
             _persistentPanels.ForEach(kvp => kvp.Value.Item1.Update());
+
+            if (Input.GetKeyDown(KeyCode.Escape)) {
+                if (ActiveModal != null && ActiveModal.CancelButton.RootGameObject.activeSelf) {
+                    CloseActiveModal();
+                }
+            }
         }
 
         public static T ApplyTemplate<T>(this T component, Func<T, T> template)

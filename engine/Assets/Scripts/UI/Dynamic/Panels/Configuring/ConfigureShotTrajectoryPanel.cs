@@ -57,8 +57,7 @@ namespace Synthesis.UI.Dynamic {
 
             AcceptButton
                 .AddOnClickedEvent(b => {
-                    SimulationPreferences.SetRobotTrajectoryData(
-                        _robot.MiraLive.MiraAssembly.Info.GUID, _resultingData);
+                    SimulationPreferences.SetRobotTrajectoryData(_robot.RobotGUID, _resultingData);
                     PreferenceManager.PreferenceManager.Save();
                     _save = true;
                     DynamicUIManager.ClosePanel<ConfigureShotTrajectoryPanel>();
@@ -175,6 +174,17 @@ namespace Synthesis.UI.Dynamic {
         }
 
         public override void Update() {
+            _resultingData.RelativePosition =
+                _robot.RobotNode.transform.Find(_resultingData.NodeName)
+                    .transform.localToWorldMatrix.inverse.MultiplyPoint(_arrowObject.transform.position)
+                    .ToArray();
+
+            _resultingData.RelativeRotation =
+                (Quaternion.Inverse(
+                     _robot.RobotNode.transform.Find(_resultingData.NodeName).transform.localToWorldMatrix.rotation) *
+                    (_arrowObject.transform.rotation))
+                    .ToArray();
+
             if (!_selectingNode) {
                 return;
             }

@@ -35,6 +35,7 @@ public class InitLobbyConnection : ModalDynamic {
                 var mode = (ModeManager.CurrentMode as HostMode)!;
 
                 DynamicUIManager.CreateModal<NetworkWaitModal>(
+                    true,
                     mode.StartHostClient(_username),
                     typeof(LobbyManagerModal),
                     ModeManager.CurrentMode
@@ -45,7 +46,10 @@ public class InitLobbyConnection : ModalDynamic {
 
                 mode.StartClient(_ip ?? "127.0.0.1", _username);
                 if (mode.Client.IsAlive) {
-                    
+                    DynamicUIManager.CreateModal<LobbyManagerModal>(
+                        true,
+                        ModeManager.CurrentMode
+                    );
                 }
             }
         });

@@ -91,7 +91,7 @@ public class NetworkWaitModal : ModalDynamic {
             _isClosing = true;
             if (_modalCallback != null) {
                 typeof(DynamicUIManager).GetMethod("CreateModal")!.MakeGenericMethod(_modalCallback)
-                    .Invoke(null, new [] { _modalCallbackParameters });
+                    .Invoke(null, new [] { true, _modalCallbackParameters });
             } else {
                 DynamicUIManager.CloseActiveModal();
             }

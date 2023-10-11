@@ -1,10 +1,7 @@
 using System.IO;
 using System.Linq;
-using Org.BouncyCastle.Asn1.X509.Qualified;
-using Synthesis;
-using Synthesis.UI.Dynamic;
 using SynthesisAPI.Utilities;
-using UI.Dynamic.Panels.Tooltip;
+using Synthesis.UI.Dynamic;
 using UnityEngine;
 using Utilities.ColorManager;
 using Logger = SynthesisAPI.Utilities.Logger;
@@ -17,7 +14,7 @@ namespace UI.Dynamic.Modals.Spawning {
         private int _selectedIndex = -1;
         private string[] _files;
 
-        public string Folder = "Mira";
+        private readonly string Folder = "Mira";
 
         public AddRobotModal() : base(new Vector2(400, 55)) {}
 
@@ -32,18 +29,27 @@ namespace UI.Dynamic.Modals.Spawning {
             ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("plus"))
                 .SetColor(ColorManager.SynthesisColor.MainText);
 
+            CancelButton.StepIntoLabel(l => l.SetText("Back"))
+                .AddOnClickedEvent(
+                    _ => DynamicUIManager.CreateModal<ChooseRobotTypeModal>());
+
             AcceptButton.StepIntoLabel(label => label.SetText("Load")).AddOnClickedEvent(b => {
                 if (_selectedIndex != -1) {
-                    RobotSimObject.SpawnRobot(_files[_selectedIndex]);
+                    RobotSimObject.SpawnRobot(null, true, _files[_selectedIndex]);
+
                     DynamicUIManager.CloseActiveModal();
                     MainHUD.SelectedRobot.CreateDrivetrainTooltip();
                 }
             });
-
             var chooseRobotDropdown = MainContent.CreateDropdown()
-                                          .SetOptions(_files.Select(x => Path.GetFileName(x)).ToArray())
+                                          .SetOptions(_files.Select(Path.GetFileNameWithoutExtension).ToArray())
                                           .AddOnValueChangedEvent((d, i, data) => _selectedIndex = i)
                                           .SetTopStretch<Dropdown>();
+
+            if (_files.Length == 0) {
+                chooseRobotDropdown.ApplyTemplate(Dropdown.DisableDropdown);
+                AcceptButton.RootGameObject.SetActive(false);
+            }
 
             _selectedIndex = _files.Length > 0 ? 0 : -1;
         }

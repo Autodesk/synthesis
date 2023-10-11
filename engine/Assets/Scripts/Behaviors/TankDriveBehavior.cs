@@ -86,6 +86,7 @@ namespace Synthesis {
 
         private void OnValueInputAssigned(IEvent tmp) {
             ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
+
             if (args.InputKey.Length > MiraId.Length) {
                 string s = args.InputKey.Remove(0, MiraId.Length);
                 switch (s) {
@@ -93,9 +94,6 @@ namespace Synthesis {
                     case LEFT_REVERSE:
                     case RIGHT_FORWARD:
                     case RIGHT_REVERSE:
-                        if (base.MiraId != (MainHUD.SelectedRobot?.MiraGUID ?? string.Empty) ||
-                            !((DynamicUIManager.ActiveModal as ChangeInputsModal)?.isSave ?? false))
-                            return;
                         SimulationPreferences.SetRobotInput(MiraId, args.InputKey, args.Input);
                         break;
                 }

@@ -45,19 +45,23 @@ namespace Synthesis {
 
         public double speedMult = 1.0f;
 
+        private RobotSimObject _robot;
+
         public ArcadeDriveBehaviour(
             string simObjectId, List<WheelDriver> leftWheels, List<WheelDriver> rightWheels, string inputName = "")
             : base(simObjectId) {
             if (inputName == "")
                 inputName = simObjectId;
 
+            _robot = (SimulationManager.SimulationObjects[SimObjectId] as RobotSimObject)!;
+
             _leftWheels  = leftWheels;
             _rightWheels = rightWheels;
 
-            forward  = MiraId + FORWARD;
-            backward = MiraId + BACKWARD;
-            left     = MiraId + LEFT;
-            right    = MiraId + RIGHT;
+            forward  = _robot.RobotGUID + FORWARD;
+            backward = _robot.RobotGUID + BACKWARD;
+            left     = _robot.RobotGUID + LEFT;
+            right    = _robot.RobotGUID + RIGHT;
 
             InitInputs(GetInputs());
 
@@ -73,6 +77,8 @@ namespace Synthesis {
         }
 
         public Analog TryLoadInput(string key, Analog defaultInput) {
+            // return SimulationPreferences.GetRobotInput(_robot.RobotGUID, key) ?? defaultInput;
+
             Analog input;
             if (InputManager.MappedValueInputs.ContainsKey(key)) {
                 input                = InputManager.GetAnalog(key);
@@ -89,6 +95,7 @@ namespace Synthesis {
 
         private void OnValueInputAssigned(IEvent tmp) {
             ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
+
             if (args.InputKey.Length > MiraId.Length) {
                 string s = args.InputKey.Remove(0, MiraId.Length);
                 switch (s) {
@@ -96,7 +103,7 @@ namespace Synthesis {
                     case BACKWARD:
                     case LEFT:
                     case RIGHT:
-                        if (base.MiraId != (MainHUD.SelectedRobot?.MiraGUID ?? string.Empty) ||
+                        if (base.MiraId != (MainHUD.SelectedRobot?.RobotGUID ?? string.Empty) ||
                             !((DynamicUIManager.ActiveModal as ChangeInputsModal)?.isSave ?? false))
                             return;
                         SimulationPreferences.SetRobotInput(MiraId, args.InputKey, args.Input);
@@ -121,9 +128,15 @@ namespace Synthesis {
             (_leftSpeed, _rightSpeed) = SolveSpeed(_xSpeed, _zRot, _squareInputs);
             foreach (var wheel in _leftWheels) {
                 wheel.MainInput = _leftSpeed * speedMult;
+                /*
+                wheel.MainInput = 1;
+            */
             }
             foreach (var wheel in _rightWheels) {
                 wheel.MainInput = _rightSpeed * speedMult;
+                /*
+                wheel.MainInput = 1;
+            */
             }
         }
 

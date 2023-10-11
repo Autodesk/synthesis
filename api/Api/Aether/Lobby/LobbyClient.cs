@@ -38,7 +38,7 @@ namespace SynthesisAPI.Aether.Lobby {
         /// Constructs a LobbyClient that will connect to <paramref name="ip" /> and attempt
         /// to set the client's lobby name to <paramref name="name" />.
         /// </summary>
-        /// <param name="ip">IP to connect to. (Format: ###.###.###.###)</param>
+        /// <param name="ip">IP to connect to. (Format: "###.###.###.###")</param>
         /// <param name="name">Username to attempt. Can potentially be corrected by Server</param>
         public LobbyClient(string ip, string name) {
             _instance = new Inner(ip, name);
@@ -52,9 +52,11 @@ namespace SynthesisAPI.Aether.Lobby {
         /// Get Lobby Information from currently connected Lobby.
         /// </summary>
         /// <returns>LobbyInformation, mostly including a list of other clients and their information</returns>
-        public Task<Result<LobbyMessage?, Exception>> GetLobbyInformation() {
-            return _instance?.GetLobbyInformation() ?? Task.FromResult(NO_INSTANCE_ERROR_RESULT);
-        }
+        public Task<Result<LobbyMessage?, Exception>> GetLobbyInformation()
+            => _instance?.GetLobbyInformation() ?? Task.FromResult(NO_INSTANCE_ERROR_RESULT);
+
+        public Task<Result<string?, Exception>> GeneralCommand(string data)
+            => _instance?.GeneralCommand(data) ?? Task.FromResult(NO_INSTANCE_ERROR_RESULT.MapResult(x => (string?)null));
 
 #endregion
 
@@ -211,6 +213,28 @@ namespace SynthesisAPI.Aether.Lobby {
                         Thread.Sleep(100);
                     }
                 }
+            }
+
+            public Task<Result<string?, Exception>> GeneralCommand(string data) {
+                if (!_isAlive.Value)
+                    return Task.FromResult(new Result<string?, Exception>(new Exception("Client not alive")));
+
+                var request = new LobbyMessage.Types.ToGeneralCommand {
+                    SenderGuid = Handler!.Guid,
+                    Data = data
+                };
+
+                var task = new Task<object?>(() => {
+                    var response = HandleResponseBoilerplate(
+                        new LobbyMessage { ToGeneralCommand = request },
+                        LobbyMessage.MessageTypeOneofCase.FromGeneralCommand
+                    );
+
+                    return response.MapResult(x => x?.FromGeneralCommand.Data);
+                });
+
+                _requestQueue.Enqueue(task);
+                return task.CastTask<object?, Result<string?, Exception>>();
             }
 
 #endregion

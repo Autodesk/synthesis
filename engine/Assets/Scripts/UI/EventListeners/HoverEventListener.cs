@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace UI.EventListeners {
@@ -23,12 +24,20 @@ namespace UI.EventListeners {
         private float _clickedScaleMultiplier = 1.1f;
         [SerializeField]
         private Transform _scaledObj;
+        [FormerlySerializedAs("_isSlider")]
         [SerializeField]
-        private bool _isSlider;
+        private bool _dontUseTint;
+
+        private Color _setColor;
 
         private GradientImageUpdater _imageUpdater;
 
         public GradientImageUpdater ImageUpdater { set => _imageUpdater = value; }
+
+        private void Start() {
+            if (_image)
+                _setColor = _image.color;
+        }
 
         public void OnPointerEnter(PointerEventData eventData) {
             SetTintColor(_hoverColor);
@@ -36,7 +45,7 @@ namespace UI.EventListeners {
         }
 
         public void OnPointerExit(PointerEventData eventData) {
-            if (_isSlider && _pointerDown)
+            if (_dontUseTint && _pointerDown)
                 return;
 
             SetTintColor(_defaultColor);
@@ -61,9 +70,11 @@ namespace UI.EventListeners {
             if (_imageUpdater) {
                 _imageUpdater.TintColor = color;
                 _imageUpdater.Refresh();
-            } else if (_image) {
-                _image.color = color;
-            }
+            } else if (_image)
+                if (_dontUseTint)
+                    _image.color = color;
+                else
+                    _image.color = color * _setColor;
         }
 
         private void SetScaleMultiplier(float multiplier) {

@@ -217,7 +217,7 @@ MonoBehaviour:
   _hoverScaleMultiplier: 1.1
   _clickedScaleMultiplier: 1.15
   _scaledObj: {fileID: 0}
-  _isSlider: 0
+  _dontUseTint: 0
 --- !u!1 &576733567672268221
 GameObject:
   m_ObjectHideFlags: 0
@@ -662,7 +662,7 @@ MonoBehaviour:
   _hoverScaleMultiplier: 1.1
   _clickedScaleMultiplier: 1.15
   _scaledObj: {fileID: 0}
-  _isSlider: 0
+  _dontUseTint: 0
 --- !u!1 &3747646977971318140
 GameObject:
   m_ObjectHideFlags: 0
@@ -694,7 +694,7 @@ RectTransform:
   - {fileID: 3747646979102330408}
   - {fileID: 3127452595430955388}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -836,8 +836,10 @@ MonoBehaviour:
   Radius: 30
   StartColor: {r: 0.92941177, g: 0.5019608, b: 0.23137255, a: 1}
   EndColor: {r: 0.9529412, g: 0.30980393, b: 0.25490198, a: 1}
+  GradientAngle: 0
+  GradientSpread: 1
   TintColor: {r: 1, g: 1, b: 1, a: 1}
-  Horizontal: 0
+  Offset: {x: 0, y: 0}
 --- !u!1 &3911701003975561942
 GameObject:
   m_ObjectHideFlags: 0
@@ -1608,12 +1610,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _image: {fileID: 2546519792591978200}
   _defaultColor: {r: 1, g: 1, b: 1, a: 0}
-  _hoverColor: {r: 1, g: 1, b: 1, a: 0.05882353}
-  _selectedColor: {r: 1, g: 1, b: 1, a: 0.09803922}
+  _hoverColor: {r: 1, g: 1, b: 1, a: 0.03137255}
+  _selectedColor: {r: 1, g: 1, b: 1, a: 0.05882353}
   _hoverScaleMultiplier: 1.02
   _clickedScaleMultiplier: 1.045
   _scaledObj: {fileID: 0}
-  _isSlider: 0
+  _dontUseTint: 1
 --- !u!1 &7093609934609360696
 GameObject:
   m_ObjectHideFlags: 0
@@ -1872,9 +1874,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _image: {fileID: 1210725172438139982}
   _defaultColor: {r: 1, g: 1, b: 1, a: 0}
-  _hoverColor: {r: 1, g: 1, b: 1, a: 0.05882353}
-  _selectedColor: {r: 1, g: 1, b: 1, a: 0.09803922}
+  _hoverColor: {r: 1, g: 1, b: 1, a: 0.03137255}
+  _selectedColor: {r: 1, g: 1, b: 1, a: 0.05882353}
   _hoverScaleMultiplier: 1.02
   _clickedScaleMultiplier: 1.045
   _scaledObj: {fileID: 0}
-  _isSlider: 0
+  _dontUseTint: 1

@@ -45,6 +45,7 @@ enabling and choosing between Telop and Auto, I recommend using the GUI extensio
 I recommend using VSCode and the WPILib Suite extension for running the code simulation. Alternatively you can use this command:
 `gradlew.bat simulationJava` or `gradlew.bat simulate`
 
-## Need more help?
+## Need More Help?
 
-If you need any help with code simulation or want to be involved in the process of its development, feel free to join our [Discord](https://www.discord.gg/hHcF9AVgZA) where you can be in direct contact with Synthesis developers.
+If you need help with anything regarding Synthesis or it's related features please reach out through our
+[discord sever](https://www.discord.gg/hHcF9AVgZA). It's the best way to get in contact with the community and our current developers.

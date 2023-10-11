@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using SynthesisAPI.Simulation;
 using Synthesis.PreferenceManager;
@@ -8,20 +6,11 @@ using Synthesis.Physics;
 
 namespace Synthesis {
     public class LinearDriver : Driver {
-        public const float LINEAR_TO_MOTOR_VELOCITY = 100f;
-
         public string Signal => _inputs[0];
 
         public ConfigurableJoint JointA { get; private set; }
         public ConfigurableJoint JointB { get; private set; }
-        private float _maxSpeed;
-        public float MaxSpeed {
-            get => _maxSpeed;
-            set {
-                _maxSpeed = value;
-                SimulationPreferences.SetRobotJointSpeed((_simObject as RobotSimObject).MiraGUID, Name, _maxSpeed);
-            }
-        }
+        private float _lastVel = 0;
         public float _position = 0f;
         public float Position {
             get => _position;
@@ -29,20 +18,18 @@ namespace Synthesis {
             set {
                 var newPos             = Mathf.Clamp(value, Limits.Lower, Limits.Upper);
                 JointA.connectedAnchor = JointA.anchor + (JointA.axis * newPos);
-                _position              = newPos;
+                if (newPos == Limits.Lower || newPos == Limits.Upper)
+                    _lastVel = 0;
+                _position = newPos;
             }
         }
-        // clang-format off
-        private float _velocity = 0f;
-        // clang-format on
-        public float Velocity => _velocity;
         // Note: only used to save between sessions
         private JointMotor _motor;
         public JointMotor Motor {
             get => _motor;
             set {
                 _motor = value;
-                SimulationPreferences.SetRobotJointMotor((_simObject as RobotSimObject)!.MiraGUID, Name, _motor);
+                SimulationPreferences.SetRobotJointMotor((_simObject as RobotSimObject)!.RobotGUID, Name, _motor);
             }
         }
         public (float Upper, float Lower) Limits { get; private set; }
@@ -62,8 +49,7 @@ namespace Synthesis {
         public readonly string MotorRef;
 
         public LinearDriver(string name, string[] inputs, string[] outputs, SimObject simObject,
-            ConfigurableJoint jointA, ConfigurableJoint jointB, float maxSpeed, (float, float) limits,
-            string motorRef = "")
+            ConfigurableJoint jointA, ConfigurableJoint jointB, (float, float) limits, string motorRef)
             : base(name, inputs, outputs, simObject) {
             // Takeover joint configuration and make it more suited to control rather than passive
             var l              = jointA.linearLimit;
@@ -72,34 +58,44 @@ namespace Synthesis {
 
             JointA   = jointA;
             JointB   = jointB;
-            MaxSpeed = maxSpeed;
             Position = 0f;
             Limits   = limits;
             MotorRef = motorRef;
 
-            (simObject as RobotSimObject)!.MiraLive.MiraAssembly.Data.Joints.MotorDefinitions.TryGetValue(
-                motorRef, out var motor);
+            var motor = SimulationPreferences.GetRobotJointMotor((simObject as RobotSimObject)!.RobotGUID, motorRef);
 
-            if (motor != null && motor.MotorTypeCase == Mirabuf.Motor.Motor.MotorTypeOneofCase.SimpleMotor) {
-                _motor = motor!.SimpleMotor.UnityMotor;
+            if (motor != null) {
+                _motor = motor.Value;
             } else {
                 Motor = new JointMotor() {
-                    force          = 2000,
+                    force          = 0.1f,
                     freeSpin       = false,
-                    targetVelocity = 100,
+                    targetVelocity = 0.2f,
                 };
             }
-
-            _velocity = MaxSpeed;
         }
 
         public override void Update() {
-            // TODO: Velocity?
+            // TODO: Position
+
+            // VelocityControl
 
             float value = (float) MainInput;
 
-            _velocity = value * MaxSpeed;
-            Position += Time.deltaTime * _velocity;
+            var tarVel = value * _motor.targetVelocity;
+
+            var delta         = tarVel - _lastVel;
+            var possibleDelta = _motor.force * Time.deltaTime; // Force = acceleration in M/S/S
+
+            if (Mathf.Abs(delta) > possibleDelta)
+                delta = possibleDelta * Mathf.Sign(delta);
+
+            _lastVel += delta;
+
+            if (Mathf.Abs(_lastVel * Time.deltaTime) > _motor.targetVelocity)
+                _lastVel = _motor.targetVelocity * Mathf.Sign(_lastVel);
+
+            Position += _lastVel * Time.deltaTime;
         }
     }
 }

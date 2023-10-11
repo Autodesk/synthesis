@@ -66,7 +66,7 @@ public class LobbyManagerModal : ModalDynamic {
         if (_isHost) {
             AcceptButton.StepIntoLabel(l => l.SetText("Start")).AddOnClickedEvent(b => {
                 var task = _hostMode?.UploadData();
-                DynamicUIManager.CreateModal<NetworkWaitModal>(task, null, null);
+                DynamicUIManager.CreateModal<NetworkWaitModal>(true, task, null, null);
             });
             CancelButton.RootGameObject.SetActive(false);
         } else {
@@ -140,10 +140,12 @@ public class LobbyManagerModal : ModalDynamic {
         _availableRobots.Clear();
         _availableRobots.AddRange(allAvailableTask.Result.Where(x => x.Description.Equals("Robot")));
         _availableRobotsDropdown.StepIntoDropdown(d => d.SetOptions(_availableRobots.Select(x => x.Name).ToArray()));
-        
-        _availableFields.Clear();
-        _availableFields.AddRange(allAvailableTask.Result.Where(x => x.Description.Equals("Field")));
-        _availableFieldsDropdown.StepIntoDropdown(d => d.SetOptions(_availableFields.Select(x => x.Name).ToArray()));
+
+        if (_isHost) {
+            _availableFields.Clear();
+            _availableFields.AddRange(allAvailableTask.Result.Where(x => x.Description.Equals("Field")));
+            _availableFieldsDropdown.StepIntoDropdown(d => d.SetOptions(_availableFields.Select(x => x.Name).ToArray()));
+        }
     }
 
     private void RefreshPlayers() {

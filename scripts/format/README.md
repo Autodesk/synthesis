@@ -34,7 +34,7 @@ brew install clang-format
 - Open the root project folder in Visual Studio.
 - Ensure you are at the root of the project.
 - Open the terminal in the IDE (`` Ctrl + ` `` by default) or press "View" and then "Terminal" in the menu bar.
-- Copy and paste the following command into the terminal depending on your os and press enter.
+- Copy and paste the following command into the terminal depending on your operating system:
   - Windows: `.\scripts\format\format_all.ps1`
   - OSX `./scripts/format/format_all.sh`
 
@@ -43,4 +43,5 @@ brew install clang-format
 - Open the root project folder in your terminal.
 - Copy and paste the following command into the terminal depending on your os and press enter.
   - Windows: `.\scripts\format\format_all.ps1`
+    - Note: If you do not have your `ExecutionPolicy` set to `RemoteSigned` or `Unrestricted` the powershell script will not work. Run `.\scripts\win\resolve_deps.bat` to fix this.
   - OSX / Linux: `./scripts/format/format_all.sh`
