@@ -1,5 +1,6 @@
 ﻿using Org.BouncyCastle.Crypto.Tls;
 using Org.BouncyCastle.Math.EC.Rfc7748;
+using Org.BouncyCastle.Tsp;
 using SynthesisAPI.Controller;
 using SynthesisAPI.Utilities;
 using SynthesisServer.Proto;
@@ -30,6 +31,16 @@ namespace SynthesisAPI.Aether.Lobby {
 
         public ControllableState? GetControllableState(ulong guid)
             => _instance?.GetControllableState(guid);
+
+        public void SetGeneralCommandResponse(Func<ulong, string, string>? response) {
+            if (_instance == null)
+                return;
+
+            _instance.GeneralCommandResponse = response;
+        }
+
+        public bool IsGeneralCommandResponseSet()
+            => _instance?.GeneralCommandResponse != null;
         
         private class Inner : IDisposable {
 
@@ -43,6 +54,8 @@ namespace SynthesisAPI.Aether.Lobby {
             private readonly TcpListener _listener;
             private readonly Dictionary<ulong, LobbyClientHandler> _clients;
             private readonly LinkedList<Thread> _clientThreads;
+
+            public Func<ulong, string, string>? GeneralCommandResponse;
 
             private readonly Dictionary<ulong, RemoteData> _remoteData;
 
@@ -173,6 +186,9 @@ namespace SynthesisAPI.Aether.Lobby {
                         case LobbyMessage.MessageTypeOneofCase.ToClientHeartbeat:
 							handler.UpdateHeartbeat();
                             break;
+                        case LobbyMessage.MessageTypeOneofCase.ToGeneralCommand:
+                            OnGeneralCommand(msg.ToGeneralCommand, handler);
+                            break;
                         // Data Selection
                         case LobbyMessage.MessageTypeOneofCase.ToSelectData:
                             OnSelectData(msg.ToSelectData, handler);
@@ -198,6 +214,13 @@ namespace SynthesisAPI.Aether.Lobby {
                             break;
                     }
                 }
+            }
+
+            private void OnGeneralCommand(LobbyMessage.Types.ToGeneralCommand command, LobbyClientHandler handler) {
+                var response = new LobbyMessage.Types.FromGeneralCommand {
+                    Data = GeneralCommandResponse?.Invoke(command.SenderGuid, command.Data)
+                };
+                handler.WriteMessage(new LobbyMessage { FromGeneralCommand = response });
             }
 
             private void OnSelectData(LobbyMessage.Types.ToSelectData selection, LobbyClientHandler handler) {
