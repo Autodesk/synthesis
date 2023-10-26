@@ -11,6 +11,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Google.Protobuf.Collections;
+using MathNet.Numerics.Financial;
 
 #nullable enable
 
@@ -215,26 +216,48 @@ namespace SynthesisAPI.Aether.Lobby {
                 }
             }
 
-            public Task<Result<string?, Exception>> GeneralCommand(string data) {
+            public Task<Result<bool, Exception>> SendMessage(ulong[] receivers, string data) {
                 if (!_isAlive.Value)
-                    return Task.FromResult(new Result<string?, Exception>(new Exception("Client not alive")));
+                    return Task.FromResult(new Result<bool, Exception>(new Exception("Client not alive")));
 
-                var request = new LobbyMessage.Types.ToGeneralCommand {
-                    SenderGuid = Handler!.Guid,
+                var request = new LobbyMessage.Types.ToSendMessage {
+                    Sender = Handler!.Guid,
                     Data = data
+                };
+                request.Receivers.AddRange(receivers);
+
+                var task = new Task<object?>(() => {
+                    var response = HandleResponseBoilerplate(
+                        new LobbyMessage { ToSendMessage = request },
+                        LobbyMessage.MessageTypeOneofCase.FromSendMessage
+                    );
+
+                    return response.MapResult(x => x?.FromSendMessage.Receivers.Count == receivers.Length);
+                });
+
+                _requestQueue.Enqueue(task);
+                return task.CastTask<object?, Result<bool, Exception>>();
+            }
+
+            public Task<Result<LobbyMessage.Types.FromGetMessage, Exception>> GetMessages() {
+                if (!_isAlive.Value)
+                    return Task.FromResult(new Result<LobbyMessage.Types.FromGetMessage, Exception>(new Exception("Client not alive")));
+
+                var request = new LobbyMessage.Types.ToGetMessage {
+                    Guid = Handler!.Guid
                 };
 
                 var task = new Task<object?>(() => {
                     var response = HandleResponseBoilerplate(
-                        new LobbyMessage { ToGeneralCommand = request },
-                        LobbyMessage.MessageTypeOneofCase.FromGeneralCommand
+                        new LobbyMessage { ToGetMessage = request },
+                        LobbyMessage.MessageTypeOneofCase.FromGetMessage
                     );
 
-                    return response.MapResult(x => x?.FromGeneralCommand.Data);
+                    return response.MapResult(x => x?.FromGetMessage);
                 });
 
                 _requestQueue.Enqueue(task);
-                return task.CastTask<object?, Result<string?, Exception>>();
+                return task.CastTask<object?, Result<LobbyMessage.Types.FromGetMessage, Exception>>();
             }
 
 #endregion

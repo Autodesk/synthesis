@@ -22,7 +22,8 @@ message LobbyMessage {
         ToUploadSynthesisData to_upload_synthesis_data = 10;
         ToDownloadSynthesisData to_download_synthesis_data = 11;
 
-        ToGeneralCommand to_general_command = 22;
+        ToSendMessage to_send_message = 22;
+        ToGetMessage to_get_message = 24;
 
         FromRegisterClient from_register_client = 12;
         FromGetLobbyInformation from_get_lobby_information = 13;
@@ -37,7 +38,8 @@ message LobbyMessage {
         FromUploadSynthesisDataConfirmation from_upload_synthesis_data_confirmation = 20;
         FromDownloadSynthesisData from_download_synthesis_data = 21;
 
-        FromGeneralCommand from_general_command = 23;
+        FromSendMessage from_send_message = 23;
+        FromGetMessage from_get_message = 25;
     }
 
     /////////////////////
@@ -96,9 +98,14 @@ message LobbyMessage {
         uint64 data_owner = 2;
     }
 
-    message ToGeneralCommand {
-        uint64 sender_guid = 1;
-        string data = 2;
+    message ToSendMessage {
+        uint64 sender = 1;
+        repeated uint64 receivers = 2;
+        string data = 3;
+    }
+
+    message ToGetMessage {
+        uint64 guid = 1;
     }
 
     /////////////////////
@@ -150,7 +157,17 @@ message LobbyMessage {
         bool data_available = 2;
     }
 
-    message FromGeneralCommand {
-        string data = 2;
+    message FromSendMessage {
+        repeated uint64 receivers = 1;
+    }
+
+    message FromGetMessage {
+        message MessageData {
+            uint64 sender = 1;
+            repeated uint64 receivers = 2;
+            string data = 3;
+        }
+
+        repeated MessageData messages = 1;
     }
 }
