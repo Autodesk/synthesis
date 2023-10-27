@@ -15,6 +15,7 @@ set(SHARED_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/src/client_util.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/browser_util.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/resource_util.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/offscreen_cef_client.cpp
 )
 
 set(SHARED_HEADERS
@@ -24,6 +25,7 @@ set(SHARED_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/inc/client_util.h
     ${CMAKE_CURRENT_LIST_DIR}/inc/resource_util.h
     ${CMAKE_CURRENT_LIST_DIR}/inc/shared_main.h
+    ${CMAKE_CURRENT_LIST_DIR}/inc/offscreen_cef_client.h
 )
 
 set(SHARED_SOURCES_MAC

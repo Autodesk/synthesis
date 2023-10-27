@@ -80,4 +80,4 @@ endmacro()
 
 add_subdirectory(shared)
 add_subdirectory(standalone)
-add_subdirectory(wrapper)
+# add_subdirectory(wrapper)

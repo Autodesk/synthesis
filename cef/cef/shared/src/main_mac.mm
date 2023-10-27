@@ -3,6 +3,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include <include/cef_application_mac.h>
+#include <include/cef_browser.h>
 #include <include/wrapper/cef_helpers.h>
 #include <include/wrapper/cef_library_loader.h>
 
@@ -10,6 +11,7 @@
 #include "client_manager.h"
 #include "core.h"
 #include "debug.h"
+#include "offscreen_cef_client.h"
 
 @interface SharedAppDelegate : NSObject <NSApplicationDelegate>
 - (void)createApplication:(id)object;
@@ -75,7 +77,8 @@ int main(int argc, char* argv[]) {
 
     NSAutoreleasePool* autopool = [[NSAutoreleasePool alloc] init];
     CefMainArgs main_args(argc, argv);
-    CefRefPtr<CefApp> app = synthesis::shared::CreateBrowserProcessApp();
+    // CefRefPtr<CefApp> app = synthesis::shared::CreateRendererProcessApp();
+    CefRefPtr<CefApp> app = nullptr;
 
     [sharedApplication sharedApplication];
     synthesis::shared::ClientManager manager;
@@ -92,6 +95,10 @@ int main(int argc, char* argv[]) {
     [delegate performSelectorOnMainThread:@selector(createApplication:) withObject:nil waitUntilDone:NO];
 
     SYNTHESIS_DEBUG_LOG("Starting main loop...");
+
+    CefRefPtr<CefClient> client(new OffscreenCefClient(500, 400));
+    CefBrowserSettings browser_settings;
+    CefWindowInfo window_info;
 
     CefRunMessageLoop();
     CefShutdown();
