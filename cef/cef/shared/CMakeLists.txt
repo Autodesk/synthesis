@@ -1,6 +1,7 @@
 set(SHARED_COMMON_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/inc/app_factory.h
     ${CMAKE_CURRENT_LIST_DIR}/src/main_util.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/debug.cpp
 )
 
 set(SHARED_COMMON_HEADERS

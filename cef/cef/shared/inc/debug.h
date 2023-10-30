@@ -26,9 +26,7 @@ std::ostream& operator<<(std::ostream& os, const std::pair<A, B>& p) {
     return os << '(' << p.first << ", " << p.second << ')';
 }
 
-void dbg_out() {
-    std::cout << std::endl;
-}
+void dbg_out();
 
 template <typename Head, typename... Tail>
 void dbg_out(Head A, Tail... B) {
