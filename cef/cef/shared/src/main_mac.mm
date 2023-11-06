@@ -7,6 +7,8 @@
 #include <include/wrapper/cef_helpers.h>
 #include <include/wrapper/cef_library_loader.h>
 
+#include <numeric>
+
 #include "app_factory.h"
 #include "client_manager.h"
 #include "core.h"
@@ -96,11 +98,24 @@ int main(int argc, char* argv[]) {
 
     SYNTHESIS_DEBUG_LOG("Starting main loop...");
 
-    CefRefPtr<CefClient> client(new OffscreenCefClient(500, 400));
+    CefRefPtr<OffscreenCefClient> client(new OffscreenCefClient(500, 400));
     CefBrowserSettings browser_settings;
     CefWindowInfo window_info;
+    window_info.SetAsWindowless(nullptr);
 
-    CefRunMessageLoop();
+    CefBrowserHost::CreateBrowser(window_info, client, "http://www.google.com", browser_settings, nullptr, nullptr);
+
+    SYNTHESIS_DEBUG_LOG("Browser texture bytes size: ", client->GetBrowserTextureBuffer().size());
+
+    int64_t count = 0;
+    while (count++ < 5000) {
+        CefDoMessageLoopWork();
+
+        if (count == 2500) {
+            SYNTHESIS_DEBUG_LOG(std::accumulate(client->GetBrowserTextureBuffer().begin(), client->GetBrowserTextureBuffer().end(), 0ll));
+        }
+    }
+
     CefShutdown();
 
     [delegate release];

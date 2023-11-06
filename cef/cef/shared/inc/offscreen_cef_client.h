@@ -9,20 +9,26 @@
 
 #include <cstdint>
 #include <mutex>
+#include <vector>
 
 namespace synthesis {
+
+class OffscreenCefRenderHandler;
+class OffscreenCefLoadHandler;
 
 class OffscreenCefClient : public CefClient {
 public:
     OffscreenCefClient(int width, int height);
+
+    std::vector<int8_t> GetBrowserTextureBuffer();
 
 protected:
     virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override;
     virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override;
 
 private:
-    CefRefPtr<CefRenderHandler> renderHandler;
-    CefRefPtr<CefLoadHandler> loadHandler;
+    CefRefPtr<OffscreenCefRenderHandler> renderHandler;
+    CefRefPtr<OffscreenCefLoadHandler> loadHandler;
 
     IMPLEMENT_REFCOUNTING(OffscreenCefClient);
 };
@@ -32,10 +38,13 @@ public:
     OffscreenCefRenderHandler(const int& width, const int& height);
     ~OffscreenCefRenderHandler();
 
+    std::vector<int8_t> GetBrowserTextureBuffer();
+
 protected:
     virtual bool GetRootScreenRect(CefRefPtr<CefBrowser> browser, CefRect& rect) override;
     virtual void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) override;
     virtual void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList& dirtyRects, const void* buffer, int width, int height) override;
+    virtual void OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList& dirtyRects, void* shared_handle) override;
 
 private:
     int width;

@@ -92,6 +92,8 @@ add_subdirectory(${CEF_LIBCEF_DLL_WRAPPER_PATH} libcef_dll_wrapper)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     message(STATUS "Building CEF in Debug mode")
     add_definitions(-DSYNTHESIS_CEF_DEBUG)
+else()
+    message(STATUS "Building CEF in Release mode")
 endif()
 
 add_subdirectory(cef)
