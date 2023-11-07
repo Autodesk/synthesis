@@ -85,6 +85,7 @@ int main(int argc, char* argv[]) {
     [sharedApplication sharedApplication];
     synthesis::shared::ClientManager manager;
     CefSettings settings;
+    settings.windowless_rendering_enabled = true;
 
     CefInitialize(main_args, settings, app, nullptr);
 
@@ -112,7 +113,7 @@ int main(int argc, char* argv[]) {
         CefDoMessageLoopWork();
 
         if (count == 2500) {
-            SYNTHESIS_DEBUG_LOG(std::accumulate(client->GetBrowserTextureBuffer().begin(), client->GetBrowserTextureBuffer().end(), 0ll));
+            SYNTHESIS_DEBUG_LOG(std::accumulate(client->GetBrowserTextureBuffer().begin(), client->GetBrowserTextureBuffer().end(), static_cast<int64_t>(0)));
         }
     }
 
