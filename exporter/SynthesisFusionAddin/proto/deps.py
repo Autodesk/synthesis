@@ -1,17 +1,79 @@
 import platform, subprocess
 from pathlib import Path
-from os import __file__, path
+# from os import __file__, path, system
+import os
+from src.general_imports import INTERNAL_ID;
+
+help("modules")
 
 import adsk.core, adsk.fusion
+
+system = platform.system()
+
+def getPythonFolder() -> str:
+    """Retreives the folder that contains the Autodesk python executable
+
+    Raises:
+        ImportError: Unrecognized Platform
+
+    Returns:
+        str: The path that contains the Autodesk python executable
+    """
+
+    # Thank you Kris Kaplan
+    import sys
+    import importlib.machinery
+    osPath = importlib.machinery.PathFinder.find_spec('os', sys.path).origin
+    logging.getLogger(f'{INTERNAL_ID}').debug(f'OS Path -> {osPath}')
+
+    if system == "Windows":
+        pythonFolder = Path(osPath).parents[
+            1
+        ]  # Assumes the location of the fusion python executable is two folders up from the os lib location
+    elif system == "Darwin":
+        pythonFolder = f'{Path(osPath).parents[2]}/bin'
+    else:
+        raise ImportError(
+            f"Unsupported platform! This add-in only supports windows and macos"
+        )
+    
+    return pythonFolder
+
+def executeCommand(command: tuple) -> int:
+    """Abstracts the execution of commands to account for platform differences
+
+    Args:
+        command (tuple): Tuple starting with command, and each indice having the arguments for said command
+
+    Returns:
+        int: Exit code of the process
+    """
+    if system == "Windows":
+        executionResult = subprocess.call(
+            command,
+            bufsize=1,
+            creationflags=subprocess.CREATE_NO_WINDOW,
+            shell=False
+        )
+    else:
+        # executionResult = subprocess.call(
+        #     command,
+        #     bufsize=1,
+        #     shell=False
+        # )
+        joinedCommand = str.join(' ', command)
+        executionResult = os.system(joinedCommand)
+        if isinstance(executionResult, str):
+            logging.getLogger(f'{INTERNAL_ID}').debug(f'Execution output -> {executionResult}')
+            executionResult = 0
+
+    return executionResult
 
 def installCross(pipDeps: list) -> bool:
     """Attempts to fetch pip script and resolve dependencies with less user interaction
 
     Args:
         pipDeps (list): List of all string imports
-
-    Raises:
-        ImportError: Unrecognized Platform
 
     Returns:
         bool: Success
@@ -31,65 +93,42 @@ def installCross(pipDeps: list) -> bool:
     progressBar = ui.createProgressDialog()
     progressBar.isCancelButtonShown = False
     progressBar.reset()
-    progressBar.show("Unity Addin", f"Installing dependencies...", 0, 4, 0)
+    progressBar.show("Synthesis", f"Installing dependencies...", 0, 4, 0)
 
     # this is important to reduce the chance of hang on startup
     adsk.doEvents()
 
-    system = platform.system()
+    try:
+        pythonFolder = getPythonFolder()
+    except ImportError as e:
+        logging.getLogger(f'{INTERNAL_ID}').error(f'Failed to download dependencies: {e.msg}')
+        return False
 
-    if system == "Windows":
-        pythonFolder = Path(__file__).parents[
-            1
-        ]  # Assumes the location of the fusion python executable is two folders up from the os lib location
-    elif system == "Darwin":  # macos
-        pythonFolder = Path(__file__).parents[2] / "bin"
-        progressBar.message = f"Fetching pip..."
-        adsk.doEvents()
-
+    if system == "Darwin":  # macos
         # if nothing has previously fetched it
-        if (not path.exists({pythonFolder / 'get-pip.py'})) :
-            subprocess.call(
-                f"curl https://bootstrap.pypa.io/get-pip.py -o \"{pythonFolder / 'get-pip.py'}\"",
-                bufsize=1,
-                creationflags=subprocess.CREATE_NO_WINDOW,
-                shell=False,
-            )
-        
+        if (not os.path.exists(f'{pythonFolder}/get-pip.py')) :
+            executeCommand(['curl', 'https://bootstrap.pypa.io/get-pip.py', '-o', f'"{pythonFolder}/get-pip.py"'])
 
-        subprocess.call(
-            f"\"{pythonFolder / 'python'}\" \"{pythonFolder / 'get-pip.py'}\"",
-            bufsize=1,
-            creationflags=subprocess.CREATE_NO_WINDOW,
-            shell=False,
-        )
-    else:
-        raise ImportError(
-            f"Unsupported platform! This add-in only supports windows and macos"
-        )
+        executeCommand([f'"{pythonFolder}/python"', f'"{pythonFolder}/get-pip.py"'])
 
     for depName in pipDeps:
         progressBar.progressValue += 1
         progressBar.message = f"Installing {depName}..."
         adsk.doEvents()
-        subprocess.call(
-            f"\"{pythonFolder / 'python'}\" -m pip install {depName}",
-            bufsize=1,
-            creationflags=subprocess.CREATE_NO_WINDOW,
-            shell=False
-        )
+        installResult = executeCommand([f'"{pythonFolder}/python"', '-m', 'pip', 'install', depName])
+
+        if installResult != 0:
+            logging.getLogger(f'{INTERNAL_ID}').warn(f'Dep installation "{depName}" exited with code "{installResult}"')
 
     if system == "Darwin":
         pipAntiDeps = ["dataclasses", "typing"]
         for depName in pipAntiDeps:
             progressBar.message = f"Uninstalling {depName}..."
             adsk.doEvents()
-            subprocess.call(
-                f"\"{pythonFolder / 'python'}\" -m pip uninstall {depName} -y",
-                bufsize=1,
-                creationflags=subprocess.CREATE_NO_WINDOW,
-                shell=False,
-            )
+            uninstallResult = executeCommand([f'"{pythonFolder}/python"', '-m', 'pip', 'uninstall', f'{depName}', '-y'])
+
+            if uninstallResult != 0:
+                logging.getLogger(f'{INTERNAL_ID}').warn(f'AntiDep uninstallation "{depName}" exited with code "{uninstallResult}"')
 
     progressBar.hide()
 
