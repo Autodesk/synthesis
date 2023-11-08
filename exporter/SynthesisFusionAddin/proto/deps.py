@@ -24,7 +24,6 @@ def getPythonFolder() -> str:
     import sys
     import importlib.machinery
     osPath = importlib.machinery.PathFinder.find_spec('os', sys.path).origin
-    logging.getLogger(f'{INTERNAL_ID}').debug(f'OS Path -> {osPath}')
 
     if system == "Windows":
         pythonFolder = Path(osPath).parents[
@@ -37,6 +36,7 @@ def getPythonFolder() -> str:
             f"Unsupported platform! This add-in only supports windows and macos"
         )
     
+    logging.getLogger(f'{INTERNAL_ID}').debug(f'Python Folder -> {pythonFolder}')
     return pythonFolder
 
 def executeCommand(command: tuple) -> int:
@@ -115,7 +115,8 @@ def installCross(pipDeps: list) -> bool:
         progressBar.progressValue += 1
         progressBar.message = f"Installing {depName}..."
         adsk.doEvents()
-        installResult = executeCommand([f'"{pythonFolder}/python"', '-m', 'pip', 'install', depName])
+        # os.path.join needed for varying system path separators
+        installResult = executeCommand([os.path.join(pythonFolder, 'python'), '-m', 'pip', 'install', depName])
 
         if installResult != 0:
             logging.getLogger(f'{INTERNAL_ID}').warn(f'Dep installation "{depName}" exited with code "{installResult}"')
@@ -125,7 +126,7 @@ def installCross(pipDeps: list) -> bool:
         for depName in pipAntiDeps:
             progressBar.message = f"Uninstalling {depName}..."
             adsk.doEvents()
-            uninstallResult = executeCommand([f'"{pythonFolder}/python"', '-m', 'pip', 'uninstall', f'{depName}', '-y'])
+            uninstallResult = executeCommand([os.path.join(pythonFolder, 'python'), '-m', 'pip', 'uninstall', f'{depName}', '-y'])
 
             if uninstallResult != 0:
                 logging.getLogger(f'{INTERNAL_ID}').warn(f'AntiDep uninstallation "{depName}" exited with code "{uninstallResult}"')
