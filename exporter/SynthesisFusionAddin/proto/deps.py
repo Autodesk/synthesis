@@ -1,10 +1,8 @@
+import os
 import platform, subprocess
 from pathlib import Path
-# from os import __file__, path, system
-import os
-from src.general_imports import INTERNAL_ID;
 
-help("modules")
+from src.general_imports import INTERNAL_ID;
 
 import adsk.core, adsk.fusion
 
@@ -25,16 +23,13 @@ def getPythonFolder() -> str:
     import importlib.machinery
     osPath = importlib.machinery.PathFinder.find_spec('os', sys.path).origin
 
+    # The location of the python executable is found relative to the location of the os module in each operating system
     if system == "Windows":
-        pythonFolder = Path(osPath).parents[
-            1
-        ]  # Assumes the location of the fusion python executable is two folders up from the os lib location
+        pythonFolder = Path(osPath).parents[1]
     elif system == "Darwin":
         pythonFolder = f'{Path(osPath).parents[2]}/bin'
     else:
-        raise ImportError(
-            f"Unsupported platform! This add-in only supports windows and macos"
-        )
+        raise ImportError('Unsupported platform! This add-in only supports windows and macos')
     
     logging.getLogger(f'{INTERNAL_ID}').debug(f'Python Folder -> {pythonFolder}')
     return pythonFolder
@@ -56,16 +51,8 @@ def executeCommand(command: tuple) -> int:
             shell=False
         )
     else:
-        # executionResult = subprocess.call(
-        #     command,
-        #     bufsize=1,
-        #     shell=False
-        # )
-        joinedCommand = str.join(' ', command)
-        executionResult = os.system(joinedCommand)
-        if isinstance(executionResult, str):
-            logging.getLogger(f'{INTERNAL_ID}').debug(f'Execution output -> {executionResult}')
-            executionResult = 0
+        # Uses os.system because I was unable to get subprocess.call to work on MacOS
+        executionResult = os.system(str.join(' ', command))
 
     return executionResult
 
@@ -93,7 +80,7 @@ def installCross(pipDeps: list) -> bool:
     progressBar = ui.createProgressDialog()
     progressBar.isCancelButtonShown = False
     progressBar.reset()
-    progressBar.show("Synthesis", f"Installing dependencies...", 0, 4, 0)
+    progressBar.show("Synthesis", f"Installing dependencies...", 0, len(pipDeps), 0)
 
     # this is important to reduce the chance of hang on startup
     adsk.doEvents()
@@ -105,6 +92,7 @@ def installCross(pipDeps: list) -> bool:
         return False
 
     if system == "Darwin":  # macos
+
         # if nothing has previously fetched it
         if (not os.path.exists(f'{pythonFolder}/get-pip.py')) :
             executeCommand(['curl', 'https://bootstrap.pypa.io/get-pip.py', '-o', f'"{pythonFolder}/get-pip.py"'])
@@ -117,17 +105,18 @@ def installCross(pipDeps: list) -> bool:
         adsk.doEvents()
         # os.path.join needed for varying system path separators
         installResult = executeCommand([os.path.join(pythonFolder, 'python'), '-m', 'pip', 'install', depName])
-
         if installResult != 0:
             logging.getLogger(f'{INTERNAL_ID}').warn(f'Dep installation "{depName}" exited with code "{installResult}"')
 
     if system == "Darwin":
         pipAntiDeps = ["dataclasses", "typing"]
+        progressBar.progressValue = 0
+        progressBar.maximumValue = len(pipAntiDeps)
         for depName in pipAntiDeps:
             progressBar.message = f"Uninstalling {depName}..."
+            progressBar.progressValue += 1
             adsk.doEvents()
             uninstallResult = executeCommand([os.path.join(pythonFolder, 'python'), '-m', 'pip', 'uninstall', f'{depName}', '-y'])
-
             if uninstallResult != 0:
                 logging.getLogger(f'{INTERNAL_ID}').warn(f'AntiDep uninstallation "{depName}" exited with code "{uninstallResult}"')
 
@@ -152,14 +141,7 @@ try:
     import google.protobuf
     import pkg_resources
 
-    #logging.getLogger("deps").error()
-
     from .proto_out import joint_pb2, assembly_pb2, types_pb2, material_pb2
 except ImportError or ModuleNotFoundError:
-    # Version 1 with built in Pip - cannot check if it works on OSX right now.
-    # Works with fusion debug builds
     installCross(["protobuf==4.23.3"])
     from .proto_out import joint_pb2, assembly_pb2, types_pb2, material_pb2
-
-    # Version 2 with no shell and fetched pip
-    # NOTE: This does NOT work on dev streamer since it looks for installed fusion
