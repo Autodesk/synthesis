@@ -1251,7 +1251,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 else:
                     savepath = (
                         home
-                        + "/.config/Autodesk/Synthesis/Mira/Fields"
+                        + "/.config/Autodesk/Synthesis/Mira/Fields/"
                         + processedFileName
                         + ".mira"
                     )
