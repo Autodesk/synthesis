@@ -2,5 +2,6 @@ source_folder/Synthesis.app/
 exporter_source_folder/
 Synthesis-Installer.dmg
 create-dmg/
+addins-folder-link
 
 *.dmg
