@@ -45,10 +45,13 @@ namespace Synthesis {
         private Vector3 _fieldForward;
 
         /// <summary>
-        /// Wheels must be in this quadrant order: I (Front Right), II (Front Left), III (Back Left), IV (Back Right)
+        /// Create a mecanum drivetrain.
         /// </summary>
-        /// <param name="robot"></param>
-        /// <param name="wheels"></param>
+        /// <param name="robot">Owning SimObject</param>
+        /// <param name="frontLeft">Front-Left wheels</param>
+        /// <param name="frontRight">Front-Right wheels</param>
+        /// <param name="backRight">Back-Right wheels</param>
+        /// <param name="backLeft">Back-Left wheels</param>
         public MecanumDriveBehaviour(RobotSimObject robot, List<WheelDriver> frontLeft, List<WheelDriver> frontRight,
             List<WheelDriver> backRight, List<WheelDriver> backLeft)
             : base(robot.Name, false) {
@@ -178,8 +181,6 @@ namespace Synthesis {
             _backRightWheels.ForEach(x => x.MainInput = backRightSpeed);
             _backLeftWheels.ForEach(x => x.MainInput = backLeftSpeed);
         }
-
-        // public override void OnRemove() { }
 
         protected override void OnEnable() {
             Vector3 northWest = new Vector3(-1, 0, 1).normalized;

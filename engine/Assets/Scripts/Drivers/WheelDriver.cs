@@ -8,7 +8,6 @@ using SynthesisAPI.Simulation;
 using UnityEngine;
 using Synthesis.Util;
 using Synthesis.Physics;
-using static Mirabuf.Joint.JointInstance;
 
 #nullable enable
 
@@ -17,7 +16,7 @@ namespace Synthesis {
         private const float MIRABUF_TO_UNITY_FORCE = 40f;
 
         private CustomWheel _customWheel;
-        private WheelTypeEnum _wheelType;
+        private Mirabuf.JointInstance.WheelTypeEnum _wheelType;
 
         private JointInstance _jointInstance;
         public JointInstance JointInstance => _jointInstance;
@@ -126,7 +125,7 @@ namespace Synthesis {
         /// <param name="wheelType">Optional parameter of wheel type for joint</param>
         public WheelDriver(string name, string[] inputs, string[] outputs, SimObject simObject,
             JointInstance jointInstance, CustomWheel customWheel, Vector3 anchor, Vector3 axis, float radius,
-            string motorRef, WheelTypeEnum wheelType)
+            string motorRef, Mirabuf.JointInstance.WheelTypeEnum wheelType)
             : base(name, inputs, outputs, simObject) {
             _jointInstance = jointInstance;
             _customWheel   = customWheel;

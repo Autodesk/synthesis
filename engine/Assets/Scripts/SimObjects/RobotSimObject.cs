@@ -1023,12 +1023,6 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                          .Name,
             "Eject");
 
-        for (int j = 0; j < inputs.Length; j++) {
-            if (inputs[j].Item1 == null || inputs[j].Item2 == null) {
-                Logger.Log($"[{j}] -> NULL", LogLevel.Debug);
-            }
-        }
-
         TooltipManager.CreateTooltip(inputs);
     }
 

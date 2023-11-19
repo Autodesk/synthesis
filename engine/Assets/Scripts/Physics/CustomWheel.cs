@@ -123,7 +123,6 @@ public class CustomWheel : MonoBehaviour {
             var rollerVec     = rollerDir * Vector3.Dot(rollerDir, evaluatedFriction);
             var sansRoller    = evaluatedFriction - rollerVec;
             evaluatedFriction = sansRoller + rollerVec * ROLLER_FRICTION;
-            // evaluatedFriction -= rollerDir * Vector3.Dot(rollerDir, evaluatedFriction);
         }
 
         return evaluatedFriction;
