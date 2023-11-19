@@ -13,11 +13,7 @@ feedback link: https://github.com/Autodesk/synthesis/issues
 
 Configure Mode allows you to change and fine tune aspects of your robot to better test and simulate its behavior on the field. Configure Mode is available in both Practice and Match Modes and is accessible via the side panel.
 
-<<<<<<< Updated upstream
-[<img src="img/synthesis/config-mode.png" alt="image" width="50%" height="50%"/>](img/synthesis/config-mode.png)
-=======
 ![image_caption](img/synthesis/config-mode.png)
->>>>>>> Stashed changes
 
 In each configuration panel, you will be able to cancel and save your modifications. You will also be given the option to `Session Save`, saving your changes until you quit the session. If you want the changes you make to that robot to be saved permanently, hit the `Save` button on the far right.
 
@@ -56,6 +52,7 @@ The drivetrains available on Synthesis are as the following:
 * **Tank**: A direct-drive control where each joystick is used for one side of the drivetrain
 * **Arcade**: A control scheme in which one single joystick controls both the robot’s forward and backward movement, as well as its turning.
 * **Swerve**: A specialized drivetrain that allows each wheel to move and rotate independently.
+* **Mecanum**: An omni-directional drivetrain. When using mecanum drive, wheels will switch to a mecanum wheel model. When switching back, the wheels will revert back to standard or omni wheels (whichever you've selected during exportation).
 
 ### Compatibility
 
