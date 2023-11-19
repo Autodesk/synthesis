@@ -17,8 +17,13 @@ public class CustomWheel : MonoBehaviour {
         }
     }
 
+    private const float ROLLER_FRICTION = 0.15f;
+
     public Vector3? LocalRollerRollingDirection = Vector3.right;
-    private Vector3? RollerRollingDirection => LocalRollerRollingDirection == null ? null : Rb.transform.localToWorldMatrix.MultiplyVector(LocalRollerRollingDirection.Value);
+    private Vector3? RollerRollingDirection =>
+        LocalRollerRollingDirection == null
+            ? null
+            : Rb.transform.localToWorldMatrix.MultiplyVector(LocalRollerRollingDirection.Value);
 
     public float ImpulseMax = 100f;
 
@@ -110,13 +115,14 @@ public class CustomWheel : MonoBehaviour {
 
         _collisionDataThisFrame = new(Vector3.zero, Vector3.zero, 0);
 
-        var evaluatedFriction = CalculateSlidingFriction(netImpulse, netVelocity) + CalculateRollingFriction(netImpulse, netVelocity);
-    
+        var evaluatedFriction =
+            CalculateSlidingFriction(netImpulse, netVelocity) + CalculateRollingFriction(netImpulse, netVelocity);
+
         if (LocalRollerRollingDirection.HasValue) {
             Vector3 rollerDir = RollerRollingDirection.Value;
-            var rollerVec = rollerDir * Vector3.Dot(rollerDir, evaluatedFriction);
-            var sansRoller = evaluatedFriction - rollerVec;
-            evaluatedFriction = sansRoller + rollerVec * 0.3f;
+            var rollerVec     = rollerDir * Vector3.Dot(rollerDir, evaluatedFriction);
+            var sansRoller    = evaluatedFriction - rollerVec;
+            evaluatedFriction = sansRoller + rollerVec * ROLLER_FRICTION;
             // evaluatedFriction -= rollerDir * Vector3.Dot(rollerDir, evaluatedFriction);
         }
 

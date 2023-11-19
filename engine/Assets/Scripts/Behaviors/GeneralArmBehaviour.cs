@@ -74,7 +74,7 @@ namespace Synthesis {
         }
 
         private void OnValueInputAssigned(IEvent tmp) {
-            ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
+            ValueInputAssignedEvent args = (tmp as ValueInputAssignedEvent)!;
             if (args.InputKey.Equals(_forwardInputKey) || args.InputKey.Equals(_reverseInputKey)) {
                 if (_robot.RobotGUID != (MainHUD.SelectedRobot?.RobotGUID ?? string.Empty) ||
                     !((DynamicUIManager.ActiveModal as ChangeInputsModal)?.isSave ?? false))

@@ -248,7 +248,8 @@ namespace Synthesis.Import {
                                 _simObject, instance, customWheel, wheelA.anchor, axisWut, float.NaN,
                                 (assembly.Data.Joints.MotorDefinitions.ContainsKey(definition.MotorReference)
                                         ? definition.MotorReference
-                                        : null)!);
+                                        : null)!,
+                                instance.GetWheelType(assembly));
                         SimulationManager.AddDriver(_simObject.Name, driver);
                     }
                 }

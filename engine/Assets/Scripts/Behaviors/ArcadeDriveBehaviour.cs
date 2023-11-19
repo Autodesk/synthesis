@@ -94,7 +94,7 @@ namespace Synthesis {
         }
 
         private void OnValueInputAssigned(IEvent tmp) {
-            ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
+            ValueInputAssignedEvent args = (tmp as ValueInputAssignedEvent)!;
 
             if (args.InputKey.Length > MiraId.Length) {
                 string s = args.InputKey.Remove(0, MiraId.Length);

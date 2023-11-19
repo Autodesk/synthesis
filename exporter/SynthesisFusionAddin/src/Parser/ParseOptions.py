@@ -25,7 +25,6 @@ class JointParentType:  # validate for unique key and value
 class WheelType:
     STANDARD = 0
     OMNI = 1
-    MECANUM = 2
 
 
 class SignalType:

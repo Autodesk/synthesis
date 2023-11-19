@@ -8,6 +8,7 @@ using SynthesisAPI.Simulation;
 using UnityEngine;
 using Synthesis.Util;
 using Synthesis.Physics;
+using static Mirabuf.Joint.JointInstance;
 
 #nullable enable
 
@@ -16,6 +17,7 @@ namespace Synthesis {
         private const float MIRABUF_TO_UNITY_FORCE = 40f;
 
         private CustomWheel _customWheel;
+        private WheelTypeEnum _wheelType;
 
         private JointInstance _jointInstance;
         public JointInstance JointInstance => _jointInstance;
@@ -50,6 +52,14 @@ namespace Synthesis {
                 _localAxis             = value;
                 _customWheel.LocalAxis = _localAxis;
             }
+        }
+
+        /// <summary>
+        /// Specify a roller direction. NULL roller direction indicates no roller
+        /// </summary>
+        public Vector3? LocalRoller {
+            get => _customWheel.LocalRollerRollingDirection;
+            set { _customWheel.LocalRollerRollingDirection = value; }
         }
 
         private float _radius = 0.05f;
@@ -113,12 +123,14 @@ namespace Synthesis {
         /// <param name="anchor">Anchor of the Rotational Joint</param>
         /// <param name="axis">Axis of the Rotational Joint</param>
         /// <param name="radius">Radius of the wheel. Automatically calculated if set to NaN</param>
+        /// <param name="wheelType">Optional parameter of wheel type for joint</param>
         public WheelDriver(string name, string[] inputs, string[] outputs, SimObject simObject,
             JointInstance jointInstance, CustomWheel customWheel, Vector3 anchor, Vector3 axis, float radius,
-            string motorRef)
+            string motorRef, WheelTypeEnum wheelType)
             : base(name, inputs, outputs, simObject) {
             _jointInstance = jointInstance;
             _customWheel   = customWheel;
+            _wheelType     = wheelType;
 
             Anchor = _customWheel.Rb.transform.localToWorldMatrix.MultiplyPoint3x4(anchor);
             Axis   = _customWheel.Rb.transform.localToWorldMatrix.MultiplyVector(axis);
@@ -143,6 +155,8 @@ namespace Synthesis {
                     targetVelocity = 30,
                 };
             }
+
+            MatchRollerToWheelType();
 
             State.SetValue(_outputs[0], Value.ForNumber(0));
             State.SetValue(_outputs[1], Value.ForNumber(1));
@@ -178,6 +192,14 @@ namespace Synthesis {
 
         public void WheelsPhysicsUpdate(float mod) {
             _customWheel.CalculateAndApplyFriction(mod);
+        }
+
+        public void MatchRollerToWheelType() {
+            if (_wheelType == WheelTypeEnum.Omni) {
+                LocalRoller = Vector3.right;
+            } else {
+                LocalRoller = null;
+            }
         }
 
         private void VelocityControl() {
