@@ -73,6 +73,12 @@ public class CustomWheel : MonoBehaviour {
         _lastImpulseTotal = CalculateNetFriction();
 
         Rb.velocity += _lastImpulseTotal * mod; // / Rb.mass;
+
+        // Update visual meshes
+        for (int i = 0; i < Rb.transform.childCount; i++) {
+            var child = Rb.transform.GetChild(i);
+            child.RotateAround(Anchor, Axis, -RotationSpeed * Time.fixedDeltaTime * Mathf.Rad2Deg);
+        }
     }
 
     public void OnCollisionEnter(Collision collision) {

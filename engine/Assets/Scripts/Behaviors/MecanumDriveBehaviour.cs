@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Google.Protobuf.WellKnownTypes;
 using Synthesis.PreferenceManager;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
@@ -12,21 +13,23 @@ using Math = System.Math;
 
 namespace Synthesis {
     public class MecanumDriveBehaviour : SimBehaviour {
-        internal const string FORWARD             = "Mecanum Forward";
-        internal const string BACKWARD            = "Mecanum Backward";
-        internal const string LEFT                = "Mecanum Left";
-        internal const string RIGHT               = "Mecanum Right";
-        internal const string TURN_LEFT           = "Mecanum Turn Left";
-        internal const string TURN_RIGHT          = "Mecanum Turn Right";
-        internal const string RESET_FIELD_FORWARD = "Mecanum Reset Forward";
+        internal const string FORWARD              = "Mecanum Forward";
+        internal const string BACKWARD             = "Mecanum Backward";
+        internal const string LEFT                 = "Mecanum Left";
+        internal const string RIGHT                = "Mecanum Right";
+        internal const string TURN_LEFT            = "Mecanum Turn Left";
+        internal const string TURN_RIGHT           = "Mecanum Turn Right";
+        internal const string RESET_FIELD_FORWARD  = "Mecanum Reset Forward";
+        internal const string TOGGLE_FIELD_CENTRIC = "Toggle Field Centric";
 
-        private readonly string forward             = FORWARD;
-        private readonly string backward            = BACKWARD;
-        private readonly string left                = LEFT;
-        private readonly string right               = RIGHT;
-        private readonly string turn_left           = TURN_LEFT;
-        private readonly string turn_right          = TURN_RIGHT;
-        private readonly string reset_field_forward = RESET_FIELD_FORWARD;
+        private readonly string forward              = FORWARD;
+        private readonly string backward             = BACKWARD;
+        private readonly string left                 = LEFT;
+        private readonly string right                = RIGHT;
+        private readonly string turn_left            = TURN_LEFT;
+        private readonly string turn_right           = TURN_RIGHT;
+        private readonly string reset_field_forward  = RESET_FIELD_FORWARD;
+        private readonly string toggle_field_centric = TOGGLE_FIELD_CENTRIC;
 
         private List<WheelDriver> _frontLeftWheels;
         private List<WheelDriver> _frontRightWheels;
@@ -35,6 +38,7 @@ namespace Synthesis {
         private readonly RobotSimObject _robot;
 
         private Vector3 _fieldForward;
+        private bool _fieldCentric = true;
 
         /// <summary>
         /// Create a mecanum drivetrain.
@@ -55,13 +59,14 @@ namespace Synthesis {
             _robot        = robot;
             _fieldForward = Vector3.forward;
 
-            forward             = _robot.RobotGUID + "Mecanum Forward";
-            backward            = _robot.RobotGUID + "Mecanum Backward";
-            left                = _robot.RobotGUID + "Mecanum Left";
-            right               = _robot.RobotGUID + "Mecanum Right";
-            turn_left           = _robot.RobotGUID + "Mecanum Turn Left";
-            turn_right          = _robot.RobotGUID + "Mecanum Turn Right";
-            reset_field_forward = _robot.RobotGUID + "Mecanum Reset Forward";
+            forward              = _robot.RobotGUID + "Mecanum Forward";
+            backward             = _robot.RobotGUID + "Mecanum Backward";
+            left                 = _robot.RobotGUID + "Mecanum Left";
+            right                = _robot.RobotGUID + "Mecanum Right";
+            turn_left            = _robot.RobotGUID + "Mecanum Turn Left";
+            turn_right           = _robot.RobotGUID + "Mecanum Turn Right";
+            reset_field_forward  = _robot.RobotGUID + "Mecanum Reset Forward";
+            toggle_field_centric = _robot.RobotGUID + "Toggle Field Centric";
 
             InitInputs(GetInputs());
             EventBus.NewTypeListener<ValueInputAssignedEvent>(OnValueInputAssigned);
@@ -77,7 +82,8 @@ namespace Synthesis {
                 (right, RIGHT, TryLoadInput(right, new Digital("D"))),
                 (turn_left, TURN_LEFT, TryLoadInput(turn_left, new Digital("LeftArrow"))),
                 (turn_right, TURN_RIGHT, TryLoadInput(turn_right, new Digital("RightArrow"))),
-                (reset_field_forward, RESET_FIELD_FORWARD, TryLoadInput(reset_field_forward, new Digital("R"))) };
+                (reset_field_forward, RESET_FIELD_FORWARD, TryLoadInput(reset_field_forward, new Digital("R"))),
+                (toggle_field_centric, TOGGLE_FIELD_CENTRIC, TryLoadInput(toggle_field_centric, new Digital("T"))) };
         }
 
         public Analog TryLoadInput(string key, Analog defaultInput) {
@@ -108,6 +114,7 @@ namespace Synthesis {
                     case TURN_LEFT:
                     case TURN_RIGHT:
                     case RESET_FIELD_FORWARD:
+                    case TOGGLE_FIELD_CENTRIC:
                         SimulationPreferences.SetRobotInput(_robot.RobotGUID, args.InputKey, args.Input);
                         break;
                 }
@@ -128,6 +135,9 @@ namespace Synthesis {
         public override void Update() {
             if (Mathf.Abs(InputManager.MappedValueInputs[reset_field_forward].Value) > 0.5f)
                 _fieldForward = _robot.GroundedNode.transform.forward;
+
+            if (Mathf.Abs(InputManager.MappedValueInputs[toggle_field_centric].Value) > 0.5f)
+                _fieldCentric = !_fieldCentric;
 
             Vector3 headingVector = _robot.GroundedNode.transform.forward -
                                     (Vector3.up * Vector3.Dot(Vector3.up, _robot.GroundedNode.transform.forward));
@@ -150,9 +160,11 @@ namespace Synthesis {
             moveStrafe  = Diff(moveStrafe, 0f, 0.1f) ? 0f : moveStrafe;
             moveTurn    = Diff(moveTurn, 0f, 0.1f) ? 0f : moveTurn;
 
-            var vec     = Quaternion.AngleAxis(chassisAngle, Vector3.up) * new Vector3(moveStrafe, 0f, moveForward);
-            moveForward = vec.z;
-            moveStrafe  = vec.x;
+            if (_fieldCentric) {
+                var vec     = Quaternion.AngleAxis(chassisAngle, Vector3.up) * new Vector3(moveStrafe, 0f, moveForward);
+                moveForward = vec.z;
+                moveStrafe  = vec.x;
+            }
 
             // Are the inputs basically zero
             if (moveForward == 0f && moveTurn == 0f && moveStrafe == 0f) {

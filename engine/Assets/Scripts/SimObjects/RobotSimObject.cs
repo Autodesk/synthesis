@@ -969,8 +969,10 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             if (!input.displayName.Contains("Arcade") &&
                 (!input.displayName.Contains("Swerve") || input.displayName.Contains("Reset Forward")) &&
                 !input.displayName.Contains("Tank") &&
-                (!input.displayName.Contains("Mecanum") || input.displayName.Contains("Reset Forward")) &&
-                (!input.displayName.Contains("Omni") || input.displayName.Contains("Reset Forward"))) {
+                (!input.displayName.Contains("Mecanum") || input.displayName.Contains("Reset Forward") ||
+                    input.displayName.Contains("Toggle Field Centric")) &&
+                (!input.displayName.Contains("Omni") || input.displayName.Contains("Reset Forward") ||
+                    input.displayName.Contains("Toggle Field Centric"))) {
                 inputCount++;
             }
         });
@@ -1034,8 +1036,10 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             if (!inputKey.displayName.Contains("Arcade") &&
                 (!inputKey.displayName.Contains("Swerve") || inputKey.displayName.Contains("Reset Forward")) &&
                 !inputKey.displayName.Contains("Tank") &&
-                (!inputKey.displayName.Contains("Mecanum") || inputKey.displayName.Contains("Reset Forward")) &&
-                (!inputKey.displayName.Contains("Omni") || inputKey.displayName.Contains("Reset Forward"))) {
+                (!inputKey.displayName.Contains("Mecanum") || inputKey.displayName.Contains("Reset Forward") ||
+                    inputKey.displayName.Contains("Toggle Field Centric")) &&
+                (!inputKey.displayName.Contains("Omni") || inputKey.displayName.Contains("Reset Forward") ||
+                    inputKey.displayName.Contains("Toggle Field Centric"))) {
                 inputs[i] = (InputManager.MappedValueInputs[inputKey.key].Name, inputKey.displayName);
                 i++;
             }
