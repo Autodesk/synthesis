@@ -1,17 +1,11 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using Google.Protobuf.WellKnownTypes;
 using Synthesis.PreferenceManager;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
-using SynthesisAPI.Utilities;
 using UnityEngine;
-
-using Logger = SynthesisAPI.Utilities.Logger;
 
 #nullable enable
 

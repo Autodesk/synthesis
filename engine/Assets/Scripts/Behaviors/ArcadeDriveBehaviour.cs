@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using Google.Protobuf.WellKnownTypes;
+﻿using System.Collections.Generic;
 using Synthesis.PreferenceManager;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
-using UnityEditor;
 using UnityEngine;
-using Input  = UnityEngine.Input;
-using Logger = SynthesisAPI.Utilities.Logger;
-using Math   = SynthesisAPI.Utilities.Math;
+using Math = SynthesisAPI.Utilities.Math;
 
 #nullable enable
 

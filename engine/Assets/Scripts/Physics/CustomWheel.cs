@@ -19,7 +19,7 @@ public class CustomWheel : MonoBehaviour {
 
     private const float ROLLER_FRICTION = 0.15f;
 
-    public Vector3? LocalRollerRollingDirection = Vector3.right;
+    public Vector3? LocalRollerRollingDirection = null;
     private Vector3? RollerRollingDirection =>
         LocalRollerRollingDirection == null
             ? null
@@ -119,10 +119,11 @@ public class CustomWheel : MonoBehaviour {
             CalculateSlidingFriction(netImpulse, netVelocity) + CalculateRollingFriction(netImpulse, netVelocity);
 
         if (LocalRollerRollingDirection.HasValue) {
-            Vector3 rollerDir = RollerRollingDirection.Value;
-            var rollerVec     = rollerDir * Vector3.Dot(rollerDir, evaluatedFriction);
-            var sansRoller    = evaluatedFriction - rollerVec;
-            evaluatedFriction = sansRoller + rollerVec * ROLLER_FRICTION;
+            Vector3 rollerDir  = RollerRollingDirection.Value;
+            var rollerVec      = rollerDir * Vector3.Dot(rollerDir, evaluatedFriction);
+            var sansRoller     = evaluatedFriction - rollerVec;
+            var rollerFriction = rollerDir * Vector3.Dot(rollerDir, netVelocity);
+            evaluatedFriction  = sansRoller + rollerFriction * ROLLER_FRICTION;
         }
 
         return evaluatedFriction;

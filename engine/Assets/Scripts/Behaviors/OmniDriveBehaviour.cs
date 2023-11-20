@@ -5,20 +5,21 @@ using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
 using UnityEngine;
-
-using Math = System.Math;
+using Logger   = SynthesisAPI.Utilities.Logger;
+using LogLevel = SynthesisAPI.Utilities.LogLevel;
+using Math     = System.Math;
 
 #nullable enable
 
 namespace Synthesis {
-    public class MecanumDriveBehaviour : SimBehaviour {
-        internal const string FORWARD             = "Mecanum Forward";
-        internal const string BACKWARD            = "Mecanum Backward";
-        internal const string LEFT                = "Mecanum Left";
-        internal const string RIGHT               = "Mecanum Right";
-        internal const string TURN_LEFT           = "Mecanum Turn Left";
-        internal const string TURN_RIGHT          = "Mecanum Turn Right";
-        internal const string RESET_FIELD_FORWARD = "Mecanum Reset Forward";
+    public class OmniDriveBehaviour : SimBehaviour {
+        internal const string FORWARD             = "Omni Forward";
+        internal const string BACKWARD            = "Omni Backward";
+        internal const string LEFT                = "Omni Left";
+        internal const string RIGHT               = "Omni Right";
+        internal const string TURN_LEFT           = "Omni Turn Left";
+        internal const string TURN_RIGHT          = "Omni Turn Right";
+        internal const string RESET_FIELD_FORWARD = "Omni Reset Forward";
 
         private readonly string forward             = FORWARD;
         private readonly string backward            = BACKWARD;
@@ -28,13 +29,12 @@ namespace Synthesis {
         private readonly string turn_right          = TURN_RIGHT;
         private readonly string reset_field_forward = RESET_FIELD_FORWARD;
 
-        private List<WheelDriver> _frontLeftWheels;
-        private List<WheelDriver> _frontRightWheels;
-        private List<WheelDriver> _backRightWheels;
-        private List<WheelDriver> _backLeftWheels;
+        private List<WheelDriver> _wheels;
         private readonly RobotSimObject _robot;
 
         private Vector3 _fieldForward;
+
+        private float _turnFavor = 1.5f;
 
         /// <summary>
         /// Create a mecanum drivetrain.
@@ -44,24 +44,19 @@ namespace Synthesis {
         /// <param name="frontRight">Front-Right wheels</param>
         /// <param name="backRight">Back-Right wheels</param>
         /// <param name="backLeft">Back-Left wheels</param>
-        public MecanumDriveBehaviour(RobotSimObject robot, List<WheelDriver> frontLeft, List<WheelDriver> frontRight,
-            List<WheelDriver> backRight, List<WheelDriver> backLeft)
-            : base(robot.Name, false) {
-            _frontLeftWheels  = frontLeft;
-            _frontRightWheels = frontRight;
-            _backRightWheels  = backRight;
-            _backLeftWheels   = backLeft;
+        public OmniDriveBehaviour(RobotSimObject robot, List<WheelDriver> wheels) : base(robot.Name, false) {
+            _wheels = wheels;
 
             _robot        = robot;
             _fieldForward = Vector3.forward;
 
-            forward             = _robot.RobotGUID + "Mecanum Forward";
-            backward            = _robot.RobotGUID + "Mecanum Backward";
-            left                = _robot.RobotGUID + "Mecanum Left";
-            right               = _robot.RobotGUID + "Mecanum Right";
-            turn_left           = _robot.RobotGUID + "Mecanum Turn Left";
-            turn_right          = _robot.RobotGUID + "Mecanum Turn Right";
-            reset_field_forward = _robot.RobotGUID + "Mecanum Reset Forward";
+            forward             = _robot.RobotGUID + "Omni Forward";
+            backward            = _robot.RobotGUID + "Omni Backward";
+            left                = _robot.RobotGUID + "Omni Left";
+            right               = _robot.RobotGUID + "Omni Right";
+            turn_left           = _robot.RobotGUID + "Omni Turn Left";
+            turn_right          = _robot.RobotGUID + "Omni Turn Right";
+            reset_field_forward = _robot.RobotGUID + "Omni Reset Forward";
 
             InitInputs(GetInputs());
             EventBus.NewTypeListener<ValueInputAssignedEvent>(OnValueInputAssigned);
@@ -150,55 +145,65 @@ namespace Synthesis {
             moveStrafe  = Diff(moveStrafe, 0f, 0.1f) ? 0f : moveStrafe;
             moveTurn    = Diff(moveTurn, 0f, 0.1f) ? 0f : moveTurn;
 
-            var vec     = Quaternion.AngleAxis(chassisAngle, Vector3.up) * new Vector3(moveStrafe, 0f, moveForward);
-            moveForward = vec.z;
-            moveStrafe  = vec.x;
-
             // Are the inputs basically zero
             if (moveForward == 0f && moveTurn == 0f && moveStrafe == 0f) {
-                _frontLeftWheels.ForEach(x => x.MainInput = 0f);
-                _frontRightWheels.ForEach(x => x.MainInput = 0f);
-                _backRightWheels.ForEach(x => x.MainInput = 0f);
-                _backLeftWheels.ForEach(x => x.MainInput = 0f);
+                _wheels.ForEach(x => x.MainInput = 0f);
                 return;
             }
 
-            var frontLeftSpeed  = moveForward + moveStrafe - moveTurn;
-            var frontRightSpeed = moveForward - moveStrafe + moveTurn;
-            var backLeftSpeed   = moveForward - moveStrafe - moveTurn;
-            var backRightSpeed  = moveForward + moveStrafe + moveTurn;
+            // Adjusts how much turning verse translation is favored
+            moveTurn *= _turnFavor;
 
-            _frontLeftWheels.ForEach(x => x.MainInput = frontLeftSpeed);
-            _frontRightWheels.ForEach(x => x.MainInput = frontRightSpeed);
-            _backRightWheels.ForEach(x => x.MainInput = backRightSpeed);
-            _backLeftWheels.ForEach(x => x.MainInput = backLeftSpeed);
+            var robotTransform = _robot.GroundedNode.transform;
+
+            Vector3 chassisVelocity        = robotTransform.forward * moveForward + robotTransform.right * moveStrafe;
+            Vector3 chassisAngularVelocity = robotTransform.up * moveTurn;
+
+            if (chassisVelocity.magnitude > 1)
+                chassisVelocity = chassisVelocity.normalized;
+
+            // Rotate chassis velocity by chassis angle
+            chassisVelocity = Quaternion.AngleAxis(chassisAngle, robotTransform.up) * chassisVelocity;
+
+            var maxVelocity    = 1.0f;
+            float[] velocities = new float[_wheels.Count];
+            for (int i = 0; i < velocities.Length; i++) {
+                var wheel = _wheels[i];
+                var com   = robotTransform.localToWorldMatrix.MultiplyPoint3x4(
+                    robotTransform.GetComponent<Rigidbody>().centerOfMass);
+                var radius = wheel.Anchor - com;
+
+                // Remove axis component of radius
+                radius -= Vector3.Dot(robotTransform.up, radius) * robotTransform.up;
+
+                velocities[i] = Vector3.Dot(Vector3.Cross(wheel.Axis, robotTransform.up).normalized,
+                    Vector3.Cross(chassisAngularVelocity, radius) + chassisVelocity);
+                if (Mathf.Abs(velocities[i]) > maxVelocity)
+                    maxVelocity = Mathf.Abs(velocities[i]);
+            }
+
+            for (int i = 0; i < velocities.Length; i++) {
+                _wheels[i].MainInput = velocities[i] / maxVelocity;
+            }
         }
 
         protected override void OnEnable() {
-            Vector3 northWest = new Vector3(-1, 0, 1).normalized;
-            Vector3 northEast = new Vector3(1, 0, 1).normalized;
+            bool wheelTypeWarning = false;
+            _wheels.ForEach(x => {
+                if (x.LocalRoller == null) {
+                    wheelTypeWarning = true;
+                    x.LocalRoller    = Vector3.right;
+                }
+            });
 
-            _frontLeftWheels.ForEach(x => x.LocalRoller = northWest);
-            _frontRightWheels.ForEach(x => x.LocalRoller = northEast);
-            _backRightWheels.ForEach(x => x.LocalRoller = northWest);
-            _backLeftWheels.ForEach(x => x.LocalRoller = northEast);
+            if (wheelTypeWarning) {
+                Logger.Log("Switching standard wheels to omni while using omni drive", LogLevel.Warning);
+            }
         }
 
         protected override void OnDisable() {
-            _frontLeftWheels.ForEach(x => {
-                x.MainInput = 0f;
-                x.MatchRollerToWheelType();
-            });
-            _frontRightWheels.ForEach(x => {
-                x.MainInput = 0f;
-                x.MatchRollerToWheelType();
-            });
-            _backRightWheels.ForEach(x => {
-                x.MainInput = 0f;
-                x.MatchRollerToWheelType();
-            });
-            _backLeftWheels.ForEach(x => {
-                x.MainInput = 0f;
+            _wheels.ForEach(x => {
+                x.MainInput = 0.0f;
                 x.MatchRollerToWheelType();
             });
         }

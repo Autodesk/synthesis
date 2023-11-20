@@ -584,6 +584,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             success = ConfigureSwerveDrivetrain();
         } else if (ConfiguredDrivetrainType.Value == DrivetrainType.MECANUM.Value) {
             success = ConfigureMecanumDrivetrain();
+        } else if (ConfiguredDrivetrainType.Value == DrivetrainType.OMNI.Value) {
+            ConfigureOmniDrivetrain();
         }
 
         if (!success) {
@@ -728,6 +730,15 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         SimulationManager.AddBehaviour(Name, mecanumBehaviour);
 
         return true;
+    }
+
+    private void ConfigureOmniDrivetrain() {
+        var wheels = SimulationManager.Drivers[Name].OfType<WheelDriver>().ToList();
+
+        var omniBehaviour = new OmniDriveBehaviour(this, wheels);
+        DriveBehaviour    = omniBehaviour;
+
+        SimulationManager.AddBehaviour(Name, omniBehaviour);
     }
 
     public static void SpawnRobot(
@@ -884,6 +895,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         public static readonly DrivetrainType ARCADE  = new(2, "Arcade");
         public static readonly DrivetrainType SWERVE  = new(3, "Swerve");
         public static readonly DrivetrainType MECANUM = new(4, "Mecanum");
+        public static readonly DrivetrainType OMNI    = new(5, "Omni");
 
         [JsonProperty]
         private string _name;
@@ -911,7 +923,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     }
 
     public static readonly DrivetrainType[] DRIVETRAIN_TYPES = { DrivetrainType.NONE, DrivetrainType.TANK,
-        DrivetrainType.ARCADE, DrivetrainType.SWERVE, DrivetrainType.MECANUM };
+        DrivetrainType.ARCADE, DrivetrainType.SWERVE, DrivetrainType.MECANUM, DrivetrainType.OMNI };
 
     public struct IntakeTriggerData {
         public string NodeName;
@@ -947,7 +959,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             inputCount++;
 
             if (ConfiguredDrivetrainType.Equals(DrivetrainType.SWERVE) ||
-                ConfiguredDrivetrainType.Equals(DrivetrainType.MECANUM)) {
+                ConfiguredDrivetrainType.Equals(DrivetrainType.MECANUM) ||
+                ConfiguredDrivetrainType.Equals(DrivetrainType.OMNI)) {
                 inputCount++; // for turn
             }
         }
@@ -956,7 +969,8 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             if (!input.displayName.Contains("Arcade") &&
                 (!input.displayName.Contains("Swerve") || input.displayName.Contains("Reset Forward")) &&
                 !input.displayName.Contains("Tank") &&
-                (!input.displayName.Contains("Mecanum") || input.displayName.Contains("Reset Forward"))) {
+                (!input.displayName.Contains("Mecanum") || input.displayName.Contains("Reset Forward")) &&
+                (!input.displayName.Contains("Omni") || input.displayName.Contains("Reset Forward"))) {
                 inputCount++;
             }
         });
@@ -1003,12 +1017,25 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                 inputs[1] = (lturn + " " + rturn, "Turn");
                 i++;
                 break;
+            case "Omni":
+                f         = GetTooltipOutput(MiraId + "Omni Forward", "W");
+                b         = GetTooltipOutput(MiraId + "Omni Backward", "S");
+                l         = GetTooltipOutput(MiraId + "Omni Left", "A");
+                r         = GetTooltipOutput(MiraId + "Omni Right", "D");
+                inputs[0] = (f + b + l + r, "Drive");
+                i++;
+                lturn     = GetTooltipOutput(MiraId + "Omni Turn Left", "LeftArrow");
+                rturn     = GetTooltipOutput(MiraId + "Omni Turn Right", "RightArrow");
+                inputs[1] = (lturn + " " + rturn, "Turn");
+                i++;
+                break;
         }
         foreach (var inputKey in MainHUD.SelectedRobot.GetAllReservedInputs()) {
             if (!inputKey.displayName.Contains("Arcade") &&
                 (!inputKey.displayName.Contains("Swerve") || inputKey.displayName.Contains("Reset Forward")) &&
                 !inputKey.displayName.Contains("Tank") &&
-                (!inputKey.displayName.Contains("Mecanum") || inputKey.displayName.Contains("Reset Forward"))) {
+                (!inputKey.displayName.Contains("Mecanum") || inputKey.displayName.Contains("Reset Forward")) &&
+                (!inputKey.displayName.Contains("Omni") || inputKey.displayName.Contains("Reset Forward"))) {
                 inputs[i] = (InputManager.MappedValueInputs[inputKey.key].Name, inputKey.displayName);
                 i++;
             }
