@@ -38,7 +38,8 @@ namespace Synthesis {
         private readonly RobotSimObject _robot;
 
         private Vector3 _fieldForward;
-        private bool _fieldCentric = true;
+        private bool _fieldCentric     = true;
+        private bool _fieldCentricDown = false;
 
         /// <summary>
         /// Create a mecanum drivetrain.
@@ -136,8 +137,13 @@ namespace Synthesis {
             if (Mathf.Abs(InputManager.MappedValueInputs[reset_field_forward].Value) > 0.5f)
                 _fieldForward = _robot.GroundedNode.transform.forward;
 
-            if (Mathf.Abs(InputManager.MappedValueInputs[toggle_field_centric].Value) > 0.5f)
-                _fieldCentric = !_fieldCentric;
+            var fieldCentricInput = Mathf.Abs(InputManager.MappedValueInputs[toggle_field_centric].Value);
+            if (_fieldCentricDown ^ (fieldCentricInput > 0.5f)) {
+                _fieldCentricDown = !_fieldCentricDown;
+                if (_fieldCentricDown) {
+                    _fieldCentric = !_fieldCentric;
+                }
+            }
 
             Vector3 headingVector = _robot.GroundedNode.transform.forward -
                                     (Vector3.up * Vector3.Dot(Vector3.up, _robot.GroundedNode.transform.forward));
