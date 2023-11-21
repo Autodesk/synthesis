@@ -53,7 +53,7 @@ The drivetrains available on Synthesis are as the following:
 * **Arcade**: A control scheme in which one single joystick controls both the robot’s forward and backward movement, as well as its turning.
 * **Swerve**: A specialized drivetrain that allows each wheel to move and rotate independently.
 * **Mecanum**: An omnidirectional drivetrain. When using mecanum drive, wheels will switch to a mecanum wheel model. When switching back, the wheels will revert back to standard or omni wheels (whichever you've selected during exportation).
-* **Omni**: A general purpose, omnidirectional drivetrain. This includes Kiwi and H drives. All wheels will switch to an omni wheel model.
+* **Omni**: A general purpose, omnidirectional drivetrain. This includes Kiwi and H drives. All wheels will switch to an omni wheel model while using this drivetrain model.
 
 ### Compatibility
 
