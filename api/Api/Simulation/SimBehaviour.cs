@@ -32,8 +32,8 @@ namespace SynthesisAPI.Simulation {
         /// </summary>
         /// <param name="simObjectId">ID of the SimObject within the SimulationManager</param>
         /// <param name="inputs">A list of reserved inputs by the behaviour, along with a input to assign to each</param>
-        public SimBehaviour(string simObjectId) {
-            Enabled = true;
+        public SimBehaviour(string simObjectId, bool autoEnable = true) {
+            Enabled = autoEnable;
             SimObjectId = simObjectId;
             string id = simObjectId;
             int _i = id.IndexOf("_", 0);

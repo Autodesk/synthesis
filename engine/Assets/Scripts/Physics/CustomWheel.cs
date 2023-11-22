@@ -17,6 +17,14 @@ public class CustomWheel : MonoBehaviour {
         }
     }
 
+    private const float ROLLER_FRICTION = 0.15f;
+
+    public Vector3? LocalRollerRollingDirection = null;
+    private Vector3? RollerRollingDirection =>
+        LocalRollerRollingDirection == null
+            ? null
+            : Rb.transform.localToWorldMatrix.MultiplyVector(LocalRollerRollingDirection.Value);
+
     public float ImpulseMax = 100f;
 
     public Vector3 LocalAxis;
@@ -65,6 +73,12 @@ public class CustomWheel : MonoBehaviour {
         _lastImpulseTotal = CalculateNetFriction();
 
         Rb.velocity += _lastImpulseTotal * mod; // / Rb.mass;
+
+        // Update visual meshes
+        for (int i = 0; i < Rb.transform.childCount; i++) {
+            var child = Rb.transform.GetChild(i);
+            child.RotateAround(Anchor, Axis, -RotationSpeed * Time.fixedDeltaTime * Mathf.Rad2Deg);
+        }
     }
 
     public void OnCollisionEnter(Collision collision) {
@@ -107,7 +121,18 @@ public class CustomWheel : MonoBehaviour {
 
         _collisionDataThisFrame = new(Vector3.zero, Vector3.zero, 0);
 
-        return CalculateSlidingFriction(netImpulse, netVelocity) + CalculateRollingFriction(netImpulse, netVelocity);
+        var evaluatedFriction =
+            CalculateSlidingFriction(netImpulse, netVelocity) + CalculateRollingFriction(netImpulse, netVelocity);
+
+        if (LocalRollerRollingDirection.HasValue) {
+            Vector3 rollerDir  = RollerRollingDirection.Value;
+            var rollerVec      = rollerDir * Vector3.Dot(rollerDir, evaluatedFriction);
+            var sansRoller     = evaluatedFriction - rollerVec;
+            var rollerFriction = rollerDir * Vector3.Dot(rollerDir, netVelocity);
+            evaluatedFriction  = sansRoller + rollerFriction * ROLLER_FRICTION;
+        }
+
+        return evaluatedFriction;
     }
 
     /// <summary>

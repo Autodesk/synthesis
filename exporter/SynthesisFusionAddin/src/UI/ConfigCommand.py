@@ -2604,7 +2604,6 @@ def addWheelToTable(wheel: adsk.fusion.Joint) -> None:
         )
         wheelType.listItems.add("Standard", True, "")
         wheelType.listItems.add("Omni", False, "")
-        wheelType.listItems.add("Mecanum", False, "")
         wheelType.tooltip = "Wheel type"
         wheelType.tooltipDescription = "<Br>Omni-directional wheels can be used just like regular drive wheels but they have the advantage of being able to roll freely perpendicular to the drive direction.</Br>"
         wheelType.toolClipFilename = OsHelper.getOSPath(
