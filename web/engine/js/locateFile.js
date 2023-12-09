@@ -1,0 +1,1 @@
+Module["locateFile"] = (path, _) => path;

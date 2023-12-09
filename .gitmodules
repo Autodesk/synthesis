@@ -1,3 +1,6 @@
 [submodule "mirabuf"]
 	path = mirabuf
 	url = https://github.com/HiceS/mirabuf
+[submodule "web/engine/vendor/protobuf"]
+	path = web/engine/vendor/protobuf
+	url = https://github.com/protocolbuffers/protobuf
