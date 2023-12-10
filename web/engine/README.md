@@ -1,7 +1,7 @@
 # TEMP README
 
 ## Building
-Configure emsdk for your system. create a `./build` folder and inside of it, run the following command:
+After following the [Setup for Fission](../README.md), create a `./build` folder and inside of it, run the following command:
 ```
 $ emcmake cmake ../
 ```
