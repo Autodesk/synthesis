@@ -4,7 +4,7 @@ project(SynthesisWASM)
 # Setup toolchain and some initial build settings
 set(CMAKE_TOOLCHAIN_FILE "$ENV{EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake")
 set(CMAKE_BUILD_TYPE Debug)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Setup emcc specific settings
@@ -12,6 +12,8 @@ set(WASM_EXPORTED_SYMBOLS_LIST
     _proto_test
     _parse_assembly _destroy_assembly _debug_print_assembly
     _make_obj _get_obj_value _free_obj
+    _test_phys
+    _core_init _core_destroy _core_update_physics
     _malloc _free
 )
 list(JOIN WASM_EXPORTED_SYMBOLS_LIST "," WASM_EXPORTED_SYMBOLS)
@@ -28,12 +30,19 @@ set(EMCC_FLAGS "\
     -sEXPORTED_RUNTIME_METHODS=['ccall','cwrap'] \
     -sMODULARIZE=1 \
     -sENVIRONMENT=web \
-    -std=c++14 \
+    -sTOTAL_STACK=1048576 \
+    -sTOTAL_MEMORY=67108864 \
+    -sALLOW_MEMORY_GROWTH=1 \
+    -sALLOW_TABLE_GROWTH=1 \
+    -std=c++17 \
+    -O2 \
     --bind \
 ")
 
 # Add dependencies
 add_subdirectory(vendor/mirabuf/)
+
+add_subdirectory(vendor/JoltPhysics/Build/)
 
 file(GLOB_RECURSE SRC src/*.cpp)
 add_executable(synthesis-web ${SRC})
@@ -43,7 +52,9 @@ set(CMAKE_EXECUTABLE_SUFFIX ".mjs")
 set_target_properties(synthesis-web PROPERTIES LINK_FLAGS ${EMCC_FLAGS})
 
 target_include_directories(synthesis-web PUBLIC include/)
+target_include_directories(synthesis-web PUBLIC vendor/JoltPhysics/)
 target_link_libraries(synthesis-web mirabuf)
+target_link_libraries(synthesis-web Jolt)
 
 # ALL THE COMMANDS!!!!
 add_custom_command(TARGET synthesis-web POST_BUILD

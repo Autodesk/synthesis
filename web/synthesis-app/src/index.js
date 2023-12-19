@@ -10,10 +10,12 @@ async function test() {
 
     await wasmWrapper.wrapperPromise;
 
-    var miraFile = getBinaryFile("TestCube_v1.mira");
-    var assembly = wasmWrapper.parseAssembly(await miraFile);
-    wasmWrapper.debugPrintAssembly(assembly);
-    wasmWrapper.destroyAssembly(assembly);
+    // var miraFile = getBinaryFile("TestCube_v1.mira");
+    // var assembly = wasmWrapper.parseAssembly(await miraFile);
+    // wasmWrapper.debugPrintAssembly(assembly);
+    // wasmWrapper.destroyAssembly(assembly);
+
+    wasmWrapper.testPhys();
 }
 test();
 

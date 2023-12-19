@@ -55,12 +55,14 @@ class WasmWrapper {
     #_parseAssembly = () => { };
     #_destroyAssembly = () => { };
     #_debugPrintAssembly = () => { };
+    #_testPhys = () => { };
 
     constructor() {
         this.wrapperPromise = createModule().then((Module) => {
             this.#_parseAssembly = wrapParseAssembly(Module);
             this.#_destroyAssembly = Module.cwrap("destroy_assembly", "void", ["number"]);
             this.#_debugPrintAssembly = Module.cwrap("debug_print_assembly", "void", ["number"]);
+            this.#_testPhys = Module.cwrap("test_phys", "void", null);
         });
     }
 
@@ -77,6 +79,12 @@ class WasmWrapper {
     debugPrintAssembly(assembly) {
         console.log("Calling Debug Print Assembly")
         this.#_debugPrintAssembly(assembly);
+    }
+
+    testPhys() {
+        console.log("Calling Test Phys");
+        this.#_testPhys();
+        console.log("Physics Test Completed");
     }
 
 }
