@@ -11,6 +11,8 @@ $ git clone git@github.com:create-dmg/create-dmg.git
 $ cp -r [Location of app] ./source_folder/Synthesis.app
 ```
 
+2. Compile the `exporter-install-instructions.md` into a PDF. I recommend using the Yzane extension in VSCode. 
+
 ## Create Disk Image
 Run the `make-installer.sh` shell script:
 ```

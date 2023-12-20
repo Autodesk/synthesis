@@ -10,12 +10,12 @@ test -f Synthesis-Installer.dmg && rm Synthesis-Installer.dmg
   --window-pos 200 120 \
   --window-size 375 320 \
   --text-size 12 \
-  --icon-size 50 \
-  --icon "Synthesis.app" 80 80 \
-  --add-file AddIns addins-folder-link 280 190 \
-  --add-file Exporter ../../exporter/SynthesisFusionAddin 80 190 \
+  --icon-size 60 \
+  --icon "Synthesis.app" 85 80 \
+  --add-file Instructions.pdf exporter-install-instructions.pdf 288 190 \
+  --add-file Exporter ../../exporter/SynthesisFusionAddin 85 190 \
   --hide-extension "Synthesis.app" \
-  --app-drop-link 280 80 \
+  --app-drop-link 288 80 \
   --eula "license.txt" \
   --text-size 10 \
   "Synthesis-Installer.dmg" \

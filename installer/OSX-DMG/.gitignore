@@ -4,4 +4,6 @@ Synthesis-Installer.dmg
 create-dmg/
 addins-folder-link
 
+exporter-install-instructions.pdf
+
 *.dmg
