@@ -1,8 +1,4 @@
 #!/bin/sh
-if ! test -f addins-folder-link; then
-  ln -s ~/Library/Application\ Support/Autodesk/Autodesk\ Fusion\ 360/API/AddIns addins-folder-link
-fi
-
 test -f Synthesis-Installer.dmg && rm Synthesis-Installer.dmg
 ./create-dmg/create-dmg \
   --volname "Synthesis Installer" \

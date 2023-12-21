@@ -148,7 +148,7 @@ namespace Synthesis {
 
             float moveForward = Mathf.Abs(forwardInput.Value) - Mathf.Abs(backwardInput.Value);
             float moveStrafe  = Mathf.Abs(rightInput.Value) - Mathf.Abs(leftInput.Value);
-            float moveTurn    = Mathf.Abs(turnLeftInput.Value) - Mathf.Abs(turnRightInput.Value);
+            float moveTurn    = Mathf.Abs(turnRightInput.Value) - Mathf.Abs(turnLeftInput.Value);
 
             moveForward = Diff(moveForward, 0f, 0.1f) ? 0f : moveForward;
             moveStrafe  = Diff(moveStrafe, 0f, 0.1f) ? 0f : moveStrafe;
