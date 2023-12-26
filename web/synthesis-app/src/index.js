@@ -8,14 +8,16 @@ import { getBinaryFile } from './util/FileLoading.mjs';
 
 async function test() {
 
-    await wasmWrapper.wrapperPromise;
+    // await wasmWrapper.wrapperPromise;
 
     // var miraFile = getBinaryFile("TestCube_v1.mira");
     // var assembly = wasmWrapper.parseAssembly(await miraFile);
     // wasmWrapper.debugPrintAssembly(assembly);
     // wasmWrapper.destroyAssembly(assembly);
 
-    wasmWrapper.testPhys();
+    
+
+    // wasmWrapper.coreDestroy();
 }
 test();
 

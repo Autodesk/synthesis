@@ -1,27 +1,28 @@
 #include "core.h"
 
 namespace SYN {
-    Core::Core() {
 
-    }
+    Core *Core::instance = nullptr;
 
-    Core::~Core() {
+    Core::Core(): physics_manager(PhysicsManager()) { }
 
-    }
+    Core::~Core() { }
 }
 
 extern "C" {
 
-    void *core_init() {
-        return SYN::Core::Init();
+    void core_init() {
+        if (SYN::Core::instance != nullptr) {
+            delete SYN::Core::instance;
+        }
+        SYN::Core::instance = new SYN::Core();
     }
 
-    int core_destroy() {
-        return SYN::Core::Destroy();
-    }
-
-    void core_update_physics() {
-        
+    void core_destroy() {
+        if (SYN::Core::instance != nullptr) {
+            delete SYN::Core::instance;
+            SYN::Core::instance = nullptr;
+        }
     }
 
 }

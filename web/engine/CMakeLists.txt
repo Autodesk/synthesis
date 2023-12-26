@@ -13,7 +13,10 @@ set(WASM_EXPORTED_SYMBOLS_LIST
     _parse_assembly _destroy_assembly _debug_print_assembly
     _make_obj _get_obj_value _free_obj
     _test_phys
-    _core_init _core_destroy _core_update_physics
+
+    _core_init _core_destroy
+    _physics_step _physics_create_ball _physics_get_position
+
     _malloc _free
 )
 list(JOIN WASM_EXPORTED_SYMBOLS_LIST "," WASM_EXPORTED_SYMBOLS)

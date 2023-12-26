@@ -1,7 +1,10 @@
 // SOURCE: https://dev.to/omher/how-to-start-using-react-and-threejs-in-a-few-minutes-2h6g
 import * as THREE from 'three';
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { wasmWrapper } from '../WasmWrapper.mjs';
+
+export var Position = new THREE.Vector3(0.0, 0.0, 0.0);
 
 function MyThree() {
 
@@ -33,11 +36,40 @@ function MyThree() {
       requestAnimationFrame(animate);
       cube.rotation.x += 0.01;
       cube.rotation.y += 0.01;
+
+      cube.position.set(Position.x, Position.y, Position.z);
       renderer.render(scene, camera);
     };
     animate();
 
   }, []);
+
+  useEffect(() => {
+
+    async function physicsStuff() {
+      await wasmWrapper.wrapperPromise;
+
+      wasmWrapper.coreInit();
+
+      var ball = wasmWrapper.physicsCreateBall();
+
+      var update = function () {
+        requestAnimationFrame(update);
+
+        wasmWrapper.physicsStep(1.0 / 60.0, 1);
+        var pos = wasmWrapper.physicsGetPosition(ball);
+        Position.set(pos[0], pos[1], pos[2]);
+      }
+      update();
+    }
+
+    physicsStuff();
+
+    return () => {
+      wasmWrapper.coreDestroy();
+    }
+  }, []);
+
   return (
     <div ref={refContainer}></div>
   );

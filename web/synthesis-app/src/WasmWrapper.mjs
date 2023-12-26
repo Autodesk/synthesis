@@ -50,6 +50,22 @@ function wrapParseAssembly(Module) {
     };
 }
 
+function wrapPhysicsGetPosition(Module) {
+    return function (bodyPtr) {
+        const wrapFunc = Module.cwrap("physics_get_position", "number", ["number"]);
+
+        var vecPtr = Module._malloc(3 * Float32Array.BYTES_PER_ELEMENT);
+        wrapFunc(bodyPtr, vecPtr);
+
+        const res = Module.HEAPF32.slice(vecPtr / Float32Array.BYTES_PER_ELEMENT, (vecPtr / Float32Array.BYTES_PER_ELEMENT) + 3);
+        // console.log(res.length);
+
+        Module._free(vecPtr);
+
+        return res;
+    };
+}
+
 class WasmWrapper {
 
     #_parseAssembly = () => { };
@@ -57,12 +73,30 @@ class WasmWrapper {
     #_debugPrintAssembly = () => { };
     #_testPhys = () => { };
 
+    #_coreInit = () => { };
+    #_coreDestroy = () => { };
+
+    #_physicsStep = () => { };
+    #_physicsCreateBall = () => { };
+    #_physicsGetPosition = () => { };
+
     constructor() {
         this.wrapperPromise = createModule().then((Module) => {
+
+            // Bindings
             this.#_parseAssembly = wrapParseAssembly(Module);
             this.#_destroyAssembly = Module.cwrap("destroy_assembly", "void", ["number"]);
             this.#_debugPrintAssembly = Module.cwrap("debug_print_assembly", "void", ["number"]);
             this.#_testPhys = Module.cwrap("test_phys", "void", null);
+
+            this.#_coreInit = Module.cwrap("core_init");
+            this.#_coreDestroy = Module.cwrap("core_destroy");
+
+            this.#_physicsStep = Module.cwrap("physics_step", "void", ["number", "number"]);
+            this.#_physicsCreateBall = Module.cwrap("physics_create_ball", "number");
+            this.#_physicsGetPosition = wrapPhysicsGetPosition(Module);
+
+            return Module;
         });
     }
 
@@ -85,6 +119,36 @@ class WasmWrapper {
         console.log("Calling Test Phys");
         this.#_testPhys();
         console.log("Physics Test Completed");
+    }
+
+    coreInit() {
+        this.#_coreInit();
+    }
+
+    coreDestroy() {
+        this.#_coreDestroy();
+    }
+
+    physicsStep(deltaT, substeps) {
+        this.#_physicsStep(deltaT, substeps);
+    }
+
+    /**
+     * @returns {number} JPH::Body* to body.
+     */
+    physicsCreateBall() {
+        return this.#_physicsCreateBall();
+    }
+
+    /**
+     * Get the Center of Mass (COM) position of a body.
+     * 
+     * @param {number} JPH::Body* to body you want the position of.
+     * 
+     * @param {Array<number>} Vec3 of positions maybe?
+     */
+    physicsGetPosition(bodyPtr) {
+        return this.#_physicsGetPosition(bodyPtr);
     }
 
 }
