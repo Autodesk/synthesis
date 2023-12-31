@@ -3,7 +3,7 @@ project(SynthesisWASM)
 
 # Setup toolchain and some initial build settings
 set(CMAKE_TOOLCHAIN_FILE "$ENV{EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake")
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -38,7 +38,7 @@ set(EMCC_FLAGS "\
     -sALLOW_MEMORY_GROWTH=1 \
     -sALLOW_TABLE_GROWTH=1 \
     -std=c++17 \
-    -O2 \
+    -O3 \
     --bind \
 ")
 
@@ -50,14 +50,18 @@ add_subdirectory(vendor/JoltPhysics/Build/)
 file(GLOB_RECURSE SRC src/*.cpp)
 add_executable(synthesis-web ${SRC})
 
+message(STATUS ${SRC})
+
 message(STATUS "Setting compilation target to WASM")
 set(CMAKE_EXECUTABLE_SUFFIX ".mjs")
 set_target_properties(synthesis-web PROPERTIES LINK_FLAGS ${EMCC_FLAGS})
 
 target_include_directories(synthesis-web PUBLIC include/)
 target_include_directories(synthesis-web PUBLIC vendor/JoltPhysics/)
+target_include_directories(synthesis-web PUBLIC "$ENV{EMSDK}/upstream/emscripten/system/include/")
 target_link_libraries(synthesis-web mirabuf)
 target_link_libraries(synthesis-web Jolt)
+target_link_libraries(synthesis-web embind)
 
 # ALL THE COMMANDS!!!!
 add_custom_command(TARGET synthesis-web POST_BUILD

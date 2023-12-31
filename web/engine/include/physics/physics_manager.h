@@ -8,6 +8,10 @@ namespace SYN {
 
     class PhysicsManager {
     public:
+        JPH::PhysicsSystem *physics_system;
+
+        std::vector<JPH::Body *> bodies;
+
         PhysicsManager();
         ~PhysicsManager();
 
@@ -22,10 +26,6 @@ namespace SYN {
         BPLayerInterfaceImpl broad_phase_layer_interface;
         ObjectVsBroadPhaseLayerFilterImpl object_vs_broadphase_layer_filter;
         ObjectLayerPairFilterImpl object_vs_object_layer_filter;
-
-        JPH::PhysicsSystem *physics_system;
-
-        std::vector<JPH::Body *> bodies;
     };
 
 }

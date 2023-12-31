@@ -25,10 +25,14 @@ function MyThree() {
     }
     console.log("Added dom element");
 
-    var geometry = new THREE.BoxGeometry(1, 1, 1);
-    var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    var geometry = new THREE.SphereGeometry(0.5);
+    var material = new THREE.MeshPhongMaterial({ color: 0x59f081, shininess: 0.1 });
     var cube = new THREE.Mesh(geometry, material);
     scene.add(cube);
+
+    var pointLight = new THREE.PointLight(0xffffff, 0.3, 9.0);
+    var ambientLight = new THREE.AmbientLight(0xffffff, 0.05);
+    scene.add(pointLight, ambientLight);
     
     camera.position.z = 5;
     
@@ -46,6 +50,8 @@ function MyThree() {
 
   useEffect(() => {
 
+    var frameReq = undefined;
+
     async function physicsStuff() {
       await wasmWrapper.wrapperPromise;
 
@@ -54,18 +60,24 @@ function MyThree() {
       var ball = wasmWrapper.physicsCreateBall();
 
       var update = function () {
-        requestAnimationFrame(update);
+        frameReq = requestAnimationFrame(update);
 
-        wasmWrapper.physicsStep(1.0 / 60.0, 1);
+        wasmWrapper.physicsStep(1.0 / 30.0, 2);
         var pos = wasmWrapper.physicsGetPosition(ball);
         Position.set(pos[0], pos[1], pos[2]);
+
+        // console.log(pos);
       }
-      update();
+      frameReq = requestAnimationFrame(update);
     }
 
     physicsStuff();
 
     return () => {
+      if (frameReq) {
+        cancelAnimationFrame(frameReq);
+        console.log("Canceling animation");
+      }
       wasmWrapper.coreDestroy();
     }
   }, []);

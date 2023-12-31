@@ -75,18 +75,25 @@ SYN::PhysicsManager::PhysicsManager()
 		object_vs_object_layer_filter
 	);
 
+	this->physics_system->SetGravity(Vec3(0.0, 0.0, 0.0));
+
 	// Create Ground Body
 
+	// Box Shape: new JPH::BoxShape(Vec3(100.0, 1.0, 100.0))
+
 	auto groundCreationSettings = JPH::BodyCreationSettings(
-		new JPH::BoxShape(Vec3(100.0, 1.0, 100.0)),
-		JPH::RVec3(0.0_r, -3.0_r, 0.0_r),
+		new JPH::SphereShape(0.3f),
+		JPH::RVec3(0.0_r, 0.0_r, 0.0_r),
 		JPH::Quat::sIdentity(),
 		JPH::EMotionType::Static,
 		Layers::NON_MOVING
 	);
+	groundCreationSettings.mRestitution = 0.2f;
 
 	JPH::Body *body = this->physics_system->GetBodyInterface().CreateBody(groundCreationSettings);
 	this->physics_system->GetBodyInterface().AddBody(body->GetID(), JPH::EActivation::DontActivate);
+
+	body->SetFriction(0.0);
 
 	this->bodies.push_back(body);
 }
@@ -124,18 +131,24 @@ JPH::Body *SYN::PhysicsManager::CreateSphere() {
 		JPH::EMotionType::Dynamic,
 		Layers::MOVING
 	);
-	sphere_settings.mRestitution = 0.995;
+	sphere_settings.mRestitution = 0.995f;
 	JPH::Body *body = this->physics_system->GetBodyInterface().CreateBody(sphere_settings);
 
 	this->bodies.push_back(body);
 
 	this->physics_system->GetBodyInterface().AddBody(body->GetID(), JPH::EActivation::Activate);
 
+	body->SetLinearVelocity(Vec3(0.5f, 0.0f, 0.1f));
+
 	return body;
 }
 
 JPH::Vec3 SYN::PhysicsManager::GetBodyCOMPos(const JPH::Body &body) {
 	return body.GetCenterOfMassPosition();
+}
+
+void printVector(const JPH::Vec3& vec) {
+	// printf("(%.3f, %.3f, %.3f)\n", vec.GetX(), vec.GetY(), vec.GetZ());
 }
 
 extern "C" {
@@ -146,16 +159,26 @@ extern "C" {
 	void physics_get_position(const void *ball, float *res) {
 		auto pos = SYN::Core::instance->physics_manager.GetBodyCOMPos(*((JPH::Body *)ball));
 
-		// printf("(%.2f, %.2f, %.2f)\n", pos.GetX(), pos.GetY(), pos.GetZ());
-
-		res[0] = pos.GetX();
-		res[1] = pos.GetY();
-		res[2] = pos.GetZ();
+		memcpy(res, &pos, sizeof(float) * 3);
 	}
 
 	void physics_step(float deltaT, int substeps) {
 
 		printf("DeltaT: %.1fms, Substeps: %d\n", deltaT * 1000.0, substeps);
+
+		auto phys = &SYN::Core::instance->physics_manager;
+		for (auto body = phys->bodies.begin(); body != phys->bodies.end(); ++body) {
+			auto radius = (*body)->GetCenterOfMassPosition() * -1.0f;
+
+			if (radius.Length() > 0.0001f) {
+				auto force = 4.5f * (*body)->GetBodyCreationSettings().GetMassProperties().mMass;
+				auto forceVec = radius.Normalized() * force;
+
+				printVector(forceVec);
+
+				phys->physics_system->GetBodyInterface().AddImpulse((*body)->GetID(), forceVec * deltaT);
+			}
+		}
 
 		SYN::Core::instance->physics_manager.Step(deltaT, substeps);
     }

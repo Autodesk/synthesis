@@ -96,6 +96,11 @@ class WasmWrapper {
             this.#_physicsCreateBall = Module.cwrap("physics_create_ball", "number");
             this.#_physicsGetPosition = wrapPhysicsGetPosition(Module);
 
+            Module.TestPrint("123abc");
+
+            const vec = Module.TestView(5);
+            console.log(vec);
+
             return Module;
         });
     }

@@ -6,7 +6,9 @@ import reportWebVitals from './reportWebVitals';
 import { wasmWrapper } from './WasmWrapper.mjs';
 import { getBinaryFile } from './util/FileLoading.mjs';
 
-async function test() {
+function test() {
+
+    console.log("Helloskfjdks");
 
     // await wasmWrapper.wrapperPromise;
 
@@ -19,12 +21,12 @@ async function test() {
 
     // wasmWrapper.coreDestroy();
 }
-test();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <React.StrictMode>
         <App />
+        <button onClick={() => test()}>Load Mira</button>
     </React.StrictMode>
 );
 
