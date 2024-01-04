@@ -16,11 +16,11 @@ namespace SYN {
         Core();
         ~Core();
 
-        std::weak_ptr<MiraAssembly> LoadAssembly(const void *binary, size_t size);
+        std::weak_ptr<MIRA::Assembly> LoadAssembly(const void *binary, size_t size);
 
         PhysicsManager physics_manager;
 
-        std::vector<std::shared_ptr<MiraAssembly>> assemblies;
+        std::vector<std::shared_ptr<MIRA::Assembly>> assemblies;
     };
 
 }

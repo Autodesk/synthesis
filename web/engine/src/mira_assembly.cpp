@@ -2,9 +2,17 @@
 
 namespace SYN {
 
-    MiraAssembly::MiraAssembly(mirabuf::Assembly *assemblyPtr): assemblyPtr(assemblyPtr) { }
-    MiraAssembly::~MiraAssembly() {
-        delete this->assemblyPtr;
+    namespace MIRA {
+
+        Assembly::Assembly(mirabuf::Assembly *assemblyPtr): assemblyPtr(assemblyPtr) { }
+        Assembly::~Assembly() {
+            delete this->assemblyPtr;
+        }
+
+        inline std::string Assembly::GetName() {
+            return this->assemblyPtr->info().name();
+        }
+
     }
 
 }

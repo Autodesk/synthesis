@@ -14,19 +14,19 @@ namespace SYN {
 
     Core::~Core() { }
 
-    std::weak_ptr<MiraAssembly> Core::LoadAssembly(const void *binary, size_t size) {
+    std::weak_ptr<MIRA::Assembly> Core::LoadAssembly(const void *binary, size_t size) {
         mirabuf::Assembly *assembly = new mirabuf::Assembly();
         bool res = assembly->ParseFromArray(binary, size);
 
         if (res) {
             std::cout << "Successfully parsed assembly: '" << assembly->info().name() << "'\n";
 
-            auto handler = std::make_shared<MiraAssembly>(assembly);
+            auto handler = std::make_shared<MIRA::Assembly>(assembly);
             this->assemblies.push_back(handler);
             return handler;
         } else {
             std::cout << "Failed to parse assembly\n";
-            return std::weak_ptr<MiraAssembly>(); // TODO: Should probably having some better error handling
+            return std::weak_ptr<MIRA::Assembly>(); // TODO: Should probably having some better error handling
         }
     }
     
@@ -34,7 +34,7 @@ namespace SYN {
         std::cout << "Test Print: '" << str << "'\n";
     }
 
-    std::weak_ptr<MiraAssembly> LoadAssembly(const void *binary, size_t size) {
+    std::weak_ptr<MIRA::Assembly> LoadAssembly(const void *binary, size_t size) {
         return Core::instance->LoadAssembly(binary, size);
     }
 
