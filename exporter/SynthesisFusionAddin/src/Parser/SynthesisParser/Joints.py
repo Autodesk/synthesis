@@ -210,6 +210,7 @@ def _addJointInstance(
         for wheel in options.wheels:
             if wheel.joint_token == joint.entityToken:
                 joint_definition.user_data.data["wheel"] = "true"
+                joint_definition.user_data.data["wheelType"] = str(wheel.wheelType)
 
                 # if it exists get it and overwrite the signal type
                 if joint_instance.signal_reference:

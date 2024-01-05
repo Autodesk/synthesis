@@ -39,6 +39,8 @@ This is where you will do most of your configuring. Here is a basic overview of 
   - Note: The weight can either be measured in `lbs` or `kgs`.
 - Wheel Configuration:
   - This is where you will select all of your drivetrain wheels on your robot.
+  - Use the wheel type to decide between standard or omni wheels (mecanum drive can be used with either in the engine)
+  - Change the signal type of the joint (PWN, CAN for simulation. Passive to not be controlled)
 - Joint Configuration:
   - This is where you will select all other moving joints on your robot that are not a part of your drivetrain. All joints are automatically added to this list. If you want to remove it either suppress it, or manually remove it from the list.
 

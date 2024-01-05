@@ -128,7 +128,7 @@ namespace SynthesisAPI.UIManager
 
             // Logger.Log("Finished Creating Element");
 
-            _UnityVisualElement resultElement = (_UnityVisualElement)element;
+            _UnityVisualElement resultElement = (_UnityVisualElement)element!;
 
             foreach (XmlNode child in node.ChildNodes)
             {

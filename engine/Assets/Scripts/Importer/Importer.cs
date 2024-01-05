@@ -75,7 +75,7 @@ namespace Synthesis.Import {
 
             public ImportHelper(MixAndMatchRobotData mixAndMatchRobotData)
                 : this(mixAndMatchRobotData,
-                      mixAndMatchRobotData.GlobalPartData.Select(part => new MirabufLive(part.MirabufPartFile))
+                      mixAndMatchRobotData.GlobalPartData.Select(part => new MirabufLive(part.MirabufPartFilePath))
                           .ToArray()) {}
 
             public ImportHelper(string filePath) : this(null, new[] { new MirabufLive(filePath) }) {}
@@ -248,7 +248,8 @@ namespace Synthesis.Import {
                                 _simObject, instance, customWheel, wheelA.anchor, axisWut, float.NaN,
                                 (assembly.Data.Joints.MotorDefinitions.ContainsKey(definition.MotorReference)
                                         ? definition.MotorReference
-                                        : null)!);
+                                        : null)!,
+                                instance.GetWheelType(assembly));
                         SimulationManager.AddDriver(_simObject.Name, driver);
                     }
                 }

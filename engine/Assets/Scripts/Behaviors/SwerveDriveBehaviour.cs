@@ -46,7 +46,7 @@ namespace Synthesis {
             _fieldForward = Vector3.forward;
 
             _moduleDrivers.ForEach(x => {
-                if (x.azimuth.IsReserved) {
+                if (x.azimuth.Reservee != null) {
                     SimulationManager.RemoveBehaviour(_robot.Name, x.azimuth.Reservee);
                 }
 
@@ -94,7 +94,7 @@ namespace Synthesis {
         }
 
         private void OnValueInputAssigned(IEvent tmp) {
-            ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
+            ValueInputAssignedEvent args = (tmp as ValueInputAssignedEvent)!;
 
             if (args.InputKey.Length > _robot.RobotGUID.Length) {
                 string s = args.InputKey.Remove(0, _robot.RobotGUID.Length);
