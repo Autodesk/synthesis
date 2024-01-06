@@ -1,6 +1,7 @@
-import logo from './logo.svg';
+// import logo from './logo.svg';
 import './App.css';
-import MyThree from './graphics/ThreeExample.mjs';
+import MyThree from './graphics/ThreeExample.tsx';
+import React from 'react';
 
 function App() {
 	console.log("App executed");
