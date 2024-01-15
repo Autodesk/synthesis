@@ -8,7 +8,7 @@ import { PhysicsManager } from "../physics/PhysicsManager.tsx";
 import * as AppTest from "../App.tsx";
 import { Translations } from "../util/Translations.tsx";
 
-export var ObjTransform = new THREE.Matrix4();
+var cube: THREE.Mesh;
 
 function MyThree() {
     const refContainer = useRef<HTMLDivElement>(null);
@@ -49,7 +49,7 @@ function MyThree() {
             color: 0xe32b50,
             shininess: 0.1,
         });
-        var cube = new THREE.Mesh(geometry, material);
+        cube = new THREE.Mesh(geometry, material);
         cube.receiveShadow = true;
         cube.castShadow = true;
         scene.add(cube, ground);
@@ -73,14 +73,14 @@ function MyThree() {
         var animate = function () {
             requestAnimationFrame(animate);
 
-            var pos: THREE.Vector3 = new THREE.Vector3();
-            var rot: THREE.Quaternion = new THREE.Quaternion();
-            var scale: THREE.Vector3 = new THREE.Vector3();
+            // var pos: THREE.Vector3 = new THREE.Vector3();
+            // var rot: THREE.Quaternion = new THREE.Quaternion();
+            // var scale: THREE.Vector3 = new THREE.Vector3();
 
-            ObjTransform.decompose(pos, rot, scale);
+            // ObjTransform.decompose(pos, rot, scale);
 
-            cube.position.set(pos.x, pos.y, pos.z);
-            cube.rotation.setFromQuaternion(rot);
+            // cube.position.set(pos.x, pos.y, pos.z);
+            // cube.rotation.setFromQuaternion(rot);
 
             renderer.render(scene, camera);
         };
@@ -99,9 +99,12 @@ function MyThree() {
                 var body = PhysicsManager.getInstance().getBody(0);
 
                 if (body) {
-                    ObjTransform = Translations.rigidToMatrix4(body);
+                    cube.matrixAutoUpdate = false;
+                    cube.matrixWorld.compose(new THREE.Vector3(1.0, -3.0, 1.0), new THREE.Quaternion(), new THREE.Vector3(1.0, 1.0, 1.0));
+                    cube.matrixWorldNeedsUpdate = true;
+                    // Translations.loadMeshWithRigidbody(body, cube);
                 } else {
-                    ObjTransform = new THREE.Matrix4();
+                    // ObjTransform = new THREE.Matrix4();
                 }
 
                 // console.log(pos);

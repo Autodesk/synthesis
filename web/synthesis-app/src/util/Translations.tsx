@@ -24,4 +24,10 @@ export class Translations {
         );
         return mat;
     }
+
+    public static loadMeshWithRigidbody(rb: RAPIER.RigidBody, mesh: THREE.Mesh) {
+        var pos = this.vector3ToThree(rb.translation());
+        mesh.position.set(pos.x, pos.y, pos.z);
+        mesh.rotation.setFromQuaternion(this.rotationToThree(rb.rotation()));
+    }
 }
