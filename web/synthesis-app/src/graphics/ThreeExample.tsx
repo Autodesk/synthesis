@@ -4,9 +4,7 @@ import * as THREE from "three";
 import { useEffect, useRef } from "react";
 // import { wasmWrapper } from '../WasmWrapper.mjs';
 import React from "react";
-import { PhysicsManager } from "../physics/PhysicsManager.tsx";
 import * as AppTest from "../App.tsx";
-import { Translations } from "../util/Translations.tsx";
 
 var cube: THREE.Mesh;
 
@@ -54,11 +52,6 @@ function MyThree() {
         cube.castShadow = true;
         scene.add(cube, ground);
 
-        // var pointLight = new THREE.PointLight(0xffffff, 3, 9.0);
-        // pointLight.translateY(2.0);
-        // pointLight.translateZ(1.0);
-        // pointLight.translateX(1.0);
-
         var directionalLight = new THREE.DirectionalLight(0xffffff, 3.0);
         directionalLight.position.set(-1.0, 3.0, 2.0);
         directionalLight.castShadow = true;
@@ -72,16 +65,6 @@ function MyThree() {
 
         var animate = function () {
             requestAnimationFrame(animate);
-
-            // var pos: THREE.Vector3 = new THREE.Vector3();
-            // var rot: THREE.Quaternion = new THREE.Quaternion();
-            // var scale: THREE.Vector3 = new THREE.Vector3();
-
-            // ObjTransform.decompose(pos, rot, scale);
-
-            // cube.position.set(pos.x, pos.y, pos.z);
-            // cube.rotation.setFromQuaternion(rot);
-
             renderer.render(scene, camera);
         };
         animate();
@@ -94,20 +77,8 @@ function MyThree() {
             var update = function () {
                 frameReq = requestAnimationFrame(update);
 
-                PhysicsManager.getInstance().step();
-
-                var body = PhysicsManager.getInstance().getBody(0);
-
-                if (body) {
-                    cube.matrixAutoUpdate = false;
-                    cube.matrixWorld.compose(new THREE.Vector3(1.0, -3.0, 1.0), new THREE.Quaternion(), new THREE.Vector3(1.0, 1.0, 1.0));
-                    cube.matrixWorldNeedsUpdate = true;
-                    // Translations.loadMeshWithRigidbody(body, cube);
-                } else {
-                    // ObjTransform = new THREE.Matrix4();
-                }
-
-                // console.log(pos);
+                cube.position.set(1.0, 4.0, -2.0);
+                cube.rotation.setFromVector3(new THREE.Vector3(30.0, 0.0, 45.0));
             };
             frameReq = requestAnimationFrame(update);
         }
@@ -119,7 +90,6 @@ function MyThree() {
                 cancelAnimationFrame(frameReq);
                 console.log("Canceling animation");
             }
-            // wasmWrapper.coreDestroy();
         };
     }, []);
 
