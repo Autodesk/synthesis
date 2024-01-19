@@ -8,7 +8,45 @@ import { PhysicsManager } from "../physics/PhysicsManager.tsx";
 import * as AppTest from "../App.tsx";
 import { Translations } from "../util/Translations.tsx";
 
-var cube: THREE.Mesh;
+var staticCube: THREE.Mesh;
+var mainBar: THREE.Mesh;
+var lightBar: THREE.Mesh;
+var heavyBar: THREE.Mesh;
+
+function createMeshes(scene: THREE.Scene) {
+
+    var redMaterial = new THREE.MeshPhongMaterial({
+        color: 0xe32b50,
+        shininess: 0.1,
+    });
+    var greenMaterial = new THREE.MeshPhongMaterial({
+        color: 0x4ccf57,
+        shininess: 0.1,
+    });
+    var pinkMaterial = new THREE.MeshPhongMaterial({
+        color: 0xcf4cca,
+        shininess: 0.1,
+    });
+
+    var staticGeo = new THREE.BoxGeometry(1.0, 1.0, 1.0);
+    var barGeo = new THREE.BoxGeometry(0.5, 0.5, 2.0);
+
+    staticCube = new THREE.Mesh(staticGeo, redMaterial);
+    staticCube.receiveShadow = true;
+    staticCube.castShadow = true;
+
+    mainBar = new THREE.Mesh(barGeo, redMaterial);
+    mainBar.receiveShadow = true;
+    mainBar.castShadow = true;
+    lightBar = new THREE.Mesh(barGeo, greenMaterial);
+    lightBar.receiveShadow = true;
+    lightBar.castShadow = true;
+    heavyBar = new THREE.Mesh(barGeo, pinkMaterial);
+    heavyBar.receiveShadow = true;
+    heavyBar.castShadow = true;
+
+    scene.add(staticCube, mainBar, lightBar, heavyBar);
+}
 
 function MyThree() {
     const refContainer = useRef<HTMLDivElement>(null);
@@ -37,27 +75,22 @@ function MyThree() {
 
         var groundGeo = new THREE.BoxGeometry(10.0, 0.5, 10.0);
         var groundMat = new THREE.MeshPhongMaterial({
-            color: 0x287aed,
+            color: 0xeeeeee,
             shininess: 0.1,
         });
         var ground = new THREE.Mesh(groundGeo, groundMat);
         ground.receiveShadow = true;
         ground.position.set(0.0, -2.0, 0.0);
 
-        var geometry = new THREE.BoxGeometry(1.0, 1.0, 1.0);
-        var material = new THREE.MeshPhongMaterial({
-            color: 0xe32b50,
-            shininess: 0.1,
-        });
-        cube = new THREE.Mesh(geometry, material);
-        cube.receiveShadow = true;
-        cube.castShadow = true;
-        scene.add(cube, ground);
+        // var geometry = new THREE.BoxGeometry(1.0, 1.0, 1.0);
+        // var material = new THREE.MeshPhongMaterial({
+        //     color: 0xe32b50,
+        //     shininess: 0.1,
+        // });
 
-        // var pointLight = new THREE.PointLight(0xffffff, 3, 9.0);
-        // pointLight.translateY(2.0);
-        // pointLight.translateZ(1.0);
-        // pointLight.translateX(1.0);
+        createMeshes(scene);
+
+        scene.add(ground);
 
         var directionalLight = new THREE.DirectionalLight(0xffffff, 3.0);
         directionalLight.position.set(-1.0, 3.0, 2.0);
@@ -96,18 +129,15 @@ function MyThree() {
 
                 PhysicsManager.getInstance().step();
 
-                var body = PhysicsManager.getInstance().getBody(0);
+                var staticBody = PhysicsManager.getInstance().getBody(0);
+                var mainBody = PhysicsManager.getInstance().getBody(1);
+                var lightBody = PhysicsManager.getInstance().getBody(2);
+                var heavyBody = PhysicsManager.getInstance().getBody(3);
 
-                if (body) {
-                    cube.matrixAutoUpdate = false;
-                    cube.matrixWorld.compose(new THREE.Vector3(1.0, -3.0, 1.0), new THREE.Quaternion(), new THREE.Vector3(1.0, 1.0, 1.0));
-                    cube.matrixWorldNeedsUpdate = true;
-                    // Translations.loadMeshWithRigidbody(body, cube);
-                } else {
-                    // ObjTransform = new THREE.Matrix4();
-                }
-
-                // console.log(pos);
+                (staticBody) && Translations.loadMeshWithRigidbody(staticBody, staticCube);
+                (mainBody) && Translations.loadMeshWithRigidbody(mainBody, mainBar);
+                (lightBody) && Translations.loadMeshWithRigidbody(lightBody, lightBar);
+                (heavyBody) && Translations.loadMeshWithRigidbody(heavyBody, heavyBar);
             };
             frameReq = requestAnimationFrame(update);
         }
