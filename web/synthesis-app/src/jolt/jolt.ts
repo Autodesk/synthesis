@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import Jolt from 'jolt-physics/asm';
-import initJolt from 'jolt-physics/asm';
+import Jolt from 'jolt-physics';
+import initJolt from 'jolt-physics';
 import { WebGL } from './WebGL.ts';
 
 let clock = new THREE.Clock();
@@ -196,5 +196,5 @@ export function RunJolt() {
     initJolt().then(function (Jolt) {
         init(Jolt);
         createFloor();
-    })
+    });
 }
