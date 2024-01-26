@@ -63,7 +63,7 @@ function createBall(
     var mesh = new THREE.Mesh(ballGeo, materials[matIndex % materials.length]);
     mesh.receiveShadow = true;
     mesh.castShadow = true;
-    // scene.add(mesh);
+    scene.add(mesh);
     var phys = PhysicsManager.getInstance().makeBall(position, radius);
     phys.setLinvel(velocity, true);
     phys.collider(0).setRestitution(restitution);
@@ -81,7 +81,7 @@ function createBox(
     var mesh = new THREE.Mesh(ballGeo, materials[matIndex % materials.length]);
     mesh.receiveShadow = true;
     mesh.castShadow = true;
-    // scene.add(mesh);
+    scene.add(mesh);
     var phys = PhysicsManager.getInstance().makeBox(position, halfExtents);
     phys.setLinvel(velocity, true);
     phys.collider(0).setRestitution(restitution);
@@ -245,12 +245,12 @@ function MyThree() {
 
                 PhysicsManager.getInstance().step(delta / 1000.0);
 
-                // for (var i = 0; i < balls.length; i++) {
-                //     var [mesh, handle] = balls[i];
-                //     var body = PhysicsManager.getInstance().getBody(handle);
+                for (var i = 0; i < balls.length; i++) {
+                    var [mesh, handle] = balls[i];
+                    var body = PhysicsManager.getInstance().getBody(handle);
 
-                //     (body) && Translations.loadMeshWithRigidbody(body, mesh);
-                // }
+                    (body) && Translations.loadMeshWithRigidbody(body, mesh);
+                }
             };
 
             frameReq = requestAnimationFrame(update);
