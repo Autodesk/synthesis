@@ -80,6 +80,7 @@ function MyThree() {
                 cube.position.set(1.0, 4.0, -2.0);
                 cube.rotation.setFromVector3(new THREE.Vector3(30.0, 0.0, 45.0));
             };
+
             frameReq = requestAnimationFrame(update);
         }
 

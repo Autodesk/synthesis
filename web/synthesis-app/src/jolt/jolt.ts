@@ -1,7 +1,13 @@
+// This file is leftover from initial testing. It is not used in the current version of the test app.
+// Just left this here for reference for now.
+
 import * as THREE from 'three';
-import Jolt from 'jolt-physics';
-import initJolt from 'jolt-physics';
 import { WebGL } from './WebGL.ts';
+
+// import Jolt from 'https://www.unpkg.com/jolt-physics/dist/jolt-physics.wasm-compat.js';
+import initJolt from 'https://www.unpkg.com/jolt-physics/dist/jolt-physics.wasm-compat.js';
+
+import Jolt from '../JoltPkg/Jolt.ts'
 
 let clock = new THREE.Clock();
 let time = 0;
@@ -115,7 +121,7 @@ function render() {
         threeObj.position.copy(wrapVec3(body.GetPosition()));
         threeObj.quaternion.copy(wrapQuat(body.GetRotation()));
 
-        if (body.GetBodyType() == Jolt.EBodyType_SoftBody) {
+        if (body.GetBodyType() === Jolt.EBodyType_SoftBody) {
             // TODO: Special soft body handle.
         }
     }
@@ -177,8 +183,8 @@ function initPhysics() {
     bodyInterface = physicsSystem.GetBodyInterface();
 }
 
-function init(Jolt) {
-    window.Jolt = Jolt;
+function init(jolt) {
+    window.Jolt = jolt;
 
     container = document.getElementById('container');
     container.innerHTML = "";
