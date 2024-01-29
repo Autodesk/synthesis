@@ -62,7 +62,7 @@ function initGraphics() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.2, 2000);
-    camera.position.set(0, 15, 30);
+    camera.position.set(-10, 15, 30);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
     scene = new THREE.Scene();
@@ -147,7 +147,7 @@ function createFloor(size = 50) {
     let shape = new Jolt.BoxShape(new Jolt.Vec3(size, 0.5, size), 0.05, undefined);
     let position = new Jolt.Vec3(0, -0.5, 0);
     let rotation = new Jolt.Quat(0, 0, 0, 1);
-    let creationSettings = new Jolt.BodyCreationSettings(shape, position, rotation, Jolt.EBodyType_Static, LAYER_NOT_MOVING)
+    let creationSettings = new Jolt.BodyCreationSettings(shape, position, rotation, Jolt.EMotionType_Static, LAYER_NOT_MOVING)
     let body = bodyInterface.CreateBody(creationSettings);
     Jolt.destroy(position);
     Jolt.destroy(rotation);
@@ -194,14 +194,48 @@ function render() {
 const timePerObject = 0.1;
 let timeNextSpawn = time + timePerObject;
 
-function onTestUpdate(time, deltaTime) {
+// const onTestUpdate = (time, deltaTime) => spawnRandomCubes(time, deltaTime);
+const onTestUpdate = (time, deltaTime) => {};
+
+function spikeTestScene() {
+    let baseBody;
+    {
+        let pos = new Jolt.Vec3(0, 0, 0);
+        let rot = new Jolt.Quat(0, 0, 0, 1);
+        let size = new Jolt.Vec3(1, 1, 1);
+        let shape = new Jolt.BoxShape(size, 0.05, undefined);
+        let creationSettings = new Jolt.BodyCreationSettings(shape, pos, rot, Jolt.EMotionType_Static, LAYER_NOT_MOVING);
+        creationSettings.mRestitution = 0.5;
+        baseBody = bodyInterface.CreateBody(creationSettings);
+        addToScene(baseBody, 0x00ff00);
+    }
+
+    let body2;
+    {
+        let pos = new Jolt.Vec3(0, 1.5, 0);
+        let rot = new Jolt.Quat(2, 0, 0, 1);
+        let size = new Jolt.Vec3(0.5, 0.5, 2);
+        let shape = new Jolt.BoxShape(size, 0.05, undefined);
+        let creationSettings = new Jolt.BodyCreationSettings(shape, pos, rot, Jolt.EMotionType_Dynamic, LAYER_MOVING);
+        creationSettings.mRestitution = 0.5;
+        body2 = bodyInterface.CreateBody(creationSettings);
+        addToScene(body2, 0xff0000);
+    }
+
+    // If this gets added with the above the box is nowhere to be found.
+    // Unless you replace line 216 with 0, 0, 0, 1.
+    // let constraintSettings = new Jolt.FixedConstraintSettings();
+    // physicsSystem.AddConstraint(constraintSettings.Create(baseBody, body2));
+}
+
+function spawnRandomCubes(time, deltaTime) {
     if (time > timeNextSpawn) {
-        makeBox();
+        makeRandomBox();
         timeNextSpawn = time + timePerObject;
     }
 
     if (dynamicObjects.length > 100) {
-        removeFromScene(dynamicObjects[2]); // 0 is the floor, don't want to remove that.
+        removeFromScene(dynamicObjects[2]); // 0 &&|| 1 is the floor, don't want to remove that.
     }
 }
 
@@ -212,7 +246,7 @@ function getRandomQuat() {
 	return quat;
 }
 
-function makeBox() {
+function makeRandomBox() {
     let pos = new Jolt.Vec3((Math.random() - 0.5) * 25, 15, (Math.random() - 0.5) * 25);
     let rot = getRandomQuat();
 
@@ -251,6 +285,9 @@ function MyThree() {
         render();
 
         createFloor();
+
+        // Spawn the y-cube of blocks as specified in the spike document.
+        spikeTestScene();
     }, []);
 
     return (
