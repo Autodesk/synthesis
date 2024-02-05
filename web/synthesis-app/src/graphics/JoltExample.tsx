@@ -11,7 +11,7 @@ let renderer;
 let camera;
 let scene;
 
-let jolt;
+let joltInterface;
 let physicsSystem;
 let bodyInterface;
 
@@ -48,10 +48,10 @@ function setupCollisionFiltering(settings) {
 function initPhysics() {
     let settings = new Jolt.JoltSettings();
     setupCollisionFiltering(settings);
-    jolt = new Jolt.JoltInterface(settings);
+    joltInterface = new Jolt.JoltInterface(settings);
     Jolt.destroy(settings);
 
-    physicsSystem = jolt.GetPhysicsSystem();
+    physicsSystem = joltInterface.GetPhysicsSystem();
     bodyInterface = physicsSystem.GetBodyInterface();
 }
 
@@ -160,7 +160,7 @@ function createFloor(size = 50) {
 function updatePhysics(deltaTime) {
     // If below 55hz run 2 steps. Otherwise things run very slow.
     let numSteps = deltaTime > 1.0 / 55.0 ? 2 : 1;
-    jolt.Step(deltaTime, numSteps);
+    joltInterface.Step(deltaTime, numSteps);
 }
 
 function render() {
@@ -191,41 +191,51 @@ function render() {
 }
 
 // vvv The following are test functions used to do various basic things. vvv
-const timePerObject = 0.1;
+const timePerObject = 0.05;
 let timeNextSpawn = time + timePerObject;
 
-// const onTestUpdate = (time, deltaTime) => spawnRandomCubes(time, deltaTime);
-const onTestUpdate = (time, deltaTime) => {};
+const onTestUpdate = (time, deltaTime) => spawnRandomCubes(time, deltaTime);
+// const onTestUpdate = (time, deltaTime) => {};
 
+// Not going to continue with this function for now. Reason being, not having pixel perfect placement of the objects seems to be a problem.
+// When things are not placed perfectly the constraints seem to break in weird ways. Just play this function in MyThree() if you want to find out what it looks like.
 function spikeTestScene() {
-    let baseBody;
+    let squareBodyBase;
     {
-        let pos = new Jolt.Vec3(0, 0, 0);
-        let rot = new Jolt.Quat(0, 0, 0, 1);
-        let size = new Jolt.Vec3(1, 1, 1);
-        let shape = new Jolt.BoxShape(size, 0.05, undefined);
-        let creationSettings = new Jolt.BodyCreationSettings(shape, pos, rot, Jolt.EMotionType_Static, LAYER_NOT_MOVING);
-        creationSettings.mRestitution = 0.5;
-        baseBody = bodyInterface.CreateBody(creationSettings);
-        addToScene(baseBody, 0x00ff00);
+        let shape = new Jolt.BoxShape(new Jolt.Vec3(1, 1, 1), 0.05, undefined);
+        let creationSettings = new Jolt.BodyCreationSettings(shape, new Jolt.Vec3(0, 1.1, 0), Jolt.Quat.prototype.sIdentity(), Jolt.EMotionType_Static, LAYER_NOT_MOVING);
+        squareBodyBase = bodyInterface.CreateBody(creationSettings);
+        addToScene(squareBodyBase, 0x00ff00);
     }
 
-    let body2;
+    let rectangleBody1;
     {
-        let pos = new Jolt.Vec3(0, 1.5, 0);
-        let rot = new Jolt.Quat(2, 0, 0, 1);
-        let size = new Jolt.Vec3(0.5, 0.5, 2);
-        let shape = new Jolt.BoxShape(size, 0.05, undefined);
-        let creationSettings = new Jolt.BodyCreationSettings(shape, pos, rot, Jolt.EMotionType_Dynamic, LAYER_MOVING);
-        creationSettings.mRestitution = 0.5;
-        body2 = bodyInterface.CreateBody(creationSettings);
-        addToScene(body2, 0xff0000);
+        let shape = new Jolt.BoxShape(new Jolt.Vec3(0.5, 2, 0.5), 0.05, undefined);
+        let creationSettings = new Jolt.BodyCreationSettings(shape, new Jolt.Vec3(-0.5, 4.1, 1.5), Jolt.Quat.prototype.sIdentity(), Jolt.EMotionType_Dynamic, LAYER_MOVING);
+        rectangleBody1 = bodyInterface.CreateBody(creationSettings);
+        addToScene(rectangleBody1, 0xff0000);
     }
 
-    // If this gets added with the above the box is nowhere to be found.
-    // Unless you replace line 216 with 0, 0, 0, 1.
-    // let constraintSettings = new Jolt.FixedConstraintSettings();
-    // physicsSystem.AddConstraint(constraintSettings.Create(baseBody, body2));
+    let constraintSettings = new Jolt.FixedConstraintSettings();
+    constraintSettings.mAutoDetectPoint = true;
+
+    // let constraintSettings = new Jolt.HingeConstraintSettings();
+
+    // physicsSystem.AddConstraint(constraintSettings.Create(squareBodyBase, rectangleBody1));
+
+    // let rectangleBodyLeft;
+    // {
+    //     let shape = new Jolt.BoxShape(new Jolt.Vec3(0.5, 0.5, 2), 0.05, undefined);
+    //     let trot = new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.PI * 0.5, Math.PI * 0.25, 0.0)); // Rotate 45 degrees around z-axis.
+    //     let rot = new Jolt.Quat(trot.x, trot.y, trot.z, trot.w);
+    //     // let creationSettings = new Jolt.BodyCreationSettings(shape, new Jolt.Vec3(-2.3, 7.1, 1.4), rot, Jolt.EMotionType_Static, LAYER_NOT_MOVING);
+    //     let creationSettings = new Jolt.BodyCreationSettings(shape, new Jolt.Vec3(-2.3, 7.1, 1.4), rot, Jolt.EMotionType_Dynamic, LAYER_MOVING);
+    //     creationSettings.mCollisionGroup.SetGroupID(creationSettings.mCollisionGroup.GetGroupID() + 1);
+    //     rectangleBodyLeft = bodyInterface.CreateBody(creationSettings);
+    //     addToScene(rectangleBodyLeft, 0xff0000);
+    // }
+
+    // physicsSystem.AddConstraint(constraintSettings.Create(rectangleBody1, rectangleBodyLeft));
 }
 
 function spawnRandomCubes(time, deltaTime) {
@@ -234,7 +244,7 @@ function spawnRandomCubes(time, deltaTime) {
         timeNextSpawn = time + timePerObject;
     }
 
-    if (dynamicObjects.length > 100) {
+    if (dynamicObjects.length > 500) {
         removeFromScene(dynamicObjects[2]); // 0 &&|| 1 is the floor, don't want to remove that.
     }
 }
@@ -250,7 +260,10 @@ function makeRandomBox() {
     let pos = new Jolt.Vec3((Math.random() - 0.5) * 25, 15, (Math.random() - 0.5) * 25);
     let rot = getRandomQuat();
 
-    let size = new Jolt.Vec3(0.5, 0.5, 0.5);
+    let x = Math.random();
+    let y = Math.random();
+    let z = Math.random();
+    let size = new Jolt.Vec3(x, y, z);
     let shape = new Jolt.BoxShape(size, 0.05, undefined);
     let creationSettings = new Jolt.BodyCreationSettings(shape, pos, rot, Jolt.EMotionType_Dynamic, LAYER_MOVING);
     creationSettings.mRestitution = 0.5;
@@ -263,6 +276,7 @@ function makeRandomBox() {
     // I feel as though this object should be freed at this point but doing so will cause a crash at runtime.
     // This is the only object where this happens. I'm not sure why. Seems problematic.
     // Jolt.destroy(shape);
+
     Jolt.destroy(creationSettings);
 
     addToScene(body, 0xff0000);
@@ -287,7 +301,7 @@ function MyThree() {
         createFloor();
 
         // Spawn the y-cube of blocks as specified in the spike document.
-        spikeTestScene();
+        // spikeTestScene();
     }, []);
 
     return (
