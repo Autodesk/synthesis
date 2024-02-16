@@ -198,49 +198,61 @@ function render() {
 const timePerObject = 0.05;
 let timeNextSpawn = time + timePerObject;
 
-const onTestUpdate = (time, deltaTime) => spawnRandomCubes(time, deltaTime);
-// const onTestUpdate = (time, deltaTime) => {};
+// const onTestUpdate = (time, deltaTime) => spawnRandomCubes(time, deltaTime);
+const onTestUpdate = (time, deltaTime) => {};
 
-// Not going to continue with this function for now. Reason being, not having pixel perfect placement of the objects seems to be a problem.
-// When things are not placed perfectly the constraints seem to break in weird ways. Just play this function in MyThree() if you want to find out what it looks like.
 function spikeTestScene() {
     let squareBodyBase;
     {
         let shape = new Jolt.BoxShape(new Jolt.Vec3(1, 1, 1), 0.05, undefined);
         let creationSettings = new Jolt.BodyCreationSettings(shape, new Jolt.Vec3(0, 1.1, 0), Jolt.Quat.prototype.sIdentity(), Jolt.EMotionType_Static, LAYER_NOT_MOVING);
+        creationSettings.mCollisionGroup.SetSubGroupID(0);
         squareBodyBase = bodyInterface.CreateBody(creationSettings);
         addToScene(squareBodyBase, 0x00ff00);
     }
 
-    let rectangleBody1;
-    {
-        let shape = new Jolt.BoxShape(new Jolt.Vec3(0.5, 2, 0.5), 0.05, undefined);
-        let creationSettings = new Jolt.BodyCreationSettings(shape, new Jolt.Vec3(-0.5, 4.1, 1.5), Jolt.Quat.prototype.sIdentity(), Jolt.EMotionType_Dynamic, LAYER_MOVING);
-        rectangleBody1 = bodyInterface.CreateBody(creationSettings);
-        addToScene(rectangleBody1, 0xff0000);
-    }
+    let hingeConstraintSettings = new Jolt.HingeConstraintSettings();
 
-    let constraintSettings = new Jolt.FixedConstraintSettings();
-    constraintSettings.mAutoDetectPoint = true;
+    let shape = new Jolt.BoxShape(new Jolt.Vec3(0.5, 2, 0.5), 0.05, undefined);
+    let creationSettings = new Jolt.BodyCreationSettings(shape, new Jolt.Vec3(-0.5, 4.1, 1.5), Jolt.Quat.prototype.sIdentity(), Jolt.EMotionType_Dynamic, LAYER_MOVING);
 
-    // let constraintSettings = new Jolt.HingeConstraintSettings();
-    // constraintSettings
+    hingeConstraintSettings.mPoint1 = hingeConstraintSettings.mPoint2 = new Jolt.Vec3(creationSettings.mPosition.GetX(), creationSettings.mPosition.GetY() - 0.5, creationSettings.mPosition.GetZ());
+    creationSettings.mCollisionGroup.SetSubGroupID(1);
+    let rectangleBody1 = bodyInterface.CreateBody(creationSettings);
+    addToScene(rectangleBody1, 0xff0000);
 
-    physicsSystem.AddConstraint(constraintSettings.Create(squareBodyBase, rectangleBody1));
+    let fixedConstraintSettings = new Jolt.FixedConstraintSettings();
+    fixedConstraintSettings.mAutoDetectPoint = true;
+    physicsSystem.AddConstraint(fixedConstraintSettings.Create(squareBodyBase, rectangleBody1));
 
-    // let rectangleBodyLeft;
+    creationSettings.mPosition.SetZ(-1.5);
+    let rectangleBody2 = bodyInterface.CreateBody(creationSettings);
+    addToScene(rectangleBody2, 0xff0000);
+
+    hingeConstraintSettings.mHingeAxis1 = hingeConstraintSettings.mHingeAxis2 = new Jolt.Vec3(1, 0, 0);
+    hingeConstraintSettings.mNormalAxis1 = hingeConstraintSettings.mNormalAxis2 = new Jolt.Vec3(0, 1, 0);
+    physicsSystem.AddConstraint(hingeConstraintSettings.Create(rectangleBody1, rectangleBody2));
+
     // {
-    //     let shape = new Jolt.BoxShape(new Jolt.Vec3(0.5, 0.5, 2), 0.05, undefined);
-    //     let trot = new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.PI * 0.5, Math.PI * 0.25, 0.0)); // Rotate 45 degrees around z-axis.
-    //     let rot = new Jolt.Quat(trot.x, trot.y, trot.z, trot.w);
-    //     // let creationSettings = new Jolt.BodyCreationSettings(shape, new Jolt.Vec3(-2.3, 7.1, 1.4), rot, Jolt.EMotionType_Static, LAYER_NOT_MOVING);
-    //     let creationSettings = new Jolt.BodyCreationSettings(shape, new Jolt.Vec3(-2.3, 7.1, 1.4), rot, Jolt.EMotionType_Dynamic, LAYER_MOVING);
-    //     creationSettings.mCollisionGroup.SetGroupID(creationSettings.mCollisionGroup.GetGroupID() + 1);
-    //     rectangleBodyLeft = bodyInterface.CreateBody(creationSettings);
-    //     addToScene(rectangleBodyLeft, 0xff0000);
+    //     let constraintSettings = new Jolt.FixedConstraintSettings();
+    //     constraintSettings.mAutoDetectPoint = true;
+    
+    //     physicsSystem.AddConstraint(constraintSettings.Create(squareBodyBase, rectangleBody1));
     // }
 
-    // physicsSystem.AddConstraint(constraintSettings.Create(rectangleBody1, rectangleBodyLeft));
+    // hingeConstraintSettings.mHingeAxis1 = hingeConstraintSettings.mHingeAxis2 = new Jolt.Vec3(1, 0, 0);
+    // hingeConstraintSettings.mNormalAxis1 = hingeConstraintSettings.mNormalAxis2 = new Jolt.Vec3(0, 1, 0);
+
+    // let rectangleBody2;
+    // {
+    //     let shape = new Jolt.BoxShape(new Jolt.Vec3(0.5, 2, 0.5), 0.05, undefined);
+    //     let creationSettings = new Jolt.BodyCreationSettings(shape, new Jolt.Vec3(-1.0, 6.1, 1.5), Jolt.Quat.prototype.sIdentity(), Jolt.EMotionType_Dynamic, LAYER_MOVING);
+    //     creationSettings.mCollisionGroup.SetSubGroupID(2);
+    //     rectangleBody2 = bodyInterface.CreateBody(creationSettings);
+    //     addToScene(rectangleBody2, 0xff0000);
+        
+    //     physicsSystem.AddConstraint(hingeConstraintSettings.Create(rectangleBody1, rectangleBody2));
+    // }
 }
 
 function spawnRandomCubes(time, deltaTime) {
@@ -311,7 +323,7 @@ function MyThree() {
         createFloor();
 
         // Spawn the y-cube of blocks as specified in the spike document.
-        // spikeTestScene();
+        spikeTestScene();
     }, []);
 
     return (
