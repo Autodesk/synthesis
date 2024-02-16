@@ -1753,17 +1753,20 @@ class MyPreSelectHandler(adsk.core.SelectionEventHandler):
         try:
             design = adsk.fusion.Design.cast(gm.app.activeProduct)
             preSelectedOcc = adsk.fusion.Occurrence.cast(args.selection.entity)
+            preSelectedJoint = adsk.fusion.Joint.cast(args.selection.entity)
 
             onSelect = gm.handlers[3]  # select handler
 
-            if not preSelectedOcc or not design:
+            if (not preSelectedOcc and not preSelectedJoint) or not design:
                 self.cmd.setCursor("", 0, 0)
                 return
+            
+            preSelected = preSelectedOcc if preSelectedOcc else preSelectedJoint 
 
             dropdownExportMode = INPUTS_ROOT.itemById("mode")
-            if preSelectedOcc and design:
+            if preSelected and design:
                 if dropdownExportMode.selectedItem.index == 0:
-                    if preSelectedOcc.entityToken in onSelect.allWheelPreselections:
+                    if preSelected.entityToken in onSelect.allWheelPreselections:
                         self.cmd.setCursor(
                             IconPaths.mouseIcons["remove"],
                             0,
@@ -1777,7 +1780,7 @@ class MyPreSelectHandler(adsk.core.SelectionEventHandler):
                         )
 
                 elif dropdownExportMode.selectedItem.index == 1:
-                    if preSelectedOcc.entityToken in onSelect.allGamepiecePreselections:
+                    if preSelected.entityToken in onSelect.allGamepiecePreselections:
                         self.cmd.setCursor(
                             IconPaths.mouseIcons["remove"],
                             0,
@@ -1811,8 +1814,9 @@ class MyPreselectEndHandler(adsk.core.SelectionEventHandler):
         try:
             design = adsk.fusion.Design.cast(gm.app.activeProduct)
             preSelectedOcc = adsk.fusion.Occurrence.cast(args.selection.entity)
+            preSelectedJoint = adsk.fusion.Joint.cast(args.selection.entity)
 
-            if preSelectedOcc and design:
+            if (preSelectedOcc or preSelectedJoint) and design:
                 self.cmd.setCursor(
                     "", 0, 0
                 )  # if preselection ends (mouse off of design), reset the mouse icon to default
