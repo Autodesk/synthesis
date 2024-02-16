@@ -65,12 +65,12 @@ function initGraphics() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.2, 2000);
-    camera.position.set(-10, 7, 10);
+    camera.position.set(-5, 4, 5);
     camera.lookAt(new THREE.Vector3(0, 0.5, 0));
 
     scene = new THREE.Scene();
 
-    let directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    let directionalLight = new THREE.DirectionalLight(0xffffff, 2);
     directionalLight.position.set(10, 10, 5);
     scene.add(directionalLight);
 
@@ -205,37 +205,75 @@ let timeNextSpawn = time + timePerObject;
 const onTestUpdate = (time, deltaTime) => {};
 
 function spikeTestScene() {
-    let squareBodyBase;
-    {
-        let shape = new Jolt.BoxShape(new Jolt.Vec3(1, 1, 1), 0.05, undefined);
-        let creationSettings = new Jolt.BodyCreationSettings(shape, new Jolt.Vec3(0, 1.1, 0), Jolt.Quat.prototype.sIdentity(), Jolt.EMotionType_Static, LAYER_NOT_MOVING);
-        creationSettings.mCollisionGroup.SetSubGroupID(0);
-        squareBodyBase = bodyInterface.CreateBody(creationSettings);
-        addToScene(squareBodyBase, 0x00ff00);
-    }
+    let boxShape = new Jolt.BoxShape(new Jolt.Vec3(0.5, 0.5, 0.5), 0.1, undefined);
+    let boxCreationSettings = new Jolt.BodyCreationSettings(boxShape, new Jolt.Vec3(0, 0.5, 0), Jolt.Quat.prototype.sIdentity(), Jolt.EMotionType_Static, LAYER_NOT_MOVING);
+    boxCreationSettings.mCollisionGroup.SetSubGroupID(0);
+    let squareBodyBase = bodyInterface.CreateBody(boxCreationSettings);
+    addToScene(squareBodyBase, 0x00ff00);
 
-    let hingeConstraintSettings = new Jolt.HingeConstraintSettings();
+    
 
-    let shape = new Jolt.BoxShape(new Jolt.Vec3(0.5, 2, 0.5), 0.05, undefined);
-    let creationSettings = new Jolt.BodyCreationSettings(shape, new Jolt.Vec3(-0.5, 4.1, 1.5), Jolt.Quat.prototype.sIdentity(), Jolt.EMotionType_Dynamic, LAYER_MOVING);
+    let shape = new Jolt.BoxShape(new Jolt.Vec3(0.25, 1, 0.25), 0.1, undefined);
+    shape.GetMassProperties().mMass = 0.1;
+    let creationSettings = new Jolt.BodyCreationSettings(shape, new Jolt.Vec3(-0.25, 2, 0.75), Jolt.Quat.prototype.sIdentity(), Jolt.EMotionType_Dynamic, LAYER_MOVING);
 
-    hingeConstraintSettings.mPoint1 = hingeConstraintSettings.mPoint2 = new Jolt.Vec3(creationSettings.mPosition.GetX(), creationSettings.mPosition.GetY() - 0.5, creationSettings.mPosition.GetZ());
+    // RECTANGLE BODY 1 (Red)
     creationSettings.mCollisionGroup.SetSubGroupID(1);
     let rectangleBody1 = bodyInterface.CreateBody(creationSettings);
     addToScene(rectangleBody1, 0xff0000);
 
+    // GROUP FITLER
+    // let a = squareBodyBase.GetCollisionGroup();
+    // a.SetGroupID(0);
+    // a.SetSubGroupID(0);
+    // let b = rectangleBody1.GetCollisionGroup();
+    // b.SetGroupID(0);
+    // b.SetSubGroupID(0);
+    // let filterTable = new Jolt.GroupFilterTable(2);
+    // filterTable.DisableCollision(a.GetSubGroupID(), b.GetSubGroupID());
+    // a.SetGroupFilter(filterTable);
+    // b.SetGroupFilter(filterTable);
+
+    // RECTANGLE BODY 2 (Blue)
+    let shape2 = new Jolt.BoxShape(new Jolt.Vec3(0.25, 1, 0.25), 0.1, undefined);
+    shape2.GetMassProperties().mMass = 100;
+    let creationSettings2 = new Jolt.BodyCreationSettings(
+        shape2,
+        new Jolt.Vec3(-0.75, 4, 0.75),
+        Jolt.Quat.prototype.sIdentity(),
+        Jolt.EMotionType_Dynamic, LAYER_MOVING
+    );
+    let rectangleBody2 = bodyInterface.CreateBody(creationSettings2);
+    addToScene(rectangleBody2, 0x3394e8);
+
+    // FIXED CONSTRAINT
     // let fixedConstraintSettings = new Jolt.FixedConstraintSettings();
-    // // fixedConstraintSettings.mAutoDetectPoint = true;
-    // fixedConstraintSettings.mPoint1
-    // physicsSystem.AddConstraint(fixedConstraintSettings.Create(squareBodyBase, rectangleBody1));
+    // fixedConstraintSettings.mAutoDetectPoint = true;
+    // physicsSystem.AddConstraint(fixedConstraintSettings.Create(squareBodyBase, rectangleBody2));
 
-    creationSettings.mPosition.SetZ(-1.5);
-    let rectangleBody2 = bodyInterface.CreateBody(creationSettings);
-    addToScene(rectangleBody2, 0xff0000);
+    // HINGE CONSTRAINT
+    let hingeConstraintSettings = new Jolt.HingeConstraintSettings();
+    // hingeConstraintSettings.mSpace
+    let anchorPoint = new Jolt.Vec3(creationSettings.mPosition.GetX(), creationSettings.mPosition.GetY() - 1.0, creationSettings.mPosition.GetZ() -0.25);
+    // let anchorPoint = new Jolt.Vec3(0, 1, 0);
+    hingeConstraintSettings.mPoint1 = hingeConstraintSettings.mPoint2 = anchorPoint;
+    let axis = new Jolt.Vec3(1, 0, 0)
+    let normAxis = new Jolt.Vec3(0, -1, 0);
+    hingeConstraintSettings.mHingeAxis1 = hingeConstraintSettings.mHingeAxis2 = axis;
+    hingeConstraintSettings.mNormalAxis1 = hingeConstraintSettings.mNormalAxis2 = normAxis;
+    physicsSystem.AddConstraint(hingeConstraintSettings.Create(squareBodyBase, rectangleBody1));
 
-    // hingeConstraintSettings.mHingeAxis1 = hingeConstraintSettings.mHingeAxis2 = new Jolt.Vec3(1, 0, 0);
-    // hingeConstraintSettings.mNormalAxis1 = hingeConstraintSettings.mNormalAxis2 = new Jolt.Vec3(0, 1, 0);
-    // physicsSystem.AddConstraint(hingeConstraintSettings.Create(rectangleBody1, rectangleBody2));
+    // HINGE CONSTRAINT 2
+    let hingeConstraintSettings2 = new Jolt.HingeConstraintSettings();
+    // hingeConstraintSettings.mSpace
+    let anchorPoint2 = new Jolt.Vec3(creationSettings.mPosition.GetX() - 0.25, creationSettings.mPosition.GetY() + 1.0, creationSettings.mPosition.GetZ());
+    // let anchorPoint = new Jolt.Vec3(0, 1, 0);
+    hingeConstraintSettings2.mPoint1 = hingeConstraintSettings2.mPoint2 = anchorPoint2;
+    let axis2 = new Jolt.Vec3(0, 0, 1)
+    let normAxis2 = new Jolt.Vec3(-1, 0, 0);
+    hingeConstraintSettings2.mHingeAxis1 = hingeConstraintSettings2.mHingeAxis2 = axis2;
+    hingeConstraintSettings2.mNormalAxis1 = hingeConstraintSettings2.mNormalAxis2 = normAxis2;
+    physicsSystem.AddConstraint(hingeConstraintSettings2.Create(rectangleBody1, rectangleBody2));
 
     // {
     //     let constraintSettings = new Jolt.FixedConstraintSettings();
