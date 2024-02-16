@@ -65,14 +65,17 @@ function initGraphics() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.2, 2000);
-    camera.position.set(-10, 15, 30);
-    camera.lookAt(new THREE.Vector3(0, 0, 0));
+    camera.position.set(-10, 7, 10);
+    camera.lookAt(new THREE.Vector3(0, 0.5, 0));
 
     scene = new THREE.Scene();
 
     let directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     directionalLight.position.set(10, 10, 5);
     scene.add(directionalLight);
+
+    let ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
+    scene.add(ambientLight);
 
     // TODO: Add controls.
 
@@ -221,17 +224,18 @@ function spikeTestScene() {
     let rectangleBody1 = bodyInterface.CreateBody(creationSettings);
     addToScene(rectangleBody1, 0xff0000);
 
-    let fixedConstraintSettings = new Jolt.FixedConstraintSettings();
-    fixedConstraintSettings.mAutoDetectPoint = true;
-    physicsSystem.AddConstraint(fixedConstraintSettings.Create(squareBodyBase, rectangleBody1));
+    // let fixedConstraintSettings = new Jolt.FixedConstraintSettings();
+    // // fixedConstraintSettings.mAutoDetectPoint = true;
+    // fixedConstraintSettings.mPoint1
+    // physicsSystem.AddConstraint(fixedConstraintSettings.Create(squareBodyBase, rectangleBody1));
 
     creationSettings.mPosition.SetZ(-1.5);
     let rectangleBody2 = bodyInterface.CreateBody(creationSettings);
     addToScene(rectangleBody2, 0xff0000);
 
-    hingeConstraintSettings.mHingeAxis1 = hingeConstraintSettings.mHingeAxis2 = new Jolt.Vec3(1, 0, 0);
-    hingeConstraintSettings.mNormalAxis1 = hingeConstraintSettings.mNormalAxis2 = new Jolt.Vec3(0, 1, 0);
-    physicsSystem.AddConstraint(hingeConstraintSettings.Create(rectangleBody1, rectangleBody2));
+    // hingeConstraintSettings.mHingeAxis1 = hingeConstraintSettings.mHingeAxis2 = new Jolt.Vec3(1, 0, 0);
+    // hingeConstraintSettings.mNormalAxis1 = hingeConstraintSettings.mNormalAxis2 = new Jolt.Vec3(0, 1, 0);
+    // physicsSystem.AddConstraint(hingeConstraintSettings.Create(rectangleBody1, rectangleBody2));
 
     // {
     //     let constraintSettings = new Jolt.FixedConstraintSettings();
