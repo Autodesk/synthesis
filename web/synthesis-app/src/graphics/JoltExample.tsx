@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import Stats from 'stats.js';
 import Jolt from '../JoltPkg/Jolt.ts'
 
 import { useEffect, useRef } from 'react';
@@ -6,6 +7,8 @@ import React from 'react';
 
 let clock = new THREE.Clock();
 let time = 0;
+
+let stats;
 
 let renderer;
 let camera;
@@ -164,6 +167,7 @@ function updatePhysics(deltaTime) {
 }
 
 function render() {
+    stats.update();
     requestAnimationFrame(render);
 
     // Prevents a problem when rendering at 30hz. Referred to as the spiral of death.
@@ -220,8 +224,9 @@ function spikeTestScene() {
     constraintSettings.mAutoDetectPoint = true;
 
     // let constraintSettings = new Jolt.HingeConstraintSettings();
+    // constraintSettings
 
-    // physicsSystem.AddConstraint(constraintSettings.Create(squareBodyBase, rectangleBody1));
+    physicsSystem.AddConstraint(constraintSettings.Create(squareBodyBase, rectangleBody1));
 
     // let rectangleBodyLeft;
     // {
@@ -293,6 +298,11 @@ function MyThree() {
         if (refContainer.current) {
             refContainer.current.innerHTML = "";
             refContainer.current.appendChild(renderer.domElement)
+
+            stats = new Stats();
+            stats.domElement.style.position = 'absolute';
+            stats.domElement.style.top = '0px';
+            refContainer.current.appendChild(stats.domElement);
         }
 
         initPhysics();
