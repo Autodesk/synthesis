@@ -192,7 +192,7 @@ function render() {
     onTestUpdate(time, deltaTime);
 
     time += deltaTime;
-    updatePhysics(deltaTime);
+    updatePhysics(1.0 / 60.0);
     // controls.update(deltaTime); // TODO: Add controls?
     renderer.render(scene, camera);
 }
@@ -214,7 +214,7 @@ function spikeTestScene() {
     
 
     let shape = new Jolt.BoxShape(new Jolt.Vec3(0.25, 1, 0.25), 0.1, undefined);
-    shape.GetMassProperties().mMass = 0.1;
+    shape.GetMassProperties().mMass = 1;
     let creationSettings = new Jolt.BodyCreationSettings(shape, new Jolt.Vec3(-0.25, 2, 0.75), Jolt.Quat.prototype.sIdentity(), Jolt.EMotionType_Dynamic, LAYER_MOVING);
 
     // RECTANGLE BODY 1 (Red)
@@ -222,21 +222,9 @@ function spikeTestScene() {
     let rectangleBody1 = bodyInterface.CreateBody(creationSettings);
     addToScene(rectangleBody1, 0xff0000);
 
-    // GROUP FITLER
-    // let a = squareBodyBase.GetCollisionGroup();
-    // a.SetGroupID(0);
-    // a.SetSubGroupID(0);
-    // let b = rectangleBody1.GetCollisionGroup();
-    // b.SetGroupID(0);
-    // b.SetSubGroupID(0);
-    // let filterTable = new Jolt.GroupFilterTable(2);
-    // filterTable.DisableCollision(a.GetSubGroupID(), b.GetSubGroupID());
-    // a.SetGroupFilter(filterTable);
-    // b.SetGroupFilter(filterTable);
-
     // RECTANGLE BODY 2 (Blue)
     let shape2 = new Jolt.BoxShape(new Jolt.Vec3(0.25, 1, 0.25), 0.1, undefined);
-    shape2.GetMassProperties().mMass = 100;
+    shape2.GetMassProperties().mMass = 1;
     let creationSettings2 = new Jolt.BodyCreationSettings(
         shape2,
         new Jolt.Vec3(-0.75, 4, 0.75),
@@ -245,6 +233,22 @@ function spikeTestScene() {
     );
     let rectangleBody2 = bodyInterface.CreateBody(creationSettings2);
     addToScene(rectangleBody2, 0x3394e8);
+
+    // GROUP FITLER
+    // let a = squareBodyBase.GetCollisionGroup();
+    // a.SetGroupID(0);
+    // a.SetSubGroupID(0);
+    // let b = rectangleBody1.GetCollisionGroup();
+    // b.SetGroupID(0);
+    // b.SetSubGroupID(0);
+    // let c = rectangleBody2.GetCollisionGroup();
+    // c.SetGroupID(0);
+    // c.SetSubGroupID(0);
+    // let filterTable = new Jolt.GroupFilterTable(3);
+    // filterTable.DisableCollision(0, 0);
+    // a.SetGroupFilter(filterTable);
+    // b.SetGroupFilter(filterTable);
+    // c.SetGroupFilter(filterTable);
 
     // FIXED CONSTRAINT
     // let fixedConstraintSettings = new Jolt.FixedConstraintSettings();
