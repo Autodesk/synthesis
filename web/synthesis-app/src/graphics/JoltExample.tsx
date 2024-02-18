@@ -198,9 +198,11 @@ function render() {
 }
 
 // vvv The following are test functions used to do various basic things. vvv
+
 const timePerObject = 0.05;
 let timeNextSpawn = time + timePerObject;
 
+// Swap the onTestUpdate function to run the performance test with the random cubes.
 // const onTestUpdate = (time, deltaTime) => spawnRandomCubes(time, deltaTime);
 const onTestUpdate = (time, deltaTime) => {};
 
@@ -210,8 +212,6 @@ function spikeTestScene() {
     boxCreationSettings.mCollisionGroup.SetSubGroupID(0);
     let squareBodyBase = bodyInterface.CreateBody(boxCreationSettings);
     addToScene(squareBodyBase, 0x00ff00);
-
-    
 
     let shape = new Jolt.BoxShape(new Jolt.Vec3(0.25, 1, 0.25), 0.1, undefined);
     shape.GetMassProperties().mMass = 1;
@@ -225,15 +225,18 @@ function spikeTestScene() {
     // RECTANGLE BODY 2 (Blue)
     let shape2 = new Jolt.BoxShape(new Jolt.Vec3(0.25, 1, 0.25), 0.1, undefined);
     shape2.GetMassProperties().mMass = 1;
-    let creationSettings2 = new Jolt.BodyCreationSettings(
-        shape2,
-        new Jolt.Vec3(-0.75, 4, 0.75),
-        Jolt.Quat.prototype.sIdentity(),
-        Jolt.EMotionType_Dynamic, LAYER_MOVING
-    );
+    let creationSettings2 = new Jolt.BodyCreationSettings(shape2, new Jolt.Vec3(-0.75, 4, 0.75), Jolt.Quat.prototype.sIdentity(), Jolt.EMotionType_Dynamic, LAYER_MOVING);
     let rectangleBody2 = bodyInterface.CreateBody(creationSettings2);
     addToScene(rectangleBody2, 0x3394e8);
 
+    // RECTANGLE BODY 3 (Yellow)
+    let shape3 = new Jolt.BoxShape(new Jolt.Vec3(0.25, 1, 0.25), 0.1, undefined);
+    shape3.GetMassProperties().mMass = 10000;
+    let creationSettings3 = new Jolt.BodyCreationSettings(shape3, new Jolt.Vec3(0.25, 4, 0.75), Jolt.Quat.prototype.sIdentity(), Jolt.EMotionType_Dynamic, LAYER_MOVING);
+    let rectangleBody3 = bodyInterface.CreateBody(creationSettings3);
+    addToScene(rectangleBody3, 0xffff00);
+
+    // Left here for future reference.
     // GROUP FITLER
     // let a = squareBodyBase.GetCollisionGroup();
     // a.SetGroupID(0);
@@ -250,16 +253,9 @@ function spikeTestScene() {
     // b.SetGroupFilter(filterTable);
     // c.SetGroupFilter(filterTable);
 
-    // FIXED CONSTRAINT
-    // let fixedConstraintSettings = new Jolt.FixedConstraintSettings();
-    // fixedConstraintSettings.mAutoDetectPoint = true;
-    // physicsSystem.AddConstraint(fixedConstraintSettings.Create(squareBodyBase, rectangleBody2));
-
     // HINGE CONSTRAINT
     let hingeConstraintSettings = new Jolt.HingeConstraintSettings();
-    // hingeConstraintSettings.mSpace
     let anchorPoint = new Jolt.Vec3(creationSettings.mPosition.GetX(), creationSettings.mPosition.GetY() - 1.0, creationSettings.mPosition.GetZ() -0.25);
-    // let anchorPoint = new Jolt.Vec3(0, 1, 0);
     hingeConstraintSettings.mPoint1 = hingeConstraintSettings.mPoint2 = anchorPoint;
     let axis = new Jolt.Vec3(1, 0, 0)
     let normAxis = new Jolt.Vec3(0, -1, 0);
@@ -269,9 +265,7 @@ function spikeTestScene() {
 
     // HINGE CONSTRAINT 2
     let hingeConstraintSettings2 = new Jolt.HingeConstraintSettings();
-    // hingeConstraintSettings.mSpace
     let anchorPoint2 = new Jolt.Vec3(creationSettings.mPosition.GetX() - 0.25, creationSettings.mPosition.GetY() + 1.0, creationSettings.mPosition.GetZ());
-    // let anchorPoint = new Jolt.Vec3(0, 1, 0);
     hingeConstraintSettings2.mPoint1 = hingeConstraintSettings2.mPoint2 = anchorPoint2;
     let axis2 = new Jolt.Vec3(0, 0, 1)
     let normAxis2 = new Jolt.Vec3(-1, 0, 0);
@@ -279,26 +273,15 @@ function spikeTestScene() {
     hingeConstraintSettings2.mNormalAxis1 = hingeConstraintSettings2.mNormalAxis2 = normAxis2;
     physicsSystem.AddConstraint(hingeConstraintSettings2.Create(rectangleBody1, rectangleBody2));
 
-    // {
-    //     let constraintSettings = new Jolt.FixedConstraintSettings();
-    //     constraintSettings.mAutoDetectPoint = true;
-    
-    //     physicsSystem.AddConstraint(constraintSettings.Create(squareBodyBase, rectangleBody1));
-    // }
-
-    // hingeConstraintSettings.mHingeAxis1 = hingeConstraintSettings.mHingeAxis2 = new Jolt.Vec3(1, 0, 0);
-    // hingeConstraintSettings.mNormalAxis1 = hingeConstraintSettings.mNormalAxis2 = new Jolt.Vec3(0, 1, 0);
-
-    // let rectangleBody2;
-    // {
-    //     let shape = new Jolt.BoxShape(new Jolt.Vec3(0.5, 2, 0.5), 0.05, undefined);
-    //     let creationSettings = new Jolt.BodyCreationSettings(shape, new Jolt.Vec3(-1.0, 6.1, 1.5), Jolt.Quat.prototype.sIdentity(), Jolt.EMotionType_Dynamic, LAYER_MOVING);
-    //     creationSettings.mCollisionGroup.SetSubGroupID(2);
-    //     rectangleBody2 = bodyInterface.CreateBody(creationSettings);
-    //     addToScene(rectangleBody2, 0xff0000);
-        
-    //     physicsSystem.AddConstraint(hingeConstraintSettings.Create(rectangleBody1, rectangleBody2));
-    // }
+    // HINGE CONSTRAINT 3
+    let hingeConstraintSettings3 = new Jolt.HingeConstraintSettings();
+    let anchorPoint3 = new Jolt.Vec3(creationSettings.mPosition.GetX() + 0.25, creationSettings.mPosition.GetY() + 1.0, creationSettings.mPosition.GetZ());
+    hingeConstraintSettings3.mPoint1 = hingeConstraintSettings3.mPoint2 = anchorPoint3;
+    let axis3 = new Jolt.Vec3(0, 0, 1)
+    let normAxis3 = new Jolt.Vec3(1, 0, 0);
+    hingeConstraintSettings3.mHingeAxis1 = hingeConstraintSettings3.mHingeAxis2 = axis3;
+    hingeConstraintSettings3.mNormalAxis1 = hingeConstraintSettings3.mNormalAxis2 = normAxis3;
+    physicsSystem.AddConstraint(hingeConstraintSettings3.Create(rectangleBody1, rectangleBody3));
 }
 
 function spawnRandomCubes(time, deltaTime) {
