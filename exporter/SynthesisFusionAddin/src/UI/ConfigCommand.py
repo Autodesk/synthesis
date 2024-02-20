@@ -2091,6 +2091,7 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
 
                 wheelSelect.isVisible = True
                 wheelSelect.isEnabled = True
+                wheelSelect.clearSelection()
                 addJointInput.isEnabled = True
                 addWheelInput.isEnabled = False
 
@@ -2100,6 +2101,7 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                 addWheelInput.isEnabled = True
                 jointSelect.isVisible = True
                 jointSelect.isEnabled = True
+                jointSelect.clearSelection()
                 addJointInput.isEnabled = False
 
             elif cmdInput.id == "field_add":
@@ -2107,6 +2109,7 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
 
                 gamepieceSelect.isVisible = True
                 gamepieceSelect.isEnabled = True
+                gamepieceSelect.clearSelection()
                 addFieldInput.isEnabled = False
 
             elif cmdInput.id == "wheel_delete":
@@ -2150,18 +2153,12 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                     removeGamePieceFromTable(index)
 
             elif cmdInput.id == "wheel_select":
-                self.reset()
-
                 addWheelInput.isEnabled = True
 
             elif cmdInput.id == "joint_select":
-                self.reset()
-
                 addJointInput.isEnabled = True
 
             elif cmdInput.id == "gamepiece_select":
-                self.reset()
-
                 addFieldInput.isEnabled = True
 
             elif cmdInput.id == "friction_override":
