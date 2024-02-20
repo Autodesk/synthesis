@@ -1,4 +1,5 @@
 """ Stores data and fields from config.ini """
+
 from configparser import ConfigParser
 from .Types.OString import OString
 from .strings import INTERNAL_ID
