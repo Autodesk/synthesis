@@ -1690,9 +1690,7 @@ class MySelectHandler(adsk.core.SelectionEventHandler):
             # indicator = INPUTS_ROOT.itemById("algorithmic_indicator")
 
             if self.selectedOcc:
-                self.cmd.setCursor(
-                    "", 0, 0
-                )
+                self.cmd.setCursor("", 0, 0)
                 if dropdownExportMode.selectedItem.index == 1:
                     occurrenceList = gm.app.activeDocument.design.rootComponent.allOccurrencesByComponent(
                         self.selectedOcc.component
@@ -1707,9 +1705,7 @@ class MySelectHandler(adsk.core.SelectionEventHandler):
                     selectionInput.isVisible = False
 
             elif self.selectedJoint:
-                self.cmd.setCursor(
-                    "", 0, 0
-                )
+                self.cmd.setCursor("", 0, 0)
                 jointType = self.selectedJoint.jointMotion.jointType
                 if (
                     jointType == JointMotions.REVOLUTE.value
@@ -1766,8 +1762,8 @@ class MyPreSelectHandler(adsk.core.SelectionEventHandler):
             if (not preSelectedOcc and not preSelectedJoint) or not design:
                 self.cmd.setCursor("", 0, 0)
                 return
-            
-            preSelected = preSelectedOcc if preSelectedOcc else preSelectedJoint 
+
+            preSelected = preSelectedOcc if preSelectedOcc else preSelectedJoint
 
             dropdownExportMode = INPUTS_ROOT.itemById("mode")
             if preSelected and design:
@@ -1799,9 +1795,7 @@ class MyPreSelectHandler(adsk.core.SelectionEventHandler):
                             0,
                         )
             else:
-                self.cmd.setCursor(
-                    "", 0, 0
-                )
+                self.cmd.setCursor("", 0, 0)
         except:
             if gm.ui:
                 gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
