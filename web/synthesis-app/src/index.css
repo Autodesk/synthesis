@@ -12,7 +12,7 @@ code {
     monospace;
 }
 
-button {
+button#loadMira {
   position: fixed;
   top: 10pt;
   left: 10pt;

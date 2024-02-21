@@ -1,0 +1,38 @@
+div#info {
+    position: fixed;
+    top: 10pt;
+    right: 10pt;
+    padding: 5pt;
+    
+    border: none;
+    border-radius: 5pt;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: right;
+    gap: 2pt;
+
+    font-family: 'Ubuntu', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+p {
+    font-size: large;
+    margin: 0pt;
+    padding: 0pt;
+    color: white;
+
+    text-align: right;
+}
+
+button {
+
+    font-family: 'Ubuntu', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    border: none;
+    border-radius: 5pt;
+    padding: 5pt;
+}
