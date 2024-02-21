@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from "react";
 import React from "react";
 import { PhysicsManager } from "../physics/PhysicsManager.tsx";
 import * as AppTest from "../App.tsx";
-import { Translations } from "../util/Translations.tsx";
 import RAPIER from "@dimforge/rapier3d-compat";
 import DetailsPanel from "../components/Details.tsx";
 
