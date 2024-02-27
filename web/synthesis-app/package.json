@@ -5,7 +5,6 @@
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "*",
     "@babel/plugin-transform-class-static-block": "^7.23.4",
-    "@dimforge/rapier3d-compat": "^0.11.2",
     "@react-three/drei": "^9.96.5",
     "@react-three/fiber": "^8.15.15",
     "@testing-library/jest-dom": "^5.17.0",
@@ -33,8 +32,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test-react": "react-scripts test",
-    "eject": "react-scripts eject",
-    "rust-wasm": "wasm-pack build ../engine-rust/ --target web --no-typescript --dev --out-dir ../synthesis-app/src/wasm/"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
