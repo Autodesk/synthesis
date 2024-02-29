@@ -1,12 +1,14 @@
+/**
+ * This Example will be used not for the physics, but the rendering setup for ThreeJS.
+ */
+
 // SOURCE: https://dev.to/omher/how-to-start-using-react-and-threejs-in-a-few-minutes-2h6g
 import * as THREE from "three";
 
 import { useEffect, useRef, useState } from "react";
 // import { wasmWrapper } from '../WasmWrapper.mjs';
 import React from "react";
-import { PhysicsManager } from "../physics/PhysicsManager.tsx";
 import * as AppTest from "../App.tsx";
-import RAPIER from "@dimforge/rapier3d-compat";
 import DetailsPanel from "../components/Details.tsx";
 
 var staticCube: THREE.Mesh;
@@ -53,8 +55,8 @@ var spawnBalls = true;
 
 function createBall(
     radius: number,
-    position: RAPIER.Vector3,
-    velocity: RAPIER.Vector3,
+    position: THREE.Vector3,
+    velocity: THREE.Vector3,
     restitution: number
 ) {
     matIndex++;

@@ -12,8 +12,7 @@ import './App.css';
 // import MyThree from './graphics/ThreeExample.tsx';
 import MyThree from './graphics/JoltExample.tsx'
 import React, { useEffect, useState } from 'react';
-import { PhysicsManager } from './physics/PhysicsManager.tsx';
-import RAPIER from "@dimforge/rapier3d-compat";
+// import { PhysicsManager } from './physics/PhysicsManager.tsx';
 
 // function App() {
 // 	console.log("App executed");
@@ -43,14 +42,12 @@ import RAPIER from "@dimforge/rapier3d-compat";
 import { mirabuf as Mirabuf } from './proto/mirabuf.js';
 import DetailsPanel from './components/Details.tsx';
 
-function initPhysicsScene() {
+// function initPhysicsScene() {
 	
-	PhysicsManager.killInstance();
-	PhysicsManager.getInstance();
+// 	PhysicsManager.killInstance();
+// 	PhysicsManager.getInstance();
 
-}
-
-var STOP = false;
+// }
 
 function App() {
 	console.log("App executed");
@@ -58,10 +55,8 @@ function App() {
 	const [rapier, setRapier] = useState<boolean>(false);
 
 	useEffect(() => {
-		if (!STOP) {
-			STOP = true;
-			RAPIER.init().then(() => { console.log("Rapier Loaded"); initPhysicsScene(); setRapier(true); });
-		}
+		// One-time effect
+		setRapier(true);
 	}, []);
 
 	if (rapier) {

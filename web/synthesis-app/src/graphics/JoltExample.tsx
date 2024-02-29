@@ -1,6 +1,10 @@
+/**
+ * This example will be used to showcase how Jolt physics works.
+ */
+
 import * as THREE from 'three';
 import Stats from 'stats.js';
-import Jolt from '../JoltPkg/Jolt.ts'
+import Jolt from '../util/JoltLoader.ts';
 
 import { useEffect, useRef } from 'react';
 import React from 'react';

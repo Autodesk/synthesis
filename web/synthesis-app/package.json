@@ -5,6 +5,7 @@
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "*",
     "@babel/plugin-transform-class-static-block": "^7.23.4",
+    "@barclah/jolt-physics": "^0.16.1",
     "@react-three/drei": "^9.96.5",
     "@react-three/fiber": "^8.15.15",
     "@testing-library/jest-dom": "^5.17.0",
@@ -15,7 +16,6 @@
     "@types/react": "^18.2.47",
     "@types/react-dom": "^18.2.18",
     "@types/three": "^0.160.0",
-    "jolt-physics": "^0.15.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
