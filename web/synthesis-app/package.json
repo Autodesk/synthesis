@@ -6,6 +6,7 @@
     "@babel/plugin-proposal-private-property-in-object": "*",
     "@babel/plugin-transform-class-static-block": "^7.23.4",
     "@barclah/jolt-physics": "^0.16.1",
+    "@jest/globals": "^29.7.0",
     "@react-three/drei": "^9.96.5",
     "@react-three/fiber": "^8.15.15",
     "@testing-library/jest-dom": "^5.17.0",
@@ -31,7 +32,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test-react": "react-scripts test",
+    "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -53,10 +54,10 @@
     ]
   },
   "devDependencies": {
+    "@babel/preset-typescript": "^7.23.3",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@mui/material": "^5.15.6",
-    "jest": "^27.5.1",
     "protobufjs": "^7.2.6",
     "protobufjs-cli": "^1.1.2"
   }
