@@ -3,8 +3,8 @@ import './App.css';
 import MyThree from './graphics/JoltExample.tsx'
 import React, { useEffect, useState } from 'react';
 
-import { mirabuf as Mirabuf } from './proto/mirabuf.js';
-import DetailsPanel from './components/Details.tsx';
+// import { mirabuf as Mirabuf } from './proto/mirabuf.js';
+// import DetailsPanel from './components/Details.tsx';
 import { joltInit } from './util/loading/JoltAsyncLoader.ts';
 
 function App() {

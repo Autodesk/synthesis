@@ -1,4 +1,4 @@
-import { test, expect, describe } from '@jest/globals';
+import { test, expect, describe } from 'vitest';
 
 import Queue from '../../../util/data/Queue';
 

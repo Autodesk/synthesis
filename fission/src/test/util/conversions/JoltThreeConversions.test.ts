@@ -1,4 +1,4 @@
-import { test, expect, describe } from '@jest/globals';
+import { test, expect, describe } from 'vitest';
 import { joltInit } from '../../../util/loading/JoltAsyncLoader';
 import * as THREE from 'three';
 import { ThreeVector3_JoltVec3 } from '../../../util/conversions/JoltThreeConversions';
