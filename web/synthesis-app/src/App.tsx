@@ -5,24 +5,23 @@ import React, { useEffect, useState } from 'react';
 
 import { mirabuf as Mirabuf } from './proto/mirabuf.js';
 import DetailsPanel from './components/Details.tsx';
+import { joltInit } from './util/loading/JoltAsyncLoader.ts';
 
 function App() {
-	console.log("App executed");
+	const [joltLoaded, setJoltLoaded] = useState<boolean>(false);
 
-	const [rapier, setRapier] = useState<boolean>(false);
+	useEffect(() => { (async () => {
+		var _ = await joltInit
+		setJoltLoaded(true);
+	})()}, []);
 
-	useEffect(() => {
-		setRapier(true);
-	}, []);
-
-	if (rapier) {
-
+	if (joltLoaded) {
 		return (
 			< MyThree />
 		);
 	} else {
 		return (
-			<div>{rapier ? "True" : "False"}</div>
+			<div>{joltLoaded ? "Jolt has loaded!" : "Jolt is loading..."}</div>
 		)
 	}
 }

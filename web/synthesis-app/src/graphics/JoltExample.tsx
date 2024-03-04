@@ -4,7 +4,7 @@
 
 import * as THREE from 'three';
 import Stats from 'stats.js';
-import Jolt from '../util/loading/JoltLoader.ts';
+import Jolt from '../util/loading/JoltSyncLoader.ts';
 
 import { useEffect, useRef } from 'react';
 import React from 'react';

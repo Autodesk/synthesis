@@ -1,27 +1,38 @@
 import { Type } from "typescript";
 import Queue from "../../util/data/Queue";
+import { PhysicsSystem, RenderSystem } from "../Systems";
 
 class WorldSystem {
 
-    private _systems: Array<System>;
-    private _entities: Array<number>;
-    private _removedEntityIndexes: Queue<number>;
-    private _components: Map<Type, Component>;
+    private _lastFrameTime: number;
+    private _updateFrame?: number;
+
+    private _physics: PhysicsSystem;
+    private _renderer: RenderSystem;
 
     constructor() {
-        this._systems = new Array();
-        this._entities = new Array();
+        this._physics = new PhysicsSystem();
+        this._renderer = new RenderSystem();
+
+        // Create Robot
     }
 
-    addComponent() {
+    public startLoop() {
+        this.stopLoop();
+
+        
+    }
+
+    private update() {
+        var _ = Date.now() - this._lastFrameTime;
+        this._lastFrameTime = Date.now();
+
+        this._updateFrame = requestAnimationFrame(this.update);
+
 
     }
 
-    removeComponent() {
-
-    }
-
-    getComponent<T extends Component>(entity: Entity) {
+    public stopLoop() {
 
     }
 
@@ -29,31 +40,12 @@ class WorldSystem {
 export var worldSystem = new WorldSystem();
 
 export abstract class System {
-    protected abstract componentAdded(comp: Component);
-}
 
-export class Component {
-        
-    private _owner: Entity;
+    private _priority: number;
+    
+    protected get priority() { return this._priority; }
 
-    public get owner(): Entity { return this._owner; }
+    protected constructor(priority: number) {
 
-    constructor(owner: Entity | undefined) {
-        owner && (this._owner = owner);
-    }
-}
-
-class Entity {
-    private _kill = false;
-    private _index: number;
-    private _gen: number;
-
-    constructor(index: number, gen: number) {
-        this._index = index;
-        this._gen = gen;
-    }
-
-    kill() {
-        this._kill = true;
     }
 }
