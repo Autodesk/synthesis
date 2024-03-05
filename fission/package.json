@@ -20,8 +20,7 @@
     "@types/three": "^0.160.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "three": "^0.159.0",
-    "three-addons": "^1.2.0"
+    "three": "^0.159.0"
   },
   "devDependencies": {
     "@emotion/react": "^11.11.3",

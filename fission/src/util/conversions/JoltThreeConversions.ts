@@ -3,10 +3,8 @@ import JOLT from '../loading/JoltSyncLoader';
 
 export function _JoltQuat(a: THREE.Euler | THREE.Quaternion | undefined) {
     if (a instanceof THREE.Euler) {
-        console.debug('Gen Euler');
         return ThreeEuler_JoltQuat(a as THREE.Euler);
     } else if (a instanceof THREE.Quaternion) {
-        console.debug('Gen Quat');
         return ThreeQuaternion_JoltQuat(a as THREE.Quaternion);
     } else {
         return new JOLT.Quat(0, 0, 0, 1);

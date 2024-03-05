@@ -2,27 +2,30 @@
  * This example will be used to showcase how Jolt physics works.
  */
 
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+
 import * as THREE from 'three';
 import Stats from 'stats.js';
 import JOLT from '../util/loading/JoltSyncLoader.ts';
 
 import { useEffect, useRef } from 'react';
 import React from 'react';
+import { random } from '../util/Random.ts';
 
-let clock = new THREE.Clock();
+const clock = new THREE.Clock();
 let time = 0;
 
-let stats;
+let stats: any;
 
-let renderer;
-let camera;
-let scene;
+let renderer: any;
+let camera: any;
+let scene: any;
 
-let joltInterface;
-let physicsSystem;
-let bodyInterface;
+let joltInterface: any;
+let physicsSystem: any;
+let bodyInterface: any;
 
-let dynamicObjects: any = [];
+const dynamicObjects: any[] = [];
 
 const LAYER_NOT_MOVING = 0;
 const LAYER_MOVING = 1;
@@ -300,19 +303,19 @@ function spawnRandomCubes(time, deltaTime) {
 }
 
 function getRandomQuat() {
-	let vec = new JOLT.Vec3(0.001 + Math.random(), Math.random(), Math.random());
-	let quat = JOLT.Quat.prototype.sRotation(vec.Normalized(), 2 * Math.PI * Math.random());
+	let vec = new JOLT.Vec3(0.001 + random(), random(), random());
+	let quat = JOLT.Quat.prototype.sRotation(vec.Normalized(), 2 * Math.PI * random());
 	JOLT.destroy(vec);
 	return quat;
 }
 
 function makeRandomBox() {
-    let pos = new JOLT.Vec3((Math.random() - 0.5) * 25, 15, (Math.random() - 0.5) * 25);
+    let pos = new JOLT.Vec3((random() - 0.5) * 25, 15, (random() - 0.5) * 25);
     let rot = getRandomQuat();
 
-    let x = Math.random();
-    let y = Math.random();
-    let z = Math.random();
+    let x = random();
+    let y = random();
+    let z = random();
     let size = new JOLT.Vec3(x, y, z);
     let shape = new JOLT.BoxShape(size, 0.05, undefined);
     let creationSettings = new JOLT.BodyCreationSettings(shape, pos, rot, JOLT.EMotionType_Dynamic, LAYER_MOVING);

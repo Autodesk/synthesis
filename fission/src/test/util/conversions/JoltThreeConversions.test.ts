@@ -44,14 +44,15 @@ describe('ThreeJS to Jolt Conversions', async () => {
         expect(joltQuat.GetW() - a.w).toBeLessThan(0.0001);
     });
     test('THREE.Euler -> JOLT.Quat (General Func)', () => {
-        const a = new THREE.Quaternion(0.285, 0.450, 0.237, 0.812);
-        a.normalize();
+        const a = new THREE.Euler(30, 60, 15);
         const joltQuat = _JoltQuat(a);
-        
-        expect(joltQuat.GetX() - a.x).toBeLessThan(0.0001);
-        expect(joltQuat.GetY() - a.y).toBeLessThan(0.0001);
-        expect(joltQuat.GetZ() - a.z).toBeLessThan(0.0001);
-        expect(joltQuat.GetW() - a.w).toBeLessThan(0.0001);
+        const threeQuat = new THREE.Quaternion();
+        threeQuat.setFromEuler(a);
+
+        expect(joltQuat.GetX() - threeQuat.x).toBeLessThan(0.0001);
+        expect(joltQuat.GetY() - threeQuat.y).toBeLessThan(0.0001);
+        expect(joltQuat.GetZ() - threeQuat.z).toBeLessThan(0.0001);
+        expect(joltQuat.GetW() - threeQuat.w).toBeLessThan(0.0001);
     });
     test('undefined -> JOLT.Quat (General Func)', () => {
         const joltQuat = _JoltQuat(undefined);
