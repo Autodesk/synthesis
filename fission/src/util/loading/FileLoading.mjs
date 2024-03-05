@@ -1,6 +1,6 @@
 export async function getBinaryFile(src) {
     const get_file_array = (file) => {
-        return new Promise((acc, err) => {
+        return new Promise((acc, _) => {
             const reader = new FileReader();
             reader.onload = (event) => { acc(event.target.result) };
             reader.onerror = (err)  => { err(err) };

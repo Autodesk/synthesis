@@ -9,8 +9,8 @@ class Queue<T> {
     constructor() { }
 
     public enqueue(...items: T[]) {
-        for (var item of items) {
-            var node = new LinkedNode<T>(item);
+        for (const item of items) {
+            const node = new LinkedNode<T>(item);
             if (this._head) {
                 this._tail!.next = node;
             } else {
@@ -23,7 +23,7 @@ class Queue<T> {
     }
 
     public dequeue(): T | undefined {
-        var retVal: T | undefined;
+        let retVal: T | undefined;
         if (this._head) {
             retVal = this._head.value;
             this._head = this._head.next;

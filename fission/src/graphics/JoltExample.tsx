@@ -4,7 +4,7 @@
 
 import * as THREE from 'three';
 import Stats from 'stats.js';
-import Jolt from '../util/loading/JoltSyncLoader.ts';
+import JOLT from '../util/loading/JoltSyncLoader.ts';
 
 import { useEffect, useRef } from 'react';
 import React from 'react';
@@ -35,28 +35,28 @@ const wrapQuat = (q) => new THREE.Quaternion(q.GetX(), q.GetY(), q.GetZ(), q.Get
 // vvv Below are the functions required to initalize everything and draw a basic floor with collisions. vvv
 
 function setupCollisionFiltering(settings) {
-    let objectFilter = new Jolt.ObjectLayerPairFilterTable(COUNT_OBJECT_LAYERS);
+    let objectFilter = new JOLT.ObjectLayerPairFilterTable(COUNT_OBJECT_LAYERS);
     objectFilter.EnableCollision(LAYER_NOT_MOVING, LAYER_MOVING);
     objectFilter.EnableCollision(LAYER_MOVING, LAYER_MOVING);
 
-    const BP_LAYER_NOT_MOVING = new Jolt.BroadPhaseLayer(LAYER_NOT_MOVING);
-    const BP_LAYER_MOVING = new Jolt.BroadPhaseLayer(LAYER_MOVING);
+    const BP_LAYER_NOT_MOVING = new JOLT.BroadPhaseLayer(LAYER_NOT_MOVING);
+    const BP_LAYER_MOVING = new JOLT.BroadPhaseLayer(LAYER_MOVING);
     const COUNT_BROAD_PHASE_LAYERS = 2;
 
-    let bpInterface = new Jolt.BroadPhaseLayerInterfaceTable(COUNT_OBJECT_LAYERS, COUNT_BROAD_PHASE_LAYERS);
+    let bpInterface = new JOLT.BroadPhaseLayerInterfaceTable(COUNT_OBJECT_LAYERS, COUNT_BROAD_PHASE_LAYERS);
     bpInterface.MapObjectToBroadPhaseLayer(LAYER_NOT_MOVING, BP_LAYER_NOT_MOVING);
     bpInterface.MapObjectToBroadPhaseLayer(LAYER_MOVING, BP_LAYER_MOVING);
 
     settings.mObjectLayerPairFilter = objectFilter;
     settings.mBroadPhaseLayerInterface = bpInterface;
-    settings.mObjectVsBroadPhaseLayerFilter = new Jolt.ObjectVsBroadPhaseLayerFilterTable(settings.mBroadPhaseLayerInterface, COUNT_BROAD_PHASE_LAYERS, settings.mObjectLayerPairFilter, COUNT_OBJECT_LAYERS);
+    settings.mObjectVsBroadPhaseLayerFilter = new JOLT.ObjectVsBroadPhaseLayerFilterTable(settings.mBroadPhaseLayerInterface, COUNT_BROAD_PHASE_LAYERS, settings.mObjectLayerPairFilter, COUNT_OBJECT_LAYERS);
 }
 
 function initPhysics() {
-    let settings = new Jolt.JoltSettings();
+    let settings = new JOLT.JoltSettings();
     setupCollisionFiltering(settings);
-    joltInterface = new Jolt.JoltInterface(settings);
-    Jolt.destroy(settings);
+    joltInterface = new JOLT.JoltInterface(settings);
+    JOLT.destroy(settings);
 
     physicsSystem = joltInterface.GetPhysicsSystem();
     bodyInterface = physicsSystem.GetBodyInterface();
@@ -87,13 +87,13 @@ function initGraphics() {
 }
 
 function createMeshForShape(shape) {
-    let scale = new Jolt.Vec3(1, 1, 1);
-    let triangleContext = new Jolt.ShapeGetTriangles(shape, Jolt.AABox.prototype.sBiggest(), shape.GetCenterOfMass(), Jolt.Quat.prototype.sIdentity(), scale);
-    Jolt.destroy(scale);
+    let scale = new JOLT.Vec3(1, 1, 1);
+    let triangleContext = new JOLT.ShapeGetTriangles(shape, JOLT.AABox.prototype.sBiggest(), shape.GetCenterOfMass(), JOLT.Quat.prototype.sIdentity(), scale);
+    JOLT.destroy(scale);
 
-    let vertices = new Float32Array(Jolt.HEAP32.buffer, triangleContext.GetVerticesData(), triangleContext.GetVerticesSize() / Float32Array.BYTES_PER_ELEMENT);
+    let vertices = new Float32Array(JOLT.HEAP32.buffer, triangleContext.GetVerticesData(), triangleContext.GetVerticesSize() / Float32Array.BYTES_PER_ELEMENT);
     let buffer = new THREE.BufferAttribute(vertices, 3).clone();
-    Jolt.destroy(triangleContext);
+    JOLT.destroy(triangleContext);
 
     let geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', buffer);
@@ -108,16 +108,16 @@ function getThreeObjForBody(body, color) {
     let shape = body.GetShape();
 
     switch (shape.GetSubType()) {
-        case Jolt.EShapeSubType_Box:
-            let boxShape = Jolt.castObject(shape, Jolt.BoxShape);
+        case JOLT.EShapeSubType_Box:
+            let boxShape = JOLT.castObject(shape, JOLT.BoxShape);
             let extent = wrapVec3(boxShape.GetHalfExtent()).multiplyScalar(2);
             threeObj = new THREE.Mesh(new THREE.BoxGeometry(extent.x, extent.y, extent.z, 1, 1, 1), material);
             break;
-        case Jolt.EShapeSubType_Capsule:
+        case JOLT.EShapeSubType_Capsule:
             // TODO
-        case Jolt.EShapeSubType_Cylinder:
+        case JOLT.EShapeSubType_Cylinder:
             // TODO
-        case Jolt.EShapeSubType_Sphere:
+        case JOLT.EShapeSubType_Sphere:
             // TODO
         default:
             threeObj = new THREE.Mesh(createMeshForShape(shape), material);
@@ -138,7 +138,7 @@ function addToThreeScene(body, color) {
 }
 
 function addToScene(body, color) {
-    bodyInterface.AddBody(body.GetID(), Jolt.EActivation_Activate);
+    bodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate);
     addToThreeScene(body, color);
 }
 
@@ -154,14 +154,14 @@ function removeFromScene(threeObject) {
 }
 
 function createFloor(size = 50) {
-    let shape = new Jolt.BoxShape(new Jolt.Vec3(size, 0.5, size), 0.05, undefined);
-    let position = new Jolt.Vec3(0, -0.5, 0);
-    let rotation = new Jolt.Quat(0, 0, 0, 1);
-    let creationSettings = new Jolt.BodyCreationSettings(shape, position, rotation, Jolt.EMotionType_Static, LAYER_NOT_MOVING)
+    let shape = new JOLT.BoxShape(new JOLT.Vec3(size, 0.5, size), 0.05, undefined);
+    let position = new JOLT.Vec3(0, -0.5, 0);
+    let rotation = new JOLT.Quat(0, 0, 0, 1);
+    let creationSettings = new JOLT.BodyCreationSettings(shape, position, rotation, JOLT.EMotionType_Static, LAYER_NOT_MOVING)
     let body = bodyInterface.CreateBody(creationSettings);
-    Jolt.destroy(position);
-    Jolt.destroy(rotation);
-    Jolt.destroy(creationSettings);
+    JOLT.destroy(position);
+    JOLT.destroy(rotation);
+    JOLT.destroy(creationSettings);
     addToScene(body, 0xc7c7c7);
 
     return body;
@@ -188,7 +188,7 @@ function render() {
         threeObj.position.copy(wrapVec3(body.GetPosition()));
         threeObj.quaternion.copy(wrapQuat(body.GetRotation()));
 
-        if (body.GetBodyType() === Jolt.EBodyType_SoftBody) {
+        if (body.GetBodyType() === JOLT.EBodyType_SoftBody) {
             // TODO: Special soft body handle.
         }
     }
@@ -211,15 +211,15 @@ let timeNextSpawn = time + timePerObject;
 const onTestUpdate = (time, deltaTime) => {};
 
 function spikeTestScene() {
-    let boxShape = new Jolt.BoxShape(new Jolt.Vec3(0.5, 0.5, 0.5), 0.1, undefined);
-    let boxCreationSettings = new Jolt.BodyCreationSettings(boxShape, new Jolt.Vec3(0, 0.5, 0), Jolt.Quat.prototype.sIdentity(), Jolt.EMotionType_Static, LAYER_NOT_MOVING);
+    let boxShape = new JOLT.BoxShape(new JOLT.Vec3(0.5, 0.5, 0.5), 0.1, undefined);
+    let boxCreationSettings = new JOLT.BodyCreationSettings(boxShape, new JOLT.Vec3(0, 0.5, 0), JOLT.Quat.prototype.sIdentity(), JOLT.EMotionType_Static, LAYER_NOT_MOVING);
     boxCreationSettings.mCollisionGroup.SetSubGroupID(0);
     let squareBodyBase = bodyInterface.CreateBody(boxCreationSettings);
     addToScene(squareBodyBase, 0x00ff00);
 
-    let shape = new Jolt.BoxShape(new Jolt.Vec3(0.25, 1, 0.25), 0.1, undefined);
+    let shape = new JOLT.BoxShape(new JOLT.Vec3(0.25, 1, 0.25), 0.1, undefined);
     shape.GetMassProperties().mMass = 1;
-    let creationSettings = new Jolt.BodyCreationSettings(shape, new Jolt.Vec3(-0.25, 2, 0.75), Jolt.Quat.prototype.sIdentity(), Jolt.EMotionType_Dynamic, LAYER_MOVING);
+    let creationSettings = new JOLT.BodyCreationSettings(shape, new JOLT.Vec3(-0.25, 2, 0.75), JOLT.Quat.prototype.sIdentity(), JOLT.EMotionType_Dynamic, LAYER_MOVING);
 
     // RECTANGLE BODY 1 (Red)
     creationSettings.mCollisionGroup.SetSubGroupID(1);
@@ -227,16 +227,16 @@ function spikeTestScene() {
     addToScene(rectangleBody1, 0xff0000);
 
     // RECTANGLE BODY 2 (Blue)
-    let shape2 = new Jolt.BoxShape(new Jolt.Vec3(0.25, 1, 0.25), 0.1, undefined);
+    let shape2 = new JOLT.BoxShape(new JOLT.Vec3(0.25, 1, 0.25), 0.1, undefined);
     shape2.GetMassProperties().mMass = 1;
-    let creationSettings2 = new Jolt.BodyCreationSettings(shape2, new Jolt.Vec3(-0.75, 4, 0.75), Jolt.Quat.prototype.sIdentity(), Jolt.EMotionType_Dynamic, LAYER_MOVING);
+    let creationSettings2 = new JOLT.BodyCreationSettings(shape2, new JOLT.Vec3(-0.75, 4, 0.75), JOLT.Quat.prototype.sIdentity(), JOLT.EMotionType_Dynamic, LAYER_MOVING);
     let rectangleBody2 = bodyInterface.CreateBody(creationSettings2);
     addToScene(rectangleBody2, 0x3394e8);
 
     // RECTANGLE BODY 3 (Yellow)
-    let shape3 = new Jolt.BoxShape(new Jolt.Vec3(0.25, 1, 0.25), 0.1, undefined);
+    let shape3 = new JOLT.BoxShape(new JOLT.Vec3(0.25, 1, 0.25), 0.1, undefined);
     shape3.GetMassProperties().mMass = 10000;
-    let creationSettings3 = new Jolt.BodyCreationSettings(shape3, new Jolt.Vec3(0.25, 4, 0.75), Jolt.Quat.prototype.sIdentity(), Jolt.EMotionType_Dynamic, LAYER_MOVING);
+    let creationSettings3 = new JOLT.BodyCreationSettings(shape3, new JOLT.Vec3(0.25, 4, 0.75), JOLT.Quat.prototype.sIdentity(), JOLT.EMotionType_Dynamic, LAYER_MOVING);
     let rectangleBody3 = bodyInterface.CreateBody(creationSettings3);
     addToScene(rectangleBody3, 0xffff00);
 
@@ -258,31 +258,31 @@ function spikeTestScene() {
     // c.SetGroupFilter(filterTable);
 
     // HINGE CONSTRAINT
-    let hingeConstraintSettings = new Jolt.HingeConstraintSettings();
-    let anchorPoint = new Jolt.Vec3(creationSettings.mPosition.GetX(), creationSettings.mPosition.GetY() - 1.0, creationSettings.mPosition.GetZ() -0.25);
+    let hingeConstraintSettings = new JOLT.HingeConstraintSettings();
+    let anchorPoint = new JOLT.Vec3(creationSettings.mPosition.GetX(), creationSettings.mPosition.GetY() - 1.0, creationSettings.mPosition.GetZ() -0.25);
     hingeConstraintSettings.mPoint1 = hingeConstraintSettings.mPoint2 = anchorPoint;
-    let axis = new Jolt.Vec3(1, 0, 0)
-    let normAxis = new Jolt.Vec3(0, -1, 0);
+    let axis = new JOLT.Vec3(1, 0, 0)
+    let normAxis = new JOLT.Vec3(0, -1, 0);
     hingeConstraintSettings.mHingeAxis1 = hingeConstraintSettings.mHingeAxis2 = axis;
     hingeConstraintSettings.mNormalAxis1 = hingeConstraintSettings.mNormalAxis2 = normAxis;
     physicsSystem.AddConstraint(hingeConstraintSettings.Create(squareBodyBase, rectangleBody1));
 
     // HINGE CONSTRAINT 2
-    let hingeConstraintSettings2 = new Jolt.HingeConstraintSettings();
-    let anchorPoint2 = new Jolt.Vec3(creationSettings.mPosition.GetX() - 0.25, creationSettings.mPosition.GetY() + 1.0, creationSettings.mPosition.GetZ());
+    let hingeConstraintSettings2 = new JOLT.HingeConstraintSettings();
+    let anchorPoint2 = new JOLT.Vec3(creationSettings.mPosition.GetX() - 0.25, creationSettings.mPosition.GetY() + 1.0, creationSettings.mPosition.GetZ());
     hingeConstraintSettings2.mPoint1 = hingeConstraintSettings2.mPoint2 = anchorPoint2;
-    let axis2 = new Jolt.Vec3(0, 0, 1)
-    let normAxis2 = new Jolt.Vec3(-1, 0, 0);
+    let axis2 = new JOLT.Vec3(0, 0, 1)
+    let normAxis2 = new JOLT.Vec3(-1, 0, 0);
     hingeConstraintSettings2.mHingeAxis1 = hingeConstraintSettings2.mHingeAxis2 = axis2;
     hingeConstraintSettings2.mNormalAxis1 = hingeConstraintSettings2.mNormalAxis2 = normAxis2;
     physicsSystem.AddConstraint(hingeConstraintSettings2.Create(rectangleBody1, rectangleBody2));
 
     // HINGE CONSTRAINT 3
-    let hingeConstraintSettings3 = new Jolt.HingeConstraintSettings();
-    let anchorPoint3 = new Jolt.Vec3(creationSettings.mPosition.GetX() + 0.25, creationSettings.mPosition.GetY() + 1.0, creationSettings.mPosition.GetZ());
+    let hingeConstraintSettings3 = new JOLT.HingeConstraintSettings();
+    let anchorPoint3 = new JOLT.Vec3(creationSettings.mPosition.GetX() + 0.25, creationSettings.mPosition.GetY() + 1.0, creationSettings.mPosition.GetZ());
     hingeConstraintSettings3.mPoint1 = hingeConstraintSettings3.mPoint2 = anchorPoint3;
-    let axis3 = new Jolt.Vec3(0, 0, 1)
-    let normAxis3 = new Jolt.Vec3(1, 0, 0);
+    let axis3 = new JOLT.Vec3(0, 0, 1)
+    let normAxis3 = new JOLT.Vec3(1, 0, 0);
     hingeConstraintSettings3.mHingeAxis1 = hingeConstraintSettings3.mHingeAxis2 = axis3;
     hingeConstraintSettings3.mNormalAxis1 = hingeConstraintSettings3.mNormalAxis2 = normAxis3;
     physicsSystem.AddConstraint(hingeConstraintSettings3.Create(rectangleBody1, rectangleBody3));
@@ -300,34 +300,34 @@ function spawnRandomCubes(time, deltaTime) {
 }
 
 function getRandomQuat() {
-	let vec = new Jolt.Vec3(0.001 + Math.random(), Math.random(), Math.random());
-	let quat = Jolt.Quat.prototype.sRotation(vec.Normalized(), 2 * Math.PI * Math.random());
-	Jolt.destroy(vec);
+	let vec = new JOLT.Vec3(0.001 + Math.random(), Math.random(), Math.random());
+	let quat = JOLT.Quat.prototype.sRotation(vec.Normalized(), 2 * Math.PI * Math.random());
+	JOLT.destroy(vec);
 	return quat;
 }
 
 function makeRandomBox() {
-    let pos = new Jolt.Vec3((Math.random() - 0.5) * 25, 15, (Math.random() - 0.5) * 25);
+    let pos = new JOLT.Vec3((Math.random() - 0.5) * 25, 15, (Math.random() - 0.5) * 25);
     let rot = getRandomQuat();
 
     let x = Math.random();
     let y = Math.random();
     let z = Math.random();
-    let size = new Jolt.Vec3(x, y, z);
-    let shape = new Jolt.BoxShape(size, 0.05, undefined);
-    let creationSettings = new Jolt.BodyCreationSettings(shape, pos, rot, Jolt.EMotionType_Dynamic, LAYER_MOVING);
+    let size = new JOLT.Vec3(x, y, z);
+    let shape = new JOLT.BoxShape(size, 0.05, undefined);
+    let creationSettings = new JOLT.BodyCreationSettings(shape, pos, rot, JOLT.EMotionType_Dynamic, LAYER_MOVING);
     creationSettings.mRestitution = 0.5;
     let body = bodyInterface.CreateBody(creationSettings);
 
-    Jolt.destroy(pos);
-    Jolt.destroy(rot);
-    Jolt.destroy(size);
+    JOLT.destroy(pos);
+    JOLT.destroy(rot);
+    JOLT.destroy(size);
 
     // I feel as though this object should be freed at this point but doing so will cause a crash at runtime.
     // This is the only object where this happens. I'm not sure why. Seems problematic.
     // Jolt.destroy(shape);
 
-    Jolt.destroy(creationSettings);
+    JOLT.destroy(creationSettings);
 
     addToScene(body, 0xff0000);
 }

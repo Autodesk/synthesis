@@ -1,26 +1,28 @@
 import * as THREE from 'three';
-import Jolt from '../loading/JoltSyncLoader';
+import JOLT from '../loading/JoltSyncLoader';
 
 export function _JoltQuat(a: THREE.Euler | THREE.Quaternion | undefined) {
-    if (<THREE.Euler>a) {
+    if (a instanceof THREE.Euler) {
+        console.debug('Gen Euler');
         return ThreeEuler_JoltQuat(a as THREE.Euler);
-    } else if (<THREE.Quaternion>a) {
+    } else if (a instanceof THREE.Quaternion) {
+        console.debug('Gen Quat');
         return ThreeQuaternion_JoltQuat(a as THREE.Quaternion);
     } else {
-        return new Jolt.Quat(0, 0, 0, 1);
+        return new JOLT.Quat(0, 0, 0, 1);
     }
 }
 
 export function ThreeEuler_JoltQuat(euler: THREE.Euler) {
-    var quat = new THREE.Quaternion();
+    const quat = new THREE.Quaternion();
     quat.setFromEuler(euler);
     return ThreeQuaternion_JoltQuat(quat);
 }
 
 export function ThreeQuaternion_JoltQuat(quat: THREE.Quaternion) {
-    return new Jolt.Quat(quat.x, quat.y, quat.z, quat.w);
+    return new JOLT.Quat(quat.x, quat.y, quat.z, quat.w);
 }
 
 export function ThreeVector3_JoltVec3(vec: THREE.Vector3) {
-    return new Jolt.Vec3(vec.x, vec.y, vec.z);
+    return new JOLT.Vec3(vec.x, vec.y, vec.z);
 }
