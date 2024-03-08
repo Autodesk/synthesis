@@ -7,10 +7,15 @@
 import * as THREE from 'three';
 import Stats from 'stats.js';
 import JOLT from '../util/loading/JoltSyncLoader.ts';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 import { useEffect, useRef } from 'react';
 import React from 'react';
 import { random } from '../util/Random.ts';
+import Jolt from '@barclah/jolt-physics';
+import mirabuf from "../proto/mirabuf"
+
+import { getBinaryFile } from "../util/loading/FileLoading.mjs"
 
 const clock = new THREE.Clock();
 let time = 0;
@@ -33,6 +38,7 @@ const COUNT_OBJECT_LAYERS = 2;
 
 const wrapVec3 = (v) => new THREE.Vector3(v.GetX(), v.GetY(), v.GetZ());
 const wrapQuat = (q) => new THREE.Quaternion(q.GetX(), q.GetY(), q.GetZ(), q.GetW());
+let controls: OrbitControls;
 
 
 // vvv Below are the functions required to initalize everything and draw a basic floor with collisions. vvv
@@ -72,8 +78,9 @@ function initGraphics() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.2, 2000);
+    controls = new OrbitControls(camera, renderer.domElement);
     camera.position.set(-5, 4, 5);
-    camera.lookAt(new THREE.Vector3(0, 0.5, 0));
+    controls.update();
 
     scene = new THREE.Scene();
 
@@ -89,16 +96,16 @@ function initGraphics() {
     // TODO: Add resize event
 }
 
-function createMeshForShape(shape) {
-    let scale = new JOLT.Vec3(1, 1, 1);
-    let triangleContext = new JOLT.ShapeGetTriangles(shape, JOLT.AABox.prototype.sBiggest(), shape.GetCenterOfMass(), JOLT.Quat.prototype.sIdentity(), scale);
+function createMeshForShape(shape: Jolt.Shape) {
+    const scale = new JOLT.Vec3(1, 1, 1);
+    const triangleContext = new JOLT.ShapeGetTriangles(shape, JOLT.AABox.prototype.sBiggest(), shape.GetCenterOfMass(), JOLT.Quat.prototype.sIdentity(), scale);
     JOLT.destroy(scale);
 
-    let vertices = new Float32Array(JOLT.HEAP32.buffer, triangleContext.GetVerticesData(), triangleContext.GetVerticesSize() / Float32Array.BYTES_PER_ELEMENT);
-    let buffer = new THREE.BufferAttribute(vertices, 3).clone();
+    const vertices = new Float32Array(JOLT.HEAP32.buffer, triangleContext.GetVerticesData(), triangleContext.GetVerticesSize() / Float32Array.BYTES_PER_ELEMENT);
+    const buffer = new THREE.BufferAttribute(vertices, 3).clone();
     JOLT.destroy(triangleContext);
 
-    let geometry = new THREE.BufferGeometry();
+    const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', buffer);
     geometry.computeVertexNormals();
 
@@ -179,6 +186,7 @@ function updatePhysics(deltaTime) {
 function render() {
     stats.update();
     requestAnimationFrame(render);
+    controls.update();
 
     // Prevents a problem when rendering at 30hz. Referred to as the spiral of death.
     let deltaTime = clock.getDelta();
@@ -340,7 +348,50 @@ function MyThree() {
 
     const refContainer = useRef<HTMLDivElement>(null);
 
+
     useEffect(() => {
+        getBinaryFile("TestCube_v1.mira").then(( arr: Uint8Array ) => {
+            const assembly = mirabuf.mirabuf.Assembly.decode(arr);
+            if (!assembly) return;
+            const data = assembly.data;
+            if (!data) return;
+            const parts = data.parts;
+            if (!parts) return;
+            const definitions = parts.partDefinitions;
+            if (!definitions) return;
+            for (const definition of Object.values(definitions)) {
+                const bodies = definition.bodies;
+                if (!bodies) continue;
+                if (bodies.length > 0) {
+                    console.log(definition)
+                    const body = bodies[0];
+                    if (!body) continue;
+                    const mesh = body.triangleMesh;
+                    const geometry = new THREE.BufferGeometry();
+                    const positionNumComponents = 3;
+                    const normalNumComponents = 3;
+                    const uvNumComponents = 2;
+                    console.log(data);
+                    if (mesh && mesh.mesh && mesh.mesh.verts && mesh.mesh.normals && mesh.mesh.uv && mesh.mesh.indices) {
+                        geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(mesh.mesh.verts), positionNumComponents));
+                        geometry.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(mesh.mesh.normals), normalNumComponents));
+                        geometry.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(mesh.mesh.uv), uvNumComponents));
+                        geometry.setIndex(mesh.mesh.indices);
+
+                        const appearanceOverride = body.appearanceOverride;
+                        const miraMaterial = data.materials.appearances[appearanceOverride];
+                        const {A, B, G, R} = miraMaterial.albedo;
+                        const toHex = (r: number, g: number, b: number, a: number): number => {
+                            return a << 24 | r << 16 | g << 8 | b;
+                        }
+
+                        const material = new THREE.MeshBasicMaterial( { color: toHex(R, G, B, A) } );
+                        const threeMesh = new THREE.Mesh( geometry, material );
+                        scene.add(threeMesh);
+                    }
+                }
+            }
+        })
         initGraphics();
         
         if (refContainer.current) {
