@@ -1,6 +1,6 @@
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 
-import { ThreeVector3_JoltVec3, _JoltQuat } from "../../util/conversions/JoltThreeConversions";
+import { ThreeVector3_JoltVec3, _JoltQuat } from "../../util/TypeConversions";
 import JOLT from "../../util/loading/JoltSyncLoader";
 import * as THREE from 'three';
 
@@ -8,6 +8,11 @@ const LAYER_NOT_MOVING = 0;
 const LAYER_MOVING = 1;
 const COUNT_OBJECT_LAYERS = 2;
 
+/**
+ * The PhysicsSystem handles all Jolt Phyiscs interactions within Synthesis.
+ * This system can create physical representations of objects such as Robots,
+ * Fields, and Game pieces, and simulate them.
+ */
 export class PhysicsSystem {
     
     private _joltInterface;
@@ -15,11 +20,14 @@ export class PhysicsSystem {
     private _joltBodyInterface;
     private _bodies: Array<any>;
 
+    /**
+     * Creates a PhysicsSystem object.
+     */
     constructor() {
         this._bodies = [];
 
         const joltSettings = new JOLT.JoltSettings();
-        setupCollisionFiltering(joltSettings);
+        SetupCollisionFiltering(joltSettings);
 
         this._joltInterface = new JOLT.JoltInterface(joltSettings);
         JOLT.destroy(joltSettings);
@@ -28,7 +36,17 @@ export class PhysicsSystem {
         this._joltBodyInterface = this._joltPhysSystem.GetBodyInterface();
     }
 
-    public createBox(
+    /**
+     * TEMPORARY
+     * Create a box.
+     * 
+     * @param   halfExtents The half extents of the Box.
+     * @param   mass        Mass of the Box. Leave undefined to make Box static.
+     * @param   position    Posiition of the Box (default: 0, 0, 0)
+     * @param   rotation    Rotation of the Box (default 0, 0, 0, 1)
+     * @returns Reference to Jolt Body
+     */
+    public CreateBox(
     halfExtents: THREE.Vector3,
     mass: number | undefined,
     position: THREE.Vector3 | undefined,
@@ -58,13 +76,37 @@ export class PhysicsSystem {
         return body;
     }
 
-    public createConvexHull() {
-        const helper = new JOLT.SynthesisHelper();
-        // TODO
+    public CreateBody(
+    shape: any,
+    mass: number | undefined,
+    position: THREE.Vector3 | undefined,
+    rotation: THREE.Euler | THREE.Quaternion | undefined) {
+        
+    }
+
+    public CreateConvexHull(points: Float32Array, density: number = 1.0) {
+        if (points.length % 3) {
+            throw new Error(`Invalid size of points: ${points.length}`);
+        }
+        const settings = new JOLT.ConvexHullShapeSettings();
+        settings.mPoints.clear();
+        settings.mPoints.reserve(points.length / 3.0);
+        for (let i = 0; i < points.length; i += 3) {
+            settings.mPoints.push_back(new JOLT.Vec3(points[i], points[i + 1], points[i + 2]));
+        }
+        settings.mDensity = density;
+        return settings.Create();
+    }
+
+    public Destroy() {
+        // Release Jolt Body references.
+        this._bodies.forEach(x => x.Release());
+
+        JOLT.destroy(this._joltInterface);
     }
 }
 
-function setupCollisionFiltering(settings: any) {
+function SetupCollisionFiltering(settings: any) {
     const objectFilter = new JOLT.ObjectLayerPairFilterTable(COUNT_OBJECT_LAYERS);
     objectFilter.EnableCollision(LAYER_NOT_MOVING, LAYER_MOVING);
     objectFilter.EnableCollision(LAYER_MOVING, LAYER_MOVING);
