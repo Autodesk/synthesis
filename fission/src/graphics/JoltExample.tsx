@@ -72,23 +72,51 @@ function initPhysics() {
 }
 
 function initGraphics() {
-    renderer = new THREE.WebGLRenderer();
-    renderer.setClearColor(0xbfd1e5);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(window.innerWidth, window.innerHeight);
-
-    camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.2, 2000);
-    controls = new OrbitControls(camera, renderer.domElement);
+    camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+    );
+    
     camera.position.set(-5, 4, 5);
-    controls.update();
 
     scene = new THREE.Scene();
 
-    let directionalLight = new THREE.DirectionalLight(0xffffff, 2);
-    directionalLight.position.set(10, 10, 5);
+    renderer = new THREE.WebGLRenderer();
+    renderer.setClearColor(0x121212);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    controls = new OrbitControls(camera, renderer.domElement);
+    controls.update();
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 3.0);
+    directionalLight.position.set(-1.0, 3.0, 2.0);
+    directionalLight.castShadow = true;
     scene.add(directionalLight);
 
-    let ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
+    const shadowMapSize = Math.min(4096, renderer.capabilities.maxTextureSize);
+    const shadowCamSize = 15;
+    console.debug(`Shadow Map Size: ${shadowMapSize}`);
+
+    // console.log(`Cam Top: ${directionalLight.shadow.camera.top}`);
+    // console.log(`Cam Bottom: ${directionalLight.shadow.camera.bottom}`);
+    // console.log(`Cam Left: ${directionalLight.shadow.camera.left}`);
+    // console.log(`Cam Right: ${directionalLight.shadow.camera.right}`);
+
+    directionalLight.shadow.camera.top = shadowCamSize;
+    directionalLight.shadow.camera.bottom = -shadowCamSize;
+    directionalLight.shadow.camera.left = -shadowCamSize;
+    directionalLight.shadow.camera.right = shadowCamSize;
+    directionalLight.shadow.mapSize = new THREE.Vector2(shadowMapSize, shadowMapSize);
+    directionalLight.shadow.blurSamples = 16;
+    directionalLight.shadow.normalBias = -0.02;
+    // directionalLight.shadow.bias = -0.01;
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
     scene.add(ambientLight);
 
     // TODO: Add controls.
@@ -113,7 +141,7 @@ function createMeshForShape(shape: Jolt.Shape) {
 }
 
 function getThreeObjForBody(body, color) {
-    let material = new THREE.MeshPhongMaterial({ color: color });
+    let material = new THREE.MeshPhongMaterial({ color: color, shininess: 0.1 });
     let threeObj;
     let shape = body.GetShape();
 
@@ -122,6 +150,8 @@ function getThreeObjForBody(body, color) {
             let boxShape = JOLT.castObject(shape, JOLT.BoxShape);
             let extent = wrapVec3(boxShape.GetHalfExtent()).multiplyScalar(2);
             threeObj = new THREE.Mesh(new THREE.BoxGeometry(extent.x, extent.y, extent.z, 1, 1, 1), material);
+            threeObj.receiveShadow = true;
+            threeObj.castShadow = true;
             break;
         case JOLT.EShapeSubType_Capsule:
             // TODO
@@ -131,6 +161,8 @@ function getThreeObjForBody(body, color) {
             // TODO
         default:
             threeObj = new THREE.Mesh(createMeshForShape(shape), material);
+            threeObj.receiveShadow = true;
+            threeObj.castShadow = true;
             break;
     }
 
@@ -373,10 +405,25 @@ function MyThree() {
                     const uvNumComponents = 2;
                     console.log(data);
                     if (mesh && mesh.mesh && mesh.mesh.verts && mesh.mesh.normals && mesh.mesh.uv && mesh.mesh.indices) {
-                        geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(mesh.mesh.verts), positionNumComponents));
+
+                        const newVerts = new Float32Array(mesh.mesh.verts.length);
+                        for (let i = 0; i < mesh.mesh.verts.length; i += 3) {
+                            newVerts[i] = mesh.mesh.verts.at(i)! / -100.0;
+                            newVerts[i + 1] = mesh.mesh.verts.at(i + 1)! / 100.0;
+                            newVerts[i + 2] = mesh.mesh.verts.at(i + 2)! / 100.0;
+                        }
+
+                        const newNorms = new Float32Array(mesh.mesh.normals.length);
+                        for (let i = 0; i < mesh.mesh.normals.length; i += 3) {
+                            newNorms[i] = mesh.mesh.normals.at(i)! / -100.0;
+                            newNorms[i + 1] = mesh.mesh.normals.at(i + 1)! / 100.0;
+                            newNorms[i + 2] = mesh.mesh.normals.at(i + 2)! / 100.0;
+                        }
+
+                        geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(newVerts), positionNumComponents));
                         geometry.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(mesh.mesh.normals), normalNumComponents));
                         geometry.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(mesh.mesh.uv), uvNumComponents));
-                        geometry.setIndex(mesh.mesh.indices);
+                        geometry.setIndex(mesh.mesh.indices.reverse());
 
                         const appearanceOverride = body.appearanceOverride;
                         const miraMaterial = data.materials.appearances[appearanceOverride];
@@ -385,8 +432,16 @@ function MyThree() {
                             return a << 24 | r << 16 | g << 8 | b;
                         }
 
-                        const material = new THREE.MeshBasicMaterial( { color: toHex(R, G, B, A) } );
+                        // const material = new THREE.MeshBasicMaterial( { color: toHex(R, G, B, A) } );
+                        // const material = new THREE.MeshNormalMaterial();
+                        const material = new THREE.MeshPhongMaterial({
+                            color: 0xe32b50,
+                            shininess: 0.5,
+                        });
                         const threeMesh = new THREE.Mesh( geometry, material );
+                        threeMesh.translateX(2.0);
+                        threeMesh.receiveShadow = true;
+                        threeMesh.castShadow = true;
                         scene.add(threeMesh);
                     }
                 }
