@@ -80,8 +80,26 @@ export class PhysicsSystem {
     shape: any,
     mass: number | undefined,
     position: THREE.Vector3 | undefined,
-    rotation: THREE.Euler | THREE.Quaternion | undefined) {
-        
+    rotation: THREE.Euler | THREE.Quaternion | undefined) {;
+        const pos = position ? ThreeVector3_JoltVec3(position) : new JOLT.Vec3(0.0, 0.0, 0.0);
+        const rot = _JoltQuat(rotation);
+        const creationSettings = new JOLT.BodyCreationSettings(
+            shape,
+            pos,
+            rot,
+            mass ? JOLT.EMotionType_Dynamic : JOLT.EMotionType_Static,
+            LAYER_NOT_MOVING
+        );
+        if (mass) {
+            creationSettings.mMassPropertiesOverride.mMass = mass;
+        }
+        const body = this._joltBodyInterface.CreateBody(creationSettings);
+        JOLT.destroy(pos);
+        JOLT.destroy(rot);
+        JOLT.destroy(creationSettings);
+
+        this._bodies.push(body);
+        return body;
     }
 
     public CreateConvexHull(points: Float32Array, density: number = 1.0) {
