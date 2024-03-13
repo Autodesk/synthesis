@@ -14,6 +14,7 @@ import { random } from '../util/Random.ts';
 import Jolt from '@barclah/jolt-physics';
 import { mirabuf } from "../proto/mirabuf"
 import loadMirabufRemote from '../mirabuf/MirabufLoader.ts';
+import MirabufParser from '../mirabuf/MirabufParser.ts';
 
 const clock = new THREE.Clock();
 let time = 0;
@@ -30,14 +31,26 @@ let bodyInterface: any;
 
 const dynamicObjects: any[] = [];
 
+// const MIRA_FILE = "Team 2471 (2018)_v7.mira"
+const MIRA_FILE = "Dozer_v2.mira"
+
 const LAYER_NOT_MOVING = 0;
 const LAYER_MOVING = 1;
 const COUNT_OBJECT_LAYERS = 2;
 
 const wrapVec3 = (v: Jolt.Vec3) => new THREE.Vector3(v.GetX(), v.GetY(), v.GetZ());
 const wrapQuat = (q: Jolt.Quat) => new THREE.Quaternion(q.GetX(), q.GetY(), q.GetZ(), q.GetW());
-let controls: OrbitControls;
+const wrapMat4 = (m: mirabuf.ITransform) => {
+    const arr: number[] | null | undefined = m.spatialMatrix;
+    if (!arr) return undefined;
+    const pos = new THREE.Vector3(arr[3] * 0.01, arr[7] * 0.01, arr[11] * 0.01);
+    const mat = new THREE.Matrix4().fromArray(arr);
+    const onlyRotation = new THREE.Matrix4().extractRotation(mat);
+    const quat = new THREE.Quaternion().setFromRotationMatrix(onlyRotation);
 
+    return new THREE.Matrix4().compose(pos, quat, new THREE.Vector3(1, 1, 1));
+}
+let controls: OrbitControls;
 
 // vvv Below are the functions required to initialize everything and draw a basic floor with collisions. vvv
 
@@ -387,19 +400,59 @@ function MyThree() {
 
 
     useEffect(() => {
-        loadMirabufRemote("Dozer_v9.mira").then((assembly: mirabuf.Assembly | undefined) => {
+        loadMirabufRemote(MIRA_FILE).then((assembly: mirabuf.Assembly | undefined) => {
             if (!assembly) return;
             const data = assembly.data;
+            console.log(assembly.toJSON())
             if (!data) return;
             const parts = data.parts;
             if (!parts) return;
+            const partInstances = new Map<string, mirabuf.IPartInstance>();
+            for (const partInstance of Object.values(parts.partInstances!)) {
+                partInstances.set(partInstance.info!.GUID!, partInstance);
+            }
+
+            // const 
+            const parser = new MirabufParser(assembly);
+            const root = parser.designHierarchyRoot;
+            
+            const transforms = new Map<string, THREE.Matrix4>();
+            const getTransforms = (node: mirabuf.INode, parent: THREE.Matrix4) => {
+                for (const child of node.children!) {
+                    if (!partInstances.has(child.value!)) {
+                        continue;
+                    }
+                    const partInstance = partInstances.get(child.value!)!;
+                    if (transforms.has(child.value!)) continue;
+                    const mat = wrapMat4(partInstance.transform!)!;
+                    transforms.set(child.value!, mat.multiply(parent));
+                    getTransforms(child, mat);
+                }
+            }
+
+            for (const child of root.children!) {
+                const partInstance = partInstances.get(child.value!)!;
+                let mat;
+                if (!partInstance.transform) {
+                    const def = parts.partDefinitions![partInstances.get(child.value!)!.partDefinitionReference!];
+                    if (!def.baseTransform) {
+                        mat = new THREE.Matrix4().identity();
+                    } else {
+                        mat = wrapMat4(def.baseTransform);
+                    }
+                } else {
+                    mat = wrapMat4(partInstance.transform);
+                }
+                transforms.set(partInstance.info!.GUID!, mat!);
+                getTransforms(child, mat!);
+            }
+
             const definitions = parts.partDefinitions;
             if (!definitions) return;
             for (const definition of Object.values(definitions)) {
                 const bodies = definition.bodies;
                 if (!bodies) continue;
-                if (bodies.length > 0) {
-                    const body = bodies[0];
+                for (const body of bodies) {
                     if (!body) continue;
                     const mesh = body.triangleMesh;
                     const geometry = new THREE.BufferGeometry();
@@ -407,22 +460,22 @@ function MyThree() {
 
                         const newVerts = new Float32Array(mesh.mesh.verts.length);
                         for (let i = 0; i < mesh.mesh.verts.length; i += 3) {
-                            newVerts[i] = mesh.mesh.verts.at(i)! / -100.0;
+                            newVerts[i] = mesh.mesh.verts.at(i)! / 100.0;
                             newVerts[i + 1] = mesh.mesh.verts.at(i + 1)! / 100.0;
                             newVerts[i + 2] = mesh.mesh.verts.at(i + 2)! / 100.0;
                         }
 
                         const newNorms = new Float32Array(mesh.mesh.normals.length);
                         for (let i = 0; i < mesh.mesh.normals.length; i += 3) {
-                            newNorms[i] = mesh.mesh.normals.at(i)! / -100.0;
+                            newNorms[i] = mesh.mesh.normals.at(i)! / 100.0;
                             newNorms[i + 1] = mesh.mesh.normals.at(i + 1)! / 100.0;
                             newNorms[i + 2] = mesh.mesh.normals.at(i + 2)! / 100.0;
                         }
 
                         geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(newVerts), 3));
-                        geometry.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(mesh.mesh.normals), 3));
+                        geometry.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(newNorms), 3));
                         geometry.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(mesh.mesh.uv), 2));
-                        geometry.setIndex(mesh.mesh.indices.reverse());
+                        geometry.setIndex(mesh.mesh.indices);
 
                         const appearanceOverride = body.appearanceOverride;
                         let material;
@@ -441,8 +494,11 @@ function MyThree() {
                                 shininess: 0.5,
                             });
                         }
+                        for (const entry of transforms.entries()) {
+                            if (partInstances.get(entry[0])!.partDefinitionReference! != definition.info!.GUID!) continue;
+                            geometry.applyMatrix4(entry[1]);
+                        }
                         const threeMesh = new THREE.Mesh( geometry, material );
-                        threeMesh.translateX(2.0);
                         threeMesh.receiveShadow = true;
                         threeMesh.castShadow = true;
                         scene.add(threeMesh);
@@ -468,7 +524,7 @@ function MyThree() {
         createFloor();
 
         // Spawn the y-cube of blocks as specified in the spike document.
-        spikeTestScene();
+        // spikeTestScene();
     }, []);
 
     return (

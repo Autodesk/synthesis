@@ -9,6 +9,8 @@ export enum ParseErrorSeverity {
 
 const GROUNDED_JOINT_ID = 'grounded';
 
+export type ParseError = [severity: ParseErrorSeverity, message: string];
+
 /**
  * TODO:
  * 1. Account for special versions
@@ -19,7 +21,7 @@ class MirabufParser {
     private _nodeNameCounter: number = 0;
 
     private _assembly: mirabuf.Assembly;
-    private _errors: Array<[severity: ParseErrorSeverity, message: string]>;
+    private _errors: Array<ParseError>;
 
     protected _partTreeValues: Map<string, number> = new Map();
     private _designHierarchyRoot: mirabuf.INode = new mirabuf.Node();
@@ -27,16 +29,32 @@ class MirabufParser {
     protected _partToNodeMap: Map<string, RigidNode> = new Map();
     protected _rigidNodes: Array<RigidNode> = [];
 
+    public get partTreeValues() {
+        return this._partTreeValues;
+    }
+
+    public get designHierarchyRoot() {
+        return this._designHierarchyRoot;
+    }
+
+    public get partToNodeMap() {
+        return this._partToNodeMap;
+    }
+
+    public get rigidNodes() {
+        return this._rigidNodes;
+    }
+
     public constructor(assembly: mirabuf.Assembly) {
         this._assembly = assembly;
-        this._errors = new Array<[ParseErrorSeverity, string]>();
+        this._errors = new Array<ParseError>();
 
         this.GenerateTreeValues();
 
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const that = this;
 
-        function traverseJointParts(nodes: mirabuf.INode[], rn: RigidNode) {
+        const traverseJointParts = (nodes: mirabuf.INode[], rn: RigidNode) => {
             nodes.forEach(x => {
                 if (x.children) {
                     traverseJointParts(x.children, rn);
@@ -65,7 +83,7 @@ class MirabufParser {
         traverseJointParts(gInst.parts!.nodes!, gNode);
         
         // 3: Traverse and round up
-        function traverseNodeRoundup(node: mirabuf.INode, parentNode: RigidNode) {
+        const traverseNodeRoundup = (node: mirabuf.INode, parentNode: RigidNode) => {
             const currentNode = that._partToNodeMap.get(node.value!);
             if (!currentNode) {
                 that.MovePartToRigidNode(node.value!, parentNode);
@@ -120,7 +138,7 @@ class MirabufParser {
 
         const ptv = this._partTreeValues;
 
-        function binarySearch(target: number, children: mirabuf.INode[]): number {
+        const binarySearch = (target: number, children: mirabuf.INode[]): number => {
             let l = 0;
             let h = children.length;
 
@@ -171,7 +189,7 @@ class MirabufParser {
         let nextValue = 0;
         const partTreeValues = new Map<string, number>();
 
-        function recursive(partNode: mirabuf.INode) {
+        const recursive = (partNode: mirabuf.INode) => {
             partNode.children = partNode.children?.filter(x => x.value != null);
             partNode.children?.forEach(x => recursive(x));
             partTreeValues.set(partNode.value!, nextValue++);
