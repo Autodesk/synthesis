@@ -45,7 +45,7 @@ const wrapMat4 = (m: mirabuf.ITransform) => {
     if (!arr) return undefined;
     const pos = new THREE.Vector3(arr[3] * 0.01, arr[7] * 0.01, arr[11] * 0.01);
     const mat = new THREE.Matrix4().fromArray(arr);
-    const onlyRotation = new THREE.Matrix4().extractRotation(mat);
+    const onlyRotation = new THREE.Matrix4().extractRotation(mat).transpose();
     const quat = new THREE.Quaternion().setFromRotationMatrix(onlyRotation);
 
     return new THREE.Matrix4().compose(pos, quat, new THREE.Vector3(1, 1, 1));
@@ -425,7 +425,7 @@ function MyThree() {
                     const partInstance = partInstances.get(child.value!)!;
                     if (transforms.has(child.value!)) continue;
                     const mat = wrapMat4(partInstance.transform!)!;
-                    transforms.set(child.value!, mat.multiply(parent));
+                    transforms.set(child.value!, mat.multiply(parent) /* mat.multiply(parent) */);
                     getTransforms(child, mat);
                 }
             }
@@ -466,9 +466,14 @@ function MyThree() {
 
                         const newNorms = new Float32Array(mesh.mesh.normals.length);
                         for (let i = 0; i < mesh.mesh.normals.length; i += 3) {
-                            newNorms[i] = mesh.mesh.normals.at(i)! / 1;
-                            newNorms[i + 1] = mesh.mesh.normals.at(i + 1)! / 1;
-                            newNorms[i + 2] = mesh.mesh.normals.at(i + 2)! / 1;
+                            const normLength = Math.sqrt(mesh.mesh.normals.at(i)! * mesh.mesh.normals.at(i)! +
+                                mesh.mesh.normals.at(i + 1)! * mesh.mesh.normals.at(i + 1)! +
+                                mesh.mesh.normals.at(i + 2)! * mesh.mesh.normals.at(i + 2)!
+                            );
+
+                            newNorms[i] = mesh.mesh.normals.at(i)! / normLength;
+                            newNorms[i + 1] = mesh.mesh.normals.at(i + 1)! / normLength;
+                            newNorms[i + 2] = mesh.mesh.normals.at(i + 2)! / normLength;
                         }
 
                         geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(newVerts), 3));
@@ -500,7 +505,7 @@ function MyThree() {
                         for (const entry of transforms.entries()) {
                             if (partInstances.get(entry[0])!.partDefinitionReference! != definition.info!.GUID!) continue;
                             // geometry.applyMatrix4(entry[1]);
-                            threeMesh.position.applyMatrix4(entry[1]);
+                            threeMesh.position.setFromMatrixPosition(entry[1]);
                             threeMesh.rotation.setFromRotationMatrix(entry[1]);
                         }
                     }
