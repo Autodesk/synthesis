@@ -1,60 +1,55 @@
 import { describe, test, expect } from "vitest";
-import * as fs from 'fs';
+
 import { mirabuf } from "../../proto/mirabuf";
-import MirabufParser, { RigidNode } from "../../mirabuf/MirabufParser";
+import MirabufParser, { RigidNodeReadOnly } from "../../mirabuf/MirabufParser";
+import { LoadMirabufLocal } from "../../mirabuf/MirabufLoader";
 
 describe('Mirabuf Parser Tests', () => {
-    test('Test Load TestCube_v1.mira', () => {
-        const testCubeMira = mirabuf.Assembly.decode(new Uint8Array(fs.readFileSync('./public/test_mira/TestCube_v1.mira')));
+    test('Test Load TestCube_v1.mira (Uncompressed)', () => {
+        const testCubeMira = LoadMirabufLocal('./public/test_mira/TestCube_v1.mira');
         
         expect(testCubeMira).toBeDefined();
         expect(testCubeMira.info!.name!).toBe('TestCube v1');
     });
 
-    test('Generate Rigid Nodes (TestCube_v1.mira)', () => {
-        const testCubeMira = mirabuf.Assembly.decode(new Uint8Array(fs.readFileSync('./public/test_mira/TestCube_v1.mira')));
-        
-        class T extends MirabufParser {
-            public get partTreeValues() { return this._partTreeValues; }
-            public get rigidNodes() { return this._rigidNodes; }
-        }
+    test('Test Load FRC_Field_2018_v14.mira (Compressed)', () => {
+        const field = LoadMirabufLocal('./public/test_mira/FRC_Field_2018_v14.mira');
 
-        const t = new T(testCubeMira);
-        const vals = t.partTreeValues;
-        const rn = t.rigidNodes;
+        expect(field).toBeDefined();
+        expect(field.info!.name!).toBe('FRC Field 2018 v14');
+    });
+
+    test('Generate Rigid Nodes (TestCube_v1.mira)', () => {
+        const testCubeMira = LoadMirabufLocal('./public/test_mira/TestCube_v1.mira');
+
+        const parser = new MirabufParser(testCubeMira);
+        const rn = parser.rigidNodes;
 
         expect(rn.length).toBe(1);
         printRigidNodeParts(rn, testCubeMira);
     });
 
-    // test('Generate JSON (PhysicsSpikeTest_v1.mira)', () => {
-    //     const testCubeMira = mirabuf.Assembly.decode(new Uint8Array(fs.readFileSync('./public/test_mira/PhysicsSpikeTest_v1.mira')));
-        
-    //     console.log('=== START JSON ===');
-    //     console.log(JSON.stringify(testCubeMira));
-    //     console.log('\n=== END JSON ===');
-
-    //     expect(true).toBe(true);
-    // });
-
     test('Generate Rigid Nodes (PhysicsSpikeTest_v1.mira)', () => {
-        const spikeMira = mirabuf.Assembly.decode(new Uint8Array(fs.readFileSync('./public/test_mira/PhysicsSpikeTest_v1.mira')));
-        
-        class T extends MirabufParser {
-            public get partTreeValues() { return this._partTreeValues; }
-            public get rigidNodes() { return this._rigidNodes; }
-        }
+        const spikeMira = LoadMirabufLocal('./public/test_mira/PhysicsSpikeTest_v1.mira');
 
-        const t = new T(spikeMira);
-        const vals = t.partTreeValues;
+        const t = new MirabufParser(spikeMira);
         const rn = t.rigidNodes;
 
         expect(rn.length).toBe(4);
         printRigidNodeParts(rn, spikeMira);
     });
+
+    test('Generate Rigid Nodes (FRC_Field_2018_v14.mira)', () => {
+        const field = LoadMirabufLocal('./public/test_mira/FRC_Field_2018_v14.mira');
+
+        const t = new MirabufParser(field);
+
+        printRigidNodeParts(t.rigidNodes, field);
+        expect(t.rigidNodes.length).toBe(34);
+    });
 });
 
-function printRigidNodeParts(nodes: RigidNode[], mira: mirabuf.Assembly) {
+function printRigidNodeParts(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembly) {
     nodes.forEach(x => {
         console.log(`[ ${x.name} ]:`);
         x.parts.forEach(y => console.log(`-> '${mira.data!.parts!.partInstances![y]!.info!.name!}'`));

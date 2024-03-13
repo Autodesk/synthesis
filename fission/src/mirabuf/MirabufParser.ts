@@ -41,8 +41,8 @@ class MirabufParser {
         return this._partToNodeMap;
     }
 
-    public get rigidNodes() {
-        return this._rigidNodes;
+    public get rigidNodes(): Array<RigidNodeReadOnly> {
+        return this._rigidNodes.map(x => new RigidNodeReadOnly(x));
     }
 
     public constructor(assembly: mirabuf.Assembly) {
@@ -54,12 +54,12 @@ class MirabufParser {
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const that = this;
 
-        const traverseJointParts = (nodes: mirabuf.INode[], rn: RigidNode) => {
+        function traverseTree(nodes: mirabuf.INode[], op: ((node: mirabuf.INode) => void)) {
             nodes.forEach(x => {
                 if (x.children) {
-                    traverseJointParts(x.children, rn);
+                    traverseTree(x.children, op);
                 }
-                that.MovePartToRigidNode(x.value!, rn);
+                op(x);
             });
         }
 
@@ -72,15 +72,39 @@ class MirabufParser {
                 this.MovePartToRigidNode(ancestorA, parentRN);
                 this.MovePartToRigidNode(ancestorB, this.NewRigidNode());
                 if (jInst.parts && jInst.parts.nodes)
-                    traverseJointParts(jInst.parts.nodes, parentRN);
+                    traverseTree(jInst.parts.nodes, x => this.MovePartToRigidNode(x.value!, parentRN));
             }
         });
+
+        // Fields Only: Assign Game Piece rigid nodes
+        if (!assembly.dynamic) {
+            // Collect all definitions labelled as gamepieces (dynamic = true)
+            const gamepieceDefinitions: Set<string> = new Set();
+            (Object.values(assembly.data!.parts!.partDefinitions!) as mirabuf.IPartDefinition[]).forEach(def => {
+                if (def.dynamic)
+                    gamepieceDefinitions.add(def.info!.GUID!);
+            });
+
+            // Create gamepiece rigid nodes from partinstances with corresponding definitons
+            (Object.values(assembly.data!.parts!.partInstances!) as mirabuf.IPartInstance[]).forEach(inst => {
+                if (gamepieceDefinitions.has(inst.partDefinitionReference!)) {
+                    const instNode = this.BinarySearchDesignTree(inst.info!.GUID!);
+                    if (instNode) {
+                        const gpRn = this.NewRigidNode('gp');
+                        this.MovePartToRigidNode(instNode!.value!, gpRn);
+                        instNode.children && traverseTree(instNode.children, x => this.MovePartToRigidNode(x.value!, gpRn));
+                    } else {
+                        this._errors.push([ParseErrorSeverity.LikelyIssues, 'Failed to find Game piece in Design Tree']);
+                    }
+                }
+            });
+        }
 
         // 2: Grounded joint
         const gInst = assembly.data!.joints!.jointInstances![GROUNDED_JOINT_ID];
         const gNode = this.NewRigidNode();
         
-        traverseJointParts(gInst.parts!.nodes!, gNode);
+        traverseTree(gInst.parts!.nodes!, x => this.MovePartToRigidNode(x.value!, gNode));
         
         // 3: Traverse and round up
         const traverseNodeRoundup = (node: mirabuf.INode, parentNode: RigidNode) => {
@@ -97,8 +121,15 @@ class MirabufParser {
 
         // 4: Bandage via rigidgroups
         assembly.data!.joints!.rigidGroups!.forEach(rg => {
-            const rn = this.NewRigidNode(rg.name!);
-            rg.occurrences!.forEach(y => this.MovePartToRigidNode(y, rn));
+            let rn: RigidNode | null = null;
+            rg.occurrences!.forEach(y => {
+                const currentRn = this._partToNodeMap.get(y)!;
+                if (!rn) {
+                    rn = currentRn;
+                } else if (currentRn != rn) {
+                    rn = this.MergeRigidNodes(currentRn, rn);
+                }
+            });
         });
 
         // 5. Remove Empty RNs
@@ -109,6 +140,13 @@ class MirabufParser {
         const node = new RigidNode((this._nodeNameCounter++).toString() + (suffix ? `_${suffix}` : ''));
         this._rigidNodes.push(node);
         return node;
+    }
+
+    private MergeRigidNodes(rnA: RigidNode, rnB: RigidNode) {
+        const newRn = this.NewRigidNode('merged');
+        const allParts = new Set<string>([...rnA.parts, ...rnB.parts]);
+        allParts.forEach(x => this.MovePartToRigidNode(x, newRn));
+        return newRn;
     }
 
     private MovePartToRigidNode(part: string, node: RigidNode) {
@@ -137,52 +175,64 @@ class MirabufParser {
         }
 
         const ptv = this._partTreeValues;
-
-        const binarySearch = (target: number, children: mirabuf.INode[]): number => {
-            let l = 0;
-            let h = children.length;
-
-            while (h - l > 1) {
-                const i = Math.floor((h + l) / 2.0);
-                const iVal = ptv.get(children[i].value!)!;
-                if (iVal > target) {
-                    h = i;
-                } else if (iVal < target) {
-                    l = i + 1;
-                } else {
-                    return i;
-                }
-            }
-
-            return Math.floor((h + l) / 2.0);
-        }
-
         let pathA = this._designHierarchyRoot;
         let pathB = this._designHierarchyRoot;
         const valueA = ptv.get(partA)!;
         const valueB = ptv.get(partB)!;
 
         while (pathA.value! == pathB.value! && pathA.value! != partA && pathB.value! != partB) {
-            const ancestorIndexA = binarySearch(valueA, pathA.children!);
+            const ancestorIndexA = this.BinarySearchIndex(valueA, pathA.children!);
             const ancestorValueA = ptv.get(pathA.children![ancestorIndexA].value!)!;
             pathA = pathA.children![ancestorIndexA + (ancestorValueA < valueA ? 1 : 0)];
 
-            const ancestorIndexB = binarySearch(valueB, pathB.children!);
+            const ancestorIndexB = this.BinarySearchIndex(valueB, pathB.children!);
             const ancestorValueB = ptv.get(pathB.children![ancestorIndexB].value!)!;
             pathB = pathB.children![ancestorIndexB + (ancestorValueB < valueB ? 1 : 0)];
         }
 
         if (pathA.value! == partA && pathA.value! == pathB.value!) {
-            const ancestorIndexB = binarySearch(valueB, pathB.children!);
+            const ancestorIndexB = this.BinarySearchIndex(valueB, pathB.children!);
             const ancestorValueB = ptv.get(pathB.children![ancestorIndexB].value!)!;
             pathB = pathB.children![ancestorIndexB + (ancestorValueB < valueB ? 1 : 0)];
         } else if (pathB.value! == partB && pathA.value! == pathB.value!) {
-            const ancestorIndexA = binarySearch(valueA, pathA.children!);
+            const ancestorIndexA = this.BinarySearchIndex(valueA, pathA.children!);
             const ancestorValueA = ptv.get(pathA.children![ancestorIndexA].value!)!;
             pathA = pathA.children![ancestorIndexA + (ancestorValueA < valueA ? 1 : 0)];
         }
 
         return [pathA.value!, pathB.value!];
+    }
+
+    private BinarySearchIndex(target: number, children: mirabuf.INode[]): number {
+        let l = 0;
+        let h = children.length;
+
+        while (h - l > 1) {
+            const i = Math.floor((h + l) / 2.0);
+            const iVal = this._partTreeValues.get(children[i].value!)!;
+            if (iVal > target) {
+                h = i;
+            } else if (iVal < target) {
+                l = i + 1;
+            } else {
+                return i;
+            }
+        }
+
+        return Math.floor((h + l) / 2.0);
+    }
+
+    private BinarySearchDesignTree(target: string): mirabuf.INode | null {
+        let node = this._designHierarchyRoot;
+        const targetValue = this._partTreeValues.get(target)!;
+
+        while (node.value != target && node.children) {
+            const i = this.BinarySearchIndex(targetValue, node.children!);
+            const iValue = this._partTreeValues.get(node.children![i].value!)!;
+            node = node.children![i + (iValue < targetValue ? 1 : 0)];
+        }
+
+        return node.value! == target ? node : null;
     }
 
     private GenerateTreeValues() {
@@ -208,12 +258,28 @@ class MirabufParser {
 /**
  * Collection of mirabuf parts that are bound together
  */
-export class RigidNode {
+class RigidNode {
     public name: string;
     public parts: Set<string> = new Set();
 
     public constructor(name: string) {
         this.name = name;
+    }
+}
+
+export class RigidNodeReadOnly {
+    private _original: RigidNode;
+    
+    public get name(): string {
+        return this._original.name;
+    }
+
+    public get parts(): ReadonlySet<string> {
+        return this._original.parts;
+    }
+
+    public constructor(original: RigidNode) {
+        this._original = original;
     }
 }
 
