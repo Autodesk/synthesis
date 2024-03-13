@@ -104,7 +104,7 @@ class MirabufParser {
         const gInst = assembly.data!.joints!.jointInstances![GROUNDED_JOINT_ID];
         const gNode = this.NewRigidNode();
         
-        traverseTree(gInst.parts!.nodes!, x => this.MovePartToRigidNode(x.value!, gNode));
+        traverseTree(gInst.parts!.nodes!, x => (!this._partToNodeMap.has) && this.MovePartToRigidNode(x.value!, gNode));
         
         // 3: Traverse and round up
         const traverseNodeRoundup = (node: mirabuf.INode, parentNode: RigidNode) => {
@@ -126,7 +126,7 @@ class MirabufParser {
                 const currentRn = this._partToNodeMap.get(y)!;
                 if (!rn) {
                     rn = currentRn;
-                } else if (currentRn != rn) {
+                } else if (currentRn.name != rn.name) {
                     rn = this.MergeRigidNodes(currentRn, rn);
                 }
             });

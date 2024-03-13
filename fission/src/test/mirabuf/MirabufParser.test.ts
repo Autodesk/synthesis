@@ -25,8 +25,8 @@ describe('Mirabuf Parser Tests', () => {
         const parser = new MirabufParser(testCubeMira);
         const rn = parser.rigidNodes;
 
-        expect(rn.length).toBe(1);
-        printRigidNodeParts(rn, testCubeMira);
+        expect(filterNonPhysicsNodes(rn, testCubeMira).length).toBe(1);
+        // printRigidNodeParts(rn, testCubeMira);
     });
 
     test('Generate Rigid Nodes (PhysicsSpikeTest_v1.mira)', () => {
@@ -35,8 +35,8 @@ describe('Mirabuf Parser Tests', () => {
         const t = new MirabufParser(spikeMira);
         const rn = t.rigidNodes;
 
-        expect(rn.length).toBe(4);
-        printRigidNodeParts(rn, spikeMira);
+        expect(filterNonPhysicsNodes(rn, spikeMira).length).toBe(4);
+        // printRigidNodeParts(rn, spikeMira);
     });
 
     test('Generate Rigid Nodes (FRC_Field_2018_v14.mira)', () => {
@@ -44,10 +44,32 @@ describe('Mirabuf Parser Tests', () => {
 
         const t = new MirabufParser(field);
 
-        printRigidNodeParts(t.rigidNodes, field);
-        expect(t.rigidNodes.length).toBe(34);
+        // printRigidNodeParts(t.rigidNodes, field);
+        expect(filterNonPhysicsNodes(t.rigidNodes, field).length).toBe(34);
+    });
+
+    test('Generate Rigid Nodes (Team_2471_(2018)_v7.mira)', () => {
+        const mm = LoadMirabufLocal('./public/test_mira/Team_2471_(2018)_v7.mira');
+
+        const t = new MirabufParser(mm);
+
+        // printRigidNodeParts(t.rigidNodes, mm);
+        expect(filterNonPhysicsNodes(t.rigidNodes, mm).length).toBe(10);
     });
 });
+
+function filterNonPhysicsNodes(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembly): RigidNodeReadOnly[] {
+    return nodes.filter(x => {
+        for (const part of x.parts) {
+            const inst = mira.data!.parts!.partInstances![part]!;
+            const def = mira.data!.parts!.partDefinitions![inst.partDefinitionReference!]!;
+            if (def.bodies && def.bodies.length > 0) {
+                return true;
+            }
+        }
+        return false;
+    });
+}
 
 function printRigidNodeParts(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembly) {
     nodes.forEach(x => {

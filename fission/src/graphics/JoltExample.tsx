@@ -31,8 +31,8 @@ let bodyInterface: any;
 
 const dynamicObjects: any[] = [];
 
-// const MIRA_FILE = "Team 2471 (2018)_v7.mira"
-const MIRA_FILE = "Dozer_v2.mira"
+// const MIRA_FILE = "test_mira/Team_2471_(2018)_v7.mira"
+const MIRA_FILE = "test_mira/Dozer_v2.mira"
 
 const LAYER_NOT_MOVING = 0;
 const LAYER_MOVING = 1;
