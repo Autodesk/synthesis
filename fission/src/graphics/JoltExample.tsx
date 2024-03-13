@@ -457,7 +457,6 @@ function MyThree() {
                     const mesh = body.triangleMesh;
                     const geometry = new THREE.BufferGeometry();
                     if (mesh && mesh.mesh && mesh.mesh.verts && mesh.mesh.normals && mesh.mesh.uv && mesh.mesh.indices) {
-
                         const newVerts = new Float32Array(mesh.mesh.verts.length);
                         for (let i = 0; i < mesh.mesh.verts.length; i += 3) {
                             newVerts[i] = mesh.mesh.verts.at(i)! / 100.0;
@@ -467,9 +466,9 @@ function MyThree() {
 
                         const newNorms = new Float32Array(mesh.mesh.normals.length);
                         for (let i = 0; i < mesh.mesh.normals.length; i += 3) {
-                            newNorms[i] = mesh.mesh.normals.at(i)! / 100.0;
-                            newNorms[i + 1] = mesh.mesh.normals.at(i + 1)! / 100.0;
-                            newNorms[i + 2] = mesh.mesh.normals.at(i + 2)! / 100.0;
+                            newNorms[i] = mesh.mesh.normals.at(i)! / 1;
+                            newNorms[i + 1] = mesh.mesh.normals.at(i + 1)! / 1;
+                            newNorms[i + 2] = mesh.mesh.normals.at(i + 2)! / 1;
                         }
 
                         geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(newVerts), 3));
@@ -494,14 +493,16 @@ function MyThree() {
                                 shininess: 0.5,
                             });
                         }
-                        for (const entry of transforms.entries()) {
-                            if (partInstances.get(entry[0])!.partDefinitionReference! != definition.info!.GUID!) continue;
-                            geometry.applyMatrix4(entry[1]);
-                        }
                         const threeMesh = new THREE.Mesh( geometry, material );
                         threeMesh.receiveShadow = true;
                         threeMesh.castShadow = true;
                         scene.add(threeMesh);
+                        for (const entry of transforms.entries()) {
+                            if (partInstances.get(entry[0])!.partDefinitionReference! != definition.info!.GUID!) continue;
+                            // geometry.applyMatrix4(entry[1]);
+                            threeMesh.position.applyMatrix4(entry[1]);
+                            threeMesh.rotation.setFromRotationMatrix(entry[1]);
+                        }
                     }
                 }
             }
@@ -521,7 +522,7 @@ function MyThree() {
         initPhysics();
         render();
 
-        createFloor();
+        // createFloor();
 
         // Spawn the y-cube of blocks as specified in the spike document.
         // spikeTestScene();
