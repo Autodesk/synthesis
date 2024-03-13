@@ -13,7 +13,7 @@ import { useEffect, useRef } from 'react';
 import { random } from '../util/Random.ts';
 import Jolt from '@barclah/jolt-physics';
 import { mirabuf } from "../proto/mirabuf"
-import loadMirabufRemote from '../mirabuf/MirabufLoader.ts';
+import { LoadMirabufRemote } from '../mirabuf/MirabufLoader.ts';
 import MirabufParser from '../mirabuf/MirabufParser.ts';
 
 const clock = new THREE.Clock();
@@ -400,7 +400,7 @@ function MyThree() {
 
 
     useEffect(() => {
-        loadMirabufRemote(MIRA_FILE).then((assembly: mirabuf.Assembly | undefined) => {
+        LoadMirabufRemote(MIRA_FILE).then((assembly: mirabuf.Assembly | undefined) => {
             if (!assembly) return;
             const data = assembly.data;
             console.log(assembly.toJSON())
