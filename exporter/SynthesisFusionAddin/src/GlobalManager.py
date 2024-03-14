@@ -1,4 +1,5 @@
 """ Initializes the global variables that are set in the run method to reduce hanging commands. """
+
 import adsk.core, adsk.fusion, traceback
 import inspect
 

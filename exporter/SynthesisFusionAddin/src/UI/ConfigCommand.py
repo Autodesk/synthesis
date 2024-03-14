@@ -1690,6 +1690,7 @@ class MySelectHandler(adsk.core.SelectionEventHandler):
             # indicator = INPUTS_ROOT.itemById("algorithmic_indicator")
 
             if self.selectedOcc:
+                self.cmd.setCursor("", 0, 0)
                 if dropdownExportMode.selectedItem.index == 1:
                     occurrenceList = gm.app.activeDocument.design.rootComponent.allOccurrencesByComponent(
                         self.selectedOcc.component
@@ -1704,6 +1705,7 @@ class MySelectHandler(adsk.core.SelectionEventHandler):
                     selectionInput.isVisible = False
 
             elif self.selectedJoint:
+                self.cmd.setCursor("", 0, 0)
                 jointType = self.selectedJoint.jointMotion.jointType
                 if (
                     jointType == JointMotions.REVOLUTE.value
@@ -1753,17 +1755,20 @@ class MyPreSelectHandler(adsk.core.SelectionEventHandler):
         try:
             design = adsk.fusion.Design.cast(gm.app.activeProduct)
             preSelectedOcc = adsk.fusion.Occurrence.cast(args.selection.entity)
+            preSelectedJoint = adsk.fusion.Joint.cast(args.selection.entity)
 
             onSelect = gm.handlers[3]  # select handler
 
-            if not preSelectedOcc or not design:
+            if (not preSelectedOcc and not preSelectedJoint) or not design:
                 self.cmd.setCursor("", 0, 0)
                 return
 
+            preSelected = preSelectedOcc if preSelectedOcc else preSelectedJoint
+
             dropdownExportMode = INPUTS_ROOT.itemById("mode")
-            if preSelectedOcc and design:
+            if preSelected and design:
                 if dropdownExportMode.selectedItem.index == 0:
-                    if preSelectedOcc.entityToken in onSelect.allWheelPreselections:
+                    if preSelected.entityToken in onSelect.allWheelPreselections:
                         self.cmd.setCursor(
                             IconPaths.mouseIcons["remove"],
                             0,
@@ -1777,7 +1782,7 @@ class MyPreSelectHandler(adsk.core.SelectionEventHandler):
                         )
 
                 elif dropdownExportMode.selectedItem.index == 1:
-                    if preSelectedOcc.entityToken in onSelect.allGamepiecePreselections:
+                    if preSelected.entityToken in onSelect.allGamepiecePreselections:
                         self.cmd.setCursor(
                             IconPaths.mouseIcons["remove"],
                             0,
@@ -1789,6 +1794,8 @@ class MyPreSelectHandler(adsk.core.SelectionEventHandler):
                             0,
                             0,
                         )
+            else:
+                self.cmd.setCursor("", 0, 0)
         except:
             if gm.ui:
                 gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
@@ -1811,8 +1818,9 @@ class MyPreselectEndHandler(adsk.core.SelectionEventHandler):
         try:
             design = adsk.fusion.Design.cast(gm.app.activeProduct)
             preSelectedOcc = adsk.fusion.Occurrence.cast(args.selection.entity)
+            preSelectedJoint = adsk.fusion.Joint.cast(args.selection.entity)
 
-            if preSelectedOcc and design:
+            if (preSelectedOcc or preSelectedJoint) and design:
                 self.cmd.setCursor(
                     "", 0, 0
                 )  # if preselection ends (mouse off of design), reset the mouse icon to default
@@ -1932,22 +1940,22 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                         gamepieceConfig.isVisible = False
                         weightTableInput.isVisible = True
 
-                        addFieldInput.isEnabled = (
-                            wheelConfig.isVisible
-                        ) = jointConfig.isVisible = True
+                        addFieldInput.isEnabled = wheelConfig.isVisible = (
+                            jointConfig.isVisible
+                        ) = True
 
                 elif modeDropdown.selectedItem.index == 1:
                     if gamepieceConfig:
                         gm.ui.activeSelections.clear()
                         gm.app.activeDocument.design.rootComponent.opacity = 1
 
-                        addWheelInput.isEnabled = (
-                            addJointInput.isEnabled
-                        ) = gamepieceConfig.isVisible = True
+                        addWheelInput.isEnabled = addJointInput.isEnabled = (
+                            gamepieceConfig.isVisible
+                        ) = True
 
-                        jointConfig.isVisible = (
-                            wheelConfig.isVisible
-                        ) = weightTableInput.isVisible = False
+                        jointConfig.isVisible = wheelConfig.isVisible = (
+                            weightTableInput.isVisible
+                        ) = False
 
             elif cmdInput.id == "joint_config":
                 gm.app.activeDocument.design.rootComponent.opacity = 1
@@ -2087,6 +2095,7 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
 
                 wheelSelect.isVisible = True
                 wheelSelect.isEnabled = True
+                wheelSelect.clearSelection()
                 addJointInput.isEnabled = True
                 addWheelInput.isEnabled = False
 
@@ -2096,6 +2105,7 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                 addWheelInput.isEnabled = True
                 jointSelect.isVisible = True
                 jointSelect.isEnabled = True
+                jointSelect.clearSelection()
                 addJointInput.isEnabled = False
 
             elif cmdInput.id == "field_add":
@@ -2103,6 +2113,7 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
 
                 gamepieceSelect.isVisible = True
                 gamepieceSelect.isEnabled = True
+                gamepieceSelect.clearSelection()
                 addFieldInput.isEnabled = False
 
             elif cmdInput.id == "wheel_delete":
@@ -2146,18 +2157,12 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                     removeGamePieceFromTable(index)
 
             elif cmdInput.id == "wheel_select":
-                self.reset()
-
                 addWheelInput.isEnabled = True
 
             elif cmdInput.id == "joint_select":
-                self.reset()
-
                 addJointInput.isEnabled = True
 
             elif cmdInput.id == "gamepiece_select":
-                self.reset()
-
                 addFieldInput.isEnabled = True
 
             elif cmdInput.id == "friction_override":
