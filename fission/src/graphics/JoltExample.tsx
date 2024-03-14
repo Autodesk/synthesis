@@ -447,9 +447,24 @@ function MyThree() {
                 getTransforms(child, mat!);
             }
 
-            const definitions = parts.partDefinitions;
-            if (!definitions) return;
-            for (const definition of Object.values(definitions)) {
+            let i = 0;
+
+            const materials = [
+                new THREE.MeshToonMaterial({
+                    color: 0xe32b50
+                }),
+                new THREE.MeshToonMaterial({
+                    color: 0x4ccf57
+                }),
+                new THREE.MeshToonMaterial({
+                    color: 0xcf4cca
+                })
+            ]
+
+            const instances = parts.partInstances;
+            if (!instances) return;
+            for (const instance of Object.values(instances).filter(x => x.info!.name!.startsWith('EyeBall'))) {
+                const definition = assembly.data!.parts!.partDefinitions![instance.partDefinitionReference!]!;
                 const bodies = definition.bodies;
                 if (!bodies) continue;
                 for (const body of bodies) {
@@ -482,22 +497,24 @@ function MyThree() {
                         geometry.setIndex(mesh.mesh.indices);
 
                         const appearanceOverride = body.appearanceOverride;
-                        let material;
+                        const material = materials[i++ % materials.length];
                         let appearances;
-                        if (appearanceOverride && (appearances = data.materials?.appearances) && appearances[appearanceOverride]) {
-                            const miraMaterial = data.materials.appearances[appearanceOverride];
-                            let hex = 0xe32b50;
-                            if (miraMaterial.albedo) {
-                                const {A, B, G, R} = miraMaterial.albedo;
-                                if (A && B && G && R)
-                                    hex = A << 24 | R << 16 | G << 8  | B;
-                            }
 
-                            material = new THREE.MeshPhongMaterial({
-                                color: hex,
-                                shininess: 0.5,
-                            });
-                        }
+                        // if (appearanceOverride && (appearances = data.materials?.appearances) && appearances[appearanceOverride]) {
+                        //     const miraMaterial = data.materials.appearances[appearanceOverride];
+                        //     let hex = 0xe32b50;
+                        //     if (miraMaterial.albedo) {
+                        //         const {A, B, G, R} = miraMaterial.albedo;
+                        //         if (A && B && G && R)
+                        //             hex = A << 24 | R << 16 | G << 8  | B;
+                        //     }
+
+                        //     material = new THREE.MeshPhongMaterial({
+                        //         color: hex,
+                        //         shininess: 0.5,
+                        //     });
+                        // }
+
                         const threeMesh = new THREE.Mesh( geometry, material );
                         threeMesh.receiveShadow = true;
                         threeMesh.castShadow = true;
@@ -506,6 +523,7 @@ function MyThree() {
                             if (partInstances.get(entry[0])!.partDefinitionReference! != definition.info!.GUID!) continue;
                             // geometry.applyMatrix4(entry[1]);
                             threeMesh.position.setFromMatrixPosition(entry[1]);
+                            threeMesh.position.add(new THREE.Vector3(0.0, 0.1 * i, 0.0));
                             threeMesh.rotation.setFromRotationMatrix(entry[1]);
                         }
                     }
