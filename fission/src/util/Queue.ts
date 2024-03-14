@@ -8,7 +8,7 @@ class Queue<T> {
 
     constructor() { }
 
-    public enqueue(...items: T[]) {
+    public Enqueue(...items: T[]) {
         for (const item of items) {
             const node = new LinkedNode<T>(item);
             if (this._head) {
@@ -22,7 +22,7 @@ class Queue<T> {
         }
     }
 
-    public dequeue(): T | undefined {
+    public Dequeue(): T | undefined {
         let retVal: T | undefined;
         if (this._head) {
             retVal = this._head.value;
@@ -37,7 +37,7 @@ class Queue<T> {
         const queue = new Queue<T>();
         let node = this._head;
         while (node != null) {
-            queue.enqueue(node.value);
+            queue.Enqueue(node.value);
             node = node.next;
         }
         return queue;

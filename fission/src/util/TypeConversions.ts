@@ -1,6 +1,7 @@
 import * as THREE from 'three';
-import JOLT from '../loading/JoltSyncLoader';
+import JOLT from './loading/JoltSyncLoader';
 import Jolt from '@barclah/jolt-physics';
+import { mirabuf } from "../proto/mirabuf";
 
 export function _JoltQuat(a: THREE.Euler | THREE.Quaternion | undefined) {
     if (a instanceof THREE.Euler) {
@@ -32,4 +33,13 @@ export function JoltVec3_ThreeVector3(vec: Jolt.Vec3) {
 
 export function JoltQuat_ThreeQuaternion(quat: Jolt.Quat) {
     return new THREE.Quaternion(quat.GetX(), quat.GetY(), quat.GetZ(), quat.GetW());
+}
+
+export function MirabufTransform_ThreeMatrix4(m: mirabuf.ITransform): THREE.Matrix4 {
+    const arr = m.spatialMatrix!;
+    const pos = new THREE.Vector3(arr[3] * 0.01, arr[7] * 0.01, arr[11] * 0.01);
+    const mat = new THREE.Matrix4().fromArray(arr);
+    const onlyRotation = new THREE.Matrix4().extractRotation(mat).transpose();
+    const quat = new THREE.Quaternion().setFromRotationMatrix(onlyRotation);
+    return new THREE.Matrix4().compose(pos, quat, new THREE.Vector3(1, 1, 1));
 }

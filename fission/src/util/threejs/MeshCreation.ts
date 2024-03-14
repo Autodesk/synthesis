@@ -1,8 +1,8 @@
 import JOLT from '../loading/JoltSyncLoader.ts';
 import Jolt from '@barclah/jolt-physics';
 import * as THREE from 'three';
-import { JoltVec3_ThreeVector3, JoltQuat_ThreeQuaternion } from '../conversions/JoltThreeConversions';
-import { random } from '../Random.ts';
+import { JoltVec3_ThreeVector3, JoltQuat_ThreeQuaternion } from '../TypeConversions.ts';
+import { Random } from '../Random.ts';
 
 export const LAYER_NOT_MOVING = 0;
 export const LAYER_MOVING = 1;
@@ -87,19 +87,19 @@ export function removeFromScene(scene: THREE.Scene, threeObject: THREE.Mesh, bod
 }
 
 function getRandomQuat() {
-	const vec = new JOLT.Vec3(0.001 + random(), random(), random());
-	const quat = JOLT.Quat.prototype.sRotation(vec.Normalized(), 2 * Math.PI * random());
+	const vec = new JOLT.Vec3(0.001 + Random(), Random(), Random());
+	const quat = JOLT.Quat.prototype.sRotation(vec.Normalized(), 2 * Math.PI * Random());
 	JOLT.destroy(vec);
 	return quat;
 }
 
 function makeRandomBox(scene: THREE.Scene, bodyInterface: Jolt.BodyInterface, dynamicObjects: THREE.Mesh[]) {
-    const pos = new JOLT.Vec3((random() - 0.5) * 25, 15, (random() - 0.5) * 25);
+    const pos = new JOLT.Vec3((Random() - 0.5) * 25, 15, (Random() - 0.5) * 25);
     const rot = getRandomQuat();
 
-    const x = random();
-    const y = random();
-    const z = random();
+    const x = Random();
+    const y = Random();
+    const z = Random();
     const size = new JOLT.Vec3(x, y, z);
     const shape = new JOLT.BoxShape(size, 0.05, undefined);
     const creationSettings = new JOLT.BodyCreationSettings(shape, pos, rot, JOLT.EMotionType_Dynamic, LAYER_MOVING);

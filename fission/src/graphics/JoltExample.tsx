@@ -11,7 +11,7 @@ import { useEffect, useRef } from 'react';
 import Jolt from '@barclah/jolt-physics';
 import { mirabuf } from "../proto/mirabuf"
 import { LoadMirabufRemote } from '../mirabuf/MirabufLoader.ts';
-import { JoltVec3_ThreeVector3, JoltQuat_ThreeQuaternion } from '../util/conversions/JoltThreeConversions';
+import { JoltVec3_ThreeVector3, JoltQuat_ThreeQuaternion } from '../util/TypeConversions.ts';
 import { COUNT_OBJECT_LAYERS, LAYER_MOVING, LAYER_NOT_MOVING, addToScene, removeFromScene } from '../util/threejs/MeshCreation.ts';
 import { applyTransforms } from '../mirabuf/MirabufTransforms.ts';
 
@@ -103,8 +103,8 @@ function initGraphics() {
     directionalLight.shadow.camera.right = shadowCamSize;
     directionalLight.shadow.mapSize = new THREE.Vector2(shadowMapSize, shadowMapSize);
     directionalLight.shadow.blurSamples = 16;
-    directionalLight.shadow.normalBias = -0.02;
-    // directionalLight.shadow.bias = -0.01;
+    directionalLight.shadow.normalBias = 0.01;
+    directionalLight.shadow.bias = 0.00;
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
     scene.add(ambientLight);
@@ -168,8 +168,11 @@ function MyThree() {
     const urlParams = new URLSearchParams(document.location.search);
     let mira_path = MIRA_FILE;
 
+    urlParams.forEach((v, k, p) => console.debug(`${k}: ${v}`));
+
     if (urlParams.has("mira")) {
         mira_path = `test_mira/${urlParams.get("mira")!}`;
+        console.debug(`Selected Mirabuf File: ${mira_path}`);
     }
     console.log(urlParams)
 
@@ -193,7 +196,7 @@ function MyThree() {
         initPhysics();
         render();
 
-        createFloor();
+        // createFloor();
     }, []);
 
     return (

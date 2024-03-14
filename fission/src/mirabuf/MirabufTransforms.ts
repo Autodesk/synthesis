@@ -1,7 +1,9 @@
 import * as THREE from 'three';
 import { mirabuf } from "../proto/mirabuf"
 import MirabufParser from '../mirabuf/MirabufParser.ts';
-import { MirabufTransform_ThreeMatrix4 } from '../util/conversions/MiraThreeConversions.ts';
+import { MirabufTransform_ThreeMatrix4 } from '../util/TypeConversions.ts';
+
+const NORMAL_MATERIALS = false;
 
 export const matToString = (mat: THREE.Matrix4) => {
     const arr = mat.toArray();
@@ -79,7 +81,7 @@ const getMaterial = (data: mirabuf.IAssemblyData, appearanceOverride: string | u
 
         return new THREE.MeshPhongMaterial({
             color: hex,
-            shininess: 0.5,
+            shininess: 0.0,
         });
     }
 }
@@ -141,6 +143,9 @@ export const applyTransforms = (assembly: mirabuf.Assembly | undefined, scene: T
 
             const instances = parts.partInstances;
             if (!instances) return;
+
+            let meshCount = 0;
+
             for (const instance of Object.values(instances)/* .filter(x => x.info!.name!.startsWith('EyeBall')) */) {
                 const definition = assembly.data!.parts!.partDefinitions![instance.partDefinitionReference!]!;
                 const bodies = definition.bodies;
@@ -153,13 +158,17 @@ export const applyTransforms = (assembly: mirabuf.Assembly | undefined, scene: T
                         transformGeometry(geometry, mesh.mesh!);
 
                         const appearanceOverride = body.appearanceOverride;
-                        const material: THREE.Material = getMaterial(data, appearanceOverride) || materials[i++ % materials.length];
+                        let material: THREE.Material = getMaterial(data, appearanceOverride) || materials[i++ % materials.length];
 
+                        if (NORMAL_MATERIALS) {
+                            material = new THREE.MeshNormalMaterial();
+                        }
 
                         const threeMesh = new THREE.Mesh( geometry, material );
-                        // threeMesh.receiveShadow = true;
-                        // threeMesh.castShadow = true;
+                        threeMesh.receiveShadow = true;
+                        threeMesh.castShadow = true;
                         scene.add(threeMesh);
+                        meshCount++;
                         
                         const mat = transforms.get(instance.info!.GUID!)!;
                         
@@ -170,4 +179,6 @@ export const applyTransforms = (assembly: mirabuf.Assembly | undefined, scene: T
                     }
                 }
             }
+
+            console.debug(`Meshes Added to the Scene -> ${meshCount}`);
         }
