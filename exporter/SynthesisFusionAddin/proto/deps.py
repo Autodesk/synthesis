@@ -52,7 +52,8 @@ def executeCommand(command: tuple) -> int:
         )
     else:
         # Uses os.system because I was unable to get subprocess.call to work on MacOS
-        executionResult = os.system(str.join(' ', command))
+        installComm = str.join(' ', command)
+        executionResult = os.system(installComm)
 
     return executionResult
 
@@ -104,7 +105,7 @@ def installCross(pipDeps: list) -> bool:
         progressBar.message = f"Installing {depName}..."
         adsk.doEvents()
         # os.path.join needed for varying system path separators
-        installResult = executeCommand([os.path.join(pythonFolder, 'python'), '-m', 'pip', 'install', depName])
+        installResult = executeCommand([f"\"{os.path.join(pythonFolder, 'python')}\"", '-m', 'pip', 'install', depName])
         if installResult != 0:
             logging.getLogger(f'{INTERNAL_ID}').warn(f'Dep installation "{depName}" exited with code "{installResult}"')
 
@@ -116,7 +117,7 @@ def installCross(pipDeps: list) -> bool:
             progressBar.message = f"Uninstalling {depName}..."
             progressBar.progressValue += 1
             adsk.doEvents()
-            uninstallResult = executeCommand([os.path.join(pythonFolder, 'python'), '-m', 'pip', 'uninstall', f'{depName}', '-y'])
+            uninstallResult = executeCommand([f"\"{os.path.join(pythonFolder, 'python')}\"", '-m', 'pip', 'uninstall', f'{depName}', '-y'])
             if uninstallResult != 0:
                 logging.getLogger(f'{INTERNAL_ID}').warn(f'AntiDep uninstallation "{depName}" exited with code "{uninstallResult}"')
 
