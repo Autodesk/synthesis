@@ -27,7 +27,7 @@ export function ThreeVector3_JoltVec3(vec: THREE.Vector3) {
     return new JOLT.Vec3(vec.x, vec.y, vec.z);
 }
 
-export function JoltVec3_ThreeVector3(vec: Jolt.Vec3) {
+export function JoltVec3_ThreeVector3(vec: Jolt.Vec3 | Jolt.RVec3) {
     return new THREE.Vector3(vec.GetX(), vec.GetY(), vec.GetZ());
 }
 
@@ -42,4 +42,12 @@ export function MirabufTransform_ThreeMatrix4(m: mirabuf.ITransform): THREE.Matr
     const onlyRotation = new THREE.Matrix4().extractRotation(mat).transpose();
     const quat = new THREE.Quaternion().setFromRotationMatrix(onlyRotation);
     return new THREE.Matrix4().compose(pos, quat, new THREE.Vector3(1, 1, 1));
+}
+
+export function JoltMat44_ThreeMatrix4(m: Jolt.Mat44): THREE.Matrix4 {
+    return new THREE.Matrix4().compose(
+        JoltVec3_ThreeVector3(m.GetTranslation()),
+        JoltQuat_ThreeQuaternion(m.GetQuaternion()),
+        new THREE.Vector3(1, 1, 1)
+    );
 }

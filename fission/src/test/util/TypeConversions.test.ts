@@ -1,9 +1,11 @@
 import { test, expect, describe } from 'vitest';
 import * as THREE from 'three';
-import { MirabufTransform_ThreeMatrix4, ThreeEuler_JoltQuat, ThreeQuaternion_JoltQuat, ThreeVector3_JoltVec3, _JoltQuat } from '../../util/TypeConversions';
+import { JoltMat44_ThreeMatrix4, MirabufTransform_ThreeMatrix4, ThreeEuler_JoltQuat, ThreeQuaternion_JoltQuat, ThreeVector3_JoltVec3, _JoltQuat } from '../../util/TypeConversions';
 import { mirabuf } from '../../proto/mirabuf';
+import JOLT from '../../util/loading/JoltSyncLoader';
+import Jolt from '@barclah/jolt-physics';
 
-describe('ThreeJS to Jolt Conversions', async () => {
+describe('Three to Jolt Conversions', async () => {
     test('THREE.Vector3 -> JOLT.Vec3', () => {
         const a = new THREE.Vector3(2, 4, 1);
         const joltVec = ThreeVector3_JoltVec3(a);
@@ -81,8 +83,8 @@ function miraMatToString(mat: mirabuf.ITransform) {
         + `${arr[12].toFixed(4)}, ${arr[13].toFixed(4)}, ${arr[14].toFixed(4)}, ${arr[15].toFixed(4)},\n]`
 }
 
-describe('Mirabuf Conversion Tests', () => {
-    test('Matrix | Identity', () => {
+describe('Mirabuf to Three Conversions', () => {
+    test('Mirabuf.Transform [Identity] -> THREE.Matrix4', () => {
         const miraMat = new mirabuf.Transform();
         miraMat.spatialMatrix = [
             1, 0, 0, 0,
@@ -104,7 +106,7 @@ describe('Mirabuf Conversion Tests', () => {
         }
     });
 
-    test('Matrix | Rotation -> +X', () => {
+    test('Mirabuf.Transform [+X Axis Rotation] -> THREE.Matrix4', () => {
         const miraMat = new mirabuf.Transform();
         miraMat.spatialMatrix = [
             1, 0, 0, 0,
@@ -122,11 +124,11 @@ describe('Mirabuf Conversion Tests', () => {
         const threeArr = threeMat.transpose().toArray(); // To Array gives column major for some reason. See docs
 
         for (let i = 0; i < 16; i++) {
-            expect(threeArr[i] - miraArr[i]).toBeLessThan(0.00001);
+            expect(threeArr[i]).toBeCloseTo(miraArr[i]);
         }
     });
 
-    test('Matrix | Rotation -> -X', () => {
+    test('Mirabuf.Transform [-X Axis Rotation] -> THREE.Matrix4', () => {
         const miraMat = new mirabuf.Transform();
         miraMat.spatialMatrix = [
             1, 0, 0, 0,
@@ -144,7 +146,121 @@ describe('Mirabuf Conversion Tests', () => {
         const threeArr = threeMat.transpose().toArray(); // To Array gives column major for some reason. See docs
 
         for (let i = 0; i < 16; i++) {
-            expect(threeArr[i] - miraArr[i]).toBeLessThan(0.00001);
+            expect(threeArr[i]).toBeCloseTo(miraArr[i]);
         }
+    });
+});
+
+describe('Jolt to Three Conversions', () => {
+
+    function compareMat(jM: Jolt.Mat44, tM: THREE.Matrix4) {
+        const threeArr = tM.toArray();
+
+        for (let c = 0; c < 4; c++) {
+            const column = jM.GetColumn4(c);
+            for (let r = 0; r < 4; r++) {
+                expect(threeArr[c * 4 + r]).toBeCloseTo(column.GetComponent(r), 4);
+            }
+            JOLT.destroy(column);
+        }
+
+        const threeTranslation = new THREE.Vector3();
+        const threeRotation = new THREE.Quaternion();
+        const threeScale = new THREE.Vector3();
+        tM.decompose(threeTranslation, threeRotation, threeScale);
+
+        const joltTranslation = jM.GetTranslation();
+        const joltRotation = jM.GetQuaternion();
+        const joltScale = new JOLT.Vec3(1, 1, 1);
+
+        expect(threeTranslation.x).toBeCloseTo(joltTranslation.GetX(), 4);
+        expect(threeTranslation.y).toBeCloseTo(joltTranslation.GetY(), 4);
+        expect(threeTranslation.z).toBeCloseTo(joltTranslation.GetZ(), 4);
+        // JOLT.destroy(joltTranslation); // Causes error for some reason?
+        expect(threeRotation.x).toBeCloseTo(joltRotation.GetX(), 4);
+        expect(threeRotation.y).toBeCloseTo(joltRotation.GetY(), 4);
+        expect(threeRotation.z).toBeCloseTo(joltRotation.GetZ(), 4);
+        expect(threeRotation.w).toBeCloseTo(joltRotation.GetW(), 4);
+        JOLT.destroy(joltRotation);
+        expect(threeScale.x).toBeCloseTo(joltScale.GetX(), 4);
+        expect(threeScale.y).toBeCloseTo(joltScale.GetY(), 4);
+        expect(threeScale.z).toBeCloseTo(joltScale.GetZ(), 4);
+        JOLT.destroy(joltScale);
+    }
+
+    test('Jolt.Mat44 [Identity] -> THREE.Matrix4', () => {
+        const tmp = new JOLT.Mat44();
+        const joltMat = tmp.sIdentity();
+        const threeMat = JoltMat44_ThreeMatrix4(joltMat);
+
+        compareMat(joltMat, threeMat);
+
+        JOLT.destroy(joltMat);
+    });
+
+    test('Jolt.Mat44 [+X Axis Rotation] -> THREE.Matrix4', () => {
+        const joltMat = new JOLT.Mat44();
+        const c0 = new JOLT.Vec4(1, 0, 0, 0);
+        const c1 = new JOLT.Vec4(0, 0,-1, 0);
+        const c2 = new JOLT.Vec4(0, 1, 0, 0);
+        const c3 = new JOLT.Vec4(0, 0, 0, 1);
+        joltMat.SetColumn4(0, c0);
+        joltMat.SetColumn4(1, c1);
+        joltMat.SetColumn4(2, c2);
+        joltMat.SetColumn4(3, c3);
+        JOLT.destroy(c0);
+        JOLT.destroy(c1);
+        JOLT.destroy(c2);
+        JOLT.destroy(c3);
+
+        const threeMat = JoltMat44_ThreeMatrix4(joltMat);
+        
+        compareMat(joltMat, threeMat);
+
+        JOLT.destroy(joltMat);
+    });
+
+    test('Jolt.Mat44 [-X Axis Rotation] -> THREE.Matrix4', () => {
+        const joltMat = new JOLT.Mat44();
+        const c0 = new JOLT.Vec4(1, 0, 0, 0);
+        const c1 = new JOLT.Vec4(0, 0, 1, 0);
+        const c2 = new JOLT.Vec4(0,-1, 0, 0);
+        const c3 = new JOLT.Vec4(0, 0, 0, 1);
+        joltMat.SetColumn4(0, c0);
+        joltMat.SetColumn4(1, c1);
+        joltMat.SetColumn4(2, c2);
+        joltMat.SetColumn4(3, c3);
+        JOLT.destroy(c0);
+        JOLT.destroy(c1);
+        JOLT.destroy(c2);
+        JOLT.destroy(c3);
+
+        const threeMat = JoltMat44_ThreeMatrix4(joltMat);
+        
+        compareMat(joltMat, threeMat);
+
+        JOLT.destroy(joltMat);
+    });
+
+    test('Jolt.Mat44 [X,Y Translation] -> THREE.Matrix4', () => {
+        const joltMat = new JOLT.Mat44();
+        const c0 = new JOLT.Vec4(1, 0, 0, 0);
+        const c1 = new JOLT.Vec4(0, 1, 0, 0);
+        const c2 = new JOLT.Vec4(0, 0, 1, 0);
+        const c3 = new JOLT.Vec4(5, 3, 0, 1);
+        joltMat.SetColumn4(0, c0);
+        joltMat.SetColumn4(1, c1);
+        joltMat.SetColumn4(2, c2);
+        joltMat.SetColumn4(3, c3);
+        JOLT.destroy(c0);
+        JOLT.destroy(c1);
+        JOLT.destroy(c2);
+        JOLT.destroy(c3);
+
+        const threeMat = JoltMat44_ThreeMatrix4(joltMat);
+        
+        compareMat(joltMat, threeMat);
+
+        JOLT.destroy(joltMat);
     });
 });
