@@ -15,6 +15,7 @@ import Jolt from '@barclah/jolt-physics';
 import { mirabuf } from "../proto/mirabuf"
 import { LoadMirabufRemote } from '../mirabuf/MirabufLoader.ts';
 import MirabufParser from '../mirabuf/MirabufParser.ts';
+import { MirabufTransform_ThreeMatrix4 } from '../util/conversions/MiraThreeConversions.ts';
 
 const clock = new THREE.Clock();
 let time = 0;
@@ -434,7 +435,7 @@ function MyThree() {
                     hacky = partInstance.info!.name!;
                     
                     if (transforms.has(child.value!)) continue;
-                    const mat = wrapMat4(partInstance.transform!)!;
+                    const mat = MirabufTransform_ThreeMatrix4(partInstance.transform!)!;
 
                     console.log(`[${partInstance.info!.name!}] -> ${matToString(mat)}`);
 
@@ -452,10 +453,10 @@ function MyThree() {
                     if (!def.baseTransform) {
                         mat = new THREE.Matrix4().identity();
                     } else {
-                        mat = wrapMat4(def.baseTransform);
+                        mat = MirabufTransform_ThreeMatrix4(def.baseTransform);
                     }
                 } else {
-                    mat = wrapMat4(partInstance.transform);
+                    mat = MirabufTransform_ThreeMatrix4(partInstance.transform);
                 }
 
                 console.log(`[${partInstance.info!.name!}] -> ${matToString(mat!)}`);
