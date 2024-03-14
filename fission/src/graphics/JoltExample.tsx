@@ -8,14 +8,12 @@ import JOLT from '../util/loading/JoltSyncLoader.ts';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 import { useEffect, useRef } from 'react';
-import { random } from '../util/Random.ts';
 import Jolt from '@barclah/jolt-physics';
 import { mirabuf } from "../proto/mirabuf"
 import { LoadMirabufRemote } from '../mirabuf/MirabufLoader.ts';
-import MirabufParser from '../mirabuf/MirabufParser.ts';
-import { MirabufTransform_ThreeMatrix4 } from '../util/conversions/MiraThreeConversions.ts';
 import { JoltVec3_ThreeVector3, JoltQuat_ThreeQuaternion } from '../util/conversions/JoltThreeConversions';
 import { COUNT_OBJECT_LAYERS, LAYER_MOVING, LAYER_NOT_MOVING, addToScene, removeFromScene } from '../util/threejs/MeshCreation.ts';
+import { applyTransforms } from '../mirabuf/MirabufTransforms.ts';
 
 const clock = new THREE.Clock();
 let time = 0;
@@ -35,26 +33,8 @@ const dynamicObjects: THREE.Mesh[] = [];
 const MIRA_FILE = "test_mira/Team_2471_(2018)_v7.mira"
 // const MIRA_FILE = "test_mira/Dozer_v2.mira"
 
-
-let hacky: string = '';
-
 let controls: OrbitControls;
 
-function matToString(mat: THREE.Matrix4) {
-    const arr = mat.toArray();
-    return `[\n${arr[0].toFixed(4)}, ${arr[4].toFixed(4)}, ${arr[8].toFixed(4)}, ${arr[12].toFixed(4)},\n`
-        + `${arr[1].toFixed(4)}, ${arr[5].toFixed(4)}, ${arr[9].toFixed(4)}, ${arr[13].toFixed(4)},\n`
-        + `${arr[2].toFixed(4)}, ${arr[6].toFixed(4)}, ${arr[10].toFixed(4)}, ${arr[14].toFixed(4)},\n`
-        + `${arr[3].toFixed(4)}, ${arr[7].toFixed(4)}, ${arr[11].toFixed(4)}, ${arr[15].toFixed(4)},\n]`
-}
-
-function miraMatToString(mat: mirabuf.ITransform) {
-    const arr = mat.spatialMatrix!;
-    return `[\n${arr[0].toFixed(4)}, ${arr[1].toFixed(4)}, ${arr[2].toFixed(4)}, ${arr[3].toFixed(4)},\n`
-        + `${arr[4].toFixed(4)}, ${arr[5].toFixed(4)}, ${arr[6].toFixed(4)}, ${arr[7].toFixed(4)},\n`
-        + `${arr[8].toFixed(4)}, ${arr[9].toFixed(4)}, ${arr[10].toFixed(4)}, ${arr[11].toFixed(4)},\n`
-        + `${arr[12].toFixed(4)}, ${arr[13].toFixed(4)}, ${arr[14].toFixed(4)}, ${arr[15].toFixed(4)},\n]`
-}
 
 // vvv Below are the functions required to initialize everything and draw a basic floor with collisions. vvv
 
@@ -117,11 +97,6 @@ function initGraphics() {
     const shadowCamSize = 15;
     console.debug(`Shadow Map Size: ${shadowMapSize}`);
 
-    // console.log(`Cam Top: ${directionalLight.shadow.camera.top}`);
-    // console.log(`Cam Bottom: ${directionalLight.shadow.camera.bottom}`);
-    // console.log(`Cam Left: ${directionalLight.shadow.camera.left}`);
-    // console.log(`Cam Right: ${directionalLight.shadow.camera.right}`);
-
     directionalLight.shadow.camera.top = shadowCamSize;
     directionalLight.shadow.camera.bottom = -shadowCamSize;
     directionalLight.shadow.camera.left = -shadowCamSize;
@@ -180,167 +155,29 @@ function render() {
         }
     }
 
-    onTestUpdate(time, deltaTime);
-
     time += deltaTime;
     updatePhysics(1.0 / 60.0);
     // controls.update(deltaTime); // TODO: Add controls?
     renderer.render(scene, camera);
 }
 
-// vvv The following are test functions used to do various basic things. vvv
-
-
-// Swap the onTestUpdate function to run the performance test with the random cubes.
-// const onTestUpdate = (time, deltaTime) => spawnRandomCubes(time, deltaTime);
-const onTestUpdate = (time: number, deltaTime: number) => {};
-
 function MyThree() {
     console.log("Running...");
 
     const refContainer = useRef<HTMLDivElement>(null);
+    const urlParams = new URLSearchParams(document.location.search);
+    let mira_path = MIRA_FILE;
 
+    if (urlParams.has("mira")) {
+        mira_path = `test_mira/${urlParams.get("mira")!}`;
+    }
+    console.log(urlParams)
 
     useEffect(() => {
-        LoadMirabufRemote(MIRA_FILE).then((assembly: mirabuf.Assembly | undefined) => {
-            if (!assembly) return;
-            const data = assembly.data;
-            console.log(assembly.toJSON())
-            if (!data) return;
-            const parts = data.parts;
-            if (!parts) return;
-            const partInstances = new Map<string, mirabuf.IPartInstance>();
-            for (const partInstance of Object.values(parts.partInstances!)) {
-                partInstances.set(partInstance.info!.GUID!, partInstance);
-            }
-
-            // const 
-            const parser = new MirabufParser(assembly);
-            const root = parser.designHierarchyRoot;
-            
-            const transforms = new Map<string, THREE.Matrix4>();
-            const getTransforms = (node: mirabuf.INode, parent: THREE.Matrix4) => {
-                for (const child of node.children!) {
-                    if (!partInstances.has(child.value!)) {
-                        continue;
-                    }
-                    const partInstance = partInstances.get(child.value!)!;
-                    hacky = partInstance.info!.name!;
-                    
-                    if (transforms.has(child.value!)) continue;
-                    const mat = MirabufTransform_ThreeMatrix4(partInstance.transform!)!;
-
-                    console.log(`[${partInstance.info!.name!}] -> ${matToString(mat)}`);
-
-                    transforms.set(child.value!, mat.premultiply(parent));
-                    getTransforms(child, mat);
-                }
-            }
-
-            for (const child of root.children!) {
-                const partInstance = partInstances.get(child.value!)!;
-                let mat;
-                hacky = partInstance.info!.name!;
-                if (!partInstance.transform) {
-                    const def = parts.partDefinitions![partInstances.get(child.value!)!.partDefinitionReference!];
-                    if (!def.baseTransform) {
-                        mat = new THREE.Matrix4().identity();
-                    } else {
-                        mat = MirabufTransform_ThreeMatrix4(def.baseTransform);
-                    }
-                } else {
-                    mat = MirabufTransform_ThreeMatrix4(partInstance.transform);
-                }
-
-                console.log(`[${partInstance.info!.name!}] -> ${matToString(mat!)}`);
-
-                transforms.set(partInstance.info!.GUID!, mat!);
-                getTransforms(child, mat!);
-            }
-
-            let i = 0;
-
-            const materials = [
-                new THREE.MeshToonMaterial({
-                    color: 0xe32b50
-                }),
-                new THREE.MeshToonMaterial({
-                    color: 0x4ccf57
-                }),
-                new THREE.MeshToonMaterial({
-                    color: 0xcf4cca
-                })
-            ]
-
-            const instances = parts.partInstances;
-            if (!instances) return;
-            for (const instance of Object.values(instances)/* .filter(x => x.info!.name!.startsWith('EyeBall')) */) {
-                const definition = assembly.data!.parts!.partDefinitions![instance.partDefinitionReference!]!;
-                const bodies = definition.bodies;
-                if (!bodies) continue;
-                for (const body of bodies) {
-                    if (!body) continue;
-                    const mesh = body.triangleMesh;
-                    const geometry = new THREE.BufferGeometry();
-                    if (mesh && mesh.mesh && mesh.mesh.verts && mesh.mesh.normals && mesh.mesh.uv && mesh.mesh.indices) {
-                        const newVerts = new Float32Array(mesh.mesh.verts.length);
-                        for (let i = 0; i < mesh.mesh.verts.length; i += 3) {
-                            newVerts[i] = mesh.mesh.verts.at(i)! / 100.0;
-                            newVerts[i + 1] = mesh.mesh.verts.at(i + 1)! / 100.0;
-                            newVerts[i + 2] = mesh.mesh.verts.at(i + 2)! / 100.0;
-                        }
-
-                        const newNorms = new Float32Array(mesh.mesh.normals.length);
-                        for (let i = 0; i < mesh.mesh.normals.length; i += 3) {
-                            const normLength = Math.sqrt(mesh.mesh.normals.at(i)! * mesh.mesh.normals.at(i)! +
-                                mesh.mesh.normals.at(i + 1)! * mesh.mesh.normals.at(i + 1)! +
-                                mesh.mesh.normals.at(i + 2)! * mesh.mesh.normals.at(i + 2)!
-                            );
-
-                            newNorms[i] = mesh.mesh.normals.at(i)! / normLength;
-                            newNorms[i + 1] = mesh.mesh.normals.at(i + 1)! / normLength;
-                            newNorms[i + 2] = mesh.mesh.normals.at(i + 2)! / normLength;
-                        }
-
-                        geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(newVerts), 3));
-                        geometry.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(newNorms), 3));
-                        geometry.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(mesh.mesh.uv), 2));
-                        geometry.setIndex(mesh.mesh.indices);
-
-                        const appearanceOverride = body.appearanceOverride;
-                        const material = materials[i++ % materials.length];
-                        let appearances;
-
-                        // if (appearanceOverride && (appearances = data.materials?.appearances) && appearances[appearanceOverride]) {
-                        //     const miraMaterial = data.materials.appearances[appearanceOverride];
-                        //     let hex = 0xe32b50;
-                        //     if (miraMaterial.albedo) {
-                        //         const {A, B, G, R} = miraMaterial.albedo;
-                        //         if (A && B && G && R)
-                        //             hex = A << 24 | R << 16 | G << 8  | B;
-                        //     }
-
-                        //     material = new THREE.MeshPhongMaterial({
-                        //         color: hex,
-                        //         shininess: 0.5,
-                        //     });
-                        // }
-
-                        const threeMesh = new THREE.Mesh( geometry, material );
-                        // threeMesh.receiveShadow = true;
-                        // threeMesh.castShadow = true;
-                        scene.add(threeMesh);
-                        
-                        const mat = transforms.get(instance.info!.GUID!)!;
-                        
-                        console.log(`RENDER [${instance.info!.name!}] -> ${matToString(mat)}`);
-
-                        threeMesh.position.setFromMatrixPosition(mat);
-                        threeMesh.rotation.setFromRotationMatrix(mat);
-                    }
-                }
-            }
-        })
+        LoadMirabufRemote(mira_path)
+            .then((assembly: mirabuf.Assembly | undefined) => applyTransforms(assembly, scene))
+            .catch(_ => LoadMirabufRemote(MIRA_FILE).then((assembly: mirabuf.Assembly | undefined) => applyTransforms(assembly, scene)))
+            .catch(console.error);
         initGraphics();
         
         if (refContainer.current) {
