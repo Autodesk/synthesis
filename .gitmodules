@@ -1,9 +1,3 @@
 [submodule "mirabuf"]
 	path = mirabuf
 	url = https://github.com/HiceS/mirabuf
-[submodule "web/engine/vendor/protobuf"]
-	path = web/engine/vendor/protobuf
-	url = https://github.com/protocolbuffers/protobuf
-[submodule "web/engine/vendor/JoltPhysics"]
-	path = web/engine/vendor/JoltPhysics
-	url = https://github.com/jrouwe/JoltPhysics

@@ -1,6 +1,6 @@
 import { test, expect, describe } from 'vitest';
 import * as THREE from 'three';
-import { ThreeEuler_JoltQuat, ThreeQuaternion_JoltQuat, ThreeVector3_JoltVec3, _JoltQuat } from '../../../util/conversions/JoltThreeConversions';
+import { ThreeEuler_JoltQuat, ThreeQuaternion_JoltQuat, ThreeVector3_JoltVec3, _JoltQuat } from '../../util/TypeConversions';
 
 describe('ThreeJS to Jolt Conversions', async () => {
     test('THREE.Vector3 -> JOLT.Vec3', () => {

@@ -10,7 +10,7 @@ import JOLT from '../util/loading/JoltSyncLoader.ts';
 
 import { useEffect, useRef } from 'react';
 import React from 'react';
-import { random } from '../util/Random.ts';
+import { Random } from '../util/Random.ts';
 
 const clock = new THREE.Clock();
 let time = 0;
@@ -303,19 +303,19 @@ function spawnRandomCubes(time, deltaTime) {
 }
 
 function getRandomQuat() {
-	let vec = new JOLT.Vec3(0.001 + random(), random(), random());
-	let quat = JOLT.Quat.prototype.sRotation(vec.Normalized(), 2 * Math.PI * random());
+	let vec = new JOLT.Vec3(0.001 + Random(), Random(), Random());
+	let quat = JOLT.Quat.prototype.sRotation(vec.Normalized(), 2 * Math.PI * Random());
 	JOLT.destroy(vec);
 	return quat;
 }
 
 function makeRandomBox() {
-    let pos = new JOLT.Vec3((random() - 0.5) * 25, 15, (random() - 0.5) * 25);
+    let pos = new JOLT.Vec3((Random() - 0.5) * 25, 15, (Random() - 0.5) * 25);
     let rot = getRandomQuat();
 
-    let x = random();
-    let y = random();
-    let z = random();
+    let x = Random();
+    let y = Random();
+    let z = Random();
     let size = new JOLT.Vec3(x, y, z);
     let shape = new JOLT.BoxShape(size, 0.05, undefined);
     let creationSettings = new JOLT.BodyCreationSettings(shape, pos, rot, JOLT.EMotionType_Dynamic, LAYER_MOVING);

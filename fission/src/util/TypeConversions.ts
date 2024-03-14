@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import JOLT from '../loading/JoltSyncLoader';
+import JOLT from './loading/JoltSyncLoader';
 
 export function _JoltQuat(a: THREE.Euler | THREE.Quaternion | undefined) {
     if (a instanceof THREE.Euler) {
