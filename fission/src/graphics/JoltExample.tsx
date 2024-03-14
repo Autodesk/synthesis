@@ -38,19 +38,27 @@ const LAYER_NOT_MOVING = 0;
 const LAYER_MOVING = 1;
 const COUNT_OBJECT_LAYERS = 2;
 
+let hacky: string = '';
+
 const wrapVec3 = (v: Jolt.Vec3) => new THREE.Vector3(v.GetX(), v.GetY(), v.GetZ());
 const wrapQuat = (q: Jolt.Quat) => new THREE.Quaternion(q.GetX(), q.GetY(), q.GetZ(), q.GetW());
-const wrapMat4 = (m: mirabuf.ITransform) => {
-    const arr: number[] | null | undefined = m.spatialMatrix;
-    if (!arr) return undefined;
-    const pos = new THREE.Vector3(arr[3] * 0.01, arr[7] * 0.01, arr[11] * 0.01);
-    const mat = new THREE.Matrix4().fromArray(arr);
-    const onlyRotation = new THREE.Matrix4().extractRotation(mat).transpose();
-    const quat = new THREE.Quaternion().setFromRotationMatrix(onlyRotation);
-
-    return new THREE.Matrix4().compose(pos, quat, new THREE.Vector3(1, 1, 1));
-}
 let controls: OrbitControls;
+
+function matToString(mat: THREE.Matrix4) {
+    const arr = mat.toArray();
+    return `[\n${arr[0].toFixed(4)}, ${arr[4].toFixed(4)}, ${arr[8].toFixed(4)}, ${arr[12].toFixed(4)},\n`
+        + `${arr[1].toFixed(4)}, ${arr[5].toFixed(4)}, ${arr[9].toFixed(4)}, ${arr[13].toFixed(4)},\n`
+        + `${arr[2].toFixed(4)}, ${arr[6].toFixed(4)}, ${arr[10].toFixed(4)}, ${arr[14].toFixed(4)},\n`
+        + `${arr[3].toFixed(4)}, ${arr[7].toFixed(4)}, ${arr[11].toFixed(4)}, ${arr[15].toFixed(4)},\n]`
+}
+
+function miraMatToString(mat: mirabuf.ITransform) {
+    const arr = mat.spatialMatrix!;
+    return `[\n${arr[0].toFixed(4)}, ${arr[1].toFixed(4)}, ${arr[2].toFixed(4)}, ${arr[3].toFixed(4)},\n`
+        + `${arr[4].toFixed(4)}, ${arr[5].toFixed(4)}, ${arr[6].toFixed(4)}, ${arr[7].toFixed(4)},\n`
+        + `${arr[8].toFixed(4)}, ${arr[9].toFixed(4)}, ${arr[10].toFixed(4)}, ${arr[11].toFixed(4)},\n`
+        + `${arr[12].toFixed(4)}, ${arr[13].toFixed(4)}, ${arr[14].toFixed(4)}, ${arr[15].toFixed(4)},\n]`
+}
 
 // vvv Below are the functions required to initialize everything and draw a basic floor with collisions. vvv
 
@@ -423,9 +431,14 @@ function MyThree() {
                         continue;
                     }
                     const partInstance = partInstances.get(child.value!)!;
+                    hacky = partInstance.info!.name!;
+                    
                     if (transforms.has(child.value!)) continue;
                     const mat = wrapMat4(partInstance.transform!)!;
-                    transforms.set(child.value!, mat.multiply(parent) /* mat.multiply(parent) */);
+
+                    console.log(`[${partInstance.info!.name!}] -> ${matToString(mat)}`);
+
+                    transforms.set(child.value!, mat.premultiply(parent));
                     getTransforms(child, mat);
                 }
             }
@@ -433,6 +446,7 @@ function MyThree() {
             for (const child of root.children!) {
                 const partInstance = partInstances.get(child.value!)!;
                 let mat;
+                hacky = partInstance.info!.name!;
                 if (!partInstance.transform) {
                     const def = parts.partDefinitions![partInstances.get(child.value!)!.partDefinitionReference!];
                     if (!def.baseTransform) {
@@ -443,6 +457,9 @@ function MyThree() {
                 } else {
                     mat = wrapMat4(partInstance.transform);
                 }
+
+                console.log(`[${partInstance.info!.name!}] -> ${matToString(mat!)}`);
+
                 transforms.set(partInstance.info!.GUID!, mat!);
                 getTransforms(child, mat!);
             }
@@ -463,7 +480,7 @@ function MyThree() {
 
             const instances = parts.partInstances;
             if (!instances) return;
-            for (const instance of Object.values(instances).filter(x => x.info!.name!.startsWith('EyeBall'))) {
+            for (const instance of Object.values(instances)/* .filter(x => x.info!.name!.startsWith('EyeBall')) */) {
                 const definition = assembly.data!.parts!.partDefinitions![instance.partDefinitionReference!]!;
                 const bodies = definition.bodies;
                 if (!bodies) continue;
@@ -519,13 +536,14 @@ function MyThree() {
                         threeMesh.receiveShadow = true;
                         threeMesh.castShadow = true;
                         scene.add(threeMesh);
-                        for (const entry of transforms.entries()) {
-                            if (partInstances.get(entry[0])!.partDefinitionReference! != definition.info!.GUID!) continue;
-                            // geometry.applyMatrix4(entry[1]);
-                            threeMesh.position.setFromMatrixPosition(entry[1]);
-                            threeMesh.position.add(new THREE.Vector3(0.0, 0.1 * i, 0.0));
-                            threeMesh.rotation.setFromRotationMatrix(entry[1]);
-                        }
+                        
+                        const mat = transforms.get(instance.info!.GUID!)!;
+                        
+                        console.log(`RENDER [${instance.info!.name!}] -> ${matToString(mat)}`);
+
+                        threeMesh.position.setFromMatrixPosition(mat);
+                        // threeMesh.position.add(new THREE.Vector3(0.0, 0.1 * i, 0.0));
+                        threeMesh.rotation.setFromRotationMatrix(mat);
                     }
                 }
             }
