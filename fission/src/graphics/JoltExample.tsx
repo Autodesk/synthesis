@@ -32,8 +32,8 @@ let bodyInterface: any;
 
 const dynamicObjects: any[] = [];
 
-// const MIRA_FILE = "test_mira/Team_2471_(2018)_v7.mira"
-const MIRA_FILE = "test_mira/Dozer_v2.mira"
+const MIRA_FILE = "test_mira/Team_2471_(2018)_v7.mira"
+// const MIRA_FILE = "test_mira/Dozer_v2.mira"
 
 const LAYER_NOT_MOVING = 0;
 const LAYER_MOVING = 1;
@@ -534,8 +534,8 @@ function MyThree() {
                         // }
 
                         const threeMesh = new THREE.Mesh( geometry, material );
-                        threeMesh.receiveShadow = true;
-                        threeMesh.castShadow = true;
+                        // threeMesh.receiveShadow = true;
+                        // threeMesh.castShadow = true;
                         scene.add(threeMesh);
                         
                         const mat = transforms.get(instance.info!.GUID!)!;
