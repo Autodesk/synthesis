@@ -2,8 +2,6 @@
  * This example will be used to showcase how Jolt physics works.
  */
 
-/* eslint-disable  @typescript-eslint/no-explicit-any */
-
 import * as THREE from 'three';
 import Stats from 'stats.js';
 import JOLT from '../util/loading/JoltSyncLoader.ts';
@@ -16,33 +14,30 @@ import { mirabuf } from "../proto/mirabuf"
 import { LoadMirabufRemote } from '../mirabuf/MirabufLoader.ts';
 import MirabufParser from '../mirabuf/MirabufParser.ts';
 import { MirabufTransform_ThreeMatrix4 } from '../util/conversions/MiraThreeConversions.ts';
+import { JoltVec3_ThreeVector3, JoltQuat_ThreeQuaternion } from '../util/conversions/JoltThreeConversions';
+import { COUNT_OBJECT_LAYERS, LAYER_MOVING, LAYER_NOT_MOVING, addToScene, removeFromScene } from '../util/threejs/MeshCreation.ts';
 
 const clock = new THREE.Clock();
 let time = 0;
 
-let stats: any;
+let stats: Stats;
 
-let renderer: any;
-let camera: any;
-let scene: any;
+let renderer: THREE.WebGLRenderer;
+let camera: THREE.PerspectiveCamera;
+let scene: THREE.Scene;
 
-let joltInterface: any;
-let physicsSystem: any;
-let bodyInterface: any;
+let joltInterface: Jolt.JoltInterface;
+let physicsSystem: Jolt.PhysicsSystem;
+let bodyInterface: Jolt.BodyInterface;
 
-const dynamicObjects: any[] = [];
+const dynamicObjects: THREE.Mesh[] = [];
 
 const MIRA_FILE = "test_mira/Team_2471_(2018)_v7.mira"
 // const MIRA_FILE = "test_mira/Dozer_v2.mira"
 
-const LAYER_NOT_MOVING = 0;
-const LAYER_MOVING = 1;
-const COUNT_OBJECT_LAYERS = 2;
 
 let hacky: string = '';
 
-const wrapVec3 = (v: Jolt.Vec3) => new THREE.Vector3(v.GetX(), v.GetY(), v.GetZ());
-const wrapQuat = (q: Jolt.Quat) => new THREE.Quaternion(q.GetX(), q.GetY(), q.GetZ(), q.GetW());
 let controls: OrbitControls;
 
 function matToString(mat: THREE.Matrix4) {
@@ -144,84 +139,6 @@ function initGraphics() {
     // TODO: Add resize event
 }
 
-function createMeshForShape(shape: Jolt.Shape) {
-    const scale = new JOLT.Vec3(1, 1, 1);
-    const triangleContext = new JOLT.ShapeGetTriangles(shape, JOLT.AABox.prototype.sBiggest(), shape.GetCenterOfMass(), JOLT.Quat.prototype.sIdentity(), scale);
-    JOLT.destroy(scale);
-
-    const vertices = new Float32Array(JOLT.HEAP32.buffer, triangleContext.GetVerticesData(), triangleContext.GetVerticesSize() / Float32Array.BYTES_PER_ELEMENT);
-    const buffer = new THREE.BufferAttribute(vertices, 3).clone();
-    JOLT.destroy(triangleContext);
-
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', buffer);
-    geometry.computeVertexNormals();
-
-    return geometry;
-}
-
-function getThreeObjForBody(body: Jolt.Body, color: THREE.Color) {
-    const material = new THREE.MeshPhongMaterial({ color: color, shininess: 0.1 });
-    let threeObj;
-    const shape = body.GetShape();
-
-    switch (shape.GetSubType()) {
-        case JOLT.EShapeSubType_Box: {
-            const boxShape = JOLT.castObject(shape, JOLT.BoxShape);
-            const extent = wrapVec3(boxShape.GetHalfExtent()).multiplyScalar(2);
-            threeObj = new THREE.Mesh(new THREE.BoxGeometry(extent.x, extent.y, extent.z, 1, 1, 1), material);
-            threeObj.receiveShadow = true;
-            threeObj.castShadow = true;
-            break;
-        }
-        case JOLT.EShapeSubType_Capsule:
-            // TODO
-            break;
-        case JOLT.EShapeSubType_Cylinder:
-            // TODO
-            break;
-        case JOLT.EShapeSubType_Sphere:
-            // TODO
-            break;
-        default:
-            threeObj = new THREE.Mesh(createMeshForShape(shape), material);
-            threeObj.receiveShadow = true;
-            threeObj.castShadow = true;
-            break;
-    }
-
-    if (!threeObj) return undefined;
-
-    threeObj.position.copy(wrapVec3(body.GetPosition()));
-    threeObj.quaternion.copy(wrapQuat(body.GetRotation()));
-
-    return threeObj;
-}
-
-function addToThreeScene(body: Jolt.Body, color: THREE.Color) {
-    const threeObj = getThreeObjForBody(body, color);
-    if (!threeObj) return;
-    threeObj.userData.body = body;
-    scene.add(threeObj);
-    dynamicObjects.push(threeObj);
-}
-
-function addToScene(body: Jolt.Body, color: THREE.Color) {
-    bodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate);
-    addToThreeScene(body, color);
-}
-
-function removeFromScene(threeObject: THREE.Mesh) {
-	const id = threeObject.userData.body.GetID();
-	bodyInterface.RemoveBody(id);
-	bodyInterface.DestroyBody(id);
-	delete threeObject.userData.body;
-
-	scene.remove(threeObject);
-	const idx = dynamicObjects.indexOf(threeObject);
-	dynamicObjects.splice(idx, 1);
-}
-
 function createFloor(size = 50) {
     const shape = new JOLT.BoxShape(new JOLT.Vec3(size, 0.5, size), 0.05, undefined);
     const position = new JOLT.Vec3(0, -0.5, 0);
@@ -231,7 +148,7 @@ function createFloor(size = 50) {
     JOLT.destroy(position);
     JOLT.destroy(rotation);
     JOLT.destroy(creationSettings);
-    addToScene(body, new THREE.Color(0xc7c7c7));
+    addToScene(scene, body, new THREE.Color(0xc7c7c7), bodyInterface, dynamicObjects);
 
     return body;
 }
@@ -255,8 +172,8 @@ function render() {
     for (let i = 0, j = dynamicObjects.length; i < j; i++) {
         const threeObj = dynamicObjects[i];
         const body = threeObj.userData.body;
-        threeObj.position.copy(wrapVec3(body.GetPosition()));
-        threeObj.quaternion.copy(wrapQuat(body.GetRotation()));
+        threeObj.position.copy(JoltVec3_ThreeVector3(body.GetPosition()));
+        threeObj.quaternion.copy(JoltQuat_ThreeQuaternion(body.GetRotation()));
 
         if (body.GetBodyType() === JOLT.EBodyType_SoftBody) {
             // TODO: Special soft body handle.
@@ -273,134 +190,10 @@ function render() {
 
 // vvv The following are test functions used to do various basic things. vvv
 
-const timePerObject = 0.05;
-let timeNextSpawn = time + timePerObject;
 
 // Swap the onTestUpdate function to run the performance test with the random cubes.
 // const onTestUpdate = (time, deltaTime) => spawnRandomCubes(time, deltaTime);
 const onTestUpdate = (time: number, deltaTime: number) => {};
-
-function spikeTestScene() {
-    const boxShape = new JOLT.BoxShape(new JOLT.Vec3(0.5, 0.5, 0.5), 0.1, undefined);
-    const boxCreationSettings = new JOLT.BodyCreationSettings(boxShape, new JOLT.Vec3(0, 0.5, 0), JOLT.Quat.prototype.sIdentity(), JOLT.EMotionType_Static, LAYER_NOT_MOVING);
-    boxCreationSettings.mCollisionGroup.SetSubGroupID(0);
-    const squareBodyBase = bodyInterface.CreateBody(boxCreationSettings);
-    addToScene(squareBodyBase, new THREE.Color(0x00ff00));
-
-    const shape = new JOLT.BoxShape(new JOLT.Vec3(0.25, 1, 0.25), 0.1, undefined);
-    shape.GetMassProperties().mMass = 1;
-    const creationSettings = new JOLT.BodyCreationSettings(shape, new JOLT.Vec3(-0.25, 2, 0.75), JOLT.Quat.prototype.sIdentity(), JOLT.EMotionType_Dynamic, LAYER_MOVING);
-
-    // RECTANGLE BODY 1 (Red)
-    creationSettings.mCollisionGroup.SetSubGroupID(1);
-    const rectangleBody1 = bodyInterface.CreateBody(creationSettings);
-    addToScene(rectangleBody1, new THREE.Color(0xff0000));
-
-    // RECTANGLE BODY 2 (Blue)
-    const shape2 = new JOLT.BoxShape(new JOLT.Vec3(0.25, 1, 0.25), 0.1, undefined);
-    shape2.GetMassProperties().mMass = 1;
-    const creationSettings2 = new JOLT.BodyCreationSettings(shape2, new JOLT.Vec3(-0.75, 4, 0.75), JOLT.Quat.prototype.sIdentity(), JOLT.EMotionType_Dynamic, LAYER_MOVING);
-    const rectangleBody2 = bodyInterface.CreateBody(creationSettings2);
-    addToScene(rectangleBody2, new THREE.Color(0x3394e8));
-
-    // RECTANGLE BODY 3 (Yellow)
-    const shape3 = new JOLT.BoxShape(new JOLT.Vec3(0.25, 1, 0.25), 0.1, undefined);
-    shape3.GetMassProperties().mMass = 10000;
-    const creationSettings3 = new JOLT.BodyCreationSettings(shape3, new JOLT.Vec3(0.25, 4, 0.75), JOLT.Quat.prototype.sIdentity(), JOLT.EMotionType_Dynamic, LAYER_MOVING);
-    const rectangleBody3 = bodyInterface.CreateBody(creationSettings3);
-    addToScene(rectangleBody3, new THREE.Color(0xffff00));
-
-    // Left here for future reference.
-    // GROUP FILTER
-    // let a = squareBodyBase.GetCollisionGroup();
-    // a.SetGroupID(0);
-    // a.SetSubGroupID(0);
-    // let b = rectangleBody1.GetCollisionGroup();
-    // b.SetGroupID(0);
-    // b.SetSubGroupID(0);
-    // let c = rectangleBody2.GetCollisionGroup();
-    // c.SetGroupID(0);
-    // c.SetSubGroupID(0);
-    // let filterTable = new Jolt.GroupFilterTable(3);
-    // filterTable.DisableCollision(0, 0);
-    // a.SetGroupFilter(filterTable);
-    // b.SetGroupFilter(filterTable);
-    // c.SetGroupFilter(filterTable);
-
-    // HINGE CONSTRAINT
-    const hingeConstraintSettings = new JOLT.HingeConstraintSettings();
-    const anchorPoint = new JOLT.Vec3(creationSettings.mPosition.GetX(), creationSettings.mPosition.GetY() - 1.0, creationSettings.mPosition.GetZ() -0.25);
-    hingeConstraintSettings.mPoint1 = hingeConstraintSettings.mPoint2 = anchorPoint;
-    const axis = new JOLT.Vec3(1, 0, 0)
-    const normAxis = new JOLT.Vec3(0, -1, 0);
-    hingeConstraintSettings.mHingeAxis1 = hingeConstraintSettings.mHingeAxis2 = axis;
-    hingeConstraintSettings.mNormalAxis1 = hingeConstraintSettings.mNormalAxis2 = normAxis;
-    physicsSystem.AddConstraint(hingeConstraintSettings.Create(squareBodyBase, rectangleBody1));
-
-    // HINGE CONSTRAINT 2
-    const hingeConstraintSettings2 = new JOLT.HingeConstraintSettings();
-    const anchorPoint2 = new JOLT.Vec3(creationSettings.mPosition.GetX() - 0.25, creationSettings.mPosition.GetY() + 1.0, creationSettings.mPosition.GetZ());
-    hingeConstraintSettings2.mPoint1 = hingeConstraintSettings2.mPoint2 = anchorPoint2;
-    const axis2 = new JOLT.Vec3(0, 0, 1)
-    const normAxis2 = new JOLT.Vec3(-1, 0, 0);
-    hingeConstraintSettings2.mHingeAxis1 = hingeConstraintSettings2.mHingeAxis2 = axis2;
-    hingeConstraintSettings2.mNormalAxis1 = hingeConstraintSettings2.mNormalAxis2 = normAxis2;
-    physicsSystem.AddConstraint(hingeConstraintSettings2.Create(rectangleBody1, rectangleBody2));
-
-    // HINGE CONSTRAINT 3
-    const hingeConstraintSettings3 = new JOLT.HingeConstraintSettings();
-    const anchorPoint3 = new JOLT.Vec3(creationSettings.mPosition.GetX() + 0.25, creationSettings.mPosition.GetY() + 1.0, creationSettings.mPosition.GetZ());
-    hingeConstraintSettings3.mPoint1 = hingeConstraintSettings3.mPoint2 = anchorPoint3;
-    const axis3 = new JOLT.Vec3(0, 0, 1)
-    const normAxis3 = new JOLT.Vec3(1, 0, 0);
-    hingeConstraintSettings3.mHingeAxis1 = hingeConstraintSettings3.mHingeAxis2 = axis3;
-    hingeConstraintSettings3.mNormalAxis1 = hingeConstraintSettings3.mNormalAxis2 = normAxis3;
-    physicsSystem.AddConstraint(hingeConstraintSettings3.Create(rectangleBody1, rectangleBody3));
-}
-
-function spawnRandomCubes(time: number, deltaTime: number) {
-    if (time > timeNextSpawn) {
-        makeRandomBox();
-        timeNextSpawn = time + timePerObject;
-    }
-
-    if (dynamicObjects.length > 500) {
-        removeFromScene(dynamicObjects[2]); // 0 &&|| 1 is the floor, don't want to remove that.
-    }
-}
-
-function getRandomQuat() {
-	const vec = new JOLT.Vec3(0.001 + random(), random(), random());
-	const quat = JOLT.Quat.prototype.sRotation(vec.Normalized(), 2 * Math.PI * random());
-	JOLT.destroy(vec);
-	return quat;
-}
-
-function makeRandomBox() {
-    const pos = new JOLT.Vec3((random() - 0.5) * 25, 15, (random() - 0.5) * 25);
-    const rot = getRandomQuat();
-
-    const x = random();
-    const y = random();
-    const z = random();
-    const size = new JOLT.Vec3(x, y, z);
-    const shape = new JOLT.BoxShape(size, 0.05, undefined);
-    const creationSettings = new JOLT.BodyCreationSettings(shape, pos, rot, JOLT.EMotionType_Dynamic, LAYER_MOVING);
-    creationSettings.mRestitution = 0.5;
-    const body = bodyInterface.CreateBody(creationSettings);
-
-    JOLT.destroy(pos);
-    JOLT.destroy(rot);
-    JOLT.destroy(size);
-
-    // I feel as though this object should be freed at this point but doing so will cause a crash at runtime.
-    // This is the only object where this happens. I'm not sure why. Seems problematic.
-    // Jolt.destroy(shape);
-
-    JOLT.destroy(creationSettings);
-
-    addToScene(body, new THREE.Color(0xff0000));
-}
 
 function MyThree() {
     console.log("Running...");
@@ -543,7 +336,6 @@ function MyThree() {
                         console.log(`RENDER [${instance.info!.name!}] -> ${matToString(mat)}`);
 
                         threeMesh.position.setFromMatrixPosition(mat);
-                        // threeMesh.position.add(new THREE.Vector3(0.0, 0.1 * i, 0.0));
                         threeMesh.rotation.setFromRotationMatrix(mat);
                     }
                 }
@@ -556,18 +348,15 @@ function MyThree() {
             refContainer.current.appendChild(renderer.domElement)
 
             stats = new Stats();
-            stats.domElement.style.position = 'absolute';
-            stats.domElement.style.top = '0px';
-            refContainer.current.appendChild(stats.domElement);
+            stats.dom.style.position = 'absolute';
+            stats.dom.style.top = '0px';
+            refContainer.current.appendChild(stats.dom);
         }
 
         initPhysics();
         render();
 
-        // createFloor();
-
-        // Spawn the y-cube of blocks as specified in the spike document.
-        // spikeTestScene();
+        createFloor();
     }, []);
 
     return (

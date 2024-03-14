@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import JOLT from '../loading/JoltSyncLoader';
+import Jolt from '@barclah/jolt-physics';
 
 export function _JoltQuat(a: THREE.Euler | THREE.Quaternion | undefined) {
     if (a instanceof THREE.Euler) {
@@ -23,4 +24,12 @@ export function ThreeQuaternion_JoltQuat(quat: THREE.Quaternion) {
 
 export function ThreeVector3_JoltVec3(vec: THREE.Vector3) {
     return new JOLT.Vec3(vec.x, vec.y, vec.z);
+}
+
+export function JoltVec3_ThreeVector3(vec: Jolt.Vec3) {
+    return new THREE.Vector3(vec.GetX(), vec.GetY(), vec.GetZ());
+}
+
+export function JoltQuat_ThreeQuaternion(quat: Jolt.Quat) {
+    return new THREE.Quaternion(quat.GetX(), quat.GetY(), quat.GetZ(), quat.GetW());
 }
