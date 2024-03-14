@@ -1,12 +1,14 @@
-/* eslint-disable  @typescript-eslint/no-explicit-any */
-
 import { ThreeVector3_JoltVec3, _JoltQuat } from "../../util/TypeConversions";
 import JOLT from "../../util/loading/JoltSyncLoader";
+import Jolt from "@barclah/jolt-physics";
 import * as THREE from 'three';
 
 const LAYER_NOT_MOVING = 0;
 const LAYER_MOVING = 1;
 const COUNT_OBJECT_LAYERS = 2;
+
+const STANDARD_TIME_STEP = 1.0 / 60.0;
+const STANDARD_SUB_STEPS = 1;
 
 /**
  * The PhysicsSystem handles all Jolt Phyiscs interactions within Synthesis.
@@ -15,10 +17,10 @@ const COUNT_OBJECT_LAYERS = 2;
  */
 export class PhysicsSystem {
     
-    private _joltInterface;
-    private _joltPhysSystem;
-    private _joltBodyInterface;
-    private _bodies: Array<any>;
+    private _joltInterface: Jolt.JoltInterface;
+    private _joltPhysSystem: Jolt.PhysicsSystem;
+    private _joltBodyInterface: Jolt.BodyInterface;
+    private _bodies: Array<Jolt.Body>;
 
     /**
      * Creates a PhysicsSystem object.
@@ -77,10 +79,10 @@ export class PhysicsSystem {
     }
 
     public CreateBody(
-    shape: any,
+    shape: Jolt.Shape,
     mass: number | undefined,
     position: THREE.Vector3 | undefined,
-    rotation: THREE.Euler | THREE.Quaternion | undefined) {;
+    rotation: THREE.Euler | THREE.Quaternion | undefined) {
         const pos = position ? ThreeVector3_JoltVec3(position) : new JOLT.Vec3(0.0, 0.0, 0.0);
         const rot = _JoltQuat(rotation);
         const creationSettings = new JOLT.BodyCreationSettings(
@@ -116,15 +118,20 @@ export class PhysicsSystem {
         return settings.Create();
     }
 
+    public Step() {
+        this._joltInterface.Step(STANDARD_TIME_STEP, STANDARD_SUB_STEPS);
+    }
+
     public Destroy() {
-        // Release Jolt Body references.
-        this._bodies.forEach(x => x.Release());
+        // Destroy Jolt Bodies.
+        this._bodies.forEach(x => JOLT.destroy(x));
+        this._bodies = [];
 
         JOLT.destroy(this._joltInterface);
     }
 }
 
-function SetupCollisionFiltering(settings: any) {
+function SetupCollisionFiltering(settings: Jolt.JoltSettings) {
     const objectFilter = new JOLT.ObjectLayerPairFilterTable(COUNT_OBJECT_LAYERS);
     objectFilter.EnableCollision(LAYER_NOT_MOVING, LAYER_MOVING);
     objectFilter.EnableCollision(LAYER_MOVING, LAYER_MOVING);

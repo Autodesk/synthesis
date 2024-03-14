@@ -29,7 +29,7 @@ describe('Physics System Tests', () => {
         expect(shape.GetCenterOfMass().Length()).toBe(0.0);
 
         shape.Release();
-        system.Release();
+        system.Destroy();
 
     });
     test('Convex Hull Shape (Tetrahedron)', () => {
