@@ -25,7 +25,7 @@ namespace Engine {
                     Action<ToastHandler>? optionCallback = null;
                     if (logLevel == LogLevel.Error) {
                         optionCallback = th => {
-                            DynamicUIManager.CreateModal<ToastModal>(o.ToString(), logLevel);
+                            DynamicUIManager.CreateModal<ToastModal>(false, o.ToString(), logLevel);
                             if (th.LinkedNode != null) {
                                 Toaster.RemoveToast(th.LinkedNode);
                             }

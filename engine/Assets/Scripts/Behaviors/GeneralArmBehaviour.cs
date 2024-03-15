@@ -1,17 +1,11 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using Google.Protobuf.WellKnownTypes;
 using Synthesis.PreferenceManager;
 using Synthesis.UI.Dynamic;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Simulation;
-using SynthesisAPI.Utilities;
 using UnityEngine;
-
-using Logger = SynthesisAPI.Utilities.Logger;
 
 #nullable enable
 
@@ -74,7 +68,7 @@ namespace Synthesis {
         }
 
         private void OnValueInputAssigned(IEvent tmp) {
-            ValueInputAssignedEvent args = tmp as ValueInputAssignedEvent;
+            ValueInputAssignedEvent args = (tmp as ValueInputAssignedEvent)!;
             if (args.InputKey.Equals(_forwardInputKey) || args.InputKey.Equals(_reverseInputKey)) {
                 if (_robot.RobotGUID != (MainHUD.SelectedRobot?.RobotGUID ?? string.Empty) ||
                     !((DynamicUIManager.ActiveModal as ChangeInputsModal)?.isSave ?? false))

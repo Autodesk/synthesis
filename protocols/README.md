@@ -1,6 +1,6 @@
 # Protobuf Transfer Protocols
 
-The **mirabuf** folder is a pointer to a submodule which needs to be pulled down seperately
+The **mirabuf** folder is a pointer to a submodule which needs to be pulled down separately
 
 ## Fetching
 

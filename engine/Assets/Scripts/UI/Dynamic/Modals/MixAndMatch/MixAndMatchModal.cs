@@ -27,6 +27,8 @@ namespace UI.Dynamic.Modals.MixAndMatch {
 
         /// <summary>The screen where the user specifies if they will edit a robot or part</summary>
         private void CreateChooseTypeModal() {
+            ModalIcon.SetSprite(SynthesisAssetCollection.GetSpriteByName("robot-builder-icon"));
+
             ClearAndResizeContent(new Vector2(CONTENT_WIDTH, CHOOSE_TYPE_HEIGHT));
             Title.SetText("Robot Builder");
 
@@ -193,7 +195,6 @@ namespace UI.Dynamic.Modals.MixAndMatch {
                                 MixAndMatchSaveUtil.DeletePart(fileName);
                             CreateChooseObjectModal(robot);
                         })
-                    .ApplyTemplate(Button.EnableCancelButton)
                     .RootGameObject.SetActive(true);
             }
 
@@ -201,7 +202,6 @@ namespace UI.Dynamic.Modals.MixAndMatch {
                 .AddOnClickedEvent(
                     _ => CreateChooseObjectModal(robot))
                 .StepIntoLabel(l => l.SetText("Back"))
-                .ApplyTemplate(Button.EnableAcceptButton)
                 .RootGameObject.SetActive(true);
         }
 
@@ -223,7 +223,8 @@ namespace UI.Dynamic.Modals.MixAndMatch {
 
             AcceptButton
                 .AddOnClickedEvent(
-                    _ => OpenPartEditor(MixAndMatchSaveUtil.CreateNewPart(fileName, files[dropdown.Value])))
+                    _ => OpenPartEditor(
+                        MixAndMatchSaveUtil.CreateNewPart(fileName, Path.GetFileName(files[dropdown.Value]))))
                 .StepIntoLabel(l => l.SetText("Select"))
                 .RootGameObject.SetActive(true);
         }

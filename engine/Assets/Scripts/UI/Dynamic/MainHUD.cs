@@ -114,6 +114,9 @@ public static class MainHUD {
 
     public static RobotSimObject? SelectedRobot {
         get {
+            if (ModeManager.CurrentMode == null)
+                return RobotSimObject.GetCurrentlyPossessedRobot();
+
             if (ModeManager.CurrentMode.GetType() == typeof(MatchMode) &&
                 DynamicUIManager.PanelExists<SpawnLocationPanel>()) {
                 return MatchMode.Robots[DynamicUIManager.GetPanel<SpawnLocationPanel>().SelectedButton];
@@ -374,9 +377,11 @@ public static class MainHUD {
         _accordionButton.Image.SetColor(ColorManager.SynthesisColor.MainHUDIcon);
         _closeButton.Image.SetColor(ColorManager.SynthesisColor.MainHUDCloseIcon);
 
-        _spawnButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.BackgroundHUD);
+        _spawnButton.Image.SetColor(ColorManager.SynthesisColor.BackgroundHUD);
+        _spawnButton.Label!.SetColor(ColorManager.SynthesisColor.MainText);
         _spawnIcon.SetColor(ColorManager.SynthesisColor.Icon);
-        _homeButton.SetBackgroundColor<Button>(ColorManager.SynthesisColor.BackgroundHUD);
+        _homeButton.Image.SetColor(ColorManager.SynthesisColor.BackgroundHUD);
+        _homeButton.Label!.SetColor(ColorManager.SynthesisColor.MainText);
         _homeIcon.SetColor(ColorManager.SynthesisColor.Icon);
 
         _topItemContainer.SetBackgroundColor<Content>(ColorManager.SynthesisColor.BackgroundHUD);
@@ -387,6 +392,7 @@ public static class MainHUD {
             x.button.Image.SetColor(ColorManager.SynthesisColor.BackgroundHUD);
             x.image.SetColor(ColorManager.SynthesisColor.Icon);
         });
+
         _bottomDrawerItems.ForEach(x => {
             x.button.Label!.SetColor(ColorManager.SynthesisColor.MainText);
             x.button.Image.SetColor(ColorManager.SynthesisColor.BackgroundHUD);
@@ -429,10 +435,10 @@ public static class MainHUD {
                 if (!DynamicUIManager.PanelExists<ScoringZonesPanel>())
                     DynamicUIManager.CreatePanel<ScoringZonesPanel>();
             }
-        }, drawerPosition: DrawerPosition.Bottom);
+        }, drawerPosition: DrawerPosition.Bottom, icon: SynthesisAssetCollection.GetSpriteByName("flag-icon"));
 
         AddItemToDrawer("Robot Builder", b => DynamicUIManager.CreateModal<MixAndMatchModal>(),
-            drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("wrench-icon"));
+            drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("robot-builder-icon"));
 
         PhysicsManager.IsFrozen = false;
     }
@@ -465,7 +471,7 @@ public static class MainHUD {
                 if (!DynamicUIManager.PanelExists<ScoringZonesPanel>())
                     DynamicUIManager.CreatePanel<ScoringZonesPanel>();
             }
-        }, drawerPosition: DrawerPosition.Bottom);
+        }, drawerPosition: DrawerPosition.Bottom, icon: SynthesisAssetCollection.GetSpriteByName("flag-icon"));
 
 #if UNITY_EDITOR
         AddItemToDrawer("Skip to End", b => MatchMode.MatchTime = MatchMode.MatchTime > 10 ? 10 : MatchMode.MatchTime,
@@ -508,21 +514,20 @@ public static class MainHUD {
             }
 
             DynamicUIManager.CreatePanel<ConfigureGamepiecePickupPanel>();
-        }, drawerPosition: DrawerPosition.Top);
+        }, drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("robot-arm-icon"));
         AddItemToDrawer("Ejector", b => {
             if (DynamicUIManager.PanelExists<ConfigureGamepiecePickupPanel>()) {
                 DynamicUIManager.ClosePanel<ConfigureGamepiecePickupPanel>();
             }
-
             DynamicUIManager.CreatePanel<ConfigureShotTrajectoryPanel>();
-        }, drawerPosition: DrawerPosition.Top);
+        }, drawerPosition: DrawerPosition.Top, icon: SynthesisAssetCollection.GetSpriteByName("robot-arm-icon"));
 
-        AddItemToDrawer("RoboRIO", b => DynamicUIManager.CreateModal<RioConfigurationModal>(true),
+        AddItemToDrawer("RoboRIO", b => DynamicUIManager.CreateModal<RioConfigurationModal>(false, true),
             drawerPosition: DrawerPosition.Bottom, icon: SynthesisAssetCollection.GetSpriteByName("roborio"));
         AddItemToDrawer("Drivetrain", b => DynamicUIManager.CreateModal<ChangeDrivetrainModal>(),
             drawerPosition: DrawerPosition.Bottom, icon: SynthesisAssetCollection.GetSpriteByName("drivetrain"));
-        AddItemToDrawer("Motors", b => { DynamicUIManager.CreateModal<ConfigMotorModal>(); },
-            drawerPosition: DrawerPosition.Bottom);
+        AddItemToDrawer("Joints", b => { DynamicUIManager.CreateModal<ConfigJointModal>(); },
+            drawerPosition: DrawerPosition.Bottom, icon: SynthesisAssetCollection.GetSpriteByName("joint-icon"));
 
         if (ModeManager.CurrentMode.GetType() == typeof(PracticeMode))
             AddItemToDrawer("Move", b => {
@@ -535,7 +540,7 @@ public static class MainHUD {
                 }
 
                 GizmoManager.SpawnGizmo(SelectedRobot);
-            }, drawerPosition: DrawerPosition.Bottom);
+            }, drawerPosition: DrawerPosition.Bottom, icon: SynthesisAssetCollection.GetSpriteByName("move-icon"));
 
         if (MatchStateMachine.Instance.CurrentState.StateName is MatchStateMachine.StateName.RobotPositioning) {
             isMatchFreeCam =

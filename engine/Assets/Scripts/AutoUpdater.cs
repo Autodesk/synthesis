@@ -15,7 +15,7 @@ public class AutoUpdater : MonoBehaviour {
     public static bool UpdateAvailable { get; private set; } = false;
     public static string UpdaterLink { get; private set; }
 
-    public const string LocalVersion = "5.1.0.0"; // must be a version value
+    public const string LocalVersion = "6.1.0.0"; // must be a version value
 
     private void Start() {
         if (CheckConnection()) {

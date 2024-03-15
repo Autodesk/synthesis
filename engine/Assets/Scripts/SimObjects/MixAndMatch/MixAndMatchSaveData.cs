@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -10,7 +9,7 @@ namespace SimObjects.MixAndMatch {
     public static class MixAndMatchSaveUtil {
         private static readonly char ALT_SEP = Path.AltDirectorySeparatorChar;
 
-        private static readonly string PART_MIRABUF_FOLDER_PATH =
+        public static readonly string PART_MIRABUF_FOLDER_PATH =
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + ALT_SEP + "Autodesk" + ALT_SEP +
             "Synthesis" + ALT_SEP + "MixAndMatch" + ALT_SEP + "Mira";
 
@@ -78,7 +77,7 @@ namespace SimObjects.MixAndMatch {
             var part = JsonUtility.FromJson<GlobalPartData>(File.ReadAllText(filePath));
 
             if (part.Guid is null or "")
-                part.Guid = GUID.Generate().ToString();
+                part.Guid = Guid.NewGuid().ToString();
 
             return part;
         }
@@ -112,7 +111,7 @@ namespace SimObjects.MixAndMatch {
         /// <summary>Creates a new mix and match part with no connection points</summary>
         public static GlobalPartData CreateNewPart(string name, string mirabufFile = "") {
             return new GlobalPartData(
-                name, GUID.Generate().ToString(), mirabufFile, Array.Empty<(Vector3, Quaternion)>());
+                name, Guid.NewGuid().ToString(), mirabufFile, Array.Empty<(Vector3, Quaternion)>());
         }
 
         /// <summary>Creates a new mix and match robot with no parts</summary>
@@ -210,6 +209,26 @@ namespace SimObjects.MixAndMatch {
         public string Name; // Ignored because it is the filename
         public string Guid;
         public string MirabufPartFile;
+
+        [JsonIgnore]
+        private string _mirabufPartFilePath;
+        [JsonIgnore]
+        public string MirabufPartFilePath {
+            get {
+                if (_mirabufPartFilePath == null) {
+                    _mirabufPartFilePath =
+                        MixAndMatchSaveUtil.PART_MIRABUF_FOLDER_PATH + Path.AltDirectorySeparatorChar + MirabufPartFile;
+                    if (!File.Exists(_mirabufPartFilePath)) {
+                        _mirabufPartFilePath = MirabufPartFile;
+                        if (!File.Exists(_mirabufPartFilePath)) {
+                            throw new Exception($"Can't find mira file '{_mirabufPartFilePath}'.");
+                        }
+                    }
+                }
+
+                return _mirabufPartFilePath;
+            }
+        }
 
         public ConnectionPointData[] ConnectionPoints;
 

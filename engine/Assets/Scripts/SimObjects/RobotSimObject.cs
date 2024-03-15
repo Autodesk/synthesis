@@ -25,6 +25,7 @@ using UI.Dynamic.Panels.Tooltip;
 using UnityEngine;
 using Utilities.ColorManager;
 using Bounds   = UnityEngine.Bounds;
+using Input    = UnityEngine.Input;
 using Logger   = SynthesisAPI.Utilities.Logger;
 using MVector3 = Mirabuf.Vector3;
 using Object   = UnityEngine.Object;
@@ -581,6 +582,10 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             ConfigureTankDrivetrain();
         } else if (ConfiguredDrivetrainType.Value == DrivetrainType.SWERVE.Value) {
             success = ConfigureSwerveDrivetrain();
+        } else if (ConfiguredDrivetrainType.Value == DrivetrainType.MECANUM.Value) {
+            success = ConfigureMecanumDrivetrain();
+        } else if (ConfiguredDrivetrainType.Value == DrivetrainType.OMNI.Value) {
+            ConfigureOmniDrivetrain();
         }
 
         if (!success) {
@@ -650,13 +655,13 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
             var wheelDrivers = wheels as WheelDriver[] ?? wheels.ToArray();
 
-            if (potentialAzimuthDrivers.Count() < wheelDrivers.Count())
+            if (!potentialAzimuthDrivers.Any() || potentialAzimuthDrivers.Count() < wheelDrivers.Count())
                 return false;
 
             modules = new(RotationalDriver azimuth, WheelDriver driver)[wheelDrivers.Count()];
             int i   = 0;
             wheelDrivers.ForEach(x => {
-                RotationalDriver closest = null;
+                RotationalDriver closest = potentialAzimuthDrivers.First();
                 float distance           = float.MaxValue;
                 potentialAzimuthDrivers.ForEach(
                     y => closest = (y.Anchor - x.Anchor).magnitude < distance ? y : closest);
@@ -676,6 +681,66 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
         return true;
     }
 
+    private bool ConfigureMecanumDrivetrain() {
+        var wheels = GetLeftRightWheels();
+
+        if (!wheels.HasValue) {
+            return false;
+        }
+
+        List<WheelDriver> frontLeft  = new List<WheelDriver>(wheels.Value.leftWheels.Count);
+        List<WheelDriver> backLeft   = new List<WheelDriver>(wheels.Value.leftWheels.Count);
+        List<WheelDriver> backRight  = new List<WheelDriver>(wheels.Value.rightWheels.Count);
+        List<WheelDriver> frontRight = new List<WheelDriver>(wheels.Value.rightWheels.Count);
+
+        // Using GroundedBounds instead of rigidbody because there is an issue with grabbing it too early
+        var comZ = GroundedBounds.center.z;
+
+        foreach (var leftWheel in wheels.Value.leftWheels) {
+            if (GroundedNode.transform.worldToLocalMatrix.MultiplyPoint3x4(leftWheel.Anchor).z >= comZ) {
+                frontLeft.Add(leftWheel);
+            } else {
+                backLeft.Add(leftWheel);
+            }
+        }
+
+        foreach (var rightWheel in wheels.Value.rightWheels) {
+            if (GroundedNode.transform.worldToLocalMatrix.MultiplyPoint3x4(rightWheel.Anchor).z >= comZ) {
+                frontRight.Add(rightWheel);
+            } else {
+                backRight.Add(rightWheel);
+            }
+        }
+
+        if (!frontLeft.Any() || !frontRight.Any() || !backRight.Any() || !backLeft.Any()) {
+            if (!frontLeft.Any())
+                Logger.Log("No front-left wheels", LogLevel.Debug);
+            if (!frontRight.Any())
+                Logger.Log("No front-right wheels", LogLevel.Debug);
+            if (!backLeft.Any())
+                Logger.Log("No back-left wheels", LogLevel.Debug);
+            if (!backRight.Any())
+                Logger.Log("No back-right wheels", LogLevel.Debug);
+            return false;
+        }
+
+        var mecanumBehaviour = new MecanumDriveBehaviour(this, frontLeft, frontRight, backRight, backLeft);
+        DriveBehaviour       = mecanumBehaviour;
+
+        SimulationManager.AddBehaviour(Name, mecanumBehaviour);
+
+        return true;
+    }
+
+    private void ConfigureOmniDrivetrain() {
+        var wheels = SimulationManager.Drivers[Name].OfType<WheelDriver>().ToList();
+
+        var omniBehaviour = new OmniDriveBehaviour(this, wheels);
+        DriveBehaviour    = omniBehaviour;
+
+        SimulationManager.AddBehaviour(Name, omniBehaviour);
+    }
+
     public static void SpawnRobot(
         MixAndMatchRobotData mixAndMatchRobotData, bool spawnGizmo = true, string? filePath = null) {
         SpawnRobot(mixAndMatchRobotData, new Vector3(0f, 0.5f, 0f), Quaternion.identity, spawnGizmo, filePath);
@@ -684,7 +749,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
     public static void SpawnRobot(MixAndMatchRobotData mixAndMatchRobotData, Vector3 position, Quaternion rotation,
         bool spawnGizmo, string? filePath) {
         if (mixAndMatchRobotData?.PartTransformData.Length == 0) {
-            Logger.Log("Mix and match robot contains no parts", LogLevel.Info);
+            Logger.Log("Custom robot contains no parts", LogLevel.Info);
             return;
         }
 
@@ -825,10 +890,12 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     [JsonObject(MemberSerialization.OptIn)]
     public struct DrivetrainType {
-        public static readonly DrivetrainType NONE   = new(0, "None");
-        public static readonly DrivetrainType TANK   = new(1, "Tank");
-        public static readonly DrivetrainType ARCADE = new(2, "Arcade");
-        public static readonly DrivetrainType SWERVE = new(3, "Swerve");
+        public static readonly DrivetrainType NONE    = new(0, "None");
+        public static readonly DrivetrainType TANK    = new(1, "Tank");
+        public static readonly DrivetrainType ARCADE  = new(2, "Arcade");
+        public static readonly DrivetrainType SWERVE  = new(3, "Swerve");
+        public static readonly DrivetrainType MECANUM = new(4, "Mecanum");
+        public static readonly DrivetrainType OMNI    = new(5, "Omni");
 
         [JsonProperty]
         private string _name;
@@ -841,10 +908,22 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
             _value = val;
             _name  = name;
         }
+
+        public override bool Equals(object obj) {
+            if (!(obj is DrivetrainType))
+                return false;
+
+            var o = (DrivetrainType) obj;
+            return o._value == _value && o._name.Equals(_name);
+        }
+
+        public override int GetHashCode() {
+            return _name.GetHashCode() * 345345234 + _value * 678465890;
+        }
     }
 
     public static readonly DrivetrainType[] DRIVETRAIN_TYPES = { DrivetrainType.NONE, DrivetrainType.TANK,
-        DrivetrainType.ARCADE, DrivetrainType.SWERVE };
+        DrivetrainType.ARCADE, DrivetrainType.SWERVE, DrivetrainType.MECANUM, DrivetrainType.OMNI };
 
     public struct IntakeTriggerData {
         public string NodeName;
@@ -875,14 +954,27 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
 
     public void CreateDrivetrainTooltip() {
         string MiraId  = MainHUD.SelectedRobot.RobotGUID;
-        int inputCount = 3; // for drive, intake, and eject
-        if (ConfiguredDrivetrainType.Name.Equals("Swerve"))
-            inputCount++; // for turn
+        int inputCount = 2; // for intake, and eject
+        if (!ConfiguredDrivetrainType.Equals(DrivetrainType.NONE)) {
+            inputCount++;
+
+            if (ConfiguredDrivetrainType.Equals(DrivetrainType.SWERVE) ||
+                ConfiguredDrivetrainType.Equals(DrivetrainType.MECANUM) ||
+                ConfiguredDrivetrainType.Equals(DrivetrainType.OMNI)) {
+                inputCount++; // for turn
+            }
+        }
+
         MainHUD.SelectedRobot.GetAllReservedInputs().ForEach(input => {
             if (!input.displayName.Contains("Arcade") &&
                 (!input.displayName.Contains("Swerve") || input.displayName.Contains("Reset Forward")) &&
-                !input.displayName.Contains("Tank"))
+                !input.displayName.Contains("Tank") &&
+                (!input.displayName.Contains("Mecanum") || input.displayName.Contains("Reset Forward") ||
+                    input.displayName.Contains("Toggle Field Centric")) &&
+                (!input.displayName.Contains("Omni") || input.displayName.Contains("Reset Forward") ||
+                    input.displayName.Contains("Toggle Field Centric"))) {
                 inputCount++;
+            }
         });
         (string, string)[] inputs = new(string key, string input)[inputCount];
         int i                     = 0;
@@ -915,11 +1007,39 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                 inputs[1]    = (lturn + " " + rturn, "Turn");
                 i++;
                 break;
+            case "Mecanum":
+                f         = GetTooltipOutput(MiraId + "Mecan Forward", "W");
+                b         = GetTooltipOutput(MiraId + "Mecan Backward", "S");
+                l         = GetTooltipOutput(MiraId + "Mecan Left", "A");
+                r         = GetTooltipOutput(MiraId + "Mecan Right", "D");
+                inputs[0] = (f + b + l + r, "Drive");
+                i++;
+                lturn     = GetTooltipOutput(MiraId + "Mecan Turn Left", "LeftArrow");
+                rturn     = GetTooltipOutput(MiraId + "Mecan Turn Right", "RightArrow");
+                inputs[1] = (lturn + " " + rturn, "Turn");
+                i++;
+                break;
+            case "Omni":
+                f         = GetTooltipOutput(MiraId + "Omni Forward", "W");
+                b         = GetTooltipOutput(MiraId + "Omni Backward", "S");
+                l         = GetTooltipOutput(MiraId + "Omni Left", "A");
+                r         = GetTooltipOutput(MiraId + "Omni Right", "D");
+                inputs[0] = (f + b + l + r, "Drive");
+                i++;
+                lturn     = GetTooltipOutput(MiraId + "Omni Turn Left", "LeftArrow");
+                rturn     = GetTooltipOutput(MiraId + "Omni Turn Right", "RightArrow");
+                inputs[1] = (lturn + " " + rturn, "Turn");
+                i++;
+                break;
         }
         foreach (var inputKey in MainHUD.SelectedRobot.GetAllReservedInputs()) {
             if (!inputKey.displayName.Contains("Arcade") &&
                 (!inputKey.displayName.Contains("Swerve") || inputKey.displayName.Contains("Reset Forward")) &&
-                !inputKey.displayName.Contains("Tank")) {
+                !inputKey.displayName.Contains("Tank") &&
+                (!inputKey.displayName.Contains("Mecanum") || inputKey.displayName.Contains("Reset Forward") ||
+                    inputKey.displayName.Contains("Toggle Field Centric")) &&
+                (!inputKey.displayName.Contains("Omni") || inputKey.displayName.Contains("Reset Forward") ||
+                    inputKey.displayName.Contains("Toggle Field Centric"))) {
                 inputs[i] = (InputManager.MappedValueInputs[inputKey.key].Name, inputKey.displayName);
                 i++;
             }
@@ -933,6 +1053,7 @@ public class RobotSimObject : SimObject, IPhysicsOverridable, IGizmo {
                           OUTTAKE_GAMEPIECES, new Digital("Q", context: SimulationRunner.RUNNING_SIM_CONTEXT)))
                          .Name,
             "Eject");
+
         TooltipManager.CreateTooltip(inputs);
     }
 

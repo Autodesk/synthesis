@@ -210,13 +210,16 @@ def getMaterialAppearance(
 
         if matModelType == 0:
             baseColor = properties.itemById("opaque_albedo").value
-            baseColor.opacity = 255
+            if baseColor:
+                baseColor.opacity = 255
         elif matModelType == 1:
             baseColor = properties.itemById("metal_f0").value
-            baseColor.opacity = 255
+            if baseColor:
+                baseColor.opacity = 255
         elif matModelType == 2:
             baseColor = properties.itemById("layered_diffuse").value
-            baseColor.opacity = 255
+            if baseColor:
+                baseColor.opacity = 255
         elif matModelType == 3:
             baseColor = properties.itemById("transparent_color").value
             transparent_distance = properties.itemById("transparent_distance").value
@@ -228,7 +231,9 @@ def getMaterialAppearance(
                 opac = 255
             elif opac < 0:
                 opac = 0
-            baseColor.opacity = int(round(opac))
+
+            if baseColor:
+                baseColor.opacity = int(round(opac))
 
         if baseColor:
             color.R = baseColor.red

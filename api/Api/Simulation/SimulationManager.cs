@@ -108,6 +108,7 @@ namespace SynthesisAPI.Simulation {
             var cursor = list.First;
             while (!removed && cursor != null) {
                 if (cursor.Value.Equals(b)) {
+                    cursor.Value.Enabled = false;
                     cursor.Value.OnRemove();
                     list.Remove(cursor);
                     removed = true;

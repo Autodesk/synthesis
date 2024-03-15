@@ -1,12 +1,8 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Google.Protobuf.WellKnownTypes;
 using Mirabuf.Joint;
 using Synthesis.PreferenceManager;
 using SynthesisAPI.Simulation;
 using UnityEngine;
-using Synthesis.Util;
 using Synthesis.Physics;
 
 #nullable enable
@@ -16,6 +12,7 @@ namespace Synthesis {
         private const float MIRABUF_TO_UNITY_FORCE = 40f;
 
         private CustomWheel _customWheel;
+        private JointInstance.WheelTypeEnum _wheelType;
 
         private JointInstance _jointInstance;
         public JointInstance JointInstance => _jointInstance;
@@ -50,6 +47,14 @@ namespace Synthesis {
                 _localAxis             = value;
                 _customWheel.LocalAxis = _localAxis;
             }
+        }
+
+        /// <summary>
+        /// Specify a roller direction. NULL roller direction indicates no roller
+        /// </summary>
+        public Vector3? LocalRoller {
+            get => _customWheel.LocalRollerRollingDirection;
+            set { _customWheel.LocalRollerRollingDirection = value; }
         }
 
         private float _radius = 0.05f;
@@ -113,12 +118,14 @@ namespace Synthesis {
         /// <param name="anchor">Anchor of the Rotational Joint</param>
         /// <param name="axis">Axis of the Rotational Joint</param>
         /// <param name="radius">Radius of the wheel. Automatically calculated if set to NaN</param>
+        /// <param name="wheelType">Optional parameter of wheel type for joint</param>
         public WheelDriver(string name, string[] inputs, string[] outputs, SimObject simObject,
             JointInstance jointInstance, CustomWheel customWheel, Vector3 anchor, Vector3 axis, float radius,
-            string motorRef)
+            string motorRef, JointInstance.WheelTypeEnum wheelType)
             : base(name, inputs, outputs, simObject) {
             _jointInstance = jointInstance;
             _customWheel   = customWheel;
+            _wheelType     = wheelType;
 
             Anchor = _customWheel.Rb.transform.localToWorldMatrix.MultiplyPoint3x4(anchor);
             Axis   = _customWheel.Rb.transform.localToWorldMatrix.MultiplyVector(axis);
@@ -138,11 +145,13 @@ namespace Synthesis {
             } else {
                 Motor = new JointMotor() {
                     // Default Motor. Slow but powerful enough. Also uses Motor to save it
-                    force          = 2000,
+                    force          = 1, // About a Neo 550. Max is Falcon 550 at 4.67
                     freeSpin       = false,
                     targetVelocity = 30,
                 };
             }
+
+            MatchRollerToWheelType();
 
             State.SetValue(_outputs[0], Value.ForNumber(0));
             State.SetValue(_outputs[1], Value.ForNumber(1));
@@ -180,21 +189,21 @@ namespace Synthesis {
             _customWheel.CalculateAndApplyFriction(mod);
         }
 
+        public void MatchRollerToWheelType() {
+            if (_wheelType == JointInstance.WheelTypeEnum.Omni) {
+                LocalRoller = LocalAxis;
+            } else {
+                LocalRoller = null;
+            }
+        }
+
         private void VelocityControl() {
             if (!_useMotor)
                 return;
 
-            var val = (float) MainInput;
-
-            _targetRotationalSpeed = val * _motor.targetVelocity;
-
-            var delta         = _targetRotationalSpeed - _customWheel.RotationSpeed;
-            var possibleDelta = (_motor.force * Time.deltaTime) / _customWheel.Inertia;
-            if (Mathf.Abs(delta) > possibleDelta)
-                delta = possibleDelta * Mathf.Sign(delta);
-
-            var lastRotSpeed = _customWheel.RotationSpeed;
-            _customWheel.RotationSpeed += delta;
+            var val                    = (float) MainInput;
+            var lastRotSpeed           = _customWheel.RotationSpeed;
+            _customWheel.RotationSpeed = val * _motor.targetVelocity;
 
             if (!float.IsNaN(_lastUpdate)) {
                 var deltaT = Time.realtimeSinceStartup - _lastUpdate;
@@ -202,8 +211,10 @@ namespace Synthesis {
                 if (deltaT == 0f)
                     return;
 
-                var alpha = (_customWheel.RotationSpeed - lastRotSpeed) / deltaT;
-                _jointAngle += 0.5f * alpha * deltaT * deltaT + lastRotSpeed * deltaT;
+                // Calculations:
+                // var alpha = (_customWheel.RotationSpeed - lastRotSpeed) / deltaT;
+                // 0.5f * alpha * deltaT * deltaT + lastRotSpeed * deltaT;
+                _jointAngle += deltaT * (_customWheel.RotationSpeed - 0.5f * lastRotSpeed);
             }
         }
     }

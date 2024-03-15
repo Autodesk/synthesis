@@ -44,12 +44,15 @@ public class RobotSwitchPanel : PanelDynamic {
 
         if (!_isMatchMode) {
             _addButton = left.CreateButton("Add").SetStretch<Button>().AddOnClickedEvent(
-                b => { DynamicUIManager.CreateModal<AddRobotModal>(); });
+                b => { DynamicUIManager.CreateModal<ChooseRobotTypeModal>(); });
+
             _removeButton = right.CreateButton("Remove").SetStretch<Button>().AddOnClickedEvent(b => {
                 RobotSimObject.RemoveRobot(RobotSimObject.CurrentlyPossessedRobot);
                 PopulateScrollView();
                 if (RobotSimObject.SpawnedRobots.Count < RobotSimObject.MAX_ROBOTS)
-                    _addButton.ApplyTemplate<Button>(Button.EnableButton);
+                    _addButton.ApplyTemplate<Button>(Button.EnableDeleteButton);
+
+                OrbitCameraMode.FocusPoint = () => Vector3.zero;
             });
 
             if (RobotSimObject.CurrentlyPossessedRobot == string.Empty)
@@ -103,10 +106,8 @@ public class RobotSwitchPanel : PanelDynamic {
             return;
 
         if (!_isMatchMode) {
-            if (possChangeEvent.NewBot == string.Empty)
-                _removeButton.ApplyTemplate(Button.DisableButton);
-            else
-                _removeButton.ApplyTemplate(Button.EnableButton);
+            _removeButton.ApplyTemplate(
+                possChangeEvent.NewBot == string.Empty ? Button.DisableButton : Button.EnableDeleteButton);
         }
     }
 
@@ -135,7 +136,7 @@ public class RobotSwitchPanel : PanelDynamic {
 
         if (!_isMatchMode) {
             if (RobotSimObject.CurrentlyPossessedRobot == string.Empty)
-                _removeButton.ApplyTemplate(Button.EnableButton);
+                _removeButton.ApplyTemplate(Button.DisableButton);
 
             if (RobotSimObject.SpawnedRobots.Count >= RobotSimObject.MAX_ROBOTS)
                 _addButton.ApplyTemplate(Button.DisableButton);

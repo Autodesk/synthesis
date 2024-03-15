@@ -114,12 +114,12 @@ namespace UI.Dynamic.Panels.MixAndMatch {
 
         /// <summary>Instantiates the main part object</summary>
         private GameObject InstantiatePartGameObject() {
-            if (!File.Exists(_partData.MirabufPartFile)) {
-                Logger.Log($"Part file {_partData.MirabufPartFile} not found!", LogLevel.Error);
+            if (!File.Exists(_partData.MirabufPartFilePath)) {
+                Logger.Log($"Part file {_partData.MirabufPartFilePath} not found!", LogLevel.Error);
                 return null;
             }
 
-            MirabufLive miraLive = new MirabufLive(_partData.MirabufPartFile);
+            MirabufLive miraLive = new MirabufLive(_partData.MirabufPartFilePath);
 
             GameObject assemblyObject = new GameObject(miraLive.MiraAssembly.Info.Name);
             miraLive.GenerateDefinitionObjects(assemblyObject, false, false);
@@ -172,6 +172,9 @@ namespace UI.Dynamic.Panels.MixAndMatch {
                 _selectedConnection = point;
                 GizmoManager.SpawnGizmo(point.transform,
                     t => {
+                        if (point.transform == null)
+                            GizmoManager.ExitGizmo();
+
                         point.transform.position = t.Position;
                         point.transform.rotation = t.Rotation;
                     },
@@ -212,6 +215,7 @@ namespace UI.Dynamic.Panels.MixAndMatch {
         public override void Update() {}
 
         public override void Delete() {
+            GizmoManager.ExitGizmo();
             SceneHider.IsHidden = false;
             Object.Destroy(_partGameObject);
         }
