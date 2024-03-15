@@ -1,27 +1,24 @@
 import './App.css';
-// import MyThree from './graphics/ThreeExample.tsx';
-import MyThree from './graphics/JoltExample.tsx'
-import { useEffect, useState } from 'react';
-
-// import { mirabuf as Mirabuf } from './proto/mirabuf.js';
-// import DetailsPanel from './components/Details.tsx';
+import Scene from './components/Scene.tsx';
+import { useEffect } from 'react';
+import GetSceneRenderer from './systems/scene/SceneRenderer.ts';
+import MyThree from './graphics/JoltExample.tsx';
 
 function App() {
-	const [joltLoaded, setJoltLoaded] = useState<boolean>(false);
 
-	useEffect(() => { (async () => {
-		setJoltLoaded(true);
-	})()}, []);
+	// useEffect(() => {
 
-	if (joltLoaded) {
-		return (
-			< MyThree />
-		);
-	} else {
-		return (
-			<div>{joltLoaded ? "Jolt has loaded!" : "Jolt is loading..."}</div>
-		)
-	}
+	// 	const mainLoop = () => {
+	// 		requestAnimationFrame(mainLoop);
+	
+	// 		GetSceneRenderer().Update();
+	// 	};
+	// 	mainLoop();
+	// }, []);
+
+	// return <Scene useStats={true} />
+
+	return <MyThree />;
 }
 
 export default App;
