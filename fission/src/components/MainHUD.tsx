@@ -58,6 +58,9 @@ const variants = {
 }
 
 const MainHUD: React.FC = () => {
+
+    console.debug('Creating MainHUD');
+
     const { openModal } = useModalControlContext()
     const { openPanel } = usePanelControlContext()
     const { addToast } = useToastContext()

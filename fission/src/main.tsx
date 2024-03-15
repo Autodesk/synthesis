@@ -40,13 +40,11 @@ const themes = {
 }
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-    <React.StrictMode>
-        <ThemeProvider
-            initialThemeName={initialThemeName}
-            themes={themes}
-            defaultTheme={defaultColors}
-        >
-            <Synthesis />
-        </ThemeProvider>
-    </React.StrictMode>
+    <ThemeProvider
+        initialThemeName={initialThemeName}
+        themes={themes}
+        defaultTheme={defaultColors}
+    >
+        <Synthesis />
+    </ThemeProvider>
 )

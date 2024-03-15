@@ -213,12 +213,12 @@ function Synthesis() {
                         }}
                     >
                         <ToastProvider>
+							<Scene useStats={true} />
                             <MainHUD />
                             {motionPanelElements.length > 0 &&
                                 motionPanelElements}
                             {motionModalElement && motionModalElement}
                             <ToastContainer />
-                            <Scene useStats={true} />
                         </ToastProvider>
                     </PanelControlProvider>
                 </ModalControlProvider>

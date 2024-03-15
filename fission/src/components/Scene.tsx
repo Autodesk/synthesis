@@ -31,6 +31,7 @@ function Scene({ useStats }: SceneProps) {
             });
 
             if (useStats && !stats) {
+                console.log('Adding stat');
                 stats = new Stats();
                 stats.dom.style.position = 'absolute';
                 stats.dom.style.top = '0px';
