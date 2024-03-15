@@ -13,7 +13,8 @@ import { mirabuf } from "../proto/mirabuf"
 import { LoadMirabufRemote } from '../mirabuf/MirabufLoader.ts';
 import { JoltVec3_ThreeVector3, JoltQuat_ThreeQuaternion } from '../util/TypeConversions.ts';
 import { COUNT_OBJECT_LAYERS, LAYER_MOVING, LAYER_NOT_MOVING, addToScene, removeFromScene } from '../util/threejs/MeshCreation.ts';
-import { applyTransforms } from '../mirabuf/MirabufTransforms.ts';
+import MirabufInstance from '../mirabuf/MirabufInstance.ts';
+import MirabufParser, { ParseErrorSeverity } from '../mirabuf/MirabufParser.ts';
 
 const clock = new THREE.Clock();
 let time = 0;
@@ -176,11 +177,32 @@ function MyThree() {
     }
     console.log(urlParams)
 
+    const addMiraToScene = (assembly: mirabuf.Assembly | undefined) => {
+        if (!assembly) {
+            console.error('Assembly is undefined');
+            return;
+        }
+
+        const parser = new MirabufParser(assembly);
+        if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
+            console.error(`Assembly Parser produced significant errors for '${assembly.info!.name!}'`);
+            return;
+        }
+        
+        const instance = new MirabufInstance(parser);
+        instance.AddToScene(scene);
+    }
+
     useEffect(() => {
         LoadMirabufRemote(mira_path)
-            .then((assembly: mirabuf.Assembly | undefined) => applyTransforms(assembly, scene))
-            .catch(_ => LoadMirabufRemote(MIRA_FILE).then((assembly: mirabuf.Assembly | undefined) => applyTransforms(assembly, scene)))
-            .catch(console.error);
+            .then(
+                (assembly: mirabuf.Assembly | undefined) => addMiraToScene(assembly)
+            ).catch(
+                _ => LoadMirabufRemote(MIRA_FILE).then(
+                    (assembly: mirabuf.Assembly | undefined) => addMiraToScene(assembly)
+                )
+            ).catch(console.error);
+
         initGraphics();
         
         if (refContainer.current) {

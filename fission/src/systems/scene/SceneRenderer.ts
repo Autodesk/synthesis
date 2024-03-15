@@ -36,6 +36,8 @@ class SceneRenderer {
             0.1,
             1000
         );
+        this._mainCamera.position.set(-2.5, 2, 2.5);
+
 
         this._scene = new THREE.Scene();
 
@@ -72,8 +74,8 @@ class SceneRenderer {
         // Prevents a problem when rendering at 30hz. Referred to as the spiral of death.
         const deltaTime = this._clock.getDelta();
 
-        (Object.values(this._sceneObjects) as SceneObject[]).forEach(obj => {
-            obj.PreRenderUpdate();
+        this._sceneObjects.forEach(obj => {
+            obj.Update();
         });
 
         // controls.update(deltaTime); // TODO: Add controls?
@@ -84,7 +86,13 @@ class SceneRenderer {
         const id = nextSceneObjectId++;
         obj.id = id;
         this._sceneObjects.set(id, obj);
+        obj.Setup();
         return id;
+    }
+
+    public RemoveAllSceneObjects() {
+        this._sceneObjects.forEach(obj => obj.Dispose());
+        this._sceneObjects.clear();
     }
 }
 

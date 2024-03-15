@@ -1,10 +1,10 @@
 import { mirabuf } from "../proto/mirabuf";
 
 export enum ParseErrorSeverity {
-    Unimportable = 1,
-    LikelyIssues = 2,
-    ProbablyOkay = 3,
-    JustAWarning = 4
+    Unimportable = 10,
+    LikelyIssues = 6,
+    ProbablyOkay = 5,
+    JustAWarning = 2
 }
 
 const GROUNDED_JOINT_ID = 'grounded';
@@ -29,17 +29,17 @@ class MirabufParser {
     protected _partToNodeMap: Map<string, RigidNode> = new Map();
     protected _rigidNodes: Array<RigidNode> = [];
 
-    public get partTreeValues() {
-        return this._partTreeValues;
-    }
+    public get errors() { return new Array(...this._errors); }
 
-    public get designHierarchyRoot() {
-        return this._designHierarchyRoot;
-    }
+    public get maxErrorSeverity() { return Math.max(...this._errors.map(x => x[0])); }
 
-    public get partToNodeMap() {
-        return this._partToNodeMap;
-    }
+    public get assembly() { return this._assembly; }
+
+    public get partTreeValues() { return this._partTreeValues; }
+
+    public get designHierarchyRoot() { return this._designHierarchyRoot; }
+
+    public get partToNodeMap() { return this._partToNodeMap; }
 
     public get rigidNodes(): Array<RigidNodeReadOnly> {
         return this._rigidNodes.map(x => new RigidNodeReadOnly(x));
