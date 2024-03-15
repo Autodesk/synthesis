@@ -71,9 +71,12 @@ const transformGeometry = (geometry: THREE.BufferGeometry, mesh: mirabuf.IMesh) 
 
 class MirabufInstance {
     private _mirabufParser: MirabufParser;
-    private _globalTransforms: Map<string, THREE.Matrix4>;
     private _materials: Map<string, THREE.Material>;
     private _meshes: Map<string, Array<THREE.Mesh>>;
+
+    public get parser() { return this._mirabufParser; }
+    public get materials() { return this._materials; }
+    public get meshes() { return this._meshes; }
 
     public constructor(parser: MirabufParser) {
         if (parser.errors.some(x => x[0] >= ParseErrorSeverity.Unimportable)) {
@@ -81,11 +84,9 @@ class MirabufInstance {
         }
 
         this._mirabufParser = parser;
-        this._globalTransforms = new Map();
         this._materials = new Map();
         this._meshes = new Map();
 
-        this.LoadGlobalTransforms();
         this.LoadMaterials();
         this.CreateMeshes();
     }
@@ -110,54 +111,6 @@ class MirabufInstance {
                 })
             );
         });
-    }
-
-    /**
-     * Loads this._globalTransforms with the world space transformations of each part instance.
-     */
-    private LoadGlobalTransforms() {
-        const root = this._mirabufParser.designHierarchyRoot;
-        const partInstances = new Map<string, mirabuf.IPartInstance>(Object.entries(this._mirabufParser.assembly.data!.parts!.partInstances!));
-        const partDefinitions = this._mirabufParser.assembly.data!.parts!.partDefinitions!;
-
-        this._globalTransforms.clear();
-
-        const getTransforms = (node: mirabuf.INode, parent: THREE.Matrix4) => {
-            for (const child of node.children!) {
-                if (!partInstances.has(child.value!)) {
-                    continue;
-                }
-                const partInstance = partInstances.get(child.value!)!;
-                
-                if (this._globalTransforms.has(child.value!)) continue;
-                const mat = MirabufTransform_ThreeMatrix4(partInstance.transform!)!;
-
-                // console.log(`[${partInstance.info!.name!}] -> ${matToString(mat)}`);
-
-                this._globalTransforms.set(child.value!, mat.premultiply(parent));
-                getTransforms(child, mat);
-            }
-        }
-
-        for (const child of root.children!) {
-            const partInstance = partInstances.get(child.value!)!;
-            let mat;
-            if (!partInstance.transform) {
-                const def = partDefinitions[partInstances.get(child.value!)!.partDefinitionReference!];
-                if (!def.baseTransform) {
-                    mat = new THREE.Matrix4().identity();
-                } else {
-                    mat = MirabufTransform_ThreeMatrix4(def.baseTransform);
-                }
-            } else {
-                mat = MirabufTransform_ThreeMatrix4(partInstance.transform);
-            }
-
-            // console.log(`[${partInstance.info!.name!}] -> ${matToString(mat!)}`);
-
-            this._globalTransforms.set(partInstance.info!.GUID!, mat!);
-            getTransforms(child, mat!);
-        }
     }
 
     /**
@@ -197,7 +150,7 @@ class MirabufInstance {
 
                         meshes.push(threeMesh);
                         
-                        const mat = this._globalTransforms.get(instance.info!.GUID!)!;
+                        const mat = this._mirabufParser.globalTransforms.get(instance.info!.GUID!)!;
                         threeMesh.position.setFromMatrixPosition(mat);
                         threeMesh.rotation.setFromRotationMatrix(mat);
                     }

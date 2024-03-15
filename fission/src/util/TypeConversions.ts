@@ -27,12 +27,37 @@ export function ThreeVector3_JoltVec3(vec: THREE.Vector3) {
     return new JOLT.Vec3(vec.x, vec.y, vec.z);
 }
 
+export function ThreeMatrix4_JoltMat44(m: THREE.Matrix4) {
+    const jMat = new JOLT.Mat44();
+    const threeArr = m.toArray();
+    for (let c = 0; c < 4; c++) {
+        const column = new JOLT.Vec4(
+            threeArr[4 * c + 0],
+            threeArr[4 * c + 1],
+            threeArr[4 * c + 2],
+            threeArr[4 * c + 3]
+        );
+        jMat.SetColumn4(c, column);
+        JOLT.destroy(column);
+    }
+
+    return jMat;
+}
+
 export function JoltVec3_ThreeVector3(vec: Jolt.Vec3 | Jolt.RVec3) {
     return new THREE.Vector3(vec.GetX(), vec.GetY(), vec.GetZ());
 }
 
 export function JoltQuat_ThreeQuaternion(quat: Jolt.Quat) {
     return new THREE.Quaternion(quat.GetX(), quat.GetY(), quat.GetZ(), quat.GetW());
+}
+
+export function JoltMat44_ThreeMatrix4(m: Jolt.Mat44): THREE.Matrix4 {
+    return new THREE.Matrix4().compose(
+        JoltVec3_ThreeVector3(m.GetTranslation()),
+        JoltQuat_ThreeQuaternion(m.GetQuaternion()),
+        new THREE.Vector3(1, 1, 1)
+    );
 }
 
 export function MirabufTransform_ThreeMatrix4(m: mirabuf.ITransform): THREE.Matrix4 {
@@ -44,10 +69,10 @@ export function MirabufTransform_ThreeMatrix4(m: mirabuf.ITransform): THREE.Matr
     return new THREE.Matrix4().compose(pos, quat, new THREE.Vector3(1, 1, 1));
 }
 
-export function JoltMat44_ThreeMatrix4(m: Jolt.Mat44): THREE.Matrix4 {
-    return new THREE.Matrix4().compose(
-        JoltVec3_ThreeVector3(m.GetTranslation()),
-        JoltQuat_ThreeQuaternion(m.GetQuaternion()),
-        new THREE.Vector3(1, 1, 1)
-    );
+export function MirabufVector3_ThreeVector3(v: mirabuf.Vector3): THREE.Vector3 {
+    return new THREE.Vector3(v.x / 100.0, v.y / 100.0, v.z / 100.0);
+}
+
+export function MirabufVector3_JoltVec3(v: mirabuf.Vector3): Jolt.Vec3 {
+    return new Jolt.Vec3(v.x / 100.0, v.y / 100.0, v.z / 100.0);
 }

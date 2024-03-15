@@ -1,3 +1,4 @@
+import './Scene.css';
 import { useEffect, useRef } from "react";
 import GetSceneRenderer from "../systems/scene/SceneRenderer";
 import Stats from 'stats.js';
@@ -20,9 +21,14 @@ function Scene({ useStats }: SceneProps) {
             console.debug('Adding ThreeJs to DOM');
 
             const sr = GetSceneRenderer();
+            sr.renderer.domElement.style.width = '100%';
+            sr.renderer.domElement.style.height = '100%';
 
             refContainer.current.innerHTML = "";
             refContainer.current.appendChild(sr.renderer.domElement)
+            window.addEventListener('resize', () => {
+                sr.UpdateCanvasSize();
+            });
 
             if (useStats && !stats) {
                 stats = new Stats();

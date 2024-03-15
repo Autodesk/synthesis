@@ -1,4 +1,6 @@
+import * as THREE from "three";
 import { mirabuf } from "../proto/mirabuf";
+import { MirabufTransform_ThreeMatrix4 } from "../util/TypeConversions";
 
 export enum ParseErrorSeverity {
     Unimportable = 10,
@@ -28,6 +30,7 @@ class MirabufParser {
 
     protected _partToNodeMap: Map<string, RigidNode> = new Map();
     protected _rigidNodes: Array<RigidNode> = [];
+    private _globalTransforms: Map<string, THREE.Matrix4>;
 
     public get errors() { return new Array(...this._errors); }
 
@@ -41,6 +44,8 @@ class MirabufParser {
 
     public get partToNodeMap() { return this._partToNodeMap; }
 
+    public get globalTransforms() { return this._globalTransforms; }
+
     public get rigidNodes(): Array<RigidNodeReadOnly> {
         return this._rigidNodes.map(x => new RigidNodeReadOnly(x));
     }
@@ -48,8 +53,10 @@ class MirabufParser {
     public constructor(assembly: mirabuf.Assembly) {
         this._assembly = assembly;
         this._errors = new Array<ParseError>();
+        this._globalTransforms = new Map();
 
         this.GenerateTreeValues();
+        this.LoadGlobalTransforms();
 
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const that = this;
@@ -164,6 +171,54 @@ class MirabufParser {
 
         node.parts.add(part);
         this._partToNodeMap.set(part, node);
+    }
+
+    /**
+     * Loads this._globalTransforms with the world space transformations of each part instance.
+     */
+    private LoadGlobalTransforms() {
+        const root = this._designHierarchyRoot;
+        const partInstances = new Map<string, mirabuf.IPartInstance>(Object.entries(this._assembly.data!.parts!.partInstances!));
+        const partDefinitions = this._assembly.data!.parts!.partDefinitions!;
+
+        this._globalTransforms.clear();
+
+        const getTransforms = (node: mirabuf.INode, parent: THREE.Matrix4) => {
+            for (const child of node.children!) {
+                if (!partInstances.has(child.value!)) {
+                    continue;
+                }
+                const partInstance = partInstances.get(child.value!)!;
+                
+                if (this._globalTransforms.has(child.value!)) continue;
+                const mat = MirabufTransform_ThreeMatrix4(partInstance.transform!)!;
+
+                // console.log(`[${partInstance.info!.name!}] -> ${matToString(mat)}`);
+
+                this._globalTransforms.set(child.value!, mat.premultiply(parent));
+                getTransforms(child, mat);
+            }
+        }
+
+        for (const child of root.children!) {
+            const partInstance = partInstances.get(child.value!)!;
+            let mat;
+            if (!partInstance.transform) {
+                const def = partDefinitions[partInstances.get(child.value!)!.partDefinitionReference!];
+                if (!def.baseTransform) {
+                    mat = new THREE.Matrix4().identity();
+                } else {
+                    mat = MirabufTransform_ThreeMatrix4(def.baseTransform);
+                }
+            } else {
+                mat = MirabufTransform_ThreeMatrix4(partInstance.transform);
+            }
+
+            // console.log(`[${partInstance.info!.name!}] -> ${matToString(mat!)}`);
+
+            this._globalTransforms.set(partInstance.info!.GUID!, mat!);
+            getTransforms(child, mat!);
+        }
     }
 
     private FindAncestorialBreak(partA: string, partB: string): [string, string] {

@@ -7,7 +7,7 @@ let nextSceneObjectId = 1;
 
 class SceneRenderer {
 
-    private _mainCamera: THREE.Camera;
+    private _mainCamera: THREE.PerspectiveCamera;
     private _scene: THREE.Scene;
     private _renderer: THREE.WebGLRenderer;
     private _clock: THREE.Clock;
@@ -68,6 +68,13 @@ class SceneRenderer {
 
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
         this._scene.add(ambientLight);
+    }
+
+    public UpdateCanvasSize() {
+        this._renderer.setSize(window.innerWidth, window.innerHeight);
+        // No idea why height would be zero, but just incase.
+        this._mainCamera.aspect = window.innerWidth / window.innerHeight;
+        this._mainCamera.updateProjectionMatrix();
     }
 
     public Update() {
