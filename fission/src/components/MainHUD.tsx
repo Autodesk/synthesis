@@ -85,7 +85,7 @@ const MainHUD: React.FC = () => {
                 variants={variants}
                 className="fixed flex flex-col gap-2 bg-gradient-to-b from-interactive-element-right to-interactive-element-left w-min p-4 rounded-3xl ml-4 top-1/2 -translate-y-1/2"
             >
-                <div className="flex flex-row gap-2">
+                <div className="flex flex-row gap-2 w-60 h-10">
                     <img src={logo} width={"80%"} />
                     <button onClick={() => setIsOpen(false)}>
                         <GrFormClose
