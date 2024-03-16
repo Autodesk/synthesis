@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { test, expect, describe, assert } from 'vitest';
 import { PhysicsSystem } from '../systems/physics/PhysicsSystem';
 

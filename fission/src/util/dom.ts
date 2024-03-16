@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const click = (btn: number, x: number, y: number) => {
     const el = document.elementFromPoint(x, y);
 
