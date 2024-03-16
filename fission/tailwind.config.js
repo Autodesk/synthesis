@@ -41,6 +41,9 @@ export default {
     theme: {
         extend: {
             colors: colors,
+            maxHeight: {
+                '70vh': '70vh',
+            }
         },
     },
     safelist: safelist,

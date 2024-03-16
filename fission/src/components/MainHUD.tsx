@@ -102,6 +102,11 @@ const MainHUD: React.FC = () => {
                 />
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton
+                        value={"Manage Assemblies"}
+                        icon={<FaGear />}
+                        onClick={() => openModal("manage-assembles")}
+                    />
+                    <MainHUDButton
                         value={"Settings"}
                         icon={<FaGear />}
                         onClick={() => openModal("settings")}

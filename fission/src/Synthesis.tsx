@@ -53,6 +53,7 @@ import ScoringZonesPanel from "./panels/configuring/scoring/ScoringZonesPanel"
 import ZoneConfigPanel from "./panels/configuring/scoring/ZoneConfigPanel"
 import ScoreboardPanel from "./panels/information/ScoreboardPanel"
 import DriverStationPanel from "./panels/simulation/DriverStationPanel"
+import ManageAssembliesModal from './modals/spawning/ManageAssembliesModal.tsx';
 
 const DEFAULT_MIRA_PATH = 'test_mira/Team_2471_(2018)_v7.mira';
 
@@ -255,6 +256,7 @@ const initialModals = [
     <MatchModeModal modalId="match-mode" />,
     <SpawningModal modalId="spawning" />,
     <ConfigMotorModal modalId="config-motor" />,
+    <ManageAssembliesModal modalId="manage-assembles" />,
 ]
 
 const initialPanels: ReactElement[] = [
