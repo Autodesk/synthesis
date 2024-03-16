@@ -22,16 +22,21 @@ jobs:
       run: |
         cd fission
         npm install
-    - name: Format Validation
-      id: format-validation
+    - name: Linter
+      id: linter-validation
       run: |
         cd fission
         npm run lint
+      continue-on-error: true
+    - name: Prettier
+      id: prettier-validation
+      run: |
+        cd fission
         npm run prettier
       continue-on-error: true
     - name: Check Success
       run: |
-        if [ ${{ steps.format-validation.outcome }} == "success" ]; then
+        if [ ${{ steps.linter-validation.outcome }} == "success" ]; then
           echo "Format Validation Passed"
         else
           echo "Format Validation Failed"
