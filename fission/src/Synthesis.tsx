@@ -141,17 +141,19 @@ function Synthesis() {
             </motion.div>
         )
 
-	let mira_path = DEFAULT_MIRA_PATH;
-
-	const urlParams = new URLSearchParams(document.location.search);
-
-	if (urlParams.has("mira")) {
-        mira_path = `test_mira/${urlParams.get("mira")!}`;
-        console.debug(`Selected Mirabuf File: ${mira_path}`);
-    }
-    console.log(urlParams)
+	
 
 	useEffect(() => {
+
+        let mira_path = DEFAULT_MIRA_PATH;
+
+        const urlParams = new URLSearchParams(document.location.search);
+
+        if (urlParams.has("mira")) {
+            mira_path = `test_mira/${urlParams.get("mira")!}`;
+            console.debug(`Selected Mirabuf File: ${mira_path}`);
+        }
+        console.log(urlParams)
 
 		const setup = async () => {
 			const miraAssembly = await LoadMirabufRemote(mira_path)
