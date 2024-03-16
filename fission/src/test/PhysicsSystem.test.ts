@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { test, expect, describe, assert } from 'vitest';
-import { PhysicsSystem } from '../systems/Systems';
+import { PhysicsSystem } from '../systems/physics/PhysicsSystem';
 
 describe('Physics System Tests', () => {
     test('Convex Hull Shape (Cube)', () => {

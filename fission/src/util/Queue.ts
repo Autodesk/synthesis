@@ -32,6 +32,16 @@ class Queue<T> {
         }
         return retVal;
     }
+
+    public Clone(): Queue<T> {
+        const queue = new Queue<T>();
+        let node = this._head;
+        while (node != null) {
+            queue.Enqueue(node.value);
+            node = node.next;
+        }
+        return queue;
+    }
 }
 
 class LinkedNode<T> {

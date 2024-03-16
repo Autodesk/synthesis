@@ -1,6 +1,7 @@
 import { test, expect, describe } from 'vitest';
 
 import Queue from '../../util/Queue';
+import { Random } from '../../util/Random';
 
 describe('Queue Tests', () => {
     test('Create Empty', () => {
@@ -58,5 +59,18 @@ describe('Queue Tests', () => {
         }
         expect(q.size).toBe(0);
         expect(q.Dequeue()).toBeUndefined();
+    });
+
+    test('Queue Clone (100 Elements)', () => {
+        const q1 = new Queue<number>();
+        for (let i = 0; i < 100; i++) {
+            q1.Enqueue(Math.floor(Random() * 400));
+        }
+
+        const q2 = q1.Clone();
+        expect(q2.size).toBe(q1.size);
+        for (let i = 0; i < q1.size; i++) {
+            expect(q2.Dequeue()).toBe(q1.Dequeue());
+        }
     });
 });

@@ -1,7 +1,9 @@
-import { ThreeVector3_JoltVec3, _JoltQuat } from "../../util/TypeConversions";
+import { MirabufVector3_JoltVec3, MirabufVector3_ThreeVector3, ThreeVector3_JoltVec3, _JoltQuat } from "../../util/TypeConversions";
 import JOLT from "../../util/loading/JoltSyncLoader";
 import Jolt from "@barclah/jolt-physics";
 import * as THREE from 'three';
+import { mirabuf } from '../../proto/mirabuf';
+import MirabufParser from "../../mirabuf/MirabufParser";
 
 const LAYER_NOT_MOVING = 0;
 const LAYER_MOVING = 1;
@@ -115,6 +117,35 @@ export class PhysicsSystem {
             settings.mPoints.push_back(new JOLT.Vec3(points[i], points[i + 1], points[i + 2]));
         }
         settings.mDensity = density;
+        return settings.Create();
+    }
+
+    public CreateBodiesFromParser(parser: MirabufParser): Map<string, Jolt.Body> {
+        const rnToBodies = new Map<string, Jolt.Body>();
+        
+        parser.rigidNodes.forEach(rn => {
+            rn.parts.forEach(partId => {
+                const partInstance = parser.assembly.data!.parts!.partInstances![partId]!;
+                const partDefinition = parser.assembly.data!.parts!.partDefinitions![partInstance.partDefinitionReference!];
+                
+            });
+        });
+
+        return rnToBodies;
+    }
+
+    private CreateColliderFromPart(partDefinition: mirabuf.PartDefinition): Jolt.ShapeResult {
+        const settings = new JOLT.ConvexHullShapeSettings();
+        const points = settings.mPoints;
+        partDefinition.bodies.forEach(body => {
+            if (body.triangleMesh && body.triangleMesh.mesh && body.triangleMesh.mesh.verts) {
+                const vertArr = body.triangleMesh.mesh.verts;
+                for (let i = 0; i < body.triangleMesh.mesh.verts.length; i += 3) {
+                    points.push_back(new JOLT.Vec3(vertArr[i], vertArr[i + 1], vertArr[i + 2]));
+                }
+            }
+        });
+
         return settings.Create();
     }
 
