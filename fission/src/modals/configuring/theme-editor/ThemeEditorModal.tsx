@@ -8,6 +8,7 @@ import Button from "@/components/Button"
 import Dropdown from "@/components/Dropdown"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Stack, { StackDirection } from "@/components/Stack"
+import { Random } from "@/util/Random"
 import { extend as cdExtend, random as cdRandom, colord } from "colord"
 import a11yPlugin from "colord/plugins/a11y"
 import React, { useState } from "react"
@@ -127,7 +128,7 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                             if (selectedTheme == initialThemeName) return;
                             const keys: ColorName[] = Object.keys(themes[selectedTheme]) as ColorName[];
                             keys.forEach(k => {
-                                const randAlpha = () => Math.max(0.1, Math.random());
+                                const randAlpha = () => Math.max(0.1, Random());
                                 updateColor(selectedTheme, k, { ...cdRandom().toRgb(), a: randAlpha() } as RgbaColor);
                             })
                             applyTheme(selectedTheme)

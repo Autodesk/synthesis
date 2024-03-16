@@ -11,6 +11,7 @@ import { usePanelControlContext } from "../PanelContext"
 import { motion } from "framer-motion"
 import logo from "../assets/autodesk_logo.png"
 import { ToastType, useToastContext } from "../ToastContext"
+import { Random } from "@/util/Random"
 
 type ButtonProps = {
     value: string
@@ -156,7 +157,7 @@ const MainHUD: React.FC = () => {
                                 "info",
                                 "warning",
                                 "error",
-                            ][Math.floor(Math.random() * 3)] as ToastType
+                            ][Math.floor(Random() * 3)] as ToastType
                             addToast(
                                 type,
                                 type,
