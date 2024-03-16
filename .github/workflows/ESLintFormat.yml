@@ -20,12 +20,12 @@ jobs:
         node-version: 20
     - name: Install Dependencies
       run: |
-        cd react
+        cd fission
         npm install
     - name: Format Validation
       id: format-validation
       run: |
-        cd react
+        cd fission
         npm run lint
         npm run prettier
       continue-on-error: true
