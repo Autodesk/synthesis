@@ -144,6 +144,18 @@ class PhysicsSystem extends WorldSystem {
                     0
                 );
             });
+
+            const shapeResult = compoundShapeSettings.Create();
+            if (!shapeResult.IsValid || shapeResult.HasError()) {
+                console.error(`Failed to create shape for RigidNode ${rn.name}`);
+            }
+
+            const shape = shapeResult.Get();
+            // shape.GetMassProperties().mMass = 
+            const bodySettings = new JOLT.BodyCreationSettings(
+                shape, new JOLT.RVec3(), new JOLT.Quat(), JOLT.EMotionType_Dynamic, LAYER_MOVING
+            );
+            this._joltBodyInterface.CreateBody(bodySettings);
         });
 
         return rnToBodies;

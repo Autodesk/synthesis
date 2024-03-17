@@ -5,12 +5,12 @@ import MirabufParser, { RigidNodeReadOnly } from "../../mirabuf/MirabufParser";
 import { LoadMirabufLocal } from "../../mirabuf/MirabufLoader";
 
 describe('Mirabuf Parser Tests', () => {
-    test('Get Dozer JSON', () => {
-        const dozer = LoadMirabufLocal('./public/test_mira/Dozer_v2.mira');
-        Object.values(dozer.data!.parts!.partDefinitions!).forEach(x => x.bodies = new Array<mirabuf.IBody>());
-        const json = JSON.stringify(dozer);
-        console.log(json);
-    });
+    // test('Get Dozer JSON', () => {
+    //     const dozer = LoadMirabufLocal('./public/test_mira/Dozer_v2.mira');
+    //     Object.values(dozer.data!.parts!.partDefinitions!).forEach(x => x.bodies = new Array<mirabuf.IBody>());
+    //     const json = JSON.stringify(dozer);
+    //     console.log(json);
+    // });
 
     test('Test Load TestCube_v1.mira (Uncompressed)', () => {
         const testCubeMira = LoadMirabufLocal('./public/test_mira/TestCube_v1.mira');
@@ -78,10 +78,10 @@ function filterNonPhysicsNodes(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembl
     });
 }
 
-function printRigidNodeParts(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembly) {
-    nodes.forEach(x => {
-        console.log(`[ ${x.name} ]:`);
-        x.parts.forEach(y => console.log(`-> '${mira.data!.parts!.partInstances![y]!.info!.name!}'`));
-        console.log('');
-    });
-}
+// function printRigidNodeParts(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembly) {
+//     nodes.forEach(x => {
+//         console.log(`[ ${x.name} ]:`);
+//         x.parts.forEach(y => console.log(`-> '${mira.data!.parts!.partInstances![y]!.info!.name!}'`));
+//         console.log('');
+//     });
+// }

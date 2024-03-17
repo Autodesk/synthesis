@@ -1,5 +1,5 @@
 import { test, expect, describe, assert } from 'vitest';
-import { PhysicsSystem } from '../systems/physics/PhysicsSystem';
+import PhysicsSystem from '../systems/physics/PhysicsSystem';
 
 describe('Physics System Tests', () => {
     test('Convex Hull Shape (Cube)', () => {
