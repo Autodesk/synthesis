@@ -1,16 +1,16 @@
 import * as THREE from 'three';
 import SceneObject from './SceneObject';
+import WorldSystem from '../WorldSystem';
 
 const CLEAR_COLOR = 0x121212;
 
 let nextSceneObjectId = 1;
 
-class SceneRenderer {
+class SceneRenderer extends WorldSystem {
 
     private _mainCamera: THREE.PerspectiveCamera;
     private _scene: THREE.Scene;
     private _renderer: THREE.WebGLRenderer;
-    private _clock: THREE.Clock;
 
     private _sceneObjects: Map<number, SceneObject>;
 
@@ -27,8 +27,9 @@ class SceneRenderer {
     }
 
     public constructor() {
+        super();
+
         this._sceneObjects = new Map();
-        this._clock = new THREE.Clock();
 
         this._mainCamera = new THREE.PerspectiveCamera(
             75,
@@ -77,16 +78,17 @@ class SceneRenderer {
         this._mainCamera.updateProjectionMatrix();
     }
 
-    public Update() {
-        // Prevents a problem when rendering at 30hz. Referred to as the spiral of death.
-        const deltaTime = this._clock.getDelta();
-
+    public Update(_: number): void {
         this._sceneObjects.forEach(obj => {
             obj.Update();
         });
 
         // controls.update(deltaTime); // TODO: Add controls?
         this._renderer.render(this._scene, this._mainCamera);
+    }
+
+    public Destroy(): void {
+        
     }
 
     public RegisterSceneObject<T extends SceneObject>(obj: T): number {
@@ -103,13 +105,4 @@ class SceneRenderer {
     }
 }
 
-let instance: SceneRenderer | null = null;
-
-function GetSceneRenderer() {
-    if (!instance) {
-        instance = new SceneRenderer();
-    }
-    return instance;
-}
-
-export default GetSceneRenderer;
+export default SceneRenderer;

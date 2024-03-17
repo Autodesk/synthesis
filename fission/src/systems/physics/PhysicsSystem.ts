@@ -1,9 +1,10 @@
-import { MirabufVector3_JoltVec3, MirabufVector3_ThreeVector3, ThreeVector3_JoltVec3, _JoltQuat } from "../../util/TypeConversions";
+import { ThreeMatrix4_JoltMat44, ThreeVector3_JoltVec3, _JoltQuat } from "../../util/TypeConversions";
 import JOLT from "../../util/loading/JoltSyncLoader";
 import Jolt from "@barclah/jolt-physics";
 import * as THREE from 'three';
 import { mirabuf } from '../../proto/mirabuf';
 import MirabufParser from "../../mirabuf/MirabufParser";
+import WorldSystem from "../WorldSystem";
 
 const LAYER_NOT_MOVING = 0;
 const LAYER_MOVING = 1;
@@ -17,7 +18,7 @@ const STANDARD_SUB_STEPS = 1;
  * This system can create physical representations of objects such as Robots,
  * Fields, and Game pieces, and simulate them.
  */
-export class PhysicsSystem {
+class PhysicsSystem extends WorldSystem {
     
     private _joltInterface: Jolt.JoltInterface;
     private _joltPhysSystem: Jolt.PhysicsSystem;
@@ -28,6 +29,8 @@ export class PhysicsSystem {
      * Creates a PhysicsSystem object.
      */
     constructor() {
+        super();
+
         this._bodies = [];
 
         const joltSettings = new JOLT.JoltSettings();
@@ -124,20 +127,32 @@ export class PhysicsSystem {
         const rnToBodies = new Map<string, Jolt.Body>();
         
         parser.rigidNodes.forEach(rn => {
+
+            const compoundShapeSettings = new Jolt.StaticCompoundShapeSettings();
+
             rn.parts.forEach(partId => {
                 const partInstance = parser.assembly.data!.parts!.partInstances![partId]!;
-                const partDefinition = parser.assembly.data!.parts!.partDefinitions![partInstance.partDefinitionReference!];
+                const partDefinition = parser.assembly.data!.parts!.partDefinitions![partInstance.partDefinitionReference!]!;
                 
+                const shapeSettings = this.CreateShapeSettingsFromPart(partDefinition);
+                
+                const transform = ThreeMatrix4_JoltMat44(parser.globalTransforms.get(partId)!);
+                compoundShapeSettings.AddShape(
+                    transform.GetTranslation(),
+                    transform.GetQuaternion(),
+                    shapeSettings,
+                    0
+                );
             });
         });
 
         return rnToBodies;
     }
 
-    private CreateColliderFromPart(partDefinition: mirabuf.PartDefinition): Jolt.ShapeResult {
+    private CreateShapeSettingsFromPart(partDefinition: mirabuf.IPartDefinition): Jolt.ShapeSettings {
         const settings = new JOLT.ConvexHullShapeSettings();
         const points = settings.mPoints;
-        partDefinition.bodies.forEach(body => {
+        partDefinition.bodies!.forEach(body => {
             if (body.triangleMesh && body.triangleMesh.mesh && body.triangleMesh.mesh.verts) {
                 const vertArr = body.triangleMesh.mesh.verts;
                 for (let i = 0; i < body.triangleMesh.mesh.verts.length; i += 3) {
@@ -146,14 +161,14 @@ export class PhysicsSystem {
             }
         });
 
-        return settings.Create();
+        return settings;
     }
 
-    public Step() {
+    public Update(_: number): void {
         this._joltInterface.Step(STANDARD_TIME_STEP, STANDARD_SUB_STEPS);
     }
 
-    public Destroy() {
+    public Destroy(): void {
         // Destroy Jolt Bodies.
         this._bodies.forEach(x => JOLT.destroy(x));
         this._bodies = [];
@@ -184,3 +199,5 @@ function SetupCollisionFiltering(settings: Jolt.JoltSettings) {
         COUNT_OBJECT_LAYERS
     );
 }
+
+export default PhysicsSystem;
