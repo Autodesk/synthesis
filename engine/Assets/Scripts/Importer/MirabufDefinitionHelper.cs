@@ -121,7 +121,6 @@ namespace Synthesis.Import {
             AssemblyData assemblyData, ColliderGenType colliderGenType, bool useIndex, int partIndex) {
             PhysicMaterial physMat = new PhysicMaterial { dynamicFriction = 0.6f, staticFriction = 0.6f };
             foreach (var body in definition.Bodies) {
-
                 if (body.TriangleMesh == null)
                     continue;
 
