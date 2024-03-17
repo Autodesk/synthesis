@@ -74,5 +74,17 @@ export function MirabufVector3_ThreeVector3(v: mirabuf.Vector3): THREE.Vector3 {
 }
 
 export function MirabufVector3_JoltVec3(v: mirabuf.Vector3): Jolt.Vec3 {
-    return new Jolt.Vec3(v.x / 100.0, v.y / 100.0, v.z / 100.0);
+    return new JOLT.Vec3(v.x / 100.0, v.y / 100.0, v.z / 100.0);
+}
+
+export function MirabufFloatArr_JoltVec3(v: number[], offsetIndex: number): Jolt.Vec3 {
+    return new JOLT.Vec3(v[offsetIndex] / 100.0, v[offsetIndex + 1] / 100.0, v[offsetIndex + 2] / 100.0);
+}
+
+export function MirabufFloatArr_JoltVec3Arr(v: number[]): Jolt.Vec3[] {
+    const arr = [];
+    for (let i = 0; i < v.length; i += 3) {
+        arr.push(MirabufFloatArr_JoltVec3(v, i));
+    }
+    return arr;
 }

@@ -39,7 +39,7 @@ class World {
 
     public static UpdateWorld() {
         const deltaT = World._clock.getDelta();
-        this._physicsSystem.Update(deltaT);
+        // this._physicsSystem.Update(deltaT);
         this._sceneRenderer.Update(deltaT);
     }
 }

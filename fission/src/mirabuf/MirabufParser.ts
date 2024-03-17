@@ -83,6 +83,8 @@ class MirabufParser {
             }
         });
 
+        // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
+
         // Fields Only: Assign Game Piece rigid nodes
         if (!assembly.dynamic) {
             // Collect all definitions labelled as gamepieces (dynamic = true)
@@ -110,9 +112,12 @@ class MirabufParser {
         // 2: Grounded joint
         const gInst = assembly.data!.joints!.jointInstances![GROUNDED_JOINT_ID];
         const gNode = this.NewRigidNode();
+        this.MovePartToRigidNode(gInst.parts!.nodes!.at(0)!.value!, gNode);
         
-        traverseTree(gInst.parts!.nodes!, x => (!this._partToNodeMap.has) && this.MovePartToRigidNode(x.value!, gNode));
+        // traverseTree(gInst.parts!.nodes!, x => (!this._partToNodeMap.has(x.value!)) && this.MovePartToRigidNode(x.value!, gNode));
         
+        // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
+
         // 3: Traverse and round up
         const traverseNodeRoundup = (node: mirabuf.INode, parentNode: RigidNode) => {
             const currentNode = that._partToNodeMap.get(node.value!);
@@ -126,6 +131,8 @@ class MirabufParser {
         }
         this._designHierarchyRoot.children?.forEach(x => traverseNodeRoundup(x, gNode));
 
+        // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
+
         // 4: Bandage via rigidgroups
         assembly.data!.joints!.rigidGroups!.forEach(rg => {
             let rn: RigidNode | null = null;
@@ -138,6 +145,8 @@ class MirabufParser {
                 }
             });
         });
+
+        // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
 
         // 5. Remove Empty RNs
         this._rigidNodes = this._rigidNodes.filter(x => x.parts.size > 0);
@@ -307,6 +316,19 @@ class MirabufParser {
 
         recursive(this._designHierarchyRoot);
         this._partTreeValues = partTreeValues;
+    }
+
+    private DebugPrintHierarchy(level: number = 1, ...nodes: mirabuf.INode[]) {
+        if (level <= 1)
+            console.debug('    .... RN DEBUG ....');
+        for (const node of nodes) {
+            console.debug(`${'-'.repeat(level)} ${this._assembly.data!.parts!.partInstances![node.value!]!.info!.name!} [${this._partToNodeMap.get(node.value!)?.name ?? '---'}]`);
+            if (node.children)
+                this.DebugPrintHierarchy(level + 1, ...node.children);
+        }
+
+        if (level <= 1)
+            console.debug('    .... END ....');
     }
 }
 

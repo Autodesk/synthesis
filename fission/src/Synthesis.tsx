@@ -183,7 +183,7 @@ function Synthesis() {
 		const mainLoop = () => {
 			mainLoopHandle = requestAnimationFrame(mainLoop);
 	
-			// World.UpdateWorld();
+			World.UpdateWorld();
 		};
 		mainLoop();
         // Cleanup

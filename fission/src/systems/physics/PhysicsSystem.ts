@@ -1,4 +1,4 @@
-import { ThreeMatrix4_JoltMat44, ThreeVector3_JoltVec3, _JoltQuat } from "../../util/TypeConversions";
+import { MirabufFloatArr_JoltVec3, ThreeMatrix4_JoltMat44, ThreeVector3_JoltVec3, _JoltQuat } from "../../util/TypeConversions";
 import JOLT from "../../util/loading/JoltSyncLoader";
 import Jolt from "@barclah/jolt-physics";
 import * as THREE from 'three';
@@ -41,6 +41,8 @@ class PhysicsSystem extends WorldSystem {
 
         this._joltPhysSystem = this._joltInterface.GetPhysicsSystem();
         this._joltBodyInterface = this._joltPhysSystem.GetBodyInterface();
+
+        this.CreateBox(new THREE.Vector3(5.0, 0.5, 5.0), undefined, new THREE.Vector3(0.0, -2.0, 0.0), undefined);
     }
 
     /**
@@ -132,6 +134,7 @@ class PhysicsSystem extends WorldSystem {
             rn.parts.forEach(x => console.debug(parser.assembly.data!.parts!.partInstances![x]!.info!.name!));
 
             const compoundShapeSettings = new JOLT.StaticCompoundShapeSettings();
+            let shapesAdded = 0;
 
             let totalMass = 0;
             const comAccum = new mirabuf.Vector3();
@@ -143,58 +146,73 @@ class PhysicsSystem extends WorldSystem {
                     
                     const shapeSettings = this.CreateShapeSettingsFromPart(partDefinition);
                     
-                    const transform = ThreeMatrix4_JoltMat44(parser.globalTransforms.get(partId)!);
-                    compoundShapeSettings.AddShape(
-                        transform.GetTranslation(),
-                        transform.GetQuaternion(),
-                        shapeSettings,
-                        0
-                    );
+                    if (shapeSettings) {
+                        const transform = ThreeMatrix4_JoltMat44(parser.globalTransforms.get(partId)!);
+                        compoundShapeSettings.AddShape(
+                            transform.GetTranslation(),
+                            transform.GetQuaternion(),
+                            shapeSettings,
+                            0
+                        );
+                        shapesAdded++;
 
-                    if (partDefinition.physicalData && partDefinition.physicalData.com && partDefinition.physicalData.mass) {
-                        const mass = partDefinition.massOverride ? partDefinition.massOverride! : partDefinition.physicalData.mass!;
-                        totalMass += mass;
-                        comAccum.x += partDefinition.physicalData.com.x! * mass;
-                        comAccum.y += partDefinition.physicalData.com.y! * mass;
-                        comAccum.z += partDefinition.physicalData.com.z! * mass;
+                        if (partDefinition.physicalData && partDefinition.physicalData.com && partDefinition.physicalData.mass) {
+                            const mass = partDefinition.massOverride ? partDefinition.massOverride! : partDefinition.physicalData.mass!;
+                            totalMass += mass;
+                            comAccum.x += partDefinition.physicalData.com.x! * mass / 100.0;
+                            comAccum.y += partDefinition.physicalData.com.y! * mass / 100.0;
+                            comAccum.z += partDefinition.physicalData.com.z! * mass / 100.0;
+                        }
                     }
                 }
             });
 
-            const shapeResult = compoundShapeSettings.Create();
-            if (!shapeResult.IsValid || shapeResult.HasError()) {
-                console.error(`Failed to create shape for RigidNode ${rn.name}`);
-            }
+            if (shapesAdded > 0) {
+                const shapeResult = compoundShapeSettings.Create();
+                if (!shapeResult.IsValid || shapeResult.HasError()) {
+                    console.error(`Failed to create shape for RigidNode ${rn.name}\n${shapeResult.GetError().c_str()}`);
+                }
 
-            const shape = shapeResult.Get();
-            shape.GetMassProperties().mMass = totalMass == 0.0 ? 1 : totalMass;
-            shape.GetMassProperties().Translate(
-                new JOLT.Vec3(comAccum.x / totalMass, comAccum.y / totalMass, comAccum.z / totalMass)
-            );
-            const bodySettings = new JOLT.BodyCreationSettings(
-                shape, new JOLT.RVec3(), new JOLT.Quat(), JOLT.EMotionType_Dynamic, LAYER_MOVING
-            );
-            const body = this._joltBodyInterface.CreateBody(bodySettings);
-            this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate);
-            rnToBodies.set(rn.name, body);
+                const shape = shapeResult.Get();
+                shape.GetMassProperties().mMass = totalMass == 0.0 ? 1 : totalMass;
+                // shape.GetMassProperties().Translate(
+                //     new JOLT.Vec3(comAccum.x / totalMass, comAccum.y / totalMass, comAccum.z / totalMass)
+                // );
+                // const worldBounds = shape.GetWorldSpaceBounds(new JOLT.Mat44().sIdentity(), new JOLT.Vec3(1,1,1));
+                // const center =  worldBounds.mMax.Sub(worldBounds.mMin);
+
+                const bodySettings = new JOLT.BodyCreationSettings(
+                    shape, new JOLT.RVec3(), new JOLT.Quat(), JOLT.EMotionType_Dynamic, LAYER_MOVING
+                );
+                const body = this._joltBodyInterface.CreateBody(bodySettings);
+                this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate);
+                rnToBodies.set(rn.name, body);
+            } else {
+                JOLT.destroy(compoundShapeSettings);
+            }
         });
 
         return rnToBodies;
     }
 
-    private CreateShapeSettingsFromPart(partDefinition: mirabuf.IPartDefinition): Jolt.ShapeSettings {
+    private CreateShapeSettingsFromPart(partDefinition: mirabuf.IPartDefinition): Jolt.ShapeSettings | undefined | null {
         const settings = new JOLT.ConvexHullShapeSettings();
         const points = settings.mPoints;
         partDefinition.bodies!.forEach(body => {
             if (body.triangleMesh && body.triangleMesh.mesh && body.triangleMesh.mesh.verts) {
                 const vertArr = body.triangleMesh.mesh.verts;
                 for (let i = 0; i < body.triangleMesh.mesh.verts.length; i += 3) {
-                    points.push_back(new JOLT.Vec3(vertArr[i], vertArr[i + 1], vertArr[i + 2]));
+                    points.push_back(MirabufFloatArr_JoltVec3(vertArr, i));
                 }
             }
         });
 
-        return settings;
+        if (points.size() < 4) {
+            JOLT.destroy(settings);
+            return;
+        } else {
+            return settings;
+        }
     }
 
     public DestroyBodies(...bodies: Jolt.Body[]) {
