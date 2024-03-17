@@ -1,5 +1,4 @@
 import Scene from './components/Scene.tsx';
-import GetSceneRenderer from './systems/scene/SceneRenderer.ts';
 import MirabufSceneObject from './mirabuf/MirabufSceneObject.ts';
 import { LoadMirabufRemote } from './mirabuf/MirabufLoader.ts';
 import { mirabuf } from './proto/mirabuf';
@@ -54,6 +53,7 @@ import ZoneConfigPanel from "./panels/configuring/scoring/ZoneConfigPanel"
 import ScoreboardPanel from "./panels/information/ScoreboardPanel"
 import DriverStationPanel from "./panels/simulation/DriverStationPanel"
 import ManageAssembliesModal from './modals/spawning/ManageAssembliesModal.tsx';
+import World from './systems/World.ts';
 
 const DEFAULT_MIRA_PATH = 'test_mira/Team_2471_(2018)_v7.mira';
 
@@ -145,6 +145,8 @@ function Synthesis() {
 
 	useEffect(() => {
 
+        World.InitWorld();
+
         let mira_path = DEFAULT_MIRA_PATH;
 
         const urlParams = new URLSearchParams(document.location.search);
@@ -172,7 +174,7 @@ function Synthesis() {
 			}
 			
 			const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser));
-			GetSceneRenderer().RegisterSceneObject(mirabufSceneObject);
+			World.SceneRenderer.RegisterSceneObject(mirabufSceneObject);
 		};
 		setup();
 
@@ -180,14 +182,14 @@ function Synthesis() {
 		const mainLoop = () => {
 			mainLoopHandle = requestAnimationFrame(mainLoop);
 	
-			GetSceneRenderer().Update();
+			World.UpdateWorld();
 		};
 		mainLoop();
         // Cleanup
         return () => {
             // TODO: Teardown literally everything
             cancelAnimationFrame(mainLoopHandle);
-            GetSceneRenderer().RemoveAllSceneObjects();
+            World.SceneRenderer.RemoveAllSceneObjects();
         };
 	}, []);
 

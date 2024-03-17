@@ -11,6 +11,8 @@ class World {
     private static _sceneRenderer: SceneRenderer;
     private static _physicsSystem: PhysicsSystem;
 
+    public static get isAlive() { return World._isAlive; }
+    
     public static get SceneRenderer() { return World._sceneRenderer; }
     public static get PhysicsSystem() { return World._physicsSystem; }
     
