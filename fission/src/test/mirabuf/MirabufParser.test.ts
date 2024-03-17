@@ -36,6 +36,16 @@ describe('Mirabuf Parser Tests', () => {
         // printRigidNodeParts(rn, testCubeMira);
     });
 
+    test('Generate Rigid Nodes (Dozer_v2.mira)', () => {
+        const spikeMira = LoadMirabufLocal('./public/test_mira/Dozer_v2.mira');
+
+        const t = new MirabufParser(spikeMira);
+        const rn = t.rigidNodes;
+
+        expect(filterNonPhysicsNodes(rn, spikeMira).length).toBe(7);
+        // printRigidNodeParts(rn, spikeMira);
+    });
+
     test('Generate Rigid Nodes (PhysicsSpikeTest_v1.mira)', () => {
         const spikeMira = LoadMirabufLocal('./public/test_mira/PhysicsSpikeTest_v1.mira');
 

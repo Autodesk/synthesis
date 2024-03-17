@@ -3,7 +3,7 @@ import JOLT from "../../util/loading/JoltSyncLoader";
 import Jolt from "@barclah/jolt-physics";
 import * as THREE from 'three';
 import { mirabuf } from '../../proto/mirabuf';
-import MirabufParser from "../../mirabuf/MirabufParser";
+import MirabufParser, { RigidNodeReadOnly } from "../../mirabuf/MirabufParser";
 import WorldSystem from "../WorldSystem";
 
 const LAYER_NOT_MOVING = 0;
@@ -126,23 +126,39 @@ class PhysicsSystem extends WorldSystem {
     public CreateBodiesFromParser(parser: MirabufParser): Map<string, Jolt.Body> {
         const rnToBodies = new Map<string, Jolt.Body>();
         
-        parser.rigidNodes.forEach(rn => {
+        filterNonPhysicsNodes(parser.rigidNodes, parser.assembly).forEach(rn => {
 
-            const compoundShapeSettings = new Jolt.StaticCompoundShapeSettings();
+            console.debug(`Making Body for RigidNode '${rn.name}'`);
+            rn.parts.forEach(x => console.debug(parser.assembly.data!.parts!.partInstances![x]!.info!.name!));
+
+            const compoundShapeSettings = new JOLT.StaticCompoundShapeSettings();
+
+            let totalMass = 0;
+            const comAccum = new mirabuf.Vector3();
 
             rn.parts.forEach(partId => {
                 const partInstance = parser.assembly.data!.parts!.partInstances![partId]!;
-                const partDefinition = parser.assembly.data!.parts!.partDefinitions![partInstance.partDefinitionReference!]!;
-                
-                const shapeSettings = this.CreateShapeSettingsFromPart(partDefinition);
-                
-                const transform = ThreeMatrix4_JoltMat44(parser.globalTransforms.get(partId)!);
-                compoundShapeSettings.AddShape(
-                    transform.GetTranslation(),
-                    transform.GetQuaternion(),
-                    shapeSettings,
-                    0
-                );
+                if (partInstance.skipCollider == null || partInstance == undefined || partInstance.skipCollider == false) {
+                    const partDefinition = parser.assembly.data!.parts!.partDefinitions![partInstance.partDefinitionReference!]!;
+                    
+                    const shapeSettings = this.CreateShapeSettingsFromPart(partDefinition);
+                    
+                    const transform = ThreeMatrix4_JoltMat44(parser.globalTransforms.get(partId)!);
+                    compoundShapeSettings.AddShape(
+                        transform.GetTranslation(),
+                        transform.GetQuaternion(),
+                        shapeSettings,
+                        0
+                    );
+
+                    if (partDefinition.physicalData && partDefinition.physicalData.com && partDefinition.physicalData.mass) {
+                        const mass = partDefinition.massOverride ? partDefinition.massOverride! : partDefinition.physicalData.mass!;
+                        totalMass += mass;
+                        comAccum.x += partDefinition.physicalData.com.x! * mass;
+                        comAccum.y += partDefinition.physicalData.com.y! * mass;
+                        comAccum.z += partDefinition.physicalData.com.z! * mass;
+                    }
+                }
             });
 
             const shapeResult = compoundShapeSettings.Create();
@@ -151,11 +167,16 @@ class PhysicsSystem extends WorldSystem {
             }
 
             const shape = shapeResult.Get();
-            // shape.GetMassProperties().mMass = 
+            shape.GetMassProperties().mMass = totalMass == 0.0 ? 1 : totalMass;
+            shape.GetMassProperties().Translate(
+                new JOLT.Vec3(comAccum.x / totalMass, comAccum.y / totalMass, comAccum.z / totalMass)
+            );
             const bodySettings = new JOLT.BodyCreationSettings(
                 shape, new JOLT.RVec3(), new JOLT.Quat(), JOLT.EMotionType_Dynamic, LAYER_MOVING
             );
-            this._joltBodyInterface.CreateBody(bodySettings);
+            const body = this._joltBodyInterface.CreateBody(bodySettings);
+            this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate);
+            rnToBodies.set(rn.name, body);
         });
 
         return rnToBodies;
@@ -174,6 +195,13 @@ class PhysicsSystem extends WorldSystem {
         });
 
         return settings;
+    }
+
+    public DestroyBodies(...bodies: Jolt.Body[]) {
+        bodies.forEach(x => {
+            this._joltBodyInterface.RemoveBody(x.GetID());
+            this._joltBodyInterface.DestroyBody(x.GetID());
+        });
     }
 
     public Update(_: number): void {
@@ -210,6 +238,19 @@ function SetupCollisionFiltering(settings: Jolt.JoltSettings) {
         settings.mObjectLayerPairFilter,
         COUNT_OBJECT_LAYERS
     );
+}
+
+function filterNonPhysicsNodes(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembly): RigidNodeReadOnly[] {
+    return nodes.filter(x => {
+        for (const part of x.parts) {
+            const inst = mira.data!.parts!.partInstances![part]!;
+            const def = mira.data!.parts!.partDefinitions![inst.partDefinitionReference!]!;
+            if (def.bodies && def.bodies.length > 0) {
+                return true;
+            }
+        }
+        return false;
+    });
 }
 
 export default PhysicsSystem;

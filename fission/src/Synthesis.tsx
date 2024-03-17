@@ -55,7 +55,8 @@ import DriverStationPanel from "./panels/simulation/DriverStationPanel"
 import ManageAssembliesModal from './modals/spawning/ManageAssembliesModal.tsx';
 import World from './systems/World.ts';
 
-const DEFAULT_MIRA_PATH = 'test_mira/Team_2471_(2018)_v7.mira';
+// const DEFAULT_MIRA_PATH = 'test_mira/Team_2471_(2018)_v7.mira';
+const DEFAULT_MIRA_PATH = 'test_mira/Dozer_v2.mira';
 
 function Synthesis() {
     const { openModal, closeModal, getActiveModalElement } =
@@ -182,7 +183,7 @@ function Synthesis() {
 		const mainLoop = () => {
 			mainLoopHandle = requestAnimationFrame(mainLoop);
 	
-			World.UpdateWorld();
+			// World.UpdateWorld();
 		};
 		mainLoop();
         // Cleanup

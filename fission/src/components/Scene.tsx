@@ -1,9 +1,9 @@
 import './Scene.css';
 import { useEffect, useRef } from "react";
-import GetSceneRenderer from "../systems/scene/SceneRenderer";
 import Stats from 'stats.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import SceneObject from "../systems/scene/SceneObject";
+import World from '@/systems/World';
 
 let stats: Stats | null;
 
@@ -17,10 +17,12 @@ function Scene({ useStats }: SceneProps) {
     const refContainer = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        World.InitWorld();
+
         if (refContainer.current) {
             console.debug('Adding ThreeJs to DOM');
 
-            const sr = GetSceneRenderer();
+            const sr = World.SceneRenderer;
             sr.renderer.domElement.style.width = '100%';
             sr.renderer.domElement.style.height = '100%';
 

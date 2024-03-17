@@ -52,7 +52,7 @@ export function JoltQuat_ThreeQuaternion(quat: Jolt.Quat) {
     return new THREE.Quaternion(quat.GetX(), quat.GetY(), quat.GetZ(), quat.GetW());
 }
 
-export function JoltMat44_ThreeMatrix4(m: Jolt.Mat44): THREE.Matrix4 {
+export function JoltMat44_ThreeMatrix4(m: Jolt.RMat44): THREE.Matrix4 {
     return new THREE.Matrix4().compose(
         JoltVec3_ThreeVector3(m.GetTranslation()),
         JoltQuat_ThreeQuaternion(m.GetQuaternion()),
