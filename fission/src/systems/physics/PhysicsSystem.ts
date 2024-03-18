@@ -11,8 +11,8 @@ const LAYER_NOT_MOVING = 0;
 const LAYER_MOVING = 1;
 const COUNT_OBJECT_LAYERS = 2;
 
-const STANDARD_TIME_STEP = 1.0 / 600.0;
-const STANDARD_SUB_STEPS = 1;
+const STANDARD_TIME_STEP = 1.0 / 120.0;
+const STANDARD_SUB_STEPS = 3;
 
 /**
  * The PhysicsSystem handles all Jolt Phyiscs interactions within Synthesis.
@@ -241,8 +241,8 @@ class PhysicsSystem extends WorldSystem {
                 for (let i = 0; i < body.triangleMesh.mesh.verts.length; i += 3) {
                     const vert = MirabufFloatArr_JoltVec3(vertArr, i);
                     points.push_back(vert);
-
                     this.UpdateMinMaxBounds(vert, min, max);
+                    JOLT.destroy(vert);
                 }
             }
         });
@@ -251,9 +251,9 @@ class PhysicsSystem extends WorldSystem {
             JOLT.destroy(settings);
             return;
         } else {
-            JOLT.destroy(settings);
-            return [new JOLT.SphereShapeSettings(0.2), min, max];
-            // return [settings, min, max];
+            // JOLT.destroy(settings);
+            // return [new JOLT.SphereShapeSettings(0.2), min, max];
+            return [settings, min, max];
         }
     }
 
