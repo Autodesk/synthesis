@@ -69,6 +69,12 @@ class SceneRenderer extends WorldSystem {
 
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
         this._scene.add(ambientLight);
+
+        const ground = new THREE.Mesh(new THREE.BoxGeometry(10, 1, 10), this.CreateToonMaterial(0x3785de));
+        ground.position.set(0.0, -2.0, 0.0);
+        ground.receiveShadow = true;
+        ground.castShadow = true;
+        this._scene.add(ground);
     }
 
     public UpdateCanvasSize() {
@@ -102,6 +108,26 @@ class SceneRenderer extends WorldSystem {
     public RemoveAllSceneObjects() {
         this._sceneObjects.forEach(obj => obj.Dispose());
         this._sceneObjects.clear();
+    }
+
+    public CreateSphere(radius: number, material?: THREE.Material | undefined): THREE.Mesh {
+        const geo = new THREE.SphereGeometry(radius);
+        if (material) {
+            return new THREE.Mesh(geo, material);
+        } else {
+            return new THREE.Mesh(geo, this.CreateToonMaterial());
+        }
+    }
+
+    public CreateToonMaterial(color: THREE.ColorRepresentation = 0xff00aa, steps: number = 5): THREE.MeshToonMaterial {
+        const format = ( this._renderer.capabilities.isWebGL2 ) ? THREE.RedFormat : THREE.LuminanceFormat;
+        const colors = new Uint8Array(steps);
+        for ( let c = 0; c < colors.length; c ++ ) {
+            colors[c] = 128 + (c / colors.length) * 128;
+        }
+        const gradientMap = new THREE.DataTexture(colors, colors.length, 1, format);
+        gradientMap.needsUpdate = true;
+        return new THREE.MeshToonMaterial({color: color, gradientMap: gradientMap});
     }
 }
 
