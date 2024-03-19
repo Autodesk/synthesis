@@ -27,6 +27,7 @@ jobs:
     - name: Get package info
       id: info
       uses: codex-team/action-nodejs-package-info@v1.1
+      path: "fission/"
 
     - name: Build
       id: build
