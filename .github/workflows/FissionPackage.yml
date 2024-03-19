@@ -19,6 +19,11 @@ jobs:
       with:
         node-version: 20
 
+    - name: Get date
+        id: date # this is used on variable path
+        run: |
+          echo "timestamp=$(date +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_OUTPUT
+
     - name: Install Dependencies
       run: |
         cd fission
@@ -40,5 +45,5 @@ jobs:
       uses: actions/upload-artifact@v4
       id: upload-artifact
       with:
-        name: "${{ steps.info.outputs.name }}@${{ steps.info.outputs.version }} [$(date +'%Y-%m-%dT%H:%M:%S')]"
+        name: "${{ steps.info.outputs.name }}@${{ steps.info.outputs.version }}[${{ steps.date.outputs.timestamp }}]"
         path: fission/dist/
