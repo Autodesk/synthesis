@@ -4,7 +4,6 @@ import { FaPlus } from "react-icons/fa6"
 import Dropdown from "../../components/Dropdown"
 import { useTooltipControlContext } from "@/TooltipContext"
 import { CreateMirabufFromUrl } from "@/mirabuf/MirabufSceneObject"
-import GetSceneRenderer from "@/systems/scene/SceneRenderer"
 import World from "@/systems/World"
 
 const RobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {

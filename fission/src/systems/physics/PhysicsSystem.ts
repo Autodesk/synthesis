@@ -1,11 +1,10 @@
-import { JoltMat44_ThreeMatrix4, MirabufFloatArr_JoltVec3, ThreeMatrix4_JoltMat44, ThreeVector3_JoltVec3, _JoltQuat } from "../../util/TypeConversions";
+import { MirabufFloatArr_JoltVec3, ThreeMatrix4_JoltMat44, ThreeVector3_JoltVec3, _JoltQuat } from "../../util/TypeConversions";
 import JOLT from "../../util/loading/JoltSyncLoader";
 import Jolt from "@barclah/jolt-physics";
 import * as THREE from 'three';
 import { mirabuf } from '../../proto/mirabuf';
 import MirabufParser, { RigidNodeReadOnly } from "../../mirabuf/MirabufParser";
 import WorldSystem from "../WorldSystem";
-import { threeMatrix4ToString } from "@/util/debug/DebugPrint";
 
 const LAYER_NOT_MOVING = 0;
 const LAYER_MOVING = 1;
@@ -87,6 +86,15 @@ class PhysicsSystem extends WorldSystem {
         return body;
     }
 
+    /**
+     * This creates a body in Jolt. Mostly used for Unit test validation.
+     * 
+     * @param   shape       Shape to impart on the body.
+     * @param   mass        Mass of the body.
+     * @param   position    Position of the body.
+     * @param   rotation    Rotation of the body.
+     * @returns Resulting Body object.
+     */
     public CreateBody(
     shape: Jolt.Shape,
     mass: number | undefined,
@@ -113,7 +121,14 @@ class PhysicsSystem extends WorldSystem {
         return body;
     }
 
-    public CreateConvexHull(points: Float32Array, density: number = 1.0) {
+    /**
+     * Utility function for creating convex hulls. Mostly used for Unit test validation.
+     * 
+     * @param   points  Flat pack array of vector 3 components.
+     * @param   density Density of the convex hull.
+     * @returns Resulting shape.
+     */
+    public CreateConvexHull(points: Float32Array, density: number = 1.0): Jolt.ShapeResult {
         if (points.length % 3) {
             throw new Error(`Invalid size of points: ${points.length}`);
         }
@@ -127,13 +142,16 @@ class PhysicsSystem extends WorldSystem {
         return settings.Create();
     }
 
+    /**
+     * Creates a map, mapping the name of RigidNodes to Jolt BodyIDs
+     * 
+     * @param   parser  MirabufParser containing properly parsed RigidNodes
+     * @returns Mapping of Jolt BodyIDs
+     */
     public CreateBodiesFromParser(parser: MirabufParser): Map<string, Jolt.BodyID> {
         const rnToBodies = new Map<string, Jolt.BodyID>();
         
         filterNonPhysicsNodes(parser.rigidNodes, parser.assembly).forEach(rn => {
-
-            // console.debug(`Making Body for RigidNode '${rn.name}'`);
-            // rn.parts.forEach(x => console.debug(parser.assembly.data!.parts!.partInstances![x]!.info!.name!));
 
             const compoundShapeSettings = new JOLT.StaticCompoundShapeSettings();
             let shapesAdded = 0;
@@ -156,9 +174,11 @@ class PhysicsSystem extends WorldSystem {
                         const [shapeSettings, partMin, partMax] = partShapeResult;
 
                         const transform = ThreeMatrix4_JoltMat44(parser.globalTransforms.get(partId)!);
+                        const translation = transform.GetTranslation();
+                        const rotation = transform.GetQuaternion();
                         compoundShapeSettings.AddShape(
-                            transform.GetTranslation(),
-                            transform.GetQuaternion(),
+                            translation,
+                            rotation,
                             shapeSettings,
                             0
                         );
@@ -167,14 +187,16 @@ class PhysicsSystem extends WorldSystem {
                         this.UpdateMinMaxBounds(transform.Multiply3x3(partMin), minBounds, maxBounds);
                         this.UpdateMinMaxBounds(transform.Multiply3x3(partMax), minBounds, maxBounds);
 
+                        JOLT.destroy(partMin);
+                        JOLT.destroy(partMax);
+                        JOLT.destroy(transform);
+
                         if (partDefinition.physicalData && partDefinition.physicalData.com && partDefinition.physicalData.mass) {
                             const mass = partDefinition.massOverride ? partDefinition.massOverride! : partDefinition.physicalData.mass!;
                             totalMass += mass;
                             comAccum.x += partDefinition.physicalData.com.x! * mass / 100.0;
                             comAccum.y += partDefinition.physicalData.com.y! * mass / 100.0;
                             comAccum.z += partDefinition.physicalData.com.z! * mass / 100.0;
-
-                            console.debug(`COM MIRA: ${partDefinition.physicalData.com.x!.toFixed(4)}, ${partDefinition.physicalData.com.y!.toFixed(4)}, ${partDefinition.physicalData.com.z!.toFixed(4)}`);
                         }
                     }
                 }
@@ -183,51 +205,47 @@ class PhysicsSystem extends WorldSystem {
             if (shapesAdded > 0) {
                 
                 const shapeResult = compoundShapeSettings.Create();
-                // const shapeResult = new JOLT.SphereShapeSettings(0.2).Create();
-                // const shapeResult = new JOLT.BoxShapeSettings(new JOLT.Vec3(2.0, 0.5, 1.0)).Create();
-
-                const com = new JOLT.Vec3(comAccum.x / totalMass, comAccum.y / totalMass, comAccum.z / totalMass);
-
-                const boundsCenter = minBounds.Add(maxBounds).Div(2);
-                // const rtSettings = new JOLT.RotatedTranslatedShapeSettings(
-                //     boundsCenter.Mul(-1), new JOLT.Quat(0, 0, 0, 1), compoundShapeSettings
-                // );
-                // const shapeResult = rtSettings.Create();
 
                 if (!shapeResult.IsValid || shapeResult.HasError()) {
                     console.error(`Failed to create shape for RigidNode ${rn.name}\n${shapeResult.GetError().c_str()}`);
                 }
 
                 const shape = shapeResult.Get();
-                // shape.GetMassProperties().mMass = 1;
-                // shape.GetMassProperties().mMass = totalMass == 0.0 ? 1 : totalMass;
-                // console.debug(`Mass: ${shape.GetMassProperties().mMass}`);
-                // shape.GetMassProperties().SetMassAndInertiaOfSolidBox(new JOLT.Vec3(1, 1, 1), 100);
 
-                console.debug(`Inertia [${rn.name}]:${threeMatrix4ToString(JoltMat44_ThreeMatrix4(shape.GetMassProperties().mInertia))}`);
-                
-                console.debug(`COM: ${com.GetX().toFixed(4)}, ${com.GetY().toFixed(4)}, ${com.GetZ().toFixed(4)}`);
-
-                // const worldBounds = shape.GetWorldSpaceBounds(new JOLT.Mat44().sIdentity(), new JOLT.Vec3(1,1,1));
-                // const center =  worldBounds.mMax.Sub(worldBounds.mMin);
+                if (rn.isDynamic)
+                    shape.GetMassProperties().mMass = totalMass == 0.0 ? 1 : totalMass;
 
                 const bodySettings = new JOLT.BodyCreationSettings(
-                    shape, new JOLT.Vec3()/*boundsCenter.Mul(-1)*/, new JOLT.Quat(0, 0, 0, 1), JOLT.EMotionType_Dynamic, LAYER_MOVING
+                    shape,
+                    new JOLT.Vec3(0.0, 0.0, 0.0),
+                    new JOLT.Quat(0, 0, 0, 1),
+                    rn.isDynamic ? JOLT.EMotionType_Dynamic : JOLT.EMotionType_Static,
+                    rn.isDynamic ? LAYER_MOVING : LAYER_NOT_MOVING
                 );
                 const body = this._joltBodyInterface.CreateBody(bodySettings);
                 this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate);
                 rnToBodies.set(rn.name, body.GetID());
 
+                // Little testing components
                 body.SetRestitution(0.2);
-                body.SetAngularVelocity(new JOLT.Vec3(0.2, 1.0, 0.0));
-            } else {
-                JOLT.destroy(compoundShapeSettings);
+                const angVelocity = new JOLT.Vec3(2.0, 20.0, 5.0);
+                body.SetAngularVelocity(angVelocity);
+                JOLT.destroy(angVelocity);
             }
+
+            // Cleanup
+            JOLT.destroy(compoundShapeSettings);
         });
 
         return rnToBodies;
     }
 
+    /**
+     * Creates the Jolt ShapeSettings for a given part using the Part Definition of said part.
+     * 
+     * @param   partDefinition  Definition of the part to create.
+     * @returns If successful, the created convex hull shape settings from the given Part Definition.
+     */
     private CreateShapeSettingsFromPart(partDefinition: mirabuf.IPartDefinition): [Jolt.ShapeSettings, Jolt.Vec3, Jolt.Vec3] | undefined | null {
         const settings = new JOLT.ConvexHullShapeSettings();
 
@@ -249,14 +267,21 @@ class PhysicsSystem extends WorldSystem {
 
         if (points.size() < 4) {
             JOLT.destroy(settings);
+            JOLT.destroy(min);
+            JOLT.destroy(max);
             return;
         } else {
-            // JOLT.destroy(settings);
-            // return [new JOLT.SphereShapeSettings(0.2), min, max];
             return [settings, min, max];
         }
     }
 
+    /**
+     * Helper function to update min and max vector bounds.
+     * 
+     * @param   v   Vector to add to min, max, bounds.
+     * @param   min Minimum vector of the bounds.
+     * @param   max Maximum vector of the bounds.
+     */
     private UpdateMinMaxBounds(v: Jolt.Vec3, min: Jolt.Vec3, max: Jolt.Vec3) {
         if (v.GetX() < min.GetX())
             min.SetX(v.GetX());
@@ -273,6 +298,11 @@ class PhysicsSystem extends WorldSystem {
             max.SetZ(v.GetZ());
     }
 
+    /**
+     * Destroys bodies.
+     * 
+     * @param   bodies  Bodies to destroy.
+     */
     public DestroyBodies(...bodies: Jolt.Body[]) {
         bodies.forEach(x => {
             this._joltBodyInterface.RemoveBody(x.GetID());
@@ -297,9 +327,10 @@ class PhysicsSystem extends WorldSystem {
 
     public Destroy(): void {
         // Destroy Jolt Bodies.
-        this._bodies.forEach(x => JOLT.destroy(x));
+        this.DestroyBodyIds(...this._bodies);
         this._bodies = [];
 
+        JOLT.destroy(this._joltBodyInterface);
         JOLT.destroy(this._joltInterface);
     }
 }
@@ -307,6 +338,7 @@ class PhysicsSystem extends WorldSystem {
 function SetupCollisionFiltering(settings: Jolt.JoltSettings) {
     const objectFilter = new JOLT.ObjectLayerPairFilterTable(COUNT_OBJECT_LAYERS);
     objectFilter.EnableCollision(LAYER_NOT_MOVING, LAYER_MOVING);
+    // TODO: Collision between dynamic objects temporarily disabled.
     // objectFilter.EnableCollision(LAYER_MOVING, LAYER_MOVING);
 
     const BP_LAYER_NOT_MOVING = new JOLT.BroadPhaseLayer(LAYER_NOT_MOVING);

@@ -70,7 +70,7 @@ class SceneRenderer extends WorldSystem {
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
         this._scene.add(ambientLight);
 
-        const ground = new THREE.Mesh(new THREE.BoxGeometry(10, 1, 10), this.CreateToonMaterial(0x3785de));
+        const ground = new THREE.Mesh(new THREE.BoxGeometry(10, 1, 10), this.CreateToonMaterial(CLEAR_COLOR));
         ground.position.set(0.0, -2.0, 0.0);
         ground.receiveShadow = true;
         ground.castShadow = true;

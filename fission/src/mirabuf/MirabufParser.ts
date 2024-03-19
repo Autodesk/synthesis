@@ -32,20 +32,16 @@ class MirabufParser {
     protected _rigidNodes: Array<RigidNode> = [];
     private _globalTransforms: Map<string, THREE.Matrix4>;
 
+    private _groundedNode: RigidNode | undefined;
+
     public get errors() { return new Array(...this._errors); }
-
     public get maxErrorSeverity() { return Math.max(...this._errors.map(x => x[0])); }
-
     public get assembly() { return this._assembly; }
-
     public get partTreeValues() { return this._partTreeValues; }
-
     public get designHierarchyRoot() { return this._designHierarchyRoot; }
-
     public get partToNodeMap() { return this._partToNodeMap; }
-
     public get globalTransforms() { return this._globalTransforms; }
-
+    public get groundedNode() { return this._groundedNode ? new RigidNodeReadOnly(this._groundedNode) : undefined; }
     public get rigidNodes(): Array<RigidNodeReadOnly> {
         return this._rigidNodes.map(x => new RigidNodeReadOnly(x));
     }
@@ -150,6 +146,12 @@ class MirabufParser {
 
         // 5. Remove Empty RNs
         this._rigidNodes = this._rigidNodes.filter(x => x.parts.size > 0);
+
+        // 6. If field, find grounded node and set isDynamic to false. Also just find grounded node again
+        this._groundedNode = this.partToNodeMap.get(gInst.parts!.nodes!.at(0)!.value!);
+        if (!assembly.dynamic && this._groundedNode) {
+            this._groundedNode.isDynamic = false;
+        }
     }
 
     private NewRigidNode(suffix?: string): RigidNode {
@@ -317,19 +319,6 @@ class MirabufParser {
         recursive(this._designHierarchyRoot);
         this._partTreeValues = partTreeValues;
     }
-
-    private DebugPrintHierarchy(level: number = 1, ...nodes: mirabuf.INode[]) {
-        if (level <= 1)
-            console.debug('    .... RN DEBUG ....');
-        for (const node of nodes) {
-            console.debug(`${'-'.repeat(level)} ${this._assembly.data!.parts!.partInstances![node.value!]!.info!.name!} [${this._partToNodeMap.get(node.value!)?.name ?? '---'}]`);
-            if (node.children)
-                this.DebugPrintHierarchy(level + 1, ...node.children);
-        }
-
-        if (level <= 1)
-            console.debug('    .... END ....');
-    }
 }
 
 /**
@@ -338,9 +327,11 @@ class MirabufParser {
 class RigidNode {
     public name: string;
     public parts: Set<string> = new Set();
+    public isDynamic: boolean;
 
-    public constructor(name: string) {
+    public constructor(name: string, isDynamic?: boolean) {
         this.name = name;
+        this.isDynamic = isDynamic ?? true;
     }
 }
 
@@ -353,6 +344,10 @@ export class RigidNodeReadOnly {
 
     public get parts(): ReadonlySet<string> {
         return this._original.parts;
+    }
+
+    public get isDynamic(): boolean {
+        return this._original.isDynamic;
     }
 
     public constructor(original: RigidNode) {

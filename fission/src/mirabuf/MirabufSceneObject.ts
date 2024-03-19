@@ -40,7 +40,7 @@ class MirabufSceneObject extends SceneObject {
                 const body = World.PhysicsSystem.GetBody(bodyId);
 
                 const colliderMesh = this.CreateMeshForShape(body.GetShape());
-                const comMesh = World.SceneRenderer.CreateSphere(0.01);
+                const comMesh = World.SceneRenderer.CreateSphere(0.05);
                 World.SceneRenderer.scene.add(colliderMesh);
                 World.SceneRenderer.scene.add(comMesh);
                 (comMesh.material as THREE.Material).depthTest = false;

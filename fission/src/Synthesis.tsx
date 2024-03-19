@@ -164,18 +164,20 @@ function Synthesis() {
 					_ => LoadMirabufRemote(DEFAULT_MIRA_PATH)
 				).catch(console.error);
 
-			if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
-				return;
-			}
-	
-			const parser = new MirabufParser(miraAssembly);
-			if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
-				console.error(`Assembly Parser produced significant errors for '${miraAssembly.info!.name!}'`);
-				return;
-			}
-			
-			const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser));
-			World.SceneRenderer.RegisterSceneObject(mirabufSceneObject);
+            await (async () => {
+                if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
+                    return;
+                }
+        
+                const parser = new MirabufParser(miraAssembly);
+                if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
+                    console.error(`Assembly Parser produced significant errors for '${miraAssembly.info!.name!}'`);
+                    return;
+                }
+                
+                const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser));
+                World.SceneRenderer.RegisterSceneObject(mirabufSceneObject);
+            })();
 		};
 		setup();
 
@@ -190,7 +192,8 @@ function Synthesis() {
         return () => {
             // TODO: Teardown literally everything
             cancelAnimationFrame(mainLoopHandle);
-            World.SceneRenderer.RemoveAllSceneObjects();
+            World.DestroyWorld();
+            // World.SceneRenderer.RemoveAllSceneObjects();
         };
 	}, []);
 
