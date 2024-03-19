@@ -208,8 +208,11 @@ def _ParseBRep(
             "Failed:\n{}".format(traceback.format_exc())
         )
 
+
 def _ParseMesh(
-    meshBody: adsk.fusion.MeshBody, options: ParseOptions, trimesh: assembly_pb2.TriangleMesh
+    meshBody: adsk.fusion.MeshBody,
+    options: ParseOptions,
+    trimesh: assembly_pb2.TriangleMesh,
 ) -> any:
     try:
         mesh = meshBody.displayMesh
