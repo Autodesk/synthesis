@@ -1,8 +1,8 @@
 import { describe, test, expect } from "vitest";
 
-import { mirabuf } from "../../proto/mirabuf";
-import MirabufParser, { RigidNodeReadOnly } from "../../mirabuf/MirabufParser";
-import { LoadMirabufLocal } from "../../mirabuf/MirabufLoader";
+import { mirabuf } from "../proto/mirabuf";
+import MirabufParser, { RigidNodeReadOnly } from "../mirabuf/MirabufParser";
+import { LoadMirabufLocal } from "../mirabuf/MirabufLoader";
 
 describe('Mirabuf Parser Tests', () => {
     // test('Get Dozer JSON', () => {

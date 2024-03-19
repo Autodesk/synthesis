@@ -1,7 +1,9 @@
 import { test, expect, describe, assert } from 'vitest';
 import PhysicsSystem from '../systems/physics/PhysicsSystem';
+import { LoadMirabufLocal } from '@/mirabuf/MirabufLoader';
+import MirabufParser from '@/mirabuf/MirabufParser';
 
-describe('Physics System Tests', () => {
+describe('Physics Sansity Checks', () => {
     test('Convex Hull Shape (Cube)', () => {
         const points: Float32Array = new Float32Array(
             [
@@ -59,5 +61,25 @@ describe('Physics System Tests', () => {
 
         shape.Release();
         system.Destroy();
+    });
+});
+
+describe('Mirabuf Body Loading', () => {
+    test('Body Loading (Dozer)', () => {
+        const assembly = LoadMirabufLocal('./public/test_mira/Dozer_v2.mira');
+        const parser = new MirabufParser(assembly);
+        const physSystem = new PhysicsSystem();
+        const mapping = physSystem.CreateBodiesFromParser(parser);
+
+        expect(mapping.size).toBe(7);
+    });
+
+    test('Body Loading (Team_2471_(2018)_v7.mira)', () => {
+        const assembly = LoadMirabufLocal('./public/test_mira/Team_2471_(2018)_v7.mira');
+        const parser = new MirabufParser(assembly);
+        const physSystem = new PhysicsSystem();
+        const mapping = physSystem.CreateBodiesFromParser(parser);
+
+        expect(mapping.size).toBe(10);
     });
 });
