@@ -41,4 +41,4 @@ jobs:
       id: upload-artifact
       with:
         name: "${{ steps.info.outputs.name }}@${{ steps.info.outputs.version }} [$(date +'%Y-%m-%dT%H:%M:%S')]"
-        path: "dist"
+        path: fission/dist/
