@@ -9,7 +9,7 @@ export enum ParseErrorSeverity {
     JustAWarning = 2
 }
 
-const GROUNDED_JOINT_ID = 'grounded';
+export const GROUNDED_JOINT_ID = 'grounded';
 
 export type ParseError = [severity: ParseErrorSeverity, message: string];
 

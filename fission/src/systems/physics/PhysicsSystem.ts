@@ -1,9 +1,9 @@
-import { MirabufFloatArr_JoltVec3, ThreeMatrix4_JoltMat44, ThreeVector3_JoltVec3, _JoltQuat } from "../../util/TypeConversions";
+import { MirabufFloatArr_JoltVec3, MirabufVector3_JoltVec3, ThreeMatrix4_JoltMat44, ThreeVector3_JoltVec3, _JoltQuat } from "../../util/TypeConversions";
 import JOLT from "../../util/loading/JoltSyncLoader";
 import Jolt from "@barclah/jolt-physics";
 import * as THREE from 'three';
 import { mirabuf } from '../../proto/mirabuf';
-import MirabufParser, { RigidNodeReadOnly } from "../../mirabuf/MirabufParser";
+import MirabufParser, { GROUNDED_JOINT_ID, RigidNodeReadOnly } from "../../mirabuf/MirabufParser";
 import WorldSystem from "../WorldSystem";
 
 const LAYER_NOT_MOVING = 0;
@@ -140,6 +140,80 @@ class PhysicsSystem extends WorldSystem {
         }
         settings.mDensity = density;
         return settings.Create();
+    }
+
+    public CreateJointsFromParser(parser: MirabufParser, rnMapping: Map<string, Jolt.BodyID>) {
+        const jointData = parser.assembly.data!.joints!;
+        for (const [jGuid, jInst] of (Object.entries(jointData.jointInstances!) as [string, mirabuf.joint.JointInstance][])) {
+            if (jGuid == GROUNDED_JOINT_ID)
+                continue;
+
+            const rnA = parser.partToNodeMap.get(jInst.parentPart!);
+            const rnB = parser.partToNodeMap.get(jInst.childPart!);
+
+            if (!rnA || !rnB) {
+                console.warn(`Skipping joint '${jInst.info!.name!}'. Couldn't find associated rigid nodes.`);
+                continue;
+            } else if (rnA.name == rnB.name) {
+                console.warn(`Skipping joint '${jInst.info!.name!}'. Jointing the same parts. Likely in issue with Fusion Design structure.`);
+                continue;
+            }
+
+            const jDef = parser.assembly.data!.joints!.jointDefinitions![jInst.jointReference!]! as mirabuf.joint.Joint;
+            const bodyIdA = rnMapping.get(rnA.name);
+            const bodyIdB = rnMapping.get(rnB.name);
+            if (!bodyIdA || !bodyIdB) {
+                console.warn(`Skipping joint '${jInst.info!.name!}'. Failed to find rigid nodes' associated bodies.`);
+                continue;
+            }
+            const bodyA = this.GetBody(bodyIdA);
+            const bodyB = this.GetBody(bodyIdB);
+
+            switch (jDef.jointMotionType!) {
+                case mirabuf.joint.JointMotion.REVOLUTE:
+                    this.CreateRevoluteJoint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!);
+                    break;
+                case mirabuf.joint.JointMotion.SLIDER:
+                    console.debug('Slider joint detected. Skipping...');
+                    break;
+                default:
+                    console.debug('Unsupported joint detected. Skipping...');
+                    break;
+            }
+        }
+    }
+
+    private CreateRevoluteJoint(
+    jointInstance: mirabuf.joint.JointInstance, jointDefinition: mirabuf.joint.Joint,
+    bodyA: Jolt.Body, bodyB: Jolt.Body, versionNum: number) {
+        // HINGE CONSTRAINT
+        const hingeConstraintSettings = new Jolt.HingeConstraintSettings();
+        
+        const jointOrigin = jointDefinition.origin
+            ? MirabufVector3_JoltVec3(jointDefinition.origin as mirabuf.Vector3)
+            : new Jolt.Vec3(0, 0, 0);
+        // TODO: Offset transformation for robot builder.
+        const jointOriginOffset = jointInstance.offset
+            ? MirabufVector3_JoltVec3(jointInstance.offset as mirabuf.Vector3)
+            : new Jolt.Vec3(0, 0, 0);
+
+        const anchorPoint = jointOrigin.Add(jointOriginOffset);
+        hingeConstraintSettings.mPoint1 = hingeConstraintSettings.mPoint2 = anchorPoint;
+
+        const miraAxis = jointDefinition.rotational!.rotationalFreedom!.axis! as mirabuf.Vector3;
+        let axis: Jolt.Vec3;
+        // No scaling, these are unit vectors
+        if (versionNum < 5) {
+            axis = new JOLT.Vec3(-miraAxis.x ?? 0, miraAxis.y ?? 0, miraAxis.z! ?? 0);
+        } else {
+            axis = new JOLT.Vec3(miraAxis.x! ?? 0, miraAxis.y! ?? 0, miraAxis.z! ?? 0);
+        }
+        
+        
+        const normAxis = new Jolt.Vec3(0, -1, 0);
+        hingeConstraintSettings.mHingeAxis1 = hingeConstraintSettings.mHingeAxis2 = axis;
+        hingeConstraintSettings.mNormalAxis1 = hingeConstraintSettings.mNormalAxis2 = normAxis;
+        this._joltPhysSystem.AddConstraint(hingeConstraintSettings.Create(bodyA, bodyB));
     }
 
     /**
