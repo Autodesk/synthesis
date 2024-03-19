@@ -20,9 +20,9 @@ jobs:
         node-version: 20
 
     - name: Get date
-        id: date # this is used on variable path
-        run: |
-          echo "timestamp=$(date +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_OUTPUT
+      id: date # this is used on variable path
+      run: |
+        echo "timestamp=$(date +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_OUTPUT
 
     - name: Install Dependencies
       run: |
