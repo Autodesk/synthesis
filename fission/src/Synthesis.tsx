@@ -1,5 +1,4 @@
 import Scene from './components/Scene.tsx';
-import GetSceneRenderer from './systems/scene/SceneRenderer.ts';
 import MirabufSceneObject from './mirabuf/MirabufSceneObject.ts';
 import { LoadMirabufRemote } from './mirabuf/MirabufLoader.ts';
 import { mirabuf } from './proto/mirabuf';
@@ -54,8 +53,10 @@ import ZoneConfigPanel from "./panels/configuring/scoring/ZoneConfigPanel"
 import ScoreboardPanel from "./panels/information/ScoreboardPanel"
 import DriverStationPanel from "./panels/simulation/DriverStationPanel"
 import ManageAssembliesModal from './modals/spawning/ManageAssembliesModal.tsx';
+import World from './systems/World.ts';
 
 const DEFAULT_MIRA_PATH = 'test_mira/Team_2471_(2018)_v7.mira';
+// const DEFAULT_MIRA_PATH = 'test_mira/Dozer_v2.mira';
 
 function Synthesis() {
     const { openModal, closeModal, getActiveModalElement } =
@@ -145,6 +146,8 @@ function Synthesis() {
 
 	useEffect(() => {
 
+        World.InitWorld();
+
         let mira_path = DEFAULT_MIRA_PATH;
 
         const urlParams = new URLSearchParams(document.location.search);
@@ -161,18 +164,20 @@ function Synthesis() {
 					_ => LoadMirabufRemote(DEFAULT_MIRA_PATH)
 				).catch(console.error);
 
-			if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
-				return;
-			}
-	
-			const parser = new MirabufParser(miraAssembly);
-			if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
-				console.error(`Assembly Parser produced significant errors for '${miraAssembly.info!.name!}'`);
-				return;
-			}
-			
-			const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser));
-			GetSceneRenderer().RegisterSceneObject(mirabufSceneObject);
+            await (async () => {
+                if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
+                    return;
+                }
+        
+                const parser = new MirabufParser(miraAssembly);
+                if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
+                    console.error(`Assembly Parser produced significant errors for '${miraAssembly.info!.name!}'`);
+                    return;
+                }
+                
+                const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser));
+                World.SceneRenderer.RegisterSceneObject(mirabufSceneObject);
+            })();
 		};
 		setup();
 
@@ -180,14 +185,15 @@ function Synthesis() {
 		const mainLoop = () => {
 			mainLoopHandle = requestAnimationFrame(mainLoop);
 	
-			GetSceneRenderer().Update();
+			World.UpdateWorld();
 		};
 		mainLoop();
         // Cleanup
         return () => {
             // TODO: Teardown literally everything
             cancelAnimationFrame(mainLoopHandle);
-            GetSceneRenderer().RemoveAllSceneObjects();
+            World.DestroyWorld();
+            // World.SceneRenderer.RemoveAllSceneObjects();
         };
 	}, []);
 

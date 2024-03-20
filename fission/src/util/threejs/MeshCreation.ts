@@ -2,7 +2,6 @@ import JOLT from '../loading/JoltSyncLoader.ts';
 import Jolt from '@barclah/jolt-physics';
 import * as THREE from 'three';
 import { JoltVec3_ThreeVector3, JoltQuat_ThreeQuaternion } from '../TypeConversions.ts';
-import { Random } from '../Random.ts';
 
 export const LAYER_NOT_MOVING = 0;
 export const LAYER_MOVING = 1;
@@ -84,37 +83,4 @@ export function removeFromScene(scene: THREE.Scene, threeObject: THREE.Mesh, bod
 	scene.remove(threeObject);
 	const idx = dynamicObjects.indexOf(threeObject);
 	dynamicObjects.splice(idx, 1);
-}
-
-function getRandomQuat() {
-	const vec = new JOLT.Vec3(0.001 + Random(), Random(), Random());
-	const quat = JOLT.Quat.prototype.sRotation(vec.Normalized(), 2 * Math.PI * Random());
-	JOLT.destroy(vec);
-	return quat;
-}
-
-function makeRandomBox(scene: THREE.Scene, bodyInterface: Jolt.BodyInterface, dynamicObjects: THREE.Mesh[]) {
-    const pos = new JOLT.Vec3((Random() - 0.5) * 25, 15, (Random() - 0.5) * 25);
-    const rot = getRandomQuat();
-
-    const x = Random();
-    const y = Random();
-    const z = Random();
-    const size = new JOLT.Vec3(x, y, z);
-    const shape = new JOLT.BoxShape(size, 0.05, undefined);
-    const creationSettings = new JOLT.BodyCreationSettings(shape, pos, rot, JOLT.EMotionType_Dynamic, LAYER_MOVING);
-    creationSettings.mRestitution = 0.5;
-    const body = bodyInterface.CreateBody(creationSettings);
-
-    JOLT.destroy(pos);
-    JOLT.destroy(rot);
-    JOLT.destroy(size);
-
-    // I feel as though this object should be freed at this point but doing so will cause a crash at runtime.
-    // This is the only object where this happens. I'm not sure why. Seems problematic.
-    // Jolt.destroy(shape);
-
-    JOLT.destroy(creationSettings);
-
-    addToScene(scene, body, new THREE.Color(0xff0000), bodyInterface, dynamicObjects);
 }

@@ -32,20 +32,16 @@ class MirabufParser {
     protected _rigidNodes: Array<RigidNode> = [];
     private _globalTransforms: Map<string, THREE.Matrix4>;
 
+    private _groundedNode: RigidNode | undefined;
+
     public get errors() { return new Array(...this._errors); }
-
     public get maxErrorSeverity() { return Math.max(...this._errors.map(x => x[0])); }
-
     public get assembly() { return this._assembly; }
-
     public get partTreeValues() { return this._partTreeValues; }
-
     public get designHierarchyRoot() { return this._designHierarchyRoot; }
-
     public get partToNodeMap() { return this._partToNodeMap; }
-
     public get globalTransforms() { return this._globalTransforms; }
-
+    public get groundedNode() { return this._groundedNode ? new RigidNodeReadOnly(this._groundedNode) : undefined; }
     public get rigidNodes(): Array<RigidNodeReadOnly> {
         return this._rigidNodes.map(x => new RigidNodeReadOnly(x));
     }
@@ -83,6 +79,8 @@ class MirabufParser {
             }
         });
 
+        // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
+
         // Fields Only: Assign Game Piece rigid nodes
         if (!assembly.dynamic) {
             // Collect all definitions labelled as gamepieces (dynamic = true)
@@ -110,9 +108,12 @@ class MirabufParser {
         // 2: Grounded joint
         const gInst = assembly.data!.joints!.jointInstances![GROUNDED_JOINT_ID];
         const gNode = this.NewRigidNode();
+        this.MovePartToRigidNode(gInst.parts!.nodes!.at(0)!.value!, gNode);
         
-        traverseTree(gInst.parts!.nodes!, x => (!this._partToNodeMap.has) && this.MovePartToRigidNode(x.value!, gNode));
+        // traverseTree(gInst.parts!.nodes!, x => (!this._partToNodeMap.has(x.value!)) && this.MovePartToRigidNode(x.value!, gNode));
         
+        // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
+
         // 3: Traverse and round up
         const traverseNodeRoundup = (node: mirabuf.INode, parentNode: RigidNode) => {
             const currentNode = that._partToNodeMap.get(node.value!);
@@ -125,6 +126,8 @@ class MirabufParser {
             }
         }
         this._designHierarchyRoot.children?.forEach(x => traverseNodeRoundup(x, gNode));
+
+        // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
 
         // 4: Bandage via rigidgroups
         assembly.data!.joints!.rigidGroups!.forEach(rg => {
@@ -139,8 +142,16 @@ class MirabufParser {
             });
         });
 
+        // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
+
         // 5. Remove Empty RNs
         this._rigidNodes = this._rigidNodes.filter(x => x.parts.size > 0);
+
+        // 6. If field, find grounded node and set isDynamic to false. Also just find grounded node again
+        this._groundedNode = this.partToNodeMap.get(gInst.parts!.nodes!.at(0)!.value!);
+        if (!assembly.dynamic && this._groundedNode) {
+            this._groundedNode.isDynamic = false;
+        }
     }
 
     private NewRigidNode(suffix?: string): RigidNode {
@@ -316,9 +327,11 @@ class MirabufParser {
 class RigidNode {
     public name: string;
     public parts: Set<string> = new Set();
+    public isDynamic: boolean;
 
-    public constructor(name: string) {
+    public constructor(name: string, isDynamic?: boolean) {
         this.name = name;
+        this.isDynamic = isDynamic ?? true;
     }
 }
 
@@ -331,6 +344,10 @@ export class RigidNodeReadOnly {
 
     public get parts(): ReadonlySet<string> {
         return this._original.parts;
+    }
+
+    public get isDynamic(): boolean {
+        return this._original.isDynamic;
     }
 
     public constructor(original: RigidNode) {

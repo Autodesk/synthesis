@@ -1,0 +1,47 @@
+name: Fission
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [ master ]
+
+jobs:
+  runUnitTests:
+    name: Package
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+    - name: JavaScript Setup
+      uses: actions/setup-node@v2
+      with:
+        node-version: 20
+
+    - name: Get date
+      id: date # this is used on variable path
+      run: |
+        echo "timestamp=$(date +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_OUTPUT
+
+    - name: Install Dependencies
+      run: |
+        cd fission
+        npm install
+
+    - name: Get package info
+      id: info
+      uses: codex-team/action-nodejs-package-info@v1.1
+      with:
+        path: fission/
+
+    - name: Build
+      id: build
+      run: |
+        cd fission
+        npm run build
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      id: upload-artifact
+      with:
+        name: "${{ steps.info.outputs.name }}@${{ steps.info.outputs.version }}[${{ steps.date.outputs.timestamp }}]"
+        path: fission/dist/

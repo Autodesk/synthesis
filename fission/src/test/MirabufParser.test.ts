@@ -1,8 +1,8 @@
 import { describe, test, expect } from "vitest";
 
-import { mirabuf } from "../../proto/mirabuf";
-import MirabufParser, { RigidNodeReadOnly } from "../../mirabuf/MirabufParser";
-import { LoadMirabufLocal } from "../../mirabuf/MirabufLoader";
+import { mirabuf } from "../proto/mirabuf";
+import MirabufParser, { RigidNodeReadOnly } from "../mirabuf/MirabufParser";
+import { LoadMirabufLocal } from "../mirabuf/MirabufLoader";
 
 describe('Mirabuf Parser Tests', () => {
     // test('Get Dozer JSON', () => {
@@ -34,6 +34,16 @@ describe('Mirabuf Parser Tests', () => {
 
         expect(filterNonPhysicsNodes(rn, testCubeMira).length).toBe(1);
         // printRigidNodeParts(rn, testCubeMira);
+    });
+
+    test('Generate Rigid Nodes (Dozer_v2.mira)', () => {
+        const spikeMira = LoadMirabufLocal('./public/test_mira/Dozer_v2.mira');
+
+        const t = new MirabufParser(spikeMira);
+        const rn = t.rigidNodes;
+
+        expect(filterNonPhysicsNodes(rn, spikeMira).length).toBe(7);
+        // printRigidNodeParts(rn, spikeMira);
     });
 
     test('Generate Rigid Nodes (PhysicsSpikeTest_v1.mira)', () => {
@@ -78,10 +88,10 @@ function filterNonPhysicsNodes(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembl
     });
 }
 
-function printRigidNodeParts(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembly) {
-    nodes.forEach(x => {
-        console.log(`[ ${x.name} ]:`);
-        x.parts.forEach(y => console.log(`-> '${mira.data!.parts!.partInstances![y]!.info!.name!}'`));
-        console.log('');
-    });
-}
+// function printRigidNodeParts(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembly) {
+//     nodes.forEach(x => {
+//         console.log(`[ ${x.name} ]:`);
+//         x.parts.forEach(y => console.log(`-> '${mira.data!.parts!.partInstances![y]!.info!.name!}'`));
+//         console.log('');
+//     });
+// }
