@@ -24,6 +24,7 @@ class PhysicsSystem extends WorldSystem {
     private _joltPhysSystem: Jolt.PhysicsSystem;
     private _joltBodyInterface: Jolt.BodyInterface;
     private _bodies: Array<Jolt.BodyID>;
+    private _constraints: Array<Jolt.Constraint>
 
     /**
      * Creates a PhysicsSystem object.
@@ -32,6 +33,7 @@ class PhysicsSystem extends WorldSystem {
         super();
 
         this._bodies = [];
+        this._constraints = [];
 
         const joltSettings = new JOLT.JoltSettings();
         SetupCollisionFiltering(joltSettings);
@@ -174,6 +176,11 @@ class PhysicsSystem extends WorldSystem {
                     this.CreateRevoluteJoint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!);
                     break;
                 case mirabuf.joint.JointMotion.SLIDER:
+                    console.debug(`SLIDER: ${
+                        parser.assembly.data!.parts!.partInstances![jInst.parentPart]!.info!.name!
+                    } <-> ${
+                        parser.assembly.data!.parts!.partInstances![jInst.childPart]!.info!.name!
+                    }`);
                     this.CreateSliderJoint(jInst, jDef, bodyA, bodyB);
                     break;
                 default:
@@ -200,7 +207,9 @@ class PhysicsSystem extends WorldSystem {
         const anchorPoint = jointOrigin.Add(jointOriginOffset);
         hingeConstraintSettings.mPoint1 = hingeConstraintSettings.mPoint2 = anchorPoint;
 
-        const miraAxis = jointDefinition.rotational!.rotationalFreedom!.axis! as mirabuf.Vector3;
+        const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!;
+
+        const miraAxis = rotationalFreedom.axis! as mirabuf.Vector3;
         let axis: Jolt.Vec3;
         // No scaling, these are unit vectors
         if (versionNum < 5) {
@@ -212,6 +221,21 @@ class PhysicsSystem extends WorldSystem {
             = axis.Normalized();
         hingeConstraintSettings.mNormalAxis1 = hingeConstraintSettings.mNormalAxis2
             = getPerpendicular(hingeConstraintSettings.mHingeAxis1);
+
+        // Some values that are meant to be exactly PI are perceived as being past it, causing unexpected beavior.
+        // This safety check caps the values to be within [-PI, PI] wth minimal difference in precision.
+        const piSafetyCheck = (v: number) => Math.min(3.14158, Math.max(-3.14158, v));
+
+        if (rotationalFreedom.limits && Math.abs((rotationalFreedom.limits.upper ?? 0) - (rotationalFreedom.limits.lower ?? 0)) > 0.001) {
+            const currentPos = piSafetyCheck(rotationalFreedom.value ?? 0);
+            const upper = piSafetyCheck(rotationalFreedom.limits.upper ?? 0) - currentPos;
+            const lower = piSafetyCheck(rotationalFreedom.limits.lower ?? 0) - currentPos;
+
+            console.debug(`Lower: ${lower}\nUpper: ${upper}\nCurrent: ${currentPos}`);
+
+            hingeConstraintSettings.mLimitsMin = -upper;
+            hingeConstraintSettings.mLimitsMax = -lower;
+        }
         
         this._joltPhysSystem.AddConstraint(hingeConstraintSettings.Create(bodyA, bodyB));
     }
@@ -219,7 +243,7 @@ class PhysicsSystem extends WorldSystem {
     private CreateSliderJoint(
     jointInstance: mirabuf.joint.JointInstance, jointDefinition: mirabuf.joint.Joint,
     bodyA: Jolt.Body, bodyB: Jolt.Body) {
-        // HINGE CONSTRAINT
+
         const sliderConstraintSettings = new JOLT.SliderConstraintSettings();
         
         const jointOrigin = jointDefinition.origin
@@ -233,7 +257,9 @@ class PhysicsSystem extends WorldSystem {
         const anchorPoint = jointOrigin.Add(jointOriginOffset);
         sliderConstraintSettings.mPoint1 = sliderConstraintSettings.mPoint2 = anchorPoint;
 
-        const miraAxis = jointDefinition.prismatic!.prismaticFreedom!.axis! as mirabuf.Vector3;
+        const prismaticFreedom = jointDefinition.prismatic!.prismaticFreedom!;
+
+        const miraAxis = prismaticFreedom.axis! as mirabuf.Vector3;
         const axis = new JOLT.Vec3(miraAxis.x! ?? 0, miraAxis.y! ?? 0, miraAxis.z! ?? 0);
 
         sliderConstraintSettings.mSliderAxis1 = sliderConstraintSettings.mSliderAxis2
@@ -241,10 +267,31 @@ class PhysicsSystem extends WorldSystem {
         sliderConstraintSettings.mNormalAxis1 = sliderConstraintSettings.mNormalAxis2
             = getPerpendicular(sliderConstraintSettings.mSliderAxis1);
 
-        sliderConstraintSettings.mLimitsMax = 1.0;
-        sliderConstraintSettings.mLimitsMin = -1.0;
+        if (prismaticFreedom.limits && Math.abs((prismaticFreedom.limits.upper ?? 0) - (prismaticFreedom.limits.lower ?? 0)) > 0.001) {
+
+            const currentPos = (prismaticFreedom.value ?? 0) * 0.01;
+            const upper = ((prismaticFreedom.limits.upper ?? 0) * 0.01) - currentPos;
+            const lower = ((prismaticFreedom.limits.lower ?? 0) * 0.01) - currentPos;
+
+            // Calculate mid point
+            const midPoint = (upper + lower) / 2.0;
+            const halfRange = Math.abs((upper - lower) / 2.0);
+            
+            // Move the anchor points
+            sliderConstraintSettings.mPoint2
+                = anchorPoint.Add(axis.Normalized().Mul(midPoint));
+
+            sliderConstraintSettings.mLimitsMax =  halfRange;
+            sliderConstraintSettings.mLimitsMin = -halfRange;
+        }
+
+        // sliderConstraintSettings.mLimitsMax = 1.0;
+        // sliderConstraintSettings.mLimitsMin = 0.0;
         
-        this._joltPhysSystem.AddConstraint(sliderConstraintSettings.Create(bodyA, bodyB));
+        const constraint = sliderConstraintSettings.Create(bodyA, bodyB);
+        
+        this._constraints.push(constraint);
+        this._joltPhysSystem.AddConstraint(constraint);
     }
 
     /**
@@ -332,10 +379,10 @@ class PhysicsSystem extends WorldSystem {
                 rnToBodies.set(rn.name, body.GetID());
 
                 // Little testing components
-                body.SetRestitution(0.2);
-                // const angVelocity = new JOLT.Vec3(2.0, 20.0, 5.0);
-                // body.SetAngularVelocity(angVelocity);
-                // JOLT.destroy(angVelocity);
+                body.SetRestitution(0.4);
+                const angVelocity = new JOLT.Vec3(0, 0, 2);
+                body.SetAngularVelocity(angVelocity);
+                JOLT.destroy(angVelocity);
             }
 
             // Cleanup
@@ -431,6 +478,12 @@ class PhysicsSystem extends WorldSystem {
     }
 
     public Destroy(): void {
+        this._constraints.forEach(x => {
+            this._joltPhysSystem.RemoveConstraint(x);
+            // JOLT.destroy(x);
+        });
+        this._constraints = [];
+
         // Destroy Jolt Bodies.
         this.DestroyBodyIds(...this._bodies);
         this._bodies = [];
@@ -483,11 +536,11 @@ function getPerpendicular(vec: Jolt.Vec3): Jolt.Vec3 {
 }
 
 function tryGetPerpendicular(vec: Jolt.Vec3, toCheck: Jolt.Vec3): Jolt.Vec3 | undefined {
-    if (Math.abs(vec.Dot(toCheck) - 1.0) < 0.0001) {
+    if (Math.abs(Math.abs(vec.Dot(toCheck)) - 1.0) < 0.0001) {
         return undefined;
     }
 
-    const a = vec.Dot(toCheck) - 1.0;
+    const a = vec.Dot(toCheck);
     return new JOLT.Vec3(
         toCheck.GetX() - vec.GetX() * a,
         toCheck.GetY() - vec.GetY() * a,

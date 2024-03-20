@@ -1,5 +1,6 @@
 import { RigidNodeReadOnly } from "@/mirabuf/MirabufParser";
 import { mirabuf } from "@/proto/mirabuf";
+import Jolt from "@barclah/jolt-physics";
 
 export function printRigidNodeParts(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembly) {
     nodes.forEach(x => {
@@ -23,4 +24,16 @@ export function mirabufTransformToString(mat: mirabuf.ITransform) {
         + `${arr[4].toFixed(4)}, ${arr[5].toFixed(4)}, ${arr[6].toFixed(4)}, ${arr[7].toFixed(4)},\n`
         + `${arr[8].toFixed(4)}, ${arr[9].toFixed(4)}, ${arr[10].toFixed(4)}, ${arr[11].toFixed(4)},\n`
         + `${arr[12].toFixed(4)}, ${arr[13].toFixed(4)}, ${arr[14].toFixed(4)}, ${arr[15].toFixed(4)},\n]`
+}
+
+export function mirabufVector3ToString(v: mirabuf.Vector3, units: number = 3) {
+    return `(${v.x.toFixed(units)}, ${v.y.toFixed(units)}, ${v.z.toFixed(units)})`;
+}
+
+export function threeVector3ToString(v: THREE.Vector3, units: number = 3) {
+    return `(${v.x.toFixed(units)}, ${v.y.toFixed(units)}, ${v.z.toFixed(units)})`;
+}
+
+export function joltVec3ToString(v: Jolt.Vec3 | Jolt.RVec3, units: number = 3) {
+    return `(${v.GetX().toFixed(units)}, ${v.GetY().toFixed(units)}, ${v.GetZ().toFixed(units)})`;
 }

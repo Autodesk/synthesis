@@ -9,7 +9,7 @@ import { JoltMat44_ThreeMatrix4 } from "@/util/TypeConversions";
 import * as THREE from 'three';
 import JOLT from "@/util/loading/JoltSyncLoader";
 
-const DEBUG_BODIES = true;
+const DEBUG_BODIES = false;
 
 interface RnDebugMeshes {
     colliderMesh: THREE.Mesh;
