@@ -166,6 +166,12 @@ class Parser:
             path = pathlib.Path(self.parseOptions.fileLocation).parent
             path.mkdir(parents=True, exist_ok=True)
 
+            ### Print out assembly as JSON
+            # miraJson = MessageToJson(assembly_out)
+            # miraJsonFile = open(f'', 'wb')
+            # miraJsonFile.write(str.encode(miraJson))
+            # miraJsonFile.close()
+
             if self.parseOptions.compress:
                 self.logger.debug("Compressing file")
                 with gzip.open(self.parseOptions.fileLocation, "wb", 9) as f:
