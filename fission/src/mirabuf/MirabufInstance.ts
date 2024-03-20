@@ -1,9 +1,13 @@
 import * as THREE from 'three';
 import { mirabuf } from "../proto/mirabuf"
 import MirabufParser, { ParseErrorSeverity } from './MirabufParser.ts';
-import { MirabufTransform_ThreeMatrix4 } from '../util/TypeConversions.ts';
+import World from '@/systems/World.ts';
 
-const NORMAL_MATERIALS = false;
+export enum MaterialStyle {
+    Regular = 0,
+    Normals = 1,
+    Toon = 2
+}
 
 export const matToString = (mat: THREE.Matrix4) => {
     const arr = mat.toArray();
@@ -78,7 +82,7 @@ class MirabufInstance {
     public get materials() { return this._materials; }
     public get meshes() { return this._meshes; }
 
-    public constructor(parser: MirabufParser) {
+    public constructor(parser: MirabufParser, materialStyle?: MaterialStyle) {
         if (parser.errors.some(x => x[0] >= ParseErrorSeverity.Unimportable)) {
             throw new Error('Parser has significant errors...');
         }
@@ -87,14 +91,14 @@ class MirabufInstance {
         this._materials = new Map();
         this._meshes = new Map();
 
-        this.LoadMaterials();
+        this.LoadMaterials(materialStyle ?? MaterialStyle.Regular);
         this.CreateMeshes();
     }
 
     /**
      * Parses all mirabuf appearances into ThreeJs materials.
      */
-    private LoadMaterials() {
+    private LoadMaterials(materialStyle: MaterialStyle) {
         Object.entries(this._mirabufParser.assembly.data!.materials!.appearances!).forEach(([appearanceId, appearance]) => {
             let hex = 0xe32b50;
             if (appearance.albedo) {
@@ -103,12 +107,22 @@ class MirabufInstance {
                     hex = A << 24 | R << 16 | G << 8  | B;
             }
 
-            this._materials.set(
-                appearanceId,
-                new THREE.MeshPhongMaterial({
+            let material: THREE.Material;
+            if (materialStyle == MaterialStyle.Regular) {
+                material = new THREE.MeshPhongMaterial({
                     color: hex,
                     shininess: 0.0,
-                })
+                });
+            } else if (materialStyle == MaterialStyle.Normals) {
+                material = new THREE.MeshNormalMaterial();
+            } else if (materialStyle == MaterialStyle.Toon) {
+                material = World.SceneRenderer.CreateToonMaterial(hex, 5);
+                console.debug('Toon Material');
+            }
+
+            this._materials.set(
+                appearanceId,
+                material!
             );
         });
     }
@@ -135,14 +149,14 @@ class MirabufInstance {
                         transformGeometry(geometry, mesh.mesh!);
 
                         const appearanceOverride = body.appearanceOverride;
-                        let material: THREE.Material =
+                        const material: THREE.Material =
                             appearanceOverride && this._materials.has(appearanceOverride)
                                 ? this._materials.get(appearanceOverride)!
                                 : fillerMaterials[nextFillerMaterial++ % fillerMaterials.length];
 
-                        if (NORMAL_MATERIALS) {
-                            material = new THREE.MeshNormalMaterial();
-                        }
+                        // if (NORMAL_MATERIALS) {
+                        //     material = new THREE.MeshNormalMaterial();
+                        // }
 
                         const threeMesh = new THREE.Mesh( geometry, material );
                         threeMesh.receiveShadow = true;

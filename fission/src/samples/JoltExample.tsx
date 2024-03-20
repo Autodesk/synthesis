@@ -12,7 +12,7 @@ import Jolt from '@barclah/jolt-physics';
 import { mirabuf } from "../proto/mirabuf"
 import { LoadMirabufRemote } from '../mirabuf/MirabufLoader.ts';
 import { JoltVec3_ThreeVector3, JoltQuat_ThreeQuaternion } from '../util/TypeConversions.ts';
-import { COUNT_OBJECT_LAYERS, LAYER_MOVING, LAYER_NOT_MOVING, addToScene, removeFromScene } from '../util/threejs/MeshCreation.ts';
+import { COUNT_OBJECT_LAYERS, LAYER_MOVING, LAYER_NOT_MOVING } from '../util/threejs/MeshCreation.ts';
 import MirabufInstance from '../mirabuf/MirabufInstance.ts';
 import MirabufParser, { ParseErrorSeverity } from '../mirabuf/MirabufParser.ts';
 
@@ -26,8 +26,8 @@ let camera: THREE.PerspectiveCamera;
 let scene: THREE.Scene;
 
 let joltInterface: Jolt.JoltInterface;
-let physicsSystem: Jolt.PhysicsSystem;
-let bodyInterface: Jolt.BodyInterface;
+// let physicsSystem: Jolt.PhysicsSystem;
+// let bodyInterface: Jolt.BodyInterface;
 
 const dynamicObjects: THREE.Mesh[] = [];
 
@@ -63,8 +63,8 @@ function initPhysics() {
     joltInterface = new JOLT.JoltInterface(settings);
     JOLT.destroy(settings);
 
-    physicsSystem = joltInterface.GetPhysicsSystem();
-    bodyInterface = physicsSystem.GetBodyInterface();
+    // physicsSystem = joltInterface.GetPhysicsSystem();
+    // bodyInterface = physicsSystem.GetBodyInterface();
 }
 
 function initGraphics() {
@@ -115,20 +115,6 @@ function initGraphics() {
     // TODO: Add resize event
 }
 
-function createFloor(size = 50) {
-    const shape = new JOLT.BoxShape(new JOLT.Vec3(size, 0.5, size), 0.05, undefined);
-    const position = new JOLT.Vec3(0, -0.5, 0);
-    const rotation = new JOLT.Quat(0, 0, 0, 1);
-    const creationSettings = new JOLT.BodyCreationSettings(shape, position, rotation, JOLT.EMotionType_Static, LAYER_NOT_MOVING)
-    const body = bodyInterface.CreateBody(creationSettings);
-    JOLT.destroy(position);
-    JOLT.destroy(rotation);
-    JOLT.destroy(creationSettings);
-    addToScene(scene, body, new THREE.Color(0xc7c7c7), bodyInterface, dynamicObjects);
-
-    return body;
-}
-
 function updatePhysics(deltaTime: number) {
     // If below 55hz run 2 steps. Otherwise things run very slow.
     const numSteps = deltaTime > 1.0 / 55.0 ? 2 : 1;
@@ -169,7 +155,7 @@ function MyThree() {
     const urlParams = new URLSearchParams(document.location.search);
     let mira_path = MIRA_FILE;
 
-    urlParams.forEach((v, k, p) => console.debug(`${k}: ${v}`));
+    urlParams.forEach((v, k) => console.debug(`${k}: ${v}`));
 
     if (urlParams.has("mira")) {
         mira_path = `test_mira/${urlParams.get("mira")!}`;

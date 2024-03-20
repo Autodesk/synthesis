@@ -1,4 +1,4 @@
-name: Format Validation (ESLint)
+name: Fission
 
 on:
   workflow_dispatch: {}
@@ -9,7 +9,7 @@ on:
 
 jobs:
   runFormatValidationScript:
-    name: Run ESLint Format Validation
+    name: ESLint Format Validation
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Code

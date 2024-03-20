@@ -1,28 +1,116 @@
 import { mirabuf } from "@/proto/mirabuf";
 import SceneObject from "../systems/scene/SceneObject";
-import GetSceneRenderer from "../systems/scene/SceneRenderer";
 import MirabufInstance from "./MirabufInstance";
 import { LoadMirabufRemote } from "./MirabufLoader";
 import MirabufParser, { ParseErrorSeverity } from "./MirabufParser";
+import World from "@/systems/World";
+import Jolt from '@barclah/jolt-physics';
+import { JoltMat44_ThreeMatrix4 } from "@/util/TypeConversions";
+import * as THREE from 'three';
+import JOLT from "@/util/loading/JoltSyncLoader";
+
+const DEBUG_BODIES = true;
+
+interface RnDebugMeshes {
+    colliderMesh: THREE.Mesh;
+    comMesh: THREE.Mesh;
+}
 
 class MirabufSceneObject extends SceneObject {
 
     private _mirabufInstance: MirabufInstance;
+    private _bodies: Map<string, Jolt.BodyID>;
+    private _debugBodies: Map<string, RnDebugMeshes> | null;
 
     public constructor(mirabufInstance: MirabufInstance) {
         super();
 
         this._mirabufInstance = mirabufInstance;
+        this._bodies = World.PhysicsSystem.CreateBodiesFromParser(mirabufInstance.parser);
+        this._debugBodies = null;
     }
 
     public Setup(): void {
-        this._mirabufInstance.AddToScene(GetSceneRenderer().scene);
+        this._mirabufInstance.AddToScene(World.SceneRenderer.scene);
+
+        if (DEBUG_BODIES) {
+            this._debugBodies = new Map();
+            this._bodies.forEach((bodyId, rnName) => {
+
+                const body = World.PhysicsSystem.GetBody(bodyId);
+
+                const colliderMesh = this.CreateMeshForShape(body.GetShape());
+                const comMesh = World.SceneRenderer.CreateSphere(0.05);
+                World.SceneRenderer.scene.add(colliderMesh);
+                World.SceneRenderer.scene.add(comMesh);
+                (comMesh.material as THREE.Material).depthTest = false;
+                this._debugBodies!.set(rnName, { colliderMesh: colliderMesh, comMesh: comMesh });
+            });
+        }
     }
 
-    public Update(): void { }
+    public Update(): void {
+        this._mirabufInstance.parser.rigidNodes.forEach(rn => {
+            const body = World.PhysicsSystem.GetBody(this._bodies.get(rn.name)!);
+            const transform = JoltMat44_ThreeMatrix4(body.GetWorldTransform());
+            rn.parts.forEach(part => {
+                const partTransform = this._mirabufInstance.parser.globalTransforms.get(part)!.clone().premultiply(transform);
+                this._mirabufInstance.meshes.get(part)!.forEach(mesh => {
+                    mesh.position.setFromMatrixPosition(partTransform);
+                    mesh.rotation.setFromRotationMatrix(partTransform);
+                });
+            });
+
+            if (isNaN(body.GetPosition().GetX())) {
+                const vel = body.GetLinearVelocity();
+                const pos = body.GetPosition();
+                console.debug(`Invalid Position.\nPosition => ${pos.GetX()}, ${pos.GetY()}, ${pos.GetZ()}\nVelocity => ${vel.GetX()}, ${vel.GetY()}, ${vel.GetZ()}`);
+            }
+            // console.debug(`POSITION: ${body.GetPosition().GetX()}, ${body.GetPosition().GetY()}, ${body.GetPosition().GetZ()}`)
+
+            if (this._debugBodies) {
+                const { colliderMesh, comMesh } = this._debugBodies.get(rn.name)!;
+                colliderMesh.position.setFromMatrixPosition(transform);
+                colliderMesh.rotation.setFromRotationMatrix(transform);
+
+                const comTransform = JoltMat44_ThreeMatrix4(body.GetCenterOfMassTransform());
+                comMesh.position.setFromMatrixPosition(comTransform);
+                comMesh.rotation.setFromRotationMatrix(comTransform);
+            }
+        });
+    }
 
     public Dispose(): void {
-        this._mirabufInstance.Dispose(GetSceneRenderer().scene);
+        World.PhysicsSystem.DestroyBodyIds(...this._bodies.values());
+        this._mirabufInstance.Dispose(World.SceneRenderer.scene);
+        this._debugBodies?.forEach(x => {
+            World.SceneRenderer.scene.remove(x.colliderMesh, x.comMesh);
+            x.colliderMesh.geometry.dispose();
+            x.comMesh.geometry.dispose();
+            (x.colliderMesh.material as THREE.Material).dispose();
+            (x.comMesh.material as THREE.Material).dispose();
+        });
+        this._debugBodies?.clear();
+    }
+
+    private CreateMeshForShape(shape: Jolt.Shape): THREE.Mesh {
+        const scale = new JOLT.Vec3(1, 1, 1);
+        const triangleContext = new JOLT.ShapeGetTriangles(shape, JOLT.AABox.prototype.sBiggest(), shape.GetCenterOfMass(), JOLT.Quat.prototype.sIdentity(), scale);
+        JOLT.destroy(scale);
+    
+        const vertices = new Float32Array(JOLT.HEAP32.buffer, triangleContext.GetVerticesData(), triangleContext.GetVerticesSize() / Float32Array.BYTES_PER_ELEMENT);
+        const buffer = new THREE.BufferAttribute(vertices, 3).clone();
+        JOLT.destroy(triangleContext);
+    
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', buffer);
+        geometry.computeVertexNormals();
+    
+        const material = new THREE.MeshStandardMaterial({ color: 0x33ff33, wireframe: true })
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.castShadow = true;
+
+        return mesh;
     }
 }
 

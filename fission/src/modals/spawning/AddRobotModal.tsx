@@ -4,7 +4,7 @@ import { FaPlus } from "react-icons/fa6"
 import Dropdown from "../../components/Dropdown"
 import { useTooltipControlContext } from "@/TooltipContext"
 import { CreateMirabufFromUrl } from "@/mirabuf/MirabufSceneObject"
-import GetSceneRenderer from "@/systems/scene/SceneRenderer"
+import World from "@/systems/World"
 
 const RobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     // update tooltip based on type of drivetrain, receive message from Synthesis
@@ -27,7 +27,7 @@ const RobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     if (selectedRobot) {
                         CreateMirabufFromUrl(`test_mira/${selectedRobot}`).then(x => {
                             if (x) {
-                                GetSceneRenderer().RegisterSceneObject(x);
+                                World.SceneRenderer.RegisterSceneObject(x);
                             }
                         });
                     }

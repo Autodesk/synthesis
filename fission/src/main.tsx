@@ -1,4 +1,3 @@
-import React from "react"
 import ReactDOM from "react-dom/client"
 import { Theme, ThemeProvider } from "./ThemeContext"
 import Synthesis from "./Synthesis"

@@ -21,7 +21,7 @@ const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     )
 
     useEffect(() => {
-        const interval: NodeJS.Timer = setInterval(() => {
+        const interval: NodeJS.Timeout = setInterval(() => {
             const elapsed = Math.round((Date.now() - startTime) / 1_000)
             if (initialTime > 0) {
                 if (elapsed <= initialTime) setTime(initialTime - elapsed)
