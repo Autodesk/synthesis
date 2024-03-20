@@ -208,11 +208,11 @@ class PhysicsSystem extends WorldSystem {
         } else {
             axis = new JOLT.Vec3(miraAxis.x! ?? 0, miraAxis.y! ?? 0, miraAxis.z! ?? 0);
         }
+        hingeConstraintSettings.mHingeAxis1 = hingeConstraintSettings.mHingeAxis2
+            = axis.Normalized();
+        hingeConstraintSettings.mNormalAxis1 = hingeConstraintSettings.mNormalAxis2
+            = getPerpendicular(hingeConstraintSettings.mHingeAxis1);
         
-        
-        const normAxis = new Jolt.Vec3(0, -1, 0);
-        hingeConstraintSettings.mHingeAxis1 = hingeConstraintSettings.mHingeAxis2 = axis;
-        hingeConstraintSettings.mNormalAxis1 = hingeConstraintSettings.mNormalAxis2 = normAxis;
         this._joltPhysSystem.AddConstraint(hingeConstraintSettings.Create(bodyA, bodyB));
     }
 
@@ -444,6 +444,24 @@ function filterNonPhysicsNodes(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembl
         }
         return false;
     });
+}
+
+function getPerpendicular(vec: Jolt.Vec3): Jolt.Vec3 {
+    return tryGetPerpendicular(vec, new Jolt.Vec3(0, 1, 0))
+        ?? tryGetPerpendicular(vec, new Jolt.Vec3(0, 0, 1))!;
+}
+
+function tryGetPerpendicular(vec: Jolt.Vec3, toCheck: Jolt.Vec3): Jolt.Vec3 | undefined {
+    if (Math.abs(vec.Dot(toCheck) - 1.0) < 0.0001) {
+        return undefined;
+    }
+
+    const a = vec.Dot(toCheck) - 1.0;
+    return new Jolt.Vec3(
+        toCheck.GetX() - vec.GetX() * a,
+        toCheck.GetY() - vec.GetY() * a,
+        toCheck.GetZ() - vec.GetZ() * a
+    ).Normalized();
 }
 
 export default PhysicsSystem;

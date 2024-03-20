@@ -28,7 +28,7 @@ class MirabufSceneObject extends SceneObject {
         this._mirabufInstance = mirabufInstance;
 
         this._bodies = World.PhysicsSystem.CreateBodiesFromParser(mirabufInstance.parser);
-        
+        World.PhysicsSystem.CreateJointsFromParser(mirabufInstance.parser, this._bodies);
 
         this._debugBodies = null;
     }
