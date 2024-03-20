@@ -174,7 +174,7 @@ class PhysicsSystem extends WorldSystem {
                     this.CreateRevoluteJoint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!);
                     break;
                 case mirabuf.joint.JointMotion.SLIDER:
-                    console.debug('Slider joint detected. Skipping...');
+                    this.CreateSliderJoint(jInst, jDef, bodyA, bodyB);
                     break;
                 default:
                     console.debug('Unsupported joint detected. Skipping...');
@@ -187,15 +187,15 @@ class PhysicsSystem extends WorldSystem {
     jointInstance: mirabuf.joint.JointInstance, jointDefinition: mirabuf.joint.Joint,
     bodyA: Jolt.Body, bodyB: Jolt.Body, versionNum: number) {
         // HINGE CONSTRAINT
-        const hingeConstraintSettings = new Jolt.HingeConstraintSettings();
+        const hingeConstraintSettings = new JOLT.HingeConstraintSettings();
         
         const jointOrigin = jointDefinition.origin
             ? MirabufVector3_JoltVec3(jointDefinition.origin as mirabuf.Vector3)
-            : new Jolt.Vec3(0, 0, 0);
+            : new JOLT.Vec3(0, 0, 0);
         // TODO: Offset transformation for robot builder.
         const jointOriginOffset = jointInstance.offset
             ? MirabufVector3_JoltVec3(jointInstance.offset as mirabuf.Vector3)
-            : new Jolt.Vec3(0, 0, 0);
+            : new JOLT.Vec3(0, 0, 0);
 
         const anchorPoint = jointOrigin.Add(jointOriginOffset);
         hingeConstraintSettings.mPoint1 = hingeConstraintSettings.mPoint2 = anchorPoint;
@@ -214,6 +214,37 @@ class PhysicsSystem extends WorldSystem {
             = getPerpendicular(hingeConstraintSettings.mHingeAxis1);
         
         this._joltPhysSystem.AddConstraint(hingeConstraintSettings.Create(bodyA, bodyB));
+    }
+
+    private CreateSliderJoint(
+    jointInstance: mirabuf.joint.JointInstance, jointDefinition: mirabuf.joint.Joint,
+    bodyA: Jolt.Body, bodyB: Jolt.Body) {
+        // HINGE CONSTRAINT
+        const sliderConstraintSettings = new JOLT.SliderConstraintSettings();
+        
+        const jointOrigin = jointDefinition.origin
+            ? MirabufVector3_JoltVec3(jointDefinition.origin as mirabuf.Vector3)
+            : new JOLT.Vec3(0, 0, 0);
+        // TODO: Offset transformation for robot builder.
+        const jointOriginOffset = jointInstance.offset
+            ? MirabufVector3_JoltVec3(jointInstance.offset as mirabuf.Vector3)
+            : new JOLT.Vec3(0, 0, 0);
+
+        const anchorPoint = jointOrigin.Add(jointOriginOffset);
+        sliderConstraintSettings.mPoint1 = sliderConstraintSettings.mPoint2 = anchorPoint;
+
+        const miraAxis = jointDefinition.prismatic!.prismaticFreedom!.axis! as mirabuf.Vector3;
+        const axis = new JOLT.Vec3(miraAxis.x! ?? 0, miraAxis.y! ?? 0, miraAxis.z! ?? 0);
+
+        sliderConstraintSettings.mSliderAxis1 = sliderConstraintSettings.mSliderAxis2
+            = axis.Normalized();
+        sliderConstraintSettings.mNormalAxis1 = sliderConstraintSettings.mNormalAxis2
+            = getPerpendicular(sliderConstraintSettings.mSliderAxis1);
+
+        sliderConstraintSettings.mLimitsMax = 1.0;
+        sliderConstraintSettings.mLimitsMin = -1.0;
+        
+        this._joltPhysSystem.AddConstraint(sliderConstraintSettings.Create(bodyA, bodyB));
     }
 
     /**
@@ -302,9 +333,9 @@ class PhysicsSystem extends WorldSystem {
 
                 // Little testing components
                 body.SetRestitution(0.2);
-                const angVelocity = new JOLT.Vec3(2.0, 20.0, 5.0);
-                body.SetAngularVelocity(angVelocity);
-                JOLT.destroy(angVelocity);
+                // const angVelocity = new JOLT.Vec3(2.0, 20.0, 5.0);
+                // body.SetAngularVelocity(angVelocity);
+                // JOLT.destroy(angVelocity);
             }
 
             // Cleanup
@@ -447,8 +478,8 @@ function filterNonPhysicsNodes(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembl
 }
 
 function getPerpendicular(vec: Jolt.Vec3): Jolt.Vec3 {
-    return tryGetPerpendicular(vec, new Jolt.Vec3(0, 1, 0))
-        ?? tryGetPerpendicular(vec, new Jolt.Vec3(0, 0, 1))!;
+    return tryGetPerpendicular(vec, new JOLT.Vec3(0, 1, 0))
+        ?? tryGetPerpendicular(vec, new JOLT.Vec3(0, 0, 1))!;
 }
 
 function tryGetPerpendicular(vec: Jolt.Vec3, toCheck: Jolt.Vec3): Jolt.Vec3 | undefined {
@@ -457,7 +488,7 @@ function tryGetPerpendicular(vec: Jolt.Vec3, toCheck: Jolt.Vec3): Jolt.Vec3 | un
     }
 
     const a = vec.Dot(toCheck) - 1.0;
-    return new Jolt.Vec3(
+    return new JOLT.Vec3(
         toCheck.GetX() - vec.GetX() * a,
         toCheck.GetY() - vec.GetY() * a,
         toCheck.GetZ() - vec.GetZ() * a
