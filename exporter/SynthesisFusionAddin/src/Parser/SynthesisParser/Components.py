@@ -43,14 +43,18 @@ def _MapAllComponents(
         else:
             partDefinition.dynamic = True
 
-        for body in component.bRepBodies:
+        def processBody(body: adsk.fusion.BRepBody | adsk.fusion.MeshBody):
             if progressDialog.wasCancelled():
                 raise RuntimeError("User canceled export")
             if body.isLightBulbOn:
                 part_body = partDefinition.bodies.add()
                 fill_info(part_body, body)
                 part_body.part = comp_ref
-                _ParseBRep(body, options, part_body.triangle_mesh)
+
+                if isinstance(body, adsk.fusion.BRepBody):
+                    _ParseBRep(body, options, part_body.triangle_mesh)
+                else:
+                    _ParseMesh(body, options, part_body.triangle_mesh)
 
                 appearance_key = "{}_{}".format(body.appearance.name, body.appearance.id)
                 # this should be appearance
@@ -58,6 +62,12 @@ def _MapAllComponents(
                     part_body.appearance_override = appearance_key
                 else:
                     part_body.appearance_override = "default"
+
+        for body in component.bRepBodies:
+            processBody(body)
+
+        for body in component.meshBodies:
+            processBody(body)
 
 
 @TimeThis
@@ -185,6 +195,29 @@ def _ParseBRep(
         mesh = calc.calculate()
 
         fill_info(trimesh, body)
+        trimesh.has_volume = True
+
+        plainmesh_out = trimesh.mesh
+
+        plainmesh_out.verts.extend(mesh.nodeCoordinatesAsFloat)
+        plainmesh_out.normals.extend(mesh.normalVectorsAsFloat)
+        plainmesh_out.indices.extend(mesh.nodeIndices)
+        plainmesh_out.uv.extend(mesh.textureCoordinatesAsFloat)
+    except:
+        logging.getLogger("{INTERNAL_ID}.Parser.BrepBody").error(
+            "Failed:\n{}".format(traceback.format_exc())
+        )
+
+
+def _ParseMesh(
+    meshBody: adsk.fusion.MeshBody,
+    options: ParseOptions,
+    trimesh: assembly_pb2.TriangleMesh,
+) -> any:
+    try:
+        mesh = meshBody.displayMesh
+
+        fill_info(trimesh, meshBody)
         trimesh.has_volume = True
 
         plainmesh_out = trimesh.mesh
