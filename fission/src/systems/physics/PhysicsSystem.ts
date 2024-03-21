@@ -3,12 +3,20 @@ import JOLT from "../../util/loading/JoltSyncLoader";
 import Jolt from "@barclah/jolt-physics";
 import * as THREE from 'three';
 import { mirabuf } from '../../proto/mirabuf';
-import MirabufParser, { GROUNDED_JOINT_ID, RigidNodeReadOnly } from "../../mirabuf/MirabufParser";
+import MirabufParser, { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, RigidNodeReadOnly } from "../../mirabuf/MirabufParser";
 import WorldSystem from "../WorldSystem";
 
-const LAYER_NOT_MOVING = 0;
-const LAYER_MOVING = 1;
-const COUNT_OBJECT_LAYERS = 2;
+/**
+ * Layers used for determining enabled/disabled collisions.
+ */
+const LAYER_FIELD = 0; // Used for grounded rigid node of a field as well as any rigid nodes jointed to it.
+const LAYER_GENERAL_DYNAMIC = 1; // Used for game pieces or any general dynamic objects that can collide with anything and everything.
+const RobotLayers: number[] = [ // Reserved layers for robots. Robot layers have no collision with themselves but have collision with everything else.
+    2, 3, 4, 5, 6, 7, 8, 9
+];
+
+// Please update this accordingly.
+const COUNT_OBJECT_LAYERS = 10;
 
 const STANDARD_TIME_STEP = 1.0 / 120.0;
 const STANDARD_SUB_STEPS = 3;
@@ -74,7 +82,7 @@ class PhysicsSystem extends WorldSystem {
             pos,
             rot,
             mass ? JOLT.EMotionType_Dynamic : JOLT.EMotionType_Static,
-            mass ? LAYER_MOVING : LAYER_NOT_MOVING
+            mass ? LAYER_GENERAL_DYNAMIC : LAYER_FIELD
         );
         if (mass) {
             creationSettings.mMassPropertiesOverride.mMass = mass;
@@ -109,7 +117,7 @@ class PhysicsSystem extends WorldSystem {
             pos,
             rot,
             mass ? JOLT.EMotionType_Dynamic : JOLT.EMotionType_Static,
-            LAYER_NOT_MOVING
+            mass ? LAYER_GENERAL_DYNAMIC : LAYER_FIELD
         );
         if (mass) {
             creationSettings.mMassPropertiesOverride.mMass = mass;
@@ -144,6 +152,12 @@ class PhysicsSystem extends WorldSystem {
         return settings.Create();
     }
 
+    /**
+     * Creates all the joints for a mirabuf assembly given an already compiled mapping of rigid nodes to bodies.
+     * 
+     * @param   parser      Mirabuf parser with complete set of rigid nodes and assembly data.
+     * @param   rnMapping   Mapping of the name of rigid groups to Jolt bodies. Retrieved from CreateBodiesFromParser.
+     */
     public CreateJointsFromParser(parser: MirabufParser, rnMapping: Map<string, Jolt.BodyID>) {
         const jointData = parser.assembly.data!.joints!;
         for (const [jGuid, jInst] of (Object.entries(jointData.jointInstances!) as [string, mirabuf.joint.JointInstance][])) {
@@ -173,15 +187,10 @@ class PhysicsSystem extends WorldSystem {
 
             switch (jDef.jointMotionType!) {
                 case mirabuf.joint.JointMotion.REVOLUTE:
-                    this.CreateRevoluteJoint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!);
+                    this.CreateHingeConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!);
                     break;
                 case mirabuf.joint.JointMotion.SLIDER:
-                    console.debug(`SLIDER: ${
-                        parser.assembly.data!.parts!.partInstances![jInst.parentPart]!.info!.name!
-                    } <-> ${
-                        parser.assembly.data!.parts!.partInstances![jInst.childPart]!.info!.name!
-                    }`);
-                    this.CreateSliderJoint(jInst, jDef, bodyA, bodyB);
+                    this.CreateSliderConstraint(jInst, jDef, bodyA, bodyB);
                     break;
                 default:
                     console.debug('Unsupported joint detected. Skipping...');
@@ -190,9 +199,19 @@ class PhysicsSystem extends WorldSystem {
         }
     }
 
-    private CreateRevoluteJoint(
+    /**
+     * Creates a Hinge constraint.
+     * 
+     * @param   jointInstance   Joint instance.
+     * @param   jointDefinition Joint definition.
+     * @param   bodyA           Parent body to connect.
+     * @param   bodyB           Child body to connect.
+     * @param   versionNum      Version number of the export. Used for compatability purposes.
+     * @returns Resulting Jolt Hinge Constraint.
+     */
+    private CreateHingeConstraint(
     jointInstance: mirabuf.joint.JointInstance, jointDefinition: mirabuf.joint.Joint,
-    bodyA: Jolt.Body, bodyB: Jolt.Body, versionNum: number) {
+    bodyA: Jolt.Body, bodyB: Jolt.Body, versionNum: number): Jolt.HingeConstraint {
         // HINGE CONSTRAINT
         const hingeConstraintSettings = new JOLT.HingeConstraintSettings();
         
@@ -231,18 +250,29 @@ class PhysicsSystem extends WorldSystem {
             const upper = piSafetyCheck(rotationalFreedom.limits.upper ?? 0) - currentPos;
             const lower = piSafetyCheck(rotationalFreedom.limits.lower ?? 0) - currentPos;
 
-            console.debug(`Lower: ${lower}\nUpper: ${upper}\nCurrent: ${currentPos}`);
-
             hingeConstraintSettings.mLimitsMin = -upper;
             hingeConstraintSettings.mLimitsMax = -lower;
         }
         
-        this._joltPhysSystem.AddConstraint(hingeConstraintSettings.Create(bodyA, bodyB));
+        const constraint = hingeConstraintSettings.Create(bodyA, bodyB);
+        this._joltPhysSystem.AddConstraint(constraint);
+
+        return JOLT.castObject(constraint, JOLT.HingeConstraint);
     }
 
-    private CreateSliderJoint(
+    /**
+     * Creates a new slider constraint.
+     * 
+     * @param   jointInstance   Joint instance.
+     * @param   jointDefinition Joint definition.
+     * @param   bodyA           Parent body to connect.
+     * @param   bodyB           Child body to connect.
+     * 
+     * @returns Resulting Jolt constraint.
+     */
+    private CreateSliderConstraint(
     jointInstance: mirabuf.joint.JointInstance, jointDefinition: mirabuf.joint.Joint,
-    bodyA: Jolt.Body, bodyB: Jolt.Body) {
+    bodyA: Jolt.Body, bodyB: Jolt.Body): Jolt.SliderConstraint {
 
         const sliderConstraintSettings = new JOLT.SliderConstraintSettings();
         
@@ -292,6 +322,8 @@ class PhysicsSystem extends WorldSystem {
         
         this._constraints.push(constraint);
         this._joltPhysSystem.AddConstraint(constraint);
+
+        return JOLT.castObject(constraint, JOLT.SliderConstraint);
     }
 
     /**
@@ -300,8 +332,14 @@ class PhysicsSystem extends WorldSystem {
      * @param   parser  MirabufParser containing properly parsed RigidNodes
      * @returns Mapping of Jolt BodyIDs
      */
-    public CreateBodiesFromParser(parser: MirabufParser): Map<string, Jolt.BodyID> {
+    public CreateBodiesFromParser(parser: MirabufParser, layerReserve?: LayerReserve): Map<string, Jolt.BodyID> {
         const rnToBodies = new Map<string, Jolt.BodyID>();
+
+        if ((parser.assembly.dynamic && !layerReserve) || layerReserve?.isReleased) {
+            throw new Error('No layer reserve for dynamic assembly');
+        }
+
+        const reservedLayer: number | undefined = layerReserve?.layer;
         
         filterNonPhysicsNodes(parser.rigidNodes, parser.assembly).forEach(rn => {
 
@@ -313,6 +351,10 @@ class PhysicsSystem extends WorldSystem {
 
             const minBounds = new JOLT.Vec3(1000000.0, 1000000.0, 1000000.0);
             const maxBounds = new JOLT.Vec3(-1000000.0, -1000000.0, -1000000.0);
+
+            const rnLayer: number = reservedLayer
+                ? reservedLayer
+                : (rn.name.endsWith(GAMEPIECE_SUFFIX) ? LAYER_GENERAL_DYNAMIC : LAYER_FIELD);
 
             rn.parts.forEach(partId => {
                 const partInstance = parser.assembly.data!.parts!.partInstances![partId]!;
@@ -364,15 +406,16 @@ class PhysicsSystem extends WorldSystem {
 
                 const shape = shapeResult.Get();
 
-                if (rn.isDynamic)
+                if (rn.isDynamic) {
                     shape.GetMassProperties().mMass = totalMass == 0.0 ? 1 : totalMass;
+                }
 
                 const bodySettings = new JOLT.BodyCreationSettings(
                     shape,
                     new JOLT.Vec3(0.0, 0.0, 0.0),
                     new JOLT.Quat(0, 0, 0, 1),
                     rn.isDynamic ? JOLT.EMotionType_Dynamic : JOLT.EMotionType_Static,
-                    rn.isDynamic ? LAYER_MOVING : LAYER_NOT_MOVING
+                    rnLayer
                 );
                 const body = this._joltBodyInterface.CreateBody(bodySettings);
                 this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate);
@@ -380,7 +423,7 @@ class PhysicsSystem extends WorldSystem {
 
                 // Little testing components
                 body.SetRestitution(0.4);
-                const angVelocity = new JOLT.Vec3(0, 0, 2);
+                const angVelocity = new JOLT.Vec3(0, 3, 0);
                 body.SetAngularVelocity(angVelocity);
                 JOLT.destroy(angVelocity);
             }
@@ -493,19 +536,66 @@ class PhysicsSystem extends WorldSystem {
     }
 }
 
+export class LayerReserve {
+    private _layer: number;
+    private _isReleased: boolean;
+
+    public get layer() { return this._layer; }
+    public get isReleased() { return this._isReleased; }
+
+    public constructor() {
+        this._layer = RobotLayers.pop()!;
+        this._isReleased = false;
+    }
+
+    public Release() {
+        if (!this._isReleased) {
+            RobotLayers.push(this._layer);
+            this._isReleased = true;
+        }
+    }
+}
+
+/**
+ * Initialize collision groups and filtering for Jolt.
+ * 
+ * @param   settings    Jolt object used for applying filters.
+ */
 function SetupCollisionFiltering(settings: Jolt.JoltSettings) {
     const objectFilter = new JOLT.ObjectLayerPairFilterTable(COUNT_OBJECT_LAYERS);
-    objectFilter.EnableCollision(LAYER_NOT_MOVING, LAYER_MOVING);
-    // TODO: Collision between dynamic objects temporarily disabled.
-    // objectFilter.EnableCollision(LAYER_MOVING, LAYER_MOVING);
+    
+    // Enable Field layer collisions
+    objectFilter.EnableCollision(LAYER_GENERAL_DYNAMIC, LAYER_GENERAL_DYNAMIC);
+    objectFilter.EnableCollision(LAYER_FIELD, LAYER_GENERAL_DYNAMIC);
+    for (let i = 0; i < RobotLayers.length; i++) {
+        objectFilter.EnableCollision(LAYER_FIELD, RobotLayers[i]);
+        objectFilter.EnableCollision(LAYER_GENERAL_DYNAMIC, RobotLayers[i]);
+    }
 
-    const BP_LAYER_NOT_MOVING = new JOLT.BroadPhaseLayer(LAYER_NOT_MOVING);
-    const BP_LAYER_MOVING = new JOLT.BroadPhaseLayer(LAYER_MOVING);
-    const COUNT_BROAD_PHASE_LAYERS = 2;
+    // Enable Collisions between other robots
+    for (let i = 0; i < RobotLayers.length - 1; i++) {
+        for (let j = i + 1; j < RobotLayers.length; j++) {
+            objectFilter.EnableCollision(RobotLayers[i], RobotLayers[j]);
+        }
+    }
+
+    const BP_LAYER_FIELD = new JOLT.BroadPhaseLayer(LAYER_FIELD);
+    const BP_LAYER_GENERAL_DYNAMIC = new JOLT.BroadPhaseLayer(LAYER_GENERAL_DYNAMIC);
+
+    const bpRobotLayers = new Array<Jolt.BroadPhaseLayer>(RobotLayers.length);
+    for (let i = 0; i < bpRobotLayers.length; i++) {
+        bpRobotLayers[i] = new JOLT.BroadPhaseLayer(RobotLayers[i]);
+    }
+
+    const COUNT_BROAD_PHASE_LAYERS = 2 + RobotLayers.length;
 
     const bpInterface = new JOLT.BroadPhaseLayerInterfaceTable(COUNT_OBJECT_LAYERS, COUNT_BROAD_PHASE_LAYERS);
-    bpInterface.MapObjectToBroadPhaseLayer(LAYER_NOT_MOVING, BP_LAYER_NOT_MOVING);
-    bpInterface.MapObjectToBroadPhaseLayer(LAYER_MOVING, BP_LAYER_MOVING);
+    
+    bpInterface.MapObjectToBroadPhaseLayer(LAYER_FIELD, BP_LAYER_FIELD);
+    bpInterface.MapObjectToBroadPhaseLayer(LAYER_GENERAL_DYNAMIC, BP_LAYER_GENERAL_DYNAMIC);
+    for (let i = 0; i < bpRobotLayers.length; i++) {
+        bpInterface.MapObjectToBroadPhaseLayer(RobotLayers[i], bpRobotLayers[i]);
+    }
 
     settings.mObjectLayerPairFilter = objectFilter;
     settings.mBroadPhaseLayerInterface = bpInterface;

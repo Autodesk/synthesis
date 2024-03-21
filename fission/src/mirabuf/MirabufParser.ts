@@ -10,6 +10,7 @@ export enum ParseErrorSeverity {
 }
 
 export const GROUNDED_JOINT_ID = 'grounded';
+export const GAMEPIECE_SUFFIX = '_gp';
 
 export type ParseError = [severity: ParseErrorSeverity, message: string];
 
@@ -95,7 +96,7 @@ class MirabufParser {
                 if (gamepieceDefinitions.has(inst.partDefinitionReference!)) {
                     const instNode = this.BinarySearchDesignTree(inst.info!.GUID!);
                     if (instNode) {
-                        const gpRn = this.NewRigidNode('gp');
+                        const gpRn = this.NewRigidNode(GAMEPIECE_SUFFIX);
                         this.MovePartToRigidNode(instNode!.value!, gpRn);
                         instNode.children && traverseTree(instNode.children, x => this.MovePartToRigidNode(x.value!, gpRn));
                     } else {
@@ -155,7 +156,7 @@ class MirabufParser {
     }
 
     private NewRigidNode(suffix?: string): RigidNode {
-        const node = new RigidNode((this._nodeNameCounter++).toString() + (suffix ? `_${suffix}` : ''));
+        const node = new RigidNode(`${this._nodeNameCounter++}${suffix ? suffix : ''}`);
         this._rigidNodes.push(node);
         return node;
     }

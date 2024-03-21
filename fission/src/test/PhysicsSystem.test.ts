@@ -1,5 +1,5 @@
 import { test, expect, describe, assert } from 'vitest';
-import PhysicsSystem from '../systems/physics/PhysicsSystem';
+import PhysicsSystem, { LayerReserve } from '../systems/physics/PhysicsSystem';
 import { LoadMirabufLocal } from '@/mirabuf/MirabufLoader';
 import MirabufParser from '@/mirabuf/MirabufParser';
 
@@ -64,12 +64,12 @@ describe('Physics Sansity Checks', () => {
     });
 });
 
-describe('Mirabuf Body Loading', () => {
+describe('Mirabuf Physics Loading', () => {
     test('Body Loading (Dozer)', () => {
         const assembly = LoadMirabufLocal('./public/test_mira/Dozer_v2.mira');
         const parser = new MirabufParser(assembly);
         const physSystem = new PhysicsSystem();
-        const mapping = physSystem.CreateBodiesFromParser(parser);
+        const mapping = physSystem.CreateBodiesFromParser(parser, new LayerReserve());
 
         expect(mapping.size).toBe(7);
     });
@@ -78,7 +78,7 @@ describe('Mirabuf Body Loading', () => {
         const assembly = LoadMirabufLocal('./public/test_mira/Team_2471_(2018)_v7.mira');
         const parser = new MirabufParser(assembly);
         const physSystem = new PhysicsSystem();
-        const mapping = physSystem.CreateBodiesFromParser(parser);
+        const mapping = physSystem.CreateBodiesFromParser(parser, new LayerReserve());
 
         expect(mapping.size).toBe(10);
     });
