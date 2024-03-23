@@ -137,7 +137,7 @@ class MirabufParser {
                 const currentRn = this._partToNodeMap.get(y)!;
                 if (!rn) {
                     rn = currentRn;
-                } else if (currentRn.name != rn.name) {
+                } else if (currentRn.id != rn.id) {
                     rn = this.MergeRigidNodes(currentRn, rn);
                 }
             });
@@ -326,12 +326,12 @@ class MirabufParser {
  * Collection of mirabuf parts that are bound together
  */
 class RigidNode {
-    public name: string;
+    public id: string;
     public parts: Set<string> = new Set();
     public isDynamic: boolean;
 
-    public constructor(name: string, isDynamic?: boolean) {
-        this.name = name;
+    public constructor(id: string, isDynamic?: boolean) {
+        this.id = id;
         this.isDynamic = isDynamic ?? true;
     }
 }
@@ -339,8 +339,8 @@ class RigidNode {
 export class RigidNodeReadOnly {
     private _original: RigidNode;
     
-    public get name(): string {
-        return this._original.name;
+    public get id(): string {
+        return this._original.id;
     }
 
     public get parts(): ReadonlySet<string> {

@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { mirabuf } from '../../proto/mirabuf';
 import MirabufParser, { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, RigidNodeReadOnly } from "../../mirabuf/MirabufParser";
 import WorldSystem from "../WorldSystem";
+import Mechanism from "./Mechanism";
 
 /**
  * Layers used for determining enabled/disabled collisions.
@@ -152,13 +153,21 @@ class PhysicsSystem extends WorldSystem {
         return settings.Create();
     }
 
+    public CreateMechanismFromParser(parser: MirabufParser) {
+        const layer = parser.assembly.dynamic ? new LayerReserve(): undefined;
+        const bodyMap = this.CreateBodiesFromParser(parser, layer);
+        const mechanism = new Mechanism(bodyMap, layer);
+        this.CreateJointsFromParser(parser, mechanism);
+        return mechanism;
+    }
+
     /**
      * Creates all the joints for a mirabuf assembly given an already compiled mapping of rigid nodes to bodies.
      * 
      * @param   parser      Mirabuf parser with complete set of rigid nodes and assembly data.
-     * @param   rnMapping   Mapping of the name of rigid groups to Jolt bodies. Retrieved from CreateBodiesFromParser.
+     * @param   mechainsm   Mapping of the name of rigid groups to Jolt bodies. Retrieved from CreateBodiesFromParser.
      */
-    public CreateJointsFromParser(parser: MirabufParser, rnMapping: Map<string, Jolt.BodyID>) {
+    public CreateJointsFromParser(parser: MirabufParser, mechanism: Mechanism) {
         const jointData = parser.assembly.data!.joints!;
         for (const [jGuid, jInst] of (Object.entries(jointData.jointInstances!) as [string, mirabuf.joint.JointInstance][])) {
             if (jGuid == GROUNDED_JOINT_ID)
@@ -170,14 +179,14 @@ class PhysicsSystem extends WorldSystem {
             if (!rnA || !rnB) {
                 console.warn(`Skipping joint '${jInst.info!.name!}'. Couldn't find associated rigid nodes.`);
                 continue;
-            } else if (rnA.name == rnB.name) {
+            } else if (rnA.id == rnB.id) {
                 console.warn(`Skipping joint '${jInst.info!.name!}'. Jointing the same parts. Likely in issue with Fusion Design structure.`);
                 continue;
             }
 
             const jDef = parser.assembly.data!.joints!.jointDefinitions![jInst.jointReference!]! as mirabuf.joint.Joint;
-            const bodyIdA = rnMapping.get(rnA.name);
-            const bodyIdB = rnMapping.get(rnB.name);
+            const bodyIdA = mechanism.GetBodyByNodeId(rnA.id);
+            const bodyIdB = mechanism.GetBodyByNodeId(rnB.id);
             if (!bodyIdA || !bodyIdB) {
                 console.warn(`Skipping joint '${jInst.info!.name!}'. Failed to find rigid nodes' associated bodies.`);
                 continue;
@@ -185,17 +194,22 @@ class PhysicsSystem extends WorldSystem {
             const bodyA = this.GetBody(bodyIdA);
             const bodyB = this.GetBody(bodyIdB);
 
+            let constraint: Jolt.Constraint | undefined = undefined;
+
             switch (jDef.jointMotionType!) {
                 case mirabuf.joint.JointMotion.REVOLUTE:
-                    this.CreateHingeConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!);
+                    constraint = this.CreateHingeConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!);
                     break;
                 case mirabuf.joint.JointMotion.SLIDER:
-                    this.CreateSliderConstraint(jInst, jDef, bodyA, bodyB);
+                    constraint = this.CreateSliderConstraint(jInst, jDef, bodyA, bodyB);
                     break;
                 default:
                     console.debug('Unsupported joint detected. Skipping...');
                     break;
             }
+
+            if (constraint)
+                mechanism.AddConstraint({ parentBody: bodyIdA, childBody: bodyIdB, constraint: constraint });
         }
     }
 
@@ -211,7 +225,7 @@ class PhysicsSystem extends WorldSystem {
      */
     private CreateHingeConstraint(
     jointInstance: mirabuf.joint.JointInstance, jointDefinition: mirabuf.joint.Joint,
-    bodyA: Jolt.Body, bodyB: Jolt.Body, versionNum: number): Jolt.HingeConstraint {
+    bodyA: Jolt.Body, bodyB: Jolt.Body, versionNum: number): Jolt.Constraint {
         // HINGE CONSTRAINT
         const hingeConstraintSettings = new JOLT.HingeConstraintSettings();
         
@@ -257,7 +271,8 @@ class PhysicsSystem extends WorldSystem {
         const constraint = hingeConstraintSettings.Create(bodyA, bodyB);
         this._joltPhysSystem.AddConstraint(constraint);
 
-        return JOLT.castObject(constraint, JOLT.HingeConstraint);
+        return constraint;
+        // return JOLT.castObject(, JOLT.HingeConstraint);
     }
 
     /**
@@ -272,7 +287,7 @@ class PhysicsSystem extends WorldSystem {
      */
     private CreateSliderConstraint(
     jointInstance: mirabuf.joint.JointInstance, jointDefinition: mirabuf.joint.Joint,
-    bodyA: Jolt.Body, bodyB: Jolt.Body): Jolt.SliderConstraint {
+    bodyA: Jolt.Body, bodyB: Jolt.Body): Jolt.Constraint {
 
         const sliderConstraintSettings = new JOLT.SliderConstraintSettings();
         
@@ -323,7 +338,8 @@ class PhysicsSystem extends WorldSystem {
         this._constraints.push(constraint);
         this._joltPhysSystem.AddConstraint(constraint);
 
-        return JOLT.castObject(constraint, JOLT.SliderConstraint);
+        return constraint;
+        // return JOLT.castObject(constraint, JOLT.SliderConstraint);
     }
 
     /**
@@ -354,7 +370,7 @@ class PhysicsSystem extends WorldSystem {
 
             const rnLayer: number = reservedLayer
                 ? reservedLayer
-                : (rn.name.endsWith(GAMEPIECE_SUFFIX) ? LAYER_GENERAL_DYNAMIC : LAYER_FIELD);
+                : (rn.id.endsWith(GAMEPIECE_SUFFIX) ? LAYER_GENERAL_DYNAMIC : LAYER_FIELD);
 
             rn.parts.forEach(partId => {
                 const partInstance = parser.assembly.data!.parts!.partInstances![partId]!;
@@ -401,7 +417,7 @@ class PhysicsSystem extends WorldSystem {
                 const shapeResult = compoundShapeSettings.Create();
 
                 if (!shapeResult.IsValid || shapeResult.HasError()) {
-                    console.error(`Failed to create shape for RigidNode ${rn.name}\n${shapeResult.GetError().c_str()}`);
+                    console.error(`Failed to create shape for RigidNode ${rn.id}\n${shapeResult.GetError().c_str()}`);
                 }
 
                 const shape = shapeResult.Get();
@@ -419,7 +435,7 @@ class PhysicsSystem extends WorldSystem {
                 );
                 const body = this._joltBodyInterface.CreateBody(bodySettings);
                 this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate);
-                rnToBodies.set(rn.name, body.GetID());
+                rnToBodies.set(rn.id, body.GetID());
 
                 // Little testing components
                 body.SetRestitution(0.4);
@@ -507,6 +523,14 @@ class PhysicsSystem extends WorldSystem {
 
     public DestroyBodyIds(...bodies: Jolt.BodyID[]) {
         bodies.forEach(x => {
+            this._joltBodyInterface.RemoveBody(x);
+            this._joltBodyInterface.DestroyBody(x);
+        });
+    }
+
+    public DestroyMechanism(mech: Mechanism) {
+        mech.constraints.forEach(x => this._joltPhysSystem.RemoveConstraint(x.constraint));
+        mech.nodeToBody.forEach(x => {
             this._joltBodyInterface.RemoveBody(x);
             this._joltBodyInterface.DestroyBody(x);
         });
