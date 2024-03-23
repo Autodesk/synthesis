@@ -8,6 +8,7 @@ import Jolt from '@barclah/jolt-physics';
 import { JoltMat44_ThreeMatrix4 } from "@/util/TypeConversions";
 import * as THREE from 'three';
 import JOLT from "@/util/loading/JoltSyncLoader";
+import { LayerReserve } from "@/systems/physics/PhysicsSystem";
 
 const DEBUG_BODIES = true;
 
@@ -21,12 +22,19 @@ class MirabufSceneObject extends SceneObject {
     private _mirabufInstance: MirabufInstance;
     private _bodies: Map<string, Jolt.BodyID>;
     private _debugBodies: Map<string, RnDebugMeshes> | null;
+    private _physicsLayerReserve: LayerReserve | undefined = undefined;
 
     public constructor(mirabufInstance: MirabufInstance) {
         super();
 
         this._mirabufInstance = mirabufInstance;
-        this._bodies = World.PhysicsSystem.CreateBodiesFromParser(mirabufInstance.parser);
+
+        if (this._mirabufInstance.parser.assembly.dynamic) {
+            this._physicsLayerReserve = new LayerReserve();
+        }
+        this._bodies = World.PhysicsSystem.CreateBodiesFromParser(mirabufInstance.parser, this._physicsLayerReserve);
+        World.PhysicsSystem.CreateJointsFromParser(mirabufInstance.parser, this._bodies);
+
         this._debugBodies = null;
     }
 
@@ -91,6 +99,7 @@ class MirabufSceneObject extends SceneObject {
             (x.comMesh.material as THREE.Material).dispose();
         });
         this._debugBodies?.clear();
+        this._physicsLayerReserve?.Release();
     }
 
     private CreateMeshForShape(shape: Jolt.Shape): THREE.Mesh {

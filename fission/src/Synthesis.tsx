@@ -57,6 +57,9 @@ import World from './systems/World.ts';
 
 const DEFAULT_MIRA_PATH = 'test_mira/Team_2471_(2018)_v7.mira';
 // const DEFAULT_MIRA_PATH = 'test_mira/Dozer_v2.mira';
+// const DEFAULT_MIRA_PATH = 'test_mira/PhysicsSpikeTest_v1.mira';
+// const DEFAULT_MIRA_PATH = 'test_mira/SliderTestFission_v2.mira';
+// const DEFAULT_MIRA_PATH = 'test_mira/HingeTestFission_v1.mira';
 
 function Synthesis() {
     const { openModal, closeModal, getActiveModalElement } =
