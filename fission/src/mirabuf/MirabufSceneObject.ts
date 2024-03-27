@@ -10,6 +10,7 @@ import * as THREE from 'three';
 import JOLT from "@/util/loading/JoltSyncLoader";
 import { LayerReserve } from "@/systems/physics/PhysicsSystem";
 import Mechanism from "@/systems/physics/Mechanism";
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain";
 
 const DEBUG_BODIES = true;
 
@@ -21,9 +22,10 @@ interface RnDebugMeshes {
 class MirabufSceneObject extends SceneObject {
 
     private _mirabufInstance: MirabufInstance;
-    private _mechanism: Mechanism;
     private _debugBodies: Map<string, RnDebugMeshes> | null;
     private _physicsLayerReserve: LayerReserve | undefined = undefined;
+
+    private _mechanism: Mechanism;
 
     public constructor(mirabufInstance: MirabufInstance) {
         super();
@@ -35,11 +37,12 @@ class MirabufSceneObject extends SceneObject {
         }
 
         this._mechanism = World.PhysicsSystem.CreateMechanismFromParser(this._mirabufInstance.parser);
-
+        
         this._debugBodies = null;
     }
 
     public Setup(): void {
+        // Rendering
         this._mirabufInstance.AddToScene(World.SceneRenderer.scene);
 
         if (DEBUG_BODIES) {
@@ -56,6 +59,11 @@ class MirabufSceneObject extends SceneObject {
                 this._debugBodies!.set(rnName, { colliderMesh: colliderMesh, comMesh: comMesh });
             });
         }
+
+        // Simulation
+        World.SimulationSystem.RegisterMechanism(this._mechanism);
+        const simLayer = World.SimulationSystem.GetSimulationLayer(this._mechanism)!;
+        const brain = new SynthesisBrain(this._mechanism);
     }
 
     public Update(): void {
