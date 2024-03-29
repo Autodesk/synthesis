@@ -1,5 +1,5 @@
-import Driver from "../Driver";
-import Stimulus from "../Stimulus";
+import Driver from "../driver/Driver";
+import Stimulus from "../stimulus/Stimulus";
 
 abstract class Behavior {
 

@@ -19,7 +19,7 @@ const RobotLayers: number[] = [ // Reserved layers for robots. Robot layers have
 // Please update this accordingly.
 const COUNT_OBJECT_LAYERS = 10;
 
-const STANDARD_TIME_STEP = 1.0 / 120.0;
+export const SIMULATION_PERIOD = 1.0 / 120.0;
 const STANDARD_SUB_STEPS = 3;
 
 /**
@@ -52,6 +52,8 @@ class PhysicsSystem extends WorldSystem {
 
         this._joltPhysSystem = this._joltInterface.GetPhysicsSystem();
         this._joltBodyInterface = this._joltPhysSystem.GetBodyInterface();
+
+        this._joltPhysSystem.SetGravity(new JOLT.Vec3(0, -9.8, 0));
 
         const ground = this.CreateBox(new THREE.Vector3(5.0, 0.5, 5.0), undefined, new THREE.Vector3(0.0, -2.0, 0.0), undefined);
         this._joltBodyInterface.AddBody(ground.GetID(), JOLT.EActivation_Activate);
@@ -435,13 +437,14 @@ class PhysicsSystem extends WorldSystem {
                 );
                 const body = this._joltBodyInterface.CreateBody(bodySettings);
                 this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate);
+                body.SetAllowSleeping(false);
                 rnToBodies.set(rn.id, body.GetID());
 
                 // Little testing components
                 body.SetRestitution(0.4);
-                const angVelocity = new JOLT.Vec3(0, 3, 0);
-                body.SetAngularVelocity(angVelocity);
-                JOLT.destroy(angVelocity);
+                // const angVelocity = new JOLT.Vec3(0, 3, 0);
+                // body.SetAngularVelocity(angVelocity);
+                // JOLT.destroy(angVelocity);
             }
 
             // Cleanup
@@ -541,7 +544,7 @@ class PhysicsSystem extends WorldSystem {
     }
 
     public Update(_: number): void {
-        this._joltInterface.Step(STANDARD_TIME_STEP, STANDARD_SUB_STEPS);
+        this._joltInterface.Step(SIMULATION_PERIOD, STANDARD_SUB_STEPS);
     }
 
     public Destroy(): void {

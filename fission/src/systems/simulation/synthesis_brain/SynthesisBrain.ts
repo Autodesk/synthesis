@@ -10,12 +10,8 @@ class SynthesisBrain extends Brain {
         super(mechanism);
     }
 
-    public Update(deltaT: number): void {
-        throw new Error("Method not implemented.");
-    }
-    public Enable(): void {
-        throw new Error("Method not implemented.");
-    }
+    public Update(_: number): void { }
+    public Enable(): void { }
     public Disable(): void {
         this._behaviors = [];
     }

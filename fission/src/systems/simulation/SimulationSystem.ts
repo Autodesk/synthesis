@@ -1,8 +1,10 @@
+import JOLT from "@/util/loading/JoltSyncLoader";
 import Mechanism from "../physics/Mechanism";
 import WorldSystem from "../WorldSystem";
 import Brain from "./Brain";
-import Driver from "./Driver";
-import Stimulus from "./Stimulus";
+import Driver from "./driver/Driver";
+import Stimulus from "./stimulus/Stimulus";
+import HingeDriver from "./driver/HingeDriver";
 
 class SimulationSystem extends WorldSystem {
 
@@ -26,7 +28,7 @@ class SimulationSystem extends WorldSystem {
     }
 
     public Update(deltaT: number): void {
-        this._simMechanisms.forEach(simLayer => simLayer.brain?.Update(deltaT));
+        this._simMechanisms.forEach(simLayer => simLayer.Update(deltaT));
     }
 
     public Destroy(): void {
@@ -50,7 +52,21 @@ class SimulationLayer {
 
         // Generate standard drivers and stimuli
         this._drivers = [];
+        this._mechanism.constraints.forEach(x => {
+            if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Hinge) {
+                const hinge = JOLT.castObject(x.constraint, JOLT.HingeConstraint);
+                const driver = new HingeDriver(hinge);
+                this._drivers.push(driver);
+            }
+        });
+
         this._stimuli = [];
+    }
+
+    public Update(deltaT: number) {
+        this._brain?.Update(deltaT);
+        this._drivers.forEach(x => x.Update(deltaT));
+        this._stimuli.forEach(x => x.Update(deltaT));
     }
 
     public SetBrain<T extends Brain>(brain: T | undefined) {
