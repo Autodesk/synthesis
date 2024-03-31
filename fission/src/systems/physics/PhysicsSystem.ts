@@ -344,6 +344,48 @@ class PhysicsSystem extends WorldSystem {
         // return JOLT.castObject(constraint, JOLT.SliderConstraint);
     }
 
+
+    public CreateWheelConstraint(
+    jointInstance: mirabuf.joint.JointInstance, jointDefinition: mirabuf.joint.Joint,
+    bodyA: Jolt.Body, bodyB: Jolt.Body, versionNum: number): [Jolt.TwoBodyConstraint, Jolt.VehicleConstraint] {
+        // HINGE CONSTRAINT
+        const fixedSettings = new JOLT.FixedConstraintSettings();
+        
+        const jointOrigin = jointDefinition.origin
+            ? MirabufVector3_JoltVec3(jointDefinition.origin as mirabuf.Vector3)
+            : new JOLT.Vec3(0, 0, 0);
+        // TODO: Offset transformation for robot builder.
+        const jointOriginOffset = jointInstance.offset
+            ? MirabufVector3_JoltVec3(jointInstance.offset as mirabuf.Vector3)
+            : new JOLT.Vec3(0, 0, 0);
+
+        const anchorPoint = jointOrigin.Add(jointOriginOffset);
+        fixedSettings.mPoint1 = fixedSettings.mPoint2 = anchorPoint;
+
+        const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!;
+
+        const miraAxis = rotationalFreedom.axis! as mirabuf.Vector3;
+        let axis: Jolt.Vec3;
+        // No scaling, these are unit vectors
+        if (versionNum < 5) {
+            axis = new JOLT.Vec3(-miraAxis.x ?? 0, miraAxis.y ?? 0, miraAxis.z! ?? 0);
+        } else {
+            axis = new JOLT.Vec3(miraAxis.x! ?? 0, miraAxis.y! ?? 0, miraAxis.z! ?? 0);
+        }
+
+        // Assigned Axes
+        // hingeConstraintSettings.mHingeAxis1 = hingeConstraintSettings.mHingeAxis2
+        //     = axis.Normalized();
+        // hingeConstraintSettings.mNormalAxis1 = hingeConstraintSettings.mNormalAxis2
+        //     = getPerpendicular(hingeConstraintSettings.mHingeAxis1);
+
+        const fixedConstraint = JOLT.castObject(fixedSettings.Create(bodyA, bodyB), JOLT.TwoBodyConstraint);
+
+        const wheelSettings = new JOLT.WheelSettings();
+
+        const vehicleSettings = new JOLT.VehicleConstraintSettings();
+    }
+
     /**
      * Creates a map, mapping the name of RigidNodes to Jolt BodyIDs
      * 
