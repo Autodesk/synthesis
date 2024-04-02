@@ -200,7 +200,10 @@ class PhysicsSystem extends WorldSystem {
 
             switch (jDef.jointMotionType!) {
                 case mirabuf.joint.JointMotion.REVOLUTE:
-                    constraint = this.CreateHingeConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!);
+                    if (this.IsWheel(jDef))
+                        constraint = this.CreateWheelConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!)[1];
+                    else
+                        constraint = this.CreateHingeConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!);
                     break;
                 case mirabuf.joint.JointMotion.SLIDER:
                     constraint = this.CreateSliderConstraint(jInst, jDef, bodyA, bodyB);
@@ -379,11 +382,46 @@ class PhysicsSystem extends WorldSystem {
         // hingeConstraintSettings.mNormalAxis1 = hingeConstraintSettings.mNormalAxis2
         //     = getPerpendicular(hingeConstraintSettings.mHingeAxis1);
 
-        const fixedConstraint = JOLT.castObject(fixedSettings.Create(bodyA, bodyB), JOLT.TwoBodyConstraint);
-
-        const wheelSettings = new JOLT.WheelSettings();
+        const wheelSettings = new JOLT.WheelSettingsWV();
+        wheelSettings.mPosition = new JOLT.Vec3(0, 0, 0);
+		wheelSettings.mMaxSteerAngle = 1.0;
+		wheelSettings.mMaxHandBrakeTorque = 0.0;
+        wheelSettings.mRadius = 0.102;
+        wheelSettings.mWidth = 0.05;
+        // wheelSettings.mSuspensionMinLength = 0;
+        // wheelSettings.mSuspensionMaxLength = 0;
 
         const vehicleSettings = new JOLT.VehicleConstraintSettings();
+        
+        vehicleSettings.mWheels.clear();
+        vehicleSettings.mWheels.push_back(wheelSettings);
+
+        const controllerSettings = new JOLT.WheeledVehicleControllerSettings();
+        controllerSettings.mEngine.mMaxTorque = 500.0;
+        controllerSettings.mTransmission.mClutchStrength = 10.0;
+        vehicleSettings.mController = controllerSettings;
+
+        controllerSettings.mDifferentials.clear();
+        vehicleSettings.mAntiRollBars.clear();
+
+        console.log("Before creating contraint");
+        const vehicleConstraint = new JOLT.VehicleConstraint(bodyB, vehicleSettings);
+        console.log("After creating constraint");
+
+        const fixedConstraint = JOLT.castObject(fixedSettings.Create(bodyA, bodyB), JOLT.TwoBodyConstraint);
+
+        
+
+        // const helper = new JOLT.SynthesisHelper();
+
+        
+
+        this._constraints.push(fixedConstraint, vehicleConstraint);
+        return [fixedConstraint, vehicleConstraint];
+    }
+
+    private IsWheel(jDef: mirabuf.joint.Joint) {
+        return (jDef.info!.name! != 'grounded') && (jDef.userData) && ((new Map(Object.entries(jDef.userData.data!)).get('wheel') ?? 'false') == 'true')
     }
 
     /**
