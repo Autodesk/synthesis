@@ -350,7 +350,7 @@ class PhysicsSystem extends WorldSystem {
 
     public CreateWheelConstraint(
     jointInstance: mirabuf.joint.JointInstance, jointDefinition: mirabuf.joint.Joint,
-    bodyA: Jolt.Body, bodyB: Jolt.Body, versionNum: number): [Jolt.TwoBodyConstraint, Jolt.VehicleConstraint] {
+    bodyA: Jolt.Body, bodyB: Jolt.Body, versionNum: number): [Jolt.Constraint, Jolt.VehicleConstraint] {
         // HINGE CONSTRAINT
         const fixedSettings = new JOLT.FixedConstraintSettings();
         
@@ -386,10 +386,10 @@ class PhysicsSystem extends WorldSystem {
         wheelSettings.mPosition = new JOLT.Vec3(0, 0, 0);
 		wheelSettings.mMaxSteerAngle = 1.0;
 		wheelSettings.mMaxHandBrakeTorque = 0.0;
-        wheelSettings.mRadius = 0.102;
-        wheelSettings.mWidth = 0.05;
-        // wheelSettings.mSuspensionMinLength = 0;
-        // wheelSettings.mSuspensionMaxLength = 0;
+        wheelSettings.mRadius = 2;
+        wheelSettings.mWidth = 0.2;
+        wheelSettings.mSuspensionMinLength = 0.1;
+        wheelSettings.mSuspensionMaxLength = 0.2;
 
         const vehicleSettings = new JOLT.VehicleConstraintSettings();
         
@@ -404,17 +404,11 @@ class PhysicsSystem extends WorldSystem {
         controllerSettings.mDifferentials.clear();
         vehicleSettings.mAntiRollBars.clear();
 
-        console.log("Before creating contraint");
         const vehicleConstraint = new JOLT.VehicleConstraint(bodyB, vehicleSettings);
-        console.log("After creating constraint");
-
         const fixedConstraint = JOLT.castObject(fixedSettings.Create(bodyA, bodyB), JOLT.TwoBodyConstraint);
 
-        
-
-        // const helper = new JOLT.SynthesisHelper();
-
-        
+        this._joltPhysSystem.AddConstraint(vehicleConstraint);
+        this._joltPhysSystem.AddConstraint(fixedConstraint);
 
         this._constraints.push(fixedConstraint, vehicleConstraint);
         return [fixedConstraint, vehicleConstraint];

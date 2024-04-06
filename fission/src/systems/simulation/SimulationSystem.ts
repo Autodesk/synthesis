@@ -5,6 +5,7 @@ import Brain from "./Brain";
 import Driver from "./driver/Driver";
 import Stimulus from "./stimulus/Stimulus";
 import HingeDriver from "./driver/HingeDriver";
+import WheelDriver from "./driver/WheelDriver";
 
 class SimulationSystem extends WorldSystem {
 
@@ -56,6 +57,10 @@ class SimulationLayer {
             if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Hinge) {
                 const hinge = JOLT.castObject(x.constraint, JOLT.HingeConstraint);
                 const driver = new HingeDriver(hinge);
+                this._drivers.push(driver);
+            } else if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Vehicle) {
+                const vehicle = JOLT.castObject(x.constraint, JOLT.VehicleConstraint);
+                const driver = new WheelDriver(vehicle);
                 this._drivers.push(driver);
             }
         });

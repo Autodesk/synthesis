@@ -28,12 +28,12 @@ class HingeDriver extends Driver {
     public Update(deltaT: number): void {
         this._timeAccum += deltaT;
         const vel = Math.sin(this._timeAccum * 0.8) * 0.5;
-        console.log(`Ang Vel: ${vel}`);
+        // console.log(`Ang Vel: ${vel}`);
         this._constraint.SetTargetAngularVelocity(vel);
 
-        if (!this._constraint.GetBody2().IsActive()) {
-            console.log("Asleep");
-        }
+        // if (!this._constraint.GetBody2().IsActive()) {
+        //     console.log("Asleep");
+        // }
     }
 }
 
