@@ -383,10 +383,10 @@ class PhysicsSystem extends WorldSystem {
         //     = getPerpendicular(hingeConstraintSettings.mHingeAxis1);
 
         const wheelSettings = new JOLT.WheelSettingsWV();
-        wheelSettings.mPosition = new JOLT.Vec3(0, 0, 0);
-		wheelSettings.mMaxSteerAngle = 1.0;
+        wheelSettings.mPosition = new JOLT.Vec3(0, -0.1, 0);
+		wheelSettings.mMaxSteerAngle = 0.0;
 		wheelSettings.mMaxHandBrakeTorque = 0.0;
-        wheelSettings.mRadius = 2;
+        wheelSettings.mRadius = 0.4;
         wheelSettings.mWidth = 0.2;
         wheelSettings.mSuspensionMinLength = 0.1;
         wheelSettings.mSuspensionMaxLength = 0.2;
@@ -408,9 +408,22 @@ class PhysicsSystem extends WorldSystem {
         const fixedConstraint = JOLT.castObject(fixedSettings.Create(bodyA, bodyB), JOLT.TwoBodyConstraint);
 
         // Wheel Collision Tester
-        const tester = new JOLT.VehicleCollisionTesterCastSphere(LAYER_GENERAL_DYNAMIC, 1);
+        const tester = new JOLT.VehicleCollisionTesterRay(LAYER_GENERAL_DYNAMIC);
         vehicleConstraint.SetVehicleCollisionTester(tester);
 
+
+        // const callbacks = new JOLT.VehicleConstraintCallbacksJS();
+        // callbacks.GetCombinedFriction = (wheelIndex, tireFrictionDirection, tireFriction, body2, subShapeID2) => {
+        //     const b = JOLT.wrapPointer(body2, Jolt.Body);
+        //     return Math.sqrt(tireFriction * b.GetFriction()); // This is the default calculation
+        // };
+        // callbacks.OnPreStepCallback = (vehicle, deltaTime, physicsSystem) => { };
+        // callbacks.OnPostCollideCallback = (vehicle, deltaTime, physicsSystem) => { console.log('Collision'); };
+        // callbacks.OnPostStepCallback = (vehicle, deltaTime, physicsSystem) => { };
+        // JOLT.castObject(callbacks, JOLT.VehicleConstraintCallbacksEm).SetVehicleConstraint(vehicleConstraint);
+        this._joltPhysSystem.AddStepListener(new JOLT.VehicleConstraintStepListener(vehicleConstraint));
+
+        
         this._joltPhysSystem.AddConstraint(vehicleConstraint);
         this._joltPhysSystem.AddConstraint(fixedConstraint);
 
