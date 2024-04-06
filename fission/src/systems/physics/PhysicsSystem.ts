@@ -407,6 +407,10 @@ class PhysicsSystem extends WorldSystem {
         const vehicleConstraint = new JOLT.VehicleConstraint(bodyB, vehicleSettings);
         const fixedConstraint = JOLT.castObject(fixedSettings.Create(bodyA, bodyB), JOLT.TwoBodyConstraint);
 
+        // Wheel Collision Tester
+        const tester = new JOLT.VehicleCollisionTesterCastSphere(LAYER_GENERAL_DYNAMIC, 1);
+        vehicleConstraint.SetVehicleCollisionTester(tester);
+
         this._joltPhysSystem.AddConstraint(vehicleConstraint);
         this._joltPhysSystem.AddConstraint(fixedConstraint);
 
