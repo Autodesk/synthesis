@@ -371,9 +371,9 @@ class PhysicsSystem extends WorldSystem {
         let axis: Jolt.Vec3;
         // No scaling, these are unit vectors
         if (versionNum < 5) {
-            axis = new JOLT.Vec3(-miraAxis.x ?? 0, miraAxis.y ?? 0, miraAxis.z! ?? 0);
+            axis = new JOLT.Vec3(-miraAxis.x ?? 0, miraAxis.y ?? 0, miraAxis.z ?? 0);
         } else {
-            axis = new JOLT.Vec3(miraAxis.x! ?? 0, miraAxis.y! ?? 0, miraAxis.z! ?? 0);
+            axis = new JOLT.Vec3(miraAxis.x ?? 0, miraAxis.y ?? 0, miraAxis.z ?? 0);
         }
 
         // Assigned Axes
@@ -383,13 +383,13 @@ class PhysicsSystem extends WorldSystem {
         //     = getPerpendicular(hingeConstraintSettings.mHingeAxis1);
 
         const wheelSettings = new JOLT.WheelSettingsWV();
-        wheelSettings.mPosition = new JOLT.Vec3(0, -0.1, 0);
+        wheelSettings.mPosition = anchorPoint;
 		wheelSettings.mMaxSteerAngle = 0.0;
 		wheelSettings.mMaxHandBrakeTorque = 0.0;
-        wheelSettings.mRadius = 0.4;
+        wheelSettings.mRadius = 0.1;
         wheelSettings.mWidth = 0.2;
-        wheelSettings.mSuspensionMinLength = 0.1;
-        wheelSettings.mSuspensionMaxLength = 0.2;
+        wheelSettings.mSuspensionMinLength = 0.00003;
+        wheelSettings.mSuspensionMaxLength = 0.00006;
 
         const vehicleSettings = new JOLT.VehicleConstraintSettings();
         
@@ -408,7 +408,7 @@ class PhysicsSystem extends WorldSystem {
         const fixedConstraint = JOLT.castObject(fixedSettings.Create(bodyA, bodyB), JOLT.TwoBodyConstraint);
 
         // Wheel Collision Tester
-        const tester = new JOLT.VehicleCollisionTesterRay(LAYER_GENERAL_DYNAMIC);
+        const tester = new JOLT.VehicleCollisionTesterCastCylinder(bodyB.GetObjectLayer(), 0.05);
         vehicleConstraint.SetVehicleCollisionTester(tester);
 
 
@@ -423,7 +423,7 @@ class PhysicsSystem extends WorldSystem {
         // JOLT.castObject(callbacks, JOLT.VehicleConstraintCallbacksEm).SetVehicleConstraint(vehicleConstraint);
         this._joltPhysSystem.AddStepListener(new JOLT.VehicleConstraintStepListener(vehicleConstraint));
 
-        
+
         this._joltPhysSystem.AddConstraint(vehicleConstraint);
         this._joltPhysSystem.AddConstraint(fixedConstraint);
 

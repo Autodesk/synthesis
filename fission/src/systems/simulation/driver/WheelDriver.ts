@@ -18,7 +18,10 @@ class WheelDriver extends Driver {
 
     private _timeAccum = 0;
     public Update(deltaT: number): void {
-        this._controller.SetForwardInput(50);
+        this._controller.SetDriverInput(1.0, 0.0, 0.0, 0.0);
+        if (!this._constraint.GetVehicleBody().IsActive()) {
+            console.log("Asleep");
+        }
     }
 }
 
