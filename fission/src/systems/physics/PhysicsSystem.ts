@@ -383,25 +383,54 @@ class PhysicsSystem extends WorldSystem {
         //     = getPerpendicular(hingeConstraintSettings.mHingeAxis1);
 
         const wheelSettings = new JOLT.WheelSettingsWV();
-        wheelSettings.mPosition = anchorPoint;
+        wheelSettings.mPosition = anchorPoint.Add(axis.Mul(0.1));
 		wheelSettings.mMaxSteerAngle = 0.0;
 		wheelSettings.mMaxHandBrakeTorque = 0.0;
         wheelSettings.mRadius = 0.1;
-        wheelSettings.mWidth = 0.2;
+        wheelSettings.mWidth = 0.1;
         wheelSettings.mSuspensionMinLength = 0.00003;
         wheelSettings.mSuspensionMaxLength = 0.00006;
+        wheelSettings.mInertia = 1;
+        
+        const friction = new JOLT.LinearCurve();
+        friction.Clear();
+        friction.AddPoint(1,1);
+        friction.AddPoint(0,1);
+        wheelSettings.mLongitudinalFriction = friction;
+
+        const wheelSettingsB = new JOLT.WheelSettingsWV();
+        wheelSettingsB.mPosition = anchorPoint.Sub(axis.Mul(0.1));
+		wheelSettingsB.mMaxSteerAngle = 0.0;
+		wheelSettingsB.mMaxHandBrakeTorque = 0.0;
+        wheelSettingsB.mRadius = 0.1;
+        wheelSettingsB.mWidth = 0.1;
+        wheelSettingsB.mSuspensionMinLength = 0.00003;
+        wheelSettingsB.mSuspensionMaxLength = 0.00006;
+        wheelSettingsB.mInertia = 1;
+        
+        wheelSettingsB.mLongitudinalFriction = friction;
 
         const vehicleSettings = new JOLT.VehicleConstraintSettings();
         
         vehicleSettings.mWheels.clear();
         vehicleSettings.mWheels.push_back(wheelSettings);
+        vehicleSettings.mWheels.push_back(wheelSettingsB);
 
         const controllerSettings = new JOLT.WheeledVehicleControllerSettings();
-        controllerSettings.mEngine.mMaxTorque = 500.0;
+        controllerSettings.mEngine.mMaxTorque = 1500.0;
         controllerSettings.mTransmission.mClutchStrength = 10.0;
+        controllerSettings.mTransmission.mGearRatios.clear();
+        controllerSettings.mTransmission.mGearRatios.push_back(2);
+        controllerSettings.mTransmission.mMode = JOLT.ETransmissionMode_Auto;
         vehicleSettings.mController = controllerSettings;
 
-        controllerSettings.mDifferentials.clear();
+        // controllerSettings.mDifferentials.clear();
+        // const differential = new JOLT.VehicleDifferentialSettings();
+        // differential.mLeftWheel = -1;
+        // differential.mRightWheel = 1;
+        // differential.mDifferentialRatio = 1.93 * 40.0 / 16.0;
+        // controllerSettings.mDifferentials.push_back(differential);
+
         vehicleSettings.mAntiRollBars.clear();
 
         const vehicleConstraint = new JOLT.VehicleConstraint(bodyB, vehicleSettings);

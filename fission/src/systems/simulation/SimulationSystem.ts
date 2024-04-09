@@ -6,6 +6,7 @@ import Driver from "./driver/Driver";
 import Stimulus from "./stimulus/Stimulus";
 import HingeDriver from "./driver/HingeDriver";
 import WheelDriver from "./driver/WheelDriver";
+import SliderDriver from "./driver/SliderDriver";
 
 class SimulationSystem extends WorldSystem {
 
@@ -61,6 +62,10 @@ class SimulationLayer {
             } else if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Vehicle) {
                 const vehicle = JOLT.castObject(x.constraint, JOLT.VehicleConstraint);
                 const driver = new WheelDriver(vehicle);
+                this._drivers.push(driver);
+            } else if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Slider) {
+                const slider = JOLT.castObject(x.constraint, JOLT.SliderConstraint);
+                const driver = new SliderDriver(slider);
                 this._drivers.push(driver);
             }
         });

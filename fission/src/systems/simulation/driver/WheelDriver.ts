@@ -16,9 +16,15 @@ class WheelDriver extends Driver {
         this._controller = JOLT.castObject(this._constraint.GetController(), JOLT.WheeledVehicleController);
     }
 
-    private _timeAccum = 0;
     public Update(deltaT: number): void {
-        this._controller.SetDriverInput(1.0, 0.0, 0.0, 0.0);
+        // this._controller.GetEngine().SetCurrentRPM(1000);
+        // this._controller.SetDriverInput(1.0, 0.0, 0.0, 0.0);
+
+        // this._constraint.GetWheel(0).SetAngularVelocity(10);
+
+        const current = this._constraint.GetVehicleBody().GetLinearVelocity();
+        console.log(`Speed: ${current.Length()}`);
+
         if (!this._constraint.GetVehicleBody().IsActive()) {
             console.log("Asleep");
         }

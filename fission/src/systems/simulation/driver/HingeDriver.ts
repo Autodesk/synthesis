@@ -18,8 +18,8 @@ class HingeDriver extends Driver {
         springSettings.mDamping = 0.995;
 
         motorSettings.mSpringSettings = springSettings;
-        motorSettings.mMinTorqueLimit = -125.0;
-        motorSettings.mMaxTorqueLimit = 125.0;
+        motorSettings.mMinTorqueLimit = -50.0;
+        motorSettings.mMaxTorqueLimit = 50.0;
 
         this._constraint.SetMotorState(JOLT.EMotorState_Velocity);
     }
@@ -29,7 +29,7 @@ class HingeDriver extends Driver {
         this._timeAccum += deltaT;
         const vel = Math.sin(this._timeAccum * 0.8) * 0.5;
         // console.log(`Ang Vel: ${vel}`);
-        this._constraint.SetTargetAngularVelocity(vel);
+        // this._constraint.SetTargetAngularVelocity(vel);
 
         // if (!this._constraint.GetBody2().IsActive()) {
         //     console.log("Asleep");
