@@ -7,6 +7,12 @@ class HingeDriver extends Driver {
 
     private _constraint: Jolt.HingeConstraint;
 
+    private _targetVelocity: number = 0.0;
+
+    public set targetVelocity(radsPerSec: number) {
+        this._targetVelocity = radsPerSec;
+    }
+
     public constructor(constraint: Jolt.HingeConstraint) {
         super();
 
@@ -28,12 +34,8 @@ class HingeDriver extends Driver {
     public Update(deltaT: number): void {
         this._timeAccum += deltaT;
         const vel = Math.sin(this._timeAccum * 0.8) * 0.5;
-        // console.log(`Ang Vel: ${vel}`);
-        // this._constraint.SetTargetAngularVelocity(vel);
+        this._constraint.SetTargetAngularVelocity(this._targetVelocity);
 
-        // if (!this._constraint.GetBody2().IsActive()) {
-        //     console.log("Asleep");
-        // }
     }
 }
 

@@ -6,21 +6,29 @@ import JOLT from "@/util/loading/JoltSyncLoader";
 class WheelDriver extends Driver {
 
     private _constraint: Jolt.VehicleConstraint;
-    private _controller: Jolt.WheeledVehicleController;
+    private _wheel: Jolt.WheelWV;
+
+    private _targetWheelSpeed: number = 0.0;
+
+    public get actualWheelSpeed(): number {
+        return this._wheel.GetAngularVelocity();
+    }
+    public get targetWheelSpeed(): number {
+        return this._targetWheelSpeed;
+    }
+    public set targetWheelSpeed(radsPerSec: number) {
+        this._wheel.SetAngularVelocity(radsPerSec);
+    }
 
     public constructor(constraint: Jolt.VehicleConstraint) {
         super();
 
         this._constraint = constraint;
-
-        this._controller = JOLT.castObject(this._constraint.GetController(), JOLT.WheeledVehicleController);
+        this._wheel = JOLT.castObject(this._constraint.GetWheel(0), JOLT.WheelWV);
     }
 
     public Update(deltaT: number): void {
-        // this._controller.GetEngine().SetCurrentRPM(1000);
-        // this._controller.SetDriverInput(1.0, 0.0, 0.0, 0.0);
-
-        // this._constraint.GetWheel(0).SetAngularVelocity(10);
+        this._wheel.SetAngularVelocity(this._targetWheelSpeed);
 
         const current = this._constraint.GetVehicleBody().GetLinearVelocity();
         console.log(`Speed: ${current.Length()}`);

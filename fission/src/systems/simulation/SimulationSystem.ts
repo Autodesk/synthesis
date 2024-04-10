@@ -7,6 +7,9 @@ import Stimulus from "./stimulus/Stimulus";
 import HingeDriver from "./driver/HingeDriver";
 import WheelDriver from "./driver/WheelDriver";
 import SliderDriver from "./driver/SliderDriver";
+import HingeStimulus from "./stimulus/HingeStimulus";
+import WheelRotationStimulus from "./stimulus/WheelStimulus";
+import SliderStimulus from "./stimulus/SliderStimulus";
 
 class SimulationSystem extends WorldSystem {
 
@@ -54,23 +57,28 @@ class SimulationLayer {
 
         // Generate standard drivers and stimuli
         this._drivers = [];
+        this._stimuli = [];
         this._mechanism.constraints.forEach(x => {
             if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Hinge) {
                 const hinge = JOLT.castObject(x.constraint, JOLT.HingeConstraint);
                 const driver = new HingeDriver(hinge);
                 this._drivers.push(driver);
+                const stim = new HingeStimulus(hinge);
+                this._stimuli.push(stim);
             } else if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Vehicle) {
                 const vehicle = JOLT.castObject(x.constraint, JOLT.VehicleConstraint);
                 const driver = new WheelDriver(vehicle);
                 this._drivers.push(driver);
+                const stim = new WheelRotationStimulus(vehicle.GetWheel(0));
+                this._stimuli.push(stim);
             } else if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Slider) {
                 const slider = JOLT.castObject(x.constraint, JOLT.SliderConstraint);
                 const driver = new SliderDriver(slider);
                 this._drivers.push(driver);
+                const stim = new SliderStimulus(slider);
+                this._stimuli.push(stim);
             }
         });
-
-        this._stimuli = [];
     }
 
     public Update(deltaT: number) {
