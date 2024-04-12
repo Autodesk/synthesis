@@ -6,6 +6,23 @@ import JOLT from "@/util/loading/JoltSyncLoader";
 class SliderDriver extends Driver {
 
     private _constraint: Jolt.SliderConstraint;
+    private _targetPosition: number = 0.0;
+
+    public get targetPosition(): number {
+        return this._targetPosition;
+    }
+    public set targetPosition(position: number) {
+        this._targetPosition = Math.max(this._constraint.GetLimitsMin(), Math.min(this._constraint.GetLimitsMax(), position));
+    }
+
+    public set minForceLimit(newtons: number) {
+        const motorSettings = this._constraint.GetMotorSettings();
+        motorSettings.mMinForceLimit = newtons;
+    }
+    public set maxForceLimit(newtons: number) {
+        const motorSettings = this._constraint.GetMotorSettings();
+        motorSettings.mMaxForceLimit = newtons;
+    }
 
     public constructor(constraint: Jolt.SliderConstraint) {
         super();
@@ -18,26 +35,16 @@ class SliderDriver extends Driver {
         springSettings.mDamping = 0.995;
 
         motorSettings.mSpringSettings = springSettings;
-        motorSettings.mMinTorqueLimit = -125.0;
-        motorSettings.mMaxTorqueLimit = 125.0;
+        motorSettings.mMinForceLimit = -125.0;
+        motorSettings.mMaxForceLimit = 125.0;
 
         this._constraint.SetMotorState(JOLT.EMotorState_Position);
-        this._constraint.SetTargetPosition(this._constraint.GetCurrentPosition());
+
+        this.targetPosition = this._constraint.GetCurrentPosition();
     }
 
-    private _flip = 1;
-    public Update(deltaT: number): void {
-
-        let targetPosition = this._constraint.GetTargetPosition() + (this._flip * deltaT * 0.05);
-        if (targetPosition < this._constraint.GetLimitsMin()) {
-            targetPosition = this._constraint.GetLimitsMin();
-            this._flip *= -1;
-        } else if (targetPosition > this._constraint.GetLimitsMax()) {
-            targetPosition = this._constraint.GetLimitsMax();
-            this._flip *= -1;
-        }
-
-        this._constraint.SetTargetPosition(targetPosition);
+    public Update(_: number): void {
+        this._constraint.SetTargetPosition(this._targetPosition);
     }
 }
 

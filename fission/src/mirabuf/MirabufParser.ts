@@ -153,6 +153,12 @@ class MirabufParser {
         if (!assembly.dynamic && this._groundedNode) {
             this._groundedNode.isDynamic = false;
         }
+
+        // 7. Update root RigidNode
+        const rootNode = this._partToNodeMap.get(gInst.parts!.nodes!.at(0)!.value!);
+        if (rootNode) {
+            rootNode.isRoot = true;
+        }
     }
 
     private NewRigidNode(suffix?: string): RigidNode {
@@ -326,6 +332,7 @@ class MirabufParser {
  * Collection of mirabuf parts that are bound together
  */
 class RigidNode {
+    public isRoot: boolean;
     public id: string;
     public parts: Set<string> = new Set();
     public isDynamic: boolean;
@@ -333,6 +340,7 @@ class RigidNode {
     public constructor(id: string, isDynamic?: boolean) {
         this.id = id;
         this.isDynamic = isDynamic ?? true;
+        this.isRoot = false;
     }
 }
 
@@ -350,6 +358,8 @@ export class RigidNodeReadOnly {
     public get isDynamic(): boolean {
         return this._original.isDynamic;
     }
+
+    public get isRoot(): boolean { return this._original.isRoot; }
 
     public constructor(original: RigidNode) {
         this._original = original;

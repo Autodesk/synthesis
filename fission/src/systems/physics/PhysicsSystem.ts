@@ -158,7 +158,8 @@ class PhysicsSystem extends WorldSystem {
     public CreateMechanismFromParser(parser: MirabufParser) {
         const layer = parser.assembly.dynamic ? new LayerReserve(): undefined;
         const bodyMap = this.CreateBodiesFromParser(parser, layer);
-        const mechanism = new Mechanism(bodyMap, layer);
+        const rootBody = (parser.rigidNodes.find(x => x.isRoot) ?? parser.rigidNodes[0]).id;
+        const mechanism = new Mechanism(rootBody, bodyMap, layer);
         this.CreateJointsFromParser(parser, mechanism);
         return mechanism;
     }
@@ -200,10 +201,11 @@ class PhysicsSystem extends WorldSystem {
 
             switch (jDef.jointMotionType!) {
                 case mirabuf.joint.JointMotion.REVOLUTE:
-                    if (this.IsWheel(jDef))
+                    if (this.IsWheel(jDef)) {
                         constraint = this.CreateWheelConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!)[1];
-                    else
+                    } else {
                         constraint = this.CreateHingeConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!);
+                    }
                     break;
                 case mirabuf.joint.JointMotion.SLIDER:
                     constraint = this.CreateSliderConstraint(jInst, jDef, bodyA, bodyB);
@@ -382,11 +384,17 @@ class PhysicsSystem extends WorldSystem {
         // hingeConstraintSettings.mNormalAxis1 = hingeConstraintSettings.mNormalAxis2
         //     = getPerpendicular(hingeConstraintSettings.mHingeAxis1);
 
+        const bounds = bodyA.GetShape().GetLocalBounds();
+        const radius = bounds.mMax.GetY() - bounds.mMin.GetY();
+        console.log(`Max: (${bounds.mMax.GetX()}, ${bounds.mMax.GetY()}, ${bounds.mMax.GetZ()})`);
+        console.log(`Min: (${bounds.mMin.GetX()}, ${bounds.mMin.GetY()}, ${bounds.mMin.GetZ()})`);
+        console.log(`Radius: ${radius}`);
+
         const wheelSettings = new JOLT.WheelSettingsWV();
         wheelSettings.mPosition = anchorPoint.Add(axis.Mul(0.1));
 		wheelSettings.mMaxSteerAngle = 0.0;
 		wheelSettings.mMaxHandBrakeTorque = 0.0;
-        wheelSettings.mRadius = 0.1;
+        wheelSettings.mRadius = radius + 0.0001;
         wheelSettings.mWidth = 0.1;
         wheelSettings.mSuspensionMinLength = 0.00003;
         wheelSettings.mSuspensionMaxLength = 0.00006;

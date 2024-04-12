@@ -9,8 +9,20 @@ class HingeDriver extends Driver {
 
     private _targetVelocity: number = 0.0;
 
+    public get targetVelocity(): number {
+        return this._targetVelocity;
+    }
     public set targetVelocity(radsPerSec: number) {
         this._targetVelocity = radsPerSec;
+    }
+
+    public set minTorqueLimit(nm: number) {
+        const motorSettings = this._constraint.GetMotorSettings();
+        motorSettings.mMinTorqueLimit = nm;
+    }
+    public set maxTorqueLimit(nm: number) {
+        const motorSettings = this._constraint.GetMotorSettings();
+        motorSettings.mMaxTorqueLimit = nm;
     }
 
     public constructor(constraint: Jolt.HingeConstraint) {
@@ -30,10 +42,7 @@ class HingeDriver extends Driver {
         this._constraint.SetMotorState(JOLT.EMotorState_Velocity);
     }
 
-    private _timeAccum = 0;
-    public Update(deltaT: number): void {
-        this._timeAccum += deltaT;
-        const vel = Math.sin(this._timeAccum * 0.8) * 0.5;
+    public Update(_: number): void {
         this._constraint.SetTargetAngularVelocity(this._targetVelocity);
 
     }

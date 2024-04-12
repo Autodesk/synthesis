@@ -8,11 +8,13 @@ export interface MechanismConstraint {
 }
 
 class Mechanism {
+    public rootBody: string;
     public nodeToBody: Map<string, Jolt.BodyID>;
     public constraints: Array<MechanismConstraint>;
     public layerReserve: LayerReserve | undefined;
 
-    public constructor(bodyMap: Map<string, Jolt.BodyID>, layerReserve?: LayerReserve) {
+    public constructor(rootBody: string, bodyMap: Map<string, Jolt.BodyID>, layerReserve?: LayerReserve) {
+        this.rootBody = rootBody;
         this.nodeToBody = bodyMap;
         this.constraints = [];
         this.layerReserve = layerReserve;
