@@ -79,6 +79,7 @@ class SimulationLayer {
                 this._stimuli.push(stim);
             }
         });
+        
     }
 
     public Update(deltaT: number) {

@@ -202,7 +202,11 @@ class PhysicsSystem extends WorldSystem {
             switch (jDef.jointMotionType!) {
                 case mirabuf.joint.JointMotion.REVOLUTE:
                     if (this.IsWheel(jDef)) {
-                        constraint = this.CreateWheelConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!)[1];
+                        if (parser.directedGraph.GetAdjacencyList(rnA.id).length > 0) {
+                            constraint = this.CreateWheelConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!)[1];
+                        } else {
+                            constraint = this.CreateWheelConstraint(jInst, jDef, bodyB, bodyA, parser.assembly.info!.version!)[1];
+                        }
                     } else {
                         constraint = this.CreateHingeConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!);
                     }
@@ -352,7 +356,7 @@ class PhysicsSystem extends WorldSystem {
 
     public CreateWheelConstraint(
     jointInstance: mirabuf.joint.JointInstance, jointDefinition: mirabuf.joint.Joint,
-    bodyA: Jolt.Body, bodyB: Jolt.Body, versionNum: number): [Jolt.Constraint, Jolt.VehicleConstraint] {
+    bodyMain: Jolt.Body, bodyWheel: Jolt.Body, versionNum: number): [Jolt.Constraint, Jolt.VehicleConstraint] {
         // HINGE CONSTRAINT
         const fixedSettings = new JOLT.FixedConstraintSettings();
         
@@ -384,7 +388,7 @@ class PhysicsSystem extends WorldSystem {
         // hingeConstraintSettings.mNormalAxis1 = hingeConstraintSettings.mNormalAxis2
         //     = getPerpendicular(hingeConstraintSettings.mHingeAxis1);
 
-        const bounds = bodyA.GetShape().GetLocalBounds();
+        const bounds = bodyWheel.GetShape().GetLocalBounds();
         const radius = bounds.mMax.GetY() - bounds.mMin.GetY();
         console.log(`Max: (${bounds.mMax.GetX()}, ${bounds.mMax.GetY()}, ${bounds.mMax.GetZ()})`);
         console.log(`Min: (${bounds.mMin.GetX()}, ${bounds.mMin.GetY()}, ${bounds.mMin.GetZ()})`);
@@ -441,11 +445,11 @@ class PhysicsSystem extends WorldSystem {
 
         vehicleSettings.mAntiRollBars.clear();
 
-        const vehicleConstraint = new JOLT.VehicleConstraint(bodyB, vehicleSettings);
-        const fixedConstraint = JOLT.castObject(fixedSettings.Create(bodyA, bodyB), JOLT.TwoBodyConstraint);
+        const vehicleConstraint = new JOLT.VehicleConstraint(bodyWheel, vehicleSettings);
+        const fixedConstraint = JOLT.castObject(fixedSettings.Create(bodyMain, bodyWheel), JOLT.TwoBodyConstraint);
 
         // Wheel Collision Tester
-        const tester = new JOLT.VehicleCollisionTesterCastCylinder(bodyB.GetObjectLayer(), 0.05);
+        const tester = new JOLT.VehicleCollisionTesterCastCylinder(bodyWheel.GetObjectLayer(), 0.05);
         vehicleConstraint.SetVehicleCollisionTester(tester);
 
 
