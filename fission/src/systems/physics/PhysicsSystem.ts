@@ -389,19 +389,19 @@ class PhysicsSystem extends WorldSystem {
         //     = getPerpendicular(hingeConstraintSettings.mHingeAxis1);
 
         const bounds = bodyWheel.GetShape().GetLocalBounds();
-        const radius = bounds.mMax.GetY() - bounds.mMin.GetY();
-        console.log(`Max: (${bounds.mMax.GetX()}, ${bounds.mMax.GetY()}, ${bounds.mMax.GetZ()})`);
-        console.log(`Min: (${bounds.mMin.GetX()}, ${bounds.mMin.GetY()}, ${bounds.mMin.GetZ()})`);
-        console.log(`Radius: ${radius}`);
+        const radius = (bounds.mMax.GetY() - bounds.mMin.GetY()) / 2.0;
+        // console.log(`Max: (${bounds.mMax.GetX()}, ${bounds.mMax.GetY()}, ${bounds.mMax.GetZ()})`);
+        // console.log(`Min: (${bounds.mMin.GetX()}, ${bounds.mMin.GetY()}, ${bounds.mMin.GetZ()})`);
+        // console.log(`Radius: ${radius}`);
 
         const wheelSettings = new JOLT.WheelSettingsWV();
         wheelSettings.mPosition = anchorPoint.Add(axis.Mul(0.1));
 		wheelSettings.mMaxSteerAngle = 0.0;
 		wheelSettings.mMaxHandBrakeTorque = 0.0;
-        wheelSettings.mRadius = radius + 0.0001;
+        wheelSettings.mRadius = radius * 1.05;
         wheelSettings.mWidth = 0.1;
-        wheelSettings.mSuspensionMinLength = 0.00003;
-        wheelSettings.mSuspensionMaxLength = 0.00006;
+        wheelSettings.mSuspensionMinLength = 0.0000003;
+        wheelSettings.mSuspensionMaxLength = 0.0000006;
         wheelSettings.mInertia = 1;
         
         const friction = new JOLT.LinearCurve();
@@ -410,23 +410,23 @@ class PhysicsSystem extends WorldSystem {
         friction.AddPoint(0,1);
         wheelSettings.mLongitudinalFriction = friction;
 
-        const wheelSettingsB = new JOLT.WheelSettingsWV();
-        wheelSettingsB.mPosition = anchorPoint.Sub(axis.Mul(0.1));
-		wheelSettingsB.mMaxSteerAngle = 0.0;
-		wheelSettingsB.mMaxHandBrakeTorque = 0.0;
-        wheelSettingsB.mRadius = 0.1;
-        wheelSettingsB.mWidth = 0.1;
-        wheelSettingsB.mSuspensionMinLength = 0.00003;
-        wheelSettingsB.mSuspensionMaxLength = 0.00006;
-        wheelSettingsB.mInertia = 1;
+        // const wheelSettingsB = new JOLT.WheelSettingsWV();
+        // wheelSettingsB.mPosition = anchorPoint.Sub(axis.Mul(0.1));
+		// wheelSettingsB.mMaxSteerAngle = 0.0;
+		// wheelSettingsB.mMaxHandBrakeTorque = 0.0;
+        // wheelSettingsB.mRadius = ;
+        // wheelSettingsB.mWidth = 0.1;
+        // wheelSettingsB.mSuspensionMinLength = 0.00003;
+        // wheelSettingsB.mSuspensionMaxLength = 0.00006;
+        // wheelSettingsB.mInertia = 1;
         
-        wheelSettingsB.mLongitudinalFriction = friction;
+        // wheelSettingsB.mLongitudinalFriction = friction;
 
         const vehicleSettings = new JOLT.VehicleConstraintSettings();
         
         vehicleSettings.mWheels.clear();
         vehicleSettings.mWheels.push_back(wheelSettings);
-        vehicleSettings.mWheels.push_back(wheelSettingsB);
+        // vehicleSettings.mWheels.push_back(wheelSettingsB);
 
         const controllerSettings = new JOLT.WheeledVehicleControllerSettings();
         controllerSettings.mEngine.mMaxTorque = 1500.0;
@@ -443,9 +443,12 @@ class PhysicsSystem extends WorldSystem {
         // differential.mDifferentialRatio = 1.93 * 40.0 / 16.0;
         // controllerSettings.mDifferentials.push_back(differential);
 
+        // console.log(`Wheel Volume: ${bodyWheel.GetShape().GetVolume()}`);
+        // console.log(`Main Volume: ${bodyMain.GetShape().GetVolume()}`);
+
         vehicleSettings.mAntiRollBars.clear();
 
-        const vehicleConstraint = new JOLT.VehicleConstraint(bodyWheel, vehicleSettings);
+        const vehicleConstraint = new JOLT.VehicleConstraint(bodyMain, vehicleSettings);
         const fixedConstraint = JOLT.castObject(fixedSettings.Create(bodyMain, bodyWheel), JOLT.TwoBodyConstraint);
 
         // Wheel Collision Tester

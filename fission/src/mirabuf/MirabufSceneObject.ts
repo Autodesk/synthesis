@@ -82,7 +82,7 @@ class MirabufSceneObject extends SceneObject {
             if (isNaN(body.GetPosition().GetX())) {
                 const vel = body.GetLinearVelocity();
                 const pos = body.GetPosition();
-                console.debug(`Invalid Position.\nPosition => ${pos.GetX()}, ${pos.GetY()}, ${pos.GetZ()}\nVelocity => ${vel.GetX()}, ${vel.GetY()}, ${vel.GetZ()}`);
+                console.warn(`Invalid Position.\nPosition => ${pos.GetX()}, ${pos.GetY()}, ${pos.GetZ()}\nVelocity => ${vel.GetX()}, ${vel.GetY()}, ${vel.GetZ()}`);
             }
             // console.debug(`POSITION: ${body.GetPosition().GetX()}, ${body.GetPosition().GetY()}, ${body.GetPosition().GetZ()}`)
 

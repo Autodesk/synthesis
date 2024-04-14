@@ -17,7 +17,7 @@ class WheelDriver extends Driver {
         return this._targetWheelSpeed;
     }
     public set targetWheelSpeed(radsPerSec: number) {
-        this._wheel.SetAngularVelocity(radsPerSec);
+        this._targetWheelSpeed = radsPerSec;
     }
 
     public constructor(constraint: Jolt.VehicleConstraint) {
@@ -25,6 +25,15 @@ class WheelDriver extends Driver {
 
         this._constraint = constraint;
         this._wheel = JOLT.castObject(this._constraint.GetWheel(0), JOLT.WheelWV);
+
+        // this._wheel.
+        
+        console.log(`Wheel X: ${constraint.GetVehicleBody().GetCenterOfMassPosition().GetX().toFixed(5)}`);
+        if (constraint.GetVehicleBody().GetCenterOfMassPosition().GetX() < 0) {
+            this._targetWheelSpeed = 10.0;
+        } else {
+            this._targetWheelSpeed = 10.0;
+        }
     }
 
     public Update(_: number): void {
