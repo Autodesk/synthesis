@@ -1,6 +1,5 @@
 import Jolt from "@barclah/jolt-physics";
 import Driver from "./Driver";
-import { SIMULATION_PERIOD } from "@/systems/physics/PhysicsSystem";
 import JOLT from "@/util/loading/JoltSyncLoader";
 
 class WheelDriver extends Driver {
@@ -9,7 +8,7 @@ class WheelDriver extends Driver {
     private _wheel: Jolt.WheelWV;
 
     private _targetWheelSpeed: number = 0.0;
-    
+
     public get targetWheelSpeed(): number {
         return this._targetWheelSpeed;
     }

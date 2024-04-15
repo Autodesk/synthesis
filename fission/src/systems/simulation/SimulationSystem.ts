@@ -10,6 +10,7 @@ import SliderDriver from "./driver/SliderDriver";
 import HingeStimulus from "./stimulus/HingeStimulus";
 import WheelRotationStimulus from "./stimulus/WheelStimulus";
 import SliderStimulus from "./stimulus/SliderStimulus";
+import ChassisStimulus from "./stimulus/ChassisStimulus";
 
 class SimulationSystem extends WorldSystem {
 
@@ -79,7 +80,7 @@ class SimulationLayer {
                 this._stimuli.push(stim);
             }
         });
-        
+        this._stimuli.push(new ChassisStimulus(mechanism.nodeToBody.get(mechanism.rootBody)!));
     }
 
     public Update(deltaT: number) {

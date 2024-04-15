@@ -1,5 +1,6 @@
 import Jolt from "@barclah/jolt-physics";
 import Stimulus from "./Stimulus";
+import World from "@/systems/World";
 
 class ChassisStimulus extends Stimulus {
     private _body: Jolt.Body;
@@ -18,12 +19,14 @@ class ChassisStimulus extends Stimulus {
         return this._body.GetRotation().GetEulerAngles();
     }
 
-    public constructor(body: Jolt.Body) {
+    public constructor(bodyId: Jolt.BodyID) {
         super();
     
-        this._body = body;
-        this._mass = body.GetShape().GetMassProperties().mMass;
+        this._body = World.PhysicsSystem.GetBody(bodyId);
+        this._mass = this._body.GetShape().GetMassProperties().mMass;
     }
     
     public Update(_: number): void { }
 }
+
+export default ChassisStimulus;

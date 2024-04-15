@@ -59,6 +59,8 @@ class HingeDriver extends Driver {
 
         const motorSettings = this._constraint.GetMotorSettings();
         const springSettings = motorSettings.mSpringSettings;
+
+        // These values were selected based on the suggestions of the documentation for stiff control.
         springSettings.mFrequency = 20 * (1.0 / SIMULATION_PERIOD);
         springSettings.mDamping = 0.995;
 

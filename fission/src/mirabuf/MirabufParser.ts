@@ -47,6 +47,7 @@ class MirabufParser {
     public get groundedNode() { return this._groundedNode ? new RigidNodeReadOnly(this._groundedNode) : undefined; }
     public get rigidNodes(): Array<RigidNodeReadOnly> { return this._rigidNodes.map(x => new RigidNodeReadOnly(x)); }
     public get directedGraph() { return this._directedGraph; }
+    public get rootNode() { return this._rootNode; }
 
     public constructor(assembly: mirabuf.Assembly) {
         this._assembly = assembly;

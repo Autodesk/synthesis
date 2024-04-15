@@ -158,7 +158,7 @@ class PhysicsSystem extends WorldSystem {
     public CreateMechanismFromParser(parser: MirabufParser) {
         const layer = parser.assembly.dynamic ? new LayerReserve(): undefined;
         const bodyMap = this.CreateBodiesFromParser(parser, layer);
-        const rootBody = (parser.rigidNodes.find(x => x.isRoot) ?? parser.rigidNodes[0]).id;
+        const rootBody = parser.rootNode;
         const mechanism = new Mechanism(rootBody, bodyMap, layer);
         this.CreateJointsFromParser(parser, mechanism);
         return mechanism;
@@ -283,7 +283,6 @@ class PhysicsSystem extends WorldSystem {
         this._joltPhysSystem.AddConstraint(constraint);
 
         return constraint;
-        // return JOLT.castObject(, JOLT.HingeConstraint);
     }
 
     /**
@@ -340,9 +339,6 @@ class PhysicsSystem extends WorldSystem {
             sliderConstraintSettings.mLimitsMax =  halfRange;
             sliderConstraintSettings.mLimitsMin = -halfRange;
         }
-
-        // sliderConstraintSettings.mLimitsMax = 1.0;
-        // sliderConstraintSettings.mLimitsMin = 0.0;
         
         const constraint = sliderConstraintSettings.Create(bodyA, bodyB);
         
@@ -350,7 +346,6 @@ class PhysicsSystem extends WorldSystem {
         this._joltPhysSystem.AddConstraint(constraint);
 
         return constraint;
-        // return JOLT.castObject(constraint, JOLT.SliderConstraint);
     }
 
 
@@ -363,7 +358,6 @@ class PhysicsSystem extends WorldSystem {
         const jointOrigin = jointDefinition.origin
             ? MirabufVector3_JoltVec3(jointDefinition.origin as mirabuf.Vector3)
             : new JOLT.Vec3(0, 0, 0);
-        // TODO: Offset transformation for robot builder.
         const jointOriginOffset = jointInstance.offset
             ? MirabufVector3_JoltVec3(jointInstance.offset as mirabuf.Vector3)
             : new JOLT.Vec3(0, 0, 0);
@@ -382,17 +376,8 @@ class PhysicsSystem extends WorldSystem {
             axis = new JOLT.Vec3(miraAxis.x ?? 0, miraAxis.y ?? 0, miraAxis.z ?? 0);
         }
 
-        // Assigned Axes
-        // hingeConstraintSettings.mHingeAxis1 = hingeConstraintSettings.mHingeAxis2
-        //     = axis.Normalized();
-        // hingeConstraintSettings.mNormalAxis1 = hingeConstraintSettings.mNormalAxis2
-        //     = getPerpendicular(hingeConstraintSettings.mHingeAxis1);
-
         const bounds = bodyWheel.GetShape().GetLocalBounds();
         const radius = (bounds.mMax.GetY() - bounds.mMin.GetY()) / 2.0;
-        // console.log(`Max: (${bounds.mMax.GetX()}, ${bounds.mMax.GetY()}, ${bounds.mMax.GetZ()})`);
-        // console.log(`Min: (${bounds.mMin.GetX()}, ${bounds.mMin.GetY()}, ${bounds.mMin.GetZ()})`);
-        // console.log(`Radius: ${radius}`);
 
         const wheelSettings = new JOLT.WheelSettingsWV();
         wheelSettings.mPosition = anchorPoint.Add(axis.Mul(0.1));
@@ -410,23 +395,10 @@ class PhysicsSystem extends WorldSystem {
         friction.AddPoint(0,1);
         wheelSettings.mLongitudinalFriction = friction;
 
-        // const wheelSettingsB = new JOLT.WheelSettingsWV();
-        // wheelSettingsB.mPosition = anchorPoint.Sub(axis.Mul(0.1));
-		// wheelSettingsB.mMaxSteerAngle = 0.0;
-		// wheelSettingsB.mMaxHandBrakeTorque = 0.0;
-        // wheelSettingsB.mRadius = ;
-        // wheelSettingsB.mWidth = 0.1;
-        // wheelSettingsB.mSuspensionMinLength = 0.00003;
-        // wheelSettingsB.mSuspensionMaxLength = 0.00006;
-        // wheelSettingsB.mInertia = 1;
-        
-        // wheelSettingsB.mLongitudinalFriction = friction;
-
         const vehicleSettings = new JOLT.VehicleConstraintSettings();
         
         vehicleSettings.mWheels.clear();
         vehicleSettings.mWheels.push_back(wheelSettings);
-        // vehicleSettings.mWheels.push_back(wheelSettingsB);
 
         const controllerSettings = new JOLT.WheeledVehicleControllerSettings();
         controllerSettings.mEngine.mMaxTorque = 1500.0;
@@ -436,16 +408,6 @@ class PhysicsSystem extends WorldSystem {
         controllerSettings.mTransmission.mMode = JOLT.ETransmissionMode_Auto;
         vehicleSettings.mController = controllerSettings;
 
-        // controllerSettings.mDifferentials.clear();
-        // const differential = new JOLT.VehicleDifferentialSettings();
-        // differential.mLeftWheel = -1;
-        // differential.mRightWheel = 1;
-        // differential.mDifferentialRatio = 1.93 * 40.0 / 16.0;
-        // controllerSettings.mDifferentials.push_back(differential);
-
-        // console.log(`Wheel Volume: ${bodyWheel.GetShape().GetVolume()}`);
-        // console.log(`Main Volume: ${bodyMain.GetShape().GetVolume()}`);
-
         vehicleSettings.mAntiRollBars.clear();
 
         const vehicleConstraint = new JOLT.VehicleConstraint(bodyMain, vehicleSettings);
@@ -454,17 +416,6 @@ class PhysicsSystem extends WorldSystem {
         // Wheel Collision Tester
         const tester = new JOLT.VehicleCollisionTesterCastCylinder(bodyWheel.GetObjectLayer(), 0.05);
         vehicleConstraint.SetVehicleCollisionTester(tester);
-
-
-        // const callbacks = new JOLT.VehicleConstraintCallbacksJS();
-        // callbacks.GetCombinedFriction = (wheelIndex, tireFrictionDirection, tireFriction, body2, subShapeID2) => {
-        //     const b = JOLT.wrapPointer(body2, Jolt.Body);
-        //     return Math.sqrt(tireFriction * b.GetFriction()); // This is the default calculation
-        // };
-        // callbacks.OnPreStepCallback = (vehicle, deltaTime, physicsSystem) => { };
-        // callbacks.OnPostCollideCallback = (vehicle, deltaTime, physicsSystem) => { console.log('Collision'); };
-        // callbacks.OnPostStepCallback = (vehicle, deltaTime, physicsSystem) => { };
-        // JOLT.castObject(callbacks, JOLT.VehicleConstraintCallbacksEm).SetVehicleConstraint(vehicleConstraint);
         this._joltPhysSystem.AddStepListener(new JOLT.VehicleConstraintStepListener(vehicleConstraint));
 
 
@@ -577,9 +528,6 @@ class PhysicsSystem extends WorldSystem {
 
                 // Little testing components
                 body.SetRestitution(0.4);
-                // const angVelocity = new JOLT.Vec3(0, 3, 0);
-                // body.SetAngularVelocity(angVelocity);
-                // JOLT.destroy(angVelocity);
             }
 
             // Cleanup
