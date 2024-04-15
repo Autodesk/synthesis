@@ -13,7 +13,6 @@
     "prettier": "npx prettier src --check",
     "prettier:fix": "npm run prettier --write",
     "format": "npm run prettier:fix && npm run lint:fix",
-    "build:hidden-prod": "tsc && vite build --base=/h1dd3n/fission/",
     "build:prod": "tsc && vite build --base=/fission/"
   },
   "dependencies": {
