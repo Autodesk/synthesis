@@ -4,9 +4,13 @@ import EncoderStimulus from "./EncoderStimulus";
 class SliderStimulus extends EncoderStimulus {
     
     private _slider: Jolt.SliderConstraint;
+    private _velocity: number = 0.0;
 
-    public get value(): number {
+    public get positionValue(): number {
         return this._slider.GetCurrentPosition();
+    }
+    public get velocityValue(): number {
+        return this._velocity;
     }
     
     public constructor(slider: Jolt.SliderConstraint) {
@@ -14,8 +18,12 @@ class SliderStimulus extends EncoderStimulus {
 
         this._slider = slider;
     }
-    
-    public Update(_: number): void { }
+
+    private _lastPosition: number = 0.0;
+    public Update(deltaT: number): void {
+        this._velocity = (this._slider.GetCurrentPosition() - this._lastPosition) / deltaT;
+        this._lastPosition = this._slider.GetCurrentPosition();
+    }
 }
 
 export default SliderStimulus;

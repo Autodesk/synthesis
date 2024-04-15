@@ -3,15 +3,19 @@ import EncoderStimulus from "./EncoderStimulus";
 
 class HingeStimulus extends EncoderStimulus {
     private _accum: boolean = false;
-    private _hingeAngleAccum = 0.0;
+    private _hingeAngleAccum: number = 0.0;
     private _hinge: Jolt.HingeConstraint;
 
-    public get value(): number {
+    public get positionValue(): number {
         if (this._accum) {
             return this._hingeAngleAccum;
         } else {
             return this._hinge.GetCurrentAngle();
         }
+    }
+
+    public get velocityValue(): number {
+        return 0.0;
     }
 
     public set accum(shouldAccum: boolean) {

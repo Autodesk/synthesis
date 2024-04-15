@@ -9,12 +9,16 @@ class WheelRotationStimulus extends EncoderStimulus {
     private _wheelRotationAccum = 0.0;
     private _wheel: Jolt.Wheel;
     
-    public get value(): number {
+    public get positionValue(): number {
         if (this._accum) {
             return this._wheelRotationAccum;
         } else {
             return this._wheel.GetRotationAngle();
         }
+    }
+
+    public get velocityValue(): number {
+        return this._wheel.GetAngularVelocity();
     }
 
     public set accum(shouldAccum: boolean) {
