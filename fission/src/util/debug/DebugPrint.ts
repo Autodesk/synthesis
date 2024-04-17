@@ -4,7 +4,7 @@ import Jolt from "@barclah/jolt-physics";
 
 export function printRigidNodeParts(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembly) {
     nodes.forEach(x => {
-        console.log(`[ ${x.name} ]:`);
+        console.log(`[ ${x.id} ]:`);
         x.parts.forEach(y => console.log(`-> '${mira.data!.parts!.partInstances![y]!.info!.name!}'`));
         console.log('');
     });

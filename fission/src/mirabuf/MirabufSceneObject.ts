@@ -9,8 +9,10 @@ import { JoltMat44_ThreeMatrix4 } from "@/util/TypeConversions";
 import * as THREE from 'three';
 import JOLT from "@/util/loading/JoltSyncLoader";
 import { LayerReserve } from "@/systems/physics/PhysicsSystem";
+import Mechanism from "@/systems/physics/Mechanism";
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain";
 
-const DEBUG_BODIES = true;
+const DEBUG_BODIES = false;
 
 interface RnDebugMeshes {
     colliderMesh: THREE.Mesh;
@@ -20,9 +22,10 @@ interface RnDebugMeshes {
 class MirabufSceneObject extends SceneObject {
 
     private _mirabufInstance: MirabufInstance;
-    private _bodies: Map<string, Jolt.BodyID>;
     private _debugBodies: Map<string, RnDebugMeshes> | null;
     private _physicsLayerReserve: LayerReserve | undefined = undefined;
+
+    private _mechanism: Mechanism;
 
     public constructor(mirabufInstance: MirabufInstance) {
         super();
@@ -32,18 +35,19 @@ class MirabufSceneObject extends SceneObject {
         if (this._mirabufInstance.parser.assembly.dynamic) {
             this._physicsLayerReserve = new LayerReserve();
         }
-        this._bodies = World.PhysicsSystem.CreateBodiesFromParser(mirabufInstance.parser, this._physicsLayerReserve);
-        World.PhysicsSystem.CreateJointsFromParser(mirabufInstance.parser, this._bodies);
 
+        this._mechanism = World.PhysicsSystem.CreateMechanismFromParser(this._mirabufInstance.parser);
+        
         this._debugBodies = null;
     }
 
     public Setup(): void {
+        // Rendering
         this._mirabufInstance.AddToScene(World.SceneRenderer.scene);
 
         if (DEBUG_BODIES) {
             this._debugBodies = new Map();
-            this._bodies.forEach((bodyId, rnName) => {
+            this._mechanism.nodeToBody.forEach((bodyId, rnName) => {
 
                 const body = World.PhysicsSystem.GetBody(bodyId);
 
@@ -55,11 +59,17 @@ class MirabufSceneObject extends SceneObject {
                 this._debugBodies!.set(rnName, { colliderMesh: colliderMesh, comMesh: comMesh });
             });
         }
+
+        // Simulation
+        World.SimulationSystem.RegisterMechanism(this._mechanism);
+        const simLayer = World.SimulationSystem.GetSimulationLayer(this._mechanism)!;
+        const brain = new SynthesisBrain(this._mechanism);
+        simLayer.SetBrain(brain);
     }
 
     public Update(): void {
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
-            const body = World.PhysicsSystem.GetBody(this._bodies.get(rn.name)!);
+            const body = World.PhysicsSystem.GetBody(this._mechanism.GetBodyByNodeId(rn.id)!);
             const transform = JoltMat44_ThreeMatrix4(body.GetWorldTransform());
             rn.parts.forEach(part => {
                 const partTransform = this._mirabufInstance.parser.globalTransforms.get(part)!.clone().premultiply(transform);
@@ -72,12 +82,12 @@ class MirabufSceneObject extends SceneObject {
             if (isNaN(body.GetPosition().GetX())) {
                 const vel = body.GetLinearVelocity();
                 const pos = body.GetPosition();
-                console.debug(`Invalid Position.\nPosition => ${pos.GetX()}, ${pos.GetY()}, ${pos.GetZ()}\nVelocity => ${vel.GetX()}, ${vel.GetY()}, ${vel.GetZ()}`);
+                console.warn(`Invalid Position.\nPosition => ${pos.GetX()}, ${pos.GetY()}, ${pos.GetZ()}\nVelocity => ${vel.GetX()}, ${vel.GetY()}, ${vel.GetZ()}`);
             }
             // console.debug(`POSITION: ${body.GetPosition().GetX()}, ${body.GetPosition().GetY()}, ${body.GetPosition().GetZ()}`)
 
             if (this._debugBodies) {
-                const { colliderMesh, comMesh } = this._debugBodies.get(rn.name)!;
+                const { colliderMesh, comMesh } = this._debugBodies.get(rn.id)!;
                 colliderMesh.position.setFromMatrixPosition(transform);
                 colliderMesh.rotation.setFromRotationMatrix(transform);
 
@@ -89,7 +99,7 @@ class MirabufSceneObject extends SceneObject {
     }
 
     public Dispose(): void {
-        World.PhysicsSystem.DestroyBodyIds(...this._bodies.values());
+        World.PhysicsSystem.DestroyMechanism(this._mechanism);
         this._mirabufInstance.Dispose(World.SceneRenderer.scene);
         this._debugBodies?.forEach(x => {
             World.SceneRenderer.scene.remove(x.colliderMesh, x.comMesh);

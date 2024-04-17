@@ -25,6 +25,8 @@ class MirabufParser {
 
     private _assembly: mirabuf.Assembly;
     private _errors: Array<ParseError>;
+    private _directedGraph: Graph;
+    private _rootNode: string;
 
     protected _partTreeValues: Map<string, number> = new Map();
     private _designHierarchyRoot: mirabuf.INode = new mirabuf.Node();
@@ -43,9 +45,9 @@ class MirabufParser {
     public get partToNodeMap() { return this._partToNodeMap; }
     public get globalTransforms() { return this._globalTransforms; }
     public get groundedNode() { return this._groundedNode ? new RigidNodeReadOnly(this._groundedNode) : undefined; }
-    public get rigidNodes(): Array<RigidNodeReadOnly> {
-        return this._rigidNodes.map(x => new RigidNodeReadOnly(x));
-    }
+    public get rigidNodes(): Array<RigidNodeReadOnly> { return this._rigidNodes.map(x => new RigidNodeReadOnly(x)); }
+    public get directedGraph() { return this._directedGraph; }
+    public get rootNode() { return this._rootNode; }
 
     public constructor(assembly: mirabuf.Assembly) {
         this._assembly = assembly;
@@ -137,7 +139,7 @@ class MirabufParser {
                 const currentRn = this._partToNodeMap.get(y)!;
                 if (!rn) {
                     rn = currentRn;
-                } else if (currentRn.name != rn.name) {
+                } else if (currentRn.id != rn.id) {
                     rn = this.MergeRigidNodes(currentRn, rn);
                 }
             });
@@ -153,6 +155,53 @@ class MirabufParser {
         if (!assembly.dynamic && this._groundedNode) {
             this._groundedNode.isDynamic = false;
         }
+
+        // 7. Update root RigidNode
+        const rootNode = this._partToNodeMap.get(gInst.parts!.nodes!.at(0)!.value!);
+        if (rootNode) {
+            rootNode.isRoot = true;
+            this._rootNode = rootNode.id;
+        } else {
+            this._rootNode = this._rigidNodes[0].id;
+        }
+
+        // 8. Generate Rigid Node Graph
+        // Build undirected graph
+        const graph = new Graph();
+        graph.AddNode(rootNode ? rootNode.id : this._rigidNodes[0].id);
+        (Object.values(assembly.data!.joints!.jointInstances!) as mirabuf.joint.JointInstance[]).forEach(x => {
+            const rA = this._partToNodeMap.get(x.parentPart);
+            const rB = this._partToNodeMap.get(x.childPart);
+
+            if (rA && rB && rA.id != rB.id) {
+                graph.AddNode(rA.id);
+                graph.AddNode(rB.id);
+                graph.AddEdgeUndirected(rA.id, rB.id);
+            }
+        });
+        const directedGraph = new Graph();
+        const whiteGreyBlackMap = new Map<string, boolean>();
+        this._rigidNodes.forEach(x => {
+            whiteGreyBlackMap.set(x.id, false);
+            directedGraph.AddNode(x.id);
+        });
+        function directedRecursive(node: string) {
+            graph.GetAdjacencyList(node).forEach(x => {
+                if (whiteGreyBlackMap.has(x)) {
+                    directedGraph.AddEdgeDirected(node, x);
+                    whiteGreyBlackMap.delete(x);
+                    directedRecursive(x);
+                }
+            });
+        }
+        if (rootNode) {
+            whiteGreyBlackMap.delete(rootNode.id);
+            directedRecursive(rootNode.id);
+        } else {
+            whiteGreyBlackMap.delete(this._rigidNodes[0].id);
+            directedRecursive(this._rigidNodes[0].id);
+        }
+        this._directedGraph = directedGraph;
     }
 
     private NewRigidNode(suffix?: string): RigidNode {
@@ -326,21 +375,23 @@ class MirabufParser {
  * Collection of mirabuf parts that are bound together
  */
 class RigidNode {
-    public name: string;
+    public isRoot: boolean;
+    public id: string;
     public parts: Set<string> = new Set();
     public isDynamic: boolean;
 
-    public constructor(name: string, isDynamic?: boolean) {
-        this.name = name;
+    public constructor(id: string, isDynamic?: boolean) {
+        this.id = id;
         this.isDynamic = isDynamic ?? true;
+        this.isRoot = false;
     }
 }
 
 export class RigidNodeReadOnly {
     private _original: RigidNode;
     
-    public get name(): string {
-        return this._original.name;
+    public get id(): string {
+        return this._original.id;
     }
 
     public get parts(): ReadonlySet<string> {
@@ -351,8 +402,49 @@ export class RigidNodeReadOnly {
         return this._original.isDynamic;
     }
 
+    public get isRoot(): boolean { return this._original.isRoot; }
+
     public constructor(original: RigidNode) {
         this._original = original;
+    }
+}
+
+export class Graph {
+    private _adjacencyMap: Map<string, string[]>;
+
+    public get nodes() {
+        return this._adjacencyMap.keys();
+    }
+
+    public constructor() {
+        this._adjacencyMap = new Map();
+    }
+
+    public AddNode(node: string) {
+        if (!this._adjacencyMap.has(node))
+            this._adjacencyMap.set(node, new Array<string>());
+    }
+
+    public AddEdgeUndirected(nodeA: string, nodeB: string) {
+        if (!this._adjacencyMap.has(nodeA) || !this._adjacencyMap.has(nodeB))
+            throw new Error("Nodes aren't in graph");
+
+        this._adjacencyMap.get(nodeA)!.push(nodeB);
+        this._adjacencyMap.get(nodeB)!.push(nodeA);
+    }
+
+    public AddEdgeDirected(nodeA: string, nodeB: string) {
+        if (!this._adjacencyMap.has(nodeA) || !this._adjacencyMap.has(nodeB))
+            throw new Error("Nodes aren't in graph");
+
+        this._adjacencyMap.get(nodeA)!.push(nodeB);
+    }
+
+    public GetAdjacencyList(node: string) {
+        if (!this._adjacencyMap.has(node)) { // Don't remove this. Without this check initially, Map.get *randomly* fails. I have no clue why...
+            throw new Error(`Node '${node}' is not in adjacency list`);
+        }
+        return this._adjacencyMap.get(node)!;
     }
 }
 

@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { mirabuf } from '../../proto/mirabuf';
 import MirabufParser, { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, RigidNodeReadOnly } from "../../mirabuf/MirabufParser";
 import WorldSystem from "../WorldSystem";
+import Mechanism from "./Mechanism";
 
 /**
  * Layers used for determining enabled/disabled collisions.
@@ -18,7 +19,7 @@ const RobotLayers: number[] = [ // Reserved layers for robots. Robot layers have
 // Please update this accordingly.
 const COUNT_OBJECT_LAYERS = 10;
 
-const STANDARD_TIME_STEP = 1.0 / 120.0;
+export const SIMULATION_PERIOD = 1.0 / 120.0;
 const STANDARD_SUB_STEPS = 3;
 
 /**
@@ -51,6 +52,8 @@ class PhysicsSystem extends WorldSystem {
 
         this._joltPhysSystem = this._joltInterface.GetPhysicsSystem();
         this._joltBodyInterface = this._joltPhysSystem.GetBodyInterface();
+
+        this._joltPhysSystem.SetGravity(new JOLT.Vec3(0, -9.8, 0));
 
         const ground = this.CreateBox(new THREE.Vector3(5.0, 0.5, 5.0), undefined, new THREE.Vector3(0.0, -2.0, 0.0), undefined);
         this._joltBodyInterface.AddBody(ground.GetID(), JOLT.EActivation_Activate);
@@ -152,13 +155,22 @@ class PhysicsSystem extends WorldSystem {
         return settings.Create();
     }
 
+    public CreateMechanismFromParser(parser: MirabufParser) {
+        const layer = parser.assembly.dynamic ? new LayerReserve(): undefined;
+        const bodyMap = this.CreateBodiesFromParser(parser, layer);
+        const rootBody = parser.rootNode;
+        const mechanism = new Mechanism(rootBody, bodyMap, layer);
+        this.CreateJointsFromParser(parser, mechanism);
+        return mechanism;
+    }
+
     /**
      * Creates all the joints for a mirabuf assembly given an already compiled mapping of rigid nodes to bodies.
      * 
      * @param   parser      Mirabuf parser with complete set of rigid nodes and assembly data.
-     * @param   rnMapping   Mapping of the name of rigid groups to Jolt bodies. Retrieved from CreateBodiesFromParser.
+     * @param   mechainsm   Mapping of the name of rigid groups to Jolt bodies. Retrieved from CreateBodiesFromParser.
      */
-    public CreateJointsFromParser(parser: MirabufParser, rnMapping: Map<string, Jolt.BodyID>) {
+    public CreateJointsFromParser(parser: MirabufParser, mechanism: Mechanism) {
         const jointData = parser.assembly.data!.joints!;
         for (const [jGuid, jInst] of (Object.entries(jointData.jointInstances!) as [string, mirabuf.joint.JointInstance][])) {
             if (jGuid == GROUNDED_JOINT_ID)
@@ -170,14 +182,14 @@ class PhysicsSystem extends WorldSystem {
             if (!rnA || !rnB) {
                 console.warn(`Skipping joint '${jInst.info!.name!}'. Couldn't find associated rigid nodes.`);
                 continue;
-            } else if (rnA.name == rnB.name) {
+            } else if (rnA.id == rnB.id) {
                 console.warn(`Skipping joint '${jInst.info!.name!}'. Jointing the same parts. Likely in issue with Fusion Design structure.`);
                 continue;
             }
 
             const jDef = parser.assembly.data!.joints!.jointDefinitions![jInst.jointReference!]! as mirabuf.joint.Joint;
-            const bodyIdA = rnMapping.get(rnA.name);
-            const bodyIdB = rnMapping.get(rnB.name);
+            const bodyIdA = mechanism.GetBodyByNodeId(rnA.id);
+            const bodyIdB = mechanism.GetBodyByNodeId(rnB.id);
             if (!bodyIdA || !bodyIdB) {
                 console.warn(`Skipping joint '${jInst.info!.name!}'. Failed to find rigid nodes' associated bodies.`);
                 continue;
@@ -185,17 +197,30 @@ class PhysicsSystem extends WorldSystem {
             const bodyA = this.GetBody(bodyIdA);
             const bodyB = this.GetBody(bodyIdB);
 
+            let constraint: Jolt.Constraint | undefined = undefined;
+
             switch (jDef.jointMotionType!) {
                 case mirabuf.joint.JointMotion.REVOLUTE:
-                    this.CreateHingeConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!);
+                    if (this.IsWheel(jDef)) {
+                        if (parser.directedGraph.GetAdjacencyList(rnA.id).length > 0) {
+                            constraint = this.CreateWheelConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!)[1];
+                        } else {
+                            constraint = this.CreateWheelConstraint(jInst, jDef, bodyB, bodyA, parser.assembly.info!.version!)[1];
+                        }
+                    } else {
+                        constraint = this.CreateHingeConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!);
+                    }
                     break;
                 case mirabuf.joint.JointMotion.SLIDER:
-                    this.CreateSliderConstraint(jInst, jDef, bodyA, bodyB);
+                    constraint = this.CreateSliderConstraint(jInst, jDef, bodyA, bodyB);
                     break;
                 default:
                     console.debug('Unsupported joint detected. Skipping...');
                     break;
             }
+
+            if (constraint)
+                mechanism.AddConstraint({ parentBody: bodyIdA, childBody: bodyIdB, constraint: constraint });
         }
     }
 
@@ -211,7 +236,7 @@ class PhysicsSystem extends WorldSystem {
      */
     private CreateHingeConstraint(
     jointInstance: mirabuf.joint.JointInstance, jointDefinition: mirabuf.joint.Joint,
-    bodyA: Jolt.Body, bodyB: Jolt.Body, versionNum: number): Jolt.HingeConstraint {
+    bodyA: Jolt.Body, bodyB: Jolt.Body, versionNum: number): Jolt.Constraint {
         // HINGE CONSTRAINT
         const hingeConstraintSettings = new JOLT.HingeConstraintSettings();
         
@@ -257,7 +282,7 @@ class PhysicsSystem extends WorldSystem {
         const constraint = hingeConstraintSettings.Create(bodyA, bodyB);
         this._joltPhysSystem.AddConstraint(constraint);
 
-        return JOLT.castObject(constraint, JOLT.HingeConstraint);
+        return constraint;
     }
 
     /**
@@ -272,7 +297,7 @@ class PhysicsSystem extends WorldSystem {
      */
     private CreateSliderConstraint(
     jointInstance: mirabuf.joint.JointInstance, jointDefinition: mirabuf.joint.Joint,
-    bodyA: Jolt.Body, bodyB: Jolt.Body): Jolt.SliderConstraint {
+    bodyA: Jolt.Body, bodyB: Jolt.Body): Jolt.Constraint {
 
         const sliderConstraintSettings = new JOLT.SliderConstraintSettings();
         
@@ -314,16 +339,95 @@ class PhysicsSystem extends WorldSystem {
             sliderConstraintSettings.mLimitsMax =  halfRange;
             sliderConstraintSettings.mLimitsMin = -halfRange;
         }
-
-        // sliderConstraintSettings.mLimitsMax = 1.0;
-        // sliderConstraintSettings.mLimitsMin = 0.0;
         
         const constraint = sliderConstraintSettings.Create(bodyA, bodyB);
         
         this._constraints.push(constraint);
         this._joltPhysSystem.AddConstraint(constraint);
 
-        return JOLT.castObject(constraint, JOLT.SliderConstraint);
+        return constraint;
+    }
+
+
+    public CreateWheelConstraint(
+    jointInstance: mirabuf.joint.JointInstance, jointDefinition: mirabuf.joint.Joint,
+    bodyMain: Jolt.Body, bodyWheel: Jolt.Body, versionNum: number): [Jolt.Constraint, Jolt.VehicleConstraint] {
+        // HINGE CONSTRAINT
+        const fixedSettings = new JOLT.FixedConstraintSettings();
+        
+        const jointOrigin = jointDefinition.origin
+            ? MirabufVector3_JoltVec3(jointDefinition.origin as mirabuf.Vector3)
+            : new JOLT.Vec3(0, 0, 0);
+        const jointOriginOffset = jointInstance.offset
+            ? MirabufVector3_JoltVec3(jointInstance.offset as mirabuf.Vector3)
+            : new JOLT.Vec3(0, 0, 0);
+
+        const anchorPoint = jointOrigin.Add(jointOriginOffset);
+        fixedSettings.mPoint1 = fixedSettings.mPoint2 = anchorPoint;
+
+        const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!;
+
+        const miraAxis = rotationalFreedom.axis! as mirabuf.Vector3;
+        let axis: Jolt.Vec3;
+        // No scaling, these are unit vectors
+        if (versionNum < 5) {
+            axis = new JOLT.Vec3(-miraAxis.x ?? 0, miraAxis.y ?? 0, miraAxis.z ?? 0);
+        } else {
+            axis = new JOLT.Vec3(miraAxis.x ?? 0, miraAxis.y ?? 0, miraAxis.z ?? 0);
+        }
+
+        const bounds = bodyWheel.GetShape().GetLocalBounds();
+        const radius = (bounds.mMax.GetY() - bounds.mMin.GetY()) / 2.0;
+
+        const wheelSettings = new JOLT.WheelSettingsWV();
+        wheelSettings.mPosition = anchorPoint.Add(axis.Mul(0.1));
+		wheelSettings.mMaxSteerAngle = 0.0;
+		wheelSettings.mMaxHandBrakeTorque = 0.0;
+        wheelSettings.mRadius = radius * 1.05;
+        wheelSettings.mWidth = 0.1;
+        wheelSettings.mSuspensionMinLength = 0.0000003;
+        wheelSettings.mSuspensionMaxLength = 0.0000006;
+        wheelSettings.mInertia = 1;
+        
+        const friction = new JOLT.LinearCurve();
+        friction.Clear();
+        friction.AddPoint(1,1);
+        friction.AddPoint(0,1);
+        wheelSettings.mLongitudinalFriction = friction;
+
+        const vehicleSettings = new JOLT.VehicleConstraintSettings();
+        
+        vehicleSettings.mWheels.clear();
+        vehicleSettings.mWheels.push_back(wheelSettings);
+
+        const controllerSettings = new JOLT.WheeledVehicleControllerSettings();
+        controllerSettings.mEngine.mMaxTorque = 1500.0;
+        controllerSettings.mTransmission.mClutchStrength = 10.0;
+        controllerSettings.mTransmission.mGearRatios.clear();
+        controllerSettings.mTransmission.mGearRatios.push_back(2);
+        controllerSettings.mTransmission.mMode = JOLT.ETransmissionMode_Auto;
+        vehicleSettings.mController = controllerSettings;
+
+        vehicleSettings.mAntiRollBars.clear();
+
+        const vehicleConstraint = new JOLT.VehicleConstraint(bodyMain, vehicleSettings);
+        const fixedConstraint = JOLT.castObject(fixedSettings.Create(bodyMain, bodyWheel), JOLT.TwoBodyConstraint);
+
+        // Wheel Collision Tester
+        const tester = new JOLT.VehicleCollisionTesterCastCylinder(bodyWheel.GetObjectLayer(), 0.05);
+        vehicleConstraint.SetVehicleCollisionTester(tester);
+        this._joltPhysSystem.AddStepListener(new JOLT.VehicleConstraintStepListener(vehicleConstraint));
+
+
+        this._joltPhysSystem.AddConstraint(vehicleConstraint);
+        this._joltPhysSystem.AddConstraint(fixedConstraint);
+
+        this._constraints.push(fixedConstraint, vehicleConstraint);
+        return [fixedConstraint, vehicleConstraint];
+    }
+
+    private IsWheel(jDef: mirabuf.joint.Joint) {
+        return (jDef.info!.name! != 'grounded') && (jDef.userData) && ((new Map(Object.entries(jDef.userData.data!)).get('wheel') ?? 'false') == 'true')
     }
 
     /**
@@ -354,7 +458,7 @@ class PhysicsSystem extends WorldSystem {
 
             const rnLayer: number = reservedLayer
                 ? reservedLayer
-                : (rn.name.endsWith(GAMEPIECE_SUFFIX) ? LAYER_GENERAL_DYNAMIC : LAYER_FIELD);
+                : (rn.id.endsWith(GAMEPIECE_SUFFIX) ? LAYER_GENERAL_DYNAMIC : LAYER_FIELD);
 
             rn.parts.forEach(partId => {
                 const partInstance = parser.assembly.data!.parts!.partInstances![partId]!;
@@ -401,7 +505,7 @@ class PhysicsSystem extends WorldSystem {
                 const shapeResult = compoundShapeSettings.Create();
 
                 if (!shapeResult.IsValid || shapeResult.HasError()) {
-                    console.error(`Failed to create shape for RigidNode ${rn.name}\n${shapeResult.GetError().c_str()}`);
+                    console.error(`Failed to create shape for RigidNode ${rn.id}\n${shapeResult.GetError().c_str()}`);
                 }
 
                 const shape = shapeResult.Get();
@@ -419,13 +523,11 @@ class PhysicsSystem extends WorldSystem {
                 );
                 const body = this._joltBodyInterface.CreateBody(bodySettings);
                 this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate);
-                rnToBodies.set(rn.name, body.GetID());
+                body.SetAllowSleeping(false);
+                rnToBodies.set(rn.id, body.GetID());
 
                 // Little testing components
                 body.SetRestitution(0.4);
-                const angVelocity = new JOLT.Vec3(0, 3, 0);
-                body.SetAngularVelocity(angVelocity);
-                JOLT.destroy(angVelocity);
             }
 
             // Cleanup
@@ -512,12 +614,20 @@ class PhysicsSystem extends WorldSystem {
         });
     }
 
+    public DestroyMechanism(mech: Mechanism) {
+        mech.constraints.forEach(x => this._joltPhysSystem.RemoveConstraint(x.constraint));
+        mech.nodeToBody.forEach(x => {
+            this._joltBodyInterface.RemoveBody(x);
+            this._joltBodyInterface.DestroyBody(x);
+        });
+    }
+
     public GetBody(bodyId: Jolt.BodyID) {
         return this._joltPhysSystem.GetBodyLockInterface().TryGetBody(bodyId);
     }
 
     public Update(_: number): void {
-        this._joltInterface.Step(STANDARD_TIME_STEP, STANDARD_SUB_STEPS);
+        this._joltInterface.Step(SIMULATION_PERIOD, STANDARD_SUB_STEPS);
     }
 
     public Destroy(): void {
