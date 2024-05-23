@@ -15,7 +15,7 @@ interface RobotCardProps {
 
 const RobotCard: React.FC<RobotCardProps> = ({ robot, select }) => {
     return (
-        <div className="flex flex-row align-middle justify-between items-center bg-interactive-element-right rounded-sm p-2 gap-2">
+        <div className="flex flex-row align-middle justify-between items-center bg-background rounded-sm p-2 gap-2">
             <Label className="text-wrap break-all">{robot}</Label>
             <Button
                 value="Spawn"
@@ -55,7 +55,7 @@ const RobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             modalId={modalId}
             acceptEnabled={false}
         >
-            <div className="flex flex-col gap-2 min-w-[50vw] max-h-[60vh] bg-background-secondary rounded-sm p-2">
+            <div className="flex flex-col gap-2 min-w-[50vw] max-h-[60vh] bg-background-secondary rounded-md p-2">
                 {robots.map(x => RobotCard({robot: x, select: selectRobot}))}
             </div>
         </Modal>

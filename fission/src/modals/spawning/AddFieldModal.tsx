@@ -14,7 +14,7 @@ interface FieldCardProps {
 
 const FieldCard: React.FC<FieldCardProps> = ({ field, select }) => {
     return (
-        <div className="flex flex-row align-middle justify-between items-center bg-background-secondary rounded-sm p-2 gap-2">
+        <div className="flex flex-row align-middle justify-between items-center bg-background rounded-sm p-2 gap-2">
             <Label className="text-wrap break-all">{field}</Label>
             <Button
                 value="Spawn"
@@ -46,7 +46,7 @@ const FieldsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             modalId={modalId}
             acceptEnabled={false}
         >
-            <div className="flex overflow-y-auto flex-col gap-2 min-w-[50vw] max-h-[60vh] bg-background-secondary rounded-sm p-2">
+            <div className="flex overflow-y-auto flex-col gap-2 min-w-[50vw] max-h-[60vh] bg-background-secondary rounded-md p-2">
                 {fields.map(x => FieldCard({field: x, select: selectField}))}
             </div>
         </Modal>
