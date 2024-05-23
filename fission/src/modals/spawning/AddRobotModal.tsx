@@ -1,22 +1,26 @@
 import React from "react"
 import Modal, { ModalPropsImpl } from "../../components/Modal"
 import { FaPlus } from "react-icons/fa6"
-import Dropdown from "../../components/Dropdown"
 import { useTooltipControlContext } from "@/TooltipContext"
 import { CreateMirabufFromUrl } from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
 import Button from "@/components/Button"
 import Label from "@/components/Label"
+import { useModalControlContext } from "@/ModalContext"
 
 interface RobotCardProps {
     robot: string;
+    select: (robot: string) => void;
 }
 
-const RobotCard: React.FC<RobotCardProps> = ({ robot }) => {
+const RobotCard: React.FC<RobotCardProps> = ({ robot, select }) => {
     return (
-        <div className="bg-background-secondary rounded-sm p-2">
-            <Label>{robot}</Label>
-            <Button value="Spawn"></Button>
+        <div className="flex flex-row align-middle justify-between items-center bg-interactive-element-right rounded-sm p-2 gap-2">
+            <Label className="text-wrap break-all">{robot}</Label>
+            <Button
+                value="Spawn"
+                onClick={() => select(robot)}
+            />
         </div>
     )
 }
@@ -24,42 +28,36 @@ const RobotCard: React.FC<RobotCardProps> = ({ robot }) => {
 const RobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     // update tooltip based on type of drivetrain, receive message from Synthesis
     const { showTooltip } = useTooltipControlContext()
-
-    let selectedRobot: string | null = null;
+    const { closeModal } = useModalControlContext()
 
     const robots = ["Dozer_v2.mira", "Team_2471_(2018)_v7.mira"]
+
+    const selectRobot = (robot: string) => {
+        showTooltip("controls", [
+            { control: "WASD", description: "Drive" },
+            { control: "E", description: "Intake" },
+            { control: "Q", description: "Dispense" },
+        ])
+
+        CreateMirabufFromUrl(`test_mira/${robot}`).then(x => {
+            if (x) {
+                World.SceneRenderer.RegisterSceneObject(x)
+            }
+        })
+
+        closeModal()
+    }
 
     return (
         <Modal
             name={"Robot Selection"}
             icon={<FaPlus />}
             modalId={modalId}
-            onAccept={() => {
-                    showTooltip("controls", [
-                        { control: "WASD", description: "Drive" },
-                        { control: "E", description: "Intake" },
-                        { control: "Q", description: "Dispense" },
-                    ]);
-
-                    if (selectedRobot) {
-                        CreateMirabufFromUrl(`test_mira/${selectedRobot}`).then(x => {
-                            if (x) {
-                                World.SceneRenderer.RegisterSceneObject(x);
-                            }
-                        });
-                    }
-                }
-            }
+            acceptEnabled={false}
         >
-            <div className="flex flex-col gap-2">
-                {robots.map(x => RobotCard({robot: x}))}
+            <div className="flex flex-col gap-2 min-w-[50vw] max-h-[60vh] bg-background-secondary rounded-sm p-2">
+                {robots.map(x => RobotCard({robot: x, select: selectRobot}))}
             </div>
-            {/* <Dropdown
-                options={["Dozer_v2.mira", "Team_2471_(2018)_v7.mira"]}
-                onSelect={(op) => {
-                    selectedRobot = op;
-                }}
-            /> */}
         </Modal>
     )
 }

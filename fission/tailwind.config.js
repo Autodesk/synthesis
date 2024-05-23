@@ -39,16 +39,20 @@ export default {
     ],
     theme: {
         fontFamily: {
-            'artifakt': 'Artifakt',
+            'artifakt-normal': 'Artifakt',
         },
         fontWeight: {
-            'reg': '400',
+            'regular': '400',
+            'medium': '700',
         },
         extend: {
             colors: colors,
             maxHeight: {
                 '70vh': '70vh',
             },
+            spacing: {
+                '20vw': '20vw',
+            }
         },
     },
     safelist: safelist,
