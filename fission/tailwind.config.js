@@ -1,5 +1,3 @@
-/** @type {import('tailwindcss').Config} */
-
 let colors = {
     'interactive-element-solid': 'var(--interactive-element-solid)',
     'interactive-element-left': 'var(--interactive-element-left)',
@@ -33,17 +31,24 @@ let colors = {
 
 let safelist = Object.keys(colors).map(c => "bg-" + c);
 
+/** @type {import('tailwindcss').Config} */
 export default {
     content: [
         "./index.html",
         "./src/**/*.{js,jsx,ts,tsx}",
     ],
     theme: {
+        fontFamily: {
+            'artifakt': 'Artifakt',
+        },
+        fontWeight: {
+            'reg': '400',
+        },
         extend: {
             colors: colors,
             maxHeight: {
                 '70vh': '70vh',
-            }
+            },
         },
     },
     safelist: safelist,

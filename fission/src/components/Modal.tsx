@@ -78,7 +78,7 @@ const Modal: React.FC<ModalProps> = ({
             </div>
             <div
                 id="footer"
-                className="flex justify-between mx-10 py-8 gap-4 text-accept-cancel-button-text"
+                className="flex justify-between px-8 py-6 gap-4 text-accept-cancel-button-text"
             >
                 {cancelEnabled && (
                     <input
