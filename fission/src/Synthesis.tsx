@@ -21,7 +21,6 @@ import MainHUD from "./components/MainHUD"
 import DownloadAssetsModal from "./modals/DownloadAssetsModal"
 import ExitSynthesisModal from "./modals/ExitSynthesisModal"
 import MatchResultsModal from "./modals/MatchResultsModal"
-import SpawningModal from "./modals/SpawningModal"
 import UpdateAvailableModal from "./modals/UpdateAvailableModal"
 import ViewModal from "./modals/ViewModal"
 import ConnectToMultiplayerModal from "./modals/aether/ConnectToMultiplayerModal"
@@ -41,7 +40,6 @@ import DeleteAllThemesModal from "./modals/configuring/theme-editor/DeleteAllThe
 import DeleteThemeModal from "./modals/configuring/theme-editor/DeleteThemeModal"
 import NewThemeModal from "./modals/configuring/theme-editor/NewThemeModal"
 import ThemeEditorModal from "./modals/configuring/theme-editor/ThemeEditorModal"
-import AddFieldModal from "./modals/spawning/AddFieldModal"
 import AddRobotModal from "./modals/spawning/AddRobotModal"
 import MatchModeModal from "./modals/spawning/MatchModeModal"
 import RobotSwitchPanel from "./panels/RobotSwitchPanel"
@@ -54,6 +52,7 @@ import ScoreboardPanel from "./panels/information/ScoreboardPanel"
 import DriverStationPanel from "./panels/simulation/DriverStationPanel"
 import ManageAssembliesModal from './modals/spawning/ManageAssembliesModal.tsx';
 import World from './systems/World.ts';
+import { AddFieldsModal, SpawningModal } from './modals/spawning/SpawningModal.tsx';
 
 const DEFAULT_MIRA_PATH = 'test_mira/Team_2471_(2018)_v7.mira';
 // const DEFAULT_MIRA_PATH = 'test_mira/Dozer_v2.mira';
@@ -243,7 +242,7 @@ const initialModals = [
     <SettingsModal modalId="settings" />,
     <SpawningModal modalId="spawning" />,
     <AddRobotModal modalId="add-robot" />,
-    <AddFieldModal modalId="add-field" />,
+    <AddFieldsModal modalId="add-field" />,
     <ViewModal modalId="view" />,
     <DownloadAssetsModal modalId="download-assets" />,
     <RoboRIOModal modalId="roborio" />,

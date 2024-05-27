@@ -11,7 +11,7 @@ export function UnzipMira(buff: Uint8Array): Uint8Array {
 }
 
 export async function LoadMirabufRemote(fetchLocation: string, useCache: boolean = true): Promise<mirabuf.Assembly | undefined> {
-    const miraBuff = await fetch(fetchLocation, useCache ? undefined : {cache: "no-store"}).then(x => x.blob()).then(x => x.arrayBuffer());
+    const miraBuff = await fetch(encodeURI(fetchLocation), useCache ? undefined : {cache: "no-store"}).then(x => x.blob()).then(x => x.arrayBuffer());
     const byteBuffer = UnzipMira(new Uint8Array(miraBuff));
     return mirabuf.Assembly.decode(byteBuffer);
 }
