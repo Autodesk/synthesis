@@ -40,7 +40,6 @@ import DeleteAllThemesModal from "./modals/configuring/theme-editor/DeleteAllThe
 import DeleteThemeModal from "./modals/configuring/theme-editor/DeleteThemeModal"
 import NewThemeModal from "./modals/configuring/theme-editor/NewThemeModal"
 import ThemeEditorModal from "./modals/configuring/theme-editor/ThemeEditorModal"
-import AddRobotModal from "./modals/spawning/AddRobotModal"
 import MatchModeModal from "./modals/spawning/MatchModeModal"
 import RobotSwitchPanel from "./panels/RobotSwitchPanel"
 import SpawnLocationsPanel from "./panels/SpawnLocationPanel"
@@ -52,7 +51,7 @@ import ScoreboardPanel from "./panels/information/ScoreboardPanel"
 import DriverStationPanel from "./panels/simulation/DriverStationPanel"
 import ManageAssembliesModal from './modals/spawning/ManageAssembliesModal.tsx';
 import World from './systems/World.ts';
-import { AddFieldsModal, SpawningModal } from './modals/spawning/SpawningModal.tsx';
+import { AddRobotsModal, AddFieldsModal, SpawningModal } from './modals/spawning/SpawningModal.tsx';
 
 const DEFAULT_MIRA_PATH = 'test_mira/Team_2471_(2018)_v7.mira';
 // const DEFAULT_MIRA_PATH = 'test_mira/Dozer_v2.mira';
@@ -241,7 +240,7 @@ function Synthesis() {
 const initialModals = [
     <SettingsModal modalId="settings" />,
     <SpawningModal modalId="spawning" />,
-    <AddRobotModal modalId="add-robot" />,
+    <AddRobotsModal modalId="add-robot" />,
     <AddFieldsModal modalId="add-field" />,
     <ViewModal modalId="view" />,
     <DownloadAssetsModal modalId="download-assets" />,
