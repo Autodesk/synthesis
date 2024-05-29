@@ -18,7 +18,7 @@ export default defineConfig({
     cors: false,
     proxy: {
       '/api/mira': {
-        target: 'https://synthesis.autodesk.com/Downloadables/Mira',
+        target: '/Downloadables/Mira',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api\/mira/, '')
@@ -26,6 +26,7 @@ export default defineConfig({
     },
   },
   build: {
-    target: 'esnext'
-  }
+    target: 'esnext',
+  },
+  base: '/h1dd3n/dist'
 })

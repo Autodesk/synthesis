@@ -6,6 +6,13 @@
 2. NodeJS (v20.10.0 recommended)
 3. TypeScript (v4.8.4 recommended) *Unknown if this is actually required*
 
+### Assets
+For the asset pack that will be available in production, download the asset pack [here](https://synthesis.autodesk.com/Downloadables/assetpack.zip) and unzip it.
+Make sure that the Downloadables directory is placed inside of the public directory like so:
+```
+/fission/public/Downloadables/
+```
+
 ### Building
 To build, install all dependencies:
 ```bash
