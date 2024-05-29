@@ -155,8 +155,10 @@ class PhysicsSystem extends WorldSystem {
         return settings.Create();
     }
 
-    public CreateMechanismFromParser(parser: MirabufParser) {
-        const layer = parser.assembly.dynamic ? new LayerReserve(): undefined;
+    public CreateMechanismFromParser(parser: MirabufParser): Mechanism {
+        const layer = parser.assembly.dynamic ? new LayerReserve() : undefined;
+        // const layer = undefined;
+        console.log(`Using layer ${layer?.layer}`)
         const bodyMap = this.CreateBodiesFromParser(parser, layer);
         const rootBody = parser.rootNode;
         const mechanism = new Mechanism(rootBody, bodyMap, layer);
@@ -197,30 +199,41 @@ class PhysicsSystem extends WorldSystem {
             const bodyA = this.GetBody(bodyIdA);
             const bodyB = this.GetBody(bodyIdB);
 
-            let constraint: Jolt.Constraint | undefined = undefined;
+            const constraints: Jolt.Constraint[] = []
+            let listener: Jolt.PhysicsStepListener | undefined = undefined;
 
             switch (jDef.jointMotionType!) {
                 case mirabuf.joint.JointMotion.REVOLUTE:
                     if (this.IsWheel(jDef)) {
                         if (parser.directedGraph.GetAdjacencyList(rnA.id).length > 0) {
-                            constraint = this.CreateWheelConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!)[1];
+                            const res = this.CreateWheelConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!);
+                            constraints.push(res[0])
+                            constraints.push(res[1])
+                            listener = res[2]
                         } else {
-                            constraint = this.CreateWheelConstraint(jInst, jDef, bodyB, bodyA, parser.assembly.info!.version!)[1];
+                            const res = this.CreateWheelConstraint(jInst, jDef, bodyB, bodyA, parser.assembly.info!.version!);
+                            constraints.push(res[0])
+                            constraints.push(res[1])
+                            listener = res[2]
                         }
                     } else {
-                        constraint = this.CreateHingeConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!);
+                        constraints.push(this.CreateHingeConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!));
                     }
                     break;
                 case mirabuf.joint.JointMotion.SLIDER:
-                    constraint = this.CreateSliderConstraint(jInst, jDef, bodyA, bodyB);
+                    constraints.push(this.CreateSliderConstraint(jInst, jDef, bodyA, bodyB));
                     break;
                 default:
                     console.debug('Unsupported joint detected. Skipping...');
                     break;
             }
 
-            if (constraint)
-                mechanism.AddConstraint({ parentBody: bodyIdA, childBody: bodyIdB, constraint: constraint });
+            if (constraints.length > 0) {
+                constraints.forEach(x => mechanism.AddConstraint({ parentBody: bodyIdA, childBody: bodyIdB, constraint: x }))
+            }
+            if (listener) {
+                mechanism.AddStepListener(listener)
+            }
         }
     }
 
@@ -351,7 +364,7 @@ class PhysicsSystem extends WorldSystem {
 
     public CreateWheelConstraint(
     jointInstance: mirabuf.joint.JointInstance, jointDefinition: mirabuf.joint.Joint,
-    bodyMain: Jolt.Body, bodyWheel: Jolt.Body, versionNum: number): [Jolt.Constraint, Jolt.VehicleConstraint] {
+    bodyMain: Jolt.Body, bodyWheel: Jolt.Body, versionNum: number): [Jolt.Constraint, Jolt.VehicleConstraint, Jolt.PhysicsStepListener] {
         // HINGE CONSTRAINT
         const fixedSettings = new JOLT.FixedConstraintSettings();
         
@@ -416,14 +429,14 @@ class PhysicsSystem extends WorldSystem {
         // Wheel Collision Tester
         const tester = new JOLT.VehicleCollisionTesterCastCylinder(bodyWheel.GetObjectLayer(), 0.05);
         vehicleConstraint.SetVehicleCollisionTester(tester);
-        this._joltPhysSystem.AddStepListener(new JOLT.VehicleConstraintStepListener(vehicleConstraint));
-
+        const listener = new JOLT.VehicleConstraintStepListener(vehicleConstraint);
+        this._joltPhysSystem.AddStepListener(listener);
 
         this._joltPhysSystem.AddConstraint(vehicleConstraint);
         this._joltPhysSystem.AddConstraint(fixedConstraint);
 
         this._constraints.push(fixedConstraint, vehicleConstraint);
-        return [fixedConstraint, vehicleConstraint];
+        return [fixedConstraint, vehicleConstraint, listener];
     }
 
     private IsWheel(jDef: mirabuf.joint.Joint) {
@@ -615,11 +628,17 @@ class PhysicsSystem extends WorldSystem {
     }
 
     public DestroyMechanism(mech: Mechanism) {
-        mech.constraints.forEach(x => this._joltPhysSystem.RemoveConstraint(x.constraint));
+        mech.stepListeners.forEach(x => {
+            this._joltPhysSystem.RemoveStepListener(x)
+        })
+        mech.constraints.forEach(x => {
+            this._joltPhysSystem.RemoveConstraint(x.constraint)
+        });
         mech.nodeToBody.forEach(x => {
             this._joltBodyInterface.RemoveBody(x);
-            this._joltBodyInterface.DestroyBody(x);
+            // this._joltBodyInterface.DestroyBody(x);
         });
+        console.log('Mechanism destroyed')
     }
 
     public GetBody(bodyId: Jolt.BodyID) {
@@ -650,18 +669,20 @@ export class LayerReserve {
     private _layer: number;
     private _isReleased: boolean;
 
-    public get layer() { return this._layer; }
-    public get isReleased() { return this._isReleased; }
+    public get layer() { return this._layer }
+    public get isReleased() { return this._isReleased }
 
     public constructor() {
-        this._layer = RobotLayers.pop()!;
-        this._isReleased = false;
+        this._layer = RobotLayers.shift()!
+        console.log(`Layer ${this._layer} Popped`)
+        this._isReleased = false
     }
 
     public Release() {
         if (!this._isReleased) {
             RobotLayers.push(this._layer);
             this._isReleased = true;
+            console.log(`Layer ${this._layer} Released`)
         }
     }
 }

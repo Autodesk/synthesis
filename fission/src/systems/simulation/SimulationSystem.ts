@@ -42,6 +42,16 @@ class SimulationSystem extends WorldSystem {
         this._simMechanisms.clear();
     }
 
+    public UnregisterMechanism(mech: Mechanism): boolean {
+        const layer = this._simMechanisms.get(mech);
+        if (this._simMechanisms.delete(mech)) {
+            layer?.SetBrain(undefined)
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }
 
 class SimulationLayer {

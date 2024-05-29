@@ -64,7 +64,7 @@ const Modal: React.FC<ModalProps> = ({
                     <span className="flex justify-center align-center ml-8 text-icon">
                         {iconEl && iconEl}
                     </span>
-                    <h1 className="text-3xl inline-block align-middle whitespace-nowrap mr-10">
+                    <h1 className="text-3xl font-medium inline-block align-middle whitespace-nowrap mr-10">
                         {name}
                     </h1>
                 </div>
@@ -78,7 +78,7 @@ const Modal: React.FC<ModalProps> = ({
             </div>
             <div
                 id="footer"
-                className="flex justify-between mx-10 py-8 gap-4 text-accept-cancel-button-text"
+                className="flex justify-between px-8 py-6 gap-4 text-accept-cancel-button-text"
             >
                 {cancelEnabled && (
                     <input
