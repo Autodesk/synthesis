@@ -90,6 +90,7 @@ const MainHUD: React.FC = () => {
                     <img src={logo} className="w-[80%] h-[100%] object-contain" />
                     <button onClick={() => setIsOpen(false)}>
                         <GrFormClose
+                            color="bg-icon"
                             size={20}
                             className="text-main-hud-close-icon"
                         />

@@ -14,6 +14,10 @@ class SceneRenderer extends WorldSystem {
 
     private _sceneObjects: Map<number, SceneObject>;
 
+    public get sceneObjects() {
+        return this._sceneObjects;
+    }
+
     public get mainCamera() {
         return this._mainCamera;
     }
@@ -94,7 +98,7 @@ class SceneRenderer extends WorldSystem {
     }
 
     public Destroy(): void {
-        
+        this.RemoveAllSceneObjects()
     }
 
     public RegisterSceneObject<T extends SceneObject>(obj: T): number {
@@ -102,12 +106,22 @@ class SceneRenderer extends WorldSystem {
         obj.id = id;
         this._sceneObjects.set(id, obj);
         obj.Setup();
+
+        console.debug(obj);
+
         return id;
     }
 
     public RemoveAllSceneObjects() {
         this._sceneObjects.forEach(obj => obj.Dispose());
         this._sceneObjects.clear();
+    }
+
+    public RemoveSceneObject(id: number) {
+        const obj = this._sceneObjects.get(id)
+        if (this._sceneObjects.delete(id)) {
+            obj!.Dispose();
+        }
     }
 
     public CreateSphere(radius: number, material?: THREE.Material | undefined): THREE.Mesh {

@@ -78,11 +78,11 @@ export const AddRobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             acceptEnabled={false}
         >
             <div className="flex overflow-y-auto flex-col gap-2 min-w-[50vw] max-h-[60vh] bg-background-secondary rounded-md p-2">
-                <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">{remoteRobots ? 'Default Robots' : 'No Default Robots'}</Label>
+                <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">{remoteRobots ? `${remoteRobots.length} Default Robots` : 'No Default Robots'}</Label>
                 {
                     remoteRobots
                         ? remoteRobots!.map(x => MirabufCard({entry: x, select: selectRobot}))
-                        : 'no fields'
+                        : (<></>)
                 }
             </div>
         </Modal>
@@ -129,11 +129,11 @@ export const AddFieldsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             acceptEnabled={false}
         >
             <div className="flex overflow-y-auto flex-col gap-2 min-w-[50vw] max-h-[60vh] bg-background-secondary rounded-md p-2">
-                <Label size={LabelSize.Medium} className="text-center border-b-2 mt-2 mb-4 mx-6">{remoteFields ? 'Default Fields' : 'No Default Fields'}</Label>
+                <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">{remoteFields ? `${remoteFields.length} Default Fields` : 'No Default Fields'}</Label>
                 {
                     remoteFields
                         ? remoteFields!.map(x => MirabufCard({entry: x, select: selectField}))
-                        : 'no fields'
+                        : (<></>)
                 }
             </div>
         </Modal>

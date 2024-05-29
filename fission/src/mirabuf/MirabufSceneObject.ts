@@ -28,17 +28,16 @@ class MirabufSceneObject extends SceneObject {
     private _mechanism: Mechanism;
 
     public constructor(mirabufInstance: MirabufInstance) {
-        super();
+        super()
 
-        this._mirabufInstance = mirabufInstance;
+        this._mirabufInstance = mirabufInstance
 
-        if (this._mirabufInstance.parser.assembly.dynamic) {
-            this._physicsLayerReserve = new LayerReserve();
+        this._mechanism = World.PhysicsSystem.CreateMechanismFromParser(this._mirabufInstance.parser)
+        if (this._mechanism.layerReserve) {
+            this._physicsLayerReserve = this._mechanism.layerReserve
         }
-
-        this._mechanism = World.PhysicsSystem.CreateMechanismFromParser(this._mirabufInstance.parser);
         
-        this._debugBodies = null;
+        this._debugBodies = null
     }
 
     public Setup(): void {
@@ -99,6 +98,7 @@ class MirabufSceneObject extends SceneObject {
     }
 
     public Dispose(): void {
+        World.SimulationSystem.UnregisterMechanism(this._mechanism)
         World.PhysicsSystem.DestroyMechanism(this._mechanism);
         this._mirabufInstance.Dispose(World.SceneRenderer.scene);
         this._debugBodies?.forEach(x => {
