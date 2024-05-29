@@ -1,4 +1,4 @@
-name: Fission
+name: Fission - Unit Test
 
 on:
   workflow_dispatch: {}
