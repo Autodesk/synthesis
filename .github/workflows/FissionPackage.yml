@@ -1,4 +1,4 @@
-name: Fission
+name: Fission - Package
 
 on:
   workflow_dispatch: {}
