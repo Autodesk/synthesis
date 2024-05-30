@@ -160,6 +160,14 @@ function Synthesis() {
         console.log(urlParams)
 
 		const setup = async () => {
+
+            fetch('/api/auth/').then(x => {
+                console.log('api returned')
+                return x.text()
+            }).then(x => {
+                console.log(`API Result: ${x}`)
+            })
+
 			const miraAssembly = await LoadMirabufRemote(mira_path)
 				.catch(
 					_ => LoadMirabufRemote(DEFAULT_MIRA_PATH)

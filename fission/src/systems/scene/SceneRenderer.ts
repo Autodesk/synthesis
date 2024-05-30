@@ -106,9 +106,6 @@ class SceneRenderer extends WorldSystem {
         obj.id = id;
         this._sceneObjects.set(id, obj);
         obj.Setup();
-
-        console.debug(obj);
-
         return id;
     }
 

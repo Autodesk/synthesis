@@ -2,6 +2,10 @@ import { defineConfig } from 'vite'
 import * as path from 'path'
 import react from '@vitejs/plugin-react-swc'
 
+const basePath = '/h1dd3n/dist/'
+const serverPort = 3000
+const dockerServerPort = 3003
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), /* viteSingleFile() */],
@@ -10,23 +14,28 @@ export default defineConfig({
           { find: '@', replacement: path.resolve(__dirname, 'src') }
       ]
   },
-  server: {    
+  server: {
     // this ensures that the browser opens upon server start
     open: true,
-    // this sets a default port to 3000  
-    port: 3000,
+    // this sets a default port to 3000
+    port: serverPort,
     cors: false,
     proxy: {
       '/api/mira': {
-        target: '/Downloadables/Mira',
+        target: `http://localhost:${serverPort}${basePath}`,
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api\/mira/, '')
+        rewrite: (path) => path.replace(/^\/api\/mira/, '/Downloadables/Mira')
+      },
+      '/api/auth': {
+        target: `http://localhost:${dockerServerPort}/`,
+        changeOrigin: true,
+        secure: false
       }
     },
   },
   build: {
     target: 'esnext',
   },
-  base: '/h1dd3n/dist'
+  base: basePath
 })
