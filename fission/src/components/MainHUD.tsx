@@ -12,6 +12,7 @@ import { motion } from "framer-motion"
 import logo from "../assets/autodesk_logo.png"
 import { ToastType, useToastContext } from "../ToastContext"
 import { Random } from "@/util/Random"
+import APS from "@/aps/APS"
 
 type ButtonProps = {
     value: string
@@ -127,6 +128,11 @@ const MainHUD: React.FC = () => {
                         value={"MultiBot"}
                         icon={<IoPeople />}
                         onClick={() => openPanel("multibot")}
+                    />
+                    <MainHUDButton
+                        value={"APS Login"}
+                        icon={<IoPeople />}
+                        onClick={() => APS.requestAuth()}
                     />
                 </div>
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
