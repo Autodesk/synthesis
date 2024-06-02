@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import * as path from 'path'
 import react from '@vitejs/plugin-react-swc'
 
-const basePath = '/h1dd3n/dist/'
+const basePath = '/fission/'
 const serverPort = 3000
 const dockerServerPort = 3003
 

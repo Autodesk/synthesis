@@ -132,7 +132,7 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton
                         value={"APS Login"}
                         icon={<IoPeople />}
-                        onClick={() => APS.requestAuth()}
+                        onClick={() => APS.requestAuthCode()}
                     />
                 </div>
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">

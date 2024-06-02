@@ -25,7 +25,8 @@
     "react-colorful": "^5.6.1",
     "react-dom": "^18.2.0",
     "react-icons": "^4.10.1",
-    "three": "^0.159.0"
+    "three": "^0.159.0",
+    "typescript-cookie": "^1.0.6"
   },
   "devDependencies": {
     "@emotion/react": "^11.11.3",
