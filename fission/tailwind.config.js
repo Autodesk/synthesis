@@ -52,6 +52,9 @@ export default {
             },
             spacing: {
                 '20vw': '20vw',
+            },
+            aspectRatio: {
+                'toast': '6.44 / 1.0'
             }
         },
     },

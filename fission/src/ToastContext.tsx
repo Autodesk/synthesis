@@ -70,7 +70,7 @@ export const ToastContainer: React.FC = () => {
     const { toasts } = useToastContext()
 
     return (
-        <div className="absolute right-0 bottom-0 pl-8 pb-8 w-min h-fit overflow-hidden flex flex-col gap-2">
+        <div className="absolute right-[5pt] bottom-[5pt] pl-8 pb-8 w-min h-fit overflow-hidden flex flex-col gap-2">
             <AnimatePresence>
                 {toasts.length > 0 &&
                     toasts.map(t => (

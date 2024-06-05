@@ -54,6 +54,8 @@ const MainHUDButton: React.FC<ButtonProps> = ({
     )
 }
 
+export let MainHUD_AddToast: (type: ToastType, title: string, description: string) => void = (a, b, c) => { }
+
 const variants = {
     open: { opacity: 1, y: "-50%", x: 0 },
     closed: { opacity: 0, y: "-50%", x: "-100%" },
@@ -67,6 +69,8 @@ const MainHUD: React.FC = () => {
     const { openPanel } = usePanelControlContext()
     const { addToast } = useToastContext()
     const [isOpen, setIsOpen] = useState(false)
+
+    MainHUD_AddToast = addToast
 
     return (
         <>
@@ -129,11 +133,6 @@ const MainHUD: React.FC = () => {
                         icon={<IoPeople />}
                         onClick={() => openPanel("multibot")}
                     />
-                    <MainHUDButton
-                        value={"APS Login"}
-                        icon={<IoPeople />}
-                        onClick={() => APS.requestAuthCode()}
-                    />
                 </div>
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton
@@ -173,12 +172,22 @@ const MainHUD: React.FC = () => {
                         }}
                     />
                 </div>
-                <MainHUDButton
-                    value={"Home"}
-                    icon={<FaHouse />}
-                    larger={true}
-                    onClick={() => openModal("spawning")}
-                />
+                {APS.latestUserInfo
+                    ?
+                        <MainHUDButton
+                            value={`Hi, ${APS.latestUserInfo.givenName}`}
+                            icon={<FaHouse />}
+                            larger={true}
+                            onClick={() => openModal("spawning")}
+                        />
+                    :
+                        <MainHUDButton
+                            value={`APS Login`}
+                            icon={<FaHouse />}
+                            larger={true}
+                            onClick={() => APS.requestAuthCode()}
+                        />
+                }
             </motion.div>
         </>
     )

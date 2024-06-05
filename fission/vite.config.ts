@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import * as path from 'path'
 import react from '@vitejs/plugin-react-swc'
 
@@ -13,6 +13,10 @@ export default defineConfig({
       alias: [
           { find: '@', replacement: path.resolve(__dirname, 'src') }
       ]
+  },
+  test: {
+    globals: true,
+    environment: 'jsdom'
   },
   server: {
     // this ensures that the browser opens upon server start

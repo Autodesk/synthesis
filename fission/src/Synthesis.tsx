@@ -52,7 +52,6 @@ import DriverStationPanel from "./panels/simulation/DriverStationPanel"
 import ManageAssembliesModal from './modals/spawning/ManageAssembliesModal.tsx';
 import World from './systems/World.ts';
 import { AddRobotsModal, AddFieldsModal, SpawningModal } from './modals/spawning/SpawningModals.tsx';
-import APS from './aps/APS.ts';
 
 const DEFAULT_MIRA_PATH = '/api/mira/Robots/Team 2471 (2018)_v7.mira';
 // const DEFAULT_MIRA_PATH = 'test_mira/Dozer_v2.mira';
@@ -65,10 +64,7 @@ function Synthesis() {
     const urlParams = new URLSearchParams(document.location.search);
     if (urlParams.has('code')) {
         const code = urlParams.get('code')
-        window.open(`https://synthesis.autodesk.com/?code=${code}`)
-        // document.cookie = 'code=why'
         window.opener.setAuthCode(code)
-        window.opener.focus()
         window.close()
     }
     
