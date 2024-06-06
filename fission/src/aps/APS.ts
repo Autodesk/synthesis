@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { MainHUD_AddToast } from "@/components/MainHUD"
 import { Random } from "@/util/Random"
+import getHubs from "./Hubs"
+import getProjects from "./Projects"
 
 const APS_AUTH_KEY = 'aps_auth'
 const APS_USER_INFO_KEY = 'aps_user_info'
@@ -34,7 +37,7 @@ class APS {
 
     static get auth(): APSAuth | undefined {
         const res = window.localStorage.getItem(APS_AUTH_KEY)
-        console.debug('AUTH')
+        // console.debug('AUTH')
         try {
             return res ? JSON.parse(res) as APSAuth : undefined
         } catch (e) {
@@ -53,7 +56,7 @@ class APS {
 
     static get userInfo(): APSUserInfo | undefined {
         let res = window.localStorage.getItem(APS_USER_INFO_KEY)
-        console.debug('USER INFO')
+        // console.debug('USER INFO')
         if (!res) {
             const auth = this.auth
             if (auth) {
@@ -137,9 +140,23 @@ class APS {
         }).then(() => {
             console.log('Preloading user info')
             if (this.auth) {
-                this.loadUserInfo(this.auth!).then(() => {
+                this.loadUserInfo(this.auth!).then(async () => {
                     if (APS.userInfo) {
                         MainHUD_AddToast('info', 'ADSK Login', `Hello, ${APS.userInfo.givenName}`)
+
+                        // Test grabbing files
+                        await getHubs().then(x => {
+                            x?.forEach(async y => {
+                                console.log(`${y.name}: ${y.id}`)
+                                await getProjects(y).then(z => {
+                                    if (z) {
+                                        z.forEach(w => {
+                                            console.log(`${w.name}: ${w.id}`)
+                                        })
+                                    }
+                                })
+                            })
+                        })
                     }
                 })
             }
