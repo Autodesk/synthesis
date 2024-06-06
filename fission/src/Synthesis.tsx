@@ -64,7 +64,7 @@ function Synthesis() {
     const urlParams = new URLSearchParams(document.location.search);
     if (urlParams.has('code')) {
         const code = urlParams.get('code')
-        window.opener.setAuthCode(code)
+        window.opener?.setAuthCode(code)
         window.close()
     }
     

@@ -1,6 +1,10 @@
 import { MainHUD_AddToast } from "@/components/MainHUD"
 import { Random } from "@/util/Random"
-import { getCookie, removeCookie, setCookie } from "typescript-cookie"
+
+const APS_AUTH_KEY = 'aps_auth'
+const APS_USER_INFO_KEY = 'aps_user_info'
+
+export const APS_USER_INFO_UPDATE_EVENT = 'aps_user_info_update'
 
 let lastCall = Date.now()
 
@@ -12,9 +16,10 @@ const CLIENT_ID = 'GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU'
 const CHARACTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 
 interface APSAuth {
-    accessToken: string;
-    refreshToken: string;
-    expiresIn: number;
+    access_token: string;
+    refresh_token: string;
+    expires_in: number;
+    token_type: number;
 }
 
 interface APSUserInfo {
@@ -26,29 +31,67 @@ interface APSUserInfo {
 class APS {
 
     static authCode: string | undefined = undefined
-    static auth: APSAuth | undefined = undefined
-    static latestUserInfo: APSUserInfo | undefined = undefined
 
-    static async removeCookieTest() {
-        setCookie('code', 'hello')
-        if (getCookie('code')) {
-            removeCookie('code')
-            if (getCookie('code')) {
-                console.log('Failed to remove cookie')
-            } else {
-                console.log('Cookie Test Passed')
-            }
-        } else {
-            console.log('Failed to set cookie')
+    static get auth(): APSAuth | undefined {
+        const res = window.localStorage.getItem(APS_AUTH_KEY)
+        console.debug('AUTH')
+        try {
+            return res ? JSON.parse(res) as APSAuth : undefined
+        } catch (e) {
+            console.warn(`Failed to parse stored APS auth data: ${e}`)
+            return undefined
         }
+    }
+
+    static set auth(a: APSAuth | undefined) {
+        window.localStorage.removeItem(APS_AUTH_KEY)
+        if (a) {
+            window.localStorage.setItem(APS_AUTH_KEY, JSON.stringify(a))
+        }
+        this.userInfo = undefined
+    }
+
+    static get userInfo(): APSUserInfo | undefined {
+        let res = window.localStorage.getItem(APS_USER_INFO_KEY)
+        console.debug('USER INFO')
+        if (!res) {
+            const auth = this.auth
+            if (auth) {
+                console.debug('No information, loading from auth token')
+                this.loadUserInfo(auth)
+                res = window.localStorage.getItem(APS_USER_INFO_KEY)
+            } else {
+                return undefined
+            }
+        }
+
+        try {
+            return res ? JSON.parse(res) as APSUserInfo : undefined
+        } catch (e) {
+            console.warn(`Failed to parse stored APS user info: ${e}`)
+            return undefined
+        }
+    }
+
+    static set userInfo(info: APSUserInfo | undefined) {
+        window.localStorage.removeItem(APS_USER_INFO_KEY)
+        if (info) {
+            window.localStorage.setItem(APS_USER_INFO_KEY, JSON.stringify(info))
+        }
+
+        document.dispatchEvent(new Event(APS_USER_INFO_UPDATE_EVENT))
+    }
+
+    static async logout() {
+        this.auth = undefined
     }
 
     static async requestAuthCode() {
         if (Date.now() - lastCall > delay) {
             lastCall = Date.now()
-            const callbackUrl = import.meta.env.DEV ? `http://localhost:3000${import.meta.env.BASE_URL}` : `https://synthesis.autodesk.com${import.meta.env.BASE_URL}`
-            console.debug(`Setting callback url to '${callbackUrl}'`)
-            removeCookie('code')
+            const callbackUrl = import.meta.env.DEV
+                ? `http://localhost:3000${import.meta.env.BASE_URL}`
+                : `https://synthesis.autodesk.com${import.meta.env.BASE_URL}`
 
             const [ codeVerifier, codeChallenge ] = await this.codeChallenge();
 
@@ -89,30 +132,39 @@ class APS {
     static async convertAuthToken(code: string, codeVerifier: string) {
         const authUrl = import.meta.env.DEV ? `http://localhost:3003/api/aps/code/` : `https://synthesis.autodesk.com/api/aps/code/`
         fetch(`${authUrl}?code=${code}&code_verifier=${codeVerifier}`).then(x => x.json()).then(x => {
-            this.auth = { accessToken: x.response.access_token, expiresIn: x.response.expires_in, refreshToken: x.response.refresh_token }
-            console.log(x)
+            this.auth = x.response as APSAuth;
+            // console.log(x.response)
         }).then(() => {
-            if (this.auth)
-                this.getUserData(this.auth!)
+            console.log('Preloading user info')
+            if (this.auth) {
+                this.loadUserInfo(this.auth!).then(() => {
+                    if (APS.userInfo) {
+                        MainHUD_AddToast('info', 'ADSK Login', `Hello, ${APS.userInfo.givenName}`)
+                    }
+                })
+            }
         })
     }
 
-    static async getUserData(auth: APSAuth) {
-        fetch('https://api.userprofile.autodesk.com/userinfo', {
+    static async loadUserInfo(auth: APSAuth) {
+        // console.log(auth.access_token)
+        console.log('Loading user information')
+        await fetch('https://api.userprofile.autodesk.com/userinfo', {
             method: 'GET',
             headers: {
-                'Authorization': auth.accessToken
+                'Authorization': auth.access_token
             }
         }).then(x => x.json()).then(x => {
 
-            this.latestUserInfo = {
+            const info: APSUserInfo = {
                 name: x.name,
                 givenName: x.given_name,
                 picture: x.picture
             }
 
-            MainHUD_AddToast('info', 'ADSK Login', `Hello, ${this.latestUserInfo.givenName}`)
-            console.log(`Hello, ${this.latestUserInfo.givenName}`)
+            // console.log(x)
+
+            this.userInfo = info;
         })
     }
 
@@ -143,5 +195,8 @@ class APS {
 Window.prototype.setAuthCode = (code: string) => {
     APS.authCode = code
 }
+
+// window.localStorage.removeItem(APS_AUTH_KEY)
+// window.localStorage.removeItem(APS_USER_INFO_KEY)
 
 export default APS
