@@ -142,6 +142,11 @@ const MainHUD: React.FC = () => {
                         icon={<IoPeople />}
                         onClick={() => openPanel("multibot")}
                     />
+                    <MainHUDButton
+                        value={"Import Mira"}
+                        icon={<IoPeople />}
+                        onClick={() => openModal("import-mirabuf")}
+                    />
                 </div>
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton

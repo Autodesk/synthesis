@@ -143,20 +143,6 @@ class APS {
                 this.loadUserInfo(this.auth!).then(async () => {
                     if (APS.userInfo) {
                         MainHUD_AddToast('info', 'ADSK Login', `Hello, ${APS.userInfo.givenName}`)
-
-                        // Test grabbing files
-                        await getHubs().then(x => {
-                            x?.forEach(async y => {
-                                console.log(`${y.name}: ${y.id}`)
-                                await getProjects(y).then(z => {
-                                    if (z) {
-                                        z.forEach(w => {
-                                            console.log(`${w.name}: ${w.id}`)
-                                        })
-                                    }
-                                })
-                            })
-                        })
                     }
                 })
             }
