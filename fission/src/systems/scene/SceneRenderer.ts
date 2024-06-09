@@ -3,6 +3,7 @@ import SceneObject from './SceneObject';
 import WorldSystem from '../WorldSystem';
 
 const CLEAR_COLOR = 0x121212;
+const GROUND_COLOR = 0x73937E
 
 let nextSceneObjectId = 1;
 
@@ -74,7 +75,7 @@ class SceneRenderer extends WorldSystem {
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
         this._scene.add(ambientLight);
 
-        const ground = new THREE.Mesh(new THREE.BoxGeometry(10, 1, 10), this.CreateToonMaterial(CLEAR_COLOR));
+        const ground = new THREE.Mesh(new THREE.BoxGeometry(10, 1, 10), this.CreateToonMaterial(GROUND_COLOR));
         ground.position.set(0.0, -2.0, 0.0);
         ground.receiveShadow = true;
         ground.castShadow = true;

@@ -1,22 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { MainHUD_AddToast } from "@/components/MainHUD"
 import { Random } from "@/util/Random"
-import getHubs from "./Hubs"
-import getProjects from "./Projects"
+// import { Mutex } from 'async-mutex'
 
 const APS_AUTH_KEY = 'aps_auth'
 const APS_USER_INFO_KEY = 'aps_user_info'
 
 export const APS_USER_INFO_UPDATE_EVENT = 'aps_user_info_update'
 
-let lastCall = Date.now()
-
 const delay = 1000
 const authCodeTimeout = 200000
 
 const CLIENT_ID = 'GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU'
-
 const CHARACTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+
+let lastCall = Date.now()
 
 interface APSAuth {
     access_token: string;
@@ -30,6 +28,8 @@ interface APSUserInfo {
     picture: string;
     givenName: string;
 }
+
+// const authMutex = new Mutex()
 
 class APS {
 
@@ -55,18 +55,18 @@ class APS {
     }
 
     static get userInfo(): APSUserInfo | undefined {
-        let res = window.localStorage.getItem(APS_USER_INFO_KEY)
+        const res = window.localStorage.getItem(APS_USER_INFO_KEY)
         // console.debug('USER INFO')
-        if (!res) {
-            const auth = this.auth
-            if (auth) {
-                console.debug('No information, loading from auth token')
-                this.loadUserInfo(auth)
-                res = window.localStorage.getItem(APS_USER_INFO_KEY)
-            } else {
-                return undefined
-            }
-        }
+        // if (!res) {
+        //     const auth = this.auth
+        //     if (auth) {
+        //         console.debug('No information, loading from auth token')
+        //         this.loadUserInfo(auth)
+        //         res = window.localStorage.getItem(APS_USER_INFO_KEY)
+        //     } else {
+        //         return undefined
+        //     }
+        // }
 
         try {
             return res ? JSON.parse(res) as APSUserInfo : undefined
