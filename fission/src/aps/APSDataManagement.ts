@@ -152,6 +152,6 @@ export async function getFolderData(project: Project, folder: Folder): Promise<D
     }
 }
 
-export async function downloadData(project: Project, data: Data) {
-    
-}
+// export async function downloadData(project: Project, data: Data) {
+
+// }
