@@ -15,7 +15,7 @@
     "format": "npm run prettier:fix && npm run lint:fix",
     "build:prod": "tsc && vite build --base=/fission/",
     "assetpack": "run-script-os",
-    "assetpack:darwin:linxu:default": "curl -o public/assetpack.zip https://synthesis.autodesk.com/Downloadables/assetpack.zip && unzip -o public/assetpack.zip -d public/",
+    "assetpack:nix": "curl -o public/assetpack.zip https://synthesis.autodesk.com/Downloadables/assetpack.zip && unzip -o public/assetpack.zip -d public/",
     "assetpack:win32": "echo todo"
   },
   "dependencies": {
