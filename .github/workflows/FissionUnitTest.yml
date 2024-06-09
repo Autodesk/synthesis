@@ -22,6 +22,7 @@ jobs:
       run: |
         cd fission
         npm install
+        npm run assetpack
     - name: Unit Tests
       id: unit-tests
       run: |

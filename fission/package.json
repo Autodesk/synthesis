@@ -13,7 +13,10 @@
     "prettier": "npx prettier src --check",
     "prettier:fix": "npm run prettier --write",
     "format": "npm run prettier:fix && npm run lint:fix",
-    "build:prod": "tsc && vite build --base=/fission/"
+    "build:prod": "tsc && vite build --base=/fission/",
+    "assetpack": "run-script-os",
+    "assetpack:darwin:linxu": "curl -o public/assetpack.zip https://synthesis.autodesk.com/Downloadables/assetpack.zip && unzip public/assetpack.zip -d public/",
+    "assetpack:win32": "echo todo"
   },
   "dependencies": {
     "@barclah/jolt-physics": "^0.19.3",

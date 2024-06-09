@@ -5,30 +5,6 @@ import MirabufParser, { RigidNodeReadOnly } from "../mirabuf/MirabufParser";
 import { LoadMirabufLocal } from "../mirabuf/MirabufLoader";
 
 describe('Mirabuf Parser Tests', () => {
-    // test('Get Dozer JSON', () => {
-    //     const dozer = LoadMirabufLocal('./public/test_mira/Dozer_v2.mira');
-    //     Object.values(dozer.data!.parts!.partDefinitions!).forEach(x => x.bodies = new Array<mirabuf.IBody>());
-    //     const json = JSON.stringify(dozer);
-    //     console.log(json);
-    // });
-
-    // test('Test Load TestCube_v1.mira (Uncompressed)', () => {
-    //     const testCubeMira = LoadMirabufLocal('./public/test_mira/TestCube_v1.mira');
-        
-    //     expect(testCubeMira).toBeDefined();
-    //     expect(testCubeMira.info!.name!).toBe('TestCube v1');
-    // });
-
-    // test('Generate Rigid Nodes (TestCube_v1.mira)', () => {
-    //     const testCubeMira = LoadMirabufLocal('./public/test_mira/TestCube_v1.mira');
-
-    //     const parser = new MirabufParser(testCubeMira);
-    //     const rn = parser.rigidNodes;
-
-    //     expect(filterNonPhysicsNodes(rn, testCubeMira).length).toBe(1);
-    //     // printRigidNodeParts(rn, testCubeMira);
-    // });
-
     test('Generate Rigid Nodes (Dozer_v9.mira)', () => {
         const spikeMira = LoadMirabufLocal('./public/Downloadables/Mira/Robots/Dozer_v9.mira');
 
@@ -36,25 +12,13 @@ describe('Mirabuf Parser Tests', () => {
         const rn = t.rigidNodes;
 
         expect(filterNonPhysicsNodes(rn, spikeMira).length).toBe(7);
-        // printRigidNodeParts(rn, spikeMira);
     });
-
-    // test('Generate Rigid Nodes (PhysicsSpikeTest_v1.mira)', () => {
-    //     const spikeMira = LoadMirabufLocal('./public/test_mira/PhysicsSpikeTest_v1.mira');
-
-    //     const t = new MirabufParser(spikeMira);
-    //     const rn = t.rigidNodes;
-
-    //     expect(filterNonPhysicsNodes(rn, spikeMira).length).toBe(4);
-    //     // printRigidNodeParts(rn, spikeMira);
-    // });
 
     test('Generate Rigid Nodes (FRC_Field_2018_v14.mira)', () => {
         const field = LoadMirabufLocal('./public/Downloadables/Mira/Fields/FRC Field 2018_v13.mira');
 
         const t = new MirabufParser(field);
 
-        // printRigidNodeParts(t.rigidNodes, field);
         expect(filterNonPhysicsNodes(t.rigidNodes, field).length).toBe(34);
     });
 
@@ -63,7 +27,6 @@ describe('Mirabuf Parser Tests', () => {
 
         const t = new MirabufParser(mm);
 
-        // printRigidNodeParts(t.rigidNodes, mm);
         expect(filterNonPhysicsNodes(t.rigidNodes, mm).length).toBe(10);
     });
 });
