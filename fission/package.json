@@ -15,7 +15,7 @@
     "format": "npm run prettier:fix && npm run lint:fix",
     "build:prod": "tsc && vite build --base=/fission/",
     "assetpack": "run-script-os",
-    "assetpack:darwin:linxu": "curl -o public/assetpack.zip https://synthesis.autodesk.com/Downloadables/assetpack.zip && unzip public/assetpack.zip -d public/",
+    "assetpack:darwin:linxu": "curl -o public/assetpack.zip https://synthesis.autodesk.com/Downloadables/assetpack.zip && unzip -o public/assetpack.zip -d public/",
     "assetpack:win32": "echo todo"
   },
   "dependencies": {
@@ -30,6 +30,7 @@
     "react-colorful": "^5.6.1",
     "react-dom": "^18.2.0",
     "react-icons": "^4.10.1",
+    "run-script-os": "^1.1.6",
     "three": "^0.159.0",
     "typescript-cookie": "^1.0.6"
   },
