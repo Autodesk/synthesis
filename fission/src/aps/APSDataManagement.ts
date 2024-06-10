@@ -96,8 +96,6 @@ export async function getProjects(hub: Hub): Promise<Project[] | undefined> {
                 'Authorization': `Bearer ${auth.access_token}`
             }
         }).then(x => x.json()).then(x => {
-            // console.log('Project Data')
-            // console.log(x)
             if ((x.data as any[]).length > 0) {
                 return (x.data as any[]).map<Project>(y => {
                     return {
@@ -151,7 +149,3 @@ export async function getFolderData(project: Project, folder: Folder): Promise<D
         return undefined
     }
 }
-
-// export async function downloadData(project: Project, data: Data) {
-
-// }

@@ -13,6 +13,11 @@ Make sure that the Downloadables directory is placed inside of the public direct
 /fission/public/Downloadables/
 ```
 
+This can be accomplished with the `assetpack` npm script:
+```
+npm run assetpack
+```
+
 ### Building
 To build, install all dependencies:
 ```bash
@@ -32,6 +37,7 @@ npm i
 | `prettier` | Runs prettier on the project as a check. |
 | `prettier:fix` | Runs prettier on the project to fix any issues with formating. **DO NOT USE**, I don't like the current format it uses. |
 | `format` | Runs `prettier:fix` and `lint:fix`. **Do not use** for the same reasons as `prettier:fix`. |
+| `assetpack` | Downloads the assetpack and unzips/installs it in the correct location. |
 
 ## Core Systems
 These core systems make up the bulk of the vital technologies to make Synthesis work. The idea is that these systems will serve as a

@@ -1,6 +1,5 @@
 import { MainHUD_AddToast } from "@/components/MainHUD"
 import { Random } from "@/util/Random"
-// import { Mutex } from 'async-mutex'
 
 const APS_AUTH_KEY = 'aps_auth'
 const APS_USER_INFO_KEY = 'aps_user_info'
@@ -28,15 +27,12 @@ interface APSUserInfo {
     givenName: string;
 }
 
-// const authMutex = new Mutex()
-
 class APS {
 
     static authCode: string | undefined = undefined
 
     static get auth(): APSAuth | undefined {
         const res = window.localStorage.getItem(APS_AUTH_KEY)
-        // console.debug('AUTH')
         try {
             return res ? JSON.parse(res) as APSAuth : undefined
         } catch (e) {
@@ -55,17 +51,6 @@ class APS {
 
     static get userInfo(): APSUserInfo | undefined {
         const res = window.localStorage.getItem(APS_USER_INFO_KEY)
-        // console.debug('USER INFO')
-        // if (!res) {
-        //     const auth = this.auth
-        //     if (auth) {
-        //         console.debug('No information, loading from auth token')
-        //         this.loadUserInfo(auth)
-        //         res = window.localStorage.getItem(APS_USER_INFO_KEY)
-        //     } else {
-        //         return undefined
-        //     }
-        // }
 
         try {
             return res ? JSON.parse(res) as APSUserInfo : undefined
@@ -135,7 +120,6 @@ class APS {
         const authUrl = import.meta.env.DEV ? `http://localhost:3003/api/aps/code/` : `https://synthesis.autodesk.com/api/aps/code/`
         fetch(`${authUrl}?code=${code}&code_verifier=${codeVerifier}`).then(x => x.json()).then(x => {
             this.auth = x.response as APSAuth;
-            // console.log(x.response)
         }).then(() => {
             console.log('Preloading user info')
             if (this.auth) {
@@ -149,7 +133,6 @@ class APS {
     }
 
     static async loadUserInfo(auth: APSAuth) {
-        // console.log(auth.access_token)
         console.log('Loading user information')
         await fetch('https://api.userprofile.autodesk.com/userinfo', {
             method: 'GET',
@@ -163,8 +146,6 @@ class APS {
                 givenName: x.given_name,
                 picture: x.picture
             }
-
-            // console.log(x)
 
             this.userInfo = info;
         })
@@ -197,8 +178,5 @@ class APS {
 Window.prototype.setAuthCode = (code: string) => {
     APS.authCode = code
 }
-
-// window.localStorage.removeItem(APS_AUTH_KEY)
-// window.localStorage.removeItem(APS_USER_INFO_KEY)
 
 export default APS

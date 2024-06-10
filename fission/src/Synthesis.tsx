@@ -55,10 +55,6 @@ import { AddRobotsModal, AddFieldsModal, SpawningModal } from './modals/spawning
 import ImportMirabufModal from './modals/mirabuf/ImportMirabufModal.tsx';
 
 const DEFAULT_MIRA_PATH = '/api/mira/Robots/Team 2471 (2018)_v7.mira';
-// const DEFAULT_MIRA_PATH = 'test_mira/Dozer_v2.mira';
-// const DEFAULT_MIRA_PATH = 'test_mira/PhysicsSpikeTest_v1.mira';
-// const DEFAULT_MIRA_PATH = 'test_mira/SliderTestFission_v2.mira';
-// const DEFAULT_MIRA_PATH = 'test_mira/HingeTestFission_v1.mira';
 
 function Synthesis() {
 
@@ -169,13 +165,6 @@ function Synthesis() {
         console.log(urlParams)
 
 		const setup = async () => {
-
-            // fetch('/api/auth/').then(x => {
-            //     console.log('api returned')
-            //     return x.json()
-            // }).then(x => {
-            //     console.log(`API Result: ${x}`)
-            // })
 
 			const miraAssembly = await LoadMirabufRemote(mira_path)
 				.catch(
