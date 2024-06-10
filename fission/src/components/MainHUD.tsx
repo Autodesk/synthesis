@@ -12,6 +12,7 @@ import { motion } from "framer-motion"
 import logo from "../assets/autodesk_logo.png"
 import { ToastType, useToastContext } from "../ToastContext"
 import { Random } from "@/util/Random"
+import WPILibConnector from "@/systems/simulation/wpilib_brain/WPILibConnector"
 
 type ButtonProps = {
     value: string
@@ -149,6 +150,11 @@ const MainHUD: React.FC = () => {
                         value={"Drivetrain"}
                         icon={<FaCar />}
                         onClick={() => openModal("drivetrain")}
+                    />
+                    <MainHUDButton
+                        value={"WS Test"}
+                        icon={<FaCar />}
+                        onClick={() => WPILibConnector.getInstance().then(_ => console.debug('WS connector loaded'))}
                     />
                     <MainHUDButton
                         value={"Toasts"}

@@ -19,6 +19,7 @@
     "@barclah/jolt-physics": "^0.19.3",
     "@react-three/drei": "^9.96.5",
     "@react-three/fiber": "^8.15.15",
+    "async-mutex": "^0.5.0",
     "colord": "^2.9.3",
     "framer-motion": "^10.13.1",
     "react": "^18.2.0",
