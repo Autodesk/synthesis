@@ -12,7 +12,11 @@ import { motion } from "framer-motion"
 import logo from "../assets/autodesk_logo.png"
 import { ToastType, useToastContext } from "../ToastContext"
 import { Random } from "@/util/Random"
-import WPILibConnector from "@/systems/simulation/wpilib_brain/WPILibConnector"
+import { worker } from "@/Synthesis"
+import World from "@/systems/World"
+import SceneObject from "@/systems/scene/SceneObject"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 
 type ButtonProps = {
     value: string
@@ -37,7 +41,7 @@ const MainHUDButton: React.FC<ButtonProps> = ({
             {larger && icon}
             {!larger && (
                 <span
-                    onClick={onClick}
+                    // onClick={onClick}
                     className="absolute left-3 text-main-hud-icon"
                 >
                     {icon}
@@ -48,7 +52,7 @@ const MainHUDButton: React.FC<ButtonProps> = ({
                 className={`px-2 ${larger ? "py-2" : "py-1 ml-6"
                     } text-main-text cursor-pointer`}
                 value={value}
-                onClick={onClick}
+                // onClick={onClick}
             />
         </div>
     )
@@ -154,7 +158,17 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton
                         value={"WS Test"}
                         icon={<FaCar />}
-                        onClick={() => WPILibConnector.getInstance().then(_ => console.debug('WS connector loaded'))}
+                        onClick={() => {
+                            worker?.postMessage({ command: 'connect' });
+                            const miraObjs = [...World.SceneRenderer.sceneObjects.entries()]
+                                .filter(x => x[1] instanceof MirabufSceneObject)
+                            console.log(`Number of mirabuf scene objects: ${miraObjs.length}`)
+                            if (miraObjs.length > 0) {
+                                const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
+                                const simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)
+                                simLayer?.SetBrain(new WPILibBrain(mechanism))
+                            }
+                        }}
                     />
                     <MainHUDButton
                         value={"Toasts"}

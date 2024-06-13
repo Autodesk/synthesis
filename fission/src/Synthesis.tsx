@@ -53,11 +53,15 @@ import ManageAssembliesModal from './modals/spawning/ManageAssembliesModal.tsx';
 import World from './systems/World.ts';
 import { AddRobotsModal, AddFieldsModal, SpawningModal } from './modals/spawning/SpawningModals.tsx';
 
+import WPILibWSWorker from '@/systems/simulation/wpilib_brain/WPILibWSWorker.ts?worker'
+
 const DEFAULT_MIRA_PATH = 'test_mira/Team_2471_(2018)_v7.mira';
 // const DEFAULT_MIRA_PATH = 'test_mira/Dozer_v2.mira';
 // const DEFAULT_MIRA_PATH = 'test_mira/PhysicsSpikeTest_v1.mira';
 // const DEFAULT_MIRA_PATH = 'test_mira/SliderTestFission_v2.mira';
 // const DEFAULT_MIRA_PATH = 'test_mira/HingeTestFission_v1.mira';
+
+export let worker: Worker | undefined = undefined
 
 function Synthesis() {
     const { openModal, closeModal, getActiveModalElement } =
@@ -148,6 +152,9 @@ function Synthesis() {
 	useEffect(() => {
 
         World.InitWorld();
+
+        // worker = new Worker(new URL('systems/simulation/wpilib_brain/Worker.ts', import.meta.url))
+        worker = new WPILibWSWorker()
 
         let mira_path = DEFAULT_MIRA_PATH;
 

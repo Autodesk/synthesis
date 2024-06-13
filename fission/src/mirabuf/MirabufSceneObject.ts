@@ -27,6 +27,8 @@ class MirabufSceneObject extends SceneObject {
 
     private _mechanism: Mechanism;
 
+    public get mechanism(): Mechanism { return this._mechanism }
+
     public constructor(mirabufInstance: MirabufInstance) {
         super()
 
