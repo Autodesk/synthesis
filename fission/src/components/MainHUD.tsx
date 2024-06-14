@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { BsCodeSquare } from "react-icons/bs"
 import { FaCar, FaGear, FaHouse, FaMagnifyingGlass, FaPlus } from "react-icons/fa6"
 import { BiMenuAltLeft } from "react-icons/bi"
@@ -12,6 +12,8 @@ import { motion } from "framer-motion"
 import logo from "../assets/autodesk_logo.png"
 import { ToastType, useToastContext } from "../ToastContext"
 import { Random } from "@/util/Random"
+import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
+import { UserIcon } from "./UserIcon"
 
 type ButtonProps = {
     value: string
@@ -53,6 +55,8 @@ const MainHUDButton: React.FC<ButtonProps> = ({
     )
 }
 
+export let MainHUD_AddToast: (type: ToastType, title: string, description: string) => void = (a, b, c) => { }
+
 const variants = {
     open: { opacity: 1, y: "-50%", x: 0 },
     closed: { opacity: 0, y: "-50%", x: "-100%" },
@@ -60,12 +64,22 @@ const variants = {
 
 const MainHUD: React.FC = () => {
 
-    console.debug('Creating MainHUD');
+    // console.debug('Creating MainHUD');
 
     const { openModal } = useModalControlContext()
     const { openPanel } = usePanelControlContext()
     const { addToast } = useToastContext()
     const [isOpen, setIsOpen] = useState(false)
+
+    MainHUD_AddToast = addToast
+
+    const [userInfo, setUserInfo] = useState(APS.userInfo);
+
+    useEffect(() => {
+        document.addEventListener(APS_USER_INFO_UPDATE_EVENT, () => {
+            setUserInfo(APS.userInfo)
+        });
+    }, [])
 
     return (
         <>
@@ -128,6 +142,11 @@ const MainHUD: React.FC = () => {
                         icon={<IoPeople />}
                         onClick={() => openPanel("multibot")}
                     />
+                    <MainHUDButton
+                        value={"Import Mira"}
+                        icon={<IoPeople />}
+                        onClick={() => openModal("import-mirabuf")}
+                    />
                 </div>
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton
@@ -167,12 +186,22 @@ const MainHUD: React.FC = () => {
                         }}
                     />
                 </div>
-                <MainHUDButton
-                    value={"Home"}
-                    icon={<FaHouse />}
-                    larger={true}
-                    onClick={() => openModal("spawning")}
-                />
+                {userInfo
+                    ?
+                        <MainHUDButton
+                            value={`Hi, ${userInfo.givenName}`}
+                            icon={<UserIcon className="h-[20pt] m-[5pt] rounded-full" />}
+                            larger={true}
+                            onClick={() => APS.logout()}
+                        />
+                    :
+                        <MainHUDButton
+                            value={`APS Login`}
+                            icon={<IoPeople />}
+                            larger={true}
+                            onClick={() => APS.requestAuthCode()}
+                        />
+                }
             </motion.div>
         </>
     )

@@ -674,7 +674,6 @@ export class LayerReserve {
 
     public constructor() {
         this._layer = RobotLayers.shift()!
-        console.log(`Layer ${this._layer} Popped`)
         this._isReleased = false
     }
 
@@ -682,7 +681,6 @@ export class LayerReserve {
         if (!this._isReleased) {
             RobotLayers.push(this._layer);
             this._isReleased = true;
-            console.log(`Layer ${this._layer} Released`)
         }
     }
 }

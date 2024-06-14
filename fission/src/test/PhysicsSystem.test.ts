@@ -66,7 +66,7 @@ describe('Physics Sansity Checks', () => {
 
 describe('Mirabuf Physics Loading', () => {
     test('Body Loading (Dozer)', () => {
-        const assembly = LoadMirabufLocal('./public/test_mira/Dozer_v2.mira');
+        const assembly = LoadMirabufLocal('./public/Downloadables/Mira/Robots/Dozer_v9.mira');
         const parser = new MirabufParser(assembly);
         const physSystem = new PhysicsSystem();
         const mapping = physSystem.CreateBodiesFromParser(parser, new LayerReserve());
@@ -75,7 +75,7 @@ describe('Mirabuf Physics Loading', () => {
     });
 
     test('Body Loading (Team_2471_(2018)_v7.mira)', () => {
-        const assembly = LoadMirabufLocal('./public/test_mira/Team_2471_(2018)_v7.mira');
+        const assembly = LoadMirabufLocal('./public/Downloadables/Mira/Robots/Team 2471 (2018)_v7.mira');
         const parser = new MirabufParser(assembly);
         const physSystem = new PhysicsSystem();
         const mapping = physSystem.CreateBodiesFromParser(parser, new LayerReserve());
