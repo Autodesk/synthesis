@@ -1192,12 +1192,12 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             # defaultPath = self.fp
             # defaultPath = os.getenv()
 
-            # if mode == 5:
-            #     savepath = FileDialogConfig.SaveFileDialog(
-            #         defaultPath=self.fp, ext="Synthesis File (*.synth)"
-            #     )
-            # else:
-            #     savepath = FileDialogConfig.SaveFileDialog(defaultPath=self.fp)
+            if mode == 5:
+                savepath = FileDialogConfig.SaveFileDialog(
+                    defaultPath=self.fp, ext="Synthesis File (*.synth)"
+                )
+            else:
+                savepath = FileDialogConfig.SaveFileDialog(defaultPath=self.fp)
 
             processedFileName = gm.app.activeDocument.name.replace(" ", "_")
             dropdownExportMode = INPUTS_ROOT.itemById("mode")
@@ -1206,55 +1206,55 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             elif dropdownExportMode.selectedItem.index == 1:
                 isRobot = False
 
-            if platform.system() == "Windows":
-                if isRobot:
-                    if export_as_part_boolean.value:
-                        savepath = (
-                            os.getenv("APPDATA")
-                            + "\\Autodesk\\Synthesis\\MixAndMatch\\Mira\\"
-                            + processedFileName
-                            + ".mira"
-                        )
-                    else:
-                        savepath = (
-                            os.getenv("APPDATA")
-                            + "\\Autodesk\\Synthesis\\Mira\\"
-                            + processedFileName
-                            + ".mira"
-                        )
-                else:
-                    savepath = (
-                        os.getenv("APPDATA")
-                        + "\\Autodesk\\Synthesis\\Mira\\Fields\\"
-                        + processedFileName
-                        + ".mira"
-                    )
-            else:
-                from os.path import expanduser
+            # if platform.system() == "Windows":
+            #     if isRobot:
+            #         if export_as_part_boolean.value:
+            #             savepath = (
+            #                 os.getenv("APPDATA")
+            #                 + "\\Autodesk\\Synthesis\\MixAndMatch\\Mira\\"
+            #                 + processedFileName
+            #                 + ".mira"
+            #             )
+            #         else:
+            #             savepath = (
+            #                 os.getenv("APPDATA")
+            #                 + "\\Autodesk\\Synthesis\\Mira\\"
+            #                 + processedFileName
+            #                 + ".mira"
+            #             )
+            #     else:
+            #         savepath = (
+            #             os.getenv("APPDATA")
+            #             + "\\Autodesk\\Synthesis\\Mira\\Fields\\"
+            #             + processedFileName
+            #             + ".mira"
+            #         )
+            # else:
+            #     from os.path import expanduser
 
-                home = expanduser("~")
-                if isRobot:
-                    if export_as_part_boolean.value:
-                        savepath = (
-                            home
-                            + "/.config/Autodesk/Synthesis/MixAndMatch/Mira/"
-                            + processedFileName
-                            + ".mira"
-                        )
-                    else:
-                        savepath = (
-                            home
-                            + "/.config/Autodesk/Synthesis/Mira/"
-                            + processedFileName
-                            + ".mira"
-                        )
-                else:
-                    savepath = (
-                        home
-                        + "/.config/Autodesk/Synthesis/Mira/Fields/"
-                        + processedFileName
-                        + ".mira"
-                    )
+            #     home = expanduser("~")
+            #     if isRobot:
+            #         if export_as_part_boolean.value:
+            #             savepath = (
+            #                 home
+            #                 + "/.config/Autodesk/Synthesis/MixAndMatch/Mira/"
+            #                 + processedFileName
+            #                 + ".mira"
+            #             )
+            #         else:
+            #             savepath = (
+            #                 home
+            #                 + "/.config/Autodesk/Synthesis/Mira/"
+            #                 + processedFileName
+            #                 + ".mira"
+            #             )
+            #     else:
+            #         savepath = (
+            #             home
+            #             + "/.config/Autodesk/Synthesis/Mira/Fields/"
+            #             + processedFileName
+            #             + ".mira"
+            #         )
 
             if savepath == False:
                 # save was canceled

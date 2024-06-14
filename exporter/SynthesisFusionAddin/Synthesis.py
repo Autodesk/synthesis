@@ -1,3 +1,7 @@
+from http.server import HTTPServer
+from threading import Thread
+
+from .src.Fission.HttpServer import MyHTTPHandler
 from .src.general_imports import root_logger, gm, INTERNAL_ID, APP_NAME, DESCRIPTION
 
 from .src.UI import HUI, Handlers, Camera, Helper, ConfigCommand
@@ -11,6 +15,10 @@ import logging.handlers, traceback, importlib.util, os
 from .src.UI import MarkingMenu
 import adsk.core
 
+httpServer: HTTPServer | None = None
+serveThread: Thread | None = None
+
+HTTP_PORT = 3004
 
 def run(_):
     """## Entry point to application from Fusion 360.
@@ -22,6 +30,21 @@ def run(_):
     try:
         # Remove all items prior to start just to make sure
         unregister_all()
+
+        # httpServer = HTTPServer(('127.0.0.1', HTTP_PORT), MyHTTPHandler)
+
+        # def serveFunc():
+        #     try:
+        #         print('Http serve')
+        #         httpServer.serve_forever()
+        #     except:
+        #         print('Error')
+        #         logging.getLogger(f"{INTERNAL_ID}").error(
+        #             "Failed:\n{}".format(traceback.format_exc())
+        #         )
+
+        # serveThread = Thread(target = serveFunc)
+        # serveThread.run()
 
         # creates the UI elements
         register_ui()
@@ -45,6 +68,10 @@ def stop(_):
     """
     try:
         unregister_all()
+
+        if httpServer:
+            httpServer.server_close()
+            httpServer = None
 
         app = adsk.core.Application.get()
         ui = app.userInterface
