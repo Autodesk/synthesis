@@ -39,6 +39,10 @@ npm i
 | `format` | Runs `prettier:fix` and `lint:fix`. **Do not use** for the same reasons as `prettier:fix`. |
 | `assetpack` | Downloads the assetpack and unzips/installs it in the correct location. |
 
+### Autodesk Platform Services
+
+To test/enable the use of Autodesk Platform Services (APS), please follow instructions for development web server (Closed Source).
+
 ## Core Systems
 These core systems make up the bulk of the vital technologies to make Synthesis work. The idea is that these systems will serve as a
 jumping off point for anything requiring real-time simulation.
