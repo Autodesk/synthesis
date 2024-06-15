@@ -1,6 +1,8 @@
 from http.server import HTTPServer
 from threading import Thread
 
+import adsk.fusion
+
 from .src.Fission.HttpServer import MyHTTPHandler
 from .src.general_imports import root_logger, gm, INTERNAL_ID, APP_NAME, DESCRIPTION
 
@@ -15,11 +17,6 @@ import logging.handlers, traceback, importlib.util, os
 from .src.UI import MarkingMenu
 import adsk.core
 
-httpServer: HTTPServer | None = None
-serveThread: Thread | None = None
-
-HTTP_PORT = 3004
-
 def run(_):
     """## Entry point to application from Fusion 360.
 
@@ -31,7 +28,7 @@ def run(_):
         # Remove all items prior to start just to make sure
         unregister_all()
 
-        # httpServer = HTTPServer(('127.0.0.1', HTTP_PORT), MyHTTPHandler)
+        # httpServer = HTTPServer(('', HTTP_PORT), MyHTTPHandler)
 
         # def serveFunc():
         #     try:
@@ -45,6 +42,7 @@ def run(_):
 
         # serveThread = Thread(target = serveFunc)
         # serveThread.run()
+        # serveFunc()
 
         # creates the UI elements
         register_ui()
@@ -58,7 +56,6 @@ def run(_):
         logging.getLogger(f"{INTERNAL_ID}").error(
             "Failed:\n{}".format(traceback.format_exc())
         )
-
 
 def stop(_):
     """## Fusion 360 exit point - deconstructs buttons and handlers
@@ -154,5 +151,32 @@ def register_ui() -> None:
         description=f"{DESCRIPTION}",
         command=True,
     )
+
+    app = adsk.core.Application.get()
+    ui = app.userInterface
+
+    showPaletteCmdDef = ui.commandDefinitions.itemById('showAPSLogin')
+    if showPaletteCmdDef:
+        if not showPaletteCmdDef.deleteMe():
+            print('fhsdja')
+        else:
+            print('fdshjs')
+        
+        showPaletteCmdDef = None
+
+    if not showPaletteCmdDef:
+        showPaletteCmdDef = ui.commandDefinitions.addButtonDefinition('showAPSLogin', 'Show Custom Synthesis Palette', 'Show the custom palette', '')
+
+        class CreateHandlerThing(adsk.core.CommandCreatedEventHandler):
+            def notify(self, args: adsk.core.CommandCreatedEventArgs):
+                print('Eyyooo')
+
+        # Connect to Command Created event.
+        showPaletteCmdDef.commandCreated.add(CreateHandlerThing())
+
+    panel = ui.allToolbarPanels.itemById('SolidScriptsAddinsPanel')
+    cntrl = panel.controls.itemById('showAPSLogin')
+    if not cntrl:
+        panel.controls.addCommand(showPaletteCmdDef)
 
     gm.elements.append(commandButton)

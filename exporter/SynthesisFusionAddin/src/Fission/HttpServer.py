@@ -8,9 +8,11 @@ class MyHTTPHandler(BaseHTTPRequestHandler):
 
     def __init__(self, a, b, c):
         print('init')
-        pass
+        print(f'{self.address_string}')
+        print(f'{self.command}')
 
     def do_GET(self):
+        print('get')
         logging.getLogger(f'{INTERNAL_ID}').debug('Request')
         self.send_response(200)
         self.end_headers()

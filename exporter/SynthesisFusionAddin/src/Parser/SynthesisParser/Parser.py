@@ -29,7 +29,11 @@ class Parser:
     def export(self) -> bool:
         try:
             app = adsk.core.Application.get()
-            design = app.activeDocument.design
+            design: adsk.fusion.Design = app.activeDocument.design
+
+            folder = design.parentDocument.dataFile.parentFolder
+            print(f'===\nFolder\nName: {folder.name}\n===')
+            folder.uploadFile(f'{design.parentDocument.name}_mira')
 
             assembly_out = assembly_pb2.Assembly()
             fill_info(
