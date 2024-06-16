@@ -999,6 +999,11 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             cmd.destroy.add(onDestroy)
             gm.handlers.append(onDestroy)  # 8
 
+            app = adsk.core.Application.get()
+            document = app.activeDocument
+            if document.isModified:
+                print('Modified')
+
         except:
             if gm.ui:
                 gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
@@ -1513,6 +1518,7 @@ class CommandExecutePreviewHandler(adsk.core.CommandEventHandler):
                 gm.app.activeViewport.refresh()
             else:
                 gm.app.activeDocument.design.rootComponent.opacity = 1
+                
                 for (
                     group
                 ) in gm.app.activeDocument.design.rootComponent.customGraphicsGroups:

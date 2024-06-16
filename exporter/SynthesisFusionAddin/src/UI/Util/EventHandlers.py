@@ -9,9 +9,7 @@ def ErrorHandle(handler, eventArgs):
     try:
         handler(eventArgs)
     except:
-        gm.ui.messageBox("command executed failed: {}").format(
-            traceback.format_exc()
-        )
+        gm.ui.messageBox(f'command executed failed: {traceback.format_exc()}')
         logging.getLogger(f"{INTERNAL_ID}").error(
             "Failed:\n{}".format(traceback.format_exc())
         )

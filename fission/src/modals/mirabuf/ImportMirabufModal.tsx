@@ -3,7 +3,7 @@ import Modal, { ModalPropsImpl } from "../../components/Modal"
 import { FaPlus } from "react-icons/fa6"
 import Button from "@/components/Button";
 import Label, { LabelSize } from "@/components/Label";
-import { Data, Folder, Hub, Item, Project, getFolderData, getHubs, getProjects } from "@/aps/APSDataManagement";
+import { Data, Folder, Hub, Item, Project, downloadItem, getFolderData, getHubs, getProjects } from "@/aps/APSDataManagement";
 
 interface ItemCardProps {
     id: string;
@@ -109,7 +109,7 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                             : folderData?.map(x => x instanceof Folder
                                 ? ItemCard({ name: `DIR: ${x.displayName}`, id: x.id, buttonText: '>', onClick: () => setSelectedFolder(x) })
                                 : x instanceof Item
-                                    ? ItemCard({ name: `${x.displayName}`, id: x.id, buttonText: 'import', onClick: () => { console.log(`Selecting ${x.displayName} (${x.id})`) } })
+                                    ? ItemCard({ name: `${x.displayName}`, id: x.id, buttonText: 'import', onClick: () => { downloadItem(selectedProject, x) } })
                                     : ItemCard({ name: `${x.type}: ${x.id}`, id: x.id, buttonText: '---', onClick: () => { console.log(`Selecting (${x.id})`) } })
                             )
                 }

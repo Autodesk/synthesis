@@ -264,7 +264,7 @@ def setupMarkingMenu(ui: adsk.core.UserInterface):
             if entities:
                 joint = adsk.fusion.Joint.cast(entities[0])
                 if joint:
-                    BuildJointEditPanel(joint, args)
+                    buildJointEditPanel(joint, args)
 
         onJointEditCreated = MakeCommandCreatedHandler(
             handleEditJoint,
