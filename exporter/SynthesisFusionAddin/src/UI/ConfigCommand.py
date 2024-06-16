@@ -5,6 +5,8 @@
 from enum import Enum
 import platform
 
+from .Util.EventHandlers import MakeCommandExecuteHandler
+
 from ..Parser.SynthesisParser.Utilities import guid_occurrence
 from ..general_imports import *
 from ..configure import NOTIFIED, write_configuration
@@ -954,6 +956,14 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 ),
                 previous.filePath,
             )
+
+            def t(args: adsk.core.CommandEventArgs):
+                print('sup')
+
+            a = MakeCommandExecuteHandler(t)
+
+            # onExecute = CommandExecuteHandlerShort(lambda args: logging.getLogger(f'{INTERNAL_ID}').debug('Hello world from execute'))
+
             cmd.execute.add(onExecute)
             gm.handlers.append(onExecute)  # 0
 
