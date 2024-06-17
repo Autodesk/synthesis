@@ -1464,6 +1464,8 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
 
                 # Transition: AARD-1687
                 self.designAttrs.add("SynthesisExporter", "compress", str(compress))
+                ui = adsk.core.Application.get().userInterface
+                ui.messageBox(f"Compress: {str(compress)}")
 
                 options = ParseOptions(
                     savepath,
