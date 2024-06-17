@@ -172,7 +172,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             previous = None
             saved = Helper.previouslyConfigured()
 
-            # ui = adsk.core.Application.get().userInterface
+            ui = adsk.core.Application.get().userInterface
             # try:
             #     design_compress = self.designAttrs.itemByName("SynthesisExporter", "compress")
             #     global compress
@@ -186,8 +186,10 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             designCompress = self.designAttrs.itemByName("SynthesisExporter", "compress")
             global compress
             if designCompress is not None:
+                ui.messageBox("designCompress is not None")
                 compress = True if designCompress == "True" else False
             else:
+                ui.messageBox("designCompress is None")
                 compress = True
 
             if type(saved) == str:
