@@ -9,7 +9,7 @@ from ..Parser.SynthesisParser.Utilities import guid_occurrence
 from ..general_imports import *
 from ..configure import NOTIFIED, write_configuration
 from ..Analytics.alert import showAnalyticsAlert
-from . import Helper, FileDialogConfig, OsHelper, CustomGraphics, IconPaths
+from . import Helper, OsHelper, CustomGraphics, IconPaths
 from ..Parser.ParseOptions import (
     Gamepiece,
     Mode,
@@ -156,6 +156,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
     def __init__(self, configure):
         super().__init__()
         self.log = logging.getLogger(f"{INTERNAL_ID}.UI.{self.__class__.__name__}")
+        self.designAttrs = adsk.core.Application.get().activeProduct.attributes
 
     def notify(self, args):
         try:
@@ -171,8 +172,20 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             previous = None
             saved = Helper.previouslyConfigured()
 
+            # ui = adsk.core.Application.get().userInterface
+            # try:
+            #     design_compress = self.designAttrs.itemByName("SynthesisExporter", "compress")
+            #     global compress
+            #     compress = bool(design_compress.value) if design_compress else True
+            #     ui.messageBox("Compress: " + str(compress))
+            # except:
+            #     ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
+            #     global compress
+            #     compress = True
+
+            designCompress = self.designAttrs.itemByName("SynthesisExporter", "compress")
             global compress
-            compress = True
+            compress = (True if designCompress == "True" else False) if designCompress else True
 
             if type(saved) == str:
                 try:
@@ -750,6 +763,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             exporterSetings.tooltip = "tooltip"  # TODO: update tooltip
             exporter_settings = exporterSetings.children
 
+            # Not sure if this is used - Brandon
             self.createBooleanInput(  # algorithm wheel selection checkbox.
                 "algorithmic_selection",
                 "Algorithmic Wheel Selection",
@@ -768,6 +782,8 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 enabled=True,
             )
 
+            # TODO: Bug mentioned with not always compressing?
+            # Hunter has this information in his brain somewhere - Brandon
             self.createBooleanInput(
                 "compress",
                 "Compress Output",
@@ -778,14 +794,17 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 enabled=True,
             )
 
-            self.createBooleanInput(  # open synthesis checkbox
-                "open_synthesis",
-                "Open Synthesis",
-                exporter_settings,
-                checked=True,
-                tooltip="Open Synthesis after the export is complete.",
-                enabled=True,
-            )
+            # Transition: AARD-1689
+            # Should possibly be implemented later?
+
+            # self.createBooleanInput(  # open synthesis checkbox
+            #     "open_synthesis",
+            #     "Open Synthesis",
+            #     exporter_settings,
+            #     checked=True,
+            #     tooltip="Open Synthesis after the export is complete.",
+            #     enabled=True,
+            # )
 
             self.createBooleanInput(
                 "export_as_part",
@@ -809,33 +828,40 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             physicsSettings.tooltip = "tooltip"  # TODO: update tooltip
             physics_settings = physicsSettings.children
 
-            self.createBooleanInput(  # density checkbox
-                "density",
-                "Density",
-                physics_settings,
-                checked=True,
-                tooltip="tooltip",  # TODO: update tooltip
-                enabled=True,
-            )
+            # Transition: AARD-1689
+            # Should possibly be implemented later?
 
-            self.createBooleanInput(  # SA checkbox
-                "surface_area",
-                "Surface Area",
-                physics_settings,
-                checked=True,
-                tooltip="tooltip",  # TODO: update tooltip
-                enabled=True,
-            )
+            # self.createBooleanInput(  # density checkbox
+            #     "density",
+            #     "Density",
+            #     physics_settings,
+            #     checked=True,
+            #     tooltip="tooltip",  # TODO: update tooltip
+            #     enabled=True,
+            # )
 
-            self.createBooleanInput(  # restitution checkbox
-                "restitution",
-                "Restitution",
-                physics_settings,
-                checked=True,
-                tooltip="tooltip",  # TODO: update tooltip
-                enabled=True,
-            )
+            # self.createBooleanInput(  # SA checkbox
+            #     "surface_area",
+            #     "Surface Area",
+            #     physics_settings,
+            #     checked=True,
+            #     tooltip="tooltip",  # TODO: update tooltip
+            #     enabled=True,
+            # )
 
+            # self.createBooleanInput(  # restitution checkbox
+            #     "restitution",
+            #     "Restitution",
+            #     physics_settings,
+            #     checked=True,
+            #     tooltip="tooltip",  # TODO: update tooltip
+            #     enabled=True,
+            # )
+
+
+            # Should also be commented out / removed?
+            # This would cause problems elsewhere but I can't tell i f
+            # this is even being used.
             frictionOverrideTable = self.createTableInput(
                 "friction_override_table",
                 "",
@@ -883,62 +909,70 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             """
             Joint settings group command
             """
-            jointsSettings = a_input.addGroupCommandInput(
-                "joints_settings", "Joints Settings"
-            )
-            jointsSettings.isExpanded = False
-            jointsSettings.isEnabled = True
-            jointsSettings.tooltip = "tooltip"  # TODO: update tooltip
-            joints_settings = jointsSettings.children
 
-            self.createBooleanInput(
-                "kinematic_only",
-                "Kinematic Only",
-                joints_settings,
-                checked=False,
-                tooltip="tooltip",  # TODO: update tooltip
-                enabled=True,
-            )
+            # Transition: AARD-1689
+            # Should possibly be implemented later?
 
-            self.createBooleanInput(
-                "calculate_limits",
-                "Calculate Limits",
-                joints_settings,
-                checked=True,
-                tooltip="tooltip",  # TODO: update tooltip
-                enabled=True,
-            )
+            # jointsSettings = a_input.addGroupCommandInput(
+            #     "joints_settings", "Joints Settings"
+            # )
+            # jointsSettings.isExpanded = False
+            # jointsSettings.isEnabled = True
+            # jointsSettings.tooltip = "tooltip"  # TODO: update tooltip
+            # joints_settings = jointsSettings.children
 
-            self.createBooleanInput(
-                "auto_assign_ids",
-                "Auto-Assign ID's",
-                joints_settings,
-                checked=True,
-                tooltip="tooltip",  # TODO: update tooltip
-                enabled=True,
-            )
+            # self.createBooleanInput(
+            #     "kinematic_only",
+            #     "Kinematic Only",
+            #     joints_settings,
+            #     checked=False,
+            #     tooltip="tooltip",  # TODO: update tooltip
+            #     enabled=True,
+            # )
+
+            # self.createBooleanInput(
+            #     "calculate_limits",
+            #     "Calculate Limits",
+            #     joints_settings,
+            #     checked=True,
+            #     tooltip="tooltip",  # TODO: update tooltip
+            #     enabled=True,
+            # )
+
+            # self.createBooleanInput(
+            #     "auto_assign_ids",
+            #     "Auto-Assign ID's",
+            #     joints_settings,
+            #     checked=True,
+            #     tooltip="tooltip",  # TODO: update tooltip
+            #     enabled=True,
+            # )
 
             # ~~~~~~~~~~~~~~~~ CONTROLLER SETTINGS ~~~~~~~~~~~~~~~~
             """
             Controller settings group command
             """
-            controllerSettings = a_input.addGroupCommandInput(
-                "controller_settings", "Controller Settings"
-            )
 
-            controllerSettings.isExpanded = False
-            controllerSettings.isEnabled = True
-            controllerSettings.tooltip = "tooltip"  # TODO: update tooltip
-            controller_settings = controllerSettings.children
+            # Transition: AARD-1689
+            # Should possibly be implemented later?
 
-            self.createBooleanInput(  # export signals checkbox
-                "export_signals",
-                "Export Signals",
-                controller_settings,
-                checked=True,
-                tooltip="tooltip",
-                enabled=True,
-            )
+            # controllerSettings = a_input.addGroupCommandInput(
+            #     "controller_settings", "Controller Settings"
+            # )
+
+            # controllerSettings.isExpanded = False
+            # controllerSettings.isEnabled = True
+            # controllerSettings.tooltip = "tooltip"  # TODO: update tooltip
+            # controller_settings = controllerSettings.children
+
+            # self.createBooleanInput(  # export signals checkbox
+            #     "export_signals",
+            #     "Export Signals",
+            #     controller_settings,
+            #     checked=True,
+            #     tooltip="tooltip",
+            #     enabled=True,
+            # )
 
             # clear all selections before instantiating handlers.
             gm.ui.activeSelections.clear()
@@ -1164,6 +1198,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
         self.previous = previous
         self.current = SerialCommand()
         self.fp = fp
+        self.designAttrs = adsk.core.Application.get().activeProduct.attributes
 
     def notify(self, args):
         try:
@@ -1189,6 +1224,9 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 .children.itemById("export_as_part")
             )
 
+            # Transition: AARD-1687
+            self.designAttrs.add("SynthesisExporter", "export_as_part", str(export_as_part_boolean.value))
+
             # defaultPath = self.fp
             # defaultPath = os.getenv()
 
@@ -1205,6 +1243,9 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 isRobot = True
             elif dropdownExportMode.selectedItem.index == 1:
                 isRobot = False
+
+            # Transition: AARD-1687
+            self.designAttrs.add("SynthesisExporter", "mode", str(isRobot))
 
             if platform.system() == "Windows":
                 if isRobot:
@@ -1415,6 +1456,9 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                     _mode = Mode.SynthesisField
 
                 global compress
+
+                # Transition: AARD-1687
+                self.designAttrs.add("SynthesisExporter", "compress", str(compress))
 
                 options = ParseOptions(
                     savepath,
@@ -1767,7 +1811,7 @@ class MyPreSelectHandler(adsk.core.SelectionEventHandler):
 
             dropdownExportMode = INPUTS_ROOT.itemById("mode")
             if preSelected and design:
-                if dropdownExportMode.selectedItem.index == 0:
+                if dropdownExportMode.selectedItem.index == 0: # Dynamic? - Brandon
                     if preSelected.entityToken in onSelect.allWheelPreselections:
                         self.cmd.setCursor(
                             IconPaths.mouseIcons["remove"],
@@ -1781,7 +1825,7 @@ class MyPreSelectHandler(adsk.core.SelectionEventHandler):
                             0,
                         )
 
-                elif dropdownExportMode.selectedItem.index == 1:
+                elif dropdownExportMode.selectedItem.index == 1: # Static? - Brandon
                     if preSelected.entityToken in onSelect.allGamepiecePreselections:
                         self.cmd.setCursor(
                             IconPaths.mouseIcons["remove"],
@@ -1794,7 +1838,7 @@ class MyPreSelectHandler(adsk.core.SelectionEventHandler):
                             0,
                             0,
                         )
-            else:
+            else: # Should literally be impossible? - Brandon
                 self.cmd.setCursor("", 0, 0)
         except:
             if gm.ui:
