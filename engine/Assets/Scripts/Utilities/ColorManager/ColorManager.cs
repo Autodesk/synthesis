@@ -9,19 +9,23 @@ using SynthesisAPI.EventBus;
 using UI.Dynamic.Modals.Configuring.ThemeEditor;
 using UnityEngine;
 
-namespace Utilities.ColorManager {
-    public static class ColorManager {
+namespace Utilities.ColorManager
+{
+    public static class ColorManager
+    {
         public const string SELECTED_THEME_PREF = "color/selected_theme";
-        public const string DEFAULT_THEME       = "Default";
+        public const string DEFAULT_THEME = "Default";
 
-        public class OnThemeChanged : IEvent {}
+        public class OnThemeChanged : IEvent { }
 
         private static readonly Color UNASSIGNED_COLOR = new(200, 255, 0, 255);
 
         private static readonly char altSep = Path.AltDirectorySeparatorChar;
 
-        private static string THEMES_FOLDER_PATH {
-            get {
+        private static string THEMES_FOLDER_PATH
+        {
+            get
+            {
                 string dir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + altSep +
                              "Autodesk" + altSep + "Synthesis" + altSep + "Themes";
 
@@ -39,9 +43,11 @@ namespace Utilities.ColorManager {
         public static Dictionary<SynthesisColor, Color> ActiveColors => _tempPreviewColors ?? LoadedColors;
 
         private static string _selectedTheme;
-        public static string SelectedTheme {
+        public static string SelectedTheme
+        {
             get => _selectedTheme;
-            set {
+            set
+            {
                 if (value == _selectedTheme)
                     return;
 
@@ -57,8 +63,10 @@ namespace Utilities.ColorManager {
         }
 
         /// <summary>A list of themes found in Appdata plus the default theme</summary>
-        public static string[] AvailableThemes {
-            get {
+        public static string[] AvailableThemes
+        {
+            get
+            {
                 var themes = Directory.GetFiles(THEMES_FOLDER_PATH).Select(Path.GetFileNameWithoutExtension).ToList();
 
                 themes.Insert(0, DEFAULT_THEME);
@@ -66,13 +74,16 @@ namespace Utilities.ColorManager {
             }
         }
 
-        static ColorManager() {
-            EventBus.NewTypeListener<EditThemeModal.SelectedThemeChanged>(e => {
+        static ColorManager()
+        {
+            EventBus.NewTypeListener<EditThemeModal.SelectedThemeChanged>(e =>
+            {
                 string selectedTheme = PreferenceManager.GetPreference<string>(SELECTED_THEME_PREF);
-                SelectedTheme        = selectedTheme;
+                SelectedTheme = selectedTheme;
             });
             _selectedTheme = PreferenceManager.GetPreference<string>(SELECTED_THEME_PREF);
-            if (_selectedTheme is "" or null) {
+            if (_selectedTheme is "" or null)
+            {
                 PreferenceManager.SetPreference(SELECTED_THEME_PREF, DEFAULT_THEME);
                 _selectedTheme = DEFAULT_THEME;
             }
@@ -84,29 +95,35 @@ namespace Utilities.ColorManager {
 
         /// <summary>Loads the default theme into the _colors dictionary. Will fill missing colors in a custom
         /// theme</summary>
-        private static void LoadDefaultColors() {
+        private static void LoadDefaultColors()
+        {
             DefaultColors.SYNTHESIS_DEFAULT.ForEach(c => { _loadedColors.TryAdd(c.name, c.color); });
         }
 
         /// <summary>Loads a theme from the synthesis appdata folder. Will create a theme if it does not exist</summary>
         /// <param name="themeName">The theme to load</param>
-        private static void LoadTheme(string themeName) {
+        private static void LoadTheme(string themeName)
+        {
             if (themeName is DEFAULT_THEME or "")
                 return;
 
             string themePath = THEMES_FOLDER_PATH + altSep + themeName + ".json";
 
             var dir = Path.GetFullPath(themePath).Replace(Path.GetFileName(themePath), "");
-            if (!Directory.Exists(dir)) {
+            if (!Directory.Exists(dir))
+            {
                 Directory.CreateDirectory(dir);
                 return;
-            } else if (!File.Exists(themePath)) {
+            }
+            else if (!File.Exists(themePath))
+            {
                 return;
             }
 
             var jsonColors = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(themePath));
 
-            jsonColors?.ForEach(x => {
+            jsonColors?.ForEach(x =>
+            {
                 if (Enum.TryParse<SynthesisColor>(x.Key, out var colorName))
                     _loadedColors.Add(colorName, x.Value.ColorToHex());
             });
@@ -114,7 +131,8 @@ namespace Utilities.ColorManager {
 
         /// <summary>Loads a theme to the synthesis appdata folder</summary>
         /// <param name="themeName">The theme to save</param>
-        private static void SaveTheme(string themeName) {
+        private static void SaveTheme(string themeName)
+        {
             if (themeName is DEFAULT_THEME or "")
                 return;
 
@@ -122,14 +140,15 @@ namespace Utilities.ColorManager {
 
             var jsonColors = new Dictionary<string, string>();
 
-            _loadedColors.ForEach(x => { jsonColors.Add(x.Key.ToString(), ((Color) x.Value).ToHex()); });
+            _loadedColors.ForEach(x => { jsonColors.Add(x.Key.ToString(), ((Color)x.Value).ToHex()); });
 
             File.WriteAllText(themePath, JsonConvert.SerializeObject(jsonColors));
         }
 
         /// <summary>Deletes a theme from the synthesis appdata folder</summary>
         /// <param name="themeName">The theme to delete</param>
-        private static void DeleteTheme(string themeName) {
+        private static void DeleteTheme(string themeName)
+        {
             if (themeName is DEFAULT_THEME or "")
                 return;
 
@@ -139,19 +158,22 @@ namespace Utilities.ColorManager {
         }
 
         /// <summary>Permanently deletes the selected theme unless it is Default</summary>
-        public static void DeleteSelectedTheme() {
+        public static void DeleteSelectedTheme()
+        {
             DeleteTheme(_selectedTheme);
             SelectedTheme = DEFAULT_THEME;
         }
 
-        public static void DeleteAllThemes() {
+        public static void DeleteAllThemes()
+        {
             AvailableThemes.ForEach(DeleteTheme);
             SelectedTheme = DEFAULT_THEME;
         }
 
         /// <summary>Modifies the colors of the selected theme</summary>
         /// <param name="changes">A list of new colors. Does not have to contain every color</param>
-        public static void ModifySelectedTheme(List<(SynthesisColor name, Color color)> changes) {
+        public static void ModifySelectedTheme(List<(SynthesisColor name, Color color)> changes)
+        {
             SetTempPreviewColors(null);
 
             if (_selectedTheme == null)
@@ -167,11 +189,15 @@ namespace Utilities.ColorManager {
         /// <summary>Returns a color, or <see cref="UNASSIGNED_COLOR">UNASSIGNED_COLOR</see> if it is not
         /// found</summary> <param name="colorName">The name of the color to get</param> <returns>The corresponding
         /// color of the current theme</returns>
-        public static Color GetColor(SynthesisColor colorName) {
-            if (_tempPreviewColors != null) {
+        public static Color GetColor(SynthesisColor colorName)
+        {
+            if (_tempPreviewColors != null)
+            {
                 if (_tempPreviewColors.TryGetValue(colorName, out Color color))
                     return color;
-            } else {
+            }
+            else
+            {
                 if (_loadedColors.TryGetValue(colorName, out Color color))
                     return color;
             }
@@ -182,7 +208,8 @@ namespace Utilities.ColorManager {
         /// <summary>Temporarily preview colors without saving them. Call with null to switch back to loaded
         /// colors</summary> <param name="colors">The colors to preview. If null, color manager will switch back to
         /// loaded colors</param>
-        public static void SetTempPreviewColors(Dictionary<SynthesisColor, Color> colors) {
+        public static void SetTempPreviewColors(Dictionary<SynthesisColor, Color> colors)
+        {
             _tempPreviewColors = colors;
             EventBus.Push(new OnThemeChanged());
         }
@@ -190,9 +217,11 @@ namespace Utilities.ColorManager {
         /// <summary>Finds the index of a theme</summary>
         /// <param name="themeName">A theme name</param>
         /// <returns>The index of the given theme</returns>
-        public static int ThemeNameToIndex(string themeName) {
+        public static int ThemeNameToIndex(string themeName)
+        {
             int i = 0;
-            foreach (string theme in AvailableThemes) {
+            foreach (string theme in AvailableThemes)
+            {
                 if (theme.Equals(themeName))
                     return i;
                 i++;
@@ -204,7 +233,8 @@ namespace Utilities.ColorManager {
         /// <summary>The theme name at that index, or default if it does not exist</summary>
         /// <param name="index">A theme index</param>
         /// <returns>The name of the given theme</returns>
-        public static string ThemeIndexToName(int index) {
+        public static string ThemeIndexToName(int index)
+        {
             if (index >= AvailableThemes.Length || index == -1)
                 return DEFAULT_THEME;
             else
@@ -212,7 +242,8 @@ namespace Utilities.ColorManager {
         }
 
         /// <summary>Each value represents a different color that can differ across themes</summary>
-        public enum SynthesisColor {
+        public enum SynthesisColor
+        {
             InteractiveElementSolid,
             InteractiveElementLeft,
             InteractiveElementRight,

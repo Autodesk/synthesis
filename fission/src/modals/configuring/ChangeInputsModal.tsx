@@ -4,35 +4,10 @@ import { FaGamepad } from "react-icons/fa6"
 import Stack, { StackDirection } from "../../components/Stack"
 import Label, { LabelSize } from "../../components/Label"
 import LabeledButton, { LabelPlacement } from "../../components/LabeledButton"
-
-type ModifierState = {
-    alt?: boolean
-    ctrl?: boolean
-    shift?: boolean
-    meta?: boolean
-}
-
-type Control = {
-    name: string
-    key: string
-    modifiers?: ModifierState
-}
-
-const globalControls: { [key: string]: Control } = {
-    "Intake": { name: "Intake", key: "E" },
-    "Shoot Gamepiece": { name: "Shoot Gamepiece", key: "Q" },
-    "Enable God Mode": { name: "Enable God Mode", key: "G" },
-}
-
-const robotControls: { [key: string]: Control } = {
-    "Arcade Forward": { name: "Arcade Forward", key: "W" },
-    "Arcade Backward": { name: "Arcade Backward", key: "A" },
-    "Arcade Left": { name: "Arcade Left", key: "S" },
-    "Arcade Right": { name: "Arcade Right", key: "D" },
-}
+import InputSystem from "@/systems/input/InputSystem"
 
 // capitalize first letter
-const transformKeyName = (control: Control) => {
+const transformKeyName = (control: Input) => {
     let suffix = ""
     if (control.modifiers) {
         if (control.modifiers.meta) suffix += " + Meta"
@@ -40,7 +15,7 @@ const transformKeyName = (control: Control) => {
         if (control.modifiers.ctrl) suffix += " + Ctrl"
         if (control.modifiers.alt) suffix += " + Alt"
     }
-    return control.key[0].toUpperCase() + control.key.substring(1) + suffix
+    return control.keybind[0].toUpperCase() + control.keybind.substring(1) + suffix
 }
 
 const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
@@ -54,8 +29,8 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     })
 
     if (selectedInput && chosenKey) {
-        const selected = globalControls[selectedInput]
-        selected.key = chosenKey
+        const selected = InputSystem.allInputs[selectedInput]
+        selected.keybind = chosenKey
         selected.modifiers = modifierState
         setChosenKey("")
         setSelectedInput("")
@@ -80,8 +55,9 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     {loadedRobot ? (
                         <>
                             <Label size={LabelSize.Large}>Robot Controls</Label>
-                            {Object.values(robotControls).map(c => (
+                            {Object.values(InputSystem.robotInputs).map(c => (
                                 <LabeledButton
+                                    key={c.name}
                                     label={c.name}
                                     placement={LabelPlacement.Left}
                                     value={
@@ -112,8 +88,9 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     }}
                 >
                     <Label size={LabelSize.Large}>Global Controls</Label>
-                    {Object.values(globalControls).map(c => (
+                    {Object.values(InputSystem.globalInputs).map(c => (
                         <LabeledButton
+                            key={c.name}
                             label={c.name}
                             placement={LabelPlacement.Left}
                             value={

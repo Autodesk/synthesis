@@ -7,8 +7,10 @@ using Synthesis.Physics;
 
 #nullable enable
 
-namespace Synthesis {
-    public class WheelDriver : Driver {
+namespace Synthesis
+{
+    public class WheelDriver : Driver
+    {
         private const float MIRABUF_TO_UNITY_FORCE = 40f;
 
         private CustomWheel _customWheel;
@@ -18,33 +20,41 @@ namespace Synthesis {
         public JointInstance JointInstance => _jointInstance;
 
         private Vector3 _localAnchor = Vector3.zero;
-        public Vector3 Anchor {
+        public Vector3 Anchor
+        {
             get => _customWheel.Rb.transform.localToWorldMatrix.MultiplyPoint3x4(_localAnchor);
-            set {
-                _localAnchor             = _customWheel.Rb.transform.worldToLocalMatrix.MultiplyPoint3x4(value);
+            set
+            {
+                _localAnchor = _customWheel.Rb.transform.worldToLocalMatrix.MultiplyPoint3x4(value);
                 _customWheel.LocalAnchor = _localAnchor;
             }
         }
-        public Vector3 LocalAnchor {
+        public Vector3 LocalAnchor
+        {
             get => _localAnchor;
-            set {
-                _localAnchor             = value;
+            set
+            {
+                _localAnchor = value;
                 _customWheel.LocalAnchor = _localAnchor;
             }
         }
 
         private Vector3 _localAxis = Vector3.right;
-        public Vector3 Axis {
+        public Vector3 Axis
+        {
             get => _customWheel.Rb.transform.localToWorldMatrix.MultiplyVector(_localAxis);
-            set {
-                _localAxis             = _customWheel.Rb.transform.worldToLocalMatrix.MultiplyVector(value);
+            set
+            {
+                _localAxis = _customWheel.Rb.transform.worldToLocalMatrix.MultiplyVector(value);
                 _customWheel.LocalAxis = _localAxis;
             }
         }
-        public Vector3 LocalAxis {
+        public Vector3 LocalAxis
+        {
             get => _localAxis;
-            set {
-                _localAxis             = value;
+            set
+            {
+                _localAxis = value;
                 _customWheel.LocalAxis = _localAxis;
             }
         }
@@ -52,32 +62,39 @@ namespace Synthesis {
         /// <summary>
         /// Specify a roller direction. NULL roller direction indicates no roller
         /// </summary>
-        public Vector3? LocalRoller {
+        public Vector3? LocalRoller
+        {
             get => _customWheel.LocalRollerRollingDirection;
             set { _customWheel.LocalRollerRollingDirection = value; }
         }
 
         private float _radius = 0.05f;
-        public float Radius {
+        public float Radius
+        {
             get => _radius;
-            set {
-                _radius             = value;
+            set
+            {
+                _radius = value;
                 _customWheel.Radius = _radius;
             }
         }
 
-        public float ImpulseMax {
+        public float ImpulseMax
+        {
             get => _customWheel.ImpulseMax;
             set => _customWheel.ImpulseMax = value;
         }
 
-        public enum RotationalControlMode {
+        public enum RotationalControlMode
+        {
             Position,
             Velocity
         }
 
-        public double MainInput {
-            get {
+        public double MainInput
+        {
+            get
+            {
                 if (PhysicsManager.IsFrozen)
                     return 0f;
                 var val = State.GetValue(_inputs[0]);
@@ -89,9 +106,11 @@ namespace Synthesis {
         public bool HasContacts => _customWheel.HasContacts;
 
         private JointMotor _motor;
-        public JointMotor Motor {
+        public JointMotor Motor
+        {
             get => _motor;
-            set {
+            set
+            {
                 _motor = value;
                 SimulationPreferences.SetRobotJointMotor((_simObject as RobotSimObject)!.RobotGUID, MotorRef, _motor);
             }
@@ -122,31 +141,39 @@ namespace Synthesis {
         public WheelDriver(string name, string[] inputs, string[] outputs, SimObject simObject,
             JointInstance jointInstance, CustomWheel customWheel, Vector3 anchor, Vector3 axis, float radius,
             string motorRef, JointInstance.WheelTypeEnum wheelType)
-            : base(name, inputs, outputs, simObject) {
+            : base(name, inputs, outputs, simObject)
+        {
             _jointInstance = jointInstance;
-            _customWheel   = customWheel;
-            _wheelType     = wheelType;
+            _customWheel = customWheel;
+            _wheelType = wheelType;
 
             Anchor = _customWheel.Rb.transform.localToWorldMatrix.MultiplyPoint3x4(anchor);
-            Axis   = _customWheel.Rb.transform.localToWorldMatrix.MultiplyVector(axis);
+            Axis = _customWheel.Rb.transform.localToWorldMatrix.MultiplyVector(axis);
 
             MotorRef = motorRef;
 
-            if (float.IsNaN(radius)) {
+            if (float.IsNaN(radius))
+            {
                 Radius = _customWheel.Rb.transform.GetBounds().extents.y;
-            } else {
+            }
+            else
+            {
                 Radius = radius;
             }
 
             var motor = SimulationPreferences.GetRobotJointMotor((simObject as RobotSimObject)!.RobotGUID, motorRef);
 
-            if (motor != null) {
+            if (motor != null)
+            {
                 _motor = motor.Value;
-            } else {
-                Motor = new JointMotor() {
+            }
+            else
+            {
+                Motor = new JointMotor()
+                {
                     // Default Motor. Slow but powerful enough. Also uses Motor to save it
-                    force          = 1, // About a Neo 550. Max is Falcon 550 at 4.67
-                    freeSpin       = false,
+                    force = 1, // About a Neo 550. Max is Falcon 550 at 4.67
+                    freeSpin = false,
                     targetVelocity = 30,
                 };
             }
@@ -157,18 +184,21 @@ namespace Synthesis {
             State.SetValue(_outputs[1], Value.ForNumber(1));
         }
 
-        void EnableMotor() {
+        void EnableMotor()
+        {
             _useMotor = true;
         }
 
-        void DisableMotor() {
+        void DisableMotor()
+        {
             _useMotor = false;
         }
 
         private float _jointAngle = 0.0f;
         private float _lastUpdate = float.NaN;
 
-        public override void Update() {
+        public override void Update()
+        {
             VelocityControl();
 
             _lastUpdate = Time.realtimeSinceStartup;
@@ -178,34 +208,42 @@ namespace Synthesis {
             State.SetValue(_outputs[1], Value.ForNumber(PositiveMod(_jointAngle, Mathf.PI)));
         }
 
-        public float PositiveMod(float val, float mod) {
+        public float PositiveMod(float val, float mod)
+        {
             var res = val % mod;
             if (res < 0)
                 res += mod;
             return res;
         }
 
-        public void WheelsPhysicsUpdate(float mod) {
+        public void WheelsPhysicsUpdate(float mod)
+        {
             _customWheel.CalculateAndApplyFriction(mod);
         }
 
-        public void MatchRollerToWheelType() {
-            if (_wheelType == JointInstance.WheelTypeEnum.Omni) {
+        public void MatchRollerToWheelType()
+        {
+            if (_wheelType == JointInstance.WheelTypeEnum.Omni)
+            {
                 LocalRoller = LocalAxis;
-            } else {
+            }
+            else
+            {
                 LocalRoller = null;
             }
         }
 
-        private void VelocityControl() {
+        private void VelocityControl()
+        {
             if (!_useMotor)
                 return;
 
-            var val                    = (float) MainInput;
-            var lastRotSpeed           = _customWheel.RotationSpeed;
+            var val = (float)MainInput;
+            var lastRotSpeed = _customWheel.RotationSpeed;
             _customWheel.RotationSpeed = val * _motor.targetVelocity;
 
-            if (!float.IsNaN(_lastUpdate)) {
+            if (!float.IsNaN(_lastUpdate))
+            {
                 var deltaT = Time.realtimeSinceStartup - _lastUpdate;
 
                 if (deltaT == 0f)
