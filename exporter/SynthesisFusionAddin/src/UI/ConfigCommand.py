@@ -185,7 +185,10 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
 
             designCompress = self.designAttrs.itemByName("SynthesisExporter", "compress")
             global compress
-            compress = (True if designCompress == "True" else False) if designCompress else True
+            if designCompress is not None:
+                compress = True if designCompress == "True" else False
+            else:
+                compress = True
 
             if type(saved) == str:
                 try:
