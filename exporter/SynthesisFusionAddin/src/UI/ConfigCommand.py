@@ -14,6 +14,7 @@ from ..Parser.ParseOptions import (
     Gamepiece,
     Mode,
     ParseOptions,
+    ExporterOptions, # TODO
     _Joint,
     _Wheel,
     JointParentType,
@@ -21,6 +22,8 @@ from ..Parser.ParseOptions import (
 from .Configuration.SerialCommand import SerialCommand
 
 import adsk.core, adsk.fusion, traceback, logging, os
+
+from ..Parser.SynthesisParser.Parser import Parser
 
 # ====================================== CONFIG COMMAND ======================================
 
@@ -42,6 +45,7 @@ GamepieceListGlobal = []
 
 # Default to compressed files
 compress = True
+# exporterOptions = ExporterOptions(compress=True).read()
 
 
 def GUID(arg):
@@ -169,12 +173,12 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 write_configuration("analytics", "notified", "yes")
 
             # Transition: AARD-1687
-            designCompress = self.designAttrs.itemByName("SynthesisExporter", "compress")
-            global compress
-            if designCompress:
-                compress = True if designCompress.value == "True" else False
-            else:
-                compress = True
+            # designCompress = self.designAttrs.itemByName("SynthesisExporter", "compress")
+            # global compress
+            # if designCompress:
+            #     compress = True if designCompress.value == "True" else False
+            # else:
+            #     compress = True
 
             if A_EP:
                 A_EP.send_view("export_panel")
@@ -217,8 +221,12 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 "Export Mode",
                 dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
             )
-            dropdownExportMode.listItems.add("Dynamic", True)
-            dropdownExportMode.listItems.add("Static", False)
+
+            # TODO
+            # dynamic = exporterOptions.mode == Mode.Synthesis
+            dynamic = True
+            dropdownExportMode.listItems.add("Dynamic", dynamic)
+            dropdownExportMode.listItems.add("Static", not dynamic)
 
             dropdownExportMode.tooltip = "Export Mode"
             dropdownExportMode.tooltipDescription = (
@@ -263,7 +271,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 "weight_input",
                 "Weight Input",
                 "",
-                adsk.core.ValueInput.createByString("0.0"),
+                adsk.core.ValueInput.createByString("0.0"), # TODO
             )
             weight_input.tooltip = "Robot weight"
             weight_input.tooltipDescription = """<tt>(in pounds)</tt><hr>This is the weight of the entire robot assembly."""
@@ -357,40 +365,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 removeWheelInput
             )  # add buttons to the toolbar
 
-            """
-            Algorithmic Wheel Selection Indicator
-            """
-            """
-            algorithmicIndicator = self.createTextBoxInput( # wheel type header
-                    "algorithmic_indicator",
-                    "Indicator",
-                    wheel_inputs,
-                    "Algorithmic Wheel Selection",
-                    background="whitesmoke", # textbox header background color
-                    tooltip="Algorithmic Wheel Selection"
-            )
-            algorithmicIndicator.isFullWidth = True
-            algorithmicIndicator.formattedText = "🟢"
-            algorithmicIndicator.tooltipDescription = (
-                "<tt>(enabled)</tt>" +
-                "<hr>If a sub-part of a wheel is selected (eg. a roller of an omni wheel), an algorithm will traverse the assembly to best determine the entire wheel component.<br>" + 
-                "<br>This traversal operates on how the wheel is jointed and where the joint is placed. If the automatic selection fails, try:" + 
-                "<ul>" +
-                    "<tt>" + 
-                        "<li>Jointing the wheel differently, or</li><br>" + 
-                        "<li>Selecting the wheel from the browser while holding down <span style='text-decoration:overline;text-decoration:underline;background-color: #c27b10'>&nbsp;CTRL&nbsp;</span></span>, or</li><br>" + 
-                        "<li>Disabling Algorithmic Selection.</li>" + 
-                    "</tt>" + 
-                "</ul>"
-            )
-            
-            wheelTableInput.addCommandInput(
-                algorithmicIndicator,
-                0,
-                0,
-            )
-            """
-
             wheelTableInput.addCommandInput(  # create textbox input using helper (component name)
                 self.createTextBoxInput(
                     "name_header", "Name", wheel_inputs, "Joint name", bold=False
@@ -422,22 +396,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 0,
                 3,
             )
-
-            # AUTOMATICALLY SELECT DUPLICATES
-            """
-            Select duplicates?
-                - creates a BoolValueCommandInput
-            """
-            # self.createBooleanInput( # create bool value command input using helper
-            #     "duplicate_selection",
-            #     "Select Duplicates",
-            #     wheel_inputs,
-            #     checked=True,
-            #     tooltip="Select duplicate wheel components.",
-            #     tooltipadvanced="""<hr>When this is checked, all duplicate occurrences will be automatically selected.
-            #     <br>This feature may fail when duplicates are not direct copies.</br>""", # advanced tooltip
-            #     enabled=True,
-            # )
 
             # ~~~~~~~~~~~~~~~~ JOINT CONFIGURATION ~~~~~~~~~~~~~~~~
             """
@@ -1103,24 +1061,15 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 self.log.error("Could not execute configuration due to failure")
                 return
 
-            mode_dropdown = eventArgs.command.commandInputs.itemById(
-                "general_settings"
-            ).children.itemById("mode")
-
-            mode_dropdown = adsk.core.DropDownCommandInput.cast(mode_dropdown)
-            mode = 5
-
-            if mode_dropdown.selectedItem.name == "Synthesis Exporter":
-                mode = 5
-
             export_as_part_boolean = (
                 eventArgs.command.commandInputs.itemById("advanced_settings")
                 .children.itemById("exporter_settings")
                 .children.itemById("export_as_part")
-            )
+            ).value
+            # parserOptions.exportAsPart = export_as_part_boolean
 
             # Transition: AARD-1687
-            self.designAttrs.add("SynthesisExporter", "export_as_part", str(export_as_part_boolean.value))
+            # self.designAttrs.add("SynthesisExporter", "export_as_part", str(export_as_part_boolean.value))
 
             processedFileName = gm.app.activeDocument.name.replace(" ", "_")
             dropdownExportMode = INPUTS_ROOT.itemById("mode")
@@ -1129,12 +1078,18 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             elif dropdownExportMode.selectedItem.index == 1:
                 isRobot = False
 
+            # TODO: This is silly
+            # if isRobot:
+            #     parserOptions.mode = Mode.Synthesis
+            # else:
+            #     parserOptions.mode = Mode.SynthesisField
+
             # Transition: AARD-1687
-            self.designAttrs.add("SynthesisExporter", "mode", str(isRobot))
+            # self.designAttrs.add("SynthesisExporter", "mode", str(isRobot))
 
             if platform.system() == "Windows":
                 if isRobot:
-                    if export_as_part_boolean.value:
+                    if export_as_part_boolean:
                         savepath = (
                             os.getenv("APPDATA")
                             + "\\Autodesk\\Synthesis\\MixAndMatch\\Mira\\"
@@ -1160,7 +1115,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
 
                 home = expanduser("~")
                 if isRobot:
-                    if export_as_part_boolean.value:
+                    if export_as_part_boolean:
                         savepath = (
                             home
                             + "/.config/Autodesk/Synthesis/MixAndMatch/Mira/"
@@ -1185,197 +1140,207 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             if savepath == False:
                 # save was canceled
                 return
-            else:
-                updatedPath = pathlib.Path(savepath).parent
-                if updatedPath != self.current.filePath:
-                    self.current.filePath = str(updatedPath)
 
-                adsk.doEvents()
-                # get active document
-                design = gm.app.activeDocument.design
-                name = design.rootComponent.name.rsplit(" ", 1)[0]
-                version = design.rootComponent.name.rsplit(" ", 1)[1]
+            updatedPath = pathlib.Path(savepath).parent
+            if updatedPath != self.current.filePath:
+                self.current.filePath = str(updatedPath)
 
-                renderer = 0
+            adsk.doEvents()
+            # get active document
+            design = gm.app.activeDocument.design
+            name = design.rootComponent.name.rsplit(" ", 1)[0]
+            version = design.rootComponent.name.rsplit(" ", 1)[1]
 
-                _exportWheels = []  # all selected wheels, formatted for parseOptions
-                _exportJoints = []  # all selected joints, formatted for parseOptions
-                _exportGamepieces = []  # TODO work on the code to populate Gamepiece
-                _robotWeight = float
-                _mode = Mode
+            _exportWheels = []  # all selected wheels, formatted for parseOptions
+            _exportJoints = []  # all selected joints, formatted for parseOptions
+            _exportGamepieces = []  # TODO work on the code to populate Gamepiece
+            _robotWeight = float
+            _mode = Mode
 
-                """
-                Loops through all rows in the wheel table to extract all the input values
-                """
-                onSelect = gm.handlers[3]
-                wheelTableInput = wheelTable()
-                for row in range(wheelTableInput.rowCount):
-                    if row == 0:
-                        continue
+            """
+            Loops through all rows in the wheel table to extract all the input values
+            """
+            onSelect = gm.handlers[3]
+            wheelTableInput = wheelTable()
+            for row in range(wheelTableInput.rowCount):
+                if row == 0:
+                    continue
 
-                    wheelTypeIndex = wheelTableInput.getInputAtPosition(
-                        row, 2
-                    ).selectedItem.index  # This must be either 0 or 1 for standard or omni
+                wheelTypeIndex = wheelTableInput.getInputAtPosition(
+                    row, 2
+                ).selectedItem.index  # This must be either 0 or 1 for standard or omni
 
-                    signalTypeIndex = wheelTableInput.getInputAtPosition(
-                        row, 3
-                    ).selectedItem.index
+                signalTypeIndex = wheelTableInput.getInputAtPosition(
+                    row, 3
+                ).selectedItem.index
 
-                    _exportWheels.append(
-                        _Wheel(
-                            WheelListGlobal[row - 1].entityToken,
-                            wheelTypeIndex,
-                            signalTypeIndex,
-                            # onSelect.wheelJointList[row-1][0] # GUID of wheel joint. if no joint found, default to None
-                        )
+                _exportWheels.append(
+                    _Wheel(
+                        WheelListGlobal[row - 1].entityToken,
+                        wheelTypeIndex,
+                        signalTypeIndex,
+                        # onSelect.wheelJointList[row-1][0] # GUID of wheel joint. if no joint found, default to None
                     )
+                )
 
-                """
-                Loops through all rows in the joint table to extract the input values
-                """
-                jointTableInput = jointTable()
-                for row in range(jointTableInput.rowCount):
-                    if row == 0:
-                        continue
+            """
+            Loops through all rows in the joint table to extract the input values
+            """
+            jointTableInput = jointTable()
+            for row in range(jointTableInput.rowCount):
+                if row == 0:
+                    continue
 
-                    parentJointIndex = jointTableInput.getInputAtPosition(
-                        row, 2
-                    ).selectedItem.index  # parent joint index, int
+                parentJointIndex = jointTableInput.getInputAtPosition(
+                    row, 2
+                ).selectedItem.index  # parent joint index, int
 
-                    signalTypeIndex = jointTableInput.getInputAtPosition(
-                        row, 3
-                    ).selectedItem.index  # signal type index, int
+                signalTypeIndex = jointTableInput.getInputAtPosition(
+                    row, 3
+                ).selectedItem.index  # signal type index, int
 
-                    # typeString = jointTableInput.getInputAtPosition(
-                    #     row, 0
-                    # ).name
+                # typeString = jointTableInput.getInputAtPosition(
+                #     row, 0
+                # ).name
 
-                    jointSpeed = jointTableInput.getInputAtPosition(row, 4).value
+                jointSpeed = jointTableInput.getInputAtPosition(row, 4).value
 
-                    jointForce = jointTableInput.getInputAtPosition(row, 5).value
+                jointForce = jointTableInput.getInputAtPosition(row, 5).value
 
-                    parentJointToken = ""
+                parentJointToken = ""
 
-                    if parentJointIndex == 0:
-                        _exportJoints.append(
-                            _Joint(
-                                JointListGlobal[row - 1].entityToken,
-                                JointParentType.ROOT,
-                                signalTypeIndex,  # index of selected signal in dropdown
-                                jointSpeed,
-                                jointForce / 100.0,
-                            )  # parent joint GUID
-                        )
-                        continue
-                    elif parentJointIndex < row:
-                        parentJointToken = JointListGlobal[
-                            parentJointIndex - 1
-                        ].entityToken  # parent joint GUID, str
-                    else:
-                        parentJointToken = JointListGlobal[
-                            parentJointIndex + 1
-                        ].entityToken  # parent joint GUID, str
-
-                    # for wheel in _exportWheels:
-                    # find some way to get joint
-                    # 1. Compare Joint occurrence1 to wheel.occurrence_token
-                    # 2. if true set the parent to Root
-
+                if parentJointIndex == 0:
                     _exportJoints.append(
                         _Joint(
                             JointListGlobal[row - 1].entityToken,
-                            parentJointToken,
-                            signalTypeIndex,
+                            JointParentType.ROOT,
+                            signalTypeIndex,  # index of selected signal in dropdown
                             jointSpeed,
-                            jointForce,
-                        )
+                            jointForce / 100.0,
+                        )  # parent joint GUID
                     )
-
-                """
-                Loops through all rows in the gamepiece table to extract the input values
-                """
-                gamepieceTableInput = gamepieceTable()
-                weight_unit_f = INPUTS_ROOT.itemById("weight_unit_f")
-                for row in range(gamepieceTableInput.rowCount):
-                    if row == 0:
-                        continue
-
-                    weightValue = gamepieceTableInput.getInputAtPosition(
-                        row, 2
-                    ).value  # weight/mass input, float
-
-                    if weight_unit_f.selectedItem.index == 0:
-                        weightValue /= 2.2046226218
-
-                    frictionValue = gamepieceTableInput.getInputAtPosition(
-                        row, 3
-                    ).valueOne  # friction value, float
-
-                    _exportGamepieces.append(
-                        Gamepiece(
-                            guid_occurrence(GamepieceListGlobal[row - 1]),
-                            weightValue,
-                            frictionValue,
-                        )
-                    )
-
-                """
-                Robot Weight
-                """
-                weight_input = INPUTS_ROOT.itemById("weight_input")
-                weight_unit = INPUTS_ROOT.itemById("weight_unit")
-
-                if weight_unit.selectedItem.index == 0:
-                    _robotWeight = float(weight_input.value) / 2.2046226218
+                    continue
+                elif parentJointIndex < row:
+                    parentJointToken = JointListGlobal[
+                        parentJointIndex - 1
+                    ].entityToken  # parent joint GUID, str
                 else:
-                    _robotWeight = float(weight_input.value)
+                    parentJointToken = JointListGlobal[
+                        parentJointIndex + 1
+                    ].entityToken  # parent joint GUID, str
 
-                """
-                Export Mode
-                """
-                dropdownExportMode = INPUTS_ROOT.itemById("mode")
-                if dropdownExportMode.selectedItem.index == 0:
-                    _mode = Mode.Synthesis
-                elif dropdownExportMode.selectedItem.index == 1:
-                    _mode = Mode.SynthesisField
+                # for wheel in _exportWheels:
+                # find some way to get joint
+                # 1. Compare Joint occurrence1 to wheel.occurrence_token
+                # 2. if true set the parent to Root
 
-                global compress
-                compress = (
-                    eventArgs.command.commandInputs.itemById("advanced_settings")
-                    .children.itemById("exporter_settings")
-                    .children.itemById("compress")
-                ).value
+                _exportJoints.append(
+                    _Joint(
+                        JointListGlobal[row - 1].entityToken,
+                        parentJointToken,
+                        signalTypeIndex,
+                        jointSpeed,
+                        jointForce,
+                    )
+                )
 
-                # Transition: AARD-1687
-                self.designAttrs.add("SynthesisExporter", "compress", str(compress))
+            """
+            Loops through all rows in the gamepiece table to extract the input values
+            """
+            gamepieceTableInput = gamepieceTable()
+            weight_unit_f = INPUTS_ROOT.itemById("weight_unit_f")
+            for row in range(gamepieceTableInput.rowCount):
+                if row == 0:
+                    continue
 
-                options = ParseOptions(
+                weightValue = gamepieceTableInput.getInputAtPosition(
+                    row, 2
+                ).value  # weight/mass input, float
+
+                if weight_unit_f.selectedItem.index == 0:
+                    weightValue /= 2.2046226218
+
+                frictionValue = gamepieceTableInput.getInputAtPosition(
+                    row, 3
+                ).valueOne  # friction value, float
+
+                _exportGamepieces.append(
+                    Gamepiece(
+                        guid_occurrence(GamepieceListGlobal[row - 1]),
+                        weightValue,
+                        frictionValue,
+                    )
+                )
+
+            """
+            Robot Weight
+            """
+            weight_input = INPUTS_ROOT.itemById("weight_input")
+            weight_unit = INPUTS_ROOT.itemById("weight_unit")
+
+            if weight_unit.selectedItem.index == 0:
+                _robotWeight = float(weight_input.value) / 2.2046226218
+            else:
+                _robotWeight = float(weight_input.value)
+
+            """
+            Export Mode
+            """
+            dropdownExportMode = INPUTS_ROOT.itemById("mode")
+            if dropdownExportMode.selectedItem.index == 0:
+                _mode = Mode.Synthesis
+            elif dropdownExportMode.selectedItem.index == 1:
+                _mode = Mode.SynthesisField
+
+            global compress
+            compress = (
+                eventArgs.command.commandInputs.itemById("advanced_settings")
+                .children.itemById("exporter_settings")
+                .children.itemById("compress")
+            ).value
+
+            # Transition: AARD-1687
+            # self.designAttrs.add("SynthesisExporter", "compress", str(compress))
+
+            options = ParseOptions(
                     savepath,
                     name,
                     version,
-                    materials=renderer,
+                    materials=0,
                     joints=_exportJoints,
                     wheels=_exportWheels,
                     gamepieces=_exportGamepieces,
                     weight=_robotWeight,
                     mode=_mode,
                     compress=compress,
-                )
+            )
 
-                if options.parse(False):
-                    # success
-                    return
-                else:
-                    self.log.error(
-                        f"Error: \n\t{name} could not be written to \n {savepath}"
-                    )
+            # parserOptions.fileLocation = savepath
+            # parserOptions.name = name
+            # parserOptions.version = version
+            # parserOptions.mode = _mode
+            # parserOptions.wheels = _exportWheels
+            # parserOptions.joints = _exportJoints
+            # parserOptions.gamepieces = _exportGamepieces
+            # parserOptions.weight = _robotWeight
+            # parserOptions.compress = compress
+            # parserOptions.exportAsPart = export_as_part_boolean
+
+            # exporterOptions.compress = compress
+            # exporterOptions.exportAsPart = export_as_part_boolean
+
+            # if not options.parse():
+            #     # Fail message
+            #     self.log.error(
+            #         f"Error: \n\t{name} could not be written to \n {savepath}"
+            #     )
+
+            options.parse(False)
+            # Parser(options).export()
+            # exporterOptions.write()
         except:
             if gm.ui:
                 gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
-
-        #    logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.{self.__class__.__name__}").error(
-        #    "Failed:\n{}".format(traceback.format_exc())
-        # )
 
 
 class CommandExecutePreviewHandler(adsk.core.CommandEventHandler):
