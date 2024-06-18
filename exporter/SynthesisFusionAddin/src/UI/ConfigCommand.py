@@ -185,8 +185,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
 
             designCompress = self.designAttrs.itemByName("SynthesisExporter", "compress")
             global compress
-            if designCompress is not None:
-                ui.messageBox("designCompress is not None")
+            if designCompress:
                 ui.messageBox(f"Compress: {designCompress}")
                 compress = True if designCompress == "True" else False
             else:
@@ -1464,7 +1463,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 global compress
 
                 # Transition: AARD-1687
-                self.designAttrs.add("SynthesisExporter", "compress", str(compress))
+                self.designAttrs.add("SynthesisExporter", "compress", str("some other random value"))
                 ui = adsk.core.Application.get().userInterface
                 ui.messageBox(f"Compress: {str(compress)}")
 
