@@ -32,7 +32,7 @@ INPUTS_ROOT (adsk.fusion.CommandInputs):
 INPUTS_ROOT = None
 
 """
-These lists are crucial, and contain all of the relevent object selections.
+These lists are crucial, and contain all of the relevant object selections.
 - WheelListGlobal: list of wheels (adsk.fusion.Occurrence)
 - JointListGlobal: list of joints (adsk.fusion.Joint)
 - GamepieceListGlobal: list of gamepieces (adsk.fusion.Occurrence)
@@ -104,7 +104,7 @@ class JointMotions(Enum):
     BALL = 6
 
 
-class FullMassCalculuation:
+class FullMassCalculation:
     def __init__(self):
         self.totalMass = 0.0
         self.bRepMassInRoot()
@@ -748,35 +748,14 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             """
             Exporter settings group command
             """
-            exporterSetings = a_input.addGroupCommandInput(
+            exporterSettings = a_input.addGroupCommandInput(
                 "exporter_settings", "Exporter Settings"
             )
-            exporterSetings.isExpanded = True
-            exporterSetings.isEnabled = True
-            exporterSetings.tooltip = "tooltip"  # TODO: update tooltip
-            exporter_settings = exporterSetings.children
+            exporterSettings.isExpanded = True
+            exporterSettings.isEnabled = True
+            exporterSettings.tooltip = "tooltip"  # TODO: update tooltip
+            exporter_settings = exporterSettings.children
 
-            # Not sure if this is used - Brandon
-            self.createBooleanInput(  # algorithm wheel selection checkbox.
-                "algorithmic_selection",
-                "Algorithmic Wheel Selection",
-                exporter_settings,
-                checked=True,
-                tooltip="Automatically select the entire wheel component.",
-                tooltipadvanced="<hr>If a sub-part of a wheel is selected (eg. a roller of an omni wheel), an algorithm will traverse the assembly to best determine the entire wheel component.<br>"
-                + "<br>This traversal operates on how the wheel is jointed and where the joint is placed. If the automatic selection fails, try:"
-                + "<ul>"
-                + "<tt>"
-                + "<li>Jointing the wheel differently, or</li><br>"
-                + "<li>Selecting the wheel from the browser while holding down <span style='text-decoration:overline;text-decoration:underline;background-color: #c27b10'>&nbsp;CTRL&nbsp;</span></span>, or</li><br>"
-                + "<li>Disabling Algorithmic Selection.</li>"
-                + "</tt>"
-                + "</ul>",
-                enabled=True,
-            )
-
-            # TODO: Bug mentioned with not always compressing?
-            # Hunter has this information in his brain somewhere - Brandon
             self.createBooleanInput(
                 "compress",
                 "Compress Output",
@@ -787,18 +766,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 enabled=True,
             )
 
-            # Transition: AARD-1689
-            # Should possibly be implemented later?
-
-            # self.createBooleanInput(  # open synthesis checkbox
-            #     "open_synthesis",
-            #     "Open Synthesis",
-            #     exporter_settings,
-            #     checked=True,
-            #     tooltip="Open Synthesis after the export is complete.",
-            #     enabled=True,
-            # )
-
             self.createBooleanInput(
                 "export_as_part",
                 "Export As Part",
@@ -808,7 +775,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 enabled=True,
             )
 
-            # ~~~~~~~~~~~~~~~~ PHYSICS SETINGS ~~~~~~~~~~~~~~~~
+            # ~~~~~~~~~~~~~~~~ PHYSICS SETTINGS ~~~~~~~~~~~~~~~~
             """
             Physics settings group command
             """
@@ -821,37 +788,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             physicsSettings.tooltip = "tooltip"  # TODO: update tooltip
             physics_settings = physicsSettings.children
 
-            # Transition: AARD-1689
-            # Should possibly be implemented later?
-
-            # self.createBooleanInput(  # density checkbox
-            #     "density",
-            #     "Density",
-            #     physics_settings,
-            #     checked=True,
-            #     tooltip="tooltip",  # TODO: update tooltip
-            #     enabled=True,
-            # )
-
-            # self.createBooleanInput(  # SA checkbox
-            #     "surface_area",
-            #     "Surface Area",
-            #     physics_settings,
-            #     checked=True,
-            #     tooltip="tooltip",  # TODO: update tooltip
-            #     enabled=True,
-            # )
-
-            # self.createBooleanInput(  # restitution checkbox
-            #     "restitution",
-            #     "Restitution",
-            #     physics_settings,
-            #     checked=True,
-            #     tooltip="tooltip",  # TODO: update tooltip
-            #     enabled=True,
-            # )
-
-
+            # AARD-1687
             # Should also be commented out / removed?
             # This would cause problems elsewhere but I can't tell i f
             # this is even being used.
@@ -1004,14 +941,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             cmd.preSelectEnd.add(onPreSelectEnd)
             gm.handlers.append(onPreSelectEnd)  # 5
 
-            onKeyDown = MyKeyDownHandler()
-            cmd.keyDown.add(onKeyDown)
-            gm.handlers.append(onKeyDown)  # 6
-
-            onKeyUp = MyKeyUpHandler()
-            cmd.keyUp.add(onKeyUp)
-            gm.handlers.append(onKeyUp)  # 7
-
             onDestroy = MyCommandDestroyHandler()
             cmd.destroy.add(onDestroy)
             gm.handlers.append(onDestroy)  # 8
@@ -1080,7 +1009,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             columns (int): column count
             ratio (str): column width ratio
             maxRows (int): the maximum number of displayed rows possible
-            minRows (int, optional): the minumum number of displayed rows. Defaults to 1.
+            minRows (int, optional): the minimum number of displayed rows. Defaults to 1.
             columnSpacing (int, optional): spacing in between the columns, in pixels. Defaults to 0.
             rowSpacing (int, optional): spacing in between the rows, in pixels. Defaults to 0.
 
@@ -1915,7 +1844,7 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
         """
         try:
             if gm.app.activeDocument.design:
-                massCalculation = FullMassCalculuation()
+                massCalculation = FullMassCalculation()
                 totalMass = massCalculation.getTotalMass()
 
                 value = float
@@ -2304,141 +2233,12 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                 if checkBox.value:
                     global compress
                     compress = checkBox.value
-            elif cmdInput.id == "algorithmic_selection":
-                checkBox = adsk.core.BoolValueCommandInput.cast(cmdInput)
-                onSelect.algorithmicSelection = checkBox.value
-                if checkBox.value:
-                    indicator.formattedText = "🟢"
-                    indicator.tooltipDescription = (
-                        "<tt>(enabled)</tt>"
-                        + "<hr>If a sub-part of a wheel is selected (eg. a roller of an omni wheel), an algorithm will traverse the assembly to best determine the entire wheel component.<br>"
-                        + "<br>This traversal operates on how the wheel is jointed and where the joint is placed. If the automatic selection fails, try:"
-                        + "<ul>"
-                        + "<tt>"
-                        + "<li>Jointing the wheel differently, or</li><br>"
-                        + "<li>Selecting the wheel from the browser while holding down <span style='text-decoration:overline;text-decoration:underline;background-color: #c27b10'>&nbsp;CTRL&nbsp;</span></span>, or</li><br>"
-                        + "<li>Disabling Algorithmic Selection.</li>"
-                        + "</tt>"
-                        + "</ul>"
-                    )
-
-                else:
-                    indicator.formattedText = "🔴"
-                    indicator.tooltipDescription = (
-                        "<tt>(disabled)</tt>"
-                        + "<hr>If a sub-part of a wheel is selected (eg. a roller of an omni wheel), an algorithm will traverse the assembly to best determine the entire wheel component.<br>"
-                        + "<br>This traversal operates on how the wheel is jointed and where the joint is placed. If the automatic selection fails, try:"
-                        + "<ul>"
-                        + "<tt>"
-                        + "<li>Jointing the wheel differently, or</li><br>"
-                        + "<li>Selecting the wheel from the browser while holding down <span style='text-decoration:overline;text-decoration:underline;background-color: #c27b10'>&nbsp;CTRL&nbsp;</span></span>, or</li><br>"
-                        + "<li>Disabling Algorithmic Selection.</li>"
-                        + "</tt>"
-                        + "</ul>"
-                    )
         except:
             if gm.ui:
                 gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
             logging.getLogger(
                 "{INTERNAL_ID}.UI.ConfigCommand.{self.__class__.__name__}"
             ).error("Failed:\n{}".format(traceback.format_exc()))
-
-
-class MyKeyDownHandler(adsk.core.KeyboardEventHandler):
-    def __init__(self) -> None:
-        super().__init__()
-
-    def notify(self, args):
-        eventArgs = adsk.core.KeyboardEventArgs.cast(args)
-        keyCode = eventArgs.keyCode
-        onSelect = gm.handlers[3]
-        algorithmicSelection = INPUTS_ROOT.itemById("algorithmic_selection")
-        indicator = INPUTS_ROOT.itemById("algorithmic_indicator")
-        # wheelAddButton = INPUTS_ROOT.itemById("wheel_add")
-
-        # if wheelAddButton.isEnabled:
-        #    return
-
-        if keyCode == 16777249:  # CTRL key pressed
-            # gm.ui.messageBox("KEY DOWN")
-            onSelect.algorithmicSelection = not algorithmicSelection.value
-            if algorithmicSelection.value:
-                indicator.formattedText = "🔴"
-                indicator.tooltipDescription = (
-                    "<tt>(disabled)</tt>"
-                    + "<hr>If a sub-part of a wheel is selected (eg. a roller of an omni wheel), an algorithm will traverse the assembly to best determine the entire wheel component.<br>"
-                    + "<br>This traversal operates on how the wheel is jointed and where the joint is placed. If the automatic selection fails, try:"
-                    + "<ul>"
-                    + "<tt>"
-                    + "<li>Jointing the wheel differently, or</li><br>"
-                    + "<li>Selecting the wheel from the browser while holding down <span style='text-decoration:overline;text-decoration:underline;background-color: #c27b10'>&nbsp;CTRL&nbsp;</span></span>, or</li><br>"
-                    + "<li>Disabling Algorithmic Selection.</li>"
-                    + "</tt>"
-                    + "</ul>"
-                )
-            else:
-                indicator.formattedText = "🟢"
-                indicator.tooltipDescription = (
-                    "<tt>(enabled)</tt>"
-                    + "<hr>If a sub-part of a wheel is selected (eg. a roller of an omni wheel), an algorithm will traverse the assembly to best determine the entire wheel component.<br>"
-                    + "<br>This traversal operates on how the wheel is jointed and where the joint is placed. If the automatic selection fails, try:"
-                    + "<ul>"
-                    + "<tt>"
-                    + "<li>Jointing the wheel differently, or</li><br>"
-                    + "<li>Selecting the wheel from the browser while holding down <span style='text-decoration:overline;text-decoration:underline;background-color: #c27b10'>&nbsp;CTRL&nbsp;</span></span>, or</li><br>"
-                    + "<li>Disabling Algorithmic Selection.</li>"
-                    + "</tt>"
-                    + "</ul>"
-                )
-
-
-class MyKeyUpHandler(adsk.core.KeyboardEventHandler):
-    def __init__(self) -> None:
-        super().__init__()
-
-    def notify(self, args):
-        eventArgs = adsk.core.KeyboardEventArgs.cast(args)
-        keyCode = eventArgs.keyCode
-
-        onSelect = gm.handlers[3]
-        algorithmicSelection = INPUTS_ROOT.itemById("algorithmic_selection")
-        indicator = INPUTS_ROOT.itemById("algorithmic_indicator")
-        # wheelAddButton = INPUTS_ROOT.itemById("wheel_add")
-
-        # if wheelAddButton.isEnabled:
-        #    return
-
-        if keyCode == 16777249:  # CTRL key released
-            # gm.ui.messageBox("KEY UP")
-            onSelect.algorithmicSelection = algorithmicSelection.value
-            if algorithmicSelection.value:
-                indicator.formattedText = "🟢"
-                indicator.tooltipDescription = (
-                    "<tt>(enabled)</tt>"
-                    + "<hr>If a sub-part of a wheel is selected (eg. a roller of an omni wheel), an algorithm will traverse the assembly to best determine the entire wheel component.<br>"
-                    + "<br>This traversal operates on how the wheel is jointed and where the joint is placed. If the automatic selection fails, try:"
-                    + "<ul>"
-                    + "<tt>"
-                    + "<li>Jointing the wheel differently, or</li><br>"
-                    + "<li>Selecting the wheel from the browser while holding down <span style='text-decoration:overline;text-decoration:underline;background-color: #c27b10'>&nbsp;CTRL&nbsp;</span></span>, or</li><br>"
-                    + "<li>Disabling Algorithmic Selection.</li>"
-                    + "</tt>"
-                    + "</ul>"
-                )
-            else:
-                indicator.formattedText = "🔴"
-                indicator.tooltipDescription = (
-                    "<tt>(disabled)</tt>"
-                    + "<hr>If a sub-part of a wheel is selected (eg. a roller of an omni wheel), an algorithm will traverse the assembly to best determine the entire wheel component.<br>"
-                    + "<br>This traversal operates on how the wheel is jointed and where the joint is placed. If the automatic selection fails, try:"
-                    + "<ul>"
-                    + "<tt>"
-                    + "<li>Jointing the wheel differently, or</li><br>"
-                    + "<li>Selecting the wheel from the browser while holding down <span style='text-decoration:overline;text-decoration:underline;background-color: #c27b10'>&nbsp;CTRL&nbsp;</span></span>, or</li><br>"
-                    + "<li>Disabling Algorithmic Selection.</li>"
-                    + "</tt>"
-                    + "</ul>"
-                )
 
 
 class MyCommandDestroyHandler(adsk.core.CommandEventHandler):
