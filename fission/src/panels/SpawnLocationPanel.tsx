@@ -5,6 +5,7 @@ import Panel, { PanelPropsImpl } from "../components/Panel"
 const SpawnLocationsPanel: React.FC<PanelPropsImpl> = ({
     panelId,
     openLocation,
+    sidePadding,
 }) => {
     const robotsPerAlliance = 3
     const alliances = 2
@@ -20,6 +21,7 @@ const SpawnLocationsPanel: React.FC<PanelPropsImpl> = ({
             name="Set Spawn Locations"
             panelId={panelId}
             openLocation={openLocation}
+            sidePadding={sidePadding}
         >
             <table>
                 <tbody>

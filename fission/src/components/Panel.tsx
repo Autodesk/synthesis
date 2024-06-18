@@ -13,37 +13,73 @@ export type OpenLocation =
     | "bottom"
     | "bottom-right"
 
-const getLocationClasses = (openLocation: OpenLocation) => {
+type LocationOptions = { className: string; styles: { [key: string]: string } }
+
+const getLocationClasses = (
+    openLocation: OpenLocation,
+    sidePadding: number
+): LocationOptions => {
+    // Can't use tailwind left-[custom] because it won't generate the classes since we're using them dynamically with string templating
+    const paddingStyle = `${sidePadding}px`
     switch (openLocation) {
         case "top-left":
-            return "absolute left-0 top-0"
+            return {
+                className: ``,
+                styles: { left: paddingStyle, top: paddingStyle },
+            }
         case "top":
-            return "absolute left-1/2 top-0 -translate-x-1/2"
+            return {
+                className: `left-1/2 -translate-x-1/2`,
+                styles: { top: paddingStyle },
+            }
         case "top-right":
-            return "absolute right-0 top-0"
+            return {
+                className: ``,
+                styles: { right: paddingStyle, top: paddingStyle },
+            }
         case "left":
-            return "absolute left-0 top-1/2 -translate-y-1/2"
+            return {
+                className: `top-1/2 -translate-y-1/2`,
+                styles: { left: paddingStyle },
+            }
         case "center":
-            return "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+            return {
+                className: `left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2`,
+                styles: {},
+            }
         case "right":
-            return "absolute right-0 top-1/2 -translate-y-1/2"
+            return {
+                className: `top-1/2 -translate-y-1/2`,
+                styles: { right: paddingStyle },
+            }
         case "bottom-left":
-            return "absolute left-0 bottom-0"
+            return {
+                className: ``,
+                styles: { left: paddingStyle, bottom: paddingStyle },
+            }
         case "bottom":
-            return "absolute left-1/2 bottom-0 -translate-x-1/2"
+            return {
+                className: `left-1/2 -translate-x-1/2`,
+                styles: { bottom: paddingStyle },
+            }
         case "bottom-right":
-            return "absolute right-0 bottom-0"
+            return {
+                className: ``,
+                styles: { right: paddingStyle, bottom: paddingStyle },
+            }
     }
 }
 
 export type PanelPropsImpl = {
     panelId: string
     openLocation?: OpenLocation
+    sidePadding?: number
 }
 
 type PanelProps = {
     panelId: string
     openLocation?: OpenLocation
+    sidePadding?: number
     name?: string
     icon?: ReactNode | string
     onCancel?: () => void
@@ -63,27 +99,13 @@ type PanelProps = {
     contentClassName?: string
 }
 
-const styles = `
-.panel-open {
-    opacity: 1;
-    scale: 1;
-    width: min-content;
-    height: min-content;
-}
-.panel-close {
-    opacity: 0;
-    scale: 0;
-    width: 0px;
-    height: 0px;
-}
-`
-
 const Panel: React.FC<PanelProps> = ({
     children,
     name,
     icon,
     panelId,
     openLocation,
+    sidePadding,
     onCancel,
     onMiddle,
     onAccept,
@@ -107,13 +129,13 @@ const Panel: React.FC<PanelProps> = ({
             icon
         )
     openLocation ||= "center"
-    const locationClasses = getLocationClasses(openLocation)
-    console.log(panelId, openLocation, locationClasses)
+    sidePadding ||= 16
+    const locationClasses = getLocationClasses(openLocation, sidePadding)
     return (
         <div>
-            <style>{styles}</style>
             <div
-                className={`${locationClasses} ${className || ""} bg-background text-main-text m-auto border-5 rounded-2xl shadow-sm shadow-slate-800`}
+                className={`absolute ${locationClasses.className} ${className || ""} bg-background text-main-text m-auto border-5 rounded-2xl shadow-sm shadow-slate-800`}
+                style={locationClasses.styles}
                 key={"panel-" + panelId}
             >
                 {name && (
@@ -128,7 +150,7 @@ const Panel: React.FC<PanelProps> = ({
                 )}
                 <div
                     id="content"
-                    className={`${contentClassName} ${
+                    className={`${contentClassName || ""} ${
                         !contentClassName?.includes("mx") ? "mx-16" : ""
                     } flex flex-col gap-4 max-h-[75vh]`}
                 >

@@ -218,7 +218,11 @@ const initialModals = [
 ]
 
 const initialPanels: ReactElement[] = [
-    <RobotSwitchPanel panelId="multibot" openLocation="right" />,
+    <RobotSwitchPanel
+        panelId="multibot"
+        openLocation="right"
+        sidePadding={8}
+    />,
     <DriverStationPanel panelId="driver-station" />,
     <SpawnLocationsPanel panelId="spawn-locations" />,
     <ScoreboardPanel panelId="scoreboard" />,

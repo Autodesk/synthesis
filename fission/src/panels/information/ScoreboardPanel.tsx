@@ -6,6 +6,7 @@ import Stack, { StackDirection } from "../../components/Stack"
 const ScoreboardPanel: React.FC<PanelPropsImpl> = ({
     panelId,
     openLocation,
+    sidePadding,
 }) => {
     const [redScore] = useState<number>(0)
     const [blueScore] = useState<number>(0)
@@ -43,6 +44,7 @@ const ScoreboardPanel: React.FC<PanelPropsImpl> = ({
         <Panel
             panelId={panelId}
             openLocation={openLocation}
+            sidePadding={sidePadding}
             cancelEnabled={false}
             acceptEnabled={false}
             contentClassName="mx-0 w-min"

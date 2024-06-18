@@ -8,6 +8,7 @@ import Dropdown from "../../components/Dropdown"
 const DriverStationPanel: React.FC<PanelPropsImpl> = ({
     panelId,
     openLocation,
+    sidePadding,
 }) => {
     const [enabled, setEnabled] = useState(false)
 
@@ -17,6 +18,7 @@ const DriverStationPanel: React.FC<PanelPropsImpl> = ({
             icon={<GiSteeringWheel />}
             panelId={panelId}
             openLocation={openLocation}
+            sidePadding={sidePadding}
         >
             <Stack direction={StackDirection.Horizontal}>
                 <Button
