@@ -10,22 +10,14 @@ type InputProps = {
     className?: string
 }
 
-const Input: React.FC<InputProps> = ({
-    placeholder,
-    defaultValue,
-    label,
-    onInput,
-    className,
-}) => {
+const Input: React.FC<InputProps> = ({ placeholder, defaultValue, label, onInput, className }) => {
     return (
         <>
             {label && <Label size={LabelSize.Small}>{label}</Label>}
             <BaseInput
                 defaultValue={defaultValue}
                 placeholder={placeholder}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    onInput && onInput(e.target.value)
-                }
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => onInput && onInput(e.target.value)}
                 className={className}
                 slotProps={{
                     input: {

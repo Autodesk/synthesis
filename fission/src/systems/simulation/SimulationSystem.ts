@@ -27,9 +27,7 @@ class SimulationSystem extends WorldSystem {
         this._simMechanisms.set(mechanism, new SimulationLayer(mechanism))
     }
 
-    public GetSimulationLayer(
-        mechanism: Mechanism
-    ): SimulationLayer | undefined {
+    public GetSimulationLayer(mechanism: Mechanism): SimulationLayer | undefined {
         return this._simMechanisms.get(mechanism)
     }
 
@@ -72,41 +70,26 @@ class SimulationLayer {
         this._stimuli = []
         this._mechanism.constraints.forEach(x => {
             if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Hinge) {
-                const hinge = JOLT.castObject(
-                    x.constraint,
-                    JOLT.HingeConstraint
-                )
+                const hinge = JOLT.castObject(x.constraint, JOLT.HingeConstraint)
                 const driver = new HingeDriver(hinge)
                 this._drivers.push(driver)
                 const stim = new HingeStimulus(hinge)
                 this._stimuli.push(stim)
-            } else if (
-                x.constraint.GetSubType() == JOLT.EConstraintSubType_Vehicle
-            ) {
-                const vehicle = JOLT.castObject(
-                    x.constraint,
-                    JOLT.VehicleConstraint
-                )
+            } else if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Vehicle) {
+                const vehicle = JOLT.castObject(x.constraint, JOLT.VehicleConstraint)
                 const driver = new WheelDriver(vehicle)
                 this._drivers.push(driver)
                 const stim = new WheelRotationStimulus(vehicle.GetWheel(0))
                 this._stimuli.push(stim)
-            } else if (
-                x.constraint.GetSubType() == JOLT.EConstraintSubType_Slider
-            ) {
-                const slider = JOLT.castObject(
-                    x.constraint,
-                    JOLT.SliderConstraint
-                )
+            } else if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Slider) {
+                const slider = JOLT.castObject(x.constraint, JOLT.SliderConstraint)
                 const driver = new SliderDriver(slider)
                 this._drivers.push(driver)
                 const stim = new SliderStimulus(slider)
                 this._stimuli.push(stim)
             }
         })
-        this._stimuli.push(
-            new ChassisStimulus(mechanism.nodeToBody.get(mechanism.rootBody)!)
-        )
+        this._stimuli.push(new ChassisStimulus(mechanism.nodeToBody.get(mechanism.rootBody)!))
     }
 
     public Update(deltaT: number) {

@@ -10,8 +10,7 @@ const delay = 1000
 const authCodeTimeout = 200000
 
 const CLIENT_ID = "GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU"
-const CHARACTERS =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+const CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 let lastCall = Date.now()
 
@@ -92,13 +91,9 @@ class APS {
                 ["code_challenge", codeChallenge],
                 ["code_challenge_method", "S256"],
             ]
-            const data = dataParams
-                .map(x => `${x[0]}=${encodeURIComponent(x[1])}`)
-                .join("&")
+            const data = dataParams.map(x => `${x[0]}=${encodeURIComponent(x[1])}`).join("&")
 
-            window.open(
-                `https://developer.api.autodesk.com/authentication/v2/authorize?${data}`
-            )
+            window.open(`https://developer.api.autodesk.com/authentication/v2/authorize?${data}`)
 
             const searchStart = Date.now()
             const func = () => {
@@ -134,11 +129,7 @@ class APS {
                 if (this.auth) {
                     this.loadUserInfo(this.auth!).then(async () => {
                         if (APS.userInfo) {
-                            MainHUD_AddToast(
-                                "info",
-                                "ADSK Login",
-                                `Hello, ${APS.userInfo.givenName}`
-                            )
+                            MainHUD_AddToast("info", "ADSK Login", `Hello, ${APS.userInfo.givenName}`)
                         }
                     })
                 }
@@ -172,13 +163,8 @@ class APS {
         const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer)
 
         let str = ""
-        new Uint8Array(hashBuffer).forEach(
-            x => (str = str + String.fromCharCode(x))
-        )
-        const codeChallenge = btoa(str)
-            .replace(/\+/g, "-")
-            .replace(/\//g, "_")
-            .replace(/=/g, "")
+        new Uint8Array(hashBuffer).forEach(x => (str = str + String.fromCharCode(x)))
+        const codeChallenge = btoa(str).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "")
 
         return [codeVerifier, codeChallenge]
     }
@@ -186,9 +172,7 @@ class APS {
     static genRandomString(len: number): string {
         const s: string[] = []
         for (let i = 0; i < len; i++) {
-            const c = CHARACTERS.charAt(
-                Math.abs(Random() * 10000) % CHARACTERS.length
-            )
+            const c = CHARACTERS.charAt(Math.abs(Random() * 10000) % CHARACTERS.length)
             s.push(c)
         }
 

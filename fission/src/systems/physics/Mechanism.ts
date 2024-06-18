@@ -14,11 +14,7 @@ class Mechanism {
     public stepListeners: Array<Jolt.PhysicsStepListener>
     public layerReserve: LayerReserve | undefined
 
-    public constructor(
-        rootBody: string,
-        bodyMap: Map<string, Jolt.BodyID>,
-        layerReserve?: LayerReserve
-    ) {
+    public constructor(rootBody: string, bodyMap: Map<string, Jolt.BodyID>, layerReserve?: LayerReserve) {
         this.rootBody = rootBody
         this.nodeToBody = bodyMap
         this.constraints = []

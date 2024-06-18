@@ -4,11 +4,7 @@ import Panel, { PanelPropsImpl } from "../../components/Panel"
 import SelectButton from "../../components/SelectButton"
 import Slider from "../../components/Slider"
 
-const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({
-    panelId,
-    openLocation,
-    sidePadding,
-}) => {
+const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
     const defaultShootSpeed = 5
     const [, setNode] = useState<string>("Click to select")
     const [, setShootSpeed] = useState<number>(defaultShootSpeed)

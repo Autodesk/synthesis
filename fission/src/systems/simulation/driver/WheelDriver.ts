@@ -19,14 +19,9 @@ class WheelDriver extends Driver {
         super()
 
         this._constraint = constraint
-        this._wheel = JOLT.castObject(
-            this._constraint.GetWheel(0),
-            JOLT.WheelWV
-        )
+        this._wheel = JOLT.castObject(this._constraint.GetWheel(0), JOLT.WheelWV)
 
-        console.log(
-            `Wheel X: ${constraint.GetVehicleBody().GetCenterOfMassPosition().GetX().toFixed(5)}`
-        )
+        console.log(`Wheel X: ${constraint.GetVehicleBody().GetCenterOfMassPosition().GetX().toFixed(5)}`)
         if (constraint.GetVehicleBody().GetCenterOfMassPosition().GetX() < 0) {
             this._targetWheelSpeed = 10.0
         } else {

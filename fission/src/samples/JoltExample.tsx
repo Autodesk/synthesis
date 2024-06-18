@@ -11,15 +11,8 @@ import { useEffect, useRef } from "react"
 import Jolt from "@barclah/jolt-physics"
 import { mirabuf } from "../proto/mirabuf"
 import { LoadMirabufRemote } from "../mirabuf/MirabufLoader.ts"
-import {
-    JoltVec3_ThreeVector3,
-    JoltQuat_ThreeQuaternion,
-} from "../util/TypeConversions.ts"
-import {
-    COUNT_OBJECT_LAYERS,
-    LAYER_MOVING,
-    LAYER_NOT_MOVING,
-} from "../util/threejs/MeshCreation.ts"
+import { JoltVec3_ThreeVector3, JoltQuat_ThreeQuaternion } from "../util/TypeConversions.ts"
+import { COUNT_OBJECT_LAYERS, LAYER_MOVING, LAYER_NOT_MOVING } from "../util/threejs/MeshCreation.ts"
 import MirabufInstance from "../mirabuf/MirabufInstance.ts"
 import MirabufParser, { ParseErrorSeverity } from "../mirabuf/MirabufParser.ts"
 
@@ -46,9 +39,7 @@ let controls: OrbitControls
 // vvv Below are the functions required to initialize everything and draw a basic floor with collisions. vvv
 
 function setupCollisionFiltering(settings: Jolt.JoltSettings) {
-    const objectFilter = new JOLT.ObjectLayerPairFilterTable(
-        COUNT_OBJECT_LAYERS
-    )
+    const objectFilter = new JOLT.ObjectLayerPairFilterTable(COUNT_OBJECT_LAYERS)
     objectFilter.EnableCollision(LAYER_NOT_MOVING, LAYER_MOVING)
     objectFilter.EnableCollision(LAYER_MOVING, LAYER_MOVING)
 
@@ -56,25 +47,18 @@ function setupCollisionFiltering(settings: Jolt.JoltSettings) {
     const BP_LAYER_MOVING = new JOLT.BroadPhaseLayer(LAYER_MOVING)
     const COUNT_BROAD_PHASE_LAYERS = 2
 
-    const bpInterface = new JOLT.BroadPhaseLayerInterfaceTable(
-        COUNT_OBJECT_LAYERS,
-        COUNT_BROAD_PHASE_LAYERS
-    )
-    bpInterface.MapObjectToBroadPhaseLayer(
-        LAYER_NOT_MOVING,
-        BP_LAYER_NOT_MOVING
-    )
+    const bpInterface = new JOLT.BroadPhaseLayerInterfaceTable(COUNT_OBJECT_LAYERS, COUNT_BROAD_PHASE_LAYERS)
+    bpInterface.MapObjectToBroadPhaseLayer(LAYER_NOT_MOVING, BP_LAYER_NOT_MOVING)
     bpInterface.MapObjectToBroadPhaseLayer(LAYER_MOVING, BP_LAYER_MOVING)
 
     settings.mObjectLayerPairFilter = objectFilter
     settings.mBroadPhaseLayerInterface = bpInterface
-    settings.mObjectVsBroadPhaseLayerFilter =
-        new JOLT.ObjectVsBroadPhaseLayerFilterTable(
-            settings.mBroadPhaseLayerInterface,
-            COUNT_BROAD_PHASE_LAYERS,
-            settings.mObjectLayerPairFilter,
-            COUNT_OBJECT_LAYERS
-        )
+    settings.mObjectVsBroadPhaseLayerFilter = new JOLT.ObjectVsBroadPhaseLayerFilterTable(
+        settings.mBroadPhaseLayerInterface,
+        COUNT_BROAD_PHASE_LAYERS,
+        settings.mObjectLayerPairFilter,
+        COUNT_OBJECT_LAYERS
+    )
 }
 
 function initPhysics() {
@@ -88,12 +72,7 @@ function initPhysics() {
 }
 
 function initGraphics() {
-    camera = new THREE.PerspectiveCamera(
-        75,
-        window.innerWidth / window.innerHeight,
-        0.1,
-        1000
-    )
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
 
     camera.position.set(-5, 4, 5)
 
@@ -122,10 +101,7 @@ function initGraphics() {
     directionalLight.shadow.camera.bottom = -shadowCamSize
     directionalLight.shadow.camera.left = -shadowCamSize
     directionalLight.shadow.camera.right = shadowCamSize
-    directionalLight.shadow.mapSize = new THREE.Vector2(
-        shadowMapSize,
-        shadowMapSize
-    )
+    directionalLight.shadow.mapSize = new THREE.Vector2(shadowMapSize, shadowMapSize)
     directionalLight.shadow.blurSamples = 16
     directionalLight.shadow.normalBias = 0.01
     directionalLight.shadow.bias = 0.0
@@ -194,9 +170,7 @@ function MyThree() {
 
         const parser = new MirabufParser(assembly)
         if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
-            console.error(
-                `Assembly Parser produced significant errors for '${assembly.info!.name!}'`
-            )
+            console.error(`Assembly Parser produced significant errors for '${assembly.info!.name!}'`)
             return
         }
 
@@ -206,14 +180,9 @@ function MyThree() {
 
     useEffect(() => {
         LoadMirabufRemote(mira_path)
-            .then((assembly: mirabuf.Assembly | undefined) =>
-                addMiraToScene(assembly)
-            )
+            .then((assembly: mirabuf.Assembly | undefined) => addMiraToScene(assembly))
             .catch(_ =>
-                LoadMirabufRemote(MIRA_FILE).then(
-                    (assembly: mirabuf.Assembly | undefined) =>
-                        addMiraToScene(assembly)
-                )
+                LoadMirabufRemote(MIRA_FILE).then((assembly: mirabuf.Assembly | undefined) => addMiraToScene(assembly))
             )
             .catch(console.error)
 

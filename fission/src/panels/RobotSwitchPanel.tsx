@@ -7,15 +7,8 @@ import Button from "../components/Button"
 import { useModalControlContext } from "../ModalContext"
 import Checkbox from "../components/Checkbox"
 
-const RobotSwitchPanel: React.FC<PanelPropsImpl> = ({
-    panelId,
-    openLocation,
-    sidePadding,
-}) => {
-    const [robots, setRobots] = useState([
-        "Dozer_v9_0",
-        "Team 2471 (2018) v7_0",
-    ])
+const RobotSwitchPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
+    const [robots, setRobots] = useState(["Dozer_v9_0", "Team 2471 (2018) v7_0"])
     const [selected, setSelected] = useState(0)
     const { openModal } = useModalControlContext()
     return (
@@ -42,12 +35,7 @@ const RobotSwitchPanel: React.FC<PanelPropsImpl> = ({
             </form>
             <Stack direction={StackDirection.Horizontal}>
                 <Button value="Add" onClick={() => openModal("robots")} />
-                <Button
-                    value="Remove"
-                    onClick={() =>
-                        setRobots(robots.filter(r => r !== robots[selected]))
-                    }
-                />
+                <Button value="Remove" onClick={() => setRobots(robots.filter(r => r !== robots[selected]))} />
             </Stack>
         </Panel>
     )

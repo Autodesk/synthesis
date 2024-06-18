@@ -9,11 +9,7 @@ import JOLT from "../../util/loading/JoltSyncLoader"
 import Jolt from "@barclah/jolt-physics"
 import * as THREE from "three"
 import { mirabuf } from "../../proto/mirabuf"
-import MirabufParser, {
-    GAMEPIECE_SUFFIX,
-    GROUNDED_JOINT_ID,
-    RigidNodeReadOnly,
-} from "../../mirabuf/MirabufParser"
+import MirabufParser, { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, RigidNodeReadOnly } from "../../mirabuf/MirabufParser"
 import WorldSystem from "../WorldSystem"
 import Mechanism from "./Mechanism"
 
@@ -72,10 +68,7 @@ class PhysicsSystem extends WorldSystem {
             new THREE.Vector3(0.0, -2.0, 0.0),
             undefined
         )
-        this._joltBodyInterface.AddBody(
-            ground.GetID(),
-            JOLT.EActivation_Activate
-        )
+        this._joltBodyInterface.AddBody(ground.GetID(), JOLT.EActivation_Activate)
     }
 
     /**
@@ -98,9 +91,7 @@ class PhysicsSystem extends WorldSystem {
         const shape = new JOLT.BoxShape(size, 0.1)
         JOLT.destroy(size)
 
-        const pos = position
-            ? ThreeVector3_JoltVec3(position)
-            : new JOLT.Vec3(0.0, 0.0, 0.0)
+        const pos = position ? ThreeVector3_JoltVec3(position) : new JOLT.Vec3(0.0, 0.0, 0.0)
         const rot = _JoltQuat(rotation)
         const creationSettings = new JOLT.BodyCreationSettings(
             shape,
@@ -136,9 +127,7 @@ class PhysicsSystem extends WorldSystem {
         position: THREE.Vector3 | undefined,
         rotation: THREE.Euler | THREE.Quaternion | undefined
     ) {
-        const pos = position
-            ? ThreeVector3_JoltVec3(position)
-            : new JOLT.Vec3(0.0, 0.0, 0.0)
+        const pos = position ? ThreeVector3_JoltVec3(position) : new JOLT.Vec3(0.0, 0.0, 0.0)
         const rot = _JoltQuat(rotation)
         const creationSettings = new JOLT.BodyCreationSettings(
             shape,
@@ -166,10 +155,7 @@ class PhysicsSystem extends WorldSystem {
      * @param   density Density of the convex hull.
      * @returns Resulting shape.
      */
-    public CreateConvexHull(
-        points: Float32Array,
-        density: number = 1.0
-    ): Jolt.ShapeResult {
+    public CreateConvexHull(points: Float32Array, density: number = 1.0): Jolt.ShapeResult {
         if (points.length % 3) {
             throw new Error(`Invalid size of points: ${points.length}`)
         }
@@ -177,9 +163,7 @@ class PhysicsSystem extends WorldSystem {
         settings.mPoints.clear()
         settings.mPoints.reserve(points.length / 3.0)
         for (let i = 0; i < points.length; i += 3) {
-            settings.mPoints.push_back(
-                new JOLT.Vec3(points[i], points[i + 1], points[i + 2])
-            )
+            settings.mPoints.push_back(new JOLT.Vec3(points[i], points[i + 1], points[i + 2]))
         }
         settings.mDensity = density
         return settings.Create()
@@ -204,18 +188,17 @@ class PhysicsSystem extends WorldSystem {
      */
     public CreateJointsFromParser(parser: MirabufParser, mechanism: Mechanism) {
         const jointData = parser.assembly.data!.joints!
-        for (const [jGuid, jInst] of Object.entries(
-            jointData.jointInstances!
-        ) as [string, mirabuf.joint.JointInstance][]) {
+        for (const [jGuid, jInst] of Object.entries(jointData.jointInstances!) as [
+            string,
+            mirabuf.joint.JointInstance,
+        ][]) {
             if (jGuid == GROUNDED_JOINT_ID) continue
 
             const rnA = parser.partToNodeMap.get(jInst.parentPart!)
             const rnB = parser.partToNodeMap.get(jInst.childPart!)
 
             if (!rnA || !rnB) {
-                console.warn(
-                    `Skipping joint '${jInst.info!.name!}'. Couldn't find associated rigid nodes.`
-                )
+                console.warn(`Skipping joint '${jInst.info!.name!}'. Couldn't find associated rigid nodes.`)
                 continue
             } else if (rnA.id == rnB.id) {
                 console.warn(
@@ -224,15 +207,11 @@ class PhysicsSystem extends WorldSystem {
                 continue
             }
 
-            const jDef = parser.assembly.data!.joints!.jointDefinitions![
-                jInst.jointReference!
-            ]! as mirabuf.joint.Joint
+            const jDef = parser.assembly.data!.joints!.jointDefinitions![jInst.jointReference!]! as mirabuf.joint.Joint
             const bodyIdA = mechanism.GetBodyByNodeId(rnA.id)
             const bodyIdB = mechanism.GetBodyByNodeId(rnB.id)
             if (!bodyIdA || !bodyIdB) {
-                console.warn(
-                    `Skipping joint '${jInst.info!.name!}'. Failed to find rigid nodes' associated bodies.`
-                )
+                console.warn(`Skipping joint '${jInst.info!.name!}'. Failed to find rigid nodes' associated bodies.`)
                 continue
             }
             const bodyA = this.GetBody(bodyIdA)
@@ -244,10 +223,7 @@ class PhysicsSystem extends WorldSystem {
             switch (jDef.jointMotionType!) {
                 case mirabuf.joint.JointMotion.REVOLUTE:
                     if (this.IsWheel(jDef)) {
-                        if (
-                            parser.directedGraph.GetAdjacencyList(rnA.id)
-                                .length > 0
-                        ) {
+                        if (parser.directedGraph.GetAdjacencyList(rnA.id).length > 0) {
                             const res = this.CreateWheelConstraint(
                                 jInst,
                                 jDef,
@@ -272,20 +248,12 @@ class PhysicsSystem extends WorldSystem {
                         }
                     } else {
                         constraints.push(
-                            this.CreateHingeConstraint(
-                                jInst,
-                                jDef,
-                                bodyA,
-                                bodyB,
-                                parser.assembly.info!.version!
-                            )
+                            this.CreateHingeConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!)
                         )
                     }
                     break
                 case mirabuf.joint.JointMotion.SLIDER:
-                    constraints.push(
-                        this.CreateSliderConstraint(jInst, jDef, bodyA, bodyB)
-                    )
+                    constraints.push(this.CreateSliderConstraint(jInst, jDef, bodyA, bodyB))
                     break
                 default:
                     console.debug("Unsupported joint detected. Skipping...")
@@ -336,8 +304,7 @@ class PhysicsSystem extends WorldSystem {
             : new JOLT.Vec3(0, 0, 0)
 
         const anchorPoint = jointOrigin.Add(jointOriginOffset)
-        hingeConstraintSettings.mPoint1 = hingeConstraintSettings.mPoint2 =
-            anchorPoint
+        hingeConstraintSettings.mPoint1 = hingeConstraintSettings.mPoint2 = anchorPoint
 
         const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!
 
@@ -345,42 +312,26 @@ class PhysicsSystem extends WorldSystem {
         let axis: Jolt.Vec3
         // No scaling, these are unit vectors
         if (versionNum < 5) {
-            axis = new JOLT.Vec3(
-                -miraAxis.x ?? 0,
-                miraAxis.y ?? 0,
-                miraAxis.z! ?? 0
-            )
+            axis = new JOLT.Vec3(-miraAxis.x ?? 0, miraAxis.y ?? 0, miraAxis.z! ?? 0)
         } else {
-            axis = new JOLT.Vec3(
-                miraAxis.x! ?? 0,
-                miraAxis.y! ?? 0,
-                miraAxis.z! ?? 0
-            )
+            axis = new JOLT.Vec3(miraAxis.x! ?? 0, miraAxis.y! ?? 0, miraAxis.z! ?? 0)
         }
-        hingeConstraintSettings.mHingeAxis1 =
-            hingeConstraintSettings.mHingeAxis2 = axis.Normalized()
-        hingeConstraintSettings.mNormalAxis1 =
-            hingeConstraintSettings.mNormalAxis2 = getPerpendicular(
-                hingeConstraintSettings.mHingeAxis1
-            )
+        hingeConstraintSettings.mHingeAxis1 = hingeConstraintSettings.mHingeAxis2 = axis.Normalized()
+        hingeConstraintSettings.mNormalAxis1 = hingeConstraintSettings.mNormalAxis2 = getPerpendicular(
+            hingeConstraintSettings.mHingeAxis1
+        )
 
         // Some values that are meant to be exactly PI are perceived as being past it, causing unexpected beavior.
         // This safety check caps the values to be within [-PI, PI] wth minimal difference in precision.
-        const piSafetyCheck = (v: number) =>
-            Math.min(3.14158, Math.max(-3.14158, v))
+        const piSafetyCheck = (v: number) => Math.min(3.14158, Math.max(-3.14158, v))
 
         if (
             rotationalFreedom.limits &&
-            Math.abs(
-                (rotationalFreedom.limits.upper ?? 0) -
-                    (rotationalFreedom.limits.lower ?? 0)
-            ) > 0.001
+            Math.abs((rotationalFreedom.limits.upper ?? 0) - (rotationalFreedom.limits.lower ?? 0)) > 0.001
         ) {
             const currentPos = piSafetyCheck(rotationalFreedom.value ?? 0)
-            const upper =
-                piSafetyCheck(rotationalFreedom.limits.upper ?? 0) - currentPos
-            const lower =
-                piSafetyCheck(rotationalFreedom.limits.lower ?? 0) - currentPos
+            const upper = piSafetyCheck(rotationalFreedom.limits.upper ?? 0) - currentPos
+            const lower = piSafetyCheck(rotationalFreedom.limits.lower ?? 0) - currentPos
 
             hingeConstraintSettings.mLimitsMin = -upper
             hingeConstraintSettings.mLimitsMax = -lower
@@ -419,46 +370,32 @@ class PhysicsSystem extends WorldSystem {
             : new JOLT.Vec3(0, 0, 0)
 
         const anchorPoint = jointOrigin.Add(jointOriginOffset)
-        sliderConstraintSettings.mPoint1 = sliderConstraintSettings.mPoint2 =
-            anchorPoint
+        sliderConstraintSettings.mPoint1 = sliderConstraintSettings.mPoint2 = anchorPoint
 
         const prismaticFreedom = jointDefinition.prismatic!.prismaticFreedom!
 
         const miraAxis = prismaticFreedom.axis! as mirabuf.Vector3
-        const axis = new JOLT.Vec3(
-            miraAxis.x! ?? 0,
-            miraAxis.y! ?? 0,
-            miraAxis.z! ?? 0
-        )
+        const axis = new JOLT.Vec3(miraAxis.x! ?? 0, miraAxis.y! ?? 0, miraAxis.z! ?? 0)
 
-        sliderConstraintSettings.mSliderAxis1 =
-            sliderConstraintSettings.mSliderAxis2 = axis.Normalized()
-        sliderConstraintSettings.mNormalAxis1 =
-            sliderConstraintSettings.mNormalAxis2 = getPerpendicular(
-                sliderConstraintSettings.mSliderAxis1
-            )
+        sliderConstraintSettings.mSliderAxis1 = sliderConstraintSettings.mSliderAxis2 = axis.Normalized()
+        sliderConstraintSettings.mNormalAxis1 = sliderConstraintSettings.mNormalAxis2 = getPerpendicular(
+            sliderConstraintSettings.mSliderAxis1
+        )
 
         if (
             prismaticFreedom.limits &&
-            Math.abs(
-                (prismaticFreedom.limits.upper ?? 0) -
-                    (prismaticFreedom.limits.lower ?? 0)
-            ) > 0.001
+            Math.abs((prismaticFreedom.limits.upper ?? 0) - (prismaticFreedom.limits.lower ?? 0)) > 0.001
         ) {
             const currentPos = (prismaticFreedom.value ?? 0) * 0.01
-            const upper =
-                (prismaticFreedom.limits.upper ?? 0) * 0.01 - currentPos
-            const lower =
-                (prismaticFreedom.limits.lower ?? 0) * 0.01 - currentPos
+            const upper = (prismaticFreedom.limits.upper ?? 0) * 0.01 - currentPos
+            const lower = (prismaticFreedom.limits.lower ?? 0) * 0.01 - currentPos
 
             // Calculate mid point
             const midPoint = (upper + lower) / 2.0
             const halfRange = Math.abs((upper - lower) / 2.0)
 
             // Move the anchor points
-            sliderConstraintSettings.mPoint2 = anchorPoint.Add(
-                axis.Normalized().Mul(midPoint)
-            )
+            sliderConstraintSettings.mPoint2 = anchorPoint.Add(axis.Normalized().Mul(midPoint))
 
             sliderConstraintSettings.mLimitsMax = halfRange
             sliderConstraintSettings.mLimitsMin = -halfRange
@@ -498,17 +435,9 @@ class PhysicsSystem extends WorldSystem {
         let axis: Jolt.Vec3
         // No scaling, these are unit vectors
         if (versionNum < 5) {
-            axis = new JOLT.Vec3(
-                -miraAxis.x ?? 0,
-                miraAxis.y ?? 0,
-                miraAxis.z ?? 0
-            )
+            axis = new JOLT.Vec3(-miraAxis.x ?? 0, miraAxis.y ?? 0, miraAxis.z ?? 0)
         } else {
-            axis = new JOLT.Vec3(
-                miraAxis.x ?? 0,
-                miraAxis.y ?? 0,
-                miraAxis.z ?? 0
-            )
+            axis = new JOLT.Vec3(miraAxis.x ?? 0, miraAxis.y ?? 0, miraAxis.z ?? 0)
         }
 
         const bounds = bodyWheel.GetShape().GetLocalBounds()
@@ -545,24 +474,13 @@ class PhysicsSystem extends WorldSystem {
 
         vehicleSettings.mAntiRollBars.clear()
 
-        const vehicleConstraint = new JOLT.VehicleConstraint(
-            bodyMain,
-            vehicleSettings
-        )
-        const fixedConstraint = JOLT.castObject(
-            fixedSettings.Create(bodyMain, bodyWheel),
-            JOLT.TwoBodyConstraint
-        )
+        const vehicleConstraint = new JOLT.VehicleConstraint(bodyMain, vehicleSettings)
+        const fixedConstraint = JOLT.castObject(fixedSettings.Create(bodyMain, bodyWheel), JOLT.TwoBodyConstraint)
 
         // Wheel Collision Tester
-        const tester = new JOLT.VehicleCollisionTesterCastCylinder(
-            bodyWheel.GetObjectLayer(),
-            0.05
-        )
+        const tester = new JOLT.VehicleCollisionTesterCastCylinder(bodyWheel.GetObjectLayer(), 0.05)
         vehicleConstraint.SetVehicleCollisionTester(tester)
-        const listener = new JOLT.VehicleConstraintStepListener(
-            vehicleConstraint
-        )
+        const listener = new JOLT.VehicleConstraintStepListener(vehicleConstraint)
         this._joltPhysSystem.AddStepListener(listener)
 
         this._joltPhysSystem.AddConstraint(vehicleConstraint)
@@ -576,8 +494,7 @@ class PhysicsSystem extends WorldSystem {
         return (
             jDef.info!.name! != "grounded" &&
             jDef.userData &&
-            (new Map(Object.entries(jDef.userData.data!)).get("wheel") ??
-                "false") == "true"
+            (new Map(Object.entries(jDef.userData.data!)).get("wheel") ?? "false") == "true"
         )
     }
 
@@ -587,159 +504,108 @@ class PhysicsSystem extends WorldSystem {
      * @param   parser  MirabufParser containing properly parsed RigidNodes
      * @returns Mapping of Jolt BodyIDs
      */
-    public CreateBodiesFromParser(
-        parser: MirabufParser,
-        layerReserve?: LayerReserve
-    ): Map<string, Jolt.BodyID> {
+    public CreateBodiesFromParser(parser: MirabufParser, layerReserve?: LayerReserve): Map<string, Jolt.BodyID> {
         const rnToBodies = new Map<string, Jolt.BodyID>()
 
-        if (
-            (parser.assembly.dynamic && !layerReserve) ||
-            layerReserve?.isReleased
-        ) {
+        if ((parser.assembly.dynamic && !layerReserve) || layerReserve?.isReleased) {
             throw new Error("No layer reserve for dynamic assembly")
         }
 
         const reservedLayer: number | undefined = layerReserve?.layer
 
-        filterNonPhysicsNodes(parser.rigidNodes, parser.assembly).forEach(
-            rn => {
-                const compoundShapeSettings =
-                    new JOLT.StaticCompoundShapeSettings()
-                let shapesAdded = 0
+        filterNonPhysicsNodes(parser.rigidNodes, parser.assembly).forEach(rn => {
+            const compoundShapeSettings = new JOLT.StaticCompoundShapeSettings()
+            let shapesAdded = 0
 
-                let totalMass = 0
-                const comAccum = new mirabuf.Vector3()
+            let totalMass = 0
+            const comAccum = new mirabuf.Vector3()
 
-                const minBounds = new JOLT.Vec3(1000000.0, 1000000.0, 1000000.0)
-                const maxBounds = new JOLT.Vec3(
-                    -1000000.0,
-                    -1000000.0,
-                    -1000000.0
-                )
+            const minBounds = new JOLT.Vec3(1000000.0, 1000000.0, 1000000.0)
+            const maxBounds = new JOLT.Vec3(-1000000.0, -1000000.0, -1000000.0)
 
-                const rnLayer: number = reservedLayer
-                    ? reservedLayer
-                    : rn.id.endsWith(GAMEPIECE_SUFFIX)
-                      ? LAYER_GENERAL_DYNAMIC
-                      : LAYER_FIELD
+            const rnLayer: number = reservedLayer
+                ? reservedLayer
+                : rn.id.endsWith(GAMEPIECE_SUFFIX)
+                  ? LAYER_GENERAL_DYNAMIC
+                  : LAYER_FIELD
 
-                rn.parts.forEach(partId => {
-                    const partInstance =
-                        parser.assembly.data!.parts!.partInstances![partId]!
-                    if (
-                        partInstance.skipCollider == null ||
-                        partInstance == undefined ||
-                        partInstance.skipCollider == false
-                    ) {
-                        const partDefinition =
-                            parser.assembly.data!.parts!.partDefinitions![
-                                partInstance.partDefinitionReference!
-                            ]!
+            rn.parts.forEach(partId => {
+                const partInstance = parser.assembly.data!.parts!.partInstances![partId]!
+                if (
+                    partInstance.skipCollider == null ||
+                    partInstance == undefined ||
+                    partInstance.skipCollider == false
+                ) {
+                    const partDefinition =
+                        parser.assembly.data!.parts!.partDefinitions![partInstance.partDefinitionReference!]!
 
-                        const partShapeResult =
-                            this.CreateShapeSettingsFromPart(partDefinition)
+                    const partShapeResult = this.CreateShapeSettingsFromPart(partDefinition)
 
-                        if (partShapeResult) {
-                            const [shapeSettings, partMin, partMax] =
-                                partShapeResult
+                    if (partShapeResult) {
+                        const [shapeSettings, partMin, partMax] = partShapeResult
 
-                            const transform = ThreeMatrix4_JoltMat44(
-                                parser.globalTransforms.get(partId)!
-                            )
-                            const translation = transform.GetTranslation()
-                            const rotation = transform.GetQuaternion()
-                            compoundShapeSettings.AddShape(
-                                translation,
-                                rotation,
-                                shapeSettings,
-                                0
-                            )
-                            shapesAdded++
+                        const transform = ThreeMatrix4_JoltMat44(parser.globalTransforms.get(partId)!)
+                        const translation = transform.GetTranslation()
+                        const rotation = transform.GetQuaternion()
+                        compoundShapeSettings.AddShape(translation, rotation, shapeSettings, 0)
+                        shapesAdded++
 
-                            this.UpdateMinMaxBounds(
-                                transform.Multiply3x3(partMin),
-                                minBounds,
-                                maxBounds
-                            )
-                            this.UpdateMinMaxBounds(
-                                transform.Multiply3x3(partMax),
-                                minBounds,
-                                maxBounds
-                            )
+                        this.UpdateMinMaxBounds(transform.Multiply3x3(partMin), minBounds, maxBounds)
+                        this.UpdateMinMaxBounds(transform.Multiply3x3(partMax), minBounds, maxBounds)
 
-                            JOLT.destroy(partMin)
-                            JOLT.destroy(partMax)
-                            JOLT.destroy(transform)
+                        JOLT.destroy(partMin)
+                        JOLT.destroy(partMax)
+                        JOLT.destroy(transform)
 
-                            if (
-                                partDefinition.physicalData &&
-                                partDefinition.physicalData.com &&
-                                partDefinition.physicalData.mass
-                            ) {
-                                const mass = partDefinition.massOverride
-                                    ? partDefinition.massOverride!
-                                    : partDefinition.physicalData.mass!
-                                totalMass += mass
-                                comAccum.x +=
-                                    (partDefinition.physicalData.com.x! *
-                                        mass) /
-                                    100.0
-                                comAccum.y +=
-                                    (partDefinition.physicalData.com.y! *
-                                        mass) /
-                                    100.0
-                                comAccum.z +=
-                                    (partDefinition.physicalData.com.z! *
-                                        mass) /
-                                    100.0
-                            }
+                        if (
+                            partDefinition.physicalData &&
+                            partDefinition.physicalData.com &&
+                            partDefinition.physicalData.mass
+                        ) {
+                            const mass = partDefinition.massOverride
+                                ? partDefinition.massOverride!
+                                : partDefinition.physicalData.mass!
+                            totalMass += mass
+                            comAccum.x += (partDefinition.physicalData.com.x! * mass) / 100.0
+                            comAccum.y += (partDefinition.physicalData.com.y! * mass) / 100.0
+                            comAccum.z += (partDefinition.physicalData.com.z! * mass) / 100.0
                         }
                     }
-                })
+                }
+            })
 
-                if (shapesAdded > 0) {
-                    const shapeResult = compoundShapeSettings.Create()
+            if (shapesAdded > 0) {
+                const shapeResult = compoundShapeSettings.Create()
 
-                    if (!shapeResult.IsValid || shapeResult.HasError()) {
-                        console.error(
-                            `Failed to create shape for RigidNode ${rn.id}\n${shapeResult.GetError().c_str()}`
-                        )
-                    }
-
-                    const shape = shapeResult.Get()
-
-                    if (rn.isDynamic) {
-                        shape.GetMassProperties().mMass =
-                            totalMass == 0.0 ? 1 : totalMass
-                    }
-
-                    const bodySettings = new JOLT.BodyCreationSettings(
-                        shape,
-                        new JOLT.Vec3(0.0, 0.0, 0.0),
-                        new JOLT.Quat(0, 0, 0, 1),
-                        rn.isDynamic
-                            ? JOLT.EMotionType_Dynamic
-                            : JOLT.EMotionType_Static,
-                        rnLayer
-                    )
-                    const body =
-                        this._joltBodyInterface.CreateBody(bodySettings)
-                    this._joltBodyInterface.AddBody(
-                        body.GetID(),
-                        JOLT.EActivation_Activate
-                    )
-                    body.SetAllowSleeping(false)
-                    rnToBodies.set(rn.id, body.GetID())
-
-                    // Little testing components
-                    body.SetRestitution(0.4)
+                if (!shapeResult.IsValid || shapeResult.HasError()) {
+                    console.error(`Failed to create shape for RigidNode ${rn.id}\n${shapeResult.GetError().c_str()}`)
                 }
 
-                // Cleanup
-                JOLT.destroy(compoundShapeSettings)
+                const shape = shapeResult.Get()
+
+                if (rn.isDynamic) {
+                    shape.GetMassProperties().mMass = totalMass == 0.0 ? 1 : totalMass
+                }
+
+                const bodySettings = new JOLT.BodyCreationSettings(
+                    shape,
+                    new JOLT.Vec3(0.0, 0.0, 0.0),
+                    new JOLT.Quat(0, 0, 0, 1),
+                    rn.isDynamic ? JOLT.EMotionType_Dynamic : JOLT.EMotionType_Static,
+                    rnLayer
+                )
+                const body = this._joltBodyInterface.CreateBody(bodySettings)
+                this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate)
+                body.SetAllowSleeping(false)
+                rnToBodies.set(rn.id, body.GetID())
+
+                // Little testing components
+                body.SetRestitution(0.4)
             }
-        )
+
+            // Cleanup
+            JOLT.destroy(compoundShapeSettings)
+        })
 
         return rnToBodies
     }
@@ -760,17 +626,9 @@ class PhysicsSystem extends WorldSystem {
 
         const points = settings.mPoints
         partDefinition.bodies!.forEach(body => {
-            if (
-                body.triangleMesh &&
-                body.triangleMesh.mesh &&
-                body.triangleMesh.mesh.verts
-            ) {
+            if (body.triangleMesh && body.triangleMesh.mesh && body.triangleMesh.mesh.verts) {
                 const vertArr = body.triangleMesh.mesh.verts
-                for (
-                    let i = 0;
-                    i < body.triangleMesh.mesh.verts.length;
-                    i += 3
-                ) {
+                for (let i = 0; i < body.triangleMesh.mesh.verts.length; i += 3) {
                     const vert = MirabufFloatArr_JoltVec3(vertArr, i)
                     points.push_back(vert)
                     this.UpdateMinMaxBounds(vert, min, max)
@@ -893,9 +751,7 @@ export class LayerReserve {
  * @param   settings    Jolt object used for applying filters.
  */
 function SetupCollisionFiltering(settings: Jolt.JoltSettings) {
-    const objectFilter = new JOLT.ObjectLayerPairFilterTable(
-        COUNT_OBJECT_LAYERS
-    )
+    const objectFilter = new JOLT.ObjectLayerPairFilterTable(COUNT_OBJECT_LAYERS)
 
     // Enable Field layer collisions
     objectFilter.EnableCollision(LAYER_GENERAL_DYNAMIC, LAYER_GENERAL_DYNAMIC)
@@ -913,9 +769,7 @@ function SetupCollisionFiltering(settings: Jolt.JoltSettings) {
     }
 
     const BP_LAYER_FIELD = new JOLT.BroadPhaseLayer(LAYER_FIELD)
-    const BP_LAYER_GENERAL_DYNAMIC = new JOLT.BroadPhaseLayer(
-        LAYER_GENERAL_DYNAMIC
-    )
+    const BP_LAYER_GENERAL_DYNAMIC = new JOLT.BroadPhaseLayer(LAYER_GENERAL_DYNAMIC)
 
     const bpRobotLayers = new Array<Jolt.BroadPhaseLayer>(RobotLayers.length)
     for (let i = 0; i < bpRobotLayers.length; i++) {
@@ -924,42 +778,29 @@ function SetupCollisionFiltering(settings: Jolt.JoltSettings) {
 
     const COUNT_BROAD_PHASE_LAYERS = 2 + RobotLayers.length
 
-    const bpInterface = new JOLT.BroadPhaseLayerInterfaceTable(
-        COUNT_OBJECT_LAYERS,
-        COUNT_BROAD_PHASE_LAYERS
-    )
+    const bpInterface = new JOLT.BroadPhaseLayerInterfaceTable(COUNT_OBJECT_LAYERS, COUNT_BROAD_PHASE_LAYERS)
 
     bpInterface.MapObjectToBroadPhaseLayer(LAYER_FIELD, BP_LAYER_FIELD)
-    bpInterface.MapObjectToBroadPhaseLayer(
-        LAYER_GENERAL_DYNAMIC,
-        BP_LAYER_GENERAL_DYNAMIC
-    )
+    bpInterface.MapObjectToBroadPhaseLayer(LAYER_GENERAL_DYNAMIC, BP_LAYER_GENERAL_DYNAMIC)
     for (let i = 0; i < bpRobotLayers.length; i++) {
         bpInterface.MapObjectToBroadPhaseLayer(RobotLayers[i], bpRobotLayers[i])
     }
 
     settings.mObjectLayerPairFilter = objectFilter
     settings.mBroadPhaseLayerInterface = bpInterface
-    settings.mObjectVsBroadPhaseLayerFilter =
-        new JOLT.ObjectVsBroadPhaseLayerFilterTable(
-            settings.mBroadPhaseLayerInterface,
-            COUNT_BROAD_PHASE_LAYERS,
-            settings.mObjectLayerPairFilter,
-            COUNT_OBJECT_LAYERS
-        )
+    settings.mObjectVsBroadPhaseLayerFilter = new JOLT.ObjectVsBroadPhaseLayerFilterTable(
+        settings.mBroadPhaseLayerInterface,
+        COUNT_BROAD_PHASE_LAYERS,
+        settings.mObjectLayerPairFilter,
+        COUNT_OBJECT_LAYERS
+    )
 }
 
-function filterNonPhysicsNodes(
-    nodes: RigidNodeReadOnly[],
-    mira: mirabuf.Assembly
-): RigidNodeReadOnly[] {
+function filterNonPhysicsNodes(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembly): RigidNodeReadOnly[] {
     return nodes.filter(x => {
         for (const part of x.parts) {
             const inst = mira.data!.parts!.partInstances![part]!
-            const def =
-                mira.data!.parts!.partDefinitions![
-                    inst.partDefinitionReference!
-                ]!
+            const def = mira.data!.parts!.partDefinitions![inst.partDefinitionReference!]!
             if (def.bodies && def.bodies.length > 0) {
                 return true
             }
@@ -969,16 +810,10 @@ function filterNonPhysicsNodes(
 }
 
 function getPerpendicular(vec: Jolt.Vec3): Jolt.Vec3 {
-    return (
-        tryGetPerpendicular(vec, new JOLT.Vec3(0, 1, 0)) ??
-        tryGetPerpendicular(vec, new JOLT.Vec3(0, 0, 1))!
-    )
+    return tryGetPerpendicular(vec, new JOLT.Vec3(0, 1, 0)) ?? tryGetPerpendicular(vec, new JOLT.Vec3(0, 0, 1))!
 }
 
-function tryGetPerpendicular(
-    vec: Jolt.Vec3,
-    toCheck: Jolt.Vec3
-): Jolt.Vec3 | undefined {
+function tryGetPerpendicular(vec: Jolt.Vec3, toCheck: Jolt.Vec3): Jolt.Vec3 | undefined {
     if (Math.abs(Math.abs(vec.Dot(toCheck)) - 1.0) < 0.0001) {
         return undefined
     }

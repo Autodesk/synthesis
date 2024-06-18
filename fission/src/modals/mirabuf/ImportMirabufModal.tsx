@@ -3,16 +3,7 @@ import Modal, { ModalPropsImpl } from "../../components/Modal"
 import { FaPlus } from "react-icons/fa6"
 import Button from "@/components/Button"
 import Label, { LabelSize } from "@/components/Label"
-import {
-    Data,
-    Folder,
-    Hub,
-    Item,
-    Project,
-    getFolderData,
-    getHubs,
-    getProjects,
-} from "@/aps/APSDataManagement"
+import { Data, Folder, Hub, Item, Project, getFolderData, getHubs, getProjects } from "@/aps/APSDataManagement"
 
 interface ItemCardProps {
     id: string
@@ -21,12 +12,7 @@ interface ItemCardProps {
     onClick: () => void
 }
 
-const ItemCard: React.FC<ItemCardProps> = ({
-    id,
-    name,
-    buttonText,
-    onClick,
-}) => {
+const ItemCard: React.FC<ItemCardProps> = ({ id, name, buttonText, onClick }) => {
     return (
         <div
             key={id}
@@ -43,12 +29,8 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     // const { showTooltip } = useTooltipControlContext()
 
     const [selectedHub, setSelectedHub] = useState<Hub | undefined>(undefined)
-    const [selectedProject, setSelectedProject] = useState<Project | undefined>(
-        undefined
-    )
-    const [selectedFolder, setSelectedFolder] = useState<Folder | undefined>(
-        undefined
-    )
+    const [selectedProject, setSelectedProject] = useState<Project | undefined>(undefined)
+    const [selectedFolder, setSelectedFolder] = useState<Folder | undefined>(undefined)
 
     const [hubs, setHubs] = useState<Hub[] | undefined>(undefined)
     useEffect(() => {
@@ -72,19 +54,12 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             if (selectedProject) {
                 console.log("Project has been selected")
                 if (selectedFolder) {
-                    console.log(
-                        `Selecting folder '${selectedFolder.displayName}'`
-                    )
+                    console.log(`Selecting folder '${selectedFolder.displayName}'`)
 
-                    setFolderData(
-                        await getFolderData(selectedProject, selectedFolder)
-                    )
+                    setFolderData(await getFolderData(selectedProject, selectedFolder))
                 } else {
                     console.log("Defaulting to project root folder")
-                    const data = await getFolderData(
-                        selectedProject,
-                        selectedProject.folder
-                    )
+                    const data = await getFolderData(selectedProject, selectedProject.folder)
                     console.log(`Folder Data:\n${JSON.stringify(data)}`)
                     setFolderData(data)
                 }
@@ -117,33 +92,18 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 {selectedHub ? (
                     selectedFolder ? (
                         <>
-                            <Label size={LabelSize.Medium}>
-                                Folder: {selectedFolder.displayName}
-                            </Label>
-                            <Button
-                                value="back to project root"
-                                onClick={() => setSelectedFolder(undefined)}
-                            />
+                            <Label size={LabelSize.Medium}>Folder: {selectedFolder.displayName}</Label>
+                            <Button value="back to project root" onClick={() => setSelectedFolder(undefined)} />
                         </>
                     ) : selectedProject ? (
                         <>
-                            <Label size={LabelSize.Medium}>
-                                Project: {selectedProject.name}
-                            </Label>
-                            <Button
-                                value="back to projects"
-                                onClick={() => setSelectedProject(undefined)}
-                            />
+                            <Label size={LabelSize.Medium}>Project: {selectedProject.name}</Label>
+                            <Button value="back to projects" onClick={() => setSelectedProject(undefined)} />
                         </>
                     ) : (
                         <>
-                            <Label size={LabelSize.Medium}>
-                                Hub: {selectedHub.name}
-                            </Label>
-                            <Button
-                                value="back to hubs"
-                                onClick={() => setSelectedHub(undefined)}
-                            />
+                            <Label size={LabelSize.Medium}>Hub: {selectedHub.name}</Label>
+                            <Button value="back to hubs" onClick={() => setSelectedHub(undefined)} />
                         </>
                     )
                 ) : (
@@ -183,9 +143,7 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                         id: x.id,
                                         buttonText: "import",
                                         onClick: () => {
-                                            console.log(
-                                                `Selecting ${x.displayName} (${x.id})`
-                                            )
+                                            console.log(`Selecting ${x.displayName} (${x.id})`)
                                         },
                                     })
                                   : ItemCard({

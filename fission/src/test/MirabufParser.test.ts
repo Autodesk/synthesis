@@ -6,9 +6,7 @@ import { LoadMirabufLocal } from "../mirabuf/MirabufLoader"
 
 describe("Mirabuf Parser Tests", () => {
     test("Generate Rigid Nodes (Dozer_v9.mira)", () => {
-        const spikeMira = LoadMirabufLocal(
-            "./public/Downloadables/Mira/Robots/Dozer_v9.mira"
-        )
+        const spikeMira = LoadMirabufLocal("./public/Downloadables/Mira/Robots/Dozer_v9.mira")
 
         const t = new MirabufParser(spikeMira)
         const rn = t.rigidNodes
@@ -17,9 +15,7 @@ describe("Mirabuf Parser Tests", () => {
     })
 
     test("Generate Rigid Nodes (FRC_Field_2018_v14.mira)", () => {
-        const field = LoadMirabufLocal(
-            "./public/Downloadables/Mira/Fields/FRC Field 2018_v13.mira"
-        )
+        const field = LoadMirabufLocal("./public/Downloadables/Mira/Fields/FRC Field 2018_v13.mira")
 
         const t = new MirabufParser(field)
 
@@ -27,9 +23,7 @@ describe("Mirabuf Parser Tests", () => {
     })
 
     test("Generate Rigid Nodes (Team_2471_(2018)_v7.mira)", () => {
-        const mm = LoadMirabufLocal(
-            "./public/Downloadables/Mira/Robots/Team 2471 (2018)_v7.mira"
-        )
+        const mm = LoadMirabufLocal("./public/Downloadables/Mira/Robots/Team 2471 (2018)_v7.mira")
 
         const t = new MirabufParser(mm)
 
@@ -37,17 +31,11 @@ describe("Mirabuf Parser Tests", () => {
     })
 })
 
-function filterNonPhysicsNodes(
-    nodes: RigidNodeReadOnly[],
-    mira: mirabuf.Assembly
-): RigidNodeReadOnly[] {
+function filterNonPhysicsNodes(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembly): RigidNodeReadOnly[] {
     return nodes.filter(x => {
         for (const part of x.parts) {
             const inst = mira.data!.parts!.partInstances![part]!
-            const def =
-                mira.data!.parts!.partDefinitions![
-                    inst.partDefinitionReference!
-                ]!
+            const def = mira.data!.parts!.partDefinitions![inst.partDefinitionReference!]!
             if (def.bodies && def.bodies.length > 0) {
                 return true
             }

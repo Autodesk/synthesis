@@ -78,10 +78,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(
-            message: mirabuf.IAssembly,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encode(message: mirabuf.IAssembly, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Encodes the specified Assembly message, length delimited. Does not implicitly {@link mirabuf.Assembly.verify|verify} messages.
@@ -89,10 +86,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(
-            message: mirabuf.IAssembly,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encodeDelimited(message: mirabuf.IAssembly, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Decodes an Assembly message from the specified reader or buffer.
@@ -102,10 +96,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(
-            reader: $protobuf.Reader | Uint8Array,
-            length?: number
-        ): mirabuf.Assembly
+        public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.Assembly
 
         /**
          * Decodes an Assembly message from the specified reader or buffer, length delimited.
@@ -114,9 +105,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(
-            reader: $protobuf.Reader | Uint8Array
-        ): mirabuf.Assembly
+        public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.Assembly
 
         /**
          * Verifies an Assembly message.
@@ -138,10 +127,7 @@ export namespace mirabuf {
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(
-            message: mirabuf.Assembly,
-            options?: $protobuf.IConversionOptions
-        ): { [k: string]: any }
+        public static toObject(message: mirabuf.Assembly, options?: $protobuf.IConversionOptions): { [k: string]: any }
 
         /**
          * Converts this Assembly to JSON.
@@ -197,9 +183,7 @@ export namespace mirabuf {
          * @param [properties] Properties to set
          * @returns AssemblyData instance
          */
-        public static create(
-            properties?: mirabuf.IAssemblyData
-        ): mirabuf.AssemblyData
+        public static create(properties?: mirabuf.IAssemblyData): mirabuf.AssemblyData
 
         /**
          * Encodes the specified AssemblyData message. Does not implicitly {@link mirabuf.AssemblyData.verify|verify} messages.
@@ -207,10 +191,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(
-            message: mirabuf.IAssemblyData,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encode(message: mirabuf.IAssemblyData, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Encodes the specified AssemblyData message, length delimited. Does not implicitly {@link mirabuf.AssemblyData.verify|verify} messages.
@@ -218,10 +199,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(
-            message: mirabuf.IAssemblyData,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encodeDelimited(message: mirabuf.IAssemblyData, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Decodes an AssemblyData message from the specified reader or buffer.
@@ -231,10 +209,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(
-            reader: $protobuf.Reader | Uint8Array,
-            length?: number
-        ): mirabuf.AssemblyData
+        public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.AssemblyData
 
         /**
          * Decodes an AssemblyData message from the specified reader or buffer, length delimited.
@@ -243,9 +218,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(
-            reader: $protobuf.Reader | Uint8Array
-        ): mirabuf.AssemblyData
+        public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.AssemblyData
 
         /**
          * Verifies an AssemblyData message.
@@ -259,9 +232,7 @@ export namespace mirabuf {
          * @param object Plain object
          * @returns AssemblyData
          */
-        public static fromObject(object: {
-            [k: string]: any
-        }): mirabuf.AssemblyData
+        public static fromObject(object: { [k: string]: any }): mirabuf.AssemblyData
 
         /**
          * Creates a plain object from an AssemblyData message. Also converts values to other types if specified.
@@ -336,10 +307,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(
-            message: mirabuf.IParts,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encode(message: mirabuf.IParts, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Encodes the specified Parts message, length delimited. Does not implicitly {@link mirabuf.Parts.verify|verify} messages.
@@ -347,10 +315,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(
-            message: mirabuf.IParts,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encodeDelimited(message: mirabuf.IParts, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Decodes a Parts message from the specified reader or buffer.
@@ -360,10 +325,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(
-            reader: $protobuf.Reader | Uint8Array,
-            length?: number
-        ): mirabuf.Parts
+        public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.Parts
 
         /**
          * Decodes a Parts message from the specified reader or buffer, length delimited.
@@ -372,9 +334,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(
-            reader: $protobuf.Reader | Uint8Array
-        ): mirabuf.Parts
+        public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.Parts
 
         /**
          * Verifies a Parts message.
@@ -396,10 +356,7 @@ export namespace mirabuf {
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(
-            message: mirabuf.Parts,
-            options?: $protobuf.IConversionOptions
-        ): { [k: string]: any }
+        public static toObject(message: mirabuf.Parts, options?: $protobuf.IConversionOptions): { [k: string]: any }
 
         /**
          * Converts this Parts to JSON.
@@ -477,9 +434,7 @@ export namespace mirabuf {
          * @param [properties] Properties to set
          * @returns PartDefinition instance
          */
-        public static create(
-            properties?: mirabuf.IPartDefinition
-        ): mirabuf.PartDefinition
+        public static create(properties?: mirabuf.IPartDefinition): mirabuf.PartDefinition
 
         /**
          * Encodes the specified PartDefinition message. Does not implicitly {@link mirabuf.PartDefinition.verify|verify} messages.
@@ -487,10 +442,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(
-            message: mirabuf.IPartDefinition,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encode(message: mirabuf.IPartDefinition, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Encodes the specified PartDefinition message, length delimited. Does not implicitly {@link mirabuf.PartDefinition.verify|verify} messages.
@@ -498,10 +450,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(
-            message: mirabuf.IPartDefinition,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encodeDelimited(message: mirabuf.IPartDefinition, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Decodes a PartDefinition message from the specified reader or buffer.
@@ -511,10 +460,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(
-            reader: $protobuf.Reader | Uint8Array,
-            length?: number
-        ): mirabuf.PartDefinition
+        public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.PartDefinition
 
         /**
          * Decodes a PartDefinition message from the specified reader or buffer, length delimited.
@@ -523,9 +469,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(
-            reader: $protobuf.Reader | Uint8Array
-        ): mirabuf.PartDefinition
+        public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.PartDefinition
 
         /**
          * Verifies a PartDefinition message.
@@ -539,9 +483,7 @@ export namespace mirabuf {
          * @param object Plain object
          * @returns PartDefinition
          */
-        public static fromObject(object: {
-            [k: string]: any
-        }): mirabuf.PartDefinition
+        public static fromObject(object: { [k: string]: any }): mirabuf.PartDefinition
 
         /**
          * Creates a plain object from a PartDefinition message. Also converts values to other types if specified.
@@ -632,9 +574,7 @@ export namespace mirabuf {
          * @param [properties] Properties to set
          * @returns PartInstance instance
          */
-        public static create(
-            properties?: mirabuf.IPartInstance
-        ): mirabuf.PartInstance
+        public static create(properties?: mirabuf.IPartInstance): mirabuf.PartInstance
 
         /**
          * Encodes the specified PartInstance message. Does not implicitly {@link mirabuf.PartInstance.verify|verify} messages.
@@ -642,10 +582,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(
-            message: mirabuf.IPartInstance,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encode(message: mirabuf.IPartInstance, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Encodes the specified PartInstance message, length delimited. Does not implicitly {@link mirabuf.PartInstance.verify|verify} messages.
@@ -653,10 +590,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(
-            message: mirabuf.IPartInstance,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encodeDelimited(message: mirabuf.IPartInstance, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Decodes a PartInstance message from the specified reader or buffer.
@@ -666,10 +600,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(
-            reader: $protobuf.Reader | Uint8Array,
-            length?: number
-        ): mirabuf.PartInstance
+        public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.PartInstance
 
         /**
          * Decodes a PartInstance message from the specified reader or buffer, length delimited.
@@ -678,9 +609,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(
-            reader: $protobuf.Reader | Uint8Array
-        ): mirabuf.PartInstance
+        public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.PartInstance
 
         /**
          * Verifies a PartInstance message.
@@ -694,9 +623,7 @@ export namespace mirabuf {
          * @param object Plain object
          * @returns PartInstance
          */
-        public static fromObject(object: {
-            [k: string]: any
-        }): mirabuf.PartInstance
+        public static fromObject(object: { [k: string]: any }): mirabuf.PartInstance
 
         /**
          * Creates a plain object from a PartInstance message. Also converts values to other types if specified.
@@ -771,10 +698,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(
-            message: mirabuf.IBody,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encode(message: mirabuf.IBody, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Encodes the specified Body message, length delimited. Does not implicitly {@link mirabuf.Body.verify|verify} messages.
@@ -782,10 +706,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(
-            message: mirabuf.IBody,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encodeDelimited(message: mirabuf.IBody, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Decodes a Body message from the specified reader or buffer.
@@ -795,10 +716,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(
-            reader: $protobuf.Reader | Uint8Array,
-            length?: number
-        ): mirabuf.Body
+        public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.Body
 
         /**
          * Decodes a Body message from the specified reader or buffer, length delimited.
@@ -807,9 +725,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(
-            reader: $protobuf.Reader | Uint8Array
-        ): mirabuf.Body
+        public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.Body
 
         /**
          * Verifies a Body message.
@@ -831,10 +747,7 @@ export namespace mirabuf {
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(
-            message: mirabuf.Body,
-            options?: $protobuf.IConversionOptions
-        ): { [k: string]: any }
+        public static toObject(message: mirabuf.Body, options?: $protobuf.IConversionOptions): { [k: string]: any }
 
         /**
          * Converts this Body to JSON.
@@ -899,9 +812,7 @@ export namespace mirabuf {
          * @param [properties] Properties to set
          * @returns TriangleMesh instance
          */
-        public static create(
-            properties?: mirabuf.ITriangleMesh
-        ): mirabuf.TriangleMesh
+        public static create(properties?: mirabuf.ITriangleMesh): mirabuf.TriangleMesh
 
         /**
          * Encodes the specified TriangleMesh message. Does not implicitly {@link mirabuf.TriangleMesh.verify|verify} messages.
@@ -909,10 +820,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(
-            message: mirabuf.ITriangleMesh,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encode(message: mirabuf.ITriangleMesh, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Encodes the specified TriangleMesh message, length delimited. Does not implicitly {@link mirabuf.TriangleMesh.verify|verify} messages.
@@ -920,10 +828,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(
-            message: mirabuf.ITriangleMesh,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encodeDelimited(message: mirabuf.ITriangleMesh, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Decodes a TriangleMesh message from the specified reader or buffer.
@@ -933,10 +838,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(
-            reader: $protobuf.Reader | Uint8Array,
-            length?: number
-        ): mirabuf.TriangleMesh
+        public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.TriangleMesh
 
         /**
          * Decodes a TriangleMesh message from the specified reader or buffer, length delimited.
@@ -945,9 +847,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(
-            reader: $protobuf.Reader | Uint8Array
-        ): mirabuf.TriangleMesh
+        public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.TriangleMesh
 
         /**
          * Verifies a TriangleMesh message.
@@ -961,9 +861,7 @@ export namespace mirabuf {
          * @param object Plain object
          * @returns TriangleMesh
          */
-        public static fromObject(object: {
-            [k: string]: any
-        }): mirabuf.TriangleMesh
+        public static fromObject(object: { [k: string]: any }): mirabuf.TriangleMesh
 
         /**
          * Creates a plain object from a TriangleMesh message. Also converts values to other types if specified.
@@ -1038,10 +936,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(
-            message: mirabuf.IMesh,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encode(message: mirabuf.IMesh, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Encodes the specified Mesh message, length delimited. Does not implicitly {@link mirabuf.Mesh.verify|verify} messages.
@@ -1049,10 +944,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(
-            message: mirabuf.IMesh,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encodeDelimited(message: mirabuf.IMesh, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Decodes a Mesh message from the specified reader or buffer.
@@ -1062,10 +954,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(
-            reader: $protobuf.Reader | Uint8Array,
-            length?: number
-        ): mirabuf.Mesh
+        public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.Mesh
 
         /**
          * Decodes a Mesh message from the specified reader or buffer, length delimited.
@@ -1074,9 +963,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(
-            reader: $protobuf.Reader | Uint8Array
-        ): mirabuf.Mesh
+        public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.Mesh
 
         /**
          * Verifies a Mesh message.
@@ -1098,10 +985,7 @@ export namespace mirabuf {
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(
-            message: mirabuf.Mesh,
-            options?: $protobuf.IConversionOptions
-        ): { [k: string]: any }
+        public static toObject(message: mirabuf.Mesh, options?: $protobuf.IConversionOptions): { [k: string]: any }
 
         /**
          * Converts this Mesh to JSON.
@@ -1139,9 +1023,7 @@ export namespace mirabuf {
          * @param [properties] Properties to set
          * @returns BinaryMesh instance
          */
-        public static create(
-            properties?: mirabuf.IBinaryMesh
-        ): mirabuf.BinaryMesh
+        public static create(properties?: mirabuf.IBinaryMesh): mirabuf.BinaryMesh
 
         /**
          * Encodes the specified BinaryMesh message. Does not implicitly {@link mirabuf.BinaryMesh.verify|verify} messages.
@@ -1149,10 +1031,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(
-            message: mirabuf.IBinaryMesh,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encode(message: mirabuf.IBinaryMesh, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Encodes the specified BinaryMesh message, length delimited. Does not implicitly {@link mirabuf.BinaryMesh.verify|verify} messages.
@@ -1160,10 +1039,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(
-            message: mirabuf.IBinaryMesh,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encodeDelimited(message: mirabuf.IBinaryMesh, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Decodes a BinaryMesh message from the specified reader or buffer.
@@ -1173,10 +1049,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(
-            reader: $protobuf.Reader | Uint8Array,
-            length?: number
-        ): mirabuf.BinaryMesh
+        public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.BinaryMesh
 
         /**
          * Decodes a BinaryMesh message from the specified reader or buffer, length delimited.
@@ -1185,9 +1058,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(
-            reader: $protobuf.Reader | Uint8Array
-        ): mirabuf.BinaryMesh
+        public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.BinaryMesh
 
         /**
          * Verifies a BinaryMesh message.
@@ -1201,9 +1072,7 @@ export namespace mirabuf {
          * @param object Plain object
          * @returns BinaryMesh
          */
-        public static fromObject(object: {
-            [k: string]: any
-        }): mirabuf.BinaryMesh
+        public static fromObject(object: { [k: string]: any }): mirabuf.BinaryMesh
 
         /**
          * Creates a plain object from a BinaryMesh message. Also converts values to other types if specified.
@@ -1272,10 +1141,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(
-            message: mirabuf.INode,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encode(message: mirabuf.INode, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Encodes the specified Node message, length delimited. Does not implicitly {@link mirabuf.Node.verify|verify} messages.
@@ -1283,10 +1149,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(
-            message: mirabuf.INode,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encodeDelimited(message: mirabuf.INode, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Decodes a Node message from the specified reader or buffer.
@@ -1296,10 +1159,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(
-            reader: $protobuf.Reader | Uint8Array,
-            length?: number
-        ): mirabuf.Node
+        public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.Node
 
         /**
          * Decodes a Node message from the specified reader or buffer, length delimited.
@@ -1308,9 +1168,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(
-            reader: $protobuf.Reader | Uint8Array
-        ): mirabuf.Node
+        public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.Node
 
         /**
          * Verifies a Node message.
@@ -1332,10 +1190,7 @@ export namespace mirabuf {
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(
-            message: mirabuf.Node,
-            options?: $protobuf.IConversionOptions
-        ): { [k: string]: any }
+        public static toObject(message: mirabuf.Node, options?: $protobuf.IConversionOptions): { [k: string]: any }
 
         /**
          * Converts this Node to JSON.
@@ -1373,9 +1228,7 @@ export namespace mirabuf {
          * @param [properties] Properties to set
          * @returns GraphContainer instance
          */
-        public static create(
-            properties?: mirabuf.IGraphContainer
-        ): mirabuf.GraphContainer
+        public static create(properties?: mirabuf.IGraphContainer): mirabuf.GraphContainer
 
         /**
          * Encodes the specified GraphContainer message. Does not implicitly {@link mirabuf.GraphContainer.verify|verify} messages.
@@ -1383,10 +1236,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(
-            message: mirabuf.IGraphContainer,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encode(message: mirabuf.IGraphContainer, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Encodes the specified GraphContainer message, length delimited. Does not implicitly {@link mirabuf.GraphContainer.verify|verify} messages.
@@ -1394,10 +1244,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(
-            message: mirabuf.IGraphContainer,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encodeDelimited(message: mirabuf.IGraphContainer, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Decodes a GraphContainer message from the specified reader or buffer.
@@ -1407,10 +1254,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(
-            reader: $protobuf.Reader | Uint8Array,
-            length?: number
-        ): mirabuf.GraphContainer
+        public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.GraphContainer
 
         /**
          * Decodes a GraphContainer message from the specified reader or buffer, length delimited.
@@ -1419,9 +1263,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(
-            reader: $protobuf.Reader | Uint8Array
-        ): mirabuf.GraphContainer
+        public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.GraphContainer
 
         /**
          * Verifies a GraphContainer message.
@@ -1435,9 +1277,7 @@ export namespace mirabuf {
          * @param object Plain object
          * @returns GraphContainer
          */
-        public static fromObject(object: {
-            [k: string]: any
-        }): mirabuf.GraphContainer
+        public static fromObject(object: { [k: string]: any }): mirabuf.GraphContainer
 
         /**
          * Creates a plain object from a GraphContainer message. Also converts values to other types if specified.
@@ -1498,10 +1338,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(
-            message: mirabuf.IUserData,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encode(message: mirabuf.IUserData, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Encodes the specified UserData message, length delimited. Does not implicitly {@link mirabuf.UserData.verify|verify} messages.
@@ -1509,10 +1346,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(
-            message: mirabuf.IUserData,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encodeDelimited(message: mirabuf.IUserData, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Decodes a UserData message from the specified reader or buffer.
@@ -1522,10 +1356,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(
-            reader: $protobuf.Reader | Uint8Array,
-            length?: number
-        ): mirabuf.UserData
+        public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.UserData
 
         /**
          * Decodes a UserData message from the specified reader or buffer, length delimited.
@@ -1534,9 +1365,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(
-            reader: $protobuf.Reader | Uint8Array
-        ): mirabuf.UserData
+        public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.UserData
 
         /**
          * Verifies a UserData message.
@@ -1558,10 +1387,7 @@ export namespace mirabuf {
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(
-            message: mirabuf.UserData,
-            options?: $protobuf.IConversionOptions
-        ): { [k: string]: any }
+        public static toObject(message: mirabuf.UserData, options?: $protobuf.IConversionOptions): { [k: string]: any }
 
         /**
          * Converts this UserData to JSON.
@@ -1619,10 +1445,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(
-            message: mirabuf.IVector3,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encode(message: mirabuf.IVector3, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Encodes the specified Vector3 message, length delimited. Does not implicitly {@link mirabuf.Vector3.verify|verify} messages.
@@ -1630,10 +1453,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(
-            message: mirabuf.IVector3,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encodeDelimited(message: mirabuf.IVector3, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Decodes a Vector3 message from the specified reader or buffer.
@@ -1643,10 +1463,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(
-            reader: $protobuf.Reader | Uint8Array,
-            length?: number
-        ): mirabuf.Vector3
+        public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.Vector3
 
         /**
          * Decodes a Vector3 message from the specified reader or buffer, length delimited.
@@ -1655,9 +1472,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(
-            reader: $protobuf.Reader | Uint8Array
-        ): mirabuf.Vector3
+        public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.Vector3
 
         /**
          * Verifies a Vector3 message.
@@ -1679,10 +1494,7 @@ export namespace mirabuf {
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(
-            message: mirabuf.Vector3,
-            options?: $protobuf.IConversionOptions
-        ): { [k: string]: any }
+        public static toObject(message: mirabuf.Vector3, options?: $protobuf.IConversionOptions): { [k: string]: any }
 
         /**
          * Converts this Vector3 to JSON.
@@ -1744,9 +1556,7 @@ export namespace mirabuf {
          * @param [properties] Properties to set
          * @returns PhysicalProperties instance
          */
-        public static create(
-            properties?: mirabuf.IPhysicalProperties
-        ): mirabuf.PhysicalProperties
+        public static create(properties?: mirabuf.IPhysicalProperties): mirabuf.PhysicalProperties
 
         /**
          * Encodes the specified PhysicalProperties message. Does not implicitly {@link mirabuf.PhysicalProperties.verify|verify} messages.
@@ -1754,10 +1564,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(
-            message: mirabuf.IPhysicalProperties,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encode(message: mirabuf.IPhysicalProperties, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Encodes the specified PhysicalProperties message, length delimited. Does not implicitly {@link mirabuf.PhysicalProperties.verify|verify} messages.
@@ -1765,10 +1572,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(
-            message: mirabuf.IPhysicalProperties,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encodeDelimited(message: mirabuf.IPhysicalProperties, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Decodes a PhysicalProperties message from the specified reader or buffer.
@@ -1778,10 +1582,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(
-            reader: $protobuf.Reader | Uint8Array,
-            length?: number
-        ): mirabuf.PhysicalProperties
+        public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.PhysicalProperties
 
         /**
          * Decodes a PhysicalProperties message from the specified reader or buffer, length delimited.
@@ -1790,9 +1591,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(
-            reader: $protobuf.Reader | Uint8Array
-        ): mirabuf.PhysicalProperties
+        public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.PhysicalProperties
 
         /**
          * Verifies a PhysicalProperties message.
@@ -1806,9 +1605,7 @@ export namespace mirabuf {
          * @param object Plain object
          * @returns PhysicalProperties
          */
-        public static fromObject(object: {
-            [k: string]: any
-        }): mirabuf.PhysicalProperties
+        public static fromObject(object: { [k: string]: any }): mirabuf.PhysicalProperties
 
         /**
          * Creates a plain object from a PhysicalProperties message. Also converts values to other types if specified.
@@ -1869,10 +1666,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(
-            message: mirabuf.ITransform,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encode(message: mirabuf.ITransform, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Encodes the specified Transform message, length delimited. Does not implicitly {@link mirabuf.Transform.verify|verify} messages.
@@ -1880,10 +1674,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(
-            message: mirabuf.ITransform,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encodeDelimited(message: mirabuf.ITransform, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Decodes a Transform message from the specified reader or buffer.
@@ -1893,10 +1684,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(
-            reader: $protobuf.Reader | Uint8Array,
-            length?: number
-        ): mirabuf.Transform
+        public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.Transform
 
         /**
          * Decodes a Transform message from the specified reader or buffer, length delimited.
@@ -1905,9 +1693,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(
-            reader: $protobuf.Reader | Uint8Array
-        ): mirabuf.Transform
+        public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.Transform
 
         /**
          * Verifies a Transform message.
@@ -1921,9 +1707,7 @@ export namespace mirabuf {
          * @param object Plain object
          * @returns Transform
          */
-        public static fromObject(object: {
-            [k: string]: any
-        }): mirabuf.Transform
+        public static fromObject(object: { [k: string]: any }): mirabuf.Transform
 
         /**
          * Creates a plain object from a Transform message. Also converts values to other types if specified.
@@ -1931,10 +1715,7 @@ export namespace mirabuf {
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(
-            message: mirabuf.Transform,
-            options?: $protobuf.IConversionOptions
-        ): { [k: string]: any }
+        public static toObject(message: mirabuf.Transform, options?: $protobuf.IConversionOptions): { [k: string]: any }
 
         /**
          * Converts this Transform to JSON.
@@ -1998,10 +1779,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(
-            message: mirabuf.IColor,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encode(message: mirabuf.IColor, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Encodes the specified Color message, length delimited. Does not implicitly {@link mirabuf.Color.verify|verify} messages.
@@ -2009,10 +1787,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(
-            message: mirabuf.IColor,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encodeDelimited(message: mirabuf.IColor, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Decodes a Color message from the specified reader or buffer.
@@ -2022,10 +1797,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(
-            reader: $protobuf.Reader | Uint8Array,
-            length?: number
-        ): mirabuf.Color
+        public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.Color
 
         /**
          * Decodes a Color message from the specified reader or buffer, length delimited.
@@ -2034,9 +1806,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(
-            reader: $protobuf.Reader | Uint8Array
-        ): mirabuf.Color
+        public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.Color
 
         /**
          * Verifies a Color message.
@@ -2058,10 +1828,7 @@ export namespace mirabuf {
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(
-            message: mirabuf.Color,
-            options?: $protobuf.IConversionOptions
-        ): { [k: string]: any }
+        public static toObject(message: mirabuf.Color, options?: $protobuf.IConversionOptions): { [k: string]: any }
 
         /**
          * Converts this Color to JSON.
@@ -2129,10 +1896,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(
-            message: mirabuf.IInfo,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encode(message: mirabuf.IInfo, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Encodes the specified Info message, length delimited. Does not implicitly {@link mirabuf.Info.verify|verify} messages.
@@ -2140,10 +1904,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(
-            message: mirabuf.IInfo,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encodeDelimited(message: mirabuf.IInfo, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Decodes an Info message from the specified reader or buffer.
@@ -2153,10 +1914,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(
-            reader: $protobuf.Reader | Uint8Array,
-            length?: number
-        ): mirabuf.Info
+        public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.Info
 
         /**
          * Decodes an Info message from the specified reader or buffer, length delimited.
@@ -2165,9 +1923,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(
-            reader: $protobuf.Reader | Uint8Array
-        ): mirabuf.Info
+        public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.Info
 
         /**
          * Verifies an Info message.
@@ -2189,10 +1945,7 @@ export namespace mirabuf {
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(
-            message: mirabuf.Info,
-            options?: $protobuf.IConversionOptions
-        ): { [k: string]: any }
+        public static toObject(message: mirabuf.Info, options?: $protobuf.IConversionOptions): { [k: string]: any }
 
         /**
          * Converts this Info to JSON.
@@ -2265,10 +2018,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(
-            message: mirabuf.IThumbnail,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encode(message: mirabuf.IThumbnail, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Encodes the specified Thumbnail message, length delimited. Does not implicitly {@link mirabuf.Thumbnail.verify|verify} messages.
@@ -2276,10 +2026,7 @@ export namespace mirabuf {
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(
-            message: mirabuf.IThumbnail,
-            writer?: $protobuf.Writer
-        ): $protobuf.Writer
+        public static encodeDelimited(message: mirabuf.IThumbnail, writer?: $protobuf.Writer): $protobuf.Writer
 
         /**
          * Decodes a Thumbnail message from the specified reader or buffer.
@@ -2289,10 +2036,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(
-            reader: $protobuf.Reader | Uint8Array,
-            length?: number
-        ): mirabuf.Thumbnail
+        public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.Thumbnail
 
         /**
          * Decodes a Thumbnail message from the specified reader or buffer, length delimited.
@@ -2301,9 +2045,7 @@ export namespace mirabuf {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(
-            reader: $protobuf.Reader | Uint8Array
-        ): mirabuf.Thumbnail
+        public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.Thumbnail
 
         /**
          * Verifies a Thumbnail message.
@@ -2317,9 +2059,7 @@ export namespace mirabuf {
          * @param object Plain object
          * @returns Thumbnail
          */
-        public static fromObject(object: {
-            [k: string]: any
-        }): mirabuf.Thumbnail
+        public static fromObject(object: { [k: string]: any }): mirabuf.Thumbnail
 
         /**
          * Creates a plain object from a Thumbnail message. Also converts values to other types if specified.
@@ -2327,10 +2067,7 @@ export namespace mirabuf {
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(
-            message: mirabuf.Thumbnail,
-            options?: $protobuf.IConversionOptions
-        ): { [k: string]: any }
+        public static toObject(message: mirabuf.Thumbnail, options?: $protobuf.IConversionOptions): { [k: string]: any }
 
         /**
          * Converts this Thumbnail to JSON.
@@ -2399,9 +2136,7 @@ export namespace mirabuf {
              * @param [properties] Properties to set
              * @returns Joints instance
              */
-            public static create(
-                properties?: mirabuf.joint.IJoints
-            ): mirabuf.joint.Joints
+            public static create(properties?: mirabuf.joint.IJoints): mirabuf.joint.Joints
 
             /**
              * Encodes the specified Joints message. Does not implicitly {@link mirabuf.joint.Joints.verify|verify} messages.
@@ -2409,10 +2144,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encode(
-                message: mirabuf.joint.IJoints,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encode(message: mirabuf.joint.IJoints, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Encodes the specified Joints message, length delimited. Does not implicitly {@link mirabuf.joint.Joints.verify|verify} messages.
@@ -2420,10 +2152,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encodeDelimited(
-                message: mirabuf.joint.IJoints,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encodeDelimited(message: mirabuf.joint.IJoints, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Decodes a Joints message from the specified reader or buffer.
@@ -2433,10 +2162,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decode(
-                reader: $protobuf.Reader | Uint8Array,
-                length?: number
-            ): mirabuf.joint.Joints
+            public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.joint.Joints
 
             /**
              * Decodes a Joints message from the specified reader or buffer, length delimited.
@@ -2445,9 +2171,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decodeDelimited(
-                reader: $protobuf.Reader | Uint8Array
-            ): mirabuf.joint.Joints
+            public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.joint.Joints
 
             /**
              * Verifies a Joints message.
@@ -2461,9 +2185,7 @@ export namespace mirabuf {
              * @param object Plain object
              * @returns Joints
              */
-            public static fromObject(object: {
-                [k: string]: any
-            }): mirabuf.joint.Joints
+            public static fromObject(object: { [k: string]: any }): mirabuf.joint.Joints
 
             /**
              * Creates a plain object from a Joints message. Also converts values to other types if specified.
@@ -2575,9 +2297,7 @@ export namespace mirabuf {
              * @param [properties] Properties to set
              * @returns JointInstance instance
              */
-            public static create(
-                properties?: mirabuf.joint.IJointInstance
-            ): mirabuf.joint.JointInstance
+            public static create(properties?: mirabuf.joint.IJointInstance): mirabuf.joint.JointInstance
 
             /**
              * Encodes the specified JointInstance message. Does not implicitly {@link mirabuf.joint.JointInstance.verify|verify} messages.
@@ -2585,10 +2305,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encode(
-                message: mirabuf.joint.IJointInstance,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encode(message: mirabuf.joint.IJointInstance, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Encodes the specified JointInstance message, length delimited. Does not implicitly {@link mirabuf.joint.JointInstance.verify|verify} messages.
@@ -2609,10 +2326,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decode(
-                reader: $protobuf.Reader | Uint8Array,
-                length?: number
-            ): mirabuf.joint.JointInstance
+            public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.joint.JointInstance
 
             /**
              * Decodes a JointInstance message from the specified reader or buffer, length delimited.
@@ -2621,9 +2335,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decodeDelimited(
-                reader: $protobuf.Reader | Uint8Array
-            ): mirabuf.joint.JointInstance
+            public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.joint.JointInstance
 
             /**
              * Verifies a JointInstance message.
@@ -2637,9 +2349,7 @@ export namespace mirabuf {
              * @param object Plain object
              * @returns JointInstance
              */
-            public static fromObject(object: {
-                [k: string]: any
-            }): mirabuf.joint.JointInstance
+            public static fromObject(object: { [k: string]: any }): mirabuf.joint.JointInstance
 
             /**
              * Creates a plain object from a JointInstance message. Also converts values to other types if specified.
@@ -2704,9 +2414,7 @@ export namespace mirabuf {
              * @param [properties] Properties to set
              * @returns MotionLink instance
              */
-            public static create(
-                properties?: mirabuf.joint.IMotionLink
-            ): mirabuf.joint.MotionLink
+            public static create(properties?: mirabuf.joint.IMotionLink): mirabuf.joint.MotionLink
 
             /**
              * Encodes the specified MotionLink message. Does not implicitly {@link mirabuf.joint.MotionLink.verify|verify} messages.
@@ -2714,10 +2422,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encode(
-                message: mirabuf.joint.IMotionLink,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encode(message: mirabuf.joint.IMotionLink, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Encodes the specified MotionLink message, length delimited. Does not implicitly {@link mirabuf.joint.MotionLink.verify|verify} messages.
@@ -2738,10 +2443,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decode(
-                reader: $protobuf.Reader | Uint8Array,
-                length?: number
-            ): mirabuf.joint.MotionLink
+            public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.joint.MotionLink
 
             /**
              * Decodes a MotionLink message from the specified reader or buffer, length delimited.
@@ -2750,9 +2452,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decodeDelimited(
-                reader: $protobuf.Reader | Uint8Array
-            ): mirabuf.joint.MotionLink
+            public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.joint.MotionLink
 
             /**
              * Verifies a MotionLink message.
@@ -2766,9 +2466,7 @@ export namespace mirabuf {
              * @param object Plain object
              * @returns MotionLink
              */
-            public static fromObject(object: {
-                [k: string]: any
-            }): mirabuf.joint.MotionLink
+            public static fromObject(object: { [k: string]: any }): mirabuf.joint.MotionLink
 
             /**
              * Creates a plain object from a MotionLink message. Also converts values to other types if specified.
@@ -2872,9 +2570,7 @@ export namespace mirabuf {
              * @param [properties] Properties to set
              * @returns Joint instance
              */
-            public static create(
-                properties?: mirabuf.joint.IJoint
-            ): mirabuf.joint.Joint
+            public static create(properties?: mirabuf.joint.IJoint): mirabuf.joint.Joint
 
             /**
              * Encodes the specified Joint message. Does not implicitly {@link mirabuf.joint.Joint.verify|verify} messages.
@@ -2882,10 +2578,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encode(
-                message: mirabuf.joint.IJoint,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encode(message: mirabuf.joint.IJoint, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Encodes the specified Joint message, length delimited. Does not implicitly {@link mirabuf.joint.Joint.verify|verify} messages.
@@ -2893,10 +2586,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encodeDelimited(
-                message: mirabuf.joint.IJoint,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encodeDelimited(message: mirabuf.joint.IJoint, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Decodes a Joint message from the specified reader or buffer.
@@ -2906,10 +2596,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decode(
-                reader: $protobuf.Reader | Uint8Array,
-                length?: number
-            ): mirabuf.joint.Joint
+            public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.joint.Joint
 
             /**
              * Decodes a Joint message from the specified reader or buffer, length delimited.
@@ -2918,9 +2605,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decodeDelimited(
-                reader: $protobuf.Reader | Uint8Array
-            ): mirabuf.joint.Joint
+            public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.joint.Joint
 
             /**
              * Verifies a Joint message.
@@ -2934,9 +2619,7 @@ export namespace mirabuf {
              * @param object Plain object
              * @returns Joint
              */
-            public static fromObject(object: {
-                [k: string]: any
-            }): mirabuf.joint.Joint
+            public static fromObject(object: { [k: string]: any }): mirabuf.joint.Joint
 
             /**
              * Creates a plain object from a Joint message. Also converts values to other types if specified.
@@ -2991,9 +2674,7 @@ export namespace mirabuf {
              * @param [properties] Properties to set
              * @returns Dynamics instance
              */
-            public static create(
-                properties?: mirabuf.joint.IDynamics
-            ): mirabuf.joint.Dynamics
+            public static create(properties?: mirabuf.joint.IDynamics): mirabuf.joint.Dynamics
 
             /**
              * Encodes the specified Dynamics message. Does not implicitly {@link mirabuf.joint.Dynamics.verify|verify} messages.
@@ -3001,10 +2682,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encode(
-                message: mirabuf.joint.IDynamics,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encode(message: mirabuf.joint.IDynamics, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Encodes the specified Dynamics message, length delimited. Does not implicitly {@link mirabuf.joint.Dynamics.verify|verify} messages.
@@ -3012,10 +2690,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encodeDelimited(
-                message: mirabuf.joint.IDynamics,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encodeDelimited(message: mirabuf.joint.IDynamics, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Decodes a Dynamics message from the specified reader or buffer.
@@ -3025,10 +2700,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decode(
-                reader: $protobuf.Reader | Uint8Array,
-                length?: number
-            ): mirabuf.joint.Dynamics
+            public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.joint.Dynamics
 
             /**
              * Decodes a Dynamics message from the specified reader or buffer, length delimited.
@@ -3037,9 +2709,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decodeDelimited(
-                reader: $protobuf.Reader | Uint8Array
-            ): mirabuf.joint.Dynamics
+            public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.joint.Dynamics
 
             /**
              * Verifies a Dynamics message.
@@ -3053,9 +2723,7 @@ export namespace mirabuf {
              * @param object Plain object
              * @returns Dynamics
              */
-            public static fromObject(object: {
-                [k: string]: any
-            }): mirabuf.joint.Dynamics
+            public static fromObject(object: { [k: string]: any }): mirabuf.joint.Dynamics
 
             /**
              * Creates a plain object from a Dynamics message. Also converts values to other types if specified.
@@ -3126,9 +2794,7 @@ export namespace mirabuf {
              * @param [properties] Properties to set
              * @returns Limits instance
              */
-            public static create(
-                properties?: mirabuf.joint.ILimits
-            ): mirabuf.joint.Limits
+            public static create(properties?: mirabuf.joint.ILimits): mirabuf.joint.Limits
 
             /**
              * Encodes the specified Limits message. Does not implicitly {@link mirabuf.joint.Limits.verify|verify} messages.
@@ -3136,10 +2802,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encode(
-                message: mirabuf.joint.ILimits,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encode(message: mirabuf.joint.ILimits, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Encodes the specified Limits message, length delimited. Does not implicitly {@link mirabuf.joint.Limits.verify|verify} messages.
@@ -3147,10 +2810,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encodeDelimited(
-                message: mirabuf.joint.ILimits,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encodeDelimited(message: mirabuf.joint.ILimits, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Decodes a Limits message from the specified reader or buffer.
@@ -3160,10 +2820,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decode(
-                reader: $protobuf.Reader | Uint8Array,
-                length?: number
-            ): mirabuf.joint.Limits
+            public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.joint.Limits
 
             /**
              * Decodes a Limits message from the specified reader or buffer, length delimited.
@@ -3172,9 +2829,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decodeDelimited(
-                reader: $protobuf.Reader | Uint8Array
-            ): mirabuf.joint.Limits
+            public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.joint.Limits
 
             /**
              * Verifies a Limits message.
@@ -3188,9 +2843,7 @@ export namespace mirabuf {
              * @param object Plain object
              * @returns Limits
              */
-            public static fromObject(object: {
-                [k: string]: any
-            }): mirabuf.joint.Limits
+            public static fromObject(object: { [k: string]: any }): mirabuf.joint.Limits
 
             /**
              * Creates a plain object from a Limits message. Also converts values to other types if specified.
@@ -3264,9 +2917,7 @@ export namespace mirabuf {
              * @param [properties] Properties to set
              * @returns Safety instance
              */
-            public static create(
-                properties?: mirabuf.joint.ISafety
-            ): mirabuf.joint.Safety
+            public static create(properties?: mirabuf.joint.ISafety): mirabuf.joint.Safety
 
             /**
              * Encodes the specified Safety message. Does not implicitly {@link mirabuf.joint.Safety.verify|verify} messages.
@@ -3274,10 +2925,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encode(
-                message: mirabuf.joint.ISafety,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encode(message: mirabuf.joint.ISafety, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Encodes the specified Safety message, length delimited. Does not implicitly {@link mirabuf.joint.Safety.verify|verify} messages.
@@ -3285,10 +2933,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encodeDelimited(
-                message: mirabuf.joint.ISafety,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encodeDelimited(message: mirabuf.joint.ISafety, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Decodes a Safety message from the specified reader or buffer.
@@ -3298,10 +2943,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decode(
-                reader: $protobuf.Reader | Uint8Array,
-                length?: number
-            ): mirabuf.joint.Safety
+            public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.joint.Safety
 
             /**
              * Decodes a Safety message from the specified reader or buffer, length delimited.
@@ -3310,9 +2952,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decodeDelimited(
-                reader: $protobuf.Reader | Uint8Array
-            ): mirabuf.joint.Safety
+            public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.joint.Safety
 
             /**
              * Verifies a Safety message.
@@ -3326,9 +2966,7 @@ export namespace mirabuf {
              * @param object Plain object
              * @returns Safety
              */
-            public static fromObject(object: {
-                [k: string]: any
-            }): mirabuf.joint.Safety
+            public static fromObject(object: { [k: string]: any }): mirabuf.joint.Safety
 
             /**
              * Creates a plain object from a Safety message. Also converts values to other types if specified.
@@ -3407,9 +3045,7 @@ export namespace mirabuf {
              * @param [properties] Properties to set
              * @returns DOF instance
              */
-            public static create(
-                properties?: mirabuf.joint.IDOF
-            ): mirabuf.joint.DOF
+            public static create(properties?: mirabuf.joint.IDOF): mirabuf.joint.DOF
 
             /**
              * Encodes the specified DOF message. Does not implicitly {@link mirabuf.joint.DOF.verify|verify} messages.
@@ -3417,10 +3053,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encode(
-                message: mirabuf.joint.IDOF,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encode(message: mirabuf.joint.IDOF, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Encodes the specified DOF message, length delimited. Does not implicitly {@link mirabuf.joint.DOF.verify|verify} messages.
@@ -3428,10 +3061,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encodeDelimited(
-                message: mirabuf.joint.IDOF,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encodeDelimited(message: mirabuf.joint.IDOF, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Decodes a DOF message from the specified reader or buffer.
@@ -3441,10 +3071,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decode(
-                reader: $protobuf.Reader | Uint8Array,
-                length?: number
-            ): mirabuf.joint.DOF
+            public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.joint.DOF
 
             /**
              * Decodes a DOF message from the specified reader or buffer, length delimited.
@@ -3453,9 +3080,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decodeDelimited(
-                reader: $protobuf.Reader | Uint8Array
-            ): mirabuf.joint.DOF
+            public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.joint.DOF
 
             /**
              * Verifies a DOF message.
@@ -3469,9 +3094,7 @@ export namespace mirabuf {
              * @param object Plain object
              * @returns DOF
              */
-            public static fromObject(object: {
-                [k: string]: any
-            }): mirabuf.joint.DOF
+            public static fromObject(object: { [k: string]: any }): mirabuf.joint.DOF
 
             /**
              * Creates a plain object from a DOF message. Also converts values to other types if specified.
@@ -3523,9 +3146,7 @@ export namespace mirabuf {
              * @param [properties] Properties to set
              * @returns CustomJoint instance
              */
-            public static create(
-                properties?: mirabuf.joint.ICustomJoint
-            ): mirabuf.joint.CustomJoint
+            public static create(properties?: mirabuf.joint.ICustomJoint): mirabuf.joint.CustomJoint
 
             /**
              * Encodes the specified CustomJoint message. Does not implicitly {@link mirabuf.joint.CustomJoint.verify|verify} messages.
@@ -3533,10 +3154,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encode(
-                message: mirabuf.joint.ICustomJoint,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encode(message: mirabuf.joint.ICustomJoint, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Encodes the specified CustomJoint message, length delimited. Does not implicitly {@link mirabuf.joint.CustomJoint.verify|verify} messages.
@@ -3557,10 +3175,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decode(
-                reader: $protobuf.Reader | Uint8Array,
-                length?: number
-            ): mirabuf.joint.CustomJoint
+            public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.joint.CustomJoint
 
             /**
              * Decodes a CustomJoint message from the specified reader or buffer, length delimited.
@@ -3569,9 +3184,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decodeDelimited(
-                reader: $protobuf.Reader | Uint8Array
-            ): mirabuf.joint.CustomJoint
+            public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.joint.CustomJoint
 
             /**
              * Verifies a CustomJoint message.
@@ -3585,9 +3198,7 @@ export namespace mirabuf {
              * @param object Plain object
              * @returns CustomJoint
              */
-            public static fromObject(object: {
-                [k: string]: any
-            }): mirabuf.joint.CustomJoint
+            public static fromObject(object: { [k: string]: any }): mirabuf.joint.CustomJoint
 
             /**
              * Creates a plain object from a CustomJoint message. Also converts values to other types if specified.
@@ -3639,9 +3250,7 @@ export namespace mirabuf {
              * @param [properties] Properties to set
              * @returns RotationalJoint instance
              */
-            public static create(
-                properties?: mirabuf.joint.IRotationalJoint
-            ): mirabuf.joint.RotationalJoint
+            public static create(properties?: mirabuf.joint.IRotationalJoint): mirabuf.joint.RotationalJoint
 
             /**
              * Encodes the specified RotationalJoint message. Does not implicitly {@link mirabuf.joint.RotationalJoint.verify|verify} messages.
@@ -3649,10 +3258,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encode(
-                message: mirabuf.joint.IRotationalJoint,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encode(message: mirabuf.joint.IRotationalJoint, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Encodes the specified RotationalJoint message, length delimited. Does not implicitly {@link mirabuf.joint.RotationalJoint.verify|verify} messages.
@@ -3673,10 +3279,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decode(
-                reader: $protobuf.Reader | Uint8Array,
-                length?: number
-            ): mirabuf.joint.RotationalJoint
+            public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.joint.RotationalJoint
 
             /**
              * Decodes a RotationalJoint message from the specified reader or buffer, length delimited.
@@ -3685,9 +3288,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decodeDelimited(
-                reader: $protobuf.Reader | Uint8Array
-            ): mirabuf.joint.RotationalJoint
+            public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.joint.RotationalJoint
 
             /**
              * Verifies a RotationalJoint message.
@@ -3701,9 +3302,7 @@ export namespace mirabuf {
              * @param object Plain object
              * @returns RotationalJoint
              */
-            public static fromObject(object: {
-                [k: string]: any
-            }): mirabuf.joint.RotationalJoint
+            public static fromObject(object: { [k: string]: any }): mirabuf.joint.RotationalJoint
 
             /**
              * Creates a plain object from a RotationalJoint message. Also converts values to other types if specified.
@@ -3764,9 +3363,7 @@ export namespace mirabuf {
              * @param [properties] Properties to set
              * @returns BallJoint instance
              */
-            public static create(
-                properties?: mirabuf.joint.IBallJoint
-            ): mirabuf.joint.BallJoint
+            public static create(properties?: mirabuf.joint.IBallJoint): mirabuf.joint.BallJoint
 
             /**
              * Encodes the specified BallJoint message. Does not implicitly {@link mirabuf.joint.BallJoint.verify|verify} messages.
@@ -3774,10 +3371,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encode(
-                message: mirabuf.joint.IBallJoint,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encode(message: mirabuf.joint.IBallJoint, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Encodes the specified BallJoint message, length delimited. Does not implicitly {@link mirabuf.joint.BallJoint.verify|verify} messages.
@@ -3798,10 +3392,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decode(
-                reader: $protobuf.Reader | Uint8Array,
-                length?: number
-            ): mirabuf.joint.BallJoint
+            public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.joint.BallJoint
 
             /**
              * Decodes a BallJoint message from the specified reader or buffer, length delimited.
@@ -3810,9 +3401,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decodeDelimited(
-                reader: $protobuf.Reader | Uint8Array
-            ): mirabuf.joint.BallJoint
+            public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.joint.BallJoint
 
             /**
              * Verifies a BallJoint message.
@@ -3826,9 +3415,7 @@ export namespace mirabuf {
              * @param object Plain object
              * @returns BallJoint
              */
-            public static fromObject(object: {
-                [k: string]: any
-            }): mirabuf.joint.BallJoint
+            public static fromObject(object: { [k: string]: any }): mirabuf.joint.BallJoint
 
             /**
              * Creates a plain object from a BallJoint message. Also converts values to other types if specified.
@@ -3877,9 +3464,7 @@ export namespace mirabuf {
              * @param [properties] Properties to set
              * @returns PrismaticJoint instance
              */
-            public static create(
-                properties?: mirabuf.joint.IPrismaticJoint
-            ): mirabuf.joint.PrismaticJoint
+            public static create(properties?: mirabuf.joint.IPrismaticJoint): mirabuf.joint.PrismaticJoint
 
             /**
              * Encodes the specified PrismaticJoint message. Does not implicitly {@link mirabuf.joint.PrismaticJoint.verify|verify} messages.
@@ -3887,10 +3472,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encode(
-                message: mirabuf.joint.IPrismaticJoint,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encode(message: mirabuf.joint.IPrismaticJoint, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Encodes the specified PrismaticJoint message, length delimited. Does not implicitly {@link mirabuf.joint.PrismaticJoint.verify|verify} messages.
@@ -3911,10 +3493,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decode(
-                reader: $protobuf.Reader | Uint8Array,
-                length?: number
-            ): mirabuf.joint.PrismaticJoint
+            public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.joint.PrismaticJoint
 
             /**
              * Decodes a PrismaticJoint message from the specified reader or buffer, length delimited.
@@ -3923,9 +3502,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decodeDelimited(
-                reader: $protobuf.Reader | Uint8Array
-            ): mirabuf.joint.PrismaticJoint
+            public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.joint.PrismaticJoint
 
             /**
              * Verifies a PrismaticJoint message.
@@ -3939,9 +3516,7 @@ export namespace mirabuf {
              * @param object Plain object
              * @returns PrismaticJoint
              */
-            public static fromObject(object: {
-                [k: string]: any
-            }): mirabuf.joint.PrismaticJoint
+            public static fromObject(object: { [k: string]: any }): mirabuf.joint.PrismaticJoint
 
             /**
              * Creates a plain object from a PrismaticJoint message. Also converts values to other types if specified.
@@ -3996,9 +3571,7 @@ export namespace mirabuf {
              * @param [properties] Properties to set
              * @returns RigidGroup instance
              */
-            public static create(
-                properties?: mirabuf.joint.IRigidGroup
-            ): mirabuf.joint.RigidGroup
+            public static create(properties?: mirabuf.joint.IRigidGroup): mirabuf.joint.RigidGroup
 
             /**
              * Encodes the specified RigidGroup message. Does not implicitly {@link mirabuf.joint.RigidGroup.verify|verify} messages.
@@ -4006,10 +3579,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encode(
-                message: mirabuf.joint.IRigidGroup,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encode(message: mirabuf.joint.IRigidGroup, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Encodes the specified RigidGroup message, length delimited. Does not implicitly {@link mirabuf.joint.RigidGroup.verify|verify} messages.
@@ -4030,10 +3600,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decode(
-                reader: $protobuf.Reader | Uint8Array,
-                length?: number
-            ): mirabuf.joint.RigidGroup
+            public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.joint.RigidGroup
 
             /**
              * Decodes a RigidGroup message from the specified reader or buffer, length delimited.
@@ -4042,9 +3609,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decodeDelimited(
-                reader: $protobuf.Reader | Uint8Array
-            ): mirabuf.joint.RigidGroup
+            public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.joint.RigidGroup
 
             /**
              * Verifies a RigidGroup message.
@@ -4058,9 +3623,7 @@ export namespace mirabuf {
              * @param object Plain object
              * @returns RigidGroup
              */
-            public static fromObject(object: {
-                [k: string]: any
-            }): mirabuf.joint.RigidGroup
+            public static fromObject(object: { [k: string]: any }): mirabuf.joint.RigidGroup
 
             /**
              * Creates a plain object from a RigidGroup message. Also converts values to other types if specified.
@@ -4143,9 +3706,7 @@ export namespace mirabuf {
              * @param [properties] Properties to set
              * @returns Motor instance
              */
-            public static create(
-                properties?: mirabuf.motor.IMotor
-            ): mirabuf.motor.Motor
+            public static create(properties?: mirabuf.motor.IMotor): mirabuf.motor.Motor
 
             /**
              * Encodes the specified Motor message. Does not implicitly {@link mirabuf.motor.Motor.verify|verify} messages.
@@ -4153,10 +3714,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encode(
-                message: mirabuf.motor.IMotor,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encode(message: mirabuf.motor.IMotor, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Encodes the specified Motor message, length delimited. Does not implicitly {@link mirabuf.motor.Motor.verify|verify} messages.
@@ -4164,10 +3722,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encodeDelimited(
-                message: mirabuf.motor.IMotor,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encodeDelimited(message: mirabuf.motor.IMotor, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Decodes a Motor message from the specified reader or buffer.
@@ -4177,10 +3732,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decode(
-                reader: $protobuf.Reader | Uint8Array,
-                length?: number
-            ): mirabuf.motor.Motor
+            public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.motor.Motor
 
             /**
              * Decodes a Motor message from the specified reader or buffer, length delimited.
@@ -4189,9 +3741,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decodeDelimited(
-                reader: $protobuf.Reader | Uint8Array
-            ): mirabuf.motor.Motor
+            public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.motor.Motor
 
             /**
              * Verifies a Motor message.
@@ -4205,9 +3755,7 @@ export namespace mirabuf {
              * @param object Plain object
              * @returns Motor
              */
-            public static fromObject(object: {
-                [k: string]: any
-            }): mirabuf.motor.Motor
+            public static fromObject(object: { [k: string]: any }): mirabuf.motor.Motor
 
             /**
              * Creates a plain object from a Motor message. Also converts values to other types if specified.
@@ -4273,9 +3821,7 @@ export namespace mirabuf {
              * @param [properties] Properties to set
              * @returns SimpleMotor instance
              */
-            public static create(
-                properties?: mirabuf.motor.ISimpleMotor
-            ): mirabuf.motor.SimpleMotor
+            public static create(properties?: mirabuf.motor.ISimpleMotor): mirabuf.motor.SimpleMotor
 
             /**
              * Encodes the specified SimpleMotor message. Does not implicitly {@link mirabuf.motor.SimpleMotor.verify|verify} messages.
@@ -4283,10 +3829,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encode(
-                message: mirabuf.motor.ISimpleMotor,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encode(message: mirabuf.motor.ISimpleMotor, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Encodes the specified SimpleMotor message, length delimited. Does not implicitly {@link mirabuf.motor.SimpleMotor.verify|verify} messages.
@@ -4307,10 +3850,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decode(
-                reader: $protobuf.Reader | Uint8Array,
-                length?: number
-            ): mirabuf.motor.SimpleMotor
+            public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.motor.SimpleMotor
 
             /**
              * Decodes a SimpleMotor message from the specified reader or buffer, length delimited.
@@ -4319,9 +3859,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decodeDelimited(
-                reader: $protobuf.Reader | Uint8Array
-            ): mirabuf.motor.SimpleMotor
+            public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.motor.SimpleMotor
 
             /**
              * Verifies a SimpleMotor message.
@@ -4335,9 +3873,7 @@ export namespace mirabuf {
              * @param object Plain object
              * @returns SimpleMotor
              */
-            public static fromObject(object: {
-                [k: string]: any
-            }): mirabuf.motor.SimpleMotor
+            public static fromObject(object: { [k: string]: any }): mirabuf.motor.SimpleMotor
 
             /**
              * Creates a plain object from a SimpleMotor message. Also converts values to other types if specified.
@@ -4432,9 +3968,7 @@ export namespace mirabuf {
              * @param [properties] Properties to set
              * @returns DCMotor instance
              */
-            public static create(
-                properties?: mirabuf.motor.IDCMotor
-            ): mirabuf.motor.DCMotor
+            public static create(properties?: mirabuf.motor.IDCMotor): mirabuf.motor.DCMotor
 
             /**
              * Encodes the specified DCMotor message. Does not implicitly {@link mirabuf.motor.DCMotor.verify|verify} messages.
@@ -4442,10 +3976,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encode(
-                message: mirabuf.motor.IDCMotor,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encode(message: mirabuf.motor.IDCMotor, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Encodes the specified DCMotor message, length delimited. Does not implicitly {@link mirabuf.motor.DCMotor.verify|verify} messages.
@@ -4453,10 +3984,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encodeDelimited(
-                message: mirabuf.motor.IDCMotor,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encodeDelimited(message: mirabuf.motor.IDCMotor, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Decodes a DCMotor message from the specified reader or buffer.
@@ -4466,10 +3994,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decode(
-                reader: $protobuf.Reader | Uint8Array,
-                length?: number
-            ): mirabuf.motor.DCMotor
+            public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.motor.DCMotor
 
             /**
              * Decodes a DCMotor message from the specified reader or buffer, length delimited.
@@ -4478,9 +4003,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decodeDelimited(
-                reader: $protobuf.Reader | Uint8Array
-            ): mirabuf.motor.DCMotor
+            public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.motor.DCMotor
 
             /**
              * Verifies a DCMotor message.
@@ -4494,9 +4017,7 @@ export namespace mirabuf {
              * @param object Plain object
              * @returns DCMotor
              */
-            public static fromObject(object: {
-                [k: string]: any
-            }): mirabuf.motor.DCMotor
+            public static fromObject(object: { [k: string]: any }): mirabuf.motor.DCMotor
 
             /**
              * Creates a plain object from a DCMotor message. Also converts values to other types if specified.
@@ -4576,9 +4097,7 @@ export namespace mirabuf {
                  * @param [properties] Properties to set
                  * @returns Advanced instance
                  */
-                public static create(
-                    properties?: mirabuf.motor.DCMotor.IAdvanced
-                ): mirabuf.motor.DCMotor.Advanced
+                public static create(properties?: mirabuf.motor.DCMotor.IAdvanced): mirabuf.motor.DCMotor.Advanced
 
                 /**
                  * Encodes the specified Advanced message. Does not implicitly {@link mirabuf.motor.DCMotor.Advanced.verify|verify} messages.
@@ -4622,27 +4141,21 @@ export namespace mirabuf {
                  * @throws {Error} If the payload is not a reader or valid buffer
                  * @throws {$protobuf.util.ProtocolError} If required fields are missing
                  */
-                public static decodeDelimited(
-                    reader: $protobuf.Reader | Uint8Array
-                ): mirabuf.motor.DCMotor.Advanced
+                public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.motor.DCMotor.Advanced
 
                 /**
                  * Verifies an Advanced message.
                  * @param message Plain object to verify
                  * @returns `null` if valid, otherwise the reason why it is not
                  */
-                public static verify(message: {
-                    [k: string]: any
-                }): string | null
+                public static verify(message: { [k: string]: any }): string | null
 
                 /**
                  * Creates an Advanced message from a plain object. Also converts values to their respective internal types.
                  * @param object Plain object
                  * @returns Advanced
                  */
-                public static fromObject(object: {
-                    [k: string]: any
-                }): mirabuf.motor.DCMotor.Advanced
+                public static fromObject(object: { [k: string]: any }): mirabuf.motor.DCMotor.Advanced
 
                 /**
                  * Creates a plain object from an Advanced message. Also converts values to other types if specified.
@@ -4715,9 +4228,7 @@ export namespace mirabuf {
              * @param [properties] Properties to set
              * @returns Materials instance
              */
-            public static create(
-                properties?: mirabuf.material.IMaterials
-            ): mirabuf.material.Materials
+            public static create(properties?: mirabuf.material.IMaterials): mirabuf.material.Materials
 
             /**
              * Encodes the specified Materials message. Does not implicitly {@link mirabuf.material.Materials.verify|verify} messages.
@@ -4725,10 +4236,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encode(
-                message: mirabuf.material.IMaterials,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encode(message: mirabuf.material.IMaterials, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Encodes the specified Materials message, length delimited. Does not implicitly {@link mirabuf.material.Materials.verify|verify} messages.
@@ -4749,10 +4257,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decode(
-                reader: $protobuf.Reader | Uint8Array,
-                length?: number
-            ): mirabuf.material.Materials
+            public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.material.Materials
 
             /**
              * Decodes a Materials message from the specified reader or buffer, length delimited.
@@ -4761,9 +4266,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decodeDelimited(
-                reader: $protobuf.Reader | Uint8Array
-            ): mirabuf.material.Materials
+            public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.material.Materials
 
             /**
              * Verifies a Materials message.
@@ -4777,9 +4280,7 @@ export namespace mirabuf {
              * @param object Plain object
              * @returns Materials
              */
-            public static fromObject(object: {
-                [k: string]: any
-            }): mirabuf.material.Materials
+            public static fromObject(object: { [k: string]: any }): mirabuf.material.Materials
 
             /**
              * Creates a plain object from a Materials message. Also converts values to other types if specified.
@@ -4855,9 +4356,7 @@ export namespace mirabuf {
              * @param [properties] Properties to set
              * @returns Appearance instance
              */
-            public static create(
-                properties?: mirabuf.material.IAppearance
-            ): mirabuf.material.Appearance
+            public static create(properties?: mirabuf.material.IAppearance): mirabuf.material.Appearance
 
             /**
              * Encodes the specified Appearance message. Does not implicitly {@link mirabuf.material.Appearance.verify|verify} messages.
@@ -4865,10 +4364,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encode(
-                message: mirabuf.material.IAppearance,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encode(message: mirabuf.material.IAppearance, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Encodes the specified Appearance message, length delimited. Does not implicitly {@link mirabuf.material.Appearance.verify|verify} messages.
@@ -4889,10 +4385,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decode(
-                reader: $protobuf.Reader | Uint8Array,
-                length?: number
-            ): mirabuf.material.Appearance
+            public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.material.Appearance
 
             /**
              * Decodes an Appearance message from the specified reader or buffer, length delimited.
@@ -4901,9 +4394,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decodeDelimited(
-                reader: $protobuf.Reader | Uint8Array
-            ): mirabuf.material.Appearance
+            public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.material.Appearance
 
             /**
              * Verifies an Appearance message.
@@ -4917,9 +4408,7 @@ export namespace mirabuf {
              * @param object Plain object
              * @returns Appearance
              */
-            public static fromObject(object: {
-                [k: string]: any
-            }): mirabuf.material.Appearance
+            public static fromObject(object: { [k: string]: any }): mirabuf.material.Appearance
 
             /**
              * Creates a plain object from an Appearance message. Also converts values to other types if specified.
@@ -5022,9 +4511,7 @@ export namespace mirabuf {
              * @param [properties] Properties to set
              * @returns PhysicalMaterial instance
              */
-            public static create(
-                properties?: mirabuf.material.IPhysicalMaterial
-            ): mirabuf.material.PhysicalMaterial
+            public static create(properties?: mirabuf.material.IPhysicalMaterial): mirabuf.material.PhysicalMaterial
 
             /**
              * Encodes the specified PhysicalMaterial message. Does not implicitly {@link mirabuf.material.PhysicalMaterial.verify|verify} messages.
@@ -5068,9 +4555,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decodeDelimited(
-                reader: $protobuf.Reader | Uint8Array
-            ): mirabuf.material.PhysicalMaterial
+            public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.material.PhysicalMaterial
 
             /**
              * Verifies a PhysicalMaterial message.
@@ -5084,9 +4569,7 @@ export namespace mirabuf {
              * @param object Plain object
              * @returns PhysicalMaterial
              */
-            public static fromObject(object: {
-                [k: string]: any
-            }): mirabuf.material.PhysicalMaterial
+            public static fromObject(object: { [k: string]: any }): mirabuf.material.PhysicalMaterial
 
             /**
              * Creates a plain object from a PhysicalMaterial message. Also converts values to other types if specified.
@@ -5138,9 +4621,7 @@ export namespace mirabuf {
                  * Constructs a new Thermal.
                  * @param [properties] Properties to set
                  */
-                constructor(
-                    properties?: mirabuf.material.PhysicalMaterial.IThermal
-                )
+                constructor(properties?: mirabuf.material.PhysicalMaterial.IThermal)
 
                 /** W/(m*K) */
                 public thermalConductivity: number
@@ -5211,18 +4692,14 @@ export namespace mirabuf {
                  * @param message Plain object to verify
                  * @returns `null` if valid, otherwise the reason why it is not
                  */
-                public static verify(message: {
-                    [k: string]: any
-                }): string | null
+                public static verify(message: { [k: string]: any }): string | null
 
                 /**
                  * Creates a Thermal message from a plain object. Also converts values to their respective internal types.
                  * @param object Plain object
                  * @returns Thermal
                  */
-                public static fromObject(object: {
-                    [k: string]: any
-                }): mirabuf.material.PhysicalMaterial.Thermal
+                public static fromObject(object: { [k: string]: any }): mirabuf.material.PhysicalMaterial.Thermal
 
                 /**
                  * Creates a plain object from a Thermal message. Also converts values to other types if specified.
@@ -5273,9 +4750,7 @@ export namespace mirabuf {
                  * Constructs a new Mechanical.
                  * @param [properties] Properties to set
                  */
-                constructor(
-                    properties?: mirabuf.material.PhysicalMaterial.IMechanical
-                )
+                constructor(properties?: mirabuf.material.PhysicalMaterial.IMechanical)
 
                 /** GPa */
                 public youngMod: number
@@ -5352,18 +4827,14 @@ export namespace mirabuf {
                  * @param message Plain object to verify
                  * @returns `null` if valid, otherwise the reason why it is not
                  */
-                public static verify(message: {
-                    [k: string]: any
-                }): string | null
+                public static verify(message: { [k: string]: any }): string | null
 
                 /**
                  * Creates a Mechanical message from a plain object. Also converts values to their respective internal types.
                  * @param object Plain object
                  * @returns Mechanical
                  */
-                public static fromObject(object: {
-                    [k: string]: any
-                }): mirabuf.material.PhysicalMaterial.Mechanical
+                public static fromObject(object: { [k: string]: any }): mirabuf.material.PhysicalMaterial.Mechanical
 
                 /**
                  * Creates a plain object from a Mechanical message. Also converts values to other types if specified.
@@ -5408,9 +4879,7 @@ export namespace mirabuf {
                  * Constructs a new Strength.
                  * @param [properties] Properties to set
                  */
-                constructor(
-                    properties?: mirabuf.material.PhysicalMaterial.IStrength
-                )
+                constructor(properties?: mirabuf.material.PhysicalMaterial.IStrength)
 
                 /** MPa */
                 public yieldStrength: number
@@ -5481,18 +4950,14 @@ export namespace mirabuf {
                  * @param message Plain object to verify
                  * @returns `null` if valid, otherwise the reason why it is not
                  */
-                public static verify(message: {
-                    [k: string]: any
-                }): string | null
+                public static verify(message: { [k: string]: any }): string | null
 
                 /**
                  * Creates a Strength message from a plain object. Also converts values to their respective internal types.
                  * @param object Plain object
                  * @returns Strength
                  */
-                public static fromObject(object: {
-                    [k: string]: any
-                }): mirabuf.material.PhysicalMaterial.Strength
+                public static fromObject(object: { [k: string]: any }): mirabuf.material.PhysicalMaterial.Strength
 
                 /**
                  * Creates a plain object from a Strength message. Also converts values to other types if specified.
@@ -5551,9 +5016,7 @@ export namespace mirabuf {
              * @param [properties] Properties to set
              * @returns Signals instance
              */
-            public static create(
-                properties?: mirabuf.signal.ISignals
-            ): mirabuf.signal.Signals
+            public static create(properties?: mirabuf.signal.ISignals): mirabuf.signal.Signals
 
             /**
              * Encodes the specified Signals message. Does not implicitly {@link mirabuf.signal.Signals.verify|verify} messages.
@@ -5561,10 +5024,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encode(
-                message: mirabuf.signal.ISignals,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encode(message: mirabuf.signal.ISignals, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Encodes the specified Signals message, length delimited. Does not implicitly {@link mirabuf.signal.Signals.verify|verify} messages.
@@ -5572,10 +5032,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encodeDelimited(
-                message: mirabuf.signal.ISignals,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encodeDelimited(message: mirabuf.signal.ISignals, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Decodes a Signals message from the specified reader or buffer.
@@ -5585,10 +5042,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decode(
-                reader: $protobuf.Reader | Uint8Array,
-                length?: number
-            ): mirabuf.signal.Signals
+            public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.signal.Signals
 
             /**
              * Decodes a Signals message from the specified reader or buffer, length delimited.
@@ -5597,9 +5051,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decodeDelimited(
-                reader: $protobuf.Reader | Uint8Array
-            ): mirabuf.signal.Signals
+            public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.signal.Signals
 
             /**
              * Verifies a Signals message.
@@ -5613,9 +5065,7 @@ export namespace mirabuf {
              * @param object Plain object
              * @returns Signals
              */
-            public static fromObject(object: {
-                [k: string]: any
-            }): mirabuf.signal.Signals
+            public static fromObject(object: { [k: string]: any }): mirabuf.signal.Signals
 
             /**
              * Creates a plain object from a Signals message. Also converts values to other types if specified.
@@ -5712,9 +5162,7 @@ export namespace mirabuf {
              * @param [properties] Properties to set
              * @returns Signal instance
              */
-            public static create(
-                properties?: mirabuf.signal.ISignal
-            ): mirabuf.signal.Signal
+            public static create(properties?: mirabuf.signal.ISignal): mirabuf.signal.Signal
 
             /**
              * Encodes the specified Signal message. Does not implicitly {@link mirabuf.signal.Signal.verify|verify} messages.
@@ -5722,10 +5170,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encode(
-                message: mirabuf.signal.ISignal,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encode(message: mirabuf.signal.ISignal, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Encodes the specified Signal message, length delimited. Does not implicitly {@link mirabuf.signal.Signal.verify|verify} messages.
@@ -5733,10 +5178,7 @@ export namespace mirabuf {
              * @param [writer] Writer to encode to
              * @returns Writer
              */
-            public static encodeDelimited(
-                message: mirabuf.signal.ISignal,
-                writer?: $protobuf.Writer
-            ): $protobuf.Writer
+            public static encodeDelimited(message: mirabuf.signal.ISignal, writer?: $protobuf.Writer): $protobuf.Writer
 
             /**
              * Decodes a Signal message from the specified reader or buffer.
@@ -5746,10 +5188,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decode(
-                reader: $protobuf.Reader | Uint8Array,
-                length?: number
-            ): mirabuf.signal.Signal
+            public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): mirabuf.signal.Signal
 
             /**
              * Decodes a Signal message from the specified reader or buffer, length delimited.
@@ -5758,9 +5197,7 @@ export namespace mirabuf {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decodeDelimited(
-                reader: $protobuf.Reader | Uint8Array
-            ): mirabuf.signal.Signal
+            public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): mirabuf.signal.Signal
 
             /**
              * Verifies a Signal message.
@@ -5774,9 +5211,7 @@ export namespace mirabuf {
              * @param object Plain object
              * @returns Signal
              */
-            public static fromObject(object: {
-                [k: string]: any
-            }): mirabuf.signal.Signal
+            public static fromObject(object: { [k: string]: any }): mirabuf.signal.Signal
 
             /**
              * Creates a plain object from a Signal message. Also converts values to other types if specified.

@@ -28,13 +28,7 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             acceptName="Done"
             onAccept={() => {
                 // mostly doing this so eslint doesn't complain about unused variables
-                console.log(
-                    name,
-                    selectedSignal,
-                    selectedChannelA,
-                    selectedChannelB,
-                    conversionFactor
-                )
+                console.log(name, selectedSignal, selectedChannelA, selectedChannelB, conversionFactor)
             }}
             onCancel={() => {
                 openModal("roborio")
@@ -42,11 +36,7 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         >
             <Label size={LabelSize.Small}>Name</Label>
             <Input placeholder="..." className="w-full" onInput={setName} />
-            <Dropdown
-                label="Signal"
-                options={signals}
-                onSelect={s => setSelectedSignal(s)}
-            />
+            <Dropdown label="Signal" options={signals} onSelect={s => setSelectedSignal(s)} />
             <Dropdown
                 label="Channel A"
                 options={[...Array(numPorts).keys()].map(n => n.toString())}

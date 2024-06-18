@@ -33,8 +33,7 @@ class HingeStimulus extends EncoderStimulus {
 
     public Update(deltaT: number): void {
         if (this._accum) {
-            this._hingeAngleAccum +=
-                this._hinge.GetTargetAngularVelocity() * deltaT
+            this._hingeAngleAccum += this._hinge.GetTargetAngularVelocity() * deltaT
         }
     }
 

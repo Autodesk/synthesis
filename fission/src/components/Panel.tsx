@@ -15,10 +15,7 @@ export type OpenLocation =
 
 type LocationOptions = { className: string; styles: { [key: string]: string } }
 
-const getLocationClasses = (
-    openLocation: OpenLocation,
-    sidePadding: number
-): LocationOptions => {
+const getLocationClasses = (openLocation: OpenLocation, sidePadding: number): LocationOptions => {
     // Can't use tailwind left-[custom] because it won't generate the classes since we're using them dynamically with string templating
     const paddingStyle = `${sidePadding}px`
     switch (openLocation) {
@@ -122,12 +119,7 @@ const Panel: React.FC<PanelProps> = ({
     contentClassName,
 }) => {
     const { closePanel } = usePanelControlContext()
-    const iconEl: ReactNode =
-        typeof icon === "string" ? (
-            <img src={icon} className="w-6" alt="Icon" />
-        ) : (
-            icon
-        )
+    const iconEl: ReactNode = typeof icon === "string" ? <img src={icon} className="w-6" alt="Icon" /> : icon
     openLocation ||= "center"
     sidePadding ||= 16
     const locationClasses = getLocationClasses(openLocation, sidePadding)
@@ -140,12 +132,8 @@ const Panel: React.FC<PanelProps> = ({
             >
                 {name && (
                     <div id="header" className="flex items-center gap-8 h-16">
-                        <span className="flex justify-center align-center ml-8 text-icon">
-                            {iconEl && iconEl}
-                        </span>
-                        <h1 className="text-3xl inline-block align-middle whitespace-nowrap mr-10">
-                            {name}
-                        </h1>
+                        <span className="flex justify-center align-center ml-8 text-icon">{iconEl && iconEl}</span>
+                        <h1 className="text-3xl inline-block align-middle whitespace-nowrap mr-10">{name}</h1>
                     </div>
                 )}
                 <div
@@ -157,10 +145,7 @@ const Panel: React.FC<PanelProps> = ({
                     {children}
                 </div>
                 {(cancelEnabled || middleEnabled || acceptEnabled) && (
-                    <div
-                        id="footer"
-                        className="flex justify-between mx-10 py-8 text-accept-cancel-button-text"
-                    >
+                    <div id="footer" className="flex justify-between mx-10 py-8 text-accept-cancel-button-text">
                         {cancelEnabled && (
                             <input
                                 type="button"
@@ -170,9 +155,7 @@ const Panel: React.FC<PanelProps> = ({
                                     if (!cancelBlocked && onCancel) onCancel()
                                 }}
                                 className={`${
-                                    cancelBlocked
-                                        ? "bg-interactive-background"
-                                        : "bg-cancel-button"
+                                    cancelBlocked ? "bg-interactive-background" : "bg-cancel-button"
                                 } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
                             />
                         )}
@@ -184,9 +167,7 @@ const Panel: React.FC<PanelProps> = ({
                                     if (!middleBlocked && onMiddle) onMiddle()
                                 }}
                                 className={`${
-                                    middleBlocked
-                                        ? "bg-interactive-background"
-                                        : "bg-accept-button"
+                                    middleBlocked ? "bg-interactive-background" : "bg-accept-button"
                                 } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
                             />
                         )}
@@ -199,9 +180,7 @@ const Panel: React.FC<PanelProps> = ({
                                     if (!acceptBlocked && onAccept) onAccept()
                                 }}
                                 className={`${
-                                    acceptBlocked
-                                        ? "bg-interactive-background"
-                                        : "bg-accept-button"
+                                    acceptBlocked ? "bg-interactive-background" : "bg-accept-button"
                                 } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
                             />
                         )}

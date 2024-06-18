@@ -68,25 +68,13 @@ const transformNorms = (mesh: mirabuf.IMesh) => {
     return newNorms
 }
 
-const transformGeometry = (
-    geometry: THREE.BufferGeometry,
-    mesh: mirabuf.IMesh
-) => {
+const transformGeometry = (geometry: THREE.BufferGeometry, mesh: mirabuf.IMesh) => {
     const newVerts = transformVerts(mesh)
     const newNorms = transformNorms(mesh)
 
-    geometry.setAttribute(
-        "position",
-        new THREE.BufferAttribute(new Float32Array(newVerts), 3)
-    )
-    geometry.setAttribute(
-        "normal",
-        new THREE.BufferAttribute(new Float32Array(newNorms), 3)
-    )
-    geometry.setAttribute(
-        "uv",
-        new THREE.BufferAttribute(new Float32Array(mesh.uv!), 2)
-    )
+    geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(newVerts), 3))
+    geometry.setAttribute("normal", new THREE.BufferAttribute(new Float32Array(newNorms), 3))
+    geometry.setAttribute("uv", new THREE.BufferAttribute(new Float32Array(mesh.uv!), 2))
     geometry.setIndex(mesh.indices!)
 }
 
@@ -122,30 +110,30 @@ class MirabufInstance {
      * Parses all mirabuf appearances into ThreeJs materials.
      */
     private LoadMaterials(materialStyle: MaterialStyle) {
-        Object.entries(
-            this._mirabufParser.assembly.data!.materials!.appearances!
-        ).forEach(([appearanceId, appearance]) => {
-            let hex = 0xe32b50
-            if (appearance.albedo) {
-                const { A, B, G, R } = appearance.albedo
-                if (A && B && G && R) hex = (A << 24) | (R << 16) | (G << 8) | B
-            }
+        Object.entries(this._mirabufParser.assembly.data!.materials!.appearances!).forEach(
+            ([appearanceId, appearance]) => {
+                let hex = 0xe32b50
+                if (appearance.albedo) {
+                    const { A, B, G, R } = appearance.albedo
+                    if (A && B && G && R) hex = (A << 24) | (R << 16) | (G << 8) | B
+                }
 
-            let material: THREE.Material
-            if (materialStyle == MaterialStyle.Regular) {
-                material = new THREE.MeshPhongMaterial({
-                    color: hex,
-                    shininess: 0.0,
-                })
-            } else if (materialStyle == MaterialStyle.Normals) {
-                material = new THREE.MeshNormalMaterial()
-            } else if (materialStyle == MaterialStyle.Toon) {
-                material = World.SceneRenderer.CreateToonMaterial(hex, 5)
-                console.debug("Toon Material")
-            }
+                let material: THREE.Material
+                if (materialStyle == MaterialStyle.Regular) {
+                    material = new THREE.MeshPhongMaterial({
+                        color: hex,
+                        shininess: 0.0,
+                    })
+                } else if (materialStyle == MaterialStyle.Normals) {
+                    material = new THREE.MeshNormalMaterial()
+                } else if (materialStyle == MaterialStyle.Toon) {
+                    material = World.SceneRenderer.CreateToonMaterial(hex, 5)
+                    console.debug("Toon Material")
+                }
 
-            this._materials.set(appearanceId, material!)
-        })
+                this._materials.set(appearanceId, material!)
+            }
+        )
     }
 
     /**
@@ -157,13 +145,8 @@ class MirabufInstance {
 
         let totalMeshCount = 0
 
-        for (const instance of Object.values(
-            instances
-        ) /* .filter(x => x.info!.name!.startsWith('EyeBall')) */) {
-            const definition =
-                assembly.data!.parts!.partDefinitions![
-                    instance.partDefinitionReference!
-                ]!
+        for (const instance of Object.values(instances) /* .filter(x => x.info!.name!.startsWith('EyeBall')) */) {
+            const definition = assembly.data!.parts!.partDefinitions![instance.partDefinitionReference!]!
             const bodies = definition.bodies
             const meshes = new Array<THREE.Mesh>()
             if (bodies) {
@@ -183,13 +166,9 @@ class MirabufInstance {
 
                         const appearanceOverride = body.appearanceOverride
                         const material: THREE.Material =
-                            appearanceOverride &&
-                            this._materials.has(appearanceOverride)
+                            appearanceOverride && this._materials.has(appearanceOverride)
                                 ? this._materials.get(appearanceOverride)!
-                                : fillerMaterials[
-                                      nextFillerMaterial++ %
-                                          fillerMaterials.length
-                                  ]
+                                : fillerMaterials[nextFillerMaterial++ % fillerMaterials.length]
 
                         // if (NORMAL_MATERIALS) {
                         //     material = new THREE.MeshNormalMaterial();
@@ -201,9 +180,7 @@ class MirabufInstance {
 
                         meshes.push(threeMesh)
 
-                        const mat = this._mirabufParser.globalTransforms.get(
-                            instance.info!.GUID!
-                        )!
+                        const mat = this._mirabufParser.globalTransforms.get(instance.info!.GUID!)!
                         threeMesh.position.setFromMatrixPosition(mat)
                         threeMesh.rotation.setFromRotationMatrix(mat)
                     }
@@ -213,9 +190,7 @@ class MirabufInstance {
             this._meshes.set(instance.info!.GUID!, meshes)
         }
 
-        console.debug(
-            `Created '${totalMeshCount}' meshes for mira file '${this._mirabufParser.assembly.info!.name!}'`
-        )
+        console.debug(`Created '${totalMeshCount}' meshes for mira file '${this._mirabufParser.assembly.info!.name!}'`)
     }
 
     /**

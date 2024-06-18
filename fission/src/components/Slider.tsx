@@ -21,17 +21,7 @@ type SliderProps = {
     format?: Intl.NumberFormatOptions & CustomFormatOptions
 }
 
-const Slider: React.FC<SliderProps> = ({
-    label,
-    min,
-    max,
-    defaultValue,
-    onChange,
-    step,
-    marks,
-    locale,
-    format,
-}) => {
+const Slider: React.FC<SliderProps> = ({ label, min, max, defaultValue, onChange, step, marks, locale, format }) => {
     const [value, setValue] = useState<number>(defaultValue)
     locale ||= "en-us"
     format ||= {
@@ -47,17 +37,11 @@ const Slider: React.FC<SliderProps> = ({
             <div className="flex flex-row justify-between w-full">
                 <Label size={LabelSize.Small}>{label}</Label>
                 <Label size={LabelSize.Small}>
-                    {format.prefix +
-                        value.toLocaleString(locale, format) +
-                        format.suffix}
+                    {format.prefix + value.toLocaleString(locale, format) + format.suffix}
                 </Label>
             </div>
             <BaseSlider
-                onChange={(
-                    event: Event,
-                    value: number | number[],
-                    activeThumb: number
-                ) => {
+                onChange={(event: Event, value: number | number[], activeThumb: number) => {
                     if (typeof value === "number") {
                         setValue(value)
                         onChange && onChange(value)

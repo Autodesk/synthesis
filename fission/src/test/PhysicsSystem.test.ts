@@ -6,8 +6,8 @@ import MirabufParser from "@/mirabuf/MirabufParser"
 describe("Physics Sansity Checks", () => {
     test("Convex Hull Shape (Cube)", () => {
         const points: Float32Array = new Float32Array([
-            0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5,
-            0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5,
+            0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5,
+            0.5, -0.5, 0.5, 0.5, -0.5,
         ])
 
         const system = new PhysicsSystem()
@@ -25,9 +25,7 @@ describe("Physics Sansity Checks", () => {
         system.Destroy()
     })
     test("Convex Hull Shape (Tetrahedron)", () => {
-        const points: Float32Array = new Float32Array([
-            0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-        ])
+        const points: Float32Array = new Float32Array([0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0])
 
         const system = new PhysicsSystem()
         const shapeResult = system.CreateConvexHull(points)
@@ -52,29 +50,19 @@ describe("Physics Sansity Checks", () => {
 
 describe("Mirabuf Physics Loading", () => {
     test("Body Loading (Dozer)", () => {
-        const assembly = LoadMirabufLocal(
-            "./public/Downloadables/Mira/Robots/Dozer_v9.mira"
-        )
+        const assembly = LoadMirabufLocal("./public/Downloadables/Mira/Robots/Dozer_v9.mira")
         const parser = new MirabufParser(assembly)
         const physSystem = new PhysicsSystem()
-        const mapping = physSystem.CreateBodiesFromParser(
-            parser,
-            new LayerReserve()
-        )
+        const mapping = physSystem.CreateBodiesFromParser(parser, new LayerReserve())
 
         expect(mapping.size).toBe(7)
     })
 
     test("Body Loading (Team_2471_(2018)_v7.mira)", () => {
-        const assembly = LoadMirabufLocal(
-            "./public/Downloadables/Mira/Robots/Team 2471 (2018)_v7.mira"
-        )
+        const assembly = LoadMirabufLocal("./public/Downloadables/Mira/Robots/Team 2471 (2018)_v7.mira")
         const parser = new MirabufParser(assembly)
         const physSystem = new PhysicsSystem()
-        const mapping = physSystem.CreateBodiesFromParser(
-            parser,
-            new LayerReserve()
-        )
+        const mapping = physSystem.CreateBodiesFromParser(parser, new LayerReserve())
 
         expect(mapping.size).toBe(10)
     })

@@ -12,13 +12,7 @@ type SelectButtonProps = {
     className?: string
 }
 
-const SelectButton: React.FC<SelectButtonProps> = ({
-    colorClass,
-    size,
-    placeholder,
-    onSelect,
-    className,
-}) => {
+const SelectButton: React.FC<SelectButtonProps> = ({ colorClass, size, placeholder, onSelect, className }) => {
     const [value, setValue] = useState<string>()
     const [selecting, setSelecting] = useState<boolean>(false)
     const timeoutRef = useRef<NodeJS.Timeout>()
@@ -53,9 +47,7 @@ const SelectButton: React.FC<SelectButtonProps> = ({
 
     return (
         <Stack direction={StackDirection.Horizontal}>
-            <Label size={LabelSize.Medium}>
-                {value || placeholder || "Click to select"}
-            </Label>
+            <Label size={LabelSize.Medium}>{value || placeholder || "Click to select"}</Label>
             <Button
                 value={selecting ? "..." : "Select"}
                 colorClass={selecting ? "bg-background-secondary" : colorClass}

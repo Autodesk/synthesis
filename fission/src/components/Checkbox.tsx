@@ -11,25 +11,14 @@ type CheckboxProps = {
     onClick?: (checked: boolean) => void
 }
 
-const Checkbox: React.FC<CheckboxProps> = ({
-    label,
-    className,
-    defaultState,
-    stateOverride,
-    onClick,
-}) => {
+const Checkbox: React.FC<CheckboxProps> = ({ label, className, defaultState, stateOverride, onClick }) => {
     return (
         <Stack direction={StackDirection.Horizontal}>
-            <Label
-                size={LabelSize.Medium}
-                className={`mr-8 ${className} whitespace-nowrap`}
-            >
+            <Label size={LabelSize.Medium} className={`mr-8 ${className} whitespace-nowrap`}>
                 {label}
             </Label>
             <Switch
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    onClick && onClick(e.target.checked)
-                }
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => onClick && onClick(e.target.checked)}
                 slotProps={{
                     root: {
                         className: `group relative inline-block w-[24px] h-[24px] m-2.5 cursor-pointer`,

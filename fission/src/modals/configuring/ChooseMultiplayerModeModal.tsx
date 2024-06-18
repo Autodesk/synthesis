@@ -5,13 +5,7 @@ import Button from "../../components/Button"
 
 const ChooseMultiplayerModeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
-        <Modal
-            name="Choose Mode"
-            icon={<FaGear />}
-            modalId={modalId}
-            cancelEnabled={false}
-            acceptEnabled={false}
-        >
+        <Modal name="Choose Mode" icon={<FaGear />} modalId={modalId} cancelEnabled={false} acceptEnabled={false}>
             <Button value="Server Test Mode" />
             <Button value="Coming Soon" className="cursor-disabled" />
         </Modal>
