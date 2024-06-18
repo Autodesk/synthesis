@@ -170,6 +170,19 @@ class APS {
             const c = CHARACTERS.charAt(Math.abs(Random() * 10000) % CHARACTERS.length)
             s.push(c)
         }
+
+        const targetLocation = 'somewhere'
+
+        const fetchLocations = JSON.parse(window.localStorage.getItem('fetchLocations') ?? "{}")
+        let existingLocation = fetchLocations[targetLocation]
+        if (!existingLocation) {
+            // Load mirabuf file, get uuid
+            existingLocation = 0
+            fetchLocations[targetLocation] = existingLocation
+            window.localStorage.setItem('fetchLocation', JSON.stringify(existingLocation))
+        }
+
+        // No matter what, existing location will have the uuid of the loaded mirabuf file
         
         return s.join('')
     }

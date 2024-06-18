@@ -147,6 +147,11 @@ const MainHUD: React.FC = () => {
                         icon={<IoPeople />}
                         onClick={() => openModal("import-mirabuf")}
                     />
+                    <MainHUDButton
+                        value={"Poker"}
+                        icon={<IoPeople />}
+                        onClick={() => openPanel("poker")}
+                    />
                 </div>
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton

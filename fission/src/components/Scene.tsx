@@ -41,6 +41,7 @@ function Scene({ useStats }: SceneProps) {
             }
 
             controls = new OrbitControls(sr.mainCamera, sr.renderer.domElement);
+            controls.enablePan = false
             controls.update();
 
             // Bit hacky but works

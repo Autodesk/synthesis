@@ -53,6 +53,7 @@ import ManageAssembliesModal from './modals/spawning/ManageAssembliesModal.tsx';
 import World from './systems/World.ts';
 import { AddRobotsModal, AddFieldsModal, SpawningModal } from './modals/spawning/SpawningModals.tsx';
 import ImportMirabufModal from './modals/mirabuf/ImportMirabufModal.tsx';
+import PokerPanel from './panels/PokerPanel.tsx';
 
 const DEFAULT_MIRA_PATH = '/api/mira/Robots/Team 2471 (2018)_v7.mira';
 
@@ -153,6 +154,10 @@ function Synthesis() {
 	useEffect(() => {
 
         World.InitWorld();
+
+        World.SceneRenderer.renderer.domElement.addEventListener('auxclick', (e: MouseEvent) => {
+            console.debug(e)
+        })
 
         let mira_path = DEFAULT_MIRA_PATH;
 
@@ -284,6 +289,7 @@ const initialPanels: ReactElement[] = [
     <ConfigureShotTrajectoryPanel panelId="config-shot-trajectory" />,
     <ScoringZonesPanel panelId="scoring-zones" />,
     <ZoneConfigPanel panelId="zone-config" />,
+    <PokerPanel panelId="poker" />,
 ]
 
 export default Synthesis;

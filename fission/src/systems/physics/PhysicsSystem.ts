@@ -585,6 +585,29 @@ class PhysicsSystem extends WorldSystem {
         }
     }
 
+    public RayCast(from: Jolt.Vec3, dir: Jolt.Vec3): RayCastHit | undefined {
+        const ray = new JOLT.RayCast(from, dir)
+        const raySettings = new JOLT.RayCastSettings()
+        const collector = new JOLT.CastRayClosestHitCollisionCollector()
+        const bp_filter = new JOLT.BroadPhaseLayerFilter()
+        const object_filter = new JOLT.ObjectLayerFilter()
+        const body_filter = new JOLT.BodyFilter(); // We don't want to filter out any bodies
+        const shape_filter = new JOLT.ShapeFilter(); // We don't want to filter out any shapes
+        
+        this._joltPhysSystem.GetNarrowPhaseQuery().CastRay(ray, raySettings, collector, bp_filter, object_filter, body_filter, shape_filter)
+
+        if (collector.HadHit()) {
+            const hitPoint = ray.GetPointOnRay(collector.mHit.mFraction);
+            console.debug(`Hit: ${hitPoint.GetX().toFixed(3)}, ${hitPoint.GetY().toFixed(3)}, ${hitPoint.GetZ().toFixed(3)}`)
+
+            return { data: collector.mHit, point: hitPoint, ray: ray }
+        } else {
+            console.debug('No hit')
+        }
+
+        return undefined
+    }
+
     /**
      * Helper function to update min and max vector bounds.
      * 
@@ -765,6 +788,12 @@ function tryGetPerpendicular(vec: Jolt.Vec3, toCheck: Jolt.Vec3): Jolt.Vec3 | un
         toCheck.GetY() - vec.GetY() * a,
         toCheck.GetZ() - vec.GetZ() * a
     ).Normalized();
+}
+
+export type RayCastHit = {
+    data: Jolt.RayCastResult;
+    point: Jolt.Vec3;
+    ray: Jolt.RayCast;
 }
 
 export default PhysicsSystem;
