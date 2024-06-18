@@ -170,8 +170,7 @@ function Synthesis() {
                         <ToastProvider>
                             <Scene useStats={true} />
                             <MainHUD />
-                            {panelElements.length > 0 &&
-                                panelElements}
+                            {panelElements.length > 0 && panelElements}
                             {modalElement && (
                                 <div className="absolute w-full h-full left-0 top-0">
                                     {modalElement}

@@ -7,7 +7,10 @@ import Button from "../components/Button"
 import { useModalControlContext } from "../ModalContext"
 import Checkbox from "../components/Checkbox"
 
-const RobotSwitchPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation }) => {
+const RobotSwitchPanel: React.FC<PanelPropsImpl> = ({
+    panelId,
+    openLocation,
+}) => {
     const [robots, setRobots] = useState([
         "Dozer_v9_0",
         "Team 2471 (2018) v7_0",
@@ -15,7 +18,12 @@ const RobotSwitchPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation }) =
     const [selected, setSelected] = useState(0)
     const { openModal } = useModalControlContext()
     return (
-        <Panel name={"MultiBot"} icon={<IoPeople />} panelId={panelId} openLocation={openLocation}>
+        <Panel
+            name={"MultiBot"}
+            icon={<IoPeople />}
+            panelId={panelId}
+            openLocation={openLocation}
+        >
             <Label size={LabelSize.Medium}>MultiBot</Label>
             <form>
                 <fieldset>

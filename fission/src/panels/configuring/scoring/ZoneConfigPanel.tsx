@@ -17,7 +17,10 @@ export type ScoringZone = {
     scale: [number, number, number]
 }
 
-const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation }) => {
+const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({
+    panelId,
+    openLocation,
+}) => {
     // somehow get and store which zone is being edited
     // maybe a global ConfigProvider in App.tsx?
     // then set all default values to the state of the zone
@@ -30,7 +33,11 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation }) =>
     const [, setScale] = useState<[number, number, number]>([1, 1, 1])
 
     return (
-        <Panel name="Scoring Zone Config" panelId={panelId} openLocation={openLocation}>
+        <Panel
+            name="Scoring Zone Config"
+            panelId={panelId}
+            openLocation={openLocation}
+        >
             <Input
                 label="Name"
                 placeholder="Enter zone name"
