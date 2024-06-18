@@ -1,4 +1,5 @@
 import React from "react"
+import { Button as BaseButton } from '@mui/base/Button'
 
 export enum ButtonSize {
     Small,
@@ -9,7 +10,7 @@ export enum ButtonSize {
 
 type ButtonProps = {
     value: string
-    colorClass?: string
+    colorOverrideClass?: string
     size?: ButtonSize
     onClick?: () => void
     className?: string
@@ -17,7 +18,7 @@ type ButtonProps = {
 
 const Button: React.FC<ButtonProps> = ({
     value,
-    colorClass,
+    colorOverrideClass,
     size,
     onClick,
     className,
@@ -42,18 +43,15 @@ const Button: React.FC<ButtonProps> = ({
     }
 
     return (
-        <input
-            type="button"
-            value={value}
+        <BaseButton
             onClick={onClick}
-            className={`${
-                colorClass
-                    ? colorClass
-                    : "bg-gradient-to-r from-interactive-element-left via-interactive-element-right to-interactive-element-left bg-[length:200%_100%] active:bg-right"
-            } w-min ${sizeClassNames} rounded-sm font-semibold cursor-pointer duration-200 ${
-                className || ""
-            }`}
-        />
+            className={`${colorOverrideClass
+                ? colorOverrideClass
+                : "bg-gradient-to-r from-interactive-element-left via-interactive-element-right to-interactive-element-left bg-[length:200%_100%] active:bg-right"
+                } w-full h-full ${sizeClassNames} rounded-sm font-semibold cursor-pointer duration-200 border-none focus-visible:outline-0 ${className || ""
+                }`}
+        >{value}
+        </BaseButton>
     )
 }
 

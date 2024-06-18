@@ -1,10 +1,11 @@
 import React, { useState } from "react"
-import Modal, { ModalPropsImpl } from "../../../components/Modal"
-import { useModalControlContext } from "../../../ModalContext"
+import Modal, { ModalPropsImpl } from "@/components/Modal"
+import { useModalControlContext } from "@/ModalContext"
 import { FaPlus } from "react-icons/fa6"
-import Label, { LabelSize } from "../../../components/Label"
-import Input from "../../../components/Input"
-import Dropdown from "../../../components/Dropdown"
+import Label, { LabelSize } from "@/components/Label"
+import Input from "@/components/Input"
+import Dropdown from "@/components/Dropdown"
+import NumberInput from "@/components/NumberInput"
 
 const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
@@ -56,13 +57,12 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 options={[...Array(numPorts).keys()].map(n => n.toString())}
                 onSelect={s => setSelectedChannelB(parseInt(s))}
             />
-            <Input
-                numeric
+            <NumberInput
                 placeholder="Conversion Factor"
-                defaultValue={conversionFactor.toString()}
+                defaultValue={conversionFactor}
                 label="Conversion Factor"
                 onInput={n => {
-                    setConversionFactor(n != "" ? parseFloat(n) : 0)
+                    setConversionFactor(n || 0)
                 }}
             />
         </Modal>
