@@ -1,7 +1,6 @@
 import Jolt from "@barclah/jolt-physics";
 import Driver from "./Driver";
 import JOLT from "@/util/loading/JoltSyncLoader";
-import InputSystem from "@/systems/input/InputSystem";
 
 class WheelDriver extends Driver {
 
@@ -17,22 +16,23 @@ class WheelDriver extends Driver {
         this._targetWheelSpeed = radsPerSec;
     }
 
+    public get constraint(): Jolt.VehicleConstraint { return this._constraint }
+
     public constructor(constraint: Jolt.VehicleConstraint) {
         super();
 
         this._constraint = constraint;
         this._wheel = JOLT.castObject(this._constraint.GetWheel(0), JOLT.WheelWV);
 
-        if (constraint.GetVehicleBody().GetCenterOfMassPosition().GetX() < 0) {
-            this._targetWheelSpeed = 0;
-        } else {
-            this._targetWheelSpeed = 0;
-        }
+        // TODO: I think this was just for testing
+        // if (constraint.GetVehicleBody().GetCenterOfMassPosition().GetX() < 0) {
+        //     this._targetWheelSpeed = 0;
+        // } else {
+        //     this._targetWheelSpeed = 0;
+        // }
     }
 
-    public Update(_: number): void {
-        this._targetWheelSpeed = InputSystem.getInput('arcadeForward') ? 50 : InputSystem.getInput('arcadeBackward') ? -50 : 0;
-        
+    public Update(_: number): void {        
         this._wheel.SetAngularVelocity(this._targetWheelSpeed);
     }
 }

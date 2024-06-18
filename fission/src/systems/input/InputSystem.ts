@@ -16,6 +16,7 @@ declare global {
     }
 }
 
+// When a robot is loaded, default inputs replace any unassigned inputs
 const defaultInputs: { [key: string]: Input } = {
     "intake": { name: "intake", keybind: "e", isGlobal: true },
     "shootGamepiece": { name: "shootGamepiece", keybind: "q", isGlobal: true },
