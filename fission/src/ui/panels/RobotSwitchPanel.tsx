@@ -10,6 +10,7 @@ import Checkbox from "@/components/Checkbox"
 const RobotSwitchPanel: React.FC<PanelPropsImpl> = ({
     panelId,
     openLocation,
+    sidePadding,
 }) => {
     const [robots, setRobots] = useState([
         "Dozer_v9_0",
@@ -23,6 +24,7 @@ const RobotSwitchPanel: React.FC<PanelPropsImpl> = ({
             icon={<IoPeople />}
             panelId={panelId}
             openLocation={openLocation}
+            sidePadding={sidePadding}
         >
             <Label size={LabelSize.Medium}>MultiBot</Label>
             <form>

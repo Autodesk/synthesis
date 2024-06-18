@@ -20,6 +20,7 @@ export type ScoringZone = {
 const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({
     panelId,
     openLocation,
+    sidePadding,
 }) => {
     // somehow get and store which zone is being edited
     // maybe a global ConfigProvider in App.tsx?
@@ -37,6 +38,7 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({
             name="Scoring Zone Config"
             panelId={panelId}
             openLocation={openLocation}
+            sidePadding={sidePadding}
         >
             <Input
                 label="Name"
