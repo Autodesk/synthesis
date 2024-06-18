@@ -1,5 +1,5 @@
 import React from "react"
-import { Button as BaseButton } from '@mui/base/Button'
+import { Button as BaseButton } from "@mui/base/Button"
 
 export enum ButtonSize {
     Small,
@@ -45,12 +45,15 @@ const Button: React.FC<ButtonProps> = ({
     return (
         <BaseButton
             onClick={onClick}
-            className={`${colorOverrideClass
-                ? colorOverrideClass
-                : "bg-gradient-to-r from-interactive-element-left via-interactive-element-right to-interactive-element-left bg-[length:200%_100%] active:bg-right"
-                } w-full h-full ${sizeClassNames} rounded-sm font-semibold cursor-pointer duration-200 border-none focus-visible:outline-0 ${className || ""
-                }`}
-        >{value}
+            className={`${
+                colorOverrideClass
+                    ? colorOverrideClass
+                    : "bg-gradient-to-r from-interactive-element-left via-interactive-element-right to-interactive-element-left bg-[length:200%_100%] active:bg-right"
+            } w-full h-full ${sizeClassNames} rounded-sm font-semibold cursor-pointer duration-200 border-none focus-visible:outline-0 ${
+                className || ""
+            }`}
+        >
+            {value}
         </BaseButton>
     )
 }

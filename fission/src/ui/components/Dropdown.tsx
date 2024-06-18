@@ -1,28 +1,44 @@
 import React, { ReactNode, useState } from "react"
 import Label, { LabelSize } from "./Label"
-import { Select as BaseSelect, SelectProps, selectClasses, SelectRootSlotProps } from '@mui/base/Select'
-import { Option as BaseOption, optionClasses } from '@mui/base/Option'
-import { styled } from '@mui/system'
-import { Button } from '@mui/base/Button'
-import UnfoldMoreRoundedIcon from '@mui/icons-material/UnfoldMoreRounded'
+import {
+    Select as BaseSelect,
+    SelectProps,
+    selectClasses,
+    SelectRootSlotProps,
+} from "@mui/base/Select"
+import { Option as BaseOption, optionClasses } from "@mui/base/Option"
+import { styled } from "@mui/system"
+import { Button } from "@mui/base/Button"
+import UnfoldMoreRoundedIcon from "@mui/icons-material/UnfoldMoreRounded"
 import { SelectValue } from "@mui/base/useSelect"
 
 const Select = React.forwardRef(function Select<
     TValue extends {},
     Multiple extends boolean,
->(props: SelectProps<TValue, Multiple>, ref: React.ForwardedRef<HTMLButtonElement>) {
-    const slots: SelectProps<TValue, Multiple>['slots'] = {
+>(
+    props: SelectProps<TValue, Multiple>,
+    ref: React.ForwardedRef<HTMLButtonElement>
+) {
+    const slots: SelectProps<TValue, Multiple>["slots"] = {
         root: CustomButton,
         listbox: Listbox,
         popup: Popup,
-        ...props.slots
-    };
+        ...props.slots,
+    }
 
     // TODO: list options don't render at the same width as select root button
-    return <BaseSelect {...props} ref={ref} slots={slots} slotProps={{ listbox: {}, popup: { disablePortal: true, } }} />;
+    return (
+        <BaseSelect
+            {...props}
+            ref={ref}
+            slots={slots}
+            slotProps={{ listbox: {}, popup: { disablePortal: true } }}
+        />
+    )
 }) as <TValue extends {}, Multiple extends boolean>(
-    props: SelectProps<TValue, Multiple> & React.RefAttributes<HTMLButtonElement>,
-) => JSX.Element;
+    props: SelectProps<TValue, Multiple> &
+        React.RefAttributes<HTMLButtonElement>
+) => JSX.Element
 
 type DropdownProps = {
     children?: ReactNode
@@ -50,9 +66,23 @@ const Dropdown: React.FC<DropdownProps> = ({
         <>
             {label && <Label size={LabelSize.Medium}>{label}</Label>}
             <div className="relative w-full">
-                <Select defaultValue={optionList[0]} onChange={(_event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null, value: any) => typeof(value) === 'string' && onSelect && onSelect(value)}>
+                <Select
+                    defaultValue={optionList[0]}
+                    onChange={(
+                        _event:
+                            | React.MouseEvent
+                            | React.KeyboardEvent
+                            | React.FocusEvent
+                            | null,
+                        value: any
+                    ) =>
+                        typeof value === "string" && onSelect && onSelect(value)
+                    }
+                >
                     {optionList.map(option => (
-                        <Option value={option} key={option}>{option}</Option>
+                        <Option value={option} key={option}>
+                            {option}
+                        </Option>
                     ))}
                 </Select>
             </div>
@@ -65,28 +95,33 @@ const CustomButton = React.forwardRef(function CustomButton<
     Multiple extends boolean,
 >(
     props: SelectRootSlotProps<TValue, Multiple>,
-    ref: React.ForwardedRef<HTMLButtonElement>,
+    ref: React.ForwardedRef<HTMLButtonElement>
 ) {
-    const { ownerState, ...other } = props;
+    const { ownerState, ...other } = props
     return (
         <StyledButton type="button" {...other} ref={ref}>
             {other.children}
             <UnfoldMoreRoundedIcon />
         </StyledButton>
-    );
-});
+    )
+})
 
 const StyledButton = styled(Button)`
     position: relative;
     text-align: left;
     width: 100%;
-    background-image: linear-gradient(to right, var(--interactive-element-left), var(--interactive-element-right));
+    background-image: linear-gradient(
+        to right,
+        var(--interactive-element-left),
+        var(--interactive-element-right)
+    );
     border-radius: 0.375rem;
     border: none;
     outline: none;
     padding-left: calc(0.8em + 8px);
 
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
         outline: none;
     }
 
@@ -97,15 +132,19 @@ const StyledButton = styled(Button)`
         top: 0;
         right: 10px;
     }
-`;
+`
 
-const Listbox = styled('ul')`
+const Listbox = styled("ul")`
     box-sizing: border-box;
     width: 100%;
-    background-image: linear-gradient(to right, var(--interactive-element-right), var(--interactive-element-left));
+    background-image: linear-gradient(
+        to right,
+        var(--interactive-element-right),
+        var(--interactive-element-left)
+    );
     border-radius: 1rem;
     padding: 8px;
-`;
+`
 
 const Option = styled(BaseOption)`
     list-style: none;
@@ -116,16 +155,17 @@ const Option = styled(BaseOption)`
     &:hover {
         backdrop-filter: brightness(90%);
     }
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
         outline: none;
     }
-`;
+`
 
-const Popup = styled('div')`
+const Popup = styled("div")`
     position: relative;
     z-index: 1;
     width: 100%;
-`;
+`
 
 // <div
 //     onClick={() => setExpanded(!expanded)}

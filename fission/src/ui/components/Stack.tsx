@@ -11,24 +11,24 @@ type StackProps = {
     direction: StackDirection
     spacing?: number
     justify?:
-    | "normal"
-    | "start"
-    | "end"
-    | "center"
-    | "between"
-    | "around"
-    | "evenly"
-    | "stretch"
+        | "normal"
+        | "start"
+        | "end"
+        | "center"
+        | "between"
+        | "around"
+        | "evenly"
+        | "stretch"
     align?:
-    | "normal"
-    | "center"
-    | "start"
-    | "end"
-    | "between"
-    | "around"
-    | "evenly"
-    | "baseline"
-    | "stretch"
+        | "normal"
+        | "center"
+        | "start"
+        | "end"
+        | "between"
+        | "around"
+        | "evenly"
+        | "baseline"
+        | "stretch"
 }
 
 const Stack: React.FC<StackProps> = ({
@@ -50,30 +50,32 @@ const Stack: React.FC<StackProps> = ({
             className={`flex ${directionClassName} justify-${justify} align-${align} gap-[${spacing}px] w-full ${className}`}
             style={{
                 gap: `${spacing}px`,
-                justifyContent: `${justify == "start"
-                    ? "flex-start"
-                    : justify == "end"
-                        ? "flex-end"
-                        : justify == "between"
+                justifyContent: `${
+                    justify == "start"
+                        ? "flex-start"
+                        : justify == "end"
+                          ? "flex-end"
+                          : justify == "between"
                             ? "space-between"
                             : justify == "around"
-                                ? "space-around"
-                                : justify == "evenly"
-                                    ? "space-evenly"
-                                    : justify
-                    }`,
-                alignContent: `${align == "start"
-                    ? "flex-start"
-                    : align == "end"
-                        ? "flex-end"
-                        : align == "between"
+                              ? "space-around"
+                              : justify == "evenly"
+                                ? "space-evenly"
+                                : justify
+                }`,
+                alignContent: `${
+                    align == "start"
+                        ? "flex-start"
+                        : align == "end"
+                          ? "flex-end"
+                          : align == "between"
                             ? "space-between"
                             : align == "around"
-                                ? "space-around"
-                                : align == "evenly"
-                                    ? "space-evenly"
-                                    : align
-                    }`,
+                              ? "space-around"
+                              : align == "evenly"
+                                ? "space-evenly"
+                                : align
+                }`,
             }}
         >
             {" "}

@@ -1,9 +1,13 @@
 import React from "react"
 import Label, { LabelSize } from "./Label"
-import { Unstable_NumberInput as BaseNumberInput, NumberInputOwnerState, NumberInputProps } from '@mui/base/Unstable_NumberInput'
+import {
+    Unstable_NumberInput as BaseNumberInput,
+    NumberInputOwnerState,
+    NumberInputProps,
+} from "@mui/base/Unstable_NumberInput"
 
 const resolveSlotProps = (fn: any, args: any) =>
-    typeof fn === 'function' ? fn(args) : fn;
+    typeof fn === "function" ? fn(args) : fn
 
 type InputProps = {
     placeholder: string
@@ -28,22 +32,25 @@ const NumberInput: React.FC<InputProps> = ({
                 placeholder={placeholder}
                 onChange={(_, val) => onInput && onInput(val)}
                 slotProps={{
-                    root: (ownerState) => {
+                    root: ownerState => {
                         return {
-                            className: `grid grid-cols-[1fr_8px] grid-rows-2 overflow-hidden rounded-lg text-main-text dark:text-main-text bg-background-secondary border border-solid hover:border-interactive-element-solid dark:hover:border-interactive-element-solid focus-visible:outline-0 p-1 ${ownerState.focused ? 'border-interactive-element-solid dark:border-interactive-element-solid' : 'border-interactive-element-right dark:border-interactive-element-right'}`
+                            className: `grid grid-cols-[1fr_8px] grid-rows-2 overflow-hidden rounded-lg text-main-text dark:text-main-text bg-background-secondary border border-solid hover:border-interactive-element-solid dark:hover:border-interactive-element-solid focus-visible:outline-0 p-1 ${ownerState.focused ? "border-interactive-element-solid dark:border-interactive-element-solid" : "border-interactive-element-right dark:border-interactive-element-right"}`,
                         }
                     },
                     input: {
-                        className: 'col-start-1 col-end-2 row-start-1 row-end-3 text-sm font-sans leading-normal text-main-text dark:text-main-text bg-inherit border-0 rounded-[inherit] px-3 py-2 outline-0 focus-visible:outline-0 focus-visible:outline-none'
+                        className:
+                            "col-start-1 col-end-2 row-start-1 row-end-3 text-sm font-sans leading-normal text-main-text dark:text-main-text bg-inherit border-0 rounded-[inherit] px-3 py-2 outline-0 focus-visible:outline-0 focus-visible:outline-none",
                     },
                     incrementButton: {
-                        children: '▴',
-                        className: 'font-[system-ui] flex flex-row flex-nowrap justify-center items-center p-0 w-[19px] h-[19px] col-start-3 col-end-3 row-start-1 row-end-2 border border-solid outline-none text-sm box-border leading-[1.2] rounded-t-md rounded-b-none bg-interactive-secondary border-interactive-element-right dark:border-interactive-element-right bg-background-secondary text-main-text transition-all duration-[120ms] hover:cursor-pointer hover:border-interactive-element-right hover:bg-interactive-hover'
+                        children: "▴",
+                        className:
+                            "font-[system-ui] flex flex-row flex-nowrap justify-center items-center p-0 w-[19px] h-[19px] col-start-3 col-end-3 row-start-1 row-end-2 border border-solid outline-none text-sm box-border leading-[1.2] rounded-t-md rounded-b-none bg-interactive-secondary border-interactive-element-right dark:border-interactive-element-right bg-background-secondary text-main-text transition-all duration-[120ms] hover:cursor-pointer hover:border-interactive-element-right hover:bg-interactive-hover",
                     },
                     decrementButton: {
-                        children: '▾',
-                        className: 'font-[system-ui] flex flex-row flex-nowrap justify-center items-center p-0 w-[19px] h-[19px] col-start-3 col-end-3 row-start-2 row-end-3 border border-solid outline-none text-sm box-border leading-[1.2] rounded-b-md rounded-t-none border-t-0 border-interactive-element-right dark:border-interactive-element-right bg-background-secondary text-main-text transition-all duration-[120ms] hover:cursor-pointer hover:border-interactive-element-right hover:bg-interactive-hover'
-                    }
+                        children: "▾",
+                        className:
+                            "font-[system-ui] flex flex-row flex-nowrap justify-center items-center p-0 w-[19px] h-[19px] col-start-3 col-end-3 row-start-2 row-end-3 border border-solid outline-none text-sm box-border leading-[1.2] rounded-b-md rounded-t-none border-t-0 border-interactive-element-right dark:border-interactive-element-right bg-background-secondary text-main-text transition-all duration-[120ms] hover:cursor-pointer hover:border-interactive-element-right hover:bg-interactive-hover",
+                    },
                 }}
             />
         </>

@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react"
 import { BsCodeSquare } from "react-icons/bs"
-import { FaCar, FaGear, FaHouse, FaMagnifyingGlass, FaPlus } from "react-icons/fa6"
+import {
+    FaCar,
+    FaGear,
+    FaHouse,
+    FaMagnifyingGlass,
+    FaPlus,
+} from "react-icons/fa6"
 import { BiMenuAltLeft } from "react-icons/bi"
 import { GrFormClose } from "react-icons/gr"
 import { GiSteeringWheel } from "react-icons/gi"
@@ -14,7 +20,7 @@ import { ToastType, useToastContext } from "@/ui/ToastContext"
 import { Random } from "@/util/Random"
 import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
 import { UserIcon } from "./UserIcon"
-import { Button } from '@mui/base/Button'
+import { Button } from "@mui/base/Button"
 
 type ButtonProps = {
     value: string
@@ -31,23 +37,33 @@ const MainHUDButton: React.FC<ButtonProps> = ({
 }) => {
     if (larger == null) larger = false
     return (
-        <Button onClick={onClick} className={`relative flex flex-row cursor-pointer bg-background w-full m-auto px-2 py-1 text-main-text border-none rounded-md ${larger ? "justify-center" : "" } items-center hover:brightness-105 focus:outline-0 focus-visible:outline-0`}>
+        <Button
+            onClick={onClick}
+            className={`relative flex flex-row cursor-pointer bg-background w-full m-auto px-2 py-1 text-main-text border-none rounded-md ${larger ? "justify-center" : ""} items-center hover:brightness-105 focus:outline-0 focus-visible:outline-0`}
+        >
             {larger && icon}
             {!larger && (
                 <span
                     onClick={onClick}
                     className="absolute left-3 text-main-hud-icon"
-                    >{icon}</span>
-
+                >
+                    {icon}
+                </span>
             )}
-            <span className={`px-2 ${larger ? "py-2" : "py-1 ml-6"} text-main-text cursor-pointer`}>
-            {value}
+            <span
+                className={`px-2 ${larger ? "py-2" : "py-1 ml-6"} text-main-text cursor-pointer`}
+            >
+                {value}
             </span>
         </Button>
     )
 }
 
-export let MainHUD_AddToast: (type: ToastType, title: string, description: string) => void = (a, b, c) => { }
+export let MainHUD_AddToast: (
+    type: ToastType,
+    title: string,
+    description: string
+) => void = (a, b, c) => {}
 
 const variants = {
     open: { opacity: 1, y: "-50%", x: 0 },
@@ -55,7 +71,6 @@ const variants = {
 }
 
 const MainHUD: React.FC = () => {
-
     // console.debug('Creating MainHUD');
 
     const { openModal } = useModalControlContext()
@@ -65,12 +80,12 @@ const MainHUD: React.FC = () => {
 
     MainHUD_AddToast = addToast
 
-    const [userInfo, setUserInfo] = useState(APS.userInfo);
+    const [userInfo, setUserInfo] = useState(APS.userInfo)
 
     useEffect(() => {
         document.addEventListener(APS_USER_INFO_UPDATE_EVENT, () => {
             setUserInfo(APS.userInfo)
-        });
+        })
     }, [])
 
     return (
@@ -93,9 +108,14 @@ const MainHUD: React.FC = () => {
                 className="fixed flex flex-col gap-2 bg-gradient-to-b from-interactive-element-right to-interactive-element-left w-min p-4 rounded-3xl ml-4 top-1/2 -translate-y-1/2"
             >
                 <div className="flex flex-row gap-2 w-60 h-10">
-                    <img src={logo} className="w-[80%] h-[100%] object-contain" />
-                    <Button onClick={() => setIsOpen(false)}
-                    className={`bg-none border-none focus-visible:outline-0 focus:outline-0 select-none`}>
+                    <img
+                        src={logo}
+                        className="w-[80%] h-[100%] object-contain"
+                    />
+                    <Button
+                        onClick={() => setIsOpen(false)}
+                        className={`bg-none border-none focus-visible:outline-0 focus:outline-0 select-none`}
+                    >
                         <GrFormClose
                             color="bg-icon"
                             size={20}
@@ -179,22 +199,23 @@ const MainHUD: React.FC = () => {
                         }}
                     />
                 </div>
-                {userInfo
-                    ?
+                {userInfo ? (
                     <MainHUDButton
                         value={`Hi, ${userInfo.givenName}`}
-                        icon={<UserIcon className="h-[20pt] m-[5pt] rounded-full" />}
+                        icon={
+                            <UserIcon className="h-[20pt] m-[5pt] rounded-full" />
+                        }
                         larger={true}
                         onClick={() => APS.logout()}
                     />
-                    :
+                ) : (
                     <MainHUDButton
                         value={`APS Login`}
                         icon={<IoPeople />}
                         larger={true}
                         onClick={() => APS.requestAuthCode()}
                     />
-                }
+                )}
             </motion.div>
         </>
     )
