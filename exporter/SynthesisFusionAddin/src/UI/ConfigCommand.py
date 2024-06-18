@@ -187,6 +187,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             global compress
             if designCompress is not None:
                 ui.messageBox("designCompress is not None")
+                ui.messageBox(f"Compress: {designCompress}")
                 compress = True if designCompress == "True" else False
             else:
                 ui.messageBox("designCompress is None")
