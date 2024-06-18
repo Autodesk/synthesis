@@ -1,34 +1,25 @@
-// import HingeDriver from "../driver/HingeDriver";
-// import WheelDriver from "../driver/WheelDriver";
-// import HingeStimulus from "../stimulus/HingeStimulus";
-// import WheelRotationStimulus from "../stimulus/WheelStimulus";
-// import Behavior from "./Behavior";
-// import InputSystem from "@/systems/input/InputSystem";
+import HingeDriver from "../driver/HingeDriver";
+import HingeStimulus from "../stimulus/HingeStimulus";
+import Behavior from "./Behavior";
+import InputSystem from "@/systems/input/InputSystem";
 
-// class ArcadeDriveBehavior extends Behavior {
-//     private _hingeDriver: HingeDriver;
+class GenericArmBehavior extends Behavior {
+    private _hingeDriver: HingeDriver;
 
-//     private driveSpeed = 30;
-//     private turnSpeed = 30;
+    private _rotationalSpeed = 30;
 
-//     constructor(hingeDriver: HingeDriver, hingeStimulus: HingeStimulus) {
-//         super(leftWheels.concat(rightWheels), leftStimuli.concat(rightStimuli));
-//         this.leftWheels = leftWheels;
-//         this.rightWheels = rightWheels;
-//     }
+    constructor(hingeDriver: HingeDriver, hingeStimulus: HingeStimulus) {
+        super([hingeDriver], [hingeStimulus]);
+        this._hingeDriver = hingeDriver;
+    }
 
-//     driveSpeeds(linearVelocity: number, rotationVelocity: number) {
-//         let leftSpeed = linearVelocity + rotationVelocity;
-//         let rightSpeed = linearVelocity - rotationVelocity;
-    
-//         this.leftWheels.forEach((wheel) => wheel.targetWheelSpeed = leftSpeed);
-//         this.rightWheels.forEach((wheel) => wheel.targetWheelSpeed = rightSpeed);
-//     }
+    rotateArm(rotationalVelocity: number) {
+       this._hingeDriver.targetVelocity = rotationalVelocity; 
+    }
 
-//     public Update(_: number): void {
-//         this.driveSpeeds(InputSystem.getAxis("arcadeForward", "arcadeBackward")*this.driveSpeed, 
-//         InputSystem.getAxis("arcadeRight", "arcadeLeft")*this.turnSpeed);
-//     }
-// }
+    public Update(_: number): void {
+        this.rotateArm(InputSystem.getAxis("armPositive", "armNegative")*this._rotationalSpeed);
+    }
+}
 
-// export default ArcadeDriveBehavior;
+export default GenericArmBehavior;

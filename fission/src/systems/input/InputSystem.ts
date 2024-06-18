@@ -2,30 +2,34 @@ import WorldSystem from "../WorldSystem";
 
 declare global {
     type ModifierState = {
-        alt?: boolean
-        ctrl?: boolean
-        shift?: boolean
-        meta?: boolean
+        alt: boolean
+        ctrl: boolean
+        shift: boolean
+        meta: boolean
     }
 
     type Input = {
         name: string
         keybind: string
         isGlobal: boolean
-        modifiers?: ModifierState
+        modifiers: ModifierState
     }
 }
 
 // When a robot is loaded, default inputs replace any unassigned inputs
 const defaultInputs: { [key: string]: Input } = {
-    "intake": { name: "intake", keybind: "e", isGlobal: true },
-    "shootGamepiece": { name: "shootGamepiece", keybind: "q", isGlobal: true },
-    "enableGodMode": { name: "enableGodMode", keybind: "g", isGlobal: true },
+    "intake": { name: "intake", keybind: "e", isGlobal: true, modifiers: { ctrl: false, alt: false, shift: false, meta: false } },
+    "shootGamepiece": { name: "shootGamepiece", keybind: "q", isGlobal: true, modifiers: { ctrl: false, alt: false, shift: false, meta: false } },
+    "enableGodMode": { name: "enableGodMode", keybind: "g", isGlobal: true, modifiers: { ctrl: false, alt: false, shift: false, meta: false } },
 
-    "arcadeForward": { name: "arcadeForward", keybind: "w", isGlobal: false },
-    "arcadeBackward": { name: "arcadeBackward", keybind: "s", isGlobal: false },
-    "arcadeLeft": { name: "arcadeLeft", keybind: "a", isGlobal: false },
-    "arcadeRight": { name: "arcadeRight", keybind: "d", isGlobal: false },
+    "arcadeForward": { name: "arcadeForward", keybind: "w", isGlobal: false, modifiers: { ctrl: false, alt: false, shift: false, meta: false } },
+    "arcadeBackward": { name: "arcadeBackward", keybind: "s", isGlobal: false, modifiers: { ctrl: false, alt: false, shift: false, meta: false } },
+    "arcadeLeft": { name: "arcadeLeft", keybind: "a", isGlobal: false, modifiers: { ctrl: false, alt: false, shift: false, meta: false } },
+    "arcadeRight": { name: "arcadeRight", keybind: "d", isGlobal: false, modifiers: { ctrl: false, alt: false, shift: false, meta: false } },
+    "armPositive": { name: "armPositive", keybind: "1", isGlobal: false, modifiers: { ctrl: false, alt: false, shift: false, meta: false } },
+    "armNegative": { name: "armNegative", keybind: "2", isGlobal: false, modifiers: { ctrl: false, alt: false, shift: false, meta: false } },
+    "elevatorNegative": { name: "elevatorNegative", keybind: "4", isGlobal: false, modifiers: { ctrl: false, alt: false, shift: false, meta: false } },
+    "elevatorPositive": { name: "elevatorPositive", keybind: "3", isGlobal: false, modifiers: { ctrl: false, alt: false, shift: false, meta: false } },
 }
 
 class InputSystem extends WorldSystem {
@@ -44,7 +48,7 @@ class InputSystem extends WorldSystem {
     }
 
     // A list of keys currently being pressed
-    private static keysPressed: { [key: string]: boolean } = {};
+    private static _keysPressed: { [key: string]: boolean } = {};
 
     constructor() {
         super();
@@ -67,8 +71,10 @@ class InputSystem extends WorldSystem {
     }
 
     // #region WorldSystem Functions
-
-    public Update(_: number): void { }
+    static _currentModifierState: ModifierState;
+    public Update(_: number): void {InputSystem
+        InputSystem._currentModifierState = { ctrl: InputSystem.isKeyPressed("Control"), alt: InputSystem.isKeyPressed("Alt"), shift: InputSystem.isKeyPressed("Shift"), meta: InputSystem.isKeyPressed("Meta") }
+     }
 
     public Destroy(): void {    
         document.removeEventListener('keydown', this.handleKeyDown);
@@ -79,25 +85,31 @@ class InputSystem extends WorldSystem {
     // #region Input Events
 
     handleKeyDown(event: KeyboardEvent) {
-        InputSystem.keysPressed[event.key] = true;
+        InputSystem._keysPressed[event.key] = true;
     }
 
     handleKeyUp(event: KeyboardEvent) {
-        InputSystem.keysPressed[event.key] = false;
+        InputSystem._keysPressed[event.key] = false;
     }
 
     // #endregion
     // #region Get Inputs
 
     private static isKeyPressed(key: string): boolean {
-        return !!InputSystem.keysPressed[key];
+        return !!InputSystem._keysPressed[key];
     }
 
     public static getInput(inputName: string) : boolean {
         // Checks if there is a global control for this action
         if (inputName in this.allInputs) {
-            // TODO: support for control modifiers
-            return this.isKeyPressed(this.allInputs[inputName].keybind);
+            let targetInput = this.allInputs[inputName];
+
+            // Check for input modifiers
+
+            if (!this.compareModifiers(InputSystem._currentModifierState, targetInput.modifiers)) 
+                return false;
+
+            return this.isKeyPressed(targetInput.keybind);
         }
 
         // If the input does not exist, returns false
@@ -108,7 +120,17 @@ class InputSystem extends WorldSystem {
         return (this.getInput(positive) ? 1 : 0) - (this.getInput(negative) ? 1 : 0);
     }
 
+    public static toTitleCase(camelCase: string) : string {
+        const result = camelCase.replace(/([A-Z])/g, " $1");
+        const finalResult = result.charAt(0).toUpperCase() + result.slice(1);
+        return finalResult;
+    }
+
     // #endregion
+
+    private static compareModifiers(state1: ModifierState, state2: ModifierState) : boolean {
+        return state1.alt == state2.alt && state1.ctrl == state2.ctrl && state1.meta == state2.meta && state1.shift == state2.shift;
+    }
 }
 
 export default InputSystem;

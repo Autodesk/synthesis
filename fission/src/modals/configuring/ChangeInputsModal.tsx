@@ -8,24 +8,24 @@ import InputSystem from "@/systems/input/InputSystem"
 
 // capitalize first letter
 const transformKeyName = (control: Input) => {
-    let suffix = ""
+    let prefix = ""
     if (control.modifiers) {
-        if (control.modifiers.meta) suffix += " + Meta"
-        if (control.modifiers.shift) suffix += " + Shift"
-        if (control.modifiers.ctrl) suffix += " + Ctrl"
-        if (control.modifiers.alt) suffix += " + Alt"
+        if (control.modifiers.meta) prefix += "Meta + "
+        if (control.modifiers.shift) prefix += "Shift + "
+        if (control.modifiers.ctrl) prefix += "Ctrl + "
+        if (control.modifiers.alt) prefix += "Alt + "
     }
-    return control.keybind[0].toUpperCase() + control.keybind.substring(1) + suffix
+    return prefix + control.keybind[0].toUpperCase() + control.keybind.substring(1)
 }
 
 const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [loadedRobot, setLoadedRobot] = useState<string>("")
     const [selectedInput, setSelectedInput] = useState<string>("")
     const [chosenKey, setChosenKey] = useState<string>("")
-    const [modifierState, setModifierState] = useState<ModifierState>({})
+    const [modifierState, setModifierState] = useState<ModifierState>({ctrl: false, alt: false, shift: false, meta: false})
 
     useEffect(() => {
-        setTimeout(() => setLoadedRobot("Dozer v9"), 2_000)
+        setTimeout(() => setLoadedRobot("Dozer v9"), 1)
     })
 
     if (selectedInput && chosenKey) {
@@ -34,7 +34,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         selected.modifiers = modifierState
         setChosenKey("")
         setSelectedInput("")
-        setModifierState({})
+        setModifierState({ctrl: false, alt: false, shift: false, meta: false})
     }
 
     return (
@@ -58,7 +58,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                             {Object.values(InputSystem.robotInputs).map(c => (
                                 <LabeledButton
                                     key={c.name}
-                                    label={c.name}
+                                    label={InputSystem.toTitleCase(c.name)}
                                     placement={LabelPlacement.Left}
                                     value={
                                         c.name == selectedInput
@@ -91,7 +91,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     {Object.values(InputSystem.globalInputs).map(c => (
                         <LabeledButton
                             key={c.name}
-                            label={c.name}
+                            label={InputSystem.toTitleCase(c.name)}
                             placement={LabelPlacement.Left}
                             value={
                                 c.name == selectedInput

@@ -7,8 +7,8 @@ class ArcadeDriveBehavior extends Behavior {
     leftWheels: WheelDriver[];
     rightWheels: WheelDriver[];
 
-    private driveSpeed = 30;
-    private turnSpeed = 30;
+    private _driveSpeed = 30;
+    private _turnSpeed = 30;
 
     constructor(leftWheels: WheelDriver[], rightWheels: WheelDriver[], leftStimuli: WheelRotationStimulus[], rightStimuli: WheelRotationStimulus[]) {
         super(leftWheels.concat(rightWheels), leftStimuli.concat(rightStimuli));
@@ -25,8 +25,8 @@ class ArcadeDriveBehavior extends Behavior {
     }
 
     public Update(_: number): void {
-        this.driveSpeeds(InputSystem.getAxis("arcadeForward", "arcadeBackward")*this.driveSpeed, 
-        InputSystem.getAxis("arcadeRight", "arcadeLeft")*this.turnSpeed);
+        this.driveSpeeds(InputSystem.getAxis("arcadeForward", "arcadeBackward")*this._driveSpeed, 
+        InputSystem.getAxis("arcadeRight", "arcadeLeft")*this._turnSpeed);
     }
 }
 
