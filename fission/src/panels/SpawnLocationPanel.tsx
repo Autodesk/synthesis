@@ -2,7 +2,7 @@ import { useTooltipControlContext } from "@/TooltipContext"
 import Button from "../components/Button"
 import Panel, { PanelPropsImpl } from "../components/Panel"
 
-const SpawnLocationsPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
+const SpawnLocationsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation }) => {
     const robotsPerAlliance = 3
     const alliances = 2
 
@@ -13,7 +13,7 @@ const SpawnLocationsPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     ])
 
     return (
-        <Panel name="Set Spawn Locations" panelId={panelId}>
+        <Panel name="Set Spawn Locations" panelId={panelId} openLocation={openLocation}>
             <table>
                 <tbody>
                     {Array(alliances)
@@ -29,7 +29,7 @@ const SpawnLocationsPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                                     j + 1
                                                 }`}
                                                 className="w-32 h-16"
-                                                colorClass={`bg-match-${
+                                                colorOverrideClass={`bg-match-${
                                                     ["red", "blue"][i]
                                                 }-alliance`}
                                             />

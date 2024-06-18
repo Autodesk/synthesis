@@ -3,7 +3,7 @@ import Label, { LabelSize } from "../../components/Label"
 import Panel, { PanelPropsImpl } from "../../components/Panel"
 import Stack, { StackDirection } from "../../components/Stack"
 
-const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
+const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation }) => {
     const [redScore] = useState<number>(0)
     const [blueScore] = useState<number>(0)
     const [initialTime, setInitialTime] = useState<number>(-1)
@@ -39,6 +39,7 @@ const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     return (
         <Panel
             panelId={panelId}
+            openLocation={openLocation}
             cancelEnabled={false}
             acceptEnabled={false}
             contentClassName="mx-0 w-min"

@@ -56,7 +56,7 @@ const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({
     )
 }
 
-const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
+const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation }) => {
     const { openPanel } = usePanelControlContext()
     const [zones, setZones] = useState<ScoringZone[]>([
         {
@@ -227,6 +227,7 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         <Panel
             name="Scoring Zones"
             panelId={panelId}
+            openLocation={openLocation}
             cancelEnabled={false}
             acceptName="Close"
         >

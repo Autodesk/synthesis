@@ -6,6 +6,7 @@ import Slider from "../../components/Slider"
 
 const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({
     panelId,
+    openLocation,
 }) => {
     const defaultZoneSize = 0.5
     const [, setNode] = useState<string>("Click to select")
@@ -16,6 +17,7 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({
             name="Configure Pickup"
             icon={<FaGear />}
             panelId={panelId}
+            openLocation={openLocation}
             onAccept={() => {
                 // send zone config
             }}
