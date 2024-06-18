@@ -1303,16 +1303,16 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             # self.designAttrs.add("SynthesisExporter", "compress", str(compress))
 
             options = ParseOptions(
-                savepath,
-                name,
-                version,
-                0,
-                _exportJoints,
-                _exportWheels,
-                _exportGamepieces,
-                _robotWeight,
-                _mode,
-                compress,
+                    savepath,
+                    name,
+                    version,
+                    materials=0,
+                    joints=_exportJoints,
+                    wheels=_exportWheels,
+                    gamepieces=_exportGamepieces,
+                    weight=_robotWeight,
+                    mode=_mode,
+                    compress=compress,
             )
 
             # parserOptions.fileLocation = savepath
