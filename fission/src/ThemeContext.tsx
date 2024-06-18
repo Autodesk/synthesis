@@ -34,11 +34,13 @@ export type ColorName =
     | "ToastError"
 
 export const colorNameToTailwind = (colorName: ColorName) => {
-    return "bg" +
+    return (
+        "bg" +
         colorName
             .replace(/([A-Z]+)/g, "-$1")
             .replace(/(?<=[A-Z])([A-Z])(?![A-Z]|$)/g, "-$1")
             .toLowerCase()
+    )
 }
 export const colorNameToProp = (colorName: ColorName) => {
     return (
@@ -49,7 +51,9 @@ export const colorNameToProp = (colorName: ColorName) => {
             .toLowerCase()
     )
 }
-export type Theme = { [name in ColorName]: { color: RgbaColor, above: (ColorName | string)[] } }
+export type Theme = {
+    [name in ColorName]: { color: RgbaColor; above: (ColorName | string)[] }
+}
 export type Themes = { [name: string]: Theme }
 
 type ThemeContextType = {
@@ -84,49 +88,51 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     defaultTheme,
     children,
 }) => {
-    const [currentTheme, setCurrentTheme] = useState<string>(initialThemeName);
+    const [currentTheme, setCurrentTheme] = useState<string>(initialThemeName)
 
-    addGlobalFunc<Theme>('getTheme', () => themes[currentTheme])
+    addGlobalFunc<Theme>("getTheme", () => themes[currentTheme])
 
     // potentially dumb algorithm
     const findUnusedColor = () => {
-        if (process.env.NODE_ENV !== "production") return;
-        const MAX_VALUE = 255;
-        const sortFunc = (a: number, b: number) => a - b;
-        const themeValue: RgbaColor[] = Object.values(themes[currentTheme]).map(v => v.color);
-        const reds = themeValue.map((c) => c.r).sort(sortFunc);
-        const greens = themeValue.map((c) => c.g).sort(sortFunc);
-        const blues = themeValue.map((c) => c.b).sort(sortFunc);
+        if (process.env.NODE_ENV !== "production") return
+        const MAX_VALUE = 255
+        const sortFunc = (a: number, b: number) => a - b
+        const themeValue: RgbaColor[] = Object.values(themes[currentTheme]).map(
+            v => v.color
+        )
+        const reds = themeValue.map(c => c.r).sort(sortFunc)
+        const greens = themeValue.map(c => c.g).sort(sortFunc)
+        const blues = themeValue.map(c => c.b).sort(sortFunc)
 
-        const values = [];
+        const values = []
 
         for (const colorArr of [reds, greens, blues]) {
-            const color = Array.from(new Set(colorArr));
-            let lower = -1;
-            let largestGap = -1;
+            const color = Array.from(new Set(colorArr))
+            let lower = -1
+            let largestGap = -1
 
             for (let i = 0; i < color.length - 1; i++) {
-                const col1 = color[i];
-                const col2 = color[i + 1];
+                const col1 = color[i]
+                const col2 = color[i + 1]
 
                 if (col2 - col1 > largestGap) {
-                    largestGap = col2 - col1;
-                    lower = col1;
+                    largestGap = col2 - col1
+                    lower = col1
                 }
             }
 
-            const col1 = color[color.length - 1];
-            const col2 = color[0] + MAX_VALUE;
+            const col1 = color[color.length - 1]
+            const col2 = color[0] + MAX_VALUE
 
             if (col1 - col2 > largestGap) {
-                largestGap = col2 - col1;
-                lower = col1;
+                largestGap = col2 - col1
+                lower = col1
             }
 
-            values.push((lower + largestGap / 2) % MAX_VALUE);
+            values.push((lower + largestGap / 2) % MAX_VALUE)
         }
 
-        document.body.style.background = `rgba(${values[0]}, ${values[1]}, ${values[2]}, ${MAX_VALUE})`;
+        document.body.style.background = `rgba(${values[0]}, ${values[1]}, ${values[2]}, ${MAX_VALUE})`
     }
 
     const updateColor = (
@@ -171,7 +177,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
                 `rgba(${c.color.r}, ${c.color.g}, ${c.color.b}, ${c.color.a})`
             )
         })
-        findUnusedColor();
+        findUnusedColor()
     }
 
     return (

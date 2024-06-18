@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react"
 import Button, { ButtonSize } from "./Button"
 import Label, { LabelSize } from "./Label"
 import Stack, { StackDirection } from "./Stack"
-import { Random } from '@/util/Random';
+import { Random } from "@/util/Random"
 
 type SelectButtonProps = {
     colorClass?: string
@@ -40,9 +40,7 @@ const SelectButton: React.FC<SelectButtonProps> = ({
             timeoutRef.current = setTimeout(
                 () => {
                     if (selecting) {
-                        const v = `node_${Math.floor(
-                            Random() * 10
-                        ).toFixed(0)}`
+                        const v = `node_${Math.floor(Random() * 10).toFixed(0)}`
                         onReceiveSelection(v)
                     }
                 },

@@ -1,6 +1,6 @@
 import React from "react"
 import Label, { LabelSize } from "./Label"
-import { Input as BaseInput } from '@mui/base/Input'
+import { Input as BaseInput } from "@mui/base/Input"
 
 type InputProps = {
     placeholder: string
@@ -23,13 +23,15 @@ const Input: React.FC<InputProps> = ({
             <BaseInput
                 defaultValue={defaultValue}
                 placeholder={placeholder}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => onInput && onInput(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    onInput && onInput(e.target.value)
+                }
                 className={className}
                 slotProps={{
                     input: {
-                        className: `w-full text-sm font-normal font-sans leading-5 px-3 py-2 rounded-lg shadow-md text-main-text bg-background-secondary focus-visible:outline-0 border border-solid border-interactive-element-right dark:border-interactive-element-right hover:border-interactive-element-solid dark:hover:border-interactive-element-solid focus:border-interactive-solid dark:focus:border-interactive-element-solid`
+                        className: `w-full text-sm font-normal font-sans leading-5 px-3 py-2 rounded-lg shadow-md text-main-text bg-background-secondary focus-visible:outline-0 border border-solid border-interactive-element-right dark:border-interactive-element-right hover:border-interactive-element-solid dark:hover:border-interactive-element-solid focus:border-interactive-solid dark:focus:border-interactive-element-solid`,
                         // className: `w-full text-sm font-normal font-sans leading-5 px-3 py-2 rounded-lg shadow-md focus:shadow-outline-interactive-element-left dark:focus:shadow-outline-interactive-element-left dark:outline-interactive-element-right focus:shadow-lg border border-solid border-interactive-element-right hover:border-interactive-element-left dark:hover:border-interactive-element-left focus:border-interactive-element-left dark:focus:border-interactive-element-left dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-300 focus-visible:outline-0`
-                    }
+                    },
                 }}
             />
         </>

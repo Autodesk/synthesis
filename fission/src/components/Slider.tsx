@@ -1,8 +1,8 @@
 import React, { SyntheticEvent, useRef, useState } from "react"
-import { Slider as BaseSlider } from '@mui/base/Slider'
+import { Slider as BaseSlider } from "@mui/base/Slider"
 import { Mark } from "@mui/base/useSlider"
 import Label, { LabelSize } from "./Label"
-import { styled } from '@mui/system'
+import { styled } from "@mui/system"
 
 type CustomFormatOptions = {
     prefix?: string
@@ -32,27 +32,35 @@ const Slider: React.FC<SliderProps> = ({
     locale,
     format,
 }) => {
-    const [value, setValue] = useState<number>(defaultValue);
-    locale ||= "en-us";
+    const [value, setValue] = useState<number>(defaultValue)
+    locale ||= "en-us"
     format ||= {
         maximumFractionDigits: 0,
         prefix: "",
         suffix: "",
     }
-    format.prefix ||= "";
-    format.suffix ||= "";
+    format.prefix ||= ""
+    format.suffix ||= ""
 
     return (
         <>
             <div className="flex flex-row justify-between w-full">
                 <Label size={LabelSize.Small}>{label}</Label>
-                <Label size={LabelSize.Small}>{format.prefix + value.toLocaleString(locale, format) + format.suffix}</Label>
+                <Label size={LabelSize.Small}>
+                    {format.prefix +
+                        value.toLocaleString(locale, format) +
+                        format.suffix}
+                </Label>
             </div>
             <BaseSlider
-                onChange={(event: Event, value: number | number[], activeThumb: number) => {
-                    if (typeof (value) === "number") {
-                        setValue(value);
-                        onChange && onChange(value);
+                onChange={(
+                    event: Event,
+                    value: number | number[],
+                    activeThumb: number
+                ) => {
+                    if (typeof value === "number") {
+                        setValue(value)
+                        onChange && onChange(value)
                     }
                 }}
                 defaultValue={defaultValue}
@@ -61,22 +69,22 @@ const Slider: React.FC<SliderProps> = ({
                 step={step}
                 marks={marks}
                 slotProps={{
-                    root: (ownerState) => {
+                    root: ownerState => {
                         return {
-                            className: `h-1 w-full inline-flex items-center relative touch-none ${ownerState.disabled ? 'text-slate-200 dark:text-slate-200' : 'cursor-pointer text-[#343A40] dark:text-[#343A40]'}`
+                            className: `h-1 w-full inline-flex items-center relative touch-none ${ownerState.disabled ? "text-slate-200 dark:text-slate-200" : "cursor-pointer text-[#343A40] dark:text-[#343A40]"}`,
                         }
                     },
                     rail: {
-                        className: `block absolute w-full h-[12px] rounded-full bg-current`
+                        className: `block absolute w-full h-[12px] rounded-full bg-current`,
                     },
                     track: {
-                        className: `block absolute h-[12px] rounded-full bg-gradient-to-r from-interactive-element-left to-interactive-element-right`
+                        className: `block absolute h-[12px] rounded-full bg-gradient-to-r from-interactive-element-left to-interactive-element-right`,
                     },
                     thumb: (ownerState, { active, focused }) => {
                         return {
-                            className: `display-none`
+                            className: `display-none`,
                         }
-                    }
+                    },
                 }}
             />
         </>

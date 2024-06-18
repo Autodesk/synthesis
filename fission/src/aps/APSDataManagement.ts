@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import APS from "./APS";
+import APS from "./APS"
 
-export const FOLDER_DATA_TYPE = 'folders'
-export const ITEM_DATA_TYPE = 'items'
+export const FOLDER_DATA_TYPE = "folders"
+export const ITEM_DATA_TYPE = "items"
 
 export interface Hub {
-    id: string;
-    name: string;
+    id: string
+    name: string
 }
 
 export interface Project {
-    id: string;
-    name: string;
-    folder: Folder;
+    id: string
+    name: string
+    folder: Folder
 }
 
 export class Data {
@@ -65,20 +65,27 @@ export async function getHubs(): Promise<Hub[] | undefined> {
     }
 
     try {
-        return await fetch('https://developer.api.autodesk.com/project/v1/hubs', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${auth.access_token}`
+        return await fetch(
+            "https://developer.api.autodesk.com/project/v1/hubs",
+            {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${auth.access_token}`,
+                },
             }
-        }).then(x => x.json()).then(x => {
-            if ((x.data as any[]).length > 0) {
-                return (x.data as any[]).map<Hub>(y => { return { id: y.id, name: y.attributes.name }})
-            } else {
-                return undefined
-            }
-        })
+        )
+            .then(x => x.json())
+            .then(x => {
+                if ((x.data as any[]).length > 0) {
+                    return (x.data as any[]).map<Hub>(y => {
+                        return { id: y.id, name: y.attributes.name }
+                    })
+                } else {
+                    return undefined
+                }
+            })
     } catch (e) {
-        console.error('Failed to get hubs')
+        console.error("Failed to get hubs")
         return undefined
     }
 }
@@ -90,62 +97,75 @@ export async function getProjects(hub: Hub): Promise<Project[] | undefined> {
     }
 
     try {
-        return await fetch(`https://developer.api.autodesk.com/project/v1/hubs/${hub.id}/projects/`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${auth.access_token}`
+        return await fetch(
+            `https://developer.api.autodesk.com/project/v1/hubs/${hub.id}/projects/`,
+            {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${auth.access_token}`,
+                },
             }
-        }).then(x => x.json()).then(x => {
-            if ((x.data as any[]).length > 0) {
-                return (x.data as any[]).map<Project>(y => {
-                    return {
-                        id: y.id,
-                        name: y.attributes.name,
-                        folder: new Folder(y.relationships.rootFolder.data)
-                    }
-                })
-            } else {
-                return undefined
-            }
-        })
+        )
+            .then(x => x.json())
+            .then(x => {
+                if ((x.data as any[]).length > 0) {
+                    return (x.data as any[]).map<Project>(y => {
+                        return {
+                            id: y.id,
+                            name: y.attributes.name,
+                            folder: new Folder(y.relationships.rootFolder.data),
+                        }
+                    })
+                } else {
+                    return undefined
+                }
+            })
     } catch (e) {
-        console.error('Failed to get hubs')
+        console.error("Failed to get hubs")
         return undefined
     }
 }
 
-export async function getFolderData(project: Project, folder: Folder): Promise<Data[] | undefined> {
+export async function getFolderData(
+    project: Project,
+    folder: Folder
+): Promise<Data[] | undefined> {
     const auth = APS.auth
     if (!auth) {
         return undefined
     }
 
     try {
-        return await fetch(`https://developer.api.autodesk.com/data/v1/projects/${project.id}/folders/${folder.id}/contents`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${auth.access_token}`
+        return await fetch(
+            `https://developer.api.autodesk.com/data/v1/projects/${project.id}/folders/${folder.id}/contents`,
+            {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${auth.access_token}`,
+                },
             }
-        }).then(x => x.json()).then(x => {
-            console.log('Raw Folder Data')
-            console.log(x)
-            if ((x.data as any[]).length > 0) {
-                return (x.data as any[]).map<Data>(y => {
-                    if (y.type == ITEM_DATA_TYPE) {
-                        return new Item(y)
-                    } else if (y.type == FOLDER_DATA_TYPE) {
-                        return new Folder(y)
-                    } else {
-                        return new Data(y)
-                    }
-                })
-            } else {
-                console.log('No data in folder')
-                return undefined
-            }
-        })
+        )
+            .then(x => x.json())
+            .then(x => {
+                console.log("Raw Folder Data")
+                console.log(x)
+                if ((x.data as any[]).length > 0) {
+                    return (x.data as any[]).map<Data>(y => {
+                        if (y.type == ITEM_DATA_TYPE) {
+                            return new Item(y)
+                        } else if (y.type == FOLDER_DATA_TYPE) {
+                            return new Folder(y)
+                        } else {
+                            return new Data(y)
+                        }
+                    })
+                } else {
+                    console.log("No data in folder")
+                    return undefined
+                }
+            })
     } catch (e) {
-        console.error('Failed to get folder data')
+        console.error("Failed to get folder data")
         return undefined
     }
 }
