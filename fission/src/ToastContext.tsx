@@ -5,7 +5,7 @@ import React, {
     useCallback,
     ReactNode,
 } from "react"
-import Toast from "./components/Toast"
+import Toast from "@/components/Toast"
 import { AnimatePresence, motion } from "framer-motion"
 
 export type ToastType = "info" | "warning" | "error"
