@@ -30,20 +30,18 @@ const Checkbox: React.FC<CheckboxProps> = ({
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => onClick && onClick(e.target.checked)}
                 slotProps={{
                     root: {
-                        className: `group relative inline-block w-[38px] h-[24px] m-2.5 cursor-pointer`
+                        className: `group relative inline-block w-[24px] h-[24px] m-2.5 cursor-pointer`
                     },
                     input: {
                         className: `cursor-inherit absolute w-full h-full top-0 left-0 opacity-0 z-10 border-none`
                     },
                     track: (ownerState) => {
                         return {
-                            className: `absolute block w-full h-full transition rounded-full border border-solid outline-none border-slate-300 dark:border-gray-700 group-[.base--focusVisible]:shadow-outline-switch ${ownerState.checked ? 'bg-purple-500' : 'bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800'}`
+                            className: `absolute block w-full h-full transition rounded-full border border-solid outline-none border-interactive-element-right dark:border-interactive-element-right group-[.base--focusVisible]:shadow-outline-switch ${ownerState.checked ? 'bg-gradient-to-br from-interactive-element-left to-interactive-element-right' : 'bg-background-secondary'}`
                         }
                     },
-                    thumb: (ownerState) => {
-                        return {
-                            className: `block w-4 h-4 top-1 rounded-2xl border border-solid outline-none border-slate-300 dark:border-gray-700 transition shadow-[0_1px_2px_rgb(0_0_0_/_0.1)] dark:shadow-[0_1px_2px_rgb(0_0_0_/_0.25)] ${ownerState.checked ? 'left-[18px] bg-white shadow-[0_0_0_rgb(0_0_0_/_0.3)]' : 'left-[4px] bg-white'} relative transition-all`
-                        }
+                    thumb: {
+                        className: `display-none`
                     }
                 }}
             />
