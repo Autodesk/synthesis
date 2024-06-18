@@ -103,6 +103,10 @@ class InputSystem extends WorldSystem {
         return false;
     }
 
+    public static getAxis(positive: string, negative: string) {
+        return (this.getInput(positive) ? 1 : 0) - (this.getInput(negative) ? 1 : 0);
+    }
+
     // #endregion
 }
 

@@ -1,6 +1,6 @@
 import Mechanism from "@/systems/physics/Mechanism";
 import Brain from "../Brain";
-import Behavior from "./Behavior";
+import Behavior from "../behavior/Behavior";
 
 class SynthesisBrain extends Brain {
 

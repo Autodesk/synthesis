@@ -13,6 +13,8 @@ abstract class Behavior {
         this._drivers = drivers;
         this._stimuli = stimuli;
     }
+
+    public abstract Update(deltaT: number): void;
 }
 
 export default Behavior;
