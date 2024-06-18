@@ -19,6 +19,8 @@ class SynthesisBrain extends Brain {
 
     private _debugBodies: Map<Jolt.TwoBodyConstraint, THREE.Mesh>;
 
+    _leftWheelIndices: number[] = [];
+
     public constructor(mechanism: Mechanism) {
         super(mechanism);
 
@@ -60,11 +62,14 @@ class SynthesisBrain extends Brain {
     }
 
     public Enable(): void { }
+
     public Update(deltaT: number): void { 
         this._behaviors.forEach((b) => b.Update(deltaT)); 
-let i = 0;
+
+        let i = 0;
         this._debugBodies.forEach((value, key) => {
-            if (i != 0)return;
+            if (!(this._leftWheelIndices.includes(i))) { i++; return;}
+
             const transform = JoltMat44_ThreeMatrix4(key.GetConstraintToBody1Matrix());            
             value!.position.setFromMatrixPosition(transform);
             i++;
@@ -74,16 +79,46 @@ let i = 0;
         this._behaviors = [];
     }
 
+
     configureArcadeDriveBehavior() {
         let wheelDrivers: WheelDriver[] =  this._simLayer.drivers.filter((driver) => driver instanceof WheelDriver) as WheelDriver[];
         let wheelStimuli: WheelRotationStimulus[] =  this._simLayer.stimuli.filter((stimulus) => stimulus instanceof WheelRotationStimulus) as WheelRotationStimulus[];
 
         let fixedConstraints: Jolt.TwoBodyConstraint[] = this._mechanism.constraints.filter((mechConstraint) => mechConstraint.constraint instanceof JOLT.TwoBodyConstraint).map((mechConstraint) => mechConstraint.constraint as Jolt.TwoBodyConstraint);
-        console.log(fixedConstraints.length);
+
+        let leftWheels: WheelDriver[] = [];
+        let leftStimuli: WheelRotationStimulus[] = [];
+
+        let rightWheels: WheelDriver[] = [];
+        let rightStimuli: WheelRotationStimulus[] = [];
+
+        for (let i = 0; i < wheelDrivers.length; i++) {
+            let wheelPos = fixedConstraints[i].GetConstraintToBody1Matrix().GetTranslation();
+
+            let robotCOM = World.PhysicsSystem.GetBody(this._mechanism.constraints[0].childBody).GetCenterOfMassPosition() as Jolt.Vec3;
+            let rightVector = new JOLT.Vec3(1, 0, 0);
+
+            let dotProduct = rightVector.Dot(wheelPos.Sub(robotCOM))
+
+            if (dotProduct < 0) {
+                rightWheels.push(wheelDrivers[i]);
+                rightStimuli.push(wheelStimuli[i]);
+            }
+            else {
+                leftWheels.push(wheelDrivers[i]);
+                leftStimuli.push(wheelStimuli[i]);
+                this._leftWheelIndices.push(i);
+                console.log(i);
+            }
+        }
+        
+        fixedConstraints.forEach((c) => {
+            //console.log(c.GetBody1().GetRotation().GetEulerAngles());
+        })
 
         //wheelDrivers.forEach((w) => console.log(w.constraint))
 
-        this._behaviors.push(new ArcadeDriveBehavior([wheelDrivers[0], wheelDrivers[1], wheelDrivers[2]], [wheelDrivers[3], wheelDrivers[4], wheelDrivers[5]], [wheelStimuli[0], wheelStimuli[1], wheelStimuli[2]], [wheelStimuli[3], wheelStimuli[4], wheelStimuli[5]]));
+        this._behaviors.push(new ArcadeDriveBehavior(leftWheels, rightWheels, leftStimuli, rightStimuli));
     }
 
     getLeftRightWheels() {
