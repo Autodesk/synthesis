@@ -21,7 +21,6 @@ from ..Parser.ParseOptions import (
 from .Configuration.SerialCommand import SerialCommand
 
 import adsk.core, adsk.fusion, traceback, logging, os
-from types import SimpleNamespace
 
 # ====================================== CONFIG COMMAND ======================================
 
@@ -169,9 +168,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 NOTIFIED = True
                 write_configuration("analytics", "notified", "yes")
 
-            previous = None
-            saved = Helper.previouslyConfigured()
-
             # Transition: AARD-1687
             designCompress = self.designAttrs.itemByName("SynthesisExporter", "compress")
             global compress
@@ -179,22 +175,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 compress = True if designCompress.value == "True" else False
             else:
                 compress = True
-
-            if type(saved) == str:
-                try:
-                    # probably need some way to validate for each usage below
-                    previous = json.loads(
-                        saved, object_hook=lambda d: SimpleNamespace(**d)
-                    )
-                except:
-                    self.log.error("Failed:\n{}".format(traceback.format_exc()))
-                    gm.ui.messageBox(
-                        "Failed to read previous Unity Configuration\n  - Using default configuration"
-                    )
-                    previous = SerialCommand()
-            else:
-                # new file configuration
-                previous = SerialCommand()
 
             if A_EP:
                 A_EP.send_view("export_panel")
@@ -912,12 +892,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             Instantiating all the event handlers
             """
 
-            onExecute = ConfigureCommandExecuteHandler(
-                json.dumps(
-                    previous, default=lambda o: o.__dict__, sort_keys=True, indent=1
-                ),
-                previous.filePath,
-            )
+            onExecute = ConfigureCommandExecuteHandler()
             cmd.execute.add(onExecute)
             gm.handlers.append(onExecute)  # 0
 
@@ -1096,7 +1071,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
 
 
 class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
-    """### Called when Ok is pressed confirming the export to Unity.
+    """### Called when Ok is pressed confirming the export
 
     Process Steps:
 
@@ -1114,12 +1089,10 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
 
     """
 
-    def __init__(self, previous, fp):
+    def __init__(self):
         super().__init__()
         self.log = logging.getLogger(f"{INTERNAL_ID}.UI.{self.__class__.__name__}")
-        self.previous = previous
         self.current = SerialCommand()
-        self.fp = fp
         self.designAttrs = adsk.core.Application.get().activeProduct.attributes
 
     def notify(self, args):
@@ -1148,16 +1121,6 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
 
             # Transition: AARD-1687
             self.designAttrs.add("SynthesisExporter", "export_as_part", str(export_as_part_boolean.value))
-
-            # defaultPath = self.fp
-            # defaultPath = os.getenv()
-
-            # if mode == 5:
-            #     savepath = FileDialogConfig.SaveFileDialog(
-            #         defaultPath=self.fp, ext="Synthesis File (*.synth)"
-            #     )
-            # else:
-            #     savepath = FileDialogConfig.SaveFileDialog(defaultPath=self.fp)
 
             processedFileName = gm.app.activeDocument.name.replace(" ", "_")
             dropdownExportMode = INPUTS_ROOT.itemById("mode")
@@ -1226,7 +1189,6 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 updatedPath = pathlib.Path(savepath).parent
                 if updatedPath != self.current.filePath:
                     self.current.filePath = str(updatedPath)
-                    Helper.writeConfigure(self.current.toJSON())
 
                 adsk.doEvents()
                 # get active document
