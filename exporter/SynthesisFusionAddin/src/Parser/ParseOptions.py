@@ -8,11 +8,11 @@
 """
 
 from typing import Union, List
-from dataclasses import dataclass
+from dataclasses import dataclass, fields, field
 import adsk.core, adsk.fusion
 
 # from .unity import Parse
-from ..general_imports import A_EP
+from ..strings import INTERNAL_ID
 from .SynthesisParser.Parser import Parser
 
 
@@ -154,8 +154,41 @@ class ParseOptions:
         Returns:
             str | bool: Either a str indicating success or False indicating failure
         """
-        if A_EP:
-            A_EP.send_event("Parse", "started_parsing")
 
         Parser(self).export()
         return True
+
+# TODO: This should be the only parse option class
+@dataclass
+class ExporterOptions:
+    # TODO: Clean up all these `field(default=None)` things. This could be better - Brandon
+    fileLocation: str = field(default=None)
+    name: str = field(default=None)
+    version: str = field(default=None)
+    materials: int = field(default=0) # TODO: Find out what this is for
+    # mode: Mode = field(default=Mode.Synthesis)
+    # wheels: List[_Wheel] = field(default=None)
+    # joints: List[_Joint] = field(default=None)
+    # gamepieces: List[Gamepiece] = field(default=None)
+    weight: float = field(default=0.0)
+    compress: bool = field(default=True)
+    exportAsPart: bool = field(default=False)
+
+    # Constants
+    hierarchy: ModelHierarchy = field(default=ModelHierarchy.FusionAssembly)
+    physicalDepth: PhysicalDepth = field(default=PhysicalDepth.AllOccurrence)
+
+    def read(self):
+        designAttributes = adsk.core.Application.get().activeProduct.attributes
+        # TODO: This does not work for Lists of custom classes
+        for field in fields(self):
+            attribute = designAttributes.itemByName(INTERNAL_ID, field.name)
+            if attribute:
+                setattr(self, field.name, attribute.value)
+            
+        return self
+
+    def write(self):
+        designAttributes = adsk.core.Application.get().activeProduct.attributes
+        for field in fields(self):
+            designAttributes.add(INTERNAL_ID, field.name, str(getattr(self, field.name)))
