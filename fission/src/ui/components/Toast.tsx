@@ -25,30 +25,15 @@ const Toast: React.FC<ToastData> = ({ id, type, title, description }) => {
 
     switch (type) {
         case "info":
-            icon = (
-                <BsFillWrenchAdjustableCircleFill
-                    size={48}
-                    className="h-full w-full text-main-text"
-                />
-            )
+            icon = <BsFillWrenchAdjustableCircleFill size={48} className="h-full w-full text-main-text" />
             className = "bg-toast-info"
             break
         case "warning":
-            icon = (
-                <AiFillWarning
-                    size={48}
-                    className="h-full w-full text-main-text"
-                />
-            )
+            icon = <AiFillWarning size={48} className="h-full w-full text-main-text" />
             className = "bg-toast-warning"
             break
         case "error":
-            icon = (
-                <BiSolidErrorCircle
-                    size={48}
-                    className="h-full w-full text-main-text"
-                />
-            )
+            icon = <BiSolidErrorCircle size={48} className="h-full w-full text-main-text" />
             className = "bg-toast-error"
             break
     }

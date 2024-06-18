@@ -10,19 +10,12 @@ export function UserIcon({ className }: UserIconProps) {
     const [userInfo, setUserInfo] = useState(APS.userInfo)
 
     useEffect(() => {
-        document.addEventListener(APS_USER_INFO_UPDATE_EVENT, () =>
-            setUserInfo(APS.userInfo)
-        )
+        document.addEventListener(APS_USER_INFO_UPDATE_EVENT, () => setUserInfo(APS.userInfo))
     }, [])
 
     if (!userInfo) {
         return <FaQuestion />
     } else {
-        return (
-            <img
-                src={userInfo.picture}
-                className={`object-contain aspect-square ${className}`}
-            ></img>
-        )
+        return <img src={userInfo.picture} className={`object-contain aspect-square ${className}`}></img>
     }
 }

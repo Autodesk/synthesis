@@ -3,11 +3,7 @@ import Label, { LabelSize } from "@/components/Label"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import Stack, { StackDirection } from "@/components/Stack"
 
-const ScoreboardPanel: React.FC<PanelPropsImpl> = ({
-    panelId,
-    openLocation,
-    sidePadding,
-}) => {
+const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
     const [redScore] = useState<number>(0)
     const [blueScore] = useState<number>(0)
     const [initialTime, setInitialTime] = useState<number>(-1)
@@ -54,11 +50,7 @@ const ScoreboardPanel: React.FC<PanelPropsImpl> = ({
                     <Label size={LabelSize.XL}>{time.toFixed(0)}</Label>
                 </div>
             )}
-            <Stack
-                direction={StackDirection.Horizontal}
-                className="px-4 pb-4 pt-4"
-                spacing={16}
-            >
+            <Stack direction={StackDirection.Horizontal} className="px-4 pb-4 pt-4" spacing={16}>
                 <div className="flex flex-col items-center text-center justify-center w-20 h-20 rounded-lg bg-match-red-alliance">
                     <Label size={LabelSize.Small}>RED</Label>
                     <Label size={LabelSize.XL}>{redScore}</Label>

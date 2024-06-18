@@ -16,13 +16,7 @@ type ButtonProps = {
     className?: string
 }
 
-const Button: React.FC<ButtonProps> = ({
-    value,
-    colorOverrideClass,
-    size,
-    onClick,
-    className,
-}) => {
+const Button: React.FC<ButtonProps> = ({ value, colorOverrideClass, size, onClick, className }) => {
     let sizeClassNames
 
     if (!size) size = ButtonSize.Medium as ButtonSize

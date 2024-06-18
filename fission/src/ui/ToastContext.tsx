@@ -1,11 +1,5 @@
-import React, {
-    createContext,
-    useState,
-    useContext,
-    useCallback,
-    ReactNode,
-} from "react"
-import Toast from "@/components/Toast"
+import React, { createContext, useState, useContext, useCallback, ReactNode } from "react"
+import Toast from "./components/Toast"
 import { AnimatePresence, motion } from "framer-motion"
 
 export type ToastType = "info" | "warning" | "error"
@@ -27,43 +21,33 @@ const ToastContext = createContext<ToastContextType | null>(null)
 
 export const useToastContext = () => {
     const context = useContext(ToastContext)
-    if (!context)
-        throw new Error("useToastContext must be used within a ToastProvider")
+    if (!context) throw new Error("useToastContext must be used within a ToastProvider")
     return context
 }
 
-export const ToastProvider: React.FC<{ children: ReactNode }> = ({
-    children,
-}) => {
+export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [toasts, setToasts] = useState<ToastData[]>([])
 
-    const addToast = useCallback(
-        (type: ToastType, title: string, description: string) => {
-            // divide by 10 so that it's harder to have duplicates? could make smaller or remove
-            const id = "toast-" + Math.floor(Date.now() / 10).toString()
-            const newToast: ToastData = {
-                id,
-                type,
-                title,
-                description,
-            }
-            setToasts(prevToasts => {
-                if (prevToasts.some(t => t.id == id)) return prevToasts
-                return [...prevToasts, newToast]
-            })
-        },
-        []
-    )
+    const addToast = useCallback((type: ToastType, title: string, description: string) => {
+        // divide by 10 so that it's harder to have duplicates? could make smaller or remove
+        const id = "toast-" + Math.floor(Date.now() / 10).toString()
+        const newToast: ToastData = {
+            id,
+            type,
+            title,
+            description,
+        }
+        setToasts(prevToasts => {
+            if (prevToasts.some(t => t.id == id)) return prevToasts
+            return [...prevToasts, newToast]
+        })
+    }, [])
 
     const removeToast = useCallback((toastId: string) => {
         setToasts(prevToasts => prevToasts.filter(t => t.id !== toastId))
     }, [])
 
-    return (
-        <ToastContext.Provider value={{ toasts, addToast, removeToast }}>
-            {children}
-        </ToastContext.Provider>
-    )
+    return <ToastContext.Provider value={{ toasts, addToast, removeToast }}>{children}</ToastContext.Provider>
 }
 
 export const ToastContainer: React.FC = () => {
@@ -96,12 +80,7 @@ export const ToastContainer: React.FC = () => {
                             key={t.id}
                             className="w-fit"
                         >
-                            <Toast
-                                id={t.id}
-                                type={t.type}
-                                title={t.title}
-                                description={t.description}
-                            />
+                            <Toast id={t.id} type={t.type} title={t.title} description={t.description} />
                         </motion.div>
                     ))}
             </AnimatePresence>

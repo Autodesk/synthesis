@@ -62,11 +62,7 @@ type ThemeContextType = {
     defaultTheme: Theme
     currentTheme: string
     setTheme: (themeName: string) => void
-    updateColor: (
-        themeName: string,
-        colorName: ColorName,
-        rgbaColor: RgbaColor
-    ) => void
+    updateColor: (themeName: string, colorName: ColorName, rgbaColor: RgbaColor) => void
     createTheme: (themeName: string) => void
     deleteTheme: (themeName: string) => void
     deleteAllThemes: () => void
@@ -82,12 +78,7 @@ type ThemeProviderProps = {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
-export const ThemeProvider: React.FC<ThemeProviderProps> = ({
-    initialThemeName,
-    themes,
-    defaultTheme,
-    children,
-}) => {
+export const ThemeProvider: React.FC<ThemeProviderProps> = ({ initialThemeName, themes, defaultTheme, children }) => {
     const [currentTheme, setCurrentTheme] = useState<string>(initialThemeName)
 
     addGlobalFunc<Theme>("getTheme", () => themes[currentTheme])
@@ -97,9 +88,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
         if (process.env.NODE_ENV !== "production") return
         const MAX_VALUE = 255
         const sortFunc = (a: number, b: number) => a - b
-        const themeValue: RgbaColor[] = Object.values(themes[currentTheme]).map(
-            v => v.color
-        )
+        const themeValue: RgbaColor[] = Object.values(themes[currentTheme]).map(v => v.color)
         const reds = themeValue.map(c => c.r).sort(sortFunc)
         const greens = themeValue.map(c => c.g).sort(sortFunc)
         const blues = themeValue.map(c => c.b).sort(sortFunc)
@@ -135,11 +124,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
         document.body.style.background = `rgba(${values[0]}, ${values[1]}, ${values[2]}, ${MAX_VALUE})`
     }
 
-    const updateColor = (
-        themeName: string,
-        colorName: ColorName,
-        rgbaColor: RgbaColor
-    ) => {
+    const updateColor = (themeName: string, colorName: ColorName, rgbaColor: RgbaColor) => {
         if (themes[themeName]) {
             themes[themeName][colorName].color = rgbaColor
         }
@@ -172,10 +157,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
         const root = document.documentElement
         Object.entries(themeObject).map(([n, c]) => {
             const propName = colorNameToProp(n as ColorName)
-            root.style.setProperty(
-                propName,
-                `rgba(${c.color.r}, ${c.color.g}, ${c.color.b}, ${c.color.a})`
-            )
+            root.style.setProperty(propName, `rgba(${c.color.r}, ${c.color.g}, ${c.color.b}, ${c.color.a})`)
         })
         findUnusedColor()
     }

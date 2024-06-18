@@ -14,10 +14,7 @@ export async function LoadMirabufRemote(
     fetchLocation: string,
     useCache: boolean = true
 ): Promise<mirabuf.Assembly | undefined> {
-    const miraBuff = await fetch(
-        encodeURI(fetchLocation),
-        useCache ? undefined : { cache: "no-store" }
-    )
+    const miraBuff = await fetch(encodeURI(fetchLocation), useCache ? undefined : { cache: "no-store" })
         .then(x => x.blob())
         .then(x => x.arrayBuffer())
     const byteBuffer = UnzipMira(new Uint8Array(miraBuff))
@@ -25,7 +22,5 @@ export async function LoadMirabufRemote(
 }
 
 export function LoadMirabufLocal(fileLocation: string): mirabuf.Assembly {
-    return mirabuf.Assembly.decode(
-        UnzipMira(new Uint8Array(fs.readFileSync(fileLocation)))
-    )
+    return mirabuf.Assembly.decode(UnzipMira(new Uint8Array(fs.readFileSync(fileLocation))))
 }

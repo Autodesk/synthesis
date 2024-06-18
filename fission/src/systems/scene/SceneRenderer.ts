@@ -35,12 +35,7 @@ class SceneRenderer extends WorldSystem {
 
         this._sceneObjects = new Map()
 
-        this._mainCamera = new THREE.PerspectiveCamera(
-            75,
-            window.innerWidth / window.innerHeight,
-            0.1,
-            1000
-        )
+        this._mainCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
         this._mainCamera.position.set(-2.5, 2, 2.5)
 
         this._scene = new THREE.Scene()
@@ -57,10 +52,7 @@ class SceneRenderer extends WorldSystem {
         directionalLight.castShadow = true
         this._scene.add(directionalLight)
 
-        const shadowMapSize = Math.min(
-            4096,
-            this._renderer.capabilities.maxTextureSize
-        )
+        const shadowMapSize = Math.min(4096, this._renderer.capabilities.maxTextureSize)
         const shadowCamSize = 15
         console.debug(`Shadow Map Size: ${shadowMapSize}`)
 
@@ -68,10 +60,7 @@ class SceneRenderer extends WorldSystem {
         directionalLight.shadow.camera.bottom = -shadowCamSize
         directionalLight.shadow.camera.left = -shadowCamSize
         directionalLight.shadow.camera.right = shadowCamSize
-        directionalLight.shadow.mapSize = new THREE.Vector2(
-            shadowMapSize,
-            shadowMapSize
-        )
+        directionalLight.shadow.mapSize = new THREE.Vector2(shadowMapSize, shadowMapSize)
         directionalLight.shadow.blurSamples = 16
         directionalLight.shadow.normalBias = 0.01
         directionalLight.shadow.bias = 0.0
@@ -79,10 +68,7 @@ class SceneRenderer extends WorldSystem {
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.1)
         this._scene.add(ambientLight)
 
-        const ground = new THREE.Mesh(
-            new THREE.BoxGeometry(10, 1, 10),
-            this.CreateToonMaterial(GROUND_COLOR)
-        )
+        const ground = new THREE.Mesh(new THREE.BoxGeometry(10, 1, 10), this.CreateToonMaterial(GROUND_COLOR))
         ground.position.set(0.0, -2.0, 0.0)
         ground.receiveShadow = true
         ground.castShadow = true
@@ -129,10 +115,7 @@ class SceneRenderer extends WorldSystem {
         }
     }
 
-    public CreateSphere(
-        radius: number,
-        material?: THREE.Material | undefined
-    ): THREE.Mesh {
+    public CreateSphere(radius: number, material?: THREE.Material | undefined): THREE.Mesh {
         const geo = new THREE.SphereGeometry(radius)
         if (material) {
             return new THREE.Mesh(geo, material)
@@ -141,23 +124,13 @@ class SceneRenderer extends WorldSystem {
         }
     }
 
-    public CreateToonMaterial(
-        color: THREE.ColorRepresentation = 0xff00aa,
-        steps: number = 5
-    ): THREE.MeshToonMaterial {
-        const format = this._renderer.capabilities.isWebGL2
-            ? THREE.RedFormat
-            : THREE.LuminanceFormat
+    public CreateToonMaterial(color: THREE.ColorRepresentation = 0xff00aa, steps: number = 5): THREE.MeshToonMaterial {
+        const format = this._renderer.capabilities.isWebGL2 ? THREE.RedFormat : THREE.LuminanceFormat
         const colors = new Uint8Array(steps)
         for (let c = 0; c < colors.length; c++) {
             colors[c] = 128 + (c / colors.length) * 128
         }
-        const gradientMap = new THREE.DataTexture(
-            colors,
-            colors.length,
-            1,
-            format
-        )
+        const gradientMap = new THREE.DataTexture(colors, colors.length, 1, format)
         gradientMap.needsUpdate = true
         return new THREE.MeshToonMaterial({
             color: color,

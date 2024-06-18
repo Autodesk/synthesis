@@ -15,26 +15,15 @@ cdExtend([a11yPlugin])
 
 const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const readabilityIndicator: boolean = false
-    const {
-        themes,
-        initialThemeName,
-        currentTheme,
-        setTheme,
-        updateColor,
-        applyTheme,
-    } = useTheme()
+    const { themes, initialThemeName, currentTheme, setTheme, updateColor, applyTheme } = useTheme()
 
     const { openModal } = useModalControlContext()
 
-    const [selectedColor, setSelectedColor] = useState<ColorName>(
-        "InteractiveElementSolid"
-    )
+    const [selectedColor, setSelectedColor] = useState<ColorName>("InteractiveElementSolid")
     const [selectedTheme, setSelectedTheme] = useState<string>(currentTheme)
     const [, setCurrentColor] = useState<RgbaColor>({ r: 0, g: 0, b: 0, a: 0 })
     // needs to be useState so it doesn't get reset on re-render
-    const [initialThemeValues] = useState<Theme>(
-        JSON.parse(JSON.stringify(themes[selectedTheme]))
-    )
+    const [initialThemeValues] = useState<Theme>(JSON.parse(JSON.stringify(themes[selectedTheme])))
 
     return (
         <Modal
@@ -56,28 +45,15 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             }}
         >
             <Stack direction={StackDirection.Horizontal}>
-                <Stack
-                    direction={StackDirection.Vertical}
-                    align="center"
-                    justify="between"
-                    className="w-1/2"
-                >
+                <Stack direction={StackDirection.Vertical} align="center" justify="between" className="w-1/2">
                     <Stack direction={StackDirection.Vertical}>
                         <Dropdown
                             label="Select a Theme"
-                            options={[
-                                currentTheme,
-                                ...Object.keys(themes).filter(
-                                    t => t != currentTheme
-                                ),
-                            ]}
+                            options={[currentTheme, ...Object.keys(themes).filter(t => t != currentTheme)]}
                             onSelect={setSelectedTheme}
                             className="h-min"
                         />
-                        <Stack
-                            direction={StackDirection.Horizontal}
-                            spacing={10}
-                        >
+                        <Stack direction={StackDirection.Horizontal} spacing={10}>
                             <Button
                                 value="Create Theme"
                                 onClick={() => {
@@ -145,12 +121,9 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                             value="Randomize Theme"
                             onClick={() => {
                                 if (selectedTheme == initialThemeName) return
-                                const keys: ColorName[] = Object.keys(
-                                    themes[selectedTheme]
-                                ) as ColorName[]
+                                const keys: ColorName[] = Object.keys(themes[selectedTheme]) as ColorName[]
                                 keys.forEach(k => {
-                                    const randAlpha = () =>
-                                        Math.max(0.1, Random())
+                                    const randAlpha = () => Math.max(0.1, Random())
                                     updateColor(selectedTheme, k, {
                                         ...cdRandom().toRgb(),
                                         a: randAlpha(),
@@ -159,11 +132,8 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                 applyTheme(selectedTheme)
                                 setSelectedTheme(selectedTheme)
                                 setCurrentColor(
-                                    selectedTheme &&
-                                        themes[selectedTheme] &&
-                                        selectedColor
-                                        ? themes[selectedTheme][selectedColor]
-                                              .color
+                                    selectedTheme && themes[selectedTheme] && selectedColor
+                                        ? themes[selectedTheme][selectedColor].color
                                         : { r: 0, g: 0, b: 0, a: 0 }
                                 )
                                 setSelectedColor(selectedColor)
@@ -177,15 +147,9 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                             <div
                                 key={n}
                                 className={`${currentTheme == initialThemeName ? "cursor-not-allowed" : "cursor-pointer"} flex flex-row gap-2 content-middle align-center cursor-pointer rounded-md p-1 ${
-                                    n == selectedColor
-                                        ? "bg-background-secondary"
-                                        : ""
+                                    n == selectedColor ? "bg-background-secondary" : ""
                                 }`}
-                                title={
-                                    currentTheme == initialThemeName
-                                        ? "Cannot edit the default theme"
-                                        : undefined
-                                }
+                                title={currentTheme == initialThemeName ? "Cannot edit the default theme" : undefined}
                                 onClick={() => {
                                     if (currentTheme == initialThemeName) return
                                     setSelectedColor(n as ColorName)
@@ -202,45 +166,23 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                     (() => {
                                         if (
                                             c.color.a < 0.1 ||
-                                            ((n
-                                                .toLowerCase()
-                                                .includes("text") ||
-                                                n
-                                                    .toLowerCase()
-                                                    .includes("icon")) &&
-                                                !n
-                                                    .toLowerCase()
-                                                    .includes("closeicon"))
+                                            ((n.toLowerCase().includes("text") || n.toLowerCase().includes("icon")) &&
+                                                !n.toLowerCase().includes("closeicon"))
                                         ) {
-                                            const aboveColors = c.above.map(
-                                                (above: ColorName | string) =>
-                                                    typeof above == "string"
-                                                        ? above
-                                                        : themes[selectedTheme][
-                                                              above
-                                                          ]
+                                            const aboveColors = c.above.map((above: ColorName | string) =>
+                                                typeof above == "string" ? above : themes[selectedTheme][above]
                                             )
                                             const conflicting = aboveColors
-                                                .map(
-                                                    (
-                                                        above:
-                                                            | string
-                                                            | RgbaColor
-                                                    ) => [
-                                                        above,
-                                                        colord(
-                                                            c.color
-                                                        ).isReadable(above),
-                                                    ]
-                                                )
+                                                .map((above: string | RgbaColor) => [
+                                                    above,
+                                                    colord(c.color).isReadable(above),
+                                                ])
                                                 .filter(c => !c[1])
                                                 .map(([n]) => n)
 
                                             if (
-                                                currentTheme !=
-                                                    initialThemeName &&
-                                                (conflicting.length > 0 ||
-                                                    c.color.a < 0.1)
+                                                currentTheme != initialThemeName &&
+                                                (conflicting.length > 0 || c.color.a < 0.1)
                                             )
                                                 return (
                                                     <div

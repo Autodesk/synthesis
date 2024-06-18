@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { BsCodeSquare } from "react-icons/bs"
-import {
-    FaCar,
-    FaGear,
-    FaHouse,
-    FaMagnifyingGlass,
-    FaPlus,
-} from "react-icons/fa6"
+import { FaCar, FaGear, FaHouse, FaMagnifyingGlass, FaPlus } from "react-icons/fa6"
 import { BiMenuAltLeft } from "react-icons/bi"
 import { GrFormClose } from "react-icons/gr"
 import { GiSteeringWheel } from "react-icons/gi"
@@ -29,12 +23,7 @@ type ButtonProps = {
     larger?: boolean
 }
 
-const MainHUDButton: React.FC<ButtonProps> = ({
-    value,
-    icon,
-    onClick,
-    larger,
-}) => {
+const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) => {
     if (larger == null) larger = false
     return (
         <Button
@@ -43,27 +32,16 @@ const MainHUDButton: React.FC<ButtonProps> = ({
         >
             {larger && icon}
             {!larger && (
-                <span
-                    onClick={onClick}
-                    className="absolute left-3 text-main-hud-icon"
-                >
+                <span onClick={onClick} className="absolute left-3 text-main-hud-icon">
                     {icon}
                 </span>
             )}
-            <span
-                className={`px-2 ${larger ? "py-2" : "py-1 ml-6"} text-main-text cursor-pointer`}
-            >
-                {value}
-            </span>
+            <span className={`px-2 ${larger ? "py-2" : "py-1 ml-6"} text-main-text cursor-pointer`}>{value}</span>
         </Button>
     )
 }
 
-export let MainHUD_AddToast: (
-    type: ToastType,
-    title: string,
-    description: string
-) => void = (a, b, c) => {}
+export let MainHUD_AddToast: (type: ToastType, title: string, description: string) => void = (a, b, c) => {}
 
 const variants = {
     open: { opacity: 1, y: "-50%", x: 0 },
@@ -95,10 +73,7 @@ const MainHUD: React.FC = () => {
                     onClick={() => setIsOpen(!isOpen)}
                     className="absolute left-6 top-6 focus:outline-0 focus-visible:outline-0"
                 >
-                    <BiMenuAltLeft
-                        size={40}
-                        className="text-main-hud-close-icon"
-                    />
+                    <BiMenuAltLeft size={40} className="text-main-hud-close-icon" />
                 </button>
             )}
             <motion.div
@@ -108,19 +83,12 @@ const MainHUD: React.FC = () => {
                 className="fixed flex flex-col gap-2 bg-gradient-to-b from-interactive-element-right to-interactive-element-left w-min p-4 rounded-3xl ml-4 top-1/2 -translate-y-1/2"
             >
                 <div className="flex flex-row gap-2 w-60 h-10">
-                    <img
-                        src={logo}
-                        className="w-[80%] h-[100%] object-contain"
-                    />
+                    <img src={logo} className="w-[80%] h-[100%] object-contain" />
                     <Button
                         onClick={() => setIsOpen(false)}
                         className={`bg-none border-none focus-visible:outline-0 focus:outline-0 select-none`}
                     >
-                        <GrFormClose
-                            color="bg-icon"
-                            size={20}
-                            className="text-main-hud-close-icon"
-                        />
+                        <GrFormClose color="bg-icon" size={20} className="text-main-hud-close-icon" />
                     </Button>
                 </div>
                 <MainHUDButton
@@ -135,26 +103,14 @@ const MainHUD: React.FC = () => {
                         icon={<FaGear />}
                         onClick={() => openModal("manage-assembles")}
                     />
-                    <MainHUDButton
-                        value={"Settings"}
-                        icon={<FaGear />}
-                        onClick={() => openModal("settings")}
-                    />
-                    <MainHUDButton
-                        value={"View"}
-                        icon={<FaMagnifyingGlass />}
-                        onClick={() => openModal("view")}
-                    />
+                    <MainHUDButton value={"Settings"} icon={<FaGear />} onClick={() => openModal("settings")} />
+                    <MainHUDButton value={"View"} icon={<FaMagnifyingGlass />} onClick={() => openModal("view")} />
                     <MainHUDButton
                         value={"Controls"}
                         icon={<IoGameControllerOutline />}
                         onClick={() => openModal("change-inputs")}
                     />
-                    <MainHUDButton
-                        value={"MultiBot"}
-                        icon={<IoPeople />}
-                        onClick={() => openPanel("multibot")}
-                    />
+                    <MainHUDButton value={"MultiBot"} icon={<IoPeople />} onClick={() => openPanel("multibot")} />
                     <MainHUDButton
                         value={"Import Mira"}
                         icon={<IoPeople />}
@@ -167,44 +123,26 @@ const MainHUD: React.FC = () => {
                         icon={<HiDownload />}
                         onClick={() => openModal("download-assets")}
                     />
-                    <MainHUDButton
-                        value={"RoboRIO"}
-                        icon={<BsCodeSquare />}
-                        onClick={() => openModal("roborio")}
-                    />
+                    <MainHUDButton value={"RoboRIO"} icon={<BsCodeSquare />} onClick={() => openModal("roborio")} />
                     <MainHUDButton
                         value={"Driver Station"}
                         icon={<GiSteeringWheel />}
                         onClick={() => openPanel("driver-station")}
                     />
-                    <MainHUDButton
-                        value={"Drivetrain"}
-                        icon={<FaCar />}
-                        onClick={() => openModal("drivetrain")}
-                    />
+                    <MainHUDButton value={"Drivetrain"} icon={<FaCar />} onClick={() => openModal("drivetrain")} />
                     <MainHUDButton
                         value={"Toasts"}
                         icon={<FaCar />}
                         onClick={() => {
-                            const type: ToastType = [
-                                "info",
-                                "warning",
-                                "error",
-                            ][Math.floor(Random() * 3)] as ToastType
-                            addToast(
-                                type,
-                                type,
-                                "This is a test toast to test the toast system"
-                            )
+                            const type: ToastType = ["info", "warning", "error"][Math.floor(Random() * 3)] as ToastType
+                            addToast(type, type, "This is a test toast to test the toast system")
                         }}
                     />
                 </div>
                 {userInfo ? (
                     <MainHUDButton
                         value={`Hi, ${userInfo.givenName}`}
-                        icon={
-                            <UserIcon className="h-[20pt] m-[5pt] rounded-full" />
-                        }
+                        icon={<UserIcon className="h-[20pt] m-[5pt] rounded-full" />}
                         larger={true}
                         onClick={() => APS.logout()}
                     />

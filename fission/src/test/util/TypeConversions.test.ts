@@ -20,10 +20,7 @@ describe("Three to Jolt Conversions", async () => {
         for (let c = 0; c < 4; c++) {
             const column = jM.GetColumn4(c)
             for (let r = 0; r < 4; r++) {
-                expect(threeArr[c * 4 + r]).toBeCloseTo(
-                    column.GetComponent(r),
-                    4
-                )
+                expect(threeArr[c * 4 + r]).toBeCloseTo(column.GetComponent(r), 4)
             }
             JOLT.destroy(column)
         }
@@ -118,24 +115,7 @@ describe("Three to Jolt Conversions", async () => {
     })
 
     test("THREE.Matrix4 [Identity] -> Jolt.Mat44", () => {
-        const threeMat = new THREE.Matrix4(
-            1,
-            0,
-            0,
-            0,
-            0,
-            1,
-            0,
-            0,
-            0,
-            0,
-            1,
-            0,
-            0,
-            0,
-            0,
-            1
-        )
+        const threeMat = new THREE.Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
 
         const jMat = ThreeMatrix4_JoltMat44(threeMat)
 
@@ -143,24 +123,7 @@ describe("Three to Jolt Conversions", async () => {
     })
 
     test("THREE.Matrix4 [+X Axis Rotation] -> Jolt.Mat44", () => {
-        const threeMat = new THREE.Matrix4(
-            1,
-            0,
-            0,
-            0,
-            0,
-            0,
-            1,
-            0,
-            0,
-            -1,
-            0,
-            0,
-            0,
-            0,
-            0,
-            1
-        )
+        const threeMat = new THREE.Matrix4(1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1)
 
         const jMat = ThreeMatrix4_JoltMat44(threeMat)
 
@@ -168,24 +131,7 @@ describe("Three to Jolt Conversions", async () => {
     })
 
     test("THREE.Matrix4 [-X Axis Rotation] -> Jolt.Mat44", () => {
-        const threeMat = new THREE.Matrix4(
-            1,
-            0,
-            0,
-            0,
-            0,
-            0,
-            -1,
-            0,
-            0,
-            1,
-            0,
-            0,
-            0,
-            0,
-            0,
-            1
-        )
+        const threeMat = new THREE.Matrix4(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1)
 
         const jMat = ThreeMatrix4_JoltMat44(threeMat)
 
@@ -193,24 +139,7 @@ describe("Three to Jolt Conversions", async () => {
     })
 
     test("THREE.Matrix4 [XY Translation] -> Jolt.Mat44", () => {
-        const threeMat = new THREE.Matrix4(
-            1,
-            0,
-            0,
-            3,
-            0,
-            1,
-            0,
-            5,
-            0,
-            0,
-            1,
-            0,
-            0,
-            0,
-            0,
-            1
-        )
+        const threeMat = new THREE.Matrix4(1, 0, 0, 3, 0, 1, 0, 5, 0, 0, 1, 0, 0, 0, 0, 1)
 
         const jMat = ThreeMatrix4_JoltMat44(threeMat)
 
@@ -254,9 +183,7 @@ describe("Mirabuf to Three Conversions", () => {
 
     test("Mirabuf.Transform [+X Axis Rotation] -> THREE.Matrix4", () => {
         const miraMat = new mirabuf.Transform()
-        miraMat.spatialMatrix = [
-            1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1,
-        ]
+        miraMat.spatialMatrix = [1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1]
 
         // console.debug(`Mira: ${miraMatToString(miraMat)}`);
 
@@ -273,9 +200,7 @@ describe("Mirabuf to Three Conversions", () => {
 
     test("Mirabuf.Transform [-X Axis Rotation] -> THREE.Matrix4", () => {
         const miraMat = new mirabuf.Transform()
-        miraMat.spatialMatrix = [
-            1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1,
-        ]
+        miraMat.spatialMatrix = [1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1]
 
         // console.debug(`Mira: ${miraMatToString(miraMat)}`);
 
@@ -298,10 +223,7 @@ describe("Jolt to Three Conversions", () => {
         for (let c = 0; c < 4; c++) {
             const column = jM.GetColumn4(c)
             for (let r = 0; r < 4; r++) {
-                expect(threeArr[c * 4 + r]).toBeCloseTo(
-                    column.GetComponent(r),
-                    4
-                )
+                expect(threeArr[c * 4 + r]).toBeCloseTo(column.GetComponent(r), 4)
             }
             JOLT.destroy(column)
         }

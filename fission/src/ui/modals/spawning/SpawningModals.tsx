@@ -35,9 +35,7 @@ export const AddRobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { showTooltip } = useTooltipControlContext()
     const { closeModal } = useModalControlContext()
 
-    const [remoteRobots, setRemoteRobots] = useState<MirabufEntry[] | null>(
-        null
-    )
+    const [remoteRobots, setRemoteRobots] = useState<MirabufEntry[] | null>(null)
 
     useEffect(() => {
         ;(async () => {
@@ -81,28 +79,12 @@ export const AddRobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     }
 
     return (
-        <Modal
-            name={"Robot Selection"}
-            icon={<FaPlus />}
-            modalId={modalId}
-            acceptEnabled={false}
-        >
+        <Modal name={"Robot Selection"} icon={<FaPlus />} modalId={modalId} acceptEnabled={false}>
             <div className="flex overflow-y-auto flex-col gap-2 min-w-[50vw] max-h-[60vh] bg-background-secondary rounded-md p-2">
-                <Label
-                    size={LabelSize.Medium}
-                    className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]"
-                >
-                    {remoteRobots
-                        ? `${remoteRobots.length} Default Robots`
-                        : "No Default Robots"}
+                <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
+                    {remoteRobots ? `${remoteRobots.length} Default Robots` : "No Default Robots"}
                 </Label>
-                {remoteRobots ? (
-                    remoteRobots!.map(x =>
-                        MirabufCard({ entry: x, select: selectRobot })
-                    )
-                ) : (
-                    <></>
-                )}
+                {remoteRobots ? remoteRobots!.map(x => MirabufCard({ entry: x, select: selectRobot })) : <></>}
             </div>
         </Modal>
     )
@@ -111,9 +93,7 @@ export const AddRobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 export const AddFieldsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { closeModal } = useModalControlContext()
 
-    const [remoteFields, setRemoteFields] = useState<MirabufEntry[] | null>(
-        null
-    )
+    const [remoteFields, setRemoteFields] = useState<MirabufEntry[] | null>(null)
 
     useEffect(() => {
         ;(async () => {
@@ -151,28 +131,12 @@ export const AddFieldsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     }
 
     return (
-        <Modal
-            name={"Field Selection"}
-            icon={<FaPlus />}
-            modalId={modalId}
-            acceptEnabled={false}
-        >
+        <Modal name={"Field Selection"} icon={<FaPlus />} modalId={modalId} acceptEnabled={false}>
             <div className="flex overflow-y-auto flex-col gap-2 min-w-[50vw] max-h-[60vh] bg-background-secondary rounded-md p-2">
-                <Label
-                    size={LabelSize.Medium}
-                    className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]"
-                >
-                    {remoteFields
-                        ? `${remoteFields.length} Default Fields`
-                        : "No Default Fields"}
+                <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
+                    {remoteFields ? `${remoteFields.length} Default Fields` : "No Default Fields"}
                 </Label>
-                {remoteFields ? (
-                    remoteFields!.map(x =>
-                        MirabufCard({ entry: x, select: selectField })
-                    )
-                ) : (
-                    <></>
-                )}
+                {remoteFields ? remoteFields!.map(x => MirabufCard({ entry: x, select: selectField })) : <></>}
             </div>
         </Modal>
     )

@@ -1,12 +1,6 @@
 import Tooltip from "@/components/Tooltip"
 import { AnimatePresence, motion } from "framer-motion"
-import React, {
-    ReactNode,
-    createContext,
-    useCallback,
-    useContext,
-    useState,
-} from "react"
+import React, { ReactNode, createContext, useCallback, useContext, useState } from "react"
 
 export type TooltipControl = { control: string; description: string }
 export type TooltipType = "controls"
@@ -14,33 +8,21 @@ export type TooltipType = "controls"
 export const TOOLTIP_DURATION: number = 7_000
 
 type TooltipControlContextType = {
-    showTooltip: (
-        type: TooltipType,
-        controls?: TooltipControl[],
-        duration?: number
-    ) => void
+    showTooltip: (type: TooltipType, controls?: TooltipControl[], duration?: number) => void
     children?: ReactNode
 }
 
-const TooltipControlContext = createContext<TooltipControlContextType | null>(
-    null
-)
+const TooltipControlContext = createContext<TooltipControlContextType | null>(null)
 
 export const useTooltipControlContext = () => {
     const context = useContext(TooltipControlContext)
-    if (!context)
-        throw new Error(
-            "useTooltipControlContext must be used within a TooltipControlProvider"
-        )
+    if (!context) throw new Error("useTooltipControlContext must be used within a TooltipControlProvider")
     return context
 }
 
 let tooltip: ReactNode
 
-export const TooltipControlProvider: React.FC<TooltipControlContextType> = ({
-    children,
-    ...methods
-}) => {
+export const TooltipControlProvider: React.FC<TooltipControlContextType> = ({ children, ...methods }) => {
     return (
         <TooltipControlContext.Provider value={methods}>
             <AnimatePresence>
@@ -84,11 +66,7 @@ export const useTooltipManager = () => {
     const [timeout, setTimeoutState] = useState<NodeJS.Timeout | null>(null)
 
     const showTooltip = useCallback(
-        (
-            type: TooltipType,
-            controls?: TooltipControl[],
-            duration: number = TOOLTIP_DURATION
-        ) => {
+        (type: TooltipType, controls?: TooltipControl[], duration: number = TOOLTIP_DURATION) => {
             tooltip = <Tooltip type={type} controls={controls} />
             setDuration(duration)
 

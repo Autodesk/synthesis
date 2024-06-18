@@ -20,8 +20,7 @@ class SliderStimulus extends EncoderStimulus {
 
     private _lastPosition: number = 0.0
     public Update(deltaT: number): void {
-        this._velocity =
-            (this._slider.GetCurrentPosition() - this._lastPosition) / deltaT
+        this._velocity = (this._slider.GetCurrentPosition() - this._lastPosition) / deltaT
         this._lastPosition = this._slider.GetCurrentPosition()
     }
 }

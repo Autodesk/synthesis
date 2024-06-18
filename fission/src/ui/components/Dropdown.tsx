@@ -1,21 +1,13 @@
 import React, { ReactNode, useState } from "react"
 import Label, { LabelSize } from "./Label"
-import {
-    Select as BaseSelect,
-    SelectProps,
-    selectClasses,
-    SelectRootSlotProps,
-} from "@mui/base/Select"
+import { Select as BaseSelect, SelectProps, selectClasses, SelectRootSlotProps } from "@mui/base/Select"
 import { Option as BaseOption, optionClasses } from "@mui/base/Option"
 import { styled } from "@mui/system"
 import { Button } from "@mui/base/Button"
 import UnfoldMoreRoundedIcon from "@mui/icons-material/UnfoldMoreRounded"
 import { SelectValue } from "@mui/base/useSelect"
 
-const Select = React.forwardRef(function Select<
-    TValue extends {},
-    Multiple extends boolean,
->(
+const Select = React.forwardRef(function Select<TValue extends {}, Multiple extends boolean>(
     props: SelectProps<TValue, Multiple>,
     ref: React.ForwardedRef<HTMLButtonElement>
 ) {
@@ -27,17 +19,9 @@ const Select = React.forwardRef(function Select<
     }
 
     // TODO: list options don't render at the same width as select root button
-    return (
-        <BaseSelect
-            {...props}
-            ref={ref}
-            slots={slots}
-            slotProps={{ listbox: {}, popup: { disablePortal: true } }}
-        />
-    )
+    return <BaseSelect {...props} ref={ref} slots={slots} slotProps={{ listbox: {}, popup: { disablePortal: true } }} />
 }) as <TValue extends {}, Multiple extends boolean>(
-    props: SelectProps<TValue, Multiple> &
-        React.RefAttributes<HTMLButtonElement>
+    props: SelectProps<TValue, Multiple> & React.RefAttributes<HTMLButtonElement>
 ) => JSX.Element
 
 type DropdownProps = {
@@ -48,12 +32,7 @@ type DropdownProps = {
     onSelect: (opt: string) => void
 }
 
-const Dropdown: React.FC<DropdownProps> = ({
-    label,
-    className,
-    options,
-    onSelect,
-}) => {
+const Dropdown: React.FC<DropdownProps> = ({ label, className, options, onSelect }) => {
     const [optionList, setOptionList] = useState(options)
 
     type DropdownOptionProps = {
@@ -68,14 +47,7 @@ const Dropdown: React.FC<DropdownProps> = ({
             <div className="relative w-full">
                 <Select
                     defaultValue={optionList[0]}
-                    onChange={(
-                        _event:
-                            | React.MouseEvent
-                            | React.KeyboardEvent
-                            | React.FocusEvent
-                            | null,
-                        value: any
-                    ) =>
+                    onChange={(_event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null, value: any) =>
                         typeof value === "string" && onSelect && onSelect(value)
                     }
                 >
@@ -90,10 +62,7 @@ const Dropdown: React.FC<DropdownProps> = ({
     )
 }
 
-const CustomButton = React.forwardRef(function CustomButton<
-    TValue extends {},
-    Multiple extends boolean,
->(
+const CustomButton = React.forwardRef(function CustomButton<TValue extends {}, Multiple extends boolean>(
     props: SelectRootSlotProps<TValue, Multiple>,
     ref: React.ForwardedRef<HTMLButtonElement>
 ) {
@@ -110,11 +79,7 @@ const StyledButton = styled(Button)`
     position: relative;
     text-align: left;
     width: 100%;
-    background-image: linear-gradient(
-        to right,
-        var(--interactive-element-left),
-        var(--interactive-element-right)
-    );
+    background-image: linear-gradient(to right, var(--interactive-element-left), var(--interactive-element-right));
     border-radius: 0.375rem;
     border: none;
     outline: none;
@@ -137,11 +102,7 @@ const StyledButton = styled(Button)`
 const Listbox = styled("ul")`
     box-sizing: border-box;
     width: 100%;
-    background-image: linear-gradient(
-        to right,
-        var(--interactive-element-right),
-        var(--interactive-element-left)
-    );
+    background-image: linear-gradient(to right, var(--interactive-element-right), var(--interactive-element-left));
     border-radius: 1rem;
     padding: 8px;
 `

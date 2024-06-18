@@ -51,11 +51,7 @@ import ScoreboardPanel from "./panels/information/ScoreboardPanel"
 import DriverStationPanel from "./panels/simulation/DriverStationPanel"
 import ManageAssembliesModal from "./modals/spawning/ManageAssembliesModal.tsx"
 import World from "./systems/World.ts"
-import {
-    AddRobotsModal,
-    AddFieldsModal,
-    SpawningModal,
-} from "./modals/spawning/SpawningModals.tsx"
+import { AddRobotsModal, AddFieldsModal, SpawningModal } from "./modals/spawning/SpawningModals.tsx"
 import ImportMirabufModal from "./modals/mirabuf/ImportMirabufModal.tsx"
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
@@ -68,10 +64,8 @@ function Synthesis() {
         window.close()
     }
 
-    const { openModal, closeModal, getActiveModalElement } =
-        useModalManager(initialModals)
-    const { openPanel, closePanel, closeAllPanels, getActivePanelElements } =
-        usePanelManager(initialPanels)
+    const { openModal, closeModal, getActiveModalElement } = useModalManager(initialModals)
+    const { openPanel, closePanel, closeAllPanels, getActivePanelElements } = usePanelManager(initialPanels)
     const { showTooltip } = useTooltipManager()
 
     const { currentTheme, applyTheme } = useTheme()
@@ -102,26 +96,17 @@ function Synthesis() {
                 .catch(console.error)
 
             await (async () => {
-                if (
-                    !miraAssembly ||
-                    !(miraAssembly instanceof mirabuf.Assembly)
-                ) {
+                if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
                     return
                 }
 
                 const parser = new MirabufParser(miraAssembly)
-                if (
-                    parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable
-                ) {
-                    console.error(
-                        `Assembly Parser produced significant errors for '${miraAssembly.info!.name!}'`
-                    )
+                if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
+                    console.error(`Assembly Parser produced significant errors for '${miraAssembly.info!.name!}'`)
                     return
                 }
 
-                const mirabufSceneObject = new MirabufSceneObject(
-                    new MirabufInstance(parser)
-                )
+                const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser))
                 World.SceneRenderer.RegisterSceneObject(mirabufSceneObject)
             })()
         }
@@ -146,11 +131,7 @@ function Synthesis() {
     return (
         <AnimatePresence>
             <TooltipControlProvider
-                showTooltip={(
-                    type: TooltipType,
-                    controls?: TooltipControl[],
-                    duration: number = TOOLTIP_DURATION
-                ) => {
+                showTooltip={(type: TooltipType, controls?: TooltipControl[], duration: number = TOOLTIP_DURATION) => {
                     showTooltip(type, controls, duration)
                 }}
             >
@@ -171,11 +152,7 @@ function Synthesis() {
                             <Scene useStats={true} />
                             <MainHUD />
                             {panelElements.length > 0 && panelElements}
-                            {modalElement && (
-                                <div className="absolute w-full h-full left-0 top-0">
-                                    {modalElement}
-                                </div>
-                            )}
+                            {modalElement && <div className="absolute w-full h-full left-0 top-0">{modalElement}</div>}
                             <ToastContainer />
                         </ToastProvider>
                     </PanelControlProvider>
@@ -218,11 +195,7 @@ const initialModals = [
 ]
 
 const initialPanels: ReactElement[] = [
-    <RobotSwitchPanel
-        panelId="multibot"
-        openLocation="right"
-        sidePadding={8}
-    />,
+    <RobotSwitchPanel panelId="multibot" openLocation="right" sidePadding={8} />,
     <DriverStationPanel panelId="driver-station" />,
     <SpawnLocationsPanel panelId="spawn-locations" />,
     <ScoreboardPanel panelId="scoreboard" />,

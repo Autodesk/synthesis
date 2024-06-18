@@ -1,10 +1,7 @@
 import JOLT from "../loading/JoltSyncLoader.ts"
 import Jolt from "@barclah/jolt-physics"
 import * as THREE from "three"
-import {
-    JoltVec3_ThreeVector3,
-    JoltQuat_ThreeQuaternion,
-} from "../TypeConversions.ts"
+import { JoltVec3_ThreeVector3, JoltQuat_ThreeQuaternion } from "../TypeConversions.ts"
 
 export const LAYER_NOT_MOVING = 0
 export const LAYER_MOVING = 1
@@ -47,13 +44,8 @@ export function getThreeObjForBody(body: Jolt.Body, color: THREE.Color) {
     switch (shape.GetSubType()) {
         case JOLT.EShapeSubType_Box: {
             const boxShape = JOLT.castObject(shape, JOLT.BoxShape)
-            const extent = JoltVec3_ThreeVector3(
-                boxShape.GetHalfExtent()
-            ).multiplyScalar(2)
-            threeObj = new THREE.Mesh(
-                new THREE.BoxGeometry(extent.x, extent.y, extent.z, 1, 1, 1),
-                material
-            )
+            const extent = JoltVec3_ThreeVector3(boxShape.GetHalfExtent()).multiplyScalar(2)
+            threeObj = new THREE.Mesh(new THREE.BoxGeometry(extent.x, extent.y, extent.z, 1, 1, 1), material)
             threeObj.receiveShadow = true
             threeObj.castShadow = true
             break
@@ -82,12 +74,7 @@ export function getThreeObjForBody(body: Jolt.Body, color: THREE.Color) {
     return threeObj
 }
 
-export function addToThreeScene(
-    scene: THREE.Scene,
-    body: Jolt.Body,
-    color: THREE.Color,
-    dynamicObjects: THREE.Mesh[]
-) {
+export function addToThreeScene(scene: THREE.Scene, body: Jolt.Body, color: THREE.Color, dynamicObjects: THREE.Mesh[]) {
     const threeObj = getThreeObjForBody(body, color)
     if (!threeObj) return
     threeObj.userData.body = body
