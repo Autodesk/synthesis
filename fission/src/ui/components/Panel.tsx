@@ -2,28 +2,37 @@ import React, { ReactNode } from "react"
 import { usePanelControlContext } from "../PanelContext"
 import { CssTransition } from "@mui/base/Transitions"
 
-export type OpenLocation = "top-left" | "top" | "top-right" | "left" | "center" | "right" | "bottom-left" | "bottom" | "bottom-right";
+export type OpenLocation =
+    | "top-left"
+    | "top"
+    | "top-right"
+    | "left"
+    | "center"
+    | "right"
+    | "bottom-left"
+    | "bottom"
+    | "bottom-right"
 
 const getLocationClasses = (openLocation: OpenLocation) => {
     switch (openLocation) {
         case "top-left":
-            return "absolute left-0 top-0";
+            return "absolute left-0 top-0"
         case "top":
-            return "absolute left-1/2 top-0 -translate-x-1/2";
+            return "absolute left-1/2 top-0 -translate-x-1/2"
         case "top-right":
-            return "absolute right-0 top-0";
+            return "absolute right-0 top-0"
         case "left":
-            return "absolute left-0 top-1/2 -translate-y-1/2";
+            return "absolute left-0 top-1/2 -translate-y-1/2"
         case "center":
-            return "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2";
+            return "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
         case "right":
-            return "absolute right-0 top-1/2 -translate-y-1/2";
+            return "absolute right-0 top-1/2 -translate-y-1/2"
         case "bottom-left":
-            return "absolute left-0 bottom-0";
+            return "absolute left-0 bottom-0"
         case "bottom":
-            return "absolute left-1/2 bottom-0 -translate-x-1/2";
+            return "absolute left-1/2 bottom-0 -translate-x-1/2"
         case "bottom-right":
-            return "absolute right-0 bottom-0";
+            return "absolute right-0 bottom-0"
     }
 }
 
@@ -34,7 +43,7 @@ export type PanelPropsImpl = {
 
 type PanelProps = {
     panelId: string
-    openLocation?: OpenLocation,
+    openLocation?: OpenLocation
     name?: string
     icon?: ReactNode | string
     onCancel?: () => void
@@ -67,7 +76,7 @@ const styles = `
     width: 0px;
     height: 0px;
 }
-`;
+`
 
 const Panel: React.FC<PanelProps> = ({
     children,
@@ -97,15 +106,16 @@ const Panel: React.FC<PanelProps> = ({
         ) : (
             icon
         )
-    openLocation ||= "center";
-    const locationClasses = getLocationClasses(openLocation);
-    console.log(panelId, openLocation, locationClasses);
+    openLocation ||= "center"
+    const locationClasses = getLocationClasses(openLocation)
+    console.log(panelId, openLocation, locationClasses)
     return (
         <div>
             <style>{styles}</style>
             <div
                 className={`${locationClasses} ${className || ""} bg-background text-main-text m-auto border-5 rounded-2xl shadow-sm shadow-slate-800`}
-                key={"panel-" + panelId}>
+                key={"panel-" + panelId}
+            >
                 {name && (
                     <div id="header" className="flex items-center gap-8 h-16">
                         <span className="flex justify-center align-center ml-8 text-icon">
@@ -118,8 +128,9 @@ const Panel: React.FC<PanelProps> = ({
                 )}
                 <div
                     id="content"
-                    className={`${contentClassName} ${!contentClassName?.includes("mx") ? "mx-16" : ""
-                        } flex flex-col gap-4 max-h-[75vh]`}
+                    className={`${contentClassName} ${
+                        !contentClassName?.includes("mx") ? "mx-16" : ""
+                    } flex flex-col gap-4 max-h-[75vh]`}
                 >
                     {children}
                 </div>
@@ -136,10 +147,11 @@ const Panel: React.FC<PanelProps> = ({
                                     closePanel(panelId)
                                     if (!cancelBlocked && onCancel) onCancel()
                                 }}
-                                className={`${cancelBlocked
-                                    ? "bg-interactive-background"
-                                    : "bg-cancel-button"
-                                    } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
+                                className={`${
+                                    cancelBlocked
+                                        ? "bg-interactive-background"
+                                        : "bg-cancel-button"
+                                } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
                             />
                         )}
                         {middleEnabled && (
@@ -149,10 +161,11 @@ const Panel: React.FC<PanelProps> = ({
                                 onClick={() => {
                                     if (!middleBlocked && onMiddle) onMiddle()
                                 }}
-                                className={`${middleBlocked
-                                    ? "bg-interactive-background"
-                                    : "bg-accept-button"
-                                    } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
+                                className={`${
+                                    middleBlocked
+                                        ? "bg-interactive-background"
+                                        : "bg-accept-button"
+                                } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
                             />
                         )}
                         {acceptEnabled && (
@@ -163,10 +176,11 @@ const Panel: React.FC<PanelProps> = ({
                                     closePanel(panelId)
                                     if (!acceptBlocked && onAccept) onAccept()
                                 }}
-                                className={`${acceptBlocked
-                                    ? "bg-interactive-background"
-                                    : "bg-accept-button"
-                                    } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
+                                className={`${
+                                    acceptBlocked
+                                        ? "bg-interactive-background"
+                                        : "bg-accept-button"
+                                } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
                             />
                         )}
                     </div>

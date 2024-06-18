@@ -2,7 +2,10 @@ import { useTooltipControlContext } from "@/ui/TooltipContext"
 import Button from "@/components/Button"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 
-const SpawnLocationsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation }) => {
+const SpawnLocationsPanel: React.FC<PanelPropsImpl> = ({
+    panelId,
+    openLocation,
+}) => {
     const robotsPerAlliance = 3
     const alliances = 2
 
@@ -13,7 +16,11 @@ const SpawnLocationsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation }
     ])
 
     return (
-        <Panel name="Set Spawn Locations" panelId={panelId} openLocation={openLocation}>
+        <Panel
+            name="Set Spawn Locations"
+            panelId={panelId}
+            openLocation={openLocation}
+        >
             <table>
                 <tbody>
                     {Array(alliances)
