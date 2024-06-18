@@ -157,9 +157,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         super().__init__()
         self.log = logging.getLogger(f"{INTERNAL_ID}.UI.{self.__class__.__name__}")
         self.designAttrs = adsk.core.Application.get().activeProduct.attributes
-        # self.design = adsk.fusion.Design
-        # app = adsk.core.Application.get()
-        # self.designAttrs = adsk.fusion.Design.cast(app.activeProduct).attributes
 
     def notify(self, args):
         try:
@@ -175,32 +172,13 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             previous = None
             saved = Helper.previouslyConfigured()
 
-            ui = adsk.core.Application.get().userInterface
-            # try:
-            #     design_compress = self.designAttrs.itemByName("SynthesisExporter", "compress")
-            #     global compress
-            #     compress = bool(design_compress.value) if design_compress else True
-            #     ui.messageBox("Compress: " + str(compress))
-            # except:
-            #     ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
-            #     global compress
-            #     compress = True
-
+            # Transition: AARD-1687
             designCompress = self.designAttrs.itemByName("SynthesisExporter", "compress")
             global compress
             if designCompress:
-                ui.messageBox(f"Compress: {designCompress}")
-                compress = True if designCompress == "True" else False
+                compress = True if designCompress.value == "True" else False
             else:
-                ui.messageBox("designCompress is None")
                 compress = True
-
-            # designCompress = self.design.findAttributes("SynthesisExporter", "compress")
-
-            # if designCompress:
-            #     ui.messageBox(f"Found a compress attr: {designCompress}")
-            # else:
-            #     ui.messageBox(f"Nothing found {designCompress}")
 
             if type(saved) == str:
                 try:
@@ -1214,7 +1192,6 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
         self.current = SerialCommand()
         self.fp = fp
         self.designAttrs = adsk.core.Application.get().activeProduct.attributes
-        # self.designAttrs = adsk.fusion.Design.attributes
 
     def notify(self, args):
         try:
@@ -1472,11 +1449,14 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                     _mode = Mode.SynthesisField
 
                 global compress
+                compress = (
+                    eventArgs.command.commandInputs.itemById("advanced_settings")
+                    .children.itemById("exporter_settings")
+                    .children.itemById("compress")
+                ).value
 
                 # Transition: AARD-1687
-                self.designAttrs.add("SynthesisExporter", "compress", str("some other random value"))
-                ui = adsk.core.Application.get().userInterface
-                ui.messageBox(f"Compress: {str(compress)}")
+                self.designAttrs.add("SynthesisExporter", "compress", str(compress))
 
                 options = ParseOptions(
                     savepath,
