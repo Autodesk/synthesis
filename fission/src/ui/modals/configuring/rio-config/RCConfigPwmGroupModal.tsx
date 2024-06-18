@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { useModalControlContext } from "@/ModalContext"
+import { useModalControlContext } from "@/ui/ModalContext"
 import { FaPlus } from "react-icons/fa6"
 import ScrollView from "@/components/ScrollView"
 import Stack, { StackDirection } from "@/components/Stack"

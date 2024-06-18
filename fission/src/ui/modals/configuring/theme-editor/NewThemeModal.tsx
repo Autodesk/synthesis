@@ -1,9 +1,9 @@
 import React, { useState } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { useModalControlContext } from "@/ModalContext"
+import { useModalControlContext } from "@/ui/ModalContext"
 import { FaPlus } from "react-icons/fa6"
 import Input from "@/components/Input"
-import { useTheme } from "@/ThemeContext"
+import { useTheme } from "@/ui/ThemeContext"
 
 const NewThemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()

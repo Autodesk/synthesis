@@ -6,17 +6,17 @@ import MirabufParser, { ParseErrorSeverity } from './mirabuf/MirabufParser.ts';
 import MirabufInstance from './mirabuf/MirabufInstance.ts';
 import { AnimatePresence, motion } from "framer-motion"
 import { ReactElement, useEffect } from "react"
-import { ModalControlProvider, useModalManager } from "@/ModalContext"
-import { PanelControlProvider, usePanelManager } from "@/PanelContext"
-import { useTheme } from "@/ThemeContext"
-import { ToastContainer, ToastProvider } from "@/ToastContext"
+import { ModalControlProvider, useModalManager } from "@/ui/ModalContext"
+import { PanelControlProvider, usePanelManager } from "@/ui/PanelContext"
+import { useTheme } from "@/ui/ThemeContext"
+import { ToastContainer, ToastProvider } from "@/ui/ToastContext"
 import {
     TOOLTIP_DURATION,
     TooltipControl,
     TooltipControlProvider,
     TooltipType,
     useTooltipManager,
-} from "@/TooltipContext"
+} from "@/ui/TooltipContext"
 import MainHUD from "@/components/MainHUD"
 import DownloadAssetsModal from "@/modals/DownloadAssetsModal"
 import ExitSynthesisModal from "@/modals/ExitSynthesisModal"

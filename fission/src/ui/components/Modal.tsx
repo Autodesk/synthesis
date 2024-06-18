@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react"
-import { useModalControlContext } from "@/ModalContext"
+import { useModalControlContext } from "@/ui/ModalContext"
 
 export type ModalPropsImpl = {
     modalId: string

@@ -1,6 +1,6 @@
 import React, { ReactNode, createContext, useContext, useState } from "react"
 import { RgbaColor } from "react-colorful"
-import { addGlobalFunc } from "./util/dom"
+import { addGlobalFunc } from "@/util/dom"
 
 export const defaultThemeName = "Default"
 export type ColorName =

@@ -1,4 +1,4 @@
-import { useTooltipControlContext } from "@/TooltipContext"
+import { useTooltipControlContext } from "@/ui/TooltipContext"
 import Button from "@/components/Button"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 

@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Dropdown from "@/components/Dropdown"
 import { FaMagnifyingGlass } from "react-icons/fa6"
-import { TooltipControl, useTooltipControlContext } from "@/TooltipContext"
+import { TooltipControl, useTooltipControlContext } from "@/ui/TooltipContext"
 
 type ViewType = "Orbit" | "Freecam" | "Overview" | "Driver Station"
 

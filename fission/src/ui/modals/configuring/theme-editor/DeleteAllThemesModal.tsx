@@ -1,8 +1,8 @@
 import React from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { GrFormClose } from "react-icons/gr"
-import { useModalControlContext } from "@/ModalContext"
-import { useTheme } from "@/ThemeContext"
+import { useModalControlContext } from "@/ui/ModalContext"
+import { useTheme } from "@/ui/ThemeContext"
 
 const DeleteAllThemesModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()

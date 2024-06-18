@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { FaCar } from "react-icons/fa6"
 import Dropdown from "@/components/Dropdown"
-import { TooltipControl, useTooltipControlContext } from "@/TooltipContext"
+import { TooltipControl, useTooltipControlContext } from "@/ui/TooltipContext"
 
 type DrivetrainType = "None" | "Tank" | "Arcade" | "Swerve"
 

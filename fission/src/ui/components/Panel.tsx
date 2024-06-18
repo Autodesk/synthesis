@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react"
-import { usePanelControlContext } from "@/PanelContext"
+import { usePanelControlContext } from "@/ui/PanelContext"
 
 export type PanelPropsImpl = {
     panelId: string

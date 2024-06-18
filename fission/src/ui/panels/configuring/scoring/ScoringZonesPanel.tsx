@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { usePanelControlContext } from "@/PanelContext"
+import { usePanelControlContext } from "@/ui/PanelContext"
 import Button from "@/components/Button"
 import Label, { LabelSize } from "@/components/Label"
 import Panel, { PanelPropsImpl } from "@/components/Panel"

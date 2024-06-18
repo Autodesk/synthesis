@@ -4,7 +4,7 @@ import Panel, { PanelPropsImpl } from "@/components/Panel"
 import { IoPeople } from "react-icons/io5"
 import Stack, { StackDirection } from "@/components/Stack"
 import Button from "@/components/Button"
-import { useModalControlContext } from "@/ModalContext"
+import { useModalControlContext } from "@/ui/ModalContext"
 import Checkbox from "@/components/Checkbox"
 
 const RobotSwitchPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {

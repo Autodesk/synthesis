@@ -3,11 +3,11 @@ import Modal, { ModalPropsImpl } from "../../components/Modal"
 import { FaPlus } from "react-icons/fa6"
 import Stack, { StackDirection } from "../../components/Stack"
 import Button, { ButtonSize } from "../../components/Button"
-import { useModalControlContext } from "@/ModalContext"
+import { useModalControlContext } from "@/ui/ModalContext"
 import Label, { LabelSize } from "@/components/Label"
 import { CreateMirabufFromUrl } from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
-import { useTooltipControlContext } from "@/TooltipContext"
+import { useTooltipControlContext } from "@/ui/TooltipContext"
 
 interface MirabufEntry {
     displayName: string;

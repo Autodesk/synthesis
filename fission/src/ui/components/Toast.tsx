@@ -1,5 +1,5 @@
 import React, { ReactElement, useEffect } from "react"
-import { ToastData, useToastContext } from "@/ToastContext"
+import { ToastData, useToastContext } from "@/ui/ToastContext"
 import { GrFormClose } from "react-icons/gr"
 import { BsFillWrenchAdjustableCircleFill } from "react-icons/bs"
 import { AiFillWarning } from "react-icons/ai"
