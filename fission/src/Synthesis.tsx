@@ -81,74 +81,7 @@ function Synthesis() {
     }, [currentTheme, applyTheme])
 
     const panelElements = getActivePanelElements()
-
-    const motionPanelElements = panelElements.map((el, i) => (
-        <motion.div
-            initial={{
-                scale: 0,
-                opacity: 0,
-                width: "min-content",
-                height: "min-content",
-            }}
-            animate={{
-                scale: 1,
-                opacity: 1,
-                width: "min-content",
-                height: "min-content",
-            }}
-            exit={{
-                scale: 0,
-                opacity: 0,
-                width: "min-content",
-                height: "min-content",
-            }}
-            transition={{
-                type: "spring",
-                stiffness: 300,
-                damping: 20,
-            }}
-            style={{ translateX: "-50%", translateY: "-50%" }}
-            className="absolute left-1/2 top-1/2"
-            key={"panel-" + i}
-        >
-            {el}
-        </motion.div>
-    ))
-
     const modalElement = getActiveModalElement()
-    const motionModalElement =
-        modalElement == null ? null : (
-            <motion.div
-                initial={{
-                    scale: 0,
-                    opacity: 0,
-                    width: "min-content",
-                    height: "min-content",
-                }}
-                animate={{
-                    scale: 1,
-                    opacity: 1,
-                    width: "min-content",
-                    height: "min-content",
-                }}
-                exit={{
-                    scale: 0,
-                    opacity: 0,
-                    width: "min-content",
-                    height: "min-content",
-                }}
-                transition={{
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 25,
-                }}
-                style={{ translateX: "-50%", translateY: "-50%" }}
-                className="absolute left-1/2 top-1/2"
-                key={"modal"}
-            >
-                {getActiveModalElement()}
-            </motion.div>
-        )
 
     useEffect(() => {
         World.InitWorld()
@@ -237,11 +170,11 @@ function Synthesis() {
                         <ToastProvider>
                             <Scene useStats={true} />
                             <MainHUD />
-                            {motionPanelElements.length > 0 &&
-                                motionPanelElements}
-                            {motionModalElement && (
+                            {panelElements.length > 0 &&
+                                panelElements}
+                            {modalElement && (
                                 <div className="absolute w-full h-full left-0 top-0">
-                                    {motionModalElement}
+                                    {modalElement}
                                 </div>
                             )}
                             <ToastContainer />
@@ -286,7 +219,7 @@ const initialModals = [
 ]
 
 const initialPanels: ReactElement[] = [
-    <RobotSwitchPanel panelId="multibot" />,
+    <RobotSwitchPanel panelId="multibot" openLocation="right" />,
     <DriverStationPanel panelId="driver-station" />,
     <SpawnLocationsPanel panelId="spawn-locations" />,
     <ScoreboardPanel panelId="scoreboard" />,
