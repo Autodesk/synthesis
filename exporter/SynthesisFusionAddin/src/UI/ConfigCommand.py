@@ -156,7 +156,8 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
     def __init__(self, configure):
         super().__init__()
         self.log = logging.getLogger(f"{INTERNAL_ID}.UI.{self.__class__.__name__}")
-        self.designAttrs = adsk.core.Application.get().activeProduct.attributes
+        # self.designAttrs = adsk.core.Application.get().activeProduct.attributes
+        self.design = adsk.fusion.Design
 
     def notify(self, args):
         try:
@@ -183,14 +184,21 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             #     global compress
             #     compress = True
 
-            designCompress = self.designAttrs.itemByName("SynthesisExporter", "compress")
-            global compress
+            # designCompress = self.designAttrs.itemByName("SynthesisExporter", "compress")
+            # global compress
+            # if designCompress:
+            #     ui.messageBox(f"Compress: {designCompress}")
+            #     compress = True if designCompress == "True" else False
+            # else:
+            #     ui.messageBox("designCompress is None")
+            #     compress = True
+
+            designCompress = self.design.findAttributes("SynthesisExporter", "compress")
+
             if designCompress:
-                ui.messageBox(f"Compress: {designCompress}")
-                compress = True if designCompress == "True" else False
+                ui.messageBox(f"Found a compress attr: {designCompress}")
             else:
-                ui.messageBox("designCompress is None")
-                compress = True
+                ui.messageBox(f"Nothing found {designCompress}")
 
             if type(saved) == str:
                 try:
@@ -1203,7 +1211,8 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
         self.previous = previous
         self.current = SerialCommand()
         self.fp = fp
-        self.designAttrs = adsk.core.Application.get().activeProduct.attributes
+        # self.designAttrs = adsk.core.Application.get().activeProduct.attributes
+        self.designAttrs = adsk.fusion.Design.attributes
 
     def notify(self, args):
         try:
