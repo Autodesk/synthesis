@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import SceneObject from './SceneObject';
 import WorldSystem from '../WorldSystem';
 
+import vertexShader from '@/shaders/vertex.glsl';
+import fragmentShader from '@/shaders/fragment.glsl';
+
 const CLEAR_COLOR = 0x121212;
 const GROUND_COLOR = 0x73937E
 
@@ -12,6 +15,8 @@ class SceneRenderer extends WorldSystem {
     private _mainCamera: THREE.PerspectiveCamera;
     private _scene: THREE.Scene;
     private _renderer: THREE.WebGLRenderer;
+    private _skybox: THREE.Mesh;
+    private _uTime: number = 0;
 
     private _sceneObjects: Map<number, SceneObject>;
 
@@ -80,6 +85,30 @@ class SceneRenderer extends WorldSystem {
         ground.receiveShadow = true;
         ground.castShadow = true;
         this._scene.add(ground);
+
+        // skybox
+        const currentTheme = (window as any).getTheme();
+        console.log('Current Theme:', currentTheme['Background']['color']['r']);
+
+        const geometry = new THREE.SphereGeometry(1000);
+        const material = new THREE.ShaderMaterial({
+            vertexShader: vertexShader,
+            fragmentShader: fragmentShader,
+            side: THREE.BackSide,
+            uniforms: {
+                rColor: { value: currentTheme['Background']['color']['r']},
+                gColor: { value: currentTheme['Background']['color']['g']},
+                bColor: { value: currentTheme['Background']['color']['b'] },
+                uTime: { value: this._uTime }
+            }
+        });
+
+        this._skybox = new THREE.Mesh(geometry, material);
+        this._skybox.receiveShadow = false;
+        this._skybox.castShadow = false;
+        this.scene.add(this._skybox); 
+
+
     }
 
     public UpdateCanvasSize() {
@@ -95,6 +124,8 @@ class SceneRenderer extends WorldSystem {
         });
 
         // controls.update(deltaTime); // TODO: Add controls?
+        this._skybox.position.copy(this._mainCamera.position);
+        this._uTime += 0.1;
         this._renderer.render(this._scene, this._mainCamera);
     }
 

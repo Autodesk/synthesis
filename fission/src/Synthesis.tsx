@@ -166,25 +166,25 @@ function Synthesis() {
 
 		const setup = async () => {
 
-			const miraAssembly = await LoadMirabufRemote(mira_path)
-				.catch(
-					_ => LoadMirabufRemote(DEFAULT_MIRA_PATH)
-				).catch(console.error);
+			// const miraAssembly = await LoadMirabufRemote(mira_path)
+			// 	.catch(
+			// 		_ => LoadMirabufRemote(DEFAULT_MIRA_PATH)
+			// 	).catch(console.error);
 
-            await (async () => {
-                if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
-                    return;
-                }
+            // await (async () => {
+            //     if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
+            //         return;
+            //     }
         
-                const parser = new MirabufParser(miraAssembly);
-                if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
-                    console.error(`Assembly Parser produced significant errors for '${miraAssembly.info!.name!}'`);
-                    return;
-                }
+            //     const parser = new MirabufParser(miraAssembly);
+            //     if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
+            //         console.error(`Assembly Parser produced significant errors for '${miraAssembly.info!.name!}'`);
+            //         return;
+            //     }
                 
-                const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser));
-                World.SceneRenderer.RegisterSceneObject(mirabufSceneObject);
-            })();
+            //     const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser));
+            //     World.SceneRenderer.RegisterSceneObject(mirabufSceneObject);
+            // })();
 		};
 		setup();
 
