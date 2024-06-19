@@ -109,4 +109,4 @@ class SynthesisBrain extends Brain {
     }
 }
 
-export default SynthesisBrain;32
+export default SynthesisBrain;
