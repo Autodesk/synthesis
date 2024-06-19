@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react"
 import Label, { LabelSize } from "./Label"
 import { Unstable_NumberInput as BaseNumberInput, } from "@mui/base/Unstable_NumberInput"
