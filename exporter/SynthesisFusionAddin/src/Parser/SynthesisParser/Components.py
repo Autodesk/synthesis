@@ -36,7 +36,9 @@ def _MapAllComponents(
 
         fill_info(partDefinition, component, comp_ref)
 
-        PhysicalProperties.GetPhysicalProperties(component, partDefinition.physical_data)
+        PhysicalProperties.GetPhysicalProperties(
+            component, partDefinition.physical_data
+        )
 
         if options.mode == 3:
             partDefinition.dynamic = False
@@ -56,7 +58,9 @@ def _MapAllComponents(
                 else:
                     _ParseMesh(body, options, part_body.triangle_mesh)
 
-                appearance_key = "{}_{}".format(body.appearance.name, body.appearance.id)
+                appearance_key = "{}_{}".format(
+                    body.appearance.name, body.appearance.id
+                )
                 # this should be appearance
                 if appearance_key in materials.appearances:
                     part_body.appearance_override = appearance_key
@@ -152,7 +156,9 @@ def __parseChildOccurrence(
     if options.mode == ParseOptions.Mode.SynthesisField:
         for x in options.gamepieces:
             if x.occurrence_token == mapConstant:
-                partsData.part_definitions[part.part_definition_reference].dynamic = True
+                partsData.part_definitions[
+                    part.part_definition_reference
+                ].dynamic = True
                 break
 
     part.transform.spatial_matrix.extend(occurrence.transform.asArray())
@@ -186,7 +192,9 @@ def GetMatrixWorld(occurrence):
 
 
 def _ParseBRep(
-    body: adsk.fusion.BRepBody, options: ParseOptions, trimesh: assembly_pb2.TriangleMesh
+    body: adsk.fusion.BRepBody,
+    options: ParseOptions,
+    trimesh: assembly_pb2.TriangleMesh,
 ) -> any:
     try:
         meshManager = body.meshManager
