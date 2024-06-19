@@ -34,14 +34,14 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
     const [hubs, setHubs] = useState<Hub[] | undefined>(undefined)
     useEffect(() => {
-        ;(async () => {
+        (async () => {
             setHubs(await getHubs())
         })()
     }, [])
 
     const [projects, setProjects] = useState<Project[] | undefined>(undefined)
     useEffect(() => {
-        ;(async () => {
+        (async () => {
             if (selectedHub) {
                 setProjects(await getProjects(selectedHub))
             }
@@ -50,7 +50,7 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
     const [folderData, setFolderData] = useState<Data[] | undefined>(undefined)
     useEffect(() => {
-        ;(async () => {
+        (async () => {
             if (selectedProject) {
                 console.log("Project has been selected")
                 if (selectedFolder) {

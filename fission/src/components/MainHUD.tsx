@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { BsCodeSquare } from "react-icons/bs"
-import { FaCar, FaGear, FaHouse, FaMagnifyingGlass, FaPlus } from "react-icons/fa6"
+import { FaCar, FaGear, FaMagnifyingGlass, FaPlus } from "react-icons/fa6"
 import { BiMenuAltLeft } from "react-icons/bi"
 import { GrFormClose } from "react-icons/gr"
 import { GiSteeringWheel } from "react-icons/gi"
@@ -41,7 +41,7 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
     )
 }
 
-export let MainHUD_AddToast: (type: ToastType, title: string, description: string) => void = (a, b, c) => {}
+export let MainHUD_AddToast: (type: ToastType, title: string, description: string) => void = (_a, _b, _c) => {}
 
 const variants = {
     open: { opacity: 1, y: "-50%", x: 0 },

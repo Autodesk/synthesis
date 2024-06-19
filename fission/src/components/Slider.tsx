@@ -1,8 +1,7 @@
-import React, { SyntheticEvent, useRef, useState } from "react"
+import React, { useState } from "react"
 import { Slider as BaseSlider } from "@mui/base/Slider"
 import { Mark } from "@mui/base/useSlider"
 import Label, { LabelSize } from "./Label"
-import { styled } from "@mui/system"
 
 type CustomFormatOptions = {
     prefix?: string
@@ -41,7 +40,7 @@ const Slider: React.FC<SliderProps> = ({ label, min, max, defaultValue, onChange
                 </Label>
             </div>
             <BaseSlider
-                onChange={(event: Event, value: number | number[], activeThumb: number) => {
+                onChange={(_event: Event, value: number | number[], _activeThumb: number) => {
                     if (typeof value === "number") {
                         setValue(value)
                         onChange && onChange(value)
@@ -64,10 +63,8 @@ const Slider: React.FC<SliderProps> = ({ label, min, max, defaultValue, onChange
                     track: {
                         className: `block absolute h-[12px] rounded-full bg-gradient-to-r from-interactive-element-left to-interactive-element-right`,
                     },
-                    thumb: (ownerState, { active, focused }) => {
-                        return {
-                            className: `display-none`,
-                        }
+                    thumb: {
+                        className: `display-none`,
                     },
                 }}
             />

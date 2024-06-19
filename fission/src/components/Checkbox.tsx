@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React from "react"
 import Stack, { StackDirection } from "./Stack"
 import Label, { LabelSize } from "./Label"
 import { Switch } from "@mui/base/Switch"
@@ -11,7 +11,7 @@ type CheckboxProps = {
     onClick?: (checked: boolean) => void
 }
 
-const Checkbox: React.FC<CheckboxProps> = ({ label, className, defaultState, stateOverride, onClick }) => {
+const Checkbox: React.FC<CheckboxProps> = ({ label, className, onClick }) => {
     return (
         <Stack direction={StackDirection.Horizontal}>
             <Label size={LabelSize.Medium} className={`mr-8 ${className} whitespace-nowrap`}>
