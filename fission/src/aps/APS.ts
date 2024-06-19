@@ -152,10 +152,11 @@ class APS {
             const auth = x.response as APSAuth;
             auth.expires_at = auth.expires_in + Date.now()
             this.auth = auth
-        }).then(() => {
+        }).then(async () => {
             console.log('Preloading user info')
-            if (this.auth) {
-                this.loadUserInfo(this.auth!).then(async () => {
+            const auth = await this.getAuth();
+            if (auth) {
+                this.loadUserInfo(auth).then(async () => {
                     if (APS.userInfo) {
                         MainHUD_AddToast('info', 'ADSK Login', `Hello, ${APS.userInfo.givenName}`)
                     }
