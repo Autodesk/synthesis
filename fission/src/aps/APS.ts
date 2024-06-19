@@ -10,7 +10,6 @@ const delay = 1000
 const authCodeTimeout = 200000
 
 const CLIENT_ID = 'GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU'
-const CHARACTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 
 let lastCall = Date.now()
 
@@ -18,6 +17,7 @@ interface APSAuth {
     access_token: string;
     refresh_token: string;
     expires_in: number;
+    expires_at: number;
     token_type: number;
 }
 
@@ -34,7 +34,7 @@ class APS {
     static get auth(): APSAuth | undefined {
         const res = window.localStorage.getItem(APS_AUTH_KEY)
         try {
-            return res ? JSON.parse(res) as APSAuth : undefined
+            return res ? JSON.parse(res) : undefined;
         } catch (e) {
             console.warn(`Failed to parse stored APS auth data: ${e}`)
             return undefined
@@ -47,6 +47,16 @@ class APS {
             window.localStorage.setItem(APS_AUTH_KEY, JSON.stringify(a))
         }
         this.userInfo = undefined
+    }
+
+    static async getAuth(): Promise<APSAuth | undefined> {
+        const auth = this.auth;
+        if (!auth) return new Promise((resolve) => resolve(undefined));
+
+        if (Date.now() > auth.expires_at) {
+            await this.refreshAuthToken(auth.refresh_token);
+        }
+        return new Promise((resolve) => resolve(this.auth));
     }
 
     static get userInfo(): APSUserInfo | undefined {
@@ -80,22 +90,21 @@ class APS {
                 ? `http://localhost:3000${import.meta.env.BASE_URL}`
                 : `https://synthesis.autodesk.com${import.meta.env.BASE_URL}`
 
-            const [ codeVerifier, codeChallenge ] = await this.codeChallenge();
+            const challenge = await this.codeChallenge();
 
-            const dataParams = [
-                ['response_type', 'code'],
-                ['client_id', CLIENT_ID],
-                ['redirect_uri', callbackUrl],
-                ['scope', 'data:read'],
-                ['nonce', Date.now().toString()],
-                ['prompt', 'login'],
-                ['code_challenge', codeChallenge],
-                ['code_challenge_method', 'S256']
-            ]
-            const data = dataParams.map(x => `${x[0]}=${encodeURIComponent(x[1])}`).join('&')
+            const params = new URLSearchParams({
+                'response_type': 'code',
+                'client_id': CLIENT_ID,
+                'redirect_uri': callbackUrl,
+                'scope': 'data:read',
+                'nonce': Date.now().toString(),
+                'prompt': 'login',
+                'code_challenge': challenge,
+                'code_challenge_method': 'S256'
+            })
 
-            window.open(`https://developer.api.autodesk.com/authentication/v2/authorize?${data}`)
-            
+            window.open(`https://developer.api.autodesk.com/authentication/v2/authorize?${params.toString()}`)
+
             const searchStart = Date.now()
             const func = () => {
                 if (Date.now() - searchStart > authCodeTimeout) {
@@ -107,7 +116,7 @@ class APS {
                     const code = this.authCode;
                     this.authCode = undefined;
 
-                    this.convertAuthToken(code, codeVerifier)
+                    this.convertAuthToken(code)
                 } else {
                     setTimeout(func, 500)
                 }
@@ -116,10 +125,33 @@ class APS {
         }
     }
 
-    static async convertAuthToken(code: string, codeVerifier: string) {
+    static async refreshAuthToken(refresh_token: string) {
+        let now
+        if ((now = Date.now()) - lastCall > delay) {
+            lastCall = now
+            const res = await fetch('https://developer.api.autodesk.com/authentication/v2/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    'client_id': CLIENT_ID,
+                    'grant_type': 'refresh_token',
+                    'refresh_token': refresh_token,
+                    'scope': 'data:read',
+                })
+            }).then(res => res.json());
+            res.expires_at = res.expires_in + Date.now()
+            this.auth = res as APSAuth
+        }
+    }
+
+    static async convertAuthToken(code: string) {
         const authUrl = import.meta.env.DEV ? `http://localhost:3003/api/aps/code/` : `https://synthesis.autodesk.com/api/aps/code/`
-        fetch(`${authUrl}?code=${code}&code_verifier=${codeVerifier}`).then(x => x.json()).then(x => {
-            this.auth = x.response as APSAuth;
+        fetch(`${authUrl}?code=${code}`).then(x => x.json()).then(x => {
+            const auth = x.response as APSAuth;
+            auth.expires_at = auth.expires_in + Date.now()
+            this.auth = auth
         }).then(() => {
             console.log('Preloading user info')
             if (this.auth) {
@@ -152,26 +184,10 @@ class APS {
     }
 
     static async codeChallenge() {
-        const codeVerifier = this.genRandomString(50)
-    
-        const msgBuffer = new TextEncoder().encode(codeVerifier);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-        
-        let str = '';
-        (new Uint8Array(hashBuffer)).forEach(x => str = str + String.fromCharCode(x))
-        const codeChallenge = btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
-    
-        return [ codeVerifier, codeChallenge ]
-    }
-
-    static genRandomString(len: number): string {
-        const s: string[] = []
-        for (let i = 0; i < len; i++) {
-            const c = CHARACTERS.charAt(Math.abs(Random() * 10000) % CHARACTERS.length)
-            s.push(c)
-        }
-        
-        return s.join('')
+        const endpoint = import.meta.env.DEV ? 'http://localhost:3003/api/aps/challenge/' : 'https://synthesis.autodesk.com/api/aps/challenge/';
+        const res = await fetch(endpoint)
+        const json = await res.json()
+        return json['challenge']
     }
 }
 
