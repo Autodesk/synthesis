@@ -138,7 +138,9 @@ class HButton:
         cmdDef = gm.ui.commandDefinitions.itemById(self.uid)
         if cmdDef:
             # gm.ui.messageBox("Looks like you have experienced a crash we will do cleanup.")
-            self.logger.debug("Looks like there was a crash, doing cleanup in button id")
+            self.logger.debug(
+                "Looks like there was a crash, doing cleanup in button id"
+            )
             self.scrub()
 
         # needs to updated with new OString data
@@ -146,7 +148,9 @@ class HButton:
             self.uid,
             f"{name}",
             f"{description}",
-            OsHelper.getOSPath(".", "src", "Resources", f'{self.name.replace(" ", "")}'),
+            OsHelper.getOSPath(
+                ".", "src", "Resources", f'{self.name.replace(" ", "")}'
+            ),
         )
         """ Button Command Definition stored as a member """
 
@@ -204,7 +208,9 @@ class HButton:
             self.logger.debug(f"Removing Button {self.uid}")
             cmdDef.deleteMe()
 
-        ctrl = gm.ui.allToolbarPanels.itemById(self.location).controls.itemById(self.uid)
+        ctrl = gm.ui.allToolbarPanels.itemById(self.location).controls.itemById(
+            self.uid
+        )
         if ctrl:
             self.logger.debug(f"Removing Button Control {self.location}:{self.uid}")
             ctrl.deleteMe()

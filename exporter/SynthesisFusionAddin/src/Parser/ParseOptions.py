@@ -7,7 +7,9 @@
         - this is essentially a flat configuration file with non serializable objects
 """
 
-from typing import Union, List
+import json
+from typing import get_origin
+from enum import Enum, EnumType
 from dataclasses import dataclass, fields, field
 import adsk.core, adsk.fusion
 
@@ -21,16 +23,21 @@ class JointParentType:  # validate for unique key and value
     ROOT = 0  # grounded root object
     END = 1
 
+# JointParentType = Enum("JointParentType", ["ROOT", "END"])
 
 class WheelType:
     STANDARD = 0
     OMNI = 1
+
+# WheelType = Enum("WheelType", ["STANDARD", "OMNI"])
 
 
 class SignalType:
     PWM = 0
     CAN = 1
     PASSIVE = 2
+
+# SignalType = Enum("SignalType", ["PWM", "CAN", "PASSIVE"])
 
 
 # will need to be constructed in the UI Configure on Export
@@ -39,13 +46,12 @@ class _Wheel:
     joint_token: str  # maybe just pass the component
     wheelType: WheelType
     signalType: SignalType
-    # joint_token: Union[str, None] # GUID of wheel's rotational joint. If no joint found, default to None
 
 
 @dataclass
 class _Joint:
     joint_token: str
-    parent: Union[str, JointParentType]  # str can be root
+    parent: str | JointParentType  # str can be root
     signalType: SignalType
     speed: float
     force: float
@@ -59,8 +65,9 @@ class Gamepiece:
 
 
 class PhysicalDepth:
+# class PhysicalDepth(Enum):
     """Depth at which the Physical Properties are generated and saved
-    - This is mostly dictatated by export type as flattening or any hierarchical modification takes presedence
+    - This is mostly dictated by export type as flattening or any hierarchical modification takes precedence
     """
 
     NoPhysical = 0
@@ -74,6 +81,7 @@ class PhysicalDepth:
 
 
 class ModelHierarchy:
+# class ModelHierarchy(Enum):
     """
     Enum Class to describe how the model format should look on export to suit different needs
     """
@@ -95,6 +103,8 @@ class Mode:
     Synthesis = 0
     SynthesisField = 3
 
+# Mode = Enum("Mode", ["ROBOT", "FIELD"])
+
 
 class ParseOptions:
     """Options to supply to the parser object that will generate the output file"""
@@ -110,9 +120,9 @@ class ParseOptions:
         physicalDepth=PhysicalDepth.AllOccurrence,
         materials=1,
         mode=Mode.Synthesis,
-        wheels=List[_Wheel],
-        joints=List[_Joint],  # [{Occurrence, wheeltype} , {entitytoken, wheeltype}]
-        gamepieces=List[Gamepiece],
+        wheels=list[_Wheel],
+        joints=list[_Joint],  # [{Occurrence, wheeltype} , {entitytoken, wheeltype}]
+        gamepieces=list[Gamepiece],
         weight=float,
         compress=bool,
     ):
@@ -145,7 +155,7 @@ class ParseOptions:
         self.weight = weight  # full weight of robot in KG
         self.compress = compress
 
-    def parse(self, _: bool) -> Union[str, bool]:
+    def parse(self, _: bool) -> str | bool:
         """Parses the file given the options
 
         Args:
@@ -166,18 +176,19 @@ class ExporterOptions:
     fileLocation: str = field(default=None)
     name: str = field(default=None)
     version: str = field(default=None)
-    materials: int = field(default=0) # TODO: Find out what this is for
-    # mode: Mode = field(default=Mode.Synthesis)
-    # wheels: List[_Wheel] = field(default=None)
-    # joints: List[_Joint] = field(default=None)
-    # gamepieces: List[Gamepiece] = field(default=None)
+    materials: int = field(default=0)  # TODO: Find out what this is for
+    mode: Mode = field(default=Mode.Synthesis)
+    wheels: list[_Wheel] = field(default=None)
+    joints: list[_Joint] = field(default=None)
+    gamepieces: list[Gamepiece] = field(default=None)
     weight: float = field(default=0.0)
     compress: bool = field(default=True)
     exportAsPart: bool = field(default=False)
 
-    # Constants
     hierarchy: ModelHierarchy = field(default=ModelHierarchy.FusionAssembly)
-    visual: adsk.fusion.TriangleMeshQualityOptions = field(default=adsk.fusion.TriangleMeshQualityOptions.LowQualityTriangleMesh)
+    visual: adsk.fusion.TriangleMeshQualityOptions = field(
+        default=adsk.fusion.TriangleMeshQualityOptions.LowQualityTriangleMesh
+    )
     physicalDepth: PhysicalDepth = field(default=PhysicalDepth.AllOccurrence)
 
     def read(self):
@@ -186,11 +197,64 @@ class ExporterOptions:
         for field in fields(self):
             attribute = designAttributes.itemByName(INTERNAL_ID, field.name)
             if attribute:
-                setattr(self, field.name, attribute.value)
-            
+                setattr(
+                    self,
+                    field.name,
+                    self.readHelper(field.type, json.loads(attribute.value)),
+                )
+
         return self
+
+    def readHelper(self, objectType, data):
+        primitives = (bool, str, int, float, type(None))
+        if objectType in primitives or type(data) in primitives: # Required to catch `fusion.TriangleMeshQualityOptions`
+            return data
+        elif isinstance(objectType, EnumType):
+            return objectType(data)
+
+        newObject = objectType()
+        attrs = [
+            x
+            for x in dir(newObject)
+            if not x.startswith("__") and not callable(getattr(newObject, x))
+        ]
+        for attr in attrs:
+            currType = objectType.__annotations__.get(attr, None)
+            if get_origin(currType) is list:
+                setattr(
+                    newObject,
+                    attr,
+                    [
+                        self.readHelper(currType.__args__[0], item)
+                        for item in data[attr]
+                    ],
+                )
+            elif currType in primitives:
+                setattr(newObject, attr, data[attr])
+            elif isinstance(currType, object):
+                setattr(newObject, attr, self.readHelper(currType, data[attr]))
+
+        return newObject
 
     def write(self):
         designAttributes = adsk.core.Application.get().activeProduct.attributes
         for field in fields(self):
-            designAttributes.add(INTERNAL_ID, field.name, str(getattr(self, field.name)))
+            data = json.dumps(
+                getattr(self, field.name),
+                default=lambda obj: (
+                    obj.value
+                    if isinstance(obj, Enum)
+                    else {
+                        key: (
+                            lambda value: value
+                            if not isinstance(value, Enum)
+                            else value.value
+                        )(value)
+                        for key, value in obj.__dict__.items()
+                    }
+                    if hasattr(obj, "__dict__")
+                    else obj
+                ),
+                indent=4,
+            )
+            designAttributes.add(INTERNAL_ID, field.name, data)
