@@ -30,7 +30,7 @@ from typing import Union
 from ...general_imports import *
 from .Utilities import fill_info, construct_info, guid_occurrence
 from .PDMessage import PDMessage
-from .. import ParseOptions
+from ..ParseOptions import ParseOptions, JointParentType
 
 
 # Need to take in a graphcontainer
@@ -481,10 +481,10 @@ def createJointGraph(
     # second sort them
     for supplied_joint in supplied_joints:
         current_node = node_map[supplied_joint.joint_token]
-        if supplied_joint.parent == 0:
+        if supplied_joint.parent == JointParentType.ROOT:
             node_map["ground"].children.append(node_map[supplied_joint.joint_token])
         elif (
-            node_map[supplied_joint.parent] is not None
+            node_map[supplied_joint.parent.value] is not None
             and node_map[supplied_joint.joint_token] is not None
         ):
             node_map[supplied_joint.parent].children.append(

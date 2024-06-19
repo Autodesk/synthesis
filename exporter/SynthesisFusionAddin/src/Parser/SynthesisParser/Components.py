@@ -153,7 +153,7 @@ def __parseChildOccurrence(
         part.part_definition_reference = compRef
 
     # TODO: Maybe make this a separate step where you dont go backwards and search for the gamepieces
-    if options.mode == ParseOptions.Mode.SynthesisField:
+    if options.mode == ParseOptions.ExportMode.FIELD:
         for x in options.gamepieces:
             if x.occurrence_token == mapConstant:
                 partsData.part_definitions[
