@@ -1,6 +1,5 @@
 import React, { ReactNode } from "react"
 import { usePanelControlContext } from "../PanelContext"
-import { CssTransition } from "@mui/base/Transitions"
 
 export type OpenLocation =
     | "top-left"

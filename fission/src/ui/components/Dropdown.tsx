@@ -1,13 +1,12 @@
 import React, { ReactNode, useState } from "react"
 import Label, { LabelSize } from "./Label"
-import { Select as BaseSelect, SelectProps, selectClasses, SelectRootSlotProps } from "@mui/base/Select"
-import { Option as BaseOption, optionClasses } from "@mui/base/Option"
+import { Select as BaseSelect, SelectProps, SelectRootSlotProps } from "@mui/base/Select"
+import { Option as BaseOption } from "@mui/base/Option"
 import { styled } from "@mui/system"
 import { Button } from "@mui/base/Button"
 import UnfoldMoreRoundedIcon from "@mui/icons-material/UnfoldMoreRounded"
-import { SelectValue } from "@mui/base/useSelect"
 
-const Select = React.forwardRef(function Select<TValue extends {}, Multiple extends boolean>(
+const Select = React.forwardRef(function Select<TValue extends NonNullable<unknown>, Multiple extends boolean>(
     props: SelectProps<TValue, Multiple>,
     ref: React.ForwardedRef<HTMLButtonElement>
 ) {
@@ -18,9 +17,8 @@ const Select = React.forwardRef(function Select<TValue extends {}, Multiple exte
         ...props.slots,
     }
 
-    // TODO: list options don't render at the same width as select root button
     return <BaseSelect {...props} ref={ref} slots={slots} slotProps={{ listbox: {}, popup: { disablePortal: true } }} />
-}) as <TValue extends {}, Multiple extends boolean>(
+}) as <TValue extends NonNullable<unknown>, Multiple extends boolean>(
     props: SelectProps<TValue, Multiple> & React.RefAttributes<HTMLButtonElement>
 ) => JSX.Element
 
@@ -32,14 +30,8 @@ type DropdownProps = {
     onSelect: (opt: string) => void
 }
 
-const Dropdown: React.FC<DropdownProps> = ({ label, className, options, onSelect }) => {
-    const [optionList, setOptionList] = useState(options)
-
-    type DropdownOptionProps = {
-        value: string
-        children?: ReactNode
-        className?: string
-    }
+const Dropdown: React.FC<DropdownProps> = ({ label, options, onSelect }) => {
+    const [optionList, _setOptionList] = useState(options)
 
     return (
         <>
@@ -47,7 +39,7 @@ const Dropdown: React.FC<DropdownProps> = ({ label, className, options, onSelect
             <div className="relative w-full">
                 <Select
                     defaultValue={optionList[0]}
-                    onChange={(_event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null, value: any) =>
+                    onChange={(_event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null, value: string | unknown) =>
                         typeof value === "string" && onSelect && onSelect(value)
                     }
                 >
@@ -62,14 +54,13 @@ const Dropdown: React.FC<DropdownProps> = ({ label, className, options, onSelect
     )
 }
 
-const CustomButton = React.forwardRef(function CustomButton<TValue extends {}, Multiple extends boolean>(
+const CustomButton = React.forwardRef(function CustomButton<TValue extends NonNullable<unknown>, Multiple extends boolean>(
     props: SelectRootSlotProps<TValue, Multiple>,
     ref: React.ForwardedRef<HTMLButtonElement>
 ) {
-    const { ownerState, ...other } = props
     return (
-        <StyledButton type="button" {...other} ref={ref}>
-            {other.children}
+        <StyledButton type="button" {...props} ref={ref}>
+            {props.children}
             <UnfoldMoreRoundedIcon />
         </StyledButton>
     )

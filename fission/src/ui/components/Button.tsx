@@ -43,7 +43,7 @@ const Button: React.FC<ButtonProps> = ({ value, colorOverrideClass, size, onClic
                 colorOverrideClass
                     ? colorOverrideClass
                     : "bg-gradient-to-r from-interactive-element-left via-interactive-element-right to-interactive-element-left bg-[length:200%_100%] active:bg-right"
-            } w-full h-full ${sizeClassNames} rounded-sm font-semibold cursor-pointer duration-200 border-none focus-visible:outline-0 ${
+            } w-full h-full ${sizeClassNames} rounded-sm font-semibold cursor-pointer duration-200 border-none focus-visible:outline-0 focus:outline-0 ${
                 className || ""
             }`}
         >

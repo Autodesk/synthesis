@@ -91,7 +91,7 @@ class MirabufParser {
         }
 
         // 1: Initial Rigidgroups from ancestorial breaks in joints
-        ;(Object.keys(assembly.data!.joints!.jointInstances!) as string[]).forEach(key => {
+        (Object.keys(assembly.data!.joints!.jointInstances!) as string[]).forEach(key => {
             if (key != GROUNDED_JOINT_ID) {
                 const jInst = assembly.data!.joints!.jointInstances![key]
                 const [ancestorA, ancestorB] = this.FindAncestorialBreak(jInst.parentPart!, jInst.childPart!)
@@ -108,13 +108,14 @@ class MirabufParser {
         // Fields Only: Assign Game Piece rigid nodes
         if (!assembly.dynamic) {
             // Collect all definitions labelled as gamepieces (dynamic = true)
-            const gamepieceDefinitions: Set<string> = new Set()
-            ;(Object.values(assembly.data!.parts!.partDefinitions!) as mirabuf.IPartDefinition[]).forEach(def => {
+            const gamepieceDefinitions: Set<string> = new Set<string>()
+
+            Object.values(assembly.data!.parts!.partDefinitions!).forEach((def: mirabuf.IPartDefinition) => {
                 if (def.dynamic) gamepieceDefinitions.add(def.info!.GUID!)
             })
 
-            // Create gamepiece rigid nodes from partinstances with corresponding definitons
-            ;(Object.values(assembly.data!.parts!.partInstances!) as mirabuf.IPartInstance[]).forEach(inst => {
+            // Create gamepiece rigid nodes from partinstances with corresponding definitions
+            Object.values(assembly.data!.parts!.partInstances!).forEach((inst: mirabuf.IPartInstance) => {
                 if (gamepieceDefinitions.has(inst.partDefinitionReference!)) {
                     const instNode = this.BinarySearchDesignTree(inst.info!.GUID!)
                     if (instNode) {
@@ -190,7 +191,8 @@ class MirabufParser {
         // Build undirected graph
         const graph = new Graph()
         graph.AddNode(rootNode ? rootNode.id : this._rigidNodes[0].id)
-        ;(Object.values(assembly.data!.joints!.jointInstances!) as mirabuf.joint.JointInstance[]).forEach(x => {
+        const jointInstances = (Object.values(assembly.data!.joints!.jointInstances!) as mirabuf.joint.JointInstance[])
+        jointInstances.forEach((x: mirabuf.joint.JointInstance) => {
             const rA = this._partToNodeMap.get(x.parentPart)
             const rB = this._partToNodeMap.get(x.childPart)
 

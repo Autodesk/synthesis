@@ -1,12 +1,6 @@
 import React from "react"
 import Label, { LabelSize } from "./Label"
-import {
-    Unstable_NumberInput as BaseNumberInput,
-    NumberInputOwnerState,
-    NumberInputProps,
-} from "@mui/base/Unstable_NumberInput"
-
-const resolveSlotProps = (fn: any, args: any) => (typeof fn === "function" ? fn(args) : fn)
+import { Unstable_NumberInput as BaseNumberInput, } from "@mui/base/Unstable_NumberInput"
 
 type InputProps = {
     placeholder: string
@@ -16,7 +10,7 @@ type InputProps = {
     className?: string
 }
 
-const NumberInput: React.FC<InputProps> = ({ placeholder, defaultValue, label, onInput, className }) => {
+const NumberInput: React.FC<InputProps> = ({ placeholder, defaultValue, label, onInput }) => {
     return (
         <>
             {label && <Label size={LabelSize.Small}>{label}</Label>}
