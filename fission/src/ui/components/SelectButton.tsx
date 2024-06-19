@@ -50,7 +50,7 @@ const SelectButton: React.FC<SelectButtonProps> = ({ colorClass, size, placehold
             <Label size={LabelSize.Medium}>{value || placeholder || "Click to select"}</Label>
             <Button
                 value={selecting ? "..." : "Select"}
-                colorClass={selecting ? "bg-background-secondary" : colorClass}
+                colorOverrideClass={selecting ? "bg-background-secondary" : colorClass}
                 size={size}
                 onClick={() => {
                     // send selecting state
