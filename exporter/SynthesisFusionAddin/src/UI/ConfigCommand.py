@@ -12,7 +12,7 @@ from ..Analytics.alert import showAnalyticsAlert
 from . import Helper, OsHelper, CustomGraphics, IconPaths
 from ..Parser.ParseOptions import (
     Gamepiece,
-    Mode,
+    ExportMode,
     ParseOptions,
     ExporterOptions,  # TODO
     _Joint,
@@ -1168,7 +1168,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             _exportJoints = []  # all selected joints, formatted for parseOptions
             _exportGamepieces = []  # TODO work on the code to populate Gamepiece
             _robotWeight = float
-            _mode = Mode
+            _mode = ExportMode.ROBOT
 
             """
             Loops through all rows in the wheel table to extract all the input values
@@ -1301,9 +1301,9 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             """
             dropdownExportMode = INPUTS_ROOT.itemById("mode")
             if dropdownExportMode.selectedItem.index == 0:
-                _mode = Mode.Synthesis
+                _mode = ExportMode.ROBOT
             elif dropdownExportMode.selectedItem.index == 1:
-                _mode = Mode.SynthesisField
+                _mode = ExportMode.FIELD
 
             global compress
             compress = (
@@ -1342,15 +1342,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             # )
             # exporterOptions.write()
 
-            # if not options.parse():
-            #     # Fail message
-            #     self.log.error(
-            #         f"Error: \n\t{name} could not be written to \n {savepath}"
-            #     )
-
-            options.parse(False)
-            # Parser(options).export()
-            # exporterOptions.write()
+            Parser(options).export()
         except:
             if gm.ui:
                 gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
