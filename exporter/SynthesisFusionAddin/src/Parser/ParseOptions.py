@@ -158,6 +158,7 @@ class ParseOptions:
         Parser(self).export()
         return True
 
+
 # TODO: This should be the only parse option class
 @dataclass
 class ExporterOptions:
@@ -176,6 +177,7 @@ class ExporterOptions:
 
     # Constants
     hierarchy: ModelHierarchy = field(default=ModelHierarchy.FusionAssembly)
+    visual: adsk.fusion.TriangleMeshQualityOptions = field(default=adsk.fusion.TriangleMeshQualityOptions.LowQualityTriangleMesh)
     physicalDepth: PhysicalDepth = field(default=PhysicalDepth.AllOccurrence)
 
     def read(self):
