@@ -18,17 +18,17 @@ class ArcadeDriveBehavior extends Behavior {
     }
 
     // Sets the drivetrains target linear and rotational velocity
-    driveSpeeds(linearVelocity: number, rotationVelocity: number) {
-        let leftSpeed = linearVelocity + rotationVelocity;
-        let rightSpeed = linearVelocity - rotationVelocity;
+    private DriveSpeeds(linearVelocity: number, rotationVelocity: number) {
+        const leftSpeed = linearVelocity + rotationVelocity;
+        const rightSpeed = linearVelocity - rotationVelocity;
     
         this.leftWheels.forEach((wheel) => wheel.targetWheelSpeed = leftSpeed);
         this.rightWheels.forEach((wheel) => wheel.targetWheelSpeed = rightSpeed);
     }
 
     public Update(_: number): void {
-        this.driveSpeeds(InputSystem.getAxis("arcadeForward", "arcadeBackward")*this._driveSpeed, 
-        InputSystem.getAxis("arcadeRight", "arcadeLeft")*this._turnSpeed);
+        this.DriveSpeeds(InputSystem.GetAxis("arcadeForward", "arcadeBackward")*this._driveSpeed, 
+        InputSystem.GetAxis("arcadeRight", "arcadeLeft")*this._turnSpeed);
     }
 }
 

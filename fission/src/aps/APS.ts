@@ -1,4 +1,3 @@
-import { MainHUD_AddToast } from "@/components/MainHUD"
 import { Random } from "@/util/Random"
 
 const APS_AUTH_KEY = 'aps_auth'
@@ -125,7 +124,7 @@ class APS {
             if (this.auth) {
                 this.loadUserInfo(this.auth!).then(async () => {
                     if (APS.userInfo) {
-                        MainHUD_AddToast('info', 'ADSK Login', `Hello, ${APS.userInfo.givenName}`)
+                        console.log(`Hello, ${APS.userInfo.givenName}`)
                     }
                 })
             }

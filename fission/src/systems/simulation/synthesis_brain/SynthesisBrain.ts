@@ -35,9 +35,9 @@ class SynthesisBrain extends Brain {
             return;
         }
 
-        this.configureArcadeDriveBehavior();
-        this.configureArmBehaviors();
-        this.configureElevatorBehaviors();
+        this.ConfigureArcadeDriveBehavior();
+        this.ConfigureArmBehaviors();
+        this.ConfigureElevatorBehaviors();
     }
 
     public Enable(): void { }
@@ -51,27 +51,27 @@ class SynthesisBrain extends Brain {
     }
 
     // Creates an instance of ArcadeDriveBehavior and automatically configures it
-    configureArcadeDriveBehavior() {
-        let wheelDrivers: WheelDriver[] =  this._simLayer.drivers.filter((driver) => driver instanceof WheelDriver) as WheelDriver[];
-        let wheelStimuli: WheelRotationStimulus[] =  this._simLayer.stimuli.filter((stimulus) => stimulus instanceof WheelRotationStimulus) as WheelRotationStimulus[];
+    public ConfigureArcadeDriveBehavior() {
+        const wheelDrivers: WheelDriver[] =  this._simLayer.drivers.filter((driver) => driver instanceof WheelDriver) as WheelDriver[];
+        const wheelStimuli: WheelRotationStimulus[] =  this._simLayer.stimuli.filter((stimulus) => stimulus instanceof WheelRotationStimulus) as WheelRotationStimulus[];
 
         // Two body constraints are part of wheels and are used to determine which way a wheel is facing
-        let fixedConstraints: Jolt.TwoBodyConstraint[] = this._mechanism.constraints.filter((mechConstraint) => mechConstraint.constraint instanceof JOLT.TwoBodyConstraint).map((mechConstraint) => mechConstraint.constraint as Jolt.TwoBodyConstraint);
+        const fixedConstraints: Jolt.TwoBodyConstraint[] = this._mechanism.constraints.filter((mechConstraint) => mechConstraint.constraint instanceof JOLT.TwoBodyConstraint).map((mechConstraint) => mechConstraint.constraint as Jolt.TwoBodyConstraint);
 
-        let leftWheels: WheelDriver[] = [];
-        let leftStimuli: WheelRotationStimulus[] = [];
+        const leftWheels: WheelDriver[] = [];
+        const leftStimuli: WheelRotationStimulus[] = [];
 
-        let rightWheels: WheelDriver[] = [];
-        let rightStimuli: WheelRotationStimulus[] = [];
+        const rightWheels: WheelDriver[] = [];
+        const rightStimuli: WheelRotationStimulus[] = [];
 
         // Determines which wheels and stimuli belong to which side of the robot
         for (let i = 0; i < wheelDrivers.length; i++) {
-            let wheelPos = fixedConstraints[i].GetConstraintToBody1Matrix().GetTranslation();
+            const wheelPos = fixedConstraints[i].GetConstraintToBody1Matrix().GetTranslation();
 
-            let robotCOM = World.PhysicsSystem.GetBody(this._mechanism.constraints[0].childBody).GetCenterOfMassPosition() as Jolt.Vec3;
-            let rightVector = new JOLT.Vec3(1, 0, 0);
+            const robotCOM = World.PhysicsSystem.GetBody(this._mechanism.constraints[0].childBody).GetCenterOfMassPosition() as Jolt.Vec3;
+            const rightVector = new JOLT.Vec3(1, 0, 0);
 
-            let dotProduct = rightVector.Dot(wheelPos.Sub(robotCOM))
+            const dotProduct = rightVector.Dot(wheelPos.Sub(robotCOM))
 
             if (dotProduct < 0) {
                 rightWheels.push(wheelDrivers[i]);
@@ -87,9 +87,9 @@ class SynthesisBrain extends Brain {
     }
 
     // Creates instances of ArmBehavior and automatically configures them
-    configureArmBehaviors() {
-        let hingeDrivers: HingeDriver[] =  this._simLayer.drivers.filter((driver) => driver instanceof HingeDriver) as HingeDriver[];
-        let hingeStimuli: HingeStimulus[] =  this._simLayer.stimuli.filter((stimulus) => stimulus instanceof HingeStimulus) as HingeStimulus[];
+    public ConfigureArmBehaviors() {
+        const hingeDrivers: HingeDriver[] =  this._simLayer.drivers.filter((driver) => driver instanceof HingeDriver) as HingeDriver[];
+        const hingeStimuli: HingeStimulus[] =  this._simLayer.stimuli.filter((stimulus) => stimulus instanceof HingeStimulus) as HingeStimulus[];
 
         for (let i = 0; i < hingeDrivers.length; i++) {
             this._behaviors.push(new GenericArmBehavior(hingeDrivers[i], hingeStimuli[i], this._currentJointIndex));
@@ -98,9 +98,9 @@ class SynthesisBrain extends Brain {
     }
 
     // Creates instances of ElevatorBehavior and automatically configures them
-    configureElevatorBehaviors() {
-        let sliderDrivers: SliderDriver[] =  this._simLayer.drivers.filter((driver) => driver instanceof SliderDriver) as SliderDriver[];
-        let sliderStimuli: SliderStimulus[] =  this._simLayer.stimuli.filter((stimulus) => stimulus instanceof SliderStimulus) as SliderStimulus[];
+    public ConfigureElevatorBehaviors() {
+        const sliderDrivers: SliderDriver[] =  this._simLayer.drivers.filter((driver) => driver instanceof SliderDriver) as SliderDriver[];
+        const sliderStimuli: SliderStimulus[] =  this._simLayer.stimuli.filter((stimulus) => stimulus instanceof SliderStimulus) as SliderStimulus[];
 
         for (let i = 0; i < sliderDrivers.length; i++) {
             this._behaviors.push(new GenericElevatorBehavior(sliderDrivers[i], sliderStimuli[i], this._currentJointIndex));

@@ -54,16 +54,16 @@ class InputSystem extends WorldSystem {
     constructor() {
         super();
 
-        this.handleKeyDown = this.handleKeyDown.bind(this);
-        document.addEventListener('keydown', this.handleKeyDown);
+        this.HandleKeyDown = this.HandleKeyDown.bind(this);
+        document.addEventListener('keydown', this.HandleKeyDown);
 
-        this.handleKeyUp = this.handleKeyUp.bind(this);
-        document.addEventListener('keyup', this.handleKeyUp);
+        this.HandleKeyUp = this.HandleKeyUp.bind(this);
+        document.addEventListener('keyup', this.HandleKeyUp);
         
         // TODO: Load saved inputs from mira (robot specific) & global inputs
 
-        for (let key in defaultInputs) {
-            if (defaultInputs.hasOwnProperty(key)) {
+        for (const key in defaultInputs) {
+            if (Object.prototype.hasOwnProperty.call(defaultInputs, key)) {
               InputSystem.allInputs[key] = defaultInputs[key];
             }
         }
@@ -74,17 +74,17 @@ class InputSystem extends WorldSystem {
     }
 
     public Destroy(): void {    
-        document.removeEventListener('keydown', this.handleKeyDown);
-        document.removeEventListener('keyup', this.handleKeyUp);
+        document.removeEventListener('keydown', this.HandleKeyDown);
+        document.removeEventListener('keyup', this.HandleKeyUp);
     }   
 
     // Called when any key is pressed
-    handleKeyDown(event: KeyboardEvent) {
+    private HandleKeyDown(event: KeyboardEvent) {
         InputSystem._keysPressed[event.key] = true;
     }
 
     // Called when any key is released
-    handleKeyUp(event: KeyboardEvent) {
+    private HandleKeyUp(event: KeyboardEvent) {
         InputSystem._keysPressed[event.key] = false;
     }
 
@@ -97,10 +97,10 @@ class InputSystem extends WorldSystem {
     public static getInput(inputName: string) : boolean {
         // Checks if there is an input assigned to this action
         if (inputName in this.allInputs) {
-            let targetInput = this.allInputs[inputName];
+            const targetInput = this.allInputs[inputName];
 
             // Check for input modifiers
-            if (!this.compareModifiers(InputSystem._currentModifierState, targetInput.modifiers)) 
+            if (!this.CompareModifiers(InputSystem._currentModifierState, targetInput.modifiers)) 
                 return false;
 
             return this.isKeyPressed(targetInput.keybind);
@@ -111,19 +111,19 @@ class InputSystem extends WorldSystem {
     }
 
     // Combines two inputs into a positive/negative axis
-    public static getAxis(positive: string, negative: string) {
+    public static GetAxis(positive: string, negative: string) {
         return (this.getInput(positive) ? 1 : 0) - (this.getInput(negative) ? 1 : 0);
     }
 
     // Converts camelCase to Title Case for the inputs modal
-    public static toTitleCase(camelCase: string) : string {
+    public static ToTitleCase(camelCase: string) : string {
         const result = camelCase.replace(/([A-Z])/g, " $1");
         const finalResult = result.charAt(0).toUpperCase() + result.slice(1);
         return finalResult;
     }
 
     // Returns true if two modifier states are identical
-    private static compareModifiers(state1: ModifierState, state2: ModifierState) : boolean {
+    private static CompareModifiers(state1: ModifierState, state2: ModifierState) : boolean {
         return state1.alt == state2.alt && state1.ctrl == state2.ctrl && state1.meta == state2.meta && state1.shift == state2.shift;
     }
 }

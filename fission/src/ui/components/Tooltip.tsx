@@ -1,4 +1,4 @@
-import { TooltipControl, TooltipType } from "@/TooltipContext"
+import { TooltipControl, TooltipType } from "@/ui/TooltipContext"
 import { FaInfoCircle } from "react-icons/fa"
 import Label, { LabelSize } from "./Label"
 import Stack, { StackDirection } from "./Stack"

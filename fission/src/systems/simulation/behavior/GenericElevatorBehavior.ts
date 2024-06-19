@@ -30,7 +30,7 @@ class GenericElevatorBehavior extends Behavior {
     }
 
     public Update(deltaT: number): void {
-        this.moveElevator(InputSystem.getAxis(this._positiveInput, this._negativeInput)*this._linearSpeed*deltaT); 
+        this.moveElevator(InputSystem.GetAxis(this._positiveInput, this._negativeInput)*this._linearSpeed*deltaT); 
     }
 }
 

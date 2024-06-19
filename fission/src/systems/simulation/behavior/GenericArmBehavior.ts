@@ -30,7 +30,7 @@ class GenericArmBehavior extends Behavior {
     }
 
     public Update(_: number): void {
-        this.rotateArm(InputSystem.getAxis(this._positiveInput, this._negativeInput)*this._rotationalSpeed);
+        this.rotateArm(InputSystem.GetAxis(this._positiveInput, this._negativeInput)*this._rotationalSpeed);
     }
 }
 

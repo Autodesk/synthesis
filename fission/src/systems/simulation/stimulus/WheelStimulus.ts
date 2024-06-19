@@ -34,7 +34,7 @@ class WheelRotationStimulus extends EncoderStimulus {
         this._wheel = wheel;
     }
 
-    public Update(deltaT: number): void {
+    public Update(_: number): void {
         if (this._accum) {
             this._wheelRotationAccum += 0;
         }

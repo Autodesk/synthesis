@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { BsCodeSquare } from "react-icons/bs"
-import { FaCar, FaGear, FaHouse, FaMagnifyingGlass, FaPlus } from "react-icons/fa6"
+import { FaCar, FaGear, FaMagnifyingGlass, FaPlus } from "react-icons/fa6"
 import { BiMenuAltLeft } from "react-icons/bi"
 import { GrFormClose } from "react-icons/gr"
 import { GiSteeringWheel } from "react-icons/gi"
@@ -55,8 +55,6 @@ const MainHUDButton: React.FC<ButtonProps> = ({
     )
 }
 
-export let MainHUD_AddToast: (type: ToastType, title: string, description: string) => void = (a, b, c) => { }
-
 const variants = {
     open: { opacity: 1, y: "-50%", x: 0 },
     closed: { opacity: 0, y: "-50%", x: "-100%" },
@@ -70,8 +68,6 @@ const MainHUD: React.FC = () => {
     const { openPanel } = usePanelControlContext()
     const { addToast } = useToastContext()
     const [isOpen, setIsOpen] = useState(false)
-
-    MainHUD_AddToast = addToast
 
     const [userInfo, setUserInfo] = useState(APS.userInfo);
 

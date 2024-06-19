@@ -58,7 +58,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                             {Object.values(InputSystem.robotInputs).map(c => (
                                 <LabeledButton
                                     key={c.name}
-                                    label={InputSystem.toTitleCase(c.name)}
+                                    label={InputSystem.ToTitleCase(c.name)}
                                     placement={LabelPlacement.Left}
                                     value={
                                         c.name == selectedInput
@@ -91,7 +91,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     {Object.values(InputSystem.globalInputs).map(c => (
                         <LabeledButton
                             key={c.name}
-                            label={InputSystem.toTitleCase(c.name)}
+                            label={InputSystem.ToTitleCase(c.name)}
                             placement={LabelPlacement.Left}
                             value={
                                 c.name == selectedInput
