@@ -45,7 +45,6 @@ GamepieceListGlobal = []
 
 # Default to compressed files
 compress = True
-# exporterOptions = ExporterOptions(compress=True).read()
 
 
 def GUID(arg):
@@ -163,6 +162,8 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
 
     def notify(self, args):
         try:
+            # exporterOptions = ExporterOptions().read()
+
             if not Helper.check_solid_open():
                 return
 
