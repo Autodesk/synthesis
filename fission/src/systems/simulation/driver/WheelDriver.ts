@@ -23,13 +23,6 @@ class WheelDriver extends Driver {
 
         this._constraint = constraint;
         this._wheel = JOLT.castObject(this._constraint.GetWheel(0), JOLT.WheelWV);
-
-        // TODO: I think this was just for testing
-        // if (constraint.GetVehicleBody().GetCenterOfMassPosition().GetX() < 0) {
-        //     this._targetWheelSpeed = 0;
-        // } else {
-        //     this._targetWheelSpeed = 0;
-        // }
     }
 
     public Update(_: number): void {        

@@ -12,10 +12,12 @@ class ArcadeDriveBehavior extends Behavior {
 
     constructor(leftWheels: WheelDriver[], rightWheels: WheelDriver[], leftStimuli: WheelRotationStimulus[], rightStimuli: WheelRotationStimulus[]) {
         super(leftWheels.concat(rightWheels), leftStimuli.concat(rightStimuli));
+        
         this.leftWheels = leftWheels;
         this.rightWheels = rightWheels;
     }
 
+    // Sets the drivetrains target linear and rotational velocity
     driveSpeeds(linearVelocity: number, rotationVelocity: number) {
         let leftSpeed = linearVelocity + rotationVelocity;
         let rightSpeed = linearVelocity - rotationVelocity;

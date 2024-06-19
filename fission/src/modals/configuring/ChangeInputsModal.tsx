@@ -4,7 +4,7 @@ import { FaGamepad } from "react-icons/fa6"
 import Stack, { StackDirection } from "../../components/Stack"
 import Label, { LabelSize } from "../../components/Label"
 import LabeledButton, { LabelPlacement } from "../../components/LabeledButton"
-import InputSystem from "@/systems/input/InputSystem"
+import InputSystem, { emptyModifierState } from "@/systems/input/InputSystem"
 
 // capitalize first letter
 const transformKeyName = (control: Input) => {
@@ -22,7 +22,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [loadedRobot, setLoadedRobot] = useState<string>("")
     const [selectedInput, setSelectedInput] = useState<string>("")
     const [chosenKey, setChosenKey] = useState<string>("")
-    const [modifierState, setModifierState] = useState<ModifierState>({ctrl: false, alt: false, shift: false, meta: false})
+    const [modifierState, setModifierState] = useState<ModifierState>(emptyModifierState)
 
     useEffect(() => {
         setTimeout(() => setLoadedRobot("Dozer v9"), 1)
@@ -34,7 +34,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         selected.modifiers = modifierState
         setChosenKey("")
         setSelectedInput("")
-        setModifierState({ctrl: false, alt: false, shift: false, meta: false})
+        setModifierState(emptyModifierState)
     }
 
     return (
