@@ -399,12 +399,12 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 3,
             )
 
-            for wheel in exporterOptions.wheels:
-                wheelEntity = gm.app.activeDocument.design.findEntityByToken(
-                    wheel.jointToken
-                )[0]
-                typeWheel = type(wheelEntity)
-                addWheelToTable(wheelEntity)
+            if exporterOptions.wheels:
+                for wheel in exporterOptions.wheels:
+                    wheelEntity = gm.app.activeDocument.design.findEntityByToken(
+                        wheel.jointToken
+                    )[0]
+                    addWheelToTable(wheelEntity)
 
             # ~~~~~~~~~~~~~~~~ JOINT CONFIGURATION ~~~~~~~~~~~~~~~~
             """
