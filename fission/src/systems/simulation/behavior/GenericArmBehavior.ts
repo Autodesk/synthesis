@@ -15,13 +15,13 @@ class GenericArmBehavior extends Behavior {
         super([hingeDriver], [hingeStimulus]);
         this._hingeDriver = hingeDriver;
 
-        this._positiveInput = "jointPositive" + jointIndex;
-        this._negativeInput = "jointNegative" + jointIndex;
+        this._positiveInput = "joint " + jointIndex + " Positive";
+        this._negativeInput = "joint " + jointIndex + " Negative";
 
         // TODO: load inputs from mira
-        InputSystem.allInputs[this._positiveInput] = { name: this._positiveInput, keybind: jointIndex.toString(), isGlobal: true, modifiers: emptyModifierState };
-        InputSystem.allInputs[this._negativeInput] = { name: this._negativeInput, keybind: jointIndex.toString(), isGlobal: true, 
-            modifiers: { ctrl: false, alt: true, shift: false, meta: false } };
+        InputSystem.allInputs[this._positiveInput] = { name: this._positiveInput, keyCode: "Digit" + jointIndex.toString(), isGlobal: false, modifiers: emptyModifierState };
+        InputSystem.allInputs[this._negativeInput] = { name: this._negativeInput, keyCode: "Digit" + jointIndex.toString(), isGlobal: false, 
+            modifiers: { ctrl: false, alt: false, shift: true, meta: false } };
     }
 
     // Sets the arms target rotational velocity

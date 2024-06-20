@@ -15,18 +15,18 @@ class GenericElevatorBehavior extends Behavior {
         super([sliderDriver], [sliderStimulus]);
         this._sliderDriver = sliderDriver;
 
-        this._positiveInput = "jointPositive" + jointIndex;
-        this._negativeInput = "jointNegative" + jointIndex;
+        this._positiveInput = "joint " + jointIndex + " Positive";
+        this._negativeInput = "joint " + jointIndex + " Negative";
 
         // TODO: load inputs from mira
-        InputSystem.allInputs[this._positiveInput] = { name: this._positiveInput, keybind: jointIndex.toString(), isGlobal: true, modifiers: emptyModifierState };
-        InputSystem.allInputs[this._negativeInput] = { name: this._negativeInput, keybind: jointIndex.toString(), isGlobal: true, 
-            modifiers: { ctrl: false, alt: true, shift: false, meta: false } };
+        InputSystem.allInputs[this._positiveInput] = { name: this._positiveInput, keyCode: "Digit" + jointIndex.toString(), isGlobal: false, modifiers: emptyModifierState };
+        InputSystem.allInputs[this._negativeInput] = { name: this._negativeInput, keyCode: "Digit" + jointIndex.toString(), isGlobal: false, 
+            modifiers: { ctrl: false, alt: false, shift: true, meta: false } };
     }
 
     // Changes the elevators target position
     moveElevator(positionDelta: number) {
-       this._sliderDriver.targetPosition += positionDelta; 
+        this._sliderDriver.targetPosition += positionDelta; 
     }
 
     public Update(deltaT: number): void {

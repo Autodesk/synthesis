@@ -15,7 +15,43 @@ const transformKeyName = (control: Input) => {
         if (control.modifiers.ctrl) prefix += "Ctrl + "
         if (control.modifiers.alt) prefix += "Alt + "
     }
-    return prefix + control.keybind[0].toUpperCase() + control.keybind.substring(1)
+
+    return prefix +  keyCodeToCharacter(control.keyCode);
+}
+    
+// Converts camelCase to Title Case for the inputs modal
+const toTitleCase = (camelCase: string) => {
+const result = camelCase.replace(/([A-Z])/g, " $1");
+const finalResult = result.charAt(0).toUpperCase() + result.slice(1);
+    return finalResult;
+}
+
+const codeToCharacterMap: { [code: string]: string } = {
+    "Slash": "/",
+    "Comma": ",",
+    "Period": ".",
+    "BracketLeft": "{",
+    "BracketRight": "}",
+    "BackQuote": "`",
+    "Minus": "-",
+    "Equal": "=",
+    "Backslash": "\\", //TODO
+    "Semicolon": ";",
+    "Quote": "\""
+};
+
+// Converts a key code to displayable character (ex: KeyA -> "A")
+const keyCodeToCharacter = (code: string) => {
+    if (code.startsWith("Key"))
+        return code.charAt(3);
+
+    if (code.startsWith("Digit"))
+        return code.charAt(5);
+
+    if (code in codeToCharacterMap)
+        return codeToCharacterMap[code];
+
+    return code;
 }
 
 const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
@@ -30,7 +66,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
     if (selectedInput && chosenKey) {
         const selected = InputSystem.allInputs[selectedInput]
-        selected.keybind = chosenKey
+        selected.keyCode = chosenKey
         selected.modifiers = modifierState
         setChosenKey("")
         setSelectedInput("")
@@ -43,7 +79,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 <div
                     className="w-max"
                     onKeyUp={e => {
-                        setChosenKey(selectedInput ? e.key : "")
+                        setChosenKey(selectedInput ? e.code : "")
                         setModifierState({
                             ctrl: e.ctrlKey,
                             alt: e.altKey,
@@ -58,7 +94,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                             {Object.values(InputSystem.robotInputs).map(c => (
                                 <LabeledButton
                                     key={c.name}
-                                    label={InputSystem.ToTitleCase(c.name)}
+                                    label={toTitleCase(c.name)}
                                     placement={LabelPlacement.Left}
                                     value={
                                         c.name == selectedInput
@@ -91,7 +127,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     {Object.values(InputSystem.globalInputs).map(c => (
                         <LabeledButton
                             key={c.name}
-                            label={InputSystem.ToTitleCase(c.name)}
+                            label={toTitleCase(c.name)}
                             placement={LabelPlacement.Left}
                             value={
                                 c.name == selectedInput

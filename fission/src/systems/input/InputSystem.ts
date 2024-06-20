@@ -10,7 +10,7 @@ declare global {
 
     type Input = {
         name: string
-        keybind: string
+        keyCode: string
         isGlobal: boolean
         modifiers: ModifierState
     }
@@ -20,14 +20,14 @@ export const emptyModifierState: ModifierState = { ctrl: false, alt: false, shif
 
 // When a robot is loaded, default inputs replace any unassigned inputs
 const defaultInputs: { [key: string]: Input } = {
-    "intake": { name: "intake", keybind: "e", isGlobal: true, modifiers: emptyModifierState },
-    "shootGamepiece": { name: "shootGamepiece", keybind: "q", isGlobal: true, modifiers: emptyModifierState },
-    "enableGodMode": { name: "enableGodMode", keybind: "g", isGlobal: true, modifiers: emptyModifierState },
+    "intake": { name: "intake", keyCode: "KeyE", isGlobal: true, modifiers: emptyModifierState },
+    "shootGamepiece": { name: "shootGamepiece", keyCode: "KeyQ", isGlobal: true, modifiers: emptyModifierState },
+    "enableGodMode": { name: "enableGodMode", keyCode: "KeyG", isGlobal: true, modifiers: emptyModifierState },
 
-    "arcadeForward": { name: "arcadeForward", keybind: "w", isGlobal: false, modifiers: emptyModifierState },
-    "arcadeBackward": { name: "arcadeBackward", keybind: "s", isGlobal: false, modifiers: emptyModifierState },
-    "arcadeLeft": { name: "arcadeLeft", keybind: "a", isGlobal: false, modifiers: emptyModifierState },
-    "arcadeRight": { name: "arcadeRight", keybind: "d", isGlobal: false, modifiers: emptyModifierState },
+    "arcadeForward": { name: "arcadeForward", keyCode: "KeyW", isGlobal: false, modifiers: emptyModifierState },
+    "arcadeBackward": { name: "arcadeBackward", keyCode: "KeyS", isGlobal: false, modifiers: emptyModifierState },
+    "arcadeLeft": { name: "arcadeLeft", keyCode: "KeyA", isGlobal: false, modifiers: emptyModifierState },
+    "arcadeRight": { name: "arcadeRight", keyCode: "KeyD", isGlobal: false, modifiers: emptyModifierState },
 }
 
 class InputSystem extends WorldSystem {
@@ -70,7 +70,7 @@ class InputSystem extends WorldSystem {
     }
 
     public Update(_: number): void {InputSystem
-        InputSystem._currentModifierState = { ctrl: InputSystem.isKeyPressed("Control"), alt: InputSystem.isKeyPressed("Alt"), shift: InputSystem.isKeyPressed("Shift"), meta: InputSystem.isKeyPressed("Meta") }
+        InputSystem._currentModifierState = { ctrl: InputSystem.isKeyPressed("ControlLeft") || InputSystem.isKeyPressed("ControlRight"), alt: InputSystem.isKeyPressed("AltLeft") || InputSystem.isKeyPressed("AltRight"), shift: InputSystem.isKeyPressed("ShiftLeft") || InputSystem.isKeyPressed("ShiftRight"), meta: InputSystem.isKeyPressed("MetaLeft") || InputSystem.isKeyPressed("MetaRight") }
     }
 
     public Destroy(): void {    
@@ -80,12 +80,12 @@ class InputSystem extends WorldSystem {
 
     // Called when any key is pressed
     private HandleKeyDown(event: KeyboardEvent) {
-        InputSystem._keysPressed[event.key] = true;
+        InputSystem._keysPressed[event.code] = true;
     }
 
     // Called when any key is released
     private HandleKeyUp(event: KeyboardEvent) {
-        InputSystem._keysPressed[event.key] = false;
+        InputSystem._keysPressed[event.code] = false;
     }
 
     // Returns true if the given key is currently down
@@ -103,7 +103,7 @@ class InputSystem extends WorldSystem {
             if (!this.CompareModifiers(InputSystem._currentModifierState, targetInput.modifiers)) 
                 return false;
 
-            return this.isKeyPressed(targetInput.keybind);
+            return this.isKeyPressed(targetInput.keyCode);
         }
 
         // If the input does not exist, returns false
@@ -113,13 +113,6 @@ class InputSystem extends WorldSystem {
     // Combines two inputs into a positive/negative axis
     public static GetAxis(positive: string, negative: string) {
         return (this.getInput(positive) ? 1 : 0) - (this.getInput(negative) ? 1 : 0);
-    }
-
-    // Converts camelCase to Title Case for the inputs modal
-    public static ToTitleCase(camelCase: string) : string {
-        const result = camelCase.replace(/([A-Z])/g, " $1");
-        const finalResult = result.charAt(0).toUpperCase() + result.slice(1);
-        return finalResult;
     }
 
     // Returns true if two modifier states are identical
