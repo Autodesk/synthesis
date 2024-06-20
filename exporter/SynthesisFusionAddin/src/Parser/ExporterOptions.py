@@ -36,7 +36,7 @@ class Joint:
     signalType: SignalType = field(default=None)
     speed: float = field(default=None)
     force: float = field(default=None)
- 
+
 
 @dataclass
 class Gamepiece:
@@ -85,7 +85,9 @@ class ExporterOptions:
     joints: list[Joint] = field(default=None)
     gamepieces: list[Gamepiece] = field(default=None)
     preferredUnits: PreferredUnits = field(default=PreferredUnits.IMPERIAL)
-    robotWeight: float = field(default=0.0)  # Always stored in kg regardless of 'preferredUnits'
+    robotWeight: float = field(
+        default=0.0
+    )  # Always stored in kg regardless of 'preferredUnits'
     compressOutput: bool = field(default=True)
     exportAsPart: bool = field(default=False)
 
