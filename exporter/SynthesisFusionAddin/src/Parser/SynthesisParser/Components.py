@@ -156,9 +156,9 @@ def __parseChildOccurrence(
     if options.exportMode == ExporterOptions.ExportMode.FIELD:
         for x in options.gamepieces:
             if x.occurrenceToken == mapConstant:
-                partsData.part_definitions[
-                    part.part_definition_reference
-                ].dynamic = True
+                partsData.part_definitions[part.part_definition_reference].dynamic = (
+                    True
+                )
                 break
 
     part.transform.spatial_matrix.extend(occurrence.transform.asArray())

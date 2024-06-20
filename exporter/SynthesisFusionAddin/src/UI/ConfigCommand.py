@@ -1833,22 +1833,22 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                         gamepieceConfig.isVisible = False
                         weightTableInput.isVisible = True
 
-                        addFieldInput.isEnabled = (
-                            wheelConfig.isVisible
-                        ) = jointConfig.isVisible = True
+                        addFieldInput.isEnabled = wheelConfig.isVisible = (
+                            jointConfig.isVisible
+                        ) = True
 
                 elif modeDropdown.selectedItem.index == 1:
                     if gamepieceConfig:
                         gm.ui.activeSelections.clear()
                         gm.app.activeDocument.design.rootComponent.opacity = 1
 
-                        addWheelInput.isEnabled = (
-                            addJointInput.isEnabled
-                        ) = gamepieceConfig.isVisible = True
+                        addWheelInput.isEnabled = addJointInput.isEnabled = (
+                            gamepieceConfig.isVisible
+                        ) = True
 
-                        jointConfig.isVisible = (
-                            wheelConfig.isVisible
-                        ) = weightTableInput.isVisible = False
+                        jointConfig.isVisible = wheelConfig.isVisible = (
+                            weightTableInput.isVisible
+                        ) = False
 
             elif cmdInput.id == "joint_config":
                 gm.app.activeDocument.design.rootComponent.opacity = 1

@@ -84,9 +84,10 @@ class ExporterOptions:
     joints: list[Joint] = field(default=None)
     gamepieces: list[Gamepiece] = field(default=None)
     preferredUnits: PreferredUnits = field(default=PreferredUnits.IMPERIAL)
-    robotWeight: float = field(
-        default=0.0
-    )  # Always stored in kg regardless of 'preferredUnits'
+
+    # Always stored in kg regardless of 'preferredUnits'
+    robotWeight: float = field(default=0.0)
+
     compressOutput: bool = field(default=True)
     exportAsPart: bool = field(default=False)
 
@@ -120,16 +121,20 @@ class ExporterOptions:
                 default=lambda obj: (
                     obj.value
                     if isinstance(obj, Enum)
-                    else {
-                        key: (
-                            lambda value: value
-                            if not isinstance(value, Enum)
-                            else value.value
-                        )(value)
-                        for key, value in obj.__dict__.items()
-                    }
-                    if hasattr(obj, "__dict__")
-                    else obj
+                    else (
+                        {
+                            key: (
+                                lambda value: (
+                                    value
+                                    if not isinstance(value, Enum)
+                                    else value.value
+                                )
+                            )(value)
+                            for key, value in obj.__dict__.items()
+                        }
+                        if hasattr(obj, "__dict__")
+                        else obj
+                    )
                 ),
                 indent=4,
             )
