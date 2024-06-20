@@ -82,9 +82,7 @@ class JointRelationship(enum.Enum):
 
 
 class DynamicOccurrenceNode(GraphNode):
-    def __init__(
-        self, occurrence: adsk.fusion.Occurrence, isGround=False, previous=None
-    ):
+    def __init__(self, occurrence: adsk.fusion.Occurrence, isGround=False, previous=None):
         super().__init__(occurrence)
         self.isGround = isGround
         self.name = occurrence.name
@@ -124,9 +122,7 @@ class DynamicOccurrenceNode(GraphNode):
 
 
 class DynamicEdge(GraphEdge):
-    def __init__(
-        self, relationship: OccurrenceRelationship, node: DynamicOccurrenceNode
-    ):
+    def __init__(self, relationship: OccurrenceRelationship, node: DynamicOccurrenceNode):
         super().__init__(relationship, node)
 
     # should print all in this class
@@ -518,9 +514,7 @@ def populateJoint(simNode: SimulationNode, joints: joint_pb2.Joints, progressDia
     #     print(f"Configuring {proto_joint.info.name}")
 
     # construct body tree if possible
-    createTreeParts(
-        simNode.data, OccurrenceRelationship.CONNECTION, root, progressDialog
-    )
+    createTreeParts(simNode.data, OccurrenceRelationship.CONNECTION, root, progressDialog)
 
     proto_joint.parts.nodes.append(root)
 
@@ -539,10 +533,7 @@ def createTreeParts(
         raise RuntimeError("User canceled export")
 
     # if it's the next part just exit early for our own sanity
-    if (
-        relationship == OccurrenceRelationship.NEXT
-        or dynNode.data.isLightBulbOn == False
-    ):
+    if relationship == OccurrenceRelationship.NEXT or dynNode.data.isLightBulbOn == False:
         return
 
     # set the occurrence / component id to reference the part

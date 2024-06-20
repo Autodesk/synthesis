@@ -57,9 +57,7 @@ class Toolbar:
             self.logger.debug(f"Created Panel {panel_uid} in Toolbar {self.uid}")
             return panel_uid
         else:
-            self.logger.error(
-                f"Failed to Create Panel {panel_uid} in Toolbar {self.uid}"
-            )
+            self.logger.error(f"Failed to Create Panel {panel_uid} in Toolbar {self.uid}")
             return None
 
     @staticmethod
