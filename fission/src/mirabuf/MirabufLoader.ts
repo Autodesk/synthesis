@@ -2,7 +2,6 @@ import { mirabuf } from "../proto/mirabuf";
 import Pako from "pako";
 import * as fs from 'fs';
 
-var id = 6;
 const root = await navigator.storage.getDirectory();
 const miraFolderHandle = await root.getDirectoryHandle("Mira", { create: true })
 const robotFolderHandle = await miraFolderHandle.getDirectoryHandle("Robots", { create: true })
@@ -29,12 +28,61 @@ export async function LoadMirabufRemote(fetchLocation: string, useCache: boolean
 
     console.log(target)
 
-    let cachedMira = JSON.parse(window.localStorage.getItem('Mira') ?? "{}")
-    let targetID = cachedMira[target]
-    console.log(targetID)
+
+
+    const miraJSON = window.localStorage.getItem("Mira") //returning object?? Parsed json?? Despite the docs saying returning key string
+    let cachedMira;
+    let targetID;
     let assembly;
-    
-    if (!targetID) {
+
+
+
+    if (!miraJSON?.includes("[object Object]")) { // Goes to else first time
+        console.log("miraJSON found")
+        const hi = JSON.stringify(window.localStorage.getItem("Mira"))
+        console.log(hi)
+
+
+        cachedMira = JSON.parse(window.localStorage.getItem("Mira") ?? "{}")
+
+        targetID = cachedMira[target]
+        console.log(targetID)
+        
+        if (targetID) {
+            console.log("targetID found")
+            // Grab file OPFS if targetID exists
+            let fileHandle;
+            try {
+                if (isRobot) {
+                    fileHandle = await robotFolderHandle.getFileHandle(targetID, {create: false}) ?? false
+                } else {
+                    fileHandle = await fieldFolderHandle.getFileHandle(targetID, {create: false}) ?? false
+                }
+            } catch (e) {
+                console.log('exited')
+                // delete cachedMira[target]  figure out how to remove from json
+                window.localStorage.setItem('Mira', cachedMira)
+                LoadMirabufRemote(target)
+            }
+            if (fileHandle) {
+                console.log(fileHandle)
+                const file = await fileHandle.getFile()
+                const buff = await file.arrayBuffer()
+                console.log(file)
+                assembly = mirabuf.Assembly.decode(UnzipMira(new Uint8Array(buff)))
+            }
+
+            console.log(assembly)
+            return assembly
+        }
+    } else {
+        window.localStorage.setItem("Mira", JSON.stringify(""))
+        
+        cachedMira = JSON.parse(window.localStorage.getItem("Mira") ?? "{}")
+    }
+
+    if (cachedMira) {
+        //Download and store file if targetID doesn't exist
         const id = Date.now().toString()
 
         // Grab file remote
@@ -53,32 +101,9 @@ export async function LoadMirabufRemote(fetchLocation: string, useCache: boolean
         await writable.close()
 
         // Local cache array
-        console.log('better hi')
         targetID = id
         cachedMira[target] = targetID
         window.localStorage.setItem('Mira', JSON.stringify(cachedMira))
-    } else {
-        // Grab file OPFS
-        let fileHandle;
-        try {
-            if (isRobot) {
-                fileHandle = await robotFolderHandle.getFileHandle(targetID, {create: false}) ?? false
-            } else {
-                fileHandle = await fieldFolderHandle.getFileHandle(targetID, {create: false}) ?? false
-            }
-        } catch (e) {
-            console.log('exited')
-            // delete cachedMira[target]  figure out how to remove from json
-            window.localStorage.setItem('Mira', cachedMira)
-            LoadMirabufRemote(target)
-        }
-        if (fileHandle) {
-            console.log(fileHandle)
-            const file = await fileHandle.getFile()
-            const buff = await file.arrayBuffer()
-            console.log(file)
-            assembly = mirabuf.Assembly.decode(UnzipMira(new Uint8Array(buff)))
-        }
     }
 
     console.log(assembly)
@@ -98,5 +123,5 @@ export async function ClearMira() {
         fieldFolderHandle.removeEntry(key)
     }
 
-    // window.localStorage.clear()
+    window.localStorage.clear()
 }
