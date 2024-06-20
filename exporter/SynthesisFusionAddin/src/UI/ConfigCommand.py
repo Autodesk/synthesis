@@ -17,6 +17,7 @@ from ..Parser.ExporterOptions import (
     Joint,
     Wheel,
     JointParentType,
+    PreferredUnits,
 )
 from .Configuration.SerialCommand import SerialCommand
 
@@ -162,6 +163,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
     def notify(self, args):
         try:
             exporterOptions = ExporterOptions().read()
+            # exporterOptions = ExporterOptions()
 
             if not Helper.check_solid_open():
                 return
@@ -171,14 +173,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 showAnalyticsAlert()
                 NOTIFIED = True
                 write_configuration("analytics", "notified", "yes")
-
-            # Transition: AARD-1687
-            # designCompress = self.designAttrs.itemByName("SynthesisExporter", "compress")
-            # global compress
-            # if designCompress:
-            #     compress = True if designCompress.value == "True" else False
-            # else:
-            #     compress = True
 
             if A_EP:
                 A_EP.send_view("export_panel")
@@ -226,9 +220,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
             )
 
-            # TODO
-            # dynamic = exporterOptions.exportMode == ExporterOptions.ExportMode.ROBOT
-            dynamic = True
+            dynamic = exporterOptions.exportMode == ExportMode.ROBOT
             dropdownExportMode.listItems.add("Dynamic", dynamic)
             dropdownExportMode.listItems.add("Static", not dynamic)
 
@@ -271,11 +263,18 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             auto_calc_weight.resourceFolder = IconPaths.stringIcons["calculate-enabled"]
             auto_calc_weight.isFullWidth = True
 
+            imperialUnits = exporterOptions.preferredUnits == PreferredUnits.IMPERIAL
+            if imperialUnits:
+                # ExporterOptions always contains the metric value
+                displayWeight = exporterOptions.robotWeight * 2.2046226218
+            else:
+                displayWeight = exporterOptions.robotWeight
+
             weight_input = inputs.addValueInput(
                 "weight_input",
                 "Weight Input",
                 "",
-                adsk.core.ValueInput.createByString("0.0"),  # TODO
+                adsk.core.ValueInput.createByReal(displayWeight),
             )
             weight_input.tooltip = "Robot weight"
             weight_input.tooltipDescription = """<tt>(in pounds)</tt><hr>This is the weight of the entire robot assembly."""
@@ -285,11 +284,12 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 "Weight Unit",
                 adsk.core.DropDownStyles.LabeledIconDropDownStyle,
             )
+
             weight_unit.listItems.add(
-                "‎", True, IconPaths.massIcons["LBS"]
+                "‎", imperialUnits, IconPaths.massIcons["LBS"]
             )  # add listdropdown mass options
             weight_unit.listItems.add(
-                "‎", False, IconPaths.massIcons["KG"]
+                "‎", not imperialUnits, IconPaths.massIcons["KG"]
             )  # add listdropdown mass options
             weight_unit.tooltip = "Unit of mass"
             weight_unit.tooltipDescription = (
@@ -400,6 +400,11 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 0,
                 3,
             )
+
+            for wheel in exporterOptions.wheels:
+                wheelEntity = gm.app.activeDocument.design.findEntityByToken(wheel.jointToken)[0]
+                typeWheel = type(wheelEntity)
+                addWheelToTable(wheelEntity)
 
             # ~~~~~~~~~~~~~~~~ JOINT CONFIGURATION ~~~~~~~~~~~~~~~~
             """
@@ -530,6 +535,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 5,
             )
 
+            # Fill the table with all joints in current design
             for joint in list(
                 gm.app.activeDocument.design.rootComponent.allJoints
             ) + list(gm.app.activeDocument.design.rootComponent.allAsBuiltJoints):
@@ -710,7 +716,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 "compress",
                 "Compress Output",
                 exporter_settings,
-                checked=compress,
+                checked=exporterOptions.compressOutput,
                 tooltip="Compress the output file for a smaller file size.",
                 tooltipadvanced="<hr>Use the GZIP compression system to compress the resulting file which will be opened in the simulator, perfect if you want to share the file.<br>",
                 enabled=True,
@@ -720,7 +726,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 "export_as_part",
                 "Export As Part",
                 exporter_settings,
-                checked=False,
+                checked=exporterOptions.exportAsPart,
                 tooltip="Use to export as a part for Mix And Match",
                 enabled=True,
             )
@@ -1078,10 +1084,6 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 .children.itemById("exporter_settings")
                 .children.itemById("export_as_part")
             ).value
-            # parserOptions.exportAsPart = export_as_part_boolean
-
-            # Transition: AARD-1687
-            # self.designAttrs.add("SynthesisExporter", "export_as_part", str(export_as_part_boolean.value))
 
             processedFileName = gm.app.activeDocument.name.replace(" ", "_")
             dropdownExportMode = INPUTS_ROOT.itemById("mode")
@@ -1089,9 +1091,6 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 isRobot = True
             elif dropdownExportMode.selectedItem.index == 1:
                 isRobot = False
-
-            # Transition: AARD-1687
-            # self.designAttrs.add("SynthesisExporter", "mode", str(isRobot))
 
             if platform.system() == "Windows":
                 if isRobot:
@@ -1183,8 +1182,8 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 _exportWheels.append(
                     Wheel(
                         WheelListGlobal[row - 1].entityToken,
-                        wheelTypeIndex,
-                        signalTypeIndex,
+                        wheelTypeIndex + 1, # TODO: More explicit conversion to 'enum' - Brandon
+                        signalTypeIndex + 1, # TODO: More explicit conversion to 'enum' - Brandon
                         # onSelect.wheelJointList[row-1][0] # GUID of wheel joint. if no joint found, default to None
                     )
                 )
@@ -1220,7 +1219,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                         Joint(
                             JointListGlobal[row - 1].entityToken,
                             JointParentType.ROOT,
-                            signalTypeIndex,  # index of selected signal in dropdown
+                            signalTypeIndex + 1, # TODO: More explicit conversion to 'Enum' - Brandon 
                             jointSpeed,
                             jointForce / 100.0,
                         )  # parent joint GUID
@@ -1244,7 +1243,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                     Joint(
                         JointListGlobal[row - 1].entityToken,
                         parentJointToken,
-                        signalTypeIndex,
+                        signalTypeIndex + 1, # TODO: More explicit conversion to 'Enum' - Brandon
                         jointSpeed,
                         jointForce,
                     )
@@ -1285,8 +1284,10 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             weight_unit = INPUTS_ROOT.itemById("weight_unit")
 
             if weight_unit.selectedItem.index == 0:
+                selectedUnits = PreferredUnits.IMPERIAL
                 _robotWeight = float(weight_input.value) / 2.2046226218
             else:
+                selectedUnits = PreferredUnits.METRIC
                 _robotWeight = float(weight_input.value)
 
             """
@@ -1305,9 +1306,6 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 .children.itemById("compress")
             ).value
 
-            # Transition: AARD-1687
-            # self.designAttrs.add("SynthesisExporter", "compress", str(compress))
-
             exporterOptions = ExporterOptions(
                 savepath,
                 name,
@@ -1316,13 +1314,14 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 joints=_exportJoints,
                 wheels=_exportWheels,
                 gamepieces=_exportGamepieces,
+                preferredUnits=selectedUnits,
                 robotWeight=_robotWeight,
                 exportMode=_mode,
                 compressOutput=compress,
             )
-            exporterOptions.write()
 
             Parser(exporterOptions).export()
+            exporterOptions.write()
         except:
             if gm.ui:
                 gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
@@ -2347,7 +2346,15 @@ def addWheelToTable(wheel: adsk.fusion.Joint) -> None:
         wheel (adsk.fusion.Occurrence): wheel Occurrence object to be added.
     """
     try:
-        onSelect = gm.handlers[3]
+        try:
+            onSelect = gm.handlers[3]
+            onSelect.allWheelPreselections.append(wheel.entityToken)
+        except IndexError:
+            # Not 100% sure what we need the select handler here for however it should not run when
+            # first populating the saved wheel configs. This will naturally throw a IndexError as
+            # we do this before the initialization of gm.handlers[]
+            pass
+
         wheelTableInput = wheelTable()
         # def addPreselections(child_occurrences):
         #     for occ in child_occurrences:
@@ -2359,7 +2366,6 @@ def addWheelToTable(wheel: adsk.fusion.Joint) -> None:
         # if wheel.childOccurrences:
         #     addPreselections(wheel.childOccurrences)
         # else:
-        onSelect.allWheelPreselections.append(wheel.entityToken)
 
         WheelListGlobal.append(wheel)
         cmdInputs = adsk.core.CommandInputs.cast(wheelTableInput.commandInputs)

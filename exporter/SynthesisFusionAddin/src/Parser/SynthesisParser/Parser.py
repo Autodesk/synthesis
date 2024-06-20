@@ -14,6 +14,7 @@ from . import Materials, Components, Joints, JointHierarchy, PDMessage
 from .Utilities import *
 from .. import ExporterOptions
 
+
 class Parser:
     def __init__(self, options: ExporterOptions):
         """Creates a new parser with the supplied options
@@ -37,7 +38,9 @@ class Parser:
             )
 
             # set int to 0 in dropdown selection for dynamic
-            assembly_out.dynamic = self.exporterOptions.exportMode == ExporterOptions.ExportMode.ROBOT
+            assembly_out.dynamic = (
+                self.exporterOptions.exportMode == ExporterOptions.ExportMode.ROBOT
+            )
 
             # Physical Props here when ready
 
