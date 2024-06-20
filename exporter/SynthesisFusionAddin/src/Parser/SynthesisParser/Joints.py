@@ -116,12 +116,19 @@ def populateJoints(
 
                         # really could just map the enum to a friggin string
                         if (
-                            parse_joints.signalType != ExporterOptions.SignalType.PASSIVE
+                            parse_joints.signalType
+                            != ExporterOptions.SignalType.PASSIVE
                             and assembly.dynamic
                         ):
-                            if parse_joints.signalType == ExporterOptions.SignalType.CAN:
+                            if (
+                                parse_joints.signalType
+                                == ExporterOptions.SignalType.CAN
+                            ):
                                 signal.device_type = signal_pb2.DeviceType.CANBUS
-                            elif parse_joints.signalType == ExporterOptions.SignalType.PWM:
+                            elif (
+                                parse_joints.signalType
+                                == ExporterOptions.SignalType.PWM
+                            ):
                                 signal.device_type = signal_pb2.DeviceType.PWM
 
                             motor = joints.motor_definitions[joint.entityToken]
