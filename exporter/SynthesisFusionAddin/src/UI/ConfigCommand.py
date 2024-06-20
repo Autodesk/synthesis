@@ -1310,6 +1310,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 robotWeight=_robotWeight,
                 exportMode=_mode,
                 compressOutput=compress,
+                exportAsPart=export_as_part_boolean,
             )
 
             Parser(exporterOptions).export()
