@@ -108,7 +108,7 @@ def populateJoints(
                 joint_instance = joints.joint_instances[joint.entityToken]
 
                 for parse_joints in options.joints:
-                    if parse_joints.joint_token == joint.entityToken:
+                    if parse_joints.jointToken == joint.entityToken:
                         guid = str(uuid.uuid4())
                         signal = signals.signal_map[guid]
                         construct_info(joint.name, signal, GUID=guid)
@@ -208,7 +208,7 @@ def _addJointInstance(
 
     if options.wheels:
         for wheel in options.wheels:
-            if wheel.joint_token == joint.entityToken:
+            if wheel.jointToken == joint.entityToken:
                 joint_definition.user_data.data["wheel"] = "true"
                 joint_definition.user_data.data["wheelType"] = str(wheel.wheelType)
 
@@ -475,24 +475,24 @@ def createJointGraph(
     # first iterate through to create the nodes
     for supplied_joint in supplied_joints:
         newNode = types_pb2.Node()
-        newNode.value = supplied_joint.joint_token
+        newNode.value = supplied_joint.jointToken
         node_map[newNode.value] = newNode
 
     # second sort them
     for supplied_joint in supplied_joints:
-        current_node = node_map[supplied_joint.joint_token]
+        current_node = node_map[supplied_joint.jointToken]
         if supplied_joint.parent == JointParentType.ROOT:
-            node_map["ground"].children.append(node_map[supplied_joint.joint_token])
+            node_map["ground"].children.append(node_map[supplied_joint.jointToken])
         elif (
             node_map[supplied_joint.parent.value] is not None
-            and node_map[supplied_joint.joint_token] is not None
+            and node_map[supplied_joint.jointToken] is not None
         ):
             node_map[supplied_joint.parent].children.append(
-                node_map[supplied_joint.joint_token]
+                node_map[supplied_joint.jointToken]
             )
         else:
             logging.getLogger("JointHierarchy").error(
-                f"Cannot construct hierarhcy because of detached tree at : {supplied_joint.joint_token}"
+                f"Cannot construct hierarhcy because of detached tree at : {supplied_joint.jointToken}"
             )
 
     for node in node_map.values():
@@ -509,6 +509,6 @@ def addWheelsToGraph(
         # wheel occ id
         # these don't have children
         wheelNode = types_pb2.Node()
-        wheelNode.value = wheel.occurrence_token
+        wheelNode.value = wheel.occurrenceToken
         rootNode.children.append(wheelNode)
         joint_tree.nodes.append(wheelNode)

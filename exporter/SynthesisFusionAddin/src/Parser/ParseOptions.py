@@ -16,34 +16,33 @@ import adsk.core, adsk.fusion
 from ..strings import INTERNAL_ID
 
 
-JointParentType = Enum("JointParentType", ["ROOT", "END"])
+JointParentType = Enum("JointParentType", ["ROOT", "END"]) # Not 100% sure what this is for - Brandon
 WheelType = Enum("WheelType", ["STANDARD", "OMNI"])
 SignalType = Enum("SignalType", ["PWM", "CAN", "PASSIVE"])
 ExportMode = Enum("ExportMode", ["ROBOT", "FIELD"])
 
 
-# will need to be constructed in the UI Configure on Export
 @dataclass
-class _Wheel:
-    joint_token: str  # maybe just pass the component
-    wheelType: WheelType
-    signalType: SignalType
+class Wheel:
+    jointToken: str = field(default=None)
+    wheelType: WheelType = field(default=None)
+    signalType: SignalType = field(default=None)
 
 
 @dataclass
-class _Joint:
-    joint_token: str
-    parent: str | JointParentType  # str can be root
-    signalType: SignalType
-    speed: float
-    force: float
+class Joint:
+    jointToken: str = field(default=None)
+    parent: JointParentType = field(default=None)
+    signalType: SignalType = field(default=None)
+    speed: float = field(default=None)
+    force: float = field(default=None)
 
 
 @dataclass
 class Gamepiece:
-    occurrence_token: str
-    weight: float
-    friction: float
+    occurrenceToken: str = field(default=None)
+    weight: float = field(default=None)
+    friction: float = field(default=None)
 
 
 class PhysicalDepth(Enum):
@@ -93,8 +92,8 @@ class ParseOptions:
         physicalDepth=PhysicalDepth.AllOccurrence,
         materials=1,
         mode=ExportMode.ROBOT,
-        wheels=list[_Wheel],
-        joints=list[_Joint],  # [{Occurrence, wheeltype} , {entitytoken, wheeltype}]
+        wheels=list[Wheel],
+        joints=list[Joint],  # [{Occurrence, wheeltype} , {entitytoken, wheeltype}]
         gamepieces=list[Gamepiece],
         weight=float,
         compress=bool,
@@ -129,22 +128,20 @@ class ParseOptions:
         self.compress = compress
 
 
-# TODO: This should be the only parse option class
+# TODO: This should be the only parse option class - Brandon
 @dataclass
 class ExporterOptions:
-    # TODO: Clean up all these `field(default=None)` things. This could be better - Brandon
+    # TODO: Clean up all these `field(default=None)` things. This could potentially be better - Brandon
     fileLocation: str = field(default=None)
     name: str = field(default=None)
     version: str = field(default=None)
     materials: int = field(default=0)  # TODO: Find out what this is for
-    mode: ExportMode = field(
-        default=ExportMode.ROBOT
-    )  # TODO: Maybe rename 'mode' to 'exportMode'
-    wheels: list[_Wheel] = field(default=None)
-    joints: list[_Joint] = field(default=None)
+    exportMode: ExportMode = field(default=ExportMode.ROBOT)
+    wheels: list[Wheel] = field(default=None)
+    joints: list[Joint] = field(default=None)
     gamepieces: list[Gamepiece] = field(default=None)
-    weight: float = field(default=0.0)
-    compress: bool = field(default=True)
+    robotWeight: float = field(default=0.0) # kg
+    compressOutput: bool = field(default=True)
     exportAsPart: bool = field(default=False)
 
     hierarchy: ModelHierarchy = field(default=ModelHierarchy.FusionAssembly)
@@ -155,19 +152,19 @@ class ExporterOptions:
 
     def read(self):
         designAttributes = adsk.core.Application.get().activeProduct.attributes
-        # TODO: This does not work for Lists of custom classes
         for field in fields(self):
             attribute = designAttributes.itemByName(INTERNAL_ID, field.name)
             if attribute:
                 setattr(
                     self,
                     field.name,
-                    self.readHelper(field.type, json.loads(attribute.value)),
+                    self.makeObjectFromJson(field.type, json.loads(attribute.value)),
                 )
 
         return self
 
-    def readHelper(self, objectType, data):
+    # TODO: There should be a way to clean this up - Brandon
+    def makeObjectFromJson(self, objectType, data):
         primitives = (bool, str, int, float, type(None))
         if (
             objectType in primitives or type(data) in primitives
@@ -175,6 +172,11 @@ class ExporterOptions:
             return data
         elif isinstance(objectType, EnumType):
             return objectType(data)
+        elif get_origin(objectType) is list:
+            return [
+                self.makeObjectFromJson(objectType.__args__[0], item)
+                for item in data
+            ]
 
         newObject = objectType()
         attrs = [
@@ -189,14 +191,14 @@ class ExporterOptions:
                     newObject,
                     attr,
                     [
-                        self.readHelper(currType.__args__[0], item)
+                        self.makeObjectFromJson(currType.__args__[0], item)
                         for item in data[attr]
                     ],
                 )
             elif currType in primitives:
                 setattr(newObject, attr, data[attr])
             elif isinstance(currType, object):
-                setattr(newObject, attr, self.readHelper(currType, data[attr]))
+                setattr(newObject, attr, self.makeObjectFromJson(currType, data[attr]))
 
         return newObject
 

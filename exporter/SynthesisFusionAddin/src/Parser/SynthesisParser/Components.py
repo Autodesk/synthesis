@@ -155,7 +155,7 @@ def __parseChildOccurrence(
     # TODO: Maybe make this a separate step where you dont go backwards and search for the gamepieces
     if options.mode == ParseOptions.ExportMode.FIELD:
         for x in options.gamepieces:
-            if x.occurrence_token == mapConstant:
+            if x.occurrenceToken == mapConstant:
                 partsData.part_definitions[
                     part.part_definition_reference
                 ].dynamic = True
