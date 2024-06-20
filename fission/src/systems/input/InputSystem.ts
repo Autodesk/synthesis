@@ -69,7 +69,7 @@ class InputSystem extends WorldSystem {
         }
     }
 
-    public Update(_: number): void {InputSystem
+    public Update(_: number): void {
         InputSystem._currentModifierState = { ctrl: InputSystem.isKeyPressed("ControlLeft") || InputSystem.isKeyPressed("ControlRight"), alt: InputSystem.isKeyPressed("AltLeft") || InputSystem.isKeyPressed("AltRight"), shift: InputSystem.isKeyPressed("ShiftLeft") || InputSystem.isKeyPressed("ShiftRight"), meta: InputSystem.isKeyPressed("MetaLeft") || InputSystem.isKeyPressed("MetaRight") }
     }
 
