@@ -75,11 +75,10 @@ class ModelHierarchy(Enum):
 
 @dataclass
 class ExporterOptions:
-    # TODO: Clean up all these `field(default=None)` things. This could potentially be better - Brandon
     fileLocation: str = field(default=None)
     name: str = field(default=None)
     version: str = field(default=None)
-    materials: int = field(default=0)  # TODO: Find out what this is for
+    materials: int = field(default=0)
     exportMode: ExportMode = field(default=ExportMode.ROBOT)
     wheels: list[Wheel] = field(default=None)
     joints: list[Joint] = field(default=None)
@@ -100,7 +99,7 @@ class ExporterOptions:
         default=CalculationAccuracy.LowCalculationAccuracy
     )
 
-    def read(self) -> None:
+    def readFromDesign(self) -> None:
         designAttributes = adsk.core.Application.get().activeProduct.attributes
         for field in fields(self):
             attribute = designAttributes.itemByName(INTERNAL_ID, field.name)
@@ -113,7 +112,7 @@ class ExporterOptions:
 
         return self
 
-    def write(self) -> None:
+    def writeToDesign(self) -> None:
         designAttributes = adsk.core.Application.get().activeProduct.attributes
         for field in fields(self):
             data = json.dumps(
@@ -136,7 +135,7 @@ class ExporterOptions:
             )
             designAttributes.add(INTERNAL_ID, field.name, data)
 
-    # TODO: There should be a way to clean this up - Brandon
+    # There should be a way to clean this up - Brandon
     def _makeObjectFromJson(self, objectType: type, data: any) -> any:
         primitives = (bool, str, int, float, type(None))
         if isinstance(objectType, EnumType):

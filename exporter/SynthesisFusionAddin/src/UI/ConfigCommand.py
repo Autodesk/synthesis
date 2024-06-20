@@ -16,6 +16,8 @@ from ..Parser.ExporterOptions import (
     ExporterOptions,
     Joint,
     Wheel,
+    WheelType,
+    SignalType,
     JointParentType,
     PreferredUnits,
 )
@@ -162,7 +164,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
 
     def notify(self, args):
         try:
-            exporterOptions = ExporterOptions().read()
+            exporterOptions = ExporterOptions().readFromDesign()
             # exporterOptions = ExporterOptions()
 
             if not Helper.check_solid_open():
@@ -1184,10 +1186,8 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 _exportWheels.append(
                     Wheel(
                         WheelListGlobal[row - 1].entityToken,
-                        wheelTypeIndex
-                        + 1,  # TODO: More explicit conversion to 'enum' - Brandon
-                        signalTypeIndex
-                        + 1,  # TODO: More explicit conversion to 'enum' - Brandon
+                        WheelType(wheelTypeIndex + 1),
+                        SignalType(signalTypeIndex + 1),
                         # onSelect.wheelJointList[row-1][0] # GUID of wheel joint. if no joint found, default to None
                     )
                 )
@@ -1223,8 +1223,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                         Joint(
                             JointListGlobal[row - 1].entityToken,
                             JointParentType.ROOT,
-                            signalTypeIndex
-                            + 1,  # TODO: More explicit conversion to 'Enum' - Brandon
+                            SignalType(signalTypeIndex + 1),
                             jointSpeed,
                             jointForce / 100.0,
                         )  # parent joint GUID
@@ -1248,8 +1247,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                     Joint(
                         JointListGlobal[row - 1].entityToken,
                         parentJointToken,
-                        signalTypeIndex
-                        + 1,  # TODO: More explicit conversion to 'Enum' - Brandon
+                        SignalType(signalTypeIndex + 1),
                         jointSpeed,
                         jointForce,
                     )
@@ -1327,7 +1325,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             )
 
             Parser(exporterOptions).export()
-            exporterOptions.write()
+            exporterOptions.writeToDesign()
         except:
             if gm.ui:
                 gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
@@ -1662,7 +1660,7 @@ class MyPreSelectHandler(adsk.core.SelectionEventHandler):
 
             dropdownExportMode = INPUTS_ROOT.itemById("mode")
             if preSelected and design:
-                if dropdownExportMode.selectedItem.index == 0:  # Dynamic? - Brandon
+                if dropdownExportMode.selectedItem.index == 0:  # Dynamic
                     if preSelected.entityToken in onSelect.allWheelPreselections:
                         self.cmd.setCursor(
                             IconPaths.mouseIcons["remove"],
@@ -1676,7 +1674,7 @@ class MyPreSelectHandler(adsk.core.SelectionEventHandler):
                             0,
                         )
 
-                elif dropdownExportMode.selectedItem.index == 1:  # Static? - Brandon
+                elif dropdownExportMode.selectedItem.index == 1:  # Static
                     if preSelected.entityToken in onSelect.allGamepiecePreselections:
                         self.cmd.setCursor(
                             IconPaths.mouseIcons["remove"],
