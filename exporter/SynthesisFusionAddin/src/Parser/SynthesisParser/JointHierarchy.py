@@ -2,7 +2,7 @@ from .Utilities import guid_component, guid_occurrence
 from ...general_imports import *
 import adsk.core, adsk.fusion, traceback, logging, enum
 from typing import *
-from .. import ParseOptions
+from ..ExporterOptions import ExporterOptions
 from .PDMessage import PDMessage
 from proto.proto_out import types_pb2, joint_pb2
 
@@ -461,7 +461,7 @@ def searchForGrounded(
 def BuildJointPartHierarchy(
     design: adsk.fusion.Design,
     joints: joint_pb2.Joints,
-    options: ParseOptions,
+    options: ExporterOptions,
     progressDialog: PDMessage,
 ):
     try:
