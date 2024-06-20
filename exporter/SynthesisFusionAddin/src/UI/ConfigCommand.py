@@ -402,7 +402,9 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             )
 
             for wheel in exporterOptions.wheels:
-                wheelEntity = gm.app.activeDocument.design.findEntityByToken(wheel.jointToken)[0]
+                wheelEntity = gm.app.activeDocument.design.findEntityByToken(
+                    wheel.jointToken
+                )[0]
                 typeWheel = type(wheelEntity)
                 addWheelToTable(wheelEntity)
 
@@ -1182,8 +1184,10 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 _exportWheels.append(
                     Wheel(
                         WheelListGlobal[row - 1].entityToken,
-                        wheelTypeIndex + 1, # TODO: More explicit conversion to 'enum' - Brandon
-                        signalTypeIndex + 1, # TODO: More explicit conversion to 'enum' - Brandon
+                        wheelTypeIndex
+                        + 1,  # TODO: More explicit conversion to 'enum' - Brandon
+                        signalTypeIndex
+                        + 1,  # TODO: More explicit conversion to 'enum' - Brandon
                         # onSelect.wheelJointList[row-1][0] # GUID of wheel joint. if no joint found, default to None
                     )
                 )
@@ -1219,7 +1223,8 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                         Joint(
                             JointListGlobal[row - 1].entityToken,
                             JointParentType.ROOT,
-                            signalTypeIndex + 1, # TODO: More explicit conversion to 'Enum' - Brandon 
+                            signalTypeIndex
+                            + 1,  # TODO: More explicit conversion to 'Enum' - Brandon
                             jointSpeed,
                             jointForce / 100.0,
                         )  # parent joint GUID
@@ -1243,7 +1248,8 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                     Joint(
                         JointListGlobal[row - 1].entityToken,
                         parentJointToken,
-                        signalTypeIndex + 1, # TODO: More explicit conversion to 'Enum' - Brandon
+                        signalTypeIndex
+                        + 1,  # TODO: More explicit conversion to 'Enum' - Brandon
                         jointSpeed,
                         jointForce,
                     )
