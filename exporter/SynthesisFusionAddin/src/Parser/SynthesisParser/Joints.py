@@ -116,18 +116,13 @@ def populateJoints(
 
                         # really could just map the enum to a friggin string
                         if (
-                            parse_joints.signalType
-                            != ExporterOptions.SignalType.PASSIVE
+                            parse_joints.signalType != ExporterOptions.SignalType.PASSIVE
                             and assembly.dynamic
                         ):
-                            if (
-                                parse_joints.signalType
-                                == ExporterOptions.SignalType.CAN
-                            ):
+                            if parse_joints.signalType == ExporterOptions.SignalType.CAN:
                                 signal.device_type = signal_pb2.DeviceType.CANBUS
                             elif (
-                                parse_joints.signalType
-                                == ExporterOptions.SignalType.PWM
+                                parse_joints.signalType == ExporterOptions.SignalType.PWM
                             ):
                                 signal.device_type = signal_pb2.DeviceType.PWM
 
@@ -405,8 +400,7 @@ def _jointOrigin(
     geometryOrOrigin = (
         (
             fusionJoint.geometryOrOriginOne
-            if fusionJoint.geometryOrOriginOne.objectType
-            == "adsk::fusion::JointGeometry"
+            if fusionJoint.geometryOrOriginOne.objectType == "adsk::fusion::JointGeometry"
             else fusionJoint.geometryOrOriginTwo
         )
         if fusionJoint.objectType == "adsk::fusion::Joint"

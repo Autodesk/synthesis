@@ -186,12 +186,8 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             cmd.isAutoExecute = False
             cmd.isExecutedWhenPreEmpted = False
             cmd.okButtonText = "Export"  # replace default OK text with "export"
-            cmd.setDialogInitialSize(
-                400, 350
-            )  # these aren't working for some reason...
-            cmd.setDialogMinimumSize(
-                400, 350
-            )  # these aren't working for some reason...
+            cmd.setDialogInitialSize(400, 350)  # these aren't working for some reason...
+            cmd.setDialogMinimumSize(400, 350)  # these aren't working for some reason...
 
             global INPUTS_ROOT  # Global CommandInputs arg
             INPUTS_ROOT = cmd.commandInputs
@@ -419,9 +415,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             )
             jointConfig.isExpanded = False
             jointConfig.isVisible = True
-            jointConfig.tooltip = (
-                "Select and define joint occurrences in your assembly."
-            )
+            jointConfig.tooltip = "Select and define joint occurrences in your assembly."
 
             joint_inputs = jointConfig.children
 
@@ -571,9 +565,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             )
             weightTableInput_f.tablePresentationStyle = 2  # set to clear background
 
-            weight_name_f = gamepiece_inputs.addStringValueInput(
-                "weight_name", "Weight"
-            )
+            weight_name_f = gamepiece_inputs.addStringValueInput("weight_name", "Weight")
             weight_name_f.value = "Unit of Mass"
             weight_name_f.isReadOnly = True
 
@@ -586,9 +578,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 enabled=True,
                 isCheckBox=False,
             )
-            auto_calc_weight_f.resourceFolder = IconPaths.stringIcons[
-                "calculate-enabled"
-            ]
+            auto_calc_weight_f.resourceFolder = IconPaths.stringIcons["calculate-enabled"]
             auto_calc_weight_f.isFullWidth = True
 
             weight_unit_f = gamepiece_inputs.addDropDownCommandInput(
@@ -630,9 +620,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 50,
             )
 
-            addFieldInput = gamepiece_inputs.addBoolValueInput(
-                "field_add", "Add", False
-            )
+            addFieldInput = gamepiece_inputs.addBoolValueInput("field_add", "Add", False)
 
             removeFieldInput = gamepiece_inputs.addBoolValueInput(
                 "field_delete", "Remove", False
@@ -1465,9 +1453,7 @@ class MySelectHandler(adsk.core.SelectionEventHandler):
                     if occ in value:
                         return [joint, occ]  # occurrence that is jointed
 
-                if (
-                    occ.childOccurrences
-                ):  # if occurrence has children, traverse sub-tree
+                if occ.childOccurrences:  # if occurrence has children, traverse sub-tree
                     self.traverseAssembly(occ.childOccurrences, jointedOcc)
             return None  # no jointed occurrence found
         except:
@@ -1540,9 +1526,7 @@ class MySelectHandler(adsk.core.SelectionEventHandler):
             treeParent = parent  # each parent that will traverse up in algorithm.
 
             while treeParent != None:  # loops until reaches top-level component
-                returned = self.traverseAssembly(
-                    treeParent.childOccurrences, jointedOcc
-                )
+                returned = self.traverseAssembly(treeParent.childOccurrences, jointedOcc)
 
                 if returned != None:
                     for i in range(parentLevel):
@@ -2014,10 +1998,7 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                 # gm.ui.activeSelections.clear()
 
                 addWheelInput.isEnabled = True
-                if (
-                    wheelTableInput.selectedRow == -1
-                    or wheelTableInput.selectedRow == 0
-                ):
+                if wheelTableInput.selectedRow == -1 or wheelTableInput.selectedRow == 0:
                     wheelTableInput.selectedRow = wheelTableInput.rowCount - 1
                     gm.ui.messageBox("Select a row to delete.")
                 else:
@@ -2030,10 +2011,7 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                 addJointInput.isEnabled = True
                 addWheelInput.isEnabled = True
 
-                if (
-                    jointTableInput.selectedRow == -1
-                    or jointTableInput.selectedRow == 0
-                ):
+                if jointTableInput.selectedRow == -1 or jointTableInput.selectedRow == 0:
                     jointTableInput.selectedRow = jointTableInput.rowCount - 1
                     gm.ui.messageBox("Select a row to delete.")
                 else:
@@ -2189,9 +2167,7 @@ class MyCommandDestroyHandler(adsk.core.CommandEventHandler):
             onSelect.allWheelPreselections.clear()
             onSelect.wheelJointList.clear()
 
-            for (
-                group
-            ) in gm.app.activeDocument.design.rootComponent.customGraphicsGroups:
+            for group in gm.app.activeDocument.design.rootComponent.customGraphicsGroups:
                 group.deleteMe()
 
             # Currently causes Internal Autodesk Error
@@ -2260,9 +2236,7 @@ def addJointToTable(joint: adsk.fusion.Joint) -> None:
             icon.tooltip = "Ball joint"
 
         # joint name
-        name = cmdInputs.addTextBoxCommandInput(
-            "name_j", "Occurrence name", "", 1, True
-        )
+        name = cmdInputs.addTextBoxCommandInput("name_j", "Occurrence name", "", 1, True)
         name.tooltip = joint.name
         name.formattedText = "<p style='font-size:11px'>{}</p>".format(joint.name)
 
@@ -2535,9 +2509,9 @@ def removeWheelFromTable(index: int) -> None:
     except IndexError:
         pass
     except:
-        logging.getLogger(
-            "{INTERNAL_ID}.UI.ConfigCommand.removeWheelFromTable()"
-        ).error("Failed:\n{}".format(traceback.format_exc()))
+        logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.removeWheelFromTable()").error(
+            "Failed:\n{}".format(traceback.format_exc())
+        )
 
 
 def removeJointFromTable(joint: adsk.fusion.Joint) -> None:
@@ -2573,9 +2547,9 @@ def removeJointFromTable(joint: adsk.fusion.Joint) -> None:
                 else:
                     listItems.item(index).deleteMe()
     except:
-        logging.getLogger(
-            "{INTERNAL_ID}.UI.ConfigCommand.removeJointFromTable()"
-        ).error("Failed:\n{}".format(traceback.format_exc()))
+        logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.removeJointFromTable()").error(
+            "Failed:\n{}".format(traceback.format_exc())
+        )
 
 
 def removeGamePieceFromTable(index: int) -> None:

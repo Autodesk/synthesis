@@ -125,9 +125,7 @@ class ExporterOptions:
                         {
                             key: (
                                 lambda value: (
-                                    value
-                                    if not isinstance(value, Enum)
-                                    else value.value
+                                    value if not isinstance(value, Enum) else value.value
                                 )
                             )(value)
                             for key, value in obj.__dict__.items()
