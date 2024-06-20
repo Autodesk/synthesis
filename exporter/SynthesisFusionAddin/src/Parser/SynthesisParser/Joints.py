@@ -30,7 +30,7 @@ from typing import Union
 from ...general_imports import *
 from .Utilities import fill_info, construct_info, guid_occurrence
 from .PDMessage import PDMessage
-from ..ExporterOptions import ExporterOptions, JointParentType
+from ..ExporterOptions import ExporterOptions, JointParentType, SignalType
 
 
 # Need to take in a graphcontainer
@@ -116,14 +116,12 @@ def populateJoints(
 
                         # really could just map the enum to a friggin string
                         if (
-                            parse_joints.signalType != ExporterOptions.SignalType.PASSIVE
+                            parse_joints.signalType != SignalType.PASSIVE
                             and assembly.dynamic
                         ):
-                            if parse_joints.signalType == ExporterOptions.SignalType.CAN:
+                            if parse_joints.signalType == SignalType.CAN:
                                 signal.device_type = signal_pb2.DeviceType.CANBUS
-                            elif (
-                                parse_joints.signalType == ExporterOptions.SignalType.PWM
-                            ):
+                            elif parse_joints.signalType == SignalType.PWM:
                                 signal.device_type = signal_pb2.DeviceType.PWM
 
                             motor = joints.motor_definitions[joint.entityToken]
