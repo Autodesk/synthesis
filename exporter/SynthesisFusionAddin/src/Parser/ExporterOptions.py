@@ -11,7 +11,9 @@ import json
 from typing import get_origin
 from enum import Enum, EnumType
 from dataclasses import dataclass, fields, field
-import adsk.core, adsk.fusion
+import adsk.core
+
+from adsk.fusion import CalculationAccuracy, TriangleMeshQualityOptions
 
 from ..strings import INTERNAL_ID
 
@@ -19,7 +21,7 @@ from ..strings import INTERNAL_ID
 JointParentType = Enum("JointParentType", ["ROOT", "END"]) # Not 100% sure what this is for - Brandon
 WheelType = Enum("WheelType", ["STANDARD", "OMNI"])
 SignalType = Enum("SignalType", ["PWM", "CAN", "PASSIVE"])
-ExportMode = Enum("ExportMode", ["ROBOT", "FIELD"])
+ExportMode = Enum("ExportMode", ["ROBOT", "FIELD"]) # Dynamic / Static export
 
 
 @dataclass
@@ -46,18 +48,22 @@ class Gamepiece:
 
 
 class PhysicalDepth(Enum):
-    """Depth at which the Physical Properties are generated and saved
-    - This is mostly dictated by export type as flattening or any hierarchical modification takes precedence
+    """
+    Depth at which the Physical Properties are generated and saved
+    This is mostly dictated by export type as flattening or any hierarchical modification takes precedence
     """
 
-    NoPhysical = 0
     """ No Physical Properties are generated """
-    Body = 1
+    NoPhysical = 0
+
     """ Only Body Physical Objects are generated """
-    SurfaceOccurrence = 2
+    Body = 1
+
     """ Only Occurrence that contain Bodies and Bodies have Physical Properties """
-    AllOccurrence = 3
+    SurfaceOccurrence = 2
+
     """ Every Single Occurrence has Physical Properties even if empty """
+    AllOccurrence = 3
 
 
 class ModelHierarchy(Enum):
@@ -65,70 +71,19 @@ class ModelHierarchy(Enum):
     Enum Class to describe how the model format should look on export to suit different needs
     """
 
-    FusionAssembly = 0
     """ Model exactly as it is shown in Fusion 360 in the model view tree """
+    FusionAssembly = 0
 
-    FlatAssembly = 1
     """ Flattened Assembly with all bodies as children of the root object """
+    FlatAssembly = 1
 
-    PhysicalAssembly = 2
     """ A Model represented with parented objects that are part of a jointed tree """
+    PhysicalAssembly = 2
 
-    SingleMesh = 3
     """ Generates the root assembly as a single mesh and stores the associated data """
+    SingleMesh = 3
 
 
-class ParseOptions:
-    """Options to supply to the parser object that will generate the output file"""
-
-    def __init__(
-        self,
-        fileLocation: str,
-        name: str,
-        version: str,
-        hierarchy=ModelHierarchy.FusionAssembly,
-        visual=adsk.fusion.TriangleMeshQualityOptions.LowQualityTriangleMesh,
-        physical=adsk.fusion.CalculationAccuracy.LowCalculationAccuracy,
-        physicalDepth=PhysicalDepth.AllOccurrence,
-        materials=1,
-        mode=ExportMode.ROBOT,
-        wheels=list[Wheel],
-        joints=list[Joint],  # [{Occurrence, wheeltype} , {entitytoken, wheeltype}]
-        gamepieces=list[Gamepiece],
-        weight=float,
-        compress=bool,
-    ):
-        """Generates the Parser Options for the given export
-
-        Args:
-            - fileLocation (str): Location of file with file name (given during file explore action)
-            - name (str): name of the assembly
-            - version (str): root assembly version
-            - hierarchy (ModelHierarchy.FusionAssembly, optional): The exported model hierarchy. Defaults to ModelHierarchy.FusionAssembly
-            - visual (adsk.fusion.TriangleMeshQualityOptions, optional): Triangle Mesh Export Quality. Defaults to adsk.fusion.TriangleMeshQualityOptions.HighQualityTriangleMesh.
-            - physical (adsk.fusion.CalculationAccuracy, optional): Calculation Level of the physical properties. Defaults to adsk.fusion.CalculationAccuracy.MediumCalculationAccuracy.
-            - physicalDepth (PhysicalDepth, optional): Enum to define the level of physical attributes exported. Defaults to PhysicalDepth.AllOccurrence.
-            - materials (int, optional): Export Materials type: defaults to STANDARD 1
-            - joints (bool, optional): Export Joints. Defaults to True.
-            - wheels (list (strings)): List of Occurrence.entityTokens that
-        """
-        self.fileLocation = fileLocation
-        self.name = name
-        self.version = version
-        self.hierarchy = hierarchy
-        self.visual = visual
-        self.physical = physical
-        self.physicalDepth = physicalDepth
-        self.materials = materials
-        self.mode = mode
-        self.wheels = wheels
-        self.joints = joints
-        self.gamepieces = gamepieces
-        self.weight = weight  # full weight of robot in KG
-        self.compress = compress
-
-
-# TODO: This should be the only parse option class - Brandon
 @dataclass
 class ExporterOptions:
     # TODO: Clean up all these `field(default=None)` things. This could potentially be better - Brandon
@@ -145,12 +100,11 @@ class ExporterOptions:
     exportAsPart: bool = field(default=False)
 
     hierarchy: ModelHierarchy = field(default=ModelHierarchy.FusionAssembly)
-    visual: adsk.fusion.TriangleMeshQualityOptions = field(
-        default=adsk.fusion.TriangleMeshQualityOptions.LowQualityTriangleMesh
-    )
+    visualQuality: TriangleMeshQualityOptions = field(default=TriangleMeshQualityOptions.LowQualityTriangleMesh)
     physicalDepth: PhysicalDepth = field(default=PhysicalDepth.AllOccurrence)
+    physicalCalculationLevel: CalculationAccuracy = field(default=CalculationAccuracy.LowCalculationAccuracy)
 
-    def read(self):
+    def read(self) -> None:
         designAttributes = adsk.core.Application.get().activeProduct.attributes
         for field in fields(self):
             attribute = designAttributes.itemByName(INTERNAL_ID, field.name)
@@ -158,51 +112,12 @@ class ExporterOptions:
                 setattr(
                     self,
                     field.name,
-                    self.makeObjectFromJson(field.type, json.loads(attribute.value)),
+                    self._makeObjectFromJson(field.type, json.loads(attribute.value)),
                 )
 
         return self
 
-    # TODO: There should be a way to clean this up - Brandon
-    def makeObjectFromJson(self, objectType, data):
-        primitives = (bool, str, int, float, type(None))
-        if (
-            objectType in primitives or type(data) in primitives
-        ):  # Required to catch `fusion.TriangleMeshQualityOptions`
-            return data
-        elif isinstance(objectType, EnumType):
-            return objectType(data)
-        elif get_origin(objectType) is list:
-            return [
-                self.makeObjectFromJson(objectType.__args__[0], item)
-                for item in data
-            ]
-
-        newObject = objectType()
-        attrs = [
-            x
-            for x in dir(newObject)
-            if not x.startswith("__") and not callable(getattr(newObject, x))
-        ]
-        for attr in attrs:
-            currType = objectType.__annotations__.get(attr, None)
-            if get_origin(currType) is list:
-                setattr(
-                    newObject,
-                    attr,
-                    [
-                        self.makeObjectFromJson(currType.__args__[0], item)
-                        for item in data[attr]
-                    ],
-                )
-            elif currType in primitives:
-                setattr(newObject, attr, data[attr])
-            elif isinstance(currType, object):
-                setattr(newObject, attr, self.makeObjectFromJson(currType, data[attr]))
-
-        return newObject
-
-    def write(self):
+    def write(self) -> None:
         designAttributes = adsk.core.Application.get().activeProduct.attributes
         for field in fields(self):
             data = json.dumps(
@@ -224,3 +139,42 @@ class ExporterOptions:
                 indent=4,
             )
             designAttributes.add(INTERNAL_ID, field.name, data)
+
+    # TODO: There should be a way to clean this up - Brandon
+    def _makeObjectFromJson(self, objectType: type, data: any) -> any:
+        primitives = (bool, str, int, float, type(None))
+        if (
+            objectType in primitives or type(data) in primitives
+        ):  # Required to catch `fusion.TriangleMeshQualityOptions`
+            return data
+        elif isinstance(objectType, EnumType):
+            return objectType(data)
+        elif get_origin(objectType) is list:
+            return [
+                self._makeObjectFromJson(objectType.__args__[0], item)
+                for item in data
+            ]
+
+        newObject = objectType()
+        attrs = [
+            x
+            for x in dir(newObject)
+            if not x.startswith("__") and not callable(getattr(newObject, x))
+        ]
+        for attr in attrs:
+            currType = objectType.__annotations__.get(attr, None)
+            if get_origin(currType) is list:
+                setattr(
+                    newObject,
+                    attr,
+                    [
+                        self._makeObjectFromJson(currType.__args__[0], item)
+                        for item in data[attr]
+                    ],
+                )
+            elif currType in primitives:
+                setattr(newObject, attr, data[attr])
+            elif isinstance(currType, object):
+                setattr(newObject, attr, self._makeObjectFromJson(currType, data[attr]))
+
+        return newObject

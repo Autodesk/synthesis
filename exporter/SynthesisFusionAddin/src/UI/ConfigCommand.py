@@ -10,11 +10,10 @@ from ..general_imports import *
 from ..configure import NOTIFIED, write_configuration
 from ..Analytics.alert import showAnalyticsAlert
 from . import Helper, OsHelper, CustomGraphics, IconPaths
-from ..Parser.ParseOptions import (
+from ..Parser.ExporterOptions import (
     Gamepiece,
     ExportMode,
-    ParseOptions,
-    ExporterOptions,  # TODO
+    ExporterOptions,
     Joint,
     Wheel,
     JointParentType,
@@ -228,7 +227,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             )
 
             # TODO
-            # dynamic = exporterOptions.mode == Mode.Synthesis
+            # dynamic = exporterOptions.exportMode == ExporterOptions.ExportMode.ROBOT
             dynamic = True
             dropdownExportMode.listItems.add("Dynamic", dynamic)
             dropdownExportMode.listItems.add("Static", not dynamic)
@@ -1091,12 +1090,6 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             elif dropdownExportMode.selectedItem.index == 1:
                 isRobot = False
 
-            # TODO: This is silly
-            # if isRobot:
-            #     parserOptions.mode = Mode.Synthesis
-            # else:
-            #     parserOptions.mode = Mode.SynthesisField
-
             # Transition: AARD-1687
             # self.designAttrs.add("SynthesisExporter", "mode", str(isRobot))
 
@@ -1315,19 +1308,6 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             # Transition: AARD-1687
             # self.designAttrs.add("SynthesisExporter", "compress", str(compress))
 
-            options = ParseOptions(
-                savepath,
-                name,
-                version,
-                materials=0,
-                joints=_exportJoints,
-                wheels=_exportWheels,
-                gamepieces=_exportGamepieces,
-                weight=_robotWeight,
-                mode=_mode,
-                compress=compress,
-            )
-
             exporterOptions = ExporterOptions(
                 savepath,
                 name,
@@ -1342,7 +1322,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             )
             exporterOptions.write()
 
-            Parser(options).export()
+            Parser(exporterOptions).export()
         except:
             if gm.ui:
                 gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))

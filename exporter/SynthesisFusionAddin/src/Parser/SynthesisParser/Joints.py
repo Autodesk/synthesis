@@ -30,7 +30,7 @@ from typing import Union
 from ...general_imports import *
 from .Utilities import fill_info, construct_info, guid_occurrence
 from .PDMessage import PDMessage
-from ..ParseOptions import ParseOptions, JointParentType
+from ..ExporterOptions import ExporterOptions, JointParentType
 
 
 # Need to take in a graphcontainer
@@ -59,7 +59,7 @@ def populateJoints(
     joints: joint_pb2.Joints,
     signals: signal_pb2.Signals,
     progressDialog: PDMessage,
-    options: ParseOptions,
+    options: ExporterOptions,
     assembly: assembly_pb2.Assembly,
 ):
     fill_info(joints, None)
@@ -116,12 +116,12 @@ def populateJoints(
 
                         # really could just map the enum to a friggin string
                         if (
-                            parse_joints.signalType != ParseOptions.SignalType.PASSIVE
+                            parse_joints.signalType != ExporterOptions.SignalType.PASSIVE
                             and assembly.dynamic
                         ):
-                            if parse_joints.signalType == ParseOptions.SignalType.CAN:
+                            if parse_joints.signalType == ExporterOptions.SignalType.CAN:
                                 signal.device_type = signal_pb2.DeviceType.CANBUS
-                            elif parse_joints.signalType == ParseOptions.SignalType.PWM:
+                            elif parse_joints.signalType == ExporterOptions.SignalType.PWM:
                                 signal.device_type = signal_pb2.DeviceType.PWM
 
                             motor = joints.motor_definitions[joint.entityToken]
@@ -177,7 +177,7 @@ def _addJointInstance(
     joint_instance: joint_pb2.JointInstance,
     joint_definition: joint_pb2.Joint,
     signals: signal_pb2.Signals,
-    options: ParseOptions,
+    options: ExporterOptions,
 ):
     fill_info(joint_instance, joint)
     # because there is only one and we are using the token - should be the same
@@ -222,10 +222,10 @@ def _addJointInstance(
                     signal.io = signal_pb2.IOType.OUTPUT
                     joint_instance.signal_reference = signal.info.GUID
 
-                if wheel.signalType != ParseOptions.SignalType.PASSIVE:
-                    if wheel.signalType == ParseOptions.SignalType.CAN:
+                if wheel.signalType != ExporterOptions.SignalType.PASSIVE:
+                    if wheel.signalType == ExporterOptions.SignalType.CAN:
                         signal.device_type = signal_pb2.DeviceType.CANBUS
-                    elif wheel.signalType == ParseOptions.SignalType.PWM:
+                    elif wheel.signalType == ExporterOptions.SignalType.PWM:
                         signal.device_type = signal_pb2.DeviceType.PWM
                 else:
                     joint_instance.signal_reference = ""
