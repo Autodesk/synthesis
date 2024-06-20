@@ -5,13 +5,7 @@ import Button from "@/components/Button"
 
 const ChooseSingleplayerModeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
-        <Modal
-            name="Choose Mode"
-            icon={<FaGear />}
-            modalId={modalId}
-            cancelEnabled={false}
-            acceptEnabled={false}
-        >
+        <Modal name="Choose Mode" icon={<FaGear />} modalId={modalId} cancelEnabled={false} acceptEnabled={false}>
             <Button value="Practice Mode" />
             <Button value="Match Mode" />
         </Modal>

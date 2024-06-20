@@ -84,11 +84,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                 <LabeledButton
                                     label={c.name}
                                     placement={LabelPlacement.Left}
-                                    value={
-                                        c.name == selectedInput
-                                            ? "Press anything"
-                                            : transformKeyName(c)
-                                    }
+                                    value={c.name == selectedInput ? "Press anything" : transformKeyName(c)}
                                     onClick={() => {
                                         setSelectedInput(c.name)
                                     }}
@@ -116,11 +112,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         <LabeledButton
                             label={c.name}
                             placement={LabelPlacement.Left}
-                            value={
-                                c.name == selectedInput
-                                    ? "Press anything"
-                                    : transformKeyName(c)
-                            }
+                            value={c.name == selectedInput ? "Press anything" : transformKeyName(c)}
                             onClick={() => {
                                 setSelectedInput(c.name)
                             }}
