@@ -46,7 +46,7 @@ def getPhysicalMaterialData(fusion_material, proto_material, options):
     """Gets the material data and adds it to protobuf
 
     Args:
-        fusion_material (fusionmaterial): Fusion 360 Material
+        fusion_material (fusionmaterial): Fusion Material
         proto_material (protomaterial): proto material mirabuf
         options (parseoptions): parse options
     """
@@ -66,7 +66,7 @@ def getPhysicalMaterialData(fusion_material, proto_material, options):
         proto_material.static_friction = 0.5
         proto_material.restitution = 0.5
 
-        proto_material.description = f"{fusion_material.name} exported from FUSION 360"
+        proto_material.description = f"{fusion_material.name} exported from FUSION"
 
         """
         Thermal Properties
@@ -182,10 +182,10 @@ def getMaterialAppearance(
     options: ParseOptions,
     appearance: material_pb2.Appearance,
 ) -> None:
-    """Takes in a Fusion 360 Mesh and converts it to a usable unity mesh
+    """Takes in a Fusion Mesh and converts it to a usable unity mesh
 
     Args:
-        fusionAppearance (adsk.core.Appearance): Fusion 360 appearance material
+        fusionAppearance (adsk.core.Appearance): Fusion appearance material
     """
     construct_info("", appearance, fus_object=fusionAppearance)
 
