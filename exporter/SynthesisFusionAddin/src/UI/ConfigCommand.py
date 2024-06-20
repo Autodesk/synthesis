@@ -15,8 +15,8 @@ from ..Parser.ParseOptions import (
     ExportMode,
     ParseOptions,
     ExporterOptions,  # TODO
-    _Joint,
-    _Wheel,
+    Joint,
+    Wheel,
     JointParentType,
 )
 from .Configuration.SerialCommand import SerialCommand
@@ -162,7 +162,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
 
     def notify(self, args):
         try:
-            # exporterOptions = ExporterOptions().read()
+            exporterOptions = ExporterOptions().read()
 
             if not Helper.check_solid_open():
                 return
@@ -1188,7 +1188,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 ).selectedItem.index
 
                 _exportWheels.append(
-                    _Wheel(
+                    Wheel(
                         WheelListGlobal[row - 1].entityToken,
                         wheelTypeIndex,
                         signalTypeIndex,
@@ -1224,7 +1224,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
 
                 if parentJointIndex == 0:
                     _exportJoints.append(
-                        _Joint(
+                        Joint(
                             JointListGlobal[row - 1].entityToken,
                             JointParentType.ROOT,
                             signalTypeIndex,  # index of selected signal in dropdown
@@ -1244,11 +1244,11 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
 
                 # for wheel in _exportWheels:
                 # find some way to get joint
-                # 1. Compare Joint occurrence1 to wheel.occurrence_token
+                # 1. Compare Joint occurrence1 to wheel.occurrenceToken
                 # 2. if true set the parent to Root
 
                 _exportJoints.append(
-                    _Joint(
+                    Joint(
                         JointListGlobal[row - 1].entityToken,
                         parentJointToken,
                         signalTypeIndex,
@@ -1328,19 +1328,19 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 compress=compress,
             )
 
-            # exporterOptions = ExporterOptions(
-            #     savepath,
-            #     name,
-            #     version,
-            #     materials=0,
-            #     joints=_exportJoints,
-            #     wheels=_exportWheels,
-            #     gamepieces=_exportGamepieces,
-            #     weight=_robotWeight,
-            #     mode=_mode,
-            #     compress=compress,
-            # )
-            # exporterOptions.write()
+            exporterOptions = ExporterOptions(
+                savepath,
+                name,
+                version,
+                materials=0,
+                joints=_exportJoints,
+                wheels=_exportWheels,
+                gamepieces=_exportGamepieces,
+                robotWeight=_robotWeight,
+                exportMode=_mode,
+                compressOutput=compress,
+            )
+            exporterOptions.write()
 
             Parser(options).export()
         except:
