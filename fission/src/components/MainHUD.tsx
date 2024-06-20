@@ -14,7 +14,7 @@ import { ToastType, useToastContext } from "../ToastContext"
 import { Random } from "@/util/Random"
 import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
 import { UserIcon } from "./UserIcon"
-import { LoadMirabufRemote } from "@/mirabuf/MirabufLoader"
+import { ClearMira, LoadMirabufRemote } from "@/mirabuf/MirabufLoader"
 
 type ButtonProps = {
     value: string
@@ -161,14 +161,19 @@ const MainHUD: React.FC = () => {
                         onClick={() => openModal("roborio")}
                     /> */}
                     <MainHUDButton
-                        value={"Test"}
+                        value={"Dozer"}
                         icon={<BsCodeSquare />}
                         onClick = { () => LoadMirabufRemote('./public/Downloadables/Mira/Robots/Dozer_v9.mira')}
                         />
-                    <MainHUDButton
+                    {/* <MainHUDButton
                         value={"Driver Station"}
                         icon={<GiSteeringWheel />}
                         onClick={() => openPanel("driver-station")}
+                    /> */}
+                    <MainHUDButton
+                        value={"Clear OPFS"}
+                        icon={<GiSteeringWheel />}
+                        onClick={() => ClearMira()}
                     />
                     <MainHUDButton
                         value={"Drivetrain"}

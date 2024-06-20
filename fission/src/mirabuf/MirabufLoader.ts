@@ -1,9 +1,12 @@
 import { mirabuf } from "../proto/mirabuf";
 import Pako from "pako";
 import * as fs from 'fs';
-import { time } from "console";
 
 var id = 6;
+const root = await navigator.storage.getDirectory();
+const miraFolderHandle = await root.getDirectoryHandle("Mira", { create: true })
+const robotFolderHandle = await miraFolderHandle.getDirectoryHandle("Robots", { create: true })
+const fieldFolderHandle = await miraFolderHandle.getDirectoryHandle("Fields", { create: true })
 
 export function UnzipMira(buff: Uint8Array): Uint8Array {
     if (buff[0] == 31 && buff[1] == 139) {
@@ -14,91 +17,69 @@ export function UnzipMira(buff: Uint8Array): Uint8Array {
 }
 export async function LoadMirabufRemote(fetchLocation: string, useCache: boolean = true): Promise<mirabuf.Assembly | undefined> {
 
-    const target = fetchLocation.substring(fetchLocation.lastIndexOf("\\") + 1).substring(fetchLocation.lastIndexOf("/") + 1)
+    let target;
+    let isRobot;
+    if (fetchLocation.includes("Robot")) {
+        target = fetchLocation.substring(fetchLocation.lastIndexOf("Robot"))
+        isRobot = true
+    } else {
+        target = fetchLocation.substring(fetchLocation.lastIndexOf("Field"))
+        isRobot = false
+    }
+
     console.log(target)
 
     let cachedMira = JSON.parse(window.localStorage.getItem('Mira') ?? "{}")
     let targetID = cachedMira[target]
-
-    // let targetID = JSON.parse(window.localStorage.getItem(target) ?? "{}") //will later make a nice array cachedMira to grab instead then search through with cachedMira[target]
     console.log(targetID)
     let assembly;
-    const root = await navigator.storage.getDirectory();
-    const folderHandle = await root.getDirectoryHandle("Mira", { create: true })
+    
     if (!targetID) {
+        const id = Date.now().toString()
 
-
-        const sID = id.toString()
-        id = id + 1
-
-
-
-
-        // Grab file remote and store local
+        // Grab file remote
         const miraBuff = await fetch(encodeURI(fetchLocation), useCache ? undefined : {cache: "no-store"}).then(x => x.blob()).then(x => x.arrayBuffer());
         const byteBuffer = UnzipMira(new Uint8Array(miraBuff));
         assembly = mirabuf.Assembly.decode(byteBuffer);
 
-        const fileHandle = await folderHandle.getFileHandle(sID, { create: true });
+        // Store in OPFS
+        let fileHandle = await robotFolderHandle.getFileHandle(id, { create: true });
+        if (!isRobot) {
+            fileHandle = await fieldFolderHandle.getFileHandle(id, { create: true })
+        }
+
         const writable = await fileHandle.createWritable();
         await writable.write(miraBuff)
         await writable.close()
 
-
-
-
-
-
         // Local cache array
         console.log('better hi')
-        targetID = sID
+        targetID = id
         cachedMira[target] = targetID
         window.localStorage.setItem('Mira', JSON.stringify(cachedMira))
     } else {
-        // Grab file opfs
-        const fileHandle = await folderHandle.getFileHandle(targetID, {create: false})
-        const file = await fileHandle.getFile()
-        const buff = await file.arrayBuffer()
-        console.log(file)
-        assembly = mirabuf.Assembly.decode(UnzipMira(new Uint8Array(buff)))
+        // Grab file OPFS
+        let fileHandle;
+        try {
+            if (isRobot) {
+                fileHandle = await robotFolderHandle.getFileHandle(targetID, {create: false}) ?? false
+            } else {
+                fileHandle = await fieldFolderHandle.getFileHandle(targetID, {create: false}) ?? false
+            }
+        } catch (e) {
+            console.log('exited')
+            // delete cachedMira[target]  figure out how to remove from json
+            window.localStorage.setItem('Mira', cachedMira)
+            LoadMirabufRemote(target)
+        }
+        if (fileHandle) {
+            console.log(fileHandle)
+            const file = await fileHandle.getFile()
+            const buff = await file.arrayBuffer()
+            console.log(file)
+            assembly = mirabuf.Assembly.decode(UnzipMira(new Uint8Array(buff)))
+        }
     }
-
-    
-
-
-
-    // let bool = window.localStorage.getItem(fetchLocation)
-    // console.log(bool);
-    // var assembly;
-    // if (bool == null) {
-    //     console.log("hi");
-    //     const miraBuff = await fetch(encodeURI(fetchLocation), useCache ? undefined : {cache: "no-store"}).then(x => x.blob()).then(x => x.arrayBuffer());
-    //     const byteBuffer = UnzipMira(new Uint8Array(miraBuff));
-    //     // localStorage.setItem(fetchLocation, "A");
-    //     assembly = mirabuf.Assembly.decode(byteBuffer);
-    //     console.log(assembly);
-        
-    // } else {
-    //     console.log("bye")
-    //     assembly = LoadMirabufLocal('./public/Downloadables/Mira/Fields/FRC Field 2018_v13.mira');
-    //     console.log(assembly);
-    // }
-    // console.log(assembly);
-
-
-
-
-
-    // const targetLocation = 'somewhere'
-
-    // const fetchLocations = JSON.parse(window.localStorage.getItem('fetchLocations') ?? "{}")
-    // let existingLocation = fetchLocations[targetLocation]
-    // if (!existingLocation) {
-    //   // Load mirabuf file, get uuid
-    //   existingLocation = 0
-    //   fetchLocations[targetLocation] = existingLocation
-    //   window.localStorage.setItem('fetchLocation', JSON.stringify(existingLocation))
-    // }
 
     console.log(assembly)
     return assembly;
@@ -107,4 +88,15 @@ export async function LoadMirabufRemote(fetchLocation: string, useCache: boolean
 export function LoadMirabufLocal(fileLocation: string): mirabuf.Assembly {
     console.log(fileLocation);
     return mirabuf.Assembly.decode(UnzipMira(new Uint8Array(fs.readFileSync(fileLocation))));
+}
+
+export async function ClearMira() {
+    for await(let key of robotFolderHandle.keys()) {
+        robotFolderHandle.removeEntry(key)
+    }
+    for await(let key of robotFolderHandle.keys()) {
+        fieldFolderHandle.removeEntry(key)
+    }
+
+    // window.localStorage.clear()
 }

@@ -2,7 +2,7 @@ import { describe, test, expect } from "vitest";
 
 import { mirabuf } from "../proto/mirabuf";
 import MirabufParser, { RigidNodeReadOnly } from "../mirabuf/MirabufParser";
-import { LoadMirabufLocal } from "../mirabuf/MirabufLoader";
+import { LoadMirabufLocal, LoadMirabufRemote } from "../mirabuf/MirabufLoader";
 
 describe('Mirabuf Parser Tests', () => {
     test('Generate Rigid Nodes (Dozer_v9.mira)', () => {
@@ -29,6 +29,10 @@ describe('Mirabuf Parser Tests', () => {
 
         expect(filterNonPhysicsNodes(t.rigidNodes, mm).length).toBe(10);
     });
+
+    test('Read From Remote (Dozer_v9)', async() => {
+        LoadMirabufRemote("./public/Downloadables/Mira/Robots/Dozer_v9.mira")
+    })
 });
 
 function filterNonPhysicsNodes(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembly): RigidNodeReadOnly[] {
