@@ -33,9 +33,7 @@ def getPythonFolder() -> str:
     elif system == "Darwin":
         pythonFolder = f"{Path(osPath).parents[2]}/bin"
     else:
-        raise ImportError(
-            "Unsupported platform! This add-in only supports windows and macos"
-        )
+        raise ImportError("Unsupported platform! This add-in only supports windows and macos")
 
     logging.getLogger(f"{INTERNAL_ID}").debug(f"Python Folder -> {pythonFolder}")
     return pythonFolder
@@ -51,9 +49,7 @@ def executeCommand(command: tuple) -> int:
         int: Exit code of the process
     """
     if system == "Windows":
-        executionResult = subprocess.call(
-            command, bufsize=1, creationflags=subprocess.CREATE_NO_WINDOW, shell=False
-        )
+        executionResult = subprocess.call(command, bufsize=1, creationflags=subprocess.CREATE_NO_WINDOW, shell=False)
     else:
         # Uses os.system because I was unable to get subprocess.call to work on MacOS
         installComm = str.join(" ", command)
@@ -94,9 +90,7 @@ def installCross(pipDeps: list) -> bool:
     try:
         pythonFolder = getPythonFolder()
     except ImportError as e:
-        logging.getLogger(f"{INTERNAL_ID}").error(
-            f"Failed to download dependencies: {e.msg}"
-        )
+        logging.getLogger(f"{INTERNAL_ID}").error(f"Failed to download dependencies: {e.msg}")
         return False
 
     if system == "Darwin":  # macos
@@ -129,9 +123,7 @@ def installCross(pipDeps: list) -> bool:
             ]
         )
         if installResult != 0:
-            logging.getLogger(f"{INTERNAL_ID}").warn(
-                f'Dep installation "{depName}" exited with code "{installResult}"'
-            )
+            logging.getLogger(f"{INTERNAL_ID}").warn(f'Dep installation "{depName}" exited with code "{installResult}"')
 
     if system == "Darwin":
         pipAntiDeps = ["dataclasses", "typing"]
