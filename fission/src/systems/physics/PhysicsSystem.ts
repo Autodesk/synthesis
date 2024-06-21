@@ -1,26 +1,41 @@
-import { MirabufFloatArr_JoltVec3, MirabufVector3_JoltVec3, ThreeMatrix4_JoltMat44, ThreeVector3_JoltVec3, _JoltQuat } from "../../util/TypeConversions";
-import JOLT from "../../util/loading/JoltSyncLoader";
-import Jolt from "@barclah/jolt-physics";
-import * as THREE from 'three';
-import { mirabuf } from '../../proto/mirabuf';
-import MirabufParser, { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, RigidNodeReadOnly } from "../../mirabuf/MirabufParser";
-import WorldSystem from "../WorldSystem";
-import Mechanism from "./Mechanism";
+import {
+    MirabufFloatArr_JoltVec3,
+    MirabufVector3_JoltVec3,
+    ThreeMatrix4_JoltMat44,
+    ThreeVector3_JoltVec3,
+    _JoltQuat,
+} from "../../util/TypeConversions"
+import JOLT from "../../util/loading/JoltSyncLoader"
+import Jolt from "@barclah/jolt-physics"
+import * as THREE from "three"
+import { mirabuf } from "../../proto/mirabuf"
+import MirabufParser, {
+    GAMEPIECE_SUFFIX,
+    GROUNDED_JOINT_ID,
+    RigidNodeReadOnly,
+} from "../../mirabuf/MirabufParser"
+import WorldSystem from "../WorldSystem"
+import Mechanism from "./Mechanism"
 
 /**
  * Layers used for determining enabled/disabled collisions.
  */
-const LAYER_FIELD = 0; // Used for grounded rigid node of a field as well as any rigid nodes jointed to it.
-const LAYER_GENERAL_DYNAMIC = 1; // Used for game pieces or any general dynamic objects that can collide with anything and everything.
-const RobotLayers: number[] = [ // Reserved layers for robots. Robot layers have no collision with themselves but have collision with everything else.
-    2, 3, 4, 5, 6, 7, 8, 9
-];
+const LAYER_FIELD = 0 // Used for grounded rigid node of a field as well as any rigid nodes jointed to it.
+const LAYER_GENERAL_DYNAMIC = 1 // Used for game pieces or any general dynamic objects that can collide with anything and everything.
+const RobotLayers: number[] = [
+    // Reserved layers for robots. Robot layers have no collision with themselves but have collision with everything else.
+    2,
+    3, 4, 5, 6, 7, 8, 9,
+]
+
+// Layer for ghost object in god mode, interacts with nothing
+const GHOST_LAYER = 10
 
 // Please update this accordingly.
-const COUNT_OBJECT_LAYERS = 10;
+const COUNT_OBJECT_LAYERS = 11
 
-export const SIMULATION_PERIOD = 1.0 / 120.0;
-const STANDARD_SUB_STEPS = 3;
+export const SIMULATION_PERIOD = 1.0 / 120.0
+const STANDARD_SUB_STEPS = 3
 
 /**
  * The PhysicsSystem handles all Jolt Phyiscs interactions within Synthesis.
@@ -28,41 +43,48 @@ const STANDARD_SUB_STEPS = 3;
  * Fields, and Game pieces, and simulate them.
  */
 class PhysicsSystem extends WorldSystem {
-    
-    private _joltInterface: Jolt.JoltInterface;
-    private _joltPhysSystem: Jolt.PhysicsSystem;
-    private _joltBodyInterface: Jolt.BodyInterface;
-    private _bodies: Array<Jolt.BodyID>;
+    private _joltInterface: Jolt.JoltInterface
+    private _joltPhysSystem: Jolt.PhysicsSystem
+    private _joltBodyInterface: Jolt.BodyInterface
+    private _bodies: Array<Jolt.BodyID>
     private _constraints: Array<Jolt.Constraint>
 
     /**
      * Creates a PhysicsSystem object.
      */
     constructor() {
-        super();
+        super()
 
-        this._bodies = [];
-        this._constraints = [];
+        this._bodies = []
+        this._constraints = []
 
-        const joltSettings = new JOLT.JoltSettings();
-        SetupCollisionFiltering(joltSettings);
+        const joltSettings = new JOLT.JoltSettings()
+        SetupCollisionFiltering(joltSettings)
 
-        this._joltInterface = new JOLT.JoltInterface(joltSettings);
-        JOLT.destroy(joltSettings);
+        this._joltInterface = new JOLT.JoltInterface(joltSettings)
+        JOLT.destroy(joltSettings)
 
-        this._joltPhysSystem = this._joltInterface.GetPhysicsSystem();
-        this._joltBodyInterface = this._joltPhysSystem.GetBodyInterface();
+        this._joltPhysSystem = this._joltInterface.GetPhysicsSystem()
+        this._joltBodyInterface = this._joltPhysSystem.GetBodyInterface()
 
-        this._joltPhysSystem.SetGravity(new JOLT.Vec3(0, -9.8, 0));
+        this._joltPhysSystem.SetGravity(new JOLT.Vec3(0, -9.8, 0))
 
-        const ground = this.CreateBox(new THREE.Vector3(5.0, 0.5, 5.0), undefined, new THREE.Vector3(0.0, -2.0, 0.0), undefined);
-        this._joltBodyInterface.AddBody(ground.GetID(), JOLT.EActivation_Activate);
+        const ground = this.CreateBox(
+            new THREE.Vector3(5.0, 0.5, 5.0),
+            undefined,
+            new THREE.Vector3(0.0, -2.0, 0.0),
+            undefined
+        )
+        this._joltBodyInterface.AddBody(
+            ground.GetID(),
+            JOLT.EActivation_Activate
+        )
     }
 
     /**
      * TEMPORARY
      * Create a box.
-     * 
+     *
      * @param   halfExtents The half extents of the Box.
      * @param   mass        Mass of the Box. Leave undefined to make Box static.
      * @param   position    Posiition of the Box (default: 0, 0, 0)
@@ -70,38 +92,41 @@ class PhysicsSystem extends WorldSystem {
      * @returns Reference to Jolt Body
      */
     public CreateBox(
-    halfExtents: THREE.Vector3,
-    mass: number | undefined,
-    position: THREE.Vector3 | undefined,
-    rotation: THREE.Euler | THREE.Quaternion | undefined) {
-        const size = ThreeVector3_JoltVec3(halfExtents);
-        const shape = new JOLT.BoxShape(size, 0.1);
-        JOLT.destroy(size);
+        halfExtents: THREE.Vector3,
+        mass: number | undefined,
+        position: THREE.Vector3 | undefined,
+        rotation: THREE.Euler | THREE.Quaternion | undefined
+    ) {
+        const size = ThreeVector3_JoltVec3(halfExtents)
+        const shape = new JOLT.BoxShape(size, 0.1)
+        JOLT.destroy(size)
 
-        const pos = position ? ThreeVector3_JoltVec3(position) : new JOLT.Vec3(0.0, 0.0, 0.0);
-        const rot = _JoltQuat(rotation);
+        const pos = position
+            ? ThreeVector3_JoltVec3(position)
+            : new JOLT.Vec3(0.0, 0.0, 0.0)
+        const rot = _JoltQuat(rotation)
         const creationSettings = new JOLT.BodyCreationSettings(
             shape,
             pos,
             rot,
             mass ? JOLT.EMotionType_Dynamic : JOLT.EMotionType_Static,
             mass ? LAYER_GENERAL_DYNAMIC : LAYER_FIELD
-        );
+        )
         if (mass) {
-            creationSettings.mMassPropertiesOverride.mMass = mass;
+            creationSettings.mMassPropertiesOverride.mMass = mass
         }
-        const body = this._joltBodyInterface.CreateBody(creationSettings);
-        JOLT.destroy(pos);
-        JOLT.destroy(rot);
-        JOLT.destroy(creationSettings);
+        const body = this._joltBodyInterface.CreateBody(creationSettings)
+        JOLT.destroy(pos)
+        JOLT.destroy(rot)
+        JOLT.destroy(creationSettings)
 
-        this._bodies.push(body.GetID());
-        return body;
+        this._bodies.push(body.GetID())
+        return body
     }
 
     /**
      * This creates a body in Jolt. Mostly used for Unit test validation.
-     * 
+     *
      * @param   shape       Shape to impart on the body.
      * @param   mass        Mass of the body.
      * @param   position    Position of the body.
@@ -109,127 +134,175 @@ class PhysicsSystem extends WorldSystem {
      * @returns Resulting Body object.
      */
     public CreateBody(
-    shape: Jolt.Shape,
-    mass: number | undefined,
-    position: THREE.Vector3 | undefined,
-    rotation: THREE.Euler | THREE.Quaternion | undefined) {
-        const pos = position ? ThreeVector3_JoltVec3(position) : new JOLT.Vec3(0.0, 0.0, 0.0);
-        const rot = _JoltQuat(rotation);
+        shape: Jolt.Shape,
+        mass: number | undefined,
+        position: THREE.Vector3 | undefined,
+        rotation: THREE.Euler | THREE.Quaternion | undefined
+    ) {
+        const pos = position
+            ? ThreeVector3_JoltVec3(position)
+            : new JOLT.Vec3(0.0, 0.0, 0.0)
+        const rot = _JoltQuat(rotation)
         const creationSettings = new JOLT.BodyCreationSettings(
             shape,
             pos,
             rot,
             mass ? JOLT.EMotionType_Dynamic : JOLT.EMotionType_Static,
             mass ? LAYER_GENERAL_DYNAMIC : LAYER_FIELD
-        );
+        )
         if (mass) {
-            creationSettings.mMassPropertiesOverride.mMass = mass;
+            creationSettings.mMassPropertiesOverride.mMass = mass
         }
-        const body = this._joltBodyInterface.CreateBody(creationSettings);
-        JOLT.destroy(pos);
-        JOLT.destroy(rot);
-        JOLT.destroy(creationSettings);
+        const body = this._joltBodyInterface.CreateBody(creationSettings)
+        JOLT.destroy(pos)
+        JOLT.destroy(rot)
+        JOLT.destroy(creationSettings)
 
-        this._bodies.push(body.GetID());
-        return body;
+        this._bodies.push(body.GetID())
+        return body
     }
 
     /**
      * Utility function for creating convex hulls. Mostly used for Unit test validation.
-     * 
+     *
      * @param   points  Flat pack array of vector 3 components.
      * @param   density Density of the convex hull.
      * @returns Resulting shape.
      */
-    public CreateConvexHull(points: Float32Array, density: number = 1.0): Jolt.ShapeResult {
+    public CreateConvexHull(
+        points: Float32Array,
+        density: number = 1.0
+    ): Jolt.ShapeResult {
         if (points.length % 3) {
-            throw new Error(`Invalid size of points: ${points.length}`);
+            throw new Error(`Invalid size of points: ${points.length}`)
         }
-        const settings = new JOLT.ConvexHullShapeSettings();
-        settings.mPoints.clear();
-        settings.mPoints.reserve(points.length / 3.0);
+        const settings = new JOLT.ConvexHullShapeSettings()
+        settings.mPoints.clear()
+        settings.mPoints.reserve(points.length / 3.0)
         for (let i = 0; i < points.length; i += 3) {
-            settings.mPoints.push_back(new JOLT.Vec3(points[i], points[i + 1], points[i + 2]));
+            settings.mPoints.push_back(
+                new JOLT.Vec3(points[i], points[i + 1], points[i + 2])
+            )
         }
-        settings.mDensity = density;
-        return settings.Create();
+        settings.mDensity = density
+        return settings.Create()
     }
 
     public CreateMechanismFromParser(parser: MirabufParser): Mechanism {
-        const layer = parser.assembly.dynamic ? new LayerReserve() : undefined;
+        const layer = parser.assembly.dynamic ? new LayerReserve() : undefined
         // const layer = undefined;
         console.log(`Using layer ${layer?.layer}`)
-        const bodyMap = this.CreateBodiesFromParser(parser, layer);
-        const rootBody = parser.rootNode;
-        const mechanism = new Mechanism(rootBody, bodyMap, layer);
-        this.CreateJointsFromParser(parser, mechanism);
-        return mechanism;
+        const bodyMap = this.CreateBodiesFromParser(parser, layer)
+        const rootBody = parser.rootNode
+        const mechanism = new Mechanism(rootBody, bodyMap, layer)
+        this.CreateJointsFromParser(parser, mechanism)
+        return mechanism
     }
 
     /**
      * Creates all the joints for a mirabuf assembly given an already compiled mapping of rigid nodes to bodies.
-     * 
+     *
      * @param   parser      Mirabuf parser with complete set of rigid nodes and assembly data.
      * @param   mechainsm   Mapping of the name of rigid groups to Jolt bodies. Retrieved from CreateBodiesFromParser.
      */
     public CreateJointsFromParser(parser: MirabufParser, mechanism: Mechanism) {
-        const jointData = parser.assembly.data!.joints!;
-        for (const [jGuid, jInst] of (Object.entries(jointData.jointInstances!) as [string, mirabuf.joint.JointInstance][])) {
-            if (jGuid == GROUNDED_JOINT_ID)
-                continue;
+        const jointData = parser.assembly.data!.joints!
+        for (const [jGuid, jInst] of Object.entries(
+            jointData.jointInstances!
+        ) as [string, mirabuf.joint.JointInstance][]) {
+            if (jGuid == GROUNDED_JOINT_ID) continue
 
-            const rnA = parser.partToNodeMap.get(jInst.parentPart!);
-            const rnB = parser.partToNodeMap.get(jInst.childPart!);
+            const rnA = parser.partToNodeMap.get(jInst.parentPart!)
+            const rnB = parser.partToNodeMap.get(jInst.childPart!)
 
             if (!rnA || !rnB) {
-                console.warn(`Skipping joint '${jInst.info!.name!}'. Couldn't find associated rigid nodes.`);
-                continue;
+                console.warn(
+                    `Skipping joint '${jInst.info!.name!}'. Couldn't find associated rigid nodes.`
+                )
+                continue
             } else if (rnA.id == rnB.id) {
-                console.warn(`Skipping joint '${jInst.info!.name!}'. Jointing the same parts. Likely in issue with Fusion Design structure.`);
-                continue;
+                console.warn(
+                    `Skipping joint '${jInst.info!.name!}'. Jointing the same parts. Likely in issue with Fusion Design structure.`
+                )
+                continue
             }
 
-            const jDef = parser.assembly.data!.joints!.jointDefinitions![jInst.jointReference!]! as mirabuf.joint.Joint;
-            const bodyIdA = mechanism.GetBodyByNodeId(rnA.id);
-            const bodyIdB = mechanism.GetBodyByNodeId(rnB.id);
+            const jDef = parser.assembly.data!.joints!.jointDefinitions![
+                jInst.jointReference!
+            ]! as mirabuf.joint.Joint
+            const bodyIdA = mechanism.GetBodyByNodeId(rnA.id)
+            const bodyIdB = mechanism.GetBodyByNodeId(rnB.id)
             if (!bodyIdA || !bodyIdB) {
-                console.warn(`Skipping joint '${jInst.info!.name!}'. Failed to find rigid nodes' associated bodies.`);
-                continue;
+                console.warn(
+                    `Skipping joint '${jInst.info!.name!}'. Failed to find rigid nodes' associated bodies.`
+                )
+                continue
             }
-            const bodyA = this.GetBody(bodyIdA);
-            const bodyB = this.GetBody(bodyIdB);
+            const bodyA = this.GetBody(bodyIdA)
+            const bodyB = this.GetBody(bodyIdB)
 
             const constraints: Jolt.Constraint[] = []
-            let listener: Jolt.PhysicsStepListener | undefined = undefined;
+            let listener: Jolt.PhysicsStepListener | undefined = undefined
 
             switch (jDef.jointMotionType!) {
                 case mirabuf.joint.JointMotion.REVOLUTE:
                     if (this.IsWheel(jDef)) {
-                        if (parser.directedGraph.GetAdjacencyList(rnA.id).length > 0) {
-                            const res = this.CreateWheelConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!);
+                        if (
+                            parser.directedGraph.GetAdjacencyList(rnA.id)
+                                .length > 0
+                        ) {
+                            const res = this.CreateWheelConstraint(
+                                jInst,
+                                jDef,
+                                bodyA,
+                                bodyB,
+                                parser.assembly.info!.version!
+                            )
                             constraints.push(res[0])
                             constraints.push(res[1])
                             listener = res[2]
                         } else {
-                            const res = this.CreateWheelConstraint(jInst, jDef, bodyB, bodyA, parser.assembly.info!.version!);
+                            const res = this.CreateWheelConstraint(
+                                jInst,
+                                jDef,
+                                bodyB,
+                                bodyA,
+                                parser.assembly.info!.version!
+                            )
                             constraints.push(res[0])
                             constraints.push(res[1])
                             listener = res[2]
                         }
                     } else {
-                        constraints.push(this.CreateHingeConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!));
+                        constraints.push(
+                            this.CreateHingeConstraint(
+                                jInst,
+                                jDef,
+                                bodyA,
+                                bodyB,
+                                parser.assembly.info!.version!
+                            )
+                        )
                     }
-                    break;
+                    break
                 case mirabuf.joint.JointMotion.SLIDER:
-                    constraints.push(this.CreateSliderConstraint(jInst, jDef, bodyA, bodyB));
-                    break;
+                    constraints.push(
+                        this.CreateSliderConstraint(jInst, jDef, bodyA, bodyB)
+                    )
+                    break
                 default:
-                    console.debug('Unsupported joint detected. Skipping...');
-                    break;
+                    console.debug("Unsupported joint detected. Skipping...")
+                    break
             }
 
             if (constraints.length > 0) {
-                constraints.forEach(x => mechanism.AddConstraint({ parentBody: bodyIdA, childBody: bodyIdB, constraint: x }))
+                constraints.forEach(x =>
+                    mechanism.AddConstraint({
+                        parentBody: bodyIdA,
+                        childBody: bodyIdB,
+                        constraint: x,
+                    })
+                )
             }
             if (listener) {
                 mechanism.AddStepListener(listener)
@@ -239,7 +312,7 @@ class PhysicsSystem extends WorldSystem {
 
     /**
      * Creates a Hinge constraint.
-     * 
+     *
      * @param   jointInstance   Joint instance.
      * @param   jointDefinition Joint definition.
      * @param   bodyA           Parent body to connect.
@@ -248,383 +321,511 @@ class PhysicsSystem extends WorldSystem {
      * @returns Resulting Jolt Hinge Constraint.
      */
     private CreateHingeConstraint(
-    jointInstance: mirabuf.joint.JointInstance, jointDefinition: mirabuf.joint.Joint,
-    bodyA: Jolt.Body, bodyB: Jolt.Body, versionNum: number): Jolt.Constraint {
+        jointInstance: mirabuf.joint.JointInstance,
+        jointDefinition: mirabuf.joint.Joint,
+        bodyA: Jolt.Body,
+        bodyB: Jolt.Body,
+        versionNum: number
+    ): Jolt.Constraint {
         // HINGE CONSTRAINT
-        const hingeConstraintSettings = new JOLT.HingeConstraintSettings();
-        
+        const hingeConstraintSettings = new JOLT.HingeConstraintSettings()
+
         const jointOrigin = jointDefinition.origin
             ? MirabufVector3_JoltVec3(jointDefinition.origin as mirabuf.Vector3)
-            : new JOLT.Vec3(0, 0, 0);
+            : new JOLT.Vec3(0, 0, 0)
         // TODO: Offset transformation for robot builder.
         const jointOriginOffset = jointInstance.offset
             ? MirabufVector3_JoltVec3(jointInstance.offset as mirabuf.Vector3)
-            : new JOLT.Vec3(0, 0, 0);
+            : new JOLT.Vec3(0, 0, 0)
 
-        const anchorPoint = jointOrigin.Add(jointOriginOffset);
-        hingeConstraintSettings.mPoint1 = hingeConstraintSettings.mPoint2 = anchorPoint;
+        const anchorPoint = jointOrigin.Add(jointOriginOffset)
+        hingeConstraintSettings.mPoint1 = hingeConstraintSettings.mPoint2 =
+            anchorPoint
 
-        const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!;
+        const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!
 
-        const miraAxis = rotationalFreedom.axis! as mirabuf.Vector3;
-        let axis: Jolt.Vec3;
+        const miraAxis = rotationalFreedom.axis! as mirabuf.Vector3
+        let axis: Jolt.Vec3
         // No scaling, these are unit vectors
         if (versionNum < 5) {
-            axis = new JOLT.Vec3(-miraAxis.x ?? 0, miraAxis.y ?? 0, miraAxis.z! ?? 0);
+            axis = new JOLT.Vec3(
+                -miraAxis.x ?? 0,
+                miraAxis.y ?? 0,
+                miraAxis.z! ?? 0
+            )
         } else {
-            axis = new JOLT.Vec3(miraAxis.x! ?? 0, miraAxis.y! ?? 0, miraAxis.z! ?? 0);
+            axis = new JOLT.Vec3(
+                miraAxis.x! ?? 0,
+                miraAxis.y! ?? 0,
+                miraAxis.z! ?? 0
+            )
         }
-        hingeConstraintSettings.mHingeAxis1 = hingeConstraintSettings.mHingeAxis2
-            = axis.Normalized();
-        hingeConstraintSettings.mNormalAxis1 = hingeConstraintSettings.mNormalAxis2
-            = getPerpendicular(hingeConstraintSettings.mHingeAxis1);
+        hingeConstraintSettings.mHingeAxis1 =
+            hingeConstraintSettings.mHingeAxis2 = axis.Normalized()
+        hingeConstraintSettings.mNormalAxis1 =
+            hingeConstraintSettings.mNormalAxis2 = getPerpendicular(
+                hingeConstraintSettings.mHingeAxis1
+            )
 
         // Some values that are meant to be exactly PI are perceived as being past it, causing unexpected beavior.
         // This safety check caps the values to be within [-PI, PI] wth minimal difference in precision.
-        const piSafetyCheck = (v: number) => Math.min(3.14158, Math.max(-3.14158, v));
+        const piSafetyCheck = (v: number) =>
+            Math.min(3.14158, Math.max(-3.14158, v))
 
-        if (rotationalFreedom.limits && Math.abs((rotationalFreedom.limits.upper ?? 0) - (rotationalFreedom.limits.lower ?? 0)) > 0.001) {
-            const currentPos = piSafetyCheck(rotationalFreedom.value ?? 0);
-            const upper = piSafetyCheck(rotationalFreedom.limits.upper ?? 0) - currentPos;
-            const lower = piSafetyCheck(rotationalFreedom.limits.lower ?? 0) - currentPos;
+        if (
+            rotationalFreedom.limits &&
+            Math.abs(
+                (rotationalFreedom.limits.upper ?? 0) -
+                    (rotationalFreedom.limits.lower ?? 0)
+            ) > 0.001
+        ) {
+            const currentPos = piSafetyCheck(rotationalFreedom.value ?? 0)
+            const upper =
+                piSafetyCheck(rotationalFreedom.limits.upper ?? 0) - currentPos
+            const lower =
+                piSafetyCheck(rotationalFreedom.limits.lower ?? 0) - currentPos
 
-            hingeConstraintSettings.mLimitsMin = -upper;
-            hingeConstraintSettings.mLimitsMax = -lower;
+            hingeConstraintSettings.mLimitsMin = -upper
+            hingeConstraintSettings.mLimitsMax = -lower
         }
-        
-        const constraint = hingeConstraintSettings.Create(bodyA, bodyB);
-        this._joltPhysSystem.AddConstraint(constraint);
 
-        return constraint;
+        const constraint = hingeConstraintSettings.Create(bodyA, bodyB)
+        this._joltPhysSystem.AddConstraint(constraint)
+
+        return constraint
     }
 
     /**
      * Creates a new slider constraint.
-     * 
+     *
      * @param   jointInstance   Joint instance.
      * @param   jointDefinition Joint definition.
      * @param   bodyA           Parent body to connect.
      * @param   bodyB           Child body to connect.
-     * 
+     *
      * @returns Resulting Jolt constraint.
      */
     private CreateSliderConstraint(
-    jointInstance: mirabuf.joint.JointInstance, jointDefinition: mirabuf.joint.Joint,
-    bodyA: Jolt.Body, bodyB: Jolt.Body): Jolt.Constraint {
+        jointInstance: mirabuf.joint.JointInstance,
+        jointDefinition: mirabuf.joint.Joint,
+        bodyA: Jolt.Body,
+        bodyB: Jolt.Body
+    ): Jolt.Constraint {
+        const sliderConstraintSettings = new JOLT.SliderConstraintSettings()
 
-        const sliderConstraintSettings = new JOLT.SliderConstraintSettings();
-        
         const jointOrigin = jointDefinition.origin
             ? MirabufVector3_JoltVec3(jointDefinition.origin as mirabuf.Vector3)
-            : new JOLT.Vec3(0, 0, 0);
+            : new JOLT.Vec3(0, 0, 0)
         // TODO: Offset transformation for robot builder.
         const jointOriginOffset = jointInstance.offset
             ? MirabufVector3_JoltVec3(jointInstance.offset as mirabuf.Vector3)
-            : new JOLT.Vec3(0, 0, 0);
+            : new JOLT.Vec3(0, 0, 0)
 
-        const anchorPoint = jointOrigin.Add(jointOriginOffset);
-        sliderConstraintSettings.mPoint1 = sliderConstraintSettings.mPoint2 = anchorPoint;
+        const anchorPoint = jointOrigin.Add(jointOriginOffset)
+        sliderConstraintSettings.mPoint1 = sliderConstraintSettings.mPoint2 =
+            anchorPoint
 
-        const prismaticFreedom = jointDefinition.prismatic!.prismaticFreedom!;
+        const prismaticFreedom = jointDefinition.prismatic!.prismaticFreedom!
 
-        const miraAxis = prismaticFreedom.axis! as mirabuf.Vector3;
-        const axis = new JOLT.Vec3(miraAxis.x! ?? 0, miraAxis.y! ?? 0, miraAxis.z! ?? 0);
+        const miraAxis = prismaticFreedom.axis! as mirabuf.Vector3
+        const axis = new JOLT.Vec3(
+            miraAxis.x! ?? 0,
+            miraAxis.y! ?? 0,
+            miraAxis.z! ?? 0
+        )
 
-        sliderConstraintSettings.mSliderAxis1 = sliderConstraintSettings.mSliderAxis2
-            = axis.Normalized();
-        sliderConstraintSettings.mNormalAxis1 = sliderConstraintSettings.mNormalAxis2
-            = getPerpendicular(sliderConstraintSettings.mSliderAxis1);
+        sliderConstraintSettings.mSliderAxis1 =
+            sliderConstraintSettings.mSliderAxis2 = axis.Normalized()
+        sliderConstraintSettings.mNormalAxis1 =
+            sliderConstraintSettings.mNormalAxis2 = getPerpendicular(
+                sliderConstraintSettings.mSliderAxis1
+            )
 
-        if (prismaticFreedom.limits && Math.abs((prismaticFreedom.limits.upper ?? 0) - (prismaticFreedom.limits.lower ?? 0)) > 0.001) {
-
-            const currentPos = (prismaticFreedom.value ?? 0) * 0.01;
-            const upper = ((prismaticFreedom.limits.upper ?? 0) * 0.01) - currentPos;
-            const lower = ((prismaticFreedom.limits.lower ?? 0) * 0.01) - currentPos;
+        if (
+            prismaticFreedom.limits &&
+            Math.abs(
+                (prismaticFreedom.limits.upper ?? 0) -
+                    (prismaticFreedom.limits.lower ?? 0)
+            ) > 0.001
+        ) {
+            const currentPos = (prismaticFreedom.value ?? 0) * 0.01
+            const upper =
+                (prismaticFreedom.limits.upper ?? 0) * 0.01 - currentPos
+            const lower =
+                (prismaticFreedom.limits.lower ?? 0) * 0.01 - currentPos
 
             // Calculate mid point
-            const midPoint = (upper + lower) / 2.0;
-            const halfRange = Math.abs((upper - lower) / 2.0);
-            
+            const midPoint = (upper + lower) / 2.0
+            const halfRange = Math.abs((upper - lower) / 2.0)
+
             // Move the anchor points
-            sliderConstraintSettings.mPoint2
-                = anchorPoint.Add(axis.Normalized().Mul(midPoint));
+            sliderConstraintSettings.mPoint2 = anchorPoint.Add(
+                axis.Normalized().Mul(midPoint)
+            )
 
-            sliderConstraintSettings.mLimitsMax =  halfRange;
-            sliderConstraintSettings.mLimitsMin = -halfRange;
+            sliderConstraintSettings.mLimitsMax = halfRange
+            sliderConstraintSettings.mLimitsMin = -halfRange
         }
-        
-        const constraint = sliderConstraintSettings.Create(bodyA, bodyB);
-        
-        this._constraints.push(constraint);
-        this._joltPhysSystem.AddConstraint(constraint);
 
-        return constraint;
+        const constraint = sliderConstraintSettings.Create(bodyA, bodyB)
+
+        this._constraints.push(constraint)
+        this._joltPhysSystem.AddConstraint(constraint)
+
+        return constraint
     }
 
-
     public CreateWheelConstraint(
-    jointInstance: mirabuf.joint.JointInstance, jointDefinition: mirabuf.joint.Joint,
-    bodyMain: Jolt.Body, bodyWheel: Jolt.Body, versionNum: number): [Jolt.Constraint, Jolt.VehicleConstraint, Jolt.PhysicsStepListener] {
+        jointInstance: mirabuf.joint.JointInstance,
+        jointDefinition: mirabuf.joint.Joint,
+        bodyMain: Jolt.Body,
+        bodyWheel: Jolt.Body,
+        versionNum: number
+    ): [Jolt.Constraint, Jolt.VehicleConstraint, Jolt.PhysicsStepListener] {
         // HINGE CONSTRAINT
-        const fixedSettings = new JOLT.FixedConstraintSettings();
-        
+        const fixedSettings = new JOLT.FixedConstraintSettings()
+
         const jointOrigin = jointDefinition.origin
             ? MirabufVector3_JoltVec3(jointDefinition.origin as mirabuf.Vector3)
-            : new JOLT.Vec3(0, 0, 0);
+            : new JOLT.Vec3(0, 0, 0)
         const jointOriginOffset = jointInstance.offset
             ? MirabufVector3_JoltVec3(jointInstance.offset as mirabuf.Vector3)
-            : new JOLT.Vec3(0, 0, 0);
+            : new JOLT.Vec3(0, 0, 0)
 
-        const anchorPoint = jointOrigin.Add(jointOriginOffset);
-        fixedSettings.mPoint1 = fixedSettings.mPoint2 = anchorPoint;
+        const anchorPoint = jointOrigin.Add(jointOriginOffset)
+        fixedSettings.mPoint1 = fixedSettings.mPoint2 = anchorPoint
 
-        const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!;
+        const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!
 
-        const miraAxis = rotationalFreedom.axis! as mirabuf.Vector3;
-        let axis: Jolt.Vec3;
+        const miraAxis = rotationalFreedom.axis! as mirabuf.Vector3
+        let axis: Jolt.Vec3
         // No scaling, these are unit vectors
         if (versionNum < 5) {
-            axis = new JOLT.Vec3(-miraAxis.x ?? 0, miraAxis.y ?? 0, miraAxis.z ?? 0);
+            axis = new JOLT.Vec3(
+                -miraAxis.x ?? 0,
+                miraAxis.y ?? 0,
+                miraAxis.z ?? 0
+            )
         } else {
-            axis = new JOLT.Vec3(miraAxis.x ?? 0, miraAxis.y ?? 0, miraAxis.z ?? 0);
+            axis = new JOLT.Vec3(
+                miraAxis.x ?? 0,
+                miraAxis.y ?? 0,
+                miraAxis.z ?? 0
+            )
         }
 
-        const bounds = bodyWheel.GetShape().GetLocalBounds();
-        const radius = (bounds.mMax.GetY() - bounds.mMin.GetY()) / 2.0;
+        const bounds = bodyWheel.GetShape().GetLocalBounds()
+        const radius = (bounds.mMax.GetY() - bounds.mMin.GetY()) / 2.0
 
-        const wheelSettings = new JOLT.WheelSettingsWV();
-        wheelSettings.mPosition = anchorPoint.Add(axis.Mul(0.1));
-		wheelSettings.mMaxSteerAngle = 0.0;
-		wheelSettings.mMaxHandBrakeTorque = 0.0;
-        wheelSettings.mRadius = radius * 1.05;
-        wheelSettings.mWidth = 0.1;
-        wheelSettings.mSuspensionMinLength = 0.0000003;
-        wheelSettings.mSuspensionMaxLength = 0.0000006;
-        wheelSettings.mInertia = 1;
-        
-        const friction = new JOLT.LinearCurve();
-        friction.Clear();
-        friction.AddPoint(1,1);
-        friction.AddPoint(0,1);
-        wheelSettings.mLongitudinalFriction = friction;
+        const wheelSettings = new JOLT.WheelSettingsWV()
+        wheelSettings.mPosition = anchorPoint.Add(axis.Mul(0.1))
+        wheelSettings.mMaxSteerAngle = 0.0
+        wheelSettings.mMaxHandBrakeTorque = 0.0
+        wheelSettings.mRadius = radius * 1.05
+        wheelSettings.mWidth = 0.1
+        wheelSettings.mSuspensionMinLength = 0.0000003
+        wheelSettings.mSuspensionMaxLength = 0.0000006
+        wheelSettings.mInertia = 1
 
-        const vehicleSettings = new JOLT.VehicleConstraintSettings();
-        
-        vehicleSettings.mWheels.clear();
-        vehicleSettings.mWheels.push_back(wheelSettings);
+        const friction = new JOLT.LinearCurve()
+        friction.Clear()
+        friction.AddPoint(1, 1)
+        friction.AddPoint(0, 1)
+        wheelSettings.mLongitudinalFriction = friction
 
-        const controllerSettings = new JOLT.WheeledVehicleControllerSettings();
-        controllerSettings.mEngine.mMaxTorque = 1500.0;
-        controllerSettings.mTransmission.mClutchStrength = 10.0;
-        controllerSettings.mTransmission.mGearRatios.clear();
-        controllerSettings.mTransmission.mGearRatios.push_back(2);
-        controllerSettings.mTransmission.mMode = JOLT.ETransmissionMode_Auto;
-        vehicleSettings.mController = controllerSettings;
+        const vehicleSettings = new JOLT.VehicleConstraintSettings()
 
-        vehicleSettings.mAntiRollBars.clear();
+        vehicleSettings.mWheels.clear()
+        vehicleSettings.mWheels.push_back(wheelSettings)
 
-        const vehicleConstraint = new JOLT.VehicleConstraint(bodyMain, vehicleSettings);
-        const fixedConstraint = JOLT.castObject(fixedSettings.Create(bodyMain, bodyWheel), JOLT.TwoBodyConstraint);
+        const controllerSettings = new JOLT.WheeledVehicleControllerSettings()
+        controllerSettings.mEngine.mMaxTorque = 1500.0
+        controllerSettings.mTransmission.mClutchStrength = 10.0
+        controllerSettings.mTransmission.mGearRatios.clear()
+        controllerSettings.mTransmission.mGearRatios.push_back(2)
+        controllerSettings.mTransmission.mMode = JOLT.ETransmissionMode_Auto
+        vehicleSettings.mController = controllerSettings
+
+        vehicleSettings.mAntiRollBars.clear()
+
+        const vehicleConstraint = new JOLT.VehicleConstraint(
+            bodyMain,
+            vehicleSettings
+        )
+        const fixedConstraint = JOLT.castObject(
+            fixedSettings.Create(bodyMain, bodyWheel),
+            JOLT.TwoBodyConstraint
+        )
 
         // Wheel Collision Tester
-        const tester = new JOLT.VehicleCollisionTesterCastCylinder(bodyWheel.GetObjectLayer(), 0.05);
-        vehicleConstraint.SetVehicleCollisionTester(tester);
-        const listener = new JOLT.VehicleConstraintStepListener(vehicleConstraint);
-        this._joltPhysSystem.AddStepListener(listener);
+        const tester = new JOLT.VehicleCollisionTesterCastCylinder(
+            bodyWheel.GetObjectLayer(),
+            0.05
+        )
+        vehicleConstraint.SetVehicleCollisionTester(tester)
+        const listener = new JOLT.VehicleConstraintStepListener(
+            vehicleConstraint
+        )
+        this._joltPhysSystem.AddStepListener(listener)
 
-        this._joltPhysSystem.AddConstraint(vehicleConstraint);
-        this._joltPhysSystem.AddConstraint(fixedConstraint);
+        this._joltPhysSystem.AddConstraint(vehicleConstraint)
+        this._joltPhysSystem.AddConstraint(fixedConstraint)
 
-        this._constraints.push(fixedConstraint, vehicleConstraint);
-        return [fixedConstraint, vehicleConstraint, listener];
+        this._constraints.push(fixedConstraint, vehicleConstraint)
+        return [fixedConstraint, vehicleConstraint, listener]
     }
 
     private IsWheel(jDef: mirabuf.joint.Joint) {
-        return (jDef.info!.name! != 'grounded') && (jDef.userData) && ((new Map(Object.entries(jDef.userData.data!)).get('wheel') ?? 'false') == 'true')
+        return (
+            jDef.info!.name! != "grounded" &&
+            jDef.userData &&
+            (new Map(Object.entries(jDef.userData.data!)).get("wheel") ??
+                "false") == "true"
+        )
     }
 
     /**
      * Creates a map, mapping the name of RigidNodes to Jolt BodyIDs
-     * 
+     *
      * @param   parser  MirabufParser containing properly parsed RigidNodes
      * @returns Mapping of Jolt BodyIDs
      */
-    public CreateBodiesFromParser(parser: MirabufParser, layerReserve?: LayerReserve): Map<string, Jolt.BodyID> {
-        const rnToBodies = new Map<string, Jolt.BodyID>();
+    public CreateBodiesFromParser(
+        parser: MirabufParser,
+        layerReserve?: LayerReserve
+    ): Map<string, Jolt.BodyID> {
+        const rnToBodies = new Map<string, Jolt.BodyID>()
 
-        if ((parser.assembly.dynamic && !layerReserve) || layerReserve?.isReleased) {
-            throw new Error('No layer reserve for dynamic assembly');
+        if (
+            (parser.assembly.dynamic && !layerReserve) ||
+            layerReserve?.isReleased
+        ) {
+            throw new Error("No layer reserve for dynamic assembly")
         }
 
-        const reservedLayer: number | undefined = layerReserve?.layer;
-        
-        filterNonPhysicsNodes(parser.rigidNodes, parser.assembly).forEach(rn => {
+        const reservedLayer: number | undefined = layerReserve?.layer
 
-            const compoundShapeSettings = new JOLT.StaticCompoundShapeSettings();
-            let shapesAdded = 0;
+        filterNonPhysicsNodes(parser.rigidNodes, parser.assembly).forEach(
+            rn => {
+                const compoundShapeSettings =
+                    new JOLT.StaticCompoundShapeSettings()
+                let shapesAdded = 0
 
-            let totalMass = 0;
-            const comAccum = new mirabuf.Vector3();
+                let totalMass = 0
+                const comAccum = new mirabuf.Vector3()
 
-            const minBounds = new JOLT.Vec3(1000000.0, 1000000.0, 1000000.0);
-            const maxBounds = new JOLT.Vec3(-1000000.0, -1000000.0, -1000000.0);
+                const minBounds = new JOLT.Vec3(1000000.0, 1000000.0, 1000000.0)
+                const maxBounds = new JOLT.Vec3(
+                    -1000000.0,
+                    -1000000.0,
+                    -1000000.0
+                )
 
-            const rnLayer: number = reservedLayer
-                ? reservedLayer
-                : (rn.id.endsWith(GAMEPIECE_SUFFIX) ? LAYER_GENERAL_DYNAMIC : LAYER_FIELD);
+                const rnLayer: number = reservedLayer
+                    ? reservedLayer
+                    : rn.id.endsWith(GAMEPIECE_SUFFIX)
+                      ? LAYER_GENERAL_DYNAMIC
+                      : LAYER_FIELD
 
-            rn.parts.forEach(partId => {
-                const partInstance = parser.assembly.data!.parts!.partInstances![partId]!;
-                if (partInstance.skipCollider == null || partInstance == undefined || partInstance.skipCollider == false) {
-                    const partDefinition = parser.assembly.data!.parts!.partDefinitions![partInstance.partDefinitionReference!]!;
-                    
-                    const partShapeResult = this.CreateShapeSettingsFromPart(partDefinition);
-                    
-                    if (partShapeResult) {
+                rn.parts.forEach(partId => {
+                    const partInstance =
+                        parser.assembly.data!.parts!.partInstances![partId]!
+                    if (
+                        partInstance == undefined ||
+                        partInstance.skipCollider == null ||
+                        partInstance.skipCollider == false
+                    ) {
+                        const partDefinition =
+                            parser.assembly.data!.parts!.partDefinitions![
+                                partInstance.partDefinitionReference!
+                            ]!
 
-                        const [shapeSettings, partMin, partMax] = partShapeResult;
+                        const partShapeResult =
+                            this.CreateShapeSettingsFromPart(partDefinition)
 
-                        const transform = ThreeMatrix4_JoltMat44(parser.globalTransforms.get(partId)!);
-                        const translation = transform.GetTranslation();
-                        const rotation = transform.GetQuaternion();
-                        compoundShapeSettings.AddShape(
-                            translation,
-                            rotation,
-                            shapeSettings,
-                            0
-                        );
-                        shapesAdded++;
+                        if (partShapeResult) {
+                            const [shapeSettings, partMin, partMax] =
+                                partShapeResult
 
-                        this.UpdateMinMaxBounds(transform.Multiply3x3(partMin), minBounds, maxBounds);
-                        this.UpdateMinMaxBounds(transform.Multiply3x3(partMax), minBounds, maxBounds);
+                            const transform = ThreeMatrix4_JoltMat44(
+                                parser.globalTransforms.get(partId)!
+                            )
+                            const translation = transform.GetTranslation()
+                            const rotation = transform.GetQuaternion()
+                            compoundShapeSettings.AddShape(
+                                translation,
+                                rotation,
+                                shapeSettings,
+                                0
+                            )
+                            shapesAdded++
 
-                        JOLT.destroy(partMin);
-                        JOLT.destroy(partMax);
-                        JOLT.destroy(transform);
+                            this.UpdateMinMaxBounds(
+                                transform.Multiply3x3(partMin),
+                                minBounds,
+                                maxBounds
+                            )
+                            this.UpdateMinMaxBounds(
+                                transform.Multiply3x3(partMax),
+                                minBounds,
+                                maxBounds
+                            )
 
-                        if (partDefinition.physicalData && partDefinition.physicalData.com && partDefinition.physicalData.mass) {
-                            const mass = partDefinition.massOverride ? partDefinition.massOverride! : partDefinition.physicalData.mass!;
-                            totalMass += mass;
-                            comAccum.x += partDefinition.physicalData.com.x! * mass / 100.0;
-                            comAccum.y += partDefinition.physicalData.com.y! * mass / 100.0;
-                            comAccum.z += partDefinition.physicalData.com.z! * mass / 100.0;
+                            JOLT.destroy(partMin)
+                            JOLT.destroy(partMax)
+                            JOLT.destroy(transform)
+
+                            if (
+                                partDefinition.physicalData &&
+                                partDefinition.physicalData.com &&
+                                partDefinition.physicalData.mass
+                            ) {
+                                const mass = partDefinition.massOverride
+                                    ? partDefinition.massOverride!
+                                    : partDefinition.physicalData.mass!
+                                totalMass += mass
+                                comAccum.x +=
+                                    (partDefinition.physicalData.com.x! *
+                                        mass) /
+                                    100.0
+                                comAccum.y +=
+                                    (partDefinition.physicalData.com.y! *
+                                        mass) /
+                                    100.0
+                                comAccum.z +=
+                                    (partDefinition.physicalData.com.z! *
+                                        mass) /
+                                    100.0
+                            }
                         }
                     }
+                })
+
+                if (shapesAdded > 0) {
+                    const shapeResult = compoundShapeSettings.Create()
+
+                    if (!shapeResult.IsValid || shapeResult.HasError()) {
+                        console.error(
+                            `Failed to create shape for RigidNode ${rn.id}\n${shapeResult.GetError().c_str()}`
+                        )
+                    }
+
+                    const shape = shapeResult.Get()
+
+                    if (rn.isDynamic) {
+                        shape.GetMassProperties().mMass =
+                            totalMass == 0.0 ? 1 : totalMass
+                    }
+
+                    const bodySettings = new JOLT.BodyCreationSettings(
+                        shape,
+                        new JOLT.Vec3(0.0, 0.0, 0.0),
+                        new JOLT.Quat(0, 0, 0, 1),
+                        rn.isDynamic
+                            ? JOLT.EMotionType_Dynamic
+                            : JOLT.EMotionType_Static,
+                        rnLayer
+                    )
+                    const body =
+                        this._joltBodyInterface.CreateBody(bodySettings)
+                    this._joltBodyInterface.AddBody(
+                        body.GetID(),
+                        JOLT.EActivation_Activate
+                    )
+                    body.SetAllowSleeping(false)
+                    rnToBodies.set(rn.id, body.GetID())
+
+                    // Little testing components
+                    body.SetRestitution(0.4)
                 }
-            });
 
-            if (shapesAdded > 0) {
-                
-                const shapeResult = compoundShapeSettings.Create();
-
-                if (!shapeResult.IsValid || shapeResult.HasError()) {
-                    console.error(`Failed to create shape for RigidNode ${rn.id}\n${shapeResult.GetError().c_str()}`);
-                }
-
-                const shape = shapeResult.Get();
-
-                if (rn.isDynamic) {
-                    shape.GetMassProperties().mMass = totalMass == 0.0 ? 1 : totalMass;
-                }
-
-                const bodySettings = new JOLT.BodyCreationSettings(
-                    shape,
-                    new JOLT.Vec3(0.0, 0.0, 0.0),
-                    new JOLT.Quat(0, 0, 0, 1),
-                    rn.isDynamic ? JOLT.EMotionType_Dynamic : JOLT.EMotionType_Static,
-                    rnLayer
-                );
-                const body = this._joltBodyInterface.CreateBody(bodySettings);
-                this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate);
-                body.SetAllowSleeping(false);
-                rnToBodies.set(rn.id, body.GetID());
-
-                // Little testing components
-                body.SetRestitution(0.4);
+                // Cleanup
+                JOLT.destroy(compoundShapeSettings)
             }
+        )
 
-            // Cleanup
-            JOLT.destroy(compoundShapeSettings);
-        });
-
-        return rnToBodies;
+        return rnToBodies
     }
 
     /**
      * Creates the Jolt ShapeSettings for a given part using the Part Definition of said part.
-     * 
+     *
      * @param   partDefinition  Definition of the part to create.
      * @returns If successful, the created convex hull shape settings from the given Part Definition.
      */
-    private CreateShapeSettingsFromPart(partDefinition: mirabuf.IPartDefinition): [Jolt.ShapeSettings, Jolt.Vec3, Jolt.Vec3] | undefined | null {
-        const settings = new JOLT.ConvexHullShapeSettings();
+    private CreateShapeSettingsFromPart(
+        partDefinition: mirabuf.IPartDefinition
+    ): [Jolt.ShapeSettings, Jolt.Vec3, Jolt.Vec3] | undefined | null {
+        const settings = new JOLT.ConvexHullShapeSettings()
 
-        const min = new JOLT.Vec3(1000000.0, 1000000.0, 1000000.0);
-        const max = new JOLT.Vec3(-1000000.0, -1000000.0, -1000000.0);
+        const min = new JOLT.Vec3(1000000.0, 1000000.0, 1000000.0)
+        const max = new JOLT.Vec3(-1000000.0, -1000000.0, -1000000.0)
 
-        const points = settings.mPoints;
+        const points = settings.mPoints
         partDefinition.bodies!.forEach(body => {
-            if (body.triangleMesh && body.triangleMesh.mesh && body.triangleMesh.mesh.verts) {
-                const vertArr = body.triangleMesh.mesh.verts;
-                for (let i = 0; i < body.triangleMesh.mesh.verts.length; i += 3) {
-                    const vert = MirabufFloatArr_JoltVec3(vertArr, i);
-                    points.push_back(vert);
-                    this.UpdateMinMaxBounds(vert, min, max);
-                    JOLT.destroy(vert);
+            if (
+                body.triangleMesh &&
+                body.triangleMesh.mesh &&
+                body.triangleMesh.mesh.verts
+            ) {
+                const vertArr = body.triangleMesh.mesh.verts
+                for (
+                    let i = 0;
+                    i < body.triangleMesh.mesh.verts.length;
+                    i += 3
+                ) {
+                    const vert = MirabufFloatArr_JoltVec3(vertArr, i)
+                    points.push_back(vert)
+                    this.UpdateMinMaxBounds(vert, min, max)
+                    JOLT.destroy(vert)
                 }
             }
-        });
+        })
 
         if (points.size() < 4) {
-            JOLT.destroy(settings);
-            JOLT.destroy(min);
-            JOLT.destroy(max);
-            return;
+            JOLT.destroy(settings)
+            JOLT.destroy(min)
+            JOLT.destroy(max)
+            return
         } else {
-            return [settings, min, max];
+            return [settings, min, max]
         }
     }
 
     /**
      * Helper function to update min and max vector bounds.
-     * 
+     *
      * @param   v   Vector to add to min, max, bounds.
      * @param   min Minimum vector of the bounds.
      * @param   max Maximum vector of the bounds.
      */
     private UpdateMinMaxBounds(v: Jolt.Vec3, min: Jolt.Vec3, max: Jolt.Vec3) {
-        if (v.GetX() < min.GetX())
-            min.SetX(v.GetX());
-        if (v.GetY() < min.GetY())
-            min.SetY(v.GetY());
-        if (v.GetZ() < min.GetZ())
-            min.SetZ(v.GetZ());
+        if (v.GetX() < min.GetX()) min.SetX(v.GetX())
+        if (v.GetY() < min.GetY()) min.SetY(v.GetY())
+        if (v.GetZ() < min.GetZ()) min.SetZ(v.GetZ())
 
-        if (v.GetX() > max.GetX())
-            max.SetX(v.GetX());
-        if (v.GetY() > max.GetY())
-            max.SetY(v.GetY());
-        if (v.GetZ() > max.GetZ())
-            max.SetZ(v.GetZ());
+        if (v.GetX() > max.GetX()) max.SetX(v.GetX())
+        if (v.GetY() > max.GetY()) max.SetY(v.GetY())
+        if (v.GetZ() > max.GetZ()) max.SetZ(v.GetZ())
     }
 
     /**
      * Destroys bodies.
-     * 
+     *
      * @param   bodies  Bodies to destroy.
      */
     public DestroyBodies(...bodies: Jolt.Body[]) {
         bodies.forEach(x => {
-            this._joltBodyInterface.RemoveBody(x.GetID());
-            this._joltBodyInterface.DestroyBody(x.GetID());
-        });
+            this._joltBodyInterface.RemoveBody(x.GetID())
+            this._joltBodyInterface.DestroyBody(x.GetID())
+        })
     }
 
     public DestroyBodyIds(...bodies: Jolt.BodyID[]) {
         bodies.forEach(x => {
-            this._joltBodyInterface.RemoveBody(x);
-            this._joltBodyInterface.DestroyBody(x);
-        });
+            this._joltBodyInterface.RemoveBody(x)
+            this._joltBodyInterface.DestroyBody(x)
+        })
     }
 
     public DestroyMechanism(mech: Mechanism) {
@@ -633,44 +834,84 @@ class PhysicsSystem extends WorldSystem {
         })
         mech.constraints.forEach(x => {
             this._joltPhysSystem.RemoveConstraint(x.constraint)
-        });
+        })
         mech.nodeToBody.forEach(x => {
-            this._joltBodyInterface.RemoveBody(x);
+            this._joltBodyInterface.RemoveBody(x)
             // this._joltBodyInterface.DestroyBody(x);
-        });
-        console.log('Mechanism destroyed')
+        })
+        console.log("Mechanism destroyed")
     }
 
-    public GetBody(bodyId: Jolt.BodyID) {
-        return this._joltPhysSystem.GetBodyLockInterface().TryGetBody(bodyId);
+    public GetBody(bodyId: Jolt.BodyID): Jolt.Body {
+        return this._joltPhysSystem.GetBodyLockInterface().TryGetBody(bodyId)
     }
 
     public Update(_: number): void {
-        this._joltInterface.Step(SIMULATION_PERIOD, STANDARD_SUB_STEPS);
+        this._joltInterface.Step(SIMULATION_PERIOD, STANDARD_SUB_STEPS)
     }
 
     public Destroy(): void {
         this._constraints.forEach(x => {
-            this._joltPhysSystem.RemoveConstraint(x);
+            this._joltPhysSystem.RemoveConstraint(x)
             // JOLT.destroy(x);
-        });
-        this._constraints = [];
+        })
+        this._constraints = []
 
         // Destroy Jolt Bodies.
-        this.DestroyBodyIds(...this._bodies);
-        this._bodies = [];
+        this.DestroyBodyIds(...this._bodies)
+        this._bodies = []
 
-        JOLT.destroy(this._joltBodyInterface);
-        JOLT.destroy(this._joltInterface);
+        JOLT.destroy(this._joltBodyInterface)
+        JOLT.destroy(this._joltInterface)
+    }
+
+    /**
+     * Creates a ghost object and a distance constraint that connects it to the given body
+     * The ghost body is part of the GHOST_LAYER which doesn't interact with any other layer
+     * The caller is responsible for cleaning up the ghost body and the constraint
+     *
+     * @param body The body to be attatched to and moved
+     * @returns The ghost body and the constraint
+     */
+
+    public CreateGodModeBody(body: Jolt.Body): [Jolt.Body, Jolt.Constraint] {
+        const bodyPosition = body.GetPosition()
+        const ghostPosition = new THREE.Vector3(
+            bodyPosition.GetX(),
+            bodyPosition.GetY() + 0.05,
+            bodyPosition.GetZ()
+        )
+        const ghostBody = this.CreateBox(
+            new THREE.Vector3(0.05, 0.05, 0.05),
+            undefined,
+            ghostPosition,
+            undefined
+        )
+
+        const ghostBodyId = ghostBody.GetID()
+        // TODO: Verify that layers don't interact by default
+        this._joltBodyInterface.SetObjectLayer(ghostBodyId, GHOST_LAYER)
+        this._joltBodyInterface.AddBody(ghostBodyId, JOLT.EActivation_Activate)
+        this._bodies.push(ghostBodyId)
+
+        const constraintSettings = new JOLT.SwingTwistConstraintSettings()
+        const constraint = constraintSettings.Create(ghostBody, body)
+        this._joltPhysSystem.AddConstraint(constraint)
+
+        return [ghostBody, constraint]
     }
 }
 
 export class LayerReserve {
-    private _layer: number;
-    private _isReleased: boolean;
+    private _layer: number
+    private _isReleased: boolean
 
-    public get layer() { return this._layer }
-    public get isReleased() { return this._isReleased }
+    public get layer() {
+        return this._layer
+    }
+    public get isReleased() {
+        return this._isReleased
+    }
 
     public constructor() {
         this._layer = RobotLayers.shift()!
@@ -679,92 +920,114 @@ export class LayerReserve {
 
     public Release() {
         if (!this._isReleased) {
-            RobotLayers.push(this._layer);
-            this._isReleased = true;
+            RobotLayers.push(this._layer)
+            this._isReleased = true
         }
     }
 }
 
 /**
  * Initialize collision groups and filtering for Jolt.
- * 
+ *
  * @param   settings    Jolt object used for applying filters.
  */
-function SetupCollisionFiltering(settings: Jolt.JoltSettings) {
-    const objectFilter = new JOLT.ObjectLayerPairFilterTable(COUNT_OBJECT_LAYERS);
-    
+function SetupCollisionFiltering(settings: Jolt.JoltSettings): void {
+    const objectFilter = new JOLT.ObjectLayerPairFilterTable(
+        COUNT_OBJECT_LAYERS
+    )
+
     // Enable Field layer collisions
-    objectFilter.EnableCollision(LAYER_GENERAL_DYNAMIC, LAYER_GENERAL_DYNAMIC);
-    objectFilter.EnableCollision(LAYER_FIELD, LAYER_GENERAL_DYNAMIC);
+    objectFilter.EnableCollision(LAYER_GENERAL_DYNAMIC, LAYER_GENERAL_DYNAMIC)
+    objectFilter.EnableCollision(LAYER_FIELD, LAYER_GENERAL_DYNAMIC)
     for (let i = 0; i < RobotLayers.length; i++) {
-        objectFilter.EnableCollision(LAYER_FIELD, RobotLayers[i]);
-        objectFilter.EnableCollision(LAYER_GENERAL_DYNAMIC, RobotLayers[i]);
+        objectFilter.EnableCollision(LAYER_FIELD, RobotLayers[i])
+        objectFilter.EnableCollision(LAYER_GENERAL_DYNAMIC, RobotLayers[i])
     }
 
     // Enable Collisions between other robots
     for (let i = 0; i < RobotLayers.length - 1; i++) {
         for (let j = i + 1; j < RobotLayers.length; j++) {
-            objectFilter.EnableCollision(RobotLayers[i], RobotLayers[j]);
+            objectFilter.EnableCollision(RobotLayers[i], RobotLayers[j])
         }
     }
 
-    const BP_LAYER_FIELD = new JOLT.BroadPhaseLayer(LAYER_FIELD);
-    const BP_LAYER_GENERAL_DYNAMIC = new JOLT.BroadPhaseLayer(LAYER_GENERAL_DYNAMIC);
+    const BP_LAYER_FIELD = new JOLT.BroadPhaseLayer(LAYER_FIELD)
+    const BP_LAYER_GENERAL_DYNAMIC = new JOLT.BroadPhaseLayer(
+        LAYER_GENERAL_DYNAMIC
+    )
 
-    const bpRobotLayers = new Array<Jolt.BroadPhaseLayer>(RobotLayers.length);
+    const bpRobotLayers = new Array<Jolt.BroadPhaseLayer>(RobotLayers.length)
     for (let i = 0; i < bpRobotLayers.length; i++) {
-        bpRobotLayers[i] = new JOLT.BroadPhaseLayer(RobotLayers[i]);
+        bpRobotLayers[i] = new JOLT.BroadPhaseLayer(RobotLayers[i])
     }
 
-    const COUNT_BROAD_PHASE_LAYERS = 2 + RobotLayers.length;
+    const COUNT_BROAD_PHASE_LAYERS = 2 + RobotLayers.length
 
-    const bpInterface = new JOLT.BroadPhaseLayerInterfaceTable(COUNT_OBJECT_LAYERS, COUNT_BROAD_PHASE_LAYERS);
-    
-    bpInterface.MapObjectToBroadPhaseLayer(LAYER_FIELD, BP_LAYER_FIELD);
-    bpInterface.MapObjectToBroadPhaseLayer(LAYER_GENERAL_DYNAMIC, BP_LAYER_GENERAL_DYNAMIC);
+    const bpInterface = new JOLT.BroadPhaseLayerInterfaceTable(
+        COUNT_OBJECT_LAYERS,
+        COUNT_BROAD_PHASE_LAYERS
+    )
+
+    bpInterface.MapObjectToBroadPhaseLayer(LAYER_FIELD, BP_LAYER_FIELD)
+    bpInterface.MapObjectToBroadPhaseLayer(
+        LAYER_GENERAL_DYNAMIC,
+        BP_LAYER_GENERAL_DYNAMIC
+    )
     for (let i = 0; i < bpRobotLayers.length; i++) {
-        bpInterface.MapObjectToBroadPhaseLayer(RobotLayers[i], bpRobotLayers[i]);
+        bpInterface.MapObjectToBroadPhaseLayer(RobotLayers[i], bpRobotLayers[i])
     }
 
-    settings.mObjectLayerPairFilter = objectFilter;
-    settings.mBroadPhaseLayerInterface = bpInterface;
-    settings.mObjectVsBroadPhaseLayerFilter = new JOLT.ObjectVsBroadPhaseLayerFilterTable(
-        settings.mBroadPhaseLayerInterface,
-        COUNT_BROAD_PHASE_LAYERS,
-        settings.mObjectLayerPairFilter,
-        COUNT_OBJECT_LAYERS
-    );
+    settings.mObjectLayerPairFilter = objectFilter
+    settings.mBroadPhaseLayerInterface = bpInterface
+    settings.mObjectVsBroadPhaseLayerFilter =
+        new JOLT.ObjectVsBroadPhaseLayerFilterTable(
+            settings.mBroadPhaseLayerInterface,
+            COUNT_BROAD_PHASE_LAYERS,
+            settings.mObjectLayerPairFilter,
+            COUNT_OBJECT_LAYERS
+        )
 }
 
-function filterNonPhysicsNodes(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembly): RigidNodeReadOnly[] {
+function filterNonPhysicsNodes(
+    nodes: RigidNodeReadOnly[],
+    mira: mirabuf.Assembly
+): RigidNodeReadOnly[] {
     return nodes.filter(x => {
         for (const part of x.parts) {
-            const inst = mira.data!.parts!.partInstances![part]!;
-            const def = mira.data!.parts!.partDefinitions![inst.partDefinitionReference!]!;
+            const inst = mira.data!.parts!.partInstances![part]!
+            const def =
+                mira.data!.parts!.partDefinitions![
+                    inst.partDefinitionReference!
+                ]!
             if (def.bodies && def.bodies.length > 0) {
-                return true;
+                return true
             }
         }
-        return false;
-    });
+        return false
+    })
 }
 
 function getPerpendicular(vec: Jolt.Vec3): Jolt.Vec3 {
-    return tryGetPerpendicular(vec, new JOLT.Vec3(0, 1, 0))
-        ?? tryGetPerpendicular(vec, new JOLT.Vec3(0, 0, 1))!;
+    return (
+        tryGetPerpendicular(vec, new JOLT.Vec3(0, 1, 0)) ??
+        tryGetPerpendicular(vec, new JOLT.Vec3(0, 0, 1))!
+    )
 }
 
-function tryGetPerpendicular(vec: Jolt.Vec3, toCheck: Jolt.Vec3): Jolt.Vec3 | undefined {
+function tryGetPerpendicular(
+    vec: Jolt.Vec3,
+    toCheck: Jolt.Vec3
+): Jolt.Vec3 | undefined {
     if (Math.abs(Math.abs(vec.Dot(toCheck)) - 1.0) < 0.0001) {
-        return undefined;
+        return undefined
     }
 
-    const a = vec.Dot(toCheck);
+    const a = vec.Dot(toCheck)
     return new JOLT.Vec3(
         toCheck.GetX() - vec.GetX() * a,
         toCheck.GetY() - vec.GetY() * a,
         toCheck.GetZ() - vec.GetZ() * a
-    ).Normalized();
+    ).Normalized()
 }
 
-export default PhysicsSystem;
+export default PhysicsSystem
