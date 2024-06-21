@@ -20,8 +20,8 @@ from .SynthesisParser.Parser import Parser
 
 # Contains enums for parents of joints that have special cases
 class JointParentType:  # validate for unique key and value
-    ROOT= 0  # grounded root object
-    END= 1
+    ROOT = 0  # grounded root object
+    END = 1
 
 
 class WheelType:
