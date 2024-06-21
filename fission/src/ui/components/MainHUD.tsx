@@ -14,6 +14,7 @@ import { ToastType, useToastContext } from "@/ui/ToastContext"
 import { Random } from "@/util/Random"
 import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
 import { UserIcon } from "./UserIcon"
+import { Button } from '@mui/base/Button'
 
 type ButtonProps = {
     value: string
@@ -30,28 +31,19 @@ const MainHUDButton: React.FC<ButtonProps> = ({
 }) => {
     if (larger == null) larger = false
     return (
-        <div
-            onClick={onClick}
-            className={`relative flex flex-row cursor-pointer bg-background w-full m-auto px-2 py-1 text-main-text rounded-md ${larger ? "justify-center" : ""
-                } items-center hover:backdrop-brightness-105`}
-        >
+        <Button onClick={onClick} className={`relative flex flex-row cursor-pointer bg-background w-full m-auto px-2 py-1 text-main-text border-none rounded-md ${larger ? "justify-center" : "" } items-center hover:brightness-105 focus:outline-0 focus-visible:outline-0`}>
             {larger && icon}
             {!larger && (
                 <span
                     onClick={onClick}
                     className="absolute left-3 text-main-hud-icon"
-                >
-                    {icon}
-                </span>
+                    >{icon}</span>
+
             )}
-            <input
-                type="button"
-                className={`px-2 ${larger ? "py-2" : "py-1 ml-6"
-                    } text-main-text cursor-pointer`}
-                value={value}
-                onClick={onClick}
-            />
-        </div>
+            <span className={`px-2 ${larger ? "py-2" : "py-1 ml-6"} text-main-text cursor-pointer`}>
+            {value}
+            </span>
+        </Button>
     )
 }
 
@@ -86,7 +78,7 @@ const MainHUD: React.FC = () => {
             {!isOpen && (
                 <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className="absolute left-6 top-6"
+                    className="absolute left-6 top-6 focus:outline-0 focus-visible:outline-0"
                 >
                     <BiMenuAltLeft
                         size={40}
@@ -102,13 +94,14 @@ const MainHUD: React.FC = () => {
             >
                 <div className="flex flex-row gap-2 w-60 h-10">
                     <img src={logo} className="w-[80%] h-[100%] object-contain" />
-                    <button onClick={() => setIsOpen(false)}>
+                    <Button onClick={() => setIsOpen(false)}
+                    className={`bg-none border-none focus-visible:outline-0 focus:outline-0 select-none`}>
                         <GrFormClose
                             color="bg-icon"
                             size={20}
                             className="text-main-hud-close-icon"
                         />
-                    </button>
+                    </Button>
                 </div>
                 <MainHUDButton
                     value={"Spawn Asset"}
@@ -188,19 +181,19 @@ const MainHUD: React.FC = () => {
                 </div>
                 {userInfo
                     ?
-                        <MainHUDButton
-                            value={`Hi, ${userInfo.givenName}`}
-                            icon={<UserIcon className="h-[20pt] m-[5pt] rounded-full" />}
-                            larger={true}
-                            onClick={() => APS.logout()}
-                        />
+                    <MainHUDButton
+                        value={`Hi, ${userInfo.givenName}`}
+                        icon={<UserIcon className="h-[20pt] m-[5pt] rounded-full" />}
+                        larger={true}
+                        onClick={() => APS.logout()}
+                    />
                     :
-                        <MainHUDButton
-                            value={`APS Login`}
-                            icon={<IoPeople />}
-                            larger={true}
-                            onClick={() => APS.requestAuthCode()}
-                        />
+                    <MainHUDButton
+                        value={`APS Login`}
+                        icon={<IoPeople />}
+                        larger={true}
+                        onClick={() => APS.requestAuthCode()}
+                    />
                 }
             </motion.div>
         </>

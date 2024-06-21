@@ -54,9 +54,7 @@ const Toast: React.FC<ToastData> = ({ id, type, title, description }) => {
     }
 
     return (
-        <div
-    className={`toast toast-${type.toLowerCase()} aspect-toast relative flex flex-row ${className} px-4 py-2 content-center justify-between items-center rounded-lg shadow-md shadow-[rgba(0,0,0,0.5)]`}
-        >
+        <div className={`toast toast-${type.toLowerCase()} aspect-toast relative flex flex-row ${className} px-4 py-2 content-center justify-between items-center rounded-lg shadow-md shadow-[rgba(0,0,0,0.5)]`} >
             <div className="w-10 h-10 mr-1">{icon}</div>
             <div className="toast-content w-auto ml-2 text-main-text">
                 <div className="flex flex-col w-full">
@@ -70,7 +68,7 @@ const Toast: React.FC<ToastData> = ({ id, type, title, description }) => {
                                 size={20}
                                 className="text-main-text"
                             />
-                        </button>          
+                        </button>
                         <p className="font-medium uppercase h-min">{title}</p>
                     </div>
                     <p className="truncate w-full">{description}</p>

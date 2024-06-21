@@ -5,6 +5,7 @@ import Button from "@/components/Button"
 import SelectButton from "@/components/SelectButton"
 import Checkbox from "@/components/Checkbox"
 import Slider from "@/components/Slider"
+import NumberInput from "@/components/NumberInput"
 
 export type ScoringZone = {
     name: string
@@ -40,18 +41,17 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     alliance[0].toUpperCase() + alliance.substring(1)
                 } Alliance`}
                 onClick={() => setAlliance(alliance == "blue" ? "red" : "blue")}
-                colorClass={`bg-match-${alliance}-alliance`}
+                colorOverrideClass={`bg-match-${alliance}-alliance`}
             />
             <SelectButton
                 placeholder="Select zone parent"
                 onSelect={(p: string) => setParent(p)}
             />
-            <Input
+            <NumberInput
                 label="Points"
                 placeholder="Zone points"
-                defaultValue={"1"}
-                onInput={v => setPoints(parseInt(v))}
-                numeric
+                defaultValue={1}
+                onInput={v => setPoints(v || 1)}
             />
             <Checkbox
                 label="Destroy Gamepiece"
