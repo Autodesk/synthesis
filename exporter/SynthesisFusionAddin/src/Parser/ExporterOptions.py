@@ -3,6 +3,7 @@ Container for all options pertaining to the Fusion Exporter.
 These options are saved per-design and are passed to the parser upon design export.
 """
 
+import os
 import json
 from typing import get_origin
 from enum import Enum, EnumType
@@ -75,7 +76,7 @@ class ModelHierarchy(Enum):
 
 @dataclass
 class ExporterOptions:
-    fileLocation: str = field(default="")
+    fileLocation: str = field(default=os.path.expanduser("~"))
     name: str = field(default=None)
     version: str = field(default=None)
     materials: int = field(default=0)
