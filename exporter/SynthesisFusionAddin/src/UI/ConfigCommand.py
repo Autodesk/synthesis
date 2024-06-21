@@ -9,7 +9,7 @@ from ..Parser.SynthesisParser.Utilities import guid_occurrence
 from ..general_imports import *
 from ..configure import NOTIFIED, write_configuration
 from ..Analytics.alert import showAnalyticsAlert
-from . import Helper, OsHelper, CustomGraphics, IconPaths
+from . import Helper, OsHelper, CustomGraphics, IconPaths, FileDialogConfig
 from ..Parser.ExporterOptions import (
     Gamepiece,
     ExportMode,
@@ -1066,6 +1066,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
     def notify(self, args):
         try:
             eventArgs = adsk.core.CommandEventArgs.cast(args)
+            exporterOptions = ExporterOptions().readFromDesign()
 
             if eventArgs.executeFailed:
                 self.log.error("Could not execute configuration due to failure")
@@ -1084,55 +1085,15 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             elif dropdownExportMode.selectedItem.index == 1:
                 isRobot = False
 
-            if platform.system() == "Windows":
-                if isRobot:
-                    if export_as_part_boolean:
-                        savepath = (
-                            os.getenv("APPDATA")
-                            + "\\Autodesk\\Synthesis\\MixAndMatch\\Mira\\"
-                            + processedFileName
-                            + ".mira"
-                        )
-                    else:
-                        savepath = (
-                            os.getenv("APPDATA")
-                            + "\\Autodesk\\Synthesis\\Mira\\"
-                            + processedFileName
-                            + ".mira"
-                        )
-                else:
-                    savepath = (
-                        os.getenv("APPDATA")
-                        + "\\Autodesk\\Synthesis\\Mira\\Fields\\"
-                        + processedFileName
-                        + ".mira"
-                    )
+            if isRobot:
+                savepath = FileDialogConfig.SaveFileDialog(
+                    defaultPath=exporterOptions.fileLocation,
+                    ext="Synthesis File (*.synth)",
+                )
             else:
-                from os.path import expanduser
-
-                home = expanduser("~")
-                if isRobot:
-                    if export_as_part_boolean:
-                        savepath = (
-                            home
-                            + "/.config/Autodesk/Synthesis/MixAndMatch/Mira/"
-                            + processedFileName
-                            + ".mira"
-                        )
-                    else:
-                        savepath = (
-                            home
-                            + "/.config/Autodesk/Synthesis/Mira/"
-                            + processedFileName
-                            + ".mira"
-                        )
-                else:
-                    savepath = (
-                        home
-                        + "/.config/Autodesk/Synthesis/Mira/Fields/"
-                        + processedFileName
-                        + ".mira"
-                    )
+                savepath = FileDialogConfig.SaveFileDialog(
+                    defaultPath=exporterOptions.fileLocation
+                )
 
             if savepath == False:
                 # save was canceled

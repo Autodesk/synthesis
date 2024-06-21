@@ -75,7 +75,7 @@ class ModelHierarchy(Enum):
 
 @dataclass
 class ExporterOptions:
-    fileLocation: str = field(default=None)
+    fileLocation: str = field(default="")
     name: str = field(default=None)
     version: str = field(default=None)
     materials: int = field(default=0)
