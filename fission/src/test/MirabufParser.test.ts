@@ -2,7 +2,7 @@ import { describe, test, expect } from "vitest";
 
 import { mirabuf } from "../proto/mirabuf";
 import MirabufParser, { RigidNodeReadOnly } from "../mirabuf/MirabufParser";
-import { LoadMirabufLocal, LoadMirabufRemote } from "../mirabuf/MirabufLoader";
+import { LoadMirabufLocal, LoadMirabufRemote, MiraType } from "../mirabuf/MirabufLoader";
 
 describe('Mirabuf Parser Tests', () => {
     test('Generate Rigid Nodes (Dozer_v9.mira)', () => {
@@ -31,7 +31,7 @@ describe('Mirabuf Parser Tests', () => {
     });
 
     test('Read From Remote (Dozer_v9)', async() => {
-        LoadMirabufRemote("./public/Downloadables/Mira/Robots/Dozer_v9.mira")
+        LoadMirabufRemote("./public/Downloadables/Mira/Robots/Dozer_v9.mira", MiraType.ROBOT)
     })
 });
 

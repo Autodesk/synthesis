@@ -8,6 +8,7 @@ import Label, { LabelSize } from "@/components/Label"
 import { CreateMirabufFromUrl } from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
 import { useTooltipControlContext } from "@/TooltipContext"
+import { MiraType } from "@/mirabuf/MirabufLoader"
 
 interface MirabufEntry {
     displayName: string;
@@ -61,7 +62,7 @@ export const AddRobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             { control: "Q", description: "Dispense" },
         ])
 
-        CreateMirabufFromUrl(entry.src).then(x => {
+        CreateMirabufFromUrl(entry.src, MiraType.ROBOT).then(x => {
             if (x) {
                 World.SceneRenderer.RegisterSceneObject(x)
             }
@@ -112,7 +113,7 @@ export const AddFieldsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
     const selectField = (entry: MirabufEntry) => {
         console.log(`Mira: '${entry.src}'`)
-        CreateMirabufFromUrl(entry.src).then(x => {
+        CreateMirabufFromUrl(entry.src, MiraType.FIELD).then(x => {
             if (x) {
                 World.SceneRenderer.RegisterSceneObject(x)
             }

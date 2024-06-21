@@ -1,7 +1,7 @@
 import { mirabuf } from "@/proto/mirabuf";
 import SceneObject from "../systems/scene/SceneObject";
 import MirabufInstance from "./MirabufInstance";
-import { LoadMirabufRemote } from "./MirabufLoader";
+import { LoadMirabufRemote, MiraType } from "./MirabufLoader";
 import MirabufParser, { ParseErrorSeverity } from "./MirabufParser";
 import World from "@/systems/World";
 import Jolt from '@barclah/jolt-physics';
@@ -133,8 +133,8 @@ class MirabufSceneObject extends SceneObject {
     }
 }
 
-export async function CreateMirabufFromUrl(path: string): Promise<MirabufSceneObject | null | undefined> {
-    const miraAssembly = await LoadMirabufRemote(path)
+export async function CreateMirabufFromUrl(path: string, miraType: MiraType): Promise<MirabufSceneObject | null | undefined> {
+    const miraAssembly = await LoadMirabufRemote(path, miraType)
         .catch(console.error);
 
     if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {

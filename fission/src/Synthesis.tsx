@@ -1,6 +1,6 @@
 import Scene from './components/Scene.tsx';
 import MirabufSceneObject from './mirabuf/MirabufSceneObject.ts';
-import { LoadMirabufRemote } from './mirabuf/MirabufLoader.ts';
+import { LoadMirabufRemote, MiraType } from './mirabuf/MirabufLoader.ts';
 import { mirabuf } from './proto/mirabuf';
 import MirabufParser, { ParseErrorSeverity } from './mirabuf/MirabufParser.ts';
 import MirabufInstance from './mirabuf/MirabufInstance.ts';
@@ -166,9 +166,9 @@ function Synthesis() {
 
 		const setup = async () => {
 
-			const miraAssembly = await LoadMirabufRemote(mira_path)
+			const miraAssembly = await LoadMirabufRemote(mira_path, MiraType.ROBOT)
 				.catch(
-					_ => LoadMirabufRemote(DEFAULT_MIRA_PATH)
+					_ => LoadMirabufRemote(DEFAULT_MIRA_PATH, MiraType.ROBOT)
 				).catch(console.error);
 
             await (async () => {

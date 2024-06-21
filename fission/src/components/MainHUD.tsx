@@ -14,7 +14,7 @@ import { ToastType, useToastContext } from "../ToastContext"
 import { Random } from "@/util/Random"
 import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
 import { UserIcon } from "./UserIcon"
-import { ClearMira, LoadMirabufRemote } from "@/mirabuf/MirabufLoader"
+import { ClearMira, LoadMirabufRemote, MiraType } from "@/mirabuf/MirabufLoader"
 
 type ButtonProps = {
     value: string
@@ -163,7 +163,7 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton
                         value={"Dozer"}
                         icon={<BsCodeSquare />}
-                        onClick = { () => LoadMirabufRemote('./public/Downloadables/Mira/Robots/Dozer_v9.mira')}
+                        onClick = { () => LoadMirabufRemote('./public/Downloadables/Mira/Robots/Dozer_v9.mira', MiraType.ROBOT)}
                         />
                     {/* <MainHUDButton
                         value={"Driver Station"}
