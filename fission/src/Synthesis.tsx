@@ -1,4 +1,4 @@
-import Scene from './components/Scene.tsx';
+import Scene from '@/components/Scene.tsx';
 import MirabufSceneObject from './mirabuf/MirabufSceneObject.ts';
 import { LoadMirabufRemote } from './mirabuf/MirabufLoader.ts';
 import { mirabuf } from './proto/mirabuf';
@@ -6,64 +6,69 @@ import MirabufParser, { ParseErrorSeverity } from './mirabuf/MirabufParser.ts';
 import MirabufInstance from './mirabuf/MirabufInstance.ts';
 import { AnimatePresence, motion } from "framer-motion"
 import { ReactElement, useEffect } from "react"
-import { ModalControlProvider, useModalManager } from "./ModalContext"
-import { PanelControlProvider, usePanelManager } from "./PanelContext"
-import { useTheme } from "./ThemeContext"
-import { ToastContainer, ToastProvider } from "./ToastContext"
+import { ModalControlProvider, useModalManager } from "@/ui/ModalContext"
+import { PanelControlProvider, usePanelManager } from "@/ui/PanelContext"
+import { useTheme } from "@/ui/ThemeContext"
+import { ToastContainer, ToastProvider } from "@/ui/ToastContext"
 import {
     TOOLTIP_DURATION,
     TooltipControl,
     TooltipControlProvider,
     TooltipType,
     useTooltipManager,
-} from "./TooltipContext"
-import MainHUD from "./components/MainHUD"
-import DownloadAssetsModal from "./modals/DownloadAssetsModal"
-import ExitSynthesisModal from "./modals/ExitSynthesisModal"
-import MatchResultsModal from "./modals/MatchResultsModal"
-import UpdateAvailableModal from "./modals/UpdateAvailableModal"
-import ViewModal from "./modals/ViewModal"
-import ConnectToMultiplayerModal from "./modals/aether/ConnectToMultiplayerModal"
-import ServerHostingModal from "./modals/aether/ServerHostingModal"
-import ChangeInputsModal from "./modals/configuring/ChangeInputsModal"
-import ChooseMultiplayerModeModal from "./modals/configuring/ChooseMultiplayerModeModal"
-import ChooseSingleplayerModeModal from "./modals/configuring/ChooseSingleplayerModeModal"
-import ConfigMotorModal from "./modals/configuring/ConfigMotorModal"
-import DrivetrainModal from "./modals/configuring/DrivetrainModal"
-import PracticeSettingsModal from "./modals/configuring/PracticeSettingsModal"
-import RoboRIOModal from "./modals/configuring/RoboRIOModal"
-import SettingsModal from "./modals/configuring/SettingsModal"
-import RCConfigEncoderModal from "./modals/configuring/rio-config/RCConfigEncoderModal"
-import RCConfigPwmGroupModal from "./modals/configuring/rio-config/RCConfigPwmGroupModal"
-import RCCreateDeviceModal from "./modals/configuring/rio-config/RCCreateDeviceModal"
-import DeleteAllThemesModal from "./modals/configuring/theme-editor/DeleteAllThemesModal"
-import DeleteThemeModal from "./modals/configuring/theme-editor/DeleteThemeModal"
-import NewThemeModal from "./modals/configuring/theme-editor/NewThemeModal"
-import ThemeEditorModal from "./modals/configuring/theme-editor/ThemeEditorModal"
-import MatchModeModal from "./modals/spawning/MatchModeModal"
-import RobotSwitchPanel from "./panels/RobotSwitchPanel"
-import SpawnLocationsPanel from "./panels/SpawnLocationPanel"
-import ConfigureGamepiecePickupPanel from "./panels/configuring/ConfigureGamepiecePickupPanel"
-import ConfigureShotTrajectoryPanel from "./panels/configuring/ConfigureShotTrajectoryPanel"
-import ScoringZonesPanel from "./panels/configuring/scoring/ScoringZonesPanel"
-import ZoneConfigPanel from "./panels/configuring/scoring/ZoneConfigPanel"
-import ScoreboardPanel from "./panels/information/ScoreboardPanel"
-import DriverStationPanel from "./panels/simulation/DriverStationPanel"
-import ManageAssembliesModal from './modals/spawning/ManageAssembliesModal.tsx';
-import World from './systems/World.ts';
-import { AddRobotsModal, AddFieldsModal, SpawningModal } from './modals/spawning/SpawningModals.tsx';
+} from "@/ui/TooltipContext"
+import MainHUD from "@/components/MainHUD"
+import DownloadAssetsModal from "@/modals/DownloadAssetsModal"
+import ExitSynthesisModal from "@/modals/ExitSynthesisModal"
+import MatchResultsModal from "@/modals/MatchResultsModal"
+import UpdateAvailableModal from "@/modals/UpdateAvailableModal"
+import ViewModal from "@/modals/ViewModal"
+import ConnectToMultiplayerModal from "@/modals/aether/ConnectToMultiplayerModal"
+import ServerHostingModal from "@/modals/aether/ServerHostingModal"
+import ChangeInputsModal from "@/modals/configuring/ChangeInputsModal"
+import ChooseMultiplayerModeModal from "@/modals/configuring/ChooseMultiplayerModeModal"
+import ChooseSingleplayerModeModal from "@/modals/configuring/ChooseSingleplayerModeModal"
+import ConfigMotorModal from "@/modals/configuring/ConfigMotorModal"
+import DrivetrainModal from "@/modals/configuring/DrivetrainModal"
+import PracticeSettingsModal from "@/modals/configuring/PracticeSettingsModal"
+import RoboRIOModal from "@/modals/configuring/RoboRIOModal"
+import SettingsModal from "@/modals/configuring/SettingsModal"
+import RCConfigEncoderModal from "@/modals/configuring/rio-config/RCConfigEncoderModal"
+import RCConfigPwmGroupModal from "@/modals/configuring/rio-config/RCConfigPwmGroupModal"
+import RCCreateDeviceModal from "@/modals/configuring/rio-config/RCCreateDeviceModal"
+import DeleteAllThemesModal from "@/modals/configuring/theme-editor/DeleteAllThemesModal"
+import DeleteThemeModal from "@/modals/configuring/theme-editor/DeleteThemeModal"
+import NewThemeModal from "@/modals/configuring/theme-editor/NewThemeModal"
+import ThemeEditorModal from "@/modals/configuring/theme-editor/ThemeEditorModal"
+import MatchModeModal from "@/modals/spawning/MatchModeModal"
+import RobotSwitchPanel from "@/panels/RobotSwitchPanel"
+import SpawnLocationsPanel from "@/panels/SpawnLocationPanel"
+import ConfigureGamepiecePickupPanel from "@/panels/configuring/ConfigureGamepiecePickupPanel"
+import ConfigureShotTrajectoryPanel from "@/panels/configuring/ConfigureShotTrajectoryPanel"
+import ScoringZonesPanel from "@/panels/configuring/scoring/ScoringZonesPanel"
+import ZoneConfigPanel from "@/panels/configuring/scoring/ZoneConfigPanel"
+import ScoreboardPanel from "@/panels/information/ScoreboardPanel"
+import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
+import ManageAssembliesModal from '@/modals/spawning/ManageAssembliesModal.tsx';
+import World from '@/systems/World.ts';
+import { AddRobotsModal, AddFieldsModal, SpawningModal } from '@/modals/spawning/SpawningModals.tsx';
+import ImportMirabufModal from '@/modals/mirabuf/ImportMirabufModal.tsx';
 
 import WPILibWSWorker from '@/systems/simulation/wpilib_brain/WPILibWSWorker.ts?worker'
 
-const DEFAULT_MIRA_PATH = 'test_mira/Team_2471_(2018)_v7.mira';
-// const DEFAULT_MIRA_PATH = 'test_mira/Dozer_v2.mira';
-// const DEFAULT_MIRA_PATH = 'test_mira/PhysicsSpikeTest_v1.mira';
-// const DEFAULT_MIRA_PATH = 'test_mira/SliderTestFission_v2.mira';
-// const DEFAULT_MIRA_PATH = 'test_mira/HingeTestFission_v1.mira';
+const DEFAULT_MIRA_PATH = '/api/mira/Robots/Team 2471 (2018)_v7.mira';
 
 export let worker: Worker | undefined = undefined
 
 function Synthesis() {
+
+    const urlParams = new URLSearchParams(document.location.search);
+    if (urlParams.has('code')) {
+        const code = urlParams.get('code')
+        window.opener?.setAuthCode(code)
+        window.close()
+    }
+    
     const { openModal, closeModal, getActiveModalElement } =
         useModalManager(initialModals)
     const { openPanel, closePanel, closeAllPanels, getActivePanelElements } =
@@ -167,6 +172,7 @@ function Synthesis() {
         console.log(urlParams)
 
 		const setup = async () => {
+
 			const miraAssembly = await LoadMirabufRemote(mira_path)
 				.catch(
 					_ => LoadMirabufRemote(DEFAULT_MIRA_PATH)
@@ -273,6 +279,7 @@ const initialModals = [
     <SpawningModal modalId="spawning" />,
     <ConfigMotorModal modalId="config-motor" />,
     <ManageAssembliesModal modalId="manage-assembles" />,
+    <ImportMirabufModal modalId="import-mirabuf" />,
 ]
 
 const initialPanels: ReactElement[] = [
