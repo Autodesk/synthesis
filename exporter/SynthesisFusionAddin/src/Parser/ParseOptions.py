@@ -7,8 +7,8 @@
         - this is essentially a flat configuration file with non serializable objects
 """
 
-from dataclasses import dataclass
 from typing import List, Union
+from dataclasses import dataclass
 
 import adsk.core
 import adsk.fusion
