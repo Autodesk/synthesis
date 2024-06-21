@@ -9,7 +9,6 @@ const config = {
     bracketSpacing: true,
     bracketSameLine: false,
     arrowParens: "avoid",
-    printWidth: 120
 }
 
 export default config;

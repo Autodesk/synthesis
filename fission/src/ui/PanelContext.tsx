@@ -1,4 +1,12 @@
-import React, { createContext, useState, useEffect, useCallback, useContext, ReactNode, ReactElement } from "react"
+import React, {
+    createContext,
+    useState,
+    useEffect,
+    useCallback,
+    useContext,
+    ReactNode,
+    ReactElement,
+} from "react"
 
 type PanelControlContextType = {
     openPanel: (panelId: string) => void
@@ -10,12 +18,22 @@ const PanelControlContext = createContext<PanelControlContextType | null>(null)
 
 export const usePanelControlContext = () => {
     const context = useContext(PanelControlContext)
-    if (!context) throw new Error("usePanelControlContext must be used within a PanelControlProvider")
+    if (!context)
+        throw new Error(
+            "usePanelControlContext must be used within a PanelControlProvider"
+        )
     return context
 }
 
-export const PanelControlProvider: React.FC<PanelControlContextType> = ({ children, ...methods }) => {
-    return <PanelControlContext.Provider value={methods}>{children}</PanelControlContext.Provider>
+export const PanelControlProvider: React.FC<PanelControlContextType> = ({
+    children,
+    ...methods
+}) => {
+    return (
+        <PanelControlContext.Provider value={methods}>
+            {children}
+        </PanelControlContext.Provider>
+    )
 }
 
 type PanelInstance = {

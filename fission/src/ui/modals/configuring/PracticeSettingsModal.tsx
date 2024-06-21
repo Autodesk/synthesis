@@ -11,7 +11,10 @@ const PracticeSettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         <Modal name="Practice Settings" icon={<FaGear />} modalId={modalId}>
             <Label size={LabelSize.Large}>Gamepiece Spawning</Label>
             <Stack direction={StackDirection.Horizontal}>
-                <Dropdown options={["Sphere", "Cube", "Capsule"]} onSelect={() => {}} />
+                <Dropdown
+                    options={["Sphere", "Cube", "Capsule"]}
+                    onSelect={() => {}}
+                />
                 <Button value="Spawn" />
             </Stack>
             <Button value="Gamepiece Spawnpoint" />

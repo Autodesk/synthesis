@@ -40,8 +40,12 @@ const DrivetrainModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         >
             <Dropdown
                 label="Type"
-                options={["None", "Tank", "Arcade", "Swerve"] as DrivetrainType[]}
-                onSelect={(selected: string) => setDrivetrain(selected as DrivetrainType)}
+                options={
+                    ["None", "Tank", "Arcade", "Swerve"] as DrivetrainType[]
+                }
+                onSelect={(selected: string) =>
+                    setDrivetrain(selected as DrivetrainType)
+                }
             />
         </Modal>
     )

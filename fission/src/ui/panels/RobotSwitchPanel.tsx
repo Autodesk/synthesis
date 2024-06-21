@@ -7,18 +7,15 @@ import Button from "@/components/Button"
 import { useModalControlContext } from "@/ui/ModalContext"
 import Checkbox from "@/components/Checkbox"
 
-const RobotSwitchPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
-    const [robots, setRobots] = useState(["Dozer_v9_0", "Team 2471 (2018) v7_0"])
+const RobotSwitchPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
+    const [robots, setRobots] = useState([
+        "Dozer_v9_0",
+        "Team 2471 (2018) v7_0",
+    ])
     const [selected, setSelected] = useState(0)
     const { openModal } = useModalControlContext()
     return (
-        <Panel
-            name={"MultiBot"}
-            icon={<IoPeople />}
-            panelId={panelId}
-            openLocation={openLocation}
-            sidePadding={sidePadding}
-        >
+        <Panel name={"MultiBot"} icon={<IoPeople />} panelId={panelId}>
             <Label size={LabelSize.Medium}>MultiBot</Label>
             <form>
                 <fieldset>
@@ -35,7 +32,12 @@ const RobotSwitchPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
             </form>
             <Stack direction={StackDirection.Horizontal}>
                 <Button value="Add" onClick={() => openModal("robots")} />
-                <Button value="Remove" onClick={() => setRobots(robots.filter(r => r !== robots[selected]))} />
+                <Button
+                    value="Remove"
+                    onClick={() =>
+                        setRobots(robots.filter(r => r !== robots[selected]))
+                    }
+                />
             </Stack>
         </Panel>
     )

@@ -27,7 +27,10 @@ const Tooltip: React.FC<TooltipProps> = ({ type, controls }) => {
                         >
                             {c.control}
                         </Label>
-                        <Label size={LabelSize.Small} className="min-w-fit align-middle">
+                        <Label
+                            size={LabelSize.Small}
+                            className="min-w-fit align-middle"
+                        >
                             {c.description}
                         </Label>
                     </Stack>

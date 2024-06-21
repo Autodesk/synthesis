@@ -35,8 +35,8 @@ npm i
 | `lint` | Runs eslint on the project. |
 | `lint:fix` | Attempts to fix issues found with eslint. |
 | `prettier` | Runs prettier on the project as a check. |
-| `prettier:fix` | Runs prettier on the project to fix any issues with formating. |
-| `format` | Runs `prettier:fix` and `lint:fix`. |
+| `prettier:fix` | Runs prettier on the project to fix any issues with formating. **DO NOT USE**, I don't like the current format it uses. |
+| `format` | Runs `prettier:fix` and `lint:fix`. **Do not use** for the same reasons as `prettier:fix`. |
 | `assetpack` | Downloads the assetpack and unzips/installs it in the correct location. |
 
 ### Autodesk Platform Services

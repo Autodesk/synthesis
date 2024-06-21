@@ -7,7 +7,11 @@ import { BsCodeSquare } from "react-icons/bs"
 const RoboRIOModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
     return (
-        <Modal name="RoboRIO Configuration" icon={<BsCodeSquare />} modalId={modalId}>
+        <Modal
+            name="RoboRIO Configuration"
+            icon={<BsCodeSquare />}
+            modalId={modalId}
+        >
             <LabeledButton
                 label="cbdbcc,ds,vsdv"
                 value="Create Device"

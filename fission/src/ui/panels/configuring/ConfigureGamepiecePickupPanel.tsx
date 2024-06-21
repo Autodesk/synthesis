@@ -4,7 +4,9 @@ import Panel, { PanelPropsImpl } from "@/components/Panel"
 import SelectButton from "@/components/SelectButton"
 import Slider from "@/components/Slider"
 
-const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
+const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({
+    panelId,
+}) => {
     const defaultZoneSize = 0.5
     const [, setNode] = useState<string>("Click to select")
     const [, setZoneSize] = useState<number>(defaultZoneSize)
@@ -14,8 +16,6 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
             name="Configure Pickup"
             icon={<FaGear />}
             panelId={panelId}
-            openLocation={openLocation}
-            sidePadding={sidePadding}
             onAccept={() => {
                 // send zone config
             }}

@@ -21,7 +21,10 @@ const ConnectToMultiplayerModal: React.FC<ModalPropsImpl> = ({ modalId }) => (
                 <Label>Waiting for server...</Label>
             </div>
             <Stack direction={StackDirection.Vertical}>
-                <Dropdown options={["Dozer_v9.mira", "Team_2471_2018_v7.mira"]} onSelect={() => {}} />
+                <Dropdown
+                    options={["Dozer_v9.mira", "Team_2471_2018_v7.mira"]}
+                    onSelect={() => {}}
+                />
                 <Button value="Choose Robot" />
                 <Button value="Refresh robot list" />
             </Stack>

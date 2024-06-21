@@ -1,21 +1,18 @@
-import Driver from "../driver/Driver"
-import Stimulus from "../stimulus/Stimulus"
+import Driver from "../driver/Driver";
+import Stimulus from "../stimulus/Stimulus";
 
 abstract class Behavior {
-    private _drivers: Driver[]
-    private _stimuli: Stimulus[]
 
-    protected get drivers() {
-        return this._drivers
-    }
-    protected get stimuli() {
-        return this._stimuli
-    }
+    private _drivers: Driver[];
+    private _stimuli: Stimulus[];
+
+    protected get drivers() { return this._drivers; }
+    protected get stimuli() { return this._stimuli; }
 
     constructor(drivers: Driver[], stimuli: Stimulus[]) {
-        this._drivers = drivers
-        this._stimuli = stimuli
+        this._drivers = drivers;
+        this._stimuli = stimuli;
     }
 }
 
-export default Behavior
+export default Behavior;

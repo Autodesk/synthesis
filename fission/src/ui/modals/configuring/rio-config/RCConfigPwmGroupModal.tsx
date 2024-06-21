@@ -34,7 +34,10 @@ const RCConfigPwmGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         >
             <Label size={LabelSize.Small}>Name</Label>
             <Input placeholder="..." className="w-full" onInput={setName} />
-            <Stack direction={StackDirection.Horizontal} className="w-full min-w-full">
+            <Stack
+                direction={StackDirection.Horizontal}
+                className="w-full min-w-full"
+            >
                 <Container className="w-max">
                     <Label>Ports</Label>
                     <ScrollView className="h-full px-2">
@@ -46,8 +49,13 @@ const RCConfigPwmGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                 onClick={checked => {
                                     if (checked && !checkedPorts.includes(p)) {
                                         setCheckedPorts([...checkedPorts, p])
-                                    } else if (!checked && checkedPorts.includes(p)) {
-                                        setCheckedPorts(checkedPorts.filter(a => a != p))
+                                    } else if (
+                                        !checked &&
+                                        checkedPorts.includes(p)
+                                    ) {
+                                        setCheckedPorts(
+                                            checkedPorts.filter(a => a != p)
+                                        )
                                     }
                                 }}
                             />
@@ -63,10 +71,21 @@ const RCConfigPwmGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                 label={p.toString()}
                                 defaultState={false}
                                 onClick={checked => {
-                                    if (checked && !checkedSignals.includes(p)) {
-                                        setCheckedSignals([...checkedSignals, p])
-                                    } else if (!checked && checkedSignals.includes(p)) {
-                                        setCheckedSignals(checkedSignals.filter(a => a != p))
+                                    if (
+                                        checked &&
+                                        !checkedSignals.includes(p)
+                                    ) {
+                                        setCheckedSignals([
+                                            ...checkedSignals,
+                                            p,
+                                        ])
+                                    } else if (
+                                        !checked &&
+                                        checkedSignals.includes(p)
+                                    ) {
+                                        setCheckedSignals(
+                                            checkedSignals.filter(a => a != p)
+                                        )
                                     }
                                 }}
                             />
