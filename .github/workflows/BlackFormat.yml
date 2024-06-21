@@ -21,8 +21,42 @@ jobs:
       - name: Setup isort
         run: python3 -m pip install isort
       - name: Run isort Validation
-        run: python3 scripts/format/isort_format_validation.py
-        id: isort-validation
+        run: |
+          python - <<'EOF'
+          import os
+          import subprocess
+          import sys
+
+          FILES_DIRS = ["exporter/SynthesisFusionAddin"]
+          FILE_TARGETS = [".py", ".pyi"]
+
+          files = []
+          for dir in FILES_DIRS:
+            for root, _, filenames in os.walk(dir):
+              for filename in filenames:
+                if os.path.splitext(filename)[1] in FILE_TARGETS:
+                  print(f"Adding {filename}")
+                  files.append(os.path.abspath(os.path.join(root, filename)))
+
+          oldFileStates = [open(file, "r").readlines() for file in files]
+          for dir in FILES_DIRS:
+            subprocess.call(["isort", dir], bufsize=1, shell=False,)
+
+          newFileStates = [open(file, "r").readlines() for file in files]
+          exitCode = 0
+          for i, (oldFileState, newFileState) in enumerate(zip(oldFileStates, newFileStates)):
+            for j, (previous_line, new_line) in enumerate(zip(oldFileState, newFileState)):
+              if previous_line != new_line:
+                print(f"File {files[i]} is not formatted correctly!")
+                print(f"Line: {j + 1}")
+                exitCode = 1
+                break
+
+          if not exitCode:
+            print("All files are formatted correctly!")
+
+          sys.exit(exitCode)
+          EOF
       - name: Check isort Validation Success
         run: |
           if [ ${{ steps.isort-validation.outcome }} == "success" ]; then
