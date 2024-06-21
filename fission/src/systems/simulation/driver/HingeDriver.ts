@@ -1,6 +1,6 @@
 import Jolt from "@barclah/jolt-physics"
 import Driver from "./Driver"
-import { SIMULATION_PERIOD } from "@/systems/physics/PhysicsSystem"
+import { STANDARD_SIMULATION_PERIOD } from "@/systems/physics/PhysicsSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
 
 class HingeDriver extends Driver {
@@ -60,7 +60,7 @@ class HingeDriver extends Driver {
         const springSettings = motorSettings.mSpringSettings
 
         // These values were selected based on the suggestions of the documentation for stiff control.
-        springSettings.mFrequency = 20 * (1.0 / SIMULATION_PERIOD)
+        springSettings.mFrequency = 20 * (1.0 / STANDARD_SIMULATION_PERIOD)
         springSettings.mDamping = 0.995
 
         motorSettings.mSpringSettings = springSettings

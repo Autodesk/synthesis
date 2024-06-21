@@ -27,8 +27,11 @@ const RobotLayers: number[] = [
 // Please update this accordingly.
 const COUNT_OBJECT_LAYERS = 10
 
-export const SIMULATION_PERIOD = 1.0 / 120.0
-const STANDARD_SUB_STEPS = 3
+export const STANDARD_SIMULATION_PERIOD = 1.0 / 120.0
+const STANDARD_SUB_STEPS = 1
+const TIMESTEP_ADJUSTMENT = 0.0005
+
+let lastDeltaT = STANDARD_SIMULATION_PERIOD
 
 /**
  * The PhysicsSystem handles all Jolt Phyiscs interactions within Synthesis.
@@ -701,8 +704,13 @@ class PhysicsSystem extends WorldSystem {
         return this._joltPhysSystem.GetBodyLockInterface().TryGetBody(bodyId)
     }
 
-    public Update(_: number): void {
-        this._joltInterface.Step(SIMULATION_PERIOD, STANDARD_SUB_STEPS)
+    public Update(deltaT: number): void {
+        const diffDeltaT = deltaT - lastDeltaT
+        lastDeltaT = lastDeltaT + Math.min(TIMESTEP_ADJUSTMENT, Math.max(-TIMESTEP_ADJUSTMENT, diffDeltaT))
+
+        const substeps = Math.min(1, Math.floor((STANDARD_SIMULATION_PERIOD / lastDeltaT) * STANDARD_SUB_STEPS))
+
+        this._joltInterface.Step(lastDeltaT, substeps)
     }
 
     public Destroy(): void {
