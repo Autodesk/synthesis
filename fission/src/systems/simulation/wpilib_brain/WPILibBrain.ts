@@ -27,6 +27,64 @@ class Solenoid extends DeviceType {
 }
 const solenoids: Map<string, Solenoid> = new Map()
 
+class SimDevice extends DeviceType {
+    constructor(device: string) {
+        super(device)
+    }
+
+    public Update(data: any): void {
+
+    }
+}
+const simDevices: Map<string, SimDevice> = new Map()
+
+class SparkMax extends SimDevice {
+
+    private _sparkMaxId: number;
+
+    constructor(device: string) {
+        super(device)
+
+        console.debug('Spark Max Constructed')
+        
+        if (device.match(/spark max/i)?.length ?? 0 > 0) {
+            const endPos = device.indexOf(']')
+            const startPos = device.indexOf('[')
+            this._sparkMaxId = parseInt(device.substring(startPos + 1, endPos))
+        } else {
+            throw new Error('Unrecognized Device ID')
+        }
+    }
+
+    public Update(data: any): void {
+        super.Update(data)
+
+        Object.entries(data).forEach(x => {
+            // if (x[0].startsWith('<')) {
+            //     console.debug(`${x[0]} -> ${x[1]}`)
+            // }
+
+            switch (x[0]) {
+                case '':
+
+                    break
+                default:
+                    console.debug(`[${this._sparkMaxId}] ${x[0]} -> ${x[1]}`)
+                    break
+            }
+        })
+    }
+
+    public SetPosition(val: number) {
+        worker.postMessage(
+            {
+                command: 'update',
+                data: { type: 'simdevice', device: this._device, data: { '>Position': val } }
+            }
+        )
+    }
+}
+
 worker.addEventListener('message', (eventData: MessageEvent) => {
     let data: any | undefined;
     try {
@@ -48,10 +106,18 @@ worker.addEventListener('message', (eventData: MessageEvent) => {
             solenoids.get(data.device)?.Update(data.data)
             break
         case 'simdevice':
-            console.log(`SimDevice:\n${JSON.stringify(data, null, '\t')}`)
+            // console.debug(`SimDevice:\n${JSON.stringify(data, null, '\t')}`)
+            if (!simDevices.has(data.device)) {
+                if (data.device.match(/spark max/i)) {
+                    simDevices.set(data.device, new SparkMax(data.device))
+                } else {
+                    simDevices.set(data.device, new SimDevice(data.device))
+                }
+            }
+            simDevices.get(data.device)?.Update(data.data)
             break
         default:
-            // console.debug('Skipping Message')
+            // console.debug(`Unrecognized Message:\n${data}`)
             break
     }
 })

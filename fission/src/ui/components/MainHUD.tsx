@@ -36,7 +36,7 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
         >
             {larger && icon}
             {!larger && (
-                <span onClick={onClick} className="absolute left-3 text-main-hud-icon">
+                <span className="absolute left-3 text-main-hud-icon">
                     {icon}
                 </span>
             )}
