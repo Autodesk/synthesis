@@ -33,7 +33,7 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             name={"Import Local Assemblies"}
             icon={<FaPlus />}
             modalId={modalId}
-            acceptEnabled={selectedFile == undefined}
+            acceptEnabled={selectedFile !== undefined}
             onAccept={() => {
                     if (selectedFile) {
                         console.log(`Mira: '${selectedFile}'`)
