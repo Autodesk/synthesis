@@ -20,8 +20,17 @@ jobs:
           python-version: '3.9'
       - name: Setup isort
         run: python3 -m pip install isort
-      - name: Run isort
-        run: isort ./exporter/SynthesisFusionAddin/
+      - name: Run isort Validation
+        run: python3 scripts/format/isort_format_validation.py
+        id: isort-validation
+      - name: Check isort Validation Success
+        run: |
+          if [ ${{ steps.isort-validation.outcome }} == "success" ]; then
+            echo " Validation Passed"
+          else
+            echo "Format Validation Failed"
+            exit 1
+          fi
       - name: Validate Black/isort Formatting
         uses: psf/black@stable
         with:
