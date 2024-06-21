@@ -23,10 +23,10 @@ def main():
     new_file_states = [open(file, "r").readlines() for file in files]
     exit_code = 0
     for i, (previous_file_state, new_file_state) in enumerate(zip(file_states, new_file_states)):
-        for i, (previous_line, new_line) in enumerate(zip(previous_file_state, new_file_state)):
+        for j, (previous_line, new_line) in enumerate(zip(previous_file_state, new_file_state)):
             if previous_line != new_line:
                 print(f"File {files[i]} is not formatted correctly!")
-                print(f"Line: {i + 1}")
+                print(f"Line: {j + 1}")
                 exit_code = 1
                 break
 
