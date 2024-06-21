@@ -17,11 +17,11 @@ def main():
                     files.append(os.path.abspath(os.path.join(root, filename)))
 
     file_states = [open(file, "r").readlines() for file in files]
-    subprocess.call(["isort", "."], bufsize=1, shell=False,)
+    for dir in FILES_DIRS:
+        subprocess.call(["isort", dir], bufsize=1, shell=False,)
+
     new_file_states = [open(file, "r").readlines() for file in files]
-
     exit_code = 0
-
     for i, (previous_file_state, new_file_state) in enumerate(zip(file_states, new_file_states)):
         for i, (previous_line, new_line) in enumerate(zip(previous_file_state, new_file_state)):
             if previous_line != new_line:
