@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: '3.9'
       - name: Setup isort
-        run: python3 -m pip3 install isort
+        run: python3 -m pip install isort
       - name: Run isort
         run: isort ./exporter/SynthesisFusionAddin/
       - name: Validate Black/isort Formatting
