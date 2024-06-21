@@ -9,11 +9,21 @@ on:
 
 jobs:
   blackFormatChecker:
-    name: Black Formatter for Python Exporter
+    name: Validate Black and isort Formatting for Python Exporter
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: psf/black@stable
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Python Setup
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: Setup isort
+        run: python3 -m pip3 install isort
+      - name: Run isort
+        run: isort ./exporter/SynthesisFusionAddin/
+      - name: Validate Black/isort Formatting
+        uses: psf/black@stable
         with:
           options: "--check"
           src: "./exporter/SynthesisFusionAddin/"
