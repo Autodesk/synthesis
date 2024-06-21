@@ -9,7 +9,7 @@ on:
 
 jobs:
   blackFormatChecker:
-    name: Validate Black and Isort Formatting for Python Exporter
+    name: Black Formatter for Python Exporter
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
