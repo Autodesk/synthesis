@@ -27,8 +27,11 @@ class ArcadeDriveBehavior extends Behavior {
     }
 
     public Update(_: number): void {
-        this.DriveSpeeds(InputSystem.GetAxis("arcadeForward", "arcadeBackward")*this._driveSpeed, 
-        InputSystem.GetAxis("arcadeRight", "arcadeLeft")*this._turnSpeed);
+        this.DriveSpeeds(InputSystem.getInput("arcadeDrive")*this._driveSpeed, 
+            InputSystem.getInput("arcadeTurn")*this._turnSpeed);
+
+        // TODO: Joystick control only for testing
+        //this.DriveSpeeds(-InputSystem.getGamepadAxis(1)*this._driveSpeed, InputSystem.getGamepadAxis(0)*this._driveSpeed);
     }
 }
 

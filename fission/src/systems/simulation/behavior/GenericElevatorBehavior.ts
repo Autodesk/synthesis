@@ -1,7 +1,7 @@
 import SliderDriver from "../driver/SliderDriver";
 import SliderStimulus from "../stimulus/SliderStimulus";
 import Behavior from "./Behavior";
-import InputSystem, { emptyModifierState } from "@/systems/input/InputSystem";
+import InputSystem, { ButtonInput } from "@/systems/input/InputSystem";
 
 class GenericElevatorBehavior extends Behavior {
     private _sliderDriver: SliderDriver;
@@ -19,9 +19,9 @@ class GenericElevatorBehavior extends Behavior {
         this._negativeInput = "joint " + jointIndex + " Negative";
 
         // TODO: load inputs from mira
-        InputSystem.allInputs[this._positiveInput] = { name: this._positiveInput, keyCode: "Digit" + jointIndex.toString(), isGlobal: false, modifiers: emptyModifierState };
-        InputSystem.allInputs[this._negativeInput] = { name: this._negativeInput, keyCode: "Digit" + jointIndex.toString(), isGlobal: false, 
-            modifiers: { ctrl: false, alt: false, shift: true, meta: false } };
+        InputSystem.allInputs.push(new ButtonInput(this._positiveInput, "Digit" + jointIndex.toString()));
+        InputSystem.allInputs.push(new ButtonInput(this._negativeInput, "Digit" + jointIndex.toString(), false, false, 
+            { ctrl: false, alt: false, shift: true, meta: false } ));
     }
 
     // Changes the elevators target position
@@ -30,7 +30,7 @@ class GenericElevatorBehavior extends Behavior {
     }
 
     public Update(_: number): void {
-        this.moveElevator(InputSystem.GetAxis(this._positiveInput, this._negativeInput)*this._linearSpeed); 
+        this.moveElevator(InputSystem.getButtonAxis(this._positiveInput, this._negativeInput)*this._linearSpeed); 
     }
 }
 
