@@ -212,7 +212,9 @@ def _addJointInstance(
                 joint_definition.user_data.data["wheel"] = "true"
 
                 # Must convert type 'enum' to int to store wheelType in mirabuf
-                joint_definition.user_data.data["wheelType"] = str(wheel.wheelType.value - 1)
+                joint_definition.user_data.data["wheelType"] = str(
+                    wheel.wheelType.value - 1
+                )
 
                 # if it exists get it and overwrite the signal type
                 if joint_instance.signal_reference:
