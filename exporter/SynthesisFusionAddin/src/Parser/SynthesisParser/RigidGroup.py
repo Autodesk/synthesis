@@ -12,8 +12,11 @@
     - Success
 """
 
-import adsk.core, adsk.fusion, logging
+import logging
 from typing import *
+
+import adsk.core
+import adsk.fusion
 
 from proto.proto_out import assembly_pb2
 

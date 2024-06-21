@@ -1,15 +1,19 @@
 # Contains all of the logic for mapping the Components / Occurrences
-import adsk.core, adsk.fusion, uuid, logging, traceback
-from proto.proto_out import assembly_pb2, types_pb2, material_pb2, joint_pb2
-
-from .Utilities import *
-from .. import ParseOptions
+import logging
+import traceback
+import uuid
 from typing import *
 
-from . import PhysicalProperties
+import adsk.core
+import adsk.fusion
 
-from .PDMessage import PDMessage
+from proto.proto_out import assembly_pb2, joint_pb2, material_pb2, types_pb2
+
 from ...Analyzer.timer import TimeThis
+from .. import ParseOptions
+from . import PhysicalProperties
+from .PDMessage import PDMessage
+from .Utilities import *
 
 # TODO: Impelement Material overrides
 
@@ -98,9 +102,7 @@ def _ParseComponentRoot(
 
         if occur.isLightBulbOn:
             child_node = types_pb2.Node()
-            __parseChildOccurrence(
-                occur, progressDialog, options, partsData, material_map, child_node
-            )
+            __parseChildOccurrence(occur, progressDialog, options, partsData, material_map, child_node)
             node.children.append(child_node)
 
 
@@ -133,9 +135,7 @@ def __parseChildOccurrence(
 
     if occurrence.appearance:
         try:
-            part.appearance = "{}_{}".format(
-                occurrence.appearance.name, occurrence.appearance.id
-            )
+            part.appearance = "{}_{}".format(occurrence.appearance.name, occurrence.appearance.id)
         except:
             part.appearance = "default"
         # TODO: Add phyical_material parser
@@ -168,9 +168,7 @@ def __parseChildOccurrence(
 
         if occur.isLightBulbOn:
             child_node = types_pb2.Node()
-            __parseChildOccurrence(
-                occur, progressDialog, options, partsData, material_map, child_node
-            )
+            __parseChildOccurrence(occur, progressDialog, options, partsData, material_map, child_node)
             node.children.append(child_node)
 
 
@@ -186,7 +184,9 @@ def GetMatrixWorld(occurrence):
 
 
 def _ParseBRep(
-    body: adsk.fusion.BRepBody, options: ParseOptions, trimesh: assembly_pb2.TriangleMesh
+    body: adsk.fusion.BRepBody,
+    options: ParseOptions,
+    trimesh: assembly_pb2.TriangleMesh,
 ) -> any:
     try:
         meshManager = body.meshManager
@@ -204,9 +204,7 @@ def _ParseBRep(
         plainmesh_out.indices.extend(mesh.nodeIndices)
         plainmesh_out.uv.extend(mesh.textureCoordinatesAsFloat)
     except:
-        logging.getLogger("{INTERNAL_ID}.Parser.BrepBody").error(
-            "Failed:\n{}".format(traceback.format_exc())
-        )
+        logging.getLogger("{INTERNAL_ID}.Parser.BrepBody").error("Failed:\n{}".format(traceback.format_exc()))
 
 
 def _ParseMesh(
@@ -227,14 +225,10 @@ def _ParseMesh(
         plainmesh_out.indices.extend(mesh.nodeIndices)
         plainmesh_out.uv.extend(mesh.textureCoordinatesAsFloat)
     except:
-        logging.getLogger("{INTERNAL_ID}.Parser.BrepBody").error(
-            "Failed:\n{}".format(traceback.format_exc())
-        )
+        logging.getLogger("{INTERNAL_ID}.Parser.BrepBody").error("Failed:\n{}".format(traceback.format_exc()))
 
 
-def _MapRigidGroups(
-    rootComponent: adsk.fusion.Component, joints: joint_pb2.Joints
-) -> None:
+def _MapRigidGroups(rootComponent: adsk.fusion.Component, joints: joint_pb2.Joints) -> None:
     groups = rootComponent.allRigidGroups
     for group in groups:
         mira_group = joint_pb2.RigidGroup()

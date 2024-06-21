@@ -7,9 +7,11 @@
         - this is essentially a flat configuration file with non serializable objects
 """
 
-from typing import Union, List
 from dataclasses import dataclass
-import adsk.core, adsk.fusion
+from typing import List, Union
+
+import adsk.core
+import adsk.fusion
 
 # from .unity import Parse
 from ..general_imports import A_EP

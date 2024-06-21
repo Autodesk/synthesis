@@ -1,15 +1,16 @@
-from .src.general_imports import root_logger, gm, INTERNAL_ID, APP_NAME, DESCRIPTION
-
-from .src.UI import HUI, Handlers, Camera, Helper, ConfigCommand
-from .src.UI.Toolbar import Toolbar
-from .src.Types.OString import OString
-from .src.configure import setAnalytics, unload_config
-
+import importlib.util
+import logging.handlers
+import os
+import traceback
 from shutil import rmtree
-import logging.handlers, traceback, importlib.util, os
 
-from .src.UI import MarkingMenu
 import adsk.core
+
+from .src.configure import setAnalytics, unload_config
+from .src.general_imports import APP_NAME, DESCRIPTION, INTERNAL_ID, gm, root_logger
+from .src.Types.OString import OString
+from .src.UI import HUI, Camera, ConfigCommand, Handlers, Helper, MarkingMenu
+from .src.UI.Toolbar import Toolbar
 
 
 def run(_):
@@ -32,9 +33,7 @@ def run(_):
         MarkingMenu.setupMarkingMenu(ui)
 
     except:
-        logging.getLogger(f"{INTERNAL_ID}").error(
-            "Failed:\n{}".format(traceback.format_exc())
-        )
+        logging.getLogger(f"{INTERNAL_ID}").error("Failed:\n{}".format(traceback.format_exc()))
 
 
 def stop(_):
@@ -74,9 +73,7 @@ def stop(_):
 
         path = os.path.abspath(os.path.dirname(__file__))
 
-        path_proto_files = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "..", "proto", "proto_out")
-        )
+        path_proto_files = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "proto", "proto_out"))
 
         if path in sys.path:
             sys.path.remove(path)
@@ -85,9 +82,7 @@ def stop(_):
             sys.path.remove(path_proto_files)
 
     except:
-        logging.getLogger(f"{INTERNAL_ID}").error(
-            "Failed:\n{}".format(traceback.format_exc())
-        )
+        logging.getLogger(f"{INTERNAL_ID}").error("Failed:\n{}".format(traceback.format_exc()))
 
 
 def unregister_all() -> None:
@@ -105,9 +100,7 @@ def unregister_all() -> None:
             tab.deleteMe()
 
     except:
-        logging.getLogger(f"{INTERNAL_ID}").error(
-            "Failed:\n{}".format(traceback.format_exc())
-        )
+        logging.getLogger(f"{INTERNAL_ID}").error("Failed:\n{}".format(traceback.format_exc()))
 
 
 def register_ui() -> None:

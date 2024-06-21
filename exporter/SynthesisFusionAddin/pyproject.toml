@@ -1,8 +1,22 @@
 [build-system]
-requires = ["protobuf", "black", "pyminifier"]
+requires = ["protobuf", "isort", "black", "pyminifier"]
+
+[tool.isort]
+py_version = 39
+profile = "black"
+skip = [
+  "*.git/",
+  "*.venv",
+  "/build/",
+  "/docs/",
+  "/logs/",
+  ".vscode/",
+  "/dist/",
+  "proto/proto_out",
+]
 
 [tool.black]
-line-length = 90
+line-length = 120
 target-version = ['py39']
 include = '\.pyi?$'
 exclude = '''
@@ -13,10 +27,9 @@ exclude = '''
     | build
     | docs
     | logs
-    | proto
     | .vscode
     | dist
-    | src/proto_out
+    | proto_out
   )/
 )
 '''
