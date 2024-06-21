@@ -12,7 +12,7 @@ from ...UI.Camera import captureThumbnail, clearIconCache
 from . import Materials, Components, Joints, JointHierarchy, PDMessage
 
 from .Utilities import *
-from .. import ExporterOptions
+from ..ExporterOptions import ExporterOptions, ExportMode
 
 
 class Parser:
@@ -38,9 +38,7 @@ class Parser:
             )
 
             # set int to 0 in dropdown selection for dynamic
-            assembly_out.dynamic = (
-                self.exporterOptions.exportMode == ExporterOptions.ExportMode.ROBOT
-            )
+            assembly_out.dynamic = self.exporterOptions.exportMode == ExportMode.ROBOT
 
             # Physical Props here when ready
 

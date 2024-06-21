@@ -222,10 +222,10 @@ def _addJointInstance(
                     signal.io = signal_pb2.IOType.OUTPUT
                     joint_instance.signal_reference = signal.info.GUID
 
-                if wheel.signalType != ExporterOptions.SignalType.PASSIVE:
-                    if wheel.signalType == ExporterOptions.SignalType.CAN:
+                if wheel.signalType != SignalType.PASSIVE:
+                    if wheel.signalType == SignalType.CAN:
                         signal.device_type = signal_pb2.DeviceType.CANBUS
-                    elif wheel.signalType == ExporterOptions.SignalType.PWM:
+                    elif wheel.signalType == SignalType.PWM:
                         signal.device_type = signal_pb2.DeviceType.PWM
                 else:
                     joint_instance.signal_reference = ""
