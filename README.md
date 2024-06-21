@@ -8,30 +8,33 @@
 [![Clang Format](https://github.com/Autodesk/synthesis/actions/workflows/ClangFormat.yml/badge.svg?branch=master)](https://github.com/Autodesk/synthesis/actions/workflows/ClangFormat.yml)
 [![Black Format](https://github.com/Autodesk/synthesis/actions/workflows/BlackFormat.yml/badge.svg?branch=master)](https://github.com/Autodesk/synthesis/actions/workflows/BlackFormat.yml)
 
-Synthesis is a robotics simulator designed by and for FIRST robotics students to help teams design, strategize, test and practice. Teams have the ability to import their own robots and fields using our [Fusion 360 Exporter](/exporter/) or use the pre-packaged ones that come included with every release of Synthesis.
+Synthesis is a robotics simulator designed by and for [FIRST®](https://www.firstinspires.org/) robotics students to help teams design, strategize, test and practice. Teams have the ability to import their own robots and fields using our [Fusion Exporter](/exporter/) or use the pre-made ones available within Synthesis.
 
 For more information on the product itself or the team, visit [http://synthesis.autodesk.com](http://synthesis.autodesk.com/).
 
 ## Goals
 
-Synthesis is built with a direct focus on the FIRST community. Every single one of our developers is a FIRST student. We've also made the project completely open source in order to better involve the community. This way contributors can help make Synthesis better or modify Synthesis to better suit their team’s needs.
+Synthesis is built with a direct focus on the FIRST® community. Every single one of our developers is a FIRST® student. We've also made the project completely open source in order to better involve the community. This way contributors can help make Synthesis better or modify Synthesis to better suit their team’s needs.
 
 Here are some of our primary goals for Synthesis:
 
-- **Ease of Use**: It's important for us that Synthesis is out of the box ready for teams to use. We want to make sure that teams can get up and running with Synthesis as quickly as possible. To that end, every release of Synthesis comes pre-packaged with a variety of robots and fields; in addition to the ability to export and import your own.
+- **Ease of Use**: It's important for us that Synthesis is out of the box ready for teams to use. We want to make sure that teams can get up and running with Synthesis as quickly as possible. To that end, Synthesis comes ready with a variety of robots and fields; in addition to the ability to export and import your own.
 - **Testing Robot Designs**: Synthesis is designed to be a tool for teams to quickly test their robot designs in a semi-realistic environment. Are you a builder who wants to use some crazy virtual four-bar linkage and your team says it's a waste of time? Well now you can prove them wrong by testing it in Synthesis!
-- **Exploring the Field Environment**: Every year on kickoff, for both FTC and FRC FIRST competitions, Synthesis has a new release with the brand new field for that year included. This allows teams to explore the field through a 3D model, drive a robot around, and begin to strategize for the upcoming season's game.
+- **Exploring the Field Environment**: Every year on kickoff, for both FTC and FRC FIRST® competitions, Synthesis has the newest field available immediately. This allows teams to explore the field through a 3D model, drive a robot around, and begin to strategize for the upcoming season's game.
 - **Driver Practice & Strategy**: Not getting enough driver practice or don't have a full field available to you? Synthesis has you covered with the ability to drive your robot around with a gamepad from a first-person view at the driver station; allowing you to get a feel for potential control scheme layouts and any line-of-sight challenges that may arise. This also allows the drive team and the programmers to communicate about what control layouts work best for each driver.
 
 ## Getting Started
 
 If you are a FIRST robotics student who just wants to use Synthesis, you *don't* need this repo. Simply **install the latest release of Synthesis from [synthesis.autodesk.com/download](https://synthesis.autodesk.com/download.html)**.
 
+[!IMPORTANT]
+Moving to [synthesis.autodesk.com]
+
 If you're a developer who wants to contribute to Synthesis, you're in the right place. Synthesis is comprised of 3 main components that can be developed separately. These components include:
 
-- [Synthesis API](/api/)
-- [Simulation Engine](/engine/)
-- [Fusion Robot Exporter (Fusion 360 Plugin)](/exporter/)
+- [Fission (Core Web App)](/fission/)
+- [Fusion Exporter (Mirabuf)](/exporter/SynthesisFusionAddin/)
+- [Installers](/installer/)
 
 Each of this components can be manually compiled separately, but this is not recommended. Instead, we recommend using the *init* scripts provided (`init.bat` & `init.sh`) to build and link each component together (excluding the Fusion Robot Exporter).
 
