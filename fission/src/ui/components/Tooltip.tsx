@@ -1,4 +1,4 @@
-import { TooltipControl, TooltipType } from "@/TooltipContext"
+import { TooltipControl, TooltipType } from "@/ui/TooltipContext"
 import { FaInfoCircle } from "react-icons/fa"
 import Label, { LabelSize } from "./Label"
 import Stack, { StackDirection } from "./Stack"
@@ -27,10 +27,7 @@ const Tooltip: React.FC<TooltipProps> = ({ type, controls }) => {
                         >
                             {c.control}
                         </Label>
-                        <Label
-                            size={LabelSize.Small}
-                            className="min-w-fit align-middle"
-                        >
+                        <Label size={LabelSize.Small} className="min-w-fit align-middle">
                             {c.description}
                         </Label>
                     </Stack>

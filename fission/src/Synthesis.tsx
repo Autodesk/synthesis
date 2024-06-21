@@ -4,7 +4,7 @@ import { LoadMirabufRemote } from './mirabuf/MirabufLoader.ts';
 import { mirabuf } from './proto/mirabuf';
 import MirabufParser, { ParseErrorSeverity } from './mirabuf/MirabufParser.ts';
 import MirabufInstance from './mirabuf/MirabufInstance.ts';
-import { AnimatePresence, motion } from "framer-motion"
+import { AnimatePresence } from "framer-motion"
 import { ReactElement, useEffect } from "react"
 import { ModalControlProvider, useModalManager } from "@/ui/ModalContext"
 import { PanelControlProvider, usePanelManager } from "@/ui/PanelContext"
@@ -61,18 +61,15 @@ const DEFAULT_MIRA_PATH = '/api/mira/Robots/Team 2471 (2018)_v7.mira';
 export let worker: Worker | undefined = undefined
 
 function Synthesis() {
-
-    const urlParams = new URLSearchParams(document.location.search);
-    if (urlParams.has('code')) {
-        const code = urlParams.get('code')
+    const urlParams = new URLSearchParams(document.location.search)
+    if (urlParams.has("code")) {
+        const code = urlParams.get("code")
         window.opener?.setAuthCode(code)
         window.close()
     }
-    
-    const { openModal, closeModal, getActiveModalElement } =
-        useModalManager(initialModals)
-    const { openPanel, closePanel, closeAllPanels, getActivePanelElements } =
-        usePanelManager(initialPanels)
+
+    const { openModal, closeModal, getActiveModalElement } = useModalManager(initialModals)
+    const { openPanel, closePanel, closeAllPanels, getActivePanelElements } = usePanelManager(initialPanels)
     const { showTooltip } = useTooltipManager()
 
     const { currentTheme, applyTheme } = useTheme()
@@ -81,144 +78,66 @@ function Synthesis() {
         applyTheme(currentTheme)
     }, [currentTheme, applyTheme])
 
-
     const panelElements = getActivePanelElements()
-
-    const motionPanelElements = panelElements.map((el, i) => (
-        <motion.div
-            initial={{
-                scale: 0,
-                opacity: 0,
-                width: "min-content",
-                height: "min-content",
-            }}
-            animate={{
-                scale: 1,
-                opacity: 1,
-                width: "min-content",
-                height: "min-content",
-            }}
-            exit={{
-                scale: 0,
-                opacity: 0,
-                width: "min-content",
-                height: "min-content",
-            }}
-            transition={{
-                type: "spring",
-                stiffness: 300,
-                damping: 20,
-            }}
-            style={{ translateX: "-50%", translateY: "-50%" }}
-            className="absolute left-1/2 top-1/2"
-            key={"panel-" + i}
-        >
-            {el}
-        </motion.div>
-    ))
-
     const modalElement = getActiveModalElement()
-    const motionModalElement =
-        modalElement == null ? null : (
-            <motion.div
-                initial={{
-                    scale: 0,
-                    opacity: 0,
-                    width: "min-content",
-                    height: "min-content",
-                }}
-                animate={{
-                    scale: 1,
-                    opacity: 1,
-                    width: "min-content",
-                    height: "min-content",
-                }}
-                exit={{
-                    scale: 0,
-                    opacity: 0,
-                    width: "min-content",
-                    height: "min-content",
-                }}
-                transition={{
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 25,
-                }}
-                style={{ translateX: "-50%", translateY: "-50%" }}
-                className="absolute left-1/2 top-1/2"
-                key={"modal"}
-            >
-                {getActiveModalElement()}
-            </motion.div>
-        )
 
-	
+    useEffect(() => {
+        World.InitWorld()
 
-	useEffect(() => {
-
-        World.InitWorld();
-
-        // worker = new Worker(new URL('systems/simulation/wpilib_brain/Worker.ts', import.meta.url))
         worker = new WPILibWSWorker()
 
-        let mira_path = DEFAULT_MIRA_PATH;
+        let mira_path = DEFAULT_MIRA_PATH
 
-        const urlParams = new URLSearchParams(document.location.search);
+        const urlParams = new URLSearchParams(document.location.search)
 
         if (urlParams.has("mira")) {
-            mira_path = `test_mira/${urlParams.get("mira")!}`;
-            console.debug(`Selected Mirabuf File: ${mira_path}`);
+            mira_path = `test_mira/${urlParams.get("mira")!}`
+            console.debug(`Selected Mirabuf File: ${mira_path}`)
         }
         console.log(urlParams)
 
-		const setup = async () => {
-
-			const miraAssembly = await LoadMirabufRemote(mira_path)
-				.catch(
-					_ => LoadMirabufRemote(DEFAULT_MIRA_PATH)
-				).catch(console.error);
+        const setup = async () => {
+            const miraAssembly = await LoadMirabufRemote(mira_path)
+                .catch(_ => LoadMirabufRemote(DEFAULT_MIRA_PATH))
+                .catch(console.error)
 
             await (async () => {
                 if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
-                    return;
+                    return
                 }
-        
-                const parser = new MirabufParser(miraAssembly);
-                if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
-                    console.error(`Assembly Parser produced significant errors for '${miraAssembly.info!.name!}'`);
-                    return;
-                }
-                
-                const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser));
-                World.SceneRenderer.RegisterSceneObject(mirabufSceneObject);
-            })();
-		};
-		setup();
 
-        let mainLoopHandle = 0;
-		const mainLoop = () => {
-			mainLoopHandle = requestAnimationFrame(mainLoop);
-	
-			World.UpdateWorld();
-		};
-		mainLoop();
+                const parser = new MirabufParser(miraAssembly)
+                if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
+                    console.error(`Assembly Parser produced significant errors for '${miraAssembly.info!.name!}'`)
+                    return
+                }
+
+                const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser))
+                World.SceneRenderer.RegisterSceneObject(mirabufSceneObject)
+            })()
+        }
+        setup()
+
+        let mainLoopHandle = 0
+        const mainLoop = () => {
+            mainLoopHandle = requestAnimationFrame(mainLoop)
+
+            World.UpdateWorld()
+        }
+        mainLoop()
         // Cleanup
         return () => {
             // TODO: Teardown literally everything
-            cancelAnimationFrame(mainLoopHandle);
-            World.DestroyWorld();
+            cancelAnimationFrame(mainLoopHandle)
+            World.DestroyWorld()
             // World.SceneRenderer.RemoveAllSceneObjects();
-        };
-	}, []);
+        }
+    }, [])
 
     return (
         <AnimatePresence>
             <TooltipControlProvider
-                showTooltip={(
-                    type: TooltipType,
-                    controls?: TooltipControl[],
-                    duration: number = TOOLTIP_DURATION
-                ) => {
+                showTooltip={(type: TooltipType, controls?: TooltipControl[], duration: number = TOOLTIP_DURATION) => {
                     showTooltip(type, controls, duration)
                 }}
             >
@@ -236,11 +155,10 @@ function Synthesis() {
                         }}
                     >
                         <ToastProvider>
-							<Scene useStats={true} />
+                            <Scene useStats={true} />
                             <MainHUD />
-                            {motionPanelElements.length > 0 &&
-                                motionPanelElements}
-                            {motionModalElement && motionModalElement}
+                            {panelElements.length > 0 && panelElements}
+                            {modalElement && <div className="absolute w-full h-full left-0 top-0">{modalElement}</div>}
                             <ToastContainer />
                         </ToastProvider>
                     </PanelControlProvider>
@@ -283,7 +201,7 @@ const initialModals = [
 ]
 
 const initialPanels: ReactElement[] = [
-    <RobotSwitchPanel panelId="multibot" />,
+    <RobotSwitchPanel panelId="multibot" openLocation="right" sidePadding={8} />,
     <DriverStationPanel panelId="driver-station" />,
     <SpawnLocationsPanel panelId="spawn-locations" />,
     <ScoreboardPanel panelId="scoreboard" />,
@@ -293,4 +211,4 @@ const initialPanels: ReactElement[] = [
     <ZoneConfigPanel panelId="zone-config" />,
 ]
 
-export default Synthesis;
+export default Synthesis

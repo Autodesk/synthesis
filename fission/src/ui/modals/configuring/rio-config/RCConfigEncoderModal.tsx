@@ -5,6 +5,7 @@ import { FaPlus } from "react-icons/fa6"
 import Label, { LabelSize } from "@/components/Label"
 import Input from "@/components/Input"
 import Dropdown from "@/components/Dropdown"
+import NumberInput from "@/components/NumberInput"
 
 const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
@@ -27,13 +28,7 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             acceptName="Done"
             onAccept={() => {
                 // mostly doing this so eslint doesn't complain about unused variables
-                console.log(
-                    name,
-                    selectedSignal,
-                    selectedChannelA,
-                    selectedChannelB,
-                    conversionFactor
-                )
+                console.log(name, selectedSignal, selectedChannelA, selectedChannelB, conversionFactor)
             }}
             onCancel={() => {
                 openModal("roborio")
@@ -41,11 +36,7 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         >
             <Label size={LabelSize.Small}>Name</Label>
             <Input placeholder="..." className="w-full" onInput={setName} />
-            <Dropdown
-                label="Signal"
-                options={signals}
-                onSelect={s => setSelectedSignal(s)}
-            />
+            <Dropdown label="Signal" options={signals} onSelect={s => setSelectedSignal(s)} />
             <Dropdown
                 label="Channel A"
                 options={[...Array(numPorts).keys()].map(n => n.toString())}
@@ -56,13 +47,12 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 options={[...Array(numPorts).keys()].map(n => n.toString())}
                 onSelect={s => setSelectedChannelB(parseInt(s))}
             />
-            <Input
-                numeric
+            <NumberInput
                 placeholder="Conversion Factor"
-                defaultValue={conversionFactor.toString()}
+                defaultValue={conversionFactor}
                 label="Conversion Factor"
                 onInput={n => {
-                    setConversionFactor(n != "" ? parseFloat(n) : 0)
+                    setConversionFactor(n || 0)
                 }}
             />
         </Modal>
