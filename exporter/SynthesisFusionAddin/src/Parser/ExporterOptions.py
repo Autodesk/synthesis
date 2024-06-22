@@ -5,6 +5,7 @@ These options are saved per-design and are passed to the parser upon design expo
 
 import os
 import json
+import platform
 from typing import get_origin
 from enum import Enum, EnumType
 from dataclasses import dataclass, fields, field
@@ -76,7 +77,7 @@ class ModelHierarchy(Enum):
 
 @dataclass
 class ExporterOptions:
-    fileLocation: str = field(default=os.path.expanduser("~"))
+    fileLocation: str = field(default=(platform.system() == "Windows" if os.getenv("HOME") else os.path.expanduser("~")))
     name: str = field(default=None)
     version: str = field(default=None)
     materials: int = field(default=0)
