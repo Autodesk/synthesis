@@ -1,4 +1,4 @@
-name: Format Validation (Black)
+name: Fusion - Format Validation
 
 on:
   workflow_dispatch: {}

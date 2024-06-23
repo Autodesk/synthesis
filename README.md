@@ -1,12 +1,12 @@
-![Synthesis: An Autodesk Technology](/engine/Assets/Resources/Branding/Synthesis/Synthesis-An-Autodesk-Technology-2023-lockup-Blk-OL-No-Year-stacked.png#gh-light-mode-only)
-![Synthesis: An Autodesk Technology](/engine/Assets/Resources/Branding/Synthesis/Synthesis-An-Autodesk-Technology-2023-lockup-Wht-OL-No-Year-stacked.png#gh-dark-mode-only)
+![Synthesis: An Autodesk Technology](/fission/res/branding/Synthesis-An-Autodesk-Technology-2023-lockup-Blk-OL-No-Year-stacked.svg#gh-light-mode-only)
+![Synthesis: An Autodesk Technology](/fission/res/branding/Synthesis-An-Autodesk-Technology-2023-lockup-Wht-OL-No-Year-stacked.svg#gh-dark-mode-only)
 
 <br/>
 
-[![Engine](https://github.com/Autodesk/synthesis/actions/workflows/Engine.yml/badge.svg?branch=master)](https://github.com/Autodesk/synthesis/actions/workflows/Engine.yml)
-[![API](https://github.com/Autodesk/synthesis/actions/workflows/API.yml/badge.svg?branch=master)](https://github.com/Autodesk/synthesis/actions/workflows/API.yml)
-[![Clang Format](https://github.com/Autodesk/synthesis/actions/workflows/ClangFormat.yml/badge.svg?branch=master)](https://github.com/Autodesk/synthesis/actions/workflows/ClangFormat.yml)
-[![Black Format](https://github.com/Autodesk/synthesis/actions/workflows/BlackFormat.yml/badge.svg?branch=master)](https://github.com/Autodesk/synthesis/actions/workflows/BlackFormat.yml)
+[![Fission - Unit Test](https://github.com/Autodesk/synthesis/actions/workflows/FissionUnitTest.yml/badge.svg?branch=master)](https://github.com/Autodesk/synthesis/actions/workflows/FissionUnitTest.yml)
+[![Fission - Packaging](https://github.com/Autodesk/synthesis/actions/workflows/FissionPackage.yml/badge.svg?branch=master)](https://github.com/Autodesk/synthesis/actions/workflows/FissionPackage.yml)
+[![Fission - Lint/Format](https://github.com/Autodesk/synthesis/actions/workflows/FissionESLintFormat.yml/badge.svg?branch=master)](https://github.com/Autodesk/synthesis/actions/workflows/FissionESLintFormat.yml)
+[![Fusion - Format](https://github.com/Autodesk/synthesis/actions/workflows/BlackFormat.yml/badge.svg?branch=master)](https://github.com/Autodesk/synthesis/actions/workflows/BlackFormat.yml)
 
 Synthesis is a robotics simulator designed by and for [FIRST®](https://www.firstinspires.org/) robotics students to help teams design, strategize, test and practice. Teams have the ability to import their own robots and fields using our [Fusion Exporter](/exporter/) or use the pre-made ones available within Synthesis.
 
@@ -32,83 +32,41 @@ Moving to [synthesis.autodesk.com]
 
 If you're a developer who wants to contribute to Synthesis, you're in the right place. Synthesis is comprised of 3 main components that can be developed separately. These components include:
 
-- [Fission (Core Web App)](/fission/)
-- [Fusion Exporter (Mirabuf)](/exporter/SynthesisFusionAddin/)
+- [Fission (Core Web App)](/fission/README.md)
+- [Fusion Exporter (Fusion exporter to Mirabuf file format)](/exporter/SynthesisFusionAddin/README.md)
 - [Installers](/installer/)
 
-Each of this components can be manually compiled separately, but this is not recommended. Instead, we recommend using the *init* scripts provided (`init.bat` & `init.sh`) to build and link each component together (excluding the Fusion Robot Exporter).
+Follow the above links to the respective READMEs on how to build and run each component.
 
 ### Compatibility Notes
 
-As Fusion 360 is not supported on linux the linux installer does not come with the Fusion 360 Addin for exporting robots and fields.
-
-Also note that the linux installer is tailored for Debian based distributions. Synthesis can be installed and ran on other distros but the installer is not guaranteed for your operating system.
-
-### Dependencies
-
-Synthesis Version `6.0.0` has the following dependencies:
-
-- [.NET Standard 2.0](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-1-0)
-- [.NET 7.0](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
-- [Protobuf 23.3](https://github.com/protocolbuffers/protobuf/releases/tag/v23.3)
-- Unity Version 2022.3.2f1 (d74737c6db50)
-
-These dependencies need to be satisfied before attempting to build Synthesis with unity. You can either install these dependencies manually or use the *resolve dependencies* scripts (`scripts/win/resolve_deps.bat` & `scripts/osx/resolve_deps.sh`) to install some of them for you.
-
-To automatically install .NET and Protobuf run the following script depending on your operating system:
-- Windows: `scripts/win/resolve_deps.bat`
-- MacOS & Linux: `scripts/osx/resolve_deps.sh`
-
-Dependency Notes:
-
-- The windows script requires admin privileges to install .NET and Protobuf to the system PATH. For this reason it is not included by default in `init.bat` unlike how `init.sh` includes `resolve_deps.sh`.
-- Unity must be installed manually through the Unity Hub app which can be downloaded from [https://unity.com/download](https://unity.com/download).
-
-### How To Build Synthesis Using An `init` Script And Unity
-
-Before attempting to build Synthesis, ensure you have all dependencies installed.
-
-1. Open a command prompt.
-2. Change directories to a location where you'd like to clone the Synthesis repository.
-3. Clone the Synthesis repository using `git clone https://github.com/Autodesk/synthesis --recurse-submodules`.
-4. Change directories into the root of the Synthesis repository and run the `init` script for your operating system.
-    - Windows: `init.bat`
-    - MacOS & Linux: `init.sh`
-5. Open `synthesis/engine` in Unity.
-6. From there, you can run the simulation engine inside the Unity editor by opening `MainScene` from the `Assets/Scenes` directory or build it as a standalone application.
-    - To build Synthesis as a standalone application, go to `File -> Build Settings` and select your target platform. Then, click `Build` and select a location to save the built application.
+As Fusion is not supported on linux, the linux installer does not come with the Fusion Addin for exporting robots and fields.
 
 ## Contributing
 
-This project welcomes community suggestions and contributions. Synthesis is 100% open source and relies on the FIRST community to help make it better. The [Synthesis Contribution Guide](/CONTRIBUTING.md) suggests ways in which you can get involved through development and non-development avenues.
+This project welcomes community suggestions and contributions. Synthesis is nearly 100% open source and relies on the FIRST® community to help make it better. The [Synthesis Contribution Guide](/CONTRIBUTING.md) suggests ways in which you can get involved through development and non-development avenues.
 
 Before you contribute to this repository, please first discuss the change you wish to make via a GitHub issue, email us ([frc@autodesk.com](mailto:frc@autodesk.com)), or reach out through our [community discord](https://www.discord.gg/hHcF9AVgZA). This way we can ensure that there is no overlap between outside contributors and internal development work.
 
-When ready to contribute, just submit a pull request and be sure to fill out the template accordingly so that we can verify them and eventually merge. Feel free to check out our [contributing guidelines](/CONTRIBUTING.md) to learn more.
+When ready to contribute, fork the synthesis repository, make your changes, and submit a pull request. Be sure to fill out the template accordingly to make reviewing your work as smooth as possible. Feel free to check out our [contributing guidelines](/CONTRIBUTING.md) to learn more.
 
 ## Code Formatting And Style
 
-Synthesis uses [clang-format](https://clang.llvm.org/docs/ClangFormat.html) and [black](https://black.readthedocs.io/en/stable/) to format all of our `C++`, `C#` and `Python` code. Additionally we have GitHub workflows that verify these formatting standards for each and every pull request. For more information about how to run these formatters yourself, check out the [formatting tools](/scripts/format/) we use.
+All code is under a configured formatting utility. See each component for more details.
 
-## Components
+## Other Components
 
-Here is a brief overview of each of the components found in this repository. For more information about each component, their dependencies and their individual build processes, check out their respective *READMEs*.
+### `/mirabuf`
 
-- [Synthesis API](/api/)
-  - Components used to extend Synthesis' functionality while remaining Unity agnostic.
-- [Code Emulation](/emulation/)
-  - Synthesis tool designed to help users test their FRC robot code in a simulated environment. 
-  - Code emulation is an advanced feature that is still under development, functionality and support is limited.
-- [Core Engine](/engine/)
-  - The core of Synthesis, the Unity project that contains the simulation engine.
-- [Fusion Exporter](/exporter/SynthesisFusionAddin/)
-  - The Fusion 360 plugin that allows users to export their robots and fields into Synthesis.
-- [Installer](/installer/)
-  - Tools used to build the Synthesis installer for Windows, MacOS and Linux featured on our [Download Page](https://synthesis.autodesk.com/download.html).
-- [Mirabuf](https://github.com/HiceS/mirabuf/)
-  - A custom 3D file format developed by [@HiceS](https://github.com/HiceS) that our Fusion 360 exporter uses.
-- [Tutorials](/tutorials/)
-  - Our source code for the tutorials featured on our [Tutorials Page](https://synthesis.autodesk.com/tutorials.html).
+Mirabuf is a file format we use to store physical data from Fusion to load into the Synthesis simulator (Fission). This is a separate project that is a submodule of Synthesis. [See Mirabuf](https://github.com/HiceS/mirabuf/)
+
+### `/tutorials`
+
+Our source code for the tutorials featured on our [Tutorials Page](https://synthesis.autodesk.com/tutorials.html).
+
+### `protocols`
+
+Additional protobuf files that we use in addition to Mirabuf. [See Protocols](/protocols/README.md)
 
 ## Tutorials
 
