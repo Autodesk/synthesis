@@ -2,8 +2,8 @@
 ![Synthesis: An Autodesk Technology](/fission/res/branding/Synthesis-An-Autodesk-Technology-2023-lockup-Wht-OL-No-Year-stacked.svg#gh-dark-mode-only) -->
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="/fission/res/branding/Synthesis-An-Autodesk-Technology-2023-lockup-Wht-OL-No-Year-stacked.svg">
-  <source media="(prefers-color-scheme: light)" srcset="/fission/res/branding/Synthesis-An-Autodesk-Technology-2023-lockup-Wht-OL-No-Year-stacked.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/Autodesk/synthesis/blob/1f2638af5253afaee2252a42e3063b5f5a74899f/fission/res/branding/Synthesis-An-Autodesk-Technology-2023-lockup-Wht-OL-No-Year-stacked.svg">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/Autodesk/synthesis/blob/1f2638af5253afaee2252a42e3063b5f5a74899f/fission/res/branding/Synthesis-An-Autodesk-Technology-2023-lockup-Blk-OL-No-Year-stacked.svg">
 </picture>
 
 <br/>
