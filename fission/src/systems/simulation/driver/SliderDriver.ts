@@ -1,6 +1,6 @@
 import Jolt from "@barclah/jolt-physics"
 import Driver from "./Driver"
-import { STANDARD_SIMULATION_PERIOD } from "@/systems/physics/PhysicsSystem"
+import { GetLastDeltaT } from "@/systems/physics/PhysicsSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
 
 class SliderDriver extends Driver {
@@ -33,7 +33,7 @@ class SliderDriver extends Driver {
 
         const motorSettings = this._constraint.GetMotorSettings()
         const springSettings = motorSettings.mSpringSettings
-        springSettings.mFrequency = 20 * (1.0 / STANDARD_SIMULATION_PERIOD)
+        springSettings.mFrequency = 20 * (1.0 / GetLastDeltaT())
         springSettings.mDamping = 0.995
 
         motorSettings.mSpringSettings = springSettings

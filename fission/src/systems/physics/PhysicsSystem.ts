@@ -27,11 +27,16 @@ const RobotLayers: number[] = [
 // Please update this accordingly.
 const COUNT_OBJECT_LAYERS = 10
 
-export const STANDARD_SIMULATION_PERIOD = 1.0 / 120.0
-const STANDARD_SUB_STEPS = 1
-const TIMESTEP_ADJUSTMENT = 0.0005
+export const STANDARD_SIMULATION_PERIOD = 1.0 / 60.0
+const MIN_SIMULATION_PERIOD = 1.0 / 120.0
+const MAX_SIMULATION_PERIOD = 1.0 / 10.0
+const STANDARD_SUB_STEPS = 2
+const TIMESTEP_ADJUSTMENT = 0.0001
 
 let lastDeltaT = STANDARD_SIMULATION_PERIOD
+export function GetLastDeltaT(): number {
+    return lastDeltaT
+}
 
 /**
  * The PhysicsSystem handles all Jolt Phyiscs interactions within Synthesis.
@@ -708,7 +713,11 @@ class PhysicsSystem extends WorldSystem {
         const diffDeltaT = deltaT - lastDeltaT
         lastDeltaT = lastDeltaT + Math.min(TIMESTEP_ADJUSTMENT, Math.max(-TIMESTEP_ADJUSTMENT, diffDeltaT))
 
-        const substeps = Math.min(1, Math.floor((STANDARD_SIMULATION_PERIOD / lastDeltaT) * STANDARD_SUB_STEPS))
+        lastDeltaT = Math.min(MAX_SIMULATION_PERIOD, Math.max(MIN_SIMULATION_PERIOD, lastDeltaT))
+
+        const substeps = Math.max(1, Math.floor((STANDARD_SIMULATION_PERIOD / lastDeltaT) * STANDARD_SUB_STEPS))
+
+        console.log(`DeltaT: ${lastDeltaT.toFixed(5)}, Substeps: ${substeps}`)
 
         this._joltInterface.Step(lastDeltaT, substeps)
     }
