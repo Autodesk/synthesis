@@ -1,5 +1,10 @@
-![Synthesis: An Autodesk Technology](/fission/res/branding/Synthesis-An-Autodesk-Technology-2023-lockup-Blk-OL-No-Year-stacked.svg#gh-light-mode-only)
-![Synthesis: An Autodesk Technology](/fission/res/branding/Synthesis-An-Autodesk-Technology-2023-lockup-Wht-OL-No-Year-stacked.svg#gh-dark-mode-only)
+<!-- ![Synthesis: An Autodesk Technology](/fission/res/branding/Synthesis-An-Autodesk-Technology-2023-lockup-Blk-OL-No-Year-stacked.svg#gh-light-mode-only)
+![Synthesis: An Autodesk Technology](/fission/res/branding/Synthesis-An-Autodesk-Technology-2023-lockup-Wht-OL-No-Year-stacked.svg#gh-dark-mode-only) -->
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="/fission/res/branding/Synthesis-An-Autodesk-Technology-2023-lockup-Wht-OL-No-Year-stacked.svg">
+  <source media="(prefers-color-scheme: light)" srcset="/fission/res/branding/Synthesis-An-Autodesk-Technology-2023-lockup-Wht-OL-No-Year-stacked.svg">
+</picture>
 
 <br/>
 
