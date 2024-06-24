@@ -71,7 +71,7 @@ class PhysicsSystem extends WorldSystem {
 
         const ground = this.CreateBox(
             new THREE.Vector3(5.0, 0.5, 5.0),
-            undefined,
+            1,
             new THREE.Vector3(0.0, -2.0, 0.0),
             undefined
         )
@@ -899,6 +899,20 @@ class PhysicsSystem extends WorldSystem {
         this._joltPhysSystem.AddConstraint(constraint)
 
         return [ghostBody, constraint]
+    }
+
+    /**
+     * Exposes the SetPosition method on the _joltBodyInterface
+     *
+     * @param id The bodyID
+     * @param position The desired position for the body
+     */
+    public SetBodyPosition(id: Jolt.BodyID, position: Jolt.Vec3): void {
+        this._joltBodyInterface.SetPosition(
+            id,
+            position,
+            JOLT.EActivation_Activate
+        )
     }
 }
 

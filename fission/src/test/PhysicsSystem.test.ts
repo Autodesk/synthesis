@@ -3,6 +3,7 @@ import PhysicsSystem, { LayerReserve } from "../systems/physics/PhysicsSystem"
 import { LoadMirabufLocal } from "@/mirabuf/MirabufLoader"
 import MirabufParser from "@/mirabuf/MirabufParser"
 import * as THREE from "three"
+import JOLT from "@/util/loading/JoltSyncLoader"
 
 describe("Physics Sansity Checks", () => {
     test("Convex Hull Shape (Cube)", () => {
@@ -75,6 +76,32 @@ describe("GodMode", () => {
         assert(system.GetBody(ghostObject.GetID()) != undefined)
         assert(system.GetBody(box.GetID()) != undefined)
         assert(ghostConstraint != undefined)
+    })
+
+    test("Position", () => {
+        const system = new PhysicsSystem()
+        const box = system.CreateBox(
+            new THREE.Vector3(1, 1, 1),
+            1,
+            new THREE.Vector3(0, 0, 0),
+            undefined
+        )
+        const [ghostObject, _ghostConstraint] = system.CreateGodModeBody(box)
+        const origPosition = ghostObject.GetPosition()
+        ghostObject.AddTorque(new JOLT.Vec3(1, 1, 1))
+        ghostObject.AddForce(new JOLT.Vec3(1, 1, 1))
+
+        for (let i = 0; i < 30; i++) {
+            system.Update(i)
+        }
+
+        const currPosition = ghostObject.GetPosition()
+
+        assert(
+            currPosition.GetX() != origPosition.GetX() ||
+                currPosition.GetY() != origPosition.GetY() ||
+                currPosition.GetZ() != origPosition.GetZ()
+        )
     })
 })
 

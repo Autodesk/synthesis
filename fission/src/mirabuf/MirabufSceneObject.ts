@@ -69,7 +69,10 @@ class MirabufSceneObject extends SceneObject {
             console.error("Failed to anchor to mechanism")
         }
         const bodyId = World.PhysicsSystem.GetBody(anchorBody!)
-        World.PhysicsSystem.CreateGodModeBody(bodyId)
+        const [godModeBody, _godModeConstraint] =
+            World.PhysicsSystem.CreateGodModeBody(bodyId)
+        godModeBody.AddForce(new JOLT.Vec3(0, -10, 0))
+        godModeBody.AddTorque(new JOLT.Vec3(1, 1, 1))
 
         // Simulation
         World.SimulationSystem.RegisterMechanism(this._mechanism)
@@ -191,4 +194,3 @@ export async function CreateMirabufFromUrl(
 }
 
 export default MirabufSceneObject
-
