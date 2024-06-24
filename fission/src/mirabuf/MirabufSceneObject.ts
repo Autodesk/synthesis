@@ -31,9 +31,7 @@ class MirabufSceneObject extends SceneObject {
 
         this._mirabufInstance = mirabufInstance
 
-        this._mechanism = World.PhysicsSystem.CreateMechanismFromParser(
-            this._mirabufInstance.parser
-        )
+        this._mechanism = World.PhysicsSystem.CreateMechanismFromParser(this._mirabufInstance.parser)
         if (this._mechanism.layerReserve) {
             this._physicsLayerReserve = this._mechanism.layerReserve
         }
@@ -64,25 +62,20 @@ class MirabufSceneObject extends SceneObject {
 
         // Simulation
         World.SimulationSystem.RegisterMechanism(this._mechanism)
-        const simLayer = World.SimulationSystem.GetSimulationLayer(
-            this._mechanism
-        )!
+        const simLayer = World.SimulationSystem.GetSimulationLayer(this._mechanism)!
         const brain = new SynthesisBrain(this._mechanism)
         simLayer.SetBrain(brain)
     }
 
     public Update(): void {
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
-            const body = World.PhysicsSystem.GetBody(
-                this._mechanism.GetBodyByNodeId(rn.id)!
-            )
+            const body = World.PhysicsSystem.GetBody(this._mechanism.GetBodyByNodeId(rn.id)!)
             const transform = JoltMat44_ThreeMatrix4(body.GetWorldTransform())
             rn.parts.forEach(part => {
-                const partTransform =
-                    this._mirabufInstance.parser.globalTransforms
-                        .get(part)!
-                        .clone()
-                        .premultiply(transform)
+                const partTransform = this._mirabufInstance.parser.globalTransforms
+                    .get(part)!
+                    .clone()
+                    .premultiply(transform)
                 this._mirabufInstance.meshes.get(part)!.forEach(mesh => {
                     mesh.position.setFromMatrixPosition(partTransform)
                     mesh.rotation.setFromRotationMatrix(partTransform)
@@ -103,9 +96,8 @@ class MirabufSceneObject extends SceneObject {
                 colliderMesh.position.setFromMatrixPosition(transform)
                 colliderMesh.rotation.setFromRotationMatrix(transform)
 
-                const comTransform = JoltMat44_ThreeMatrix4(
-                    body.GetCenterOfMassTransform()
-                )
+                const comTransform = JoltMat44_ThreeMatrix4(body.GetCenterOfMassTransform())
+
                 comMesh.position.setFromMatrixPosition(comTransform)
                 comMesh.rotation.setFromRotationMatrix(comTransform)
             }
@@ -165,9 +157,7 @@ class MirabufSceneObject extends SceneObject {
     }
 }
 
-export async function CreateMirabufFromUrl(
-    path: string
-): Promise<MirabufSceneObject | null | undefined> {
+export async function CreateMirabufFromUrl(path: string): Promise<MirabufSceneObject | null | undefined> {
     const miraAssembly = await LoadMirabufRemote(path).catch(console.error)
 
     if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
@@ -176,9 +166,7 @@ export async function CreateMirabufFromUrl(
 
     const parser = new MirabufParser(miraAssembly)
     if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
-        console.error(
-            `Assembly Parser produced significant errors for '${miraAssembly.info!.name!}'`
-        )
+        console.error(`Assembly Parser produced significant errors for '${miraAssembly.info!.name!}'`)
         return
     }
 

@@ -5,12 +5,7 @@ import Label from "@/components/Label"
 
 const UpdateAvailableModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
-        <Modal
-            name={"Exit Synthesis"}
-            icon={<GrFormClose />}
-            modalId={modalId}
-            acceptName="Update"
-        >
+        <Modal name={"Exit Synthesis"} icon={<GrFormClose />} modalId={modalId} acceptName="Update">
             <Label>
                 A new update is available. <br />
                 Would you like to update?
