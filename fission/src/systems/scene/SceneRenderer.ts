@@ -89,6 +89,13 @@ class SceneRenderer extends WorldSystem {
         // skybox
         const currentTheme = (window as any).getTheme();
         console.log('Current Theme:', currentTheme['Background']['color']['r']);
+        
+        const textureLoader = new THREE.TextureLoader();
+        const cloudTexture = textureLoader.load('./starry_sky.png');
+        const renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight);
+        this._renderer.setRenderTarget(renderTarget);
+        this._renderer.render(this._scene, this._mainCamera);
+        this._renderer.setRenderTarget(null);
 
         const geometry = new THREE.SphereGeometry(1000);
         const material = new THREE.ShaderMaterial({
@@ -99,7 +106,8 @@ class SceneRenderer extends WorldSystem {
                 rColor: { value: currentTheme['Background']['color']['r']},
                 gColor: { value: currentTheme['Background']['color']['g']},
                 bColor: { value: currentTheme['Background']['color']['b'] },
-                uTime: { value: this._uTime }
+                uTime: { value: this._uTime },
+                uTexture: { value: cloudTexture }
             }
         });
 
@@ -171,6 +179,46 @@ class SceneRenderer extends WorldSystem {
         const gradientMap = new THREE.DataTexture(colors, colors.length, 1, format);
         gradientMap.needsUpdate = true;
         return new THREE.MeshToonMaterial({color: color, gradientMap: gradientMap});
+    }
+
+    public loadTexture(gl: WebGLRenderingContext, url: string): WebGLTexture {
+        const texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+
+        const level = 0;
+        const internalFormat = gl.RGBA;
+        const width = 1;
+        const height = 1;
+        const border = 0;
+        const srcFormat = gl.RGBA;
+        const srcType = gl.UNSIGNED_BYTE;
+        const pixel = new Uint8Array([0, 0, 255, 255]); // opaque blue
+        gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, width, height, border, srcFormat, srcType, pixel);
+
+
+        const image = new Image();
+        image.onload = () => {
+            gl.bindTexture(gl.TEXTURE_2D, texture);
+            gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, srcFormat, srcType, image);
+
+            if (this.isPowerOf2(image.width) && this.isPowerOf2(image.height)) {
+                // Image is a power of 2, generate mips
+                gl.generateMipmap(gl.TEXTURE_2D);
+            } else {
+                // Image is not a power of 2, turn off mips and set wrapping to clamp to edge
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            }
+        };
+        image.src = url;
+        console.log('Loaded Texture:', image.src);
+
+        return texture!;
+    }
+
+    public isPowerOf2(value: number): boolean {
+        return (value & (value - 1)) === 0;
     }
 }
 
