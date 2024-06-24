@@ -1,9 +1,3 @@
-from http.server import HTTPServer
-from threading import Thread
-
-import adsk.fusion
-
-from .src.Fission.HttpServer import MyHTTPHandler
 from .src.general_imports import root_logger, gm, INTERNAL_ID, APP_NAME, DESCRIPTION
 
 from .src.UI import HUI, Handlers, Camera, Helper, ConfigCommand
@@ -28,22 +22,6 @@ def run(_):
         # Remove all items prior to start just to make sure
         unregister_all()
 
-        # httpServer = HTTPServer(('', HTTP_PORT), MyHTTPHandler)
-
-        # def serveFunc():
-        #     try:
-        #         print('Http serve')
-        #         httpServer.serve_forever()
-        #     except:
-        #         print('Error')
-        #         logging.getLogger(f"{INTERNAL_ID}").error(
-        #             "Failed:\n{}".format(traceback.format_exc())
-        #         )
-
-        # serveThread = Thread(target = serveFunc)
-        # serveThread.run()
-        # serveFunc()
-
         # creates the UI elements
         register_ui()
 
@@ -65,10 +43,6 @@ def stop(_):
     """
     try:
         unregister_all()
-
-        if httpServer:
-            httpServer.server_close()
-            httpServer = None
 
         app = adsk.core.Application.get()
         ui = app.userInterface

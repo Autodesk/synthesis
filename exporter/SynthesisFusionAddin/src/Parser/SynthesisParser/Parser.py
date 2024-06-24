@@ -31,10 +31,6 @@ class Parser:
             app = adsk.core.Application.get()
             design: adsk.fusion.Design = app.activeDocument.design
 
-            folder = design.parentDocument.dataFile.parentFolder
-            print(f'===\nFolder\nName: {folder.name}\n===')
-            folder.uploadFile(f'{design.parentDocument.name}_mira')
-
             assembly_out = assembly_pb2.Assembly()
             fill_info(
                 assembly_out,
