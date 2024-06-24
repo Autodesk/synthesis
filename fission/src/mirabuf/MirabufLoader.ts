@@ -93,15 +93,27 @@ export function LoadMirabufLocal(fileLocation: string): mirabuf.Assembly {
 }
 
 export async function ClearMira() {
-    for await(let key of robotFolderHandle.keys()) {
+    for await (const key of robotFolderHandle.keys()) {
         robotFolderHandle.removeEntry(key)
     }
-    for await(let key of robotFolderHandle.keys()) {
+    for await (const key of fieldFolderHandle.keys()) {
         fieldFolderHandle.removeEntry(key)
     }
 
     window.localStorage.removeItem(robots)
     window.localStorage.removeItem(fields)
+}
+
+export function GetMap(type: MiraType): any {
+    const miraJSON = window.localStorage.getItem(type == MiraType.ROBOT ? robots : fields)
+
+    if (miraJSON != null) {
+        console.log("mirabuf JSON found")
+        return JSON.parse(miraJSON)
+    } else {
+        console.log("mirabuf JSON not found")
+        return null
+    }
 }
 
 export enum MiraType {
