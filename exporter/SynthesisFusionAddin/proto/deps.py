@@ -48,14 +48,11 @@ def executeCommand(command: tuple) -> int:
     Returns:
         int: Exit code of the process
     """
-    if system == "Windows":
-        executionResult = subprocess.call(
-            command, bufsize=1, creationflags=subprocess.CREATE_NO_WINDOW, shell=False
-        )
-    else:
-        # Uses os.system because I was unable to get subprocess.call to work on MacOS
-        installComm = str.join(" ", command)
-        executionResult = os.system(installComm)
+
+    logging.getLogger(f"{INTERNAL_ID}").debug(f"Command -> {comm}")
+
+    installComm = str.join(" ", command)
+    executionResult = os.system(installComm)
 
     return executionResult
 
@@ -111,14 +108,19 @@ def installCross(pipDeps: list) -> bool:
 
         executeCommand([f'"{pythonFolder}/python"', f'"{pythonFolder}/get-pip.py"'])
 
+    pythonExecutable = 'python'
+    if system == "Windows":
+        pythonExecutable = 'python.exe'
+
     for depName in pipDeps:
         progressBar.progressValue += 1
         progressBar.message = f"Installing {depName}..."
         adsk.doEvents()
+
         # os.path.join needed for varying system path separators
         installResult = executeCommand(
             [
-                f"\"{os.path.join(pythonFolder, 'python')}\"",
+                f"\"{os.path.join(pythonFolder, pythonExecutable)}\"",
                 "-m",
                 "pip",
                 "install",
@@ -140,7 +142,7 @@ def installCross(pipDeps: list) -> bool:
             adsk.doEvents()
             uninstallResult = executeCommand(
                 [
-                    f"\"{os.path.join(pythonFolder, 'python')}\"",
+                    f"\"{os.path.join(pythonFolder, pythonExecutable)}\"",
                     "-m",
                     "pip",
                     "uninstall",
