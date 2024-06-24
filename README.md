@@ -27,8 +27,8 @@ Here are some of our primary goals for Synthesis:
 
 If you are a FIRST robotics student who just wants to use Synthesis, you *don't* need this repo. Simply **install the latest release of Synthesis from [synthesis.autodesk.com/download](https://synthesis.autodesk.com/download.html)**.
 
-[!IMPORTANT]
-Moving to [synthesis.autodesk.com]
+> [!IMPORTANT]
+> Moving to [synthesis.autodesk.com]
 
 If you're a developer who wants to contribute to Synthesis, you're in the right place. Synthesis is comprised of 3 main components that can be developed separately. These components include:
 
