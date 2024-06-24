@@ -11,6 +11,7 @@ import logging.handlers, traceback, importlib.util, os
 from .src.UI import MarkingMenu
 import adsk.core
 
+
 def run(_):
     """## Entry point to application from Fusion 360.
 
@@ -125,32 +126,5 @@ def register_ui() -> None:
         description=f"{DESCRIPTION}",
         command=True,
     )
-
-    app = adsk.core.Application.get()
-    ui = app.userInterface
-
-    showPaletteCmdDef = ui.commandDefinitions.itemById('showAPSLogin')
-    if showPaletteCmdDef:
-        if not showPaletteCmdDef.deleteMe():
-            print('fhsdja')
-        else:
-            print('fdshjs')
-        
-        showPaletteCmdDef = None
-
-    if not showPaletteCmdDef:
-        showPaletteCmdDef = ui.commandDefinitions.addButtonDefinition('showAPSLogin', 'Show Custom Synthesis Palette', 'Show the custom palette', '')
-
-        class CreateHandlerThing(adsk.core.CommandCreatedEventHandler):
-            def notify(self, args: adsk.core.CommandCreatedEventArgs):
-                print('Eyyooo')
-
-        # Connect to Command Created event.
-        showPaletteCmdDef.commandCreated.add(CreateHandlerThing())
-
-    panel = ui.allToolbarPanels.itemById('SolidScriptsAddinsPanel')
-    cntrl = panel.controls.itemById('showAPSLogin')
-    if not cntrl:
-        panel.controls.addCommand(showPaletteCmdDef)
 
     gm.elements.append(commandButton)
