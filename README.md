@@ -56,15 +56,15 @@ All code is under a configured formatting utility. See each component for more d
 
 ## Other Components
 
-### `/mirabuf`
+### Mirabuf
 
 Mirabuf is a file format we use to store physical data from Fusion to load into the Synthesis simulator (Fission). This is a separate project that is a submodule of Synthesis. [See Mirabuf](https://github.com/HiceS/mirabuf/)
 
-### `/tutorials`
+### Tutorials
 
 Our source code for the tutorials featured on our [Tutorials Page](https://synthesis.autodesk.com/tutorials.html).
 
-### `protocols`
+### Protocols
 
 Additional protobuf files that we use in addition to Mirabuf. [See Protocols](/protocols/README.md)
 
