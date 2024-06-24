@@ -72,7 +72,6 @@ describe("GodMode", () => {
         // TODO: Make sure this is the correct way to do this
         // TODO: Figure out how to make it use substeps to check instead
         for (let i = 0; i < 30; i++) {
-            // TODO: Change this once this function actually uses deltaT
             system.Update(i)
         }
 
