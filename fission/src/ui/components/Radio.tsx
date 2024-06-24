@@ -9,19 +9,11 @@ type RadioProps = {
     onClick?: () => void
 }
 
-const Radio: React.FC<RadioProps> = ({
-    label,
-    className,
-    defaultState,
-    onClick,
-}) => {
+const Radio: React.FC<RadioProps> = ({ label, className, defaultState, onClick }) => {
     const [, setState] = useState(defaultState)
     return (
         <Stack direction={StackDirection.Horizontal}>
-            <Label
-                size={LabelSize.Medium}
-                className={`mr-8 ${className} whitespace-nowrap`}
-            >
+            <Label size={LabelSize.Medium} className={`mr-8 ${className} whitespace-nowrap`}>
                 {label}
             </Label>
             <input

@@ -71,7 +71,7 @@ class InputSystem extends WorldSystem {
 
     public Update(_: number): void {
         if (!document.hasFocus()) {
-            for (var keyCode in InputSystem._keysPressed) 
+            for (const keyCode in InputSystem._keysPressed) 
                 delete InputSystem._keysPressed[keyCode];
             return;
         }

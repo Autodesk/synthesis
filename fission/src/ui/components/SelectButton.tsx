@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react"
 import Button, { ButtonSize } from "./Button"
 import Label, { LabelSize } from "./Label"
 import Stack, { StackDirection } from "./Stack"
-import { Random } from '@/util/Random';
+import { Random } from "@/util/Random"
 
 type SelectButtonProps = {
     colorClass?: string
@@ -12,13 +12,7 @@ type SelectButtonProps = {
     className?: string
 }
 
-const SelectButton: React.FC<SelectButtonProps> = ({
-    colorClass,
-    size,
-    placeholder,
-    onSelect,
-    className,
-}) => {
+const SelectButton: React.FC<SelectButtonProps> = ({ colorClass, size, placeholder, onSelect, className }) => {
     const [value, setValue] = useState<string>()
     const [selecting, setSelecting] = useState<boolean>(false)
     const timeoutRef = useRef<NodeJS.Timeout>()
@@ -40,9 +34,7 @@ const SelectButton: React.FC<SelectButtonProps> = ({
             timeoutRef.current = setTimeout(
                 () => {
                     if (selecting) {
-                        const v = `node_${Math.floor(
-                            Random() * 10
-                        ).toFixed(0)}`
+                        const v = `node_${Math.floor(Random() * 10).toFixed(0)}`
                         onReceiveSelection(v)
                     }
                 },
@@ -55,12 +47,10 @@ const SelectButton: React.FC<SelectButtonProps> = ({
 
     return (
         <Stack direction={StackDirection.Horizontal}>
-            <Label size={LabelSize.Medium}>
-                {value || placeholder || "Click to select"}
-            </Label>
+            <Label size={LabelSize.Medium}>{value || placeholder || "Click to select"}</Label>
             <Button
                 value={selecting ? "..." : "Select"}
-                colorClass={selecting ? "bg-background-secondary" : colorClass}
+                colorOverrideClass={selecting ? "bg-background-secondary" : colorClass}
                 size={size}
                 onClick={() => {
                     // send selecting state
