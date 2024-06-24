@@ -14,6 +14,11 @@ import { ToastType, useToastContext } from "@/ui/ToastContext"
 import { Random } from "@/util/Random"
 import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
 import { UserIcon } from "./UserIcon"
+import World from "@/systems/World"
+import JOLT from "@/util/loading/JoltSyncLoader"
+import * as THREE from "three"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import SceneObject from "@/systems/scene/SceneObject"
 
 type ButtonProps = {
     value: string
@@ -147,6 +152,11 @@ const MainHUD: React.FC = () => {
                         icon={<IoPeople />}
                         onClick={() => openModal("import-mirabuf")}
                     />
+                    <MainHUDButton
+                        value={"God Mode"}
+                        icon={<IoGameControllerOutline />}
+                        onClick={TestGodMode}
+                    />
                 </div>
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton
@@ -188,23 +198,34 @@ const MainHUD: React.FC = () => {
                 </div>
                 {userInfo
                     ?
-                        <MainHUDButton
-                            value={`Hi, ${userInfo.givenName}`}
-                            icon={<UserIcon className="h-[20pt] m-[5pt] rounded-full" />}
-                            larger={true}
-                            onClick={() => APS.logout()}
-                        />
+                    <MainHUDButton
+                        value={`Hi, ${userInfo.givenName}`}
+                        icon={<UserIcon className="h-[20pt] m-[5pt] rounded-full" />}
+                        larger={true}
+                        onClick={() => APS.logout()}
+                    />
                     :
-                        <MainHUDButton
-                            value={`APS Login`}
-                            icon={<IoPeople />}
-                            larger={true}
-                            onClick={() => APS.requestAuthCode()}
-                        />
+                    <MainHUDButton
+                        value={`APS Login`}
+                        icon={<IoPeople />}
+                        larger={true}
+                        onClick={() => APS.requestAuthCode()}
+                    />
                 }
             </motion.div>
         </>
     )
+}
+
+function TestGodMode() {
+    const robot: MirabufSceneObject = [...World.SceneRenderer.sceneObjects.entries()].filter(x => { const y = (x[1] instanceof MirabufSceneObject); return y }).map(x => x[1])[0] as MirabufSceneObject
+    const rootNodeId = robot.GetRootNodeId()
+    if (rootNodeId == undefined) {
+        console.error("Robot root node not found for god mode")
+        return;
+    }
+    const [ghostBody, _ghostConstraint] = World.PhysicsSystem.CreateGodModeBody(rootNodeId)
+    World.PhysicsSystem.SetBodyPosition(ghostBody.GetID(), new JOLT.Vec3(2, 2, 2))
 }
 
 export default MainHUD

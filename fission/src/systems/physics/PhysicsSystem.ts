@@ -29,7 +29,7 @@ const RobotLayers: number[] = [
 ]
 
 // Layer for ghost object in god mode, interacts with nothing
-const GHOST_LAYER = 10
+const LAYER_GHOST = 10
 
 // Please update this accordingly.
 const COUNT_OBJECT_LAYERS = 11
@@ -71,7 +71,7 @@ class PhysicsSystem extends WorldSystem {
 
         const ground = this.CreateBox(
             new THREE.Vector3(5.0, 0.5, 5.0),
-            1,
+            undefined,
             new THREE.Vector3(0.0, -2.0, 0.0),
             undefined
         )
@@ -867,14 +867,15 @@ class PhysicsSystem extends WorldSystem {
 
     /**
      * Creates a ghost object and a distance constraint that connects it to the given body
-     * The ghost body is part of the GHOST_LAYER which doesn't interact with any other layer
+     * The ghost body is part of the LAYER_GHOST which doesn't interact with any other layer
      * The caller is responsible for cleaning up the ghost body and the constraint
      *
-     * @param body The body to be attatched to and moved
+     * @param id The id of the body to be attatched to and moved
      * @returns The ghost body and the constraint
      */
 
-    public CreateGodModeBody(body: Jolt.Body): [Jolt.Body, Jolt.Constraint] {
+    public CreateGodModeBody(id: Jolt.BodyID): [Jolt.Body, Jolt.Constraint] {
+        const body = this.GetBody(id)
         const bodyPosition = body.GetPosition()
         const ghostPosition = new THREE.Vector3(
             bodyPosition.GetX(),
@@ -889,23 +890,24 @@ class PhysicsSystem extends WorldSystem {
         )
 
         const ghostBodyId = ghostBody.GetID()
-        // TODO: Verify that layers don't interact by default
-        this._joltBodyInterface.SetObjectLayer(ghostBodyId, GHOST_LAYER)
+        this._joltBodyInterface.SetObjectLayer(ghostBodyId, LAYER_GHOST)
         this._joltBodyInterface.AddBody(ghostBodyId, JOLT.EActivation_Activate)
         this._bodies.push(ghostBodyId)
 
         const constraintSettings = new JOLT.SwingTwistConstraintSettings()
         const constraint = constraintSettings.Create(ghostBody, body)
         this._joltPhysSystem.AddConstraint(constraint)
+        this._constraints.push(constraint)
 
         return [ghostBody, constraint]
     }
 
     /**
      * Exposes the SetPosition method on the _joltBodyInterface
+     * Sets the position of the body
      *
-     * @param id The bodyID
-     * @param position The desired position for the body
+     * @param id The id of the body
+     * @param position The new position of the body
      */
     public SetBodyPosition(id: Jolt.BodyID, position: Jolt.Vec3): void {
         this._joltBodyInterface.SetPosition(
@@ -932,7 +934,7 @@ export class LayerReserve {
         this._isReleased = false
     }
 
-    public Release() {
+    public Release(): void {
         if (!this._isReleased) {
             RobotLayers.push(this._layer)
             this._isReleased = true

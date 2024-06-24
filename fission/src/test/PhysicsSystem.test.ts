@@ -61,7 +61,9 @@ describe("GodMode", () => {
             new THREE.Vector3(0, 0, 0),
             undefined
         )
-        const [ghostObject, ghostConstraint] = system.CreateGodModeBody(box)
+        const [ghostObject, ghostConstraint] = system.CreateGodModeBody(
+            box.GetID()
+        )
 
         assert(system.GetBody(ghostObject.GetID()) != undefined)
         assert(system.GetBody(box.GetID()) != undefined)
@@ -71,11 +73,14 @@ describe("GodMode", () => {
         // TODO: Figure out how to make it use substeps to check instead
         for (let i = 0; i < 30; i++) {
             // TODO: Change this once this function actually uses deltaT
-            system.Update(0)
+            system.Update(i)
         }
+
         assert(system.GetBody(ghostObject.GetID()) != undefined)
         assert(system.GetBody(box.GetID()) != undefined)
         assert(ghostConstraint != undefined)
+
+        system.Destroy()
     })
 
     test("Position", () => {
@@ -86,10 +91,11 @@ describe("GodMode", () => {
             new THREE.Vector3(0, 0, 0),
             undefined
         )
-        const [ghostObject, _ghostConstraint] = system.CreateGodModeBody(box)
+        const [ghostObject, _ghostConstraint] = system.CreateGodModeBody(
+            box.GetID()
+        )
         const origPosition = ghostObject.GetPosition()
-        ghostObject.AddTorque(new JOLT.Vec3(1, 1, 1))
-        ghostObject.AddForce(new JOLT.Vec3(1, 1, 1))
+        system.SetBodyPosition(ghostObject.GetID(), new JOLT.Vec3(2, 2, 2))
 
         for (let i = 0; i < 30; i++) {
             system.Update(i)
@@ -102,6 +108,8 @@ describe("GodMode", () => {
                 currPosition.GetY() != origPosition.GetY() ||
                 currPosition.GetZ() != origPosition.GetZ()
         )
+
+        system.Destroy()
     })
 })
 

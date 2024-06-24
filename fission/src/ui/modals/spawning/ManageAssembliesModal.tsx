@@ -37,18 +37,18 @@ const ManageAssembliesModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             icon={<FaPlus />}
             modalId={modalId}
             onAccept={() => {
-                    // showTooltip("controls", [
-                    //     { control: "WASD", description: "Drive" },
-                    //     { control: "E", description: "Intake" },
-                    //     { control: "Q", description: "Dispense" },
-                    // ]);
-                }
+                // showTooltip("controls", [
+                //     { control: "WASD", description: "Drive" },
+                //     { control: "E", description: "Intake" },
+                //     { control: "Q", description: "Dispense" },
+                // ]);
+            }
             }
         >
             <div className="flex overflow-y-auto flex-col gap-2 min-w-[50vw] max-h-[60vh] bg-background-secondary rounded-md p-2">
                 <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">{assemblies ? `${assemblies.length} Assemblies` : 'No Assemblies'}</Label>
                 {
-                    assemblies.map(x => AssemblyCard({id: x, update: update}))
+                    assemblies.map(x => AssemblyCard({ id: x, update: update }))
                 }
             </div>
         </Modal>
