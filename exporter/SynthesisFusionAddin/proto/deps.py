@@ -1,5 +1,6 @@
 import os
-import platform, subprocess
+import platform
+import logging
 from pathlib import Path
 
 from src.general_imports import INTERNAL_ID
@@ -49,7 +50,7 @@ def executeCommand(command: tuple) -> int:
         int: Exit code of the process
     """
 
-    logging.getLogger(f"{INTERNAL_ID}").debug(f"Command -> {comm}")
+    logging.getLogger(f"{INTERNAL_ID}").debug(f"Command -> {command}")
 
     installComm = str.join(" ", command)
     executionResult = os.system(installComm)
