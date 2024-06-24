@@ -7,25 +7,31 @@ varying vec3 vPosition;
 varying vec2 vUv;
 uniform sampler2D uTexture;
 
+#define PI 3.14159265358979323846264338327
+
 #include "/node_modules/lygia/generative/snoise.glsl" // this is wack
 
 vec3 getColor(float noiseValue, float rColor, float gColor, float bColor) {
 	vec3 blueAccent = vec3(16.0/255.0, 35.0/255.0, 110.0/255.0);
 
-	// pretty bad attempt to reduce warping
-	const float PI = 3.141592653589793;
-    float phi = atan(vPosition.z, vPosition.x);
-    float theta = acos(vPosition.y / length(vPosition));
-    theta = PI / 2.0 - theta;
-    float smoothedTheta = smoothstep(0.0, PI, theta);
-    smoothedTheta = PI * smoothedTheta;
-    vec2 adjustedUV;
-    adjustedUV.x = phi / (2.0 * PI) + 0.5;
-    adjustedUV.y = smoothedTheta / PI;
-    
+	float phi = atan(vPosition.z, vPosition.x);
+	float theta = acos(vPosition.y / length(vPosition));
+	theta = PI / 2.0 - theta;
+	vec2 adjustedUV = vec2(mod((phi * 3.0 / PI) + 0.5, 1.0), theta / PI);
+
+	// random calculations
+	vec3 absPos = abs(vPosition);
+	float maxCoord = max(absPos.x, max(absPos.y, absPos.z));
+	vec2 uv = absPos.x == maxCoord ? vec2(vPosition.z, vPosition.y) / maxCoord :
+			absPos.y == maxCoord ? vec2(vPosition.x, vPosition.z) / maxCoord :
+									vec2(vPosition.x, vPosition.y) / maxCoord;
+	adjustedUV = (uv + 1.0) / 2.0;
+	adjustedUV.x = vPosition.x < 0.0 || vPosition.z < 0.0 ? 1.0 - adjustedUV.x : adjustedUV.x;
+	adjustedUV.y = vPosition.y < 0.0 ? 1.0 - adjustedUV.y : adjustedUV.y;
+
 	vec4 imageColor = texture2D(uTexture, adjustedUV);
-    vec3 skyBaseColor= mix(vec3(0.0, 0.0, 0.0), blueAccent, noiseValue*0.7);
-    vec3 skyColor = mix(skyBaseColor, imageColor.rgb, imageColor.a);
+	vec3 colorMix = mix(vec3(0.0, 0.0, 0.0), blueAccent, noiseValue*0.7);
+	vec3 skyColor = mix(colorMix, imageColor.rgb, imageColor.a);
 	
 	vec3 horizonColor = mix(vec3(0.0, 0.0, 0.0), blueAccent, noiseValue);
 	vec3 voidColor = vec3(0.0, 0.0, 0.0);	
@@ -69,6 +75,7 @@ float func(float x) {
 	// float a = x * 0.7 - 1.0;
 	// return a * a * a + 1.0;
 }
+
 
 void main() {
 	vec4 noiseCoord = vec4(vPosition.xz * 0.001, 1.0, 1.0); 
