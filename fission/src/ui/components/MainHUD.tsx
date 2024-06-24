@@ -153,7 +153,7 @@ const MainHUD: React.FC = () => {
                         onClick={() => openModal("import-mirabuf")}
                     />
                     <MainHUDButton
-                        value={"God Mode"}
+                        value={"Test God Mode"}
                         icon={<IoGameControllerOutline />}
                         onClick={TestGodMode}
                     />
