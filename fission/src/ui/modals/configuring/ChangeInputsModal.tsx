@@ -19,7 +19,9 @@ const transformKeyName = (keyCode: string, keyModifiers: ModifierState) => {
         if (keyModifiers.alt) prefix += "Alt + "
     }
 
-    return prefix +  keyCodeToCharacter(keyCode);
+    const displayName = prefix +  keyCodeToCharacter(keyCode)
+    if (displayName == "") return "N/A";
+    return displayName;
 }
     
 // Converts camelCase to Title Case for the inputs modal
@@ -38,7 +40,7 @@ const codeToCharacterMap: { [code: string]: string } = {
     "BackQuote": "`",
     "Minus": "-",
     "Equal": "=",
-    "Backslash": "\\", //TODO
+    "Backslash": "\\",
     "Semicolon": ";",
     "Quote": "\""
 };
@@ -63,46 +65,80 @@ const keyCodeToCharacter = (code: string) => {
     return code;
 }
 
+//var chosenButton: number = -1;
+
 const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [useGamepad, setUseGamepad] = useState<boolean>(InputSystem.useGamepad)
     const [loadedRobot, setLoadedRobot] = useState<string>("")
     const [selectedInput, setSelectedInput] = useState<string>("")
 
-    const [chosenButton, setChosenButton] = useState<string>("")
+    const [chosenKey, setChosenKey] = useState<string>("")
+    const [chosenButton, setChosenButton] = useState<number>(-1)
     const [modifierState, setModifierState] = useState<ModifierState>(emptyModifierState)
 
     const [chosenGamepadAxis, setChosenGamepadAxis] = useState<number>(-1)
+
+    const axisInputs = InputSystem.allInputs.filter((input): input is AxisInput => input instanceof AxisInput);
+
+    // TODO: try removing this, might not be needed
+    type UseButtonsState = {
+        [key: string]: boolean;
+    };
+    
+    const [useButtons, setUseButtons] = useState<UseButtonsState>(
+        axisInputs.reduce<UseButtonsState>((acc, input) => {
+            acc[input.inputName] = input.useJoystickButtons;
+            return acc;
+        }, {})
+    );
 
     useEffect(() => {
         // TODO: use the actual loaded robot(s)
         setTimeout(() => setLoadedRobot("Dozer v9"), 1)
     })
 
-    if (selectedInput && chosenButton) {
+    if (!useGamepad && selectedInput && chosenKey) {
         if (selectedInput.startsWith("pos")) {
             const input = InputSystem.allInputs.find(input => input.inputName == selectedInput.substring(3)) as AxisInput;
-            input.posKeyCode = chosenButton;
+            input.posKeyCode = chosenKey;
             input.posKeyModifiers = modifierState;
         }
         else if (selectedInput.startsWith("neg")) {
             const input = InputSystem.allInputs.find(input => input.inputName == selectedInput.substring(3)) as AxisInput;
-            input.posKeyCode = chosenButton;
-            input.posKeyModifiers = modifierState;
+            input.negKeyCode = chosenKey;
+            input.negKeyModifiers = modifierState;
         }
         else {
             const input = InputSystem.allInputs.find(input => input.inputName == selectedInput) as ButtonInput;
 
-            input.keyCode = chosenButton
+            input.keyCode = chosenKey
             input.keyModifiers = modifierState
         }
 
-        setChosenButton("")
+        setChosenKey("")
         setSelectedInput("")
         setModifierState(emptyModifierState)
     }
+    else if (useGamepad && selectedInput && chosenButton != -1) {
+        if (selectedInput.startsWith("pos")) {
+            const input = InputSystem.allInputs.find(input => input.inputName == selectedInput.substring(3)) as AxisInput;
+            input.posJoystickButton = chosenButton;
+        }
+        else if (selectedInput.startsWith("neg")) {
+            const input = InputSystem.allInputs.find(input => input.inputName == selectedInput.substring(3)) as AxisInput;
+            input.negJoystickButton = chosenButton;
+        }
+        else {
+            const input = InputSystem.allInputs.find(input => input.inputName == selectedInput) as ButtonInput;
 
-    if (selectedInput && chosenGamepadAxis != -1) {
-        // TODO: assumes all inputs are keyboard buttons
+            input.gamepadButton = chosenButton
+        }
+
+        setChosenButton(-1);
+        setSelectedInput("")
+    }
+
+    if (useGamepad && selectedInput && chosenGamepadAxis != -1) {
         const selected = InputSystem.allInputs.find(input => input.inputName == selectedInput) as AxisInput
         selected.gamepadAxisNumber = chosenGamepadAxis;
 
@@ -110,27 +146,23 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         setSelectedInput("")
     }
 
-    useEffect(() => {
+      useEffect(() => {
         const checkGamepadState = () => {
-          if (useGamepad && InputSystem._gpIndex !== null) {
-            const gamepad = navigator.getGamepads()[InputSystem._gpIndex];
-            if (gamepad) {
-              const pressedButtons = gamepad.buttons
+          if (InputSystem.gamepad !== null) {
+              const pressedButtons = InputSystem.gamepad.buttons
                 .map((button, index) => (button.pressed ? index : null))
                 .filter((index) => index !== null)
                 .map((index) => index!);
 
                 if (pressedButtons.length > 0)
-                    setChosenButton("Gamepad " + pressedButtons[0]);
-                else setChosenButton("");
+                    setChosenButton(pressedButtons[0]);
+                else setChosenButton(-1);
             }
-          }
-          else setChosenButton("");
           requestAnimationFrame(checkGamepadState);
         };
-    
+
         checkGamepadState();
-      }, [InputSystem._gpIndex]);
+      });
 
     return (
         <Modal name="Keybinds" icon={<FaGamepad />} modalId={modalId}>
@@ -144,7 +176,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 <div
                     className="w-max"
                     onKeyUp={e => {
-                        setChosenButton(selectedInput ? e.code : "")
+                        setChosenKey(selectedInput ? e.code : "")
                         setModifierState({
                             ctrl: e.ctrlKey,
                             alt: e.altKey,
@@ -156,7 +188,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     {loadedRobot ? (
                         <>
                             <Label size={LabelSize.Large}>Robot Controls</Label>
-                                {Object.values(InputSystem.robotInputs).map(c => {
+                                {InputSystem.robotInputs.map(c => {
                                     if (!useGamepad) {
 
                                         // Keyboard button
@@ -169,9 +201,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                                     value={
                                                         c.inputName == selectedInput
                                                             ? "Press anything"
-        
-                                                            // TODO: assumes all inputs are keyboard buttons
-                                                            : transformKeyName(c.keyCode, c.keyModifiers)
+                                                                : transformKeyName(c.keyCode, c.keyModifiers)
                                                     }
                                                     onClick={() => {
                                                         setSelectedInput(c.inputName)
@@ -192,7 +222,6 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                                             "pos" + c.inputName == selectedInput
                                                                 ? "Press anything"
             
-                                                                // TODO: assumes all inputs are keyboard buttons
                                                                 : transformKeyName(c.posKeyCode, c.posKeyModifiers)
                                                         }
                                                         onClick={() => {
@@ -207,7 +236,6 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                                             "neg" + c.inputName == selectedInput
                                                                 ? "Press anything"
             
-                                                                // TODO: assumes all inputs are keyboard buttons
                                                                 : transformKeyName(c.negKeyCode, c.negKeyModifiers)
                                                         }
                                                         onClick={() => {
@@ -229,8 +257,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                                         c.inputName == selectedInput
                                                             ? "Press anything"
         
-                                                            // TODO: assumes all inputs are keyboard buttons
-                                                            : (c.gamepadButton == -1) ? "" : gamepadButtons[c.gamepadButton]
+                                                            : (c.gamepadButton == -1) ? "N/A" : gamepadButtons[c.gamepadButton]
                                                     }
                                                     onClick={() => {
                                                         setSelectedInput(c.inputName)
@@ -241,16 +268,61 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                         // Joystick Axis
                                         else if (c instanceof AxisInput) {
                                             return (
-                                                <Dropdown
-                                                    key={c.inputName}
-                                                    label={toTitleCase(c.inputName)}
-                                                    // Moves the selected option to the start of the array
-                                                    options={gamepadAxes.sort(function(x,y){ return x == gamepadAxes[c.gamepadAxisNumber] ? -1 : y == gamepadAxes[c.gamepadAxisNumber] ? 1 : 0; })}
-                                                    onSelect={(value) => {
-                                                        setSelectedInput(c.inputName); 
-                                                        setChosenGamepadAxis(gamepadAxes.indexOf(value));
-                                                    }}
-                                                />
+                                                <div key={c.inputName}>
+                                                    {useButtons[c.inputName] ? (
+                                                        <div>
+                                                            <LabeledButton
+                                                        key={"pos"+c.inputName}
+                                                        label={toTitleCase(c.inputName) + " (+)"}
+                                                        placement={LabelPlacement.Left}
+                                                        value={
+                                                            "pos" + c.inputName == selectedInput
+                                                                ? "Press anything"
+                                                                : (c.posJoystickButton == -1) ? "N/A" : gamepadButtons[c.posJoystickButton]
+                                                        }
+                                                        onClick={() => {
+                                                            setSelectedInput("pos" + c.inputName)
+                                                        }}
+                                                    />
+                                                        <LabeledButton
+                                                        key={"neg"+c.inputName}
+                                                        label={toTitleCase(c.inputName) + " (-)"}
+                                                        placement={LabelPlacement.Left}
+                                                        value={
+                                                            "neg" + c.inputName == selectedInput
+                                                                ? "Press anything"
+                                                                : (c.negJoystickButton == -1) ? "N/A" : gamepadButtons[c.negJoystickButton]
+                                                        }
+                                                        onClick={() => {
+                                                            setSelectedInput("neg" + c.inputName)
+                                                        }}
+                                                    />
+                                                        </div>
+                                                    ) : (
+                                                        <Dropdown
+                                                            key={c.inputName}
+                                                            label={toTitleCase(c.inputName)}
+                                                            // Moves the selected option to the start of the array
+                                                            options={gamepadAxes.sort(function(x, y) { return x === gamepadAxes[c.gamepadAxisNumber] ? -1 : y === gamepadAxes[c.gamepadAxisNumber] ? 1 : 0; })}
+                                                            onSelect={(value) => {
+                                                                setSelectedInput(c.inputName); 
+                                                                setChosenGamepadAxis(gamepadAxes.indexOf(value));
+                                                            }}
+                                                        />
+                                                    )}
+                                                    <Checkbox label="Use Buttons" defaultState={c.useJoystickButtons} onClick={ 
+                                                        (val) => {
+                                                            setUseButtons(prevState => ({
+                                                                ...prevState,
+                                                                [c.inputName]: val
+                                                            }));
+                                                            c.useJoystickButtons = val;
+                                                    }}/>
+                                                    <Checkbox label="Inverted" defaultState={c.joystickInverted} onClick={ 
+                                                        (val) => {
+                                                            c.joystickInverted = val;
+                                                    }}/>
+                                                </div>
                                             )
                                         }
                                     }
@@ -264,7 +336,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 <div
                     className="w-max"
                     onKeyUp={e => {
-                        setChosenButton(selectedInput ? e.key : "")
+                        setChosenKey(selectedInput ? e.key : "")
                         setModifierState({
                             ctrl: e.ctrlKey,
                             alt: e.altKey,
@@ -275,7 +347,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 >
                     <Label size={LabelSize.Large}>Global Controls</Label>
 
-                    {/* {Object.values(InputSystem.globalInputs).map(c => {
+                    {/* {InputSystem.globalInputs.map(c => {
                     if (!useGamepad) {
 
                         // Keyboard button

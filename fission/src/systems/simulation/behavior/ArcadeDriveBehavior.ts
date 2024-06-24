@@ -27,12 +27,10 @@ class ArcadeDriveBehavior extends Behavior {
     }
 
     public Update(_: number): void {
-        this.DriveSpeeds(InputSystem.getInput("arcadeDrive")*this._driveSpeed, 
-            InputSystem.getInput("arcadeTurn")*this._turnSpeed);
-            console.log(InputSystem.getInput("arcadeDrive")*this._driveSpeed + " " + InputSystem.getInput("arcadeTurn")*this._turnSpeed);
+        const driveInput = InputSystem.getInput("arcadeDrive");
+        const turnInput = InputSystem.getInput("arcadeTurn");
 
-        // TODO: Joystick control only for testing
-        //this.DriveSpeeds(-InputSystem.getGamepadAxis(1)*this._driveSpeed, InputSystem.getGamepadAxis(0)*this._driveSpeed);
+        this.DriveSpeeds(driveInput*this._driveSpeed, turnInput*this._turnSpeed);
     }
 }
 

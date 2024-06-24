@@ -54,8 +54,11 @@ class AxisInput extends Input {
 
     public gamepadAxisNumber: number;
     public joystickInverted: boolean;
+    public useJoystickButtons: boolean;
+    public posJoystickButton: number;
+    public negJoystickButton: number;
 
-    public constructor(inputName: string, posKeyCode: string, negKeyCode: string, gamepadAxisNumber: number, joystickInverted?: boolean, isGlobal?: boolean, posKeyModifiers?: ModifierState, negKeyModifiers?: ModifierState) {
+    public constructor(inputName: string, posKeyCode: string, negKeyCode: string, gamepadAxisNumber: number, joystickInverted?: boolean, useJoystickButtons?: boolean, posJoystickButton?: number, negJoystickButton?: number, isGlobal?: boolean, posKeyModifiers?: ModifierState, negKeyModifiers?: ModifierState) {
         super(inputName, isGlobal ?? false);
         
         this.posKeyCode = posKeyCode;
@@ -65,17 +68,28 @@ class AxisInput extends Input {
 
         this.gamepadAxisNumber = gamepadAxisNumber;
         this.joystickInverted = joystickInverted ?? false;
+
+        this.useJoystickButtons = useJoystickButtons ?? false;
+        this.posJoystickButton = posJoystickButton ?? -1;
+        this.negJoystickButton = negJoystickButton ?? -1;
     }    
 
     // Returns 1 if positive pressed, -1 if negative pressed, or 0 if none or both are pressed
     getValue(): number {
+        let inputValue: number = 0;
         // Gamepad axis input
         if (InputSystem.useGamepad) {
-            return InputSystem.getGamepadAxis(this.gamepadAxisNumber) * (this.joystickInverted ? -1 : 1);
+            if (!this.useJoystickButtons)
+                inputValue = InputSystem.getGamepadAxis(this.gamepadAxisNumber);
+            else
+                inputValue = (InputSystem.isGamepadButtonPressed(this.posJoystickButton) ? 1 : 0) - (InputSystem.isGamepadButtonPressed(this.negJoystickButton) ? 1 : 0);
+        }
+        else {
+            // Button axis input
+            inputValue = (InputSystem.isKeyPressed(this.posKeyCode, this.posKeyModifiers) ? 1 : 0) - (InputSystem.isKeyPressed(this.negKeyCode, this.negKeyModifiers) ? 1 : 0);
         }
 
-        // Button axis input
-        return (InputSystem.isKeyPressed(this.posKeyCode, this.posKeyModifiers) ? 1 : 0) - (InputSystem.isKeyPressed(this.negKeyCode, this.negKeyModifiers) ? 1 : 0);
+        return inputValue * (this.joystickInverted ? -1 : 1);
     }
 }
 
@@ -110,9 +124,8 @@ class InputSystem extends WorldSystem {
     // A list of keys currently being pressed
     private static _keysPressed: { [key: string]: boolean } = {};
 
-    // TODO: make private
-    public static _gpIndex: number | null;
-    private static _gp: Gamepad | null;
+    private static _gpIndex: number | null;
+    public static gamepad: Gamepad | null;
 
     constructor() {
         super();
@@ -143,8 +156,8 @@ class InputSystem extends WorldSystem {
         
         // Fetch current gamepad information
         if (InputSystem._gpIndex == null)
-            InputSystem._gp = null;
-        else InputSystem._gp = navigator.getGamepads()[InputSystem._gpIndex]
+            InputSystem.gamepad = null;
+        else InputSystem.gamepad = navigator.getGamepads()[InputSystem._gpIndex]
     }
 
     public Destroy(): void {    
@@ -214,25 +227,30 @@ class InputSystem extends WorldSystem {
     }
 
     public static getGamepadAxis(axisNumber: number): number {
-        if (InputSystem._gp == null)
+        if (InputSystem.gamepad == null)
             return 0;
 
-        const value = InputSystem._gp.axes[axisNumber];
+        if (axisNumber < 0 || axisNumber >= InputSystem.gamepad.axes.length)
+            return 0;
+
+        const value = InputSystem.gamepad.axes[axisNumber];
 
         // Return value with a deadband
         return Math.abs(value) < 0.15 ? 0 : value;
     }
 
     public static isGamepadButtonPressed(buttonNumber: number): boolean {
-        if (InputSystem._gpIndex == null)
+        if (InputSystem.gamepad == null)
             return false;
 
-        const gp = navigator.getGamepads()[InputSystem._gpIndex]!;
-
-        if (buttonNumber < 0 || buttonNumber >= gp.buttons.length)
+        if (buttonNumber < 0 || buttonNumber >= InputSystem.gamepad.buttons.length)
             return false;
 
-        return gp.buttons[buttonNumber].pressed;
+        const button = InputSystem.gamepad.buttons[buttonNumber];
+        if (button == null)
+            return false;
+        
+        return button.pressed;
     }
 }
 
