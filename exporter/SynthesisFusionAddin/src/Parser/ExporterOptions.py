@@ -77,7 +77,7 @@ class ModelHierarchy(Enum):
 
 @dataclass
 class ExporterOptions:
-    fileLocation: str = field(default=(platform.system() == "Windows" if os.getenv("HOME") else os.path.expanduser("~")))
+    fileLocation: str = field(default=(os.getenv("HOME") if platform.system() == "Windows" else os.path.expanduser("~")))
     name: str = field(default=None)
     version: str = field(default=None)
     materials: int = field(default=0)
