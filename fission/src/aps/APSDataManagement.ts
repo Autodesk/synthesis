@@ -160,27 +160,3 @@ export async function getFolderData(project: Project, folder: Folder): Promise<D
         return undefined
     }
 }
-
-export async function downloadItem(project: Project, item: Item): Promise<void | undefined> {
-    const auth = APS.auth
-    if (!auth) {
-        return undefined
-    }
-
-    try {
-        return await fetch(`https://developer.api.autodesk.com/data/v1/projects/${project.id}/items/${item.id}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${auth.access_token}`
-            }
-        }).then(x => x.json()).then(async x => {
-            console.debug(x)
-            const downloadLink = x.included[0].relationships.storage.meta.link.href
-            console.debug(`Download Link: ${downloadLink}`)
-            return await fetch(downloadLink, { method: 'GET', headers: { 'Authorization': `Bearer ${auth.access_token}` } })
-        }).then(x => x.blob()).then(x => { window.open(URL.createObjectURL(x)) })
-    } catch (e) {
-        console.error('Failed to download item')
-        return undefined
-    }
-}
