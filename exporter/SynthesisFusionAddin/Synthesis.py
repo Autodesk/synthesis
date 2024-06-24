@@ -36,6 +36,7 @@ def run(_):
             "Failed:\n{}".format(traceback.format_exc())
         )
 
+
 def stop(_):
     """## Fusion 360 exit point - deconstructs buttons and handlers
 
