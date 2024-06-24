@@ -62,6 +62,23 @@ class MirabufSceneObject extends SceneObject {
             })
         }
 
+        /*
+        // TODO: Comment out before PR, tranfer to test
+        // God mode testing: add ghost object to all spawned mirabuf files
+        const nodeId = this._mechanism.rootBody
+        const anchorBody = this._mechanism.GetBodyByNodeId(nodeId)
+        if (anchorBody == undefined) {
+            console.error("Failed to anchor to mechanism")
+        }
+        const [godModeBody, _godModeConstraint] =
+            World.PhysicsSystem.CreateGodModeBody(anchorBody!)
+
+        World.PhysicsSystem.SetBodyPosition(
+            godModeBody.GetID(),
+            new JOLT.Vec3(1, 1, 1)
+        )
+        */
+
         // Simulation
         World.SimulationSystem.RegisterMechanism(this._mechanism)
         const simLayer = World.SimulationSystem.GetSimulationLayer(

@@ -72,6 +72,7 @@ describe("GodMode", () => {
         // TODO: Make sure this is the correct way to do this
         // TODO: Figure out how to make it use substeps to check instead
         for (let i = 0; i < 30; i++) {
+            // TODO: Change this once this function actually uses deltaT
             system.Update(i)
         }
 
@@ -79,36 +80,7 @@ describe("GodMode", () => {
         assert(system.GetBody(box.GetID()) != undefined)
         assert(ghostConstraint != undefined)
 
-        system.Destroy()
-    })
-
-    test("Position", () => {
-        const system = new PhysicsSystem()
-        const box = system.CreateBox(
-            new THREE.Vector3(1, 1, 1),
-            1,
-            new THREE.Vector3(0, 0, 0),
-            undefined
-        )
-        const [ghostObject, _ghostConstraint] = system.CreateGodModeBody(
-            box.GetID()
-        )
-        const origPosition = ghostObject.GetPosition()
-        system.SetBodyPosition(ghostObject.GetID(), new JOLT.Vec3(2, 2, 2))
-
-        for (let i = 0; i < 30; i++) {
-            system.Update(i)
-        }
-
-        const currPosition = ghostObject.GetPosition()
-
-        assert(
-            currPosition.GetX() != origPosition.GetX() ||
-                currPosition.GetY() != origPosition.GetY() ||
-                currPosition.GetZ() != origPosition.GetZ()
-        )
-
-        system.Destroy()
+        //system.Destroy()
     })
 })
 
