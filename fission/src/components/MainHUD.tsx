@@ -167,12 +167,15 @@ const MainHUD: React.FC = () => {
                     />
                     {/* MiraMap and OPFS Temp Buttons */}
                     <MainHUDButton
-                        value={"Print Field Map"}
+                        value={"Print Mira Maps"}
                         icon={<BsCodeSquare />}
-                        onClick = { () => console.log(GetMap(MiraType.FIELD))}
+                        onClick = { () => {
+                            console.log(GetMap(MiraType.ROBOT))
+                            console.log(GetMap(MiraType.FIELD))}
+                        }
                         />
                     <MainHUDButton
-                        value={"Clear OPFS"}
+                        value={"Clear Mira"}
                         icon={<GiSteeringWheel />}
                         onClick={() => ClearMira()}
                     />
