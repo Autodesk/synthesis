@@ -175,8 +175,8 @@ def addJointToConfigTab(joint: adsk.fusion.Joint) -> None:
             dropDown = jointConfigTable.getInputAtPosition(row, 2)
             dropDown.listItems.add(selectedJointList[-1].name, False)
 
-        for j in range(len(selectedJointList) - 1):
-            jointType.listItems.add(selectedJointList[j].name, False)
+        for joint in selectedJointList:
+            jointType.listItems.add(joint.name, False)
 
         jointType.tooltip = "Possible parent joints"
         jointType.tooltipDescription = "<hr>The root component is usually the parent.</hr>"
@@ -262,7 +262,7 @@ def removeJointFromConfigTab(joint: adsk.fusion.Joint) -> None:
         )
 
 
-# Converts the current list of selected adsk.fusion.joints into Synthesis.Joints
+# Converts the current list of selected adsk.fusion.joints into list[Synthesis.Joint]
 def getSelectedJoints() -> list[Joint]:
     joints: list[Joint] = []
     for row in range(1, jointConfigTable.rowCount): # Row is 1 indexed

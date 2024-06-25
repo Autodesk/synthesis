@@ -102,7 +102,7 @@ class ExporterOptions:
         default=CalculationAccuracy.LowCalculationAccuracy
     )
 
-    def readFromDesign(self) -> None:
+    def readFromDesign(self) -> "ExporterOptions":
         designAttributes = adsk.core.Application.get().activeProduct.attributes
         for field in fields(self):
             attribute = designAttributes.itemByName(INTERNAL_ID, field.name)

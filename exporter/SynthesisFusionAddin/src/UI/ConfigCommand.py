@@ -14,16 +14,15 @@ from ..Parser.ExporterOptions import (
     Gamepiece,
     ExportMode,
     ExporterOptions,
-    Joint,
     Wheel,
     WheelType,
     SignalType,
-    JointParentType,
     PreferredUnits,
 )
 from .Configuration.SerialCommand import SerialCommand
 
 # Transition: AARD-1685
+# In the future all components should be handled in this way.
 from .JointConfigTab import (
     createJointConfigTab,
     addJointToConfigTab,
@@ -414,20 +413,22 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
 
             if exporterOptions.wheels:
                 for wheel in exporterOptions.wheels:
-                    wheelEntity = gm.app.activeDocument.design.findEntityByToken(
-                        wheel.jointToken
-                    )[0]
+                    wheelEntity = gm.app.activeDocument.design.findEntityByToken(wheel.jointToken)[0]
                     addWheelToTable(wheelEntity)
 
             # Transition: AARD-1685
             createJointConfigTab(args)
-            for joint in list(
-                gm.app.activeDocument.design.rootComponent.allJoints
-            ) + list(gm.app.activeDocument.design.rootComponent.allAsBuiltJoints):
-                if (joint.jointMotion.jointType == JointMotions.REVOLUTE.value
-                    or joint.jointMotion.jointType == JointMotions.SLIDER.value
-                ) and not joint.isSuppressed:
-                    addJointToConfigTab(joint)
+            if exporterOptions.joints:
+                for joint in exporterOptions.joints:
+                    jointEntity = gm.app.activeDocument.design.findEntityByToken(joint.jointToken)[0]
+                    addJointToConfigTab(jointEntity)
+            else:
+                for joint in [
+                    *gm.app.activeDocument.design.rootComponent.allJoints,
+                    *gm.app.activeDocument.design.rootComponent.allAsBuiltJoints
+                ]:
+                    if joint.jointMotion.jointType in (JointMotions.REVOLUTE.value, JointMotions.SLIDER.value) and not joint.isSuppressed:
+                        addJointToConfigTab(joint)
 
             # ~~~~~~~~~~~~~~~~ GAMEPIECE CONFIGURATION ~~~~~~~~~~~~~~~~
             """
