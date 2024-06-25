@@ -23,7 +23,7 @@ def SaveFileDialog(defaultPath="", defaultName="", ext="MiraBuf Package (*.mira)
 
     ext = "MiraBuf Package (*.mira)"
 
-    fileDialog = gm.ui.createFileDialog()
+    fileDialog: adsk.core.FileDialog = gm.ui.createFileDialog()
     fileDialog.isMultiSelectEnabled = False
 
     fileDialog.title = "Save Export Result"
