@@ -2,7 +2,7 @@
 import adsk, logging, traceback, math
 
 from .Utilities import *
-from .. import ParseOptions
+from .. import ExporterOptions
 
 from ...general_imports import INTERNAL_ID
 
@@ -15,7 +15,7 @@ OPACITY_RAMPING_CONSTANT = 14.0
 def _MapAllPhysicalMaterials(
     physicalMaterials: list,
     materials: material_pb2.Materials,
-    options: ParseOptions,
+    options: ExporterOptions,
     progressDialog: PDMessage,
 ) -> None:
     setDefaultMaterial(materials.physicalMaterials["default"])
@@ -137,7 +137,7 @@ def getPhysicalMaterialData(fusion_material, proto_material, options):
 def _MapAllAppearances(
     appearances: list,
     materials: material_pb2.Materials,
-    options: ParseOptions,
+    options: ExporterOptions,
     progressDialog: PDMessage,
 ) -> None:
     # in case there are no appearances on a body
@@ -179,7 +179,7 @@ def setDefaultAppearance(appearance: material_pb2.Appearance) -> None:
 
 def getMaterialAppearance(
     fusionAppearance: adsk.core.Appearance,
-    options: ParseOptions,
+    options: ExporterOptions,
     appearance: material_pb2.Appearance,
 ) -> None:
     """Takes in a Fusion 360 Mesh and converts it to a usable unity mesh

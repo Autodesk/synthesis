@@ -7,7 +7,7 @@ import adsk.fusion
 from . import IconPaths
 from .CreateCommandInputsHelper import createTableInput, createTextBoxInput
 
-from ..Parser.ParseOptions import _Joint, JointParentType
+from ..Parser.ExporterOptions import JointParentType, Joint, SignalType
 
 # Wish we did not need this. Could look into storing everything within the design every time - Brandon
 selectedJointList: list[adsk.fusion.Joint] = []
@@ -263,38 +263,20 @@ def removeJointFromConfigTab(joint: adsk.fusion.Joint) -> None:
 
 
 # Converts the current list of selected adsk.fusion.joints into Synthesis.Joints
-def getSelectedJoints() -> list[_Joint]:
-    joints: list[_Joint] = []
+def getSelectedJoints() -> list[Joint]:
+    joints: list[Joint] = []
     for row in range(1, jointConfigTable.rowCount): # Row is 1 indexed
-        parentJointIndex = jointConfigTable.getInputAtPosition(row, 2).selectedItem.index
         signalTypeIndex = jointConfigTable.getInputAtPosition(row, 3).selectedItem.index
         jointSpeed = jointConfigTable.getInputAtPosition(row, 4).value
         jointForce = jointConfigTable.getInputAtPosition(row, 5).value
-        parentJointToken = ""
-
-        if parentJointIndex == 0:
-            joints.append(
-                _Joint(
-                    selectedJointList[row - 1].entityToken, # Row is 1 indexed
-                    JointParentType.ROOT,
-                    signalTypeIndex,
-                    jointSpeed,
-                    jointForce / 100.0,
-                )
-            )
-            continue
-        elif parentJointIndex < row:
-            parentJointToken = selectedJointList[parentJointIndex - 1].entityToken
-        else:
-            parentJointToken = selectedJointList[parentJointIndex + 1].entityToken
 
         joints.append(
-            _Joint(
-                selectedJointList[row - 1].entityToken,
-                parentJointToken,
-                signalTypeIndex,
+            Joint(
+                selectedJointList[row - 1].entityToken, # Row is 1 indexed
+                JointParentType.ROOT,
+                SignalType(signalTypeIndex + 1),
                 jointSpeed,
-                jointForce,
+                jointForce / 100.0,
             )
         )
 
