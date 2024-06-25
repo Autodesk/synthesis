@@ -16,7 +16,6 @@ class SceneRenderer extends WorldSystem {
     private _scene: THREE.Scene;
     private _renderer: THREE.WebGLRenderer;
     private _skybox: THREE.Mesh;
-    private _uTime: number = 0;
 
     private _sceneObjects: Map<number, SceneObject>;
 
@@ -99,7 +98,6 @@ class SceneRenderer extends WorldSystem {
                 rColor: { value: currentTheme['Background']['color']['r']},
                 gColor: { value: currentTheme['Background']['color']['g']},
                 bColor: { value: currentTheme['Background']['color']['b'] },
-                uTime: { value: this._uTime },
             }
         });
 
@@ -125,7 +123,6 @@ class SceneRenderer extends WorldSystem {
 
         // controls.update(deltaTime); // TODO: Add controls?
         this._skybox.position.copy(this._mainCamera.position);
-        this._uTime += 0.1;
         this._renderer.render(this._scene, this._mainCamera);
     }
 
@@ -176,48 +173,3 @@ class SceneRenderer extends WorldSystem {
 }
 
 export default SceneRenderer;
-
-
-
-
-// bundled code that may be useful later for rendering images into glsl
-
-    // public loadTexture(gl: WebGLRenderingContext, url: string): WebGLTexture {
-    //     const texture = gl.createTexture();
-    //     gl.bindTexture(gl.TEXTURE_2D, texture);
-
-    //     const level = 0;
-    //     const internalFormat = gl.RGBA;
-    //     const width = 1;
-    //     const height = 1;
-    //     const border = 0;
-    //     const srcFormat = gl.RGBA;
-    //     const srcType = gl.UNSIGNED_BYTE;
-    //     const pixel = new Uint8Array([0, 0, 255, 255]); // opaque blue
-    //     gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, width, height, border, srcFormat, srcType, pixel);
-
-
-    //     const image = new Image();
-    //     image.onload = () => {
-    //         gl.bindTexture(gl.TEXTURE_2D, texture);
-    //         gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, srcFormat, srcType, image);
-
-    //         if (this.isPowerOf2(image.width) && this.isPowerOf2(image.height)) {
-    //             // Image is a power of 2, generate mips
-    //             gl.generateMipmap(gl.TEXTURE_2D);
-    //         } else {
-    //             // Image is not a power of 2, turn off mips and set wrapping to clamp to edge
-    //             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    //             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    //             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    //         }
-    //     };
-    //     image.src = url;
-    //     console.log('Loaded Texture:', image.src);
-
-    //     return texture!;
-    // }
-
-    // public isPowerOf2(value: number): boolean {
-    //     return (value & (value - 1)) === 0;
-    // }

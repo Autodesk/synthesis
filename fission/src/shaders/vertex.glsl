@@ -1,8 +1,3 @@
-uniform float uTime;
-uniform float rColor;
-uniform float gColor;
-uniform float bColor;
-
 varying vec3 vPosition;
 varying vec2 vUv;
 
