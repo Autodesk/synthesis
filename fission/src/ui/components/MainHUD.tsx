@@ -44,7 +44,7 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
     )
 }
 
-export let MainHUD_AddToast: (type: ToastType, title: string, description: string) => void = (_a, _b, _c) => { }
+export let MainHUD_AddToast: (type: ToastType, title: string, description: string) => void = (_a, _b, _c) => {}
 
 const variants = {
     open: { opacity: 1, y: "-50%", x: 0 },
@@ -119,11 +119,7 @@ const MainHUD: React.FC = () => {
                         icon={<IoPeople />}
                         onClick={() => openModal("import-mirabuf")}
                     />
-                    <MainHUDButton
-                        value={"Test God Mode"}
-                        icon={<IoGameControllerOutline />}
-                        onClick={TestGodMode}
-                    />
+                    <MainHUDButton value={"Test God Mode"} icon={<IoGameControllerOutline />} onClick={TestGodMode} />
                 </div>
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton
@@ -162,18 +158,22 @@ const MainHUD: React.FC = () => {
                         onClick={() => APS.requestAuthCode()}
                     />
                 )}
-
             </motion.div>
         </>
     )
 }
 
 function TestGodMode() {
-    const robot: MirabufSceneObject = [...World.SceneRenderer.sceneObjects.entries()].filter(x => { const y = (x[1] instanceof MirabufSceneObject); return y }).map(x => x[1])[0] as MirabufSceneObject
+    const robot: MirabufSceneObject = [...World.SceneRenderer.sceneObjects.entries()]
+        .filter(x => {
+            const y = x[1] instanceof MirabufSceneObject
+            return y
+        })
+        .map(x => x[1])[0] as MirabufSceneObject
     const rootNodeId = robot.GetRootNodeId()
     if (rootNodeId == undefined) {
         console.error("Robot root node not found for god mode")
-        return;
+        return
     }
     const [ghostBody, _ghostConstraint] = World.PhysicsSystem.CreateGodModeBody(rootNodeId)
     World.PhysicsSystem.SetBodyPosition(ghostBody.GetID(), new JOLT.Vec3(2, 2, 2))

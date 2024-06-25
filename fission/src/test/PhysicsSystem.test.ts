@@ -2,22 +2,13 @@ import { test, expect, describe, assert } from "vitest"
 import PhysicsSystem, { LayerReserve } from "../systems/physics/PhysicsSystem"
 import { LoadMirabufLocal } from "@/mirabuf/MirabufLoader"
 import MirabufParser from "@/mirabuf/MirabufParser"
-<<<<<<< HEAD
 import * as THREE from "three"
-import JOLT from "@/util/loading/JoltSyncLoader"
-=======
->>>>>>> b6da23e59d9c08bf187158486f6b7b2a9bd59bb6
 
 describe("Physics Sansity Checks", () => {
     test("Convex Hull Shape (Cube)", () => {
         const points: Float32Array = new Float32Array([
-<<<<<<< HEAD
-            0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5,
-            0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5,
-=======
             0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5,
             0.5, -0.5, 0.5, 0.5, -0.5,
->>>>>>> b6da23e59d9c08bf187158486f6b7b2a9bd59bb6
         ])
 
         const system = new PhysicsSystem()
@@ -35,13 +26,7 @@ describe("Physics Sansity Checks", () => {
         system.Destroy()
     })
     test("Convex Hull Shape (Tetrahedron)", () => {
-<<<<<<< HEAD
-        const points: Float32Array = new Float32Array([
-            0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-        ])
-=======
         const points: Float32Array = new Float32Array([0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0])
->>>>>>> b6da23e59d9c08bf187158486f6b7b2a9bd59bb6
 
         const system = new PhysicsSystem()
         const shapeResult = system.CreateConvexHull(points)
@@ -64,19 +49,11 @@ describe("Physics Sansity Checks", () => {
     })
 })
 
-<<<<<<< HEAD
 describe("GodMode", () => {
     test("Basic", () => {
         const system = new PhysicsSystem()
-        const box = system.CreateBox(
-            new THREE.Vector3(1, 1, 1),
-            1,
-            new THREE.Vector3(0, 0, 0),
-            undefined
-        )
-        const [ghostObject, ghostConstraint] = system.CreateGodModeBody(
-            box.GetID()
-        )
+        const box = system.CreateBox(new THREE.Vector3(1, 1, 1), 1, new THREE.Vector3(0, 0, 0), undefined)
+        const [ghostObject, ghostConstraint] = system.CreateGodModeBody(box.GetID())
 
         assert(system.GetBody(ghostObject.GetID()) != undefined)
         assert(system.GetBody(box.GetID()) != undefined)
@@ -99,45 +76,19 @@ describe("GodMode", () => {
 
 describe("Mirabuf Physics Loading", () => {
     test("Body Loading (Dozer)", () => {
-        const assembly = LoadMirabufLocal(
-            "./public/Downloadables/Mira/Robots/Dozer_v9.mira"
-        )
-        const parser = new MirabufParser(assembly)
-        const physSystem = new PhysicsSystem()
-        const mapping = physSystem.CreateBodiesFromParser(
-            parser,
-            new LayerReserve()
-        )
-
-=======
-describe("Mirabuf Physics Loading", () => {
-    test("Body Loading (Dozer)", () => {
         const assembly = LoadMirabufLocal("./public/Downloadables/Mira/Robots/Dozer_v9.mira")
         const parser = new MirabufParser(assembly)
         const physSystem = new PhysicsSystem()
         const mapping = physSystem.CreateBodiesFromParser(parser, new LayerReserve())
 
->>>>>>> b6da23e59d9c08bf187158486f6b7b2a9bd59bb6
         expect(mapping.size).toBe(7)
     })
 
     test("Body Loading (Team_2471_(2018)_v7.mira)", () => {
-<<<<<<< HEAD
-        const assembly = LoadMirabufLocal(
-            "./public/Downloadables/Mira/Robots/Team 2471 (2018)_v7.mira"
-        )
-        const parser = new MirabufParser(assembly)
-        const physSystem = new PhysicsSystem()
-        const mapping = physSystem.CreateBodiesFromParser(
-            parser,
-            new LayerReserve()
-        )
-=======
         const assembly = LoadMirabufLocal("./public/Downloadables/Mira/Robots/Team 2471 (2018)_v7.mira")
         const parser = new MirabufParser(assembly)
         const physSystem = new PhysicsSystem()
         const mapping = physSystem.CreateBodiesFromParser(parser, new LayerReserve())
->>>>>>> b6da23e59d9c08bf187158486f6b7b2a9bd59bb6
 
         expect(mapping.size).toBe(10)
     })
