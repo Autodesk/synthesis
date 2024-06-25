@@ -18,6 +18,7 @@ import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Button } from "@mui/base/Button"
+import Jolt from "@barclah/jolt-physics"
 
 type ButtonProps = {
     value: string
@@ -44,7 +45,7 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
     )
 }
 
-export let MainHUD_AddToast: (type: ToastType, title: string, description: string) => void = (_a, _b, _c) => {}
+export let MainHUD_AddToast: (type: ToastType, title: string, description: string) => void = (_a, _b, _c) => { }
 
 const variants = {
     open: { opacity: 1, y: "-50%", x: 0 },
@@ -176,7 +177,7 @@ async function TestGodMode() {
         return
     }
     const robotPosition = World.PhysicsSystem.GetBody(rootNodeId).GetPosition()
-    const [ghostBody, _ghostConstraint] = World.PhysicsSystem.CreateGodModeBody(rootNodeId)
+    const [ghostBody, _ghostConstraint] = World.PhysicsSystem.CreateGodModeBody(rootNodeId, robotPosition as Jolt.Vec3)
 
     // Move ghostBody to demonstrate godMode movement
     await new Promise(f => setTimeout(f, 1000))

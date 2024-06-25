@@ -1,4 +1,5 @@
 import {
+    JoltVec3_ThreeVector3,
     MirabufFloatArr_JoltVec3,
     MirabufVector3_JoltVec3,
     ThreeMatrix4_JoltMat44,
@@ -731,11 +732,14 @@ class PhysicsSystem extends WorldSystem {
      * @returns The ghost body and the constraint
      */
 
-    public CreateGodModeBody(id: Jolt.BodyID): [Jolt.Body, Jolt.Constraint] {
+    public CreateGodModeBody(id: Jolt.BodyID, anchorPoint: Jolt.Vec3): [Jolt.Body, Jolt.Constraint] {
         const body = this.GetBody(id)
-        const bodyPosition = body.GetPosition()
-        const ghostPosition = new THREE.Vector3(bodyPosition.GetX(), bodyPosition.GetY(), bodyPosition.GetZ())
-        const ghostBody = this.CreateBox(new THREE.Vector3(0.05, 0.05, 0.05), undefined, ghostPosition, undefined)
+        const ghostBody = this.CreateBox(
+            new THREE.Vector3(0.05, 0.05, 0.05),
+            undefined,
+            JoltVec3_ThreeVector3(anchorPoint),
+            undefined
+        )
 
         const ghostBodyId = ghostBody.GetID()
         this._joltBodyInterface.SetObjectLayer(ghostBodyId, LAYER_GHOST)
