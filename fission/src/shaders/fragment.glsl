@@ -5,7 +5,6 @@ uniform float bColor;
 
 varying vec3 vPosition;
 varying vec2 vUv;
-uniform sampler2D uTexture;
 
 #define PI 3.14159265358979323846264338327
 
@@ -14,51 +13,9 @@ uniform sampler2D uTexture;
 vec3 getColor(float noiseValue, float rColor, float gColor, float bColor) {
 	vec3 blueAccent = vec3(16.0/255.0, 35.0/255.0, 110.0/255.0);
 
-	float phi = atan(vPosition.z, vPosition.x);
-	float theta = acos(vPosition.y / length(vPosition));
-	theta = PI / 2.0 - theta;
-	vec2 adjustedUV = vec2(mod((phi * 3.0 / PI) + 0.5, 1.0), theta / PI);
-
-	// random calculations
-	vec3 absPos = abs(vPosition);
-	float maxCoord = max(absPos.x, max(absPos.y, absPos.z));
-	vec2 uv = absPos.x == maxCoord ? vec2(vPosition.z, vPosition.y) / maxCoord :
-			absPos.y == maxCoord ? vec2(vPosition.x, vPosition.z) / maxCoord :
-									vec2(vPosition.x, vPosition.y) / maxCoord;
-	adjustedUV = (uv + 1.0) / 2.0;
-	adjustedUV.x = vPosition.x < 0.0 || vPosition.z < 0.0 ? 1.0 - adjustedUV.x : adjustedUV.x;
-	adjustedUV.y = vPosition.y < 0.0 ? 1.0 - adjustedUV.y : adjustedUV.y;
-
-	vec4 imageColor = texture2D(uTexture, adjustedUV);
-	vec3 colorMix = mix(vec3(0.0, 0.0, 0.0), blueAccent, noiseValue*0.7);
-	vec3 skyColor = mix(colorMix, imageColor.rgb, imageColor.a);
-	
+	vec3 skyColor = vec3(rColor, gColor, bColor);
 	vec3 horizonColor = mix(vec3(0.0, 0.0, 0.0), blueAccent, noiseValue);
 	vec3 voidColor = vec3(0.0, 0.0, 0.0);	
-
-
-	// // vec3 horizonColor = vec3(1.0, 0.0, 0.0);
-
-	// vec3 horizonColor = vec3(0.6, 0.8, 1.0); 
-	// vec3 cloudColor = texture2D(uTexture, vUv).rgb;
-    // // vec3 cloudColor = vec3(1.0, 1.0, 1.0);
-	// float darkenFactor = 0.7;
-
-	// // vec3 horizonColor = rgb2hsl(originalColor);
-	// // horizonColor.y *= 2.0;
-	// // horizonColor = hsl2rgb(horizonColor);
-    // // horizonColor = mix(horizonColor, cloudColor, 0.3);
-
-	// vec3 skyColor = cloudColor;
-    // // vec3 skyColor = mix(horizonColor, cloudColor, noiseValue);
-	// vec3 voidColor = horizonColor * darkenFactor;
-
-    // // vec3 cloudColor = vec3(1.0, 1.0, 1.0);
-	// // float darkenFactor = 0.6;
-
-    // // vec3 horizonColor = vec3(rColor, gColor, bColor);
-    // // vec3 skyColor = mix(horizonColor, cloudColor, noiseValue);
-	// // vec3 voidColor = horizonColor * darkenFactor;
 
     float tHorizon = smoothstep(200.0, 700.0, vPosition.y);
     float tVoid = smoothstep(-700.0, -200.0, vPosition.y);
@@ -72,8 +29,6 @@ vec3 getColor(float noiseValue, float rColor, float gColor, float bColor) {
 // some calculations
 float func(float x) {
 	return x*x*(3.0-2.0*x);
-	// float a = x * 0.7 - 1.0;
-	// return a * a * a + 1.0;
 }
 
 
@@ -86,3 +41,25 @@ void main() {
 
 	gl_FragColor = vec4(color, 1.0);
 }
+
+
+// code for implementing image at the top without warping
+
+	// float phi = atan(vPosition.z, vPosition.x);
+	// float theta = acos(vPosition.y / length(vPosition));
+	// theta = PI / 2.0 - theta;
+	// vec2 adjustedUV = vec2(mod((phi * 3.0 / PI) + 0.5, 1.0), theta / PI);
+
+	// // random calculations
+	// vec3 absPos = abs(vPosition);
+	// float maxCoord = max(absPos.x, max(absPos.y, absPos.z));
+	// vec2 uv = absPos.x == maxCoord ? vec2(vPosition.z, vPosition.y) / maxCoord :
+	// 		absPos.y == maxCoord ? vec2(vPosition.x, vPosition.z) / maxCoord :
+	// 								vec2(vPosition.x, vPosition.y) / maxCoord;
+	// adjustedUV = (uv + 1.0) / 2.0;
+	// adjustedUV.x = vPosition.x < 0.0 || vPosition.z < 0.0 ? 1.0 - adjustedUV.x : adjustedUV.x;
+	// adjustedUV.y = vPosition.y < 0.0 ? 1.0 - adjustedUV.y : adjustedUV.y;
+
+	// vec4 imageColor = texture2D(uTexture, adjustedUV);
+	// vec3 colorMix = mix(vec3(0.0, 0.0, 0.0), blueAccent, noiseValue*0.7);
+	// vec3 skyColor = mix(colorMix, imageColor.rgb, imageColor.a);
