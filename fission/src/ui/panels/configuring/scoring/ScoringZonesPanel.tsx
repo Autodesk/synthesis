@@ -13,42 +13,19 @@ type ScoringZoneRowProps = {
     deleteZone: () => void
 }
 
-const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({
-    zone,
-    openPanel,
-    deleteZone,
-}) => {
+const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, openPanel, deleteZone }) => {
     return (
-        <Stack
-            direction={StackDirection.Horizontal}
-            spacing={48}
-            justify="between"
-        >
-            <Stack
-                direction={StackDirection.Horizontal}
-                spacing={8}
-                justify="start"
-            >
-                <div
-                    className={`w-12 h-12 bg-match-${zone.alliance}-alliance rounded-lg`}
-                />
-                <Stack
-                    direction={StackDirection.Vertical}
-                    spacing={4}
-                    justify={"center"}
-                    className="w-max"
-                >
+        <Stack direction={StackDirection.Horizontal} spacing={48} justify="between">
+            <Stack direction={StackDirection.Horizontal} spacing={8} justify="start">
+                <div className={`w-12 h-12 bg-match-${zone.alliance}-alliance rounded-lg`} />
+                <Stack direction={StackDirection.Vertical} spacing={4} justify={"center"} className="w-max">
                     <Label size={LabelSize.Small}>{zone.name}</Label>
                     <Label size={LabelSize.Small}>
                         {zone.points} {zone.points == 1 ? "point" : "points"}
                     </Label>
                 </Stack>
             </Stack>
-            <Stack
-                direction={StackDirection.Horizontal}
-                spacing={8}
-                justify="start"
-            >
+            <Stack direction={StackDirection.Horizontal} spacing={8} justify="start">
                 <Button value="Edit" onClick={() => openPanel("zone-config")} />
                 <Button value="Delete" onClick={deleteZone} />
             </Stack>
@@ -56,7 +33,7 @@ const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({
     )
 }
 
-const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
+const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
     const { openPanel } = usePanelControlContext()
     const [zones, setZones] = useState<ScoringZone[]>([
         {
@@ -227,6 +204,8 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         <Panel
             name="Scoring Zones"
             panelId={panelId}
+            openLocation={openLocation}
+            sidePadding={sidePadding}
             cancelEnabled={false}
             acceptName="Close"
         >
@@ -242,11 +221,7 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     />
                 ))}
             </ScrollView>
-            <Button
-                value="Add Zone"
-                onClick={() => openPanel("zone-config")}
-                className="px-36 w-full"
-            />
+            <Button value="Add Zone" onClick={() => openPanel("zone-config")} className="px-36 w-full" />
         </Panel>
     )
 }

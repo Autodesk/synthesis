@@ -5,7 +5,7 @@ import Stack, { StackDirection } from "@/components/Stack"
 import Button from "@/components/Button"
 import Dropdown from "@/components/Dropdown"
 
-const DriverStationPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
+const DriverStationPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
     const [enabled, setEnabled] = useState(false)
 
     return (
@@ -13,12 +13,11 @@ const DriverStationPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             name="Driver Station (Not Connected)"
             icon={<GiSteeringWheel />}
             panelId={panelId}
+            openLocation={openLocation}
+            sidePadding={sidePadding}
         >
             <Stack direction={StackDirection.Horizontal}>
-                <Button
-                    value={enabled ? "Enabled" : "Disabled"}
-                    onClick={() => setEnabled(!enabled)}
-                />
+                <Button value={enabled ? "Enabled" : "Disabled"} onClick={() => setEnabled(!enabled)} />
                 <Dropdown options={["Auto", "Teleop"]} onSelect={() => {}} />
             </Stack>
         </Panel>
