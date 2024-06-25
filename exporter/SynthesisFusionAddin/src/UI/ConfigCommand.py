@@ -20,7 +20,24 @@ from ..Parser.ParseOptions import (
 )
 from .Configuration.SerialCommand import SerialCommand
 
-import adsk.core, adsk.fusion, traceback, logging, os
+# Transition: AARD-1685
+from .CreateCommandInputsHelper import (
+    createTextBoxInput,
+    createTableInput,
+)
+from .JointConfigTab import (
+    createJointConfigTab,
+    addJointToConfigTab,
+    removeIndexedJointFromConfigTab,
+    getSelectedJoints,
+    resetSelectedJoints
+)
+
+import adsk.core
+import adsk.fusion
+import traceback
+import logging
+import os
 from types import SimpleNamespace
 
 # ====================================== CONFIG COMMAND ======================================
@@ -241,7 +258,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
 
             # ~~~~~~~~~~~~~~~~ WEIGHT CONFIGURATION ~~~~~~~~~~~~~~~~
             """
-            Table for weight config. 
+            Table for weight config.
                 - Used this to align multiple commandInputs on the same row
             """
             weightTableInput = self.createTableInput(
@@ -387,17 +404,17 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             algorithmicIndicator.formattedText = "🟢"
             algorithmicIndicator.tooltipDescription = (
                 "<tt>(enabled)</tt>" +
-                "<hr>If a sub-part of a wheel is selected (eg. a roller of an omni wheel), an algorithm will traverse the assembly to best determine the entire wheel component.<br>" + 
-                "<br>This traversal operates on how the wheel is jointed and where the joint is placed. If the automatic selection fails, try:" + 
+                "<hr>If a sub-part of a wheel is selected (eg. a roller of an omni wheel), an algorithm will traverse the assembly to best determine the entire wheel component.<br>" +
+                "<br>This traversal operates on how the wheel is jointed and where the joint is placed. If the automatic selection fails, try:" +
                 "<ul>" +
-                    "<tt>" + 
-                        "<li>Jointing the wheel differently, or</li><br>" + 
-                        "<li>Selecting the wheel from the browser while holding down <span style='text-decoration:overline;text-decoration:underline;background-color: #c27b10'>&nbsp;CTRL&nbsp;</span></span>, or</li><br>" + 
-                        "<li>Disabling Algorithmic Selection.</li>" + 
-                    "</tt>" + 
+                    "<tt>" +
+                        "<li>Jointing the wheel differently, or</li><br>" +
+                        "<li>Selecting the wheel from the browser while holding down <span style='text-decoration:overline;text-decoration:underline;background-color: #c27b10'>&nbsp;CTRL&nbsp;</span></span>, or</li><br>" +
+                        "<li>Disabling Algorithmic Selection.</li>" +
+                    "</tt>" +
                 "</ul>"
             )
-            
+
             wheelTableInput.addCommandInput(
                 algorithmicIndicator,
                 0,
@@ -437,157 +454,158 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 3,
             )
 
-            # AUTOMATICALLY SELECT DUPLICATES
-            """
-            Select duplicates?
-                - creates a BoolValueCommandInput
-            """
-            # self.createBooleanInput( # create bool value command input using helper
-            #     "duplicate_selection",
-            #     "Select Duplicates",
-            #     wheel_inputs,
-            #     checked=True,
-            #     tooltip="Select duplicate wheel components.",
-            #     tooltipadvanced="""<hr>When this is checked, all duplicate occurrences will be automatically selected.
-            #     <br>This feature may fail when duplicates are not direct copies.</br>""", # advanced tooltip
-            #     enabled=True,
-            # )
-
-            # ~~~~~~~~~~~~~~~~ JOINT CONFIGURATION ~~~~~~~~~~~~~~~~
-            """
-            Joint configuration group. Container for joint selection table
-            """
-            jointConfig = inputs.addGroupCommandInput(
-                "joint_config", "Joint Configuration"
-            )
-            jointConfig.isExpanded = False
-            jointConfig.isVisible = True
-            jointConfig.tooltip = "Select and define joint occurrences in your assembly."
-
-            joint_inputs = jointConfig.children
-
-            # JOINT SELECTION TABLE
-            """
-            All selection joints appear here.
-            """
-            jointTableInput = (
-                self.createTableInput(  # create tablecommandinput using helper
-                    "joint_table",
-                    "Joint Table",
-                    joint_inputs,
-                    6,
-                    "1:2:2:2:2:2",
-                    50,
-                )
-            )
-
-            addJointInput = joint_inputs.addBoolValueInput(
-                "joint_add", "Add", False
-            )  # add button
-
-            removeJointInput = joint_inputs.addBoolValueInput(  # remove button
-                "joint_delete", "Remove", False
-            )
-
-            addJointInput.isEnabled = removeJointInput.isEnabled = True
-
-            addJointInput.tooltip = "Add a joint selection"  # tooltips
-            removeJointInput.tooltip = "Remove a joint selection"
-
-            jointSelectInput = joint_inputs.addSelectionInput(
-                "joint_select",
-                "Selection",
-                "Select a joint in your drive-train assembly.",
-            )
-
-            jointSelectInput.addSelectionFilter("Joints")  # only allow joint selection
-            jointSelectInput.setSelectionLimits(0)  # set no selection count limits
-            jointSelectInput.isEnabled = False
-            jointSelectInput.isVisible = False  # make selection box invisible
-
-            jointTableInput.addToolbarCommandInput(
-                addJointInput
-            )  # add bool inputs to the toolbar
-            jointTableInput.addToolbarCommandInput(
-                removeJointInput
-            )  # add bool inputs to the toolbar
-
-            jointTableInput.addCommandInput(
-                self.createTextBoxInput(  # create a textBoxCommandInput for the table header (Joint Motion), using helper
-                    "motion_header",
-                    "Motion",
-                    joint_inputs,
-                    "Motion",
-                    bold=False,
-                ),
-                0,
-                0,
-            )
-
-            jointTableInput.addCommandInput(
-                self.createTextBoxInput(  # textBoxCommandInput for table header (Joint Name), using helper
-                    "name_header", "Name", joint_inputs, "Joint name", bold=False
-                ),
-                0,
-                1,
-            )
-
-            jointTableInput.addCommandInput(
-                self.createTextBoxInput(  # another header using helper
-                    "parent_header",
-                    "Parent",
-                    joint_inputs,
-                    "Parent joint",
-                    background="#d9d9d9",  # background color
-                ),
-                0,
-                2,
-            )
-
-            jointTableInput.addCommandInput(
-                self.createTextBoxInput(  # another header using helper
-                    "signal_header",
-                    "Signal",
-                    joint_inputs,
-                    "Signal type",
-                    background="#d9d9d9",  # back color
-                ),
-                0,
-                3,
-            )
-
-            jointTableInput.addCommandInput(
-                self.createTextBoxInput(  # another header using helper
-                    "speed_header",
-                    "Speed",
-                    joint_inputs,
-                    "Joint Speed",
-                    background="#d9d9d9",  # back color
-                ),
-                0,
-                4,
-            )
-
-            jointTableInput.addCommandInput(
-                self.createTextBoxInput(  # another header using helper
-                    "force_header",
-                    "Force",
-                    joint_inputs,
-                    "Joint Force",
-                    background="#d9d9d9",  # back color
-                ),
-                0,
-                5,
-            )
-
+            # Transition AARD-1685:
+            # This should be how all things in this class are handled. - Brandon
+            createJointConfigTab(args)
             for joint in list(
                 gm.app.activeDocument.design.rootComponent.allJoints
             ) + list(gm.app.activeDocument.design.rootComponent.allAsBuiltJoints):
-                if (
-                    joint.jointMotion.jointType == JointMotions.REVOLUTE.value
+                if (joint.jointMotion.jointType == JointMotions.REVOLUTE.value
                     or joint.jointMotion.jointType == JointMotions.SLIDER.value
                 ) and not joint.isSuppressed:
-                    addJointToTable(joint)
+                    addJointToConfigTab(joint)
+
+
+            # Transition AARD-1685:
+            # ~~~~~~~~~~~~~~~~ JOINT CONFIGURATION ~~~~~~~~~~~~~~~~
+            # """
+            # Joint configuration group. Container for joint selection table
+            # """
+            # jointConfig = inputs.addGroupCommandInput(
+            #     "joint_config", "Joint Configuration"
+            # )
+            # jointConfig.isExpanded = False
+            # jointConfig.isVisible = True
+            # jointConfig.tooltip = "Select and define joint occurrences in your assembly."
+
+            # joint_inputs = jointConfig.children
+
+            # # JOINT SELECTION TABLE
+            # """
+            # All selection joints appear here.
+            # """
+            # jointTableInput = (
+            #     self.createTableInput(  # create tablecommandinput using helper
+            #         "joint_table",
+            #         "Joint Table",
+            #         joint_inputs,
+            #         6,
+            #         "1:2:2:2:2:2",
+            #         50,
+            #     )
+            # )
+
+            # addJointInput = joint_inputs.addBoolValueInput(
+            #     "joint_add", "Add", False
+            # )  # add button
+
+            # removeJointInput = joint_inputs.addBoolValueInput(  # remove button
+            #     "joint_delete", "Remove", False
+            # )
+
+            # addJointInput.isEnabled = removeJointInput.isEnabled = True
+
+            # addJointInput.tooltip = "Add a joint selection"  # tooltips
+            # removeJointInput.tooltip = "Remove a joint selection"
+
+            # jointSelectInput = joint_inputs.addSelectionInput(
+            #     "joint_select",
+            #     "Selection",
+            #     "Select a joint in your drive-train assembly.",
+            # )
+
+            # jointSelectInput.addSelectionFilter("Joints")  # only allow joint selection
+            # jointSelectInput.setSelectionLimits(0)  # set no selection count limits
+            # jointSelectInput.isEnabled = False
+            # jointSelectInput.isVisible = False  # make selection box invisible
+
+            # jointTableInput.addToolbarCommandInput(
+            #     addJointInput
+            # )  # add bool inputs to the toolbar
+            # jointTableInput.addToolbarCommandInput(
+            #     removeJointInput
+            # )  # add bool inputs to the toolbar
+
+            # jointTableInput.addCommandInput(
+            #     self.createTextBoxInput(  # create a textBoxCommandInput for the table header (Joint Motion), using helper
+            #         "motion_header",
+            #         "Motion",
+            #         joint_inputs,
+            #         "Motion",
+            #         bold=False,
+            #     ),
+            #     0,
+            #     0,
+            # )
+
+            # jointTableInput.addCommandInput(
+            #     self.createTextBoxInput(  # textBoxCommandInput for table header (Joint Name), using helper
+            #         "name_header", "Name", joint_inputs, "Joint name", bold=False
+            #     ),
+            #     0,
+            #     1,
+            # )
+
+            # jointTableInput.addCommandInput(
+            #     self.createTextBoxInput(  # another header using helper
+            #         "parent_header",
+            #         "Parent",
+            #         joint_inputs,
+            #         "Parent joint",
+            #         background="#d9d9d9",  # background color
+            #     ),
+            #     0,
+            #     2,
+            # )
+
+            # jointTableInput.addCommandInput(
+            #     self.createTextBoxInput(  # another header using helper
+            #         "signal_header",
+            #         "Signal",
+            #         joint_inputs,
+            #         "Signal type",
+            #         background="#d9d9d9",  # back color
+            #     ),
+            #     0,
+            #     3,
+            # )
+
+            # jointTableInput.addCommandInput(
+            #     self.createTextBoxInput(  # another header using helper
+            #         "speed_header",
+            #         "Speed",
+            #         joint_inputs,
+            #         "Joint Speed",
+            #         background="#d9d9d9",  # back color
+            #     ),
+            #     0,
+            #     4,
+            # )
+
+            # jointTableInput.addCommandInput(
+            #     self.createTextBoxInput(  # another header using helper
+            #         "force_header",
+            #         "Force",
+            #         joint_inputs,
+            #         "Joint Force",
+            #         background="#d9d9d9",  # back color
+            #     ),
+            #     0,
+            #     5,
+            # )
+
+            # Transition: AARD-1685
+            # for joint in list(
+            #     gm.app.activeDocument.design.rootComponent.allJoints
+            # ) + list(gm.app.activeDocument.design.rootComponent.allAsBuiltJoints):
+            #     if (
+            #         joint.jointMotion.jointType == JointMotions.REVOLUTE.value
+            #         or joint.jointMotion.jointType == JointMotions.SLIDER.value
+            #     ) and not joint.isSuppressed:
+            #         # Transition: AARD-1685
+            #         # addJointToTable(joint)
+            #         addJointToConfigTab(args, joint)
+
 
             # ~~~~~~~~~~~~~~~~ GAMEPIECE CONFIGURATION ~~~~~~~~~~~~~~~~
             """
@@ -996,6 +1014,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 "{INTERNAL_ID}.UI.ConfigCommand.{self.__class__.__name__}"
             ).error("Failed:\n{}".format(traceback.format_exc()))
 
+    # Transition: AARD-1685
     def createBooleanInput(
         self,
         _id: str,
@@ -1032,6 +1051,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 "{INTERNAL_ID}.UI.ConfigCommand.{self.__class__.__name__}.createBooleanInput()"
             ).error("Failed:\n{}".format(traceback.format_exc()))
 
+    # Transition: AARD-1685
     def createTableInput(
         self,
         _id: str,
@@ -1072,6 +1092,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 "{INTERNAL_ID}.UI.ConfigCommand.{self.__class__.__name__}.createTableInput()"
             ).error("Failed:\n{}".format(traceback.format_exc()))
 
+    # Transition: AARD-1685
     def createTextBoxInput(
         self,
         _id: str,
@@ -1256,7 +1277,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                         + ".mira"
                     )
 
-            if savepath == False:
+            if not savepath:
                 # save was canceled
                 return
             else:
@@ -1274,7 +1295,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 renderer = 0
 
                 _exportWheels = []  # all selected wheels, formatted for parseOptions
-                _exportJoints = []  # all selected joints, formatted for parseOptions
+                # _exportJoints = []  # all selected joints, formatted for parseOptions
                 _exportGamepieces = []  # TODO work on the code to populate Gamepiece
                 _robotWeight = float
                 _mode = Mode
@@ -1301,70 +1322,74 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                             WheelListGlobal[row - 1].entityToken,
                             wheelTypeIndex,
                             signalTypeIndex,
-                            # onSelect.wheelJointList[row-1][0] # GUID of wheel joint. if no joint found, default to None
+                            # onSelect.wheelJointList[row-1][0] # GUID of wheel joint. if no joint
+                            # found, default to None
                         )
                     )
+
+                # Transition: AARD-1685
+                _exportJoints = getSelectedJoints()
 
                 """
                 Loops through all rows in the joint table to extract the input values
                 """
-                jointTableInput = jointTable()
-                for row in range(jointTableInput.rowCount):
-                    if row == 0:
-                        continue
+                # jointTableInput = jointTable()
+                # for row in range(jointTableInput.rowCount):
+                #     if row == 0:
+                #         continue
 
-                    parentJointIndex = jointTableInput.getInputAtPosition(
-                        row, 2
-                    ).selectedItem.index  # parent joint index, int
+                #     parentJointIndex = jointTableInput.getInputAtPosition(
+                #         row, 2
+                #     ).selectedItem.index  # parent joint index, int
 
-                    signalTypeIndex = jointTableInput.getInputAtPosition(
-                        row, 3
-                    ).selectedItem.index  # signal type index, int
+                #     signalTypeIndex = jointTableInput.getInputAtPosition(
+                #         row, 3
+                #     ).selectedItem.index  # signal type index, int
 
-                    # typeString = jointTableInput.getInputAtPosition(
-                    #     row, 0
-                    # ).name
+                #     # typeString = jointTableInput.getInputAtPosition(
+                #     #     row, 0
+                #     # ).name
 
-                    jointSpeed = jointTableInput.getInputAtPosition(row, 4).value
+                #     jointSpeed = jointTableInput.getInputAtPosition(row, 4).value
 
-                    jointForce = jointTableInput.getInputAtPosition(row, 5).value
+                #     jointForce = jointTableInput.getInputAtPosition(row, 5).value
 
-                    parentJointToken = ""
+                #     parentJointToken = ""
 
-                    if parentJointIndex == 0:
-                        _exportJoints.append(
-                            _Joint(
-                                JointListGlobal[row - 1].entityToken,
-                                JointParentType.ROOT,
-                                signalTypeIndex,  # index of selected signal in dropdown
-                                jointSpeed,
-                                jointForce / 100.0,
-                            )  # parent joint GUID
-                        )
-                        continue
-                    elif parentJointIndex < row:
-                        parentJointToken = JointListGlobal[
-                            parentJointIndex - 1
-                        ].entityToken  # parent joint GUID, str
-                    else:
-                        parentJointToken = JointListGlobal[
-                            parentJointIndex + 1
-                        ].entityToken  # parent joint GUID, str
+                #     if parentJointIndex == 0:
+                #         _exportJoints.append(
+                #             _Joint(
+                #                 JointListGlobal[row - 1].entityToken,
+                #                 JointParentType.ROOT,
+                #                 signalTypeIndex,  # index of selected signal in dropdown
+                #                 jointSpeed,
+                #                 jointForce / 100.0,
+                #             )  # parent joint GUID
+                #         )
+                #         continue
+                #     elif parentJointIndex < row:
+                #         parentJointToken = JointListGlobal[
+                #             parentJointIndex - 1
+                #         ].entityToken  # parent joint GUID, str
+                #     else:
+                #         parentJointToken = JointListGlobal[
+                #             parentJointIndex + 1
+                #         ].entityToken  # parent joint GUID, str
 
-                    # for wheel in _exportWheels:
-                    # find some way to get joint
-                    # 1. Compare Joint occurrence1 to wheel.occurrence_token
-                    # 2. if true set the parent to Root
+                #     # for wheel in _exportWheels:
+                #     # find some way to get joint
+                #     # 1. Compare Joint occurrence1 to wheel.occurrence_token
+                #     # 2. if true set the parent to Root
 
-                    _exportJoints.append(
-                        _Joint(
-                            JointListGlobal[row - 1].entityToken,
-                            parentJointToken,
-                            signalTypeIndex,
-                            jointSpeed,
-                            jointForce,
-                        )
-                    )
+                #     _exportJoints.append(
+                #         _Joint(
+                #             JointListGlobal[row - 1].entityToken,
+                #             parentJointToken,
+                #             signalTypeIndex,
+                #             jointSpeed,
+                #             jointForce,
+                #         )
+                #     )
 
                 """
                 Loops through all rows in the gamepiece table to extract the input values
@@ -1431,11 +1456,16 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
 
                 if options.parse(False):
                     # success
-                    return
+                    pass
                 else:
                     self.log.error(
                         f"Error: \n\t{name} could not be written to \n {savepath}"
                     )
+
+                # All selections should be reset AFTER a successful export and save.
+                # If we run into an exporting error we should return back to the panel with all current options
+                # still in tact. Even if they did not save.
+                resetSelectedJoints()
         except:
             if gm.ui:
                 gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
@@ -1469,15 +1499,21 @@ class CommandExecutePreviewHandler(adsk.core.CommandEventHandler):
             auto_calc_weight_f = INPUTS_ROOT.itemById("auto_calc_weight_f")
 
             removeWheelInput = INPUTS_ROOT.itemById("wheel_delete")
-            removeJointInput = INPUTS_ROOT.itemById("joint_delete")
+            removeJointInput = INPUTS_ROOT.itemById("jointRemoveButton")
             removeFieldInput = INPUTS_ROOT.itemById("field_delete")
 
             addWheelInput = INPUTS_ROOT.itemById("wheel_add")
-            addJointInput = INPUTS_ROOT.itemById("joint_add")
+            addJointInput = INPUTS_ROOT.itemById("jointAddButton")
             addFieldInput = INPUTS_ROOT.itemById("field_add")
 
             wheelTableInput = wheelTable()
-            jointTableInput = jointTable()
+
+            # Transition: AARD-1685
+            # jointTableInput = jointTable()
+
+            inputs = args.command.commandInputs
+            jointTableInput: adsk.core.TableCommandInput = inputs.itemById("jointSettings").children.itemById("jointTable")
+
             gamepieceTableInput = gamepieceTable()
 
             if wheelTableInput.rowCount <= 1:
@@ -1725,10 +1761,12 @@ class MySelectHandler(adsk.core.SelectionEventHandler):
                                 WheelListGlobal.index(self.selectedJoint)
                             )
                     else:
-                        if self.selectedJoint not in JointListGlobal:
-                            addJointToTable(self.selectedJoint)
-                        else:
-                            removeJointFromTable(self.selectedJoint)
+                        # Transition: AARD-1685
+                        # if self.selectedJoint not in JointListGlobal:
+                        addJointToConfigTab(self.selectedJoint)
+                            # addJointToTable(self.selectedJoint)
+                        # else:
+                            # removeJointFromTable(self.selectedJoint)
 
                     selectionInput.isEnabled = False
                     selectionInput.isVisible = False
@@ -1905,11 +1943,16 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
             frictionCoeff = INPUTS_ROOT.itemById("friction_coeff_override")
 
             wheelSelect = inputs.itemById("wheel_select")
-            jointSelect = inputs.itemById("joint_select")
+            jointSelect = inputs.itemById("jointSelection")
             gamepieceSelect = inputs.itemById("gamepiece_select")
 
             wheelTableInput = wheelTable()
-            jointTableInput = jointTable()
+
+            # Transition: AARD-1685
+            # jointTableInput = jointTable()
+
+            jointTableInput: adsk.core.TableCommandInput = args.inputs.itemById("jointTable")
+
             gamepieceTableInput = gamepieceTable()
             weightTableInput = inputs.itemById("weight_table")
 
@@ -1920,7 +1963,7 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
             gamepieceConfig = inputs.itemById("gamepiece_config")
 
             addWheelInput = INPUTS_ROOT.itemById("wheel_add")
-            addJointInput = INPUTS_ROOT.itemById("joint_add")
+            addJointInput = INPUTS_ROOT.itemById("jointAddButton")
             addFieldInput = INPUTS_ROOT.itemById("field_add")
 
             indicator = INPUTS_ROOT.itemById("algorithmic_indicator")
@@ -2099,7 +2142,8 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                 addJointInput.isEnabled = True
                 addWheelInput.isEnabled = False
 
-            elif cmdInput.id == "joint_add":
+            # Transition: AARD-1685
+            elif cmdInput.id == "jointAddButton":
                 self.reset()
 
                 addWheelInput.isEnabled = True
@@ -2128,7 +2172,7 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                     index = wheelTableInput.selectedRow - 1
                     removeWheelFromTable(index)
 
-            elif cmdInput.id == "joint_delete":
+            elif cmdInput.id == "jointRemoveButton":
                 gm.ui.activeSelections.clear()
 
                 addJointInput.isEnabled = True
@@ -2138,8 +2182,13 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                     jointTableInput.selectedRow = jointTableInput.rowCount - 1
                     gm.ui.messageBox("Select a row to delete.")
                 else:
-                    joint = JointListGlobal[jointTableInput.selectedRow - 1]
-                    removeJointFromTable(joint)
+                    # Transition: AARD-1685
+                    # joint = JointListGlobal[jointTableInput.selectedRow - 1]
+                    # removeJointFromTable(joint)
+                    # removeJointFromConfigTab(joint)
+
+                    # Select Row is 1 indexed
+                    removeIndexedJointFromConfigTab(jointTableInput.selectedRow - 1)
 
             elif cmdInput.id == "field_delete":
                 gm.ui.activeSelections.clear()
@@ -2159,7 +2208,7 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
             elif cmdInput.id == "wheel_select":
                 addWheelInput.isEnabled = True
 
-            elif cmdInput.id == "joint_select":
+            elif cmdInput.id == "jointSelection":
                 addJointInput.isEnabled = True
 
             elif cmdInput.id == "gamepiece_select":
@@ -2168,7 +2217,7 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
             elif cmdInput.id == "friction_override":
                 boolValue = adsk.core.BoolValueCommandInput.cast(cmdInput)
 
-                if boolValue.value == True:
+                if boolValue.value:
                     frictionCoeff.isVisible = True
                 else:
                     frictionCoeff.isVisible = False
@@ -2433,140 +2482,141 @@ class MyCommandDestroyHandler(adsk.core.CommandEventHandler):
             ).error("Failed:\n{}".format(traceback.format_exc()))
 
 
-def addJointToTable(joint: adsk.fusion.Joint) -> None:
-    """### Adds a Joint object to its global list and joint table.
+# Transition: AARD-1685
+# def addJointToTable(joint: adsk.fusion.Joint) -> None:
+#     """### Adds a Joint object to its global list and joint table.
 
-    Args:
-        joint (adsk.fusion.Joint): Joint object to be added
-    """
-    try:
-        JointListGlobal.append(joint)
-        jointTableInput = jointTable()
-        cmdInputs = adsk.core.CommandInputs.cast(jointTableInput.commandInputs)
+#     Args:
+#         joint (adsk.fusion.Joint): Joint object to be added
+#     """
+#     try:
+#         JointListGlobal.append(joint)
+#         jointTableInput = jointTable()
+#         cmdInputs = adsk.core.CommandInputs.cast(jointTableInput.commandInputs)
 
-        # joint type icons
-        if joint.jointMotion.jointType == adsk.fusion.JointTypes.RigidJointType:
-            icon = cmdInputs.addImageCommandInput(
-                "placeholder", "Rigid", IconPaths.jointIcons["rigid"]
-            )
-            icon.tooltip = "Rigid joint"
+#         # joint type icons
+#         if joint.jointMotion.jointType == adsk.fusion.JointTypes.RigidJointType:
+#             icon = cmdInputs.addImageCommandInput(
+#                 "placeholder", "Rigid", IconPaths.jointIcons["rigid"]
+#             )
+#             icon.tooltip = "Rigid joint"
 
-        elif joint.jointMotion.jointType == adsk.fusion.JointTypes.RevoluteJointType:
-            icon = cmdInputs.addImageCommandInput(
-                "placeholder", "Revolute", IconPaths.jointIcons["revolute"]
-            )
-            icon.tooltip = "Revolute joint"
+#         elif joint.jointMotion.jointType == adsk.fusion.JointTypes.RevoluteJointType:
+#             icon = cmdInputs.addImageCommandInput(
+#                 "placeholder", "Revolute", IconPaths.jointIcons["revolute"]
+#             )
+#             icon.tooltip = "Revolute joint"
 
-        elif joint.jointMotion.jointType == adsk.fusion.JointTypes.SliderJointType:
-            icon = cmdInputs.addImageCommandInput(
-                "placeholder", "Slider", IconPaths.jointIcons["slider"]
-            )
-            icon.tooltip = "Slider joint"
+#         elif joint.jointMotion.jointType == adsk.fusion.JointTypes.SliderJointType:
+#             icon = cmdInputs.addImageCommandInput(
+#                 "placeholder", "Slider", IconPaths.jointIcons["slider"]
+#             )
+#             icon.tooltip = "Slider joint"
 
-        elif joint.jointMotion.jointType == adsk.fusion.JointTypes.PlanarJointType:
-            icon = cmdInputs.addImageCommandInput(
-                "placeholder", "Planar", IconPaths.jointIcons["planar"]
-            )
-            icon.tooltip = "Planar joint"
+#         elif joint.jointMotion.jointType == adsk.fusion.JointTypes.PlanarJointType:
+#             icon = cmdInputs.addImageCommandInput(
+#                 "placeholder", "Planar", IconPaths.jointIcons["planar"]
+#             )
+#             icon.tooltip = "Planar joint"
 
-        elif joint.jointMotion.jointType == adsk.fusion.JointTypes.PinSlotJointType:
-            icon = cmdInputs.addImageCommandInput(
-                "placeholder", "Pin Slot", IconPaths.jointIcons["pin_slot"]
-            )
-            icon.tooltip = "Pin slot joint"
+#         elif joint.jointMotion.jointType == adsk.fusion.JointTypes.PinSlotJointType:
+#             icon = cmdInputs.addImageCommandInput(
+#                 "placeholder", "Pin Slot", IconPaths.jointIcons["pin_slot"]
+#             )
+#             icon.tooltip = "Pin slot joint"
 
-        elif joint.jointMotion.jointType == adsk.fusion.JointTypes.CylindricalJointType:
-            icon = cmdInputs.addImageCommandInput(
-                "placeholder", "Cylindrical", IconPaths.jointIcons["cylindrical"]
-            )
-            icon.tooltip = "Cylindrical joint"
+#         elif joint.jointMotion.jointType == adsk.fusion.JointTypes.CylindricalJointType:
+#             icon = cmdInputs.addImageCommandInput(
+#                 "placeholder", "Cylindrical", IconPaths.jointIcons["cylindrical"]
+#             )
+#             icon.tooltip = "Cylindrical joint"
 
-        elif joint.jointMotion.jointType == adsk.fusion.JointTypes.BallJointType:
-            icon = cmdInputs.addImageCommandInput(
-                "placeholder", "Ball", IconPaths.jointIcons["ball"]
-            )
-            icon.tooltip = "Ball joint"
+#         elif joint.jointMotion.jointType == adsk.fusion.JointTypes.BallJointType:
+#             icon = cmdInputs.addImageCommandInput(
+#                 "placeholder", "Ball", IconPaths.jointIcons["ball"]
+#             )
+#             icon.tooltip = "Ball joint"
 
-        # joint name
-        name = cmdInputs.addTextBoxCommandInput("name_j", "Occurrence name", "", 1, True)
-        name.tooltip = joint.name
-        name.formattedText = "<p style='font-size:11px'>{}</p>".format(joint.name)
+#         # joint name
+#         name = cmdInputs.addTextBoxCommandInput("name_j", "Occurrence name", "", 1, True)
+#         name.tooltip = joint.name
+#         name.formattedText = "<p style='font-size:11px'>{}</p>".format(joint.name)
 
-        jointType = cmdInputs.addDropDownCommandInput(
-            "joint_parent",
-            "Joint Type",
-            dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
-        )
-        jointType.isFullWidth = True
-        jointType.listItems.add("Root", True)
+#         jointType = cmdInputs.addDropDownCommandInput(
+#             "joint_parent",
+#             "Joint Type",
+#             dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
+#         )
+#         jointType.isFullWidth = True
+#         jointType.listItems.add("Root", True)
 
-        # after each additional joint added, add joint to the dropdown of all preview rows/joints
-        for row in range(jointTableInput.rowCount):
-            if row != 0:
-                dropDown = jointTableInput.getInputAtPosition(row, 2)
-                dropDown.listItems.add(JointListGlobal[-1].name, False)
+#         # after each additional joint added, add joint to the dropdown of all preview rows/joints
+#         for row in range(jointTableInput.rowCount):
+#             if row != 0:
+#                 dropDown = jointTableInput.getInputAtPosition(row, 2)
+#                 dropDown.listItems.add(JointListGlobal[-1].name, False)
 
-        # add all parent joint options to added joint dropdown
-        for j in range(len(JointListGlobal) - 1):
-            jointType.listItems.add(JointListGlobal[j].name, False)
+#         # add all parent joint options to added joint dropdown
+#         for j in range(len(JointListGlobal) - 1):
+#             jointType.listItems.add(JointListGlobal[j].name, False)
 
-        jointType.tooltip = "Possible parent joints"
-        jointType.tooltipDescription = "<hr>The root component is usually the parent."
+#         jointType.tooltip = "Possible parent joints"
+#         jointType.tooltipDescription = "<hr>The root component is usually the parent."
 
-        signalType = cmdInputs.addDropDownCommandInput(
-            "signal_type",
-            "Signal Type",
-            dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
-        )
-        signalType.listItems.add("‎", True, IconPaths.signalIcons["PWM"])
-        signalType.listItems.add("‎", False, IconPaths.signalIcons["CAN"])
-        signalType.listItems.add("‎", False, IconPaths.signalIcons["PASSIVE"])
-        signalType.tooltip = "Signal type"
+#         signalType = cmdInputs.addDropDownCommandInput(
+#             "signal_type",
+#             "Signal Type",
+#             dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
+#         )
+#         signalType.listItems.add("‎", True, IconPaths.signalIcons["PWM"])
+#         signalType.listItems.add("‎", False, IconPaths.signalIcons["CAN"])
+#         signalType.listItems.add("‎", False, IconPaths.signalIcons["PASSIVE"])
+#         signalType.tooltip = "Signal type"
 
-        row = jointTableInput.rowCount
+#         row = jointTableInput.rowCount
 
-        jointTableInput.addCommandInput(icon, row, 0)
-        jointTableInput.addCommandInput(name, row, 1)
-        jointTableInput.addCommandInput(jointType, row, 2)
-        jointTableInput.addCommandInput(signalType, row, 3)
+#         jointTableInput.addCommandInput(icon, row, 0)
+#         jointTableInput.addCommandInput(name, row, 1)
+#         jointTableInput.addCommandInput(jointType, row, 2)
+#         jointTableInput.addCommandInput(signalType, row, 3)
 
-        if joint.jointMotion.jointType == adsk.fusion.JointTypes.RevoluteJointType:
-            jointSpeed = cmdInputs.addValueInput(
-                "joint_speed",
-                "Speed",
-                "deg",
-                adsk.core.ValueInput.createByReal(3.1415926),
-            )
-            jointSpeed.tooltip = "Degrees per second"
-            jointTableInput.addCommandInput(jointSpeed, row, 4)
+#         if joint.jointMotion.jointType == adsk.fusion.JointTypes.RevoluteJointType:
+#             jointSpeed = cmdInputs.addValueInput(
+#                 "joint_speed",
+#                 "Speed",
+#                 "deg",
+#                 adsk.core.ValueInput.createByReal(3.1415926),
+#             )
+#             jointSpeed.tooltip = "Degrees per second"
+#             jointTableInput.addCommandInput(jointSpeed, row, 4)
 
-            jointForce = cmdInputs.addValueInput(
-                "joint_force", "Force", "N", adsk.core.ValueInput.createByReal(5000)
-            )
-            jointForce.tooltip = "Newton-Meters***"
-            jointTableInput.addCommandInput(jointForce, row, 5)
+#             jointForce = cmdInputs.addValueInput(
+#                 "joint_force", "Force", "N", adsk.core.ValueInput.createByReal(5000)
+#             )
+#             jointForce.tooltip = "Newton-Meters***"
+#             jointTableInput.addCommandInput(jointForce, row, 5)
 
-        if joint.jointMotion.jointType == adsk.fusion.JointTypes.SliderJointType:
-            jointSpeed = cmdInputs.addValueInput(
-                "joint_speed",
-                "Speed",
-                "m",
-                adsk.core.ValueInput.createByReal(100),
-            )
-            jointSpeed.tooltip = "Meters per second"
-            jointTableInput.addCommandInput(jointSpeed, row, 4)
+#         if joint.jointMotion.jointType == adsk.fusion.JointTypes.SliderJointType:
+#             jointSpeed = cmdInputs.addValueInput(
+#                 "joint_speed",
+#                 "Speed",
+#                 "m",
+#                 adsk.core.ValueInput.createByReal(100),
+#             )
+#             jointSpeed.tooltip = "Meters per second"
+#             jointTableInput.addCommandInput(jointSpeed, row, 4)
 
-            jointForce = cmdInputs.addValueInput(
-                "joint_force", "Force", "N", adsk.core.ValueInput.createByReal(5000)
-            )
-            jointForce.tooltip = "Newtons"
-            jointTableInput.addCommandInput(jointForce, row, 5)
+#             jointForce = cmdInputs.addValueInput(
+#                 "joint_force", "Force", "N", adsk.core.ValueInput.createByReal(5000)
+#             )
+#             jointForce.tooltip = "Newtons"
+#             jointTableInput.addCommandInput(jointForce, row, 5)
 
-    except:
-        gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
-        logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.addJointToTable()").error(
-            "Failed:\n{}".format(traceback.format_exc())
-        )
+#     except:
+#         gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
+        # logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.addJointToTable()").error(
+            # "Failed:\n{}".format(traceback.format_exc())
+        # )
 
 
 def addWheelToTable(wheel: adsk.fusion.Joint) -> None:
@@ -2759,42 +2809,43 @@ def removeWheelFromTable(index: int) -> None:
         )
 
 
-def removeJointFromTable(joint: adsk.fusion.Joint) -> None:
-    """### Removes a joint occurrence from its global list and joint table.
+# Transition: AARD-1685
+# def removeJointFromTable(joint: adsk.fusion.Joint) -> None:
+#     """### Removes a joint occurrence from its global list and joint table.
 
-    Args:
-        joint (adsk.fusion.Joint): Joint object to be removed
-    """
-    try:
-        index = JointListGlobal.index(joint)
-        jointTableInput = jointTable()
-        JointListGlobal.remove(joint)
+#     Args:
+#         joint (adsk.fusion.Joint): Joint object to be removed
+#     """
+#     try:
+#         index = JointListGlobal.index(joint)
+#         jointTableInput = jointTable()
+#         JointListGlobal.remove(joint)
 
-        jointTableInput.deleteRow(index + 1)
+#         jointTableInput.deleteRow(index + 1)
 
-        for row in range(jointTableInput.rowCount):
-            if row == 0:
-                continue
+#         for row in range(jointTableInput.rowCount):
+#             if row == 0:
+#                 continue
 
-            dropDown = jointTableInput.getInputAtPosition(row, 2)
-            listItems = dropDown.listItems
+#             dropDown = jointTableInput.getInputAtPosition(row, 2)
+#             listItems = dropDown.listItems
 
-            if row > index:
-                if listItems.item(index + 1).isSelected:
-                    listItems.item(index).isSelected = True
-                    listItems.item(index + 1).deleteMe()
-                else:
-                    listItems.item(index + 1).deleteMe()
-            else:
-                if listItems.item(index).isSelected:
-                    listItems.item(index - 1).isSelected = True
-                    listItems.item(index).deleteMe()
-                else:
-                    listItems.item(index).deleteMe()
-    except:
-        logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.removeJointFromTable()").error(
-            "Failed:\n{}".format(traceback.format_exc())
-        )
+#             if row > index:
+#                 if listItems.item(index + 1).isSelected:
+#                     listItems.item(index).isSelected = True
+#                     listItems.item(index + 1).deleteMe()
+#                 else:
+#                     listItems.item(index + 1).deleteMe()
+#             else:
+#                 if listItems.item(index).isSelected:
+#                     listItems.item(index - 1).isSelected = True
+#                     listItems.item(index).deleteMe()
+#                 else:
+#                     listItems.item(index).deleteMe()
+#     except:
+#         logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.removeJointFromTable()").error(
+#             "Failed:\n{}".format(traceback.format_exc())
+#         )
 
 
 def removeGamePieceFromTable(index: int) -> None:

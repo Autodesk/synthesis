@@ -14,7 +14,7 @@ def addWheelToTable(wheel: adsk.fusion.Joint) -> None:
     try:
         onSelect = gm.handlers[3]
         wheelTableInput = INPUTS_ROOT.itemById("wheel_table")
-        
+
         # def addPreselections(child_occurrences):
         #     for occ in child_occurrences:
         #         onSelect.allWheelPreselections.append(occ.entityToken)
@@ -22,7 +22,7 @@ def addWheelToTable(wheel: adsk.fusion.Joint) -> None:
         #         if occ.childOccurrences:
         #             addPreselections(occ.childOccurrences)
 
-        # if wheel.childOccurrences:    
+        # if wheel.childOccurrences:
         #     addPreselections(wheel.childOccurrences)
         # else:
         #     onSelect.allWheelPreselections.append(wheel.entityToken)
@@ -198,7 +198,7 @@ def addGamepieceToTable(gamepiece: adsk.fusion.Occurrence) -> None:
         def addPreselections(child_occurrences):
             for occ in child_occurrences:
                 onSelect.allGamepiecePreselections.append(occ.entityToken)
-                
+
                 if occ.childOccurrences:
                     addPreselections(occ.childOccurrences)
 
@@ -249,7 +249,7 @@ def addGamepieceToTable(gamepiece: adsk.fusion.Occurrence) -> None:
             "friction_coeff", "", "", valueList
         )
         friction_coeff.valueOne = 0.5
-        
+
         type.tooltip = gamepiece.name
 
         weight.tooltip = "Weight of field element"
@@ -354,7 +354,7 @@ def removeGamePieceFromTable(index: int) -> None:
     def removePreselections(child_occurrences):
         for occ in child_occurrences:
             onSelect.allGamepiecePreselections.remove(occ.entityToken)
-            
+
             if occ.childOccurrences:
                 removePreselections(occ.childOccurrences)
     try:

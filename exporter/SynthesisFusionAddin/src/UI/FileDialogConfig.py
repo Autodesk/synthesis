@@ -4,7 +4,8 @@ from ..general_imports import *
 from ..Types.OString import OString
 
 from typing import Union
-import adsk.core, adsk.fusion
+import adsk.core
+import adsk.fusion
 
 
 def SaveFileDialog(
