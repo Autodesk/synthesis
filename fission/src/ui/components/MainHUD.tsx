@@ -44,7 +44,7 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
     )
 }
 
-export let MainHUD_AddToast: (type: ToastType, title: string, description: string) => void = (_a, _b, _c) => { }
+export let MainHUD_AddToast: (type: ToastType, title: string, description: string) => void = (_a, _b, _c) => {}
 
 const variants = {
     open: { opacity: 1, y: "-50%", x: 0 },
@@ -179,8 +179,12 @@ async function TestGodMode() {
     const [ghostBody, _ghostConstraint] = World.PhysicsSystem.CreateGodModeBody(rootNodeId)
 
     // Move ghostBody to demonstrate godMode movement
-    World.PhysicsSystem.SetBodyPosition(ghostBody.GetID(), new JOLT.Vec3(robotPosition.GetX(), robotPosition.GetY() + 2, robotPosition.GetZ()))
-    await new Promise(f => setTimeout(f, 1000));
+    await new Promise(f => setTimeout(f, 1000))
+    World.PhysicsSystem.SetBodyPosition(
+        ghostBody.GetID(),
+        new JOLT.Vec3(robotPosition.GetX(), robotPosition.GetY() + 2, robotPosition.GetZ())
+    )
+    await new Promise(f => setTimeout(f, 1000))
     World.PhysicsSystem.SetBodyPosition(ghostBody.GetID(), new JOLT.Vec3(2, 2, 2))
 }
 
