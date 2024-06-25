@@ -36,7 +36,7 @@ class WheelRotationStimulus extends EncoderStimulus {
 
     public Update(deltaT: number): void {
         if (this._accum) {
-            this._wheelRotationAccum += this._wheel.GetAngularVelocity() * deltaT
+            this._wheelRotationAccum += this._wheel.GetAngularVelocity() * deltaT;
         }
     }
 
