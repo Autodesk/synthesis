@@ -17,74 +17,16 @@ export function UnzipMira(buff: Uint8Array): Uint8Array {
 }
 
 export async function LoadMirabufRemote(fetchLocation: string, type: MiraType): Promise<mirabuf.Assembly | undefined> {
-    const isRobot = type == MiraType.ROBOT
-    const lsLocation = isRobot ? robots : fields
-    const opfsLocation = isRobot ? robotFolderHandle : fieldFolderHandle
+    const map = GetMap(type)
+    const targetID = map != null ? map[fetchLocation] : null
 
-    const miraJSON = window.localStorage.getItem(lsLocation)
-    console.log(miraJSON)
-    let targetID;
-    let newCache: {[k: string]: string} = {}
-    let fileHandle;
-    let assembly;
-
-    // Is there anything in the localStorage list?
-    if (miraJSON != null) {
-        console.log("miraJSON found")
-
-        const cachedMira = JSON.parse(miraJSON)
-        targetID = cachedMira[fetchLocation]
-        
-        // Is this file in the localStorage list?
-        if (targetID) {
-            console.log("targetID found")
-
-            // Try to grab file from OPFS
-            try {
-                fileHandle = await opfsLocation.getFileHandle(targetID, {create: false}) ?? false
-
-                // Get assembly from file
-                if (fileHandle) {
-                    console.log(fileHandle)
-                    const buff = await fileHandle.getFile().then(x => x.arrayBuffer())
-                    assembly = mirabuf.Assembly.decode(UnzipMira(new Uint8Array(buff)))
-                    console.log(assembly)
-                    return assembly
-                }
-            } catch (e) {
-                console.log("Failed to find file from OPFS")
-
-                // Remove from localStorage list
-                delete cachedMira[fetchLocation]
-                window.localStorage.setItem(lsLocation, JSON.stringify(cachedMira)) //TODO: stringify again
-            }
-        }
-        newCache = cachedMira
-        console.log(newCache)
+    if (targetID != null) {
+        console.log("Loading mira from cache")
+        return await LoadMirabufCache(fetchLocation, targetID, type, map) ?? LoadAndCacheMira(fetchLocation, type)
+    } else {
+        console.log("Loading and caching new mira")
+        return await LoadAndCacheMira(fetchLocation, type)
     }
-
-    // Download and store file if not in localStorage map
-    const backupID = Date.now().toString()
-
-    // Grab file remote
-    const miraBuff = await fetch(encodeURI(fetchLocation), import.meta.env.DEV ? {cache: "no-store"} : undefined).then(x => x.blob()).then(x => x.arrayBuffer());
-    const byteBuffer = UnzipMira(new Uint8Array(miraBuff));
-    assembly = mirabuf.Assembly.decode(byteBuffer);
-    console.log(assembly)
-
-    // Store in OPFS
-    fileHandle = await opfsLocation.getFileHandle(backupID, { create: true });
-    const writable = await fileHandle.createWritable();
-    await writable.write(miraBuff)
-    await writable.close()
-
-    // Local cache map
-    targetID = backupID
-    newCache[fetchLocation] = targetID
-    window.localStorage.setItem(lsLocation, JSON.stringify(newCache))
-    
-    console.log(assembly)
-    return assembly;
 }
 
 export function LoadMirabufLocal(fileLocation: string): mirabuf.Assembly {
@@ -115,6 +57,56 @@ export function GetMap(type: MiraType): any {
         return null
     }
 }
+
+async function LoadAndCacheMira(fetchLocation: string, type: MiraType): Promise<mirabuf.Assembly | undefined> {
+    try {
+        const backupID = Date.now().toString()
+
+        // Grab file remote
+        const miraBuff = await fetch(encodeURI(fetchLocation), import.meta.env.DEV ? {cache: "no-store"} : undefined).then(x => x.blob()).then(x => x.arrayBuffer());
+        const byteBuffer = UnzipMira(new Uint8Array(miraBuff));
+        const assembly = mirabuf.Assembly.decode(byteBuffer);
+
+        // Store in OPFS
+        const fileHandle = await (type == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle).getFileHandle(backupID, { create: true });
+        const writable = await fileHandle.createWritable();
+        await writable.write(miraBuff)
+        await writable.close()
+
+        // Local cache map
+        let map: { [k: string]: string } = GetMap(type) ?? {}
+        map[fetchLocation] = backupID
+        window.localStorage.setItem(type == MiraType.ROBOT ? robots : fields, JSON.stringify(map))
+        
+        console.log(assembly)
+        return assembly;
+    } catch (e) {
+        console.error("Failed to load and cache mira")
+    }
+}
+
+async function LoadMirabufCache(fetchLocation: string, targetID: string, type: MiraType, map: { [k: string]: string }): Promise<mirabuf.Assembly | undefined | null> {
+    try {
+        const fileHandle = await (type == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle).getFileHandle(targetID, {create: false}) ?? null
+
+        // Get assembly from file
+        if (fileHandle != null) {
+            const buff = await fileHandle.getFile().then(x => x.arrayBuffer())
+            const assembly = mirabuf.Assembly.decode(UnzipMira(new Uint8Array(buff)))
+            console.log(assembly)
+            return assembly
+        }
+    } catch (e) {
+        console.error("Failed to find file from OPFS")
+
+        // Remove from localStorage list
+        delete map[fetchLocation]
+        window.localStorage.setItem(type == MiraType.ROBOT ? robots : fields, JSON.stringify(map))
+
+        return null
+    }
+}
+
 
 export enum MiraType {
     ROBOT,
