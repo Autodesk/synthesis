@@ -38,7 +38,7 @@ def _MapAllComponents(
 
         PhysicalProperties.GetPhysicalProperties(component, partDefinition.physical_data)
 
-        if options.exportMode == ExporterOptions.ExportMode.FIELD:
+        if options.exportMode == ExportMode.FIELD:
             partDefinition.dynamic = False
         else:
             partDefinition.dynamic = True
