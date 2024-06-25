@@ -1,6 +1,8 @@
 import * as THREE from "three"
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js'
 import SceneObject from "./SceneObject"
 import WorldSystem from "../WorldSystem"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x73937e
@@ -13,6 +15,9 @@ class SceneRenderer extends WorldSystem {
     private _renderer: THREE.WebGLRenderer
 
     private _sceneObjects: Map<number, SceneObject>
+    
+    private controls: OrbitControls
+    private transformControls: TransformControls[] = [];
 
     public get sceneObjects() {
         return this._sceneObjects
@@ -73,6 +78,14 @@ class SceneRenderer extends WorldSystem {
         ground.receiveShadow = true
         ground.castShadow = true
         this._scene.add(ground)
+
+        this.controls = new OrbitControls(this._mainCamera, this._renderer.domElement);
+        this.controls.update()
+ 
+        const sphere = new THREE.Mesh(new THREE.SphereGeometry(3.0), this.CreateToonMaterial());
+        sphere.position.set(0.0, 3, 0.0);
+        this._scene.add(sphere);
+        this.AddTransformGizmo(sphere);
     }
 
     public UpdateCanvasSize() {
@@ -88,6 +101,17 @@ class SceneRenderer extends WorldSystem {
         })
 
         // controls.update(deltaTime); // TODO: Add controls?
+
+        const mainCameraPosition = this._mainCamera.position;
+        const mainCameraFovRadians = Math.PI * (this._mainCamera.fov / 2) / 180;
+        this.transformControls.forEach(tc => {
+            if (tc.object) {
+                const distanceToCamera = mainCameraPosition.distanceTo(tc.object.position);
+                const scale = (9.0 / distanceToCamera) * Math.tan(mainCameraFovRadians) * 1.9;
+                tc.setSize(scale);
+            }
+        });
+
         this._renderer.render(this._scene, this._mainCamera)
     }
 
@@ -136,6 +160,17 @@ class SceneRenderer extends WorldSystem {
             color: color,
             gradientMap: gradientMap,
         })
+    }
+
+    public AddTransformGizmo(obj: THREE.Object3D, mode: "translate" | "rotate" | "scale" = 'translate') {
+        const transformControl = new TransformControls(this._mainCamera, this._renderer.domElement);
+        transformControl.addEventListener('dragging-changed', (event: { value: any }) => {
+            this.controls.enabled = !event.value;
+        });
+        transformControl.setMode(mode);
+        transformControl.attach(obj);
+        this.transformControls.push(transformControl);
+        this._scene.add(transformControl);
     }
 }
 

@@ -40,8 +40,8 @@ function Scene({ useStats }: SceneProps) {
                 refContainer.current.appendChild(stats.dom)
             }
 
-            controls = new OrbitControls(sr.mainCamera, sr.renderer.domElement)
-            controls.update()
+            // controls = new OrbitControls(sr.mainCamera, sr.renderer.domElement)
+            // controls.update()
 
             // Bit hacky but works
             class ComponentSceneObject extends SceneObject {
