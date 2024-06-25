@@ -7,7 +7,7 @@ import { useModalControlContext } from "@/ui/ModalContext"
 import Label, { LabelSize } from "@/components/Label"
 import { CreateMirabufFromUrl } from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
-import { useTooltipControlContext } from "@/TooltipContext"
+import { useTooltipControlContext } from "@/ui/TooltipContext"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 
 interface MirabufEntry {
