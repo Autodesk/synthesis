@@ -747,6 +747,8 @@ class PhysicsSystem extends WorldSystem {
         this._bodies.push(ghostBodyId)
 
         const constraintSettings = new JOLT.PointConstraintSettings()
+        constraintSettings.set_mPoint1(anchorPoint)
+        constraintSettings.set_mPoint2(anchorPoint)
         const constraint = constraintSettings.Create(ghostBody, body)
         this._joltPhysSystem.AddConstraint(constraint)
         this._constraints.push(constraint)
