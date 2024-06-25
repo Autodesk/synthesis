@@ -68,8 +68,10 @@ class PhysicsSystem extends WorldSystem {
             new THREE.Vector3(0.0, -2.0, 0.0),
             undefined
         )
+        ground.SetFriction(0.7);
         this._joltBodyInterface.AddBody(ground.GetID(), JOLT.EActivation_Activate)
     }
+    
 
     /**
      * TEMPORARY
@@ -453,11 +455,11 @@ class PhysicsSystem extends WorldSystem {
         wheelSettings.mSuspensionMaxLength = 0.0000006
         wheelSettings.mInertia = 1
 
-        const friction = new JOLT.LinearCurve()
-        friction.Clear()
-        friction.AddPoint(1, 1)
-        friction.AddPoint(0, 1)
-        wheelSettings.mLongitudinalFriction = friction
+        // const friction = new JOLT.LinearCurve()
+        // friction.Clear()
+        // friction.AddPoint(1, 1)
+        // friction.AddPoint(0, 1)
+        // wheelSettings.mLongitudinalFriction = friction
 
         const vehicleSettings = new JOLT.VehicleConstraintSettings()
 
