@@ -160,3 +160,72 @@ export async function getFolderData(project: Project, folder: Folder): Promise<D
         return undefined
     }
 }
+
+// export type Result<T, E = Error> = { ok: true; value: T } | { ok: false; error: E }
+
+/**
+ * Creates a folder in a specified APS project
+ *
+ * @params project The desired project to upload a folder to
+ * @params folder The blueprint for the folder to be created
+ * @returns An object with a boolean success field and an optional string field for the href of the created folder
+ */
+async function createFolder(project: Project, folder: Folder): Promise<{ success: boolean; href: string | null }> {
+    //async function createFolder(project: Project, folder: Folder): Promise<Result<string, number>> {
+    const auth = APS.auth
+    if (!auth) {
+        return { success: false, href: null }
+    }
+    const _bodyOpts = {
+        jsonapi: {
+            version: "1.0",
+        },
+        data: {
+            type: "folders",
+            attributes: {
+                name: folder.displayName,
+                extension: {
+                    type: "folders:autodesk.core:Folder",
+                    version: "1.0",
+                },
+            },
+            relationships: {
+                parent: {
+                    data: {
+                        type: "folders",
+                        id: folder.parentId,
+                    },
+                },
+            },
+        },
+    }
+    const folderRes = await fetch(`https://developer.api/autodesk/data/v1/projects/${project.id}/folders`, {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${auth.access_token}`,
+        },
+        //body: bodyOpts,
+    })
+
+    if (folderRes.ok) {
+        const json = await folderRes.json()
+        const href = json.links.self.href
+        return { success: true, href }
+    }
+
+    return { success: false, href: null }
+}
+
+export async function uploadMiraFile(project: Project): Promise<void | undefined> {
+    const auth = APS.auth
+    if (!auth) {
+        return undefined
+    }
+
+    const uploadRes = await fetch(`https://developer.api/autodesk/data/v1/projects/${project.id}/`, {
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${auth.access_token}`,
+        },
+    })
+}
