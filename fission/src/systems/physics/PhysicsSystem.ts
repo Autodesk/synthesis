@@ -734,7 +734,7 @@ class PhysicsSystem extends WorldSystem {
     public CreateGodModeBody(id: Jolt.BodyID): [Jolt.Body, Jolt.Constraint] {
         const body = this.GetBody(id)
         const bodyPosition = body.GetPosition()
-        const ghostPosition = new THREE.Vector3(bodyPosition.GetX(), bodyPosition.GetY() + 0.05, bodyPosition.GetZ())
+        const ghostPosition = new THREE.Vector3(bodyPosition.GetX(), bodyPosition.GetY(), bodyPosition.GetZ())
         const ghostBody = this.CreateBox(new THREE.Vector3(0.05, 0.05, 0.05), undefined, ghostPosition, undefined)
 
         const ghostBodyId = ghostBody.GetID()
@@ -742,7 +742,7 @@ class PhysicsSystem extends WorldSystem {
         this._joltBodyInterface.AddBody(ghostBodyId, JOLT.EActivation_Activate)
         this._bodies.push(ghostBodyId)
 
-        const constraintSettings = new JOLT.SwingTwistConstraintSettings()
+        const constraintSettings = new JOLT.PointConstraintSettings()
         const constraint = constraintSettings.Create(ghostBody, body)
         this._joltPhysSystem.AddConstraint(constraint)
         this._constraints.push(constraint)
