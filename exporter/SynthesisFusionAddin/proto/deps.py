@@ -50,10 +50,9 @@ def executeCommand(command: tuple) -> int:
         int: Exit code of the process
     """
 
-    logging.getLogger(f"{INTERNAL_ID}").debug(f"Command -> {command}")
-
-    installComm = str.join(" ", command)
-    executionResult = os.system(installComm)
+    joinedCommand = str.join(" ", command)
+    logging.getLogger(f"{INTERNAL_ID}").debug(f"Command -> {joinedCommand}")
+    executionResult = os.system(joinedCommand)
 
     return executionResult
 
