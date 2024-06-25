@@ -3,7 +3,7 @@ import adsk.core, adsk.fusion, uuid, logging, traceback
 from proto.proto_out import assembly_pb2, types_pb2, material_pb2, joint_pb2
 
 from .Utilities import *
-from .. import ParseOptions
+from ..ExporterOptions import ExporterOptions, ExportMode
 from typing import *
 
 from . import PhysicalProperties
@@ -17,7 +17,7 @@ from ...Analyzer.timer import TimeThis
 @TimeThis
 def _MapAllComponents(
     design: adsk.fusion.Design,
-    options: ParseOptions,
+    options: ExporterOptions,
     progressDialog: PDMessage,
     partsData: assembly_pb2.Parts,
     materials: material_pb2.Materials,
@@ -38,7 +38,7 @@ def _MapAllComponents(
 
         PhysicalProperties.GetPhysicalProperties(component, partDefinition.physical_data)
 
-        if options.mode == 3:
+        if options.exportMode == ExportMode.FIELD:
             partDefinition.dynamic = False
         else:
             partDefinition.dynamic = True
@@ -74,7 +74,7 @@ def _MapAllComponents(
 def _ParseComponentRoot(
     component: adsk.fusion.Component,
     progressDialog: PDMessage,
-    options: ParseOptions,
+    options: ExporterOptions,
     partsData: assembly_pb2.Parts,
     material_map: dict,
     node: types_pb2.Node,
@@ -107,7 +107,7 @@ def _ParseComponentRoot(
 def __parseChildOccurrence(
     occurrence: adsk.fusion.Occurrence,
     progressDialog: PDMessage,
-    options: ParseOptions,
+    options: ExporterOptions,
     partsData: assembly_pb2.Parts,
     material_map: dict,
     node: types_pb2.Node,
@@ -149,9 +149,9 @@ def __parseChildOccurrence(
         part.part_definition_reference = compRef
 
     # TODO: Maybe make this a separate step where you dont go backwards and search for the gamepieces
-    if options.mode == ParseOptions.Mode.SynthesisField:
+    if options.exportMode == ExportMode.FIELD:
         for x in options.gamepieces:
-            if x.occurrence_token == mapConstant:
+            if x.occurrenceToken == mapConstant:
                 partsData.part_definitions[part.part_definition_reference].dynamic = True
                 break
 
@@ -186,12 +186,14 @@ def GetMatrixWorld(occurrence):
 
 
 def _ParseBRep(
-    body: adsk.fusion.BRepBody, options: ParseOptions, trimesh: assembly_pb2.TriangleMesh
+    body: adsk.fusion.BRepBody,
+    options: ExporterOptions,
+    trimesh: assembly_pb2.TriangleMesh,
 ) -> any:
     try:
         meshManager = body.meshManager
         calc = meshManager.createMeshCalculator()
-        calc.setQuality(options.visual)
+        calc.setQuality(options.visualQuality)
         mesh = calc.calculate()
 
         fill_info(trimesh, body)
@@ -211,7 +213,7 @@ def _ParseBRep(
 
 def _ParseMesh(
     meshBody: adsk.fusion.MeshBody,
-    options: ParseOptions,
+    options: ExporterOptions,
     trimesh: assembly_pb2.TriangleMesh,
 ) -> any:
     try:
