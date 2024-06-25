@@ -9,19 +9,23 @@ from ..Parser.SynthesisParser.Utilities import guid_occurrence
 from ..general_imports import *
 from ..configure import NOTIFIED, write_configuration
 from ..Analytics.alert import showAnalyticsAlert
-from . import Helper, FileDialogConfig, OsHelper, CustomGraphics, IconPaths
-from ..Parser.ParseOptions import (
+from . import Helper, OsHelper, CustomGraphics, IconPaths, FileDialogConfig
+from ..Parser.ExporterOptions import (
     Gamepiece,
-    Mode,
-    ParseOptions,
-    _Joint,
-    _Wheel,
+    ExportMode,
+    ExporterOptions,
+    Joint,
+    Wheel,
+    WheelType,
+    SignalType,
     JointParentType,
+    PreferredUnits,
 )
 from .Configuration.SerialCommand import SerialCommand
 
 import adsk.core, adsk.fusion, traceback, logging, os
-from types import SimpleNamespace
+
+from ..Parser.SynthesisParser.Parser import Parser
 
 # ====================================== CONFIG COMMAND ======================================
 
@@ -32,7 +36,7 @@ INPUTS_ROOT (adsk.fusion.CommandInputs):
 INPUTS_ROOT = None
 
 """
-These lists are crucial, and contain all of the relevent object selections.
+These lists are crucial, and contain all of the relevant object selections.
 - WheelListGlobal: list of wheels (adsk.fusion.Occurrence)
 - JointListGlobal: list of joints (adsk.fusion.Joint)
 - GamepieceListGlobal: list of gamepieces (adsk.fusion.Occurrence)
@@ -104,7 +108,7 @@ class JointMotions(Enum):
     BALL = 6
 
 
-class FullMassCalculuation:
+class FullMassCalculation:
     def __init__(self):
         self.totalMass = 0.0
         self.bRepMassInRoot()
@@ -156,9 +160,13 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
     def __init__(self, configure):
         super().__init__()
         self.log = logging.getLogger(f"{INTERNAL_ID}.UI.{self.__class__.__name__}")
+        self.designAttrs = adsk.core.Application.get().activeProduct.attributes
 
     def notify(self, args):
         try:
+            exporterOptions = ExporterOptions().readFromDesign()
+            # exporterOptions = ExporterOptions()
+
             if not Helper.check_solid_open():
                 return
 
@@ -167,28 +175,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 showAnalyticsAlert()
                 NOTIFIED = True
                 write_configuration("analytics", "notified", "yes")
-
-            previous = None
-            saved = Helper.previouslyConfigured()
-
-            global compress
-            compress = True
-
-            if type(saved) == str:
-                try:
-                    # probably need some way to validate for each usage below
-                    previous = json.loads(
-                        saved, object_hook=lambda d: SimpleNamespace(**d)
-                    )
-                except:
-                    self.log.error("Failed:\n{}".format(traceback.format_exc()))
-                    gm.ui.messageBox(
-                        "Failed to read previous Unity Configuration\n  - Using default configuration"
-                    )
-                    previous = SerialCommand()
-            else:
-                # new file configuration
-                previous = SerialCommand()
 
             if A_EP:
                 A_EP.send_view("export_panel")
@@ -231,8 +217,10 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 "Export Mode",
                 dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
             )
-            dropdownExportMode.listItems.add("Dynamic", True)
-            dropdownExportMode.listItems.add("Static", False)
+
+            dynamic = exporterOptions.exportMode == ExportMode.ROBOT
+            dropdownExportMode.listItems.add("Dynamic", dynamic)
+            dropdownExportMode.listItems.add("Static", not dynamic)
 
             dropdownExportMode.tooltip = "Export Mode"
             dropdownExportMode.tooltipDescription = (
@@ -273,11 +261,18 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             auto_calc_weight.resourceFolder = IconPaths.stringIcons["calculate-enabled"]
             auto_calc_weight.isFullWidth = True
 
+            imperialUnits = exporterOptions.preferredUnits == PreferredUnits.IMPERIAL
+            if imperialUnits:
+                # ExporterOptions always contains the metric value
+                displayWeight = exporterOptions.robotWeight * 2.2046226218
+            else:
+                displayWeight = exporterOptions.robotWeight
+
             weight_input = inputs.addValueInput(
                 "weight_input",
                 "Weight Input",
                 "",
-                adsk.core.ValueInput.createByString("0.0"),
+                adsk.core.ValueInput.createByReal(displayWeight),
             )
             weight_input.tooltip = "Robot weight"
             weight_input.tooltipDescription = """<tt>(in pounds)</tt><hr>This is the weight of the entire robot assembly."""
@@ -287,11 +282,12 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 "Weight Unit",
                 adsk.core.DropDownStyles.LabeledIconDropDownStyle,
             )
+
             weight_unit.listItems.add(
-                "‎", True, IconPaths.massIcons["LBS"]
+                "‎", imperialUnits, IconPaths.massIcons["LBS"]
             )  # add listdropdown mass options
             weight_unit.listItems.add(
-                "‎", False, IconPaths.massIcons["KG"]
+                "‎", not imperialUnits, IconPaths.massIcons["KG"]
             )  # add listdropdown mass options
             weight_unit.tooltip = "Unit of mass"
             weight_unit.tooltipDescription = (
@@ -371,40 +367,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 removeWheelInput
             )  # add buttons to the toolbar
 
-            """
-            Algorithmic Wheel Selection Indicator
-            """
-            """
-            algorithmicIndicator = self.createTextBoxInput( # wheel type header
-                    "algorithmic_indicator",
-                    "Indicator",
-                    wheel_inputs,
-                    "Algorithmic Wheel Selection",
-                    background="whitesmoke", # textbox header background color
-                    tooltip="Algorithmic Wheel Selection"
-            )
-            algorithmicIndicator.isFullWidth = True
-            algorithmicIndicator.formattedText = "🟢"
-            algorithmicIndicator.tooltipDescription = (
-                "<tt>(enabled)</tt>" +
-                "<hr>If a sub-part of a wheel is selected (eg. a roller of an omni wheel), an algorithm will traverse the assembly to best determine the entire wheel component.<br>" + 
-                "<br>This traversal operates on how the wheel is jointed and where the joint is placed. If the automatic selection fails, try:" + 
-                "<ul>" +
-                    "<tt>" + 
-                        "<li>Jointing the wheel differently, or</li><br>" + 
-                        "<li>Selecting the wheel from the browser while holding down <span style='text-decoration:overline;text-decoration:underline;background-color: #c27b10'>&nbsp;CTRL&nbsp;</span></span>, or</li><br>" + 
-                        "<li>Disabling Algorithmic Selection.</li>" + 
-                    "</tt>" + 
-                "</ul>"
-            )
-            
-            wheelTableInput.addCommandInput(
-                algorithmicIndicator,
-                0,
-                0,
-            )
-            """
-
             wheelTableInput.addCommandInput(  # create textbox input using helper (component name)
                 self.createTextBoxInput(
                     "name_header", "Name", wheel_inputs, "Joint name", bold=False
@@ -437,21 +399,12 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 3,
             )
 
-            # AUTOMATICALLY SELECT DUPLICATES
-            """
-            Select duplicates?
-                - creates a BoolValueCommandInput
-            """
-            # self.createBooleanInput( # create bool value command input using helper
-            #     "duplicate_selection",
-            #     "Select Duplicates",
-            #     wheel_inputs,
-            #     checked=True,
-            #     tooltip="Select duplicate wheel components.",
-            #     tooltipadvanced="""<hr>When this is checked, all duplicate occurrences will be automatically selected.
-            #     <br>This feature may fail when duplicates are not direct copies.</br>""", # advanced tooltip
-            #     enabled=True,
-            # )
+            if exporterOptions.wheels:
+                for wheel in exporterOptions.wheels:
+                    wheelEntity = gm.app.activeDocument.design.findEntityByToken(
+                        wheel.jointToken
+                    )[0]
+                    addWheelToTable(wheelEntity)
 
             # ~~~~~~~~~~~~~~~~ JOINT CONFIGURATION ~~~~~~~~~~~~~~~~
             """
@@ -580,6 +533,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 5,
             )
 
+            # Fill the table with all joints in current design
             for joint in list(
                 gm.app.activeDocument.design.rootComponent.allJoints
             ) + list(gm.app.activeDocument.design.rootComponent.allAsBuiltJoints):
@@ -742,48 +696,21 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             """
             Exporter settings group command
             """
-            exporterSetings = a_input.addGroupCommandInput(
+            exporterSettings = a_input.addGroupCommandInput(
                 "exporter_settings", "Exporter Settings"
             )
-            exporterSetings.isExpanded = True
-            exporterSetings.isEnabled = True
-            exporterSetings.tooltip = "tooltip"  # TODO: update tooltip
-            exporter_settings = exporterSetings.children
-
-            self.createBooleanInput(  # algorithm wheel selection checkbox.
-                "algorithmic_selection",
-                "Algorithmic Wheel Selection",
-                exporter_settings,
-                checked=True,
-                tooltip="Automatically select the entire wheel component.",
-                tooltipadvanced="<hr>If a sub-part of a wheel is selected (eg. a roller of an omni wheel), an algorithm will traverse the assembly to best determine the entire wheel component.<br>"
-                + "<br>This traversal operates on how the wheel is jointed and where the joint is placed. If the automatic selection fails, try:"
-                + "<ul>"
-                + "<tt>"
-                + "<li>Jointing the wheel differently, or</li><br>"
-                + "<li>Selecting the wheel from the browser while holding down <span style='text-decoration:overline;text-decoration:underline;background-color: #c27b10'>&nbsp;CTRL&nbsp;</span></span>, or</li><br>"
-                + "<li>Disabling Algorithmic Selection.</li>"
-                + "</tt>"
-                + "</ul>",
-                enabled=True,
-            )
+            exporterSettings.isExpanded = True
+            exporterSettings.isEnabled = True
+            exporterSettings.tooltip = "tooltip"  # TODO: update tooltip
+            exporter_settings = exporterSettings.children
 
             self.createBooleanInput(
                 "compress",
                 "Compress Output",
                 exporter_settings,
-                checked=compress,
+                checked=exporterOptions.compressOutput,
                 tooltip="Compress the output file for a smaller file size.",
                 tooltipadvanced="<hr>Use the GZIP compression system to compress the resulting file which will be opened in the simulator, perfect if you want to share the file.<br>",
-                enabled=True,
-            )
-
-            self.createBooleanInput(  # open synthesis checkbox
-                "open_synthesis",
-                "Open Synthesis",
-                exporter_settings,
-                checked=True,
-                tooltip="Open Synthesis after the export is complete.",
                 enabled=True,
             )
 
@@ -791,12 +718,12 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 "export_as_part",
                 "Export As Part",
                 exporter_settings,
-                checked=False,
+                checked=exporterOptions.exportAsPart,
                 tooltip="Use to export as a part for Mix And Match",
                 enabled=True,
             )
 
-            # ~~~~~~~~~~~~~~~~ PHYSICS SETINGS ~~~~~~~~~~~~~~~~
+            # ~~~~~~~~~~~~~~~~ PHYSICS SETTINGS ~~~~~~~~~~~~~~~~
             """
             Physics settings group command
             """
@@ -809,33 +736,10 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             physicsSettings.tooltip = "tooltip"  # TODO: update tooltip
             physics_settings = physicsSettings.children
 
-            self.createBooleanInput(  # density checkbox
-                "density",
-                "Density",
-                physics_settings,
-                checked=True,
-                tooltip="tooltip",  # TODO: update tooltip
-                enabled=True,
-            )
-
-            self.createBooleanInput(  # SA checkbox
-                "surface_area",
-                "Surface Area",
-                physics_settings,
-                checked=True,
-                tooltip="tooltip",  # TODO: update tooltip
-                enabled=True,
-            )
-
-            self.createBooleanInput(  # restitution checkbox
-                "restitution",
-                "Restitution",
-                physics_settings,
-                checked=True,
-                tooltip="tooltip",  # TODO: update tooltip
-                enabled=True,
-            )
-
+            # AARD-1687
+            # Should also be commented out / removed?
+            # This would cause problems elsewhere but I can't tell i f
+            # this is even being used.
             frictionOverrideTable = self.createTableInput(
                 "friction_override_table",
                 "",
@@ -883,62 +787,70 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             """
             Joint settings group command
             """
-            jointsSettings = a_input.addGroupCommandInput(
-                "joints_settings", "Joints Settings"
-            )
-            jointsSettings.isExpanded = False
-            jointsSettings.isEnabled = True
-            jointsSettings.tooltip = "tooltip"  # TODO: update tooltip
-            joints_settings = jointsSettings.children
 
-            self.createBooleanInput(
-                "kinematic_only",
-                "Kinematic Only",
-                joints_settings,
-                checked=False,
-                tooltip="tooltip",  # TODO: update tooltip
-                enabled=True,
-            )
+            # Transition: AARD-1689
+            # Should possibly be implemented later?
 
-            self.createBooleanInput(
-                "calculate_limits",
-                "Calculate Limits",
-                joints_settings,
-                checked=True,
-                tooltip="tooltip",  # TODO: update tooltip
-                enabled=True,
-            )
+            # jointsSettings = a_input.addGroupCommandInput(
+            #     "joints_settings", "Joints Settings"
+            # )
+            # jointsSettings.isExpanded = False
+            # jointsSettings.isEnabled = True
+            # jointsSettings.tooltip = "tooltip"  # TODO: update tooltip
+            # joints_settings = jointsSettings.children
 
-            self.createBooleanInput(
-                "auto_assign_ids",
-                "Auto-Assign ID's",
-                joints_settings,
-                checked=True,
-                tooltip="tooltip",  # TODO: update tooltip
-                enabled=True,
-            )
+            # self.createBooleanInput(
+            #     "kinematic_only",
+            #     "Kinematic Only",
+            #     joints_settings,
+            #     checked=False,
+            #     tooltip="tooltip",  # TODO: update tooltip
+            #     enabled=True,
+            # )
+
+            # self.createBooleanInput(
+            #     "calculate_limits",
+            #     "Calculate Limits",
+            #     joints_settings,
+            #     checked=True,
+            #     tooltip="tooltip",  # TODO: update tooltip
+            #     enabled=True,
+            # )
+
+            # self.createBooleanInput(
+            #     "auto_assign_ids",
+            #     "Auto-Assign ID's",
+            #     joints_settings,
+            #     checked=True,
+            #     tooltip="tooltip",  # TODO: update tooltip
+            #     enabled=True,
+            # )
 
             # ~~~~~~~~~~~~~~~~ CONTROLLER SETTINGS ~~~~~~~~~~~~~~~~
             """
             Controller settings group command
             """
-            controllerSettings = a_input.addGroupCommandInput(
-                "controller_settings", "Controller Settings"
-            )
 
-            controllerSettings.isExpanded = False
-            controllerSettings.isEnabled = True
-            controllerSettings.tooltip = "tooltip"  # TODO: update tooltip
-            controller_settings = controllerSettings.children
+            # Transition: AARD-1689
+            # Should possibly be implemented later?
 
-            self.createBooleanInput(  # export signals checkbox
-                "export_signals",
-                "Export Signals",
-                controller_settings,
-                checked=True,
-                tooltip="tooltip",
-                enabled=True,
-            )
+            # controllerSettings = a_input.addGroupCommandInput(
+            #     "controller_settings", "Controller Settings"
+            # )
+
+            # controllerSettings.isExpanded = False
+            # controllerSettings.isEnabled = True
+            # controllerSettings.tooltip = "tooltip"  # TODO: update tooltip
+            # controller_settings = controllerSettings.children
+
+            # self.createBooleanInput(  # export signals checkbox
+            #     "export_signals",
+            #     "Export Signals",
+            #     controller_settings,
+            #     checked=True,
+            #     tooltip="tooltip",
+            #     enabled=True,
+            # )
 
             # clear all selections before instantiating handlers.
             gm.ui.activeSelections.clear()
@@ -948,12 +860,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             Instantiating all the event handlers
             """
 
-            onExecute = ConfigureCommandExecuteHandler(
-                json.dumps(
-                    previous, default=lambda o: o.__dict__, sort_keys=True, indent=1
-                ),
-                previous.filePath,
-            )
+            onExecute = ConfigureCommandExecuteHandler()
             cmd.execute.add(onExecute)
             gm.handlers.append(onExecute)  # 0
 
@@ -976,14 +883,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             onPreSelectEnd = MyPreselectEndHandler(cmd)
             cmd.preSelectEnd.add(onPreSelectEnd)
             gm.handlers.append(onPreSelectEnd)  # 5
-
-            onKeyDown = MyKeyDownHandler()
-            cmd.keyDown.add(onKeyDown)
-            gm.handlers.append(onKeyDown)  # 6
-
-            onKeyUp = MyKeyUpHandler()
-            cmd.keyUp.add(onKeyUp)
-            gm.handlers.append(onKeyUp)  # 7
 
             onDestroy = MyCommandDestroyHandler()
             cmd.destroy.add(onDestroy)
@@ -1053,7 +952,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             columns (int): column count
             ratio (str): column width ratio
             maxRows (int): the maximum number of displayed rows possible
-            minRows (int, optional): the minumum number of displayed rows. Defaults to 1.
+            minRows (int, optional): the minimum number of displayed rows. Defaults to 1.
             columnSpacing (int, optional): spacing in between the columns, in pixels. Defaults to 0.
             rowSpacing (int, optional): spacing in between the rows, in pixels. Defaults to 0.
 
@@ -1140,7 +1039,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
 
 
 class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
-    """### Called when Ok is pressed confirming the export to Unity.
+    """### Called when Ok is pressed confirming the export
 
     Process Steps:
 
@@ -1158,46 +1057,26 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
 
     """
 
-    def __init__(self, previous, fp):
+    def __init__(self):
         super().__init__()
         self.log = logging.getLogger(f"{INTERNAL_ID}.UI.{self.__class__.__name__}")
-        self.previous = previous
         self.current = SerialCommand()
-        self.fp = fp
+        self.designAttrs = adsk.core.Application.get().activeProduct.attributes
 
     def notify(self, args):
         try:
             eventArgs = adsk.core.CommandEventArgs.cast(args)
+            exporterOptions = ExporterOptions().readFromDesign()
 
             if eventArgs.executeFailed:
                 self.log.error("Could not execute configuration due to failure")
                 return
 
-            mode_dropdown = eventArgs.command.commandInputs.itemById(
-                "general_settings"
-            ).children.itemById("mode")
-
-            mode_dropdown = adsk.core.DropDownCommandInput.cast(mode_dropdown)
-            mode = 5
-
-            if mode_dropdown.selectedItem.name == "Synthesis Exporter":
-                mode = 5
-
             export_as_part_boolean = (
                 eventArgs.command.commandInputs.itemById("advanced_settings")
                 .children.itemById("exporter_settings")
                 .children.itemById("export_as_part")
-            )
-
-            # defaultPath = self.fp
-            # defaultPath = os.getenv()
-
-            # if mode == 5:
-            #     savepath = FileDialogConfig.SaveFileDialog(
-            #         defaultPath=self.fp, ext="Synthesis File (*.synth)"
-            #     )
-            # else:
-            #     savepath = FileDialogConfig.SaveFileDialog(defaultPath=self.fp)
+            ).value
 
             processedFileName = gm.app.activeDocument.name.replace(" ", "_")
             dropdownExportMode = INPUTS_ROOT.itemById("mode")
@@ -1206,243 +1085,200 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             elif dropdownExportMode.selectedItem.index == 1:
                 isRobot = False
 
-            if platform.system() == "Windows":
-                if isRobot:
-                    if export_as_part_boolean.value:
-                        savepath = (
-                            os.getenv("APPDATA")
-                            + "\\Autodesk\\Synthesis\\MixAndMatch\\Mira\\"
-                            + processedFileName
-                            + ".mira"
-                        )
-                    else:
-                        savepath = (
-                            os.getenv("APPDATA")
-                            + "\\Autodesk\\Synthesis\\Mira\\"
-                            + processedFileName
-                            + ".mira"
-                        )
-                else:
-                    savepath = (
-                        os.getenv("APPDATA")
-                        + "\\Autodesk\\Synthesis\\Mira\\Fields\\"
-                        + processedFileName
-                        + ".mira"
-                    )
+            if isRobot:
+                savepath = FileDialogConfig.SaveFileDialog(
+                    defaultPath=exporterOptions.fileLocation,
+                    ext="Synthesis File (*.synth)",
+                )
             else:
-                from os.path import expanduser
-
-                home = expanduser("~")
-                if isRobot:
-                    if export_as_part_boolean.value:
-                        savepath = (
-                            home
-                            + "/.config/Autodesk/Synthesis/MixAndMatch/Mira/"
-                            + processedFileName
-                            + ".mira"
-                        )
-                    else:
-                        savepath = (
-                            home
-                            + "/.config/Autodesk/Synthesis/Mira/"
-                            + processedFileName
-                            + ".mira"
-                        )
-                else:
-                    savepath = (
-                        home
-                        + "/.config/Autodesk/Synthesis/Mira/Fields/"
-                        + processedFileName
-                        + ".mira"
-                    )
+                savepath = FileDialogConfig.SaveFileDialog(
+                    defaultPath=exporterOptions.fileLocation
+                )
 
             if savepath == False:
                 # save was canceled
                 return
-            else:
-                updatedPath = pathlib.Path(savepath).parent
-                if updatedPath != self.current.filePath:
-                    self.current.filePath = str(updatedPath)
-                    Helper.writeConfigure(self.current.toJSON())
 
-                adsk.doEvents()
-                # get active document
-                design = gm.app.activeDocument.design
-                name = design.rootComponent.name.rsplit(" ", 1)[0]
-                version = design.rootComponent.name.rsplit(" ", 1)[1]
+            updatedPath = pathlib.Path(savepath).parent
+            if updatedPath != self.current.filePath:
+                self.current.filePath = str(updatedPath)
 
-                renderer = 0
+            adsk.doEvents()
+            # get active document
+            design = gm.app.activeDocument.design
+            name = design.rootComponent.name.rsplit(" ", 1)[0]
+            version = design.rootComponent.name.rsplit(" ", 1)[1]
 
-                _exportWheels = []  # all selected wheels, formatted for parseOptions
-                _exportJoints = []  # all selected joints, formatted for parseOptions
-                _exportGamepieces = []  # TODO work on the code to populate Gamepiece
-                _robotWeight = float
-                _mode = Mode
+            _exportWheels = []  # all selected wheels, formatted for parseOptions
+            _exportJoints = []  # all selected joints, formatted for parseOptions
+            _exportGamepieces = []  # TODO work on the code to populate Gamepiece
+            _robotWeight = float
+            _mode = ExportMode.ROBOT
 
-                """
-                Loops through all rows in the wheel table to extract all the input values
-                """
-                onSelect = gm.handlers[3]
-                wheelTableInput = wheelTable()
-                for row in range(wheelTableInput.rowCount):
-                    if row == 0:
-                        continue
+            """
+            Loops through all rows in the wheel table to extract all the input values
+            """
+            onSelect = gm.handlers[3]
+            wheelTableInput = wheelTable()
+            for row in range(wheelTableInput.rowCount):
+                if row == 0:
+                    continue
 
-                    wheelTypeIndex = wheelTableInput.getInputAtPosition(
-                        row, 2
-                    ).selectedItem.index  # This must be either 0 or 1 for standard or omni
+                wheelTypeIndex = wheelTableInput.getInputAtPosition(
+                    row, 2
+                ).selectedItem.index  # This must be either 0 or 1 for standard or omni
 
-                    signalTypeIndex = wheelTableInput.getInputAtPosition(
-                        row, 3
-                    ).selectedItem.index
+                signalTypeIndex = wheelTableInput.getInputAtPosition(
+                    row, 3
+                ).selectedItem.index
 
-                    _exportWheels.append(
-                        _Wheel(
-                            WheelListGlobal[row - 1].entityToken,
-                            wheelTypeIndex,
-                            signalTypeIndex,
-                            # onSelect.wheelJointList[row-1][0] # GUID of wheel joint. if no joint found, default to None
-                        )
+                _exportWheels.append(
+                    Wheel(
+                        WheelListGlobal[row - 1].entityToken,
+                        WheelType(wheelTypeIndex + 1),
+                        SignalType(signalTypeIndex + 1),
+                        # onSelect.wheelJointList[row-1][0] # GUID of wheel joint. if no joint found, default to None
                     )
-
-                """
-                Loops through all rows in the joint table to extract the input values
-                """
-                jointTableInput = jointTable()
-                for row in range(jointTableInput.rowCount):
-                    if row == 0:
-                        continue
-
-                    parentJointIndex = jointTableInput.getInputAtPosition(
-                        row, 2
-                    ).selectedItem.index  # parent joint index, int
-
-                    signalTypeIndex = jointTableInput.getInputAtPosition(
-                        row, 3
-                    ).selectedItem.index  # signal type index, int
-
-                    # typeString = jointTableInput.getInputAtPosition(
-                    #     row, 0
-                    # ).name
-
-                    jointSpeed = jointTableInput.getInputAtPosition(row, 4).value
-
-                    jointForce = jointTableInput.getInputAtPosition(row, 5).value
-
-                    parentJointToken = ""
-
-                    if parentJointIndex == 0:
-                        _exportJoints.append(
-                            _Joint(
-                                JointListGlobal[row - 1].entityToken,
-                                JointParentType.ROOT,
-                                signalTypeIndex,  # index of selected signal in dropdown
-                                jointSpeed,
-                                jointForce / 100.0,
-                            )  # parent joint GUID
-                        )
-                        continue
-                    elif parentJointIndex < row:
-                        parentJointToken = JointListGlobal[
-                            parentJointIndex - 1
-                        ].entityToken  # parent joint GUID, str
-                    else:
-                        parentJointToken = JointListGlobal[
-                            parentJointIndex + 1
-                        ].entityToken  # parent joint GUID, str
-
-                    # for wheel in _exportWheels:
-                    # find some way to get joint
-                    # 1. Compare Joint occurrence1 to wheel.occurrence_token
-                    # 2. if true set the parent to Root
-
-                    _exportJoints.append(
-                        _Joint(
-                            JointListGlobal[row - 1].entityToken,
-                            parentJointToken,
-                            signalTypeIndex,
-                            jointSpeed,
-                            jointForce,
-                        )
-                    )
-
-                """
-                Loops through all rows in the gamepiece table to extract the input values
-                """
-                gamepieceTableInput = gamepieceTable()
-                weight_unit_f = INPUTS_ROOT.itemById("weight_unit_f")
-                for row in range(gamepieceTableInput.rowCount):
-                    if row == 0:
-                        continue
-
-                    weightValue = gamepieceTableInput.getInputAtPosition(
-                        row, 2
-                    ).value  # weight/mass input, float
-
-                    if weight_unit_f.selectedItem.index == 0:
-                        weightValue /= 2.2046226218
-
-                    frictionValue = gamepieceTableInput.getInputAtPosition(
-                        row, 3
-                    ).valueOne  # friction value, float
-
-                    _exportGamepieces.append(
-                        Gamepiece(
-                            guid_occurrence(GamepieceListGlobal[row - 1]),
-                            weightValue,
-                            frictionValue,
-                        )
-                    )
-
-                """
-                Robot Weight
-                """
-                weight_input = INPUTS_ROOT.itemById("weight_input")
-                weight_unit = INPUTS_ROOT.itemById("weight_unit")
-
-                if weight_unit.selectedItem.index == 0:
-                    _robotWeight = float(weight_input.value) / 2.2046226218
-                else:
-                    _robotWeight = float(weight_input.value)
-
-                """
-                Export Mode
-                """
-                dropdownExportMode = INPUTS_ROOT.itemById("mode")
-                if dropdownExportMode.selectedItem.index == 0:
-                    _mode = Mode.Synthesis
-                elif dropdownExportMode.selectedItem.index == 1:
-                    _mode = Mode.SynthesisField
-
-                global compress
-
-                options = ParseOptions(
-                    savepath,
-                    name,
-                    version,
-                    materials=renderer,
-                    joints=_exportJoints,
-                    wheels=_exportWheels,
-                    gamepieces=_exportGamepieces,
-                    weight=_robotWeight,
-                    mode=_mode,
-                    compress=compress,
                 )
 
-                if options.parse(False):
-                    # success
-                    return
-                else:
-                    self.log.error(
-                        f"Error: \n\t{name} could not be written to \n {savepath}"
+            """
+            Loops through all rows in the joint table to extract the input values
+            """
+            jointTableInput = jointTable()
+            for row in range(jointTableInput.rowCount):
+                if row == 0:
+                    continue
+
+                parentJointIndex = jointTableInput.getInputAtPosition(
+                    row, 2
+                ).selectedItem.index  # parent joint index, int
+
+                signalTypeIndex = jointTableInput.getInputAtPosition(
+                    row, 3
+                ).selectedItem.index  # signal type index, int
+
+                # typeString = jointTableInput.getInputAtPosition(
+                #     row, 0
+                # ).name
+
+                jointSpeed = jointTableInput.getInputAtPosition(row, 4).value
+
+                jointForce = jointTableInput.getInputAtPosition(row, 5).value
+
+                parentJointToken = ""
+
+                if parentJointIndex == 0:
+                    _exportJoints.append(
+                        Joint(
+                            JointListGlobal[row - 1].entityToken,
+                            JointParentType.ROOT,
+                            SignalType(signalTypeIndex + 1),
+                            jointSpeed,
+                            jointForce / 100.0,
+                        )  # parent joint GUID
                     )
+                    continue
+                elif parentJointIndex < row:
+                    parentJointToken = JointListGlobal[
+                        parentJointIndex - 1
+                    ].entityToken  # parent joint GUID, str
+                else:
+                    parentJointToken = JointListGlobal[
+                        parentJointIndex + 1
+                    ].entityToken  # parent joint GUID, str
+
+                # for wheel in _exportWheels:
+                # find some way to get joint
+                # 1. Compare Joint occurrence1 to wheel.occurrenceToken
+                # 2. if true set the parent to Root
+
+                _exportJoints.append(
+                    Joint(
+                        JointListGlobal[row - 1].entityToken,
+                        parentJointToken,
+                        SignalType(signalTypeIndex + 1),
+                        jointSpeed,
+                        jointForce,
+                    )
+                )
+
+            """
+            Loops through all rows in the gamepiece table to extract the input values
+            """
+            gamepieceTableInput = gamepieceTable()
+            weight_unit_f = INPUTS_ROOT.itemById("weight_unit_f")
+            for row in range(gamepieceTableInput.rowCount):
+                if row == 0:
+                    continue
+
+                weightValue = gamepieceTableInput.getInputAtPosition(
+                    row, 2
+                ).value  # weight/mass input, float
+
+                if weight_unit_f.selectedItem.index == 0:
+                    weightValue /= 2.2046226218
+
+                frictionValue = gamepieceTableInput.getInputAtPosition(
+                    row, 3
+                ).valueOne  # friction value, float
+
+                _exportGamepieces.append(
+                    Gamepiece(
+                        guid_occurrence(GamepieceListGlobal[row - 1]),
+                        weightValue,
+                        frictionValue,
+                    )
+                )
+
+            """
+            Robot Weight
+            """
+            weight_input = INPUTS_ROOT.itemById("weight_input")
+            weight_unit = INPUTS_ROOT.itemById("weight_unit")
+
+            if weight_unit.selectedItem.index == 0:
+                selectedUnits = PreferredUnits.IMPERIAL
+                _robotWeight = float(weight_input.value) / 2.2046226218
+            else:
+                selectedUnits = PreferredUnits.METRIC
+                _robotWeight = float(weight_input.value)
+
+            """
+            Export Mode
+            """
+            dropdownExportMode = INPUTS_ROOT.itemById("mode")
+            if dropdownExportMode.selectedItem.index == 0:
+                _mode = ExportMode.ROBOT
+            elif dropdownExportMode.selectedItem.index == 1:
+                _mode = ExportMode.FIELD
+
+            global compress
+            compress = (
+                eventArgs.command.commandInputs.itemById("advanced_settings")
+                .children.itemById("exporter_settings")
+                .children.itemById("compress")
+            ).value
+
+            exporterOptions = ExporterOptions(
+                savepath,
+                name,
+                version,
+                materials=0,
+                joints=_exportJoints,
+                wheels=_exportWheels,
+                gamepieces=_exportGamepieces,
+                preferredUnits=selectedUnits,
+                robotWeight=_robotWeight,
+                exportMode=_mode,
+                compressOutput=compress,
+                exportAsPart=export_as_part_boolean,
+            )
+
+            Parser(exporterOptions).export()
+            exporterOptions.writeToDesign()
         except:
             if gm.ui:
                 gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
-
-        #    logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.{self.__class__.__name__}").error(
-        #    "Failed:\n{}".format(traceback.format_exc())
-        # )
 
 
 class CommandExecutePreviewHandler(adsk.core.CommandEventHandler):
@@ -1641,7 +1477,10 @@ class MySelectHandler(adsk.core.SelectionEventHandler):
                     != adsk.fusion.JointTypes.RevoluteJointType
                 ):
                     continue
-                jointedOcc[joint.entityToken] = [joint.occurrenceOne, joint.occurrenceTwo]
+                jointedOcc[joint.entityToken] = [
+                    joint.occurrenceOne,
+                    joint.occurrenceTwo,
+                ]
 
             parentLevel = 1  # the number of nodes above the one selected
             returned = None  # the returned value of traverseAssembly()
@@ -1767,7 +1606,7 @@ class MyPreSelectHandler(adsk.core.SelectionEventHandler):
 
             dropdownExportMode = INPUTS_ROOT.itemById("mode")
             if preSelected and design:
-                if dropdownExportMode.selectedItem.index == 0:
+                if dropdownExportMode.selectedItem.index == 0:  # Dynamic
                     if preSelected.entityToken in onSelect.allWheelPreselections:
                         self.cmd.setCursor(
                             IconPaths.mouseIcons["remove"],
@@ -1781,7 +1620,7 @@ class MyPreSelectHandler(adsk.core.SelectionEventHandler):
                             0,
                         )
 
-                elif dropdownExportMode.selectedItem.index == 1:
+                elif dropdownExportMode.selectedItem.index == 1:  # Static
                     if preSelected.entityToken in onSelect.allGamepiecePreselections:
                         self.cmd.setCursor(
                             IconPaths.mouseIcons["remove"],
@@ -1794,7 +1633,7 @@ class MyPreSelectHandler(adsk.core.SelectionEventHandler):
                             0,
                             0,
                         )
-            else:
+            else:  # Should literally be impossible? - Brandon
                 self.cmd.setCursor("", 0, 0)
         except:
             if gm.ui:
@@ -1873,7 +1712,7 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
         """
         try:
             if gm.app.activeDocument.design:
-                massCalculation = FullMassCalculuation()
+                massCalculation = FullMassCalculation()
                 totalMass = massCalculation.getTotalMass()
 
                 value = float
@@ -2262,141 +2101,12 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                 if checkBox.value:
                     global compress
                     compress = checkBox.value
-            elif cmdInput.id == "algorithmic_selection":
-                checkBox = adsk.core.BoolValueCommandInput.cast(cmdInput)
-                onSelect.algorithmicSelection = checkBox.value
-                if checkBox.value:
-                    indicator.formattedText = "🟢"
-                    indicator.tooltipDescription = (
-                        "<tt>(enabled)</tt>"
-                        + "<hr>If a sub-part of a wheel is selected (eg. a roller of an omni wheel), an algorithm will traverse the assembly to best determine the entire wheel component.<br>"
-                        + "<br>This traversal operates on how the wheel is jointed and where the joint is placed. If the automatic selection fails, try:"
-                        + "<ul>"
-                        + "<tt>"
-                        + "<li>Jointing the wheel differently, or</li><br>"
-                        + "<li>Selecting the wheel from the browser while holding down <span style='text-decoration:overline;text-decoration:underline;background-color: #c27b10'>&nbsp;CTRL&nbsp;</span></span>, or</li><br>"
-                        + "<li>Disabling Algorithmic Selection.</li>"
-                        + "</tt>"
-                        + "</ul>"
-                    )
-
-                else:
-                    indicator.formattedText = "🔴"
-                    indicator.tooltipDescription = (
-                        "<tt>(disabled)</tt>"
-                        + "<hr>If a sub-part of a wheel is selected (eg. a roller of an omni wheel), an algorithm will traverse the assembly to best determine the entire wheel component.<br>"
-                        + "<br>This traversal operates on how the wheel is jointed and where the joint is placed. If the automatic selection fails, try:"
-                        + "<ul>"
-                        + "<tt>"
-                        + "<li>Jointing the wheel differently, or</li><br>"
-                        + "<li>Selecting the wheel from the browser while holding down <span style='text-decoration:overline;text-decoration:underline;background-color: #c27b10'>&nbsp;CTRL&nbsp;</span></span>, or</li><br>"
-                        + "<li>Disabling Algorithmic Selection.</li>"
-                        + "</tt>"
-                        + "</ul>"
-                    )
         except:
             if gm.ui:
                 gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
             logging.getLogger(
                 "{INTERNAL_ID}.UI.ConfigCommand.{self.__class__.__name__}"
             ).error("Failed:\n{}".format(traceback.format_exc()))
-
-
-class MyKeyDownHandler(adsk.core.KeyboardEventHandler):
-    def __init__(self) -> None:
-        super().__init__()
-
-    def notify(self, args):
-        eventArgs = adsk.core.KeyboardEventArgs.cast(args)
-        keyCode = eventArgs.keyCode
-        onSelect = gm.handlers[3]
-        algorithmicSelection = INPUTS_ROOT.itemById("algorithmic_selection")
-        indicator = INPUTS_ROOT.itemById("algorithmic_indicator")
-        # wheelAddButton = INPUTS_ROOT.itemById("wheel_add")
-
-        # if wheelAddButton.isEnabled:
-        #    return
-
-        if keyCode == 16777249:  # CTRL key pressed
-            # gm.ui.messageBox("KEY DOWN")
-            onSelect.algorithmicSelection = not algorithmicSelection.value
-            if algorithmicSelection.value:
-                indicator.formattedText = "🔴"
-                indicator.tooltipDescription = (
-                    "<tt>(disabled)</tt>"
-                    + "<hr>If a sub-part of a wheel is selected (eg. a roller of an omni wheel), an algorithm will traverse the assembly to best determine the entire wheel component.<br>"
-                    + "<br>This traversal operates on how the wheel is jointed and where the joint is placed. If the automatic selection fails, try:"
-                    + "<ul>"
-                    + "<tt>"
-                    + "<li>Jointing the wheel differently, or</li><br>"
-                    + "<li>Selecting the wheel from the browser while holding down <span style='text-decoration:overline;text-decoration:underline;background-color: #c27b10'>&nbsp;CTRL&nbsp;</span></span>, or</li><br>"
-                    + "<li>Disabling Algorithmic Selection.</li>"
-                    + "</tt>"
-                    + "</ul>"
-                )
-            else:
-                indicator.formattedText = "🟢"
-                indicator.tooltipDescription = (
-                    "<tt>(enabled)</tt>"
-                    + "<hr>If a sub-part of a wheel is selected (eg. a roller of an omni wheel), an algorithm will traverse the assembly to best determine the entire wheel component.<br>"
-                    + "<br>This traversal operates on how the wheel is jointed and where the joint is placed. If the automatic selection fails, try:"
-                    + "<ul>"
-                    + "<tt>"
-                    + "<li>Jointing the wheel differently, or</li><br>"
-                    + "<li>Selecting the wheel from the browser while holding down <span style='text-decoration:overline;text-decoration:underline;background-color: #c27b10'>&nbsp;CTRL&nbsp;</span></span>, or</li><br>"
-                    + "<li>Disabling Algorithmic Selection.</li>"
-                    + "</tt>"
-                    + "</ul>"
-                )
-
-
-class MyKeyUpHandler(adsk.core.KeyboardEventHandler):
-    def __init__(self) -> None:
-        super().__init__()
-
-    def notify(self, args):
-        eventArgs = adsk.core.KeyboardEventArgs.cast(args)
-        keyCode = eventArgs.keyCode
-
-        onSelect = gm.handlers[3]
-        algorithmicSelection = INPUTS_ROOT.itemById("algorithmic_selection")
-        indicator = INPUTS_ROOT.itemById("algorithmic_indicator")
-        # wheelAddButton = INPUTS_ROOT.itemById("wheel_add")
-
-        # if wheelAddButton.isEnabled:
-        #    return
-
-        if keyCode == 16777249:  # CTRL key released
-            # gm.ui.messageBox("KEY UP")
-            onSelect.algorithmicSelection = algorithmicSelection.value
-            if algorithmicSelection.value:
-                indicator.formattedText = "🟢"
-                indicator.tooltipDescription = (
-                    "<tt>(enabled)</tt>"
-                    + "<hr>If a sub-part of a wheel is selected (eg. a roller of an omni wheel), an algorithm will traverse the assembly to best determine the entire wheel component.<br>"
-                    + "<br>This traversal operates on how the wheel is jointed and where the joint is placed. If the automatic selection fails, try:"
-                    + "<ul>"
-                    + "<tt>"
-                    + "<li>Jointing the wheel differently, or</li><br>"
-                    + "<li>Selecting the wheel from the browser while holding down <span style='text-decoration:overline;text-decoration:underline;background-color: #c27b10'>&nbsp;CTRL&nbsp;</span></span>, or</li><br>"
-                    + "<li>Disabling Algorithmic Selection.</li>"
-                    + "</tt>"
-                    + "</ul>"
-                )
-            else:
-                indicator.formattedText = "🔴"
-                indicator.tooltipDescription = (
-                    "<tt>(disabled)</tt>"
-                    + "<hr>If a sub-part of a wheel is selected (eg. a roller of an omni wheel), an algorithm will traverse the assembly to best determine the entire wheel component.<br>"
-                    + "<br>This traversal operates on how the wheel is jointed and where the joint is placed. If the automatic selection fails, try:"
-                    + "<ul>"
-                    + "<tt>"
-                    + "<li>Jointing the wheel differently, or</li><br>"
-                    + "<li>Selecting the wheel from the browser while holding down <span style='text-decoration:overline;text-decoration:underline;background-color: #c27b10'>&nbsp;CTRL&nbsp;</span></span>, or</li><br>"
-                    + "<li>Disabling Algorithmic Selection.</li>"
-                    + "</tt>"
-                    + "</ul>"
-                )
 
 
 class MyCommandDestroyHandler(adsk.core.CommandEventHandler):
@@ -2576,7 +2286,15 @@ def addWheelToTable(wheel: adsk.fusion.Joint) -> None:
         wheel (adsk.fusion.Occurrence): wheel Occurrence object to be added.
     """
     try:
-        onSelect = gm.handlers[3]
+        try:
+            onSelect = gm.handlers[3]
+            onSelect.allWheelPreselections.append(wheel.entityToken)
+        except IndexError:
+            # Not 100% sure what we need the select handler here for however it should not run when
+            # first populating the saved wheel configs. This will naturally throw a IndexError as
+            # we do this before the initialization of gm.handlers[]
+            pass
+
         wheelTableInput = wheelTable()
         # def addPreselections(child_occurrences):
         #     for occ in child_occurrences:
@@ -2588,7 +2306,6 @@ def addWheelToTable(wheel: adsk.fusion.Joint) -> None:
         # if wheel.childOccurrences:
         #     addPreselections(wheel.childOccurrences)
         # else:
-        onSelect.allWheelPreselections.append(wheel.entityToken)
 
         WheelListGlobal.append(wheel)
         cmdInputs = adsk.core.CommandInputs.cast(wheelTableInput.commandInputs)
