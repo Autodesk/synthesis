@@ -54,11 +54,11 @@ class AxisInput extends Input {
 
     public gamepadAxisNumber: number;
     public joystickInverted: boolean;
-    public useJoystickButtons: boolean;
-    public posJoystickButton: number;
-    public negJoystickButton: number;
+    public useGamepadButtons: boolean;
+    public posGamepadButton: number;
+    public negGamepadButton: number;
 
-    public constructor(inputName: string, posKeyCode: string, negKeyCode: string, gamepadAxisNumber: number, joystickInverted?: boolean, useJoystickButtons?: boolean, posJoystickButton?: number, negJoystickButton?: number, isGlobal?: boolean, posKeyModifiers?: ModifierState, negKeyModifiers?: ModifierState) {
+    public constructor(inputName: string, posKeyCode: string, negKeyCode: string, gamepadAxisNumber: number, joystickInverted?: boolean, useGamepadButtons?: boolean, posGamepadButton?: number, negGamepadButton?: number, isGlobal?: boolean, posKeyModifiers?: ModifierState, negKeyModifiers?: ModifierState) {
         super(inputName, isGlobal ?? false);
         
         this.posKeyCode = posKeyCode;
@@ -69,57 +69,42 @@ class AxisInput extends Input {
         this.gamepadAxisNumber = gamepadAxisNumber;
         this.joystickInverted = joystickInverted ?? false;
 
-        this.useJoystickButtons = useJoystickButtons ?? false;
-        this.posJoystickButton = posJoystickButton ?? -1;
-        this.negJoystickButton = negJoystickButton ?? -1;
+        this.useGamepadButtons = useGamepadButtons ?? false;
+        this.posGamepadButton = posGamepadButton ?? -1;
+        this.negGamepadButton = negGamepadButton ?? -1;
     }    
 
     // Returns 1 if positive pressed, -1 if negative pressed, or 0 if none or both are pressed
     getValue(): number {
-        let inputValue: number = 0;
-        // Gamepad axis input
+        // Gamepad joystick axis
         if (InputSystem.useGamepad) {
-            if (!this.useJoystickButtons)
-                inputValue = InputSystem.getGamepadAxis(this.gamepadAxisNumber);
-            else
-                inputValue = (InputSystem.isGamepadButtonPressed(this.posJoystickButton) ? 1 : 0) - (InputSystem.isGamepadButtonPressed(this.negJoystickButton) ? 1 : 0);
+            if (!this.useGamepadButtons)
+                return InputSystem.getGamepadAxis(this.gamepadAxisNumber) * (this.joystickInverted ? -1 : 1);
+            
+            // Gamepad button axis
+            return (InputSystem.isGamepadButtonPressed(this.posGamepadButton) ? 1 : 0) - (InputSystem.isGamepadButtonPressed(this.negGamepadButton) ? 1 : 0);
         }
-        else {
-            // Button axis input
-            inputValue = (InputSystem.isKeyPressed(this.posKeyCode, this.posKeyModifiers) ? 1 : 0) - (InputSystem.isKeyPressed(this.negKeyCode, this.negKeyModifiers) ? 1 : 0);
-        }
-
-        return inputValue * (this.joystickInverted ? -1 : 1);
+        
+        // Keyboard button axis
+        return  (InputSystem.isKeyPressed(this.posKeyCode, this.posKeyModifiers) ? 1 : 0) - (InputSystem.isKeyPressed(this.negKeyCode, this.negKeyModifiers) ? 1 : 0);
     }
 }
 
 export const emptyModifierState: ModifierState = { ctrl: false, alt: false, shift: false, meta: false };
 
 // When a robot is loaded, default inputs replace any unassigned inputs
-const defaultInputs: Input[] = [
-    new ButtonInput("intakeGamepiece", "KeyE", 0, true),
-    new ButtonInput("shootGamepiece", "KeyQ", 2, true),
-    new ButtonInput("enableGodMode", "KeyG", 3, true),
-
-    new AxisInput("arcadeDrive", "KeyW", "KeyS", 1, true),
-    new AxisInput("arcadeTurn", "KeyD", "KeyA", 0, false)
-]
+// TODO: handle default inputs in a better way
+// const defaultInputs: Input[] = [
+//     new ButtonInput("intakeGamepiece", "KeyE", 0, true),
+//     new ButtonInput("shootGamepiece", "KeyQ", 2, true),
+//     new ButtonInput("enableGodMode", "KeyG", 3, true)
+// ]
 
 class InputSystem extends WorldSystem {
-    public static allInputs: Input[] = [];
+    public static allInputs: Map<string, Input[]> = new Map();
     public static useGamepad: boolean = false;
 
     public static currentModifierState: ModifierState;
-
-    // Inputs global to all of synthesis like camera controls
-    public static get globalInputs(): Input[] {
-        return this.allInputs.filter(input => input.isGlobal);
-    }
-
-    // Robot specific controls like driving
-    public static get robotInputs(): Input[] {
-        return this.allInputs.filter(input => !input.isGlobal);
-    }
 
     // A list of keys currently being pressed
     private static _keysPressed: { [key: string]: boolean } = {};
@@ -144,11 +129,11 @@ class InputSystem extends WorldSystem {
         
         // TODO: Load saved inputs from mira (robot specific) & global inputs
 
-        for (const key in defaultInputs) {
-            if (Object.prototype.hasOwnProperty.call(defaultInputs, key)) {
-              InputSystem.allInputs[key] = defaultInputs[key];
-            }
-        }
+        // for (const key in defaultInputs) {
+        //     if (Object.prototype.hasOwnProperty.call(defaultInputs, key)) {
+        //       InputSystem.allInputs[key] = defaultInputs[key];
+        //     }
+        // }
     }
 
     public Update(_: number): void {InputSystem
@@ -206,19 +191,14 @@ class InputSystem extends WorldSystem {
     }
 
     // If an input exists, return true if it is pressed
-    public static getInput(inputName: string) : number {
+    public static getInput(inputName: string, assemblyId: string) : number {
         // Looks for an input assigned to this action
-        const targetInput = this.allInputs.find(input => input.inputName == inputName);
+        const targetInput = this.allInputs.get(assemblyId)?.find(input => input.inputName == inputName);
 
         if (targetInput == null)
             return 0;
 
         return targetInput.getValue();
-    }
-
-    // Combines two inputs into a positive/negative axis
-    public static getButtonAxis(positive: string, negative: string) {
-        return (this.getInput(positive)) - (this.getInput(negative));
     }
 
     // Returns true if two modifier states are identical

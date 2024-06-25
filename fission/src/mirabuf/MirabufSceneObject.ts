@@ -20,17 +20,19 @@ interface RnDebugMeshes {
 }
 
 class MirabufSceneObject extends SceneObject {
-
+    private _assemblyName: string;
     private _mirabufInstance: MirabufInstance;
+    private _mechanism: Mechanism;
+    private _brain: SynthesisBrain | undefined;
+
     private _debugBodies: Map<string, RnDebugMeshes> | null;
     private _physicsLayerReserve: LayerReserve | undefined = undefined;
 
-    private _mechanism: Mechanism;
-
-    public constructor(mirabufInstance: MirabufInstance) {
+    public constructor(mirabufInstance: MirabufInstance, assemblyName: string) {
         super()
 
         this._mirabufInstance = mirabufInstance
+        this._assemblyName = assemblyName;
 
         this._mechanism = World.PhysicsSystem.CreateMechanismFromParser(this._mirabufInstance.parser)
         if (this._mechanism.layerReserve) {
@@ -62,8 +64,8 @@ class MirabufSceneObject extends SceneObject {
         // Simulation
         World.SimulationSystem.RegisterMechanism(this._mechanism);
         const simLayer = World.SimulationSystem.GetSimulationLayer(this._mechanism)!;
-        const brain = new SynthesisBrain(this._mechanism);
-        simLayer.SetBrain(brain);
+        this._brain = new SynthesisBrain(this._mechanism, this._assemblyName);
+        simLayer.SetBrain(this._brain);
     }
 
     public Update(): void {
@@ -111,6 +113,8 @@ class MirabufSceneObject extends SceneObject {
         });
         this._debugBodies?.clear();
         this._physicsLayerReserve?.Release();
+
+        this._brain?.clearControls();
     }
 
     private CreateMeshForShape(shape: Jolt.Shape): THREE.Mesh {
@@ -148,7 +152,7 @@ export async function CreateMirabufFromUrl(path: string): Promise<MirabufSceneOb
         return;
     }
     
-    return new MirabufSceneObject(new MirabufInstance(parser));
+    return new MirabufSceneObject(new MirabufInstance(parser), miraAssembly.info!.name!);
 }
 
 export default MirabufSceneObject;

@@ -8,15 +8,18 @@ class GenericArmBehavior extends Behavior {
     private _inputName: string;
     private _rotationalSpeed = 30;
 
-    constructor(hingeDriver: HingeDriver, hingeStimulus: HingeStimulus, jointIndex: number) {
+    private _assemblyName: string;
+
+    constructor(hingeDriver: HingeDriver, hingeStimulus: HingeStimulus, jointIndex: number, assemblyName: string) {
         super([hingeDriver], [hingeStimulus]);
         this._hingeDriver = hingeDriver;
-
         this._inputName = "joint " + jointIndex;
 
+        this._assemblyName = assemblyName;
+
         // TODO: load inputs from mira
-        InputSystem.allInputs.push(new AxisInput(this._inputName, "Digit" + jointIndex.toString(), "Digit" + jointIndex.toString(), -1, 
-            false, false, emptyModifierState, { ctrl: false, alt: false, shift: true, meta: false }));
+        InputSystem.allInputs.get(this._assemblyName)!.push(new AxisInput(this._inputName, "Digit" + jointIndex.toString(), "Digit" + jointIndex.toString(), -1, 
+            false, false, -1, -1, false, emptyModifierState, { ctrl: false, alt: false, shift: true, meta: false }));
     }
 
     // Sets the arms target rotational velocity
@@ -25,7 +28,7 @@ class GenericArmBehavior extends Behavior {
     }
 
     public Update(_: number): void {
-        this.rotateArm(InputSystem.getInput(this._inputName)*this._rotationalSpeed);
+        this.rotateArm(InputSystem.getInput(this._inputName, this._assemblyName)*this._rotationalSpeed);
     }
 }
 

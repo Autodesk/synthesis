@@ -182,7 +182,7 @@ function Synthesis() {
                     return;
                 }
                 
-                const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser));
+                const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser), miraAssembly.info!.name!);
                 World.SceneRenderer.RegisterSceneObject(mirabufSceneObject);
             })();
 		};
