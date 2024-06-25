@@ -1,6 +1,6 @@
-import { mirabuf } from "../proto/mirabuf";
-import Pako from "pako";
-import * as fs from 'fs';
+import { mirabuf } from "../proto/mirabuf"
+import Pako from "pako"
+import * as fs from "fs"
 
 const robots = "Robots"
 const fields = "Fields"
@@ -10,9 +10,9 @@ const fieldFolderHandle = await root.getDirectoryHandle(fields, { create: true }
 
 export function UnzipMira(buff: Uint8Array): Uint8Array {
     if (buff[0] == 31 && buff[1] == 139) {
-        return Pako.ungzip(buff);
+        return Pako.ungzip(buff)
     } else {
-        return buff;
+        return buff
     }
 }
 

@@ -1,3 +1,3 @@
 declare interface Window {
-    setAuthCode(code: string): void;
+    setAuthCode(code: string): void
 }
