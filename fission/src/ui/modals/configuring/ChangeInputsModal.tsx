@@ -4,9 +4,10 @@ import { FaGamepad } from "react-icons/fa6"
 import Stack, { StackDirection } from "../../components/Stack"
 import Label, { LabelSize } from "../../components/Label"
 import LabeledButton, { LabelPlacement } from "../../components/LabeledButton"
-import InputSystem, { AxisInput, ButtonInput, ModifierState, emptyModifierState } from "@/systems/input/InputSystem"
+import InputSystem, { AxisInput, ButtonInput, ModifierState, EmptyModifierState } from "@/systems/input/InputSystem"
 import Dropdown from "@/ui/components/Dropdown"
 import Checkbox from "@/ui/components/Checkbox"
+import { InputScheme } from "@/systems/input/DefaultInputs"
 
 // capitalize first letter
 // TODO: assumes all inputs are keyboard buttons
@@ -46,7 +47,7 @@ const codeToCharacterMap: { [code: string]: string } = {
 };
 
 const gamepadButtons: string[] = [ "A", "B", "X", "Y",  "Left Bumper", "Right Bumper", "Back", "Start", "Left Stick", "Right Stick", "UNKNOWN", "UNKNOWN2", "Dpad Up", "Dpad Down", "Dpad Left", "Dpad Right"];
-const gamepadAxes: string[] = ["N/A", "Left X", "Left Y", /* for some reason triggers aren't registering??? "LeftTrigger", "RightTrigger", */ "Right X", "Right Y"];
+const gamepadAxes: string[] = ["N/A", "Left X", "Left Y", "Right X", "Right Y"];
 
 // Converts a key code to displayable character (ex: KeyA -> "A")
 const keyCodeToCharacter = (code: string) => {
@@ -66,27 +67,31 @@ const keyCodeToCharacter = (code: string) => {
 }
 
 const moveElementToTop = (arr: string[], element: string) => {
-    console.log(element);
     if (element == null) {
         return arr;
     }
+    
     arr = arr.includes(element) ? [element, ...arr.filter(item => item !== element)] : arr;
-    console.log(arr);
     return arr;
 };
 
 const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
-    const [useGamepad, setUseGamepad] = useState<boolean>(InputSystem.useGamepad)
-    const [selectedRobot, setSelectedRobot] = useState<string>("")
+    const [selectedScheme, setSelectedScheme] = useState<InputScheme | undefined>(undefined);
+
+    // If there is a robot spawned, set it as the selected robot
+    if (selectedScheme == null && InputSystem.allInputs.size > 0)
+        setSelectedScheme(InputSystem.allInputs.values().next().value);
+
+    const [useGamepad, setUseGamepad] = useState<boolean>(selectedScheme?.usesGamepad ?? false)
     const [selectedInput, setSelectedInput] = useState<string>("")
 
     const [chosenKey, setChosenKey] = useState<string>("")
     const [chosenButton, setChosenButton] = useState<number>(-1)
-    const [modifierState, setModifierState] = useState<ModifierState>(emptyModifierState)
+    const [modifierState, setModifierState] = useState<ModifierState>(EmptyModifierState)
 
     const [chosenGamepadAxis, setChosenGamepadAxis] = useState<number>(-1)
 
-    const axisInputs = InputSystem.allInputs.get(selectedRobot)?.filter((input): input is AxisInput => input instanceof AxisInput);
+    const axisInputs = selectedScheme?.inputs.filter((input): input is AxisInput => input instanceof AxisInput);
 
     // TODO: try removing this, might not be needed
     type UseButtonsState = {
@@ -100,42 +105,38 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         }, {})
     );
 
-    // If there is a robot spawned, set it as the selected robot
-    if (selectedRobot == "" && InputSystem.allInputs.size > 0)
-        setSelectedRobot(InputSystem.allInputs.keys().next().value);
-
     if (!useGamepad && selectedInput && chosenKey) {
         if (selectedInput.startsWith("pos")) {
-            const input = InputSystem.allInputs.get(selectedRobot)?.find(input => input.inputName == selectedInput.substring(3)) as AxisInput;
+            const input = selectedScheme?.inputs.find(input => input.inputName == selectedInput.substring(3)) as AxisInput;
             input.posKeyCode = chosenKey;
             input.posKeyModifiers = modifierState;
         }
         else if (selectedInput.startsWith("neg")) {
-            const input = InputSystem.allInputs.get(selectedRobot)?.find(input => input.inputName == selectedInput.substring(3)) as AxisInput;
+            const input = selectedScheme?.inputs.find(input => input.inputName == selectedInput.substring(3)) as AxisInput;
             input.negKeyCode = chosenKey;
             input.negKeyModifiers = modifierState;
         }
         else {
-            const input = InputSystem.allInputs.get(selectedRobot)?.find(input => input.inputName == selectedInput) as ButtonInput;
+            const input =selectedScheme?.inputs.find(input => input.inputName == selectedInput) as ButtonInput;
             input.keyCode = chosenKey
             input.keyModifiers = modifierState
         }
 
         setChosenKey("")
         setSelectedInput("")
-        setModifierState(emptyModifierState)
+        setModifierState(EmptyModifierState)
     }
     else if (useGamepad && selectedInput && chosenButton != -1) {
         if (selectedInput.startsWith("pos")) {
-            const input = InputSystem.allInputs.get(selectedRobot)?.find(input => input.inputName == selectedInput.substring(3)) as AxisInput;
+            const input = selectedScheme?.inputs.find(input => input.inputName == selectedInput.substring(3)) as AxisInput;
             input.posGamepadButton = chosenButton;
         }
         else if (selectedInput.startsWith("neg")) {
-            const input = InputSystem.allInputs.get(selectedRobot)?.find(input => input.inputName == selectedInput.substring(3)) as AxisInput;
+            const input = selectedScheme?.inputs.find(input => input.inputName == selectedInput.substring(3)) as AxisInput;
             input.negGamepadButton = chosenButton;
         }
         else {
-            const input = InputSystem.allInputs.get(selectedRobot)?.find(input => input.inputName == selectedInput) as ButtonInput;
+            const input = selectedScheme?.inputs.find(input => input.inputName == selectedInput) as ButtonInput;
 
             input.gamepadButton = chosenButton
         }
@@ -145,9 +146,8 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     }
 
     if (useGamepad && selectedInput && chosenGamepadAxis != -1) {
-        const selected = InputSystem.allInputs.get(selectedRobot)?.find(input => input.inputName == selectedInput) as AxisInput
+        const selected = selectedScheme?.inputs.find(input => input.inputName == selectedInput) as AxisInput
         selected.gamepadAxisNumber = chosenGamepadAxis - 1;
-        console.log("Set input " + selectedInput + " to " + (chosenGamepadAxis-1));
 
         setChosenGamepadAxis(-1)
         setSelectedInput("")
@@ -178,12 +178,13 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 // Moves the selected option to the start of the array
                 options={Array.from(InputSystem.allInputs.keys())}
                 onSelect={(value) => {
-                    setSelectedRobot(value);
+                    setSelectedScheme(InputSystem.allInputs.get(value));
                 }}
             />
-            <Checkbox label="Gamepad Controller" defaultState={InputSystem.useGamepad} onClick={ (val) => {
+            <Checkbox label="Gamepad Controller" defaultState={selectedScheme?.usesGamepad ?? false} onClick={ (val) => {
                         setUseGamepad(val);
-                        InputSystem.useGamepad = val;
+                        if (selectedScheme)
+                            selectedScheme.usesGamepad = val;
                     }
                 } 
             />
@@ -200,10 +201,10 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         })
                     }}
                 >
-                    {selectedRobot ? (
+                    {selectedScheme ? (
                         <>
                             <Label size={LabelSize.Large}>Robot Controls</Label>
-                                {InputSystem.allInputs.get(selectedRobot)?.map(c => {
+                                {selectedScheme.inputs.map(c => {
                                     if (!useGamepad) {
 
                                         // Keyboard button

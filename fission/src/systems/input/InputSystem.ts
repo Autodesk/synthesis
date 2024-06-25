@@ -1,4 +1,5 @@
 import WorldSystem from "../WorldSystem";
+import { InputScheme } from "./DefaultInputs";
 
 export type ModifierState = {
     alt: boolean
@@ -6,6 +7,7 @@ export type ModifierState = {
     shift: boolean
     meta: boolean
 }
+export const EmptyModifierState: ModifierState = { ctrl: false, alt: false, shift: false, meta: false };
 
 abstract class Input {
     public inputName: string;
@@ -16,7 +18,7 @@ abstract class Input {
         this.isGlobal = isGlobal;
     }    
 
-    abstract getValue(): number;
+    abstract getValue(useGamepad: boolean): number;
 }
 
 // A single button
@@ -29,14 +31,14 @@ class ButtonInput extends Input {
     public constructor(inputName: string, keyCode: string, gamepadButton: number, isGlobal?: boolean, keyModifiers?: ModifierState) {
         super(inputName, isGlobal ?? false);
         this.keyCode = keyCode;
-        this.keyModifiers = keyModifiers ?? emptyModifierState;
+        this.keyModifiers = keyModifiers ?? EmptyModifierState;
         this.gamepadButton = gamepadButton;
     }    
 
     // Returns 1 if pressed and 0 if not pressed
-    getValue(): number {
+    getValue(useGamepad: boolean): number {
         // Gamepad button input
-        if (InputSystem.useGamepad) {
+        if (useGamepad) {
             return InputSystem.isGamepadButtonPressed(this.gamepadButton) ? 1 : 0;
         }
         
@@ -62,9 +64,9 @@ class AxisInput extends Input {
         super(inputName, isGlobal ?? false);
         
         this.posKeyCode = posKeyCode;
-        this.posKeyModifiers = posKeyModifiers ?? emptyModifierState;
+        this.posKeyModifiers = posKeyModifiers ?? EmptyModifierState;
         this.negKeyCode = negKeyCode;
-        this.negKeyModifiers = negKeyModifiers ?? emptyModifierState;
+        this.negKeyModifiers = negKeyModifiers ?? EmptyModifierState;
 
         this.gamepadAxisNumber = gamepadAxisNumber;
         this.joystickInverted = joystickInverted ?? false;
@@ -75,9 +77,9 @@ class AxisInput extends Input {
     }    
 
     // Returns 1 if positive pressed, -1 if negative pressed, or 0 if none or both are pressed
-    getValue(): number {
+    getValue(useGamepad: boolean): number {
         // Gamepad joystick axis
-        if (InputSystem.useGamepad) {
+        if (useGamepad) {
             if (!this.useGamepadButtons)
                 return InputSystem.getGamepadAxis(this.gamepadAxisNumber) * (this.joystickInverted ? -1 : 1);
             
@@ -90,19 +92,8 @@ class AxisInput extends Input {
     }
 }
 
-export const emptyModifierState: ModifierState = { ctrl: false, alt: false, shift: false, meta: false };
-
-// When a robot is loaded, default inputs replace any unassigned inputs
-// TODO: handle default inputs in a better way
-// const defaultInputs: Input[] = [
-//     new ButtonInput("intakeGamepiece", "KeyE", 0, true),
-//     new ButtonInput("shootGamepiece", "KeyQ", 2, true),
-//     new ButtonInput("enableGodMode", "KeyG", 3, true)
-// ]
-
 class InputSystem extends WorldSystem {
-    public static allInputs: Map<string, Input[]> = new Map();
-    public static useGamepad: boolean = false;
+    public static allInputs: Map<string, InputScheme> = new Map();
 
     public static currentModifierState: ModifierState;
 
@@ -193,12 +184,13 @@ class InputSystem extends WorldSystem {
     // If an input exists, return true if it is pressed
     public static getInput(inputName: string, assemblyId: string) : number {
         // Looks for an input assigned to this action
-        const targetInput = this.allInputs.get(assemblyId)?.find(input => input.inputName == inputName);
+        const targetScheme = this.allInputs.get(assemblyId);
+        const targetInput = targetScheme?.inputs.find(input => input.inputName == inputName);
 
-        if (targetInput == null)
+        if (targetScheme == null || targetInput == null)
             return 0;
 
-        return targetInput.getValue();
+        return targetInput.getValue(targetScheme.usesGamepad);
     }
 
     // Returns true if two modifier states are identical

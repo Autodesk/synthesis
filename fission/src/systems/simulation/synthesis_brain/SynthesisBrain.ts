@@ -15,6 +15,7 @@ import SliderDriver from "../driver/SliderDriver";
 import SliderStimulus from "../stimulus/SliderStimulus";
 import GenericElevatorBehavior from "../behavior/GenericElevatorBehavior";
 import InputSystem from "@/systems/input/InputSystem";
+import DefaultInputs from "@/systems/input/DefaultInputs";
 
 class SynthesisBrain extends Brain {
     private _behaviors: Behavior[] = [];
@@ -23,6 +24,8 @@ class SynthesisBrain extends Brain {
     // Tracks how many joins have been made for unique controls
     private _currentJointIndex = 1;
 
+    private static _currentRobotIndex = 0;
+
     // Tracks how many robots are spawned for control identification
     private _assemblyName: string
 
@@ -30,20 +33,21 @@ class SynthesisBrain extends Brain {
         super(mechanism);
 
         this._simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)!;
-        this._assemblyName = assemblyName;
+        this._assemblyName = "[" + SynthesisBrain._currentRobotIndex.toString() + "] " + assemblyName;
 
         if (!this._simLayer) { 
             console.log("SimulationLayer is undefined");
             return;
         }
 
-        // TODO: maybe configure all the controls here instead of in the individual behaviors
-        InputSystem.allInputs.set(this._assemblyName, []);
-
         // TODO: might need to recreate these whenever the robot is enabled, not when it's first created
-        this.ConfigureArcadeDriveBehavior();
-        this.ConfigureArmBehaviors();
-        this.ConfigureElevatorBehaviors();
+        this.configureArcadeDriveBehavior();
+        this.configureArmBehaviors();
+        this.configureElevatorBehaviors();
+
+        this.configureInputs();
+
+        SynthesisBrain._currentRobotIndex++;
     }
 
     public Enable(): void { }
@@ -61,7 +65,7 @@ class SynthesisBrain extends Brain {
     }
 
     // Creates an instance of ArcadeDriveBehavior and automatically configures it
-    public ConfigureArcadeDriveBehavior() {
+    public configureArcadeDriveBehavior() {
         const wheelDrivers: WheelDriver[] =  this._simLayer.drivers.filter((driver) => driver instanceof WheelDriver) as WheelDriver[];
         const wheelStimuli: WheelRotationStimulus[] =  this._simLayer.stimuli.filter((stimulus) => stimulus instanceof WheelRotationStimulus) as WheelRotationStimulus[];
 
@@ -97,7 +101,7 @@ class SynthesisBrain extends Brain {
     }
 
     // Creates instances of ArmBehavior and automatically configures them
-    public ConfigureArmBehaviors() {
+    public configureArmBehaviors() {
         const hingeDrivers: HingeDriver[] =  this._simLayer.drivers.filter((driver) => driver instanceof HingeDriver) as HingeDriver[];
         const hingeStimuli: HingeStimulus[] =  this._simLayer.stimuli.filter((stimulus) => stimulus instanceof HingeStimulus) as HingeStimulus[];
 
@@ -108,13 +112,35 @@ class SynthesisBrain extends Brain {
     }
 
     // Creates instances of ElevatorBehavior and automatically configures them
-    public ConfigureElevatorBehaviors() {
+    public configureElevatorBehaviors() {
         const sliderDrivers: SliderDriver[] =  this._simLayer.drivers.filter((driver) => driver instanceof SliderDriver) as SliderDriver[];
         const sliderStimuli: SliderStimulus[] =  this._simLayer.stimuli.filter((stimulus) => stimulus instanceof SliderStimulus) as SliderStimulus[];
 
         for (let i = 0; i < sliderDrivers.length; i++) {
             this._behaviors.push(new GenericElevatorBehavior(sliderDrivers[i], sliderStimuli[i], this._currentJointIndex, this._assemblyName));
             this._currentJointIndex++;
+        }
+    }
+
+    public configureInputs() {
+        const scheme = DefaultInputs.ALL_INPUT_SCHEMES[SynthesisBrain._currentRobotIndex];
+
+        InputSystem.allInputs.set(this._assemblyName, {usesGamepad: scheme.usesGamepad, inputs: []});
+        const inputList = InputSystem.allInputs.get(this._assemblyName)!.inputs;
+
+        const arcadeDrive = scheme.inputs.find(i => i.inputName === "arcadeDrive");
+        if (arcadeDrive)
+            inputList.push(arcadeDrive);
+
+        const arcadeTurn = scheme.inputs.find(i => i.inputName === "arcadeTurn");
+        if (arcadeTurn)
+            inputList.push(arcadeTurn);
+
+        for (let i = 1; i < this._currentJointIndex; i++) {
+            const controlPreset = scheme.inputs.find(input => input.inputName == ("joint " + i))
+
+            if (controlPreset)
+                inputList.push(controlPreset);
         }
     }
 }
