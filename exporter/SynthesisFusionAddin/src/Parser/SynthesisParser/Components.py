@@ -3,7 +3,7 @@ import adsk.core, adsk.fusion, uuid, logging, traceback
 from proto.proto_out import assembly_pb2, types_pb2, material_pb2, joint_pb2
 
 from .Utilities import *
-from .. import ExporterOptions
+from ..ExporterOptions import ExporterOptions, ExportMode
 from typing import *
 
 from . import PhysicalProperties
@@ -149,7 +149,7 @@ def __parseChildOccurrence(
         part.part_definition_reference = compRef
 
     # TODO: Maybe make this a separate step where you dont go backwards and search for the gamepieces
-    if options.exportMode == ExporterOptions.ExportMode.FIELD:
+    if options.exportMode == ExportMode.FIELD:
         for x in options.gamepieces:
             if x.occurrenceToken == mapConstant:
                 partsData.part_definitions[part.part_definition_reference].dynamic = True
