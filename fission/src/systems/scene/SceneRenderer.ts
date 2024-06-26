@@ -86,6 +86,11 @@ class SceneRenderer extends WorldSystem {
         sphere.position.set(0.0, 3, 0.0);
         this._scene.add(sphere);
         this.AddTransformGizmo(sphere);
+
+        const box = new THREE.Mesh(new THREE.BoxGeometry(1.0, 1.0, 1.0), this.CreateToonMaterial());
+        box.position.set(0.0, 1, 0.0);
+        this._scene.add(box);
+        this.AddTransformGizmo(box);
     }
 
     public UpdateCanvasSize() {
@@ -107,8 +112,20 @@ class SceneRenderer extends WorldSystem {
         this.transformControls.forEach(tc => {
             if (tc.object) {
                 const distanceToCamera = mainCameraPosition.distanceTo(tc.object.position);
-                const scale = (9.0 / distanceToCamera) * Math.tan(mainCameraFovRadians) * 1.9;
-                tc.setSize(scale);
+                if (tc.object.geometry && tc.object.geometry.type === 'SphereGeometry') {
+                    const sphereRadius = tc.object.geometry.parameters.radius !== undefined
+                        ? tc.object.geometry.parameters.radius
+                        : 1;
+                    
+                    const scale = (sphereRadius * 3.0 / distanceToCamera) * Math.tan(mainCameraFovRadians) * 1.9;
+                    tc.setSize(scale);
+                } else if (tc.object.geometry && tc.object.geometry.type === 'BoxGeometry') {
+                    const boxSize = tc.object.geometry.parameters.width !== undefined
+                        ? tc.object.geometry.parameters.width
+                        : 1;
+                    const scale = (boxSize * 3.0 / distanceToCamera) * Math.tan(mainCameraFovRadians) * 1.9;
+                    tc.setSize(scale);
+                }
             }
         });
 
