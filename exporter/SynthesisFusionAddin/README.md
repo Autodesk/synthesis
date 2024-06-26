@@ -82,5 +82,6 @@ We format using a Python formatter called `black` [![Code style: black](https://
 
 - install by `pip3 install black && pip3 install isort` or `pip install black && pip install isort`
 - use `isort .` followed by `black .` to format all relevant exporter python files.
+  - or, alternatively, run `python ./tools/format.py` to do this for you!
 
 __Note: black will always ignore files in the proto/proto_out folder since google formats those__
