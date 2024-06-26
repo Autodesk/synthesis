@@ -20,7 +20,7 @@
     "assetpack:win32": "echo todo"
   },
   "dependencies": {
-    "@barclah/jolt-physics": "^0.24.0",
+    "@barclah/jolt-physics": "^0.24.1",
     "@mui/base": "^5.0.0-beta.40",
     "@mui/icons-material": "^5.15.20",
     "@mui/system": "^5.15.20",
