@@ -3,6 +3,7 @@ import { TransformControls } from 'three/examples/jsm/controls/TransformControls
 import SceneObject from "./SceneObject"
 import WorldSystem from "../WorldSystem"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
+import { transform } from "framer-motion"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x73937e
@@ -17,7 +18,7 @@ class SceneRenderer extends WorldSystem {
     private _sceneObjects: Map<number, SceneObject>
     
     private controls: OrbitControls
-    private transformControls: TransformControls[] = [];
+    private transformControls: Map<TransformControls, number>;
 
     public get sceneObjects() {
         return this._sceneObjects
@@ -81,16 +82,20 @@ class SceneRenderer extends WorldSystem {
 
         this.controls = new OrbitControls(this._mainCamera, this._renderer.domElement);
         this.controls.update()
+
+        this.transformControls = new Map();
  
         const sphere = new THREE.Mesh(new THREE.SphereGeometry(3.0), this.CreateToonMaterial());
         sphere.position.set(0.0, 3, 0.0);
         this._scene.add(sphere);
-        this.AddTransformGizmo(sphere);
+        this.AddTransformGizmo(sphere, 'scale', 3.0);
 
         const box = new THREE.Mesh(new THREE.BoxGeometry(1.0, 1.0, 1.0), this.CreateToonMaterial());
         box.position.set(0.0, 1, 0.0);
         this._scene.add(box);
-        this.AddTransformGizmo(box);
+        this.AddTransformGizmo(box, 'scale', 3.0);
+        this.AddTransformGizmo(box, 'rotate', 5.0);
+        this.AddTransformGizmo(box, 'translate', 6.0);
     }
 
     public UpdateCanvasSize() {
@@ -107,27 +112,10 @@ class SceneRenderer extends WorldSystem {
 
         // controls.update(deltaTime); // TODO: Add controls?
 
-        const mainCameraPosition = this._mainCamera.position;
-        const mainCameraFovRadians = Math.PI * (this._mainCamera.fov / 2) / 180;
-        this.transformControls.forEach(tc => {
-            if (tc.object) {
-                const distanceToCamera = mainCameraPosition.distanceTo(tc.object.position);
-                if (tc.object.geometry && tc.object.geometry.type === 'SphereGeometry') {
-                    const sphereRadius = tc.object.geometry.parameters.radius !== undefined
-                        ? tc.object.geometry.parameters.radius
-                        : 1;
-                    
-                    const scale = (sphereRadius * 3.0 / distanceToCamera) * Math.tan(mainCameraFovRadians) * 1.9;
-                    tc.setSize(scale);
-                } else if (tc.object.geometry && tc.object.geometry.type === 'BoxGeometry') {
-                    const boxSize = tc.object.geometry.parameters.width !== undefined
-                        ? tc.object.geometry.parameters.width
-                        : 1;
-                    const scale = (boxSize * 3.0 / distanceToCamera) * Math.tan(mainCameraFovRadians) * 1.9;
-                    tc.setSize(scale);
-                }
-            }
-        });
+        const mainCameraFovRadians = Math.PI * (this._mainCamera.fov * 0.5) / 180;
+        this.transformControls.forEach((size, tc) => {
+            tc.setSize((size / this._mainCamera.position.distanceTo(tc.object!.position)) * Math.tan(mainCameraFovRadians) * 1.9);
+        }); 
 
         this._renderer.render(this._scene, this._mainCamera)
     }
@@ -179,14 +167,14 @@ class SceneRenderer extends WorldSystem {
         })
     }
 
-    public AddTransformGizmo(obj: THREE.Object3D, mode: "translate" | "rotate" | "scale" = 'translate') {
+    public AddTransformGizmo(obj: THREE.Object3D, mode: "translate" | "rotate" | "scale" = 'translate', size: number = 5.0) {
         const transformControl = new TransformControls(this._mainCamera, this._renderer.domElement);
         transformControl.addEventListener('dragging-changed', (event: { value: any }) => {
             this.controls.enabled = !event.value;
         });
         transformControl.setMode(mode);
         transformControl.attach(obj);
-        this.transformControls.push(transformControl);
+        this.transformControls.set(transformControl, size);
         this._scene.add(transformControl);
     }
 }
