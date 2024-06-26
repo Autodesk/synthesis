@@ -2,6 +2,7 @@ import Jolt from "@barclah/jolt-physics"
 import Driver from "./Driver"
 import { GetLastDeltaT } from "@/systems/physics/PhysicsSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
+import InputSystem from "@/systems/input/InputSystem"
 
 class SliderDriver extends Driver {
     private _constraint: Jolt.SliderConstraint
@@ -46,6 +47,8 @@ class SliderDriver extends Driver {
     }
 
     public Update(_: number): void {
+        this._targetPosition +=
+            ((InputSystem.getInput("sliderUp") ? 1 : 0) - (InputSystem.getInput("sliderDown") ? 1 : 0)) * 3
         this._constraint.SetTargetPosition(this._targetPosition)
     }
 }

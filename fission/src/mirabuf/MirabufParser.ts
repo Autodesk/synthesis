@@ -91,7 +91,7 @@ class MirabufParser {
         }
 
         // 1: Initial Rigidgroups from ancestorial breaks in joints
-        (Object.keys(assembly.data!.joints!.jointInstances!) as string[]).forEach(key => {
+        ;(Object.keys(assembly.data!.joints!.jointInstances!) as string[]).forEach(key => {
             if (key != GROUNDED_JOINT_ID) {
                 const jInst = assembly.data!.joints!.jointInstances![key]
                 const [ancestorA, ancestorB] = this.FindAncestorialBreak(jInst.parentPart!, jInst.childPart!)
@@ -191,7 +191,7 @@ class MirabufParser {
         // Build undirected graph
         const graph = new Graph()
         graph.AddNode(rootNode ? rootNode.id : this._rigidNodes[0].id)
-        const jointInstances = (Object.values(assembly.data!.joints!.jointInstances!) as mirabuf.joint.JointInstance[])
+        const jointInstances = Object.values(assembly.data!.joints!.jointInstances!) as mirabuf.joint.JointInstance[]
         jointInstances.forEach((x: mirabuf.joint.JointInstance) => {
             const rA = this._partToNodeMap.get(x.parentPart)
             const rB = this._partToNodeMap.get(x.childPart)

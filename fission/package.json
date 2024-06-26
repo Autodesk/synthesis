@@ -11,7 +11,7 @@
     "test": "vitest",
     "lint:fix": "npm run lint --fix",
     "prettier": "npx prettier src --check",
-    "prettier:fix": "npm run prettier --write",
+    "prettier:fix": "npx prettier src --write",
     "format": "npm run prettier:fix && npm run lint:fix",
     "build:prod": "tsc && vite build --base=/fission/",
     "assetpack": "run-script-os",
