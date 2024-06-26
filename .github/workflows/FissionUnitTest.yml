@@ -24,11 +24,13 @@ jobs:
         npm install
         npm install -g run-script-os
         npm run assetpack
+        npx playwright install
     - name: Unit Tests
       id: unit-tests
       run: |
         cd fission
         npm run test
+        npm run test:firefox
       continue-on-error: true
     - name: Check Success
       run: |
