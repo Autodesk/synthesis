@@ -19,6 +19,7 @@ from ..Parser.ParseOptions import (
     JointParentType,
 )
 from .Configuration.SerialCommand import SerialCommand
+from ..APS.APS import getAuth, getUserInfo
 
 import adsk.core, adsk.fusion, traceback, logging, os
 from types import SimpleNamespace
@@ -939,6 +940,14 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 tooltip="tooltip",
                 enabled=True,
             )
+
+            getAuth()
+            user_info = getUserInfo()
+            apsSettings = INPUTS_ROOT.addTabCommandInput(
+                "aps_settings", f"APS Settings ({user_info.given_name if user_info else 'Not Signed In'})"
+            )
+            apsSettings.tooltip = "Configuration settings for Autodesk Platform Services."
+            aps_input = apsSettings.children
 
             # clear all selections before instantiating handlers.
             gm.ui.activeSelections.clear()
