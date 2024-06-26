@@ -1,10 +1,7 @@
-import adsk.core
-import adsk.fusion
-import traceback
+import adsk.core, adsk.fusion, traceback
 import logging.handlers
 
-# Ripped all the boiler plate from the example code:
-# https://help.autodesk.com/view/fusion360/ENU/?guid=GUID-c90ce6a2-c282-11e6-a365-3417ebc87622
+# Ripped all the boiler plate from the example code: https://help.autodesk.com/view/fusion360/ENU/?guid=GUID-c90ce6a2-c282-11e6-a365-3417ebc87622
 
 # global mapping list of event handlers to keep them referenced for the duration of the command
 # handlers = {}

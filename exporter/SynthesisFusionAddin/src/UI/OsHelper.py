@@ -1,5 +1,4 @@
-import os
-import platform
+import os, platform
 
 
 def getOSPath(*argv) -> str:
@@ -47,7 +46,7 @@ def getOS():
     return platform.system()
 
 
-""" Old code I believe
+""" Old code I believe 
 def openFileLocation(fileLoc: str) -> bool:
     osName = getOS()
     if osName == "Windows" or osName == "win32":
