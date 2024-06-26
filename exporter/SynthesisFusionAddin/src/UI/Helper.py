@@ -13,49 +13,6 @@ def check_solid_open() -> bool:
     return True
 
 
-def previouslyConfigured() -> Union[str, None]:
-    """Checks the Hellion File attribute stored in the document in order to get the saved configuration file
-
-    - This is used in the (@ref ConfigCommand.py) in order to pre-populate the fields
-    - Command check is  ` if (ret is None): return `
-
-    Args:
-        None ([type]): No Arguments
-
-    Raises:
-        RuntimeWarning: If failed attempt to handle in the parent since this is a helper (propogating up as a warning)
-
-    Returns:
-        (str | None): Will return serialized data if previously exported or None if never exported before.
-    """
-
-    app = adsk.core.Application.get()
-    try:
-        configured = app.activeDocument.attributes.itemByName(
-            f"{INTERNAL_ID}", "Configuration"
-        )
-        if configured is not None:
-            return configured.value
-        return False
-    except:
-        # handle in above function - usually indicates some kind of error to do with improper file access
-        raise RuntimeWarning(
-            f"Could not access attributes of the file {app.activeDocument.name} in previouslyConfigured"
-        )
-        return False
-
-
-def writeConfigure(serialized: str) -> bool:
-    # app = adsk.core.Application.get()
-    # try:
-    # app.activeDocument.attributes.add(
-    #    f"{INTERNAL_ID}", "Configuration", f"{serialized}"
-    # )
-    return True
-    # except:
-    #    return False
-
-
 def getDocName() -> str or None:
     """### Gets the active Document Name
     - If it can't find one then it will return None
