@@ -45,7 +45,7 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
     )
 }
 
-export let MainHUD_AddToast: (type: ToastType, title: string, description: string) => void = (_a, _b, _c) => { }
+export let MainHUD_AddToast: (type: ToastType, title: string, description: string) => void = (_a, _b, _c) => {}
 
 const variants = {
     open: { opacity: 1, y: "-50%", x: 0 },
