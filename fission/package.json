@@ -4,11 +4,12 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --open",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives",
     "preview": "vite preview --base=/fission/",
     "test": "vitest",
+    "test:firefox": "vitest --browser.name firefox",
     "lint:fix": "npm run lint --fix",
     "prettier": "npx prettier src --check",
     "prettier:fix": "npm run prettier --write",
@@ -19,16 +20,18 @@
     "assetpack:win32": "echo todo"
   },
   "dependencies": {
-    "@barclah/jolt-physics": "^0.19.3",
+    "@barclah/jolt-physics": "^0.24.0",
     "@mui/base": "^5.0.0-beta.40",
     "@mui/icons-material": "^5.15.20",
     "@mui/system": "^5.15.20",
     "@react-three/drei": "^9.96.5",
     "@react-three/fiber": "^8.15.15",
+    "@vitest/browser": "^1.6.0",
     "@vitest/coverage-v8": "^1.6.0",
     "async-mutex": "^0.5.0",
     "colord": "^2.9.3",
     "framer-motion": "^10.13.1",
+    "playwright": "^1.45.0",
     "react": "^18.2.0",
     "react-colorful": "^5.6.1",
     "react-dom": "^18.2.0",
@@ -68,6 +71,6 @@
     "typescript": "^5.2.2",
     "vite": "^5.1.4",
     "vite-plugin-singlefile": "^0.13.5",
-    "vitest": "^1.3.1"
+    "vitest": "^1.5.3"
   }
 }
