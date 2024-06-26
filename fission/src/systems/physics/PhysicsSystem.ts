@@ -30,6 +30,11 @@ const COUNT_OBJECT_LAYERS = 10
 export const SIMULATION_PERIOD = 1.0 / 120.0
 const STANDARD_SUB_STEPS = 3
 
+// Friction constants
+const FLOOR_FRICTION = 0.7
+const SUSPENSION_MIN_FACTOR = 0.1
+const SUSPENSION_MAX_FACTOR = 0.3
+
 /**
  * The PhysicsSystem handles all Jolt Phyiscs interactions within Synthesis.
  * This system can create physical representations of objects such as Robots,
@@ -68,6 +73,7 @@ class PhysicsSystem extends WorldSystem {
             new THREE.Vector3(0.0, -2.0, 0.0),
             undefined
         )
+        ground.SetFriction(FLOOR_FRICTION)
         this._joltBodyInterface.AddBody(ground.GetID(), JOLT.EActivation_Activate)
     }
 
@@ -449,15 +455,9 @@ class PhysicsSystem extends WorldSystem {
         wheelSettings.mMaxHandBrakeTorque = 0.0
         wheelSettings.mRadius = radius * 1.05
         wheelSettings.mWidth = 0.1
-        wheelSettings.mSuspensionMinLength = 0.0000003
-        wheelSettings.mSuspensionMaxLength = 0.0000006
+        wheelSettings.mSuspensionMinLength = radius * SUSPENSION_MIN_FACTOR
+        wheelSettings.mSuspensionMaxLength = radius * SUSPENSION_MAX_FACTOR
         wheelSettings.mInertia = 1
-
-        const friction = new JOLT.LinearCurve()
-        friction.Clear()
-        friction.AddPoint(1, 1)
-        friction.AddPoint(0, 1)
-        wheelSettings.mLongitudinalFriction = friction
 
         const vehicleSettings = new JOLT.VehicleConstraintSettings()
 
