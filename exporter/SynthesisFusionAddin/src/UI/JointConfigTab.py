@@ -121,11 +121,10 @@ def createJointConfigTab(args: adsk.core.CommandCreatedEventArgs) -> None:
         )
 
 
-def addJointToConfigTab(fusionJoint: adsk.fusion.Joint, synJoint: Joint = None) -> None:
+def addJointToConfigTab(fusionJoint: adsk.fusion.Joint, synJoint: Joint = None) -> bool:
     try:
         if fusionJoint in selectedJointList:
-            removeJointFromConfigTab(fusionJoint)
-            return
+            return False
 
         selectedJointList.append(fusionJoint)
         commandInputs = jointConfigTable.commandInputs
@@ -252,6 +251,8 @@ def addJointToConfigTab(fusionJoint: adsk.fusion.Joint, synJoint: Joint = None) 
         logging.getLogger("{INTERNAL_ID}.UI.JointConfigTab.addJointToConfigTab()").error(
             "Failed:\n{}".format(traceback.format_exc())
         )
+
+    return True
 
 
 def removeIndexedJointFromConfigTab(index: int) -> None:

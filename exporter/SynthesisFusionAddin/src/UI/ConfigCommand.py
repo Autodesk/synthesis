@@ -26,6 +26,7 @@ from .Configuration.SerialCommand import SerialCommand
 from .JointConfigTab import (
     createJointConfigTab,
     addJointToConfigTab,
+    removeJointFromConfigTab,
     removeIndexedJointFromConfigTab,
     getSelectedJoints,
     resetSelectedJoints
@@ -1395,8 +1396,19 @@ class MySelectHandler(adsk.core.SelectionEventHandler):
                                 WheelListGlobal.index(self.selectedJoint)
                             )
                     else:
-                        # Will prompt for removal if already selected.
-                        addJointToConfigTab(self.selectedJoint)
+                        # Transition: AARD-1685
+                        # Should move selection handles into respective UI modules
+                        if not addJointToConfigTab(self.selectedJoint):
+                            result = gm.ui.messageBox(
+                                "You have already selected this joint.\n"
+                                "Would you like to remove it?",
+                                "Synthesis: Remove Joint Confirmation",
+                                adsk.core.MessageBoxButtonTypes.YesNoButtonType,
+                                adsk.core.MessageBoxIconTypes.QuestionIconType,
+                            )
+
+                            if result == adsk.core.DialogResults.DialogYes:
+                                removeJointFromConfigTab(self.selectedJoint)
 
                     selectionInput.isEnabled = False
                     selectionInput.isVisible = False
