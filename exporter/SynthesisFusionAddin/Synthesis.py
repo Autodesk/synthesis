@@ -13,10 +13,10 @@ import adsk.core
 
 
 def run(_):
-    """## Entry point to application from Fusion 360.
+    """## Entry point to application from Fusion.
 
     Arguments:
-        **context** *context* -- Fusion 360 context to derive app and UI.
+        **context** *context* -- Fusion context to derive app and UI.
     """
 
     try:
@@ -38,10 +38,10 @@ def run(_):
 
 
 def stop(_):
-    """## Fusion 360 exit point - deconstructs buttons and handlers
+    """## Fusion exit point - deconstructs buttons and handlers
 
     Arguments:
-        **context** *context* -- Fusion 360 Data.
+        **context** *context* -- Fusion Data.
     """
     try:
         unregister_all()
