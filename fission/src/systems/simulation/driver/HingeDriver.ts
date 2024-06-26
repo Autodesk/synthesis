@@ -65,8 +65,8 @@ class HingeDriver extends Driver {
         springSettings.mDamping = 0.995
 
         motorSettings.mSpringSettings = springSettings
-        motorSettings.mMinTorqueLimit = -50.0
-        motorSettings.mMaxTorqueLimit = 50.0
+        motorSettings.mMinTorqueLimit = -200.0
+        motorSettings.mMaxTorqueLimit = 200.0
 
         this._targetAngle = this._constraint.GetCurrentAngle()
 
