@@ -109,12 +109,16 @@ def createJointConfigTab(args: adsk.core.CommandCreatedEventArgs) -> None:
         # Visibility is triggered by `addJointInputButton`
         jointSelect.isEnabled = jointSelect.isVisible = False
 
+        jointSelectCancelButton = jointConfigTabInputs.addBoolValueInput("jointSelectCancelButton", "Cancel", False)
+        jointSelectCancelButton.isEnabled = jointSelectCancelButton.isVisible = False
+
         addJointInputButton = jointConfigTabInputs.addBoolValueInput("jointAddButton", "Add", False)
         removeJointInputButton = jointConfigTabInputs.addBoolValueInput("jointRemoveButton", "Remove", False)
         addJointInputButton.isEnabled = removeJointInputButton.isEnabled = True
 
         jointConfigTable.addToolbarCommandInput(addJointInputButton)
         jointConfigTable.addToolbarCommandInput(removeJointInputButton)
+        jointConfigTable.addToolbarCommandInput(jointSelectCancelButton)
     except:
         logging.getLogger("{INTERNAL_ID}.UI.JointConfigTab.createJointConfigTab()").error(
             "Failed:\n{}".format(traceback.format_exc())

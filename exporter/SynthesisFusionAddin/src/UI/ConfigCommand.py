@@ -1134,7 +1134,8 @@ class CommandExecutePreviewHandler(adsk.core.CommandEventHandler):
             auto_calc_weight_f = INPUTS_ROOT.itemById("auto_calc_weight_f")
 
             removeWheelInput = INPUTS_ROOT.itemById("wheel_delete")
-            removeJointInput = INPUTS_ROOT.itemById("jointRemoveButton")
+            jointRemoveButton = INPUTS_ROOT.itemById("jointRemoveButton")
+            jointSelection = INPUTS_ROOT.itemById("jointSelection")
             removeFieldInput = INPUTS_ROOT.itemById("field_delete")
 
             addWheelInput = INPUTS_ROOT.itemById("wheel_add")
@@ -1154,9 +1155,9 @@ class CommandExecutePreviewHandler(adsk.core.CommandEventHandler):
                 removeWheelInput.isEnabled = True
 
             if jointTableInput.rowCount <= 1:
-                removeJointInput.isEnabled = False
-            else:
-                removeJointInput.isEnabled = True
+                jointRemoveButton.isEnabled = False
+            elif not jointSelection.isEnabled:
+                jointRemoveButton.isEnabled = True
 
             if gamepieceTableInput.rowCount <= 1:
                 removeFieldInput.isEnabled = auto_calc_weight_f.isEnabled = False
@@ -1177,7 +1178,7 @@ class CommandExecutePreviewHandler(adsk.core.CommandEventHandler):
                     group.deleteMe()
 
             if (
-                not addJointInput.isEnabled or not removeJointInput
+                not addJointInput.isEnabled or not jointRemoveButton.isEnabled
             ):  # TODO: improve joint highlighting
                 # for joint in JointListGlobal:
                 #    CustomGraphics.highlightJointedOccurrences(joint)
@@ -1585,7 +1586,8 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
             frictionCoeff = INPUTS_ROOT.itemById("friction_coeff_override")
 
             wheelSelect = inputs.itemById("wheel_select")
-            jointSelect = inputs.itemById("jointSelection")
+            jointSelection = inputs.itemById("jointSelection")
+            jointSelectCancelButton = INPUTS_ROOT.itemById("jointSelectCancelButton")
             gamepieceSelect = inputs.itemById("gamepiece_select")
 
             wheelTableInput = wheelTable()
@@ -1602,7 +1604,8 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
             gamepieceConfig = inputs.itemById("gamepiece_config")
 
             addWheelInput = INPUTS_ROOT.itemById("wheel_add")
-            addJointInput = INPUTS_ROOT.itemById("jointAddButton")
+            addJointButton = INPUTS_ROOT.itemById("jointAddButton")
+            removeJointButton = INPUTS_ROOT.itemById("jointRemoveButton")
             addFieldInput = INPUTS_ROOT.itemById("field_add")
 
             indicator = INPUTS_ROOT.itemById("algorithmic_indicator")
@@ -1631,7 +1634,7 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                         gm.ui.activeSelections.clear()
                         gm.app.activeDocument.design.rootComponent.opacity = 1
 
-                        addWheelInput.isEnabled = addJointInput.isEnabled = (
+                        addWheelInput.isEnabled = addJointButton.isEnabled = (
                             gamepieceConfig.isVisible
                         ) = True
 
@@ -1685,8 +1688,8 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                 or cmdInput.id == "signal_type"
             ):
                 self.reset()
-                jointSelect.isEnabled = False
-                addJointInput.isEnabled = True
+                jointSelection.isEnabled = False
+                addJointButton.isEnabled = True
 
             elif (
                 cmdInput.id == "blank_gp"
@@ -1778,7 +1781,7 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                 wheelSelect.isVisible = True
                 wheelSelect.isEnabled = True
                 wheelSelect.clearSelection()
-                addJointInput.isEnabled = True
+                addJointButton.isEnabled = True
                 addWheelInput.isEnabled = False
 
             # Transition: AARD-1685
@@ -1787,10 +1790,10 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                 self.reset()
 
                 addWheelInput.isEnabled = True
-                jointSelect.isVisible = True
-                jointSelect.isEnabled = True
-                jointSelect.clearSelection()
-                addJointInput.isEnabled = False
+                jointSelection.isVisible = jointSelection.isEnabled = True
+                jointSelection.clearSelection()
+                addJointButton.isEnabled = removeJointButton.isEnabled = False
+                jointSelectCancelButton.isVisible = jointSelectCancelButton.isEnabled = True
 
             elif cmdInput.id == "field_add":
                 self.reset()
@@ -1817,7 +1820,7 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
             elif cmdInput.id == "jointRemoveButton":
                 gm.ui.activeSelections.clear()
 
-                addJointInput.isEnabled = True
+                addJointButton.isEnabled = True
                 addWheelInput.isEnabled = True
 
                 if jointTableInput.selectedRow == -1 or jointTableInput.selectedRow == 0:
@@ -1846,7 +1849,13 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                 addWheelInput.isEnabled = True
 
             elif cmdInput.id == "jointSelection":
-                addJointInput.isEnabled = True
+                addJointButton.isEnabled = removeJointButton.isEnabled =  True
+                jointSelectCancelButton.isEnabled = jointSelectCancelButton.isVisible = False
+
+            elif cmdInput.id == "jointSelectCancelButton":
+                jointSelection.isEnabled = jointSelection.isVisible = False
+                jointSelectCancelButton.isEnabled = jointSelectCancelButton.isVisible = False
+                addJointButton.isEnabled = removeJointButton.isEnabled = True
 
             elif cmdInput.id == "gamepiece_select":
                 addFieldInput.isEnabled = True
