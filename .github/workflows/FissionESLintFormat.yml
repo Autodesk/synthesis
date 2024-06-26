@@ -36,7 +36,6 @@ jobs:
           echo "EsLint Validation Failed"
           exit 1
         fi
-      continue-on-error: true
     - name: Prettier
       id: prettier-validation
       run: |

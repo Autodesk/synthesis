@@ -91,7 +91,8 @@ class MirabufParser {
         }
 
         // 1: Initial Rigidgroups from ancestorial breaks in joints
-        ;(Object.keys(assembly.data!.joints!.jointInstances!) as string[]).forEach(key => {
+        const jointInstanceKeys = Object.keys(assembly.data!.joints!.jointInstances!) as string[]
+        jointInstanceKeys.forEach(key => {
             if (key != GROUNDED_JOINT_ID) {
                 const jInst = assembly.data!.joints!.jointInstances![key]
                 const [ancestorA, ancestorB] = this.FindAncestorialBreak(jInst.parentPart!, jInst.childPart!)
