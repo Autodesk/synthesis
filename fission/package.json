@@ -17,7 +17,8 @@
     "build:prod": "tsc && vite build --base=/fission/",
     "assetpack": "run-script-os",
     "assetpack:nix": "curl -o public/assetpack.zip https://synthesis.autodesk.com/Downloadables/assetpack.zip && unzip -o public/assetpack.zip -d public/",
-    "assetpack:win32": "curl -o public/assetpack.zip https://synthesis.autodesk.com/Downloadables/assetpack.zip && tar -xf public/assetpack.zip -C public/"
+    "assetpack:win32": "curl -o public/assetpack.zip https://synthesis.autodesk.com/Downloadables/assetpack.zip && tar -xf public/assetpack.zip -C public/",
+    "playwright:install": "npx playwright install || bun x playwright install"
   },
   "dependencies": {
     "@barclah/jolt-physics": "^0.24.1",
