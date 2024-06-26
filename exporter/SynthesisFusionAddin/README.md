@@ -1,5 +1,5 @@
 # Synthesis Exporter
-This is a Addin for *Autodesk Fusion* that will export a [Mirabuf](https://github.com/HiceS/mirabuf) usable by the Synthesis simulator.
+This is a Addin for Autodesk® Fusion™ that will export a [Mirabuf](https://github.com/HiceS/mirabuf) usable by the Synthesis simulator.
 
 ## Features
 - [x] Materials
