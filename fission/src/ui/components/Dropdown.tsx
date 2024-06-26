@@ -39,9 +39,10 @@ const Dropdown: React.FC<DropdownProps> = ({ label, options, onSelect }) => {
             <div className="relative w-full">
                 <Select
                     defaultValue={optionList[0]}
-                    onChange={(_event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null, value: string | unknown) =>
-                        typeof value === "string" && onSelect && onSelect(value)
-                    }
+                    onChange={(
+                        _event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null,
+                        value: string | unknown
+                    ) => typeof value === "string" && onSelect && onSelect(value)}
                 >
                     {optionList.map(option => (
                         <Option value={option} key={option}>
@@ -54,10 +55,10 @@ const Dropdown: React.FC<DropdownProps> = ({ label, options, onSelect }) => {
     )
 }
 
-const CustomButton = React.forwardRef(function CustomButton<TValue extends NonNullable<unknown>, Multiple extends boolean>(
-    props: SelectRootSlotProps<TValue, Multiple>,
-    ref: React.ForwardedRef<HTMLButtonElement>
-) {
+const CustomButton = React.forwardRef(function CustomButton<
+    TValue extends NonNullable<unknown>,
+    Multiple extends boolean,
+>(props: SelectRootSlotProps<TValue, Multiple>, ref: React.ForwardedRef<HTMLButtonElement>) {
     return (
         <StyledButton type="button" {...props} ref={ref}>
             {props.children}

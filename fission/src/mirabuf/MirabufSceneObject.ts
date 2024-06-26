@@ -96,10 +96,10 @@ class MirabufSceneObject extends SceneObject {
                 colliderMesh.position.setFromMatrixPosition(transform)
                 colliderMesh.rotation.setFromRotationMatrix(transform)
 
-                const comTransform = JoltMat44_ThreeMatrix4(body.GetCenterOfMassTransform());
+                const comTransform = JoltMat44_ThreeMatrix4(body.GetCenterOfMassTransform())
 
-                comMesh.position.setFromMatrixPosition(comTransform);
-                comMesh.rotation.setFromRotationMatrix(comTransform);
+                comMesh.position.setFromMatrixPosition(comTransform)
+                comMesh.rotation.setFromRotationMatrix(comTransform)
             }
         })
     }
