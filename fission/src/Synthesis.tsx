@@ -1,9 +1,9 @@
-import Scene from '@/components/Scene.tsx';
-import MirabufSceneObject from './mirabuf/MirabufSceneObject.ts';
-import { LoadMirabufRemote } from './mirabuf/MirabufLoader.ts';
-import { mirabuf } from './proto/mirabuf';
-import MirabufParser, { ParseErrorSeverity } from './mirabuf/MirabufParser.ts';
-import MirabufInstance from './mirabuf/MirabufInstance.ts';
+import Scene from "@/components/Scene.tsx"
+import MirabufSceneObject from "./mirabuf/MirabufSceneObject.ts"
+import { LoadMirabufRemote } from "./mirabuf/MirabufLoader.ts"
+import { mirabuf } from "./proto/mirabuf"
+import MirabufParser, { ParseErrorSeverity } from "./mirabuf/MirabufParser.ts"
+import MirabufInstance from "./mirabuf/MirabufInstance.ts"
 import { AnimatePresence } from "framer-motion"
 import { ReactElement, useEffect } from "react"
 import { ModalControlProvider, useModalManager } from "@/ui/ModalContext"
