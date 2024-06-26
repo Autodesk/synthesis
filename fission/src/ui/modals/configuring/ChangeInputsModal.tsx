@@ -7,7 +7,8 @@ import LabeledButton, { LabelPlacement } from "../../components/LabeledButton"
 import InputSystem, { AxisInput, ButtonInput, ModifierState, EmptyModifierState } from "@/systems/input/InputSystem"
 import Dropdown from "@/ui/components/Dropdown"
 import Checkbox from "@/ui/components/Checkbox"
-import { InputScheme } from "@/systems/input/DefaultInputs"
+import DefaultInputs, { InputScheme } from "@/systems/input/DefaultInputs"
+import Button from "@/ui/components/Button"
 
 // capitalize first letter
 // TODO: assumes all inputs are keyboard buttons
@@ -77,12 +78,8 @@ const moveElementToTop = (arr: string[], element: string) => {
 
 const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [selectedScheme, setSelectedScheme] = useState<InputScheme | undefined>(undefined);
+    const [useGamepad, setUseGamepad] = useState<boolean>(false)
 
-    // If there is a robot spawned, set it as the selected robot
-    if (selectedScheme == null && InputSystem.allInputs.size > 0)
-        setSelectedScheme(InputSystem.allInputs.values().next().value);
-
-    const [useGamepad, setUseGamepad] = useState<boolean>(selectedScheme?.usesGamepad ?? false)
     const [selectedInput, setSelectedInput] = useState<string>("")
 
     const [chosenKey, setChosenKey] = useState<string>("")
@@ -90,6 +87,18 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [modifierState, setModifierState] = useState<ModifierState>(EmptyModifierState)
 
     const [chosenGamepadAxis, setChosenGamepadAxis] = useState<number>(-1)
+    const [chosenResetScheme, setChosenResetScheme] = useState<string>("WASD")
+    
+    // If there is a robot spawned, set it as the selected robot
+    if (selectedScheme == null && InputSystem.allInputs.size > 0) {
+        setTimeout(() => {
+            if (!InputSystem.selectedScheme)
+                InputSystem.selectedScheme = InputSystem.allInputs.values().next().value
+
+            setSelectedScheme(InputSystem.selectedScheme);
+            setUseGamepad(InputSystem.selectedScheme?.usesGamepad ?? false);
+        }, 1);
+    }
 
     const axisInputs = selectedScheme?.inputs.filter((input): input is AxisInput => input instanceof AxisInput);
 
@@ -97,13 +106,14 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     type UseButtonsState = {
         [key: string]: boolean;
     };
-    
-    const [useButtons, setUseButtons] = useState<UseButtonsState>(
-        axisInputs == null ? {} : axisInputs.reduce<UseButtonsState>((acc, input) => {
-            acc[input.inputName] = input.useGamepadButtons;
-            return acc;
-        }, {})
-    );
+
+    const [useButtons, setUseButtons] = useState<UseButtonsState>({})
+
+    if (axisInputs && Object.keys(useButtons).length == 0) {
+        axisInputs.forEach(input => {
+            useButtons[input.inputName] = input.useGamepadButtons;
+        });
+    }
 
     if (!useGamepad && selectedInput && chosenKey) {
         if (selectedInput.startsWith("pos")) {
@@ -173,22 +183,76 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
     return (
         <Modal name="Keybinds" icon={<FaGamepad />} modalId={modalId}>
-            <Dropdown
-                label={"Select Robot"}
-                // Moves the selected option to the start of the array
-                options={Array.from(InputSystem.allInputs.keys())}
-                onSelect={(value) => {
-                    setSelectedScheme(InputSystem.allInputs.get(value));
-                }}
-            />
-            <Checkbox label="Gamepad Controller" defaultState={selectedScheme?.usesGamepad ?? false} onClick={ (val) => {
-                        setUseGamepad(val);
-                        if (selectedScheme)
-                            selectedScheme.usesGamepad = val;
-                    }
-                } 
-            />
+           {(Array.from(InputSystem.allInputs.keys()).length > 0) ? (
+                        <>
             <Stack direction={StackDirection.Horizontal}>
+                <div>
+                        <Dropdown
+                        label={"Select Robot"}
+                        // Moves the selected option to the start of the array
+                        options={Array.from(InputSystem.allInputs.keys())}
+                        onSelect={(value) => {
+                            const newScheme = InputSystem.allInputs.get(value);
+                            if (newScheme == selectedScheme)
+                                return;
+
+                            setSelectedScheme(undefined);
+                            InputSystem.selectedScheme = newScheme;
+                        }}
+                    />
+                    {selectedScheme ? (
+                        <>
+                    <Checkbox label="Gamepad Controller" defaultState={selectedScheme?.usesGamepad ?? false} onClick={ (val) => {
+                                setUseGamepad(val);
+                                if (selectedScheme)
+                                    selectedScheme.usesGamepad = val;
+                            }
+                        } 
+                    />
+                    <Label size = {LabelSize.Medium}>Reset to Defaults</Label>
+                    <Stack direction={StackDirection.Horizontal}>
+                        <div>
+                        <Dropdown
+                            label={"Choose Scheme"}
+                            // Moves the selected option to the start of the array
+                            options={DefaultInputs.ALL_INPUT_SCHEMES.map((scheme) => scheme.schemeName)}
+                            onSelect={(value) => {
+                                setChosenResetScheme(value);
+                            }}
+                        />
+                        </div>
+                        <div>
+                        <Button
+                            value={
+                                "Set"
+                            }
+                            onClick={() => {
+                                const scheme = DefaultInputs.ALL_INPUT_SCHEMES.find(s => s.schemeName == chosenResetScheme);
+                                if (!selectedScheme || !scheme)
+                                    return;
+
+                                scheme.inputs.forEach(newInput => {
+                                    const currentInput = selectedScheme.inputs.find(i => i.inputName == newInput.inputName);
+
+                                    if (currentInput) {
+                                        const inputIndex = selectedScheme.inputs.indexOf(currentInput);
+
+                                        selectedScheme.inputs.splice(inputIndex, 1);
+                                        selectedScheme.inputs.push(newInput.getCopy());
+                                    }
+                                })
+                                selectedScheme.usesGamepad = scheme.usesGamepad;
+
+                                setSelectedScheme(undefined);
+                            }}
+                        />
+                        </div>
+                        </Stack>
+                        </>
+                    ) : (
+                        <Label>No robot selected.</Label>
+                    )}
+                </div>
                 <div
                     className="w-max"
                     onKeyUp={e => {
@@ -352,10 +416,14 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                             )}
                         </>
                     ) : (
-                        <Label>No robot loaded.</Label>
+                        <Label>No robot selected.</Label>
                     )}
                 </div>
             </Stack>
+            </>
+            ) : (
+                <Label size={LabelSize.Medium}>Spawn a robot to edit controls</Label>
+            )}
         </Modal>
     )
 }

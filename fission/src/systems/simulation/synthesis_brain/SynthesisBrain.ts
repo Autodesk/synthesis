@@ -125,7 +125,7 @@ class SynthesisBrain extends Brain {
     public configureInputs() {
         const scheme = DefaultInputs.ALL_INPUT_SCHEMES[SynthesisBrain._currentRobotIndex];
 
-        InputSystem.allInputs.set(this._assemblyName, {usesGamepad: scheme.usesGamepad, inputs: []});
+        InputSystem.allInputs.set(this._assemblyName, {schemeName: this._assemblyName, usesGamepad: scheme.usesGamepad, inputs: []});
         const inputList = InputSystem.allInputs.get(this._assemblyName)!.inputs;
 
         const arcadeDrive = scheme.inputs.find(i => i.inputName === "arcadeDrive");

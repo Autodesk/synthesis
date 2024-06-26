@@ -19,6 +19,8 @@ abstract class Input {
     }    
 
     abstract getValue(useGamepad: boolean): number;
+
+    abstract getCopy(): Input;
 }
 
 // A single button
@@ -45,6 +47,10 @@ class ButtonInput extends Input {
         // Keyboard button input
         return InputSystem.isKeyPressed(this.keyCode, this.keyModifiers) ? 1 : 0;
     }
+
+    getCopy(): Input {
+        return new ButtonInput(this.inputName, this.keyCode, this.gamepadButton, this.isGlobal, this.keyModifiers);
+    }
 }
 
 // An axis between two buttons (-1 to 1)
@@ -60,7 +66,8 @@ class AxisInput extends Input {
     public posGamepadButton: number;
     public negGamepadButton: number;
 
-    public constructor(inputName: string, posKeyCode: string, negKeyCode: string, gamepadAxisNumber: number, joystickInverted?: boolean, useGamepadButtons?: boolean, posGamepadButton?: number, negGamepadButton?: number, isGlobal?: boolean, posKeyModifiers?: ModifierState, negKeyModifiers?: ModifierState) {
+    public constructor(inputName: string, posKeyCode: string, negKeyCode: string, gamepadAxisNumber?: number, joystickInverted?: boolean, useGamepadButtons?: boolean,
+            posGamepadButton?: number, negGamepadButton?: number, isGlobal?: boolean, posKeyModifiers?: ModifierState, negKeyModifiers?: ModifierState) {
         super(inputName, isGlobal ?? false);
         
         this.posKeyCode = posKeyCode;
@@ -68,7 +75,7 @@ class AxisInput extends Input {
         this.negKeyCode = negKeyCode;
         this.negKeyModifiers = negKeyModifiers ?? EmptyModifierState;
 
-        this.gamepadAxisNumber = gamepadAxisNumber;
+        this.gamepadAxisNumber = gamepadAxisNumber ?? -1;
         this.joystickInverted = joystickInverted ?? false;
 
         this.useGamepadButtons = useGamepadButtons ?? false;
@@ -90,6 +97,11 @@ class AxisInput extends Input {
         // Keyboard button axis
         return  (InputSystem.isKeyPressed(this.posKeyCode, this.posKeyModifiers) ? 1 : 0) - (InputSystem.isKeyPressed(this.negKeyCode, this.negKeyModifiers) ? 1 : 0);
     }
+
+    getCopy(): Input {
+        return new AxisInput(this.inputName, this.posKeyCode, this.negKeyCode, this.gamepadAxisNumber, this.joystickInverted, this.useGamepadButtons, 
+            this.posGamepadButton, this.negGamepadButton, this.isGlobal, this.posKeyModifiers, this.negKeyModifiers);
+    }
 }
 
 class InputSystem extends WorldSystem {
@@ -102,6 +114,8 @@ class InputSystem extends WorldSystem {
 
     private static _gpIndex: number | null;
     public static gamepad: Gamepad | null;
+
+    public static selectedScheme: InputScheme | undefined;
 
     constructor() {
         super();

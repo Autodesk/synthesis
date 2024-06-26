@@ -1,16 +1,18 @@
 import { AxisInput, Input, EmptyModifierState } from "./InputSystem"
 
 export type InputScheme = {
+    schemeName: string,
     usesGamepad: boolean,
     inputs: Input[]
 }
 
 class DefaultInputs {
     private static wasd: InputScheme = {
+        schemeName: "WASD",
         usesGamepad: false,
         inputs: [
-            new AxisInput("arcadeDrive", "KeyW", "KeyS", -1, true),
-            new AxisInput("arcadeTurn", "KeyD", "KeyA", -1, false),
+            new AxisInput("arcadeDrive", "KeyW", "KeyS"),
+            new AxisInput("arcadeTurn", "KeyD", "KeyA"),
 
             new AxisInput("joint 1", "Digit1", "Digit1", -1, false, false, -1, -1, false, 
                 EmptyModifierState, { ctrl: false, alt: false, shift: true, meta: false }),
@@ -26,6 +28,7 @@ class DefaultInputs {
     };
 
     private static arrowKeys: InputScheme = {
+        schemeName: "Arrow Keys",
         usesGamepad: false,
         inputs: [
             new AxisInput("arcadeDrive", "ArrowUp", "ArrowDown", 1, true),
@@ -44,7 +47,23 @@ class DefaultInputs {
         ]
     };
 
+    private static fullController: InputScheme = {
+        schemeName: "Full Controller",
+        usesGamepad: true,
+        inputs: [
+            new AxisInput("arcadeDrive", "", "", 1, true),
+            new AxisInput("arcadeTurn", "", "", 2, false),
+
+            new AxisInput("joint 1", "", "", -1, false, true, 3, 0),
+            new AxisInput("joint 2", "", "", -1, false, true, 2, 1),
+            new AxisInput("joint 3", "", "", -1, false, true, 4, 5),
+            new AxisInput("joint 3", "", "", -1, false, true, 12, 13),
+            new AxisInput("joint 3", "", "", -1, false, true, 15, 14)
+        ]
+    }
+
     private static leftStick: InputScheme = {
+        schemeName: "Left Stick",
         usesGamepad: true,
         inputs: [
             new AxisInput("arcadeDrive", "", "", 1, true),
@@ -56,6 +75,7 @@ class DefaultInputs {
     }
 
     private static rightStick: InputScheme = {
+        schemeName: "Right Stick",
         usesGamepad: true,
         inputs: [
             new AxisInput("arcadeDrive", "", "", 3, true),
@@ -63,20 +83,6 @@ class DefaultInputs {
 
             new AxisInput("joint 1", "", "", -1, false, true, 3, 0),
             new AxisInput("joint 2", "", "", -1, false, true, 2, 1)
-        ]
-    }
-
-    private static fullController: InputScheme = {
-        usesGamepad: true,
-        inputs: [
-            new AxisInput("arcadeDrive", "", "", 1, true),
-            new AxisInput("arcadeTurn", "", "", 2, false),
-
-            new AxisInput("joint 1", "", "", -1, false, true, 3, 0),
-            new AxisInput("joint 2", "", "", -1, false, true, 2, 1),
-            new AxisInput("joint 3", "", "", -1, false, true, 4, 5),
-            new AxisInput("joint 3", "", "", -1, false, true, 12, 13),
-            new AxisInput("joint 3", "", "", -1, false, true, 15, 14)
         ]
     }
 
