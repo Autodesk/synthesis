@@ -121,46 +121,46 @@ def createJointConfigTab(args: adsk.core.CommandCreatedEventArgs) -> None:
         )
 
 
-def addJointToConfigTab(joint: adsk.fusion.Joint) -> None:
+def addJointToConfigTab(fusionJoint: adsk.fusion.Joint, synJoint: Joint = None) -> None:
     try:
-        if joint in selectedJointList:
-            removeJointFromConfigTab(joint)
+        if fusionJoint in selectedJointList:
+            removeJointFromConfigTab(fusionJoint)
             return
 
-        selectedJointList.append(joint)
+        selectedJointList.append(fusionJoint)
         commandInputs = jointConfigTable.commandInputs
 
-        if joint.jointMotion.jointType == adsk.fusion.JointTypes.RigidJointType:
+        if fusionJoint.jointMotion.jointType == adsk.fusion.JointTypes.RigidJointType:
             icon = commandInputs.addImageCommandInput("placeholder", "Rigid", IconPaths.jointIcons["rigid"])
             icon.tooltip = "Rigid joint"
 
-        elif joint.jointMotion.jointType == adsk.fusion.JointTypes.RevoluteJointType:
+        elif fusionJoint.jointMotion.jointType == adsk.fusion.JointTypes.RevoluteJointType:
             icon = commandInputs.addImageCommandInput("placeholder", "Revolute", IconPaths.jointIcons["revolute"])
             icon.tooltip = "Revolute joint"
 
-        elif joint.jointMotion.jointType == adsk.fusion.JointTypes.SliderJointType:
+        elif fusionJoint.jointMotion.jointType == adsk.fusion.JointTypes.SliderJointType:
             icon = commandInputs.addImageCommandInput("placeholder", "Slider", IconPaths.jointIcons["slider"])
             icon.tooltip = "Slider joint"
 
-        elif joint.jointMotion.jointType == adsk.fusion.JointTypes.PlanarJointType:
+        elif fusionJoint.jointMotion.jointType == adsk.fusion.JointTypes.PlanarJointType:
             icon = commandInputs.addImageCommandInput("placeholder", "Planar", IconPaths.jointIcons["planar"])
             icon.tooltip = "Planar joint"
 
-        elif joint.jointMotion.jointType == adsk.fusion.JointTypes.PinSlotJointType:
+        elif fusionJoint.jointMotion.jointType == adsk.fusion.JointTypes.PinSlotJointType:
             icon = commandInputs.addImageCommandInput("placeholder", "Pin Slot", IconPaths.jointIcons["pin_slot"])
             icon.tooltip = "Pin slot joint"
 
-        elif joint.jointMotion.jointType == adsk.fusion.JointTypes.CylindricalJointType:
+        elif fusionJoint.jointMotion.jointType == adsk.fusion.JointTypes.CylindricalJointType:
             icon = commandInputs.addImageCommandInput("placeholder", "Cylindrical", IconPaths.jointIcons["cylindrical"])
             icon.tooltip = "Cylindrical joint"
 
-        elif joint.jointMotion.jointType == adsk.fusion.JointTypes.BallJointType:
+        elif fusionJoint.jointMotion.jointType == adsk.fusion.JointTypes.BallJointType:
             icon = commandInputs.addImageCommandInput("placeholder", "Ball", IconPaths.jointIcons["ball"])
             icon.tooltip = "Ball joint"
 
         name = commandInputs.addTextBoxCommandInput("name_j", "Occurrence name", "", 1, True)
-        name.tooltip = joint.name
-        name.formattedText = f"<p style='font-size:11px'>{joint.name}</p>"
+        name.tooltip = fusionJoint.name
+        name.formattedText = f"<p style='font-size:11px'>{fusionJoint.name}</p>"
 
         jointType = commandInputs.addDropDownCommandInput(
             "jointParent",
@@ -169,14 +169,17 @@ def addJointToConfigTab(joint: adsk.fusion.Joint) -> None:
         )
 
         jointType.isFullWidth = True
+
+        # Transition: AARD-1685
+        # Implementation of joint parent system needs to be revisited.
         jointType.listItems.add("Root", True)
 
         for row in range(1, jointConfigTable.rowCount): # Row is 1 indexed
             dropDown = jointConfigTable.getInputAtPosition(row, 2)
             dropDown.listItems.add(selectedJointList[-1].name, False)
 
-        for joint in selectedJointList:
-            jointType.listItems.add(joint.name, False)
+        for fusionJoint in selectedJointList:
+            jointType.listItems.add(fusionJoint.name, False)
 
         jointType.tooltip = "Possible parent joints"
         jointType.tooltipDescription = "<hr>The root component is usually the parent.</hr>"
@@ -186,9 +189,17 @@ def addJointToConfigTab(joint: adsk.fusion.Joint) -> None:
             "Signal Type",
             dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
         )
-        signalType.listItems.add("‎", True, IconPaths.signalIcons["PWM"])
-        signalType.listItems.add("‎", False, IconPaths.signalIcons["CAN"])
-        signalType.listItems.add("‎", False, IconPaths.signalIcons["PASSIVE"])
+
+        # TODO: Make this better, this is bad bad bad - Brandon
+        if synJoint:
+            signalType.listItems.add("‎", synJoint.signalType is SignalType.PWM, IconPaths.signalIcons["PWM"])
+            signalType.listItems.add("‎", synJoint.signalType is SignalType.CAN, IconPaths.signalIcons["CAN"])
+            signalType.listItems.add("‎", synJoint.signalType is SignalType.PASSIVE, IconPaths.signalIcons["PASSIVE"])
+        else:
+            signalType.listItems.add("‎", True, IconPaths.signalIcons["PWM"])
+            signalType.listItems.add("‎", False, IconPaths.signalIcons["CAN"])
+            signalType.listItems.add("‎", False, IconPaths.signalIcons["PASSIVE"])
+
         signalType.tooltip = "Signal type"
 
         row = jointConfigTable.rowCount
@@ -198,27 +209,43 @@ def addJointToConfigTab(joint: adsk.fusion.Joint) -> None:
         jointConfigTable.addCommandInput(signalType, row, 3)
 
         # Joint speed must be added within an `if` because there is variance between different joint types
-        if joint.jointMotion.jointType == adsk.fusion.JointTypes.RevoluteJointType:
+        # Comparison by `==` over `is` because the Autodesk API does not use `Enum` for their enum classes
+        if fusionJoint.jointMotion.jointType == adsk.fusion.JointTypes.RevoluteJointType:
+            if synJoint:
+                jointSpeedValue = synJoint.speed
+            else:
+                jointSpeedValue = 3.1415926
+
             jointSpeed = commandInputs.addValueInput(
                 "jointSpeed",
                 "Speed",
                 "deg",
-                adsk.core.ValueInput.createByReal(3.1415926),
+                adsk.core.ValueInput.createByReal(jointSpeedValue),
             )
             jointSpeed.tooltip = "Degrees per second"
             jointConfigTable.addCommandInput(jointSpeed, row, 4)
 
-        elif joint.jointMotion.jointType == adsk.fusion.JointTypes.SliderJointType:
+        elif fusionJoint.jointMotion.jointType == adsk.fusion.JointTypes.SliderJointType:
+            if synJoint:
+                jointSpeedValue = synJoint.speed
+            else:
+                jointSpeedValue = 100
+
             jointSpeed = commandInputs.addValueInput(
                 "jointSpeed",
                 "Speed",
                 "m",
-                adsk.core.ValueInput.createByReal(100),
+                adsk.core.ValueInput.createByReal(jointSpeedValue),
             )
             jointSpeed.tooltip = "Meters per second"
             jointConfigTable.addCommandInput(jointSpeed, row, 4)
 
-        jointForce = commandInputs.addValueInput("jointForce", "Force", "N", adsk.core.ValueInput.createByReal(5000))
+        if synJoint:
+            jointForceValue = synJoint.force * 100 # Currently a factor of 100 - Should be investigated
+        else:
+            jointForceValue = 5
+
+        jointForce = commandInputs.addValueInput("jointForce", "Force", "N", adsk.core.ValueInput.createByReal(jointForceValue))
         jointForce.tooltip = "Newtons"
         jointConfigTable.addCommandInput(jointForce, row, 5)
     except:

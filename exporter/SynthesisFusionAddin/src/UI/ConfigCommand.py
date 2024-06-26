@@ -50,11 +50,9 @@ INPUTS_ROOT = None
 """
 These lists are crucial, and contain all of the relevant object selections.
 - WheelListGlobal: list of wheels (adsk.fusion.Occurrence)
-- JointListGlobal: list of joints (adsk.fusion.Joint)
 - GamepieceListGlobal: list of gamepieces (adsk.fusion.Occurrence)
 """
 WheelListGlobal = []
-JointListGlobal = []
 GamepieceListGlobal = []
 
 # Default to compressed files
@@ -177,7 +175,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
     def notify(self, args):
         try:
             exporterOptions = ExporterOptions().readFromDesign()
-            # exporterOptions = ExporterOptions()
 
             if not Helper.check_solid_open():
                 return
@@ -295,12 +292,8 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 adsk.core.DropDownStyles.LabeledIconDropDownStyle,
             )
 
-            weight_unit.listItems.add(
-                "‎", imperialUnits, IconPaths.massIcons["LBS"]
-            )  # add listdropdown mass options
-            weight_unit.listItems.add(
-                "‎", not imperialUnits, IconPaths.massIcons["KG"]
-            )  # add listdropdown mass options
+            weight_unit.listItems.add("‎", imperialUnits, IconPaths.massIcons["LBS"])
+            weight_unit.listItems.add("‎", not imperialUnits, IconPaths.massIcons["KG"])
             weight_unit.tooltip = "Unit of mass"
             weight_unit.tooltipDescription = (
                 "<hr>Configure the unit of mass for the weight calculation."
@@ -419,9 +412,9 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             # Transition: AARD-1685
             createJointConfigTab(args)
             if exporterOptions.joints:
-                for joint in exporterOptions.joints:
-                    jointEntity = gm.app.activeDocument.design.findEntityByToken(joint.jointToken)[0]
-                    addJointToConfigTab(jointEntity)
+                for synJoint in exporterOptions.joints:
+                    fusionJoint = gm.app.activeDocument.design.findEntityByToken(synJoint.jointToken)[0]
+                    addJointToConfigTab(fusionJoint, synJoint)
             else:
                 for joint in [
                     *gm.app.activeDocument.design.rootComponent.allJoints,
@@ -954,7 +947,6 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
         super().__init__()
         self.log = logging.getLogger(f"{INTERNAL_ID}.UI.{self.__class__.__name__}")
         self.current = SerialCommand()
-        self.designAttrs = adsk.core.Application.get().activeProduct.attributes
 
     def notify(self, args):
         try:
@@ -1967,7 +1959,7 @@ class MyCommandDestroyHandler(adsk.core.CommandEventHandler):
             onSelect = gm.handlers[3]
 
             WheelListGlobal.clear()
-            JointListGlobal.clear()
+            resetSelectedJoints()
             GamepieceListGlobal.clear()
             onSelect.allWheelPreselections.clear()
             onSelect.wheelJointList.clear()
