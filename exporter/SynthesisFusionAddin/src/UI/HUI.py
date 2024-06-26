@@ -115,7 +115,7 @@ class HButton:
             **location** *str* -- location for button to be attached.\n
             **exec_func** *FunctionType* -- Function pointer to button execution logic.\n
             **description** *str* -- Helper text for onhover (default: *'No Description'*).\n
-            **command** *bool* -- Is this a internal Fusion 360 command created event or a pass through
+            **command** *bool* -- Is this a internal Fusion command created event or a pass through
 
         Raises:
             **ValueError**: if *location* does not exist in the current context
