@@ -398,7 +398,8 @@ def _jointOrigin(
     geometryOrOrigin = (
         (
             fusionJoint.geometryOrOriginOne
-            if fusionJoint.geometryOrOriginOne.objectType == "adsk::fusion::JointGeometry"
+            if fusionJoint.geometryOrOriginOne.objectType
+            == "adsk::fusion::JointGeometry"
             else fusionJoint.geometryOrOriginTwo
         )
         if fusionJoint.objectType == "adsk::fusion::Joint"
