@@ -16,42 +16,39 @@ const transformKeyName = (control: Input) => {
         if (control.modifiers.alt) prefix += "Alt + "
     }
 
-    return prefix +  keyCodeToCharacter(control.keyCode);
+    return prefix + keyCodeToCharacter(control.keyCode)
 }
-    
+
 // Converts camelCase to Title Case for the inputs modal
 const toTitleCase = (camelCase: string) => {
-const result = camelCase.replace(/([A-Z])/g, " $1");
-const finalResult = result.charAt(0).toUpperCase() + result.slice(1);
-    return finalResult;
+    const result = camelCase.replace(/([A-Z])/g, " $1")
+    const finalResult = result.charAt(0).toUpperCase() + result.slice(1)
+    return finalResult
 }
 
 const codeToCharacterMap: { [code: string]: string } = {
-    "Slash": "/",
-    "Comma": ",",
-    "Period": ".",
-    "BracketLeft": "{",
-    "BracketRight": "}",
-    "BackQuote": "`",
-    "Minus": "-",
-    "Equal": "=",
-    "Backslash": "\\", //TODO
-    "Semicolon": ";",
-    "Quote": "\""
-};
+    Slash: "/",
+    Comma: ",",
+    Period: ".",
+    BracketLeft: "{",
+    BracketRight: "}",
+    BackQuote: "`",
+    Minus: "-",
+    Equal: "=",
+    Backslash: "\\", //TODO
+    Semicolon: ";",
+    Quote: '"',
+}
 
 // Converts a key code to displayable character (ex: KeyA -> "A")
 const keyCodeToCharacter = (code: string) => {
-    if (code.startsWith("Key"))
-        return code.charAt(3);
+    if (code.startsWith("Key")) return code.charAt(3)
 
-    if (code.startsWith("Digit"))
-        return code.charAt(5);
+    if (code.startsWith("Digit")) return code.charAt(5)
 
-    if (code in codeToCharacterMap)
-        return codeToCharacterMap[code];
+    if (code in codeToCharacterMap) return codeToCharacterMap[code]
 
-    return code;
+    return code
 }
 
 const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {

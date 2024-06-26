@@ -1,10 +1,4 @@
-import React, {
-    createContext,
-    useState,
-    useContext,
-    useCallback,
-    ReactNode,
-} from "react"
+import React, { createContext, useState, useContext, useCallback, ReactNode } from "react"
 import Toast from "@/components/Toast"
 import { AnimatePresence, motion } from "framer-motion"
 
