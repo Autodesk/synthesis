@@ -26,7 +26,7 @@ jobs:
         continue-on-error: true
       - name: Check Isort Formatting Validation
         run: |
-          if [ ${{ steps.format-validation.outcome }} == "success" ]; then
+          if [ ${{ steps.isort-format-validation.outcome }} == "success" ]; then
             echo "Isort Formatting Validation Passed"
           else
             echo "Isort Formatting Validation Failed"
