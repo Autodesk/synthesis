@@ -70,6 +70,12 @@ class InputSystem extends WorldSystem {
     }
 
     public Update(_: number): void {
+        if (!document.hasFocus()) {
+            for (const keyCode in InputSystem._keysPressed) 
+                delete InputSystem._keysPressed[keyCode];
+            return;
+        }
+
         InputSystem._currentModifierState = { ctrl: InputSystem.isKeyPressed("ControlLeft") || InputSystem.isKeyPressed("ControlRight"), alt: InputSystem.isKeyPressed("AltLeft") || InputSystem.isKeyPressed("AltRight"), shift: InputSystem.isKeyPressed("ShiftLeft") || InputSystem.isKeyPressed("ShiftRight"), meta: InputSystem.isKeyPressed("MetaLeft") || InputSystem.isKeyPressed("MetaRight") }
     }
 

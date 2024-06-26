@@ -18,19 +18,16 @@ import { FaChessBoard } from "react-icons/fa6"
 cdExtend([a11yPlugin])
 
 const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
-    const readabilityIndicator: boolean = false;
-    const { themes, initialThemeName, currentTheme, setTheme, updateColor, applyTheme } =
-        useTheme()
+    const readabilityIndicator: boolean = false
+    const { themes, initialThemeName, currentTheme, setTheme, updateColor, applyTheme } = useTheme()
 
-    const { openModal } = useModalControlContext();
+    const { openModal } = useModalControlContext()
 
-    const [selectedColor, setSelectedColor] = useState<ColorName>(
-        "InteractiveElementSolid"
-    )
+    const [selectedColor, setSelectedColor] = useState<ColorName>("InteractiveElementSolid")
     const [selectedTheme, setSelectedTheme] = useState<string>(currentTheme)
     const [, setCurrentColor] = useState<RgbaColor>({ r: 0, g: 0, b: 0, a: 0 })
     // needs to be useState so it doesn't get reset on re-render
-    const [initialThemeValues] = useState<Theme>(JSON.parse(JSON.stringify(themes[selectedTheme])));
+    const [initialThemeValues] = useState<Theme>(JSON.parse(JSON.stringify(themes[selectedTheme])))
 
     return (
         <Modal
@@ -56,12 +53,7 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     <Stack direction={StackDirection.Vertical}>
                         <Dropdown
                             label="Select a Theme"
-                            options={[
-                                currentTheme,
-                                ...Object.keys(themes).filter(
-                                    t => t != currentTheme
-                                ),
-                            ]}
+                            options={[currentTheme, ...Object.keys(themes).filter(t => t != currentTheme)]}
                             onSelect={setSelectedTheme}
                             className="h-min"
                         />
@@ -78,18 +70,22 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                     openModal("delete-theme")
                                 }}
                             />
-                            {false && (<Button
-                                value="Delete All"
-                                onClick={() => {
-                                    openModal("delete-all-themes")
-                                }}
-                            />)}
+                            {false && (
+                                <Button
+                                    value="Delete All"
+                                    onClick={() => {
+                                        openModal("delete-all-themes")
+                                    }}
+                                />
+                            )}
                         </Stack>
                     </Stack>
                     <Stack direction={StackDirection.Vertical}>
                         <RgbaColorPicker
                             color={
-                                themes[selectedTheme] ? themes[selectedTheme][selectedColor].color : { r: 0, g: 0, b: 0, a: 0 } as RgbaColor
+                                themes[selectedTheme]
+                                    ? themes[selectedTheme][selectedColor].color
+                                    : ({ r: 0, g: 0, b: 0, a: 0 } as RgbaColor)
                             }
                             onChange={c => {
                                 if (selectedTheme == initialThemeName) return
@@ -99,43 +95,54 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         />
                         <HexColorInput
                             style={{
-                                display: 'block',
-                                boxSizing: 'border-box',
-                                width: '90px',
-                                margin: '10px 55px 0',
-                                padding: '6px',
-                                border: '1px solid #ddd',
-                                borderRadius: '4px',
-                                background: '#eee',
-                                outline: 'none',
-                                font: 'inherit',
-                                textTransform: 'uppercase',
-                                textAlign: 'center',
-                                color: 'black'
+                                display: "block",
+                                boxSizing: "border-box",
+                                width: "90px",
+                                margin: "10px 55px 0",
+                                padding: "6px",
+                                border: "1px solid #ddd",
+                                borderRadius: "4px",
+                                background: "#eee",
+                                outline: "none",
+                                font: "inherit",
+                                textTransform: "uppercase",
+                                textAlign: "center",
+                                color: "black",
                             }}
-                            color={
-                                colord(themes[selectedTheme] ? themes[selectedTheme][selectedColor].color : { r: 0, g: 0, b: 0, a: 0 } as RgbaColor).toHex()
-                            }
+                            color={colord(
+                                themes[selectedTheme]
+                                    ? themes[selectedTheme][selectedColor].color
+                                    : ({ r: 0, g: 0, b: 0, a: 0 } as RgbaColor)
+                            ).toHex()}
                             onChange={c => {
                                 if (selectedTheme == initialThemeName) return
-                                const color = colord(c).toRgb();
+                                const color = colord(c).toRgb()
                                 setCurrentColor(color)
                                 updateColor(selectedTheme, selectedColor, color)
-
                             }}
                         />
-                        <Button value="Randomize Theme" onClick={() => {
-                            if (selectedTheme == initialThemeName) return;
-                            const keys: ColorName[] = Object.keys(themes[selectedTheme]) as ColorName[];
-                            keys.forEach(k => {
-                                const randAlpha = () => Math.max(0.1, Random());
-                                updateColor(selectedTheme, k, { ...cdRandom().toRgb(), a: randAlpha() } as RgbaColor);
-                            })
-                            applyTheme(selectedTheme)
-                            setSelectedTheme(selectedTheme)
-                            setCurrentColor(selectedTheme && themes[selectedTheme] && selectedColor ? themes[selectedTheme][selectedColor].color : { r: 0, g: 0, b: 0, a: 0 })
-                            setSelectedColor(selectedColor)
-                        }} />
+                        <Button
+                            value="Randomize Theme"
+                            onClick={() => {
+                                if (selectedTheme == initialThemeName) return
+                                const keys: ColorName[] = Object.keys(themes[selectedTheme]) as ColorName[]
+                                keys.forEach(k => {
+                                    const randAlpha = () => Math.max(0.1, Random())
+                                    updateColor(selectedTheme, k, {
+                                        ...cdRandom().toRgb(),
+                                        a: randAlpha(),
+                                    } as RgbaColor)
+                                })
+                                applyTheme(selectedTheme)
+                                setSelectedTheme(selectedTheme)
+                                setCurrentColor(
+                                    selectedTheme && themes[selectedTheme] && selectedColor
+                                        ? themes[selectedTheme][selectedColor].color
+                                        : { r: 0, g: 0, b: 0, a: 0 }
+                                )
+                                setSelectedColor(selectedColor)
+                            }}
+                        />
                     </Stack>
                 </Stack>
                 <div className="w-full h-full">
@@ -143,35 +150,59 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         {Object.entries(themes[selectedTheme]).map(([n, c]) => (
                             <div
                                 key={n}
-                                className={`${currentTheme == initialThemeName ? 'cursor-not-allowed' : 'cursor-pointer'} flex flex-row gap-2 content-middle align-center cursor-pointer rounded-md p-1 ${n == selectedColor ? "bg-background-secondary" : ""
-                                    }`}
-                                title={currentTheme == initialThemeName ? 'Cannot edit the default theme' : undefined}
+                                className={`${currentTheme == initialThemeName ? "cursor-not-allowed" : "cursor-pointer"} flex flex-row gap-2 content-middle align-center cursor-pointer rounded-md p-1 ${
+                                    n == selectedColor ? "bg-background-secondary" : ""
+                                }`}
+                                title={currentTheme == initialThemeName ? "Cannot edit the default theme" : undefined}
                                 onClick={() => {
-                                    if (currentTheme == initialThemeName) return;
+                                    if (currentTheme == initialThemeName) return
                                     setSelectedColor(n as ColorName)
                                 }}
                             >
                                 <div
                                     className={`w-6 h-6 rounded-md`}
                                     style={{
-                                        background: `rgba(${c.color.r}, ${c.color.g}, ${c.color.b}, ${c.color.a})`
+                                        background: `rgba(${c.color.r}, ${c.color.g}, ${c.color.b}, ${c.color.a})`,
                                     }}
                                 ></div>
                                 <div className="h-6 text-main-text">{n}</div>
-                                {readabilityIndicator && (() => {
-                                    if (c.color.a < 0.1 || ((n.toLowerCase().includes("text") || n.toLowerCase().includes("icon")) && !n.toLowerCase().includes("closeicon"))) {
-                                        const aboveColors = c.above.map((above: (ColorName | string)) => typeof (above) == "string" ? above : themes[selectedTheme][above]);
-                                        const conflicting = aboveColors.map((above: string | RgbaColor) => [above, colord(c.color).isReadable(above)]).filter(c => !c[1]).map(([n,]) => n);
+                                {readabilityIndicator &&
+                                    (() => {
+                                        if (
+                                            c.color.a < 0.1 ||
+                                            ((n.toLowerCase().includes("text") || n.toLowerCase().includes("icon")) &&
+                                                !n.toLowerCase().includes("closeicon"))
+                                        ) {
+                                            const aboveColors = c.above.map((above: ColorName | string) =>
+                                                typeof above == "string" ? above : themes[selectedTheme][above]
+                                            )
+                                            const conflicting = aboveColors
+                                                .map((above: string | RgbaColor) => [
+                                                    above,
+                                                    colord(c.color).isReadable(above),
+                                                ])
+                                                .filter(c => !c[1])
+                                                .map(([n]) => n)
 
-                                        if (currentTheme != initialThemeName && (conflicting.length > 0 || c.color.a < 0.1))
-                                            return (
-                                                <div className="flex flex-col w-6 align-center justify-center text-toast-warning" title={c.color.a < 0.1 ? 'Alpha too low!' : `This color will not be readable on top of ${conflicting.join(', ')}!`}>
-                                                    <AiFillWarning />
-                                                </div>)
-                                        else return (<div className="w-6" />)
-                                    }
-                                })()
-                                }
+                                            if (
+                                                currentTheme != initialThemeName &&
+                                                (conflicting.length > 0 || c.color.a < 0.1)
+                                            )
+                                                return (
+                                                    <div
+                                                        className="flex flex-col w-6 align-center justify-center text-toast-warning"
+                                                        title={
+                                                            c.color.a < 0.1
+                                                                ? "Alpha too low!"
+                                                                : `This color will not be readable on top of ${conflicting.join(", ")}!`
+                                                        }
+                                                    >
+                                                        <AiFillWarning />
+                                                    </div>
+                                                )
+                                            else return <div className="w-6" />
+                                        }
+                                    })()}
                             </div>
                         ))}
                     </div>

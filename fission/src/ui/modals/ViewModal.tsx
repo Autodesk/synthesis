@@ -37,14 +37,7 @@ const ViewModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             onAccept={() => showTooltip("controls", controls[view])}
         >
             <Dropdown
-                options={
-                    [
-                        "Orbit",
-                        "Freecam",
-                        "Overview",
-                        "Driver Station",
-                    ] as ViewType[]
-                }
+                options={["Orbit", "Freecam", "Overview", "Driver Station"] as ViewType[]}
                 onSelect={(v: string) => setView(v as ViewType)}
             />
         </Modal>

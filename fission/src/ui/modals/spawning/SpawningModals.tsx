@@ -10,23 +10,23 @@ import World from "@/systems/World"
 import { useTooltipControlContext } from "@/ui/TooltipContext"
 
 interface MirabufEntry {
-    displayName: string;
-    src: string;
+    displayName: string
+    src: string
 }
 
 interface MirabufCardProps {
-    entry: MirabufEntry;
-    select: (entry: MirabufEntry) => void;
+    entry: MirabufEntry
+    select: (entry: MirabufEntry) => void
 }
 
 const MirabufCard: React.FC<MirabufCardProps> = ({ entry, select }) => {
     return (
-        <div key={entry.src} className="flex flex-row align-middle justify-between items-center bg-background rounded-sm p-2 gap-2">
+        <div
+            key={entry.src}
+            className="flex flex-row align-middle justify-between items-center bg-background rounded-sm p-2 gap-2"
+        >
             <Label className="text-wrap break-all">{entry.displayName}</Label>
-            <Button
-                value="Spawn"
-                onClick={() => select(entry)}
-            />
+            <Button value="Spawn" onClick={() => select(entry)} />
         </div>
     )
 }
@@ -35,23 +35,31 @@ export const AddRobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { showTooltip } = useTooltipControlContext()
     const { closeModal } = useModalControlContext()
 
-    const [remoteRobots, setRemoteRobots] = useState<MirabufEntry[] | null>(null);
+    const [remoteRobots, setRemoteRobots] = useState<MirabufEntry[] | null>(null)
 
     useEffect(() => {
         (async () => {
-            fetch('/api/mira/manifest.json').then(x => x.json()).then(x => {
-                const robots: MirabufEntry[] = [];
-                for (const src of x['robots']) {
-                    if (typeof(src) == 'string') {
-                        robots.push({ src: `/api/mira/Robots/${src}`, displayName: src })
-                    } else {
-                        robots.push({ src: src['src'], displayName: src['displayName'] })
+            fetch("/api/mira/manifest.json")
+                .then(x => x.json())
+                .then(x => {
+                    const robots: MirabufEntry[] = []
+                    for (const src of x["robots"]) {
+                        if (typeof src == "string") {
+                            robots.push({
+                                src: `/api/mira/Robots/${src}`,
+                                displayName: src,
+                            })
+                        } else {
+                            robots.push({
+                                src: src["src"],
+                                displayName: src["displayName"],
+                            })
+                        }
                     }
-                }
-                setRemoteRobots(robots)
-            })
+                    setRemoteRobots(robots)
+                })
         })()
-    }, []);
+    }, [])
 
     const selectRobot = (entry: MirabufEntry) => {
         console.log(`Mira: '${entry.src}'`)
@@ -71,19 +79,12 @@ export const AddRobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     }
 
     return (
-        <Modal
-            name={"Robot Selection"}
-            icon={<FaPlus />}
-            modalId={modalId}
-            acceptEnabled={false}
-        >
+        <Modal name={"Robot Selection"} icon={<FaPlus />} modalId={modalId} acceptEnabled={false}>
             <div className="flex overflow-y-auto flex-col gap-2 min-w-[50vw] max-h-[60vh] bg-background-secondary rounded-md p-2">
-                <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">{remoteRobots ? `${remoteRobots.length} Default Robots` : 'No Default Robots'}</Label>
-                {
-                    remoteRobots
-                        ? remoteRobots!.map(x => MirabufCard({entry: x, select: selectRobot}))
-                        : (<></>)
-                }
+                <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
+                    {remoteRobots ? `${remoteRobots.length} Default Robots` : "No Default Robots"}
+                </Label>
+                {remoteRobots ? remoteRobots!.map(x => MirabufCard({ entry: x, select: selectRobot })) : <></>}
             </div>
         </Modal>
     )
@@ -92,23 +93,31 @@ export const AddRobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 export const AddFieldsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { closeModal } = useModalControlContext()
 
-    const [remoteFields, setRemoteFields] = useState<MirabufEntry[] | null>(null);
+    const [remoteFields, setRemoteFields] = useState<MirabufEntry[] | null>(null)
 
     useEffect(() => {
         (async () => {
-            fetch('/api/mira/manifest.json').then(x => x.json()).then(x => {
-                const fields: MirabufEntry[] = [];
-                for (const src of x['fields']) {
-                    if (typeof(src) == 'string') {
-                        fields.push({ src: `/api/mira/Fields/${src}`, displayName: src })
-                    } else {
-                        fields.push({ src: src['src'], displayName: src['displayName'] })
+            fetch("/api/mira/manifest.json")
+                .then(x => x.json())
+                .then(x => {
+                    const fields: MirabufEntry[] = []
+                    for (const src of x["fields"]) {
+                        if (typeof src == "string") {
+                            fields.push({
+                                src: `/api/mira/Fields/${src}`,
+                                displayName: src,
+                            })
+                        } else {
+                            fields.push({
+                                src: src["src"],
+                                displayName: src["displayName"],
+                            })
+                        }
                     }
-                }
-                setRemoteFields(fields)
-            })
+                    setRemoteFields(fields)
+                })
         })()
-    }, []);
+    }, [])
 
     const selectField = (entry: MirabufEntry) => {
         console.log(`Mira: '${entry.src}'`)
@@ -122,19 +131,12 @@ export const AddFieldsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     }
 
     return (
-        <Modal
-            name={"Field Selection"}
-            icon={<FaPlus />}
-            modalId={modalId}
-            acceptEnabled={false}
-        >
+        <Modal name={"Field Selection"} icon={<FaPlus />} modalId={modalId} acceptEnabled={false}>
             <div className="flex overflow-y-auto flex-col gap-2 min-w-[50vw] max-h-[60vh] bg-background-secondary rounded-md p-2">
-                <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">{remoteFields ? `${remoteFields.length} Default Fields` : 'No Default Fields'}</Label>
-                {
-                    remoteFields
-                        ? remoteFields!.map(x => MirabufCard({entry: x, select: selectField}))
-                        : (<></>)
-                }
+                <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
+                    {remoteFields ? `${remoteFields.length} Default Fields` : "No Default Fields"}
+                </Label>
+                {remoteFields ? remoteFields!.map(x => MirabufCard({ entry: x, select: selectField })) : <></>}
             </div>
         </Modal>
     )

@@ -47,7 +47,7 @@ class SynthesisBrain extends Brain {
     }
 
     public Disable(): void {
-        this._behaviors = [];
+        this._behaviors = []
     }
 
     // Creates an instance of ArcadeDriveBehavior and automatically configures it
@@ -109,4 +109,4 @@ class SynthesisBrain extends Brain {
     }
 }
 
-export default SynthesisBrain;
+export default SynthesisBrain

@@ -1,5 +1,5 @@
 abstract class Driver {
-    public abstract Update(deltaT: number): void;
+    public abstract Update(deltaT: number): void
 }
 
 export enum DriverControlMode {
