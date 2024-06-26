@@ -3,7 +3,6 @@ import { TransformControls } from 'three/examples/jsm/controls/TransformControls
 import SceneObject from "./SceneObject"
 import WorldSystem from "../WorldSystem"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
-import { transform } from "framer-motion"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x73937e
