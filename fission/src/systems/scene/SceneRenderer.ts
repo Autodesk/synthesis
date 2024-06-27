@@ -4,6 +4,7 @@ import WorldSystem from '../WorldSystem';
 
 import vertexShader from '@/shaders/vertex.glsl';
 import fragmentShader from '@/shaders/fragment.glsl';
+import { Theme } from '@/ui/ThemeContext';
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x73937e
@@ -80,27 +81,23 @@ class SceneRenderer extends WorldSystem {
         this._scene.add(ground);
 
         // skybox
-        const currentTheme = (window as any).getTheme();
-        console.log('Current Theme:', currentTheme['Background']['color']['r']);
-        
         const geometry = new THREE.SphereGeometry(1000);
         const material = new THREE.ShaderMaterial({
             vertexShader: vertexShader,
             fragmentShader: fragmentShader,
             side: THREE.BackSide,
             uniforms: {
-                rColor: { value: currentTheme['Background']['color']['r']},
-                gColor: { value: currentTheme['Background']['color']['g']},
-                bColor: { value: currentTheme['Background']['color']['b'] },
+                rColor: { value: 1.0 },
+                gColor: { value: 1.0 },
+                bColor: { value: 1.0 },
             }
         });
 
-        this._skybox = new THREE.Mesh(geometry, material);
+
+        this._skybox = new THREE.Mesh(geometry, material); 
         this._skybox.receiveShadow = false;
         this._skybox.castShadow = false;
         this.scene.add(this._skybox); 
-
-
     }
 
     public UpdateCanvasSize() {
@@ -167,6 +164,15 @@ class SceneRenderer extends WorldSystem {
         })
     }
 
+    public updateSkyboxColors(currentTheme: Theme) {
+        if (!this._skybox) return;
+        if (this._skybox.material instanceof THREE.ShaderMaterial) {
+            this._skybox.material.uniforms.rColor.value = currentTheme['Background']['color']['r'];
+            this._skybox.material.uniforms.gColor.value = currentTheme['Background']['color']['g'];
+            this._skybox.material.uniforms.bColor.value = currentTheme['Background']['color']['b'];
+        }
+    }
+
 }
 
-export default SceneRenderer
+export default SceneRenderer;
