@@ -32,8 +32,10 @@ def createTextGraphics(wheel: adsk.fusion.Occurrence, _wheels) -> None:
             graphicsText.cullMode = (
                 adsk.fusion.CustomGraphicsCullModes.CustomGraphicsCullBack
             )
-            graphicsText.color = adsk.fusion.CustomGraphicsShowThroughColorEffect.create(
-                adsk.core.Color.create(230, 146, 18, 255), 1
+            graphicsText.color = (
+                adsk.fusion.CustomGraphicsShowThroughColorEffect.create(
+                    adsk.core.Color.create(230, 146, 18, 255), 1
+                )
             )  # orange/synthesis theme
             graphicsText.depthPriority = 0
 

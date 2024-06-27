@@ -14,7 +14,11 @@ import { ToastType, useToastContext } from "@/ui/ToastContext"
 import { Random } from "@/util/Random"
 import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
 import { UserIcon } from "./UserIcon"
+import World from "@/systems/World"
+import JOLT from "@/util/loading/JoltSyncLoader"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Button } from "@mui/base/Button"
+import Jolt from "@barclah/jolt-physics"
 
 type ButtonProps = {
     value: string
@@ -121,6 +125,11 @@ const MainHUD: React.FC = () => {
                         icon={<IoPeople />}
                         onClick={() => openModal("import-local-mirabuf")}
                     />
+                    <MainHUDButton
+                        value={"Test God Mode"}
+                        icon={<IoGameControllerOutline />}
+                        onClick={TestGodMode}
+                    />
                 </div>
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton
@@ -162,6 +171,31 @@ const MainHUD: React.FC = () => {
             </motion.div>
         </>
     )
+}
+
+async function TestGodMode() {
+    const robot: MirabufSceneObject = [...World.SceneRenderer.sceneObjects.entries()]
+        .filter(x => {
+            const y = x[1] instanceof MirabufSceneObject
+            return y
+        })
+        .map(x => x[1])[0] as MirabufSceneObject
+    const rootNodeId = robot.GetRootNodeId()
+    if (rootNodeId == undefined) {
+        console.error("Robot root node not found for god mode")
+        return
+    }
+    const robotPosition = World.PhysicsSystem.GetBody(rootNodeId).GetPosition()
+    const [ghostBody, _ghostConstraint] = World.PhysicsSystem.CreateGodModeBody(rootNodeId, robotPosition as Jolt.Vec3)
+
+    // Move ghostBody to demonstrate godMode movement
+    await new Promise(f => setTimeout(f, 1000))
+    World.PhysicsSystem.SetBodyPosition(
+        ghostBody.GetID(),
+        new JOLT.Vec3(robotPosition.GetX(), robotPosition.GetY() + 2, robotPosition.GetZ())
+    )
+    await new Promise(f => setTimeout(f, 1000))
+    World.PhysicsSystem.SetBodyPosition(ghostBody.GetID(), new JOLT.Vec3(2, 2, 2))
 }
 
 export default MainHUD
