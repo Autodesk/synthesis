@@ -9,6 +9,7 @@ export type ModifierState = {
 }
 export const EmptyModifierState: ModifierState = { ctrl: false, alt: false, shift: false, meta: false };
 
+// Represents any input
 abstract class Input {
     public inputName: string;
     public isGlobal: boolean;
@@ -18,8 +19,10 @@ abstract class Input {
         this.isGlobal = isGlobal;
     }    
 
+    // Returns the current value of the input. Range depends on input type
     abstract getValue(useGamepad: boolean): number;
 
+    // Creates a copy to avoid modifying the default inputs by reference
     abstract getCopy(): Input;
 }
 
@@ -30,11 +33,11 @@ class ButtonInput extends Input {
 
     public gamepadButton: number;
 
-    public constructor(inputName: string, keyCode: string, gamepadButton: number, isGlobal?: boolean, keyModifiers?: ModifierState) {
+    public constructor(inputName: string, keyCode?: string, gamepadButton?: number, isGlobal?: boolean, keyModifiers?: ModifierState) {
         super(inputName, isGlobal ?? false);
-        this.keyCode = keyCode;
+        this.keyCode = keyCode ?? "";
         this.keyModifiers = keyModifiers ?? EmptyModifierState;
-        this.gamepadButton = gamepadButton;
+        this.gamepadButton = gamepadButton ?? -1;
     }    
 
     // Returns 1 if pressed and 0 if not pressed
@@ -66,13 +69,13 @@ class AxisInput extends Input {
     public posGamepadButton: number;
     public negGamepadButton: number;
 
-    public constructor(inputName: string, posKeyCode: string, negKeyCode: string, gamepadAxisNumber?: number, joystickInverted?: boolean, useGamepadButtons?: boolean,
+    public constructor(inputName: string, posKeyCode?: string, negKeyCode?: string, gamepadAxisNumber?: number, joystickInverted?: boolean, useGamepadButtons?: boolean,
             posGamepadButton?: number, negGamepadButton?: number, isGlobal?: boolean, posKeyModifiers?: ModifierState, negKeyModifiers?: ModifierState) {
         super(inputName, isGlobal ?? false);
         
-        this.posKeyCode = posKeyCode;
+        this.posKeyCode = posKeyCode ?? "";
         this.posKeyModifiers = posKeyModifiers ?? EmptyModifierState;
-        this.negKeyCode = negKeyCode;
+        this.negKeyCode = negKeyCode ?? "";
         this.negKeyModifiers = negKeyModifiers ?? EmptyModifierState;
 
         this.gamepadAxisNumber = gamepadAxisNumber ?? -1;
@@ -83,7 +86,8 @@ class AxisInput extends Input {
         this.negGamepadButton = negGamepadButton ?? -1;
     }    
 
-    // Returns 1 if positive pressed, -1 if negative pressed, or 0 if none or both are pressed
+    // For keyboard: returns 1 if positive pressed, -1 if negative pressed, or 0 if none or both are pressed
+    // For gamepad axis: returns a range between -1 and 1 with a deadband in the middle
     getValue(useGamepad: boolean): number {
         // Gamepad joystick axis
         if (useGamepad) {
@@ -115,6 +119,7 @@ class InputSystem extends WorldSystem {
     private static _gpIndex: number | null;
     public static gamepad: Gamepad | null;
 
+    // The scheme most recently selected in the controls modal
     public static selectedScheme: InputScheme | undefined;
 
     constructor() {
@@ -131,14 +136,6 @@ class InputSystem extends WorldSystem {
 
         this.gamepadDisconnected = this.gamepadDisconnected.bind(this);
         window.addEventListener('gamepaddisconnected', this.gamepadDisconnected);
-        
-        // TODO: Load saved inputs from mira (robot specific) & global inputs
-
-        // for (const key in defaultInputs) {
-        //     if (Object.prototype.hasOwnProperty.call(defaultInputs, key)) {
-        //       InputSystem.allInputs[key] = defaultInputs[key];
-        //     }
-        // }
     }
 
     public Update(_: number): void {InputSystem
@@ -153,9 +150,11 @@ class InputSystem extends WorldSystem {
     public Destroy(): void {    
         document.removeEventListener('keydown', this.handleKeyDown);
         document.removeEventListener('keyup', this.handleKeyUp);
+        window.removeEventListener('gamepadconnected', this.gamepadConnected);
+        window.removeEventListener('gamepaddisconnected', this.gamepadDisconnected);
     }   
 
-    // Called when any key is pressed
+    // Called when any key is first pressed
     private handleKeyDown(event: KeyboardEvent) {
         InputSystem._keysPressed[event.code] = true;
     }
@@ -165,6 +164,7 @@ class InputSystem extends WorldSystem {
         InputSystem._keysPressed[event.code] = false;
     }
 
+    // Called once when a gamepad is first connected
     private gamepadConnected(event: GamepadEvent) {
         console.log(
             "Gamepad connected at index %d: %s. %d buttons, %d axes.",
@@ -177,6 +177,7 @@ class InputSystem extends WorldSystem {
         InputSystem._gpIndex = event.gamepad.index;
     }
 
+    // Called once when a gamepad is first disconnected
     private gamepadDisconnected(event: GamepadEvent) {
         console.log(
             "Gamepad disconnected from index %d: %s",
@@ -212,6 +213,7 @@ class InputSystem extends WorldSystem {
         return state1.alt == state2.alt && state1.ctrl == state2.ctrl && state1.meta == state2.meta && state1.shift == state2.shift;
     }
 
+    // Returns a number between -1 and 1 with a deadband
     public static getGamepadAxis(axisNumber: number): number {
         if (InputSystem.gamepad == null)
             return 0;
@@ -225,6 +227,7 @@ class InputSystem extends WorldSystem {
         return Math.abs(value) < 0.15 ? 0 : value;
     }
 
+    // Returns true if a gamepad is connected and a certain button is pressed
     public static isGamepadButtonPressed(buttonNumber: number): boolean {
         if (InputSystem.gamepad == null)
             return false;

@@ -31,8 +31,8 @@ class DefaultInputs {
         schemeName: "Arrow Keys",
         usesGamepad: false,
         inputs: [
-            new AxisInput("arcadeDrive", "ArrowUp", "ArrowDown", 1, true),
-            new AxisInput("arcadeTurn", "ArrowRight", "ArrowLeft", 0, false),
+            new AxisInput("arcadeDrive", "ArrowUp", "ArrowDown"),
+            new AxisInput("arcadeTurn", "ArrowRight", "ArrowLeft"),
 
             new AxisInput("joint 1", "Slash", "Slash", -1, false, false, -1, -1, false, 
                 EmptyModifierState, { ctrl: false, alt: true, shift: false, meta: false }),
@@ -55,10 +55,10 @@ class DefaultInputs {
             new AxisInput("arcadeTurn", "", "", 2, false),
 
             new AxisInput("joint 1", "", "", -1, false, true, 3, 0),
-            new AxisInput("joint 2", "", "", -1, false, true, 2, 1),
+            new AxisInput("joint 2", "", "", -1, false, true, 1, 2),
             new AxisInput("joint 3", "", "", -1, false, true, 4, 5),
-            new AxisInput("joint 3", "", "", -1, false, true, 12, 13),
-            new AxisInput("joint 3", "", "", -1, false, true, 15, 14)
+            new AxisInput("joint 3", "", "", -1, false, true, 15, 14),
+            new AxisInput("joint 3", "", "", -1, false, true, 12, 13)
         ]
     }
 
@@ -68,9 +68,9 @@ class DefaultInputs {
         inputs: [
             new AxisInput("arcadeDrive", "", "", 1, true),
             new AxisInput("arcadeTurn", "", "", 0, false),
-
-            new AxisInput("joint 1", "", "", -1, false, true, 12, 13),
-            new AxisInput("joint 2", "", "", -1, false, true, 15, 14)
+            
+            new AxisInput("joint 2", "", "", -1, false, true, 15, 14),
+            new AxisInput("joint 1", "", "", -1, false, true, 12, 13)
         ]
     }
 
@@ -82,7 +82,7 @@ class DefaultInputs {
             new AxisInput("arcadeTurn", "", "", 2, false),
 
             new AxisInput("joint 1", "", "", -1, false, true, 3, 0),
-            new AxisInput("joint 2", "", "", -1, false, true, 2, 1)
+            new AxisInput("joint 2", "", "", -1, false, true, 1, 2)
         ]
     }
 

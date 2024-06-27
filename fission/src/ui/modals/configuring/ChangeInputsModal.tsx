@@ -33,6 +33,7 @@ const finalResult = result.charAt(0).toUpperCase() + result.slice(1);
     return finalResult;
 }
 
+// Special characters only
 const codeToCharacterMap: { [code: string]: string } = {
     "Slash": "/",
     "Comma": ",",
@@ -67,8 +68,8 @@ const keyCodeToCharacter = (code: string) => {
     return code;
 }
 
-const moveElementToTop = (arr: string[], element: string) => {
-    if (element == null) {
+const moveElementToTop = (arr: string[], element: string | undefined) => {
+    if (element == undefined) {
         return arr;
     }
     
@@ -88,6 +89,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
     const [chosenGamepadAxis, setChosenGamepadAxis] = useState<number>(-1)
     const [chosenResetScheme, setChosenResetScheme] = useState<string>("WASD")
+    const [useButtons, setUseButtons] = useState<UseButtonsState>({})
     
     // If there is a robot spawned, set it as the selected robot
     if (selectedScheme == null && InputSystem.allInputs.size > 0) {
@@ -95,6 +97,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             if (!InputSystem.selectedScheme)
                 InputSystem.selectedScheme = InputSystem.allInputs.values().next().value
 
+            setUseButtons({});
             setSelectedScheme(InputSystem.selectedScheme);
             setUseGamepad(InputSystem.selectedScheme?.usesGamepad ?? false);
         }, 1);
@@ -102,12 +105,10 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
     const axisInputs = selectedScheme?.inputs.filter((input): input is AxisInput => input instanceof AxisInput);
 
-    // TODO: try removing this, might not be needed
+    // Stores the states for using buttons or a joystick axis for gamepad axis inputs
     type UseButtonsState = {
         [key: string]: boolean;
     };
-
-    const [useButtons, setUseButtons] = useState<UseButtonsState>({})
 
     if (axisInputs && Object.keys(useButtons).length == 0) {
         axisInputs.forEach(input => {
@@ -115,6 +116,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         });
     }
 
+    // Assign keyboard inputs when a key is pressed
     if (!useGamepad && selectedInput && chosenKey) {
         if (selectedInput.startsWith("pos")) {
             const input = selectedScheme?.inputs.find(input => input.inputName == selectedInput.substring(3)) as AxisInput;
@@ -136,6 +138,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         setSelectedInput("")
         setModifierState(EmptyModifierState)
     }
+    // Assign gamepad button inputs when a button is pressed
     else if (useGamepad && selectedInput && chosenButton != -1) {
         if (selectedInput.startsWith("pos")) {
             const input = selectedScheme?.inputs.find(input => input.inputName == selectedInput.substring(3)) as AxisInput;
@@ -155,6 +158,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         setSelectedInput("")
     }
 
+    // Assign gamepad axis inputs when a gamepad axis is selected
     if (useGamepad && selectedInput && chosenGamepadAxis != -1) {
         const selected = selectedScheme?.inputs.find(input => input.inputName == selectedInput) as AxisInput
         selected.gamepadAxisNumber = chosenGamepadAxis - 1;
@@ -163,34 +167,163 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         setSelectedInput("")
     }
 
-      useEffect(() => {
-        const checkGamepadState = () => {
-          if (InputSystem.gamepad !== null) {
-              const pressedButtons = InputSystem.gamepad.buttons
-                .map((button, index) => (button.pressed ? index : null))
-                .filter((index) => index !== null)
-                .map((index) => index!);
+    useEffect(() => {
+    const checkGamepadState = () => {
+        if (InputSystem.gamepad !== null) {
+            const pressedButtons = InputSystem.gamepad.buttons
+            .map((button, index) => (button.pressed ? index : null))
+            .filter((index) => index !== null)
+            .map((index) => index!);
 
-                if (pressedButtons.length > 0)
-                    setChosenButton(pressedButtons[0]);
-                else setChosenButton(-1);
+            if (pressedButtons.length > 0)
+                setChosenButton(pressedButtons[0]);
+            else setChosenButton(-1);
+        }
+        requestAnimationFrame(checkGamepadState);
+    };
+
+    checkGamepadState();
+    });
+
+    const KeyboardButtonSelection = (c: ButtonInput) => {
+        return (
+            <LabeledButton
+                key={c.inputName}
+                label={toTitleCase(c.inputName)}
+                placement={LabelPlacement.Left}
+                value={
+                    c.inputName == selectedInput
+                        ? "Press anything"
+                            : transformKeyName(c.keyCode, c.keyModifiers)
+                }
+                onClick={() => {
+                    setSelectedInput(c.inputName)
+                }}
+            />
+        )
+    }
+
+    const KeyboardAxisSelection = (c: AxisInput) => {
+        return (
+            <div key={c.inputName}>
+                <Stack direction={StackDirection.Vertical} spacing={3}>
+                    {/* Positive key */}
+                    <Label size={LabelSize.Medium}>{toTitleCase(c.inputName)}</Label>
+                    <LabeledButton
+                        key={"pos"+c.inputName}
+                        label={toTitleCase(c.inputName) + "(+)"}
+                        placement={LabelPlacement.Left}
+                        value={
+                            "pos" + c.inputName == selectedInput
+                                ? "Press anything"
+
+                                : transformKeyName(c.posKeyCode, c.posKeyModifiers)
+                        }
+                        onClick={() => {
+                            setSelectedInput("pos" + c.inputName)
+                        }}
+                    />
+                    {/* Negative key */}
+                    <LabeledButton
+                        key={"neg" + c.inputName}
+                        label={toTitleCase(c.inputName) + " (-)"}
+                        placement={LabelPlacement.Left}
+                        value={
+                            "neg" + c.inputName == selectedInput
+                                ? "Press anything"
+
+                                : transformKeyName(c.negKeyCode, c.negKeyModifiers)
+                        }
+                        onClick={() => {
+                            setSelectedInput("neg" + c.inputName)
+                        }}
+                    />
+                </Stack>
+            </div>
+        )
+    }
+
+    const JoystickButtonSelection = (c: ButtonInput) => {
+        return <LabeledButton
+            key={c.inputName}
+            label={toTitleCase(c.inputName)}
+            placement={LabelPlacement.Left}
+            value={
+                c.inputName == selectedInput
+                    ? "Press anything"
+
+                    : (c.gamepadButton == -1) ? "N/A" : gamepadButtons[c.gamepadButton]
             }
-          requestAnimationFrame(checkGamepadState);
-        };
+            onClick={() => {
+                setSelectedInput(c.inputName);
+            }}
+        />
+    }
 
-        checkGamepadState();
-      });
+    const JoystickAxisSelection = (c: AxisInput) => {
+        return (
+            <Dropdown
+                key={c.inputName}
+                label={toTitleCase(c.inputName)}
+                // Moves the selected option to the start of the array
+                options={moveElementToTop(gamepadAxes, gamepadAxes[c.gamepadAxisNumber + 1])}
+                onSelect={(value) => {
+                    setSelectedInput(c.inputName);
+                    setChosenGamepadAxis(gamepadAxes.indexOf(value));
+                }}
+            />
+        )
+    }
+
+    const GamepadButtonAxisSelection = (c: AxisInput) => {
+        return (
+            <div>
+                <Stack direction={StackDirection.Vertical} spacing={3}>
+                <Label size={LabelSize.Medium}>{toTitleCase(c.inputName)}</Label>
+                    {/* // Positive gamepad button */}
+                        <LabeledButton
+                    key={"pos"+c.inputName}
+                    label={toTitleCase(c.inputName) + " (+)"}
+                    placement={LabelPlacement.Left}
+                    value={
+                        "pos" + c.inputName == selectedInput
+                            ? "Press anything"
+                            : (c.posGamepadButton == -1) ? "N/A" : gamepadButtons[c.posGamepadButton]
+                    }
+                    onClick={() => {
+                        setSelectedInput("pos" + c.inputName)
+                    }}
+                    />
+                    {/* // Negative gamepad button */}
+                    <LabeledButton
+                    key={"neg"+c.inputName}
+                    label={toTitleCase(c.inputName) + " (-)"}
+                    placement={LabelPlacement.Left}
+                    value={
+                        "neg" + c.inputName == selectedInput
+                            ? "Press anything"
+                            : (c.negGamepadButton == -1) ? "N/A" : gamepadButtons[c.negGamepadButton]
+                    }
+                    onClick={() => {
+                        setSelectedInput("neg" + c.inputName)
+                    }}
+                    />
+                </Stack>
+            </div>
+        )
+    }
 
     return (
         <Modal name="Keybinds" icon={<FaGamepad />} modalId={modalId}>
            {(Array.from(InputSystem.allInputs.keys()).length > 0) ? (
                         <>
-            <Stack direction={StackDirection.Horizontal}>
+            <Stack direction={StackDirection.Horizontal} spacing={25}>
                 <div>
+                <Stack direction={StackDirection.Vertical} spacing={10}>
                         <Dropdown
                         label={"Select Robot"}
                         // Moves the selected option to the start of the array
-                        options={Array.from(InputSystem.allInputs.keys())}
+                        options={moveElementToTop(Array.from(InputSystem.allInputs.keys()), InputSystem?.selectedScheme?.schemeName)}
                         onSelect={(value) => {
                             const newScheme = InputSystem.allInputs.get(value);
                             if (newScheme == selectedScheme)
@@ -202,7 +335,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     />
                     {selectedScheme ? (
                         <>
-                    <Checkbox label="Gamepad Controller" defaultState={selectedScheme?.usesGamepad ?? false} onClick={ (val) => {
+                    <Checkbox label="Use Controller" defaultState={selectedScheme?.usesGamepad ?? false} onClick={ (val) => {
                                 setUseGamepad(val);
                                 if (selectedScheme)
                                     selectedScheme.usesGamepad = val;
@@ -210,10 +343,10 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         } 
                     />
                     <Label size = {LabelSize.Medium}>Reset to Defaults</Label>
-                    <Stack direction={StackDirection.Horizontal}>
+                    {/* <Stack direction={StackDirection.Horizontal} justify="center" align="stretch"> */}
                         <div>
                         <Dropdown
-                            label={"Choose Scheme"}
+                            label={""}
                             // Moves the selected option to the start of the array
                             options={DefaultInputs.ALL_INPUT_SCHEMES.map((scheme) => scheme.schemeName)}
                             onSelect={(value) => {
@@ -237,8 +370,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                     if (currentInput) {
                                         const inputIndex = selectedScheme.inputs.indexOf(currentInput);
 
-                                        selectedScheme.inputs.splice(inputIndex, 1);
-                                        selectedScheme.inputs.push(newInput.getCopy());
+                                        selectedScheme.inputs[inputIndex] = newInput.getCopy();
                                     }
                                 })
                                 selectedScheme.usesGamepad = scheme.usesGamepad;
@@ -247,11 +379,12 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                             }}
                         />
                         </div>
-                        </Stack>
+                        {/* </Stack> */}
                         </>
                     ) : (
                         <Label>No robot selected.</Label>
                     )}
+                    </Stack>
                 </div>
                 <div
                     className="w-max"
@@ -267,133 +400,38 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 >
                     {selectedScheme ? (
                         <>
+                        <Stack direction={StackDirection.Vertical} spacing={20}>
                             <Label size={LabelSize.Large}>Robot Controls</Label>
                                 {selectedScheme.inputs.map(c => {
                                     if (!useGamepad) {
-
                                         // Keyboard button
                                         if (c instanceof ButtonInput) {
-                                            return (
-                                                <LabeledButton
-                                                    key={c.inputName}
-                                                    label={toTitleCase(c.inputName)}
-                                                    placement={LabelPlacement.Left}
-                                                    value={
-                                                        c.inputName == selectedInput
-                                                            ? "Press anything"
-                                                                : transformKeyName(c.keyCode, c.keyModifiers)
-                                                    }
-                                                    onClick={() => {
-                                                        setSelectedInput(c.inputName)
-                                                    }}
-                                                />
-                                            )
+                                            return KeyboardButtonSelection(c);
                                         }
                                         // Keyboard Axis
                                         else if (c instanceof AxisInput) {
-                                            return ( 
-                                                <div key={c.inputName}>
-                                                    {/* Positive key */}
-                                                    <LabeledButton
-                                                        key={"pos"+c.inputName}
-                                                        label={toTitleCase(c.inputName) + " (+)"}
-                                                        placement={LabelPlacement.Left}
-                                                        value={
-                                                            "pos" + c.inputName == selectedInput
-                                                                ? "Press anything"
-            
-                                                                : transformKeyName(c.posKeyCode, c.posKeyModifiers)
-                                                        }
-                                                        onClick={() => {
-                                                            setSelectedInput("pos" + c.inputName)
-                                                        }}
-                                                    />
-                                                    {/* Negative key */}
-                                                    <LabeledButton
-                                                        key={"neg" + c.inputName}
-                                                        label={toTitleCase(c.inputName) + " (-)"}
-                                                        placement={LabelPlacement.Left}
-                                                        value={
-                                                            "neg" + c.inputName == selectedInput
-                                                                ? "Press anything"
-            
-                                                                : transformKeyName(c.negKeyCode, c.negKeyModifiers)
-                                                        }
-                                                        onClick={() => {
-                                                            setSelectedInput("neg" + c.inputName)
-                                                        }}
-                                                    />
-                                                </div>
-                                            )
+                                            return KeyboardAxisSelection(c);
                                         }
                                     }
                                     else {
                                         // Joystick Button
                                         if (c instanceof ButtonInput) {
-                                            <LabeledButton
-                                                    key={c.inputName}
-                                                    label={toTitleCase(c.inputName)}
-                                                    placement={LabelPlacement.Left}
-                                                    value={
-                                                        c.inputName == selectedInput
-                                                            ? "Press anything"
-        
-                                                            : (c.gamepadButton == -1) ? "N/A" : gamepadButtons[c.gamepadButton]
-                                                    }
-                                                    onClick={() => {
-                                                        setSelectedInput(c.inputName)
-                                                    }}
-                                                />
-                                         }
+                                            return JoystickButtonSelection(c);
+                                        }
 
                                         // Gamepad axis
                                         else if (c instanceof AxisInput) {
                                             return (
                                                 <div key={c.inputName}>
-                                                    {useButtons[c.inputName] ? (
-                                                        <div>
-                                                        {/* // Positive gamepad button */}
-                                                            <LabeledButton
-                                                        key={"pos"+c.inputName}
-                                                        label={toTitleCase(c.inputName) + " (+)"}
-                                                        placement={LabelPlacement.Left}
-                                                        value={
-                                                            "pos" + c.inputName == selectedInput
-                                                                ? "Press anything"
-                                                                : (c.posGamepadButton == -1) ? "N/A" : gamepadButtons[c.posGamepadButton]
-                                                        }
-                                                        onClick={() => {
-                                                            setSelectedInput("pos" + c.inputName)
-                                                        }}
-                                                    />
-                                                        {/* // Negative gamepad button */}
-                                                        <LabeledButton
-                                                        key={"neg"+c.inputName}
-                                                        label={toTitleCase(c.inputName) + " (-)"}
-                                                        placement={LabelPlacement.Left}
-                                                        value={
-                                                            "neg" + c.inputName == selectedInput
-                                                                ? "Press anything"
-                                                                : (c.negGamepadButton == -1) ? "N/A" : gamepadButtons[c.negGamepadButton]
-                                                        }
-                                                        onClick={() => {
-                                                            setSelectedInput("neg" + c.inputName)
-                                                        }}
-                                                    />
-                                                        </div>
-                                                    ) : (
-                                                        // Gamepad joystick axis
-                                                        <Dropdown
-                                                            key={c.inputName}
-                                                            label={toTitleCase(c.inputName)}
-                                                            // Moves the selected option to the start of the array
-                                                            options={moveElementToTop(gamepadAxes, gamepadAxes[c.gamepadAxisNumber + 1])}
-                                                            onSelect={(value) => {
-                                                                setSelectedInput(c.inputName); 
-                                                                setChosenGamepadAxis(gamepadAxes.indexOf(value));
-                                                            }}
-                                                        />
-                                                    )}
+                                                    {useButtons[c.inputName] ?
+                                                        (
+                                                            GamepadButtonAxisSelection(c)
+                                                         ) : (
+                                                            // Gamepad joystick axis
+                                                            JoystickAxisSelection(c)
+                                                        )
+                                                    }
+                                                        
                                                     {/* // Button to switch between two buttons and a joystick axis */}
                                                     <Checkbox label="Use Buttons" defaultState={c.useGamepadButtons} onClick={ 
                                                         (val) => {
@@ -414,6 +452,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                     }
                                 }
                             )}
+                            </Stack>
                         </>
                     ) : (
                         <Label>No robot selected.</Label>
@@ -428,4 +467,4 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     )
 }
 
-export default ChangeInputsModal
+export default ChangeInputsModal;

@@ -161,7 +161,7 @@ class PhysicsSystem extends WorldSystem {
         console.log(`Using layer ${layer?.layer}`)
         const bodyMap = this.CreateBodiesFromParser(parser, layer);
         const rootBody = parser.rootNode;
-        const mechanism = new Mechanism(rootBody, bodyMap, layer);
+        const mechanism = new Mechanism(rootBody, bodyMap, parser.assembly.dynamic, layer);
         this.CreateJointsFromParser(parser, mechanism);
         return mechanism;
     }

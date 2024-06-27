@@ -38,6 +38,7 @@ const Dropdown: React.FC<DropdownProps> = ({
                 if (onSelect) onSelect(value)
             }}
             className={`block relative duration-100 hover:backdrop-brightness-90 w-full h-full px-2 py-2 ${className}`}
+            style={{ maxWidth: '249px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', paddingRight: '25px'}}
         >
             {children}
         </span>

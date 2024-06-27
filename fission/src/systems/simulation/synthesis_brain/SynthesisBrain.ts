@@ -14,7 +14,7 @@ import GenericArmBehavior from "../behavior/GenericArmBehavior";
 import SliderDriver from "../driver/SliderDriver";
 import SliderStimulus from "../stimulus/SliderStimulus";
 import GenericElevatorBehavior from "../behavior/GenericElevatorBehavior";
-import InputSystem from "@/systems/input/InputSystem";
+import InputSystem, { AxisInput } from "@/systems/input/InputSystem";
 import DefaultInputs from "@/systems/input/DefaultInputs";
 
 class SynthesisBrain extends Brain {
@@ -40,14 +40,15 @@ class SynthesisBrain extends Brain {
             return;
         }
 
-        // TODO: might need to recreate these whenever the robot is enabled, not when it's first created
-        this.configureArcadeDriveBehavior();
-        this.configureArmBehaviors();
-        this.configureElevatorBehaviors();
+        // Only adds controls to mechanisms that are controllable (ignores fields)
+        if (mechanism.controllable) {
+            this.configureArcadeDriveBehavior();
+            this.configureArmBehaviors();
+            this.configureElevatorBehaviors();
+            this.configureInputs();
 
-        this.configureInputs();
-
-        SynthesisBrain._currentRobotIndex++;
+            SynthesisBrain._currentRobotIndex++;
+        }
     }
 
     public Enable(): void { }
@@ -125,22 +126,30 @@ class SynthesisBrain extends Brain {
     public configureInputs() {
         const scheme = DefaultInputs.ALL_INPUT_SCHEMES[SynthesisBrain._currentRobotIndex];
 
-        InputSystem.allInputs.set(this._assemblyName, {schemeName: this._assemblyName, usesGamepad: scheme.usesGamepad, inputs: []});
+        InputSystem.allInputs.set(this._assemblyName, {schemeName: this._assemblyName, usesGamepad: scheme?.usesGamepad ?? false, inputs: []});
         const inputList = InputSystem.allInputs.get(this._assemblyName)!.inputs;
 
-        const arcadeDrive = scheme.inputs.find(i => i.inputName === "arcadeDrive");
-        if (arcadeDrive)
-            inputList.push(arcadeDrive);
+        if (scheme) {
+            const arcadeDrive = scheme.inputs.find(i => i.inputName === "arcadeDrive");
+            if (arcadeDrive)
+                inputList.push(arcadeDrive.getCopy());
+            else 
+                inputList.push(new AxisInput("arcadeDrive"));
 
-        const arcadeTurn = scheme.inputs.find(i => i.inputName === "arcadeTurn");
-        if (arcadeTurn)
-            inputList.push(arcadeTurn);
+            const arcadeTurn = scheme.inputs.find(i => i.inputName === "arcadeTurn");
+            if (arcadeTurn)
+                inputList.push(arcadeTurn.getCopy());
+            else 
+                inputList.push(new AxisInput("arcadeTurn"));
 
-        for (let i = 1; i < this._currentJointIndex; i++) {
-            const controlPreset = scheme.inputs.find(input => input.inputName == ("joint " + i))
+            for (let i = 1; i < this._currentJointIndex; i++) {
+                const controlPreset = scheme.inputs.find(input => input.inputName == ("joint " + i))
 
-            if (controlPreset)
-                inputList.push(controlPreset);
+                if (controlPreset)
+                    inputList.push(controlPreset.getCopy());
+                else 
+                    inputList.push(new AxisInput("joint " + i));
+            }
         }
     }
 }
