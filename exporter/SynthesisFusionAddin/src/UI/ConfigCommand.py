@@ -1351,6 +1351,7 @@ class CommandExecutePreviewHandler(adsk.core.CommandEventHandler):
                 gm.app.activeViewport.refresh()
             else:
                 gm.app.activeDocument.design.rootComponent.opacity = 1
+                
                 for (
                     group
                 ) in gm.app.activeDocument.design.rootComponent.customGraphicsGroups:
