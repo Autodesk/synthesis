@@ -1,18 +1,17 @@
-import adsk.core, adsk.fusion
-import traceback, gzip
+import gzip
+import traceback
 
-from ...general_imports import *
-
+import adsk.core
+import adsk.fusion
 from google.protobuf.json_format import MessageToJson
 
 from proto.proto_out import assembly_pb2, types_pb2
 
+from ...general_imports import *
 from ...UI.Camera import captureThumbnail, clearIconCache
-
-from . import Materials, Components, Joints, JointHierarchy, PDMessage
-
-from .Utilities import *
 from ..ExporterOptions import ExporterOptions, ExportMode
+from . import Components, JointHierarchy, Joints, Materials, PDMessage
+from .Utilities import *
 
 
 class Parser:
@@ -54,9 +53,7 @@ class Parser:
             progressDialog.title = "Exporting to Synthesis Format"
             progressDialog.minimumValue = 0
             progressDialog.maximumValue = totalIterations
-            progressDialog.show(
-                "Synthesis Export", "Currently on %v of %m", 0, totalIterations
-            )
+            progressDialog.show("Synthesis Export", "Currently on %v of %m", 0, totalIterations)
 
             # this is the formatter for the progress dialog now
             self.pdMessage = PDMessage.PDMessage(
@@ -198,37 +195,19 @@ class Parser:
                         joint_hierarchy_out = f"{joint_hierarchy_out}  |- ground\n"
                     else:
                         newnode = assembly_out.data.joints.joint_instances[node.value]
-                        jointdefinition = assembly_out.data.joints.joint_definitions[
-                            newnode.joint_reference
-                        ]
+                        jointdefinition = assembly_out.data.joints.joint_definitions[newnode.joint_reference]
 
-                        wheel_ = (
-                            " wheel : true"
-                            if (jointdefinition.user_data.data["wheel"] != "")
-                            else ""
-                        )
+                        wheel_ = " wheel : true" if (jointdefinition.user_data.data["wheel"] != "") else ""
 
                         joint_hierarchy_out = f"{joint_hierarchy_out}  |- {jointdefinition.info.name} type: {jointdefinition.joint_motion_type} {wheel_}\n"
 
                     for child in node.children:
                         if child.value == "ground":
-                            joint_hierarchy_out = (
-                                f"{joint_hierarchy_out} |---> ground\n"
-                            )
+                            joint_hierarchy_out = f"{joint_hierarchy_out} |---> ground\n"
                         else:
-                            newnode = assembly_out.data.joints.joint_instances[
-                                child.value
-                            ]
-                            jointdefinition = (
-                                assembly_out.data.joints.joint_definitions[
-                                    newnode.joint_reference
-                                ]
-                            )
-                            wheel_ = (
-                                " wheel : true"
-                                if (jointdefinition.user_data.data["wheel"] != "")
-                                else ""
-                            )
+                            newnode = assembly_out.data.joints.joint_instances[child.value]
+                            jointdefinition = assembly_out.data.joints.joint_definitions[newnode.joint_reference]
+                            wheel_ = " wheel : true" if (jointdefinition.user_data.data["wheel"] != "") else ""
                             joint_hierarchy_out = f"{joint_hierarchy_out}  |---> {jointdefinition.info.name} type: {jointdefinition.joint_motion_type} {wheel_}\n"
 
                 joint_hierarchy_out += "\n\n"

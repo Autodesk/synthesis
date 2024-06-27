@@ -1,4 +1,5 @@
-import os, platform
+import os
+import platform
 
 
 def getOSPath(*argv) -> str:
