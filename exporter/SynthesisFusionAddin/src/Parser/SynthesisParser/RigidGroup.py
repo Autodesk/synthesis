@@ -28,7 +28,7 @@ def ExportRigidGroups(
     - Appears to have a bug, logged already
 
     Args:
-        fus_occ (adsk.fusion.Occurrence): Fusion 360 Occurrence Reference
+        fus_occ (adsk.fusion.Occurrence): Fusion Occurrence Reference
         hel_occ (Assembly_pb2.Occurrence): Protobuf Hellion Occurrence Reference
     """
     try:

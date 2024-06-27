@@ -1,9 +1,9 @@
-import Scene from '@/components/Scene.tsx';
-import MirabufSceneObject from './mirabuf/MirabufSceneObject.ts';
-import { LoadMirabufRemote } from './mirabuf/MirabufLoader.ts';
-import { mirabuf } from './proto/mirabuf';
-import MirabufParser, { ParseErrorSeverity } from './mirabuf/MirabufParser.ts';
-import MirabufInstance from './mirabuf/MirabufInstance.ts';
+import Scene from "@/components/Scene.tsx"
+import MirabufSceneObject from "./mirabuf/MirabufSceneObject.ts"
+import { LoadMirabufRemote } from "./mirabuf/MirabufLoader.ts"
+import { mirabuf } from "./proto/mirabuf"
+import MirabufParser, { ParseErrorSeverity } from "./mirabuf/MirabufParser.ts"
+import MirabufInstance from "./mirabuf/MirabufInstance.ts"
 import { AnimatePresence } from "framer-motion"
 import { ReactElement, useEffect } from "react"
 import { ModalControlProvider, useModalManager } from "@/ui/ModalContext"
@@ -53,6 +53,7 @@ import ManageAssembliesModal from '@/modals/spawning/ManageAssembliesModal.tsx';
 import World from '@/systems/World.ts';
 import { AddRobotsModal, AddFieldsModal, SpawningModal } from '@/modals/spawning/SpawningModals.tsx';
 import ImportMirabufModal from '@/modals/mirabuf/ImportMirabufModal.tsx';
+import ImportLocalMirabufModal from '@/modals/mirabuf/ImportLocalMirabufModal.tsx';
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
 
@@ -192,6 +193,7 @@ const initialModals = [
     <ConfigMotorModal modalId="config-motor" />,
     <ManageAssembliesModal modalId="manage-assembles" />,
     <ImportMirabufModal modalId="import-mirabuf" />,
+    <ImportLocalMirabufModal modalId="import-local-mirabuf" />,
 ]
 
 const initialPanels: ReactElement[] = [

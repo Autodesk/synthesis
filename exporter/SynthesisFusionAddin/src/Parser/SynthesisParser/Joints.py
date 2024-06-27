@@ -277,7 +277,7 @@ def fillRevoluteJointMotion(
     """#### Fill Protobuf revolute joint motion data
 
     Args:
-        revoluteMotion (adsk.fusion.RevoluteJointMotion): Fusion 360 Revolute Joint Data
+        revoluteMotion (adsk.fusion.RevoluteJointMotion): Fusion Revolute Joint Data
         protoJoint (joint_pb2.Joint): Protobuf joint that is being modified
     """
 
@@ -321,7 +321,7 @@ def fillSliderJointMotion(
     """#### Fill Protobuf slider joint motion data
 
     Args:
-        sliderMotion (adsk.fusion.SliderJointMotion): Fusion 360 Slider Joint Data
+        sliderMotion (adsk.fusion.SliderJointMotion): Fusion Slider Joint Data
         protoJoint (joint_pb2.Joint): Protobuf joint that is being modified
 
     """
@@ -394,7 +394,7 @@ def _jointOrigin(
     """#### Joint Origin Internal Finder that was orignally created for Synthesis by Liam Wang
 
     Args:
-        joint (Union[adsk.fusion.Joint, adsk.fusion.AsBuiltJoint]): A Fusion 360 Joint that is either a Proper or As Build Joint
+        joint (Union[adsk.fusion.Joint, adsk.fusion.AsBuiltJoint]): A Fusion Joint that is either a Proper or As Build Joint
 
     Returns:
         Point3D by Autodesk Fusion
@@ -402,7 +402,8 @@ def _jointOrigin(
     geometryOrOrigin = (
         (
             fusionJoint.geometryOrOriginOne
-            if fusionJoint.geometryOrOriginOne.objectType == "adsk::fusion::JointGeometry"
+            if fusionJoint.geometryOrOriginOne.objectType
+            == "adsk::fusion::JointGeometry"
             else fusionJoint.geometryOrOriginTwo
         )
         if fusionJoint.objectType == "adsk::fusion::Joint"

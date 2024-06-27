@@ -96,10 +96,10 @@ class MirabufSceneObject extends SceneObject {
                 colliderMesh.position.setFromMatrixPosition(transform)
                 colliderMesh.rotation.setFromRotationMatrix(transform)
 
-                const comTransform = JoltMat44_ThreeMatrix4(body.GetCenterOfMassTransform());
+                const comTransform = JoltMat44_ThreeMatrix4(body.GetCenterOfMassTransform())
 
-                comMesh.position.setFromMatrixPosition(comTransform);
-                comMesh.rotation.setFromRotationMatrix(comTransform);
+                comMesh.position.setFromMatrixPosition(comTransform)
+                comMesh.rotation.setFromRotationMatrix(comTransform)
             }
         })
     }
@@ -117,6 +117,10 @@ class MirabufSceneObject extends SceneObject {
         })
         this._debugBodies?.clear()
         this._physicsLayerReserve?.Release()
+    }
+
+    public GetRootNodeId(): Jolt.BodyID | undefined {
+        return this._mechanism.nodeToBody.get(this._mechanism.rootBody)
     }
 
     private CreateMeshForShape(shape: Jolt.Shape): THREE.Mesh {

@@ -28,7 +28,7 @@ class Parser:
     def export(self) -> bool:
         try:
             app = adsk.core.Application.get()
-            design = app.activeDocument.design
+            design: adsk.fusion.Design = app.activeDocument.design
 
             assembly_out = assembly_pb2.Assembly()
             fill_info(
@@ -212,14 +212,18 @@ class Parser:
 
                     for child in node.children:
                         if child.value == "ground":
-                            joint_hierarchy_out = f"{joint_hierarchy_out} |---> ground\n"
+                            joint_hierarchy_out = (
+                                f"{joint_hierarchy_out} |---> ground\n"
+                            )
                         else:
                             newnode = assembly_out.data.joints.joint_instances[
                                 child.value
                             ]
-                            jointdefinition = assembly_out.data.joints.joint_definitions[
-                                newnode.joint_reference
-                            ]
+                            jointdefinition = (
+                                assembly_out.data.joints.joint_definitions[
+                                    newnode.joint_reference
+                                ]
+                            )
                             wheel_ = (
                                 " wheel : true"
                                 if (jointdefinition.user_data.data["wheel"] != "")
