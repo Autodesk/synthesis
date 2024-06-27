@@ -62,7 +62,7 @@ class PhysicalDepth(Enum):
 
 
 class ModelHierarchy(Enum):
-    # Model exactly as it is shown in Fusion 360 in the model view tree
+    # Model exactly as it is shown in Fusion in the model view tree
     FusionAssembly = 0
 
     # Flattened Assembly with all bodies as children of the root object

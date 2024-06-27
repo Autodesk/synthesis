@@ -1,5 +1,5 @@
 # Synthesis Exporter
-This is a Addin for *Autodesk Fusion 360* that will export a [Mirabuf](https://github.com/HiceS/mirabuf) usable by the Synthesis simulator.
+This is a Addin for Autodesk® Fusion™ that will export a [Mirabuf](https://github.com/HiceS/mirabuf) usable by the Synthesis simulator.
 
 ## Features
 - [x] Materials
@@ -31,7 +31,7 @@ We use `VSCode` Primarily, download it to interact with our code or use your own
 
 ### How to Build + Run
 1. See root [`README`](/README.md) on how to run `init` script
-2. Open `Autodesk Fusion 360`
+2. Open `Autodesk Fusion`
 3. Select `UTILITIES` from the top bar
 4. Click `ADD-INS` Button
 5. Click `Add-Ins` tab at the top of Scripts and Add-Ins dialog
@@ -55,7 +55,7 @@ Most of the runtime for the addin is saved under the `logs` directory in this fo
 
 #### General Debugging
 
-1. Open `Autodesk Fusion 360`
+1. Open `Autodesk Fusion`
 2. Select `UTILITIES` from the top bar
 3. Click `ADD-INS` Button
 4. Click `Add-Ins` tab at the top of Scripts and Add-Ins dialog
