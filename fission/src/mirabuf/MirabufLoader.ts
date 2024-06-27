@@ -18,9 +18,9 @@ export function UnzipMira(buff: Uint8Array): Uint8Array {
 
 export async function LoadMirabufRemote(fetchLocation: string, type: MiraType): Promise<mirabuf.Assembly | undefined> {
     const map = GetMap(type)
-    const targetID = map != null ? map[fetchLocation] : null
+    const targetID = map != undefined ? map[fetchLocation] : undefined
 
-    if (targetID != null) {
+    if (targetID != undefined) {
         console.log("Loading mira from cache")
         return (await LoadMirabufCache(fetchLocation, targetID, type, map)) ?? LoadAndCacheMira(fetchLocation, type)
     } else {
@@ -49,12 +49,12 @@ export async function ClearMira() {
 export function GetMap(type: MiraType): any {
     const miraJSON = window.localStorage.getItem(type == MiraType.ROBOT ? robots : fields)
 
-    if (miraJSON != null) {
+    if (miraJSON != undefined) {
         console.log("mirabuf JSON found")
         return JSON.parse(miraJSON)
     } else {
         console.log("mirabuf JSON not found")
-        return null
+        return undefined
     }
 }
 
@@ -95,15 +95,15 @@ async function LoadMirabufCache(
     targetID: string,
     type: MiraType,
     map: { [k: string]: string }
-): Promise<mirabuf.Assembly | undefined | null> {
+): Promise<mirabuf.Assembly | undefined> {
     try {
         const fileHandle =
             (await (type == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle).getFileHandle(targetID, {
                 create: false,
-            })) ?? null
+            })) ?? undefined
 
         // Get assembly from file
-        if (fileHandle != null) {
+        if (fileHandle != undefined) {
             const buff = await fileHandle.getFile().then(x => x.arrayBuffer())
             const assembly = mirabuf.Assembly.decode(UnzipMira(new Uint8Array(buff)))
             console.log(assembly)
@@ -116,7 +116,7 @@ async function LoadMirabufCache(
         delete map[fetchLocation]
         window.localStorage.setItem(type == MiraType.ROBOT ? robots : fields, JSON.stringify(map))
 
-        return null
+        return undefined
     }
 }
 
