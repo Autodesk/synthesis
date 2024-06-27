@@ -1,9 +1,10 @@
 import { test, expect, describe, assert } from "vitest"
 import PhysicsSystem, { LayerReserve } from "../systems/physics/PhysicsSystem"
-import { LoadMirabufLocal } from "@/mirabuf/MirabufLoader"
+// import { LoadMirabufLocal } from "@/mirabuf/MirabufLoader"
 import MirabufParser from "@/mirabuf/MirabufParser"
 import * as THREE from "three"
 import Jolt from "@barclah/jolt-physics"
+import { LoadMirabufRemote } from "@/mirabuf/MirabufLoader"
 
 describe("Physics Sansity Checks", () => {
     test("Convex Hull Shape (Cube)", () => {
@@ -76,18 +77,18 @@ describe("GodMode", () => {
 })
 
 describe("Mirabuf Physics Loading", () => {
-    test("Body Loading (Dozer)", () => {
-        const assembly = LoadMirabufLocal("./public/Downloadables/Mira/Robots/Dozer_v9.mira")
-        const parser = new MirabufParser(assembly)
+    test("Body Loading (Dozer)", async () => {
+        const assembly = await LoadMirabufRemote("/api/mira/Robots/Dozer_v9.mira")
+        const parser = new MirabufParser(assembly!)
         const physSystem = new PhysicsSystem()
         const mapping = physSystem.CreateBodiesFromParser(parser, new LayerReserve())
 
         expect(mapping.size).toBe(7)
     })
 
-    test("Body Loading (Team_2471_(2018)_v7.mira)", () => {
-        const assembly = LoadMirabufLocal("./public/Downloadables/Mira/Robots/Team 2471 (2018)_v7.mira")
-        const parser = new MirabufParser(assembly)
+    test("Body Loading (Team_2471_(2018)_v7.mira)", async () => {
+        const assembly = await LoadMirabufRemote("/api/mira/Robots/Team 2471 (2018)_v7.mira")
+        const parser = new MirabufParser(assembly!)
         const physSystem = new PhysicsSystem()
         const mapping = physSystem.CreateBodiesFromParser(parser, new LayerReserve())
 

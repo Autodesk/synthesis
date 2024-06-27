@@ -8,7 +8,7 @@ class GenericElevatorBehavior extends Behavior {
     private _inputName: string;
     private _assemblyName: string;
 
-    private _linearSpeed = 10;
+    private _linearSpeed = 2.5;
 
     constructor(sliderDriver: SliderDriver, sliderStimulus: SliderStimulus, jointIndex: number, assemblyName: string) {
         super([sliderDriver], [sliderStimulus]);

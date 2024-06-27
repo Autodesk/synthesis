@@ -228,7 +228,15 @@ class InputSystem extends WorldSystem {
 
     // Returns true if two modifier states are identical
     public static compareModifiers(state1: ModifierState, state2: ModifierState) : boolean {
-        return state1.alt == state2.alt && state1.ctrl == state2.ctrl && state1.meta == state2.meta && state1.shift == state2.shift;
+        if (!state1 || !state2)
+            return false;
+        
+        return (
+            state1.alt == state2.alt &&
+            state1.ctrl == state2.ctrl &&
+            state1.meta == state2.meta &&
+            state1.shift == state2.shift
+        )
     }
 
     // Returns a number between -1 and 1 with a deadband

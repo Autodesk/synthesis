@@ -64,23 +64,17 @@ class SliderDriver extends Driver {
         const motorSettings = this._constraint.GetMotorSettings()
         const springSettings = motorSettings.mSpringSettings
         springSettings.mFrequency = 20 * (1.0 / SIMULATION_PERIOD)
-        springSettings.mDamping = 0.995
+        springSettings.mDamping = 0.999
 
-        motorSettings.mSpringSettings = springSettings;
-        motorSettings.mMinForceLimit = -250.0;
-        motorSettings.mMaxForceLimit = 250.0;
+        motorSettings.mSpringSettings = springSettings
+        motorSettings.mMinForceLimit = -900.0
+        motorSettings.mMaxForceLimit = 900.0
 
-        //this._constraint.SetMotorState(JOLT.EMotorState_Position);
-
-        this.targetPosition = this._constraint.GetCurrentPosition();
+        this._constraint.SetMotorState(JOLT.EMotorState_Velocity)
         this.controlMode = DriverControlMode.Velocity;
     }
 
-    public Update(_: number): void {
-        // this._targetPosition += ((InputSystem.getInput("sliderUp") ? 1 : 0) - (InputSystem.getInput("sliderDown") ? 1 : 0))*3;
-        // this._constraint.SetTargetVelocity(this._targetPosition);
-
-        if (this._controlMode == DriverControlMode.Velocity) {
+    public Update(_: number): void {if (this._controlMode == DriverControlMode.Velocity) {
             this._constraint.SetTargetVelocity(this._targetVelocity);
         } else if (this._controlMode == DriverControlMode.Position) {
             this._constraint.SetTargetPosition(this._targetPosition);

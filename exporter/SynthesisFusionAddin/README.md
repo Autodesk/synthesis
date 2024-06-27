@@ -78,9 +78,10 @@ Contact us for information on how to use the packaging script to obfuscate all o
 
 ### How to Format
 
-We format using a Python formatter called `black` [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+We format using a Python formatter called `black` [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) in conjunction with [`isort`](https://pycqa.github.io/isort/).
 
-- install by `pip3 install black` or `pip install black`
-- use `black ./src`, Formats all files in src directory
+- install by `pip3 install black && pip3 install isort` or `pip install black && pip install isort`
+- use `isort .` followed by `black .` to format all relevant exporter python files.
+  - or, alternatively, run `python ./tools/format.py` to do this for you!
 
 __Note: black will always ignore files in the proto/proto_out folder since google formats those__
