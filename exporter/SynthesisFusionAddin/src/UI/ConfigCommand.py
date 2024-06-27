@@ -19,7 +19,7 @@ from ..Parser.ParseOptions import (
     JointParentType,
 )
 from .Configuration.SerialCommand import SerialCommand
-from ..APS.APS import getAuth, getUserInfo
+from ..APS.APS import getAuth, getUserInfo, refreshAuthToken
 
 import adsk.core, adsk.fusion, traceback, logging, os
 from types import SimpleNamespace

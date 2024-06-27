@@ -2,14 +2,12 @@ from dataclasses import dataclass
 import pickle
 from src.general_imports import root_logger, gm, INTERNAL_ID, APP_NAME, DESCRIPTION, my_addin_path
 import time
-import webbrowser
+import pathlib
 import logging
 import urllib.parse
 import urllib.request
 import json
-from src.UI.OsHelper import getOSPath
 import os
-import adsk.core, traceback
 
 CLIENT_ID = 'GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU'
 auth_path = os.path.abspath(os.path.join(my_addin_path, "..", ".aps_auth"))
@@ -22,6 +20,7 @@ class APSAuth:
     access_token: str
     refresh_token: str
     expires_in: int
+    expires_at: int
     token_type: str
 
 @dataclass
@@ -46,12 +45,16 @@ def getAPSAuth() -> APSAuth | None:
 def _res_json(res):
     return json.loads(res.read().decode(res.info().get_param('charset') or 'utf-8'))
 
-def getCodeChallenge() -> str:
+def getCodeChallenge() -> str | None:
     endpoint = 'http://localhost:3003/api/aps/challenge/'
-    res = urllib.request.urlopen(endpoint)
-    data = _res_json(res)
-    logging.getLogger(f"{INTERNAL_ID}").info(f"CHALLENGE: {data}")
-    return data["challenge"]
+    try:
+        res = urllib.request.urlopen(endpoint)
+        data = _res_json(res)
+        logging.getLogger(f"{INTERNAL_ID}").info(f"CHALLENGE: {data}")
+        return data["challenge"]
+    except urllib.request.HTTPError as e:
+        logging.getLogger(f"{INTERNAL_ID}").error(f"Code Challenge Error:\n{e.code} - {e.reason}")
+        gm.ui.messageBox("There was an error reaching the Synthesis servers.")
 
 def getAuth() -> APSAuth:
     global APS_AUTH
@@ -65,10 +68,14 @@ def getAuth() -> APSAuth:
                 access_token=p["access_token"],
                 refresh_token=p["refresh_token"],
                 expires_in=p["expires_in"],
+                expires_at=int(p["expires_in"]*1000),
                 token_type=p["token_type"]
             )
     except:
         raise Exception("Need to sign in!")
+    curr_time = int(time.time() * 1000)
+    if curr_time >= APS_AUTH.expires_at:
+        refreshAuthToken()
     if APS_USER_INFO is None:
         loadUserInfo()
     return APS_AUTH
@@ -76,20 +83,61 @@ def getAuth() -> APSAuth:
 def convertAuthToken(code: str):
     global APS_AUTH
     authUrl = f'http://localhost:3003/api/aps/code/?code={code}&redirect_uri={urllib.parse.quote_plus("http://localhost:3003/api/aps/exporter/")}'
-    res = urllib.request.urlopen(authUrl)
-    data = _res_json(res)['response']
-    logging.getLogger(f"{INTERNAL_ID}").info(f"AUTH TOKEN: {data}")
-    APS_AUTH = APSAuth(
-        access_token=data["access_token"],
-        refresh_token=data["refresh_token"],
-        expires_in=data["expires_in"],
-        token_type=data["token_type"]
-    )
-    with open(auth_path, 'wb') as f:
-        pickle.dump(data, f)
-        f.close()
+    try:
+        res = urllib.request.urlopen(authUrl)
+        data = _res_json(res)['response']
+        logging.getLogger(f"{INTERNAL_ID}").info(f"AUTH TOKEN: {data}")
+        APS_AUTH = APSAuth(
+            access_token=data["access_token"],
+            refresh_token=data["refresh_token"],
+            expires_in=data["expires_in"],
+            expires_at=int(data["expires_in"]*1000),
+            token_type=data["token_type"]
+        )
+        with open(auth_path, 'wb') as f:
+            pickle.dump(data, f)
+            f.close()
 
-    loadUserInfo()
+        loadUserInfo()
+    except urllib.request.HTTPError as e:
+        removeAuth()
+        logging.getLogger(f"{INTERNAL_ID}").error(f"Auth Token Error:\n{e.code} - {e.reason}")
+        gm.ui.messageBox("There was an error signing in. Please retry.")
+
+def removeAuth():
+    global APS_AUTH, APS_USER_INFO
+    APS_AUTH = None
+    APS_USER_INFO = None
+    pathlib.Path.unlink(pathlib.Path(auth_path))
+
+def refreshAuthToken():
+    global APS_AUTH
+    if APS_AUTH is None or APS_AUTH.refresh_token is None:
+        raise Exception("No refresh token found.")
+    body = urllib.parse.urlencode({
+        'client_id': CLIENT_ID,
+        'grant_type': 'refresh_token',
+        'refresh_token': APS_AUTH.refresh_token,
+        'scope': 'data:read'
+    }).encode('utf-8')
+    req = urllib.request.Request('https://developer.api.autodesk.com/authentication/v2/token', data=body)
+    req.method = 'POST'
+    req.add_header(key='Content-Type', val='application/x-www-form-urlencoded')
+    try:
+        res = urllib.request.urlopen(req)
+        data = _res_json(res)
+        logging.getLogger(f"{INTERNAL_ID}").info(f"REFRESH TOKEN: {data}")
+        APS_AUTH = APSAuth(
+            access_token=data["access_token"],
+            refresh_token=data["refresh_token"],
+            expires_in=data["expires_in"],
+            expires_at=int(data["expires_in"]*1000),
+            token_type=data["token_type"]
+        )
+    except urllib.request.HTTPError as e:
+        removeAuth()
+        logging.getLogger(f"{INTERNAL_ID}").error(f"Refresh Error:\n{e.code} - {e.reason}")
+        gm.ui.messageBox("Please sign in again.")
 
 def loadUserInfo() -> APSUserInfo | None:
     global APS_AUTH
@@ -98,25 +146,30 @@ def loadUserInfo() -> APSUserInfo | None:
     global APS_USER_INFO
     req = urllib.request.Request("https://api.userprofile.autodesk.com/userinfo")
     req.add_header(key="Authorization", val=APS_AUTH.access_token)
-    res = urllib.request.urlopen(req)
-    data = _res_json(res)
-    logging.getLogger(f"{INTERNAL_ID}").info(f"USER INFO: {data}")
-    APS_USER_INFO = APSUserInfo(
-        name=data["name"],
-        given_name=data["given_name"],
-        family_name=data["family_name"],
-        preferred_username=data["preferred_username"],
-        email=data["email"],
-        email_verified=data["email_verified"],
-        profile=data["profile"],
-        locale=data["locale"],
-        country_code=data["country_code"],
-        about_me=data["about_me"],
-        language=data["language"],
-        company=data["company"],
-        picture=data["picture"]
-    )
-    return APS_USER_INFO
+    try:
+        res = urllib.request.urlopen(req)
+        data = _res_json(res)
+        logging.getLogger(f"{INTERNAL_ID}").info(f"USER INFO: {data}")
+        APS_USER_INFO = APSUserInfo(
+            name=data["name"],
+            given_name=data["given_name"],
+            family_name=data["family_name"],
+            preferred_username=data["preferred_username"],
+            email=data["email"],
+            email_verified=data["email_verified"],
+            profile=data["profile"],
+            locale=data["locale"],
+            country_code=data["country_code"],
+            about_me=data["about_me"],
+            language=data["language"],
+            company=data["company"],
+            picture=data["picture"]
+        )
+        return APS_USER_INFO
+    except urllib.request.HTTPError as e:
+        removeAuth()
+        logging.getLogger(f"{INTERNAL_ID}").error(f"User Info Error:\n{e.code} - {e.reason}")
+        gm.ui.messageBox("Please sign in again.")
 
 def getUserInfo() -> APSUserInfo | None:
     if APS_USER_INFO is not None:

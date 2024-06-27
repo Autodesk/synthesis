@@ -15,13 +15,13 @@ class ShowAPSAuthCommandExecuteHandler(adsk.core.CommandEventHandler):
         super().__init__()
     def notify(self, args):
         try:
-            logging.getLogger(f"{INTERNAL_ID}").info(auth_path)
-            logging.getLogger(f"{INTERNAL_ID}").info(os.path.abspath(auth_path))
-            logging.getLogger(f"{INTERNAL_ID}").info(my_addin_path)
             palette = gm.ui.palettes.itemById('authPalette')
             if not palette:
                 callbackUrl = 'http://localhost:3003/api/aps/exporter/'
                 challenge = getCodeChallenge()
+                if challenge is None:
+                    logging.getLogger(f"{INTERNAL_ID}").error("Code challenge is None when attempting to authorize for APS.")
+                    return
                 params = {
                     'response_type': 'code',
                     'client_id': CLIENT_ID,
