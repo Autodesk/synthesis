@@ -12,12 +12,14 @@ wheelIcons = {
     "omni": resources + os.path.join("WheelIcons", "omni-wheel-preview190x24.png"),
     "standard": resources
     + os.path.join("WheelIcons", "standard-wheel-preview190x24.png"),
-    "mecanum": resources + os.path.join("WheelIcons", "mecanum-wheel-preview190x24.png"),
+    "mecanum": resources
+    + os.path.join("WheelIcons", "mecanum-wheel-preview190x24.png"),
 }
 
 jointIcons = {
     "rigid": resources + os.path.join("JointIcons", "JointRigid", "rigid190x24.png"),
-    "revolute": resources + os.path.join("JointIcons", "JointRev", "revolute190x24.png"),
+    "revolute": resources
+    + os.path.join("JointIcons", "JointRev", "revolute190x24.png"),
     "slider": resources + os.path.join("JointIcons", "JointSlider", "slider190x24.png"),
     "cylindrical": resources
     + os.path.join("JointIcons", "JointCyl", "cylindrical190x24.png"),

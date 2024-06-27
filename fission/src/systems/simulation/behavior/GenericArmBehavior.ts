@@ -20,7 +20,7 @@ class GenericArmBehavior extends Behavior {
 
     // Sets the arms target rotational velocity
     rotateArm(rotationalVelocity: number) {
-       this._hingeDriver.targetVelocity = rotationalVelocity; 
+        this._hingeDriver.targetVelocity = rotationalVelocity
     }
 
     public Update(_: number): void {
@@ -28,4 +28,4 @@ class GenericArmBehavior extends Behavior {
     }
 }
 
-export default GenericArmBehavior;
+export default GenericArmBehavior

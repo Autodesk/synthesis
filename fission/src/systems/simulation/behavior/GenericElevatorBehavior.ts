@@ -28,4 +28,4 @@ class GenericElevatorBehavior extends Behavior {
     }
 }
 
-export default GenericElevatorBehavior;
+export default GenericElevatorBehavior

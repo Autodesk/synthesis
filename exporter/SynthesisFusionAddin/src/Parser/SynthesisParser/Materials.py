@@ -2,7 +2,7 @@
 import adsk, logging, traceback, math
 
 from .Utilities import *
-from .. import ParseOptions
+from .. import ExporterOptions
 
 from ...general_imports import INTERNAL_ID
 
@@ -15,7 +15,7 @@ OPACITY_RAMPING_CONSTANT = 14.0
 def _MapAllPhysicalMaterials(
     physicalMaterials: list,
     materials: material_pb2.Materials,
-    options: ParseOptions,
+    options: ExporterOptions,
     progressDialog: PDMessage,
 ) -> None:
     setDefaultMaterial(materials.physicalMaterials["default"])
@@ -46,7 +46,7 @@ def getPhysicalMaterialData(fusion_material, proto_material, options):
     """Gets the material data and adds it to protobuf
 
     Args:
-        fusion_material (fusionmaterial): Fusion 360 Material
+        fusion_material (fusionmaterial): Fusion Material
         proto_material (protomaterial): proto material mirabuf
         options (parseoptions): parse options
     """
@@ -66,7 +66,7 @@ def getPhysicalMaterialData(fusion_material, proto_material, options):
         proto_material.static_friction = 0.5
         proto_material.restitution = 0.5
 
-        proto_material.description = f"{fusion_material.name} exported from FUSION 360"
+        proto_material.description = f"{fusion_material.name} exported from FUSION"
 
         """
         Thermal Properties
@@ -137,7 +137,7 @@ def getPhysicalMaterialData(fusion_material, proto_material, options):
 def _MapAllAppearances(
     appearances: list,
     materials: material_pb2.Materials,
-    options: ParseOptions,
+    options: ExporterOptions,
     progressDialog: PDMessage,
 ) -> None:
     # in case there are no appearances on a body
@@ -179,13 +179,13 @@ def setDefaultAppearance(appearance: material_pb2.Appearance) -> None:
 
 def getMaterialAppearance(
     fusionAppearance: adsk.core.Appearance,
-    options: ParseOptions,
+    options: ExporterOptions,
     appearance: material_pb2.Appearance,
 ) -> None:
-    """Takes in a Fusion 360 Mesh and converts it to a usable unity mesh
+    """Takes in a Fusion Mesh and converts it to a usable unity mesh
 
     Args:
-        fusionAppearance (adsk.core.Appearance): Fusion 360 appearance material
+        fusionAppearance (adsk.core.Appearance): Fusion appearance material
     """
     construct_info("", appearance, fus_object=fusionAppearance)
 

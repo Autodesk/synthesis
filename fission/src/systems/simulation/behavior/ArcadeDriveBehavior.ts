@@ -1,15 +1,15 @@
-import WheelDriver from "../driver/WheelDriver";
-import WheelRotationStimulus from "../stimulus/WheelStimulus";
-import Behavior from "./Behavior";
-import InputSystem from "@/systems/input/InputSystem";
+import WheelDriver from "../driver/WheelDriver"
+import WheelRotationStimulus from "../stimulus/WheelStimulus"
+import Behavior from "./Behavior"
+import InputSystem from "@/systems/input/InputSystem"
 
 class ArcadeDriveBehavior extends Behavior {
     private leftWheels: WheelDriver[];
     private rightWheels: WheelDriver[];
     private _assemblyName: string;
 
-    private _driveSpeed = 30;
-    private _turnSpeed = 30;
+    private _driveSpeed = 30
+    private _turnSpeed = 30
 
     constructor(leftWheels: WheelDriver[], rightWheels: WheelDriver[], leftStimuli: WheelRotationStimulus[], rightStimuli: WheelRotationStimulus[], assemblyName: string) {
         super(leftWheels.concat(rightWheels), leftStimuli.concat(rightStimuli));
@@ -21,11 +21,11 @@ class ArcadeDriveBehavior extends Behavior {
 
     // Sets the drivetrains target linear and rotational velocity
     private DriveSpeeds(linearVelocity: number, rotationVelocity: number) {
-        const leftSpeed = linearVelocity + rotationVelocity;
-        const rightSpeed = linearVelocity - rotationVelocity;
-    
-        this.leftWheels.forEach((wheel) => wheel.targetWheelSpeed = leftSpeed);
-        this.rightWheels.forEach((wheel) => wheel.targetWheelSpeed = rightSpeed);
+        const leftSpeed = linearVelocity + rotationVelocity
+        const rightSpeed = linearVelocity - rotationVelocity
+
+        this.leftWheels.forEach(wheel => (wheel.targetWheelSpeed = leftSpeed))
+        this.rightWheels.forEach(wheel => (wheel.targetWheelSpeed = rightSpeed))
     }
 
     public Update(_: number): void {
@@ -36,4 +36,4 @@ class ArcadeDriveBehavior extends Behavior {
     }
 }
 
-export default ArcadeDriveBehavior;
+export default ArcadeDriveBehavior

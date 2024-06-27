@@ -114,7 +114,7 @@ class InputSystem extends WorldSystem {
     public static currentModifierState: ModifierState;
 
     // A list of keys currently being pressed
-    private static _keysPressed: { [key: string]: boolean } = {};
+    private static _keysPressed: { [key: string]: boolean } = {}
 
     private static _gpIndex: number | null;
     public static gamepad: Gamepad | null;
@@ -123,7 +123,7 @@ class InputSystem extends WorldSystem {
     public static selectedScheme: InputScheme | undefined;
 
     constructor() {
-        super();
+        super()
 
         this.handleKeyDown = this.handleKeyDown.bind(this);
         document.addEventListener('keydown', this.handleKeyDown);

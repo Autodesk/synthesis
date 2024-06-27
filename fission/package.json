@@ -16,10 +16,13 @@
     "build:prod": "tsc && vite build --base=/fission/",
     "assetpack": "run-script-os",
     "assetpack:nix": "curl -o public/assetpack.zip https://synthesis.autodesk.com/Downloadables/assetpack.zip && unzip -o public/assetpack.zip -d public/",
-    "assetpack:win32": "echo todo"
+    "assetpack:win32": "curl -o public/assetpack.zip https://synthesis.autodesk.com/Downloadables/assetpack.zip && tar -xf public/assetpack.zip -C public/"
   },
   "dependencies": {
     "@barclah/jolt-physics": "^0.19.3",
+    "@mui/base": "^5.0.0-beta.40",
+    "@mui/icons-material": "^5.15.20",
+    "@mui/system": "^5.15.20",
     "@react-three/drei": "^9.96.5",
     "@react-three/fiber": "^8.15.15",
     "@vitest/coverage-v8": "^1.6.0",

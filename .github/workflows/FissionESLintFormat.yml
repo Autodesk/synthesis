@@ -1,4 +1,4 @@
-name: Fission - ES Lint Format
+name: Fission - ES Lint Format Validation
 
 on:
   workflow_dispatch: {}

@@ -18,8 +18,8 @@ import InputSystem, { AxisInput } from "@/systems/input/InputSystem";
 import DefaultInputs from "@/systems/input/DefaultInputs";
 
 class SynthesisBrain extends Brain {
-    private _behaviors: Behavior[] = [];
-    private _simLayer: SimulationLayer;
+    private _behaviors: Behavior[] = []
+    private _simLayer: SimulationLayer
 
     // Tracks how many joins have been made for unique controls
     private _currentJointIndex = 1;
@@ -35,9 +35,9 @@ class SynthesisBrain extends Brain {
         this._simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)!;
         this._assemblyName = "[" + SynthesisBrain._currentRobotIndex.toString() + "] " + assemblyName;
 
-        if (!this._simLayer) { 
-            console.log("SimulationLayer is undefined");
-            return;
+        if (!this._simLayer) {
+            console.log("SimulationLayer is undefined")
+            return
         }
 
         // Only adds controls to mechanisms that are controllable (ignores fields)
@@ -51,14 +51,14 @@ class SynthesisBrain extends Brain {
         }
     }
 
-    public Enable(): void { }
+    public Enable(): void {}
 
-    public Update(deltaT: number): void { 
-        this._behaviors.forEach((b) => b.Update(deltaT)); 
+    public Update(deltaT: number): void {
+        this._behaviors.forEach(b => b.Update(deltaT))
     }
 
     public Disable(): void {
-        this._behaviors = [];
+        this._behaviors = []
     }
 
     public clearControls(): void {
@@ -71,30 +71,33 @@ class SynthesisBrain extends Brain {
         const wheelStimuli: WheelRotationStimulus[] =  this._simLayer.stimuli.filter((stimulus) => stimulus instanceof WheelRotationStimulus) as WheelRotationStimulus[];
 
         // Two body constraints are part of wheels and are used to determine which way a wheel is facing
-        const fixedConstraints: Jolt.TwoBodyConstraint[] = this._mechanism.constraints.filter((mechConstraint) => mechConstraint.constraint instanceof JOLT.TwoBodyConstraint).map((mechConstraint) => mechConstraint.constraint as Jolt.TwoBodyConstraint);
+        const fixedConstraints: Jolt.TwoBodyConstraint[] = this._mechanism.constraints
+            .filter(mechConstraint => mechConstraint.constraint instanceof JOLT.TwoBodyConstraint)
+            .map(mechConstraint => mechConstraint.constraint as Jolt.TwoBodyConstraint)
 
-        const leftWheels: WheelDriver[] = [];
-        const leftStimuli: WheelRotationStimulus[] = [];
+        const leftWheels: WheelDriver[] = []
+        const leftStimuli: WheelRotationStimulus[] = []
 
-        const rightWheels: WheelDriver[] = [];
-        const rightStimuli: WheelRotationStimulus[] = [];
+        const rightWheels: WheelDriver[] = []
+        const rightStimuli: WheelRotationStimulus[] = []
 
         // Determines which wheels and stimuli belong to which side of the robot
         for (let i = 0; i < wheelDrivers.length; i++) {
-            const wheelPos = fixedConstraints[i].GetConstraintToBody1Matrix().GetTranslation();
+            const wheelPos = fixedConstraints[i].GetConstraintToBody1Matrix().GetTranslation()
 
-            const robotCOM = World.PhysicsSystem.GetBody(this._mechanism.constraints[0].childBody).GetCenterOfMassPosition() as Jolt.Vec3;
-            const rightVector = new JOLT.Vec3(1, 0, 0);
+            const robotCOM = World.PhysicsSystem.GetBody(
+                this._mechanism.constraints[0].childBody
+            ).GetCenterOfMassPosition() as Jolt.Vec3
+            const rightVector = new JOLT.Vec3(1, 0, 0)
 
             const dotProduct = rightVector.Dot(wheelPos.Sub(robotCOM))
 
             if (dotProduct < 0) {
-                rightWheels.push(wheelDrivers[i]);
-                rightStimuli.push(wheelStimuli[i]);
-            }
-            else {
-                leftWheels.push(wheelDrivers[i]);
-                leftStimuli.push(wheelStimuli[i]);
+                rightWheels.push(wheelDrivers[i])
+                rightStimuli.push(wheelStimuli[i])
+            } else {
+                leftWheels.push(wheelDrivers[i])
+                leftStimuli.push(wheelStimuli[i])
             }
         }
 
@@ -154,4 +157,4 @@ class SynthesisBrain extends Brain {
     }
 }
 
-export default SynthesisBrain;
+export default SynthesisBrain

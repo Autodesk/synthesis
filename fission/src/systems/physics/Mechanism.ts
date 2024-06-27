@@ -1,9 +1,9 @@
-import Jolt from "@barclah/jolt-physics";
-import { LayerReserve } from "./PhysicsSystem";
+import Jolt from "@barclah/jolt-physics"
+import { LayerReserve } from "./PhysicsSystem"
 
 export interface MechanismConstraint {
-    parentBody: Jolt.BodyID,
-    childBody: Jolt.BodyID,
+    parentBody: Jolt.BodyID
+    childBody: Jolt.BodyID
     constraint: Jolt.Constraint
 }
 
@@ -25,7 +25,7 @@ class Mechanism {
     }
 
     public AddConstraint(mechConstraint: MechanismConstraint) {
-        this.constraints.push(mechConstraint);
+        this.constraints.push(mechConstraint)
     }
 
     public AddStepListener(listener: Jolt.PhysicsStepListener) {
@@ -33,8 +33,8 @@ class Mechanism {
     }
 
     public GetBodyByNodeId(nodeId: string) {
-        return this.nodeToBody.get(nodeId);
+        return this.nodeToBody.get(nodeId)
     }
 }
 
-export default Mechanism;
+export default Mechanism
