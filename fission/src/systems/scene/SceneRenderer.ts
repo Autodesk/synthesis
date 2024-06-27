@@ -1,6 +1,8 @@
 import * as THREE from "three"
+import { TransformControls } from "three/examples/jsm/controls/TransformControls.js"
 import SceneObject from "./SceneObject"
 import WorldSystem from "../WorldSystem"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x73937e
@@ -13,6 +15,10 @@ class SceneRenderer extends WorldSystem {
     private _renderer: THREE.WebGLRenderer
 
     private _sceneObjects: Map<number, SceneObject>
+
+    private orbitControls: OrbitControls
+    private transformControls: Map<TransformControls, number>
+    private isShiftPressed: boolean = false
 
     public get sceneObjects() {
         return this._sceneObjects
@@ -73,6 +79,28 @@ class SceneRenderer extends WorldSystem {
         ground.receiveShadow = true
         ground.castShadow = true
         this._scene.add(ground)
+
+        this.orbitControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
+        this.orbitControls.update()
+
+        this.transformControls = new Map()
+        document.addEventListener("keydown", event => {
+            if (event.key === "Shift") {
+                this.isShiftPressed = true
+            }
+        })
+        document.addEventListener("keyup", event => {
+            if (event.key === "Shift") {
+                this.isShiftPressed = false
+            }
+        })
+
+        const box = new THREE.Mesh(new THREE.BoxGeometry(1.0, 1.0, 1.0), this.CreateToonMaterial())
+        box.position.set(0.0, 1, 0.0)
+        this._scene.add(box)
+        //this.AddTransformGizmo(box, "translate", 3.0)
+        //this.AddTransformGizmo(box, "scale", 5.0)
+        this.AddTransformGizmo(box, "rotate", 7.0)
     }
 
     public UpdateCanvasSize() {
@@ -88,6 +116,16 @@ class SceneRenderer extends WorldSystem {
         })
 
         // controls.update(deltaTime); // TODO: Add controls?
+
+        const mainCameraFovRadians = (Math.PI * (this._mainCamera.fov * 0.5)) / 180
+        this.transformControls.forEach((size, tc) => {
+            tc.setSize(
+                (size / this._mainCamera.position.distanceTo(tc.object!.position)) *
+                    Math.tan(mainCameraFovRadians) *
+                    1.9
+            )
+        })
+
         this._renderer.render(this._scene, this._mainCamera)
     }
 
@@ -136,6 +174,41 @@ class SceneRenderer extends WorldSystem {
             color: color,
             gradientMap: gradientMap,
         })
+    }
+
+    public AddTransformGizmo(
+        obj: THREE.Object3D,
+        mode: "translate" | "rotate" | "scale" = "translate",
+        size: number = 5.0
+    ) {
+        const transformControl = new TransformControls(this._mainCamera, this._renderer.domElement)
+        transformControl.addEventListener("dragging-changed", (event: { value: unknown }) => {
+            this.orbitControls.enabled = !event.value
+        })
+        transformControl.setMode(mode)
+        transformControl.attach(obj)
+        if (mode === "translate") {
+            transformControl.addEventListener(
+                "dragging-changed",
+                (event: { target: TransformControls; value: unknown }) => {
+                    if (!event.target) return
+                    this.transformControls.forEach((_size, tc) => {
+                        if (tc !== event.target && tc.object === event.target.object && tc.mode !== "translate") {
+                            tc.dragging = !event.value
+                            tc.enabled = !event.value
+                        }
+                    })
+                }
+            )
+        } else if (mode === "scale") {
+            transformControl.addEventListener("dragging-changed", () => {
+                if (this.isShiftPressed) {
+                    transformControl.axis = "XYZE"
+                }
+            })
+        }
+        this.transformControls.set(transformControl, size)
+        this._scene.add(transformControl)
     }
 }
 
