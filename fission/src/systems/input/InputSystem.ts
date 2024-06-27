@@ -136,15 +136,28 @@ class InputSystem extends WorldSystem {
 
         this.gamepadDisconnected = this.gamepadDisconnected.bind(this);
         window.addEventListener('gamepaddisconnected', this.gamepadDisconnected);
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden)
+               this.clearKeyData()
+         })
     }
 
     public Update(_: number): void {InputSystem
-        InputSystem.currentModifierState = { ctrl: InputSystem.isKeyPressed("ControlLeft") || InputSystem.isKeyPressed("ControlRight"), alt: InputSystem.isKeyPressed("AltLeft") || InputSystem.isKeyPressed("AltRight"), shift: InputSystem.isKeyPressed("ShiftLeft") || InputSystem.isKeyPressed("ShiftRight"), meta: InputSystem.isKeyPressed("MetaLeft") || InputSystem.isKeyPressed("MetaRight") }
-        
         // Fetch current gamepad information
         if (InputSystem._gpIndex == null)
             InputSystem.gamepad = null;
         else InputSystem.gamepad = navigator.getGamepads()[InputSystem._gpIndex]
+
+        if (!document.hasFocus())
+           this.clearKeyData()
+
+        InputSystem.currentModifierState = { 
+            ctrl: InputSystem.isKeyPressed("ControlLeft") || InputSystem.isKeyPressed("ControlRight"), 
+            alt: InputSystem.isKeyPressed("AltLeft") || InputSystem.isKeyPressed("AltRight"), 
+            shift: InputSystem.isKeyPressed("ShiftLeft") || InputSystem.isKeyPressed("ShiftRight"), 
+            meta: InputSystem.isKeyPressed("MetaLeft") || InputSystem.isKeyPressed("MetaRight")
+        }
     }
 
     public Destroy(): void {    
@@ -162,6 +175,11 @@ class InputSystem extends WorldSystem {
     // Called when any key is released
     private handleKeyUp(event: KeyboardEvent) {
         InputSystem._keysPressed[event.code] = false;
+    }
+
+    private clearKeyData() {
+        for (const keyCode in InputSystem._keysPressed) 
+            delete InputSystem._keysPressed[keyCode]
     }
 
     // Called once when a gamepad is first connected
