@@ -1,9 +1,9 @@
-import './Scene.css';
-import { useEffect, useRef } from "react";
-import Stats from 'stats.js';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import SceneObject from "@/systems/scene/SceneObject";
-import World from '@/systems/World';
+import "./Scene.css"
+import { useEffect, useRef } from "react"
+import Stats from "stats.js"
+import { OrbitControls } from "three/addons/controls/OrbitControls.js"
+import SceneObject from "@/systems/scene/SceneObject"
+import World from "@/systems/World"
 
 let stats: Stats | null
 
@@ -64,4 +64,4 @@ function Scene({ useStats }: SceneProps) {
     )
 }
 
-export default Scene;
+export default Scene

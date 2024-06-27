@@ -115,7 +115,7 @@ class HButton:
             **location** *str* -- location for button to be attached.\n
             **exec_func** *FunctionType* -- Function pointer to button execution logic.\n
             **description** *str* -- Helper text for onhover (default: *'No Description'*).\n
-            **command** *bool* -- Is this a internal Fusion 360 command created event or a pass through
+            **command** *bool* -- Is this a internal Fusion command created event or a pass through
 
         Raises:
             **ValueError**: if *location* does not exist in the current context
@@ -138,7 +138,9 @@ class HButton:
         cmdDef = gm.ui.commandDefinitions.itemById(self.uid)
         if cmdDef:
             # gm.ui.messageBox("Looks like you have experienced a crash we will do cleanup.")
-            self.logger.debug("Looks like there was a crash, doing cleanup in button id")
+            self.logger.debug(
+                "Looks like there was a crash, doing cleanup in button id"
+            )
             self.scrub()
 
         # needs to updated with new OString data
@@ -146,7 +148,9 @@ class HButton:
             self.uid,
             f"{name}",
             f"{description}",
-            OsHelper.getOSPath(".", "src", "Resources", f'{self.name.replace(" ", "")}'),
+            OsHelper.getOSPath(
+                ".", "src", "Resources", f'{self.name.replace(" ", "")}'
+            ),
         )
         """ Button Command Definition stored as a member """
 
@@ -204,7 +208,9 @@ class HButton:
             self.logger.debug(f"Removing Button {self.uid}")
             cmdDef.deleteMe()
 
-        ctrl = gm.ui.allToolbarPanels.itemById(self.location).controls.itemById(self.uid)
+        ctrl = gm.ui.allToolbarPanels.itemById(self.location).controls.itemById(
+            self.uid
+        )
         if ctrl:
             self.logger.debug(f"Removing Button Control {self.location}:{self.uid}")
             ctrl.deleteMe()
