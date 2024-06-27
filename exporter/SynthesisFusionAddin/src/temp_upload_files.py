@@ -22,10 +22,20 @@ class Project:
     name: str
     folder: Folder
 
-"""
-Creates a folder on an APS project
-"""
-def create_folder(auth: str, project: Project, folder: Folder) -> str | None:
+
+def create_folder(auth: str, project: Project, folder: Folder) -> Result[str, None]:
+    """
+    creates a folder on an APS project
+
+    params:
+    auth - auth token
+    project - project blueprint; might be changed to just the project id
+    folder - the blueprint for the new folder
+    
+    returns:
+    success - the href of the new folder ; might be changed to the id in the future
+    failure - none if the API request fails ; the failure text will be printed
+    """
     headers = {
         "Authorization": f"Bearer {auth}",
         "Content-Type": "application/vnd.api+json"
@@ -57,22 +67,44 @@ def create_folder(auth: str, project: Project, folder: Folder) -> str | None:
 
     res = requests.post(f"https://developer.api.autodesk.com/data/v1/projects/{project.id}/folders", headers=headers, data=data)
     if not res.ok:
-        print("Failed to create folder")
-        return None
+        print(f"Failed to create folder: {res.text}")
+        return Err(None)
     json: dict[str, Any] = res.json()
     href: str = json["links"]["self"]["href"]
-    return href
+    return Ok(href)
     
 
 def file_path_to_file_name(file_path: str) -> str:
     return file_path.split("/").pop()
 
-"""
-Uploads mirabuf file to APS project
-
-TODO: Change so a folder is not needed, and the entire project is checked for files
-"""
 def upload_mirabuf(project: Project, folder: Folder, file_path: str) -> Result[str | None, None]:
+    """
+    uploads mirabuf file to a specific folder in an APS project
+    the folder and project must be created and valid
+    if the file has already been created, it will use the APS versioning API to upload it as a new file version
+
+    parameters:
+    project - the project reference object, used for it's id ; may be changed to project_id in the future
+    folder - the folder reference object, used for it's id ; may be changed to folder_id in the future
+    file_path - the path to the file on your machine, to be uploaded to APS
+
+    returns:
+    success - if the file already exists, the new version id, otherwise, None
+    failure - none ; the cause of the failure will be printed
+
+    potential causes of failure:
+    - invalid auth
+    - incorrectly formatted requests
+    - API update
+    - API down
+    
+    notes:
+    - this function is janky as hell, it should bubble errors up but I'm super lazy
+    - check appropriate called function ~~if~~ when this function fails
+
+    todo: Change so a folder is not needed, and the entire project is checked for files
+    """
+
     _auth = "" # Get token from APS API later
     file_id_result = get_file_id(_auth, project, folder, file_path_to_file_name(file_path))
     if file_id_result.is_err():
@@ -114,11 +146,19 @@ def upload_mirabuf(project: Project, folder: Folder, file_path: str) -> Result[s
     return Ok(None)
 
 
-"""
-Returns the hub id on success and API error on failure
-If the hub does not exist, it returns None
-"""
-def find_user_hub(auth: str, hub_name: str) -> Result[str | None, str]:
+def get_hub_id(auth: str, hub_name: str) -> Result[str | None, str]:
+    """
+    gets a user's hub based on a hub name
+
+    params:
+    auth - authorization token
+    hub_name - the name of the desired hub
+
+    returns:
+    success - the hub's id or none if the hub doesn't exist
+    failure - the API text if there's an error
+    """
+
     headers = {
         "Authorization": f"Bearer {auth}"
     }
@@ -133,11 +173,23 @@ def find_user_hub(auth: str, hub_name: str) -> Result[str | None, str]:
             return Ok(id)
     return Ok(None)
 
-"""
-Returns the project id on a sucess and the API error on a failure given a hub id and a project name
-If the project doesn't exist, it returns None
-"""
 def get_project_id(auth: str, hub_id: str, project_name: str) -> Result[str | None, str]:
+    """
+    gets a project in a hub with a project name
+
+    params:
+    auth - authorization token
+    hub_id - the id of the hub
+    project_name - the name of the desired project
+
+    returns:
+    success - the project's id or none if the project doesn't exist
+    failure - the API text if there's an error
+
+    notes:
+    - a hub_id can be derived from it's name with the get_hub_id function
+    """
+
     headers = {
         "Authorization": f"Bearer {auth}"
     }
@@ -157,6 +209,27 @@ def get_project_id(auth: str, hub_id: str, project_name: str) -> Result[str | No
 Updates a an existing file and returns the id of the new version
 """
 def update_file_version(auth: str, project: Project, folder: Folder, file_id: str, file_name: str, curr_file_version: str) -> Result[str, None]:
+    """
+    updates an existing file in an APS folder
+
+    params:
+    auth - authorization token
+    project - the project reference object that the file is contain within
+    folder - the folder reference object that the file is contained within
+    file_id - the id of the file in APS
+    file_name - the name of the file in APS ; ex. test.mira
+
+    returns:
+    success - the new version_id
+    failure - none
+
+    potential causes of failure:
+    - invalid auth
+    - file doesn't exist in that position / with that id / name ; fix: get_file_id() or smth
+    - version one of the file hasn't been created ; fix: create_first_file_version()
+    """
+
+
     object_id_res = create_storage_location(auth, project)
     if object_id_res.is_err():
         return Err(None)
@@ -227,11 +300,27 @@ def update_file_version(auth: str, project: Project, folder: Folder, file_id: st
     new_id: str = update_res.json()["data"]["id"]
     return Ok(new_id)
 
-"""
-Gets the file id given a file name and a folder, returns none if the file doesn't exist
-Can be used to check if a file exists
-"""
 def get_file_id(auth: str, project: Project, folder: Folder, file_name: str) -> Result[str | None, str]:
+    """
+    gets the file id given a file name
+    
+    params:
+    auth - authorization token
+    project - the project reference object that the file is contain within
+    folder - the folder reference object that the file is contained within
+    file_name - the name of the file in APS ; ex. test.mira
+
+    returns:
+    success - the id of the file, or none if the file doesn't exist
+    failure - none
+
+    potential causes of failure:
+    - incorrect auth
+
+    notes:
+    - checking if a file exists is an intended use-case
+    """
+
     file_list_res = requests.get(f"https://developer.api.autodesk.com/data/v1/projects/{project.id}/folders/{folder.id}/contents")
     if not file_list_res.ok:
         print("Failed to get file list")
@@ -245,13 +334,28 @@ def get_file_id(auth: str, project: Project, folder: Folder, file_name: str) -> 
             return Ok(id)
     return Ok(None)
 
-"""
-Creates a storage location (bucket)
+def create_storage_location(auth: str, project: Project, folder: Folder, file_name: str) -> Result[str, str]:
+    """
+    creates a storage location (a bucket)
+    the bucket can be used to upload a file to
+    every file must have a reserved storage location
+    I believe at the moment, object, bucket, and storage location are all used semi-interchangeably by APS documentation
 
-Returns the object_id, which can be split into a bucket_key and upload_key
-On failure, returns the API error
-"""
-def create_storage_location(auth: str, project: Project) -> Result[str, str]:
+    params:
+    auth - authorization token
+    project - a project reference object used for project id ; may be changed to project_id later
+    folder - a folder reference object used for project id ; may be changed to folder_id later
+    file_name - the name of the file to be later stored in the bucket
+
+    returns:
+    success - the object_id of the bucket, which can be split into a bucket_key and upload_key
+    failure - the API failure text
+
+    notes:
+    - fails if the project doesn't exist or auth is invalid
+    - the folder must be inside the project, the storage location will be inside the folder
+    """
+
     data = {
         "jsonapi": {
             "version": "1.0"
@@ -259,7 +363,7 @@ def create_storage_location(auth: str, project: Project) -> Result[str, str]:
         "data": {
             "type": "objects",
             "attributes": {
-              "name": "myfile.jpg"
+              "name": file_name
             },
             "relationships": {
               "target": {
@@ -281,13 +385,24 @@ def create_storage_location(auth: str, project: Project) -> Result[str, str]:
     object_id: str = storage_location_json["data"]["id"]
     return Ok(object_id)
 
-"""
-Generates a signed_url given a bucket_key and object_key
-Both params are returned by create_storage_location
-
-Returns the upload_key and the signed_url
-"""
 def generate_signed_url(auth: str, bucket_key: str, object_key: str) -> Result[tuple[str, str], str]:
+    """
+    generates a signed_url for a bucket, given a bucket_key and object_key
+
+    params:
+    auth - authorization token
+    bucket_key - the key of the bucket that the file will be stored in
+    object_key - the key of the object that the file will be stored in
+    
+    returns:
+    success - the upload_key and the signed_url
+    failure - the API error
+
+    notes:
+    - fails if auth, the bucket, or object keys are invalid
+    - both params are returned by the create_storage_location function
+    """
+
     headers = {
         "Authorization:": f"Bearer {auth}",
     }
@@ -298,10 +413,22 @@ def generate_signed_url(auth: str, bucket_key: str, object_key: str) -> Result[t
     signed_url_json: dict[str, str] = signed_url_res.json()
     return Ok((signed_url_json["uploadKey"], signed_url_json["urls"][0]))
 
-"""
-Uploads a file to APS given a signed_url produced by generate_signed_url and a file_path on your machine
-"""
 def upload_file(signed_url: str, file_path: str) -> Result[None, str]:
+    """
+    uploads a file to APS given a signed_url a path to the file on your machine
+
+    params:
+    signed_url - the url to used to upload the file to a specific bucket ; returned by the generate_signed_url function
+    file_path - the path of the file to be uploaded
+
+    returns:
+    success - none
+    failure - the API error
+
+    notes:
+    - fails if the auth or the signed URL are invalid
+    """
+
     with open(file_path, 'rb') as f:
         data = f.read()
     upload_response = requests.put(url=signed_url, data=data)
@@ -310,10 +437,20 @@ def upload_file(signed_url: str, file_path: str) -> Result[None, str]:
         return Err(f"Failed to upload to signed url: {upload_response.text}")
     return Ok(None)
 
-"""
-Completes and verifies the signed file upload with the upload_key, produced by generate_signed_url, and a bucket_key
-"""
 def complete_upload(auth: str, upload_key: str, bucket_key: str) -> Result[None, str]:
+    """
+    completes and verifies the APS file upload given the upload_key
+
+    params:
+    auth - authorization token
+    upload_key - the key to verify the upload, returned by generate_signed_url function
+    bucket_key - the key of the bucket that the file was uploaded to, returned by the create_storage_location function
+    
+    returns:
+    success - none
+    failure - the API error
+    """
+
     headers = {
         "Authorization:": f"Bearer {auth}",
         "Content-Type": "application/vnd.api+json",
@@ -329,12 +466,30 @@ def complete_upload(auth: str, upload_key: str, bucket_key: str) -> Result[None,
         return Err(f"Failed to complete upload: {completed_res.text}")
     return Ok(None)
 
-"""
-Initializes versioning for a file
+def create_first_file_version(auth: str, project_id: str, object_id: str, folder_id: str, file_name: str) -> Result[tuple[str, str], None]:
+    """
+    initializes versioning for a file
 
-Returns the lineage id of this file and it's href
-"""
-def create_first_file_version(auth: str, object_id: str, project_id: str, folder_id: str, file_name: str) -> Result[tuple[str, str], None]:
+    params:
+    auth - authorization token
+    project_id - the id of the project the file was uploaded to
+    object_id - the id of the object the file was uploaded to
+    folder_id - the id of the folder the file was uploaded to
+    file_name - the name of the file
+
+    returns:
+    success - the lineage id of the versioning history of the file and the href to the new version
+    failure - none
+
+    potential causes of failure
+    - incorrect auth
+    - the named file's upload was never completed
+    - invalid project, object, or folder id
+
+    notes:
+    - super complex request, probably not written correctly, likely a dev error
+    """
+
     headers = {
         "Authorization:": f"Bearer {auth}",
         "Content-Type": "application/vnd.api+json",

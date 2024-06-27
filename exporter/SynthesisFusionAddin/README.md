@@ -87,3 +87,43 @@ We format using a Python formatter called `black` [![Code style: black](https://
 - use `black ./src`, Formats all files in src directory
 
 **Note: black will always ignore files in the proto/proto_out folder since google formats those**
+
+### Docstring standard
+
+This standard is inconsistently applied, and that's ok
+
+```python
+def foo(bar: fizz="flower") -> Result[walrus, None]:
+    """
+    turns a fizz into a walrus
+
+    parameters:
+    bar - the fizz to be transformed (default = "flower") ; fizz standards are subject to change, old fizzes may no longer be valid
+
+    returns:
+    success - the new walrus
+    failure - none if the summoning fails ; the cause of failure will be printed, not returned
+
+    notes:
+    - only works as expected if the bar arg isn't a palindrome or an anagram of coffee. otherwise unexpected (but still valid) walruses may be returned
+    - please do not name your fizz "rizz" either, it hurts the walrus's feelings
+
+    todo: consult witch about inconsistent alchemical methods
+    """
+    # More alchemical fizz -> walrus code
+    some_walrus = bar + "_coffee"
+    return some_walrus
+
+```
+
+Note that not this much detail is necessary when writing function documentation, notes, defaults, and a differentiation between sucess and failure aren't always necessary.
+
+#### Where to list potential causes of failure?
+
+It depends on how many you can list
+
+- 1: In the failure return case
+- 2-3: In the notes section
+- 4+: In a dedicated "potential causes of failure section" between the "returns" and "notes" sections
+
+Additionally, printing the error instead of returning it is bad practice
