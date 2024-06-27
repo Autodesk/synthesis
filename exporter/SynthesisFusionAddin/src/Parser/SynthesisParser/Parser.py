@@ -27,7 +27,7 @@ class Parser:
     def export(self) -> bool:
         try:
             app = adsk.core.Application.get()
-            design = app.activeDocument.design
+            design: adsk.fusion.Design = app.activeDocument.design
 
             assembly_out = assembly_pb2.Assembly()
             fill_info(

@@ -9,7 +9,7 @@ class GenericElevatorBehavior extends Behavior {
     private _positiveInput: string
     private _negativeInput: string
 
-    private _linearSpeed = 1
+    private _linearSpeed = 2.5;
 
     constructor(sliderDriver: SliderDriver, sliderStimulus: SliderStimulus, jointIndex: number) {
         super([sliderDriver], [sliderStimulus])
@@ -34,12 +34,12 @@ class GenericElevatorBehavior extends Behavior {
     }
 
     // Changes the elevators target position
-    moveElevator(positionDelta: number) {
-        this._sliderDriver.targetPosition += positionDelta
+    moveElevator(linearVelocity: number) {
+        this._sliderDriver.targetVelocity = linearVelocity; 
     }
 
-    public Update(deltaT: number): void {
-        this.moveElevator(InputSystem.GetAxis(this._positiveInput, this._negativeInput) * this._linearSpeed * deltaT)
+    public Update(_: number): void {
+        this.moveElevator(InputSystem.GetAxis(this._positiveInput, this._negativeInput)*this._linearSpeed); 
     }
 }
 

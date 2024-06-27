@@ -48,7 +48,7 @@ try:
     A_EP = None
 
     # Setup the global state
-    gm = GlobalManager()
+    gm: GlobalManager = GlobalManager()
     my_addin_path = os.path.dirname(os.path.realpath(__file__))
 except:
     # should also log this
