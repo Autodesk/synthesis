@@ -5,13 +5,15 @@ import adsk.core
 import adsk.fusion
 
 from . import IconPaths
-from .CreateCommandInputsHelper import createTableInput, createTextBoxInput
+from .CreateCommandInputsHelper import createTableInput, createTextBoxInput, createBooleanInput
 
-from ..Parser.ExporterOptions import JointParentType, Joint, SignalType
+from ..Parser.ExporterOptions import JointParentType, Joint, Wheel, SignalType, WheelType
 
 # Wish we did not need this. Could look into storing everything within the design every time - Brandon
 selectedJointList: list[adsk.fusion.Joint] = []
+jointWheelIndexMap: dict[str, int] = {}
 jointConfigTable: adsk.core.TableCommandInput
+wheelConfigTable: adsk.core.TableCommandInput
 
 
 def createJointConfigTab(args: adsk.core.CommandCreatedEventArgs) -> None:
@@ -27,14 +29,13 @@ def createJointConfigTab(args: adsk.core.CommandCreatedEventArgs) -> None:
             "jointTable",
             "Joint Table",
             jointConfigTabInputs,
-            6,
-            "1:2:2:2:2:2",
-            50,
+            7,
+            "1:2:2:2:2:2:2",
         )
 
         jointConfigTable.addCommandInput(
             createTextBoxInput(
-                "motionHeader",
+                "jointMotionHeader",
                 "Motion",
                 jointConfigTabInputs,
                 "Motion",
@@ -100,6 +101,73 @@ def createJointConfigTab(args: adsk.core.CommandCreatedEventArgs) -> None:
             5,
         )
 
+        jointConfigTable.addCommandInput(
+            createTextBoxInput(
+                "wheelHeader",
+                "Is Wheel",
+                jointConfigTabInputs,
+                "Is Wheel",
+                background="#d9d9d9",
+            ),
+            0,
+            6,
+        )
+
+        jointConfigTabInputs.addTextBoxCommandInput("jointTabBlankSpacer", "", "", 1, True)
+
+        global wheelConfigTable
+        wheelConfigTable = createTableInput(
+            "wheelTable",
+            "Wheel Table",
+            jointConfigTabInputs,
+            4,
+            "1:2:2:2",
+        )
+
+        wheelConfigTable.addCommandInput(
+            createTextBoxInput(
+                "wheelMotionHeader",
+                "Motion",
+                jointConfigTabInputs,
+                "Motion",
+                bold=False,
+            ),
+            0,
+            0,
+        )
+
+        wheelConfigTable.addCommandInput(
+            createTextBoxInput(
+                "name_header", "Name", jointConfigTabInputs, "Joint name", bold=False
+            ),
+            0,
+            1,
+        )
+
+        wheelConfigTable.addCommandInput(
+            createTextBoxInput(
+                "wheelTypeHeader",
+                "WheelType",
+                jointConfigTabInputs,
+                "Wheel type",
+                background="#d9d9d9",
+            ),
+            0,
+            2,
+        )
+
+        wheelConfigTable.addCommandInput(
+            createTextBoxInput(
+                "signalTypeHeader",
+                "SignalType",
+                jointConfigTabInputs,
+                "Signal type",
+                background="#d9d9d9",
+            ),
+            0,
+            3,
+        )
+
         jointSelect = jointConfigTabInputs.addSelectionInput(
             "jointSelection", "Selection", "Select a joint in your assembly to add."
         )
@@ -125,7 +193,7 @@ def createJointConfigTab(args: adsk.core.CommandCreatedEventArgs) -> None:
         )
 
 
-def addJointToConfigTab(fusionJoint: adsk.fusion.Joint, synJoint: Joint = None) -> bool:
+def addJointToConfigTab(fusionJoint: adsk.fusion.Joint, synJoint: Joint | None = None) -> bool:
     try:
         if fusionJoint in selectedJointList:
             return False
@@ -251,12 +319,73 @@ def addJointToConfigTab(fusionJoint: adsk.fusion.Joint, synJoint: Joint = None) 
         jointForce = commandInputs.addValueInput("jointForce", "Force", "N", adsk.core.ValueInput.createByReal(jointForceValue))
         jointForce.tooltip = "Newtons"
         jointConfigTable.addCommandInput(jointForce, row, 5)
+
+        if fusionJoint.jointMotion.jointType == adsk.fusion.JointTypes.RevoluteJointType:
+            wheelCheckboxEnabled = True
+            wheelCheckboxTooltip = "Determines if this joint should be counted as a wheel."
+        else:
+            wheelCheckboxEnabled = False
+            wheelCheckboxTooltip = "Only Revolute joints can be treated as wheels."
+
+        isWheel = synJoint.isWheel if synJoint else False
+
+        # Transition: AARD-1685
+        # All command inputs should be created using the helpers.
+        jointConfigTable.addCommandInput(createBooleanInput(
+            "isWheel",
+            "Is Wheel",
+            commandInputs,
+            wheelCheckboxTooltip,
+            checked=isWheel,
+            enabled=wheelCheckboxEnabled,
+        ), row, 6)
     except:
         logging.getLogger("{INTERNAL_ID}.UI.JointConfigTab.addJointToConfigTab()").error(
             "Failed:\n{}".format(traceback.format_exc())
         )
 
     return True
+
+
+def addWheelToConfigTab(joint: adsk.fusion.Joint, wheel: Wheel | None = None) -> None:
+    jointWheelIndexMap[joint.entityToken] = wheelConfigTable.rowCount
+
+    commandInputs = wheelConfigTable.commandInputs
+    wheelIcon = commandInputs.addImageCommandInput("wheelPlaceholder", "Placeholder", IconPaths.wheelIcons["standard"])
+    wheelName = commandInputs.addTextBoxCommandInput("wheelName", "Joint Name", joint.name, 1, True)
+    wheelName.tooltip = joint.name # TODO: Should this be the same?
+    wheelType = commandInputs.addDropDownCommandInput("wheelType", "Wheel Type", dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle)
+
+    if wheel:
+        standardWheelType = wheel.wheelType is WheelType.STANDARD
+    else:
+        standardWheelType = True
+
+    wheelType.listItems.add("Standard", standardWheelType, "")
+    wheelType.listItems.add("OMNI", not standardWheelType, "")
+    wheelType.tooltip = "Wheel type"
+    wheelType.tooltipDescription = "".join(["<Br>Omni-directional wheels can be used just like regular drive wheels",
+                                            "but they have the advantage of being able to roll freely perpendicular to", 
+                                            "the drive direction.</Br>"])
+
+    signalType = commandInputs.addDropDownCommandInput("wheelSignalType", "Signal Type", dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle)
+    signalType.isFullWidth = True
+    signalType.isEnabled = False
+    signalType.tooltip = "Wheel signal type is linked with the respective joint signal type."
+    if wheel:
+        signalType.listItems.add("‎", wheel.signalType is SignalType.PWM, IconPaths.signalIcons["PWM"])
+        signalType.listItems.add("‎", wheel.signalType is SignalType.CAN, IconPaths.signalIcons["CAN"])
+        signalType.listItems.add("‎", wheel.signalType is SignalType.PASSIVE, IconPaths.signalIcons["PASSIVE"])
+    else:
+        signalType.listItems.add("‎", True, IconPaths.signalIcons["PWM"])
+        signalType.listItems.add("‎", False, IconPaths.signalIcons["CAN"])
+        signalType.listItems.add("‎", False, IconPaths.signalIcons["PASSIVE"])
+
+    row = wheelConfigTable.rowCount
+    wheelConfigTable.addCommandInput(wheelIcon, row, 0)
+    wheelConfigTable.addCommandInput(wheelName, row, 1)
+    wheelConfigTable.addCommandInput(wheelType, row, 2)
+    wheelConfigTable.addCommandInput(signalType, row, 3)
 
 
 def removeIndexedJointFromConfigTab(index: int) -> None:
@@ -270,12 +399,16 @@ def removeIndexedJointFromConfigTab(index: int) -> None:
 
 def removeJointFromConfigTab(joint: adsk.fusion.Joint) -> None:
     try:
+        if jointWheelIndexMap.get(joint.entityToken):
+            removeWheelFromConfigTab(joint)
+
         i = selectedJointList.index(joint)
         selectedJointList.remove(joint)
-
         jointConfigTable.deleteRow(i + 1)
         for row in range(jointConfigTable.rowCount): # Row is 1 indexed
+            # TODO: Step through this in the debugger and figure out if this is all necessary.
             listItems = jointConfigTable.getInputAtPosition(row, 2).listItems
+            logging.getLogger(type(listItems))
             if row > i:
                 if listItems.item(i + 1).isSelected:
                     listItems.item(i).isSelected = True
@@ -294,25 +427,53 @@ def removeJointFromConfigTab(joint: adsk.fusion.Joint) -> None:
         )
 
 
-# Converts the current list of selected adsk.fusion.joints into list[Synthesis.Joint]
-def getSelectedJoints() -> list[Joint]:
+# Transition: AARD-1685
+# Remove wheel by joint name to avoid storing additional data about selected wheels.
+# Should investigate finding a better way of linking joints and wheels.
+def removeWheelFromConfigTab(joint: adsk.fusion.Joint) -> None:
+    try:
+        row = jointWheelIndexMap[joint.entityToken]
+        wheelConfigTable.deleteRow(row)
+    except:
+        logging.getLogger("{INTERNAL_ID}.UI.JointConfigTab.removeJointFromConfigTab()").error(
+            "Failed:\n{}".format(traceback.format_exc())
+        )
+
+
+def getSelectedJointsAndWheels() -> tuple[list[Joint], list[Wheel]]:
     joints: list[Joint] = []
+    wheels: list[Wheel] = []
     for row in range(1, jointConfigTable.rowCount): # Row is 1 indexed
+        jointEntityToken = selectedJointList[row - 1].entityToken
         signalTypeIndex = jointConfigTable.getInputAtPosition(row, 3).selectedItem.index
+        signalType = SignalType(signalTypeIndex + 1)
         jointSpeed = jointConfigTable.getInputAtPosition(row, 4).value
         jointForce = jointConfigTable.getInputAtPosition(row, 5).value
+        isWheel = jointConfigTable.getInputAtPosition(row, 6).value
 
         joints.append(
             Joint(
-                selectedJointList[row - 1].entityToken, # Row is 1 indexed
+                jointEntityToken,
                 JointParentType.ROOT,
-                SignalType(signalTypeIndex + 1),
+                signalType,
                 jointSpeed,
                 jointForce / 100.0,
+                isWheel,
             )
         )
 
-    return joints
+        if isWheel:
+            wheelRow = jointWheelIndexMap[jointEntityToken]
+            wheelTypeIndex = wheelConfigTable.getInputAtPosition(wheelRow, 2).selectedItem.index
+            wheels.append(
+                Wheel(
+                    jointEntityToken,
+                    WheelType(wheelTypeIndex + 1),
+                    signalType,
+                )
+            )
+
+    return (joints, wheels)
 
 
 def resetSelectedJoints() -> None:

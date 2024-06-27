@@ -9,10 +9,10 @@ def createTableInput(
     inputs: adsk.core.CommandInputs,
     columns: int,
     ratio: str,
-    maxRows: int,
-    minRows=1,
-    columnSpacing=0,
-    rowSpacing=0,
+    minRows: int = 1,
+    maxRows: int = 50,
+    columnSpacing: int = 0,
+    rowSpacing: int = 0,
 ) -> adsk.core.TableCommandInput:
     try:
         input = inputs.addTableCommandInput(id, name, columns, ratio)
@@ -32,11 +32,11 @@ def createBooleanInput(
     id: str,
     name: str,
     inputs: adsk.core.CommandInputs,
-    tooltip="",
-    tooltipadvanced="",
-    checked=True,
-    enabled=True,
-    isCheckBox=True,
+    tooltip: str = "",
+    tooltipadvanced: str = "",
+    checked: bool = True,
+    enabled: bool = True,
+    isCheckBox: bool = True,
 ) -> adsk.core.BoolValueCommandInput:
     try:
         input = inputs.addBoolValueInput(id, name, isCheckBox)
@@ -57,15 +57,15 @@ def createTextBoxInput(
     name: str,
     inputs: adsk.core.CommandInputs,
     text: str,
-    italics=True,
-    bold=True,
-    fontSize=10,
-    alignment="center",
-    rowCount=1,
-    read=True,
-    background="whitesmoke",
-    tooltip="",
-    advanced_tooltip="",
+    italics: bool = True,
+    bold: bool = True,
+    fontSize: int = 10,
+    alignment: str = "center",
+    rowCount: int = 1,
+    read: bool = True,
+    background: str = "whitesmoke",
+    tooltip: str = "",
+    advanced_tooltip: str = "",
 ) -> adsk.core.TextBoxCommandInput:
     try:
         if bold:

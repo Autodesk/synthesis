@@ -39,6 +39,12 @@ class Joint:
     speed: float = field(default=None)
     force: float = field(default=None)
 
+    # Transition: AARD-1865
+    # Should consider changing how the parser handles wheels and joints as there is overlap between
+    # `Joint` and `Wheel` that should be avoided
+    # This overlap also presents itself in 'ConfigCommand.py' and 'JointConfigTab.py'
+    isWheel: bool = field(default=False)
+
 
 @dataclass
 class Gamepiece:
@@ -103,17 +109,20 @@ class ExporterOptions:
     )
 
     def readFromDesign(self) -> "ExporterOptions":
-        designAttributes = adsk.core.Application.get().activeProduct.attributes
-        for field in fields(self):
-            attribute = designAttributes.itemByName(INTERNAL_ID, field.name)
-            if attribute:
-                setattr(
-                    self,
-                    field.name,
-                    self._makeObjectFromJson(field.type, json.loads(attribute.value)),
-                )
+        try:
+            designAttributes = adsk.core.Application.get().activeProduct.attributes
+            for field in fields(self):
+                attribute = designAttributes.itemByName(INTERNAL_ID, field.name)
+                if attribute:
+                    setattr(
+                        self,
+                        field.name,
+                        self._makeObjectFromJson(field.type, json.loads(attribute.value)),
+                    )
 
-        return self
+            return self
+        except:
+            return ExporterOptions()
 
     def writeToDesign(self) -> None:
         designAttributes = adsk.core.Application.get().activeProduct.attributes
