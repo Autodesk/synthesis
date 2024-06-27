@@ -14,9 +14,7 @@
     "prettier:fix": "bun run prettier --write || npm run prettier --write",
     "format": "(bun run prettier:fix && bun run lint:fix) || (npm run prettier:fix && npm run lint:fix)",
     "build:prod": "tsc && vite build --base=/fission/",
-    "assetpack": "run-script-os",
-    "assetpack:nix": "curl -o public/assetpack.zip https://synthesis.autodesk.com/Downloadables/assetpack.zip && unzip -o public/assetpack.zip -d public/",
-    "assetpack:win32": "curl -o public/assetpack.zip https://synthesis.autodesk.com/Downloadables/assetpack.zip && tar -xf public/assetpack.zip -C public/"
+    "assetpack": "curl -o public/assetpack.zip https://synthesis.autodesk.com/Downloadables/assetpack.zip && tar -xf public/assetpack.zip -C public/"
   },
   "dependencies": {
     "@barclah/jolt-physics": "^0.19.3",
