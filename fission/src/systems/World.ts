@@ -1,9 +1,9 @@
 import * as THREE from "three"
 
-import PhysicsSystem from "./physics/PhysicsSystem";
-import SceneRenderer from "./scene/SceneRenderer";
-import SimulationSystem from "./simulation/SimulationSystem";
-import InputSystem from "./input/InputSystem";
+import PhysicsSystem from "./physics/PhysicsSystem"
+import SceneRenderer from "./scene/SceneRenderer"
+import SimulationSystem from "./simulation/SimulationSystem"
+import InputSystem from "./input/InputSystem"
 
 class World {
     private static _isAlive: boolean = false
@@ -37,10 +37,10 @@ class World {
         World._clock = new THREE.Clock()
         World._isAlive = true
 
-        World._sceneRenderer = new SceneRenderer();
-        World._physicsSystem = new PhysicsSystem();
-        World._simulationSystem = new SimulationSystem();
-        World._inputSystem = new InputSystem();
+        World._sceneRenderer = new SceneRenderer()
+        World._physicsSystem = new PhysicsSystem()
+        World._simulationSystem = new SimulationSystem()
+        World._inputSystem = new InputSystem()
     }
 
     public static DestroyWorld() {
@@ -48,18 +48,18 @@ class World {
 
         World._isAlive = false
 
-        World._physicsSystem.Destroy();
-        World._sceneRenderer.Destroy();
-        World._simulationSystem.Destroy();
-        World._inputSystem.Destroy();
+        World._physicsSystem.Destroy()
+        World._sceneRenderer.Destroy()
+        World._simulationSystem.Destroy()
+        World._inputSystem.Destroy()
     }
 
     public static UpdateWorld() {
-        const deltaT = World._clock.getDelta();
-        World._simulationSystem.Update(deltaT);
-        World._physicsSystem.Update(deltaT);
-        World._inputSystem.Update(deltaT);
-        World._sceneRenderer.Update(deltaT);
+        const deltaT = World._clock.getDelta()
+        World._simulationSystem.Update(deltaT)
+        World._physicsSystem.Update(deltaT)
+        World._inputSystem.Update(deltaT)
+        World._sceneRenderer.Update(deltaT)
     }
 }
 
