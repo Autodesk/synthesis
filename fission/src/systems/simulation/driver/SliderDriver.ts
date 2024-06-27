@@ -1,21 +1,20 @@
-import Jolt from "@barclah/jolt-physics";
-import Driver, { DriverControlMode } from "./Driver";
-import { GetLastDeltaT } from "@/systems/physics/PhysicsSystem";
-import JOLT from "@/util/loading/JoltSyncLoader";
+import Jolt from "@barclah/jolt-physics"
+import Driver, { DriverControlMode } from "./Driver"
+import { GetLastDeltaT } from "@/systems/physics/PhysicsSystem"
+import JOLT from "@/util/loading/JoltSyncLoader"
 
 class SliderDriver extends Driver {
+    private _constraint: Jolt.SliderConstraint
 
-    private _constraint: Jolt.SliderConstraint;
-
-    private _controlMode: DriverControlMode = DriverControlMode.Velocity;
-    private _targetVelocity: number = 0.0;
-    private _targetPosition: number = 0.0;
+    private _controlMode: DriverControlMode = DriverControlMode.Velocity
+    private _targetVelocity: number = 0.0
+    private _targetPosition: number = 0.0
 
     public get targetVelocity(): number {
-        return this._targetVelocity;
+        return this._targetVelocity
     }
     public set targetVelocity(radsPerSec: number) {
-        this._targetVelocity = radsPerSec;
+        this._targetVelocity = radsPerSec
     }
 
     public get targetPosition(): number {
@@ -38,21 +37,21 @@ class SliderDriver extends Driver {
     }
 
     public get controlMode(): DriverControlMode {
-        return this._controlMode;
+        return this._controlMode
     }
-    
+
     public set controlMode(mode: DriverControlMode) {
-        this._controlMode = mode;
+        this._controlMode = mode
         switch (mode) {
             case DriverControlMode.Velocity:
-                this._constraint.SetMotorState(JOLT.EMotorState_Velocity);
-                break;
+                this._constraint.SetMotorState(JOLT.EMotorState_Velocity)
+                break
             case DriverControlMode.Position:
-                this._constraint.SetMotorState(JOLT.EMotorState_Position);
-                break;
+                this._constraint.SetMotorState(JOLT.EMotorState_Position)
+                break
             default:
                 // idk
-                break;
+                break
         }
     }
 
@@ -71,14 +70,14 @@ class SliderDriver extends Driver {
         motorSettings.mMaxForceLimit = 900.0
 
         this._constraint.SetMotorState(JOLT.EMotorState_Velocity)
-        this.controlMode = DriverControlMode.Velocity;
+        this.controlMode = DriverControlMode.Velocity
     }
 
     public Update(_: number): void {
         if (this._controlMode == DriverControlMode.Velocity) {
-            this._constraint.SetTargetVelocity(this._targetVelocity);
+            this._constraint.SetTargetVelocity(this._targetVelocity)
         } else if (this._controlMode == DriverControlMode.Position) {
-            this._constraint.SetTargetPosition(this._targetPosition);
+            this._constraint.SetTargetPosition(this._targetPosition)
         }
     }
 }
