@@ -1,7 +1,7 @@
 import requests
 from dataclasses import dataclass
 from typing import Any 
-from result import Ok, Err, Result, is_ok, is_err
+from result import Ok, Err, Result
 
 # TODO: Port over full data model
 
@@ -25,10 +25,9 @@ class Project:
 """
 Creates a folder on an APS project
 """
-def create_folder(project: Project, folder: Folder) -> str | None:
-    _auth = "" # Get token from APS API later
+def create_folder(auth: str, project: Project, folder: Folder) -> str | None:
     headers = {
-        "Authorization": f"Bearer {_auth}",
+        "Authorization": f"Bearer {auth}",
         "Content-Type": "application/vnd.api+json"
 
     }
@@ -74,7 +73,7 @@ Uploads mirabuf file to APS project
 
 TODO: Change so a folder is not needed, and the entire project is checked for files
 """
-def upload_mirabuf(project: Project, folder: Folder, file_path: str) -> Result[None, None]:
+def upload_mirabuf(project: Project, folder: Folder, file_path: str) -> Result[str | None, None]:
     _auth = "" # Get token from APS API later
     file_id_result = get_file_id(_auth, project, folder, file_path_to_file_name(file_path))
     if file_id_result.is_err():
@@ -82,9 +81,15 @@ def upload_mirabuf(project: Project, folder: Folder, file_path: str) -> Result[N
     file_id: str | None = file_id_result.ok();
     if not file_id == None:
         print("Mirabuf file already exists!")
-        _ = update_file_version(project, folder, str(file_id))
-        return Ok(None)
+        update_file_result: Result[str, None] = update_file_version(_auth, project, folder, str(file_id), file_path_to_file_name(file_path), "1") # Grab real file version number
+        if update_file_result.is_err():
+            return Err(None)
+        new_version_id = str(update_file_result.ok())
+        return Ok(new_version_id)
     object_id = create_storage_location(_auth, project)
+    if object_id.is_err():
+        return Err(None)
+    object_id = object_id.ok()
     (prefix, object_key) = str(object_id).split("/", 1)
     bucket_key = prefix.split(":", 3)[3] # gets the last element smth like: wip.dm.prod
 
@@ -98,22 +103,39 @@ def upload_mirabuf(project: Project, folder: Folder, file_path: str) -> Result[N
 
     if complete_upload(_auth, upload_key, bucket_key).is_err():
         return Err(None)
+
+    file_name = file_path_to_file_name(file_path)
+
+    if object_id == None:
+        print("Object id is none; check create storage location")
+        return Err(None)
+
+    (_lineage_id, _lineage_href) = create_first_file_version(_auth, str(object_id), project.id, str(folder.id), file_name)
     
     return Ok(None)
 
 
-def update_file_version(project: Project, folder: Folder, file_id: str, file_name: str, curr_file_version: str) -> Result[None, None]:
-    object_id_res = create_storage_location(project, folder)
+"""
+Updates a an existing file and returns the id of the new version
+"""
+def update_file_version(auth: str, project: Project, folder: Folder, file_id: str, file_name: str, curr_file_version: str) -> Result[str, None]:
+    object_id_res = create_storage_location(auth, project)
     if object_id_res.is_err():
         return Err(None)
     object_id = object_id_res.ok()
 
-    
+
+    headers = {
+        "Authorization:": f"Bearer {auth}",
+        "Content-Type": "application/vnd.api+json",
+        "Accept": "application/vnd.api+json"
+
+    }
 
     attributes = {
         "name": file_name,
         "extension": {
-            "type": "file",
+            "type": "versions:autodesk.core:File",
             "version": curr_file_version
         }
     }
@@ -159,25 +181,22 @@ def update_file_version(project: Project, folder: Folder, file_id: str, file_nam
             "relationships": relationships
         }
     }
-    update_res = requests.post(f"https://developer.api.autodesk.com/data/v1/projects/{project.id}/versions", data=data)
+    update_res = requests.post(f"https://developer.api.autodesk.com/data/v1/projects/{project.id}/versions", headers=headers, data=data)
     if not update_res.ok:
         print(f"updating file to new version failed: {update_res.text}")
         return Err(None)
-    update_json = 
-
-
-"""
-These two functions are the same fundamentally, I couldn't decide which one I wanted
-"""
+    print(f"File {file_name} successfully updated to version {int(curr_file_version) + 1}")
+    new_id: str = update_res.json()["data"]["id"]
+    return Ok(new_id)
 
 """
-Gets the file id given a file name and a folder, returns none if t
+Gets the file id given a file name and a folder, returns none if the file doesn't exist
+Can be used to check if a file exists
 """
 def get_file_id(auth: str, project: Project, folder: Folder, file_name: str) -> Result[str | None, str]:
     file_list_res = requests.get(f"https://developer.api.autodesk.com/data/v1/projects/{project.id}/folders/{folder.id}/contents")
     if not file_list_res.ok:
         print("Failed to get file list")
-        # Error
         return Err("Failed to get file list")
     file_list_json: list[dict[str, Any]] = file_list_res.json()
     for file in file_list_json:
@@ -186,33 +205,7 @@ def get_file_id(auth: str, project: Project, folder: Folder, file_name: str) -> 
             id: str = file["id"]
             print(f"Found file {name} with id: {id}")
             return Ok(id)
-    # File does not exist in system
     return Ok(None)
-
-"""
-Checks if a file exist in a project
-This could be done if a file id was known, without having to iterate, but I'm assuming only the file name is known
-"""
-def check_file_exists(auto: str, project: Project, folder: Folder, file_name: str) -> Result[bool, str]:
-    file_list_res = requests.get(f"https://developer.api.autodesk.com/data/v1/projects/{project.id}/folders/{folder.id}/contents")
-    if not file_list_res.ok:
-        print("Failed to get file list")
-        # Error
-        return Err("Failed to get file list")
-    file_list_json: list[dict[str, Any]] = file_list_res.json()
-    for file in file_list_json:
-        name: str = file["attributes"]["name"]
-        if name == file_name:
-            id: str = file["id"]
-            print(f"Found file {name} with id: {id}")
-            return Ok(True)
-    # File does not exist in system
-    return Ok(False)
-
-"""
-End twin functions
-"""
-
 
 """
 Creates a storage location (bucket)
@@ -294,8 +287,80 @@ def complete_upload(auth: str, upload_key: str, bucket_key: str) -> Result[None,
 
     completed_res = requests.post(f"https://developer.api.autodesk.com/oss/v2/buckets/{bucket_key}/objects/{upload_key}/signeds3upload", data=data, headers=headers)
     if not completed_res.ok:
-        print("Failed to complete upload")
         print(f"Failed to complete upload: {completed_res.text}")
         return Err(f"Failed to complete upload: {completed_res.text}")
     return Ok(None)
 
+"""
+Initializes versioning for a file
+
+Returns the lineage id of this file and it's href
+"""
+def create_first_file_version(auth: str, object_id: str, project_id: str, folder_id: str, file_name: str) -> Result[tuple[str, str], None]:
+    headers = {
+        "Authorization:": f"Bearer {auth}",
+        "Content-Type": "application/vnd.api+json",
+        "Accept": "application/vnd.api+json"
+
+    }
+
+    attributes = {
+        "name": file_name,
+        "extension": {
+            "type": "items:autodesk.core:File",
+            "version": "1.0" 
+        }
+    }
+
+    relationships = {
+        "tip": {
+            "data": {
+                "type": "versions",
+                "id": "1"
+            }
+        },
+        "parent": {
+            "data": {
+                "type": "folders",
+                "id": folder_id
+            }
+        }
+    }
+
+    included = [
+        {
+            "type": "versions",
+            "id": "1",
+            "attributes": attributes,
+            "relationships": {
+                "storage": {
+                    "data": {
+                        "type": "objects",
+                        "id": object_id
+                    }
+                }
+            }
+        },
+    ]
+
+    data = {
+        "jsonapi": {
+            "version": "1.0"
+        },
+        "data": {
+            "type": "items",
+            "relationships": relationships
+        },
+        "included": included
+    }
+
+    first_version_res = requests.post(f"https://developer.api.autodesk.com/data/v1/projects/{project_id}L/items", data=data, headers=headers)
+    if not first_version_res.ok:
+        print(f"Failed to create first file version: {first_version_res.text}")
+        return Err(None)
+    first_version_json: dict[str, Any] = first_version_res.json()
+
+    lineage_id: str = first_version_json["data"]["id"]
+    href: str = first_version_json["links"]["self"]["href"]
+    
+    return Ok((lineage_id, href))
