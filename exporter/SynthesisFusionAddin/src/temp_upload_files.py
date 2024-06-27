@@ -67,7 +67,6 @@ def create_folder(auth: str, project: Project, folder: Folder) -> str | None:
 def file_path_to_file_name(file_path: str) -> str:
     return file_path.split("/").pop()
 
-
 """
 Uploads mirabuf file to APS project
 
@@ -112,6 +111,45 @@ def upload_mirabuf(project: Project, folder: Folder, file_path: str) -> Result[s
 
     (_lineage_id, _lineage_href) = create_first_file_version(_auth, str(object_id), project.id, str(folder.id), file_name)
     
+    return Ok(None)
+
+
+"""
+Returns the hub id on success and API error on failure
+If the hub does not exist, it returns None
+"""
+def find_user_hub(auth: str, hub_name: str) -> Result[str | None, str]:
+    headers = {
+        "Authorization": f"Bearer {auth}"
+    }
+    hub_list_res = requests.get("https://developer.api.autodesk.com/project/v1/hubs", headers=headers)
+    if not hub_list_res.ok:
+        print(f"Failed to retrieve hubs: {hub_list_res.text}")
+        return Err(f"Failed to retrieve hubs: {hub_list_res.text}")
+    hub_list: list[dict[str, Any]] = hub_list_res.json()
+    for hub in hub_list:
+        if hub["attributes"]["name"] == hub_name:
+            id: str = hub["id"]
+            return Ok(id)
+    return Ok(None)
+
+"""
+Returns the project id on a sucess and the API error on a failure given a hub id and a project name
+If the project doesn't exist, it returns None
+"""
+def get_project_id(auth: str, hub_id: str, project_name: str) -> Result[str | None, str]:
+    headers = {
+        "Authorization": f"Bearer {auth}"
+    }
+    project_list_res = requests.get(f"https://developer.api.autodesk.com/project/v1/hubs/{hub_id}/projects", headers=headers)
+    if not project_list_res.ok:
+        print(f"Failed to retrieve hubs: {project_list_res.text}")
+        return Err(f"Failed to retrieve hubs: {project_list_res.text}")
+    project_list: list[dict[str, Any]] = project_list_res.json()
+    for project in project_list:
+        if project["attributes"]["name"] == project_name:
+            id: str = project["id"]
+            return Ok(id)
     return Ok(None)
 
 
