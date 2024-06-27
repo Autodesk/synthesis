@@ -1,9 +1,11 @@
 """ Takes in a given function call and times and tests the memory allocations to get data
 """
 
-from ..general_imports import *
+import inspect
+import os
 from time import time
-import os, inspect
+
+from ..general_imports import *
 
 
 class Timer:

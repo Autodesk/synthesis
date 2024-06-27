@@ -1,18 +1,21 @@
 """ Takes in a given function call and times and tests the memory allocations to get data
 """
 
-from ..general_imports import *
+import inspect
+import linecache
+import os
+import time
+import tracemalloc
 from time import time
-import tracemalloc, time, linecache, os, inspect
+
+from ..general_imports import *
 
 
 class Sniffer:
     def __init__(self):
         self.logger = logging.getLogger(f"{INTERNAL_ID}.Analyzer.Sniffer")
 
-        (self.filename, self.line_number, _, self.lines, _) = inspect.getframeinfo(
-            inspect.currentframe().f_back.f_back
-        )
+        (self.filename, self.line_number, _, self.lines, _) = inspect.getframeinfo(inspect.currentframe().f_back.f_back)
 
         self.stopped = False
 

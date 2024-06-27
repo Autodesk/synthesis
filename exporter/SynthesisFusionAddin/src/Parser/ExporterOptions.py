@@ -3,14 +3,14 @@ Container for all options pertaining to the Fusion Exporter.
 These options are saved per-design and are passed to the parser upon design export.
 """
 
-import os
 import json
+import os
 import platform
-from typing import get_origin
+from dataclasses import dataclass, field, fields
 from enum import Enum, EnumType
-from dataclasses import dataclass, fields, field
-import adsk.core
+from typing import get_origin
 
+import adsk.core
 from adsk.fusion import CalculationAccuracy, TriangleMeshQualityOptions
 
 from ..strings import INTERNAL_ID
@@ -78,11 +78,7 @@ class ModelHierarchy(Enum):
 @dataclass
 class ExporterOptions:
     fileLocation: str = field(
-        default=(
-            os.getenv("HOME")
-            if platform.system() == "Windows"
-            else os.path.expanduser("~")
-        )
+        default=(os.getenv("HOME") if platform.system() == "Windows" else os.path.expanduser("~"))
     )
     name: str = field(default=None)
     version: str = field(default=None)
@@ -100,13 +96,9 @@ class ExporterOptions:
     exportAsPart: bool = field(default=False)
 
     hierarchy: ModelHierarchy = field(default=ModelHierarchy.FusionAssembly)
-    visualQuality: TriangleMeshQualityOptions = field(
-        default=TriangleMeshQualityOptions.LowQualityTriangleMesh
-    )
+    visualQuality: TriangleMeshQualityOptions = field(default=TriangleMeshQualityOptions.LowQualityTriangleMesh)
     physicalDepth: PhysicalDepth = field(default=PhysicalDepth.AllOccurrence)
-    physicalCalculationLevel: CalculationAccuracy = field(
-        default=CalculationAccuracy.LowCalculationAccuracy
-    )
+    physicalCalculationLevel: CalculationAccuracy = field(default=CalculationAccuracy.LowCalculationAccuracy)
 
     def readFromDesign(self) -> None:
         designAttributes = adsk.core.Application.get().activeProduct.attributes
@@ -131,11 +123,7 @@ class ExporterOptions:
                     if isinstance(obj, Enum)
                     else (
                         {
-                            key: (
-                                lambda value: (
-                                    value if not isinstance(value, Enum) else value.value
-                                )
-                            )(value)
+                            key: (lambda value: (value if not isinstance(value, Enum) else value.value))(value)
                             for key, value in obj.__dict__.items()
                         }
                         if hasattr(obj, "__dict__")
@@ -156,26 +144,17 @@ class ExporterOptions:
         ):  # Required to catch `fusion.TriangleMeshQualityOptions`
             return data
         elif get_origin(objectType) is list:
-            return [
-                self._makeObjectFromJson(objectType.__args__[0], item) for item in data
-            ]
+            return [self._makeObjectFromJson(objectType.__args__[0], item) for item in data]
 
         newObject = objectType()
-        attrs = [
-            x
-            for x in dir(newObject)
-            if not x.startswith("__") and not callable(getattr(newObject, x))
-        ]
+        attrs = [x for x in dir(newObject) if not x.startswith("__") and not callable(getattr(newObject, x))]
         for attr in attrs:
             currType = objectType.__annotations__.get(attr, None)
             if get_origin(currType) is list:
                 setattr(
                     newObject,
                     attr,
-                    [
-                        self._makeObjectFromJson(currType.__args__[0], item)
-                        for item in data[attr]
-                    ],
+                    [self._makeObjectFromJson(currType.__args__[0], item) for item in data[attr]],
                 )
             elif currType in primitives:
                 setattr(newObject, attr, data[attr])
