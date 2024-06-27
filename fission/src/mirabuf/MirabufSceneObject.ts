@@ -1,16 +1,16 @@
-import { mirabuf } from "@/proto/mirabuf";
-import SceneObject from "../systems/scene/SceneObject";
-import MirabufInstance from "./MirabufInstance";
-import { LoadMirabufRemote, MiraType } from "./MirabufLoader";
-import MirabufParser, { ParseErrorSeverity } from "./MirabufParser";
-import World from "@/systems/World";
-import Jolt from '@barclah/jolt-physics';
-import { JoltMat44_ThreeMatrix4 } from "@/util/TypeConversions";
-import * as THREE from 'three';
-import JOLT from "@/util/loading/JoltSyncLoader";
-import { LayerReserve } from "@/systems/physics/PhysicsSystem";
-import Mechanism from "@/systems/physics/Mechanism";
-import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain";
+import { mirabuf } from "@/proto/mirabuf"
+import SceneObject from "../systems/scene/SceneObject"
+import MirabufInstance from "./MirabufInstance"
+import { LoadMirabufRemote, MiraType } from "./MirabufLoader"
+import MirabufParser, { ParseErrorSeverity } from "./MirabufParser"
+import World from "@/systems/World"
+import Jolt from "@barclah/jolt-physics"
+import { JoltMat44_ThreeMatrix4 } from "@/util/TypeConversions"
+import * as THREE from "three"
+import JOLT from "@/util/loading/JoltSyncLoader"
+import { LayerReserve } from "@/systems/physics/PhysicsSystem"
+import Mechanism from "@/systems/physics/Mechanism"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 
 const DEBUG_BODIES = true
 
@@ -96,10 +96,10 @@ class MirabufSceneObject extends SceneObject {
                 colliderMesh.position.setFromMatrixPosition(transform)
                 colliderMesh.rotation.setFromRotationMatrix(transform)
 
-                const comTransform = JoltMat44_ThreeMatrix4(body.GetCenterOfMassTransform());
+                const comTransform = JoltMat44_ThreeMatrix4(body.GetCenterOfMassTransform())
 
-                comMesh.position.setFromMatrixPosition(comTransform);
-                comMesh.rotation.setFromRotationMatrix(comTransform);
+                comMesh.position.setFromMatrixPosition(comTransform)
+                comMesh.rotation.setFromRotationMatrix(comTransform)
             }
         })
     }
@@ -153,9 +153,11 @@ class MirabufSceneObject extends SceneObject {
     }
 }
 
-export async function CreateMirabufFromUrl(path: string, miraType: MiraType): Promise<MirabufSceneObject | null | undefined> {
-    const miraAssembly = await LoadMirabufRemote(path, miraType)
-        .catch(console.error);
+export async function CreateMirabufFromUrl(
+    path: string,
+    miraType: MiraType
+): Promise<MirabufSceneObject | null | undefined> {
+    const miraAssembly = await LoadMirabufRemote(path, miraType).catch(console.error)
 
     if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
         return

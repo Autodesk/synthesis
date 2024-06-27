@@ -134,21 +134,13 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton
                         value={"Print Mira Maps"}
                         icon={<BsCodeSquare />}
-                        onClick = { () => {
+                        onClick={() => {
                             console.log(GetMap(MiraType.ROBOT))
-                            console.log(GetMap(MiraType.FIELD))}
-                        }
-                        />
-                    <MainHUDButton
-                        value={"Clear Mira"}
-                        icon={<GiSteeringWheel />}
-                        onClick={() => ClearMira()}
+                            console.log(GetMap(MiraType.FIELD))
+                        }}
                     />
-                    <MainHUDButton
-                        value={"Drivetrain"}
-                        icon={<FaCar />}
-                        onClick={() => openModal("drivetrain")}
-                    />
+                    <MainHUDButton value={"Clear Mira"} icon={<GiSteeringWheel />} onClick={() => ClearMira()} />
+                    <MainHUDButton value={"Drivetrain"} icon={<FaCar />} onClick={() => openModal("drivetrain")} />
                     <MainHUDButton
                         value={"Toasts"}
                         icon={<FaCar />}

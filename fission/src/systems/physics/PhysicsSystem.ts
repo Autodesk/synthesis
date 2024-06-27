@@ -31,9 +31,9 @@ export const SIMULATION_PERIOD = 1.0 / 120.0
 const STANDARD_SUB_STEPS = 3
 
 // Friction constants
-const FLOOR_FRICTION = 0.7;
-const SUSPENSION_MIN_FACTOR = 0.1;
-const SUSPENSION_MAX_FACTOR = 0.3;
+const FLOOR_FRICTION = 0.7
+const SUSPENSION_MIN_FACTOR = 0.1
+const SUSPENSION_MAX_FACTOR = 0.3
 
 /**
  * The PhysicsSystem handles all Jolt Phyiscs interactions within Synthesis.
@@ -73,10 +73,9 @@ class PhysicsSystem extends WorldSystem {
             new THREE.Vector3(0.0, -2.0, 0.0),
             undefined
         )
-        ground.SetFriction(FLOOR_FRICTION);
+        ground.SetFriction(FLOOR_FRICTION)
         this._joltBodyInterface.AddBody(ground.GetID(), JOLT.EActivation_Activate)
     }
-    
 
     /**
      * TEMPORARY

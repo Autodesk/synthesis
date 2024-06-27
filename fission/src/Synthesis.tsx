@@ -91,10 +91,9 @@ function Synthesis() {
         console.log(urlParams)
 
         const setup = async () => {
-			const miraAssembly = await LoadMirabufRemote(mira_path, MiraType.ROBOT)
-				.catch(
-					_ => LoadMirabufRemote(DEFAULT_MIRA_PATH, MiraType.ROBOT)
-				).catch(console.error);
+            const miraAssembly = await LoadMirabufRemote(mira_path, MiraType.ROBOT)
+                .catch(_ => LoadMirabufRemote(DEFAULT_MIRA_PATH, MiraType.ROBOT))
+                .catch(console.error)
 
             await (async () => {
                 if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {

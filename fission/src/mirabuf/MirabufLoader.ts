@@ -4,7 +4,7 @@ import * as fs from "fs"
 
 const robots = "Robots"
 const fields = "Fields"
-const root = await navigator.storage.getDirectory();
+const root = await navigator.storage.getDirectory()
 const robotFolderHandle = await root.getDirectoryHandle(robots, { create: true })
 const fieldFolderHandle = await root.getDirectoryHandle(fields, { create: true })
 
@@ -22,7 +22,7 @@ export async function LoadMirabufRemote(fetchLocation: string, type: MiraType): 
 
     if (targetID != null) {
         console.log("Loading mira from cache")
-        return await LoadMirabufCache(fetchLocation, targetID, type, map) ?? LoadAndCacheMira(fetchLocation, type)
+        return (await LoadMirabufCache(fetchLocation, targetID, type, map)) ?? LoadAndCacheMira(fetchLocation, type)
     } else {
         console.log("Loading and caching new mira")
         return await LoadAndCacheMira(fetchLocation, type)
@@ -30,8 +30,8 @@ export async function LoadMirabufRemote(fetchLocation: string, type: MiraType): 
 }
 
 export function LoadMirabufLocal(fileLocation: string): mirabuf.Assembly {
-    console.log(fileLocation);
-    return mirabuf.Assembly.decode(UnzipMira(new Uint8Array(fs.readFileSync(fileLocation))));
+    console.log(fileLocation)
+    return mirabuf.Assembly.decode(UnzipMira(new Uint8Array(fs.readFileSync(fileLocation))))
 }
 
 export async function ClearMira() {
@@ -63,13 +63,18 @@ async function LoadAndCacheMira(fetchLocation: string, type: MiraType): Promise<
         const backupID = Date.now().toString()
 
         // Grab file remote
-        const miraBuff = await fetch(encodeURI(fetchLocation), import.meta.env.DEV ? {cache: "no-store"} : undefined).then(x => x.blob()).then(x => x.arrayBuffer());
-        const byteBuffer = UnzipMira(new Uint8Array(miraBuff));
-        const assembly = mirabuf.Assembly.decode(byteBuffer);
+        const miraBuff = await fetch(encodeURI(fetchLocation), import.meta.env.DEV ? { cache: "no-store" } : undefined)
+            .then(x => x.blob())
+            .then(x => x.arrayBuffer())
+        const byteBuffer = UnzipMira(new Uint8Array(miraBuff))
+        const assembly = mirabuf.Assembly.decode(byteBuffer)
 
         // Store in OPFS
-        const fileHandle = await (type == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle).getFileHandle(backupID, { create: true });
-        const writable = await fileHandle.createWritable();
+        const fileHandle = await (type == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle).getFileHandle(
+            backupID,
+            { create: true }
+        )
+        const writable = await fileHandle.createWritable()
         await writable.write(miraBuff)
         await writable.close()
 
@@ -77,17 +82,25 @@ async function LoadAndCacheMira(fetchLocation: string, type: MiraType): Promise<
         let map: { [k: string]: string } = GetMap(type) ?? {}
         map[fetchLocation] = backupID
         window.localStorage.setItem(type == MiraType.ROBOT ? robots : fields, JSON.stringify(map))
-        
+
         console.log(assembly)
-        return assembly;
+        return assembly
     } catch (e) {
         console.error("Failed to load and cache mira")
     }
 }
 
-async function LoadMirabufCache(fetchLocation: string, targetID: string, type: MiraType, map: { [k: string]: string }): Promise<mirabuf.Assembly | undefined | null> {
+async function LoadMirabufCache(
+    fetchLocation: string,
+    targetID: string,
+    type: MiraType,
+    map: { [k: string]: string }
+): Promise<mirabuf.Assembly | undefined | null> {
     try {
-        const fileHandle = await (type == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle).getFileHandle(targetID, {create: false}) ?? null
+        const fileHandle =
+            (await (type == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle).getFileHandle(targetID, {
+                create: false,
+            })) ?? null
 
         // Get assembly from file
         if (fileHandle != null) {
@@ -107,8 +120,7 @@ async function LoadMirabufCache(fetchLocation: string, targetID: string, type: M
     }
 }
 
-
 export enum MiraType {
     ROBOT,
-    FIELD
+    FIELD,
 }
