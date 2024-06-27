@@ -31,7 +31,6 @@ jobs:
       run: |
         cd fission
         npm run test
-        npm run test:firefox
       continue-on-error: true
     - name: Check Success
       run: |

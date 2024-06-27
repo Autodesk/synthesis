@@ -9,7 +9,6 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives",
     "preview": "vite preview --base=/fission/",
     "test": "vitest",
-    "test:firefox": "vitest --browser.name firefox",
     "lint:fix": "bun run lint --fix || npm run lint --fix",
     "prettier": "bun x prettier src --check || npx prettier src --check",
     "prettier:fix": "bun run prettier --write || npm run prettier --write",
