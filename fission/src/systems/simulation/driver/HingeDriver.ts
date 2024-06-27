@@ -1,5 +1,5 @@
 import Jolt from "@barclah/jolt-physics"
-import Driver from "./Driver"
+import Driver, { DriverControlMode } from "./Driver"
 import { GetLastDeltaT } from "@/systems/physics/PhysicsSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
 
@@ -21,7 +21,7 @@ class HingeDriver extends Driver {
         return this._targetAngle
     }
     public set targetAngle(rads: number) {
-        this._targetAngle = rads
+        this._targetAngle = Math.max(this._constraint.GetLimitsMin(), Math.min(this._constraint.GetLimitsMax(), rads));
     }
 
     public set minTorqueLimit(nm: number) {
@@ -36,6 +36,7 @@ class HingeDriver extends Driver {
     public get controlMode(): DriverControlMode {
         return this._controlMode
     }
+
     public set controlMode(mode: DriverControlMode) {
         this._controlMode = mode
         switch (mode) {
@@ -64,8 +65,8 @@ class HingeDriver extends Driver {
         springSettings.mDamping = 0.995
 
         motorSettings.mSpringSettings = springSettings
-        motorSettings.mMinTorqueLimit = -50.0
-        motorSettings.mMaxTorqueLimit = 50.0
+        motorSettings.mMinTorqueLimit = -200.0
+        motorSettings.mMaxTorqueLimit = 200.0
 
         this._targetAngle = this._constraint.GetCurrentAngle()
 
@@ -79,11 +80,6 @@ class HingeDriver extends Driver {
             this._constraint.SetTargetAngle(this._targetAngle)
         }
     }
-}
-
-export enum DriverControlMode {
-    Velocity = 0,
-    Position = 1,
 }
 
 export default HingeDriver

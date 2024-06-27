@@ -10,13 +10,13 @@
     "test": "vitest",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives",
     "lint:fix": "eslint . --ext ts,tsx --report-unused-disable-directives --fix",
-    "prettier": "npx prettier src --check",
-    "prettier:fix": "npx prettier src --write",
-    "format": "npm run prettier:fix && npm run lint:fix",
+    "prettier": "bun x prettier src --check || npx prettier src --check",
+    "prettier:fix": "bun x prettier src --write || npx prettier src --write",
+    "format": "(bun run prettier:fix && bun run lint:fix) || (npm run prettier:fix && npm run lint:fix)",
     "build:prod": "tsc && vite build --base=/fission/",
     "assetpack": "run-script-os",
     "assetpack:nix": "curl -o public/assetpack.zip https://synthesis.autodesk.com/Downloadables/assetpack.zip && unzip -o public/assetpack.zip -d public/",
-    "assetpack:win32": "echo todo"
+    "assetpack:win32": "curl -o public/assetpack.zip https://synthesis.autodesk.com/Downloadables/assetpack.zip && tar -xf public/assetpack.zip -C public/"
   },
   "dependencies": {
     "@barclah/jolt-physics": "^0.19.3",
