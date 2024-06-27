@@ -3,7 +3,6 @@ import { TransformControls } from "three/examples/jsm/controls/TransformControls
 import SceneObject from "./SceneObject"
 import WorldSystem from "../WorldSystem"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
-// import TransformControlsWrapper from "./TransformControlsWrapper.js"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x73937e
@@ -17,9 +16,9 @@ class SceneRenderer extends WorldSystem {
 
     private _sceneObjects: Map<number, SceneObject>
     
-    private controls: OrbitControls
-    private transformControls: Map<TransformControls, number>;
-    public isShiftPressed: boolean = false;
+    private orbitControls: OrbitControls
+    private transformControls: Map<TransformControls, number>
+    private isShiftPressed: boolean = false
 
     public get sceneObjects() {
         return this._sceneObjects
@@ -81,8 +80,8 @@ class SceneRenderer extends WorldSystem {
         ground.castShadow = true
         this._scene.add(ground)
 
-        this.controls = new OrbitControls(this._mainCamera, this._renderer.domElement);
-        this.controls.update()
+        this.orbitControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
+        this.orbitControls.update()
 
         this.transformControls = new Map();
         document.addEventListener('keydown', (event) => {
@@ -169,11 +168,9 @@ class SceneRenderer extends WorldSystem {
 
     public AddTransformGizmo(obj: THREE.Object3D, mode: "translate" | "rotate" | "scale" = 'translate', size: number = 5.0) {
         const transformControl = new TransformControls(this._mainCamera, this._renderer.domElement);
-        
         transformControl.addEventListener('dragging-changed', (event: { value: unknown }) => {
-            this.controls.enabled = !event.value;
+            this.orbitControls.enabled = !event.value;
         });
-        
         transformControl.setMode(mode);
         transformControl.attach(obj);
         if (mode === 'translate') { 
@@ -183,7 +180,6 @@ class SceneRenderer extends WorldSystem {
                     if (tc !== event.target && tc.object === event.target.object && tc.mode !== 'translate') {
                         tc.dragging = !event.value;
                         tc.enabled = !event.value;
-                        
                     }
                 });
             });
