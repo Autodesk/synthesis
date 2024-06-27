@@ -1,6 +1,6 @@
 import React from "react"
 import Label, { LabelSize } from "./Label"
-import { Unstable_NumberInput as BaseNumberInput, } from "@mui/base/Unstable_NumberInput"
+import { Unstable_NumberInput as BaseNumberInput } from "@mui/base/Unstable_NumberInput"
 
 type InputProps = {
     placeholder: string
