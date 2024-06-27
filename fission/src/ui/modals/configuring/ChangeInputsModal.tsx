@@ -210,7 +210,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     <Label size={LabelSize.Medium}>{toTitleCase(c.inputName)}</Label>
                     <LabeledButton
                         key={"pos"+c.inputName}
-                        label={toTitleCase(c.inputName) + "(+)"}
+                        label={"(+)"}
                         placement={LabelPlacement.Left}
                         value={
                             "pos" + c.inputName == selectedInput
@@ -225,7 +225,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     {/* Negative key */}
                     <LabeledButton
                         key={"neg" + c.inputName}
-                        label={toTitleCase(c.inputName) + " (-)"}
+                        label={"(-)"}
                         placement={LabelPlacement.Left}
                         value={
                             "neg" + c.inputName == selectedInput
@@ -282,7 +282,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     {/* // Positive gamepad button */}
                         <LabeledButton
                     key={"pos"+c.inputName}
-                    label={toTitleCase(c.inputName) + " (+)"}
+                    label={"(+)"}
                     placement={LabelPlacement.Left}
                     value={
                         "pos" + c.inputName == selectedInput
@@ -296,7 +296,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     {/* // Negative gamepad button */}
                     <LabeledButton
                     key={"neg"+c.inputName}
-                    label={toTitleCase(c.inputName) + " (-)"}
+                    label={"(-)"}
                     placement={LabelPlacement.Left}
                     value={
                         "neg" + c.inputName == selectedInput
@@ -386,7 +386,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     </Stack>
                 </div>
                 <div
-                    className="w-max"
+                    className="flex overflow-y-auto flex-col gap-2 min-w-[20vw] max-h-[60vh] bg-background-secondary rounded-md p-2"
                     onKeyUp={e => {
                         setChosenKey(selectedInput ? e.code : "")
                         setModifierState({
@@ -400,7 +400,6 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     {selectedScheme ? (
                         <>
                         <Stack direction={StackDirection.Vertical} spacing={20}>
-                            <Label size={LabelSize.Large}>Robot Controls</Label>
                                 {selectedScheme.inputs.map(c => {
                                     if (!useGamepad) {
                                         // Keyboard button
