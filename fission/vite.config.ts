@@ -19,11 +19,17 @@ export default defineConfig({
     },
     test: {
         globals: true,
-        environment: 'jsdom'
+        environment: 'jsdom',
+        browser: {
+            enabled: true,
+            name: 'chromium',
+            headless: true,
+            provider: 'playwright'
+        }
     },
     server: {
         // this ensures that the browser opens upon server start
-        open: true,
+        // open: true,
         // this sets a default port to 3000
         port: serverPort,
         cors: false,
