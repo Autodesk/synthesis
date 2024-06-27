@@ -10,15 +10,15 @@
     "preview": "vite preview --base=/fission/",
     "test": "vitest",
     "test:firefox": "vitest --browser.name firefox",
-    "lint:fix": "npm run lint --fix",
-    "prettier": "npx prettier src --check",
-    "prettier:fix": "npm run prettier --write",
-    "format": "npm run prettier:fix && npm run lint:fix",
+    "lint:fix": "bun run lint --fix || npm run lint --fix",
+    "prettier": "bun x prettier src --check || npx prettier src --check",
+    "prettier:fix": "bun run prettier --write || npm run prettier --write",
+    "format": "(bun run prettier:fix && bun run lint:fix) || (npm run prettier:fix && npm run lint:fix)",
     "build:prod": "tsc && vite build --base=/fission/",
     "assetpack": "run-script-os",
     "assetpack:nix": "curl -o public/assetpack.zip https://synthesis.autodesk.com/Downloadables/assetpack.zip && unzip -o public/assetpack.zip -d public/",
     "assetpack:win32": "curl -o public/assetpack.zip https://synthesis.autodesk.com/Downloadables/assetpack.zip && tar -xf public/assetpack.zip -C public/",
-    "playwright:install": "npx playwright install || bun x playwright install"
+    "playwright:install": "bun x playwright install || npx playwright install"
   },
   "dependencies": {
     "@barclah/jolt-physics": "^0.24.1",

@@ -120,7 +120,16 @@ const MainHUD: React.FC = () => {
                         icon={<IoPeople />}
                         onClick={() => openModal("import-mirabuf")}
                     />
-                    <MainHUDButton value={"Test God Mode"} icon={<IoGameControllerOutline />} onClick={TestGodMode} />
+                    <MainHUDButton
+                        value={"Import Local Mira"}
+                        icon={<IoPeople />}
+                        onClick={() => openModal("import-local-mirabuf")}
+                    />
+                    <MainHUDButton
+                        value={"Test God Mode"}
+                        icon={<IoGameControllerOutline />}
+                        onClick={TestGodMode}
+                    />
                 </div>
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton

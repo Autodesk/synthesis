@@ -28,12 +28,7 @@ class PDMessage:
 
         self.currentMessage = "working..."
 
-        self.finalValue = (
-            self.componentCount
-            + self.occurrenceCount
-            + self.materialCount
-            + self.appearanceCount
-        )
+        self.finalValue = self.componentCount + self.occurrenceCount + self.materialCount + self.appearanceCount
         self.currentValue = 0
 
         self.progressDialog = progressDialog
@@ -43,13 +38,9 @@ class PDMessage:
         # TABS DO NOTHING HALP
         out = f"{self.assemblyName} parsing:\n"
         out += f"\t Components: \t[ {self.currentCompCount} / {self.componentCount} ]\n"
-        out += (
-            f"\t Occurrences: \t[ {self.currentOccCount} / {self.occurrenceCount} ]\n"
-        )
+        out += f"\t Occurrences: \t[ {self.currentOccCount} / {self.occurrenceCount} ]\n"
         out += f"\t Materials: \t[ {self.currentMatCount} / {self.materialCount} ]\n"
-        out += (
-            f"\t Appearances: \t[ {self.currentAppCount} / {self.appearanceCount} ]\n"
-        )
+        out += f"\t Appearances: \t[ {self.currentAppCount} / {self.appearanceCount} ]\n"
         out += f"{self.currentMessage}"
 
         return out

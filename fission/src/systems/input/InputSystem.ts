@@ -121,7 +121,10 @@ class InputSystem extends WorldSystem {
     }
 
     // Returns true if two modifier states are identical
-    private static CompareModifiers(state1: ModifierState, state2: ModifierState): boolean {
+    private static CompareModifiers(state1: ModifierState, state2: ModifierState) : boolean {
+        if (!state1 || !state2)
+            return false;
+        
         return (
             state1.alt == state2.alt &&
             state1.ctrl == state2.ctrl &&
