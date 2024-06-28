@@ -128,7 +128,7 @@ class APS {
                 if (this.auth) {
                     this.loadUserInfo(this.auth!).then(async () => {
                         if (APS.userInfo) {
-                            MainHUD_AddToast("info", "ADSK Login", `Hello, ${APS.userInfo.givenName}`)
+                            console.info(`Hello, ${APS.userInfo.givenName}`)
                         }
                     })
                 }
