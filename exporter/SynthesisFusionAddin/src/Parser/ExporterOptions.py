@@ -18,7 +18,7 @@ from ..strings import INTERNAL_ID
 # Not 100% sure what this is for - Brandon
 JointParentType = Enum("JointParentType", ["ROOT", "END"])
 
-WheelType = Enum("WheelType", ["STANDARD", "OMNI"])
+WheelType = Enum("WheelType", ["STANDARD", "OMNI", "MECANUM"])
 SignalType = Enum("SignalType", ["PWM", "CAN", "PASSIVE"])
 ExportMode = Enum("ExportMode", ["ROBOT", "FIELD"])  # Dynamic / Static export
 PreferredUnits = Enum("PreferredUnits", ["METRIC", "IMPERIAL"])

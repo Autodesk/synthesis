@@ -11,6 +11,7 @@ from ..Parser.ExporterOptions import JointParentType, Joint, Wheel, SignalType, 
 
 # Wish we did not need this. Could look into storing everything within the design every time - Brandon
 selectedJointList: list[adsk.fusion.Joint] = []
+previousWheelCheckboxState: list[bool] = []
 jointWheelIndexMap: dict[str, int] = {}
 jointConfigTable: adsk.core.TableCommandInput
 wheelConfigTable: adsk.core.TableCommandInput
@@ -256,7 +257,7 @@ def addJointToConfigTab(fusionJoint: adsk.fusion.Joint, synJoint: Joint | None =
         jointType.tooltipDescription = "<hr>The root component is usually the parent.</hr>"
 
         signalType = commandInputs.addDropDownCommandInput(
-            "signalType",
+            "signalTypeJoint",
             "Signal Type",
             dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
         )
@@ -339,6 +340,8 @@ def addJointToConfigTab(fusionJoint: adsk.fusion.Joint, synJoint: Joint | None =
             checked=isWheel,
             enabled=wheelCheckboxEnabled,
         ), row, 6)
+
+        previousWheelCheckboxState.append(isWheel)
     except:
         logging.getLogger("{INTERNAL_ID}.UI.JointConfigTab.addJointToConfigTab()").error(
             "Failed:\n{}".format(traceback.format_exc())
@@ -356,13 +359,10 @@ def addWheelToConfigTab(joint: adsk.fusion.Joint, wheel: Wheel | None = None) ->
     wheelName.tooltip = joint.name # TODO: Should this be the same?
     wheelType = commandInputs.addDropDownCommandInput("wheelType", "Wheel Type", dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle)
 
-    if wheel:
-        standardWheelType = wheel.wheelType is WheelType.STANDARD
-    else:
-        standardWheelType = True
-
-    wheelType.listItems.add("Standard", standardWheelType, "")
-    wheelType.listItems.add("OMNI", not standardWheelType, "")
+    selectedWheelType = wheel.wheelType if wheel else WheelType.STANDARD
+    wheelType.listItems.add("Standard", selectedWheelType is WheelType.STANDARD, "")
+    wheelType.listItems.add("OMNI", selectedWheelType is WheelType.OMNI, "")
+    wheelType.listItems.add("Mecanum", selectedWheelType is WheelType.MECANUM, "")
     wheelType.tooltip = "Wheel type"
     wheelType.tooltipDescription = "".join(["<Br>Omni-directional wheels can be used just like regular drive wheels",
                                             "but they have the advantage of being able to roll freely perpendicular to", 
@@ -372,14 +372,11 @@ def addWheelToConfigTab(joint: adsk.fusion.Joint, wheel: Wheel | None = None) ->
     signalType.isFullWidth = True
     signalType.isEnabled = False
     signalType.tooltip = "Wheel signal type is linked with the respective joint signal type."
-    if wheel:
-        signalType.listItems.add("‎", wheel.signalType is SignalType.PWM, IconPaths.signalIcons["PWM"])
-        signalType.listItems.add("‎", wheel.signalType is SignalType.CAN, IconPaths.signalIcons["CAN"])
-        signalType.listItems.add("‎", wheel.signalType is SignalType.PASSIVE, IconPaths.signalIcons["PASSIVE"])
-    else:
-        signalType.listItems.add("‎", True, IconPaths.signalIcons["PWM"])
-        signalType.listItems.add("‎", False, IconPaths.signalIcons["CAN"])
-        signalType.listItems.add("‎", False, IconPaths.signalIcons["PASSIVE"])
+    i = selectedJointList.index(joint)
+    jointSignalType = SignalType(jointConfigTable.getInputAtPosition(i + 1, 3).selectedItem.index + 1)
+    signalType.listItems.add("‎", jointSignalType is SignalType.PWM, IconPaths.signalIcons["PWM"])
+    signalType.listItems.add("‎", jointSignalType is SignalType.CAN, IconPaths.signalIcons["CAN"])
+    signalType.listItems.add("‎", jointSignalType is SignalType.PASSIVE, IconPaths.signalIcons["PASSIVE"])
 
     row = wheelConfigTable.rowCount
     wheelConfigTable.addCommandInput(wheelIcon, row, 0)
@@ -404,6 +401,7 @@ def removeJointFromConfigTab(joint: adsk.fusion.Joint) -> None:
 
         i = selectedJointList.index(joint)
         selectedJointList.remove(joint)
+        previousWheelCheckboxState.pop(i)
         jointConfigTable.deleteRow(i + 1)
         for row in range(jointConfigTable.rowCount): # Row is 1 indexed
             # TODO: Step through this in the debugger and figure out if this is all necessary.
@@ -434,6 +432,10 @@ def removeWheelFromConfigTab(joint: adsk.fusion.Joint) -> None:
     try:
         row = jointWheelIndexMap[joint.entityToken]
         wheelConfigTable.deleteRow(row)
+        del jointWheelIndexMap[joint.entityToken]
+        for key, value in jointWheelIndexMap.items():
+            if value > row - 1:
+                jointWheelIndexMap[key] -= 1
     except:
         logging.getLogger("{INTERNAL_ID}.UI.JointConfigTab.removeJointFromConfigTab()").error(
             "Failed:\n{}".format(traceback.format_exc())
@@ -478,3 +480,44 @@ def getSelectedJointsAndWheels() -> tuple[list[Joint], list[Wheel]]:
 
 def resetSelectedJoints() -> None:
     selectedJointList.clear()
+    previousWheelCheckboxState.clear()
+    jointWheelIndexMap.clear()
+
+
+def handleJointConfigTabInputChanged(commandInput: adsk.core.CommandInput) -> None:
+    if commandInput.id == "wheelType":
+        wheelTypeDropdown = adsk.core.DropDownCommandInput.cast(commandInput)
+        position = wheelConfigTable.getPosition(wheelTypeDropdown)[1]
+        iconInput = wheelConfigTable.getInputAtPosition(position, 0)
+
+        if wheelTypeDropdown.selectedItem.index == 0:
+            iconInput.imageFile = IconPaths.wheelIcons["standard"]
+            iconInput.tooltip = "Standard wheel"
+        elif wheelTypeDropdown.selectedItem.index == 1:
+            iconInput.imageFile = IconPaths.wheelIcons["omni"]
+            iconInput.tooltip = "Omni wheel"
+        elif wheelTypeDropdown.selectedItem.index == 2:
+            iconInput.imageFile = IconPaths.wheelIcons["mecanum"]
+            iconInput.tooltip = "Mecanum wheel"
+
+    elif commandInput.id == "isWheel":
+        isWheelCheckbox = adsk.core.BoolValueCommandInput.cast(commandInput)
+        position = jointConfigTable.getPosition(isWheelCheckbox)[1] - 1
+        isAlreadyWheel = bool(jointWheelIndexMap.get(selectedJointList[position].entityToken))
+
+        if isWheelCheckbox.value != previousWheelCheckboxState[position]:
+            if not isAlreadyWheel:
+                addWheelToConfigTab(selectedJointList[position])
+            else:
+                removeWheelFromConfigTab(selectedJointList[position])
+
+            previousWheelCheckboxState[position] = isWheelCheckbox.value
+
+    elif commandInput.id == "signalTypeJoint":
+        signalTypeDropdown = adsk.core.DropDownCommandInput.cast(commandInput)
+        position = jointConfigTable.getPosition(signalTypeDropdown)[1] # 1 indexed
+        wheelTabPosition = jointWheelIndexMap.get(selectedJointList[position - 1].entityToken)
+
+        if wheelTabPosition:
+            wheelSignalItems = wheelConfigTable.getInputAtPosition(position, 3).listItems
+            wheelSignalItems.item(signalTypeDropdown.selectedItem.index).isSelected = True
