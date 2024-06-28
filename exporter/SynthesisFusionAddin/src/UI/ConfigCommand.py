@@ -702,7 +702,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             frictionCoeff = physics_settings.addFloatSliderListCommandInput(
                 "friction_coeff_override", "Friction Coefficient", "", valueList
             )
-            frictionCoeff.isVisible = False
+            frictionCoeff.isVisible = True 
             frictionCoeff.valueOne = 0.5
             frictionCoeff.tooltip = "Friction coefficient of field element."
             frictionCoeff.tooltipDescription = "<i>Friction coefficients range from 0 (ice) to 1 (rubber).</i>"
