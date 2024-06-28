@@ -80,7 +80,7 @@ class SceneRenderer extends WorldSystem {
         ground.castShadow = true;
         this._scene.add(ground);
 
-        // skybox
+        // Adding spherical skybox mesh
         const geometry = new THREE.SphereGeometry(1000);
         const material = new THREE.ShaderMaterial({
             vertexShader: vertexShader,
@@ -92,8 +92,6 @@ class SceneRenderer extends WorldSystem {
                 bColor: { value: 1.0 },
             }
         });
-
-
         this._skybox = new THREE.Mesh(geometry, material); 
         this._skybox.receiveShadow = false;
         this._skybox.castShadow = false;
@@ -164,6 +162,11 @@ class SceneRenderer extends WorldSystem {
         })
     }
 
+    /* 
+     * Updates the skybox colors based on the current theme
+
+     * @param currentTheme: current theme from ThemeContext.useTheme()
+     */
     public updateSkyboxColors(currentTheme: Theme) {
         if (!this._skybox) return;
         if (this._skybox.material instanceof THREE.ShaderMaterial) {

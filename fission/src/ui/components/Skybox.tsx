@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import World from "@/systems/World";
+import { useTheme } from "../ThemeContext";
 
 const Skybox = () => {
-    const currentTheme = (window as any).getTheme();
-    if (World.SceneRenderer) { World.SceneRenderer.updateSkyboxColors(currentTheme); }
+   const { currentTheme, themes } = useTheme(); 
+   if (World.SceneRenderer) { World.SceneRenderer.updateSkyboxColors(themes[currentTheme]) }
     return (
         <></>
     );
