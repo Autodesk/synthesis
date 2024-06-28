@@ -1,7 +1,5 @@
-from . import OsHelper
-from . import Handlers
-
 from ..general_imports import *
+from . import Handlers, OsHelper
 
 
 # no longer used
@@ -47,9 +45,7 @@ class HPalette:
             self.events.append(arg)
 
         if self.uid in gm.uniqueIds:
-            raise ValueError(
-                f"Cannot create two UI Elements with the same ID {self.uid}\n"
-            )
+            raise ValueError(f"Cannot create two UI Elements with the same ID {self.uid}\n")
 
         if gm.ui.palettes is None:
             raise RuntimeError(f"No Palette object exists yet")
@@ -57,9 +53,7 @@ class HPalette:
         self.palette = gm.ui.palettes.itemById(self.uid)
 
         if self.palette is None:
-            path = OsHelper.getOSPathPalette(
-                "src", "Resources", "Palette", f'{self.name.replace(" ", "")}'
-            )
+            path = OsHelper.getOSPathPalette("src", "Resources", "Palette", f'{self.name.replace(" ", "")}')
 
             self.palette = gm.ui.palettes.add(
                 self.uid,
@@ -72,9 +66,7 @@ class HPalette:
                 height,
             )
 
-            self.palette.dockingState = (
-                adsk.core.PaletteDockingStates.PaletteDockStateLeft
-            )
+            self.palette.dockingState = adsk.core.PaletteDockingStates.PaletteDockStateLeft
 
             onHTML = Handlers.HPaletteHTMLEventHandler(self)
             self.palette.incomingFromHTML.add(onHTML)
@@ -124,9 +116,7 @@ class HButton:
         self.uid = name.replace(" ", "") + f"_{INTERNAL_ID}"
 
         if self.uid in gm.uniqueIds:
-            raise ValueError(
-                f"Cannot create two UI Elements with the same ID {self.uid}\n"
-            )
+            raise ValueError(f"Cannot create two UI Elements with the same ID {self.uid}\n")
 
         self.name = name
 

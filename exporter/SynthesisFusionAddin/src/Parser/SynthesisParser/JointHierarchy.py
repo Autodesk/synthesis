@@ -1,11 +1,17 @@
-from .Utilities import guid_component, guid_occurrence
-from ...general_imports import *
-import adsk.core, adsk.fusion, traceback, logging, enum
+import enum
+import logging
+import traceback
 from typing import *
+
+import adsk.core
+import adsk.fusion
+
+from proto.proto_out import joint_pb2, types_pb2
+
+from ...general_imports import *
 from ..ExporterOptions import ExporterOptions
 from .PDMessage import PDMessage
-from proto.proto_out import types_pb2, joint_pb2
-
+from .Utilities import guid_component, guid_occurrence
 
 # ____________________________ DATA TYPES __________________
 
@@ -205,9 +211,7 @@ class JointParser:
         self.grounded = searchForGrounded(design.rootComponent)
 
         if self.grounded is None:
-            gm.ui.messageBox(
-                "There is not currently a Grounded Component in the assembly, stopping kinematic export."
-            )
+            gm.ui.messageBox("There is not currently a Grounded Component in the assembly, stopping kinematic export.")
             raise RuntimeWarning("There is no grounded component")
             return
 
@@ -245,9 +249,7 @@ class JointParser:
         # self.groundSimNode.printLink()
 
     def __getAllJoints(self):
-        for joint in list(self.design.rootComponent.allJoints) + list(
-            self.design.rootComponent.allAsBuiltJoints
-        ):
+        for joint in list(self.design.rootComponent.allJoints) + list(self.design.rootComponent.allAsBuiltJoints):
             try:
                 if joint and joint.occurrenceOne and joint.occurrenceTwo:
                     occurrenceOne = joint.occurrenceOne
@@ -257,17 +259,13 @@ class JointParser:
 
                 if occurrenceOne is None:
                     try:
-                        occurrenceOne = (
-                            joint.geometryOrOriginOne.entityOne.assemblyContext
-                        )
+                        occurrenceOne = joint.geometryOrOriginOne.entityOne.assemblyContext
                     except:
                         pass
 
                 if occurrenceTwo is None:
                     try:
-                        occurrenceTwo = (
-                            joint.geometryOrOriginTwo.entityOne.assemblyContext
-                        )
+                        occurrenceTwo = joint.geometryOrOriginTwo.entityOne.assemblyContext
                     except:
                         pass
 
@@ -312,8 +310,7 @@ class JointParser:
 
     def _recurseLink(self, simNode: SimulationNode):
         connectedAxisNodes = [
-            self.simulationNodesRef.get(componentKeys, None)
-            for componentKeys in simNode.data.getConnectedAxisTokens()
+            self.simulationNodesRef.get(componentKeys, None) for componentKeys in simNode.data.getConnectedAxisTokens()
         ]
         for connectedAxis in connectedAxisNodes:
             # connected is the occurrence
@@ -363,9 +360,9 @@ class JointParser:
             edge = DynamicEdge(relationship, node)
             prev.edges.append(edge)
             return
-        elif (
-            (occ.entityToken in self.dynamicJoints.keys()) and (prev is not None)
-        ) or self.currentTraversal.get(occ.entityToken) is not None:
+        elif ((occ.entityToken in self.dynamicJoints.keys()) and (prev is not None)) or self.currentTraversal.get(
+            occ.entityToken
+        ) is not None:
             return
 
         node = DynamicOccurrenceNode(occ)
@@ -373,9 +370,7 @@ class JointParser:
         self.currentTraversal[occ.entityToken] = True
 
         for occurrence in occ.childOccurrences:
-            self._populateNode(
-                occurrence, node, OccurrenceRelationship.TRANSFORM, is_ground=is_ground
-            )
+            self._populateNode(occurrence, node, OccurrenceRelationship.TRANSFORM, is_ground=is_ground)
 
         # if not is_ground:  # THIS IS A BUG - OCCURRENCE ACCESS VIOLATION
         try:
@@ -396,18 +391,11 @@ class JointParser:
                             connection = joint.occurrenceOne
 
                     if connection is not None:
-                        if (
-                            prev is None
-                            or connection.entityToken != prev.data.entityToken
-                        ):
+                        if prev is None or connection.entityToken != prev.data.entityToken:
                             self._populateNode(
                                 connection,
                                 node,
-                                (
-                                    OccurrenceRelationship.CONNECTION
-                                    if rigid
-                                    else OccurrenceRelationship.NEXT
-                                ),
+                                (OccurrenceRelationship.CONNECTION if rigid else OccurrenceRelationship.NEXT),
                                 is_ground=is_ground,
                             )
                 else:
@@ -489,9 +477,7 @@ def BuildJointPartHierarchy(
     except Warning:
         return False
     except:
-        logging.getLogger(f"{INTERNAL_ID}.JointHierarchy").error(
-            "Failed:\n{}".format(traceback.format_exc())
-        )
+        logging.getLogger(f"{INTERNAL_ID}.JointHierarchy").error("Failed:\n{}".format(traceback.format_exc()))
 
 
 def populateJoint(simNode: SimulationNode, joints: joint_pb2.Joints, progressDialog):
@@ -507,9 +493,7 @@ def populateJoint(simNode: SimulationNode, joints: joint_pb2.Joints, progressDia
     progressDialog.update()
 
     if not proto_joint:
-        logging.getLogger(f"{INTERNAL_ID}.JointHierarchy").error(
-            f"Could not find protobuf joint for {simNode.name}"
-        )
+        logging.getLogger(f"{INTERNAL_ID}.JointHierarchy").error(f"Could not find protobuf joint for {simNode.name}")
         return
 
     root = types_pb2.Node()

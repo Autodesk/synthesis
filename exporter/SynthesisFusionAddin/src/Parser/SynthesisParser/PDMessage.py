@@ -28,12 +28,7 @@ class PDMessage:
 
         self.currentMessage = "working..."
 
-        self.finalValue = (
-            self.componentCount
-            + self.occurrenceCount
-            + self.materialCount
-            + self.appearanceCount
-        )
+        self.finalValue = self.componentCount + self.occurrenceCount + self.materialCount + self.appearanceCount
         self.currentValue = 0
 
         self.progressDialog = progressDialog
