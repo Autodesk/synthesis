@@ -1,21 +1,21 @@
-import HingeDriver from "../driver/HingeDriver";
-import HingeStimulus from "../stimulus/HingeStimulus";
-import Behavior from "./Behavior";
-import InputSystem from "@/systems/input/InputSystem";
+import HingeDriver from "../driver/HingeDriver"
+import HingeStimulus from "../stimulus/HingeStimulus"
+import Behavior from "./Behavior"
+import InputSystem from "@/systems/input/InputSystem"
 
 class GenericArmBehavior extends Behavior {
-    private _hingeDriver: HingeDriver;
-    private _inputName: string;
-    private _assemblyName: string;
+    private _hingeDriver: HingeDriver
+    private _inputName: string
+    private _assemblyName: string
 
-    private _rotationalSpeed = 6;
+    private _rotationalSpeed = 6
 
     constructor(hingeDriver: HingeDriver, hingeStimulus: HingeStimulus, jointIndex: number, assemblyName: string) {
-        super([hingeDriver], [hingeStimulus]);
-        
-        this._hingeDriver = hingeDriver;
-        this._inputName = "joint " + jointIndex;
-        this._assemblyName = assemblyName;
+        super([hingeDriver], [hingeStimulus])
+
+        this._hingeDriver = hingeDriver
+        this._inputName = "joint " + jointIndex
+        this._assemblyName = assemblyName
     }
 
     // Sets the arms target rotational velocity
@@ -24,7 +24,7 @@ class GenericArmBehavior extends Behavior {
     }
 
     public Update(_: number): void {
-        this.rotateArm(InputSystem.getInput(this._inputName, this._assemblyName)*this._rotationalSpeed);
+        this.rotateArm(InputSystem.getInput(this._inputName, this._assemblyName) * this._rotationalSpeed)
     }
 }
 

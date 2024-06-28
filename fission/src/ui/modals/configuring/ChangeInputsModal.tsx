@@ -356,7 +356,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         <div>
                         <Button
                             value={
-                                "Set"
+                                "Apply"
                             }
                             onClick={() => {
                                 const scheme = DefaultInputs.ALL_INPUT_SCHEMES.find(s => s.schemeName == chosenResetScheme);
