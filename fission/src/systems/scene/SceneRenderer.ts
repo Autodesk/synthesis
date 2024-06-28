@@ -17,7 +17,7 @@ class SceneRenderer extends WorldSystem {
     private _sceneObjects: Map<number, SceneObject>
     
     private orbitControls: OrbitControls
-    private transformControls: Map<TransformControls, number>
+    private transformControls: Map<TransformControls, number> // maps all rendered transform controls to their size
     private isShiftPressed: boolean = false
 
     public get sceneObjects() {
@@ -83,6 +83,7 @@ class SceneRenderer extends WorldSystem {
         this.orbitControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
         this.orbitControls.update()
 
+        // Add event listeners for shift key
         this.transformControls = new Map();
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Shift') {
@@ -166,13 +167,19 @@ class SceneRenderer extends WorldSystem {
         })
     }
 
+    /*
+    * Attach new transform gizmo to Mesh
+    * 
+    * @param obj - Mesh to attach gizmo to
+    * @param mode - Transform mode (translate, rotate, scale)
+    * @param size - Size of the gizmo
+    */
     public AddTransformGizmo(obj: THREE.Object3D, mode: "translate" | "rotate" | "scale" = 'translate', size: number = 5.0) {
         const transformControl = new TransformControls(this._mainCamera, this._renderer.domElement);
-        transformControl.addEventListener('dragging-changed', (event: { value: unknown }) => {
-            this.orbitControls.enabled = !event.value;
-        });
+        transformControl.addEventListener('dragging-changed', (event: { value: unknown }) => { this.orbitControls.enabled = !event.value;  }); // Disable orbit controls when dragging
         transformControl.setMode(mode);
         transformControl.attach(obj);
+
         if (mode === 'translate') { 
             transformControl.addEventListener('dragging-changed', (event: { target: TransformControls, value: unknown }) => {
                 if (!event.target) return;
@@ -189,8 +196,8 @@ class SceneRenderer extends WorldSystem {
                     transformControl.axis = 'XYZE';
                 }
             });
-            
         }
+
         this.transformControls.set(transformControl, size);
         this._scene.add(transformControl);
     }
