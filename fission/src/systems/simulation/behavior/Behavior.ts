@@ -17,7 +17,7 @@ abstract class Behavior {
         this._stimuli = stimuli
     }
 
-    public abstract Update(deltaT: number): void;
+    public abstract Update(deltaT: number): void
 }
 
 export default Behavior

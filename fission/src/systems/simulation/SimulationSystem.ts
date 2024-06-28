@@ -58,9 +58,15 @@ class SimulationLayer {
     private _drivers: Driver[]
     private _stimuli: Stimulus[]
 
-    public get brain() { return this._brain; }
-    public get drivers() { return this._drivers; }
-    public get stimuli() { return this._stimuli; }
+    public get brain() {
+        return this._brain
+    }
+    public get drivers() {
+        return this._drivers
+    }
+    public get stimuli() {
+        return this._stimuli
+    }
 
     constructor(mechanism: Mechanism) {
         this._mechanism = mechanism
@@ -101,13 +107,13 @@ class SimulationLayer {
     public SetBrain<T extends Brain>(brain: T | undefined) {
         if (this._brain) this._brain.Disable()
 
-        this._brain = brain;
-        
+        this._brain = brain
+
         if (this._brain) {
-            this._brain.Enable();
+            this._brain.Enable()
         }
     }
 }
 
-export default SimulationSystem;
-export {SimulationLayer};
+export default SimulationSystem
+export { SimulationLayer }
