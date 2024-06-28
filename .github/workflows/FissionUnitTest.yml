@@ -36,7 +36,7 @@ jobs:
 
       - name: Cache downloaded browsers
         id: cache-assets
-        uses: cache-assets
+        uses: actions/cache@v2
         with:
           path: /home/runner/.cache/ms-playwright/
           key: ${{ runner.os }}-assets-v2
