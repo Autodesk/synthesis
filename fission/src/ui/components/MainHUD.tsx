@@ -5,7 +5,7 @@ import { BiMenuAltLeft } from "react-icons/bi"
 import { GrFormClose } from "react-icons/gr"
 import { GiSteeringWheel } from "react-icons/gi"
 import { HiDownload } from "react-icons/hi"
-import { IoGameControllerOutline, IoPeople } from "react-icons/io5"
+import { IoGameController, IoGameControllerOutline, IoPeople } from "react-icons/io5"
 import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import { motion } from "framer-motion"
@@ -19,6 +19,7 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Button } from "@mui/base/Button"
 import Jolt from "@barclah/jolt-physics"
+import TransformGizmo from "./TransformGizmo"
 
 type ButtonProps = {
     value: string
@@ -141,6 +142,13 @@ const MainHUD: React.FC = () => {
                         onClick={() => {
                             const type: ToastType = ["info", "warning", "error"][Math.floor(Random() * 3)] as ToastType
                             addToast(type, type, "This is a test toast to test the toast system")
+                        }}
+                    />
+                    <MainHUDButton
+                        value={"Test Gizmo"}
+                        icon={<IoGameControllerOutline/>}
+                        onClick={() => {
+                            new TransformGizmo("translate").setMode = "rotate"
                         }}
                     />
                 </div>

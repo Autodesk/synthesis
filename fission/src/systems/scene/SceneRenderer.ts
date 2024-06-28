@@ -3,6 +3,7 @@ import { TransformControls } from "three/examples/jsm/controls/TransformControls
 import SceneObject from "./SceneObject"
 import WorldSystem from "../WorldSystem"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x73937e
@@ -124,7 +125,7 @@ class SceneRenderer extends WorldSystem {
         this.RemoveAllSceneObjects()
     }
 
-    public RegisterSceneObject<T extends SceneObject>(obj: T): number {
+    public RegisterSceneObject<T extends MirabufSceneObject>(obj: T): number {
         const id = nextSceneObjectId++
         obj.id = id
         this._sceneObjects.set(id, obj)
@@ -180,7 +181,7 @@ class SceneRenderer extends WorldSystem {
         transformControl.setMode(mode);
         transformControl.attach(obj);
 
-        if (mode === 'translate') { 
+        if (mode === 'translate') { // prioritizing translate mode over rotate and scale
             transformControl.addEventListener('dragging-changed', (event: { target: TransformControls, value: unknown }) => {
                 if (!event.target) return;
                 this.transformControls.forEach((_size, tc) => {
@@ -190,7 +191,7 @@ class SceneRenderer extends WorldSystem {
                     }
                 });
             });
-        } else if (mode === 'scale') {
+        } else if (mode === 'scale') { // uniform scaling when shift is pressed
             transformControl.addEventListener('dragging-changed', () => {
                 if (this.isShiftPressed) {
                     transformControl.axis = 'XYZE';
@@ -199,7 +200,36 @@ class SceneRenderer extends WorldSystem {
         }
 
         this.transformControls.set(transformControl, size);
+        this._scene.add(obj);
         this._scene.add(transformControl);
+    }
+
+    /* 
+    * Remove transform gizmo from Mesh
+    *
+    * @param obj - Mesh to remove gizmo from
+    */
+    public RemoveTransformGizmo(obj: THREE.Object3D) {
+        this.transformControls.forEach((size, tc) => {
+            if (tc.object === obj) {
+                this._scene.remove(tc);
+                this.transformControls.delete(tc);
+            }
+        });
+    }
+
+    /* 
+    * Update the mode of the transform gizmo
+    *
+    * @param mode - Transform mode (translate, rotate, scale)
+    * @param obj - Mesh to update gizmo mode
+    */
+    public UpdateTransformGizmoMode(mode: "translate" | "rotate" | "scale", obj: THREE.Object3D) {
+        this.transformControls.forEach((size, tc) => {
+            if (tc.object === obj) {
+                tc.setMode(mode);
+            }
+        });
     }
 }
 
