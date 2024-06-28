@@ -34,20 +34,29 @@ jobs:
           cd fission
           curl -o public/assetpack.zip https://synthesis.autodesk.com/Downloadables/assetpack.zip && unzip -o public/assetpack.zip -d public/
 
+      - name: Get installed Playwright version
+        id: playwright-version
+        run: echo "PLAYWRIGHT_VERSION=$(node -e "console.log(require('./package-lock.json').dependencies['@playwright/test'].version)")" >> $GITHUB_ENV
+
       - name: Cache downloaded browsers
         id: cache-browsers
         uses: actions/cache@v2
         with:
-          path: /home/runner/.cache/ms-playwright/
-          key: ${{ runner.os }}-assets-v2
-          restor-keys: |
-            ${{ runner.os }}-assets-
+          path: |
+            ~/.cache/ms-playwright/
+          key: ${{ runner.os }}-assets-playwright-${{ env.PLAYWRIGHT_VERSION }}
 
-      - name: Download browsers if not cached
-        if: steps.cache-assets.outputs.cache-hit != 'true'
+      - name: Clean Install
         run: |
           cd fission
-          npm run playwright:install
+          npm ci
+
+      - name: Download playwright if not cached
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: |
+          cd fission
+          npx playwright install --with-deps
+          npx playwright install-deps
 
       - name: Install Dependencies
         run: |
