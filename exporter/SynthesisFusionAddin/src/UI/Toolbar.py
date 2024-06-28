@@ -36,9 +36,7 @@ class Toolbar:
 
             except:
                 error = traceback.format_exc()
-                self.logger.error(
-                    f"Failed at creating toolbar with {self.uid} due to {error}"
-                )
+                self.logger.error(f"Failed at creating toolbar with {self.uid} due to {error}")
 
     def getPanel(self, name: str, visibility: bool = True) -> str or None:
         """# Gets a control for a panel to the tabbed toolbar
@@ -57,15 +55,11 @@ class Toolbar:
             self.logger.debug(f"Created Panel {panel_uid} in Toolbar {self.uid}")
             return panel_uid
         else:
-            self.logger.error(
-                f"Failed to Create Panel {panel_uid} in Toolbar {self.uid}"
-            )
+            self.logger.error(f"Failed to Create Panel {panel_uid} in Toolbar {self.uid}")
             return None
 
     @staticmethod
-    def getNewPanel(
-        name: str, tab_id: str, toolbar_id: str, visibility: bool = True
-    ) -> str or None:
+    def getNewPanel(name: str, tab_id: str, toolbar_id: str, visibility: bool = True) -> str or None:
         """# Gets a control for a panel to the tabbed toolbar visibility"""
         logger = logging.getLogger(f"{INTERNAL_ID}.Toolbar.getNewPanel")
 

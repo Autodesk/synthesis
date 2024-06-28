@@ -1,13 +1,16 @@
 # Should contain Physical and Apperance materials ?
-import adsk, logging, traceback, math
+import logging
+import math
+import traceback
 
-from .Utilities import *
-from .. import ExporterOptions
+import adsk
+
+from proto.proto_out import material_pb2
 
 from ...general_imports import INTERNAL_ID
-
+from .. import ExporterOptions
 from .PDMessage import PDMessage
-from proto.proto_out import material_pb2
+from .Utilities import *
 
 OPACITY_RAMPING_CONSTANT = 14.0
 
@@ -97,31 +100,17 @@ def getPhysicalMaterialData(fusion_material, proto_material, options):
         """
         Mechanical Properties
         """
-        mechanicalProperties.young_mod = materialProperties.itemById(
-            "structural_Young_modulus"
-        ).value
-        mechanicalProperties.poisson_ratio = materialProperties.itemById(
-            "structural_Poisson_ratio"
-        ).value
-        mechanicalProperties.shear_mod = materialProperties.itemById(
-            "structural_Shear_modulus"
-        ).value
-        mechanicalProperties.density = materialProperties.itemById(
-            "structural_Density"
-        ).value
-        mechanicalProperties.damping_coefficient = materialProperties.itemById(
-            "structural_Damping_coefficient"
-        ).value
+        mechanicalProperties.young_mod = materialProperties.itemById("structural_Young_modulus").value
+        mechanicalProperties.poisson_ratio = materialProperties.itemById("structural_Poisson_ratio").value
+        mechanicalProperties.shear_mod = materialProperties.itemById("structural_Shear_modulus").value
+        mechanicalProperties.density = materialProperties.itemById("structural_Density").value
+        mechanicalProperties.damping_coefficient = materialProperties.itemById("structural_Damping_coefficient").value
 
         """
         Strength Properties
         """
-        strengthProperties.yield_strength = materialProperties.itemById(
-            "structural_Minimum_yield_stress"
-        ).value
-        strengthProperties.tensile_strength = materialProperties.itemById(
-            "structural_Minimum_tensile_strength"
-        ).value
+        strengthProperties.yield_strength = materialProperties.itemById("structural_Minimum_yield_stress").value
+        strengthProperties.tensile_strength = materialProperties.itemById("structural_Minimum_tensile_strength").value
         """
         strengthProperties.thermal_treatment = materialProperties.itemById(
             "structural_Thermally_treated"
@@ -129,9 +118,9 @@ def getPhysicalMaterialData(fusion_material, proto_material, options):
         """
 
     except:
-        logging.getLogger(
-            f"{INTERNAL_ID}.Parser.Materials.getPhysicalMaterialData"
-        ).error("Failed:\n{}".format(traceback.format_exc()))
+        logging.getLogger(f"{INTERNAL_ID}.Parser.Materials.getPhysicalMaterialData").error(
+            "Failed:\n{}".format(traceback.format_exc())
+        )
 
 
 def _MapAllAppearances(
@@ -224,9 +213,7 @@ def getMaterialAppearance(
             baseColor = properties.itemById("transparent_color").value
             transparent_distance = properties.itemById("transparent_distance").value
 
-            opac = (255.0 * transparent_distance) / (
-                transparent_distance + OPACITY_RAMPING_CONSTANT
-            )
+            opac = (255.0 * transparent_distance) / (transparent_distance + OPACITY_RAMPING_CONSTANT)
             if opac > 255:
                 opac = 255
             elif opac < 0:
@@ -242,11 +229,7 @@ def getMaterialAppearance(
             color.A = baseColor.opacity
         else:
             for prop in fusionAppearance.appearanceProperties:
-                if (
-                    (prop.name == "Color")
-                    and (prop.value is not None)
-                    and (prop.id != "surface_albedo")
-                ):
+                if (prop.name == "Color") and (prop.value is not None) and (prop.id != "surface_albedo"):
                     baseColor = prop.value
                     color.R = baseColor.red
                     color.G = baseColor.green

@@ -9,7 +9,7 @@ class GenericArmBehavior extends Behavior {
     private _positiveInput: string
     private _negativeInput: string
 
-    private _rotationalSpeed = 30
+    private _rotationalSpeed = 6
 
     constructor(hingeDriver: HingeDriver, hingeStimulus: HingeStimulus, jointIndex: number) {
         super([hingeDriver], [hingeStimulus])
