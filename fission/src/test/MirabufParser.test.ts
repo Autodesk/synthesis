@@ -2,11 +2,11 @@ import { describe, test, expect } from "vitest"
 
 import { mirabuf } from "../proto/mirabuf"
 import MirabufParser, { RigidNodeReadOnly } from "../mirabuf/MirabufParser"
-import { LoadMirabufLocal, LoadMirabufRemote, MiraType } from "../mirabuf/MirabufLoader"
+import { LoadMirabufRemote, MiraType } from "../mirabuf/MirabufLoader"
 
 describe("Mirabuf Parser Tests", () => {
     test("Generate Rigid Nodes (Dozer_v9.mira)", async () => {
-        const spikeMira = await LoadMirabufRemote("/api/mira/Robots/Dozer_v9.mira")
+        const spikeMira = await LoadMirabufRemote("/api/mira/Robots/Dozer_v9.mira", MiraType.ROBOT)
 
         const t = new MirabufParser(spikeMira!)
         const rn = t.rigidNodes
@@ -15,7 +15,7 @@ describe("Mirabuf Parser Tests", () => {
     })
 
     test("Generate Rigid Nodes (FRC_Field_2018_v14.mira)", async () => {
-        const field = await LoadMirabufRemote("/api/mira/Fields/FRC Field 2018_v13.mira")
+        const field = await LoadMirabufRemote("/api/mira/Fields/FRC Field 2018_v13.mira", MiraType.ROBOT)
 
         const t = new MirabufParser(field!)
 
@@ -23,7 +23,7 @@ describe("Mirabuf Parser Tests", () => {
     })
 
     test("Generate Rigid Nodes (Team_2471_(2018)_v7.mira)", async () => {
-        const mm = await LoadMirabufRemote("/api/mira/Robots/Team 2471 (2018)_v7.mira")
+        const mm = await LoadMirabufRemote("/api/mira/Robots/Team 2471 (2018)_v7.mira", MiraType.ROBOT)
 
         const t = new MirabufParser(mm!)
 
