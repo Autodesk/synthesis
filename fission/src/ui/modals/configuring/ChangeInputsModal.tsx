@@ -341,7 +341,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                             }
                         } 
                     />
-                    <Label size = {LabelSize.Medium}>Reset to Defaults</Label>
+                    <Label size = {LabelSize.Medium}>Default Control Schemes</Label>
                     {/* <Stack direction={StackDirection.Horizontal} justify="center" align="stretch"> */}
                         <div>
                         <Dropdown
@@ -353,7 +353,6 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                             }}
                         />
                         </div>
-                        <div>
                         <Button
                             value={
                                 "Apply"
@@ -377,7 +376,33 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                 setSelectedScheme(undefined);
                             }}
                         />
-                        </div>
+                        <Button
+                            value={
+                                "Reset all to Defaults"
+                            }
+                            onClick={() => {
+                               let i = 0;
+                                InputSystem.allInputs.forEach(currentScheme => {
+                                    const scheme = DefaultInputs.ALL_INPUT_SCHEMES[i];
+                                    if (!currentScheme || !scheme)
+                                        return;
+
+                                    scheme.inputs.forEach(newInput => {
+                                        const currentInput = currentScheme.inputs.find(i => i.inputName == newInput.inputName);
+
+                                        if (currentInput) {
+                                            const inputIndex = currentScheme.inputs.indexOf(currentInput);
+
+                                            currentScheme.inputs[inputIndex] = newInput.getCopy();
+                                        }
+                                    })
+                                    currentScheme.usesGamepad = scheme.usesGamepad;
+
+                                    i++
+                                })
+                                setSelectedScheme(undefined);
+                            }}
+                        />
                         {/* </Stack> */}
                         </>
                     ) : (

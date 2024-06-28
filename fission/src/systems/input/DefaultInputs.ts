@@ -35,15 +35,15 @@ class DefaultInputs {
             new AxisInput("arcadeTurn", "ArrowRight", "ArrowLeft"),
 
             new AxisInput("joint 1", "Slash", "Slash", -1, false, false, -1, -1, false, 
-                EmptyModifierState, { ctrl: false, alt: true, shift: false, meta: false }),
+                EmptyModifierState, { ctrl: true, alt: false, shift: false, meta: false }),
             new AxisInput("joint 2", "Period", "Period", -1, false, false, -1, -1, false, 
-                EmptyModifierState, { ctrl: false, alt: true, shift: false, meta: false }),
-            new AxisInput("joint 3", "Comma", "Comma", -1, false, false, -1, -1, false, 
-                EmptyModifierState, { ctrl: false, alt: true, shift: false, meta: false }),
+                EmptyModifierState, { ctrl: true, alt: false, shift: false, meta: false }),
+            new AxisInput("joint 3", "Comma", "Comma", -1, false, false, -1, -1, false,
+                EmptyModifierState, { ctrl: true, alt: false, shift: false, meta: false }),
             new AxisInput("joint 4", "KeyM", "KeyM", -1, false, false, -1, -1, false, 
-                EmptyModifierState, { ctrl: false, alt: true, shift: false, meta: false }),
-            new AxisInput("joint 5", "KeyN", "KeyN", -1, false, false, -1, -1, false, 
-                EmptyModifierState, { ctrl: false, alt: true, shift: false, meta: false })
+                EmptyModifierState, { ctrl: true, alt: false, shift: false, meta: false }),
+            new AxisInput("joint 5", "KeyN", "true", -1, false, false, -1, -1, false, 
+                EmptyModifierState, { ctrl: false, alt: false, shift: false, meta: false })
         ]
     };
 
