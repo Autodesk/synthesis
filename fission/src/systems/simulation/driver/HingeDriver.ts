@@ -21,7 +21,7 @@ class HingeDriver extends Driver {
         return this._targetAngle
     }
     public set targetAngle(rads: number) {
-        this._targetAngle = Math.max(this._constraint.GetLimitsMin(), Math.min(this._constraint.GetLimitsMax(), rads));
+        this._targetAngle = Math.max(this._constraint.GetLimitsMin(), Math.min(this._constraint.GetLimitsMax(), rads))
     }
 
     public set minTorqueLimit(nm: number) {
