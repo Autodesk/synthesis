@@ -1,6 +1,6 @@
 import { mirabuf } from "../proto/mirabuf"
 import Pako from "pako"
-import * as fs from "fs"
+// import * as fs from "fs"
 
 const robots = "Robots"
 const fields = "Fields"
@@ -29,10 +29,9 @@ export async function LoadMirabufRemote(fetchLocation: string, type: MiraType): 
     }
 }
 
-export function LoadMirabufLocal(fileLocation: string): mirabuf.Assembly {
-    console.log(fileLocation)
-    return mirabuf.Assembly.decode(UnzipMira(new Uint8Array(fs.readFileSync(fileLocation))))
-}
+// export function LoadMirabufLocal(fileLocation: string): mirabuf.Assembly {
+//     return mirabuf.Assembly.decode(UnzipMira(new Uint8Array(fs.readFileSync(fileLocation))))
+// }
 
 export async function ClearMira() {
     for await (const key of robotFolderHandle.keys()) {

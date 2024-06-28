@@ -21,9 +21,11 @@ jobs:
     - name: Install Dependencies
       run: |
         cd fission
+        rm package-lock.json
         npm install
         npm install -g run-script-os
         npm run assetpack
+        npm run playwright:install
     - name: Unit Tests
       id: unit-tests
       run: |
