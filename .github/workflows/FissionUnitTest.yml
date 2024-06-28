@@ -46,10 +46,11 @@ jobs:
             ~/.cache/ms-playwright/
           key: ${{ runner.os }}-assets-playwright-${{ env.PLAYWRIGHT_VERSION }}
 
-      - name: Clean Install
+      - name: Install Dependencies
         run: |
           cd fission
-          npm ci
+          rm package-lock.json
+          npm install
 
       - name: Download playwright if not cached
         if: steps.playwright-cache.outputs.cache-hit != 'true'
@@ -57,12 +58,6 @@ jobs:
           cd fission
           npx playwright install --with-deps
           npx playwright install-deps
-
-      - name: Install Dependencies
-        run: |
-          cd fission
-          rm package-lock.json
-          npm install
 
       - name: Unit Tests
         id: unit-tests
