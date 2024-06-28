@@ -14,20 +14,9 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal name="Settings" icon={<FaGear />} modalId={modalId}>
             <Label size={LabelSize.Medium}>Screen Settings</Label>
-            <Dropdown
-                label="Screen Mode"
-                options={["Windowed", "Fullscreen"]}
-                onSelect={() => {}}
-            />
-            <Dropdown
-                label="Quality Settings"
-                options={["Low", "Medium", "High", "Ultra"]}
-                onSelect={() => {}}
-            />
-            <Button
-                value="Theme Editor"
-                onClick={() => openModal("theme-editor")}
-            />
+            <Dropdown label="Screen Mode" options={["Windowed", "Fullscreen"]} onSelect={() => {}} />
+            <Dropdown label="Quality Settings" options={["Low", "Medium", "High", "Ultra"]} onSelect={() => {}} />
+            <Button value="Theme Editor" onClick={() => openModal("theme-editor")} />
             <Label size={LabelSize.Medium}>Camera Settings</Label>
             <Slider
                 min={1}
@@ -43,13 +32,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 label={"Pitch Sensitivity"}
                 format={{ maximumFractionDigits: 2 }}
             />
-            <Slider
-                min={1}
-                max={15}
-                defaultValue={3}
-                label={"Yaw Sensitivity"}
-                format={{ maximumFractionDigits: 2 }}
-            />
+            <Slider min={1} max={15} defaultValue={3} label={"Yaw Sensitivity"} format={{ maximumFractionDigits: 2 }} />
             <Label size={LabelSize.Medium}>Preferences</Label>
             <Checkbox label="Report Analytics" defaultState={false} />
             <Checkbox label="Use Metric" defaultState={true} />
