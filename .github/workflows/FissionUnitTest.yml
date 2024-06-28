@@ -34,12 +34,26 @@ jobs:
           cd fission
           curl -o public/assetpack.zip https://synthesis.autodesk.com/Downloadables/assetpack.zip && unzip -o public/assetpack.zip -d public/
 
+      - name: Cache downloaded browsers
+        id: cache-assets
+        uses: cache-assets
+        with:
+          path: /home/runner/.cache/ms-playwright/
+          key: ${{ runner.os }}-assets-v2
+          restor-keys: |
+            ${{ runner.os }}-assets-
+
+      - name: Download browsers if not cached
+        if: steps.cache-assets.outputs.cache-hit != 'true'
+        run: |
+          cd fission
+          npm run playwright:install
+
       - name: Install Dependencies
         run: |
           cd fission
           rm package-lock.json
           npm install
-          npm run playwright:install
 
       - name: Unit Tests
         id: unit-tests
