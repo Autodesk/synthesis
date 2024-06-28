@@ -205,9 +205,6 @@ def get_project_id(auth: str, hub_id: str, project_name: str) -> Result[str | No
     return Ok(None)
 
 
-"""
-Updates a an existing file and returns the id of the new version
-"""
 def update_file_version(auth: str, project: Project, folder: Folder, file_id: str, file_name: str, curr_file_version: str) -> Result[str, None]:
     """
     updates an existing file in an APS folder
@@ -230,7 +227,7 @@ def update_file_version(auth: str, project: Project, folder: Folder, file_id: st
     """
 
 
-    object_id_res = create_storage_location(auth, project)
+    object_id_res = create_storage_location(auth, project, folder, file_name)
     if object_id_res.is_err():
         return Err(None)
     object_id = object_id_res.ok()
@@ -266,7 +263,7 @@ def update_file_version(auth: str, project: Project, folder: Folder, file_id: st
         }
     }
 
-    relationships = {
+    relationships: dict[str, Any] = {
         "item": {
             "data": {
                 "type": "items",

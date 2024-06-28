@@ -95,20 +95,20 @@ This standard is inconsistently applied, and that's ok
 ```python
 def foo(bar: fizz="flower") -> Result[walrus, None]:
     """
-    turns a fizz into a walrus
+    Turns a fizz into a walrus
 
-    parameters:
-    bar - the fizz to be transformed (default = "flower") ; fizz standards are subject to change, old fizzes may no longer be valid
+    Parameters:
+    bar - The fizz to be transformed (default = "flower") ; fizz standards are subject to change, old fizzes may no longer be valid
 
-    returns:
-    success - the new walrus
-    failure - none if the summoning fails ; the cause of failure will be printed, not returned
+    Returns:
+    Success - She new walrus
+    Failure - None if the summoning fails ; the cause of failure will be printed, not returned
 
-    notes:
-    - only works as expected if the bar arg isn't a palindrome or an anagram of coffee. otherwise unexpected (but still valid) walruses may be returned
-    - please do not name your fizz "rizz" either, it hurts the walrus's feelings
+    Notes:
+    - Only works as expected if the bar arg isn't a palindrome or an anagram of coffee. Otherwise unexpected (but still valid) walruses may be returned
+    - Please do not name your fizz "rizz" either, it hurts the walrus's feelings
 
-    todo: consult witch about inconsistent alchemical methods
+    TODO: Consult witch about inconsistent alchemical methods
     """
     # More alchemical fizz -> walrus code
     some_walrus = bar + "_coffee"
