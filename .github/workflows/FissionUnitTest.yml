@@ -32,7 +32,7 @@ jobs:
         if: steps.cache-assets.outputs.cache-hit != 'true'
         run: |
           cd fission
-          npm run assetpack
+          curl -o public/assetpack.zip https://synthesis.autodesk.com/Downloadables/assetpack.zip && unzip -o public/assetpack.zip -d public/
 
       - name: Install Dependencies
         run: |
@@ -56,4 +56,3 @@ jobs:
             echo "Format Validation Failed"
             exit 1
           fi
-
