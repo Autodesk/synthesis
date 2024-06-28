@@ -8,7 +8,7 @@ import urllib.parse
 import urllib.request
 from dataclasses import dataclass
 
-from src.general_imports import (
+from ..general_imports import (
     APP_NAME,
     DESCRIPTION,
     INTERNAL_ID,
