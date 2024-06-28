@@ -35,7 +35,7 @@ jobs:
           curl -o public/assetpack.zip https://synthesis.autodesk.com/Downloadables/assetpack.zip && unzip -o public/assetpack.zip -d public/
 
       - name: Cache downloaded browsers
-        id: cache-assets
+        id: cache-browsers
         uses: actions/cache@v2
         with:
           path: /home/runner/.cache/ms-playwright/
