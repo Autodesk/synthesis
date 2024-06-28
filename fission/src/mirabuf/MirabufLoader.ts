@@ -1,6 +1,5 @@
 import { mirabuf } from "../proto/mirabuf"
 import Pako from "pako"
-// import * as fs from "fs"
 
 const robots = "Robots"
 const fields = "Fields"
@@ -9,6 +8,7 @@ const robotFolderHandle = await root.getDirectoryHandle(robots, { create: true }
 const fieldFolderHandle = await root.getDirectoryHandle(fields, { create: true })
 
 export function UnzipMira(buff: Uint8Array): Uint8Array {
+    // Check if file is gzipped via magic gzip numbers 31 139
     if (buff[0] == 31 && buff[1] == 139) {
         return Pako.ungzip(buff)
     } else {
