@@ -1,6 +1,7 @@
-import adsk.core
-import traceback
 import logging
+import traceback
+
+import adsk.core
 
 
 def createTableInput(
@@ -23,9 +24,9 @@ def createTableInput(
 
         return input
     except BaseException:
-        logging.getLogger(
-            "{INTERNAL_ID}.UI.ConfigCommand.{self.__class__.__name__}.createTableInput()"
-        ).error("Failed:\n{}".format(traceback.format_exc()))
+        logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.{self.__class__.__name__}.createTableInput()").error(
+            "Failed:\n{}".format(traceback.format_exc())
+        )
 
 
 def createBooleanInput(
@@ -47,9 +48,9 @@ def createBooleanInput(
 
         return input
     except BaseException:
-        logging.getLogger(
-            "{INTERNAL_ID}.UI.ConfigCommand.{self.__class__.__name__}.createBooleanInput()"
-        ).error("Failed:\n{}".format(traceback.format_exc()))
+        logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.{self.__class__.__name__}.createBooleanInput()").error(
+            "Failed:\n{}".format(traceback.format_exc())
+        )
 
 
 def createTextBoxInput(

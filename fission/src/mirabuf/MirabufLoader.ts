@@ -1,6 +1,6 @@
 import { mirabuf } from "../proto/mirabuf"
 import Pako from "pako"
-import * as fs from "fs"
+// import * as fs from "fs"
 
 export function UnzipMira(buff: Uint8Array): Uint8Array {
     if (buff[0] == 31 && buff[1] == 139) {
@@ -21,6 +21,6 @@ export async function LoadMirabufRemote(
     return mirabuf.Assembly.decode(byteBuffer)
 }
 
-export function LoadMirabufLocal(fileLocation: string): mirabuf.Assembly {
-    return mirabuf.Assembly.decode(UnzipMira(new Uint8Array(fs.readFileSync(fileLocation))))
-}
+// export function LoadMirabufLocal(fileLocation: string): mirabuf.Assembly {
+//     return mirabuf.Assembly.decode(UnzipMira(new Uint8Array(fs.readFileSync(fileLocation))))
+// }

@@ -1,5 +1,5 @@
 # Synthesis Exporter
-This is a Addin for *Autodesk Fusion 360* that will export a [Mirabuf](https://github.com/HiceS/mirabuf) usable by the Synthesis simulator.
+This is a Addin for Autodesk® Fusion™ that will export a [Mirabuf](https://github.com/HiceS/mirabuf) usable by the Synthesis simulator.
 
 ## Features
 - [x] Materials
@@ -31,7 +31,7 @@ We use `VSCode` Primarily, download it to interact with our code or use your own
 
 ### How to Build + Run
 1. See root [`README`](/README.md) on how to run `init` script
-2. Open `Autodesk Fusion 360`
+2. Open `Autodesk Fusion`
 3. Select `UTILITIES` from the top bar
 4. Click `ADD-INS` Button
 5. Click `Add-Ins` tab at the top of Scripts and Add-Ins dialog
@@ -55,7 +55,7 @@ Most of the runtime for the addin is saved under the `logs` directory in this fo
 
 #### General Debugging
 
-1. Open `Autodesk Fusion 360`
+1. Open `Autodesk Fusion`
 2. Select `UTILITIES` from the top bar
 3. Click `ADD-INS` Button
 4. Click `Add-Ins` tab at the top of Scripts and Add-Ins dialog
@@ -78,9 +78,10 @@ Contact us for information on how to use the packaging script to obfuscate all o
 
 ### How to Format
 
-We format using a Python formatter called `black` [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+We format using a Python formatter called `black` [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) in conjunction with [`isort`](https://pycqa.github.io/isort/).
 
-- install by `pip3 install black` or `pip install black`
-- use `black ./src`, Formats all files in src directory
+- install by `pip3 install black && pip3 install isort` or `pip install black && pip install isort`
+- use `isort .` followed by `black .` to format all relevant exporter python files.
+  - or, alternatively, run `python ./tools/format.py` to do this for you!
 
 __Note: black will always ignore files in the proto/proto_out folder since google formats those__

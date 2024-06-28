@@ -1,4 +1,5 @@
 import {
+    JoltVec3_ThreeVector3,
     MirabufFloatArr_JoltVec3,
     MirabufVector3_JoltVec3,
     ThreeMatrix4_JoltMat44,
@@ -24,11 +25,19 @@ const RobotLayers: number[] = [
     3, 4, 5, 6, 7, 8, 9,
 ]
 
+// Layer for ghost object in god mode, interacts with nothing
+const LAYER_GHOST = 10
+
 // Please update this accordingly.
-const COUNT_OBJECT_LAYERS = 10
+const COUNT_OBJECT_LAYERS = 11
 
 export const SIMULATION_PERIOD = 1.0 / 120.0
 const STANDARD_SUB_STEPS = 3
+
+// Friction constants
+const FLOOR_FRICTION = 0.7
+const SUSPENSION_MIN_FACTOR = 0.1
+const SUSPENSION_MAX_FACTOR = 0.3
 
 /**
  * The PhysicsSystem handles all Jolt Phyiscs interactions within Synthesis.
@@ -68,6 +77,7 @@ class PhysicsSystem extends WorldSystem {
             new THREE.Vector3(0.0, -2.0, 0.0),
             undefined
         )
+        ground.SetFriction(FLOOR_FRICTION)
         this._joltBodyInterface.AddBody(ground.GetID(), JOLT.EActivation_Activate)
     }
 
@@ -449,15 +459,9 @@ class PhysicsSystem extends WorldSystem {
         wheelSettings.mMaxHandBrakeTorque = 0.0
         wheelSettings.mRadius = radius * 1.05
         wheelSettings.mWidth = 0.1
-        wheelSettings.mSuspensionMinLength = 0.0000003
-        wheelSettings.mSuspensionMaxLength = 0.0000006
+        wheelSettings.mSuspensionMinLength = radius * SUSPENSION_MIN_FACTOR
+        wheelSettings.mSuspensionMaxLength = radius * SUSPENSION_MAX_FACTOR
         wheelSettings.mInertia = 1
-
-        const friction = new JOLT.LinearCurve()
-        friction.Clear()
-        friction.AddPoint(1, 1)
-        friction.AddPoint(0, 1)
-        wheelSettings.mLongitudinalFriction = friction
 
         const vehicleSettings = new JOLT.VehicleConstraintSettings()
 
@@ -602,7 +606,6 @@ class PhysicsSystem extends WorldSystem {
                 // Little testing components
                 body.SetRestitution(0.4)
             }
-
             // Cleanup
             JOLT.destroy(compoundShapeSettings)
         })
@@ -719,6 +722,50 @@ class PhysicsSystem extends WorldSystem {
         JOLT.destroy(this._joltBodyInterface)
         JOLT.destroy(this._joltInterface)
     }
+
+    /**
+     * Creates a ghost object and a distance constraint that connects it to the given body
+     * The ghost body is part of the LAYER_GHOST which doesn't interact with any other layer
+     * The caller is responsible for cleaning up the ghost body and the constraint
+     *
+     * @param id The id of the body to be attatched to and moved
+     * @returns The ghost body and the constraint
+     */
+
+    public CreateGodModeBody(id: Jolt.BodyID, anchorPoint: Jolt.Vec3): [Jolt.Body, Jolt.Constraint] {
+        const body = this.GetBody(id)
+        const ghostBody = this.CreateBox(
+            new THREE.Vector3(0.05, 0.05, 0.05),
+            undefined,
+            JoltVec3_ThreeVector3(anchorPoint),
+            undefined
+        )
+
+        const ghostBodyId = ghostBody.GetID()
+        this._joltBodyInterface.SetObjectLayer(ghostBodyId, LAYER_GHOST)
+        this._joltBodyInterface.AddBody(ghostBodyId, JOLT.EActivation_Activate)
+        this._bodies.push(ghostBodyId)
+
+        const constraintSettings = new JOLT.PointConstraintSettings()
+        constraintSettings.set_mPoint1(anchorPoint)
+        constraintSettings.set_mPoint2(anchorPoint)
+        const constraint = constraintSettings.Create(ghostBody, body)
+        this._joltPhysSystem.AddConstraint(constraint)
+        this._constraints.push(constraint)
+
+        return [ghostBody, constraint]
+    }
+
+    /**
+     * Exposes the SetPosition method on the _joltBodyInterface
+     * Sets the position of the body
+     *
+     * @param id The id of the body
+     * @param position The new position of the body
+     */
+    public SetBodyPosition(id: Jolt.BodyID, position: Jolt.Vec3): void {
+        this._joltBodyInterface.SetPosition(id, position, JOLT.EActivation_Activate)
+    }
 }
 
 export class LayerReserve {
@@ -737,7 +784,7 @@ export class LayerReserve {
         this._isReleased = false
     }
 
-    public Release() {
+    public Release(): void {
         if (!this._isReleased) {
             RobotLayers.push(this._layer)
             this._isReleased = true
