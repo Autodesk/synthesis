@@ -37,6 +37,7 @@ export const AddRobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
     const [remoteRobots, setRemoteRobots] = useState<MirabufEntry[] | null>(null)
 
+    // prettier-ignore
     useEffect(() => {
         (async () => {
             fetch("/api/mira/manifest.json")
@@ -95,6 +96,7 @@ export const AddFieldsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
     const [remoteFields, setRemoteFields] = useState<MirabufEntry[] | null>(null)
 
+    // prettier-ignore
     useEffect(() => {
         (async () => {
             fetch("/api/mira/manifest.json")
