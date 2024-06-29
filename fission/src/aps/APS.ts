@@ -20,13 +20,14 @@ interface APSUserInfo {
     name: string
     picture: string
     givenName: string
+    email: string
 }
 
 class APS {
     static authCode: string | undefined = undefined
     static requestMutex: Mutex = new Mutex()
 
-    static get auth(): APSAuth | undefined {
+    private static get auth(): APSAuth | undefined {
         const res = window.localStorage.getItem(APS_AUTH_KEY)
         try {
             return res ? JSON.parse(res) : undefined;
@@ -98,7 +99,13 @@ class APS {
                     'code_challenge_method': 'S256'
                 })
 
-                window.open(`https://developer.api.autodesk.com/authentication/v2/authorize?${params.toString()}`, '_self')
+                if (APS.userInfo) {
+                    params.append('authoptions', encodeURIComponent(JSON.stringify({ id: APS.userInfo.email })));
+                }
+
+                const url = `https://developer.api.autodesk.com/authentication/v2/authorize?${params.toString()}`;
+
+                window.open(url, '_self')
             } catch (e) {
                 console.error(e);
                 MainHUD_AddToast("error", "Error signing in.", "Please try again.");
@@ -146,11 +153,12 @@ class APS {
     static async convertAuthToken(code: string) {
         const authUrl = import.meta.env.DEV ? `http://localhost:3003/api/aps/code/` : `https://synthesis.autodesk.com/api/aps/code/`
         let retry_login = false;
-        fetch(`${authUrl}?code=${code}`).then(x => x.json()).then(x => {
-            const auth = x.response as APSAuth;
-            auth.expires_at = auth.expires_in + Date.now()
-            this.auth = auth
-        }).then(async () => {
+        try {
+            const res = await fetch(`${authUrl}?code=${code}`);
+            const json = await res.json()
+            const auth_res = json.response as APSAuth;
+            auth_res.expires_at = auth_res.expires_in + Date.now()
+            this.auth = auth_res
             console.log('Preloading user info')
             const auth = await this.getAuth();
             if (auth) {
@@ -162,10 +170,10 @@ class APS {
                 console.error("Couldn't get auth data.");
                 retry_login = true;
             }
-        }).catch(e => {
+        } catch (e) {
             console.error(e);
-            retry_login = true;
-        })
+            retry_login = true
+        }
         if (retry_login) {
             this.auth = undefined;
             MainHUD_AddToast('error', 'Error signing in.', 'Please try again.');
@@ -186,6 +194,7 @@ class APS {
                     name: x.name,
                     givenName: x.given_name,
                     picture: x.picture,
+                    email: x.email
                 }
 
                 this.userInfo = info

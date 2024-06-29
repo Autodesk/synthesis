@@ -60,14 +60,15 @@ const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
 
 function Synthesis() {
     const urlParams = new URLSearchParams(document.location.search)
-    if (urlParams.has("code")) {
+    const has_code = urlParams.has("code")
+    if (has_code) {
         const code = urlParams.get("code")
         if (code) {
-            APS.convertAuthToken(code);
-            document.location.search = '';
+            APS.convertAuthToken(code).then(() => {
+                document.location.search = ''
+            });
         }
     }
-
     const { openModal, closeModal, getActiveModalElement } = useModalManager(initialModals)
     const { openPanel, closePanel, closeAllPanels, getActivePanelElements } = usePanelManager(initialPanels)
     const { showTooltip } = useTooltipManager()
@@ -82,17 +83,16 @@ function Synthesis() {
     const modalElement = getActiveModalElement()
 
     useEffect(() => {
+        if (has_code) return;
+
         World.InitWorld()
 
         let mira_path = DEFAULT_MIRA_PATH
-
-        const urlParams = new URLSearchParams(document.location.search)
 
         if (urlParams.has("mira")) {
             mira_path = `test_mira/${urlParams.get("mira")!}`
             console.debug(`Selected Mirabuf File: ${mira_path}`)
         }
-        console.log(urlParams)
 
         const setup = async () => {
             const miraAssembly = await LoadMirabufRemote(mira_path)
