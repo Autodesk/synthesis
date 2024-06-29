@@ -96,13 +96,6 @@ class SceneRenderer extends WorldSystem {
                 this.isShiftPressed = false
             }
         })
-
-        const box = new THREE.Mesh(new THREE.BoxGeometry(1.0, 1.0, 1.0), this.CreateToonMaterial())
-        box.position.set(0.0, 1, 0.0)
-        this._scene.add(box)
-        this.AddTransformGizmo(box, "translate", 3.0)
-        this.AddTransformGizmo(box, "scale", 5.0)
-        this.AddTransformGizmo(box, "rotate", 7.0)
     }
 
     public UpdateCanvasSize() {
