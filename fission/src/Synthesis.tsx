@@ -54,6 +54,7 @@ import World from '@/systems/World.ts';
 import { AddRobotsModal, AddFieldsModal, SpawningModal } from '@/modals/spawning/SpawningModals.tsx';
 import ImportMirabufModal from '@/modals/mirabuf/ImportMirabufModal.tsx';
 import ImportLocalMirabufModal from '@/modals/mirabuf/ImportLocalMirabufModal.tsx';
+import APS from "./aps/APS.ts"
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
 
@@ -61,8 +62,10 @@ function Synthesis() {
     const urlParams = new URLSearchParams(document.location.search)
     if (urlParams.has("code")) {
         const code = urlParams.get("code")
-        window.opener?.setAuthCode(code)
-        window.close()
+        if (code) {
+            APS.convertAuthToken(code);
+            window.close()
+        }
     }
 
     const { openModal, closeModal, getActiveModalElement } = useModalManager(initialModals)

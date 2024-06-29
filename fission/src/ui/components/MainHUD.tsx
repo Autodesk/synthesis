@@ -5,7 +5,7 @@ import { BiMenuAltLeft } from "react-icons/bi"
 import { GrFormClose } from "react-icons/gr"
 import { GiSteeringWheel } from "react-icons/gi"
 import { HiDownload } from "react-icons/hi"
-import { IoGameControllerOutline, IoPeople } from "react-icons/io5"
+import { IoGameControllerOutline, IoPeople, IoRefresh } from "react-icons/io5"
 import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import { motion } from "framer-motion"
@@ -36,7 +36,7 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
         >
             {larger && icon}
             {!larger && (
-                <span onClick={onClick} className="absolute left-3 text-main-hud-icon">
+                <span className="absolute left-3 text-main-hud-icon">
                     {icon}
                 </span>
             )}
@@ -130,6 +130,11 @@ const MainHUD: React.FC = () => {
                         icon={<IoGameControllerOutline />}
                         onClick={TestGodMode}
                     />
+                    <MainHUDButton
+                        value={"Refresh APS Token"}
+                        icon={<IoRefresh />}
+                        onClick={() => APS.auth && APS.refreshAuthToken(APS.auth.refresh_token)}
+                    />
                 </div>
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton
@@ -153,21 +158,22 @@ const MainHUD: React.FC = () => {
                         }}
                     />
                 </div>
-                {userInfo ? (
+                {userInfo
+                    ?
                     <MainHUDButton
                         value={`Hi, ${userInfo.givenName}`}
                         icon={<UserIcon className="h-[20pt] m-[5pt] rounded-full" />}
                         larger={true}
                         onClick={() => APS.logout()}
                     />
-                ) : (
+                    :
                     <MainHUDButton
                         value={`APS Login`}
                         icon={<IoPeople />}
                         larger={true}
                         onClick={() => APS.requestAuthCode()}
                     />
-                )}
+                }
             </motion.div>
         </>
     )

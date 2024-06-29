@@ -1,16 +1,15 @@
+import { MainHUD_AddToast } from "@/ui/components/MainHUD"
 import { Random } from "@/util/Random"
+import { Mutex } from "async-mutex"
 
 const APS_AUTH_KEY = "aps_auth"
 const APS_USER_INFO_KEY = "aps_user_info"
 
 export const APS_USER_INFO_UPDATE_EVENT = "aps_user_info_update"
 
-const delay = 1000
 const authCodeTimeout = 200000
 
 const CLIENT_ID = 'GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU'
-
-let lastCall = Date.now()
 
 interface APSAuth {
     access_token: string;
@@ -28,6 +27,7 @@ interface APSUserInfo {
 
 class APS {
     static authCode: string | undefined = undefined
+    static requestMutex: Mutex = new Mutex()
 
     static get auth(): APSAuth | undefined {
         const res = window.localStorage.getItem(APS_AUTH_KEY)
@@ -39,7 +39,7 @@ class APS {
         }
     }
 
-    static set auth(a: APSAuth | undefined) {
+    private static set auth(a: APSAuth | undefined) {
         window.localStorage.removeItem(APS_AUTH_KEY)
         if (a) {
             window.localStorage.setItem(APS_AUTH_KEY, JSON.stringify(a))
@@ -49,12 +49,12 @@ class APS {
 
     static async getAuth(): Promise<APSAuth | undefined> {
         const auth = this.auth;
-        if (!auth) return new Promise((resolve) => resolve(undefined));
+        if (!auth) return undefined;
 
         if (Date.now() > auth.expires_at) {
             await this.refreshAuthToken(auth.refresh_token);
         }
-        return new Promise((resolve) => resolve(this.auth));
+        return this.auth;
     }
 
     static get userInfo(): APSUserInfo | undefined {
@@ -82,51 +82,36 @@ class APS {
     }
 
     static async requestAuthCode() {
-        if (Date.now() - lastCall > delay) {
-            lastCall = Date.now()
+        await this.requestMutex.runExclusive(async () => {
             const callbackUrl = import.meta.env.DEV
                 ? `http://localhost:3000${import.meta.env.BASE_URL}`
                 : `https://synthesis.autodesk.com${import.meta.env.BASE_URL}`
 
-            const challenge = await this.codeChallenge();
+            try {
+                const challenge = await this.codeChallenge();
 
-            const params = new URLSearchParams({
-                'response_type': 'code',
-                'client_id': CLIENT_ID,
-                'redirect_uri': callbackUrl,
-                'scope': 'data:read',
-                'nonce': Date.now().toString(),
-                'prompt': 'login',
-                'code_challenge': challenge,
-                'code_challenge_method': 'S256'
-            })
+                const params = new URLSearchParams({
+                    'response_type': 'code',
+                    'client_id': CLIENT_ID,
+                    'redirect_uri': callbackUrl,
+                    'scope': 'data:read',
+                    'nonce': Date.now().toString(),
+                    'prompt': 'login',
+                    'code_challenge': challenge,
+                    'code_challenge_method': 'S256'
+                })
 
-            window.open(`https://developer.api.autodesk.com/authentication/v2/authorize?${params.toString()}`)
-
-            const searchStart = Date.now()
-            const func = () => {
-                if (Date.now() - searchStart > authCodeTimeout) {
-                    console.debug("Auth Code Timeout")
-                    return
-                }
-
-                if (this.authCode) {
-                    const code = this.authCode
-                    this.authCode = undefined
-
-                    this.convertAuthToken(code)
-                } else {
-                    setTimeout(func, 500)
-                }
+                window.open(`https://developer.api.autodesk.com/authentication/v2/authorize?${params.toString()}`)
+            } catch (e) {
+                console.error(e);
+                MainHUD_AddToast("error", "Error signing in.", "Please try again.");
             }
-            func()
-        }
+        })
     }
 
     static async refreshAuthToken(refresh_token: string) {
-        let now
-        if ((now = Date.now()) - lastCall > delay) {
-            lastCall = now
+        await this.requestMutex.runExclusive(async () => {
+            let retry_login = false;
             const res = await fetch('https://developer.api.autodesk.com/authentication/v2/token', {
                 method: 'POST',
                 headers: {
@@ -138,14 +123,26 @@ class APS {
                     'refresh_token': refresh_token,
                     'scope': 'data:read',
                 })
-            }).then(res => res.json());
-            res.expires_at = res.expires_in + Date.now()
-            this.auth = res as APSAuth
-        }
+            })
+                .then(res => res.json())
+                .catch(e => {
+                    MainHUD_AddToast("error", "Error signing in.", "Please try again.");
+                    console.error(e);
+                    retry_login = true;
+                });
+            if (retry_login) {
+                this.auth = undefined;
+                this.requestAuthCode();
+            } else {
+                res.expires_at = res.expires_in + Date.now()
+                this.auth = res as APSAuth
+            }
+        })
     }
 
     static async convertAuthToken(code: string) {
         const authUrl = import.meta.env.DEV ? `http://localhost:3003/api/aps/code/` : `https://synthesis.autodesk.com/api/aps/code/`
+        let retry_login = false;
         fetch(`${authUrl}?code=${code}`).then(x => x.json()).then(x => {
             const auth = x.response as APSAuth;
             auth.expires_at = auth.expires_in + Date.now()
@@ -159,8 +156,18 @@ class APS {
                         MainHUD_AddToast('info', 'ADSK Login', `Hello, ${APS.userInfo.givenName}`)
                     }
                 })
+            } else {
+                console.error("Couldn't get auth data.");
+                retry_login = true;
             }
+        }).catch(e => {
+            console.error(e);
+            retry_login = true;
         })
+        if (retry_login) {
+            this.auth = undefined;
+            MainHUD_AddToast('error', 'Error signing in.', 'Please try again.');
+        }
     }
 
     static async loadUserInfo(auth: APSAuth) {
