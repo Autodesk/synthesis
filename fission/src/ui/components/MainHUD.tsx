@@ -35,17 +35,13 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
             className={`relative flex flex-row cursor-pointer bg-background w-full m-auto px-2 py-1 text-main-text border-none rounded-md ${larger ? "justify-center" : ""} items-center hover:brightness-105 focus:outline-0 focus-visible:outline-0`}
         >
             {larger && icon}
-            {!larger && (
-                <span className="absolute left-3 text-main-hud-icon">
-                    {icon}
-                </span>
-            )}
+            {!larger && <span className="absolute left-3 text-main-hud-icon">{icon}</span>}
             <span className={`px-2 ${larger ? "py-2" : "py-1 ml-6"} text-main-text cursor-pointer`}>{value}</span>
         </Button>
     )
 }
 
-export let MainHUD_AddToast: (type: ToastType, title: string, description: string) => void = (_a, _b, _c) => { }
+export let MainHUD_AddToast: (type: ToastType, title: string, description: string) => void = (_a, _b, _c) => {}
 
 const variants = {
     open: { opacity: 1, y: "-50%", x: 0 },
@@ -125,11 +121,7 @@ const MainHUD: React.FC = () => {
                         icon={<IoPeople />}
                         onClick={() => openModal("import-local-mirabuf")}
                     />
-                    <MainHUDButton
-                        value={"Test God Mode"}
-                        icon={<IoGameControllerOutline />}
-                        onClick={TestGodMode}
-                    />
+                    <MainHUDButton value={"Test God Mode"} icon={<IoGameControllerOutline />} onClick={TestGodMode} />
                     <MainHUDButton
                         value={"Refresh APS Token"}
                         icon={<IoRefresh />}
@@ -166,22 +158,21 @@ const MainHUD: React.FC = () => {
                         }}
                     />
                 </div>
-                {userInfo
-                    ?
+                {userInfo ? (
                     <MainHUDButton
                         value={`Hi, ${userInfo.givenName}`}
                         icon={<UserIcon className="h-[20pt] m-[5pt] rounded-full" />}
                         larger={true}
                         onClick={() => APS.logout()}
                     />
-                    :
+                ) : (
                     <MainHUDButton
                         value={`APS Login`}
                         icon={<IoPeople />}
                         larger={true}
                         onClick={() => APS.requestAuthCode()}
                     />
-                }
+                )}
             </motion.div>
         </>
     )
