@@ -1,15 +1,15 @@
+from typing import Union
+
+import adsk.core
+import adsk.fusion
+
 from ..general_imports import *
 
 # from ..proto_out import Configuration_pb2
 from ..Types.OString import OString
 
-from typing import Union
-import adsk.core, adsk.fusion
 
-
-def SaveFileDialog(
-    defaultPath="", defaultName="", ext="MiraBuf Package (*.mira)"
-) -> Union[str, bool]:
+def SaveFileDialog(defaultPath="", defaultName="", ext="MiraBuf Package (*.mira)") -> Union[str, bool]:
     """Function to generate the Save File Dialog for the Hellion Data files
 
     Args:
@@ -23,7 +23,7 @@ def SaveFileDialog(
 
     ext = "MiraBuf Package (*.mira)"
 
-    fileDialog = gm.ui.createFileDialog()
+    fileDialog: adsk.core.FileDialog = gm.ui.createFileDialog()
     fileDialog.isMultiSelectEnabled = False
 
     fileDialog.title = "Save Export Result"

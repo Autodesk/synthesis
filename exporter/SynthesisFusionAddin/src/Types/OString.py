@@ -1,6 +1,7 @@
-from typing import Union
-import os, platform
+import os
 import pathlib
+import platform
+from typing import Union
 
 
 class OString:
@@ -37,11 +38,7 @@ class OString:
             bool: Did the OString objects match?
         """
         if isinstance(value, OString):
-            if (
-                self.path == value.path
-                and self.fileName == value.fileName
-                and self.platform == value.platform
-            ):
+            if self.path == value.path and self.fileName == value.fileName and self.platform == value.platform:
                 return True
         return False
 

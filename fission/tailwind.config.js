@@ -35,7 +35,7 @@ let safelist = Object.keys(colors).map(c => "bg-" + c);
 export default {
     content: [
         "./index.html",
-        "./src/**/*.{js,jsx,ts,tsx}",
+        "./src/**/*.{js,jsx,ts,tsx}"
     ],
     theme: {
         fontFamily: {
@@ -52,6 +52,9 @@ export default {
             },
             spacing: {
                 '20vw': '20vw',
+            },
+            aspectRatio: {
+                'toast': '6.44 / 1.0'
             }
         },
     },

@@ -1,11 +1,12 @@
 """ Stores data and fields from config.ini """
 
-from configparser import ConfigParser
-from .Types.OString import OString
-from .strings import INTERNAL_ID
-import uuid, traceback
 import logging.handlers
+import traceback
+import uuid
+from configparser import ConfigParser
 
+from .strings import INTERNAL_ID
+from .Types.OString import OString
 
 try:
     config = ConfigParser()
@@ -35,19 +36,13 @@ try:
         else:
             # in here we need to ask for analytics
             CID = uuid.uuid4()
-            config.set(
-                "analytics", "c_id", str(CID)
-            )  # default values - add exception handling
+            config.set("analytics", "c_id", str(CID))  # default values - add exception handling
 except:
-    logging.getLogger(f"{INTERNAL_ID}.import_manager").error(
-        "Failed\n{}".format(traceback.format_exc())
-    )
+    logging.getLogger(f"{INTERNAL_ID}.import_manager").error("Failed\n{}".format(traceback.format_exc()))
 
 
 def setAnalytics(enabled: bool):
-    logging.getLogger(f"{INTERNAL_ID}.configure.setAnalytics").info(
-        f"First run , Analytics set to {enabled}"
-    )
+    logging.getLogger(f"{INTERNAL_ID}.configure.setAnalytics").info(f"First run , Analytics set to {enabled}")
     ANALYTICS = enabled
     ans = "yes" if ANALYTICS else "no"
     write_configuration("analytics", "analytics", ans)

@@ -1,7 +1,10 @@
-from ..general_imports import *
-from ..configure import CID, ANALYTICS, DEBUG
+import sys
+import urllib
 
-import urllib, sys, adsk.core
+import adsk.core
+
+from ..configure import ANALYTICS, CID, DEBUG
+from ..general_imports import *
 
 # Reference https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
 
@@ -169,9 +172,7 @@ class AnalyticsEndpoint:
             if DEBUG:
                 self.logger.debug(f"Sending request: \n {url}")
 
-            req = urllib.request.Request(
-                f"{self.url}/collect?{body}", data=b"", headers=headers
-            )
+            req = urllib.request.Request(f"{self.url}/collect?{body}", data=b"", headers=headers)
             # makes the request
             response = urllib.request.urlopen(req)
 

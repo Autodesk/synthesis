@@ -1,4 +1,4 @@
-name: Fission - ES Lint Format
+name: Fission - ES Lint Format Validation
 
 on:
   workflow_dispatch: {}
@@ -28,17 +28,25 @@ jobs:
         cd fission
         npm run lint
       continue-on-error: true
+    - name: Check EsLint
+      run: |
+        if [ ${{ steps.linter-validation.outcome }} == "success" ]; then
+          echo "EsLint Validation Passed"
+        else
+          echo "EsLint Validation Failed"
+          exit 1
+        fi
     - name: Prettier
       id: prettier-validation
       run: |
         cd fission
         npm run prettier
       continue-on-error: true
-    - name: Check Success
+    - name: Check Prettier
       run: |
-        if [ ${{ steps.linter-validation.outcome }} == "success" ]; then
-          echo "Format Validation Passed"
+        if [ ${{ steps.prettier-validation.outcome }} == "success" ]; then
+          echo "Prettier Validation Passed"
         else
-          echo "Format Validation Failed"
+          echo "Prettier Validation Failed"
           exit 1
         fi

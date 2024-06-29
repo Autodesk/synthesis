@@ -1,0 +1,10 @@
+canvas {
+    position: fixed;
+    top: 0pt;
+    bottom: 0pt;
+    left: 0pt;
+    right: 0pt;
+
+    width: 100%;
+    height: 100%;
+}
