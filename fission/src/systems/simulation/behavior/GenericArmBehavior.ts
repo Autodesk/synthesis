@@ -6,10 +6,10 @@ import InputSystem, { emptyModifierState } from "@/systems/input/InputSystem"
 class GenericArmBehavior extends Behavior {
     private _hingeDriver: HingeDriver
 
-    private _positiveInput: string;
-    private _negativeInput: string;
-    
-    private _rotationalSpeed = 6;
+    private _positiveInput: string
+    private _negativeInput: string
+
+    private _rotationalSpeed = 6
 
     constructor(hingeDriver: HingeDriver, hingeStimulus: HingeStimulus, jointIndex: number) {
         super([hingeDriver], [hingeStimulus])
