@@ -64,7 +64,7 @@ function Synthesis() {
         const code = urlParams.get("code")
         if (code) {
             APS.convertAuthToken(code);
-            window.close()
+            document.location.search = '';
         }
     }
 

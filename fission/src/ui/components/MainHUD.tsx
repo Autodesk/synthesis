@@ -5,7 +5,7 @@ import { BiMenuAltLeft } from "react-icons/bi"
 import { GrFormClose } from "react-icons/gr"
 import { GiSteeringWheel } from "react-icons/gi"
 import { HiDownload } from "react-icons/hi"
-import { IoGameControllerOutline, IoPeople, IoRefresh } from "react-icons/io5"
+import { IoGameControllerOutline, IoPeople, IoRefresh, IoTimer } from "react-icons/io5"
 import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import { motion } from "framer-motion"
@@ -45,7 +45,7 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
     )
 }
 
-export let MainHUD_AddToast: (type: ToastType, title: string, description: string) => void = (_a, _b, _c) => {}
+export let MainHUD_AddToast: (type: ToastType, title: string, description: string) => void = (_a, _b, _c) => { }
 
 const variants = {
     open: { opacity: 1, y: "-50%", x: 0 },
@@ -134,6 +134,14 @@ const MainHUD: React.FC = () => {
                         value={"Refresh APS Token"}
                         icon={<IoRefresh />}
                         onClick={() => APS.auth && APS.refreshAuthToken(APS.auth.refresh_token)}
+                    />
+                    <MainHUDButton
+                        value={"Expire APS Token"}
+                        icon={<IoTimer />}
+                        onClick={() => {
+                            if (APS.auth) APS.auth.expires_at = Date.now()
+                            APS.getAuth()
+                        }}
                     />
                 </div>
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">

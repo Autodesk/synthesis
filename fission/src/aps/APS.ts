@@ -1,13 +1,10 @@
 import { MainHUD_AddToast } from "@/ui/components/MainHUD"
-import { Random } from "@/util/Random"
 import { Mutex } from "async-mutex"
 
 const APS_AUTH_KEY = "aps_auth"
 const APS_USER_INFO_KEY = "aps_user_info"
 
 export const APS_USER_INFO_UPDATE_EVENT = "aps_user_info_update"
-
-const authCodeTimeout = 200000
 
 const CLIENT_ID = 'GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU'
 
@@ -101,7 +98,7 @@ class APS {
                     'code_challenge_method': 'S256'
                 })
 
-                window.open(`https://developer.api.autodesk.com/authentication/v2/authorize?${params.toString()}`)
+                window.open(`https://developer.api.autodesk.com/authentication/v2/authorize?${params.toString()}`, '_self')
             } catch (e) {
                 console.error(e);
                 MainHUD_AddToast("error", "Error signing in.", "Please try again.");
@@ -126,16 +123,22 @@ class APS {
             })
                 .then(res => res.json())
                 .catch(e => {
-                    MainHUD_AddToast("error", "Error signing in.", "Please try again.");
                     console.error(e);
                     retry_login = true;
                 });
             if (retry_login) {
+                MainHUD_AddToast("error", "Error signing in.", "Please try again.");
                 this.auth = undefined;
                 this.requestAuthCode();
             } else {
                 res.expires_at = res.expires_in + Date.now()
                 this.auth = res as APSAuth
+                if (this.auth) {
+                    await this.loadUserInfo(this.auth);
+                    if (APS.userInfo) {
+                        MainHUD_AddToast('info', 'ADSK Login', `Hello, ${APS.userInfo.givenName}`);
+                    }
+                }
             }
         })
     }
@@ -151,11 +154,10 @@ class APS {
             console.log('Preloading user info')
             const auth = await this.getAuth();
             if (auth) {
-                this.loadUserInfo(auth).then(async () => {
-                    if (APS.userInfo) {
-                        MainHUD_AddToast('info', 'ADSK Login', `Hello, ${APS.userInfo.givenName}`)
-                    }
-                })
+                await this.loadUserInfo(auth);
+                if (APS.userInfo) {
+                    MainHUD_AddToast('info', 'ADSK Login', `Hello, ${APS.userInfo.givenName}`)
+                }
             } else {
                 console.error("Couldn't get auth data.");
                 retry_login = true;
