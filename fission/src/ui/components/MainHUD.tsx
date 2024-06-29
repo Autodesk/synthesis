@@ -151,7 +151,7 @@ const MainHUD: React.FC = () => {
                     />
                     <MainHUDButton
                         value={"Test Gizmo"}
-                        icon={<IoGameControllerOutline/>}
+                        icon={<IoGameControllerOutline />}
                         onClick={() => {
                             new TransformGizmo("translate").setMode = "rotate"
                         }}
