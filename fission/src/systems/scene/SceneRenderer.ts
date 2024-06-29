@@ -16,7 +16,7 @@ class SceneRenderer extends WorldSystem {
     private _renderer: THREE.WebGLRenderer
 
     private _sceneObjects: Map<number, SceneObject>
-    
+
     private orbitControls: OrbitControls
     private transformControls: Map<TransformControls, number> // maps all rendered transform controls to their size
     private isShiftPressed: boolean = false
@@ -85,23 +85,23 @@ class SceneRenderer extends WorldSystem {
         this.orbitControls.update()
 
         // Add event listeners for shift key
-        this.transformControls = new Map();
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Shift') {
-                this.isShiftPressed = true;
+        this.transformControls = new Map()
+        document.addEventListener("keydown", event => {
+            if (event.key === "Shift") {
+                this.isShiftPressed = true
             }
-        });
-        document.addEventListener('keyup', (event) => {
-            if (event.key === 'Shift') {
-                this.isShiftPressed = false;
+        })
+        document.addEventListener("keyup", event => {
+            if (event.key === "Shift") {
+                this.isShiftPressed = false
             }
-        });
-        
-        const box = new THREE.Mesh(new THREE.BoxGeometry(1.0, 1.0, 1.0), this.CreateToonMaterial());
-        box.position.set(0.0, 1, 0.0);
-        this._scene.add(box);
-        this.AddTransformGizmo(box, 'translate', 3.0);
-        this.AddTransformGizmo(box, 'scale', 5.0);
+        })
+
+        const box = new THREE.Mesh(new THREE.BoxGeometry(1.0, 1.0, 1.0), this.CreateToonMaterial())
+        box.position.set(0.0, 1, 0.0)
+        this._scene.add(box)
+        this.AddTransformGizmo(box, "translate", 3.0)
+        this.AddTransformGizmo(box, "scale", 5.0)
         this.AddTransformGizmo(box, "rotate", 7.0)
     }
 
@@ -119,12 +119,16 @@ class SceneRenderer extends WorldSystem {
 
         // controls.update(deltaTime); // TODO: Add controls?
 
-        const mainCameraFovRadians = Math.PI * (this._mainCamera.fov * 0.5) / 180;
+        const mainCameraFovRadians = (Math.PI * (this._mainCamera.fov * 0.5)) / 180
         this.transformControls.forEach((size, tc) => {
-            tc.setSize((size / this._mainCamera.position.distanceTo(tc.object!.position)) * Math.tan(mainCameraFovRadians) * 1.9);
+            tc.setSize(
+                (size / this._mainCamera.position.distanceTo(tc.object!.position)) *
+                    Math.tan(mainCameraFovRadians) *
+                    1.9
+            )
             // tc.position.copy(tc.object!.position);
             // tc.rotation.copy(tc.object!.rotation);
-        }); 
+        })
 
         this._renderer.render(this._scene, this._mainCamera)
     }
@@ -177,84 +181,96 @@ class SceneRenderer extends WorldSystem {
     }
 
     /*
-    * Attach new transform gizmo to Mesh
-    * 
-    * @param obj - Mesh to attach gizmo to
-    * @param mode - Transform mode (translate, rotate, scale)
-    * @param size - Size of the gizmo
-    */
-    public AddTransformGizmo(obj: THREE.Object3D, mode: "translate" | "rotate" | "scale" = 'translate', size: number = 5.0) {
-        const transformControl = new TransformControls(this._mainCamera, this._renderer.domElement);
-        transformControl.setMode(mode);
-        transformControl.attach(obj);
+     * Attach new transform gizmo to Mesh
+     *
+     * @param obj - Mesh to attach gizmo to
+     * @param mode - Transform mode (translate, rotate, scale)
+     * @param size - Size of the gizmo
+     */
+    public AddTransformGizmo(
+        obj: THREE.Object3D,
+        mode: "translate" | "rotate" | "scale" = "translate",
+        size: number = 5.0
+    ) {
+        const transformControl = new TransformControls(this._mainCamera, this._renderer.domElement)
+        transformControl.setMode(mode)
+        transformControl.attach(obj)
 
-        if (mode === 'translate') { // allowing the transform gizmos to rotate with the object
-            transformControl.space = 'local';
+        if (mode === "translate") {
+            // allowing the transform gizmos to rotate with the object
+            transformControl.space = "local"
         }
 
-        transformControl.addEventListener('dragging-changed', (event: { target: TransformControls, value: unknown }) => {
- 
-            if (!event.value) { // enable orbit controls when not dragging another transform gizmo
-                const isDragging = Array.from(this.transformControls.keys()).some(tc => tc.dragging);
-                if (isDragging) {
-                    return;
+        transformControl.addEventListener(
+            "dragging-changed",
+            (event: { target: TransformControls; value: unknown }) => {
+                if (!event.value) {
+                    // enable orbit controls when not dragging another transform gizmo
+                    const isDragging = Array.from(this.transformControls.keys()).some(tc => tc.dragging)
+                    if (isDragging) {
+                        return
+                    }
+                }
+
+                this.orbitControls.enabled = !event.value // disable orbit controls when dragging transform gizmo
+
+                if (mode === "translate" && event.target) {
+                    this.transformControls.forEach((_size, tc) => {
+                        // disable other transform gizmos when translating
+                        if (tc !== event.target && tc.object === event.target.object && tc.mode !== "translate") {
+                            tc.dragging = !event.value
+                            tc.enabled = !event.value
+                            return
+                        }
+                    })
+                } else if (mode === "scale" && this.isShiftPressed) {
+                    // scale uniformly if shift is pressed
+                    transformControl.axis = "XYZE"
+                } else if (mode === "rotate") {
+                    // scale on all axes
+                    this.transformControls.forEach((_size, tc) => {
+                        // disable scale transform gizmo when scaling
+                        if (tc !== event.target && tc.object === event.target.object && tc.mode === "scale") {
+                            tc.dragging = false
+                            tc.enabled = !event.value
+                            return
+                        }
+                    })
                 }
             }
-            
-            this.orbitControls.enabled = !event.value; // disable orbit controls when dragging transform gizmo
+        )
 
-            if (mode === 'translate' && event.target) {
-                this.transformControls.forEach((_size, tc) => { // disable other transform gizmos when translating
-                    if (tc !== event.target && tc.object === event.target.object && tc.mode !== 'translate') {
-                        tc.dragging = !event.value
-                        tc.enabled = !event.value
-                        return
-                    }
-                });
-            } else if (mode === 'scale' && this.isShiftPressed) { // scale uniformly if shift is pressed
-                transformControl.axis = 'XYZE' 
-            } else if (mode === 'rotate') { // scale on all axes
-                this.transformControls.forEach((_size, tc) => { // disable scale transform gizmo when scaling
-                    if (tc !== event.target && tc.object === event.target.object && tc.mode === 'scale') {
-                        tc.dragging = false
-                        tc.enabled = !event.value
-                        return
-                    }
-                });
-            }
-        })
-    
-        this.transformControls.set(transformControl, size);
-        this._scene.add(obj);
-        this._scene.add(transformControl);
+        this.transformControls.set(transformControl, size)
+        this._scene.add(obj)
+        this._scene.add(transformControl)
     }
 
-    /* 
-    * Remove transform gizmo from Mesh
-    *
-    * @param obj - Mesh to remove gizmo from
-    */
+    /*
+     * Remove transform gizmo from Mesh
+     *
+     * @param obj - Mesh to remove gizmo from
+     */
     public RemoveTransformGizmo(obj: THREE.Object3D) {
         this.transformControls.forEach((_, tc) => {
             if (tc.object === obj) {
-                this._scene.remove(tc);
-                this.transformControls.delete(tc);
+                this._scene.remove(tc)
+                this.transformControls.delete(tc)
             }
-        });
+        })
     }
 
-    /* 
-    * Update the mode of the transform gizmo
-    *
-    * @param mode - Transform mode (translate, rotate, scale)
-    * @param obj - Mesh to update gizmo mode
-    */
+    /*
+     * Update the mode of the transform gizmo
+     *
+     * @param mode - Transform mode (translate, rotate, scale)
+     * @param obj - Mesh to update gizmo mode
+     */
     public UpdateTransformGizmoMode(mode: "translate" | "rotate" | "scale", obj: THREE.Object3D) {
         this.transformControls.forEach((_, tc) => {
             if (tc.object === obj) {
-                tc.setMode(mode);
+                tc.setMode(mode)
             }
-        });
+        })
     }
 }
 
