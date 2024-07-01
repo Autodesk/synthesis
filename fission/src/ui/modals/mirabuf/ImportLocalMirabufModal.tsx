@@ -55,6 +55,7 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         { control: "E", description: "Intake" },
                         { control: "Q", description: "Dispense" },
                     ])
+                    console.log(`Mira: '${selectedFile}'`)
 
                     const hashBuffer = await selectedFile.arrayBuffer()
                     const byteBuffer = UnzipMira(new Uint8Array(hashBuffer))
