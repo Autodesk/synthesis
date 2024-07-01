@@ -7,6 +7,8 @@ const root = await navigator.storage.getDirectory()
 const robotFolderHandle = await root.getDirectoryHandle(robots, { create: true })
 const fieldFolderHandle = await root.getDirectoryHandle(fields, { create: true })
 
+export type MiraCache = { [key: string]: string }
+
 export function UnzipMira(buff: Uint8Array): Uint8Array {
     // Check if file is gzipped via magic gzip numbers 31 139
     if (buff[0] == 31 && buff[1] == 139) {
@@ -45,7 +47,7 @@ export async function ClearMira() {
     window.localStorage.removeItem(fields)
 }
 
-export function GetMap(type: MiraType): any {
+export function GetMap(type: MiraType): MiraCache | undefined {
     const miraJSON = window.localStorage.getItem(type == MiraType.ROBOT ? robots : fields)
 
     if (miraJSON != undefined) {
@@ -54,6 +56,15 @@ export function GetMap(type: MiraType): any {
     } else {
         console.log("mirabuf JSON not found")
         return undefined
+    }
+}
+
+export function DeleteCached(type: MiraType, id: string) {
+    // window.localStorage.getItem(type == MiraType.ROBOT ? robots : fields)
+    if (type == MiraType.ROBOT) {
+        robotFolderHandle.removeEntry(id)
+    } else {
+        fieldFolderHandle.removeEntry(id)
     }
 }
 
@@ -78,7 +89,7 @@ async function LoadAndCacheMira(fetchLocation: string, type: MiraType): Promise<
         await writable.close()
 
         // Local cache map
-        let map: { [k: string]: string } = GetMap(type) ?? {}
+        const map: MiraCache = GetMap(type) ?? {}
         map[fetchLocation] = backupID
         window.localStorage.setItem(type == MiraType.ROBOT ? robots : fields, JSON.stringify(map))
 
@@ -93,7 +104,7 @@ async function LoadMirabufCache(
     fetchLocation: string,
     targetID: string,
     type: MiraType,
-    map: { [k: string]: string }
+    map: MiraCache
 ): Promise<mirabuf.Assembly | undefined> {
     try {
         const fileHandle =

@@ -4,16 +4,18 @@ import { FaPlus } from "react-icons/fa6"
 import Button from "@/components/Button"
 import Label, { LabelSize } from "@/components/Label"
 import { Data, Folder, Hub, Item, Project, getFolderData, getHubs, getProjects } from "@/aps/APSDataManagement"
-import { GetMap, MiraType } from "@/mirabuf/MirabufLoader"
+import { DeleteCached, GetMap, MiraType } from "@/mirabuf/MirabufLoader"
 
 interface ItemCardProps {
     id: string
     name: string
     buttonText: string
+    secondaryButtonText?: string
     onClick: () => void
+    secondaryOnClick?: () => void
 }
 
-const ItemCard: React.FC<ItemCardProps> = ({ id, name, buttonText, onClick }) => {
+const ItemCard: React.FC<ItemCardProps> = ({ id, name, buttonText, secondaryButtonText, onClick, secondaryOnClick }) => {
     return (
         <div
             key={id}
@@ -21,8 +23,14 @@ const ItemCard: React.FC<ItemCardProps> = ({ id, name, buttonText, onClick }) =>
         >
             <Label className="text-wrap break-all">{name}</Label>
             <Button value={buttonText} onClick={onClick} />
+            {secondaryButtonText && secondaryOnClick && <Button value={secondaryButtonText} onClick={secondaryOnClick} />}
         </div>
     )
+}
+
+export type MiraManifest = {
+    robots: string[]
+    fields: string[]
 }
 
 const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
@@ -30,13 +38,18 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     // const { showTooltip } = useTooltipControlContext()
 
     const [selectedHub, setSelectedHub] = useState<Hub | undefined>(undefined)
-    const [selectedProject, setSelectedProject] = useState<Project | undefined>(undefined)
-    const [selectedFolder, setSelectedFolder] = useState<Folder | undefined>(undefined)
-    const cachedRobots = GetMap(MiraType.ROBOT)
-    const cachedFields = GetMap(MiraType.FIELD)
-    const robotPaths = cachedRobots ? Object.keys(cachedRobots) : []
-    const fieldPaths = cachedFields ? Object.keys(cachedFields) : []
+    const [selectedProject, setSelectedProject] = useState<Project | undefined>()
+    const [selectedFolder, setSelectedFolder] = useState<Folder | undefined>()
+    const [manifest, setManifest] = useState<MiraManifest | undefined>()
+    const cachedRobots = Object.entries(GetMap(MiraType.ROBOT) || {})
+    const cachedFields = Object.entries(GetMap(MiraType.FIELD) || {})
     console.log(cachedRobots, cachedFields)
+
+    useEffect(() => {
+        fetch('/api/mira/manifest.json').then(x => x.json()).then(data => {
+            setManifest(data)
+        })
+    }, [])
 
     const [hubs, setHubs] = useState<Hub[] | undefined>(undefined)
     useEffect(() => {
@@ -82,27 +95,53 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     }, [folderData])
 
     let cachedElements;
-    if (robotPaths.length > 0) {
-        cachedElements = robotPaths.map(robotPath => 
+    if (cachedRobots.length > 0) {
+        cachedElements = cachedRobots.map(([key, value]) =>
             ItemCard({
-                name: robotPath,
-                id: robotPath,
+                name: key,
+                id: value,
                 buttonText: "import",
-                onClick: () => console.log(`Selecting cached robot: ${robotPath}`)
+                onClick: () => console.log(`Selecting cached robot: ${key}`),
+                secondaryButtonText: "delete",
+                secondaryOnClick: () => {
+                    console.log(`Deleting cache of: ${key}, ${value}`)
+                    DeleteCached(MiraType.ROBOT, value);
+                }
             })
         )
     }
-    if (fieldPaths.length > 0) {
-        const fieldElements = fieldPaths.map(fieldPath =>
+    if (cachedFields.length > 0) {
+        const fieldElements = cachedFields.map(([key, value]) =>
             ItemCard({
-                name: fieldPath,
-                id: fieldPath,
+                name: key,
+                id: value,
                 buttonText: "import",
-                onClick: () => console.log(`Selecting cached field: ${fieldPath}`)
+                onClick: () => console.log(`Selecting cached field: ${key}`),
+                secondaryButtonText: "delete",
+                secondaryOnClick: () => {
+                    console.log(`Deleting cache of: ${key}`)
+                    DeleteCached(MiraType.FIELD, value);
+                }
             })
         );
         cachedElements = cachedElements ? cachedElements.concat(fieldElements) : fieldElements
     }
+
+    let remotePaths = (manifest ? manifest.robots.concat(manifest.fields) : []);
+    if (cachedRobots.length > 0) {
+        remotePaths = remotePaths.filter(path => !cachedRobots.some(([key, _value]) => key.includes(path)))
+    }
+    if (cachedFields.length > 0) {
+        remotePaths = remotePaths.filter(path => !cachedFields.some(([key, _value]) => key.includes(path)))
+    }
+    const remoteElements = remotePaths.map(path =>
+        ItemCard({
+            name: path,
+            id: path,
+            buttonText: "import",
+            onClick: () => console.log(`Selecting remote: ${path}`)
+        })
+    );
 
     let hubElements;
 
@@ -155,7 +194,7 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         }
     }
     console.log('HUB ELEMENTS', hubElements)
-    const displayElements = (cachedElements || []).concat(hubElements)
+    const displayElements = (cachedElements || []).concat(hubElements, remoteElements)
     return (
         <Modal
             name={"Manage Assemblies"}
