@@ -26,6 +26,7 @@ from .Configuration.SerialCommand import SerialCommand
 
 # Transition: AARD-1685
 # In the future all components should be handled in this way.
+# This import broke everything when attempting to use absolute imports??? Investigate?
 from .JointConfigTab import JointConfigTab
 
 # ====================================== CONFIG COMMAND ======================================
