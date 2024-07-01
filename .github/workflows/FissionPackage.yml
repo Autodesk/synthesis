@@ -67,5 +67,5 @@ jobs:
       uses: actions/upload-artifact@v4
       id: upload-artifact-dev
       with:
-        name: "${{ steps.info.outputs.name }}/dev@${{ steps.info.outputs.version }}[${{ steps.date.outputs.timestamp }}]"
+        name: "${{ steps.info.outputs.name }}-dev@${{ steps.info.outputs.version }}[${{ steps.date.outputs.timestamp }}]"
         path: fission/dist/dev/
