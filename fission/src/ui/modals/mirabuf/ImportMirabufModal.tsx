@@ -5,6 +5,7 @@ import Button from "@/components/Button"
 import Label, { LabelSize } from "@/components/Label"
 import { Data, Folder, Hub, Item, Project, getFolderData, getHubs, getProjects } from "@/aps/APSDataManagement"
 import { DeleteCached, GetMap, MiraType } from "@/mirabuf/MirabufLoader"
+import APS, { APSAuth } from "@/aps/APS"
 
 interface ItemCardProps {
     id: string
@@ -41,6 +42,12 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [selectedProject, setSelectedProject] = useState<Project | undefined>()
     const [selectedFolder, setSelectedFolder] = useState<Folder | undefined>()
     const [manifest, setManifest] = useState<MiraManifest | undefined>()
+    const [auth, setAuth] = useState<APSAuth | undefined>()
+
+    useEffect(() => {
+        APS.getAuth().then(setAuth)
+    }, [])
+
     const cachedRobots = Object.entries(GetMap(MiraType.ROBOT) || {})
     const cachedFields = Object.entries(GetMap(MiraType.FIELD) || {})
     console.log(cachedRobots, cachedFields)
@@ -54,23 +61,23 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [hubs, setHubs] = useState<Hub[] | undefined>(undefined)
     useEffect(() => {
         (async () => {
-            setHubs(await getHubs())
+            if (auth) setHubs(await getHubs())
         })()
-    }, [])
+    }, [auth])
 
     const [projects, setProjects] = useState<Project[] | undefined>(undefined)
     useEffect(() => {
         (async () => {
-            if (selectedHub) {
+            if (auth && selectedHub) {
                 setProjects(await getProjects(selectedHub))
             }
         })()
-    }, [selectedHub])
+    }, [auth, selectedHub])
 
     const [folderData, setFolderData] = useState<Data[] | undefined>(undefined)
     useEffect(() => {
         (async () => {
-            if (selectedProject) {
+            if (auth && selectedProject) {
                 console.log("Project has been selected")
                 if (selectedFolder) {
                     console.log(`Selecting folder '${selectedFolder.displayName}'`)
@@ -84,15 +91,15 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 }
             }
         })()
-    }, [selectedProject, selectedFolder])
+    }, [auth, selectedProject, selectedFolder])
 
     useEffect(() => {
-        if (folderData) {
+        if (auth && folderData) {
             console.log(`${folderData.length} items in folder data`)
         } else {
             console.log("No folder data")
         }
-    }, [folderData])
+    }, [auth, folderData])
 
     let cachedElements;
     if (cachedRobots.length > 0) {
@@ -226,8 +233,10 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                             <Button value="back to hubs" onClick={() => setSelectedHub(undefined)} />
                         </>
                     )
-                ) : (
+                ) : APS.userInfo ? (
                     <></>
+                ) : (
+                    <Button value={"Sign In to APS"} onClick={() => APS.requestAuthCode()} />
                 )}
             </div>
             <div className="flex overflow-y-auto flex-col gap-2 min-w-[50vw] max-h-[60vh] bg-background-secondary rounded-md p-2">

@@ -8,7 +8,7 @@ export const APS_USER_INFO_UPDATE_EVENT = "aps_user_info_update"
 
 const CLIENT_ID = "GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU"
 
-interface APSAuth {
+export interface APSAuth {
     access_token: string
     refresh_token: string
     expires_in: number
@@ -16,7 +16,7 @@ interface APSAuth {
     token_type: number
 }
 
-interface APSUserInfo {
+export interface APSUserInfo {
     name: string
     picture: string
     givenName: string
