@@ -11,8 +11,6 @@ class GenericArmBehavior extends Behavior {
     
     private _rotationalSpeed = 6;
 
-    private _rotationalSpeed = 30
-
     constructor(hingeDriver: HingeDriver, hingeStimulus: HingeStimulus, jointIndex: number) {
         super([hingeDriver], [hingeStimulus])
         this._hingeDriver = hingeDriver

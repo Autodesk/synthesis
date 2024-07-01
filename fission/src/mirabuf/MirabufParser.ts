@@ -1,6 +1,6 @@
 import * as THREE from "three"
-import { mirabuf } from "../proto/mirabuf"
-import { MirabufTransform_ThreeMatrix4 } from "../util/TypeConversions"
+import { mirabuf } from "@/proto/mirabuf"
+import { MirabufTransform_ThreeMatrix4 } from "@/util/TypeConversions"
 
 export enum ParseErrorSeverity {
     Unimportable = 10,
@@ -91,7 +91,7 @@ class MirabufParser {
         }
 
         // 1: Initial Rigidgroups from ancestorial breaks in joints
-        ;(Object.keys(assembly.data!.joints!.jointInstances!) as string[]).forEach(key => {
+        (Object.keys(assembly.data!.joints!.jointInstances!) as string[]).forEach(key => {
             if (key != GROUNDED_JOINT_ID) {
                 const jInst = assembly.data!.joints!.jointInstances![key]
                 const [ancestorA, ancestorB] = this.FindAncestorialBreak(jInst.parentPart!, jInst.childPart!)

@@ -50,7 +50,6 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             acceptEnabled={selectedFile !== undefined && miraType !== undefined}
             onAccept={ async () => {
                 if (selectedFile && miraType != undefined) {
-                    console.log(`Mira: '${selectedFile.name}'`)
                     showTooltip("controls", [
                         { control: "WASD", description: "Drive" },
                         { control: "E", description: "Intake" },

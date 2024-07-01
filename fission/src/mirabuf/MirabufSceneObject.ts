@@ -162,7 +162,6 @@ export async function CreateMirabufFromUrl(
     miraType: MiraType,
     hashID?: string
 ): Promise<MirabufSceneObject | null | undefined> {
-    console.log("Got in mirabuffromurl")
     const miraAssembly = await LoadMirabufRemote(path, miraType, hashID).catch(console.error)
 
     if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {

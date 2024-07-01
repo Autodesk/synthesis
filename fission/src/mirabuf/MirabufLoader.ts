@@ -1,11 +1,13 @@
-import { mirabuf } from "../proto/mirabuf"
+import { mirabuf } from "@/proto/mirabuf"
 import Pako from "pako"
 
-const robots = "Robots"
-const fields = "Fields"
+type MiraCache = { [id: string] : string}
+
+const robotsDirName = "Robots"
+const fieldsDirName = "Fields"
 const root = await navigator.storage.getDirectory()
-const robotFolderHandle = await root.getDirectoryHandle(robots, { create: true })
-const fieldFolderHandle = await root.getDirectoryHandle(fields, { create: true })
+const robotFolderHandle = await root.getDirectoryHandle(robotsDirName, { create: true })
+const fieldFolderHandle = await root.getDirectoryHandle(fieldsDirName, { create: true })
 
 export function UnzipMira(buff: Uint8Array): Uint8Array {
     // Check if file is gzipped via magic gzip numbers 31 139
@@ -17,12 +19,12 @@ export function UnzipMira(buff: Uint8Array): Uint8Array {
 }
 
 export async function LoadMirabufRemote(fetchLocation: string, type: MiraType, blobHashID?: string): Promise<mirabuf.Assembly | undefined> {
-    const map = GetMap(type)
+    const map = GetMiraCacheMap(type)
 
     // blobHashID for ImportLocalMira
-    const targetID = blobHashID ? map[blobHashID] : ( map != undefined ? map[fetchLocation] : undefined )
+    const targetID = map ? ( blobHashID ? map[blobHashID] : map[fetchLocation]) : undefined
 
-    if (targetID != undefined) {
+    if (targetID != undefined && map != undefined) {
         console.log("Loading mira from cache")
         return (await LoadMirabufCache(fetchLocation, targetID, type, map)) ?? LoadAndCacheMira(fetchLocation, type, blobHashID)
     } else {
@@ -43,13 +45,12 @@ export async function ClearMira() {
         fieldFolderHandle.removeEntry(key)
     }
 
-    window.localStorage.removeItem(robots)
-    window.localStorage.removeItem(fields)
+    window.localStorage.removeItem(robotsDirName)
+    window.localStorage.removeItem(fieldsDirName)
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function GetMap(type: MiraType): any {
-    const miraJSON = window.localStorage.getItem(type == MiraType.ROBOT ? robots : fields)
+export function GetMiraCacheMap(type: MiraType): MiraCache | undefined {
+    const miraJSON = window.localStorage.getItem(type == MiraType.ROBOT ? robotsDirName : fieldsDirName)
 
     if (miraJSON != undefined) {
         console.log("mirabuf JSON found")
@@ -81,14 +82,15 @@ async function LoadAndCacheMira(fetchLocation: string, type: MiraType, blobHashI
         await writable.close()
 
         // Local cache map
-        const map: { [k: string]: string } = GetMap(type) ?? {}
+        const map: MiraCache = GetMiraCacheMap(type) ?? {}
         map[blobHashID ?? fetchLocation] = backupID
-        window.localStorage.setItem(type == MiraType.ROBOT ? robots : fields, JSON.stringify(map))
+        window.localStorage.setItem(type == MiraType.ROBOT ? robotsDirName : fieldsDirName, JSON.stringify(map))
 
         console.log(assembly)
         return assembly
     } catch (e) {
-        console.error("Failed to load and cache mira")
+        console.error("Failed to load and cache mira " + e)
+        return undefined
     }
 }
 
@@ -96,7 +98,7 @@ async function LoadMirabufCache(
     fetchLocation: string,
     targetID: string,
     type: MiraType,
-    map: { [k: string]: string }
+    map: MiraCache
 ): Promise<mirabuf.Assembly | undefined> {
     try {
         const fileHandle =
@@ -112,11 +114,11 @@ async function LoadMirabufCache(
             return assembly
         }
     } catch (e) {
-        console.error("Failed to find file from OPFS")
+        console.error("Failed to find file from OPFS" + e)
 
         // Remove from localStorage list
         delete map[fetchLocation]
-        window.localStorage.setItem(type == MiraType.ROBOT ? robots : fields, JSON.stringify(map))
+        window.localStorage.setItem(type == MiraType.ROBOT ? robotsDirName : fieldsDirName, JSON.stringify(map))
 
         return undefined
     }
