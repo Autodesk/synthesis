@@ -5,7 +5,7 @@ import { BiMenuAltLeft } from "react-icons/bi"
 import { GrFormClose } from "react-icons/gr"
 import { GiSteeringWheel } from "react-icons/gi"
 import { HiDownload } from "react-icons/hi"
-import { IoGameController, IoGameControllerOutline, IoPeople } from "react-icons/io5"
+import { IoGameControllerOutline, IoPeople } from "react-icons/io5"
 import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import { motion } from "framer-motion"
@@ -152,10 +152,8 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton
                         value={"Test Gizmo"}
                         icon={<IoGameControllerOutline />}
-                        onClick={() => {
-                            // if (World.PhysicsSystem.isPhysicsEnabled) World.PhysicsSystem.DisablePhysics()
-                            // else World.PhysicsSystem.EnablePhysics()
-                            // new TransformGizmo("translate").setMode = "rotate"
+                        onClick={() => { 
+                            new TransformGizmo("translate").setMode = "rotate"
                         }}
                     />
                 </div>

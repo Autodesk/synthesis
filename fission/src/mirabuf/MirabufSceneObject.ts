@@ -96,13 +96,16 @@ class MirabufSceneObject extends SceneObject {
 
             if (!this.transformGizmo.dragging) {
                 // mesh will copy position of the mirabuf object
+                World.PhysicsSystem.EnablePhysics()
                 this.meshAttachment.position.setFromMatrixPosition(transform)
                 this.meshAttachment.rotation.setFromRotationMatrix(transform)
             } else {
                 // mirabuf object will copy position of the mesh
+                World.PhysicsSystem.DisablePhysics() // potentially very slow
                 transform = this.meshAttachment.matrix
                 const newTransform = ThreeMatrix4_JoltMat44(transform)
-                // console.log(body.GetWorldTransform().GetTranslation().GetX(), newTransform.GetTranslation().GetX())
+
+                // this is where the issue is that im trying to fix
                 body.GetWorldTransform().SetTranslation(newTransform.GetTranslation())
                 body.GetWorldTransform().GetTranslation().SetX(newTransform.GetTranslation().GetX())
                 console.log(body.GetWorldTransform().GetTranslation().GetX(), newTransform.GetTranslation().GetX())
@@ -115,7 +118,6 @@ class MirabufSceneObject extends SceneObject {
                 body.GetPosition().SetX(newTransform.GetTranslation().GetX())
                 body.GetPosition().SetY(newTransform.GetTranslation().GetY())
                 body.GetPosition().SetZ(newTransform.GetTranslation().GetZ())
-
 
                 rn.parts.forEach(part => {
                     const partTransform = this._mirabufInstance.parser.globalTransforms

@@ -61,8 +61,6 @@ class PhysicsSystem extends WorldSystem {
     private _bodies: Array<Jolt.BodyID>
     private _constraints: Array<Jolt.Constraint>
 
-    public isPhysicsEnabled: boolean = true
-
     /**
      * Creates a PhysicsSystem object.
      */
@@ -91,6 +89,24 @@ class PhysicsSystem extends WorldSystem {
         )
         ground.SetFriction(FLOOR_FRICTION)
         this._joltBodyInterface.AddBody(ground.GetID(), JOLT.EActivation_Activate)
+    }
+
+    /**
+     * Disables physics system
+     */
+    public DisablePhysics() {
+        this._bodies.forEach(body => {
+            this._joltBodyInterface.DeactivateBody(body)
+        })
+    }
+
+    /**
+     * Enables physics system
+     */
+    public EnablePhysics() {
+        this._bodies.forEach(body => {
+            this._joltBodyInterface.ActivateBody(body)
+        })
     }
 
     /**
@@ -616,6 +632,7 @@ class PhysicsSystem extends WorldSystem {
                 rnToBodies.set(rn.id, body.GetID())
 
                 // Little testing components
+                this._bodies.push(body.GetID())
                 body.SetRestitution(0.4)
             }
             // Cleanup
