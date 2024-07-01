@@ -1200,7 +1200,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 compressOutput=compress,
                 exportAsPart=export_as_part_boolean,
                 frictionOverride=frictionOverride,
-                frictionOverrideValue=frictionOverrideValue,
+                frictionOverrideCoeff=frictionOverrideValue,
             )
 
             _: bool = Parser(exporterOptions).export()
