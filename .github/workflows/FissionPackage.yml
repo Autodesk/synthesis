@@ -22,21 +22,6 @@ jobs:
       run: |
         echo "timestamp=$(date +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_OUTPUT
 
-    - name: Cache downloaded assets
-      id: cache-assets
-      uses: actions/cache@v2
-      with:
-        path: fission/public/
-        key: ${{ runner.os }}-assets-v1
-        restore-keys: |
-          ${{ runner.os }}-assets-
-
-    - name: Download assets if not cached
-      if: steps.cache-assets.outputs.cache-hit != 'true'
-      run: |
-        cd fission
-        curl -o public/assetpack.zip https://synthesis.autodesk.com/Downloadables/assetpack.zip && unzip -o public/assetpack.zip -d public/
-
     - name: Install Dependencies
       run: |
         cd fission
