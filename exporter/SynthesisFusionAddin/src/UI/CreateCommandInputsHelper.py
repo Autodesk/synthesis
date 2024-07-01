@@ -3,6 +3,8 @@ import traceback
 
 import adsk.core
 
+from ..general_imports import INTERNAL_ID
+
 
 def createTableInput(
     id: str,
@@ -24,7 +26,7 @@ def createTableInput(
 
         return input
     except BaseException:
-        logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.{self.__class__.__name__}.createTableInput()").error(
+        logging.getLogger("{INTERNAL_ID}.UI.CreateCommandInputsHelper").error(
             "Failed:\n{}".format(traceback.format_exc())
         )
 
@@ -48,7 +50,7 @@ def createBooleanInput(
 
         return input
     except BaseException:
-        logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.{self.__class__.__name__}.createBooleanInput()").error(
+        logging.getLogger("{INTERNAL_ID}.UI.CreateCommandInputsHelper").error(
             "Failed:\n{}".format(traceback.format_exc())
         )
 
@@ -89,6 +91,6 @@ def createTextBoxInput(
 
         return input
     except BaseException:
-        logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.createTextBoxInput()").error(
+        logging.getLogger("{INTERNAL_ID}.UI.CreateCommandInputsHelper").error(
             "Failed:\n{}".format(traceback.format_exc())
         )

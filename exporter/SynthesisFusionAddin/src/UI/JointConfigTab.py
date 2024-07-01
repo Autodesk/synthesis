@@ -4,6 +4,7 @@ import traceback
 import adsk.core
 import adsk.fusion
 
+from ..general_imports import INTERNAL_ID
 from ..Parser.ExporterOptions import (
     Joint,
     JointParentType,
