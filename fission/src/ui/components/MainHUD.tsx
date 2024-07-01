@@ -5,7 +5,7 @@ import { BiMenuAltLeft } from "react-icons/bi"
 import { GrFormClose } from "react-icons/gr"
 import { GiSteeringWheel } from "react-icons/gi"
 import { HiDownload } from "react-icons/hi"
-import { IoGameControllerOutline, IoPeople } from "react-icons/io5"
+import { IoGameControllerOutline, IoPeople, IoRefresh, IoTimer } from "react-icons/io5"
 import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import { motion } from "framer-motion"
@@ -36,11 +36,7 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
             className={`relative flex flex-row cursor-pointer bg-background w-full m-auto px-2 py-1 text-main-text border-none rounded-md ${larger ? "justify-center" : ""} items-center hover:brightness-105 focus:outline-0 focus-visible:outline-0`}
         >
             {larger && icon}
-            {!larger && (
-                <span onClick={onClick} className="absolute left-3 text-main-hud-icon">
-                    {icon}
-                </span>
-            )}
+            {!larger && <span className="absolute left-3 text-main-hud-icon">{icon}</span>}
             <span className={`px-2 ${larger ? "py-2" : "py-1 ml-6"} text-main-text cursor-pointer`}>{value}</span>
         </Button>
     )
@@ -126,10 +122,19 @@ const MainHUD: React.FC = () => {
                         icon={<IoPeople />}
                         onClick={() => openModal("import-local-mirabuf")}
                     />
+                    <MainHUDButton value={"Test God Mode"} icon={<IoGameControllerOutline />} onClick={TestGodMode} />
                     <MainHUDButton
-                        value={"Test God Mode"}
-                        icon={<IoGameControllerOutline />}
-                        onClick={TestGodMode}
+                        value={"Refresh APS Token"}
+                        icon={<IoRefresh />}
+                        onClick={() => APS.auth && APS.refreshAuthToken(APS.auth.refresh_token)}
+                    />
+                    <MainHUDButton
+                        value={"Expire APS Token"}
+                        icon={<IoTimer />}
+                        onClick={() => {
+                            if (APS.auth) APS.auth.expires_at = Date.now()
+                            APS.getAuth()
+                        }}
                     />
                 </div>
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">

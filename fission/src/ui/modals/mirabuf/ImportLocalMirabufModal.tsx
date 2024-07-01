@@ -35,31 +35,33 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             modalId={modalId}
             acceptEnabled={selectedFile !== undefined}
             onAccept={() => {
-                    if (selectedFile) {
-                        console.log(`Mira: '${selectedFile}'`)
-                        showTooltip("controls", [
-                            { control: "WASD", description: "Drive" },
-                            { control: "E", description: "Intake" },
-                            { control: "Q", description: "Dispense" },
-                        ])
+                if (selectedFile) {
+                    console.log(`Mira: '${selectedFile}'`)
+                    showTooltip("controls", [
+                        { control: "WASD", description: "Drive" },
+                        { control: "E", description: "Intake" },
+                        { control: "Q", description: "Dispense" },
+                    ])
 
-                        CreateMirabufFromUrl(URL.createObjectURL(selectedFile)).then(x => {
-                            if (x) {
-                                World.SceneRenderer.RegisterSceneObject(x)
-                            }
-                        })
-                    }
+                    CreateMirabufFromUrl(URL.createObjectURL(selectedFile)).then(x => {
+                        if (x) {
+                            World.SceneRenderer.RegisterSceneObject(x)
+                        }
+                    })
                 }
-            }
+            }}
         >
             <div className="flex flex-col items-center gap-5">
                 <input ref={fileUploadRef} onChange={onInputChanged} type="file" hidden={true} />
                 <Button value="Upload" size={ButtonSize.Large} onClick={uploadClicked} />
-                {
-                    selectedFile
-                        ? (<Label className="text-center" size={LabelSize.Medium}>{`Selected File: ${selectedFile.name}`}</Label>)
-                        : (<></>)
-                }
+                {selectedFile ? (
+                    <Label
+                        className="text-center"
+                        size={LabelSize.Medium}
+                    >{`Selected File: ${selectedFile.name}`}</Label>
+                ) : (
+                    <></>
+                )}
             </div>
         </Modal>
     )
