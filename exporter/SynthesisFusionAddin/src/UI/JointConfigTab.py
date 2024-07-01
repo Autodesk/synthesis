@@ -191,6 +191,8 @@ class JointConfigTab:
             self.jointConfigTable.addToolbarCommandInput(addJointInputButton)
             self.jointConfigTable.addToolbarCommandInput(removeJointInputButton)
             self.jointConfigTable.addToolbarCommandInput(jointSelectCancelButton)
+
+            self.reset()
         except:
             logging.getLogger("{INTERNAL_ID}.UI.JointConfigTab.createJointConfigTab()").error(
                 "Failed:\n{}".format(traceback.format_exc())
@@ -266,15 +268,18 @@ class JointConfigTab:
                 dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
             )
 
-            # TODO: Make this better, this is bad bad bad - Brandon
-            # if synJoint:
-            #     signalType.listItems.add("", synJoint.signalType is SignalType.PWM, IconPaths.signalIcons["PWM"])
-            #     signalType.listItems.add("", synJoint.signalType is SignalType.CAN, IconPaths.signalIcons["CAN"])
-            #     signalType.listItems.add("", synJoint.signalType is SignalType.PASSIVE, IconPaths.signalIcons["PASSIVE"])
-            # else:
-            signalType.listItems.add("", True, IconPaths.signalIcons["PWM"])
-            signalType.listItems.add("", False, IconPaths.signalIcons["CAN"])
-            signalType.listItems.add("", False, IconPaths.signalIcons["PASSIVE"])
+            # Invisible white space characters are required in the list item name field to make this work.
+            # I have no idea why, Fusion API needs some special education help - Brandon
+            if synJoint:
+                signalType.listItems.add("‎", synJoint.signalType is SignalType.PWM, IconPaths.signalIcons["PWM"])
+                signalType.listItems.add("‎", synJoint.signalType is SignalType.CAN, IconPaths.signalIcons["CAN"])
+                signalType.listItems.add(
+                    "‎", synJoint.signalType is SignalType.PASSIVE, IconPaths.signalIcons["PASSIVE"]
+                )
+            else:
+                signalType.listItems.add("‎", True, IconPaths.signalIcons["PWM"])
+                signalType.listItems.add("‎", False, IconPaths.signalIcons["CAN"])
+                signalType.listItems.add("‎", False, IconPaths.signalIcons["PASSIVE"])
 
             signalType.tooltip = "Signal type"
 
@@ -531,12 +536,13 @@ class JointConfigTab:
 
         elif commandInput.id == "signalTypeJoint":
             signalTypeDropdown = adsk.core.DropDownCommandInput.cast(commandInput)
-            position = self.jointConfigTable.getPosition(signalTypeDropdown)[1]  # 1 indexed
-            wheelTabPosition = self.jointWheelIndexMap.get(self.selectedJointList[position - 1].entityToken)
+            jointTabPosition = self.jointConfigTable.getPosition(signalTypeDropdown)[1]  # 1 indexed
+            wheelTabPosition = self.jointWheelIndexMap.get(self.selectedJointList[jointTabPosition - 1].entityToken)
 
             if wheelTabPosition:
-                wheelSignalItems = self.wheelConfigTable.getInputAtPosition(position, 3).listItems
-                wheelSignalItems.item(signalTypeDropdown.selectedItem.index).isSelected = True
+                wheelSignalItems: adsk.core.DropDownCommandInput
+                wheelSignalItems = self.wheelConfigTable.getInputAtPosition(wheelTabPosition, 3)
+                wheelSignalItems.listItems.item(signalTypeDropdown.selectedItem.index).isSelected = True
 
         elif commandInput.id == "jointAddButton":
             jointAddButton = globalCommandInputs.itemById("jointAddButton")
