@@ -126,11 +126,7 @@ const MainHUD: React.FC = () => {
                         icon={<IoPeople />}
                         onClick={() => openModal("import-local-mirabuf")}
                     />
-                    <MainHUDButton
-                        value={"Test God Mode"}
-                        icon={<IoGameControllerOutline />}
-                        onClick={TestGodMode}
-                    />
+                    <MainHUDButton value={"Test God Mode"} icon={<IoGameControllerOutline />} onClick={TestGodMode} />
                     <MainHUDButton
                         value={"Load Preferences"}
                         icon={<IoBug />}
@@ -140,6 +136,21 @@ const MainHUD: React.FC = () => {
                         value={"Save Preferences"}
                         icon={<IoBug />}
                         onClick={() => PreferencesSystem.savePreferences()}
+                    />
+                    <MainHUDButton
+                        value={"Modify test Pref (true)"}
+                        icon={<IoBug />}
+                        onClick={() => PreferencesSystem.setPreference("Test", true)}
+                    />
+                    <MainHUDButton
+                        value={"Modify test Pref (false)"}
+                        icon={<IoBug />}
+                        onClick={() => PreferencesSystem.setPreference("Test", false)}
+                    />
+                    <MainHUDButton
+                        value={"Clear prefs"}
+                        icon={<IoBug />}
+                        onClick={() => PreferencesSystem.clearPreferences()}
                     />
                 </div>
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
