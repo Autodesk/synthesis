@@ -96,7 +96,6 @@ class SceneRenderer extends WorldSystem {
                 this.isShiftPressed = false
             }
         })
-
     }
 
     public UpdateCanvasSize() {
@@ -184,7 +183,7 @@ class SceneRenderer extends WorldSystem {
     public AddTransformGizmo(
         obj: THREE.Object3D,
         mode: "translate" | "rotate" | "scale" = "translate",
-        size: number = 5.0
+        size: number
     ) {
         const transformControl = new TransformControls(this._mainCamera, this._renderer.domElement)
         transformControl.setMode(mode)
@@ -237,6 +236,8 @@ class SceneRenderer extends WorldSystem {
         this.transformControls.set(transformControl, size)
         this._scene.add(obj)
         this._scene.add(transformControl)
+
+        return transformControl
     }
 
     /**

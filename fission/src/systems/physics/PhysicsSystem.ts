@@ -93,31 +93,6 @@ class PhysicsSystem extends WorldSystem {
         this._joltBodyInterface.AddBody(ground.GetID(), JOLT.EActivation_Activate)
     }
 
-    /** 
-     * TEMPORARY
-     * Disabling physics system
-     */
-    public DisablePhysics() {
-        // this._joltPhysSystem.SetGravity(new JOLT.Vec3(0, 0, 0))
-        for (const body of this._bodies) {
-            // console.log(body.freeze)
-            this._joltBodyInterface.DeactivateBody(body)
-        }
-        this.isPhysicsEnabled = false
-    }
-
-    /**
-     * TEMPORARY
-     * Enabling physics system
-     */
-    public EnablePhysics() {
-        this._joltPhysSystem.SetGravity(new JOLT.Vec3(0, -9.8, 0))
-        for (const body of this._bodies) {
-            this._joltBodyInterface.ActivateBody(body)
-        }
-        this.isPhysicsEnabled = true
-    }
-
     /**
      * TEMPORARY
      * Create a box.
