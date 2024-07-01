@@ -96,12 +96,10 @@ class MirabufSceneObject extends SceneObject {
 
             if (!this.transformGizmo.dragging) {
                 // mesh will copy position of the mirabuf object
-                World.PhysicsSystem.EnablePhysics()
                 this.meshAttachment.position.setFromMatrixPosition(transform)
                 this.meshAttachment.rotation.setFromRotationMatrix(transform)
             } else {
                 // mirabuf object will copy position of the mesh
-                World.PhysicsSystem.DisablePhysics() // potentially very slow
                 transform = this.meshAttachment.matrix
                 const newTransform = ThreeMatrix4_JoltMat44(transform)
 

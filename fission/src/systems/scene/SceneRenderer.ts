@@ -4,6 +4,7 @@ import SceneObject from "./SceneObject"
 import WorldSystem from "../WorldSystem"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import World from "../World"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x73937e
@@ -197,12 +198,14 @@ class SceneRenderer extends WorldSystem {
         transformControl.addEventListener(
             "dragging-changed",
             (event: { target: TransformControls; value: unknown }) => {
-                if (!event.value) {
-                    // enable orbit controls when not dragging another transform gizmo
-                    const isDragging = Array.from(this.transformControls.keys()).some(tc => tc.dragging)
-                    if (isDragging) {
-                        return
-                    }
+                
+                // disabling physics
+                if (!event.value) World.PhysicsSystem.EnablePhysics()
+                else World.PhysicsSystem.DisablePhysics()
+
+
+                if (!event.value && !Array.from(this.transformControls.keys()).some(tc => tc.dragging)) {
+                    this.orbitControls.enabled = true; // enable orbit controls when not dragging another transform gizmo
                 }
 
                 this.orbitControls.enabled = !event.value // disable orbit controls when dragging transform gizmo
