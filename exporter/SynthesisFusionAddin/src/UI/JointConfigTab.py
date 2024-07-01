@@ -121,6 +121,15 @@ def createJointConfigTab(args: adsk.core.CommandCreatedEventArgs) -> None:
             6,
         )
 
+        jointSelect = jointConfigTabInputs.addSelectionInput(
+            "jointSelection", "Selection", "Select a joint in your assembly to add."
+        )
+        jointSelect.addSelectionFilter("Joints")
+        jointSelect.setSelectionLimits(0)
+
+        # Visibility is triggered by `addJointInputButton`
+        jointSelect.isEnabled = jointSelect.isVisible = False
+
         jointConfigTabInputs.addTextBoxCommandInput("jointTabBlankSpacer", "", "", 1, True)
 
         global wheelConfigTable
@@ -173,15 +182,6 @@ def createJointConfigTab(args: adsk.core.CommandCreatedEventArgs) -> None:
             0,
             3,
         )
-
-        jointSelect = jointConfigTabInputs.addSelectionInput(
-            "jointSelection", "Selection", "Select a joint in your assembly to add."
-        )
-        jointSelect.addSelectionFilter("Joints")
-        jointSelect.setSelectionLimits(0)
-
-        # Visibility is triggered by `addJointInputButton`
-        jointSelect.isEnabled = jointSelect.isVisible = False
 
         jointSelectCancelButton = jointConfigTabInputs.addBoolValueInput("jointSelectCancelButton", "Cancel", False)
         jointSelectCancelButton.isEnabled = jointSelectCancelButton.isVisible = False
@@ -285,7 +285,6 @@ def addJointToConfigTab(fusionJoint: adsk.fusion.Joint, synJoint: Joint | None =
         jointConfigTable.addCommandInput(jointType, row, 2)
         jointConfigTable.addCommandInput(signalType, row, 3)
 
-        # Joint speed must be added within an `if` because there is variance between different joint types
         # Comparison by `==` over `is` because the Autodesk API does not use `Enum` for their enum classes
         if fusionJoint.jointMotion.jointType == adsk.fusion.JointTypes.RevoluteJointType:
             if synJoint:
@@ -422,10 +421,9 @@ def removeJointFromConfigTab(joint: adsk.fusion.Joint) -> None:
         selectedJointList.remove(joint)
         previousWheelCheckboxState.pop(i)
         jointConfigTable.deleteRow(i + 1)
-        for row in range(jointConfigTable.rowCount):  # Row is 1 indexed
+        for row in range(1, jointConfigTable.rowCount):  # Row is 1 indexed
             # TODO: Step through this in the debugger and figure out if this is all necessary.
             listItems = jointConfigTable.getInputAtPosition(row, 2).listItems
-            logging.getLogger(type(listItems))
             if row > i:
                 if listItems.item(i + 1).isSelected:
                     listItems.item(i).isSelected = True
@@ -444,9 +442,6 @@ def removeJointFromConfigTab(joint: adsk.fusion.Joint) -> None:
         )
 
 
-# Transition: AARD-1685
-# Remove wheel by joint name to avoid storing additional data about selected wheels.
-# Should investigate finding a better way of linking joints and wheels.
 def removeWheelFromConfigTab(joint: adsk.fusion.Joint) -> None:
     try:
         row = jointWheelIndexMap[joint.entityToken]
@@ -503,7 +498,15 @@ def resetSelectedJoints() -> None:
     jointWheelIndexMap.clear()
 
 
-def handleJointConfigTabInputChanged(commandInput: adsk.core.CommandInput) -> None:
+# Transition: AARD-1685
+# Find a way to not pass the global commandInputs into this function
+# Perhaps get the joint tab from the args then get what we want?
+def handleJointConfigTabInputChanged(
+    args: adsk.core.InputChangedEventArgs, globalCommandInputs: adsk.core.CommandInputs
+) -> None:
+    commandInput = args.input
+
+    # TODO: Reorder
     if commandInput.id == "wheelType":
         wheelTypeDropdown = adsk.core.DropDownCommandInput.cast(commandInput)
         position = wheelConfigTable.getPosition(wheelTypeDropdown)[1]
@@ -540,3 +543,69 @@ def handleJointConfigTabInputChanged(commandInput: adsk.core.CommandInput) -> No
         if wheelTabPosition:
             wheelSignalItems = wheelConfigTable.getInputAtPosition(position, 3).listItems
             wheelSignalItems.item(signalTypeDropdown.selectedItem.index).isSelected = True
+
+    elif commandInput.id == "jointAddButton":
+        jointAddButton = globalCommandInputs.itemById("jointAddButton")
+        jointRemoveButton = globalCommandInputs.itemById("jointRemoveButton")
+        jointSelectCancelButton = globalCommandInputs.itemById("jointSelectCancelButton")
+        jointSelection = globalCommandInputs.itemById("jointSelection")
+
+        jointSelection.isVisible = jointSelection.isEnabled = True
+        jointSelection.clearSelection()
+        jointAddButton.isEnabled = jointRemoveButton.isEnabled = False
+        jointSelectCancelButton.isVisible = jointSelectCancelButton.isEnabled = True
+
+    elif commandInput.id == "jointRemoveButton":
+        jointAddButton = globalCommandInputs.itemById("jointAddButton")
+        jointTable = args.inputs.itemById("jointTable")
+
+        jointAddButton.isEnabled = True
+
+        if jointTable.selectedRow == -1 or jointTable.selectedRow == 0:
+            ui = adsk.core.Application.get().userInterface
+            ui.messageBox("Select a row to delete.")
+        else:
+            # Select Row is 1 indexed
+            removeIndexedJointFromConfigTab(jointTable.selectedRow - 1)
+
+    elif commandInput.id == "jointSelectCancelButton":
+        jointAddButton = globalCommandInputs.itemById("jointAddButton")
+        jointRemoveButton = globalCommandInputs.itemById("jointRemoveButton")
+        jointSelectCancelButton = globalCommandInputs.itemById("jointSelectCancelButton")
+        jointSelection = globalCommandInputs.itemById("jointSelection")
+        jointSelection.isEnabled = jointSelection.isVisible = False
+        jointSelectCancelButton.isEnabled = jointSelectCancelButton.isVisible = False
+        jointAddButton.isEnabled = jointRemoveButton.isEnabled = True
+
+
+def handleJointConfigTabSelectionEvent(args: adsk.core.SelectionEventArgs, selectedJoint: adsk.fusion.Joint) -> None:
+    selectionInput = args.activeInput
+    jointType = selectedJoint.jointMotion.jointType
+    if jointType == adsk.fusion.JointTypes.RevoluteJointType or jointType == adsk.fusion.JointTypes.SliderJointType:
+        if not addJointToConfigTab(selectedJoint):
+            ui = adsk.core.Application.get().userInterface
+            result = ui.messageBox(
+                "You have already selected this joint.\n" "Would you like to remove it?",
+                "Synthesis: Remove Joint Confirmation",
+                adsk.core.MessageBoxButtonTypes.YesNoButtonType,
+                adsk.core.MessageBoxIconTypes.QuestionIconType,
+            )
+
+            if result == adsk.core.DialogResults.DialogYes:
+                removeJointFromConfigTab(selectedJoint)
+
+        selectionInput.isEnabled = selectionInput.isVisible = False
+
+
+def handleJointConfigTabPreviewEvent(args: adsk.core.CommandEventArgs) -> None:
+    jointAddButton = args.command.commandInputs.itemById("jointAddButton")
+    jointRemoveButton = args.command.commandInputs.itemById("jointRemoveButton")
+    jointSelectCancelButton = args.command.commandInputs.itemById("jointSelectCancelButton")
+    jointSelection = args.command.commandInputs.itemById("jointSelection")
+
+    if jointConfigTable.rowCount <= 1:
+        jointRemoveButton.isEnabled = False
+
+    if not jointSelection.isEnabled:
+        jointAddButton.isEnabled = jointRemoveButton.isEnabled = True
+        jointSelectCancelButton.isVisible = jointSelectCancelButton.isEnabled = False

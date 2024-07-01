@@ -28,14 +28,14 @@ from .Configuration.SerialCommand import SerialCommand
 
 # Transition: AARD-1685
 # In the future all components should be handled in this way.
-from .JointConfigTab import (
+from .JointConfigTab import (  # removeIndexedJointFromConfigTab,; removeJointFromConfigTab,
     addJointToConfigTab,
     addWheelToConfigTab,
     createJointConfigTab,
     getSelectedJointsAndWheels,
     handleJointConfigTabInputChanged,
-    removeIndexedJointFromConfigTab,
-    removeJointFromConfigTab,
+    handleJointConfigTabPreviewEvent,
+    handleJointConfigTabSelectionEvent,
     resetSelectedJoints,
 )
 
@@ -1098,21 +1098,24 @@ class CommandExecutePreviewHandler(adsk.core.CommandEventHandler):
 
             auto_calc_weight_f = INPUTS_ROOT.itemById("auto_calc_weight_f")
 
-            removeWheelInput = INPUTS_ROOT.itemById("wheel_delete")
+            # removeWheelInput = INPUTS_ROOT.itemById("wheel_delete")
             jointRemoveButton = INPUTS_ROOT.itemById("jointRemoveButton")
             jointSelection = INPUTS_ROOT.itemById("jointSelection")
             removeFieldInput = INPUTS_ROOT.itemById("field_delete")
 
-            addWheelInput = INPUTS_ROOT.itemById("wheel_add")
+            # addWheelInput = INPUTS_ROOT.itemById("wheel_add")
             addJointInput = INPUTS_ROOT.itemById("jointAddButton")
             addFieldInput = INPUTS_ROOT.itemById("field_add")
 
             # wheelTableInput = wheelTable()
 
-            inputs = args.command.commandInputs
-            jointTableInput: adsk.core.TableCommandInput = inputs.itemById("jointSettings").children.itemById(
-                "jointTable"
-            )
+            # inputs = args.command.commandInputs
+            # jointTableInput: adsk.core.TableCommandInput = inputs.itemById("jointSettings").children.itemById(
+            #     "jointTable"
+            # )
+
+            # Transition: AARD-1685
+            handleJointConfigTabPreviewEvent(args)
 
             gamepieceTableInput = gamepieceTable()
 
@@ -1121,26 +1124,26 @@ class CommandExecutePreviewHandler(adsk.core.CommandEventHandler):
             # else:
             #     removeWheelInput.isEnabled = True
 
-            if jointTableInput.rowCount <= 1:
-                jointRemoveButton.isEnabled = False
-            elif not jointSelection.isEnabled:
-                jointRemoveButton.isEnabled = True
+            # if jointTableInput.rowCount <= 1:
+            #     jointRemoveButton.isEnabled = False
+            # elif not jointSelection.isEnabled:
+            #     jointRemoveButton.isEnabled = True
 
             if gamepieceTableInput.rowCount <= 1:
                 removeFieldInput.isEnabled = auto_calc_weight_f.isEnabled = False
             else:
                 removeFieldInput.isEnabled = auto_calc_weight_f.isEnabled = True
 
-            if not addWheelInput.isEnabled or not removeWheelInput:
-                # for wheel in WheelListGlobal:
-                #     wheel.component.opacity = 0.25
-                #     CustomGraphics.createTextGraphics(wheel, WheelListGlobal)
+            # if not addWheelInput.isEnabled or not removeWheelInput:
+            # for wheel in WheelListGlobal:
+            #     wheel.component.opacity = 0.25
+            #     CustomGraphics.createTextGraphics(wheel, WheelListGlobal)
 
-                gm.app.activeViewport.refresh()
-            else:
-                gm.app.activeDocument.design.rootComponent.opacity = 1
-                for group in gm.app.activeDocument.design.rootComponent.customGraphicsGroups:
-                    group.deleteMe()
+            #     gm.app.activeViewport.refresh()
+            # else:
+            #     gm.app.activeDocument.design.rootComponent.opacity = 1
+            #     for group in gm.app.activeDocument.design.rootComponent.customGraphicsGroups:
+            #         group.deleteMe()
 
             if not addJointInput.isEnabled or not jointRemoveButton.isEnabled:  # TODO: improve joint highlighting
                 # for joint in JointListGlobal:
@@ -1328,40 +1331,42 @@ class MySelectHandler(adsk.core.SelectionEventHandler):
                     selectionInput.isEnabled = False
                     selectionInput.isVisible = False
 
+            # Transition: AARD-1685
             elif self.selectedJoint:
-                self.cmd.setCursor("", 0, 0)
-                jointType = self.selectedJoint.jointMotion.jointType
-                if jointType == JointMotions.REVOLUTE.value or jointType == JointMotions.SLIDER.value:
-                    # Transition: AARD-1685
-                    # if (
-                    #     jointType == JointMotions.REVOLUTE.value
-                    #     and MySelectHandler.lastInputCmd.id == "wheel_select"
-                    # ):
-                    #     addWheelToTable(self.selectedJoint)
-                    # elif (
-                    #     jointType == JointMotions.REVOLUTE.value
-                    #     and MySelectHandler.lastInputCmd.id == "wheel_remove"
-                    # ):
-                    #     if self.selectedJoint in WheelListGlobal:
-                    #         removeWheelFromTable(
-                    #             WheelListGlobal.index(self.selectedJoint)
-                    #         )
-                    # else:
-                    # Transition: AARD-1685
-                    # Should move selection handles into respective UI modules
-                    if not addJointToConfigTab(self.selectedJoint):
-                        result = gm.ui.messageBox(
-                            "You have already selected this joint.\n" "Would you like to remove it?",
-                            "Synthesis: Remove Joint Confirmation",
-                            adsk.core.MessageBoxButtonTypes.YesNoButtonType,
-                            adsk.core.MessageBoxIconTypes.QuestionIconType,
-                        )
+                handleJointConfigTabSelectionEvent(args, self.selectedJoint)
+                # self.cmd.setCursor("", 0, 0)
+                # jointType = self.selectedJoint.jointMotion.jointType
+                # if jointType == JointMotions.REVOLUTE.value or jointType == JointMotions.SLIDER.value:
+                # Transition: AARD-1685
+                # if (
+                #     jointType == JointMotions.REVOLUTE.value
+                #     and MySelectHandler.lastInputCmd.id == "wheel_select"
+                # ):
+                #     addWheelToTable(self.selectedJoint)
+                # elif (
+                #     jointType == JointMotions.REVOLUTE.value
+                #     and MySelectHandler.lastInputCmd.id == "wheel_remove"
+                # ):
+                #     if self.selectedJoint in WheelListGlobal:
+                #         removeWheelFromTable(
+                #             WheelListGlobal.index(self.selectedJoint)
+                #         )
+                # else:
+                # Transition: AARD-1685
+                # Should move selection handles into respective UI modules
+                # if not addJointToConfigTab(self.selectedJoint):
+                #     result = gm.ui.messageBox(
+                #         "You have already selected this joint.\n" "Would you like to remove it?",
+                #         "Synthesis: Remove Joint Confirmation",
+                #         adsk.core.MessageBoxButtonTypes.YesNoButtonType,
+                #         adsk.core.MessageBoxIconTypes.QuestionIconType,
+                #     )
 
-                        if result == adsk.core.DialogResults.DialogYes:
-                            removeJointFromConfigTab(self.selectedJoint)
+                #     if result == adsk.core.DialogResults.DialogYes:
+                #         removeJointFromConfigTab(self.selectedJoint)
 
-                    selectionInput.isEnabled = False
-                    selectionInput.isVisible = False
+                # selectionInput.isEnabled = False
+                # selectionInput.isVisible = False
         except:
             if gm.ui:
                 gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
@@ -1529,12 +1534,7 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
             cmdInput = eventArgs.input
 
             # Transition: AARD-1685
-            # This should be how all events are handled in separate files
-            # if not self.called:
-            handleJointConfigTabInputChanged(cmdInput)
-            #     self.called = True
-            # else:
-            #     self.called = False
+            handleJointConfigTabInputChanged(args, INPUTS_ROOT)
 
             MySelectHandler.lastInputCmd = cmdInput
             inputs = cmdInput.commandInputs
@@ -1543,13 +1543,13 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
             frictionCoeff = INPUTS_ROOT.itemById("friction_coeff_override")
 
             # wheelSelect = inputs.itemById("wheel_select")
-            jointSelection = inputs.itemById("jointSelection")
-            jointSelectCancelButton = INPUTS_ROOT.itemById("jointSelectCancelButton")
+            # jointSelection = inputs.itemById("jointSelection")
+            # jointSelectCancelButton = INPUTS_ROOT.itemById("jointSelectCancelButton")
             gamepieceSelect = inputs.itemById("gamepiece_select")
 
             # wheelTableInput = wheelTable()
 
-            jointTableInput: adsk.core.TableCommandInput = args.inputs.itemById("jointTable")
+            # jointTableInput: adsk.core.TableCommandInput = args.inputs.itemById("jointTable")
 
             gamepieceTableInput = gamepieceTable()
             weightTableInput = inputs.itemById("weight_table")
@@ -1561,8 +1561,8 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
             gamepieceConfig = inputs.itemById("gamepiece_config")
 
             # addWheelInput = INPUTS_ROOT.itemById("wheel_add")
-            addJointButton = INPUTS_ROOT.itemById("jointAddButton")
-            removeJointButton = INPUTS_ROOT.itemById("jointRemoveButton")
+            # addJointButton = INPUTS_ROOT.itemById("jointAddButton")
+            # removeJointButton = INPUTS_ROOT.itemById("jointRemoveButton")
             addFieldInput = INPUTS_ROOT.itemById("field_add")
 
             indicator = INPUTS_ROOT.itemById("algorithmic_indicator")
@@ -1721,14 +1721,14 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
 
             # Transition: AARD-1685
             # Functionality could potentially be moved into `JointConfigTab.py`
-            elif cmdInput.id == "jointAddButton":
-                self.reset()
+            # elif cmdInput.id == "jointAddButton":
+            #     self.reset()
 
-                # addWheelInput.isEnabled = True
-                jointSelection.isVisible = jointSelection.isEnabled = True
-                jointSelection.clearSelection()
-                addJointButton.isEnabled = removeJointButton.isEnabled = False
-                jointSelectCancelButton.isVisible = jointSelectCancelButton.isEnabled = True
+            #     # addWheelInput.isEnabled = True
+            #     jointSelection.isVisible = jointSelection.isEnabled = True
+            #     jointSelection.clearSelection()
+            #     addJointButton.isEnabled = removeJointButton.isEnabled = False
+            #     jointSelectCancelButton.isVisible = jointSelectCancelButton.isEnabled = True
 
             elif cmdInput.id == "field_add":
                 self.reset()
@@ -1753,18 +1753,18 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
 
             # Transition: AARD-1685
             # Functionality could potentially be moved into `JointConfigTab.py`
-            elif cmdInput.id == "jointRemoveButton":
-                gm.ui.activeSelections.clear()
+            # elif cmdInput.id == "jointRemoveButton":
+            #     gm.ui.activeSelections.clear()
 
-                addJointButton.isEnabled = True
-                # addWheelInput.isEnabled = True
+            #     addJointButton.isEnabled = True
+            #     # addWheelInput.isEnabled = True
 
-                if jointTableInput.selectedRow == -1 or jointTableInput.selectedRow == 0:
-                    jointTableInput.selectedRow = jointTableInput.rowCount - 1
-                    gm.ui.messageBox("Select a row to delete.")
-                else:
-                    # Select Row is 1 indexed
-                    removeIndexedJointFromConfigTab(jointTableInput.selectedRow - 1)
+            #     if jointTableInput.selectedRow == -1 or jointTableInput.selectedRow == 0:
+            #         jointTableInput.selectedRow = jointTableInput.rowCount - 1
+            #         gm.ui.messageBox("Select a row to delete.")
+            #     else:
+            #         # Select Row is 1 indexed
+            #         removeIndexedJointFromConfigTab(jointTableInput.selectedRow - 1)
 
             elif cmdInput.id == "field_delete":
                 gm.ui.activeSelections.clear()
@@ -1781,14 +1781,14 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
             # elif cmdInput.id == "wheel_select":
             #     addWheelInput.isEnabled = True
 
-            elif cmdInput.id == "jointSelection":
-                addJointButton.isEnabled = removeJointButton.isEnabled = True
-                jointSelectCancelButton.isEnabled = jointSelectCancelButton.isVisible = False
+            # elif cmdInput.id == "jointSelection":
+            #     addJointButton.isEnabled = removeJointButton.isEnabled = True
+            #     jointSelectCancelButton.isEnabled = jointSelectCancelButton.isVisible = False
 
-            elif cmdInput.id == "jointSelectCancelButton":
-                jointSelection.isEnabled = jointSelection.isVisible = False
-                jointSelectCancelButton.isEnabled = jointSelectCancelButton.isVisible = False
-                addJointButton.isEnabled = removeJointButton.isEnabled = True
+            # elif cmdInput.id == "jointSelectCancelButton":
+            #     jointSelection.isEnabled = jointSelection.isVisible = False
+            #     jointSelectCancelButton.isEnabled = jointSelectCancelButton.isVisible = False
+            #     addJointButton.isEnabled = removeJointButton.isEnabled = True
 
             elif cmdInput.id == "gamepiece_select":
                 addFieldInput.isEnabled = True
