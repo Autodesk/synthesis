@@ -46,6 +46,19 @@ npm i
 | `prettier:fix` | Runs prettier on the project to fix any issues with formating. **DO NOT USE**, I don't like the current format it uses. |
 | `format`       | Runs `prettier:fix` and `lint:fix`. **Do not use** for the same reasons as `prettier:fix`.                              |
 | `assetpack`    | Downloads the assetpack and unzips/installs it in the correct location.                                                 |
+| `playwright:install` | Downloads the playwright browsers. |
+
+### Unit Testing
+
+We use [Playwright](https://playwright.dev/) for testing consistency. The package is installed with the rest of the dependencies; however, be sure to install the playwright browsers with the following command:
+
+```
+npx playwright install
+```
+or
+```
+npm run playwright:install
+```
 
 ### Autodesk Platform Services
 

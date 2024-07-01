@@ -1,4 +1,9 @@
-import adsk.fusion, adsk.core, traceback, logging
+import logging
+import traceback
+
+import adsk.core
+import adsk.fusion
+
 from ..general_imports import *
 
 
@@ -12,30 +17,20 @@ def createTextGraphics(wheel: adsk.fusion.Occurrence, _wheels) -> None:
         max = boundingBox.maxPoint.asArray()  # [x, y, z] max coords
 
         if design:
-            graphics = (
-                gm.app.activeDocument.design.rootComponent.customGraphicsGroups.add()
-            )
+            graphics = gm.app.activeDocument.design.rootComponent.customGraphicsGroups.add()
             matrix = adsk.core.Matrix3D.create()
             matrix.translation = adsk.core.Vector3D.create(min[0], min[1] - 5, min[2])
 
-            billBoard = adsk.fusion.CustomGraphicsBillBoard.create(
-                adsk.core.Point3D.create(0, 0, 0)
-            )
-            billBoard.billBoardStyle = (
-                adsk.fusion.CustomGraphicsBillBoardStyles.ScreenBillBoardStyle
-            )
+            billBoard = adsk.fusion.CustomGraphicsBillBoard.create(adsk.core.Point3D.create(0, 0, 0))
+            billBoard.billBoardStyle = adsk.fusion.CustomGraphicsBillBoardStyles.ScreenBillBoardStyle
 
             text = str(_wheels.index(wheel) + 1)
             graphicsText = graphics.addText(text, "Arial Black", 6, matrix)
             graphicsText.billBoarding = billBoard  # make the text follow the camera
             graphicsText.isSelectable = False  # make it non-selectable
-            graphicsText.cullMode = (
-                adsk.fusion.CustomGraphicsCullModes.CustomGraphicsCullBack
-            )
-            graphicsText.color = (
-                adsk.fusion.CustomGraphicsShowThroughColorEffect.create(
-                    adsk.core.Color.create(230, 146, 18, 255), 1
-                )
+            graphicsText.cullMode = adsk.fusion.CustomGraphicsCullModes.CustomGraphicsCullBack
+            graphicsText.color = adsk.fusion.CustomGraphicsShowThroughColorEffect.create(
+                adsk.core.Color.create(230, 146, 18, 255), 1
             )  # orange/synthesis theme
             graphicsText.depthPriority = 0
 
@@ -82,6 +77,4 @@ def createTextGraphics(wheel: adsk.fusion.Occurrence, _wheels) -> None:
             line.isSelectable = False
             line.depthPriority = 1
     except:
-        logging.getLogger("{INTERNAL_ID}.UI.CreateTextGraphics").error(
-            "Failed:\n{}".format(traceback.format_exc())
-        )
+        logging.getLogger("{INTERNAL_ID}.UI.CreateTextGraphics").error("Failed:\n{}".format(traceback.format_exc()))

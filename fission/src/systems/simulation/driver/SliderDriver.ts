@@ -1,12 +1,21 @@
 import Jolt from "@barclah/jolt-physics"
-import Driver from "./Driver"
+import Driver, { DriverControlMode } from "./Driver"
 import { SIMULATION_PERIOD } from "@/systems/physics/PhysicsSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import InputSystem from "@/systems/input/InputSystem"
 
 class SliderDriver extends Driver {
     private _constraint: Jolt.SliderConstraint
+
+    private _controlMode: DriverControlMode = DriverControlMode.Velocity
+    private _targetVelocity: number = 0.0
     private _targetPosition: number = 0.0
+
+    public get targetVelocity(): number {
+        return this._targetVelocity
+    }
+    public set targetVelocity(radsPerSec: number) {
+        this._targetVelocity = radsPerSec
+    }
 
     public get targetPosition(): number {
         return this._targetPosition
@@ -27,6 +36,25 @@ class SliderDriver extends Driver {
         motorSettings.mMaxForceLimit = newtons
     }
 
+    public get controlMode(): DriverControlMode {
+        return this._controlMode
+    }
+
+    public set controlMode(mode: DriverControlMode) {
+        this._controlMode = mode
+        switch (mode) {
+            case DriverControlMode.Velocity:
+                this._constraint.SetMotorState(JOLT.EMotorState_Velocity)
+                break
+            case DriverControlMode.Position:
+                this._constraint.SetMotorState(JOLT.EMotorState_Position)
+                break
+            default:
+                // idk
+                break
+        }
+    }
+
     public constructor(constraint: Jolt.SliderConstraint) {
         super()
 
@@ -35,21 +63,22 @@ class SliderDriver extends Driver {
         const motorSettings = this._constraint.GetMotorSettings()
         const springSettings = motorSettings.mSpringSettings
         springSettings.mFrequency = 20 * (1.0 / SIMULATION_PERIOD)
-        springSettings.mDamping = 0.995
+        springSettings.mDamping = 0.999
 
         motorSettings.mSpringSettings = springSettings
-        motorSettings.mMinForceLimit = -125.0
-        motorSettings.mMaxForceLimit = 125.0
+        motorSettings.mMinForceLimit = -900.0
+        motorSettings.mMaxForceLimit = 900.0
 
-        this._constraint.SetMotorState(JOLT.EMotorState_Position)
-
-        this.targetPosition = this._constraint.GetCurrentPosition()
+        this._constraint.SetMotorState(JOLT.EMotorState_Velocity)
+        this.controlMode = DriverControlMode.Velocity
     }
 
     public Update(_: number): void {
-        this._targetPosition +=
-            ((InputSystem.getInput("sliderUp") ? 1 : 0) - (InputSystem.getInput("sliderDown") ? 1 : 0)) * 3
-        this._constraint.SetTargetPosition(this._targetPosition)
+        if (this._controlMode == DriverControlMode.Velocity) {
+            this._constraint.SetTargetVelocity(this._targetVelocity)
+        } else if (this._controlMode == DriverControlMode.Position) {
+            this._constraint.SetTargetPosition(this._targetPosition)
+        }
     }
 }
 

@@ -25,7 +25,7 @@ import UpdateAvailableModal from "@/modals/UpdateAvailableModal"
 import ViewModal from "@/modals/ViewModal"
 import ConnectToMultiplayerModal from "@/modals/aether/ConnectToMultiplayerModal"
 import ServerHostingModal from "@/modals/aether/ServerHostingModal"
-import ChangeInputsModal from "@/modals/configuring/ChangeInputsModal"
+import ChangeInputsModal from "@/ui/modals/configuring/ChangeInputsModal.tsx"
 import ChooseMultiplayerModeModal from "@/modals/configuring/ChooseMultiplayerModeModal"
 import ChooseSingleplayerModeModal from "@/modals/configuring/ChooseSingleplayerModeModal"
 import ConfigMotorModal from "@/modals/configuring/ConfigMotorModal"
@@ -49,11 +49,12 @@ import ScoringZonesPanel from "@/panels/configuring/scoring/ScoringZonesPanel"
 import ZoneConfigPanel from "@/panels/configuring/scoring/ZoneConfigPanel"
 import ScoreboardPanel from "@/panels/information/ScoreboardPanel"
 import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
-import ManageAssembliesModal from '@/modals/spawning/ManageAssembliesModal.tsx';
-import World from '@/systems/World.ts';
-import { AddRobotsModal, AddFieldsModal, SpawningModal } from '@/modals/spawning/SpawningModals.tsx';
-import ImportMirabufModal from '@/modals/mirabuf/ImportMirabufModal.tsx';
-import ImportLocalMirabufModal from '@/modals/mirabuf/ImportLocalMirabufModal.tsx';
+import ManageAssembliesModal from "@/modals/spawning/ManageAssembliesModal.tsx"
+import World from "@/systems/World.ts"
+import { AddRobotsModal, AddFieldsModal, SpawningModal } from "@/modals/spawning/SpawningModals.tsx"
+import ImportMirabufModal from "@/modals/mirabuf/ImportMirabufModal.tsx"
+import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
+import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
 
@@ -107,10 +108,11 @@ function Synthesis() {
                     return
                 }
 
-                const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser))
+                const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser), miraAssembly.info!.name!)
                 World.SceneRenderer.RegisterSceneObject(mirabufSceneObject)
             })()
         }
+
         setup()
 
         let mainLoopHandle = 0
@@ -179,6 +181,7 @@ const initialModals = [
     <ConnectToMultiplayerModal modalId="connect-to-multiplayer" />,
     <ServerHostingModal modalId="server-hosting" />,
     <ChangeInputsModal modalId="change-inputs" />,
+    <ResetAllInputsModal modalId="reset-inputs" />,
     <ChooseMultiplayerModeModal modalId="multiplayer-mode" />,
     <ChooseSingleplayerModeModal modalId="singleplayer-mode" />,
     <PracticeSettingsModal modalId="practice-settings" />,
