@@ -4,6 +4,7 @@ import { FaPlus } from "react-icons/fa6"
 import Button from "@/components/Button"
 import Label, { LabelSize } from "@/components/Label"
 import { Data, Folder, Hub, Item, Project, getFolderData, getHubs, getProjects } from "@/aps/APSDataManagement"
+import { GetMap, MiraType } from "@/mirabuf/MirabufLoader"
 
 interface ItemCardProps {
     id: string
@@ -31,17 +32,22 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [selectedHub, setSelectedHub] = useState<Hub | undefined>(undefined)
     const [selectedProject, setSelectedProject] = useState<Project | undefined>(undefined)
     const [selectedFolder, setSelectedFolder] = useState<Folder | undefined>(undefined)
+    const cachedRobots = GetMap(MiraType.ROBOT)
+    const cachedFields = GetMap(MiraType.FIELD)
+    const robotPaths = cachedRobots ? Object.keys(cachedRobots) : []
+    const fieldPaths = cachedFields ? Object.keys(cachedFields) : []
+    console.log(cachedRobots, cachedFields)
 
     const [hubs, setHubs] = useState<Hub[] | undefined>(undefined)
     useEffect(() => {
-        ;(async () => {
+        (async () => {
             setHubs(await getHubs())
         })()
     }, [])
 
     const [projects, setProjects] = useState<Project[] | undefined>(undefined)
     useEffect(() => {
-        ;(async () => {
+        (async () => {
             if (selectedHub) {
                 setProjects(await getProjects(selectedHub))
             }
@@ -50,7 +56,7 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
     const [folderData, setFolderData] = useState<Data[] | undefined>(undefined)
     useEffect(() => {
-        ;(async () => {
+        (async () => {
             if (selectedProject) {
                 console.log("Project has been selected")
                 if (selectedFolder) {
@@ -75,6 +81,81 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         }
     }, [folderData])
 
+    let cachedElements;
+    if (robotPaths.length > 0) {
+        cachedElements = robotPaths.map(robotPath => 
+            ItemCard({
+                name: robotPath,
+                id: robotPath,
+                buttonText: "import",
+                onClick: () => console.log(`Selecting cached robot: ${robotPath}`)
+            })
+        )
+    }
+    if (fieldPaths.length > 0) {
+        const fieldElements = fieldPaths.map(fieldPath =>
+            ItemCard({
+                name: fieldPath,
+                id: fieldPath,
+                buttonText: "import",
+                onClick: () => console.log(`Selecting cached field: ${fieldPath}`)
+            })
+        );
+        cachedElements = cachedElements ? cachedElements.concat(fieldElements) : fieldElements
+    }
+
+    let hubElements;
+
+    if (!selectedHub) {
+        hubElements = hubs?.map(x =>
+            ItemCard({
+                name: x.name,
+                id: x.id,
+                buttonText: ">",
+                onClick: () => setSelectedHub(x),
+            })
+        )
+    } else {
+        if (!selectedProject) {
+            hubElements = projects?.map(x =>
+                ItemCard({
+                    name: x.name,
+                    id: x.id,
+                    buttonText: ">",
+                    onClick: () => setSelectedProject(x),
+                })
+            )
+        } else {
+            hubElements = folderData?.map(x =>
+                x instanceof Folder
+                    ? ItemCard({
+                        name: `DIR: ${x.displayName}`,
+                        id: x.id,
+                        buttonText: ">",
+                        onClick: () => setSelectedFolder(x),
+                    })
+                    : x instanceof Item
+                        ? ItemCard({
+                            name: `${x.displayName}`,
+                            id: x.id,
+                            buttonText: "import",
+                            onClick: () => {
+                                console.log(`Selecting ${x.displayName} (${x.id})`)
+                            },
+                        })
+                        : ItemCard({
+                            name: `${x.type}: ${x.id}`,
+                            id: x.id,
+                            buttonText: "---",
+                            onClick: () => {
+                                console.log(`Selecting (${x.id})`)
+                            },
+                        })
+            )
+        }
+    }
+    console.log('HUB ELEMENTS', hubElements)
+    const displayElements = (cachedElements || []).concat(hubElements)
     return (
         <Modal
             name={"Manage Assemblies"}
@@ -111,50 +192,8 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 )}
             </div>
             <div className="flex overflow-y-auto flex-col gap-2 min-w-[50vw] max-h-[60vh] bg-background-secondary rounded-md p-2">
-                {!selectedHub
-                    ? hubs?.map(x =>
-                          ItemCard({
-                              name: x.name,
-                              id: x.id,
-                              buttonText: ">",
-                              onClick: () => setSelectedHub(x),
-                          })
-                      )
-                    : !selectedProject
-                      ? projects?.map(x =>
-                            ItemCard({
-                                name: x.name,
-                                id: x.id,
-                                buttonText: ">",
-                                onClick: () => setSelectedProject(x),
-                            })
-                        )
-                      : folderData?.map(x =>
-                            x instanceof Folder
-                                ? ItemCard({
-                                      name: `DIR: ${x.displayName}`,
-                                      id: x.id,
-                                      buttonText: ">",
-                                      onClick: () => setSelectedFolder(x),
-                                  })
-                                : x instanceof Item
-                                  ? ItemCard({
-                                        name: `${x.displayName}`,
-                                        id: x.id,
-                                        buttonText: "import",
-                                        onClick: () => {
-                                            console.log(`Selecting ${x.displayName} (${x.id})`)
-                                        },
-                                    })
-                                  : ItemCard({
-                                        name: `${x.type}: ${x.id}`,
-                                        id: x.id,
-                                        buttonText: "---",
-                                        onClick: () => {
-                                            console.log(`Selecting (${x.id})`)
-                                        },
-                                    })
-                        )}
+                {displayElements && displayElements.length > 0 ?
+                    displayElements : <p>Nothing to display.</p>}
             </div>
         </Modal>
     )
