@@ -33,19 +33,15 @@ class JointConfigTab:
             self.jointConfigTab = inputs.addTabCommandInput("jointSettings", "Joint Settings")
             self.jointConfigTab.tooltip = "Select and configure robot joints."
             jointConfigTabInputs = self.jointConfigTab.children
-
             self.jointConfigTable = createTableInput(
                 "jointTable", "Joint Table", jointConfigTabInputs, 7, "1:2:2:2:2:2:2"
             )
-
             self.jointConfigTable.addCommandInput(
                 createTextBoxInput("jointMotionHeader", "Motion", jointConfigTabInputs, "Motion", bold=False), 0, 0
             )
-
             self.jointConfigTable.addCommandInput(
                 createTextBoxInput("nameHeader", "Name", jointConfigTabInputs, "Joint name", bold=False), 0, 1
             )
-
             self.jointConfigTable.addCommandInput(
                 createTextBoxInput(
                     "parentHeader", "Parent", jointConfigTabInputs, "Parent joint", background="#d9d9d9"
@@ -53,25 +49,21 @@ class JointConfigTab:
                 0,
                 2,
             )
-
             self.jointConfigTable.addCommandInput(
                 createTextBoxInput("signalHeader", "Signal", jointConfigTabInputs, "Signal type", background="#d9d9d9"),
                 0,
                 3,
             )
-
             self.jointConfigTable.addCommandInput(
                 createTextBoxInput("speedHeader", "Speed", jointConfigTabInputs, "Joint Speed", background="#d9d9d9"),
                 0,
                 4,
             )
-
             self.jointConfigTable.addCommandInput(
                 createTextBoxInput("forceHeader", "Force", jointConfigTabInputs, "Joint Force", background="#d9d9d9"),
                 0,
                 5,
             )
-
             self.jointConfigTable.addCommandInput(
                 createTextBoxInput("wheelHeader", "Is Wheel", jointConfigTabInputs, "Is Wheel", background="#d9d9d9"),
                 0,
