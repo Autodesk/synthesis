@@ -1,32 +1,50 @@
-import DefaultPreferences from "./DefaultPreferences"
+import { DefaultPreferences, DefaultRobotPreferences, GlobalPreference, RobotPreferences, RobotPreferencesKey } from "./PreferenceTypes"
 
 class PreferencesSystem {
     private static _preferences: { [key: string]: Object }
     private static _localStorageKey = "Preferences"
 
-    public static setPreference<T extends Object>(key: string, preference: T) {
-        if (this._preferences == undefined)
-            this.loadPreferences()
+    public static setGlobalPreference<T extends Object>(key: GlobalPreference, preference: T) {
+        if (this._preferences == undefined) this.loadPreferences()
 
         this._preferences[key] = preference
     }
 
-    public static getPreference<T>(key: string): T {
-        if (this._preferences == undefined)
+    private static getPreference<T>(key: string): T | undefined {
+        if (this._preferences == undefined) 
             this.loadPreferences()
 
-        const customPref = this._preferences[key]
+        return this._preferences[key] as T
 
-        if (customPref != undefined)
-            return customPref as T
+        // if (customPref != undefined) 
+        //     return customPref as T
 
-        const defaultPref = DefaultPreferences.getDefaultPreference(key)
+        // return undefined
+    }
 
-        if (defaultPref != undefined) {
+    public static getGlobalPreference<T>(key: GlobalPreference): T {
+        const customPref = this.getPreference<T>(key);
+        if (customPref != undefined) 
+            return customPref;
+
+        const defaultPref = DefaultPreferences[key]
+        if (defaultPref != undefined)
+        
             return defaultPref as T
-        }
 
         throw new Error("Preference '" + key + "' is not assigned a default!")
+    }
+
+    public static getRobotPreferences(miraName: string): RobotPreferences {
+        const allRoboPrefs = this.getPreference<{[key: string]: RobotPreferences}>(RobotPreferencesKey);
+        if (allRoboPrefs == undefined || allRoboPrefs[miraName] == undefined)
+            return DefaultRobotPreferences()
+
+        return allRoboPrefs[miraName]
+    }
+
+    public static getFieldPreferences(miraName: string) {
+
     }
 
     public static loadPreferences() {
@@ -40,8 +58,7 @@ class PreferencesSystem {
 
         try {
             this._preferences = JSON.parse(loadedPrefs)
-        }
-        catch(e) {
+        } catch (e) {
             console.error(e)
             this._preferences = {}
         }
@@ -69,7 +86,7 @@ class PreferencesSystem {
 
     public static clearPreferences() {
         window.localStorage.removeItem(this._localStorageKey)
-        this._preferences = {};
+        this._preferences = {}
         console.log("Cleared preferences")
     }
 }

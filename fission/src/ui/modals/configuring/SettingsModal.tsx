@@ -24,24 +24,24 @@ const qualitySettingsOptions = ["Low", "Medium", "High", "Ultra"]
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
 
-    const [screenMode, setScreenMode] = useState<string>(PreferencesSystem.getPreference<string>("screenMode"))
-    const [qualitySettings, setQualitySettings] = useState<string>(PreferencesSystem.getPreference<string>("qualitySettings"))
-    const [zoomSensitivity, setZoomSensitivity] = useState<number>(PreferencesSystem.getPreference<number>("zoomSensitivity"))
-    const [pitchSensitivity, setPitchSensitivity] = useState<number>(PreferencesSystem.getPreference<number>("pitchSensitivity"))
-    const [yawSensitivity, setYawSensitivity] = useState<number>(PreferencesSystem.getPreference<number>("yawSensitivity"))
-    const [reportAnalytics, setReportAnalytics] = useState<boolean>(PreferencesSystem.getPreference<boolean>("reportAnalytics"))
-    const [useMetric, setUseMetric] = useState<boolean>(PreferencesSystem.getPreference<boolean>("useMetric"))
-    const [renderScoringZones, setRenderScoringZones] = useState<boolean>(PreferencesSystem.getPreference<boolean>("renderScoringZones"))
+    const [screenMode, setScreenMode] = useState<string>(PreferencesSystem.getGlobalPreference<string>("ScreenMode"))
+    const [qualitySettings, setQualitySettings] = useState<string>(PreferencesSystem.getGlobalPreference<string>("QualitySettings"))
+    const [zoomSensitivity, setZoomSensitivity] = useState<number>(PreferencesSystem.getGlobalPreference<number>("ZoomSensitivity"))
+    const [pitchSensitivity, setPitchSensitivity] = useState<number>(PreferencesSystem.getGlobalPreference<number>("PitchSensitivity"))
+    const [yawSensitivity, setYawSensitivity] = useState<number>(PreferencesSystem.getGlobalPreference<number>("YawSensitivity"))
+    const [reportAnalytics, setReportAnalytics] = useState<boolean>(PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics"))
+    const [useMetric, setUseMetric] = useState<boolean>(PreferencesSystem.getGlobalPreference<boolean>("UseMetric"))
+    const [renderScoringZones, setRenderScoringZones] = useState<boolean>(PreferencesSystem.getGlobalPreference<boolean>("RenderScoringZones"))
 
     const saveSettings = () => {
-        PreferencesSystem.setPreference<string>("screenMode", screenMode)
-        PreferencesSystem.setPreference<string>("qualitySettings", qualitySettings)
-        PreferencesSystem.setPreference<number>("zoomSensitivity", zoomSensitivity)
-        PreferencesSystem.setPreference<number>("pitchSensitivity", pitchSensitivity)
-        PreferencesSystem.setPreference<number>("yawSensitivity", yawSensitivity)
-        PreferencesSystem.setPreference<boolean>("reportAnalytics", reportAnalytics)
-        PreferencesSystem.setPreference<boolean>("useMetric", useMetric)
-        PreferencesSystem.setPreference<boolean>("renderScoringZones", renderScoringZones)
+        PreferencesSystem.setGlobalPreference<string>("ScreenMode", screenMode)
+        PreferencesSystem.setGlobalPreference<string>("QualitySettings", qualitySettings)
+        PreferencesSystem.setGlobalPreference<number>("ZoomSensitivity", zoomSensitivity)
+        PreferencesSystem.setGlobalPreference<number>("PitchSensitivity", pitchSensitivity)
+        PreferencesSystem.setGlobalPreference<number>("YawSensitivity", yawSensitivity)
+        PreferencesSystem.setGlobalPreference<boolean>("ReportAnalytics", reportAnalytics)
+        PreferencesSystem.setGlobalPreference<boolean>("UseMetric", useMetric)
+        PreferencesSystem.setGlobalPreference<boolean>("RenderScoringZones", renderScoringZones)
         
         PreferencesSystem.savePreferences()
     }
@@ -58,7 +58,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             <Label size={LabelSize.Medium}>Screen Settings</Label>
             <Dropdown
                 label="Screen Mode"
-                options={moveElementToTop(screenModeOptions, PreferencesSystem.getPreference<string>("screenMode"))}
+                options={moveElementToTop(screenModeOptions, PreferencesSystem.getGlobalPreference<string>("ScreenMode"))}
                 onSelect={selected => {
                     setScreenMode(selected)
                 }}
@@ -67,7 +67,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 label="Quality Settings"
                 options={moveElementToTop(
                     qualitySettingsOptions,
-                    PreferencesSystem.getPreference<string>("qualitySettings")
+                    PreferencesSystem.getGlobalPreference<string>("QualitySettings")
                 )}
                 onSelect={selected => {
                     setQualitySettings(selected)
@@ -78,7 +78,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             <Slider
                 min={1}
                 max={15}
-                defaultValue={PreferencesSystem.getPreference<number>("zoomSensitivity")}
+                defaultValue={PreferencesSystem.getGlobalPreference<number>("ZoomSensitivity")}
                 label={"Zoom Sensitivity"}
                 format={{ maximumFractionDigits: 2 }}
                 onChange={value => setZoomSensitivity(value)}
@@ -86,7 +86,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             <Slider
                 min={1}
                 max={15}
-                defaultValue={PreferencesSystem.getPreference<number>("pitchSensitivity")}
+                defaultValue={PreferencesSystem.getGlobalPreference<number>("PitchSensitivity")}
                 label={"Pitch Sensitivity"}
                 format={{ maximumFractionDigits: 2 }}
                 onChange={value => setPitchSensitivity(value)}
@@ -94,7 +94,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             <Slider
                 min={1}
                 max={15}
-                defaultValue={PreferencesSystem.getPreference<number>("yawSensitivity")}
+                defaultValue={PreferencesSystem.getGlobalPreference<number>("YawSensitivity")}
                 label={"Yaw Sensitivity"}
                 format={{ maximumFractionDigits: 2 }}
                 onChange={value => setYawSensitivity(value)}
@@ -102,21 +102,21 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             <Label size={LabelSize.Medium}>Preferences</Label>
             <Checkbox
                 label="Report Analytics"
-                defaultState={PreferencesSystem.getPreference<boolean>("reportAnalytics")}
+                defaultState={PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics")}
                 onClick={checked => {
                     setReportAnalytics(checked)
                 }}
             />
             <Checkbox
                 label="Use Metric"
-                defaultState={PreferencesSystem.getPreference<boolean>("useMetric")}
+                defaultState={PreferencesSystem.getGlobalPreference<boolean>("UseMetric")}
                 onClick={checked => {
                     setUseMetric(checked)
                 }}
             />
             <Checkbox
                 label="Render Score Zones"
-                defaultState={PreferencesSystem.getPreference<boolean>("renderScoringZones")}
+                defaultState={PreferencesSystem.getGlobalPreference<boolean>("RenderScoringZones")}
                 onClick={checked => {
                     setRenderScoringZones(checked)
                 }}

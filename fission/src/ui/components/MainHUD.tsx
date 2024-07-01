@@ -138,16 +138,6 @@ const MainHUD: React.FC = () => {
                         onClick={() => PreferencesSystem.savePreferences()}
                     />
                     <MainHUDButton
-                        value={"Modify test Pref (true)"}
-                        icon={<IoBug />}
-                        onClick={() => PreferencesSystem.setPreference("Test", true)}
-                    />
-                    <MainHUDButton
-                        value={"Modify test Pref (false)"}
-                        icon={<IoBug />}
-                        onClick={() => PreferencesSystem.setPreference("Test", false)}
-                    />
-                    <MainHUDButton
                         value={"Clear prefs"}
                         icon={<IoBug />}
                         onClick={() => PreferencesSystem.clearPreferences()}
