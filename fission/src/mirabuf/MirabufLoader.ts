@@ -16,16 +16,18 @@ export function UnzipMira(buff: Uint8Array): Uint8Array {
     }
 }
 
-export async function LoadMirabufRemote(fetchLocation: string, type: MiraType): Promise<mirabuf.Assembly | undefined> {
+export async function LoadMirabufRemote(fetchLocation: string, type: MiraType, blobHashID?: string): Promise<mirabuf.Assembly | undefined> {
     const map = GetMap(type)
-    const targetID = map != undefined ? map[fetchLocation] : undefined
+
+    // blobHashID for ImportLocalMira
+    const targetID = blobHashID ? map[blobHashID] : ( map != undefined ? map[fetchLocation] : undefined )
 
     if (targetID != undefined) {
         console.log("Loading mira from cache")
-        return (await LoadMirabufCache(fetchLocation, targetID, type, map)) ?? LoadAndCacheMira(fetchLocation, type)
+        return (await LoadMirabufCache(fetchLocation, targetID, type, map)) ?? LoadAndCacheMira(fetchLocation, type, blobHashID)
     } else {
         console.log("Loading and caching new mira")
-        return await LoadAndCacheMira(fetchLocation, type)
+        return await LoadAndCacheMira(fetchLocation, type, blobHashID)
     }
 }
 
@@ -45,11 +47,13 @@ export async function ClearMira() {
     window.localStorage.removeItem(fields)
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function GetMap(type: MiraType): any {
     const miraJSON = window.localStorage.getItem(type == MiraType.ROBOT ? robots : fields)
 
     if (miraJSON != undefined) {
         console.log("mirabuf JSON found")
+        console.log(miraJSON)
         return JSON.parse(miraJSON)
     } else {
         console.log("mirabuf JSON not found")
@@ -57,10 +61,8 @@ export function GetMap(type: MiraType): any {
     }
 }
 
-async function LoadAndCacheMira(fetchLocation: string, type: MiraType): Promise<mirabuf.Assembly | undefined> {
+async function LoadAndCacheMira(fetchLocation: string, type: MiraType, blobHashID?: string): Promise<mirabuf.Assembly | undefined> {
     try {
-        const backupID = Date.now().toString()
-
         // Grab file remote
         const miraBuff = await fetch(encodeURI(fetchLocation), import.meta.env.DEV ? { cache: "no-store" } : undefined)
             .then(x => x.blob())
@@ -69,6 +71,7 @@ async function LoadAndCacheMira(fetchLocation: string, type: MiraType): Promise<
         const assembly = mirabuf.Assembly.decode(byteBuffer)
 
         // Store in OPFS
+        const backupID = Date.now().toString()
         const fileHandle = await (type == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle).getFileHandle(
             backupID,
             { create: true }
@@ -78,8 +81,8 @@ async function LoadAndCacheMira(fetchLocation: string, type: MiraType): Promise<
         await writable.close()
 
         // Local cache map
-        let map: { [k: string]: string } = GetMap(type) ?? {}
-        map[fetchLocation] = backupID
+        const map: { [k: string]: string } = GetMap(type) ?? {}
+        map[blobHashID ?? fetchLocation] = backupID
         window.localStorage.setItem(type == MiraType.ROBOT ? robots : fields, JSON.stringify(map))
 
         console.log(assembly)

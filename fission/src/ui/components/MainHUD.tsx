@@ -18,7 +18,7 @@ import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Button } from "@mui/base/Button"
-import { ClearMira, GetMap, LoadMirabufRemote, MiraType } from "@/mirabuf/MirabufLoader"
+import { ClearMira, GetMap, MiraType } from "@/mirabuf/MirabufLoader"
 import Jolt from "@barclah/jolt-physics"
 
 type ButtonProps = {

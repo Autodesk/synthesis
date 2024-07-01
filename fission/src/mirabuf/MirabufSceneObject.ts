@@ -159,9 +159,11 @@ class MirabufSceneObject extends SceneObject {
 
 export async function CreateMirabufFromUrl(
     path: string,
-    miraType: MiraType
+    miraType: MiraType,
+    hashID?: string
 ): Promise<MirabufSceneObject | null | undefined> {
-    const miraAssembly = await LoadMirabufRemote(path, miraType).catch(console.error)
+    console.log("Got in mirabuffromurl")
+    const miraAssembly = await LoadMirabufRemote(path, miraType, hashID).catch(console.error)
 
     if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
         return
