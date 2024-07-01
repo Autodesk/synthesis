@@ -61,6 +61,8 @@ class PhysicsSystem extends WorldSystem {
     private _bodies: Array<Jolt.BodyID>
     private _constraints: Array<Jolt.Constraint>
 
+    public isPhysicsEnabled: boolean = true
+
     /**
      * Creates a PhysicsSystem object.
      */
@@ -89,6 +91,31 @@ class PhysicsSystem extends WorldSystem {
         )
         ground.SetFriction(FLOOR_FRICTION)
         this._joltBodyInterface.AddBody(ground.GetID(), JOLT.EActivation_Activate)
+    }
+
+    /** 
+     * TEMPORARY
+     * Disabling physics system
+     */
+    public DisablePhysics() {
+        // this._joltPhysSystem.SetGravity(new JOLT.Vec3(0, 0, 0))
+        for (const body of this._bodies) {
+            // console.log(body.freeze)
+            this._joltBodyInterface.DeactivateBody(body)
+        }
+        this.isPhysicsEnabled = false
+    }
+
+    /**
+     * TEMPORARY
+     * Enabling physics system
+     */
+    public EnablePhysics() {
+        this._joltPhysSystem.SetGravity(new JOLT.Vec3(0, -9.8, 0))
+        for (const body of this._bodies) {
+            this._joltBodyInterface.ActivateBody(body)
+        }
+        this.isPhysicsEnabled = true
     }
 
     /**
@@ -723,7 +750,7 @@ class PhysicsSystem extends WorldSystem {
         let substeps = Math.max(1, Math.floor((lastDeltaT / STANDARD_SIMULATION_PERIOD) * STANDARD_SUB_STEPS))
         substeps = Math.min(MAX_SUBSTEPS, Math.max(MIN_SUBSTEPS, substeps))
 
-        console.log(`DeltaT: ${lastDeltaT.toFixed(5)}, Substeps: ${substeps}`)
+        // console.log(`DeltaT: ${lastDeltaT.toFixed(5)}, Substeps: ${substeps}`)
 
         this._joltInterface.Step(lastDeltaT, substeps)
     }

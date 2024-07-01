@@ -153,7 +153,9 @@ const MainHUD: React.FC = () => {
                         value={"Test Gizmo"}
                         icon={<IoGameControllerOutline />}
                         onClick={() => {
-                            new TransformGizmo("translate").setMode = "rotate"
+                            if (World.PhysicsSystem.isPhysicsEnabled) World.PhysicsSystem.DisablePhysics()
+                            else World.PhysicsSystem.EnablePhysics()
+                            // new TransformGizmo("translate").setMode = "rotate"
                         }}
                     />
                 </div>

@@ -96,6 +96,7 @@ class SceneRenderer extends WorldSystem {
                 this.isShiftPressed = false
             }
         })
+
     }
 
     public UpdateCanvasSize() {
@@ -119,8 +120,7 @@ class SceneRenderer extends WorldSystem {
                     Math.tan(mainCameraFovRadians) *
                     1.9
             )
-            // tc.position.copy(tc.object!.position);
-            // tc.rotation.copy(tc.object!.rotation);
+             
         })
 
         this._renderer.render(this._scene, this._mainCamera)
@@ -173,12 +173,13 @@ class SceneRenderer extends WorldSystem {
         })
     }
 
-    /*
+    /**
      * Attach new transform gizmo to Mesh
      *
-     * @param obj - Mesh to attach gizmo to
-     * @param mode - Transform mode (translate, rotate, scale)
-     * @param size - Size of the gizmo
+     * @param obj Mesh to attach gizmo to
+     * @param mode Transform mode (translate, rotate, scale)
+     * @param size Size of the gizmo
+     * @returns void
      */
     public AddTransformGizmo(
         obj: THREE.Object3D,
@@ -238,10 +239,11 @@ class SceneRenderer extends WorldSystem {
         this._scene.add(transformControl)
     }
 
-    /*
+    /**
      * Remove transform gizmo from Mesh
      *
-     * @param obj - Mesh to remove gizmo from
+     * @param obj Mesh to remove gizmo from
+     * @returns void
      */
     public RemoveTransformGizmo(obj: THREE.Object3D) {
         this.transformControls.forEach((_, tc) => {
@@ -252,11 +254,12 @@ class SceneRenderer extends WorldSystem {
         })
     }
 
-    /*
+    /**
      * Update the mode of the transform gizmo
      *
      * @param mode - Transform mode (translate, rotate, scale)
      * @param obj - Mesh to update gizmo mode
+     * @returns void
      */
     public UpdateTransformGizmoMode(mode: "translate" | "rotate" | "scale", obj: THREE.Object3D) {
         this.transformControls.forEach((_, tc) => {
