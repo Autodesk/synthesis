@@ -4,7 +4,7 @@
 
 import logging
 import os
-import platform
+#import platform
 import traceback
 from enum import Enum
 
@@ -1174,6 +1174,18 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 .children.itemById("compress")
             ).value
 
+            frictionOverride: bool = (
+                eventArgs.command.commandInputs.itemById("advanced_settings")
+                .children.itemById("physics_settings")
+                .children.itemById("friction_override")
+            ).value
+
+            frictionOverrideValue: float = (
+                eventArgs.command.commandInputs.itemById("advanced_settings")
+                .children.itemById("physics_settings")
+                .children.itemById("friction_coeff_override")
+            ).value
+
             exporterOptions = ExporterOptions(
                 savepath,
                 name,
@@ -1187,9 +1199,11 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 exportMode=_mode,
                 compressOutput=compress,
                 exportAsPart=export_as_part_boolean,
+                frictionOverride=frictionOverride,
+                frictionOverrideValue=frictionOverrideValue,
             )
 
-            Parser(exporterOptions).export()
+            _: bool = Parser(exporterOptions).export()
             exporterOptions.writeToDesign()
         except:
             if gm.ui:

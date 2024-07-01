@@ -7,6 +7,7 @@ from configparser import ConfigParser
 
 from .strings import INTERNAL_ID
 from .Types.OString import OString
+from typing import Any
 
 try:
     config = ConfigParser()
@@ -49,7 +50,7 @@ def setAnalytics(enabled: bool):
     return True
 
 
-def get_value(key: str, section="main") -> any:
+def get_value(key: str, section="main") -> Any:
     """Gets a value from the config file
 
     Args:
@@ -62,7 +63,7 @@ def get_value(key: str, section="main") -> any:
     return config.get(section, key)
 
 
-def write_configuration(section: str, key: str, value: any):
+def write_configuration(section: str, key: str, value: Any):
     """Write a configuration flag to the ini file
 
     Args:
