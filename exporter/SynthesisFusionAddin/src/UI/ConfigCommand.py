@@ -4,7 +4,6 @@
 
 import logging
 import os
-import platform
 import traceback
 from enum import Enum
 
@@ -19,27 +18,19 @@ from ..Parser.ExporterOptions import (
     ExportMode,
     Gamepiece,
     PreferredUnits,
-    Wheel,
 )
 from ..Parser.SynthesisParser.Parser import Parser
 from ..Parser.SynthesisParser.Utilities import guid_occurrence
-from . import CustomGraphics, FileDialogConfig, Helper, IconPaths, OsHelper
+from . import CustomGraphics, FileDialogConfig, Helper, IconPaths
 from .Configuration.SerialCommand import SerialCommand
 
 # Transition: AARD-1685
 # In the future all components should be handled in this way.
-from .JointConfigTab import (  # removeIndexedJointFromConfigTab,; removeJointFromConfigTab,
-    addJointToConfigTab,
-    addWheelToConfigTab,
-    createJointConfigTab,
-    getSelectedJointsAndWheels,
-    handleJointConfigTabInputChanged,
-    handleJointConfigTabPreviewEvent,
-    handleJointConfigTabSelectionEvent,
-    resetSelectedJoints,
-)
+from .JointConfigTab import JointConfigTab
 
 # ====================================== CONFIG COMMAND ======================================
+
+jointConfigTab: JointConfigTab
 
 """
 INPUTS_ROOT (adsk.fusion.CommandInputs):
@@ -52,7 +43,7 @@ These lists are crucial, and contain all of the relevant object selections.
 - WheelListGlobal: list of wheels (adsk.fusion.Occurrence)
 - GamepieceListGlobal: list of gamepieces (adsk.fusion.Occurrence)
 """
-WheelListGlobal = []
+# WheelListGlobal = []
 GamepieceListGlobal = []
 
 # Default to compressed files
@@ -388,14 +379,17 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             #     3,
             # )
 
+            global jointConfigTab
+            jointConfigTab = JointConfigTab(args)
+
             # Transition: AARD-1685
             # There remains some overlap between adding joints as wheels.
             # Should investigate changes to improve performance.
-            createJointConfigTab(args)
+            # createJointConfigTab(args)
             if exporterOptions.joints:
                 for synJoint in exporterOptions.joints:
                     fusionJoint = gm.app.activeDocument.design.findEntityByToken(synJoint.jointToken)[0]
-                    addJointToConfigTab(fusionJoint, synJoint)
+                    jointConfigTab.addJoint(fusionJoint, synJoint)
             else:
                 for joint in [
                     *gm.app.activeDocument.design.rootComponent.allJoints,
@@ -405,7 +399,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                         joint.jointMotion.jointType in (JointMotions.REVOLUTE.value, JointMotions.SLIDER.value)
                         and not joint.isSuppressed
                     ):
-                        addJointToConfigTab(joint)
+                        jointConfigTab.addJoint(joint)
 
             # Adding saved wheels must take place after joints are added as a result of how the two types are connected.
             # Transition: AARD-1685
@@ -414,7 +408,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 pass
                 for wheel in exporterOptions.wheels:
                     fusionJoint = gm.app.activeDocument.design.findEntityByToken(wheel.jointToken)[0]
-                    addWheelToConfigTab(fusionJoint, wheel)
+                    jointConfigTab.addWheel(fusionJoint, wheel)
 
             # ~~~~~~~~~~~~~~~~ GAMEPIECE CONFIGURATION ~~~~~~~~~~~~~~~~
             """
@@ -1046,7 +1040,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 .children.itemById("compress")
             ).value
 
-            selectedJoints, selectedWheels = getSelectedJointsAndWheels()
+            selectedJoints, selectedWheels = jointConfigTab.getSelectedJointsAndWheels()
 
             exporterOptions = ExporterOptions(
                 savepath,
@@ -1069,7 +1063,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             # All selections should be reset AFTER a successful export and save.
             # If we run into an exporting error we should return back to the panel with all current options
             # still in tact. Even if they did not save.
-            resetSelectedJoints()
+            jointConfigTab.reset()
         except:
             if gm.ui:
                 gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
@@ -1115,7 +1109,8 @@ class CommandExecutePreviewHandler(adsk.core.CommandEventHandler):
             # )
 
             # Transition: AARD-1685
-            handleJointConfigTabPreviewEvent(args)
+            # handleJointConfigTabPreviewEvent(args)
+            jointConfigTab.handlePreviewEvent(args)
 
             gamepieceTableInput = gamepieceTable()
 
@@ -1333,7 +1328,8 @@ class MySelectHandler(adsk.core.SelectionEventHandler):
 
             # Transition: AARD-1685
             elif self.selectedJoint:
-                handleJointConfigTabSelectionEvent(args, self.selectedJoint)
+                jointConfigTab.handleSelectionEvent(args, self.selectedJoint)
+                # handleJointConfigTabSelectionEvent(args, self.selectedJoint)
                 # self.cmd.setCursor("", 0, 0)
                 # jointType = self.selectedJoint.jointMotion.jointType
                 # if jointType == JointMotions.REVOLUTE.value or jointType == JointMotions.SLIDER.value:
@@ -1534,7 +1530,8 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
             cmdInput = eventArgs.input
 
             # Transition: AARD-1685
-            handleJointConfigTabInputChanged(args, INPUTS_ROOT)
+            # handleJointConfigTabInputChanged(args)
+            jointConfigTab.handleInputChanged(args, INPUTS_ROOT)
 
             MySelectHandler.lastInputCmd = cmdInput
             inputs = cmdInput.commandInputs
@@ -1910,8 +1907,9 @@ class MyCommandDestroyHandler(adsk.core.CommandEventHandler):
         try:
             onSelect = gm.handlers[3]
 
-            WheelListGlobal.clear()
-            resetSelectedJoints()
+            # WheelListGlobal.clear()
+            # resetSelectedJoints()
+            jointConfigTab.reset()
             GamepieceListGlobal.clear()
             onSelect.allWheelPreselections.clear()
             onSelect.wheelJointList.clear()
@@ -1930,78 +1928,78 @@ class MyCommandDestroyHandler(adsk.core.CommandEventHandler):
             )
 
 
-# Transition: AARD-1685
-def addWheelToTable(wheel: adsk.fusion.Joint) -> None:
-    """### Adds a wheel occurrence to its global list and wheel table.
+# # Transition: AARD-1685
+# def addWheelToTable(wheel: adsk.fusion.Joint) -> None:
+#     """### Adds a wheel occurrence to its global list and wheel table.
 
-    Args:
-        wheel (adsk.fusion.Occurrence): wheel Occurrence object to be added.
-    """
-    try:
-        try:
-            onSelect = gm.handlers[3]
-            onSelect.allWheelPreselections.append(wheel.entityToken)
-        except IndexError:
-            # Not 100% sure what we need the select handler here for however it should not run when
-            # first populating the saved wheel configs. This will naturally throw a IndexError as
-            # we do this before the initialization of gm.handlers[]
-            pass
+#     Args:
+#         wheel (adsk.fusion.Occurrence): wheel Occurrence object to be added.
+#     """
+#     try:
+#         try:
+#             onSelect = gm.handlers[3]
+#             onSelect.allWheelPreselections.append(wheel.entityToken)
+#         except IndexError:
+#             # Not 100% sure what we need the select handler here for however it should not run when
+#             # first populating the saved wheel configs. This will naturally throw a IndexError as
+#             # we do this before the initialization of gm.handlers[]
+#             pass
 
-        wheelTableInput = None
-        # def addPreselections(child_occurrences):
-        #     for occ in child_occurrences:
-        #         onSelect.allWheelPreselections.append(occ.entityToken)
+#         wheelTableInput = None
+#         # def addPreselections(child_occurrences):
+#         #     for occ in child_occurrences:
+#         #         onSelect.allWheelPreselections.append(occ.entityToken)
 
-        #         if occ.childOccurrences:
-        #             addPreselections(occ.childOccurrences)
+#         #         if occ.childOccurrences:
+#         #             addPreselections(occ.childOccurrences)
 
-        # if wheel.childOccurrences:
-        #     addPreselections(wheel.childOccurrences)
-        # else:
+#         # if wheel.childOccurrences:
+#         #     addPreselections(wheel.childOccurrences)
+#         # else:
 
-        WheelListGlobal.append(wheel)
-        cmdInputs = adsk.core.CommandInputs.cast(wheelTableInput.commandInputs)
+#         # WheelListGlobal.append(wheel)
+#         cmdInputs = adsk.core.CommandInputs.cast(wheelTableInput.commandInputs)
 
-        icon = cmdInputs.addImageCommandInput("placeholder_w", "Placeholder", IconPaths.wheelIcons["standard"])
+#         icon = cmdInputs.addImageCommandInput("placeholder_w", "Placeholder", IconPaths.wheelIcons["standard"])
 
-        name = cmdInputs.addTextBoxCommandInput("name_w", "Joint name", wheel.name, 1, True)
-        name.tooltip = wheel.name
+#         name = cmdInputs.addTextBoxCommandInput("name_w", "Joint name", wheel.name, 1, True)
+#         name.tooltip = wheel.name
 
-        wheelType = cmdInputs.addDropDownCommandInput(
-            "wheel_type_w",
-            "Wheel Type",
-            dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
-        )
-        wheelType.listItems.add("Standard", True, "")
-        wheelType.listItems.add("Omni", False, "")
-        wheelType.tooltip = "Wheel type"
-        wheelType.tooltipDescription = "<Br>Omni-directional wheels can be used just like regular drive wheels but they have the advantage of being able to roll freely perpendicular to the drive direction.</Br>"
-        wheelType.toolClipFilename = OsHelper.getOSPath(".", "src", "Resources") + os.path.join(
-            "WheelIcons", "omni-wheel-preview.png"
-        )
+#         wheelType = cmdInputs.addDropDownCommandInput(
+#             "wheel_type_w",
+#             "Wheel Type",
+#             dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
+#         )
+#         wheelType.listItems.add("Standard", True, "")
+#         wheelType.listItems.add("Omni", False, "")
+#         wheelType.tooltip = "Wheel type"
+#         wheelType.tooltipDescription = "<Br>Omni-directional wheels can be used just like regular drive wheels but they have the advantage of being able to roll freely perpendicular to the drive direction.</Br>"
+#         wheelType.toolClipFilename = OsHelper.getOSPath(".", "src", "Resources") + os.path.join(
+#             "WheelIcons", "omni-wheel-preview.png"
+#         )
 
-        signalType = cmdInputs.addDropDownCommandInput(
-            "signal_type_w",
-            "Signal Type",
-            dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
-        )
-        signalType.isFullWidth = True
-        signalType.listItems.add("‎", True, IconPaths.signalIcons["PWM"])
-        signalType.listItems.add("‎", False, IconPaths.signalIcons["CAN"])
-        signalType.listItems.add("‎", False, IconPaths.signalIcons["PASSIVE"])
-        signalType.tooltip = "Signal type"
+#         signalType = cmdInputs.addDropDownCommandInput(
+#             "signal_type_w",
+#             "Signal Type",
+#             dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
+#         )
+#         signalType.isFullWidth = True
+#         signalType.listItems.add("‎", True, IconPaths.signalIcons["PWM"])
+#         signalType.listItems.add("‎", False, IconPaths.signalIcons["CAN"])
+#         signalType.listItems.add("‎", False, IconPaths.signalIcons["PASSIVE"])
+#         signalType.tooltip = "Signal type"
 
-        row = wheelTableInput.rowCount
+#         row = wheelTableInput.rowCount
 
-        wheelTableInput.addCommandInput(icon, row, 0)
-        wheelTableInput.addCommandInput(name, row, 1)
-        wheelTableInput.addCommandInput(wheelType, row, 2)
-        wheelTableInput.addCommandInput(signalType, row, 3)
+#         wheelTableInput.addCommandInput(icon, row, 0)
+#         wheelTableInput.addCommandInput(name, row, 1)
+#         wheelTableInput.addCommandInput(wheelType, row, 2)
+#         wheelTableInput.addCommandInput(signalType, row, 3)
 
-    except:
-        logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.addWheelToTable()").error(
-            "Failed:\n{}".format(traceback.format_exc())
-        )
+#     except:
+#         logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.addWheelToTable()").error(
+#             "Failed:\n{}".format(traceback.format_exc())
+#         )
 
 
 def addGamepieceToTable(gamepiece: adsk.fusion.Occurrence) -> None:
