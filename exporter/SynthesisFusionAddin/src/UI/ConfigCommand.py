@@ -291,7 +291,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             # Transition: AARD-1685
             # Should consider changing how the parser handles wheels and joints to avoid overlap
             if exporterOptions.wheels:
-                pass
                 for wheel in exporterOptions.wheels:
                     fusionJoint = gm.app.activeDocument.design.findEntityByToken(wheel.jointToken)[0]
                     jointConfigTab.addWheel(fusionJoint, wheel)
@@ -841,37 +840,9 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             name = design.rootComponent.name.rsplit(" ", 1)[0]
             version = design.rootComponent.name.rsplit(" ", 1)[1]
 
-            _exportWheels = []  # all selected wheels, formatted for parseOptions
             _exportGamepieces = []  # TODO work on the code to populate Gamepiece
             _robotWeight = float
             _mode = ExportMode.ROBOT
-
-            # Transition: AARD-1865
-            """
-            Loops through all rows in the wheel table to extract all the input values
-            """
-            # onSelect = gm.handlers[3]
-            # wheelTableInput = wheelTable()
-            # for row in range(wheelTableInput.rowCount):
-            #     if row == 0:
-            #         continue
-
-            #     wheelTypeIndex = wheelTableInput.getInputAtPosition(
-            #         row, 2
-            #     ).selectedItem.index  # This must be either 0 or 1 for standard or omni
-
-            #     signalTypeIndex = wheelTableInput.getInputAtPosition(
-            #         row, 3
-            #     ).selectedItem.index
-
-            #     _exportWheels.append(
-            #         Wheel(
-            #             WheelListGlobal[row - 1].entityToken,
-            #             WheelType(wheelTypeIndex + 1),
-            #             SignalType(signalTypeIndex + 1),
-            #             # onSelect.wheelJointList[row-1][0] # GUID of wheel joint. if no joint found, default to None
-            #         )
-            #     )
 
             """
             Loops through all rows in the gamepiece table to extract the input values
@@ -1285,7 +1256,6 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
         self.allWeights = [None, None]  # [lbs, kg]
         self.isLbs = True
         self.isLbs_f = True
-        self.called = False
 
     def reset(self):
         """### Process:
@@ -1372,22 +1342,12 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                         gamepieceConfig.isVisible = False
                         weightTableInput.isVisible = True
 
-                        # addFieldInput.isEnabled = wheelConfig.isVisible = (
-                        #     jointConfig.isVisible
-                        # ) = True
+                        addFieldInput.isEnabled = True
 
                 elif modeDropdown.selectedItem.index == 1:
                     if gamepieceConfig:
                         gm.ui.activeSelections.clear()
                         gm.app.activeDocument.design.rootComponent.opacity = 1
-
-                        # addWheelInput.isEnabled = addJointButton.isEnabled = (
-                        #     gamepieceConfig.isVisible
-                        # ) = True
-
-                        # jointConfig.isVisible = wheelConfig.isVisible = (
-                        #     weightTableInput.isVisible
-                        # ) = False
 
             elif cmdInput.id == "blank_gp" or cmdInput.id == "name_gp" or cmdInput.id == "weight_gp":
                 self.reset()

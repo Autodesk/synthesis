@@ -113,10 +113,8 @@ class JointConfigTab:
             self.jointConfigTable.addToolbarCommandInput(jointSelectCancelButton)
 
             self.reset()
-        except:
-            logging.getLogger("{INTERNAL_ID}.UI.JointConfigTab.createJointConfigTab()").error(
-                "Failed:\n{}".format(traceback.format_exc())
-            )
+        except BaseException:
+            logging.getLogger("{INTERNAL_ID}.UI.JointConfigTab").error("Failed:\n{}".format(traceback.format_exc()))
 
     def addJoint(self, fusionJoint: adsk.fusion.Joint, synJoint: Joint | None = None) -> bool:
         try:
@@ -276,65 +274,64 @@ class JointConfigTab:
             )
 
             self.previousWheelCheckboxState.append(isWheel)
-        except:
-            logging.getLogger("{INTERNAL_ID}.UI.JointConfigTab.addJointToConfigTab()").error(
-                "Failed:\n{}".format(traceback.format_exc())
-            )
+        except BaseException:
+            logging.getLogger("{INTERNAL_ID}.UI.JointConfigTab").error("Failed:\n{}".format(traceback.format_exc()))
 
         return True
 
     def addWheel(self, joint: adsk.fusion.Joint, wheel: Wheel | None = None) -> None:
-        self.jointWheelIndexMap[joint.entityToken] = self.wheelConfigTable.rowCount
+        try:
+            self.jointWheelIndexMap[joint.entityToken] = self.wheelConfigTable.rowCount
 
-        commandInputs = self.wheelConfigTable.commandInputs
-        wheelIcon = commandInputs.addImageCommandInput(
-            "wheelPlaceholder", "Placeholder", IconPaths.wheelIcons["standard"]
-        )
-        wheelIcon.tooltip = "Standard wheel"
-        wheelName = commandInputs.addTextBoxCommandInput("wheelName", "Joint Name", joint.name, 1, True)
-        wheelName.tooltip = joint.name  # TODO: Should this be the same?
-        wheelType = commandInputs.addDropDownCommandInput(
-            "wheelType", "Wheel Type", dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle
-        )
+            commandInputs = self.wheelConfigTable.commandInputs
+            wheelIcon = commandInputs.addImageCommandInput(
+                "wheelPlaceholder", "Placeholder", IconPaths.wheelIcons["standard"]
+            )
+            wheelIcon.tooltip = "Standard wheel"
+            wheelName = commandInputs.addTextBoxCommandInput("wheelName", "Joint Name", joint.name, 1, True)
+            wheelName.tooltip = joint.name  # TODO: Should this be the same?
+            wheelType = commandInputs.addDropDownCommandInput(
+                "wheelType", "Wheel Type", dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle
+            )
 
-        selectedWheelType = wheel.wheelType if wheel else WheelType.STANDARD
-        wheelType.listItems.add("Standard", selectedWheelType is WheelType.STANDARD, "")
-        wheelType.listItems.add("OMNI", selectedWheelType is WheelType.OMNI, "")
-        wheelType.listItems.add("Mecanum", selectedWheelType is WheelType.MECANUM, "")
-        wheelType.tooltip = "Wheel type"
-        wheelType.tooltipDescription = "".join(
-            [
-                "<Br>Omni-directional wheels can be used just like regular drive wheels",
-                "but they have the advantage of being able to roll freely perpendicular to",
-                "the drive direction.</Br>",
-            ]
-        )
+            selectedWheelType = wheel.wheelType if wheel else WheelType.STANDARD
+            wheelType.listItems.add("Standard", selectedWheelType is WheelType.STANDARD, "")
+            wheelType.listItems.add("OMNI", selectedWheelType is WheelType.OMNI, "")
+            wheelType.listItems.add("Mecanum", selectedWheelType is WheelType.MECANUM, "")
+            wheelType.tooltip = "Wheel type"
+            wheelType.tooltipDescription = "".join(
+                [
+                    "<Br>Omni-directional wheels can be used just like regular drive wheels",
+                    "but they have the advantage of being able to roll freely perpendicular to",
+                    "the drive direction.</Br>",
+                ]
+            )
 
-        signalType = commandInputs.addDropDownCommandInput(
-            "wheelSignalType", "Signal Type", dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle
-        )
-        signalType.isFullWidth = True
-        signalType.isEnabled = False
-        signalType.tooltip = "Wheel signal type is linked with the respective joint signal type."
-        i = self.selectedJointList.index(joint)
-        jointSignalType = SignalType(self.jointConfigTable.getInputAtPosition(i + 1, 3).selectedItem.index + 1)
-        signalType.listItems.add("‎", jointSignalType is SignalType.PWM, IconPaths.signalIcons["PWM"])
-        signalType.listItems.add("‎", jointSignalType is SignalType.CAN, IconPaths.signalIcons["CAN"])
-        signalType.listItems.add("‎", jointSignalType is SignalType.PASSIVE, IconPaths.signalIcons["PASSIVE"])
+            signalType = commandInputs.addDropDownCommandInput(
+                "wheelSignalType", "Signal Type", dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle
+            )
+            signalType.isFullWidth = True
+            signalType.isEnabled = False
+            signalType.tooltip = "Wheel signal type is linked with the respective joint signal type."
+            i = self.selectedJointList.index(joint)
+            jointSignalType = SignalType(self.jointConfigTable.getInputAtPosition(i + 1, 3).selectedItem.index + 1)
+            signalType.listItems.add("‎", jointSignalType is SignalType.PWM, IconPaths.signalIcons["PWM"])
+            signalType.listItems.add("‎", jointSignalType is SignalType.CAN, IconPaths.signalIcons["CAN"])
+            signalType.listItems.add("‎", jointSignalType is SignalType.PASSIVE, IconPaths.signalIcons["PASSIVE"])
 
-        row = self.wheelConfigTable.rowCount
-        self.wheelConfigTable.addCommandInput(wheelIcon, row, 0)
-        self.wheelConfigTable.addCommandInput(wheelName, row, 1)
-        self.wheelConfigTable.addCommandInput(wheelType, row, 2)
-        self.wheelConfigTable.addCommandInput(signalType, row, 3)
+            row = self.wheelConfigTable.rowCount
+            self.wheelConfigTable.addCommandInput(wheelIcon, row, 0)
+            self.wheelConfigTable.addCommandInput(wheelName, row, 1)
+            self.wheelConfigTable.addCommandInput(wheelType, row, 2)
+            self.wheelConfigTable.addCommandInput(signalType, row, 3)
+        except BaseException:
+            logging.getLogger("{INTERNAL_ID}.UI.JointConfigTab").error("Failed:\n{}".format(traceback.format_exc()))
 
     def removeIndexedJoint(self, index: int) -> None:
         try:
             self.removeJoint(self.selectedJointList[index])
-        except:
-            logging.getLogger("{INTERNAL_ID}.UI.JointConfigTab.removeIndexedJointFromConfigTab()").error(
-                "Failed:\n{}".format(traceback.format_exc())
-            )
+        except BaseException:
+            logging.getLogger("{INTERNAL_ID}.UI.JointConfigTab").error("Failed:\n{}".format(traceback.format_exc()))
 
     def removeJoint(self, joint: adsk.fusion.Joint) -> None:
         try:
@@ -360,10 +357,8 @@ class JointConfigTab:
                         listItems.item(i).deleteMe()
                     else:
                         listItems.item(i).deleteMe()
-        except:
-            logging.getLogger("{INTERNAL_ID}.UI.JointConfigTab.removeJointFromConfigTab()").error(
-                "Failed:\n{}".format(traceback.format_exc())
-            )
+        except BaseException:
+            logging.getLogger("{INTERNAL_ID}.UI.JointConfigTab").error("Failed:\n{}".format(traceback.format_exc()))
 
     def removeWheel(self, joint: adsk.fusion.Joint) -> None:
         try:
@@ -373,45 +368,46 @@ class JointConfigTab:
             for key, value in self.jointWheelIndexMap.items():
                 if value > row - 1:
                     self.jointWheelIndexMap[key] -= 1
-        except:
-            logging.getLogger("{INTERNAL_ID}.UI.JointConfigTab.removeJointFromConfigTab()").error(
-                "Failed:\n{}".format(traceback.format_exc())
-            )
+        except BaseException:
+            logging.getLogger("{INTERNAL_ID}.UI.JointConfigTab").error("Failed:\n{}".format(traceback.format_exc()))
 
     def getSelectedJointsAndWheels(self) -> tuple[list[Joint], list[Wheel]]:
-        joints: list[Joint] = []
-        wheels: list[Wheel] = []
-        for row in range(1, self.jointConfigTable.rowCount):  # Row is 1 indexed
-            jointEntityToken = self.selectedJointList[row - 1].entityToken
-            signalTypeIndex = self.jointConfigTable.getInputAtPosition(row, 3).selectedItem.index
-            signalType = SignalType(signalTypeIndex + 1)
-            jointSpeed: float = self.jointConfigTable.getInputAtPosition(row, 4).value
-            jointForce: float = self.jointConfigTable.getInputAtPosition(row, 5).value
-            isWheel: bool = self.jointConfigTable.getInputAtPosition(row, 6).value
+        try:
+            joints: list[Joint] = []
+            wheels: list[Wheel] = []
+            for row in range(1, self.jointConfigTable.rowCount):  # Row is 1 indexed
+                jointEntityToken = self.selectedJointList[row - 1].entityToken
+                signalTypeIndex = self.jointConfigTable.getInputAtPosition(row, 3).selectedItem.index
+                signalType = SignalType(signalTypeIndex + 1)
+                jointSpeed: float = self.jointConfigTable.getInputAtPosition(row, 4).value
+                jointForce: float = self.jointConfigTable.getInputAtPosition(row, 5).value
+                isWheel: bool = self.jointConfigTable.getInputAtPosition(row, 6).value
 
-            joints.append(
-                Joint(
-                    jointEntityToken,
-                    JointParentType.ROOT,
-                    signalType,
-                    jointSpeed,
-                    jointForce / 100.0,
-                    isWheel,
-                )
-            )
-
-            if isWheel:
-                wheelRow = self.jointWheelIndexMap[jointEntityToken]
-                wheelTypeIndex = self.wheelConfigTable.getInputAtPosition(wheelRow, 2).selectedItem.index
-                wheels.append(
-                    Wheel(
+                joints.append(
+                    Joint(
                         jointEntityToken,
-                        WheelType(wheelTypeIndex + 1),
+                        JointParentType.ROOT,
                         signalType,
+                        jointSpeed,
+                        jointForce / 100.0,
+                        isWheel,
                     )
                 )
 
-        return (joints, wheels)
+                if isWheel:
+                    wheelRow = self.jointWheelIndexMap[jointEntityToken]
+                    wheelTypeIndex = self.wheelConfigTable.getInputAtPosition(wheelRow, 2).selectedItem.index
+                    wheels.append(
+                        Wheel(
+                            jointEntityToken,
+                            WheelType(wheelTypeIndex + 1),
+                            signalType,
+                        )
+                    )
+
+            return (joints, wheels)
+        except BaseException:
+            logging.getLogger("{INTERNAL_ID}.UI.JointConfigTab").error("Failed:\n{}".format(traceback.format_exc()))
 
     def reset(self) -> None:
         self.selectedJointList.clear()
@@ -426,110 +422,122 @@ class JointConfigTab:
     def handleInputChanged(
         self, args: adsk.core.InputChangedEventArgs, globalCommandInputs: adsk.core.CommandInputs
     ) -> None:
-        commandInput = args.input
-        if commandInput.id == "wheelType":
-            wheelTypeDropdown = adsk.core.DropDownCommandInput.cast(commandInput)
-            position = self.wheelConfigTable.getPosition(wheelTypeDropdown)[1]
-            iconInput: adsk.core.ImageCommandInput = self.wheelConfigTable.getInputAtPosition(position, 0)
+        try:
+            commandInput = args.input
+            if commandInput.id == "wheelType":
+                wheelTypeDropdown = adsk.core.DropDownCommandInput.cast(commandInput)
+                position = self.wheelConfigTable.getPosition(wheelTypeDropdown)[1]
+                iconInput: adsk.core.ImageCommandInput = self.wheelConfigTable.getInputAtPosition(position, 0)
 
-            if wheelTypeDropdown.selectedItem.index == 0:
-                iconInput.imageFile = IconPaths.wheelIcons["standard"]
-                iconInput.tooltip = "Standard wheel"
-            elif wheelTypeDropdown.selectedItem.index == 1:
-                iconInput.imageFile = IconPaths.wheelIcons["omni"]
-                iconInput.tooltip = "Omni wheel"
-            elif wheelTypeDropdown.selectedItem.index == 2:
-                iconInput.imageFile = IconPaths.wheelIcons["mecanum"]
-                iconInput.tooltip = "Mecanum wheel"
+                if wheelTypeDropdown.selectedItem.index == 0:
+                    iconInput.imageFile = IconPaths.wheelIcons["standard"]
+                    iconInput.tooltip = "Standard wheel"
+                elif wheelTypeDropdown.selectedItem.index == 1:
+                    iconInput.imageFile = IconPaths.wheelIcons["omni"]
+                    iconInput.tooltip = "Omni wheel"
+                elif wheelTypeDropdown.selectedItem.index == 2:
+                    iconInput.imageFile = IconPaths.wheelIcons["mecanum"]
+                    iconInput.tooltip = "Mecanum wheel"
 
-        elif commandInput.id == "isWheel":
-            isWheelCheckbox = adsk.core.BoolValueCommandInput.cast(commandInput)
-            position = self.jointConfigTable.getPosition(isWheelCheckbox)[1] - 1
-            isAlreadyWheel = bool(self.jointWheelIndexMap.get(self.selectedJointList[position].entityToken))
+            elif commandInput.id == "isWheel":
+                isWheelCheckbox = adsk.core.BoolValueCommandInput.cast(commandInput)
+                position = self.jointConfigTable.getPosition(isWheelCheckbox)[1] - 1
+                isAlreadyWheel = bool(self.jointWheelIndexMap.get(self.selectedJointList[position].entityToken))
 
-            if isWheelCheckbox.value != self.previousWheelCheckboxState[position]:
-                if not isAlreadyWheel:
-                    self.addWheel(self.selectedJointList[position])
-                else:
-                    self.removeWheel(self.selectedJointList[position])
+                if isWheelCheckbox.value != self.previousWheelCheckboxState[position]:
+                    if not isAlreadyWheel:
+                        self.addWheel(self.selectedJointList[position])
+                    else:
+                        self.removeWheel(self.selectedJointList[position])
 
-                self.previousWheelCheckboxState[position] = isWheelCheckbox.value
+                    self.previousWheelCheckboxState[position] = isWheelCheckbox.value
 
-        elif commandInput.id == "signalTypeJoint":
-            signalTypeDropdown = adsk.core.DropDownCommandInput.cast(commandInput)
-            jointTabPosition = self.jointConfigTable.getPosition(signalTypeDropdown)[1]  # 1 indexed
-            wheelTabPosition = self.jointWheelIndexMap.get(self.selectedJointList[jointTabPosition - 1].entityToken)
+            elif commandInput.id == "signalTypeJoint":
+                signalTypeDropdown = adsk.core.DropDownCommandInput.cast(commandInput)
+                jointTabPosition = self.jointConfigTable.getPosition(signalTypeDropdown)[1]  # 1 indexed
+                wheelTabPosition = self.jointWheelIndexMap.get(self.selectedJointList[jointTabPosition - 1].entityToken)
 
-            if wheelTabPosition:
-                wheelSignalItems: adsk.core.DropDownCommandInput = self.wheelConfigTable.getInputAtPosition(
-                    wheelTabPosition, 3
+                if wheelTabPosition:
+                    wheelSignalItems: adsk.core.DropDownCommandInput = self.wheelConfigTable.getInputAtPosition(
+                        wheelTabPosition, 3
+                    )
+                    wheelSignalItems.listItems.item(signalTypeDropdown.selectedItem.index).isSelected = True
+
+            elif commandInput.id == "jointAddButton":
+                jointAddButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("jointAddButton")
+                jointRemoveButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("jointRemoveButton")
+                jointSelectCancelButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById(
+                    "jointSelectCancelButton"
                 )
-                wheelSignalItems.listItems.item(signalTypeDropdown.selectedItem.index).isSelected = True
+                jointSelection: adsk.core.SelectionCommandInput = globalCommandInputs.itemById("jointSelection")
 
-        elif commandInput.id == "jointAddButton":
-            jointAddButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("jointAddButton")
-            jointRemoveButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("jointRemoveButton")
-            jointSelectCancelButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById(
-                "jointSelectCancelButton"
-            )
-            jointSelection: adsk.core.SelectionCommandInput = globalCommandInputs.itemById("jointSelection")
+                jointSelection.isVisible = jointSelection.isEnabled = True
+                jointSelection.clearSelection()
+                jointAddButton.isEnabled = jointRemoveButton.isEnabled = False
+                jointSelectCancelButton.isVisible = jointSelectCancelButton.isEnabled = True
 
-            jointSelection.isVisible = jointSelection.isEnabled = True
-            jointSelection.clearSelection()
-            jointAddButton.isEnabled = jointRemoveButton.isEnabled = False
-            jointSelectCancelButton.isVisible = jointSelectCancelButton.isEnabled = True
+            elif commandInput.id == "jointRemoveButton":
+                jointAddButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("jointAddButton")
+                jointTable: adsk.core.TableCommandInput = args.inputs.itemById("jointTable")
 
-        elif commandInput.id == "jointRemoveButton":
-            jointAddButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("jointAddButton")
-            jointTable: adsk.core.TableCommandInput = args.inputs.itemById("jointTable")
+                jointAddButton.isEnabled = True
 
-            jointAddButton.isEnabled = True
+                if jointTable.selectedRow == -1 or jointTable.selectedRow == 0:
+                    ui = adsk.core.Application.get().userInterface
+                    ui.messageBox("Select a row to delete.")
+                else:
+                    self.removeIndexedJoint(jointTable.selectedRow - 1)  # selectedRow is 1 indexed
 
-            if jointTable.selectedRow == -1 or jointTable.selectedRow == 0:
-                ui = adsk.core.Application.get().userInterface
-                ui.messageBox("Select a row to delete.")
-            else:
-                self.removeIndexedJoint(jointTable.selectedRow - 1)  # selectedRow is 1 indexed
-
-        elif commandInput.id == "jointSelectCancelButton":
-            jointAddButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("jointAddButton")
-            jointRemoveButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("jointRemoveButton")
-            jointSelectCancelButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById(
-                "jointSelectCancelButton"
-            )
-            jointSelection: adsk.core.SelectionCommandInput = globalCommandInputs.itemById("jointSelection")
-            jointSelection.isEnabled = jointSelection.isVisible = False
-            jointSelectCancelButton.isEnabled = jointSelectCancelButton.isVisible = False
-            jointAddButton.isEnabled = jointRemoveButton.isEnabled = True
+            elif commandInput.id == "jointSelectCancelButton":
+                jointAddButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("jointAddButton")
+                jointRemoveButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("jointRemoveButton")
+                jointSelectCancelButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById(
+                    "jointSelectCancelButton"
+                )
+                jointSelection: adsk.core.SelectionCommandInput = globalCommandInputs.itemById("jointSelection")
+                jointSelection.isEnabled = jointSelection.isVisible = False
+                jointSelectCancelButton.isEnabled = jointSelectCancelButton.isVisible = False
+                jointAddButton.isEnabled = jointRemoveButton.isEnabled = True
+        except BaseException:
+            logging.getLogger("{INTERNAL_ID}.UI.JointConfigTab").error("Failed:\n{}".format(traceback.format_exc()))
 
     def handleSelectionEvent(self, args: adsk.core.SelectionEventArgs, selectedJoint: adsk.fusion.Joint) -> None:
-        selectionInput = args.activeInput
-        jointType = selectedJoint.jointMotion.jointType
-        if jointType == adsk.fusion.JointTypes.RevoluteJointType or jointType == adsk.fusion.JointTypes.SliderJointType:
-            if not self.addJoint(selectedJoint):
-                ui = adsk.core.Application.get().userInterface
-                result = ui.messageBox(
-                    "You have already selected this joint.\n" "Would you like to remove it?",
-                    "Synthesis: Remove Joint Confirmation",
-                    adsk.core.MessageBoxButtonTypes.YesNoButtonType,
-                    adsk.core.MessageBoxIconTypes.QuestionIconType,
-                )
+        try:
+            selectionInput = args.activeInput
+            jointType = selectedJoint.jointMotion.jointType
+            if (
+                jointType == adsk.fusion.JointTypes.RevoluteJointType
+                or jointType == adsk.fusion.JointTypes.SliderJointType
+            ):
+                if not self.addJoint(selectedJoint):
+                    ui = adsk.core.Application.get().userInterface
+                    result = ui.messageBox(
+                        "You have already selected this joint.\n" "Would you like to remove it?",
+                        "Synthesis: Remove Joint Confirmation",
+                        adsk.core.MessageBoxButtonTypes.YesNoButtonType,
+                        adsk.core.MessageBoxIconTypes.QuestionIconType,
+                    )
 
-                if result == adsk.core.DialogResults.DialogYes:
-                    self.removeJoint(selectedJoint)
+                    if result == adsk.core.DialogResults.DialogYes:
+                        self.removeJoint(selectedJoint)
 
-            selectionInput.isEnabled = selectionInput.isVisible = False
+                selectionInput.isEnabled = selectionInput.isVisible = False
+        except BaseException:
+            logging.getLogger("{INTERNAL_ID}.UI.JointConfigTab").error("Failed:\n{}".format(traceback.format_exc()))
 
     def handlePreviewEvent(self, args: adsk.core.CommandEventArgs) -> None:
-        commandInputs = args.command.commandInputs
-        jointAddButton: adsk.core.BoolValueCommandInput = commandInputs.itemById("jointAddButton")
-        jointRemoveButton: adsk.core.BoolValueCommandInput = commandInputs.itemById("jointRemoveButton")
-        jointSelectCancelButton: adsk.core.BoolValueCommandInput = commandInputs.itemById("jointSelectCancelButton")
-        jointSelection: adsk.core.SelectionCommandInput = commandInputs.itemById("jointSelection")
+        try:
+            commandInputs = args.command.commandInputs
+            jointAddButton: adsk.core.BoolValueCommandInput = commandInputs.itemById("jointAddButton")
+            jointRemoveButton: adsk.core.BoolValueCommandInput = commandInputs.itemById("jointRemoveButton")
+            jointSelectCancelButton: adsk.core.BoolValueCommandInput = commandInputs.itemById("jointSelectCancelButton")
+            jointSelection: adsk.core.SelectionCommandInput = commandInputs.itemById("jointSelection")
 
-        if self.jointConfigTable.rowCount <= 1:
-            jointRemoveButton.isEnabled = False
+            if self.jointConfigTable.rowCount <= 1:
+                jointRemoveButton.isEnabled = False
 
-        if not jointSelection.isEnabled:
-            jointAddButton.isEnabled = jointRemoveButton.isEnabled = True
-            jointSelectCancelButton.isVisible = jointSelectCancelButton.isEnabled = False
+            if not jointSelection.isEnabled:
+                jointAddButton.isEnabled = jointRemoveButton.isEnabled = True
+                jointSelectCancelButton.isVisible = jointSelectCancelButton.isEnabled = False
+        except BaseException:
+            logging.getLogger("{INTERNAL_ID}.UI.JointConfigTab").error("Failed:\n{}".format(traceback.format_exc()))
