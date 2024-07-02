@@ -92,21 +92,12 @@ class PhysicsSystem extends WorldSystem {
     }
 
     /**
-     * Disables physics system
+     * Disabling physics for a single body
+     *
+     * @param bodyId
      */
-    public DisablePhysics() {
-        this._bodies.forEach(body => {
-            this._joltBodyInterface.DeactivateBody(body)
-        })
-    }
-
-    /**
-     * Enables physics system
-     */
-    public EnablePhysics() {
-        this._bodies.forEach(body => {
-            this._joltBodyInterface.ActivateBody(body)
-        })
+    public DisablePhysicsForBody(bodyId: Jolt.BodyID) {
+        this._joltBodyInterface.DeactivateBody(bodyId)
     }
 
     /**
@@ -733,10 +724,6 @@ class PhysicsSystem extends WorldSystem {
         return this._joltPhysSystem.GetBodyLockInterface().TryGetBody(bodyId)
     }
 
-    public GetBodyNoLock(bodyId: Jolt.BodyID) {
-        return this._joltPhysSystem.GetBodyLockInterfaceNoLock().TryGetBody(bodyId)
-    }
-
     public Update(deltaT: number): void {
         const diffDeltaT = deltaT - lastDeltaT
 
@@ -808,6 +795,10 @@ class PhysicsSystem extends WorldSystem {
      */
     public SetBodyPosition(id: Jolt.BodyID, position: Jolt.Vec3): void {
         this._joltBodyInterface.SetPosition(id, position, JOLT.EActivation_Activate)
+    }
+
+    public SetBodyRotation(id: Jolt.BodyID, rotation: Jolt.Quat): void {
+        this._joltBodyInterface.SetRotation(id, rotation, JOLT.EActivation_Activate)
     }
 }
 

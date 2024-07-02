@@ -4,7 +4,6 @@ import SceneObject from "./SceneObject"
 import WorldSystem from "../WorldSystem"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import World from "../World"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x73937e
@@ -120,7 +119,6 @@ class SceneRenderer extends WorldSystem {
                     Math.tan(mainCameraFovRadians) *
                     1.9
             )
-             
         })
 
         this._renderer.render(this._scene, this._mainCamera)
@@ -181,11 +179,7 @@ class SceneRenderer extends WorldSystem {
      * @param size Size of the gizmo
      * @returns void
      */
-    public AddTransformGizmo(
-        obj: THREE.Object3D,
-        mode: "translate" | "rotate" | "scale" = "translate",
-        size: number
-    ) {
+    public AddTransformGizmo(obj: THREE.Object3D, mode: "translate" | "rotate" | "scale" = "translate", size: number) {
         const transformControl = new TransformControls(this._mainCamera, this._renderer.domElement)
         transformControl.setMode(mode)
         transformControl.attach(obj)
@@ -198,35 +192,29 @@ class SceneRenderer extends WorldSystem {
         transformControl.addEventListener(
             "dragging-changed",
             (event: { target: TransformControls; value: unknown }) => {
-                
-                // disabling physics
-                if (!event.value) World.PhysicsSystem.EnablePhysics()
-                else World.PhysicsSystem.DisablePhysics()
-
-
                 if (!event.value && !Array.from(this.transformControls.keys()).some(tc => tc.dragging)) {
-                    this.orbitControls.enabled = true; // enable orbit controls when not dragging another transform gizmo
+                    this.orbitControls.enabled = true // enable orbit controls when not dragging another transform gizmo
                 }
 
                 this.orbitControls.enabled = !event.value // disable orbit controls when dragging transform gizmo
 
-                if (mode === "translate" && event.target) {
+                if (event.target.mode === "translate") {
                     this.transformControls.forEach((_size, tc) => {
                         // disable other transform gizmos when translating
-                        if (tc !== event.target && tc.object === event.target.object && tc.mode !== "translate") {
+                        if (tc.object === event.target.object && tc.mode !== "translate") {
                             tc.dragging = !event.value
                             tc.enabled = !event.value
                             return
                         }
                     })
-                } else if (mode === "scale" && this.isShiftPressed) {
+                } else if (event.target.mode === "scale" && this.isShiftPressed) {
                     // scale uniformly if shift is pressed
                     transformControl.axis = "XYZE"
-                } else if (mode === "rotate") {
+                } else if (event.target.mode === "rotate") {
                     // scale on all axes
                     this.transformControls.forEach((_size, tc) => {
                         // disable scale transform gizmo when scaling
-                        if (tc !== event.target && tc.object === event.target.object && tc.mode === "scale") {
+                        if (tc.mode === "scale" && tc !== event.target && tc.object === event.target.object) {
                             tc.dragging = false
                             tc.enabled = !event.value
                             return

@@ -5,7 +5,7 @@ import { LoadMirabufRemote } from "./MirabufLoader"
 import MirabufParser, { ParseErrorSeverity } from "./MirabufParser"
 import World from "@/systems/World"
 import Jolt from "@barclah/jolt-physics"
-import { JoltMat44_ThreeMatrix4, ThreeMatrix4_JoltMat44 } from "@/util/TypeConversions"
+import { JoltMat44_ThreeMatrix4, ThreeMatrix4_JoltMat44, ThreeQuaternion_JoltQuat } from "@/util/TypeConversions"
 import * as THREE from "three"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { LayerReserve } from "@/systems/physics/PhysicsSystem"
@@ -26,8 +26,11 @@ class MirabufSceneObject extends SceneObject {
     private _physicsLayerReserve: LayerReserve | undefined = undefined
 
     // transform gizmo
-    private meshAttachment: THREE.Mesh = new THREE.Mesh(new THREE.SphereGeometry(3.0), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0 }))
-    private transformGizmo: TransformControls
+    private meshAttachment: THREE.Mesh | null = new THREE.Mesh(
+        new THREE.SphereGeometry(3.0),
+        new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0 })
+    )
+    private transformGizmos: TransformControls[] = []
 
     private _mechanism: Mechanism
 
@@ -47,7 +50,8 @@ class MirabufSceneObject extends SceneObject {
 
         this._debugBodies = null
 
-        this.transformGizmo = World.SceneRenderer.AddTransformGizmo(this.meshAttachment, "translate", 3.0)
+        this.transformGizmos[0] = World.SceneRenderer.AddTransformGizmo(this.meshAttachment!, "translate", 3.0)
+        this.transformGizmos[1] = World.SceneRenderer.AddTransformGizmo(this.meshAttachment!, "rotate", 5.0)
     }
 
     public Setup(): void {
@@ -76,7 +80,6 @@ class MirabufSceneObject extends SceneObject {
         const simLayer = World.SimulationSystem.GetSimulationLayer(this._mechanism)!
         const brain = new SynthesisBrain(this._mechanism)
         simLayer.SetBrain(brain)
-
     }
 
     public Update(): void {
@@ -95,14 +98,26 @@ class MirabufSceneObject extends SceneObject {
             })
 
             // transform gizmo
-            if (!this.transformGizmo.dragging) {
+            if (!this.meshAttachment) return
+            World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
+
+            if (!this.transformGizmos[0].dragging && !this.transformGizmos[1].dragging) {
                 // mesh will copy position of the mirabuf object
                 this.meshAttachment.position.setFromMatrixPosition(transform)
                 this.meshAttachment.rotation.setFromRotationMatrix(transform)
             } else {
                 // mirabuf object will copy position of the mesh
                 transform = this.meshAttachment.matrix
-                World.PhysicsSystem.SetBodyPosition(this._mechanism.GetBodyByNodeId(rn.id)!, ThreeMatrix4_JoltMat44(transform).GetTranslation()) // updating the position of the body
+
+                World.PhysicsSystem.SetBodyPosition(
+                    this._mechanism.GetBodyByNodeId(rn.id)!,
+                    ThreeMatrix4_JoltMat44(transform).GetTranslation()
+                ) // updating the position of the body
+                World.PhysicsSystem.SetBodyRotation(
+                    this._mechanism.GetBodyByNodeId(rn.id)!,
+                    ThreeQuaternion_JoltQuat(this.meshAttachment.quaternion)
+                ) // updating the rotation of the body
+
                 rn.parts.forEach(part => {
                     const partTransform = this._mirabufInstance.parser.globalTransforms
                         .get(part)!
@@ -114,8 +129,6 @@ class MirabufSceneObject extends SceneObject {
                     })
                 })
             }
-
-
 
             if (isNaN(body.GetPosition().GetX())) {
                 const vel = body.GetLinearVelocity()
