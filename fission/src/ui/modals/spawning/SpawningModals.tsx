@@ -71,14 +71,14 @@ export const AddRobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             fetch("/api/mira/manifest.json")
                 .then(x => x.json())
                 .then(x => {
-                    // TODO: Skip already cached robots
-                    // const map = MirabufCachingService.GetCacheMap(MiraType.ROBOT)
+                    const map = MirabufCachingService.GetCacheMap(MiraType.ROBOT)
                     const robots: MirabufRemoteInfo[] = []
                     for (const src of x["robots"]) {
                         if (typeof src == "string") {
-                            robots.push({ displayName: src, src: `/api/mira/Robots/${src}` })
+                            const str = `/api/mira/Robots/${src}`
+                            if (!map[str]) robots.push({ displayName: src, src: str })
                         } else {
-                            robots.push({ displayName: src["displayName"], src: src["src"] })
+                            if (!map[src["src"]]) robots.push({ displayName: src["displayName"], src: src["src"] })
                         }
                     }
                     setRemoteRobots(robots)
@@ -87,7 +87,6 @@ export const AddRobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     }, [])
 
     const selectCache = async (info: MirabufCacheInfo) => {
-        console.log(`MiraCache: '${info}'`)
         const assembly = await MirabufCachingService.Get(info.id, MiraType.ROBOT)
 
         if (assembly) {
@@ -102,6 +101,8 @@ export const AddRobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     World.SceneRenderer.RegisterSceneObject(x)
                 }
             })
+
+            if (!info.name) MirabufCachingService.SetInfo(info.cacheKey, MiraType.ROBOT, assembly.info?.name ?? undefined)
         } else {
             console.error('Failed to spawn robot')
         }
@@ -157,13 +158,15 @@ export const AddFieldsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             fetch("/api/mira/manifest.json")
                 .then(x => x.json())
                 .then(x => {
-                    // TODO: Skip already cached robots
-                    // const map = MirabufCachingService.GetCacheMap(MiraType.FIELD)
+                    // TODO: Skip already cached fields
+                    const map = MirabufCachingService.GetCacheMap(MiraType.FIELD)
                     const fields: MirabufRemoteInfo[] = []
                     for (const src of x["fields"]) {
                         if (typeof src == "string") {
-                            fields.push({ displayName: src, src: `/api/mira/Fields/${src}` })
+                            const newSrc = `/api/mira/Fields/${src}`
+                            if (!map[newSrc]) fields.push({ displayName: src, src: newSrc })
                         } else {
+                            if (!map[src["src"]])
                             fields.push({ displayName: src["displayName"], src: src["src"] })
                         }
                     }
@@ -173,7 +176,6 @@ export const AddFieldsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     }, [])
 
     const selectCache = async (info: MirabufCacheInfo) => {
-        console.log(`MiraCache: '${info}'`)
         const assembly = await MirabufCachingService.Get(info.id, MiraType.FIELD)
 
         if (assembly) {
@@ -182,6 +184,8 @@ export const AddFieldsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     World.SceneRenderer.RegisterSceneObject(x)
                 }
             })
+
+            if (!info.name) MirabufCachingService.SetInfo(info.cacheKey, MiraType.FIELD, assembly.info?.name ?? undefined)
         } else {
             console.error('Failed to spawn field')
         }
@@ -204,11 +208,11 @@ export const AddFieldsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         <Modal name={"Field Selection"} icon={<FaPlus />} modalId={modalId} acceptEnabled={false}>
             <div className="flex overflow-y-auto flex-col gap-2 min-w-[50vw] max-h-[60vh] bg-background-secondary rounded-md p-2">
                 <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
-                    {cachedFields ? `${cachedFields.length} Saved Robots` : "No Saved Robots"}
+                    {cachedFields ? `${cachedFields.length} Saved Fields` : "No Saved Fields"}
                 </Label>
                 {cachedFields ? cachedFields!.map(x => MirabufCacheCard({ info: x, select: selectCache })) : <></>}
                 <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
-                    {remoteFields ? `${remoteFields.length} Default Robots` : "No Default Robots"}
+                    {remoteFields ? `${remoteFields.length} Default Fields` : "No Default Fields"}
                 </Label>
                 {remoteFields ? remoteFields!.map(x => MirabufRemoteCard({ info: x, select: selectRemote })) : <></>}
             </div>

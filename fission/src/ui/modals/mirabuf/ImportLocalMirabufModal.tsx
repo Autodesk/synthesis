@@ -56,17 +56,19 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     console.log(`Mira: '${selectedFile}'`)
                     
 
-                    const hashBuffer = await crypto.subtle.digest("SHA-256", await selectedFile.arrayBuffer())
-                    const id = await MirabufCachingService.CacheLocal(hashBuffer, miraType).then(x => x!.id)
-                    await MirabufCachingService.Get(id, miraType)
-                        .then(x => CreateMirabuf(x!).then(x => {
+                    const hashBuffer = await selectedFile.arrayBuffer()
+                    const info = await MirabufCachingService.CacheLocal(hashBuffer, miraType)
+                    const assembly = await MirabufCachingService.Get(info!.id, miraType)
+                    await CreateMirabuf(assembly!).then(x => {
                             if (x) {
                                 console.log("registering")
                                 World.SceneRenderer.RegisterSceneObject(x)
                             }
-                        }))
-                }
-                }
+                        }).then(() => { 
+                            if (!info!.name) MirabufCachingService.SetInfo(info!.cacheKey, miraType, assembly?.info?.name ?? undefined)
+                        })
+                    }
+                } 
             }
         >
             <div className="flex flex-col items-center gap-5">

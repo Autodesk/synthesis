@@ -101,16 +101,18 @@ class MirabufCachingService {
         const hashBuffer = await crypto.subtle.digest("SHA-256",  buffer)
         let hash = ""
         new Uint8Array(hashBuffer).forEach(x => (hash = hash + String.fromCharCode(x)))
+        const str = btoa(hash).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "")
+        console.log(`str: ${str}`)
 
         const map = MirabufCachingService.GetCacheMap(miraType)
-        const target = map[hash]
+        const target = map[str]
     
         if (target) {
             console.log("Mira in cache")
             return target
         }
 
-        return await MirabufCachingService.StoreInCache(hash, hashBuffer, miraType)
+        return await MirabufCachingService.StoreInCache(str, buffer, miraType)
     }
     
     /**
@@ -181,6 +183,21 @@ class MirabufCachingService {
     
         window.localStorage.removeItem(robotsDirName)
         window.localStorage.removeItem(fieldsDirName)
+    }
+
+    public static async SetInfo(key: string, miraType: MiraType, name?: string, thumbnailStorageID?: string) {
+        const map: MiraCache = this.GetCacheMap(miraType)
+        console.log(`Haslkdf ${map[key]}`)
+        const id = map[key].id
+        const hi: MirabufCacheInfo =  {
+            id: id,
+            cacheKey: key,
+            miraType: miraType,
+            name: name,
+            thumbnailStorageID: thumbnailStorageID
+        }
+        map[key] = hi
+        window.localStorage.setItem(miraType == MiraType.ROBOT ? robotsDirName : fieldsDirName, JSON.stringify(map))
     }
 
     private static async StoreInCache(key: string, miraBuff: ArrayBuffer, miraType: MiraType): Promise<MirabufCacheInfo | undefined> {
