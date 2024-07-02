@@ -53,7 +53,6 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         { control: "E", description: "Intake" },
                         { control: "Q", description: "Dispense" },
                     ])
-                    console.log(`Mira: '${selectedFile}'`)
                     
 
                     const hashBuffer = await selectedFile.arrayBuffer()
@@ -61,7 +60,6 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     const assembly = await MirabufCachingService.Get(info!.id, miraType)
                     await CreateMirabuf(assembly!).then(x => {
                             if (x) {
-                                console.log("registering")
                                 World.SceneRenderer.RegisterSceneObject(x)
                             }
                         }).then(() => { 

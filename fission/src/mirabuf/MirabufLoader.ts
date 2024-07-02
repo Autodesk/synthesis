@@ -52,8 +52,6 @@ class MirabufCachingService {
         const map = window.localStorage.getItem(key)
 
         if (map) {
-            console.log("mirabuf JSON found")
-            console.log(map)
             return JSON.parse(map)
         } else {
             console.log("mirabuf JSON not found. Creating blank cache")
@@ -71,7 +69,6 @@ class MirabufCachingService {
      * @returns {Promise<MirabufCacheInfo | undefined>} Promise with the result of the promise. Metadata on the mirabuf file if successful, undefined if not.
      */
     public static async CacheRemote(fetchLocation: string, miraType: MiraType): Promise<MirabufCacheInfo | undefined> {
-        console.log(`Caching ${fetchLocation}`)
         const map = MirabufCachingService.GetCacheMap(miraType)
         const target = map[fetchLocation]
     
@@ -125,7 +122,6 @@ class MirabufCachingService {
      */
     public static async Get(id: MirabufCacheID, miraType: MiraType): Promise<mirabuf.Assembly | undefined> {
         try {
-            console.log(`Getting ${id}`)
             const fileHandle =
                 await (miraType == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle).getFileHandle(id, {
                     create: false,
@@ -187,7 +183,6 @@ class MirabufCachingService {
 
     public static async SetInfo(key: string, miraType: MiraType, name?: string, thumbnailStorageID?: string) {
         const map: MiraCache = this.GetCacheMap(miraType)
-        console.log(`Haslkdf ${map[key]}`)
         const id = map[key].id
         const hi: MirabufCacheInfo =  {
             id: id,
