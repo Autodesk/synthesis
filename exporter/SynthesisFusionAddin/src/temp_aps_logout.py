@@ -14,7 +14,7 @@ def revoke_token_public(token: str, client_id: str) -> Result[None, None]:
         Success - None
         Failure - None, error message will be printed
     """
-    
+
     # If the client is private, an authorizartion header will be needed, and the client_id property can be removed.
     headers: dict[str, str] = {
         "Content-Type": "application/x-www-form-urlencoded"
@@ -60,4 +60,3 @@ def revoke_token_private(token: str, client_id: str, client_secret: str) -> Resu
         print(f"Failed to revoke token: {token}\n\t{revoke_res.text}")
         return Err(None)
     return Ok(None)
-
