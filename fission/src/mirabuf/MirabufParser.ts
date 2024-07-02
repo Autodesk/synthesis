@@ -1,6 +1,6 @@
 import * as THREE from "three"
-import { mirabuf } from "../proto/mirabuf"
-import { MirabufTransform_ThreeMatrix4 } from "../util/TypeConversions"
+import { mirabuf } from "@/proto/mirabuf"
+import { MirabufTransform_ThreeMatrix4 } from "@/util/TypeConversions"
 
 export enum ParseErrorSeverity {
     Unimportable = 10,
