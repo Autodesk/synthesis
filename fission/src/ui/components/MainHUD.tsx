@@ -19,7 +19,6 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Button } from "@mui/base/Button"
 import Jolt from "@barclah/jolt-physics"
-import TransformGizmo from "./TransformGizmo"
 
 type ButtonProps = {
     value: string
@@ -153,7 +152,11 @@ const MainHUD: React.FC = () => {
                         value={"Test Gizmo"}
                         icon={<IoGameControllerOutline />}
                         onClick={() => {
-                            new TransformGizmo("translate").setMode = "rotate"
+                            World.SceneRenderer.sceneObjects.forEach(sceneObject => {
+                                if (sceneObject instanceof MirabufSceneObject) {
+                                    sceneObject.RemoveGizmo()
+                                }
+                            })
                         }}
                     />
                 </div>

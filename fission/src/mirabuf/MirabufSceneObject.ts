@@ -98,36 +98,37 @@ class MirabufSceneObject extends SceneObject {
             })
 
             // transform gizmo
-            if (!this.meshAttachment) return
-            World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
+            if (this.meshAttachment) {
+                World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
 
-            if (!this.transformGizmos[0].dragging && !this.transformGizmos[1].dragging) {
-                // mesh will copy position of the mirabuf object
-                this.meshAttachment.position.setFromMatrixPosition(transform)
-                this.meshAttachment.rotation.setFromRotationMatrix(transform)
-            } else {
-                // mirabuf object will copy position of the mesh
-                transform = this.meshAttachment.matrix
+                if (!this.transformGizmos[0].dragging && !this.transformGizmos[1].dragging) {
+                    // mesh will copy position of the mirabuf object
+                    this.meshAttachment.position.setFromMatrixPosition(transform)
+                    this.meshAttachment.rotation.setFromRotationMatrix(transform)
+                } else {
+                    // mirabuf object will copy position of the mesh
+                    transform = this.meshAttachment.matrix
 
-                World.PhysicsSystem.SetBodyPosition(
-                    this._mechanism.GetBodyByNodeId(rn.id)!,
-                    ThreeMatrix4_JoltMat44(transform).GetTranslation()
-                ) // updating the position of the body
-                World.PhysicsSystem.SetBodyRotation(
-                    this._mechanism.GetBodyByNodeId(rn.id)!,
-                    ThreeQuaternion_JoltQuat(this.meshAttachment.quaternion)
-                ) // updating the rotation of the body
+                    World.PhysicsSystem.SetBodyPosition(
+                        this._mechanism.GetBodyByNodeId(rn.id)!,
+                        ThreeMatrix4_JoltMat44(transform).GetTranslation()
+                    ) // updating the position of the body
+                    World.PhysicsSystem.SetBodyRotation(
+                        this._mechanism.GetBodyByNodeId(rn.id)!,
+                        ThreeQuaternion_JoltQuat(this.meshAttachment.quaternion)
+                    ) // updating the rotation of the body
 
-                rn.parts.forEach(part => {
-                    const partTransform = this._mirabufInstance.parser.globalTransforms
-                        .get(part)!
-                        .clone()
-                        .premultiply(transform)
-                    this._mirabufInstance.meshes.get(part)!.forEach(mesh => {
-                        mesh.position.setFromMatrixPosition(partTransform)
-                        mesh.rotation.setFromRotationMatrix(partTransform)
+                    rn.parts.forEach(part => {
+                        const partTransform = this._mirabufInstance.parser.globalTransforms
+                            .get(part)!
+                            .clone()
+                            .premultiply(transform)
+                        this._mirabufInstance.meshes.get(part)!.forEach(mesh => {
+                            mesh.position.setFromMatrixPosition(partTransform)
+                            mesh.rotation.setFromRotationMatrix(partTransform)
+                        })
                     })
-                })
+                }
             }
 
             if (isNaN(body.GetPosition().GetX())) {
@@ -202,6 +203,15 @@ class MirabufSceneObject extends SceneObject {
         mesh.castShadow = true
 
         return mesh
+    }
+
+    public RemoveGizmo() {
+        if (!this.meshAttachment) return
+        this.transformGizmos.forEach(_ => {
+            World.SceneRenderer.RemoveTransformGizmo(this.meshAttachment!)
+        })
+        this.meshAttachment = null
+        World.PhysicsSystem.EnablePhysicsForBody(this._mechanism.GetBodyByNodeId(this._mechanism.rootBody)!)
     }
 }
 

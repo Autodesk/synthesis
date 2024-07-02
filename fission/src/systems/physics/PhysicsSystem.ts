@@ -101,6 +101,15 @@ class PhysicsSystem extends WorldSystem {
     }
 
     /**
+     * Enabing physics for a single body
+     *
+     * @param bodyId
+     */
+    public EnablePhysicsForBody(bodyId: Jolt.BodyID) {
+        this._joltBodyInterface.ActivateBody(bodyId)
+    }
+
+    /**
      * TEMPORARY
      * Create a box.
      *
