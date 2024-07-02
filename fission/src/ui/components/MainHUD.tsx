@@ -148,17 +148,6 @@ const MainHUD: React.FC = () => {
                             addToast(type, type, "This is a test toast to test the toast system")
                         }}
                     />
-                    <MainHUDButton
-                        value={"Test Gizmo"}
-                        icon={<IoGameControllerOutline />}
-                        onClick={() => {
-                            World.SceneRenderer.sceneObjects.forEach(sceneObject => {
-                                if (sceneObject instanceof MirabufSceneObject) {
-                                    sceneObject.RemoveGizmo()
-                                }
-                            })
-                        }}
-                    />
                 </div>
                 {userInfo ? (
                     <MainHUDButton

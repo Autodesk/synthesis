@@ -12,6 +12,7 @@ import { LayerReserve } from "@/systems/physics/PhysicsSystem"
 import Mechanism from "@/systems/physics/Mechanism"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { TransformControls } from "three/examples/jsm/controls/TransformControls.js"
+import InputSystem from "@/systems/input/InputSystem"
 
 const DEBUG_BODIES = true
 
@@ -84,6 +85,7 @@ class MirabufSceneObject extends SceneObject {
 
     public Update(): void {
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
+            if (!this._mirabufInstance.meshes.size) return // if the mechanism is already disposed then return
             const body = World.PhysicsSystem.GetBody(this._mechanism.GetBodyByNodeId(rn.id)!)
             let transform = JoltMat44_ThreeMatrix4(body.GetWorldTransform())
             rn.parts.forEach(part => {
@@ -92,31 +94,41 @@ class MirabufSceneObject extends SceneObject {
                     .clone()
                     .premultiply(transform)
                 this._mirabufInstance.meshes.get(part)!.forEach(mesh => {
+                    // iterating through each mesh and updating their position and rotation
                     mesh.position.setFromMatrixPosition(partTransform)
                     mesh.rotation.setFromRotationMatrix(partTransform)
                 })
             })
 
-            // transform gizmo
+            /**
+             * If the gizmo is active
+             * - transform gizmo block for
+             */
             if (this.meshAttachment) {
+                // commands to either cancel gizmo creation or confirm position
+                if (InputSystem.getInput("enter")) {
+                    this.RemoveGizmo()
+                    return
+                } else if (InputSystem.getInput("escape")) {
+                    this.RemoveGizmo()
+                    World.SceneRenderer.RemoveSceneObject(this.id)
+                    return
+                }
+
                 World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
 
-                if (!this.transformGizmos[0].dragging && !this.transformGizmos[1].dragging) {
-                    // mesh will copy position of the mirabuf object
-                    this.meshAttachment.position.setFromMatrixPosition(transform)
-                    this.meshAttachment.rotation.setFromRotationMatrix(transform)
-                } else {
+                if (this.transformGizmos[0].dragging || this.transformGizmos[1].dragging) {
                     // mirabuf object will copy position of the mesh
                     transform = this.meshAttachment.matrix
 
                     World.PhysicsSystem.SetBodyPosition(
                         this._mechanism.GetBodyByNodeId(rn.id)!,
                         ThreeMatrix4_JoltMat44(transform).GetTranslation()
-                    ) // updating the position of the body
+                    ) // updating the position of the Jolt body
                     World.PhysicsSystem.SetBodyRotation(
                         this._mechanism.GetBodyByNodeId(rn.id)!,
                         ThreeQuaternion_JoltQuat(this.meshAttachment.quaternion)
-                    ) // updating the rotation of the body
+                    ) // updating the rotation of the Jolt body
 
                     rn.parts.forEach(part => {
                         const partTransform = this._mirabufInstance.parser.globalTransforms
@@ -124,6 +136,7 @@ class MirabufSceneObject extends SceneObject {
                             .clone()
                             .premultiply(transform)
                         this._mirabufInstance.meshes.get(part)!.forEach(mesh => {
+                            // iterating through each mesh and updating their position and rotation
                             mesh.position.setFromMatrixPosition(partTransform)
                             mesh.rotation.setFromRotationMatrix(partTransform)
                         })

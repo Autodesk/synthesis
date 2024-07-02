@@ -1,9 +1,14 @@
 import * as THREE from "three"
-import { TransformControls } from "three/examples/jsm/controls/TransformControls.js"
 import SceneObject from "./SceneObject"
 import WorldSystem from "../WorldSystem"
+
+import { TransformControls } from "three/examples/jsm/controls/TransformControls.js"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+
+import vertexShader from '@/shaders/vertex.glsl';
+import fragmentShader from '@/shaders/fragment.glsl';
+import { Theme } from '@/ui/ThemeContext';
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x73937e
@@ -11,9 +16,11 @@ const GROUND_COLOR = 0x73937e
 let nextSceneObjectId = 1
 
 class SceneRenderer extends WorldSystem {
-    private _mainCamera: THREE.PerspectiveCamera
-    private _scene: THREE.Scene
-    private _renderer: THREE.WebGLRenderer
+
+    private _mainCamera: THREE.PerspectiveCamera;
+    private _scene: THREE.Scene;
+    private _renderer: THREE.WebGLRenderer;
+    private _skybox: THREE.Mesh;
 
     private _sceneObjects: Map<number, SceneObject>
 
@@ -75,12 +82,30 @@ class SceneRenderer extends WorldSystem {
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.1)
         this._scene.add(ambientLight)
 
-        const ground = new THREE.Mesh(new THREE.BoxGeometry(10, 1, 10), this.CreateToonMaterial(GROUND_COLOR))
-        ground.position.set(0.0, -2.0, 0.0)
-        ground.receiveShadow = true
-        ground.castShadow = true
-        this._scene.add(ground)
+        const ground = new THREE.Mesh(new THREE.BoxGeometry(10, 1, 10), this.CreateToonMaterial(GROUND_COLOR));
+        ground.position.set(0.0, -2.0, 0.0);
+        ground.receiveShadow = true;
+        ground.castShadow = true;
+        this._scene.add(ground);
 
+        // Adding spherical skybox mesh
+        const geometry = new THREE.SphereGeometry(1000);
+        const material = new THREE.ShaderMaterial({
+            vertexShader: vertexShader,
+            fragmentShader: fragmentShader,
+            side: THREE.BackSide,
+            uniforms: {
+                rColor: { value: 1.0 },
+                gColor: { value: 1.0 },
+                bColor: { value: 1.0 },
+            }
+        });
+        this._skybox = new THREE.Mesh(geometry, material); 
+        this._skybox.receiveShadow = false;
+        this._skybox.castShadow = false;
+        this.scene.add(this._skybox); 
+
+        // Orbit controls
         this.orbitControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
         this.orbitControls.update()
 
@@ -111,6 +136,7 @@ class SceneRenderer extends WorldSystem {
         })
 
         // controls.update(deltaTime); // TODO: Add controls?
+        this._skybox.position.copy(this._mainCamera.position);
 
         const mainCameraFovRadians = (Math.PI * (this._mainCamera.fov * 0.5)) / 180
         this.transformControls.forEach((size, tc) => {
@@ -121,7 +147,7 @@ class SceneRenderer extends WorldSystem {
             )
         })
 
-        this._renderer.render(this._scene, this._mainCamera)
+        this._renderer.render(this._scene, this._mainCamera);
     }
 
     public Destroy(): void {
@@ -169,6 +195,20 @@ class SceneRenderer extends WorldSystem {
             color: color,
             gradientMap: gradientMap,
         })
+    }
+
+    /**
+     * Updates the skybox colors based on the current theme
+
+     * @param currentTheme: current theme from ThemeContext.useTheme()
+     */
+    public updateSkyboxColors(currentTheme: Theme) {
+        if (!this._skybox) return;
+        if (this._skybox.material instanceof THREE.ShaderMaterial) {
+            this._skybox.material.uniforms.rColor.value = currentTheme['Background']['color']['r'];
+            this._skybox.material.uniforms.gColor.value = currentTheme['Background']['color']['g'];
+            this._skybox.material.uniforms.bColor.value = currentTheme['Background']['color']['b'];
+        }
     }
 
     /**
@@ -262,4 +302,4 @@ class SceneRenderer extends WorldSystem {
     }
 }
 
-export default SceneRenderer
+export default SceneRenderer;
