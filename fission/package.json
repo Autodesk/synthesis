@@ -6,12 +6,12 @@
   "scripts": {
     "dev": "vite --open",
     "build": "tsc && vite build",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives",
     "preview": "vite preview --base=/fission/",
     "test": "vitest",
-    "lint:fix": "bun run lint --fix || npm run lint --fix",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives",
+    "lint:fix": "eslint . --ext ts,tsx --report-unused-disable-directives --fix",
     "prettier": "bun x prettier src --check || npx prettier src --check",
-    "prettier:fix": "bun run prettier --write || npm run prettier --write",
+    "prettier:fix": "bun x prettier src --write || npx prettier src --write",
     "format": "(bun run prettier:fix && bun run lint:fix) || (npm run prettier:fix && npm run lint:fix)",
     "build:prod": "tsc && vite build --base=/fission/",
     "assetpack": "curl -o public/assetpack.zip https://synthesis.autodesk.com/Downloadables/assetpack.zip && tar -xf public/assetpack.zip -C public/",
@@ -34,7 +34,6 @@
     "react-colorful": "^5.6.1",
     "react-dom": "^18.2.0",
     "react-icons": "^4.10.1",
-    "run-script-os": "^1.1.6",
     "three": "^0.159.0",
     "typescript-cookie": "^1.0.6"
   },
