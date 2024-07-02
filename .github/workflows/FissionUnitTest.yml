@@ -3,40 +3,74 @@ name: Fission - Unit Test
 on:
   workflow_dispatch: {}
   push:
-    branches: [ master, dev ]
+    branches: [master, dev]
   pull_request:
-    branches: [ master, dev ]
+    branches: [master, dev]
 
 jobs:
   runUnitTests:
     name: Unit Tests
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v2
-    - name: JavaScript Setup
-      uses: actions/setup-node@v2
-      with:
-        node-version: 20
-    - name: Install Dependencies
-      run: |
-        cd fission
-        rm package-lock.json
-        npm install
-        npm install -g run-script-os
-        npm run assetpack
-        npm run playwright:install
-    - name: Unit Tests
-      id: unit-tests
-      run: |
-        cd fission
-        npm run test
-      continue-on-error: true
-    - name: Check Success
-      run: |
-        if [ ${{ steps.unit-tests.outcome }} == "success" ]; then
-          echo "Format Validation Passed"
-        else
-          echo "Format Validation Failed"
-          exit 1
-        fi
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: JavaScript Setup
+        uses: actions/setup-node@v2
+        with:
+          node-version: 20
+
+      - name: Cache downloaded assets
+        id: cache-assets
+        uses: actions/cache@v2
+        with:
+          path: fission/public/
+          key: ${{ runner.os }}-assets-v1
+          restore-keys: |
+            ${{ runner.os }}-assets-
+
+      - name: Download assets if not cached
+        if: steps.cache-assets.outputs.cache-hit != 'true'
+        run: |
+          cd fission
+          curl -o public/assetpack.zip https://synthesis.autodesk.com/Downloadables/assetpack.zip && unzip -o public/assetpack.zip -d public/
+
+      - name: Get installed Playwright version
+        id: playwright-version
+        run: echo "PLAYWRIGHT_VERSION=$(node -e "console.log(require('./package-lock.json').dependencies['@playwright/test'].version)")" >> $GITHUB_ENV
+
+      - name: Cache downloaded browsers
+        id: cache-browsers
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/ms-playwright/
+          key: ${{ runner.os }}-assets-playwright-${{ env.PLAYWRIGHT_VERSION }}
+
+      - name: Install Dependencies
+        run: |
+          cd fission
+          rm package-lock.json
+          npm install
+
+      - name: Download playwright if not cached
+        if: steps.cache-browsers.outputs.cache-hit != 'true'
+        run: |
+          cd fission
+          npx playwright install --with-deps
+          npx playwright install-deps
+
+      - name: Unit Tests
+        id: unit-tests
+        run: |
+          cd fission
+          npm run test
+        continue-on-error: true
+
+      - name: Check Success
+        run: |
+          if [ ${{ steps.unit-tests.outcome }} == "success" ]; then
+            echo "Format Validation Passed"
+          else
+            echo "Format Validation Failed"
+            exit 1
+          fi
