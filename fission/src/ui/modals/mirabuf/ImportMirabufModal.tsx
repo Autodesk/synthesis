@@ -33,6 +33,7 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [selectedFolder, setSelectedFolder] = useState<Folder | undefined>(undefined)
 
     const [hubs, setHubs] = useState<Hub[] | undefined>(undefined)
+    // prettier-ignore
     useEffect(() => {
         (async () => {
             setHubs(await getHubs())
@@ -40,6 +41,7 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     }, [])
 
     const [projects, setProjects] = useState<Project[] | undefined>(undefined)
+    // prettier-ignore
     useEffect(() => {
         (async () => {
             if (selectedHub) {
@@ -49,6 +51,7 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     }, [selectedHub])
 
     const [folderData, setFolderData] = useState<Data[] | undefined>(undefined)
+    // prettier-ignore
     useEffect(() => {
         (async () => {
             if (selectedProject) {
