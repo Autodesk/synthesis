@@ -99,12 +99,6 @@ export async function getHubs(): Promise<Hub[] | undefined> {
         })
             .then(x => x.json())
             .then(x => {
-                if (x.meta.warnings.length > 0) {
-                    const warnings: APSHubError[] = x.meta.warnings;
-                    warnings.forEach(w => console.error(w.Title))
-                    const first = warnings[0]
-                    throw new APSDataError(first.ErrorCode, first.Title, first.Detail)
-                }
                 if ((x.data as any[]).length > 0) {
                     return (x.data as any[]).map<Hub>(y => {
                         return { id: y.id, name: y.attributes.name }
