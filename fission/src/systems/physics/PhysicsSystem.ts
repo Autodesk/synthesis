@@ -733,6 +733,10 @@ class PhysicsSystem extends WorldSystem {
         return this._joltPhysSystem.GetBodyLockInterface().TryGetBody(bodyId)
     }
 
+    public GetBodyNoLock(bodyId: Jolt.BodyID) {
+        return this._joltPhysSystem.GetBodyLockInterfaceNoLock().TryGetBody(bodyId)
+    }
+
     public Update(deltaT: number): void {
         const diffDeltaT = deltaT - lastDeltaT
 

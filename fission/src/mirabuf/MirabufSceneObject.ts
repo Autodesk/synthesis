@@ -94,6 +94,7 @@ class MirabufSceneObject extends SceneObject {
                 })
             })
 
+            // transform gizmo
             if (!this.transformGizmo.dragging) {
                 // mesh will copy position of the mirabuf object
                 this.meshAttachment.position.setFromMatrixPosition(transform)
@@ -101,22 +102,7 @@ class MirabufSceneObject extends SceneObject {
             } else {
                 // mirabuf object will copy position of the mesh
                 transform = this.meshAttachment.matrix
-                const newTransform = ThreeMatrix4_JoltMat44(transform)
-
-                // this is where the issue is that im trying to fix
-                body.GetWorldTransform().SetTranslation(newTransform.GetTranslation())
-                body.GetWorldTransform().GetTranslation().SetX(newTransform.GetTranslation().GetX())
-                console.log(body.GetWorldTransform().GetTranslation().GetX(), newTransform.GetTranslation().GetX())
-                body.GetWorldTransform().GetTranslation().SetY(newTransform.GetTranslation().GetY())
-                body.GetWorldTransform().GetTranslation().SetZ(newTransform.GetTranslation().GetZ())
-                body.GetWorldTransform().GetQuaternion().Set(newTransform.GetQuaternion().GetX(), newTransform.GetQuaternion().GetY(), newTransform.GetQuaternion().GetZ(), newTransform.GetQuaternion().GetW())
-                body.GetWorldTransform().GetRotation().SetAxisX(newTransform.GetRotation().GetAxisX())
-                body.GetWorldTransform().GetRotation().SetAxisY(newTransform.GetRotation().GetAxisY())
-                body.GetWorldTransform().GetRotation().SetAxisZ(newTransform.GetRotation().GetAxisZ())
-                body.GetPosition().SetX(newTransform.GetTranslation().GetX())
-                body.GetPosition().SetY(newTransform.GetTranslation().GetY())
-                body.GetPosition().SetZ(newTransform.GetTranslation().GetZ())
-
+                World.PhysicsSystem.SetBodyPosition(this._mechanism.GetBodyByNodeId(rn.id)!, ThreeMatrix4_JoltMat44(transform).GetTranslation()) // updating the position of the body
                 rn.parts.forEach(part => {
                     const partTransform = this._mirabufInstance.parser.globalTransforms
                         .get(part)!
