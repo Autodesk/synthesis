@@ -92,6 +92,24 @@ class PhysicsSystem extends WorldSystem {
     }
 
     /**
+     * Disables physics system
+     */
+    public DisablePhysics() {
+        this._bodies.forEach(body => {
+            this._joltBodyInterface.DeactivateBody(body)
+        })
+    }
+
+    /**
+     * Enables physics system
+     */
+    public EnablePhysics() {
+        this._bodies.forEach(body => {
+            this._joltBodyInterface.ActivateBody(body)
+        })
+    }
+
+    /**
      * TEMPORARY
      * Create a box.
      *
@@ -614,6 +632,7 @@ class PhysicsSystem extends WorldSystem {
                 rnToBodies.set(rn.id, body.GetID())
 
                 // Little testing components
+                this._bodies.push(body.GetID())
                 body.SetRestitution(0.4)
             }
             // Cleanup
@@ -714,6 +733,10 @@ class PhysicsSystem extends WorldSystem {
         return this._joltPhysSystem.GetBodyLockInterface().TryGetBody(bodyId)
     }
 
+    public GetBodyNoLock(bodyId: Jolt.BodyID) {
+        return this._joltPhysSystem.GetBodyLockInterfaceNoLock().TryGetBody(bodyId)
+    }
+
     public Update(deltaT: number): void {
         const diffDeltaT = deltaT - lastDeltaT
 
@@ -723,7 +746,7 @@ class PhysicsSystem extends WorldSystem {
         let substeps = Math.max(1, Math.floor((lastDeltaT / STANDARD_SIMULATION_PERIOD) * STANDARD_SUB_STEPS))
         substeps = Math.min(MAX_SUBSTEPS, Math.max(MIN_SUBSTEPS, substeps))
 
-        console.log(`DeltaT: ${lastDeltaT.toFixed(5)}, Substeps: ${substeps}`)
+        // console.log(`DeltaT: ${lastDeltaT.toFixed(5)}, Substeps: ${substeps}`)
 
         this._joltInterface.Step(lastDeltaT, substeps)
     }

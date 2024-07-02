@@ -5,12 +5,13 @@ import { LoadMirabufRemote } from "./MirabufLoader"
 import MirabufParser, { ParseErrorSeverity } from "./MirabufParser"
 import World from "@/systems/World"
 import Jolt from "@barclah/jolt-physics"
-import { JoltMat44_ThreeMatrix4 } from "@/util/TypeConversions"
+import { JoltMat44_ThreeMatrix4, ThreeMatrix4_JoltMat44 } from "@/util/TypeConversions"
 import * as THREE from "three"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { LayerReserve } from "@/systems/physics/PhysicsSystem"
 import Mechanism from "@/systems/physics/Mechanism"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import { TransformControls } from "three/examples/jsm/controls/TransformControls.js"
 
 const DEBUG_BODIES = true
 
@@ -24,7 +25,15 @@ class MirabufSceneObject extends SceneObject {
     private _debugBodies: Map<string, RnDebugMeshes> | null
     private _physicsLayerReserve: LayerReserve | undefined = undefined
 
+    // transform gizmo
+    private meshAttachment: THREE.Mesh = new THREE.Mesh(new THREE.SphereGeometry(3.0), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0 }))
+    private transformGizmo: TransformControls
+
     private _mechanism: Mechanism
+
+    public get mirabufInstance() {
+        return this._mirabufInstance
+    }
 
     public constructor(mirabufInstance: MirabufInstance) {
         super()
@@ -37,6 +46,8 @@ class MirabufSceneObject extends SceneObject {
         }
 
         this._debugBodies = null
+
+        this.transformGizmo = World.SceneRenderer.AddTransformGizmo(this.meshAttachment, "translate", 3.0)
     }
 
     public Setup(): void {
@@ -65,12 +76,13 @@ class MirabufSceneObject extends SceneObject {
         const simLayer = World.SimulationSystem.GetSimulationLayer(this._mechanism)!
         const brain = new SynthesisBrain(this._mechanism)
         simLayer.SetBrain(brain)
+
     }
 
     public Update(): void {
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
             const body = World.PhysicsSystem.GetBody(this._mechanism.GetBodyByNodeId(rn.id)!)
-            const transform = JoltMat44_ThreeMatrix4(body.GetWorldTransform())
+            let transform = JoltMat44_ThreeMatrix4(body.GetWorldTransform())
             rn.parts.forEach(part => {
                 const partTransform = this._mirabufInstance.parser.globalTransforms
                     .get(part)!
@@ -81,6 +93,29 @@ class MirabufSceneObject extends SceneObject {
                     mesh.rotation.setFromRotationMatrix(partTransform)
                 })
             })
+
+            // transform gizmo
+            if (!this.transformGizmo.dragging) {
+                // mesh will copy position of the mirabuf object
+                this.meshAttachment.position.setFromMatrixPosition(transform)
+                this.meshAttachment.rotation.setFromRotationMatrix(transform)
+            } else {
+                // mirabuf object will copy position of the mesh
+                transform = this.meshAttachment.matrix
+                World.PhysicsSystem.SetBodyPosition(this._mechanism.GetBodyByNodeId(rn.id)!, ThreeMatrix4_JoltMat44(transform).GetTranslation()) // updating the position of the body
+                rn.parts.forEach(part => {
+                    const partTransform = this._mirabufInstance.parser.globalTransforms
+                        .get(part)!
+                        .clone()
+                        .premultiply(transform)
+                    this._mirabufInstance.meshes.get(part)!.forEach(mesh => {
+                        mesh.position.setFromMatrixPosition(partTransform)
+                        mesh.rotation.setFromRotationMatrix(partTransform)
+                    })
+                })
+            }
+
+
 
             if (isNaN(body.GetPosition().GetX())) {
                 const vel = body.GetLinearVelocity()
