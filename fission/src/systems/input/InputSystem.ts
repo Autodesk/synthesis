@@ -1,4 +1,5 @@
 import WorldSystem from "../WorldSystem"
+import PreferencesSystem from "../preferences/PreferencesSystem"
 import { InputScheme } from "./DefaultInputs"
 
 export type ModifierState = {
@@ -143,8 +144,6 @@ class AxisInput extends Input {
 }
 
 class InputSystem extends WorldSystem {
-    public static allInputs: Map<string, InputScheme> = new Map()
-
     public static currentModifierState: ModifierState
 
     // A list of keys currently being pressed
@@ -241,11 +240,11 @@ class InputSystem extends WorldSystem {
         return !!InputSystem._keysPressed[key]
     }
 
-    // If an input exists, return true if it is pressed
-    public static getInput(inputName: string, assemblyId: string): number {
-        // Looks for an input assigned to this action
-        const targetScheme = this.allInputs.get(assemblyId)
-        const targetInput = targetScheme?.inputs.find(input => input.inputName == inputName)
+    // If an input exists, return it's value
+    public static getInput(inputName: string, assemblyName: string): number {
+        const targetScheme = PreferencesSystem.getRobotPreferences(assemblyName).inputsScheme
+
+        const targetInput = targetScheme?.inputs.find(input => input.inputName == inputName) as (Input)
 
         if (targetScheme == null || targetInput == null) return 0
 

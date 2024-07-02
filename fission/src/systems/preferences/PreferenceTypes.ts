@@ -1,4 +1,5 @@
 import { Vector3Tuple } from "three"
+import { InputScheme } from "../input/DefaultInputs"
 
 export type GlobalPreference =
     | "ScreenMode"
@@ -38,11 +39,19 @@ export type RobotPreferences = {
     // TODO: after merge with advanced inputs
     //controls: InputScheme,
     test: boolean
+    inputsScheme: InputScheme
+    intake: IntakePreferences
+    ejector: EjectorPreferences
 }
 
 export type FieldPreferences = {}
 
 
 export function DefaultRobotPreferences(): RobotPreferences {
-    return {test: false};
+    return {
+        test: false, 
+        inputsScheme: {schemeName: "", usesGamepad: false, inputs: []},
+        intake: { location: [0, 0, 0], diameter: 1 }, 
+        ejector: { location: [0, 0, 0], ejectorVelocity: 1 }
+    };
 }

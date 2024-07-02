@@ -1,4 +1,4 @@
-import { DefaultPreferences, DefaultRobotPreferences, GlobalPreference, RobotPreferences, RobotPreferencesKey } from "./PreferenceTypes"
+import { DefaultPreferences, DefaultRobotPreferences, FieldPreferences, GlobalPreference, RobotPreferences, RobotPreferencesKey } from "./PreferenceTypes"
 
 class PreferencesSystem {
     private static _preferences: { [key: string]: Object }
@@ -11,40 +11,53 @@ class PreferencesSystem {
     }
 
     private static getPreference<T>(key: string): T | undefined {
-        if (this._preferences == undefined) 
-            this.loadPreferences()
+        if (this._preferences == undefined) this.loadPreferences()
 
         return this._preferences[key] as T
 
-        // if (customPref != undefined) 
+        // if (customPref != undefined)
         //     return customPref as T
 
         // return undefined
     }
 
     public static getGlobalPreference<T>(key: GlobalPreference): T {
-        const customPref = this.getPreference<T>(key);
-        if (customPref != undefined) 
-            return customPref;
+        const customPref = this.getPreference<T>(key)
+        if (customPref != undefined) return customPref
 
         const defaultPref = DefaultPreferences[key]
-        if (defaultPref != undefined)
-        
-            return defaultPref as T
+        if (defaultPref != undefined) return defaultPref as T
 
         throw new Error("Preference '" + key + "' is not assigned a default!")
     }
 
     public static getRobotPreferences(miraName: string): RobotPreferences {
-        const allRoboPrefs = this.getPreference<{[key: string]: RobotPreferences}>(RobotPreferencesKey);
-        if (allRoboPrefs == undefined || allRoboPrefs[miraName] == undefined)
-            return DefaultRobotPreferences()
+        const allRoboPrefs = this.getAllRobotPreferences()
+
+        if (allRoboPrefs[miraName] == undefined) {
+            const defaultPrefs = DefaultRobotPreferences()
+            allRoboPrefs[miraName] = defaultPrefs
+            return defaultPrefs
+        }
 
         return allRoboPrefs[miraName]
     }
 
-    public static getFieldPreferences(miraName: string) {
+    public static getAllRobotPreferences(): { [key: string]: RobotPreferences } {
+        let allRoboPrefs = this.getPreference<{ [key: string]: RobotPreferences }>(RobotPreferencesKey)
+        if (allRoboPrefs == undefined) {
+            allRoboPrefs = {}
+            this._preferences[RobotPreferencesKey] = allRoboPrefs
+        }
+        return allRoboPrefs
+    }
 
+    public static getFieldPreferences(miraName: string) {
+        throw new Error("Not implemented")
+    }
+
+    public static getAllFieldPreferences(): { [key: string]: FieldPreferences } {
+        throw new Error("Not implemented")
     }
 
     public static loadPreferences() {

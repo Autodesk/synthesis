@@ -10,6 +10,7 @@ import Checkbox from "@/ui/components/Checkbox"
 import DefaultInputs, { InputScheme } from "@/systems/input/DefaultInputs"
 import Button from "@/ui/components/Button"
 import { useModalControlContext } from "@/ui/ModalContext"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 // capitalize first letter
 // TODO: assumes all inputs are keyboard buttons
@@ -109,9 +110,9 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [useButtons, setUseButtons] = useState<UseButtonsState>({})
 
     // If there is a robot spawned, set it as the selected robot
-    if (selectedScheme == null && InputSystem.allInputs.size > 0) {
+    if (selectedScheme == null && Object.keys(PreferencesSystem.getAllRobotPreferences()).length > 0) {
         setTimeout(() => {
-            if (!InputSystem.selectedScheme) InputSystem.selectedScheme = InputSystem.allInputs.values().next().value
+            if (!InputSystem.selectedScheme) InputSystem.selectedScheme = Object.values(PreferencesSystem.getAllRobotPreferences())[0].inputsScheme
 
             setUseButtons({})
             setSelectedScheme(InputSystem.selectedScheme)
@@ -335,7 +336,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
     return (
         <Modal name="Keybinds" icon={<FaGamepad />} modalId={modalId}>
-            {Array.from(InputSystem.allInputs.keys()).length > 0 ? (
+            {Object.keys(PreferencesSystem.getAllRobotPreferences()).length > 0 ? (
                 <>
                     <Stack direction={StackDirection.Horizontal} spacing={25}>
                         <div>
@@ -344,11 +345,12 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                     label={"Select Robot"}
                                     // Moves the selected option to the start of the array
                                     options={moveElementToTop(
-                                        Array.from(InputSystem.allInputs.keys()),
+                                        Object.keys(PreferencesSystem.getAllRobotPreferences()),
                                         InputSystem?.selectedScheme?.schemeName
                                     )}
                                     onSelect={value => {
-                                        const newScheme = InputSystem.allInputs.get(value)
+                                        const newScheme = PreferencesSystem.getAllRobotPreferences()[value].inputsScheme
+
                                         if (newScheme == selectedScheme) return
 
                                         setSelectedScheme(undefined)

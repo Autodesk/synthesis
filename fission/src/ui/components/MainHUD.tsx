@@ -138,9 +138,25 @@ const MainHUD: React.FC = () => {
                         onClick={() => PreferencesSystem.savePreferences()}
                     />
                     <MainHUDButton
-                        value={"Clear prefs"}
+                        value={"Robot test -> 5"}
                         icon={<IoBug />}
-                        onClick={() => PreferencesSystem.clearPreferences()}
+                        onClick={() =>
+                            (PreferencesSystem.getRobotPreferences("Team 2471 (2018) v7").intake.diameter = 5)
+                        }
+                    />
+                    <MainHUDButton
+                        value={"Robot test -> 2"}
+                        icon={<IoBug />}
+                        onClick={() =>
+                            (PreferencesSystem.getRobotPreferences("Team 2471 (2018) v7").intake.diameter = 2)
+                        }
+                    />
+                    <MainHUDButton
+                        value={"Clear Prefs"}
+                        icon={<IoBug />}
+                        onClick={() =>
+                            (PreferencesSystem.clearPreferences())
+                        }
                     />
                 </div>
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">

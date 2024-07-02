@@ -14,8 +14,9 @@ import GenericArmBehavior from "../behavior/GenericArmBehavior";
 import SliderDriver from "../driver/SliderDriver";
 import SliderStimulus from "../stimulus/SliderStimulus";
 import GenericElevatorBehavior from "../behavior/GenericElevatorBehavior";
-import InputSystem, { AxisInput } from "@/systems/input/InputSystem";
-import DefaultInputs from "@/systems/input/DefaultInputs";
+import InputSystem, { AxisInput, ButtonInput, Input } from "@/systems/input/InputSystem";
+import DefaultInputs, { InputScheme } from "@/systems/input/DefaultInputs";
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem";
 
 class SynthesisBrain extends Brain {
     private _behaviors: Behavior[] = []
@@ -32,8 +33,13 @@ class SynthesisBrain extends Brain {
     public constructor(mechanism: Mechanism, assemblyName: string) {
         super(mechanism);
 
+        console.log(assemblyName);
+        console.log("ROBOT PREFS: " + JSON.stringify(PreferencesSystem.getRobotPreferences(assemblyName)))
+
         this._simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)!;
-        this._assemblyName = "[" + SynthesisBrain._currentRobotIndex.toString() + "] " + assemblyName;
+        
+        // TODO: breaks when two of the same robot are loaded
+        this._assemblyName = /* "[" + SynthesisBrain._currentRobotIndex.toString() + "] " + */ assemblyName
 
         if (!this._simLayer) {
             console.log("SimulationLayer is undefined")
@@ -62,7 +68,8 @@ class SynthesisBrain extends Brain {
     }
 
     public clearControls(): void {
-        InputSystem.allInputs.delete(this._assemblyName);
+        // TODO: something to stop controls from being editable when this robot is removed
+        // InputSystem.allInputs.delete(this._assemblyName);
     }
 
     // Creates an instance of ArcadeDriveBehavior and automatically configures it
@@ -127,10 +134,19 @@ class SynthesisBrain extends Brain {
     }
 
     public configureInputs() {
-        const scheme = DefaultInputs.ALL_INPUT_SCHEMES[SynthesisBrain._currentRobotIndex];
+        // Check for existing inputs
+        const robotConfig = PreferencesSystem.getRobotPreferences(this._assemblyName)
+        if (robotConfig.inputsScheme != undefined)  {
+            SynthesisBrain.parseInputs(robotConfig.inputsScheme);
+            return
+        }
 
-        InputSystem.allInputs.set(this._assemblyName, {schemeName: this._assemblyName, usesGamepad: scheme?.usesGamepad ?? false, inputs: []});
-        const inputList = InputSystem.allInputs.get(this._assemblyName)!.inputs;
+        // Configure with default inputs
+
+        const scheme = DefaultInputs.ALL_INPUT_SCHEMES[SynthesisBrain._currentRobotIndex]
+
+        robotConfig.inputsScheme = {schemeName: this._assemblyName, usesGamepad: scheme?.usesGamepad ?? false, inputs: []}
+        const inputList = robotConfig.inputsScheme.inputs;
 
         if (scheme) {
             const arcadeDrive = scheme.inputs.find(i => i.inputName === "arcadeDrive");
@@ -153,6 +169,44 @@ class SynthesisBrain extends Brain {
                 else 
                     inputList.push(new AxisInput("joint " + i));
             }
+        }
+    }
+
+    private static parseInputs(rawInputs: InputScheme) {
+        for (let i = 0; i < rawInputs.inputs.length; i++) {
+            const rawInput = rawInputs.inputs[i]
+            let parsedInput: Input
+
+            if ((rawInput as ButtonInput).keyCode != undefined) {
+                const rawButton = rawInput as ButtonInput
+
+                parsedInput = new ButtonInput(
+                    rawButton.inputName,
+                    rawButton.keyCode,
+                    rawButton.gamepadButton,
+                    rawButton.isGlobal,
+                    rawButton.keyModifiers
+                )
+            }
+            else {
+                const rawAxis = rawInput as AxisInput;
+
+                parsedInput = new AxisInput(
+                    rawAxis.inputName,
+                    rawAxis.posKeyCode,
+                    rawAxis.negKeyCode,
+                    rawAxis.gamepadAxisNumber,
+                    rawAxis.joystickInverted,
+                    rawAxis.useGamepadButtons,
+                    rawAxis.posGamepadButton,
+                    rawAxis.negGamepadButton,
+                    rawAxis.isGlobal,
+                    rawAxis.posKeyModifiers,
+                    rawAxis.negKeyModifiers
+                )
+            }
+
+            rawInputs.inputs[i] = parsedInput
         }
     }
 }
