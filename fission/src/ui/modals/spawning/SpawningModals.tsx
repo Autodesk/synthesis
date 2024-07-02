@@ -5,29 +5,46 @@ import Stack, { StackDirection } from "../../components/Stack"
 import Button, { ButtonSize } from "../../components/Button"
 import { useModalControlContext } from "@/ui/ModalContext"
 import Label, { LabelSize } from "@/components/Label"
-import { CreateMirabufFromUrl } from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
 import { useTooltipControlContext } from "@/ui/TooltipContext"
-import { MiraType } from "@/mirabuf/MirabufLoader"
+import MirabufCachingService, { MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader"
+import { CreateMirabuf } from "@/mirabuf/MirabufSceneObject"
 
-interface MirabufEntry {
+interface MirabufRemoteInfo {
     displayName: string
     src: string
 }
 
-interface MirabufCardProps {
-    entry: MirabufEntry
-    select: (entry: MirabufEntry) => void
+interface MirabufRemoteCardProps {
+    info: MirabufRemoteInfo
+    select: (info: MirabufRemoteInfo) => void
 }
 
-const MirabufCard: React.FC<MirabufCardProps> = ({ entry, select }) => {
+const MirabufRemoteCard: React.FC<MirabufRemoteCardProps> = ({ info, select }) => {
     return (
         <div
-            key={entry.src}
+            key={info.src}
             className="flex flex-row align-middle justify-between items-center bg-background rounded-sm p-2 gap-2"
         >
-            <Label className="text-wrap break-all">{entry.displayName}</Label>
-            <Button value="Spawn" onClick={() => select(entry)} />
+            <Label className="text-wrap break-all">{info.displayName}</Label>
+            <Button value="Spawn" onClick={() => select(info)} />
+        </div>
+    )
+}
+
+interface MirabufCacheCardProps {
+    info: MirabufCacheInfo
+    select: (info: MirabufCacheInfo) => void
+}
+
+const MirabufCacheCard: React.FC<MirabufCacheCardProps> = ({ info, select }) => {
+    return (
+        <div
+            key={info.id}
+            className="flex flex-row align-middle justify-between items-center bg-background rounded-sm p-2 gap-2"
+        >
+            <Label className="text-wrap break-all">{info.name ?? info.cacheKey}</Label>
+            <Button value="Spawn" onClick={() => select(info)} />
         </div>
     )
 }
@@ -36,26 +53,32 @@ export const AddRobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { showTooltip } = useTooltipControlContext()
     const { closeModal } = useModalControlContext()
 
-    const [remoteRobots, setRemoteRobots] = useState<MirabufEntry[] | null>(null)
+    const [cachedRobots, setCachedRobots] = useState<MirabufCacheInfo[] | undefined>(undefined)
 
     // prettier-ignore
     useEffect(() => {
-        ;(async () => {
+        (async () => {
+            const map = MirabufCachingService.GetCacheMap(MiraType.ROBOT)
+            setCachedRobots(Object.values(map))
+        })()
+    }, [])
+
+    const [remoteRobots, setRemoteRobots] = useState<MirabufRemoteInfo[] | undefined>(undefined)
+
+    // prettier-ignore
+    useEffect(() => {
+        (async () => {
             fetch("/api/mira/manifest.json")
                 .then(x => x.json())
                 .then(x => {
-                    const robots: MirabufEntry[] = []
+                    // TODO: Skip already cached robots
+                    // const map = MirabufCachingService.GetCacheMap(MiraType.ROBOT)
+                    const robots: MirabufRemoteInfo[] = []
                     for (const src of x["robots"]) {
                         if (typeof src == "string") {
-                            robots.push({
-                                src: `/api/mira/Robots/${src}`,
-                                displayName: src,
-                            })
+                            robots.push({ displayName: src, src: `/api/mira/Robots/${src}` })
                         } else {
-                            robots.push({
-                                src: src["src"],
-                                displayName: src["displayName"],
-                            })
+                            robots.push({ displayName: src["displayName"], src: src["src"] })
                         }
                     }
                     setRemoteRobots(robots)
@@ -63,30 +86,51 @@ export const AddRobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         })()
     }, [])
 
-    const selectRobot = (entry: MirabufEntry) => {
-        console.log(`Mira: '${entry.src}'`)
-        showTooltip("controls", [
-            { control: "WASD", description: "Drive" },
-            { control: "E", description: "Intake" },
-            { control: "Q", description: "Dispense" },
-        ])
+    const selectCache = async (info: MirabufCacheInfo) => {
+        console.log(`MiraCache: '${info}'`)
+        const assembly = await MirabufCachingService.Get(info.id, MiraType.ROBOT)
 
-        CreateMirabufFromUrl(entry.src, MiraType.ROBOT).then(x => {
-            if (x) {
-                World.SceneRenderer.RegisterSceneObject(x)
-            }
-        })
+        if (assembly) {
+            showTooltip("controls", [
+                { control: "WASD", description: "Drive" },
+                { control: "E", description: "Intake" },
+                { control: "Q", description: "Dispense" },
+            ])
+
+            CreateMirabuf(assembly).then(x => {
+                if (x) {
+                    World.SceneRenderer.RegisterSceneObject(x)
+                }
+            })
+        } else {
+            console.error('Failed to spawn robot')
+        }
 
         closeModal()
+    }
+
+    const selectRemote = async (info: MirabufRemoteInfo) => {
+        const cacheInfo = await MirabufCachingService.CacheRemote(info.src, MiraType.ROBOT)
+
+        if (!cacheInfo) {
+            console.error('Failed to cache robot')
+            closeModal()
+        } else {
+            selectCache(cacheInfo)
+        }
     }
 
     return (
         <Modal name={"Robot Selection"} icon={<FaPlus />} modalId={modalId} acceptEnabled={false}>
             <div className="flex overflow-y-auto flex-col gap-2 min-w-[50vw] max-h-[60vh] bg-background-secondary rounded-md p-2">
                 <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
+                    {cachedRobots ? `${cachedRobots.length} Saved Robots` : "No Saved Robots"}
+                </Label>
+                {cachedRobots ? cachedRobots!.map(x => MirabufCacheCard({ info: x, select: selectCache })) : <></>}
+                <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
                     {remoteRobots ? `${remoteRobots.length} Default Robots` : "No Default Robots"}
                 </Label>
-                {remoteRobots ? remoteRobots!.map(x => MirabufCard({ entry: x, select: selectRobot })) : <></>}
+                {remoteRobots ? remoteRobots!.map(x => MirabufRemoteCard({ info: x, select: selectRemote })) : <></>}
             </div>
         </Modal>
     )
@@ -95,26 +139,32 @@ export const AddRobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 export const AddFieldsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { closeModal } = useModalControlContext()
 
-    const [remoteFields, setRemoteFields] = useState<MirabufEntry[] | null>(null)
+    const [cachedFields, setCachedFields] = useState<MirabufCacheInfo[] | undefined>(undefined)
 
     // prettier-ignore
     useEffect(() => {
-        ;(async () => {
+        (async () => {
+            const map = MirabufCachingService.GetCacheMap(MiraType.FIELD)
+            setCachedFields(Object.values(map))
+        })()
+    }, [])
+
+    const [remoteFields, setRemoteFields] = useState<MirabufRemoteInfo[] | undefined>(undefined)
+
+    // prettier-ignore
+    useEffect(() => {
+        (async () => {
             fetch("/api/mira/manifest.json")
                 .then(x => x.json())
                 .then(x => {
-                    const fields: MirabufEntry[] = []
+                    // TODO: Skip already cached robots
+                    // const map = MirabufCachingService.GetCacheMap(MiraType.FIELD)
+                    const fields: MirabufRemoteInfo[] = []
                     for (const src of x["fields"]) {
                         if (typeof src == "string") {
-                            fields.push({
-                                src: `/api/mira/Fields/${src}`,
-                                displayName: src,
-                            })
+                            fields.push({ displayName: src, src: `/api/mira/Fields/${src}` })
                         } else {
-                            fields.push({
-                                src: src["src"],
-                                displayName: src["displayName"],
-                            })
+                            fields.push({ displayName: src["displayName"], src: src["src"] })
                         }
                     }
                     setRemoteFields(fields)
@@ -122,24 +172,45 @@ export const AddFieldsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         })()
     }, [])
 
-    const selectField = (entry: MirabufEntry) => {
-        console.log(`Mira: '${entry.src}'`)
-        CreateMirabufFromUrl(entry.src, MiraType.FIELD).then(x => {
-            if (x) {
-                World.SceneRenderer.RegisterSceneObject(x)
-            }
-        })
+    const selectCache = async (info: MirabufCacheInfo) => {
+        console.log(`MiraCache: '${info}'`)
+        const assembly = await MirabufCachingService.Get(info.id, MiraType.FIELD)
+
+        if (assembly) {
+            CreateMirabuf(assembly).then(x => {
+                if (x) {
+                    World.SceneRenderer.RegisterSceneObject(x)
+                }
+            })
+        } else {
+            console.error('Failed to spawn field')
+        }
 
         closeModal()
+    }
+
+    const selectRemote = async (info: MirabufRemoteInfo) => {
+        const cacheInfo = await MirabufCachingService.CacheRemote(info.src, MiraType.FIELD)
+
+        if (!cacheInfo) {
+            console.error('Failed to cache field')
+            closeModal()
+        } else {
+            selectCache(cacheInfo)
+        }
     }
 
     return (
         <Modal name={"Field Selection"} icon={<FaPlus />} modalId={modalId} acceptEnabled={false}>
             <div className="flex overflow-y-auto flex-col gap-2 min-w-[50vw] max-h-[60vh] bg-background-secondary rounded-md p-2">
                 <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
-                    {remoteFields ? `${remoteFields.length} Default Fields` : "No Default Fields"}
+                    {cachedFields ? `${cachedFields.length} Saved Robots` : "No Saved Robots"}
                 </Label>
-                {remoteFields ? remoteFields!.map(x => MirabufCard({ entry: x, select: selectField })) : <></>}
+                {cachedFields ? cachedFields!.map(x => MirabufCacheCard({ info: x, select: selectCache })) : <></>}
+                <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
+                    {remoteFields ? `${remoteFields.length} Default Robots` : "No Default Robots"}
+                </Label>
+                {remoteFields ? remoteFields!.map(x => MirabufRemoteCard({ info: x, select: selectRemote })) : <></>}
             </div>
         </Modal>
     )

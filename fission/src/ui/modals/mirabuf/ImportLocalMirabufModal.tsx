@@ -4,12 +4,10 @@ import { FaPlus } from "react-icons/fa6"
 import { ChangeEvent, useRef, useState } from "react"
 import Label, { LabelSize } from "@/components/Label"
 import { useTooltipControlContext } from "@/ui/TooltipContext"
-import { CreateMirabufFromUrl } from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
-import { MiraType, UnzipMira } from "@/mirabuf/MirabufLoader"
-import * as crypto from "crypto-js"
-import { mirabuf } from "@/proto/mirabuf"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import Dropdown from "@/ui/components/Dropdown"
+import { CreateMirabuf } from "@/mirabuf/MirabufSceneObject"
 
 const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     // update tooltip based on type of drivetrain, receive message from Synthesis
@@ -56,17 +54,17 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         { control: "Q", description: "Dispense" },
                     ])
                     console.log(`Mira: '${selectedFile}'`)
+                    
 
-                    const hashBuffer = await selectedFile.arrayBuffer()
-                    const byteBuffer = UnzipMira(new Uint8Array(hashBuffer))
-                    const assembly = mirabuf.Assembly.decode(byteBuffer)
-                    const hash = crypto.SHA256(String(assembly)).toString()
-
-                    CreateMirabufFromUrl(URL.createObjectURL(selectedFile), miraType, hash).then(x => {
-                        if (x) {
-                            World.SceneRenderer.RegisterSceneObject(x)
-                        }
-                    })
+                    const hashBuffer = await crypto.subtle.digest("SHA-256", await selectedFile.arrayBuffer())
+                    const id = await MirabufCachingService.CacheLocal(hashBuffer, miraType).then(x => x!.id)
+                    await MirabufCachingService.Get(id, miraType)
+                        .then(x => CreateMirabuf(x!).then(x => {
+                            if (x) {
+                                console.log("registering")
+                                World.SceneRenderer.RegisterSceneObject(x)
+                            }
+                        }))
                 }
                 }
             }

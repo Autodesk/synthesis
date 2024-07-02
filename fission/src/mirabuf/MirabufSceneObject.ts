@@ -1,7 +1,7 @@
 import { mirabuf } from "@/proto/mirabuf"
 import SceneObject from "../systems/scene/SceneObject"
 import MirabufInstance from "./MirabufInstance"
-import { LoadMirabufRemote, MiraType } from "./MirabufLoader"
+import { MiraType } from "./MirabufLoader"
 import MirabufParser, { ParseErrorSeverity } from "./MirabufParser"
 import World from "@/systems/World"
 import Jolt from "@barclah/jolt-physics"
@@ -157,24 +157,17 @@ class MirabufSceneObject extends SceneObject {
     }
 }
 
-export async function CreateMirabufFromUrl(
-    path: string,
-    miraType: MiraType,
-    hashID?: string
+export async function CreateMirabuf(
+    assembly: mirabuf.Assembly
 ): Promise<MirabufSceneObject | null | undefined> {
-    const miraAssembly = await LoadMirabufRemote(path, miraType, hashID).catch(console.error)
-
-    if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
-        return
-    }
-
-    const parser = new MirabufParser(miraAssembly)
+    const parser = new MirabufParser(assembly)
     if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
-        console.error(`Assembly Parser produced significant errors for '${miraAssembly.info!.name!}'`)
+        console.error(`Assembly Parser produced significant errors for '${assembly.info!.name!}'`)
         return
     }
 
     return new MirabufSceneObject(new MirabufInstance(parser))
 }
+
 
 export default MirabufSceneObject
