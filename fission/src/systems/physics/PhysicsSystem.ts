@@ -98,6 +98,7 @@ class PhysicsSystem extends WorldSystem {
      */
     public DisablePhysicsForBody(bodyId: Jolt.BodyID) {
         this._joltBodyInterface.DeactivateBody(bodyId)
+        this.GetBody(bodyId).SetIsSensor(true)
     }
 
     /**
@@ -107,6 +108,7 @@ class PhysicsSystem extends WorldSystem {
      */
     public EnablePhysicsForBody(bodyId: Jolt.BodyID) {
         this._joltBodyInterface.ActivateBody(bodyId)
+        this.GetBody(bodyId).SetIsSensor(false)
     }
 
     /**
