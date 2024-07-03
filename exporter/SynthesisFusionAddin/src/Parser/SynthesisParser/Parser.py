@@ -41,10 +41,7 @@ class Parser:
 
             # Physical Props here when ready
 
-            self.logger.log(self.exporterOptions)
-
-            # ts = time()
-            
+            #
 
             progressDialog = app.userInterface.createProgressDialog()
             progressDialog.cancelButtonText = "Cancel"

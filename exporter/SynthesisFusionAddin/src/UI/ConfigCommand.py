@@ -667,27 +667,11 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             physicsSettings.tooltip = "Settings relating to the custom physics of the robot, like the wheel friction"
             physics_settings: adsk.core.CommandInputs = physicsSettings.children
 
-            # AARD-1687
-            # Should also be commented out / removed?
-            # This would cause problems elsewhere but I can't tell i f
-            # this is even being used.
-            frictionOverrideTable = self.createTableInput(
-                "friction_override_table",
-                "Friction Override Table",
-                physics_settings,
-                2,
-                "1:2",
-                1,
-                columnSpacing=25,
-            )
-            frictionOverrideTable.tablePresentationStyle = 2
-            # frictionOverrideTable.isFullWidth = True
-
             frictionOverrideInput = self.createBooleanInput(
                 "friction_override",
                 "Friction Override",
                 physics_settings,
-                checked=physicsSettings.frictionOverrideBoolean, # object is missing attribute
+                checked=exporterOptions.frictionOverride, # object is missing attribute
                 tooltip="Manually override the default friction values on the bodies in the assembly.",
                 enabled=True,
                 isCheckBox=False,
@@ -699,16 +683,13 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             for i in range(20):
                 valueList.append(i / 20)
 
-            frictionCoeffSlider= physics_settings.addFloatSliderListCommandInput(
-                "friction_coeff_override", "Friction Coefficient", "", valueList
+            frictionCoeffSlider: adsk.core.FloatSliderCommandInput = physics_settings.addFloatSliderListCommandInput(
+                "friction_override_coeff", "Friction Coefficient", "", valueList
             )
             frictionCoeffSlider.isVisible = True 
             frictionCoeffSlider.valueOne = 0.5
             frictionCoeffSlider.tooltip = "Friction coefficient of field element."
             frictionCoeffSlider.tooltipDescription = "<i>Friction coefficients range from 0 (ice) to 1 (rubber).</i>"
-
-            frictionOverrideTable.addCommandInput(frictionOverrideInput, 0, 0)
-            frictionOverrideTable.addCommandInput(frictionCoeffSlider, 0, 1)
 
             # ~~~~~~~~~~~~~~~~ JOINT SETTINGS ~~~~~~~~~~~~~~~~
             """
@@ -999,12 +980,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 self.log.error("Could not execute configuration due to failure")
                 return
 
-            export_as_part_boolean = (
-                eventArgs.command.commandInputs.itemById("advanced_settings")
-                .children.itemById("exporter_settings")
-                .children.itemById("export_as_part")
-            ).value
-
+            
             processedFileName = gm.app.activeDocument.name.replace(" ", "_")
             dropdownExportMode = INPUTS_ROOT.itemById("mode")
             if dropdownExportMode.selectedItem.index == 0:
@@ -1177,22 +1153,22 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 .children.itemById("exporter_settings")
                 .children.itemById("compress")
             ).value
+            
+            export_as_part_boolean = (
+                eventArgs.command.commandInputs.itemById("advanced_settings")
+                .children.itemById("exporter_settings")
+                .children.itemById("export_as_part")
+            ).value
 
-            settings = eventArgs.command.commandInputs.itemById("advanced_settings").children
-
-            gm.ui.messageBox(f"Command Inputs: {settings}")
-
-            #frictionOverride: bool = (
-            #    eventArgs.command.commandInputs.itemById("advanced_settings")
-            #    .children.itemById("physics_settings")
-            #    .children.itemById("friction_override")
-            #).value
-
-            #frictionOverrideValue: float = (
-            #    eventArgs.command.commandInputs.itemById("advanced_settings")
-            #    .children.itemById("physics_settings")
-            #    .children.itemById("friction_coeff_override")
-            #).value
+            frictionOverrideButton: adsk.core.BoolValueCommandInput = (eventArgs.command.commandInputs.itemById("advanced_settings")
+                .children.itemById("physics_settings")
+                .children.itemById("friction_override"))
+            frictionSlider: adsk.core.FloatSliderCommandInput = (eventArgs.command.commandInputs.itemById("advanced_settings")
+                .children.itemById("physics_settings")
+                .children.itemById("friction_override_coeff"))
+            
+            frictionOverrideCoeff = frictionSlider.valueOne
+            frictionOverride = frictionSlider.isVisible
 
             exporterOptions = ExporterOptions(
                 savepath,
@@ -1207,10 +1183,8 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 exportMode=_mode,
                 compressOutput=compress,
                 exportAsPart=export_as_part_boolean,
-                #frictionOverride=frictionOverride,
-                #frictionOverrideCoeff=frictionOverrideValue,
-                frictionOverride=False,
-                frictionOverrideCoeff=None
+                frictionOverride=frictionOverride,
+                frictionOverrideCoeff=frictionOverrideCoeff
             )
 
             _: bool = Parser(exporterOptions).export()
@@ -1652,7 +1626,7 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
             inputs = cmdInput.commandInputs
             onSelect = gm.handlers[3]
 
-            frictionCoeff = INPUTS_ROOT.itemById("friction_coeff_override")
+            frictionCoeff = INPUTS_ROOT.itemById("friction_override_coeff")
 
             wheelSelect = inputs.itemById("wheel_select")
             jointSelect = inputs.itemById("joint_select")
