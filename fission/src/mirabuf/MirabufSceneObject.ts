@@ -58,6 +58,12 @@ class MirabufSceneObject extends SceneObject {
             )
         )
         this.transformGizmos.createGizmo("translate")
+
+        // disabling physics initially for all rigid node bodies
+        this._mirabufInstance.parser.rigidNodes.forEach(rn => {
+            World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
+        })
+        World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(this._mechanism.rootBody)!)
     }
 
     public Setup(): void {
@@ -112,6 +118,7 @@ class MirabufSceneObject extends SceneObject {
                 // commands to either cancel gizmo creation or confirm position
                 if (InputSystem.getInput("enter")) {
                     this.transformGizmos.removeGizmos()
+                    World.PhysicsSystem.EnablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
                     World.PhysicsSystem.EnablePhysicsForBody(this._mechanism.GetBodyByNodeId(this._mechanism.rootBody)!)
                     return
                 } else if (InputSystem.getInput("escape")) {
@@ -120,12 +127,10 @@ class MirabufSceneObject extends SceneObject {
                     return
                 }
 
-                // disable physics for the body
-                World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
-
                 // if the gizmo is being dragged, copy the mesh position and rotation to the Mirabuf body
                 if (this.transformGizmos.isBeingDragged()) {
                     this.transformGizmos.updateMirabufPositioning(this, rn)
+                    World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
                 }
             }
 
