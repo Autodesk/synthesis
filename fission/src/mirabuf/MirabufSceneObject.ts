@@ -58,7 +58,6 @@ class MirabufSceneObject extends SceneObject {
             )
         )
         this.transformGizmos.createGizmo("translate")
-        this.transformGizmos.createGizmo("rotate")
     }
 
     public Setup(): void {
