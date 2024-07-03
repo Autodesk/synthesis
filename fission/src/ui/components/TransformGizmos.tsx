@@ -31,12 +31,19 @@ class TransformGizmos {
         return this._gizmos.some(gizmo => gizmo.dragging)
     }
 
+    /** 
+     * Adds mesh to scene
+     */
+    public AddMeshToScene() {
+        World.SceneRenderer.scene.add(this._mesh)
+    }
+
     /**
      * Creates a gizmo for the mesh
      *
      * @param mode The type of gizmo to create
      */
-    public createGizmo(mode: "translate" | "rotate" | "scale") {
+    public CreateGizmo(mode: "translate" | "rotate" | "scale") {
         const gizmo = World.SceneRenderer.AddTransformGizmo(this._mesh, mode, this._gizmos.length ? 3.0 : 5.0)
         this._gizmos.push(gizmo)
     }
@@ -44,7 +51,7 @@ class TransformGizmos {
     /**
      * Removes the gizmos from the scene
      */
-    public removeGizmos() {
+    public RemoveGizmos() {
         World.SceneRenderer.RemoveTransformGizmos(this._mesh)
         World.SceneRenderer.RemoveObject(this._mesh)
         this._isActive = false
@@ -56,7 +63,7 @@ class TransformGizmos {
      * @param obj The MirabufSceneObject that the gizmos are attached to
      * @param rn The RigidNode that are being updated
      */
-    public updateMirabufPositioning(obj: MirabufSceneObject, rn: RigidNodeReadOnly) {
+    public UpdateMirabufPositioning(obj: MirabufSceneObject, rn: RigidNodeReadOnly) {
         World.PhysicsSystem.SetBodyPosition(
             obj.mechanism.GetBodyByNodeId(rn.id)!,
             ThreeMatrix4_JoltMat44(this.mesh.matrix).GetTranslation()
