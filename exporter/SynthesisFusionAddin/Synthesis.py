@@ -1,16 +1,18 @@
-import importlib.util
 import logging.handlers
 import os
+import sys
 import traceback
-from shutil import rmtree
 
 import adsk.core
 
-from .src.configure import setAnalytics, unload_config
-from .src.general_imports import APP_NAME, DESCRIPTION, INTERNAL_ID, gm, root_logger
-from .src.Types.OString import OString
-from .src.UI import HUI, Camera, ConfigCommand, Handlers, Helper, MarkingMenu
-from .src.UI.Toolbar import Toolbar
+# Required for absolute imports
+fileDir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.abspath(os.path.join(fileDir)))
+
+from src.configure import unload_config
+from src.general_imports import APP_NAME, DESCRIPTION, INTERNAL_ID, gm, root_logger
+from src.UI import HUI, Camera, ConfigCommand, Helper, MarkingMenu
+from src.UI.Toolbar import Toolbar
 
 
 def run(_):

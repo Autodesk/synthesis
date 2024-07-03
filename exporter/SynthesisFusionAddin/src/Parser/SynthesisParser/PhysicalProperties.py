@@ -24,7 +24,8 @@ import adsk
 
 from proto.proto_out import types_pb2
 
-from ...general_imports import INTERNAL_ID
+# Transition: AARD-1737
+from src import INTERNAL_ID
 
 
 def GetPhysicalProperties(

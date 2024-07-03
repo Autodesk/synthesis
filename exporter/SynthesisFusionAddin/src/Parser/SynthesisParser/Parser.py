@@ -6,12 +6,19 @@ import adsk.fusion
 from google.protobuf.json_format import MessageToJson
 
 from proto.proto_out import assembly_pb2, types_pb2
+from src.Parser.ExporterOptions import ExporterOptions, ExportMode
+from src.Parser.SynthesisParser import (
+    Components,
+    JointHierarchy,
+    Joints,
+    Materials,
+    PDMessage,
+)
+from src.Parser.SynthesisParser.Utilities import fill_info
+from src.UI.Camera import captureThumbnail, clearIconCache
 
+# Transition: AARD-1737
 from ...general_imports import *
-from ...UI.Camera import captureThumbnail, clearIconCache
-from ..ExporterOptions import ExporterOptions, ExportMode
-from . import Components, JointHierarchy, Joints, Materials, PDMessage
-from .Utilities import *
 
 
 class Parser:

@@ -6,11 +6,12 @@ import traceback
 import adsk
 
 from proto.proto_out import material_pb2
+from src.Parser.ExporterOptions import ExporterOptions
+from src.Parser.SynthesisParser.PDMessage import PDMessage
+from src.Parser.SynthesisParser.Utilities import construct_info, fill_info
 
+# Transition: AARD-1737
 from ...general_imports import INTERNAL_ID
-from .. import ExporterOptions
-from .PDMessage import PDMessage
-from .Utilities import *
 
 OPACITY_RAMPING_CONSTANT = 14.0
 

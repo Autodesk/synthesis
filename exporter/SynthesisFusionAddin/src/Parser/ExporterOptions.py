@@ -13,7 +13,7 @@ from typing import get_origin
 import adsk.core
 from adsk.fusion import CalculationAccuracy, TriangleMeshQualityOptions
 
-from ..strings import INTERNAL_ID
+from src import INTERNAL_ID
 
 # Not 100% sure what this is for - Brandon
 JointParentType = Enum("JointParentType", ["ROOT", "END"])

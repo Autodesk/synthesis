@@ -4,17 +4,15 @@
 
 import logging
 import os
-import platform
 import traceback
 from enum import Enum
 
 import adsk.core
 import adsk.fusion
 
-from ..Analytics.alert import showAnalyticsAlert
-from ..configure import NOTIFIED, write_configuration
-from ..general_imports import *
-from ..Parser.ExporterOptions import (
+from src.Analytics.alert import showAnalyticsAlert
+from src.configure import NOTIFIED, write_configuration
+from src.Parser.ExporterOptions import (
     ExporterOptions,
     ExportMode,
     Gamepiece,
@@ -25,10 +23,13 @@ from ..Parser.ExporterOptions import (
     Wheel,
     WheelType,
 )
-from ..Parser.SynthesisParser.Parser import Parser
-from ..Parser.SynthesisParser.Utilities import guid_occurrence
-from . import CustomGraphics, FileDialogConfig, Helper, IconPaths, OsHelper
-from .Configuration.SerialCommand import SerialCommand
+from src.Parser.SynthesisParser.Parser import Parser
+from src.Parser.SynthesisParser.Utilities import guid_occurrence
+from src.UI import CustomGraphics, FileDialogConfig, Helper, IconPaths, OsHelper
+from src.UI.Configuration.SerialCommand import SerialCommand
+
+# Transition: AARD-1737
+from ..general_imports import *
 
 # ====================================== CONFIG COMMAND ======================================
 

@@ -29,12 +29,17 @@ from typing import Union
 import adsk.core
 import adsk.fusion
 
-from proto.proto_out import assembly_pb2, joint_pb2, motor_pb2, signal_pb2, types_pb2
+from proto.proto_out import assembly_pb2, joint_pb2, signal_pb2, types_pb2
+from src.Parser.ExporterOptions import ExporterOptions, JointParentType, SignalType
+from src.Parser.SynthesisParser.PDMessage import PDMessage
+from src.Parser.SynthesisParser.Utilities import (
+    construct_info,
+    fill_info,
+    guid_occurrence,
+)
 
+# Transition: AARD-1737
 from ...general_imports import *
-from ..ExporterOptions import ExporterOptions, JointParentType, SignalType
-from .PDMessage import PDMessage
-from .Utilities import construct_info, fill_info, guid_occurrence
 
 # Need to take in a graphcontainer
 # Need to create a new base node for each Joint Instance

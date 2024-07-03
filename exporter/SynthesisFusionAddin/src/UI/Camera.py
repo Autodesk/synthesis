@@ -2,9 +2,11 @@ import os
 
 from adsk.core import SaveImageFileOptions
 
+from src.Types.OString import OString
+from src.UI import Helper
+
+# Transition: AARD-1737
 from ..general_imports import *
-from ..Types.OString import OString
-from . import Helper
 
 
 def captureThumbnail(size=250):

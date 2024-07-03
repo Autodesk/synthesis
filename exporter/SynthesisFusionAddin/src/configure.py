@@ -5,8 +5,8 @@ import traceback
 import uuid
 from configparser import ConfigParser
 
-from .strings import INTERNAL_ID
-from .Types.OString import OString
+from src import INTERNAL_ID
+from src.Types.OString import OString
 
 try:
     config = ConfigParser()

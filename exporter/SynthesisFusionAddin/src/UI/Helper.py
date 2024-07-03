@@ -1,8 +1,9 @@
 from inspect import getmembers, isfunction
-from typing import Union
 
+from src.UI import HUI, Events
+
+# Transition: AARD-1737
 from ..general_imports import *
-from . import HUI, Events
 
 
 def check_solid_open() -> bool:

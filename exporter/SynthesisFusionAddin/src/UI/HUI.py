@@ -1,5 +1,7 @@
+# Transition: AARD-1737
+from src.UI import Handlers, OsHelper
+
 from ..general_imports import *
-from . import Handlers, OsHelper
 
 
 # no longer used

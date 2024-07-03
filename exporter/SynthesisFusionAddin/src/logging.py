@@ -6,8 +6,8 @@ import os
 import pathlib
 from datetime import datetime
 
-from .strings import *
-from .UI.OsHelper import getOSPath
+from src import INTERNAL_ID
+from src.UI.OsHelper import getOSPath
 
 
 def setupLogger():

@@ -1,5 +1,7 @@
+# Transition: AARD-1737
+from src import INTERNAL_ID
+
 from ..general_imports import *
-from ..strings import INTERNAL_ID
 
 
 class Toolbar:

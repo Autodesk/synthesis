@@ -1,13 +1,12 @@
 """ Initializes the global variables that are set in the run method to reduce hanging commands. """
 
-import inspect
-import traceback
-
 import adsk.core
 import adsk.fusion
 
+from src import INTERNAL_ID
+
+# Transition: AARD-1737
 from .general_imports import *
-from .strings import *
 
 
 class GlobalManager(object):

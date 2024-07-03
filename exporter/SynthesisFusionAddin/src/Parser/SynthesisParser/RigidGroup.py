@@ -13,7 +13,7 @@
 """
 
 import logging
-from typing import *
+from typing import Union
 
 import adsk.core
 import adsk.fusion
