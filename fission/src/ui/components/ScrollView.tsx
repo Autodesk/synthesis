@@ -9,7 +9,7 @@ type ScrollViewProps = {
 const ScrollView: React.FC<ScrollViewProps> = ({ className, maxHeight, children }) => {
     return (
         <div
-            className={`bg-background-secondary p-4 rounded-md ${maxHeight ? maxHeight : 'max-h-70vh'} w-full overflow-y-scroll ${className}`}
+            className={`bg-background-secondary p-4 rounded-md ${maxHeight ? maxHeight : "max-h-70vh"} w-full overflow-y-scroll ${className}`}
         >
             {children}
         </div>

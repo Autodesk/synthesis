@@ -1,5 +1,8 @@
-import adsk.core, adsk.fusion, traceback
 import logging.handlers
+import traceback
+
+import adsk.core
+import adsk.fusion
 
 # Ripped all the boiler plate from the example code: https://help.autodesk.com/view/fusion360/ENU/?guid=GUID-c90ce6a2-c282-11e6-a365-3417ebc87622
 
@@ -22,9 +25,7 @@ def setupMarkingMenu(ui: adsk.core.UserInterface):
                 linearMenu = menuArgs.linearMarkingMenu
                 linearMenu.controls.addSeparator("LinearSeparator")
 
-                synthDropDown = linearMenu.controls.addDropDown(
-                    "Synthesis", "", "synthesis"
-                )
+                synthDropDown = linearMenu.controls.addDropDown("Synthesis", "", "synthesis")
 
                 cmdSelectDisabled = ui.commandDefinitions.itemById("SelectDisabled")
                 synthDropDown.controls.addCommand(cmdSelectDisabled)
@@ -40,24 +41,15 @@ def setupMarkingMenu(ui: adsk.core.UserInterface):
                     occ = adsk.fusion.Occurrence.cast(sel0)
 
                     if occ:
-                        if (
-                            occ.attributes.itemByName("synthesis", "collision_off")
-                            == None
-                        ):
-                            cmdDisableCollision = ui.commandDefinitions.itemById(
-                                "DisableCollision"
-                            )
+                        if occ.attributes.itemByName("synthesis", "collision_off") == None:
+                            cmdDisableCollision = ui.commandDefinitions.itemById("DisableCollision")
                             synthDropDown.controls.addCommand(cmdDisableCollision)
                         else:
-                            cmdEnableCollision = ui.commandDefinitions.itemById(
-                                "EnableCollision"
-                            )
+                            cmdEnableCollision = ui.commandDefinitions.itemById("EnableCollision")
                             synthDropDown.controls.addCommand(cmdEnableCollision)
             except:
                 if ui:
-                    ui.messageBox("setting linear menu failed: {}").format(
-                        traceback.format_exc()
-                    )
+                    ui.messageBox("setting linear menu failed: {}").format(traceback.format_exc())
 
         def setCollisionAttribute(occ: adsk.fusion.Occurrence, isEnabled: bool = True):
             attr = occ.attributes.itemByName("synthesis", "collision_off")
@@ -90,9 +82,7 @@ def setupMarkingMenu(ui: adsk.core.UserInterface):
                     handlers.append(onCommandExcute)
                     command.execute.add(onCommandExcute)
                 except:
-                    ui.messageBox("command created failed: {}").format(
-                        traceback.format_exc()
-                    )
+                    ui.messageBox("command created failed: {}").format(traceback.format_exc())
 
         class MyCommandExecuteHandler(adsk.core.CommandEventHandler):
             def __init__(self):
@@ -125,34 +115,24 @@ def setupMarkingMenu(ui: adsk.core.UserInterface):
                             design = adsk.fusion.Design.cast(product)
                             ui.activeSelections.clear()
                             if design:
-                                attrs = design.findAttributes(
-                                    "synthesis", "collision_off"
-                                )
+                                attrs = design.findAttributes("synthesis", "collision_off")
                                 for attr in attrs:
-                                    for b in adsk.fusion.Occurrence.cast(
-                                        attr.parent
-                                    ).bRepBodies:
+                                    for b in adsk.fusion.Occurrence.cast(attr.parent).bRepBodies:
                                         ui.activeSelections.add(b)
                         elif cmdDef.id == "EnableAllCollision":
                             app = adsk.core.Application.get()
                             product = app.activeProduct
                             design = adsk.fusion.Design.cast(product)
                             if design:
-                                for attr in design.findAttributes(
-                                    "synthesis", "collision_off"
-                                ):
+                                for attr in design.findAttributes("synthesis", "collision_off"):
                                     attr.deleteMe()
                         else:
                             ui.messageBox("command {} triggered.".format(cmdDef.id))
                     else:
                         ui.messageBox("No CommandDefinition")
                 except:
-                    ui.messageBox("command executed failed: {}").format(
-                        traceback.format_exc()
-                    )
-                    logging.getLogger(f"{INTERNAL_ID}").error(
-                        "Failed:\n{}".format(traceback.format_exc())
-                    )
+                    ui.messageBox("command executed failed: {}").format(traceback.format_exc())
+                    logging.getLogger(f"{INTERNAL_ID}").error("Failed:\n{}".format(traceback.format_exc()))
 
         class MyMarkingMenuHandler(adsk.core.MarkingMenuEventHandler):
             def __init__(self):
@@ -170,11 +150,7 @@ def setupMarkingMenu(ui: adsk.core.UserInterface):
                     entities = args.selectedEntities
                 except:
                     if ui:
-                        ui.messageBox(
-                            "Marking Menu Displaying event failed: {}".format(
-                                traceback.format_exc()
-                            )
-                        )
+                        ui.messageBox("Marking Menu Displaying event failed: {}".format(traceback.format_exc()))
 
         # Add customized handler for marking menu displaying
         onMarkingMenuDisplaying = MyMarkingMenuHandler()

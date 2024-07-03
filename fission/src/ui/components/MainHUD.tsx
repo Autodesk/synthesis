@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { BsCodeSquare } from "react-icons/bs"
-import { FaCar, FaGear, FaHouse, FaMagnifyingGlass, FaPlus } from "react-icons/fa6"
+import { FaCar, FaGear, FaMagnifyingGlass, FaPlus } from "react-icons/fa6"
 import { BiMenuAltLeft } from "react-icons/bi"
 import { GrFormClose } from "react-icons/gr"
 import { GiSteeringWheel } from "react-icons/gi"
@@ -14,6 +14,11 @@ import { ToastType, useToastContext } from "@/ui/ToastContext"
 import { Random } from "@/util/Random"
 import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
 import { UserIcon } from "./UserIcon"
+import World from "@/systems/World"
+import JOLT from "@/util/loading/JoltSyncLoader"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { Button } from "@mui/base/Button"
+import Jolt from "@barclah/jolt-physics"
 
 type ButtonProps = {
     value: string
@@ -22,40 +27,25 @@ type ButtonProps = {
     larger?: boolean
 }
 
-const MainHUDButton: React.FC<ButtonProps> = ({
-    value,
-    icon,
-    onClick,
-    larger,
-}) => {
+const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) => {
     if (larger == null) larger = false
     return (
-        <div
+        <Button
             onClick={onClick}
-            className={`relative flex flex-row cursor-pointer bg-background w-full m-auto px-2 py-1 text-main-text rounded-md ${larger ? "justify-center" : ""
-                } items-center hover:backdrop-brightness-105`}
+            className={`relative flex flex-row cursor-pointer bg-background w-full m-auto px-2 py-1 text-main-text border-none rounded-md ${larger ? "justify-center" : ""} items-center hover:brightness-105 focus:outline-0 focus-visible:outline-0`}
         >
             {larger && icon}
             {!larger && (
-                <span
-                    onClick={onClick}
-                    className="absolute left-3 text-main-hud-icon"
-                >
+                <span onClick={onClick} className="absolute left-3 text-main-hud-icon">
                     {icon}
                 </span>
             )}
-            <input
-                type="button"
-                className={`px-2 ${larger ? "py-2" : "py-1 ml-6"
-                    } text-main-text cursor-pointer`}
-                value={value}
-                onClick={onClick}
-            />
-        </div>
+            <span className={`px-2 ${larger ? "py-2" : "py-1 ml-6"} text-main-text cursor-pointer`}>{value}</span>
+        </Button>
     )
 }
 
-export let MainHUD_AddToast: (type: ToastType, title: string, description: string) => void = (a, b, c) => { }
+export let MainHUD_AddToast: (type: ToastType, title: string, description: string) => void = (_a, _b, _c) => {}
 
 const variants = {
     open: { opacity: 1, y: "-50%", x: 0 },
@@ -63,7 +53,6 @@ const variants = {
 }
 
 const MainHUD: React.FC = () => {
-
     // console.debug('Creating MainHUD');
 
     const { openModal } = useModalControlContext()
@@ -73,12 +62,12 @@ const MainHUD: React.FC = () => {
 
     MainHUD_AddToast = addToast
 
-    const [userInfo, setUserInfo] = useState(APS.userInfo);
+    const [userInfo, setUserInfo] = useState(APS.userInfo)
 
     useEffect(() => {
         document.addEventListener(APS_USER_INFO_UPDATE_EVENT, () => {
             setUserInfo(APS.userInfo)
-        });
+        })
     }, [])
 
     return (
@@ -86,12 +75,9 @@ const MainHUD: React.FC = () => {
             {!isOpen && (
                 <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className="absolute left-6 top-6"
+                    className="absolute left-6 top-6 focus:outline-0 focus-visible:outline-0"
                 >
-                    <BiMenuAltLeft
-                        size={40}
-                        className="text-main-hud-close-icon"
-                    />
+                    <BiMenuAltLeft size={40} className="text-main-hud-close-icon" />
                 </button>
             )}
             <motion.div
@@ -102,13 +88,12 @@ const MainHUD: React.FC = () => {
             >
                 <div className="flex flex-row gap-2 w-60 h-10">
                     <img src={logo} className="w-[80%] h-[100%] object-contain" />
-                    <button onClick={() => setIsOpen(false)}>
-                        <GrFormClose
-                            color="bg-icon"
-                            size={20}
-                            className="text-main-hud-close-icon"
-                        />
-                    </button>
+                    <Button
+                        onClick={() => setIsOpen(false)}
+                        className={`bg-none border-none focus-visible:outline-0 focus:outline-0 select-none`}
+                    >
+                        <GrFormClose color="bg-icon" size={20} className="text-main-hud-close-icon" />
+                    </Button>
                 </div>
                 <MainHUDButton
                     value={"Spawn Asset"}
@@ -122,30 +107,28 @@ const MainHUD: React.FC = () => {
                         icon={<FaGear />}
                         onClick={() => openModal("manage-assembles")}
                     />
-                    <MainHUDButton
-                        value={"Settings"}
-                        icon={<FaGear />}
-                        onClick={() => openModal("settings")}
-                    />
-                    <MainHUDButton
-                        value={"View"}
-                        icon={<FaMagnifyingGlass />}
-                        onClick={() => openModal("view")}
-                    />
+                    <MainHUDButton value={"Settings"} icon={<FaGear />} onClick={() => openModal("settings")} />
+                    <MainHUDButton value={"View"} icon={<FaMagnifyingGlass />} onClick={() => openModal("view")} />
                     <MainHUDButton
                         value={"Controls"}
                         icon={<IoGameControllerOutline />}
                         onClick={() => openModal("change-inputs")}
                     />
-                    <MainHUDButton
-                        value={"MultiBot"}
-                        icon={<IoPeople />}
-                        onClick={() => openPanel("multibot")}
-                    />
+                    <MainHUDButton value={"MultiBot"} icon={<IoPeople />} onClick={() => openPanel("multibot")} />
                     <MainHUDButton
                         value={"Import Mira"}
                         icon={<IoPeople />}
                         onClick={() => openModal("import-mirabuf")}
+                    />
+                    <MainHUDButton
+                        value={"Import Local Mira"}
+                        icon={<IoPeople />}
+                        onClick={() => openModal("import-local-mirabuf")}
+                    />
+                    <MainHUDButton
+                        value={"Test God Mode"}
+                        icon={<IoGameControllerOutline />}
+                        onClick={TestGodMode}
                     />
                 </div>
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
@@ -154,57 +137,65 @@ const MainHUD: React.FC = () => {
                         icon={<HiDownload />}
                         onClick={() => openModal("download-assets")}
                     />
-                    <MainHUDButton
-                        value={"RoboRIO"}
-                        icon={<BsCodeSquare />}
-                        onClick={() => openModal("roborio")}
-                    />
+                    <MainHUDButton value={"RoboRIO"} icon={<BsCodeSquare />} onClick={() => openModal("roborio")} />
                     <MainHUDButton
                         value={"Driver Station"}
                         icon={<GiSteeringWheel />}
                         onClick={() => openPanel("driver-station")}
                     />
-                    <MainHUDButton
-                        value={"Drivetrain"}
-                        icon={<FaCar />}
-                        onClick={() => openModal("drivetrain")}
-                    />
+                    <MainHUDButton value={"Drivetrain"} icon={<FaCar />} onClick={() => openModal("drivetrain")} />
                     <MainHUDButton
                         value={"Toasts"}
                         icon={<FaCar />}
                         onClick={() => {
-                            const type: ToastType = [
-                                "info",
-                                "warning",
-                                "error",
-                            ][Math.floor(Random() * 3)] as ToastType
-                            addToast(
-                                type,
-                                type,
-                                "This is a test toast to test the toast system"
-                            )
+                            const type: ToastType = ["info", "warning", "error"][Math.floor(Random() * 3)] as ToastType
+                            addToast(type, type, "This is a test toast to test the toast system")
                         }}
                     />
                 </div>
-                {userInfo
-                    ?
-                        <MainHUDButton
-                            value={`Hi, ${userInfo.givenName}`}
-                            icon={<UserIcon className="h-[20pt] m-[5pt] rounded-full" />}
-                            larger={true}
-                            onClick={() => APS.logout()}
-                        />
-                    :
-                        <MainHUDButton
-                            value={`APS Login`}
-                            icon={<IoPeople />}
-                            larger={true}
-                            onClick={() => APS.requestAuthCode()}
-                        />
-                }
+                {userInfo ? (
+                    <MainHUDButton
+                        value={`Hi, ${userInfo.givenName}`}
+                        icon={<UserIcon className="h-[20pt] m-[5pt] rounded-full" />}
+                        larger={true}
+                        onClick={() => APS.logout()}
+                    />
+                ) : (
+                    <MainHUDButton
+                        value={`APS Login`}
+                        icon={<IoPeople />}
+                        larger={true}
+                        onClick={() => APS.requestAuthCode()}
+                    />
+                )}
             </motion.div>
         </>
     )
+}
+
+async function TestGodMode() {
+    const robot: MirabufSceneObject = [...World.SceneRenderer.sceneObjects.entries()]
+        .filter(x => {
+            const y = x[1] instanceof MirabufSceneObject
+            return y
+        })
+        .map(x => x[1])[0] as MirabufSceneObject
+    const rootNodeId = robot.GetRootNodeId()
+    if (rootNodeId == undefined) {
+        console.error("Robot root node not found for god mode")
+        return
+    }
+    const robotPosition = World.PhysicsSystem.GetBody(rootNodeId).GetPosition()
+    const [ghostBody, _ghostConstraint] = World.PhysicsSystem.CreateGodModeBody(rootNodeId, robotPosition as Jolt.Vec3)
+
+    // Move ghostBody to demonstrate godMode movement
+    await new Promise(f => setTimeout(f, 1000))
+    World.PhysicsSystem.SetBodyPosition(
+        ghostBody.GetID(),
+        new JOLT.Vec3(robotPosition.GetX(), robotPosition.GetY() + 2, robotPosition.GetZ())
+    )
+    await new Promise(f => setTimeout(f, 1000))
+    World.PhysicsSystem.SetBodyPosition(ghostBody.GetID(), new JOLT.Vec3(2, 2, 2))
 }
 
 export default MainHUD

@@ -1,35 +1,33 @@
-import adsk.core, adsk.fusion
-import traceback, gzip
+import gzip
+import traceback
 
-from ...general_imports import *
-
+import adsk.core
+import adsk.fusion
 from google.protobuf.json_format import MessageToJson
 
 from proto.proto_out import assembly_pb2, types_pb2
 
+from ...general_imports import *
 from ...UI.Camera import captureThumbnail, clearIconCache
-
-# from . import Joints, Materials, Components, Utilities
-
-from . import Materials, Components, Joints, JointHierarchy, PDMessage
-
+from ..ExporterOptions import ExporterOptions, ExportMode
+from . import Components, JointHierarchy, Joints, Materials, PDMessage
 from .Utilities import *
 
 
 class Parser:
-    def __init__(self, options: any):
+    def __init__(self, options: ExporterOptions):
         """Creates a new parser with the supplied options
 
         Args:
             options (ParserOptions): parser options
         """
-        self.parseOptions = options
+        self.exporterOptions = options
         self.logger = logging.getLogger(f"{INTERNAL_ID}.Parser")
 
     def export(self) -> bool:
         try:
             app = adsk.core.Application.get()
-            design = app.activeDocument.design
+            design: adsk.fusion.Design = app.activeDocument.design
 
             assembly_out = assembly_pb2.Assembly()
             fill_info(
@@ -39,7 +37,7 @@ class Parser:
             )
 
             # set int to 0 in dropdown selection for dynamic
-            assembly_out.dynamic = self.parseOptions.mode == 0
+            assembly_out.dynamic = self.exporterOptions.exportMode == ExportMode.ROBOT
 
             # Physical Props here when ready
 
@@ -55,9 +53,7 @@ class Parser:
             progressDialog.title = "Exporting to Synthesis Format"
             progressDialog.minimumValue = 0
             progressDialog.maximumValue = totalIterations
-            progressDialog.show(
-                "Synthesis Export", "Currently on %v of %m", 0, totalIterations
-            )
+            progressDialog.show("Synthesis Export", "Currently on %v of %m", 0, totalIterations)
 
             # this is the formatter for the progress dialog now
             self.pdMessage = PDMessage.PDMessage(
@@ -72,20 +68,20 @@ class Parser:
             Materials._MapAllAppearances(
                 design.appearances,
                 assembly_out.data.materials,
-                self.parseOptions,
+                self.exporterOptions,
                 self.pdMessage,
             )
 
             Materials._MapAllPhysicalMaterials(
                 design.materials,
                 assembly_out.data.materials,
-                self.parseOptions,
+                self.exporterOptions,
                 self.pdMessage,
             )
 
             Components._MapAllComponents(
                 design,
-                self.parseOptions,
+                self.exporterOptions,
                 self.pdMessage,
                 assembly_out.data.parts,
                 assembly_out.data.materials,
@@ -96,7 +92,7 @@ class Parser:
             Components._ParseComponentRoot(
                 design.rootComponent,
                 self.pdMessage,
-                self.parseOptions,
+                self.exporterOptions,
                 assembly_out.data.parts,
                 assembly_out.data.materials.appearances,
                 rootNode,
@@ -112,7 +108,7 @@ class Parser:
                 assembly_out.data.joints,
                 assembly_out.data.signals,
                 self.pdMessage,
-                self.parseOptions,
+                self.exporterOptions,
                 assembly_out,
             )
 
@@ -121,14 +117,14 @@ class Parser:
             # that or add code to existing parser to determine leftovers
 
             Joints.createJointGraph(
-                self.parseOptions.joints,
-                self.parseOptions.wheels,
+                self.exporterOptions.joints,
+                self.exporterOptions.wheels,
                 assembly_out.joint_hierarchy,
                 self.pdMessage,
             )
 
             JointHierarchy.BuildJointPartHierarchy(
-                design, assembly_out.data.joints, self.parseOptions, self.pdMessage
+                design, assembly_out.data.joints, self.exporterOptions, self.pdMessage
             )
 
             # These don't have an effect, I forgot how this is suppose to work
@@ -163,7 +159,7 @@ class Parser:
             self.pdMessage.update()
 
             # check if entire path exists and create if not since gzip doesn't do that.
-            path = pathlib.Path(self.parseOptions.fileLocation).parent
+            path = pathlib.Path(self.exporterOptions.fileLocation).parent
             path.mkdir(parents=True, exist_ok=True)
 
             ### Print out assembly as JSON
@@ -172,14 +168,14 @@ class Parser:
             # miraJsonFile.write(str.encode(miraJson))
             # miraJsonFile.close()
 
-            if self.parseOptions.compress:
+            if self.exporterOptions.compressOutput:
                 self.logger.debug("Compressing file")
-                with gzip.open(self.parseOptions.fileLocation, "wb", 9) as f:
+                with gzip.open(self.exporterOptions.fileLocation, "wb", 9) as f:
                     self.pdMessage.currentMessage = "Saving File..."
                     self.pdMessage.update()
                     f.write(assembly_out.SerializeToString())
             else:
-                f = open(self.parseOptions.fileLocation, "wb")
+                f = open(self.exporterOptions.fileLocation, "wb")
                 f.write(assembly_out.SerializeToString())
                 f.close()
 
@@ -199,15 +195,9 @@ class Parser:
                         joint_hierarchy_out = f"{joint_hierarchy_out}  |- ground\n"
                     else:
                         newnode = assembly_out.data.joints.joint_instances[node.value]
-                        jointdefinition = assembly_out.data.joints.joint_definitions[
-                            newnode.joint_reference
-                        ]
+                        jointdefinition = assembly_out.data.joints.joint_definitions[newnode.joint_reference]
 
-                        wheel_ = (
-                            " wheel : true"
-                            if (jointdefinition.user_data.data["wheel"] != "")
-                            else ""
-                        )
+                        wheel_ = " wheel : true" if (jointdefinition.user_data.data["wheel"] != "") else ""
 
                         joint_hierarchy_out = f"{joint_hierarchy_out}  |- {jointdefinition.info.name} type: {jointdefinition.joint_motion_type} {wheel_}\n"
 
@@ -215,17 +205,9 @@ class Parser:
                         if child.value == "ground":
                             joint_hierarchy_out = f"{joint_hierarchy_out} |---> ground\n"
                         else:
-                            newnode = assembly_out.data.joints.joint_instances[
-                                child.value
-                            ]
-                            jointdefinition = assembly_out.data.joints.joint_definitions[
-                                newnode.joint_reference
-                            ]
-                            wheel_ = (
-                                " wheel : true"
-                                if (jointdefinition.user_data.data["wheel"] != "")
-                                else ""
-                            )
+                            newnode = assembly_out.data.joints.joint_instances[child.value]
+                            jointdefinition = assembly_out.data.joints.joint_definitions[newnode.joint_reference]
+                            wheel_ = " wheel : true" if (jointdefinition.user_data.data["wheel"] != "") else ""
                             joint_hierarchy_out = f"{joint_hierarchy_out}  |---> {jointdefinition.info.name} type: {jointdefinition.joint_motion_type} {wheel_}\n"
 
                 joint_hierarchy_out += "\n\n"

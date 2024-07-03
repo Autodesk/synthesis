@@ -1,19 +1,28 @@
-from dataclasses import dataclass
-import pickle
-from src.general_imports import root_logger, gm, INTERNAL_ID, APP_NAME, DESCRIPTION, my_addin_path
-import time
-import pathlib
+import json
 import logging
+import os
+import pathlib
+import pickle
+import time
 import urllib.parse
 import urllib.request
-import json
-import os
+from dataclasses import dataclass
 
-CLIENT_ID = 'GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU'
+from ..general_imports import (
+    APP_NAME,
+    DESCRIPTION,
+    INTERNAL_ID,
+    gm,
+    my_addin_path,
+    root_logger,
+)
+
+CLIENT_ID = "GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU"
 auth_path = os.path.abspath(os.path.join(my_addin_path, "..", ".aps_auth"))
 
 APS_AUTH = None
 APS_USER_INFO = None
+
 
 @dataclass
 class APSAuth:
@@ -22,6 +31,7 @@ class APSAuth:
     expires_in: int
     expires_at: int
     token_type: str
+
 
 @dataclass
 class APSUserInfo:
@@ -39,11 +49,14 @@ class APSUserInfo:
     company: str
     picture: str
 
+
 def getAPSAuth() -> APSAuth | None:
     return APS_AUTH
 
+
 def _res_json(res):
-    return json.loads(res.read().decode(res.info().get_param('charset') or 'utf-8'))
+    return json.loads(res.read().decode(res.info().get_param("charset") or "utf-8"))
+
 
 def getCodeChallenge() -> str | None:
     endpoint = 'http://localhost:3003/api/aps/challenge/'
@@ -51,19 +64,20 @@ def getCodeChallenge() -> str | None:
     data = _res_json(res)
     return data["challenge"]
 
+
 def getAuth() -> APSAuth:
     global APS_AUTH
     if APS_AUTH is not None:
         return APS_AUTH
     try:
-        with open(auth_path, 'rb') as f:
+        with open(auth_path, "rb") as f:
             p = pickle.load(f)
             APS_AUTH = APSAuth(
                 access_token=p["access_token"],
                 refresh_token=p["refresh_token"],
                 expires_in=p["expires_in"],
-                expires_at=int(p["expires_in"]*1000),
-                token_type=p["token_type"]
+                expires_at=int(p["expires_in"] * 1000),
+                token_type=p["token_type"],
             )
     except:
         raise Exception("Need to sign in!")
@@ -73,6 +87,7 @@ def getAuth() -> APSAuth:
     if APS_USER_INFO is None:
         loadUserInfo()
     return APS_AUTH
+
 
 def convertAuthToken(code: str):
     global APS_AUTH
@@ -92,25 +107,29 @@ def convertAuthToken(code: str):
 
     loadUserInfo()
 
+
 def removeAuth():
     global APS_AUTH, APS_USER_INFO
     APS_AUTH = None
     APS_USER_INFO = None
     pathlib.Path.unlink(pathlib.Path(auth_path))
 
+
 def refreshAuthToken():
     global APS_AUTH
     if APS_AUTH is None or APS_AUTH.refresh_token is None:
         raise Exception("No refresh token found.")
-    body = urllib.parse.urlencode({
-        'client_id': CLIENT_ID,
-        'grant_type': 'refresh_token',
-        'refresh_token': APS_AUTH.refresh_token,
-        'scope': 'data:read'
-    }).encode('utf-8')
-    req = urllib.request.Request('https://developer.api.autodesk.com/authentication/v2/token', data=body)
-    req.method = 'POST'
-    req.add_header(key='Content-Type', val='application/x-www-form-urlencoded')
+    body = urllib.parse.urlencode(
+        {
+            "client_id": CLIENT_ID,
+            "grant_type": "refresh_token",
+            "refresh_token": APS_AUTH.refresh_token,
+            "scope": "data:read",
+        }
+    ).encode("utf-8")
+    req = urllib.request.Request("https://developer.api.autodesk.com/authentication/v2/token", data=body)
+    req.method = "POST"
+    req.add_header(key="Content-Type", val="application/x-www-form-urlencoded")
     try:
         res = urllib.request.urlopen(req)
         data = _res_json(res)
@@ -118,13 +137,14 @@ def refreshAuthToken():
             access_token=data["access_token"],
             refresh_token=data["refresh_token"],
             expires_in=data["expires_in"],
-            expires_at=int(data["expires_in"]*1000),
-            token_type=data["token_type"]
+            expires_at=int(data["expires_in"] * 1000),
+            token_type=data["token_type"],
         )
     except urllib.request.HTTPError as e:
         removeAuth()
         logging.getLogger(f"{INTERNAL_ID}").error(f"Refresh Error:\n{e.code} - {e.reason}")
         gm.ui.messageBox("Please sign in again.")
+
 
 def loadUserInfo() -> APSUserInfo | None:
     global APS_AUTH
@@ -149,13 +169,14 @@ def loadUserInfo() -> APSUserInfo | None:
             about_me=data["about_me"],
             language=data["language"],
             company=data["company"],
-            picture=data["picture"]
+            picture=data["picture"],
         )
         return APS_USER_INFO
     except urllib.request.HTTPError as e:
         removeAuth()
         logging.getLogger(f"{INTERNAL_ID}").error(f"User Info Error:\n{e.code} - {e.reason}")
         gm.ui.messageBox("Please sign in again.")
+
 
 def getUserInfo() -> APSUserInfo | None:
     if APS_USER_INFO is not None:

@@ -1,11 +1,11 @@
-import APS from "@/aps/APS";
-import { describe, expect, test } from "vitest";
+import APS from "@/aps/APS"
+import { describe, expect, test } from "vitest"
 
-describe('APS', () => {
-    test('Generate Random Strings (10)', () => {
-        const s = APS.genRandomString(10);
+describe("APS", () => {
+    test("Generate Random Strings (10)", () => {
+        const s = APS.genRandomString(10)
 
-        (async () => {
+        ;(async () => {
             const [v, c] = await APS.codeChallenge()
             console.log(`${v}`)
             console.log(`${c}`)
@@ -18,7 +18,7 @@ describe('APS', () => {
         expect(matches![0]).toBe(s)
     })
 
-    test('Generate Random Strings (50)', () => {
+    test("Generate Random Strings (50)", () => {
         const s = APS.genRandomString(50)
 
         expect(s.length).toBe(50)
@@ -28,7 +28,7 @@ describe('APS', () => {
         expect(matches![0]).toBe(s)
     })
 
-    test('Generate Random Strings (75)', () => {
+    test("Generate Random Strings (75)", () => {
         const s = APS.genRandomString(75)
 
         expect(s.length).toBe(75)

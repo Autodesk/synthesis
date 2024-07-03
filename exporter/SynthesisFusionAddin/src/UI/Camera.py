@@ -1,11 +1,10 @@
-from ..general_imports import *
-
-from . import Helper
 import os
 
-from ..Types.OString import OString
-
 from adsk.core import SaveImageFileOptions
+
+from ..general_imports import *
+from ..Types.OString import OString
+from . import Helper
 
 
 def captureThumbnail(size=250):
