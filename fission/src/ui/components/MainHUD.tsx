@@ -148,6 +148,11 @@ const MainHUD: React.FC = () => {
                             addToast(type, type, "This is a test toast to test the toast system")
                         }}
                     />
+                    <MainHUDButton
+                        value={"Configure"}
+                        icon={<FaGear />}
+                        onClick={() => openPanel("config-gamepiece-pickup")}
+                    />
                 </div>
                 {userInfo ? (
                     <MainHUDButton

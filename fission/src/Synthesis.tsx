@@ -203,7 +203,7 @@ const initialPanels: ReactElement[] = [
     <DriverStationPanel panelId="driver-station" />,
     <SpawnLocationsPanel panelId="spawn-locations" />,
     <ScoreboardPanel panelId="scoreboard" />,
-    <ConfigureGamepiecePickupPanel panelId="config-gamepiece-pickup" />,
+    <ConfigureGamepiecePickupPanel panelId="config-gamepiece-pickup" openLocation="right" sidePadding={8} />,
     <ConfigureShotTrajectoryPanel panelId="config-shot-trajectory" />,
     <ScoringZonesPanel panelId="scoring-zones" />,
     <ZoneConfigPanel panelId="zone-config" />,
