@@ -275,13 +275,12 @@ class SceneRenderer extends WorldSystem {
 
     /**
      * Removing object from scene
-     * 
+     *
      * @param obj Object to remove
      */
     public RemoveObject(obj: THREE.Object3D) {
         this._scene.remove(obj)
     }
- 
 }
 
 export default SceneRenderer
