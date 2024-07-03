@@ -274,19 +274,14 @@ class SceneRenderer extends WorldSystem {
     }
 
     /**
-     * Update the mode of the transform gizmo
-     *
-     * @param mode - Transform mode (translate, rotate, scale)
-     * @param obj - Mesh to update gizmo mode
-     * @returns void
+     * Removing object from scene
+     * 
+     * @param obj Object to remove
      */
-    public UpdateTransformGizmoMode(mode: "translate" | "rotate" | "scale", obj: THREE.Object3D) {
-        this.transformControls.forEach((_, tc) => {
-            if (tc.object === obj) {
-                tc.setMode(mode)
-            }
-        })
+    public RemoveObject(obj: THREE.Object3D) {
+        this._scene.remove(obj)
     }
+ 
 }
 
 export default SceneRenderer

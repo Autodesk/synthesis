@@ -46,6 +46,7 @@ class TransformGizmos {
      */
     public removeGizmos() {
         World.SceneRenderer.RemoveTransformGizmos(this._mesh)
+        World.SceneRenderer.RemoveObject(this._mesh)
         this._isActive = false
     }
 
