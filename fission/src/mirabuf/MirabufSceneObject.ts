@@ -57,7 +57,8 @@ class MirabufSceneObject extends SceneObject {
                 new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0 })
             )
         )
-        this.transformGizmos.createGizmo("translate")
+        this.transformGizmos.AddMeshToScene()
+        this.transformGizmos.CreateGizmo("translate")
 
         // disabling physics initially for all rigid node bodies
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
@@ -117,19 +118,19 @@ class MirabufSceneObject extends SceneObject {
             if (this.transformGizmos.isActive) {
                 // commands to either cancel gizmo creation or confirm position
                 if (InputSystem.getInput("enter")) {
-                    this.transformGizmos.removeGizmos()
+                    this.transformGizmos.RemoveGizmos()
                     World.PhysicsSystem.EnablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
                     World.PhysicsSystem.EnablePhysicsForBody(this._mechanism.GetBodyByNodeId(this._mechanism.rootBody)!)
                     return
                 } else if (InputSystem.getInput("escape")) {
-                    this.transformGizmos.removeGizmos()
+                    this.transformGizmos.RemoveGizmos()
                     World.SceneRenderer.RemoveSceneObject(this.id)
                     return
                 }
 
                 // if the gizmo is being dragged, copy the mesh position and rotation to the Mirabuf body
                 if (this.transformGizmos.isBeingDragged()) {
-                    this.transformGizmos.updateMirabufPositioning(this, rn)
+                    this.transformGizmos.UpdateMirabufPositioning(this, rn)
                     World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
                 }
             }

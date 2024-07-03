@@ -252,14 +252,13 @@ class SceneRenderer extends WorldSystem {
         )
 
         this.transformControls.set(transformControl, size)
-        this._scene.add(obj)
         this._scene.add(transformControl)
 
         return transformControl
     }
 
     /**
-     * Remove transform gizmo from Mesh
+     * Remove transform gizmos from Mesh
      *
      * @param obj Mesh to remove gizmo from
      * @returns void
@@ -267,10 +266,20 @@ class SceneRenderer extends WorldSystem {
     public RemoveTransformGizmos(obj: THREE.Object3D) {
         this.transformControls.forEach((_, tc) => {
             if (tc.object === obj) {
+                tc.detach()
                 this._scene.remove(tc)
                 this.transformControls.delete(tc)
             }
         })
+    }
+
+    /** 
+     * Adding object to scene
+     * 
+     * @param obj Object to add
+     */
+    public AddObject(obj: THREE.Object3D) {
+        this._scene.add(obj)
     }
 
     /**
