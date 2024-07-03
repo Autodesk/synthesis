@@ -125,14 +125,16 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton
                         value={"Refresh APS Token"}
                         icon={<IoRefresh />}
-                        onClick={() => APS.auth && APS.refreshAuthToken(APS.auth.refresh_token)}
+                        onClick={() => APS.isSignedIn() && APS.refreshAuthToken(APS.getAuth()!.refresh_token)}
                     />
                     <MainHUDButton
                         value={"Expire APS Token"}
                         icon={<IoTimer />}
                         onClick={() => {
-                            if (APS.auth) APS.auth.expires_at = Date.now()
-                            APS.getAuth()
+                            if (APS.isSignedIn()) {
+                                APS.setExpiresAt(Date.now())
+                                APS.getAuthOrLogin()
+                            }
                         }}
                     />
                 </div>

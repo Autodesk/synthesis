@@ -45,7 +45,37 @@ class APS {
         this.userInfo = undefined
     }
 
-    static async getAuth(): Promise<APSAuth | undefined> {
+    /**
+     * Sets the timestamp at which the access token expires
+     *
+     * @param {number} expires_at - When the token expires
+     */
+    static setExpiresAt(expires_at: number) {
+        if (this.auth)
+            this.auth.expires_at = expires_at;
+    }
+
+    /**
+     * Returns whether the user is signed in
+     * @returns {boolean} Whether the user is signed in
+     */
+    static isSignedIn(): boolean {
+        return !!this.getAuth()
+    }
+
+    /**
+     * Returns the auth data of the current user. See {@link APSAuth}
+     * @returns {(APSAuth | undefined)} Auth data of the current user
+     */
+    static getAuth(): APSAuth | undefined {
+        return this.auth
+    }
+
+    /**
+     * Returns the auth data of the current user or prompts them to sign in if they haven't. See {@link APSAuth} and {@link APS#refreshAuthToken}
+     * @returns {Promise<APSAuth | undefined>} Promise that resolves to the auth data
+     */
+    static async getAuthOrLogin(): Promise<APSAuth | undefined> {
         const auth = this.auth
         if (!auth) return undefined
 
@@ -75,10 +105,16 @@ class APS {
         document.dispatchEvent(new Event(APS_USER_INFO_UPDATE_EVENT))
     }
 
+    /**
+    * Logs the user out by setting their auth data to undefined.
+    */
     static async logout() {
         this.auth = undefined
     }
 
+    /**
+    * Prompts the user to sign in, which will retrieve the auth code.
+        */
     static async requestAuthCode() {
         await this.requestMutex.runExclusive(async () => {
             const callbackUrl = import.meta.env.DEV
@@ -113,6 +149,10 @@ class APS {
         })
     }
 
+    /**
+    * Refreshes the access token using our refresh token.
+    * @param {string} refresh_token - The refresh token from our auth data
+    */
     static async refreshAuthToken(refresh_token: string) {
         await this.requestMutex.runExclusive(async () => {
             try {
@@ -151,6 +191,10 @@ class APS {
         })
     }
 
+    /**
+    * Fetches the auth data from Autodesk using the auth code.
+    * @param {string} code - The auth code
+    */
     static async convertAuthToken(code: string) {
         const authUrl = import.meta.env.DEV
             ? `http://localhost:3003/api/aps/code/`
@@ -188,6 +232,10 @@ class APS {
         }
     }
 
+    /**
+    * Fetches user information using the auth data. See {@link APSAuth}
+    * @param {APSAuth} auth - The auth data
+    */
     static async loadUserInfo(auth: APSAuth) {
         console.log("Loading user information")
         try {
@@ -219,6 +267,9 @@ class APS {
         }
     }
 
+    /**
+    * Fetches the code challenge from our server for requesting the auth code.
+    */
     static async codeChallenge() {
         try {
             const endpoint = import.meta.env.DEV
@@ -232,10 +283,6 @@ class APS {
             MainHUD_AddToast("error", "Error signing in.", "Please try again.")
         }
     }
-}
-
-Window.prototype.setAuthCode = (code: string) => {
-    APS.authCode = code
 }
 
 export default APS
