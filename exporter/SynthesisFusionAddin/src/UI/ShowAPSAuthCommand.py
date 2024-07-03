@@ -10,11 +10,14 @@ import adsk.core, traceback
 import os
 from src.APS.APS import auth_path
 
+palette = None
+
 class ShowAPSAuthCommandExecuteHandler(adsk.core.CommandEventHandler):
     def __init__(self):
         super().__init__()
     def notify(self, args):
         try:
+            global palette
             palette = gm.ui.palettes.itemById('authPalette')
             if not palette:
                 callbackUrl = 'http://localhost:3003/api/aps/exporter/'
@@ -34,7 +37,6 @@ class ShowAPSAuthCommandExecuteHandler(adsk.core.CommandEventHandler):
                 }
                 query = "&".join(map(lambda pair: f"{pair[0]}={pair[1]}", params.items()))
                 url = 'https://developer.api.autodesk.com/authentication/v2/authorize?' + query
-                logging.getLogger(f"{INTERNAL_ID}").info(url)
                 palette = gm.ui.palettes.add('authPalette', 'APS Authentication', url, True, True, True, 400, 400)
                 palette.dockingState = adsk.core.PaletteDockingStates.PaletteDockStateRight
                 # register events
@@ -50,6 +52,8 @@ class ShowAPSAuthCommandExecuteHandler(adsk.core.CommandEventHandler):
         except:
             gm.ui.messageBox('Command executed failed: {}'.format(traceback.format_exc()))
             logging.getLogger(f"{INTERNAL_ID}").error('Command executed failed: {}'.format(traceback.format_exc()))
+            if palette:
+                palette.deleteMe()
 
 class ShowAPSAuthCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
     def __init__(self, configure):
@@ -63,6 +67,8 @@ class ShowAPSAuthCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         except:
             gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
             logging.getLogger(f"{INTERNAL_ID}").error("Failed:\n{}".format(traceback.format_exc()))
+            if palette:
+                palette.deleteMe()
 
 class SendInfoCommandExecuteHandler(adsk.core.CommandEventHandler):
     def __init__(self):
@@ -82,17 +88,22 @@ class SendInfoCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         except:
             gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
             logging.getLogger(f"{INTERNAL_ID}").error("Failed:\n{}".format(traceback.format_exc()))
+            if palette:
+                palette.deleteMe()
 
 class MyCloseEventHandler(adsk.core.UserInterfaceGeneralEventHandler):
     def __init__(self):
         super().__init__()
     def notify(self, args):
         try:
-            logging.getLogger(f"{INTERNAL_ID}").info('Close button is clicked')
+            if palette:
+                palette.deleteMe()
             # gm.ui.messageBox('Close button is clicked')
         except:
             gm.ui.messageBox('Failed:\n{}'.format(traceback.format_exc()))
             logging.getLogger(f"{INTERNAL_ID}").error('Failed:\n{}'.format(traceback.format_exc()))
+            if palette:
+                palette.deleteMe()
 
 class MyHTMLEventHandler(adsk.core.HTMLEventHandler):
     def __init__(self):
@@ -101,11 +112,11 @@ class MyHTMLEventHandler(adsk.core.HTMLEventHandler):
         try:
             htmlArgs = adsk.core.HTMLEventArgs.cast(args)
             data = json.loads(htmlArgs.data)
-            msg = "An event has been fired from the html to Fusion with the following data:\n"
-            msg += f"     Command: {htmlArgs.action}\n     data: {htmlArgs.data}\n     code: {data['code']}"
-            logging.getLogger(f"{INTERNAL_ID}").info(msg)
             # gm.ui.messageBox(msg)
+
             convertAuthToken(data['code'])
         except:
             gm.ui.messageBox('Failed:\n'.format(traceback.format_exc()))
             logging.getLogger(f"{INTERNAL_ID}").error('Failed:\n'.format(traceback.format_exc()))
+        if palette:
+            palette.deleteMe()

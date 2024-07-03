@@ -47,14 +47,9 @@ def _res_json(res):
 
 def getCodeChallenge() -> str | None:
     endpoint = 'http://localhost:3003/api/aps/challenge/'
-    try:
-        res = urllib.request.urlopen(endpoint)
-        data = _res_json(res)
-        logging.getLogger(f"{INTERNAL_ID}").info(f"CHALLENGE: {data}")
-        return data["challenge"]
-    except urllib.request.HTTPError as e:
-        logging.getLogger(f"{INTERNAL_ID}").error(f"Code Challenge Error:\n{e.code} - {e.reason}")
-        gm.ui.messageBox("There was an error reaching the Synthesis servers.")
+    res = urllib.request.urlopen(endpoint)
+    data = _res_json(res)
+    return data["challenge"]
 
 def getAuth() -> APSAuth:
     global APS_AUTH
@@ -63,7 +58,6 @@ def getAuth() -> APSAuth:
     try:
         with open(auth_path, 'rb') as f:
             p = pickle.load(f)
-            logging.getLogger(f"{INTERNAL_ID}").info(f"LOADING PICKLED FILE: {p}")
             APS_AUTH = APSAuth(
                 access_token=p["access_token"],
                 refresh_token=p["refresh_token"],
@@ -83,26 +77,20 @@ def getAuth() -> APSAuth:
 def convertAuthToken(code: str):
     global APS_AUTH
     authUrl = f'http://localhost:3003/api/aps/code/?code={code}&redirect_uri={urllib.parse.quote_plus("http://localhost:3003/api/aps/exporter/")}'
-    try:
-        res = urllib.request.urlopen(authUrl)
-        data = _res_json(res)['response']
-        logging.getLogger(f"{INTERNAL_ID}").info(f"AUTH TOKEN: {data}")
-        APS_AUTH = APSAuth(
-            access_token=data["access_token"],
-            refresh_token=data["refresh_token"],
-            expires_in=data["expires_in"],
-            expires_at=int(data["expires_in"]*1000),
-            token_type=data["token_type"]
-        )
-        with open(auth_path, 'wb') as f:
-            pickle.dump(data, f)
-            f.close()
+    res = urllib.request.urlopen(authUrl)
+    data = _res_json(res)['response']
+    APS_AUTH = APSAuth(
+        access_token=data["access_token"],
+        refresh_token=data["refresh_token"],
+        expires_in=data["expires_in"],
+        expires_at=int(data["expires_in"]*1000),
+        token_type=data["token_type"]
+    )
+    with open(auth_path, 'wb') as f:
+        pickle.dump(data, f)
+        f.close()
 
-        loadUserInfo()
-    except urllib.request.HTTPError as e:
-        removeAuth()
-        logging.getLogger(f"{INTERNAL_ID}").error(f"Auth Token Error:\n{e.code} - {e.reason}")
-        gm.ui.messageBox("There was an error signing in. Please retry.")
+    loadUserInfo()
 
 def removeAuth():
     global APS_AUTH, APS_USER_INFO
@@ -126,7 +114,6 @@ def refreshAuthToken():
     try:
         res = urllib.request.urlopen(req)
         data = _res_json(res)
-        logging.getLogger(f"{INTERNAL_ID}").info(f"REFRESH TOKEN: {data}")
         APS_AUTH = APSAuth(
             access_token=data["access_token"],
             refresh_token=data["refresh_token"],
@@ -149,7 +136,6 @@ def loadUserInfo() -> APSUserInfo | None:
     try:
         res = urllib.request.urlopen(req)
         data = _res_json(res)
-        logging.getLogger(f"{INTERNAL_ID}").info(f"USER INFO: {data}")
         APS_USER_INFO = APSUserInfo(
             name=data["name"],
             given_name=data["given_name"],
