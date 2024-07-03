@@ -276,7 +276,7 @@ class SceneRenderer extends WorldSystem {
      * @param obj Mesh to remove gizmo from
      * @returns void
      */
-    public RemoveTransformGizmo(obj: THREE.Object3D) {
+    public RemoveTransformGizmos(obj: THREE.Object3D) {
         this.transformControls.forEach((_, tc) => {
             if (tc.object === obj) {
                 this._scene.remove(tc)
