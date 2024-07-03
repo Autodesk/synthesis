@@ -13,6 +13,7 @@ from typing import get_origin
 import adsk.core
 from adsk.fusion import CalculationAccuracy, TriangleMeshQualityOptions
 
+from ..Logging import logFailure, timed
 from ..strings import INTERNAL_ID
 
 # Not 100% sure what this is for - Brandon
@@ -100,19 +101,26 @@ class ExporterOptions:
     physicalDepth: PhysicalDepth = field(default=PhysicalDepth.AllOccurrence)
     physicalCalculationLevel: CalculationAccuracy = field(default=CalculationAccuracy.LowCalculationAccuracy)
 
+    @logFailure
+    @timed
     def readFromDesign(self) -> None:
-        designAttributes = adsk.core.Application.get().activeProduct.attributes
-        for field in fields(self):
-            attribute = designAttributes.itemByName(INTERNAL_ID, field.name)
-            if attribute:
-                setattr(
-                    self,
-                    field.name,
-                    self._makeObjectFromJson(field.type, json.loads(attribute.value)),
-                )
+        try:
+            designAttributes = adsk.core.Application.get().activeProduct.attributes
+            for field in fields(self):
+                attribute = designAttributes.itemByName(INTERNAL_ID, field.name)
+                if attribute:
+                    setattr(
+                        self,
+                        field.name,
+                        self._makeObjectFromJson(field.type, json.loads(attribute.value)),
+                    )
 
-        return self
+            return self
+        except BaseException:
+            return ExporterOptions()
 
+    @logFailure
+    @timed
     def writeToDesign(self) -> None:
         designAttributes = adsk.core.Application.get().activeProduct.attributes
         for field in fields(self):

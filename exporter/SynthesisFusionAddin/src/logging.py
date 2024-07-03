@@ -1,33 +1,100 @@
-""" Module to create and setup the logger so that logging is accessible for other internal modules
-"""
-
+import functools
 import logging.handlers
 import os
 import pathlib
-from datetime import datetime
+import sys
+import time
+import traceback
+from datetime import date, datetime
+from typing import cast
 
-from .strings import *
+import adsk.core
+
+from .strings import INTERNAL_ID
 from .UI.OsHelper import getOSPath
 
+MAX_LOG_FILES_TO_KEEP = 10
+TIMING_LEVEL = 25
 
-def setupLogger():
-    """setupLogger() will setup the file-watcher and writer to write to the log file
 
-    Sub modules can access their own specific logger if they wish using the logging.getLogger(HellionFusion.submodule)
-    """
-    _now = datetime.now().strftime("-%H%M%S")
+class SynthesisLogger(logging.Logger):
+    def timing(self, msg: str, *args: any, **kwargs: any) -> None:
+        return self.log(TIMING_LEVEL, msg, *args, **kwargs)
 
-    loc = pathlib.Path(__file__).parent.parent
-    path = getOSPath(f"{loc}", "logs")
+    def cleanupHandlers(self) -> None:
+        for handler in self.handlers:
+            handler.close()
 
-    _log_handler = logging.handlers.WatchedFileHandler(os.environ.get("LOGFILE", f"{path}{INTERNAL_ID}.log"), mode="w")
 
-    # This will make it so I can see the auxiliary logging levels of each of the subclasses
-    _log_handler.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s"))
+def setupLogger() -> None:
+    now = datetime.now().strftime("%H-%M-%S")
+    today = date.today()
+    logFileFolder = getOSPath(f"{pathlib.Path(__file__).parent.parent}", "logs")
+    logFiles = [os.path.join(logFileFolder, file) for file in os.listdir(logFileFolder) if file.endswith(".log")]
+    logFiles.sort()
+    if len(logFiles) >= MAX_LOG_FILES_TO_KEEP:
+        for file in logFiles[: len(logFiles) - MAX_LOG_FILES_TO_KEEP]:
+            os.remove(file)
 
-    log = logging.getLogger(f"{INTERNAL_ID}")
-    log.setLevel(os.environ.get("LOGLEVEL", "DEBUG"))
-    log.addHandler(_log_handler)
+    logFileName = f"{logFileFolder}{getOSPath(f'{INTERNAL_ID}-{today}-{now}.log')}"
+    logHandler = logging.handlers.WatchedFileHandler(logFileName, mode="w")
+    logHandler.setFormatter(logging.Formatter("%(name)s - %(levelname)s - %(message)s"))
 
-    # returns the root level logger to the global namespace
-    return log, _log_handler
+    logging.setLoggerClass(SynthesisLogger)
+    logging.addLevelName(TIMING_LEVEL, "TIMING")
+    logger = getLogger(INTERNAL_ID)
+    logger.setLevel(10)  # Debug
+    logger.addHandler(logHandler)
+
+
+def getLogger(name: str) -> SynthesisLogger:
+    return cast(SynthesisLogger, logging.getLogger(name))
+
+
+# Log function failure decorator.
+def logFailure(func: callable = None, /, *, messageBox: bool = False) -> callable:
+    def wrap(func: callable) -> callable:
+        @functools.wraps(func)
+        def wrapper(*args: any, **kwargs: any) -> any:
+            try:
+                return func(*args, **kwargs)
+            except BaseException:
+                excType, excValue, excTrace = sys.exc_info()
+                tb = traceback.TracebackException(excType, excValue, excTrace)
+                formattedTb = "".join(list(tb.format())[2:])  # Remove the wrapper func from the traceback.
+                clsName = ""
+                if args and hasattr(args[0], "__class__"):
+                    clsName = args[0].__class__.__name__ + "."
+
+                getLogger(f"{INTERNAL_ID}.{clsName}{func.__name__}").error(f"Failed:\n{formattedTb}")
+                if messageBox:
+                    ui = adsk.core.Application.get().userInterface
+                    ui.messageBox(f"Internal Failure: {formattedTb}", "Synthesis: Error")
+
+        return wrapper
+
+    if func is None:
+        # Called with parens.
+        return wrap
+
+    # Called without parens.
+    return wrap(func)
+
+
+# Time function decorator.
+def timed(func: callable) -> callable:
+    def wrapper(*args: any, **kwargs: any) -> any:
+        startTime = time.perf_counter()
+        result = func(*args, **kwargs)
+        endTime = time.perf_counter()
+        runTime = f"{endTime - startTime:5f}s"
+
+        clsName = ""
+        if args and hasattr(args[0], "__class__"):
+            clsName = args[0].__class__.__name__ + "."
+
+        logger = getLogger(f"{INTERNAL_ID}.{clsName}{func.__name__}")
+        logger.timing(f"Runtime of '{func.__name__}' took '{runTime}'.")
+        return result
+
+    return wrapper

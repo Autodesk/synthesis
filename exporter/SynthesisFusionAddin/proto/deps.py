@@ -7,8 +7,10 @@ import adsk.core
 import adsk.fusion
 
 from src.general_imports import INTERNAL_ID
+from src.Logging import getLogger, logFailure
 
 system = platform.system()
+logger = getLogger(f"{INTERNAL_ID}.{__name__}")
 
 
 def getPythonFolder() -> str:
@@ -35,7 +37,7 @@ def getPythonFolder() -> str:
     else:
         raise ImportError("Unsupported platform! This add-in only supports windows and macos")
 
-    logging.getLogger(f"{INTERNAL_ID}").debug(f"Python Folder -> {pythonFolder}")
+    logger.debug(f"Python Folder -> {pythonFolder}")
     return pythonFolder
 
 
@@ -50,12 +52,13 @@ def executeCommand(command: tuple) -> int:
     """
 
     joinedCommand = str.join(" ", command)
-    logging.getLogger(f"{INTERNAL_ID}").debug(f"Command -> {joinedCommand}")
+    logger.debug(f"Command -> {joinedCommand}")
     executionResult = os.system(joinedCommand)
 
     return executionResult
 
 
+@logFailure(messageBox=True)
 def installCross(pipDeps: list) -> bool:
     """Attempts to fetch pip script and resolve dependencies with less user interaction
 
@@ -88,7 +91,7 @@ def installCross(pipDeps: list) -> bool:
     try:
         pythonFolder = getPythonFolder()
     except ImportError as e:
-        logging.getLogger(f"{INTERNAL_ID}").error(f"Failed to download dependencies: {e.msg}")
+        logger.error(f"Failed to download dependencies: {e.msg}")
         return False
 
     if system == "Darwin":  # macos
@@ -125,7 +128,7 @@ def installCross(pipDeps: list) -> bool:
             ]
         )
         if installResult != 0:
-            logging.getLogger(f"{INTERNAL_ID}").warn(f'Dep installation "{depName}" exited with code "{installResult}"')
+            logger.warn(f'Dep installation "{depName}" exited with code "{installResult}"')
 
     if system == "Darwin":
         pipAntiDeps = ["dataclasses", "typing"]
@@ -146,16 +149,12 @@ def installCross(pipDeps: list) -> bool:
                 ]
             )
             if uninstallResult != 0:
-                logging.getLogger(f"{INTERNAL_ID}").warn(
-                    f'AntiDep uninstallation "{depName}" exited with code "{uninstallResult}"'
-                )
+                logger.warn(f"AntiDep uninstallation '{depName}' exited with code '{uninstallResult}'")
 
     progressBar.hide()
 
-    if _checkDeps():
-        return True
-    else:
-        ui.messageBox("Failed to install dependencies needed")
+    if not _checkDeps():
+        raise RuntimeError("Could not resolve Proto dependencies")
 
 
 def _checkDeps() -> bool:
