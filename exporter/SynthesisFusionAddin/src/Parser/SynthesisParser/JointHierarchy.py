@@ -9,7 +9,7 @@ import adsk.fusion
 from proto.proto_out import joint_pb2, types_pb2
 
 from ...general_imports import *
-from ...Logging import getLogger, logFailure, timed
+from ...Logging import getLogger, logFailure
 from ..ExporterOptions import ExporterOptions
 from .PDMessage import PDMessage
 from .Utilities import guid_component, guid_occurrence
@@ -490,9 +490,6 @@ def populateJoint(simNode: SimulationNode, joints: joint_pb2.Joints, progressDia
 
     root = types_pb2.Node()
 
-    # if DEBUG:
-    #     print(f"Configuring {proto_joint.info.name}")
-
     # construct body tree if possible
     createTreeParts(simNode.data, OccurrenceRelationship.CONNECTION, root, progressDialog)
 
@@ -532,9 +529,6 @@ def createTreeParts(
             node.value = dynNode.data.entityToken
         except RuntimeError:
             node.value = dynNode.data.name
-
-    # if DEBUG:
-    #    print(f" -- {dynNode.data.name} + rel : {relationship}\n")
 
     # possibly add additional information for the type of connection made
     # recurse and add all children connections

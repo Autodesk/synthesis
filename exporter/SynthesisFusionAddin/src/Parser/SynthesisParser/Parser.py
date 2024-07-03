@@ -197,24 +197,36 @@ class Parser:
             if node.value == "ground":
                 joint_hierarchy_out = f"{joint_hierarchy_out}  |- ground\n"
             else:
-                newnode = assembly_out.data.joints.joint_instances[node.value]
-                jointdefinition = assembly_out.data.joints.joint_definitions[newnode.joint_reference]
+                newNode = assembly_out.data.joints.joint_instances[node.value]
+                jointDefinition = assembly_out.data.joints.joint_definitions[newNode.joint_reference]
 
-                wheel_ = " wheel : true" if (jointdefinition.user_data.data["wheel"] != "") else ""
+                wheel_ = " wheel : true" if (jointDefinition.user_data.data["wheel"] != "") else ""
 
-                joint_hierarchy_out = f"{joint_hierarchy_out}  |- {jointdefinition.info.name} type: {jointdefinition.joint_motion_type} {wheel_}\n"
-
+                joint_hierarchy_out = (
+                    f"{joint_hierarchy_out}  |---> {jointDefinition.info.name} "
+                    f"type: {jointDefinition.joint_motion_type} {wheel_}\n"
+                )
             for child in node.children:
                 if child.value == "ground":
                     joint_hierarchy_out = f"{joint_hierarchy_out} |---> ground\n"
                 else:
-                    newnode = assembly_out.data.joints.joint_instances[child.value]
-                    jointdefinition = assembly_out.data.joints.joint_definitions[newnode.joint_reference]
-                    wheel_ = " wheel : true" if (jointdefinition.user_data.data["wheel"] != "") else ""
-                    joint_hierarchy_out = f"{joint_hierarchy_out}  |---> {jointdefinition.info.name} type: {jointdefinition.joint_motion_type} {wheel_}\n"
+                    newNode = assembly_out.data.joints.joint_instances[child.value]
+                    jointDefinition = assembly_out.data.joints.joint_definitions[newNode.joint_reference]
+                    wheel_ = " wheel : true" if (jointDefinition.user_data.data["wheel"] != "") else ""
+                    joint_hierarchy_out = (
+                        f"{joint_hierarchy_out}  |- {jointDefinition.info.name} "
+                        f"type: {jointDefinition.joint_motion_type} {wheel_}\n"
+                    )
 
         joint_hierarchy_out += "\n\n"
-
-        debug_output = f"Appearances: {len(assembly_out.data.materials.appearances)} \nMaterials: {len(assembly_out.data.materials.physicalMaterials)} \nPart-Definitions: {len(part_defs)} \nParts: {len(parts)} \nSignals: {len(signals)} \nJoints: {len(joints)}\n {joint_hierarchy_out}"
+        debug_output = (
+            f"Appearances: {len(assembly_out.data.materials.appearances)} \n"
+            f"Materials: {len(assembly_out.data.materials.physicalMaterials)} \n"
+            f"Part-Definitions: {len(part_defs)} \n"
+            f"Parts: {len(parts)} \n"
+            f"Signals: {len(signals)} \n"
+            f"Joints: {len(joints)}\n"
+            f"{joint_hierarchy_out}"
+        )
 
         logger.debug(debug_output.strip())
