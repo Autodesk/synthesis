@@ -9,6 +9,7 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import vertexShader from "@/shaders/vertex.glsl"
 import fragmentShader from "@/shaders/fragment.glsl"
 import { Theme } from "@/ui/ThemeContext"
+import InputSystem from "../input/InputSystem"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x73937e
@@ -25,7 +26,6 @@ class SceneRenderer extends WorldSystem {
 
     private orbitControls: OrbitControls
     private transformControls: Map<TransformControls, number> // maps all rendered transform controls to their size
-    private isShiftPressed: boolean = false
 
     public get sceneObjects() {
         return this._sceneObjects
@@ -47,6 +47,7 @@ class SceneRenderer extends WorldSystem {
         super()
 
         this._sceneObjects = new Map()
+        this.transformControls = new Map()
 
         this._mainCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
         this._mainCamera.position.set(-2.5, 2, 2.5)
@@ -107,19 +108,6 @@ class SceneRenderer extends WorldSystem {
         // Orbit controls
         this.orbitControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
         this.orbitControls.update()
-
-        // Add event listeners for shift key
-        this.transformControls = new Map()
-        document.addEventListener("keydown", event => {
-            if (event.key === "Shift") {
-                this.isShiftPressed = true
-            }
-        })
-        document.addEventListener("keyup", event => {
-            if (event.key === "Shift") {
-                this.isShiftPressed = false
-            }
-        })
     }
 
     public UpdateCanvasSize() {
@@ -246,7 +234,7 @@ class SceneRenderer extends WorldSystem {
                             return
                         }
                     })
-                } else if (event.target.mode === "scale" && this.isShiftPressed) {
+                } else if (event.target.mode === "scale" && InputSystem.getInput("shift")) {
                     // scale uniformly if shift is pressed
                     transformControl.axis = "XYZE"
                 } else if (event.target.mode === "rotate") {

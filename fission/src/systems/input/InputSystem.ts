@@ -29,6 +29,12 @@ const defaultInputs: { [key: string]: Input } = {
     arcadeLeft: { name: "arcadeLeft", keyCode: "KeyA", isGlobal: false, modifiers: emptyModifierState },
     arcadeRight: { name: "arcadeRight", keyCode: "KeyD", isGlobal: false, modifiers: emptyModifierState },
 
+    shift: {
+        name: "shift",
+        keyCode: "ShiftLeft",
+        isGlobal: true,
+        modifiers: { ctrl: false, alt: false, shift: true, meta: false },
+    },
     escape: { name: "escape", keyCode: "Escape", isGlobal: true, modifiers: emptyModifierState },
     enter: { name: "enter", keyCode: "Enter", isGlobal: true, modifiers: emptyModifierState },
 }
