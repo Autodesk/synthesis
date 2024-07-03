@@ -102,7 +102,7 @@ export const AddRobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 }
             })
 
-            if (!info.name) MirabufCachingService.SetInfo(info.cacheKey, MiraType.ROBOT, assembly.info?.name ?? undefined)
+            if (!info.name) MirabufCachingService.CacheInfo(info.cacheKey, MiraType.ROBOT, assembly.info?.name ?? undefined)
         } else {
             console.error('Failed to spawn robot')
         }
@@ -185,7 +185,7 @@ export const AddFieldsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 }
             })
 
-            if (!info.name) MirabufCachingService.SetInfo(info.cacheKey, MiraType.FIELD, assembly.info?.name ?? undefined)
+            if (!info.name) MirabufCachingService.CacheInfo(info.cacheKey, MiraType.FIELD, assembly.info?.name ?? undefined)
         } else {
             console.error('Failed to spawn field')
         }

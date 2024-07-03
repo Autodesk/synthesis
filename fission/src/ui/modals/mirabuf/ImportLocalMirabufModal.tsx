@@ -56,15 +56,11 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     
 
                     const hashBuffer = await selectedFile.arrayBuffer()
-                    const info = await MirabufCachingService.CacheLocal(hashBuffer, miraType)
-                    const assembly = await MirabufCachingService.Get(info!.id, miraType)
-                    await CreateMirabuf(assembly!).then(x => {
-                            if (x) {
-                                World.SceneRenderer.RegisterSceneObject(x)
-                            }
-                        }).then(() => { 
-                            if (!info!.name) MirabufCachingService.SetInfo(info!.cacheKey, miraType, assembly?.info?.name ?? undefined)
-                        })
+                    await MirabufCachingService.CacheAndGetLocal(hashBuffer, MiraType.ROBOT).then(x => CreateMirabuf(x!)).then(x => {
+                                if (x) {
+                                    World.SceneRenderer.RegisterSceneObject(x)
+                                }
+                            })
                     }
                 } 
             }
