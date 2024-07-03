@@ -11,6 +11,8 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import { LayerReserve } from "@/systems/physics/PhysicsSystem"
 import Mechanism from "@/systems/physics/Mechanism"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import InputSystem from "@/systems/input/InputSystem"
+import TransformGizmos from "@/ui/components/TransformGizmos"
 
 const DEBUG_BODIES = true
 
@@ -24,7 +26,17 @@ class MirabufSceneObject extends SceneObject {
     private _debugBodies: Map<string, RnDebugMeshes> | null
     private _physicsLayerReserve: LayerReserve | undefined = undefined
 
+    private transformGizmos: TransformGizmos
+
     private _mechanism: Mechanism
+
+    get mirabufInstance() {
+        return this._mirabufInstance
+    }
+
+    get mechanism() {
+        return this._mechanism
+    }
 
     public constructor(mirabufInstance: MirabufInstance) {
         super()
@@ -37,6 +49,21 @@ class MirabufSceneObject extends SceneObject {
         }
 
         this._debugBodies = null
+
+        // creating transform gizmos in TransformGizmos handler
+        this.transformGizmos = new TransformGizmos(
+            new THREE.Mesh(
+                new THREE.SphereGeometry(3.0),
+                new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0 })
+            )
+        )
+        this.transformGizmos.createGizmo("translate")
+
+        // disabling physics initially for all rigid node bodies
+        this._mirabufInstance.parser.rigidNodes.forEach(rn => {
+            World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
+        })
+        World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(this._mechanism.rootBody)!)
     }
 
     public Setup(): void {
@@ -69,6 +96,7 @@ class MirabufSceneObject extends SceneObject {
 
     public Update(): void {
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
+            if (!this._mirabufInstance.meshes.size) return // if this.dispose() has been ran then return
             const body = World.PhysicsSystem.GetBody(this._mechanism.GetBodyByNodeId(rn.id)!)
             const transform = JoltMat44_ThreeMatrix4(body.GetWorldTransform())
             rn.parts.forEach(part => {
@@ -77,10 +105,34 @@ class MirabufSceneObject extends SceneObject {
                     .clone()
                     .premultiply(transform)
                 this._mirabufInstance.meshes.get(part)!.forEach(mesh => {
+                    // iterating through each mesh and updating their position and rotation
                     mesh.position.setFromMatrixPosition(partTransform)
                     mesh.rotation.setFromRotationMatrix(partTransform)
                 })
             })
+
+            /**
+             * transform gizmo block to update the position and rotation of the body to match the gizmos's position
+             */
+            if (this.transformGizmos.isActive) {
+                // commands to either cancel gizmo creation or confirm position
+                if (InputSystem.getInput("enter")) {
+                    this.transformGizmos.removeGizmos()
+                    World.PhysicsSystem.EnablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
+                    World.PhysicsSystem.EnablePhysicsForBody(this._mechanism.GetBodyByNodeId(this._mechanism.rootBody)!)
+                    return
+                } else if (InputSystem.getInput("escape")) {
+                    this.transformGizmos.removeGizmos()
+                    World.SceneRenderer.RemoveSceneObject(this.id)
+                    return
+                }
+
+                // if the gizmo is being dragged, copy the mesh position and rotation to the Mirabuf body
+                if (this.transformGizmos.isBeingDragged()) {
+                    this.transformGizmos.updateMirabufPositioning(this, rn)
+                    World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
+                }
+            }
 
             if (isNaN(body.GetPosition().GetX())) {
                 const vel = body.GetLinearVelocity()

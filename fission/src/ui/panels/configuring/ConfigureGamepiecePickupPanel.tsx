@@ -11,7 +11,7 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
     const [, setZoneSize] = useState<number>(defaultZoneSize)
 
     useEffect(() => {
-        // implementing spherical placeholder for intake placement        
+        // implementing spherical placeholder for intake placement
         const mesh = World.SceneRenderer.CreateSphere(5.0)
     })
 
