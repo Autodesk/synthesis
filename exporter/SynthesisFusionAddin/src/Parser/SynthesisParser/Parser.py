@@ -41,6 +41,8 @@ class Parser:
 
             # Physical Props here when ready
 
+            if self.exporterOptions.frictionOverride:
+                assembly_out.data.parts.parts_definitions.value.friction_override = self.exporterOptions.frictionOverrideCoeff
             #
 
             progressDialog = app.userInterface.createProgressDialog()
