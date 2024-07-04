@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import World from "@/systems/World"
-import * as THREE from "three"
 import { ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
 import Checkbox from "@/ui/components/Checkbox"
 import Slider from "@/ui/components/Slider"
