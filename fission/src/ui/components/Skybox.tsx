@@ -3,7 +3,7 @@ import { useTheme } from "../ThemeContext";
 
 const Skybox = () => {
    const { currentTheme, themes } = useTheme(); 
-   if (World.SceneRenderer) { World.SceneRenderer.updateSkyboxColors(themes[currentTheme]) }
+   if (World.SceneRenderer) { World.SceneRenderer.UpdateSkyboxColors(themes[currentTheme]) }
     return (
         <></>
     );

@@ -22,19 +22,13 @@ const MARK_RADIUS_MIN = 0.01
 const MARK_RADIUS_SLIDER_STEP = 0.01
 
 function affect(e: MouseEvent, punch: boolean, mark: boolean, punchForce: number, markRadius: number) {
-    const camera = World.SceneRenderer.mainCamera
+    const origin = World.SceneRenderer.mainCamera.position
 
-    const screenSpace = new THREE.Vector3(
-        e.clientX / window.innerWidth * 2 - 1,
-        (window.innerHeight - e.clientY) / window.innerHeight * 2 - 1,
-        0.5
-    )
-
-    const worldSpace = screenSpace.unproject(camera)
-    const dir = worldSpace.sub(camera.position).normalize().multiplyScalar(RAY_MAX_LENGTH)
+    const worldSpace = World.SceneRenderer.PixelToWorldSpace(e.clientX, e.clientY)
+    const dir = worldSpace.sub(origin).normalize().multiplyScalar(RAY_MAX_LENGTH)
 
     const res = World.PhysicsSystem.RayCast(
-        ThreeVector3_JoltVec3(camera.position),
+        ThreeVector3_JoltVec3(origin),
         ThreeVector3_JoltVec3(dir)
     )
     
